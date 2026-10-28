@@ -71,13 +71,11 @@ public abstract class ToolbarChild
 
     @Override
     public int updateVisibility(int availableWidth) {
-        assert ToolbarUtils.isToolbarTabletResizeRefactorEnabled();
         return 0;
     }
 
     @Override
     public int updateVisibilityWithAnimation(int availableWidth, Collection<Animator> animators) {
-        assert ToolbarUtils.isToolbarTabletResizeRefactorEnabled();
         return 0;
     }
 }

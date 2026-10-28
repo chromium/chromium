@@ -15,7 +15,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -34,6 +33,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.DeviceFormFactor;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -99,10 +99,8 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
 
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
         mTabStripVisibilitySupplier = tabStripVisibilitySupplier;
-        if (ChromeFeatureList.sToolbarTabletResizeRefactor.isEnabled()) {
-            mTabStripVisibilitySupplier.addSyncObserverAndPostIfNonNull(
-                    mOnTabStripVisibilityStateChanged);
-        }
+        mTabStripVisibilitySupplier.addSyncObserverAndPostIfNonNull(
+                mOnTabStripVisibilityStateChanged);
     }
 
     public static void setTabCreatorManagerForTesting(
@@ -156,9 +154,6 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
     @Override
     public void onConfigurationChanged(Configuration configuration) {
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
-        if (mIsTablet == isTablet && !ChromeFeatureList.sToolbarTabletResizeRefactor.isEnabled()) {
-            return;
-        }
         mIsTablet = isTablet;
 
         mButtonData.setCanShow(shouldShowButton(mActiveTabSupplier.get()));
@@ -168,14 +163,10 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
     protected boolean shouldShowButton(@Nullable Tab tab) {
         if (tab == null) return false;
         if (!super.shouldShowButton(tab)) return false;
-        // On tablets, the new tab button can be shown when the tab strip is not visible, if the
-        // tablet toolbar resize refactor is enabled.
-        if (mIsTablet) {
-            if (!ChromeFeatureList.sToolbarTabletResizeRefactor.isEnabled()
-                    || mTabStripVisibilitySupplier.get() == null
-                    || mTabStripVisibilitySupplier.get() != StripVisibilityState.HIDDEN_BY_FADE) {
-                return false;
-            }
+        // On tablets, the new tab button can be shown when the tab strip is not visible.
+        @Nullable Integer tabStripVisibility = mTabStripVisibilitySupplier.get();
+        if (mIsTablet && !Objects.equals(tabStripVisibility, StripVisibilityState.HIDDEN_BY_FADE)) {
+            return false;
         }
         if (UrlUtilities.isNtpUrl(tab.getUrl())) return false;
 

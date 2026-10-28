@@ -8,7 +8,6 @@ import android.animation.ObjectAnimator;
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.ui.interpolators.Interpolators;
 
@@ -25,10 +24,6 @@ public class ToolbarUtils {
         return isIncognito
                 ? R.drawable.default_icon_background_baseline
                 : R.drawable.default_icon_background;
-    }
-
-    public static boolean isToolbarTabletResizeRefactorEnabled() {
-        return ChromeFeatureList.sToolbarTabletResizeRefactor.isEnabled();
     }
 
     public static final @ToolbarComponentId int[] RANKED_TOOLBAR_COMPONENTS =

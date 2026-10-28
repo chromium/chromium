@@ -586,8 +586,6 @@ public class ToolbarTablet extends ToolbarLayout {
     public void onWidthConsumerVisibilityChanged() {
         assert !mIsDestroyed;
 
-        if (!ToolbarUtils.isToolbarTabletResizeRefactorEnabled()) return;
-
         // Re-allocate width to account for a change in a width consumer's visibility.
         int unspecifiedSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
         int width = Math.max(0, getWidth() - getControlContainerMargin());
@@ -949,7 +947,6 @@ public class ToolbarTablet extends ToolbarLayout {
 
         @Override
         public int updateVisibility(int availableWidth) {
-            assert ToolbarUtils.isToolbarTabletResizeRefactorEnabled();
             int width =
                     Math.min(
                             availableWidth,
@@ -985,7 +982,6 @@ public class ToolbarTablet extends ToolbarLayout {
 
         @Override
         public int updateVisibility(int availableWidth) {
-            assert ToolbarUtils.isToolbarTabletResizeRefactorEnabled();
             if (mOptionalButtonForciblyHidden) {
                 setOptionalButtonVisibility(false);
                 mHasSpaceToShow = false;

@@ -37,10 +37,8 @@ import org.robolectric.Robolectric;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.download.DownloadToolbarButtonState;
 import org.chromium.chrome.browser.download.DownloadToolbarButtonState.IconState;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
@@ -51,7 +49,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link DownloadButtonCoordinator} and {@link DownloadButtonMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
 public class DownloadButtonCoordinatorTest {
     private static final DownloadToolbarButtonState SHOWN_INACTIVE =
             new DownloadToolbarButtonState(

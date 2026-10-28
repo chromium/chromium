@@ -152,7 +152,6 @@ public class IncognitoIndicatorCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testUpdateVisibility_TabStripMigrationDisabled() {
         assertEquals(0, mCoordinator.updateVisibility(300));
@@ -160,7 +159,6 @@ public class IncognitoIndicatorCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testUpdateVisibility_ToggleIncognito() {
         // Start not in incognito.
         mCoordinator.onIncognitoStateChanged(/* isIncognito= */ false);

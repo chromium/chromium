@@ -42,7 +42,6 @@ public abstract class ToolbarChildButton extends ToolbarChild {
 
     @Override
     public int updateVisibility(int availableWidth) {
-        assert ToolbarUtils.isToolbarTabletResizeRefactorEnabled();
 
         int width = mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
         setHasSpaceToShow(availableWidth >= width);

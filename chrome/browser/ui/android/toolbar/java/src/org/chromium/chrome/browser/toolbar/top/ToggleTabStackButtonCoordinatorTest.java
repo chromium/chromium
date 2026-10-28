@@ -484,10 +484,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER,
-        ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR
-    })
+    @EnableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
     public void testUpdateVisibility_disabledOnDesktop() {
         DeviceInfo.setIsDesktopForTesting(true);
         int width = mCoordinator.updateVisibility(500);
