@@ -168,10 +168,9 @@ void ExpectCellVisibilities(bool passwords_and_passkeys_cell,
   [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
       performAction:grey_tap()];
 
-  // Ensure the Quick Delete Other Data page is closed while the Quick Delete
-  // Browsing Data page is still open.
-  [[EarlGrey selectElementWithMatcher:QuickDeleteOtherDataPageTitleMatcher(YES)]
-      assertWithMatcher:grey_nil()];
+  // Wait for the Quick Delete Other Data page to close.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      QuickDeleteOtherDataPageTitleMatcher(YES)];
   [[EarlGrey selectElementWithMatcher:QuickDeleteBrowsingDataPageTitleMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
