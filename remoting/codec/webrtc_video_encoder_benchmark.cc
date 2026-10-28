@@ -415,6 +415,25 @@ class EncoderBenchmark {
  private:
   void InitializeEncoderOnEncodeThread() {
     DCHECK(encode_task_runner_->RunsTasksInCurrentSequence());
+    auto warmup_encoder = CreateEncoder(encoder_config_);
+    if (!warmup_encoder) {
+      encoder_initialized_ = false;
+      return;
+    }
+
+    // Run a single warm-up encode on a temporary instance to warm up the
+    // encode thread, SIMD dispatch tables, and allocator caches without
+    // mutating the rate-control state of |encoder_|.
+    WebrtcVideoEncoder::FrameParams warmup_params;
+    warmup_params.bitrate_kbps = encoder_config_.bitrate_kbps;
+    warmup_params.duration = base::Hertz(runtime_params_.fps);
+    warmup_params.fps = static_cast<int>(std::round(runtime_params_.fps));
+    warmup_params.key_frame = true;
+    warmup_params.clear_active_map = true;
+    warmup_encoder->Encode(preloaded_frames_[0]->Share(), warmup_params,
+                           base::DoNothing());
+    warmup_encoder.reset();
+
     encoder_ = CreateEncoder(encoder_config_);
     encoder_initialized_ = (encoder_ != nullptr);
   }
