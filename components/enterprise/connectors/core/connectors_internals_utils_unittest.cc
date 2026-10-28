@@ -107,6 +107,15 @@ TEST_F(ConnectorsInternalsUtilsTest, CreateDeviceTrustStateWithNoKey) {
             connectors_internals::mojom::KeyManagerInitializedValue::NO_KEY);
   EXPECT_EQ(state->signals_json, signals_json);
   EXPECT_FALSE(state->consent_metadata);
+
+  auto state_with_consent = CreateDeviceTrustStateWithNoKey(
+      /*is_device_trust_enabled=*/true, levels, signals_json,
+      connectors_internals::mojom::ConsentMetadata::New(
+          /*can_collect_signals=*/true, /*consent_received=*/false));
+  ASSERT_TRUE(state_with_consent);
+  ASSERT_TRUE(state_with_consent->consent_metadata);
+  EXPECT_TRUE(state_with_consent->consent_metadata->can_collect_signals);
+  EXPECT_FALSE(state_with_consent->consent_metadata->consent_received);
 }
 
 TEST_F(ConnectorsInternalsUtilsTest, CreateSignalsReportingState_WithPrefs) {

@@ -18,6 +18,7 @@
 #import "base/test/test_future.h"
 #import "base/time/time.h"
 #import "base/values.h"
+#import "components/device_signals/core/browser/pref_names.h"
 #import "components/enterprise/browser/reporting/common_pref_names.h"
 #import "components/enterprise/browser/reporting/reporting_features.h"
 #import "components/enterprise/connectors/connectors_internals.mojom.h"
@@ -36,6 +37,7 @@
 #import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/proxy/model/enterprise_network_auth_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_service_factory_ios.h"
+#import "ios/chrome/browser/enterprise/signals/model/ios_user_permission_service_factory.h"
 #import "ios/chrome/browser/policy/model/browser_management_service.h"
 #import "ios/chrome/browser/policy/model/browser_management_service_factory.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
@@ -371,6 +373,7 @@ TEST_F(ConnectorsInternalsPageHandlerTest,
       connectors_internals::mojom::KeyManagerInitializedValue::UNSUPPORTED);
   EXPECT_TRUE(state->signals_json.empty());
   EXPECT_TRUE(state->policy_enabled_levels.empty());
+  EXPECT_FALSE(state->consent_metadata);
 }
 
 // Tests that GetDeviceTrustState returns unsupported state for a managed
@@ -394,6 +397,7 @@ TEST_F(ConnectorsInternalsPageHandlerTest,
   EXPECT_EQ(
       state->key_info->is_key_manager_initialized,
       connectors_internals::mojom::KeyManagerInitializedValue::UNSUPPORTED);
+  EXPECT_FALSE(state->consent_metadata);
 }
 
 // Tests that GetDeviceTrustState returns unsupported state for an unmanaged
@@ -422,10 +426,12 @@ TEST_F(ConnectorsInternalsPageHandlerTest,
       state->key_info->is_key_manager_initialized,
       connectors_internals::mojom::KeyManagerInitializedValue::UNSUPPORTED);
   EXPECT_TRUE(state->signals_json.empty());
+  EXPECT_FALSE(state->consent_metadata);
 }
 
-// Tests that GetDeviceTrustState returns device trust details and formatted
-// signals when DeviceTrustService is available and collects signals.
+// Tests that GetDeviceTrustState returns device trust details, formatted
+// signals, and consent metadata when DeviceTrustService is available on a
+// cloud-managed device.
 TEST_F(ConnectorsInternalsPageHandlerTest,
        GetDeviceTrustState_FeatureEnabled_WithDeviceTrustService) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -454,6 +460,109 @@ TEST_F(ConnectorsInternalsPageHandlerTest,
   EXPECT_NE(
       state->signals_json.find("\"test_signal_key\": \"test_signal_value\""),
       std::string::npos);
+  ASSERT_TRUE(state->consent_metadata);
+  EXPECT_TRUE(state->consent_metadata->can_collect_signals);
+  EXPECT_FALSE(state->consent_metadata->consent_received);
+}
+
+// Tests that GetDeviceTrustState reports `can_collect_signals` and
+// `consent_received` as false on an unmanaged device when user consent has not
+// been given.
+TEST_F(ConnectorsInternalsPageHandlerTest,
+       GetDeviceTrustState_ConsentMetadata_MissingConsent) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_connectors::features::kEnableIOSDeviceTrustConnector);
+
+  std::unique_ptr<TestProfileIOS> test_profile =
+      BuildProfileWithFakeDeviceTrustService();
+  SetManagementAuthority(test_profile.get(),
+                         policy::EnterpriseManagementAuthority::CLOUD);
+
+  mojo::Remote<connectors_internals::mojom::PageHandler> test_page_handler;
+  ConnectorsInternalsPageHandler test_handler(
+      test_page_handler.BindNewPipeAndPassReceiver(), test_profile.get());
+
+  base::test::TestFuture<connectors_internals::mojom::DeviceTrustStatePtr>
+      future;
+  test_page_handler->GetDeviceTrustState(future.GetCallback());
+  auto state = future.Take();
+
+  ASSERT_TRUE(state);
+  ASSERT_TRUE(state->consent_metadata);
+  EXPECT_FALSE(state->consent_metadata->can_collect_signals);
+  EXPECT_FALSE(state->consent_metadata->consent_received);
+}
+
+// Tests that GetDeviceTrustState reports `can_collect_signals` and
+// `consent_received` as true when user consent has been recorded.
+TEST_F(ConnectorsInternalsPageHandlerTest,
+       GetDeviceTrustState_ConsentMetadata_ConsentReceived) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_connectors::features::kEnableIOSDeviceTrustConnector);
+
+  std::unique_ptr<TestProfileIOS> test_profile =
+      BuildProfileWithFakeDeviceTrustService();
+  SetManagementAuthority(test_profile.get(),
+                         policy::EnterpriseManagementAuthority::CLOUD);
+  test_profile->GetPrefs()->SetBoolean(
+      device_signals::prefs::kDeviceSignalsPermanentConsentReceived, true);
+
+  mojo::Remote<connectors_internals::mojom::PageHandler> test_page_handler;
+  ConnectorsInternalsPageHandler test_handler(
+      test_page_handler.BindNewPipeAndPassReceiver(), test_profile.get());
+
+  base::test::TestFuture<connectors_internals::mojom::DeviceTrustStatePtr>
+      future;
+  test_page_handler->GetDeviceTrustState(future.GetCallback());
+  auto state = future.Take();
+
+  ASSERT_TRUE(state);
+  ASSERT_TRUE(state->consent_metadata);
+  EXPECT_TRUE(state->consent_metadata->can_collect_signals);
+  EXPECT_TRUE(state->consent_metadata->consent_received);
+}
+
+// Tests that GetDeviceTrustState sets `consent_metadata` to null when
+// `UserPermissionService` is unavailable.
+TEST_F(ConnectorsInternalsPageHandlerTest,
+       GetDeviceTrustState_ConsentMetadata_NullUserPermissionService) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_connectors::features::kEnableIOSDeviceTrustConnector);
+
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactory(
+      DeviceTrustServiceFactoryIOS::GetInstance(),
+      base::BindOnce([](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+        base::DictValue signals;
+        signals.Set("test_signal_key", "test_signal_value");
+        return std::make_unique<FakeDeviceTrustService>(
+            /*is_enabled=*/true, std::move(signals),
+            DeviceTrustConnectorServiceFactoryIOS::GetForProfile(profile));
+      }));
+  builder.AddTestingFactory(
+      IOSUserPermissionServiceFactory::GetInstance(),
+      base::BindOnce([](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+        return nullptr;
+      }));
+  std::unique_ptr<TestProfileIOS> test_profile = std::move(builder).Build();
+  SetManagementAuthority(test_profile.get(),
+                         policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+
+  mojo::Remote<connectors_internals::mojom::PageHandler> test_page_handler;
+  ConnectorsInternalsPageHandler test_handler(
+      test_page_handler.BindNewPipeAndPassReceiver(), test_profile.get());
+
+  base::test::TestFuture<connectors_internals::mojom::DeviceTrustStatePtr>
+      future;
+  test_page_handler->GetDeviceTrustState(future.GetCallback());
+  auto state = future.Take();
+
+  ASSERT_TRUE(state);
+  EXPECT_TRUE(state->is_enabled);
+  EXPECT_FALSE(state->consent_metadata);
 }
 
 // Tests that DeleteDeviceTrustKey runs its completion callback.

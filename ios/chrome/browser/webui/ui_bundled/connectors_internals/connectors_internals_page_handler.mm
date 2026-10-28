@@ -96,6 +96,16 @@ void ConnectorsInternalsPageHandler::OnSignalsCollected(
   base::JSONWriter::WriteWithOptions(
       signals, base::JSONWriter::OPTIONS_PRETTY_PRINT, &signals_json);
 
+  const device_signals::UserPermissionService* user_permission_service =
+      IOSUserPermissionServiceFactory::GetForProfile(profile_);
+  connectors_internals::mojom::ConsentMetadataPtr consent_metadata = nullptr;
+  if (user_permission_service) {
+    consent_metadata = connectors_internals::mojom::ConsentMetadata::New(
+        user_permission_service->CanCollectSignals() ==
+            device_signals::UserPermission::kGranted,
+        user_permission_service->HasUserConsented());
+  }
+
   std::vector<std::string> policy_enabled_levels =
       enterprise_connectors::utils::GetPolicyEnabledLevels(
           DeviceTrustConnectorServiceFactoryIOS::GetForProfile(profile_));
@@ -103,7 +113,7 @@ void ConnectorsInternalsPageHandler::OnSignalsCollected(
   connectors_internals::mojom::DeviceTrustStatePtr state =
       enterprise_connectors::utils::CreateDeviceTrustStateWithNoKey(
           is_device_trust_enabled, std::move(policy_enabled_levels),
-          std::move(signals_json));
+          std::move(signals_json), std::move(consent_metadata));
   std::move(callback).Run(std::move(state));
 }
 

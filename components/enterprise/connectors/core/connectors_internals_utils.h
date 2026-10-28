@@ -129,7 +129,7 @@ CreateDeviceTrustStateWithNoKey(
     bool is_device_trust_enabled,
     std::vector<std::string> policy_enabled_levels,
     std::string signals_json,
-    connectors_internals::mojom::ConsentMetadataPtr consent_metadata = nullptr);
+    connectors_internals::mojom::ConsentMetadataPtr consent_metadata);
 
 // Creates a SignalsReportingState populated with preference timestamps and
 // scheduler status.
