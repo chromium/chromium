@@ -859,11 +859,9 @@ DrawingBuffer::ExportLowLatencyCanvasResource() {
   }
 
   return base::MakeRefCounted<ExportedCanvasResource>(
-      base::MakeRefCounted<ExternalCanvasResource>(
-          back_color_buffer_->shared_image, sync_token,
-          viz::TransferableResource::ResourceSource::kDrawingBuffer,
-          hdr_metadata_, viz::ReleaseCallback(),
-          context_provider_->GetWeakPtr()));
+      back_color_buffer_->shared_image, sync_token,
+      viz::TransferableResource::ResourceSource::kDrawingBuffer, hdr_metadata_,
+      viz::ReleaseCallback(), context_provider_->GetWeakPtr());
 }
 
 scoped_refptr<StaticBitmapImage> DrawingBuffer::ExportLowLatencyBitmap() {
@@ -905,11 +903,9 @@ scoped_refptr<ExportedCanvasResource> DrawingBuffer::ExportCanvasResource() {
   }
 
   return base::MakeRefCounted<ExportedCanvasResource>(
-      base::MakeRefCounted<ExternalCanvasResource>(
-          client_si, sync_token,
-          viz::TransferableResource::ResourceSource::kDrawingBuffer,
-          hdr_metadata_, std::move(out_release_callback),
-          context_provider_->GetWeakPtr()));
+      client_si, sync_token,
+      viz::TransferableResource::ResourceSource::kDrawingBuffer, hdr_metadata_,
+      std::move(out_release_callback), context_provider_->GetWeakPtr());
 }
 
 DrawingBuffer::ColorBuffer::ColorBuffer(

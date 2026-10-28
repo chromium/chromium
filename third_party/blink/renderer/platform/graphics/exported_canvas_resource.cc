@@ -11,8 +11,19 @@
 namespace blink {
 
 ExportedCanvasResource::ExportedCanvasResource(
-    scoped_refptr<ExternalCanvasResource> resource)
-    : resource_(std::move(resource)) {
+    scoped_refptr<gpu::ClientSharedImage> client_si,
+    const gpu::SyncToken& sync_token,
+    viz::TransferableResource::ResourceSource resource_source,
+    const gfx::HDRMetadata& hdr_metadata,
+    viz::ReleaseCallback callback,
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> provider)
+    : resource_(
+          base::MakeRefCounted<ExternalCanvasResource>(std::move(client_si),
+                                                       sync_token,
+                                                       resource_source,
+                                                       hdr_metadata,
+                                                       std::move(callback),
+                                                       provider)) {
   CHECK(resource_);
   CHECK(!resource_->is_cross_thread());
 }
