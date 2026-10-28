@@ -916,13 +916,12 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTextExtractionTest,
                         /*expected_subtext=*/"Second Page");
 }
 
-class PDFExtensionAccessibilityTreeDumpTest
-    : public PDFExtensionAccessibilityTest,
-      public ::testing::WithParamInterface<
-          std::tuple<ui::AXApiType::Type, bool>> {
+class PDFExtensionAccessibilityTreeDumpTestBase
+    : public PDFExtensionAccessibilityTest {
  public:
-  PDFExtensionAccessibilityTreeDumpTest() : test_helper_(ax_inspect_type()) {}
-  ~PDFExtensionAccessibilityTreeDumpTest() override = default;
+  explicit PDFExtensionAccessibilityTreeDumpTestBase(ui::AXApiType::Type type)
+      : test_helper_(type) {}
+  ~PDFExtensionAccessibilityTreeDumpTestBase() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PDFExtensionAccessibilityTest::SetUpCommandLine(command_line);
@@ -931,11 +930,7 @@ class PDFExtensionAccessibilityTreeDumpTest
     test_helper_.InitializeFeatureList();
   }
 
-  ui::AXApiType::Type ax_inspect_type() const {
-    return std::get<0>(GetParam());
-  }
-
-  bool UseOopif() const override { return std::get<1>(GetParam()); }
+  virtual ui::AXApiType::Type ax_inspect_type() const = 0;
 
  protected:
   void RunPDFTest(const base::FilePath::CharType* pdf_file,
@@ -1137,6 +1132,22 @@ class PDFExtensionAccessibilityTreeDumpTest
   ui::AXInspectTestHelper test_helper_;
 };
 
+class PDFExtensionAccessibilityTreeDumpTest
+    : public ::testing::WithParamInterface<
+          std::tuple<ui::AXApiType::Type, bool>>,
+      public PDFExtensionAccessibilityTreeDumpTestBase {
+ public:
+  PDFExtensionAccessibilityTreeDumpTest()
+      : PDFExtensionAccessibilityTreeDumpTestBase(ax_inspect_type()) {}
+  ~PDFExtensionAccessibilityTreeDumpTest() override = default;
+
+  ui::AXApiType::Type ax_inspect_type() const override {
+    return std::get<0>(GetParam());
+  }
+
+  bool UseOopif() const override { return std::get<1>(GetParam()); }
+};
+
 // Constructs a list of accessibility tests, one for each accessibility tree
 // formatter testpasses.
 const std::vector<ui::AXApiType::Type> GetAXTestValues() {
@@ -1225,8 +1236,77 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, TextStyle) {
              /*expected_subtext=*/"Page 1");
 }
 
+class PDFExtensionAccessibilityTreeDumpXfaTest
+    : public ::testing::WithParamInterface<
+          std::tuple<ui::AXApiType::Type, PDFExtensionTestState>>,
+      public PDFExtensionAccessibilityTreeDumpTestBase {
+ public:
+  PDFExtensionAccessibilityTreeDumpXfaTest()
+      : PDFExtensionAccessibilityTreeDumpTestBase(ax_inspect_type()) {}
+  ~PDFExtensionAccessibilityTreeDumpXfaTest() override = default;
+
+  ui::AXApiType::Type ax_inspect_type() const override {
+    return std::get<0>(GetParam());
+  }
+
+  bool UseOopif() const override {
+    return PDFTestStateUseOopif(std::get<1>(GetParam()));
+  }
+  bool EnableXfa() const {
+    return PDFTestStateEnableXfa(std::get<1>(GetParam()));
+  }
+
+ protected:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
+    auto enabled =
+        PDFExtensionAccessibilityTreeDumpTestBase::GetEnabledFeatures();
+    if (EnableXfa()) {
+      enabled.push_back({chrome_pdf::features::kPdfXfaSupport, {}});
+    }
+    return enabled;
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
+    auto disabled =
+        PDFExtensionAccessibilityTreeDumpTestBase::GetDisabledFeatures();
+    if (!EnableXfa()) {
+      disabled.push_back(chrome_pdf::features::kPdfXfaSupport);
+    }
+    return disabled;
+  }
+};
+
+struct PDFExtensionAccessibilityTreeDumpXfaTestPassToString {
+  std::string operator()(
+      const ::testing::TestParamInfo<
+          std::tuple<ui::AXApiType::Type, PDFExtensionTestState>>& i) const {
+    const char* config = [&] {
+      switch (std::get<1>(i.param)) {
+        case PDFExtensionTestState::kGuestViewNoXfa:
+          return "GUESTVIEW_NO_XFA_";
+        case PDFExtensionTestState::kOopifPdfNoXfa:
+          return "OOPIF_NO_XFA_";
+        case PDFExtensionTestState::kOopifPdfXfa:
+          return "OOPIF_XFA_";
+      }
+      NOTREACHED();
+    }();
+    return base::StrCat({config, std::string(std::get<0>(i.param))});
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PDFExtensionAccessibilityTreeDumpXfaTest,
+    testing::Combine(testing::ValuesIn(GetAXTestValues()),
+                     testing::Values(PDFExtensionTestState::kGuestViewNoXfa,
+                                     PDFExtensionTestState::kOopifPdfNoXfa,
+                                     PDFExtensionTestState::kOopifPdfXfa)),
+    PDFExtensionAccessibilityTreeDumpXfaTestPassToString());
+
 // TODO(crbug.com/40745411)
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, XfaFields) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpXfaTest, XfaFields) {
   RunPDFTest(FILE_PATH_LITERAL("xfa_fields.pdf"),
              /*expected_subtext=*/"Page 1");
 }

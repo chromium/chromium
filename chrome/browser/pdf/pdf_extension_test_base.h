@@ -29,6 +29,36 @@ namespace gfx {
 class Point;
 }
 
+// Test configurations for PDF extension tests that test GuestView vs. OOPIF and
+// XFA support. GuestView with XFA is unsupported and omitted.
+enum class PDFExtensionTestState {
+  kGuestViewNoXfa,
+  kOopifPdfNoXfa,
+  kOopifPdfXfa,
+};
+
+inline bool PDFTestStateUseOopif(PDFExtensionTestState state) {
+  switch (state) {
+    case PDFExtensionTestState::kGuestViewNoXfa:
+      return false;
+    case PDFExtensionTestState::kOopifPdfNoXfa:
+    case PDFExtensionTestState::kOopifPdfXfa:
+      return true;
+  }
+  NOTREACHED();
+}
+
+inline bool PDFTestStateEnableXfa(PDFExtensionTestState state) {
+  switch (state) {
+    case PDFExtensionTestState::kGuestViewNoXfa:
+    case PDFExtensionTestState::kOopifPdfNoXfa:
+      return false;
+    case PDFExtensionTestState::kOopifPdfXfa:
+      return true;
+  }
+  NOTREACHED();
+}
+
 class PDFExtensionTestBase : public extensions::ExtensionApiTest {
  public:
   PDFExtensionTestBase();

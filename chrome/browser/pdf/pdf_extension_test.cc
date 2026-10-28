@@ -4822,6 +4822,40 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithRendererSideContentDecoding,
   EXPECT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf.gz")));
 }
 
+// Test class that is parameterized over OOPIF and PDF XFA support features.
+class PDFExtensionXfaTest
+    : public PDFExtensionTestBase,
+      public testing::WithParamInterface<PDFExtensionTestState> {
+ public:
+  bool UseOopif() const override { return PDFTestStateUseOopif(GetParam()); }
+  bool EnableXfa() const { return PDFTestStateEnableXfa(GetParam()); }
+
+ protected:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
+    std::vector<base::test::FeatureRefAndParams> enabled =
+        PDFExtensionTestBase::GetEnabledFeatures();
+    if (EnableXfa()) {
+      enabled.push_back({chrome_pdf::features::kPdfXfaSupport, {}});
+    }
+    return enabled;
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
+    std::vector<base::test::FeatureRef> disabled =
+        PDFExtensionTestBase::GetDisabledFeatures();
+    if (!EnableXfa()) {
+      disabled.push_back(chrome_pdf::features::kPdfXfaSupport);
+    }
+    return disabled;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionXfaTest, LoadXfaDocument) {
+  ASSERT_TRUE(LoadPdf(
+      embedded_test_server()->GetURL("/pdf/accessibility/xfa_fields.pdf")));
+}
+
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
 // launches.
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionTest);
@@ -4842,3 +4876,20 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionSameSiteProcessTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionZoomTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PDFExtensionTestWithRendererSideContentDecoding);
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PDFExtensionXfaTest,
+    testing::Values(PDFExtensionTestState::kGuestViewNoXfa,
+                    PDFExtensionTestState::kOopifPdfNoXfa,
+                    PDFExtensionTestState::kOopifPdfXfa),
+    [](const testing::TestParamInfo<PDFExtensionTestState>& info) {
+      switch (info.param) {
+        case PDFExtensionTestState::kGuestViewNoXfa:
+          return "GUESTVIEW_NoXFA";
+        case PDFExtensionTestState::kOopifPdfNoXfa:
+          return "OOPIF_NoXFA";
+        case PDFExtensionTestState::kOopifPdfXfa:
+          return "OOPIF_XFA";
+      }
+      NOTREACHED();
+    });
