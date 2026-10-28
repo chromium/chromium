@@ -24,6 +24,13 @@ bool ImageEncoder::Encode(Vector<unsigned char>* dst,
   return SkJpegEncoder::Encode(&dst_stream, src, options);
 }
 
+bool ImageEncoder::Encode(Vector<unsigned char>* dst,
+                          const SkPixmap& src,
+                          const SkPngRustEncoder::Options& options) {
+  VectorWStream dst_stream(dst);
+  return SkPngRustEncoder::Encode(&dst_stream, src, options);
+}
+
 bool ImageEncoder::Encode(
     Vector<unsigned char>* dst,
     const SkPixmap& src,
@@ -42,6 +49,7 @@ bool ImageEncoder::Encode(Vector<unsigned char>* dst,
 
 bool ImageEncoder::Encode(Vector<unsigned char>* dst,
                           const SkPixmap& src,
+                          const skhdr::Metadata* hdr_metadata,
                           ImageEncodingMimeType mime_type,
                           double quality) {
   switch (mime_type) {
@@ -49,6 +57,7 @@ bool ImageEncoder::Encode(Vector<unsigned char>* dst,
       SkJpegEncoder::Options options;
       options.fQuality = ComputeJpegQuality(quality);
       options.fAlphaOption = SkJpegEncoder::AlphaOption::kBlendOnBlack;
+      options.fHdrMetadata = hdr_metadata;
       if (options.fQuality == 100) {
         options.fDownsample = SkJpegEncoder::Downsample::k444;
       }
@@ -56,10 +65,14 @@ bool ImageEncoder::Encode(Vector<unsigned char>* dst,
     }
     case kMimeTypeWebp: {
       SkWebpEncoder::Options options = ComputeWebpOptions(quality);
+      options.fHdrMetadata = hdr_metadata;
       return Encode(dst, src, options);
     }
     case kMimeTypePng: {
-      return Encode(dst, src, SkPngRustEncoder::CompressionLevel::kLow);
+      SkPngRustEncoder::Options options;
+      options.fCompressionLevel = SkPngRustEncoder::CompressionLevel::kLow;
+      options.fHdrMetadata = hdr_metadata;
+      return Encode(dst, src, options);
     }
   }
 }
@@ -81,9 +94,8 @@ std::unique_ptr<ImageEncoder> ImageEncoder::Create(
 std::unique_ptr<ImageEncoder> ImageEncoder::Create(
     Vector<unsigned char>* dst,
     const SkPixmap& src,
-    SkPngRustEncoder::CompressionLevel compression_level) {
+    const SkPngRustEncoder::Options& options) {
   std::unique_ptr<ImageEncoder> image_encoder(new ImageEncoder(dst));
-  SkPngRustEncoder::Options options = {.fCompressionLevel = compression_level};
   image_encoder->encoder_ =
       SkPngRustEncoder::Make(&image_encoder->dst_, src, options);
   if (!image_encoder->encoder_) {

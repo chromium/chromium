@@ -5,11 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_ENCODERS_IMAGE_ENCODER_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_ENCODERS_IMAGE_ENCODER_UTILS_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/private/SkHdrMetadata.h"
 
 namespace gfx {
 struct HDRMetadata;
@@ -26,6 +29,11 @@ class PLATFORM_EXPORT ImageEncoderUtils {
   // function).
   static SkColorInfo GetColorInfoForEncoder(
       const SkColorInfo& color_info,
+      const gfx::HDRMetadata& hdr_metadata);
+
+  // Converts `hdr_metadata` to `skhdr::Metadata` for use with Skia encoders, or
+  // returns `std::nullopt` if `hdr_metadata` is empty.
+  static std::optional<skhdr::Metadata> ToSkHdrMetadata(
       const gfx::HDRMetadata& hdr_metadata);
 
   // Default image mime type for toDataURL and toBlob functions

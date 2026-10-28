@@ -7,6 +7,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -315,8 +316,9 @@ void CanvasAsyncBlobCreator::ScheduleAsyncBlobCreation(const double& quality) {
       // we do not need to use background task runner to reduce load on main.
       // So we just directly encode images on the worker thread.
       Vector<unsigned char> encoded_image;
-      if (!EncodeImage(ImageDataBuffer::Create(src_data_), mime_type_, quality,
-                       &encoded_image)) {
+      if (!EncodeImage(
+              ImageDataBuffer::Create(src_data_, image_->GetHdrMetadata()),
+              mime_type_, quality, &encoded_image)) {
         context_->GetTaskRunner(TaskType::kCanvasBlobSerialization)
             ->PostTask(
                 FROM_HERE,
@@ -335,11 +337,13 @@ void CanvasAsyncBlobCreator::ScheduleAsyncBlobCreation(const double& quality) {
       // Off-thread case, see (2a) in function comment.
 
       worker_pool::PostTask(
-          FROM_HERE, CrossThreadBindOnce(
-                         &CanvasAsyncBlobCreator::EncodeImageOnEncoderThread,
-                         MakeCrossThreadHandle(this), parent_frame_task_runner_,
-                         skia_image_, ImageDataBuffer::Create(src_data_),
-                         mime_type_, quality));
+          FROM_HERE,
+          CrossThreadBindOnce(
+              &CanvasAsyncBlobCreator::EncodeImageOnEncoderThread,
+              MakeCrossThreadHandle(this), parent_frame_task_runner_,
+              skia_image_,
+              ImageDataBuffer::Create(src_data_, image_->GetHdrMetadata()),
+              mime_type_, quality));
     }
   } else {
     // Progressive encoding case, see (1) in function comment.
@@ -529,10 +533,15 @@ bool CanvasAsyncBlobCreator::InitializeEncoder(double quality) {
   if (fail_encoder_initialization_for_test_) {
     return false;
   }
+  // It is safe for `hdr_metadata` to fall out of scope after the encoder is
+  // created, because the encoders only access it during creation.
+  std::optional<skhdr::Metadata> hdr_metadata =
+      ImageEncoderUtils::ToSkHdrMetadata(image_->GetHdrMetadata());
   if (mime_type_ == kMimeTypeJpeg) {
     SkJpegEncoder::Options options;
     options.fQuality = ImageEncoder::ComputeJpegQuality(quality);
     options.fAlphaOption = SkJpegEncoder::AlphaOption::kBlendOnBlack;
+    options.fHdrMetadata = base::OptionalToPtr(hdr_metadata);
     if (options.fQuality == 100) {
       options.fDownsample = SkJpegEncoder::Downsample::k444;
     }
@@ -544,8 +553,10 @@ bool CanvasAsyncBlobCreator::InitializeEncoder(double quality) {
     // TODO(zakerinasab): Progressive encoding on webp image formats
     // (crbug.com/571399)
     DCHECK_EQ(kMimeTypePng, mime_type_);
-    encoder_ = ImageEncoder::Create(&encoded_image_, src_data_,
-                                    SkPngRustEncoder::CompressionLevel::kLow);
+    SkPngRustEncoder::Options options;
+    options.fCompressionLevel = SkPngRustEncoder::CompressionLevel::kLow;
+    options.fHdrMetadata = base::OptionalToPtr(hdr_metadata);
+    encoder_ = ImageEncoder::Create(&encoded_image_, src_data_, options);
   }
 
   return encoder_.get();

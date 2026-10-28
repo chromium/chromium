@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace blink {
 
@@ -49,7 +50,9 @@ class PLATFORM_EXPORT ImageDataBuffer {
  public:
   static std::unique_ptr<ImageDataBuffer> Create(
       scoped_refptr<StaticBitmapImage>);
-  static std::unique_ptr<ImageDataBuffer> Create(const SkPixmap&);
+  static std::unique_ptr<ImageDataBuffer> Create(
+      const SkPixmap&,
+      const gfx::HDRMetadata& hdr_metadata = gfx::HDRMetadata());
 
   String ToDataURL(const ImageEncodingMimeType mime_type,
                    const double& quality) const;
@@ -60,13 +63,14 @@ class PLATFORM_EXPORT ImageDataBuffer {
   base::span<const uint8_t> PixelData() const;
 
  private:
-  ImageDataBuffer(const SkPixmap&);
+  ImageDataBuffer(const SkPixmap&, const gfx::HDRMetadata&);
   ImageDataBuffer(scoped_refptr<StaticBitmapImage>);
 
   bool IsValid() { return is_valid_; }  // Only used by Create()
 
   sk_sp<SkImage> retained_image_;
   SkPixmap pixmap_;
+  gfx::HDRMetadata hdr_metadata_;
   bool is_valid_ = false;
 };
 

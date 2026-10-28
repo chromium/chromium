@@ -35,6 +35,7 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder_utils.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
@@ -65,9 +66,10 @@ ImageDataBuffer::ImageDataBuffer(scoped_refptr<StaticBitmapImage> image) {
   }
 #endif
 
+  hdr_metadata_ = image->GetHdrMetadata();
   const SkColorInfo target_color_info =
       ImageEncoderUtils::GetColorInfoForEncoder(paint_image_info.colorInfo(),
-                                                image->GetHdrMetadata());
+                                                hdr_metadata_);
 
   if (target_color_info != paint_image_info.colorInfo() ||
       paint_image.IsTextureBacked() || paint_image.IsLazyGenerated()) {
@@ -100,14 +102,16 @@ ImageDataBuffer::ImageDataBuffer(scoped_refptr<StaticBitmapImage> image) {
   is_valid_ = true;
 }
 
-ImageDataBuffer::ImageDataBuffer(const SkPixmap& pixmap)
+ImageDataBuffer::ImageDataBuffer(const SkPixmap& pixmap,
+                                 const gfx::HDRMetadata& hdr_metadata)
     : pixmap_(pixmap),
+      hdr_metadata_(hdr_metadata),
       is_valid_(pixmap_.addr() &&
                 !gfx::Size(pixmap.width(), pixmap.height()).IsEmpty()) {
   // Any color space or alpha conversion should have been performed by the
   // caller higher up in the stack (e.g. in CanvasAsyncBlobCreator).
   if (ImageEncoderUtils::GetColorInfoForEncoder(pixmap_.info().colorInfo(),
-                                                gfx::HDRMetadata()) !=
+                                                hdr_metadata_) !=
       pixmap_.info().colorInfo()) {
     DLOG(WARNING) << "Encoding image without prior color space or alpha "
                      "conversion; precision or colors may be lost.";
@@ -124,9 +128,10 @@ std::unique_ptr<ImageDataBuffer> ImageDataBuffer::Create(
 }
 
 std::unique_ptr<ImageDataBuffer> ImageDataBuffer::Create(
-    const SkPixmap& pixmap) {
+    const SkPixmap& pixmap,
+    const gfx::HDRMetadata& hdr_metadata) {
   std::unique_ptr<ImageDataBuffer> buffer =
-      base::WrapUnique(new ImageDataBuffer(pixmap));
+      base::WrapUnique(new ImageDataBuffer(pixmap, hdr_metadata));
   if (!buffer->IsValid())
     return nullptr;
   return buffer;
@@ -140,14 +145,21 @@ base::span<const uint8_t> ImageDataBuffer::PixelData() const {
 bool ImageDataBuffer::EncodeImage(const ImageEncodingMimeType mime_type,
                                   const double& quality,
                                   Vector<unsigned char>* encoded_image) const {
-  return ImageEncoder::Encode(encoded_image, pixmap_, mime_type, quality);
+  std::optional<skhdr::Metadata> hdr_metadata =
+      ImageEncoderUtils::ToSkHdrMetadata(hdr_metadata_);
+  return ImageEncoder::Encode(encoded_image, pixmap_,
+                              base::OptionalToPtr(hdr_metadata), mime_type,
+                              quality);
 }
 
 String ImageDataBuffer::ToDataURL(const ImageEncodingMimeType mime_type,
                                   const double& quality) const {
   DCHECK(is_valid_);
   Vector<unsigned char> result;
-  if (!ImageEncoder::Encode(&result, pixmap_, mime_type, quality)) {
+  std::optional<skhdr::Metadata> hdr_metadata =
+      ImageEncoderUtils::ToSkHdrMetadata(hdr_metadata_);
+  if (!ImageEncoder::Encode(&result, pixmap_, base::OptionalToPtr(hdr_metadata),
+                            mime_type, quality)) {
     return "data:,";
   }
   return StrCat({"data:", ImageEncoderUtils::MimeTypeName(mime_type),

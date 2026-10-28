@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/gfx/hdr_metadata.h"
 
 namespace blink {
@@ -67,14 +68,52 @@ SkColorInfo ImageEncoderUtils::GetColorInfoForEncoder(
   SkAlphaType alpha_type = kUnpremul_SkAlphaType;
   sk_sp<SkColorSpace> color_space = color_info.refColorSpace();
 
-  // When encoding a linear float16 image, use an appropriate encoding to not
-  // lose precision.
-  if (color_type == kRGBA_F16_SkColorType && color_space &&
-      color_space->gammaIsLinear()) {
-    color_space = color_space->makeSRGBGamma();
+  // Only float images can represent values outside of [0, 1].
+  if (color_space && color_type == kRGBA_F16_SkColorType) {
+    float baseline_headroom = 0.f;
+    float hdr_reference_white =
+        skhdr::AdaptiveGlobalToneMap::kDefaultHdrReferenceWhite;
+    if (hdr_metadata.HasAgtm()) {
+      const auto& agtm = hdr_metadata.GetAgtm();
+      hdr_reference_white = agtm.fHdrReferenceWhite;
+      if (agtm.fHeadroomAdaptiveToneMap) {
+        baseline_headroom = agtm.fHeadroomAdaptiveToneMap->fBaselineHdrHeadroom;
+      }
+    }
+
+    if (baseline_headroom > 0.f) {
+      // Use PQ to preserve values above SDR white.
+      skcms_TransferFunction pq_trfn;
+      skcms_TransferFunction_makePQ(&pq_trfn, hdr_reference_white);
+      skcms_Matrix3x3 to_xyzd50;
+      color_space->toXYZD50(&to_xyzd50);
+      color_space = SkColorSpace::MakeRGB(pq_trfn, to_xyzd50);
+    } else if (color_space->gammaIsLinear()) {
+      // When encoding a linear float16 image, use an appropriate encoding to
+      // not lose precision.
+      color_space = color_space->makeSRGBGamma();
+    }
   }
 
   return SkColorInfo(color_type, alpha_type, std::move(color_space));
+}
+
+std::optional<skhdr::Metadata> ImageEncoderUtils::ToSkHdrMetadata(
+    const gfx::HDRMetadata& hdr_metadata) {
+  if (hdr_metadata.IsEmpty()) {
+    return std::nullopt;
+  }
+  skhdr::Metadata result;
+  if (hdr_metadata.HasMDCV()) {
+    result.setMasteringDisplayColorVolume(hdr_metadata.GetMDCV());
+  }
+  if (hdr_metadata.HasCLLI()) {
+    result.setContentLightLevelInformation(hdr_metadata.GetCLLI());
+  }
+  if (hdr_metadata.HasAgtm()) {
+    result.setAdaptiveGlobalToneMap(hdr_metadata.GetAgtm());
+  }
+  return result;
 }
 
 }  // namespace blink
