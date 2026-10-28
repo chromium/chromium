@@ -127,6 +127,8 @@ OverflowMenuAction* CreateOverflowMenuAction(
 
 @property(nonatomic, assign) ActionRanking basePageActions;
 
+@property(nonatomic, assign) BOOL shouldShowLevelUpWalkthroughIPH;
+
 // By default, the provider will create a standard `OverflowMenuAction`
 // and return that in `-actionForActionType:`. This will override
 // that to return a custom action.

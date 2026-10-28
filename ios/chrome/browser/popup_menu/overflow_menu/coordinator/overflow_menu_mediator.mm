@@ -444,6 +444,8 @@ void GetPresetNTPBackgroundPreview(
 
 @implementation OverflowMenuMediator
 
+@synthesize shouldShowLevelUpWalkthroughIPH = _shouldShowLevelUpWalkthroughIPH;
+
 - (instancetype)init {
   self = [super init];
   if (self) {
@@ -3210,7 +3212,9 @@ void GetPresetNTPBackgroundPreview(
       password_manager::ManagePasswordsReferrer::kChromeMenuItem);
   [self dismissMenu];
   [self.settingsHandler
-      showSavedPasswordsSettingsFromViewController:self.baseViewController];
+      showSavedPasswordsSettingsFromViewController:self.baseViewController
+                   shouldShowLevelUpWalkthroughIPH:
+                       self.shouldShowLevelUpWalkthroughIPH];
 }
 
 // Dismisses the menu and opens Cobalt.
@@ -3272,9 +3276,10 @@ void GetPresetNTPBackgroundPreview(
                      : profile_metrics::BrowserProfileType::kRegular;
   UmaHistogramEnumeration("Settings.OpenSettingsFromMenu.PerProfileType", type);
   [self.sceneHandler
-      showSettingsFromViewController:self.baseViewController
-            hasDefaultBrowserBlueDot:(self.settingsDestination.badge ==
-                                      BadgeTypePromo)];
+       showSettingsFromViewController:self.baseViewController
+             hasDefaultBrowserBlueDot:(self.settingsDestination.badge ==
+                                       BadgeTypePromo)
+      shouldShowLevelUpWalkthroughIPH:self.shouldShowLevelUpWalkthroughIPH];
 }
 
 // Dismisses the menu and opens default browser settings.
