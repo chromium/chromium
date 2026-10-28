@@ -38,10 +38,8 @@ patches/0009-Drop-std-has_denorm-_loss-deprecated-in-C-23.patch: Drop
 patches/0010-use-std-optional.patch: Use std::optional instead of
   absl::optional.
 
-To apply the patches, put upstream f94f588 in src/, then run from this
-directory:
-
-$ for patch in patches/*.patch; do patch -s -p1 < $patch; done
-
-In case of conflict, update those patches accordingly and save them back in
-//third_party/shell-encryption/patches/.
+Update instructions:
+Update commit hashes in crowbar.txtpb, then run from this directory:
+crowbar build --no-dry-run ./
+copy.bara.sky lists every file it imports. If the new upstream version
+adds a file Chromium needs, add it there and to BUILD.gn.
