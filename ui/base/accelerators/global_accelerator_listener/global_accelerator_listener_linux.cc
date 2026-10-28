@@ -10,12 +10,10 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/environment.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/nix/xdg_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -59,14 +57,9 @@ std::string GetShortcutPrefix(const std::string& accelerator_group_id,
 }
 
 bool ShouldSetPreferredTrigger() {
-  auto env = base::Environment::Create();
-  const base::nix::DesktopEnvironment desktop_environment =
-      base::nix::GetDesktopEnvironment(env.get());
-  const bool default_preferred_trigger =
-      desktop_environment != base::nix::DESKTOP_ENVIRONMENT_GNOME;
   return base::FeatureList::GetStateIfOverridden(
              features::kGlobalShortcutsPortalPreferredTrigger)
-      .value_or(default_preferred_trigger);
+      .value_or(true);
 }
 
 std::string GetDescription(const ui::Command& command) {
