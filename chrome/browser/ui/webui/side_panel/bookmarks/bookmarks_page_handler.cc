@@ -653,21 +653,27 @@ void BookmarksPageHandler::OpenBookmark(
     return;
   }
 
+  // Opening a bookmark may synchronously close the side panel and destroy
+  // `this`, so record metrics prior to open.
+  // TODO(crbug.com/578519711): bookmarks::OpenAllIfAllowed sometimes open a
+  // confirmation dialog that may result in the bookmarks not opening. Ensure
+  // metrics are only logged when bookmarks are actually opened.
+  if (source != side_panel::mojom::ActionSource::kPriceTracking) {
+    base::RecordAction(
+        base::UserMetricsAction("SidePanel.Bookmarks.Navigation"));
+    RecordBookmarkLaunch(parent_folder_depth > 0
+                             ? BookmarkLaunchLocation::kSidePanelSubfolder
+                             : BookmarkLaunchLocation::kSidePanelFolder,
+                         profile_metrics::GetBrowserProfileType(
+                             browser_window_interface_->GetProfile()));
+  }
+
   WindowOpenDisposition open_location = ui::DispositionFromClick(
       click_modifiers->middle_button, click_modifiers->alt_key,
       click_modifiers->ctrl_key, click_modifiers->meta_key,
       click_modifiers->shift_key);
   bookmarks::OpenAllIfAllowed(browser_window_interface_, {bookmark_node},
                               open_location);
-  if (source == side_panel::mojom::ActionSource::kPriceTracking) {
-    return;
-  }
-  base::RecordAction(base::UserMetricsAction("SidePanel.Bookmarks.Navigation"));
-  RecordBookmarkLaunch(parent_folder_depth > 0
-                           ? BookmarkLaunchLocation::kSidePanelSubfolder
-                           : BookmarkLaunchLocation::kSidePanelFolder,
-                       profile_metrics::GetBrowserProfileType(
-                           browser_window_interface_->GetProfile()));
 }
 
 void BookmarksPageHandler::Undo() {
