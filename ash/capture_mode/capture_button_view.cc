@@ -154,11 +154,10 @@ void CaptureButtonView::UpdateViewVisuals() {
   const auto button_state = GetCaptureButtonState();
   capture_button_->SetText(l10n_util::GetStringUTF16(button_state.label_id));
 
-  const SkColor icon_color =
-      GetColorProvider()->GetColor(kColorAshIconColorPrimary);
   capture_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(*button_state.vector_icon, icon_color));
+      ui::ImageModel::FromVectorIcon(*button_state.vector_icon,
+                                     kColorAshIconColorPrimary));
 
   if (should_invalidate_focus_ring) {
     // Note that we don't need to invalidate the focus ring of the

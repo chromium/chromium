@@ -180,6 +180,10 @@ CaptureLabelView::CaptureLabelView(
   label_->layer()->SetFillsBoundsOpaquely(false);
   label_->SetEnabledColor(kColorAshTextColorPrimary);
   label_->SetBackgroundColor(SK_ColorTRANSPARENT);
+
+  // Initialize the visibility and contents of the child views before the
+  // widget is first shown.
+  UpdateIconAndText();
 }
 
 CaptureLabelView::~CaptureLabelView() = default;
@@ -345,12 +349,6 @@ gfx::Size CaptureLabelView::CalculatePreferredSize(
       label_->GetPreferredSize(views::SizeBounds(label_->width(), {})).width() +
           kCaptureLabelRadius * 2,
       kCaptureLabelRadius * 2);
-}
-
-void CaptureLabelView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-
-  UpdateIconAndText();
 }
 
 void CaptureLabelView::AnimationEnded(const gfx::Animation* animation) {

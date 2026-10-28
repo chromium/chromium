@@ -76,7 +76,6 @@ class ASH_EXPORT CaptureLabelView : public views::View,
   void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  void OnThemeChanged() override;
 
   // gfx::AnimationDelegate:
   void AnimationEnded(const gfx::Animation* animation) override;
