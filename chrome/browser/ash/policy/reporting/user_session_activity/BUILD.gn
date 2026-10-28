@@ -28,6 +28,7 @@ static_library("user_session_activity") {
     "//chromeos/ash/components/settings",
     "//components/account_id",
     "//components/reporting/proto:record_constants",
+    "//components/session_manager/core",
     "//components/user_manager:common",
     "//components/viz/host",
     "//ui/aura",

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
@@ -11,7 +13,10 @@
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 
@@ -59,8 +64,11 @@ void ManagedSessionService::AddObserver(
     ManagedSessionService::Observer* observer) {
   observers_.AddObserver(observer);
   if (is_logged_in_observed_) {
-    auto* const profile = ash::ProfileHelper::Get()->GetProfileByUser(
-        user_manager::UserManager::Get()->GetPrimaryUser());
+    auto* const profile = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            CHECK_DEREF(
+                session_manager::SessionManager::Get()->GetPrimarySession())
+                .account_id()));
     observer->OnLogin(profile);
   }
 }
@@ -122,14 +130,20 @@ void ManagedSessionService::OnProfileWillBeDestroyed(Profile* profile) {
 }
 
 void ManagedSessionService::OnSessionWillBeTerminated() {
-  if (!user_manager::UserManager::Get() ||
-      !user_manager::UserManager::Get()->GetPrimaryUser()) {
+  if (!user_manager::UserManager::Get()) {
     return;
   }
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  if (!primary_session) {
+    return;
+  }
+  const user_manager::User* primary_user =
+      user_manager::UserManager::Get()->FindUser(primary_session->account_id());
+  CHECK(primary_user);
 
   for (auto& observer : observers_) {
-    observer.OnSessionTerminationStarted(
-        user_manager::UserManager::Get()->GetPrimaryUser());
+    observer.OnSessionTerminationStarted(primary_user);
   }
   ash::SessionTerminationManager::Get()->RemoveObserver(this);
 }
@@ -193,13 +207,11 @@ void ManagedSessionService::SetLoginStatus() {
     return;
   }
 
-  auto* const primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!primary_user || !primary_user->is_profile_created()) {
-    return;
-  }
-
-  auto* const profile =
-      ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
+  auto* const profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          CHECK_DEREF(
+              session_manager::SessionManager::Get()->GetPrimarySession())
+              .account_id()));
   if (!profile) {
     // Profile is not fully initialized yet.
     return;

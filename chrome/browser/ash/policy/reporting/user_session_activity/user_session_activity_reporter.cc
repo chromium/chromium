@@ -24,6 +24,8 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
@@ -102,8 +104,12 @@ void UserSessionActivityReporter::OnSessionTerminationStarted(
 
   // TODO(crbug.com/377539371): Remove this line after ManagedSessionObserver is
   // updated to return the active user instead of the primary user.
-  user_manager::User* active_user =
-      user_manager::UserManager::Get()->GetActiveUser();
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  const user_manager::User* active_user =
+      active_session ? user_manager::UserManager::Get()->FindUser(
+                           active_session->account_id())
+                     : nullptr;
 
   OnSessionEnd(SessionEndEvent_Reason_LOGOUT, active_user);
 }
@@ -111,8 +117,12 @@ void UserSessionActivityReporter::OnSessionTerminationStarted(
 void UserSessionActivityReporter::OnLocked() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
   const user_manager::User* active_user =
-      user_manager::UserManager::Get()->GetActiveUser();
+      active_session ? user_manager::UserManager::Get()->FindUser(
+                           active_session->account_id())
+                     : nullptr;
 
   OnSessionEnd(SessionEndEvent_Reason_LOCK, active_user);
 }
@@ -120,8 +130,12 @@ void UserSessionActivityReporter::OnLocked() {
 void UserSessionActivityReporter::OnUnlocked() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
   const user_manager::User* active_user =
-      user_manager::UserManager::Get()->GetActiveUser();
+      active_session ? user_manager::UserManager::Get()->FindUser(
+                           active_session->account_id())
+                     : nullptr;
 
   OnSessionStart(SessionStartEvent_Reason_UNLOCK, active_user);
 }
