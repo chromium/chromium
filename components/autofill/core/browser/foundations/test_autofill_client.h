@@ -485,9 +485,6 @@ class TestAutofillClientTemplate : public T {
   bool IsGlicEnabled() const override { return is_glic_enabled_; }
   void set_is_glic_enabled(bool enabled) { is_glic_enabled_ = enabled; }
 
-  bool IsGlicConsented() const override { return is_glic_consented_; }
-  void set_is_glic_consented(bool consented) { is_glic_consented_ = consented; }
-
   bool IsAutofillEnabled() const override {
     if (IsAutofillProfileEnabled() ||
         AutofillClient::GetPaymentsAutofillClient()
@@ -1026,7 +1023,6 @@ class TestAutofillClientTemplate : public T {
       personal_context_first_run_service_;
 
   bool is_glic_enabled_ = false;
-  bool is_glic_consented_ = false;
 
   SuggestionHidingReason popup_hidden_reason_ =
       SuggestionHidingReason::kNoSuggestions;

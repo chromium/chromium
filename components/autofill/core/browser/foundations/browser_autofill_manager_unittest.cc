@@ -654,6 +654,7 @@ class MockAutofillClient : public TestAutofillClient {
               (const FormFieldData& field, AutofillClient::IphFeature feature),
               (override));
   MOCK_METHOD(void, HideAutofillFieldIph, (), (override));
+  MOCK_METHOD(bool, IsGlicConsented, (), (const, override));
   MOCK_METHOD(bool, IsTabInActorMode, (), (const, override));
   MOCK_METHOD(AutofillAiManager*, GetAutofillAiManager, (), (override));
   MOCK_METHOD(void, ShowAutofillAiPrivateInferenceNotice, (), (override));
@@ -8165,7 +8166,7 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
 
   Mock::VerifyAndClearExpectations(&autofill_client());
 
-  autofill_client().set_is_glic_consented(true);
+  ON_CALL(autofill_client(), IsGlicConsented).WillByDefault(Return(true));
   NiceMock<personal_context::MockPersonalContextEligibilityService>
       mock_eligibility_service;
   ON_CALL(mock_eligibility_service, GetEligibilityState)
