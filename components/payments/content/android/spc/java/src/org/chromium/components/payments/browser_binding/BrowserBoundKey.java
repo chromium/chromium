@@ -8,6 +8,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.base.Log;
+import org.chromium.base.TimeUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -35,6 +37,10 @@ public class BrowserBoundKey {
 
     /** The signature algorithm to use for signing with the browser bound key. */
     private static final String SHA256_WITH_ECDSA = "SHA256withECDSA";
+
+    /** The histogram for the latency of signing with the browser bound key. */
+    private static final String SIGN_LATENCY_HISTOGRAM =
+            "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKey.SignLatency";
 
     /**
      * The cose algorithm identifier for SHA256 with ECDSA.
@@ -69,10 +75,14 @@ public class BrowserBoundKey {
             Log.e(TAG, "Could not sign clientData for browser bound key support.", e);
             return null;
         }
+        long signStartTimeMs = TimeUtils.elapsedRealtimeMillis();
         try {
             signature.initSign(mKeyPair.getPrivate());
             signature.update(clientData);
-            return signature.sign();
+            byte[] signatureBytes = signature.sign();
+            RecordHistogram.recordTimesHistogram(
+                    SIGN_LATENCY_HISTOGRAM, TimeUtils.elapsedRealtimeMillis() - signStartTimeMs);
+            return signatureBytes;
         } catch (InvalidKeyException | SignatureException e) {
             // Neither of these should happen since we set up the algorithms in a fixed way and the
             // signature object's methods are called in the correct order: It is initialized then

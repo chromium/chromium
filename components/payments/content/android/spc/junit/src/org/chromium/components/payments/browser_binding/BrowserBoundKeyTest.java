@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -52,9 +53,13 @@ public class BrowserBoundKeyTest {
         BrowserBoundKey browserBoundKey =
                 new BrowserBoundKey(/* identifier= */ new byte[0], keyPair);
         byte[] clientData = {0x01, 0x02, 0x03, 0x04};
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKey.SignLatency");
 
         byte[] actualSignature = browserBoundKey.sign(clientData);
 
+        histogramWatcher.assertExpected();
         Signature signature = Signature.getInstance("SHA256withECDSA");
         signature.initVerify(keyPair.getPublic());
         signature.update(clientData);
