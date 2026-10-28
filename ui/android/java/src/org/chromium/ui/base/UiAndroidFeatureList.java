@@ -122,12 +122,6 @@ public class UiAndroidFeatureList {
                     /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
 
-    public static final CachedFlag sUpdatePaddingForDisplayCalculation =
-            newCachedFlag(
-                    UiAndroidFeatures.UPDATE_PADDING_FOR_DISPLAY_CALCULATION,
-                    /* defaultValue= */ true,
-                    /* defaultValueInTests= */ true);
-
     public static final CachedFlag sReportBottomOverscrolls =
             newCachedFlag(
                     UiAndroidFeatures.REPORT_BOTTOM_OVERSCROLLS,
@@ -164,7 +158,6 @@ public class UiAndroidFeatureList {
                     sAndroidWindowOcclusion,
                     sConnectedDisplayDensityDebugLogs,
                     sRefactorMinWidthContextOverride,
-                    sUpdatePaddingForDisplayCalculation,
                     sMaximumWindowForGestureNavDetection);
 
     public static final List<CachedFeatureParam<?>> sParamsCached =

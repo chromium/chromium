@@ -124,10 +124,6 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kCheckHitEligibility);
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(
     kAndroidTouchpadOverscrollHistoryNavigation);
 
-// Update padding for display calculations to use view width instead of screen
-// width.
-UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kUpdatePaddingForDisplayCalculation);
-
 // Avoids allocating unique ColorProviders per Activity context in Android
 // embedders that do not supply a ColorProviderBridge.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAvoidPerContextColorProviders);

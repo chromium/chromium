@@ -13514,10 +13514,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kAudioRendererMixerImmediatePause)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"update-padding-for-display-calculation",
-     flag_descriptions::kUpdatePaddingForDisplayCalculationName,
-     flag_descriptions::kUpdatePaddingForDisplayCalculationDescription,
-     kOsAndroid, FEATURE_VALUE_TYPE(ui::kUpdatePaddingForDisplayCalculation)},
     {"text-classifier-timeout", flag_descriptions::kTextClassifierTimeoutName,
      flag_descriptions::kTextClassifierTimeoutDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(::features::kTextClassifierTimeout,

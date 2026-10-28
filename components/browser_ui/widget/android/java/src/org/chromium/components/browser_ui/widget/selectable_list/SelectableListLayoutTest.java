@@ -27,11 +27,8 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
-import org.chromium.ui.base.UiAndroidFeatures;
 import org.chromium.ui.base.ViewUtils;
 
 /** Tests for the wide display padding of {@link SelectableListLayout}. */
@@ -88,16 +85,17 @@ public class SelectableListLayoutTest {
 
     @Test
     @Config(qualifiers = LANDSCAPE_QUALIFIERS)
-    @EnableFeatures(UiAndroidFeatures.UPDATE_PADDING_FOR_DISPLAY_CALCULATION)
     public void rotateLandscapeToPortrait_toolbarTitleRemainsVisible() {
-        rotateLandscapeToPortraitAndAssertTitleVisible();
-    }
+        initializeLayout(/* itemCount= */ 1);
+        measureAndLayout(/* widthDp= */ LONG_SIDE_DP, /* heightDp= */ SHORT_SIDE_DP);
+        assertToolbarPadding(expectedPaddingDp(LONG_SIDE_DP));
 
-    @Test
-    @Config(qualifiers = LANDSCAPE_QUALIFIERS)
-    @DisableFeatures(UiAndroidFeatures.UPDATE_PADDING_FOR_DISPLAY_CALCULATION)
-    public void rotateLandscapeToPortrait_flagDisabled_toolbarTitleRemainsVisible() {
-        rotateLandscapeToPortraitAndAssertTitleVisible();
+        rotate(PORTRAIT_QUALIFIERS);
+        measureAndLayout(/* widthDp= */ SHORT_SIDE_DP, /* heightDp= */ LONG_SIDE_DP);
+
+        assertToolbarPadding(expectedPaddingDp(SHORT_SIDE_DP));
+        assertEquals(dpToPx(expectedPaddingDp(SHORT_SIDE_DP)), mRecyclerView.getPaddingStart());
+        assertTitleVisibleAndConverged(/* widthDp= */ SHORT_SIDE_DP, /* heightDp= */ LONG_SIDE_DP);
     }
 
     /**
@@ -107,7 +105,6 @@ public class SelectableListLayoutTest {
      */
     @Test
     @Config(qualifiers = PORTRAIT_QUALIFIERS)
-    @EnableFeatures(UiAndroidFeatures.UPDATE_PADDING_FOR_DISPLAY_CALCULATION)
     public void rotatePortraitToLandscape_paddingUpdated() {
         initializeLayout(/* itemCount= */ 1);
         measureAndLayout(/* widthDp= */ SHORT_SIDE_DP, /* heightDp= */ LONG_SIDE_DP);
@@ -122,7 +119,6 @@ public class SelectableListLayoutTest {
 
     @Test
     @Config(qualifiers = LANDSCAPE_QUALIFIERS)
-    @EnableFeatures(UiAndroidFeatures.UPDATE_PADDING_FOR_DISPLAY_CALCULATION)
     public void containerShrinksWithoutConfigChange_paddingUsesContainerWidth() {
         int shrunkWidthDp = 900;
         initializeLayout(/* itemCount= */ 1);
@@ -139,7 +135,6 @@ public class SelectableListLayoutTest {
 
     @Test
     @Config(qualifiers = LANDSCAPE_QUALIFIERS)
-    @EnableFeatures(UiAndroidFeatures.UPDATE_PADDING_FOR_DISPLAY_CALCULATION)
     public void emptyList_recyclerViewPaddingUsesContainerWidth() {
         initializeLayout(/* itemCount= */ 1);
         measureAndLayout(/* widthDp= */ LONG_SIDE_DP, /* heightDp= */ SHORT_SIDE_DP);
@@ -164,7 +159,6 @@ public class SelectableListLayoutTest {
 
     @Test
     @Config(qualifiers = LANDSCAPE_QUALIFIERS)
-    @EnableFeatures(UiAndroidFeatures.UPDATE_PADDING_FOR_DISPLAY_CALCULATION)
     public void layoutHasHorizontalPadding_recyclerViewPaddingMatchesToolbar() {
         // E.g. system window insets applied as padding when fitsSystemWindows is set.
         int layoutPaddingDp = 40;
@@ -209,19 +203,6 @@ public class SelectableListLayoutTest {
         // Shows the RecyclerView if the adapter has items.
         mAdapter.notifyDataSetChanged();
         mLayout.configureWideDisplayStyle();
-    }
-
-    private void rotateLandscapeToPortraitAndAssertTitleVisible() {
-        initializeLayout(/* itemCount= */ 1);
-        measureAndLayout(/* widthDp= */ LONG_SIDE_DP, /* heightDp= */ SHORT_SIDE_DP);
-        assertToolbarPadding(expectedPaddingDp(LONG_SIDE_DP));
-
-        rotate(PORTRAIT_QUALIFIERS);
-        measureAndLayout(/* widthDp= */ SHORT_SIDE_DP, /* heightDp= */ LONG_SIDE_DP);
-
-        assertToolbarPadding(expectedPaddingDp(SHORT_SIDE_DP));
-        assertEquals(dpToPx(expectedPaddingDp(SHORT_SIDE_DP)), mRecyclerView.getPaddingStart());
-        assertTitleVisibleAndConverged(/* widthDp= */ SHORT_SIDE_DP, /* heightDp= */ LONG_SIDE_DP);
     }
 
     /** Replaces the full qualifier set, so {@code qualifiers} must include the density. */
