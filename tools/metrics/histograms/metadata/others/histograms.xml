@@ -2886,6 +2886,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Mojo.Channel.OffThreadSendQueueTime" units="microseconds"
+    expires_after="2027-04-30">
+  <owner>nafisabedin@google.com</owner>
+  <owner>pasko@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    For a channel-associated Mojo message sent from a thread other than the
+    channel's IO thread, measures the time from
+    IPC::ChannelAssociatedGroupController posting the send task until that task
+    starts running on the IO thread. Time spent afterwards queued while the
+    channel is paused or not yet bound is excluded. Messages sent from the IO
+    thread are not recorded.
+
+    Recorded in the sending process. Senders include the browser UI thread (to
+    renderers) and the renderer main thread (to the browser).
+
+    Sub-sampled to 1/1000 sends to reduce measurement overhead. Only recorded on
+    clients with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Mojo.Channel.ProcessLaunchPauseToFlushTime" units="ms"
     expires_after="2026-09-13">
   <owner>rakina@chromium.org</owner>
