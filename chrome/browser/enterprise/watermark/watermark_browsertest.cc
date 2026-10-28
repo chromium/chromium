@@ -41,6 +41,8 @@
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/enterprise/data_protection/features.h"
 #include "components/enterprise/data_protection/utils.h"
+#include "components/enterprise/watermarking/content/watermark_text_container.h"
+#include "components/enterprise/watermarking/mojom/watermark.mojom.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_service.h"
@@ -359,6 +361,10 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest, Apply_NoWatermark) {
                    ->GetContentsContainerViews()[0]
                    ->data_protection_overlay_view()
                    ->has_text_for_testing());
+  auto* watermark_text_container = WatermarkTextContainer::FromWebContents(
+      browser()->GetTabStripModel()->GetActiveWebContents());
+  ASSERT_TRUE(watermark_text_container);
+  EXPECT_FALSE(watermark_text_container->Serialize());
 }
 
 IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
@@ -441,6 +447,10 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
                   ->GetContentsContainerViews()[0]
                   ->data_protection_overlay_view()
                   ->has_text_for_testing());
+  auto* watermark_text_container = WatermarkTextContainer::FromWebContents(
+      browser()->GetTabStripModel()->GetActiveWebContents());
+  ASSERT_TRUE(watermark_text_container);
+  EXPECT_TRUE(watermark_text_container->Serialize());
 
   // Navigate to a page that should not show a watermark.  The watermark should
   // still show while the page loads.
@@ -456,6 +466,10 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
                    ->GetContentsContainerViews()[0]
                    ->data_protection_overlay_view()
                    ->has_text_for_testing());
+  watermark_text_container =
+      WatermarkTextContainer::FromWebContents(web_contents);
+  ASSERT_TRUE(watermark_text_container);
+  EXPECT_FALSE(watermark_text_container->Serialize());
 }
 
 IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
