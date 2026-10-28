@@ -237,7 +237,9 @@ bool CookieCraving::IsValid() const {
 bool CookieCraving::IsSatisfiedBy(
     const CanonicalCookie& canonical_cookie) const {
   CHECK(IsValid());
-  CHECK(canonical_cookie.IsCanonicalForFromStorage());
+
+  // This check is expensive because it needs to decrypt the cookie.
+  DCHECK(canonical_cookie.IsCanonicalForFromStorage());
 
   // Note: Creation time is not required to match. DBSC configs may be set at
   // different times from the cookies they reference. DBSC also does not require
