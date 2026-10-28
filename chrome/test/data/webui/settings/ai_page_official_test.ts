@@ -5,51 +5,19 @@
 import 'chrome://settings/lazy_load.js';
 import 'chrome://settings/settings.js';
 
-import type {OnDeviceAiBrowserProxy, OnDeviceAiEnabled} from 'chrome://settings/lazy_load.js';
 import {OnDeviceAiBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
-import type {SettingsAiPageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {loadTimeData, OpenWindowProxyImpl, PrefsBrowserProxy, PrefService, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
+import type {CrLinkRowElement, SettingsAiPageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {TestOnDeviceAiBrowserProxy} from './test_on_device_ai_browser_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
-
-class TestOnDeviceAiBrowserProxy extends TestBrowserProxy implements
-    OnDeviceAiBrowserProxy {
-  private onDeviceAiEnabled_: OnDeviceAiEnabled = {
-    enabled: true,
-    allowedByPolicy: true,
-  };
-
-  constructor() {
-    super([
-      'getOnDeviceAiEnabled',
-      'setOnDeviceAiEnabled',
-      'openFeedbackDialog',
-    ]);
-  }
-
-  getOnDeviceAiEnabled() {
-    this.methodCalled('getOnDeviceAiEnabled');
-    return Promise.resolve(this.onDeviceAiEnabled_);
-  }
-
-  setGetOnDeviceAiEnabledResponse(response: OnDeviceAiEnabled) {
-    this.onDeviceAiEnabled_ = response;
-  }
-
-  setOnDeviceAiEnabled(enabled: boolean) {
-    this.methodCalled('setOnDeviceAiEnabled', enabled);
-  }
-
-  openFeedbackDialog() {
-    this.methodCalled('openFeedbackDialog');
-  }
-}
 
 suite('settings ai page official', function() {
   let testBrowserProxy: TestOnDeviceAiBrowserProxy;
+  let openWindowProxy: TestOpenWindowProxy;
   let aiPage: SettingsAiPageElement;
 
   function createPage() {
@@ -63,16 +31,35 @@ suite('settings ai page official', function() {
     PrefsBrowserProxy.setInstance(prefsBrowserProxy);
     PrefService.resetInstanceForTesting();
 
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+
     testBrowserProxy = new TestOnDeviceAiBrowserProxy();
     OnDeviceAiBrowserProxyImpl.setInstance(testBrowserProxy);
+    loadTimeData.overrideValues({
+      showOnDeviceAiAdvancedSettings: false,
+    });
+    resetRouterForTesting();
     createPage();
   });
 
-  function getOnDeviceAiToggle(): SettingsToggleButtonElement {
-    const toggle = aiPage.shadowRoot.querySelector<SettingsToggleButtonElement>(
+  teardown(function() {
+    openWindowProxy.reset();
+  });
+
+  function queryOnDeviceAiToggle(): SettingsToggleButtonElement|null {
+    return aiPage.shadowRoot.querySelector<SettingsToggleButtonElement>(
         '#onDeviceAiToggle');
+  }
+
+  function getOnDeviceAiToggle(): SettingsToggleButtonElement {
+    const toggle = queryOnDeviceAiToggle();
     assertTrue(!!toggle);
     return toggle;
+  }
+
+  function queryOnDeviceAiRow(): CrLinkRowElement|null {
+    return aiPage.shadowRoot.querySelector<CrLinkRowElement>('#onDeviceAiRow');
   }
 
   test('show onDeviceAi toggle', async function() {
@@ -81,6 +68,7 @@ suite('settings ai page official', function() {
     const toggle = getOnDeviceAiToggle();
     assertTrue(isVisible(toggle));
     assertTrue(toggle.checked);
+    assertNull(queryOnDeviceAiRow());
 
     // Disable the setting.
     testBrowserProxy.setGetOnDeviceAiEnabledResponse({
@@ -106,6 +94,27 @@ suite('settings ai page official', function() {
     assertTrue((await testBrowserProxy.getOnDeviceAiEnabled()).enabled);
   });
 
+  test(
+      'show onDeviceAi link row when advanced settings enabled',
+      async function() {
+        loadTimeData.overrideValues({
+          showAiPage: true,
+          showOnDeviceAiAdvancedSettings: true,
+        });
+        resetRouterForTesting();
+        createPage();
+        await microtasksFinished();
+
+        assertNull(queryOnDeviceAiToggle());
+        const row = queryOnDeviceAiRow();
+        assertTrue(!!row);
+        assertTrue(isVisible(row));
+
+        row.click();
+        assertEquals(
+            routes.ON_DEVICE_AI, Router.getInstance().getCurrentRoute());
+      });
+
   test('onDeviceAi toggle disabled by policy', async function() {
     testBrowserProxy.setGetOnDeviceAiEnabledResponse({
       enabled: true,
@@ -123,6 +132,16 @@ suite('settings ai page official', function() {
         toggle.shadowRoot.querySelector('cr-policy-pref-indicator');
     assertTrue(!!policyIndicator);
     assertTrue(isVisible(policyIndicator));
+  });
+
+  test('onDeviceAi learn more link', async function() {
+    await microtasksFinished();
+
+    const toggle = getOnDeviceAiToggle();
+    toggle.dispatchEvent(new CustomEvent('sub-label-link-clicked'));
+
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(loadTimeData.getString('onDeviceAiLearnMoreUrl'), url);
   });
 
   test('onDeviceAi send feedback', async function() {

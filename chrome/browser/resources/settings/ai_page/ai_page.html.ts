@@ -19,17 +19,14 @@ export function getHtml(this: SettingsAiPageElement) {
         @click="${this.onPasswordChangeRowClick_}" external>
     </cr-link-row>
     <cr-link-row id="composeRowV2" class="hr"
-        ?hidden="${!this.showComposeControl_}"
-        start-icon="settings20:pen-spark"
-        label="$i18n{aiComposeLabel}"
-        sub-label="$i18n{aiComposeSublabelV2}"
+        ?hidden="${!this.showComposeControl_}" start-icon="settings20:pen-spark"
+        label="$i18n{aiComposeLabel}" sub-label="$i18n{aiComposeSublabelV2}"
         role-description="$i18n{subpageArrowRoleDescription}"
         @click="${this.onComposeRowClick_}">
     </cr-link-row>
     <cr-link-row id="aiSuggestionsRow" class="hr"
         ?hidden="${!this.showAiSuggestionsControl_}"
-        start-icon="settings20:button-auto"
-        label="$i18n{aiSuggestionsLabel}"
+        start-icon="settings20:button-auto" label="$i18n{aiSuggestionsLabel}"
         sub-label="$i18n{aiSuggestionsSublabel}"
         role-description="$i18n{subpageArrowRoleDescription}"
         @click="${this.onAiSuggestionsRowClick_}">
@@ -51,19 +48,16 @@ export function getHtml(this: SettingsAiPageElement) {
         @click="${this.onSkillsRowClick_}">
     </cr-link-row>
     <cr-link-row id="dictationRow" class="hr"
-        ?hidden="${!this.showDictationControl_}"
-        start-icon="privacy:mic"
+        ?hidden="${!this.showDictationControl_}" start-icon="privacy:mic"
         label="$i18n{dictationSettingLabel}"
         sub-label="$i18n{dictationSettingSublabel}"
         role-description="$i18n{subpageArrowRoleDescription}"
         @click="${this.onDictationRowClick_}">
     </cr-link-row>
-    <cr-link-row id="indigoRow" class="hr"
-        ?hidden="${!this.showIndigoControl_}"
-        start-icon="${this.getIndigoStartIcon_()}"
-        label="$i18n{indigoLabel}"
-        sub-label="$i18n{indigoSublabel}"
-        @click="${this.onIndigoRowClick_}" external>
+    <cr-link-row id="indigoRow" class="hr" ?hidden="${!this.showIndigoControl_}"
+        start-icon="${this.getIndigoStartIcon_()}" label="$i18n{indigoLabel}"
+        sub-label="$i18n{indigoSublabel}" @click="${this.onIndigoRowClick_}"
+        external>
     </cr-link-row>
     <cr-link-row id="googleSearchAiModeWorkspaceRow" class="hr"
         ?hidden="${!this.showGoogleSearchAiModeWorkspaceControl_}"
@@ -75,9 +69,17 @@ export function getHtml(this: SettingsAiPageElement) {
   </div>
 </settings-section>
 <if expr="_google_chrome">
-  <settings-section page-title="$i18n{onDeviceAiEnabledLabel}"
-      show-send-feedback-button
-      @send-feedback="${this.onOnDeviceAiSendFeedback_}">
+<settings-section page-title="$i18n{onDeviceAiEnabledLabel}"
+    show-send-feedback-button
+    @send-feedback="${this.onOnDeviceAiSendFeedback_}">
+  ${this.showOnDeviceAiAdvancedSettings_ ? html`
+    <cr-link-row id="onDeviceAiRow" class="hr"
+        label="$i18n{onDeviceAiEnabledLabel}"
+        sub-label="$i18n{onDeviceAiRowSubLabel}"
+        role-description="$i18n{subpageArrowRoleDescription}"
+        @click="${this.onOnDeviceAiRowClick_}">
+    </cr-link-row>
+  ` : html`
     <settings-toggle-button id="onDeviceAiToggle" class="hr"
         pref-key="synthetic.settings.on_device_ai_enabled"
         label="$i18n{onDeviceAiEnabledLabel}"
@@ -86,7 +88,8 @@ export function getHtml(this: SettingsAiPageElement) {
         @settings-boolean-control-change="${
             this.onOnDeviceAiSettingsBooleanControlChange_}">
     </settings-toggle-button>
-  </settings-section>
+  `}
+</settings-section>
 </if>
 <!--_html_template_end_-->`;
 }

@@ -61,6 +61,9 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
       showIndigoControl_: {type: Boolean},
       showGoogleSearchAiModeWorkspaceControl_: {type: Boolean},
       showDictationControl_: {type: Boolean},
+      // <if expr="_google_chrome">
+      showOnDeviceAiAdvancedSettings_: {type: Boolean},
+      // </if>
     };
   }
 
@@ -80,6 +83,10 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
       loadTimeData.getBoolean('showGoogleSearchAiModeWorkspaceControl');
   protected accessor showDictationControl_: boolean =
       loadTimeData.getBoolean('showDictationControl');
+  // <if expr="_google_chrome">
+  protected accessor showOnDeviceAiAdvancedSettings_: boolean =
+      loadTimeData.getBoolean('showOnDeviceAiAdvancedSettings');
+  // </if>
 
   private shouldRecordMetrics_: boolean = true;
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -234,6 +241,11 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   }
 
   // <if expr="_google_chrome">
+  protected onOnDeviceAiRowClick_() {
+    const router = Router.getInstance();
+    router.navigateTo(router.getRoutes().ON_DEVICE_AI);
+  }
+
   protected onOnDeviceAiSubLabelLinkClicked_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('onDeviceAiLearnMoreUrl'));
@@ -290,6 +302,12 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
       map.set(routes.DICTATION.path, '#dictationRow');
     }
 
+    // <if expr="_google_chrome">
+    if (routes.ON_DEVICE_AI) {
+      map.set(routes.ON_DEVICE_AI.path, '#onDeviceAiRow');
+    }
+    // </if>
+
     return map;
   }
 
@@ -301,6 +319,9 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
       'aiSuggestions',
       'inlineCueMenu',
       'skills',
+      // <if expr="_google_chrome">
+      'onDeviceAi',
+      // </if>
     ];
     assert(ids.includes(childViewId));
 
@@ -326,6 +347,12 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         assert(this.showDictationControl_);
         triggerId = 'dictationRow';
         break;
+      // <if expr="_google_chrome">
+      case 'onDeviceAi':
+        assert(this.showOnDeviceAiAdvancedSettings_);
+        triggerId = 'onDeviceAiRow';
+        break;
+      // </if>
       default:
         assertNotReached();
     }

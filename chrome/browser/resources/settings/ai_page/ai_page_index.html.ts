@@ -18,18 +18,15 @@ export function getHtml(this: SettingsAiPageIndexElement) {
   ` : ''}
 
   ${this.showGlicSettings_ ? html`
-    <settings-glic-page slot="view" id="glic">
-    </settings-glic-page>
+    <settings-glic-page slot="view" id="glic"></settings-glic-page>
 
-    <settings-glic-subpage slot="view" id="gemini"
-        data-parent-view-id="glic"
+    <settings-glic-subpage slot="view" id="gemini" data-parent-view-id="glic"
         route-path="${this.routes_.GEMINI.path}">
     </settings-glic-subpage>
   ` : ''}
 
   ${this.showGeicSettings_ ? html`
-    <settings-geic-page slot="view" id="geic">
-    </settings-geic-page>
+    <settings-geic-page slot="view" id="geic"></settings-geic-page>
 
     <settings-geic-subpage slot="view" id="geminiEnterprise"
         data-parent-view-id="geic"
@@ -39,15 +36,13 @@ export function getHtml(this: SettingsAiPageIndexElement) {
 
   ${this.shouldShowPermissionsPage_() ? html`
     <settings-glic-login-permissions-page slot="view"
-        id="geminiLoginPermissions"
-        data-parent-view-id="gemini"
+        id="geminiLoginPermissions" data-parent-view-id="gemini"
         route-path="${this.routes_.GEMINI_LOGIN.path}">
     </settings-glic-login-permissions-page>
   ` : ''}
 
   ${this.showAiPageAiFeatureSection_ ? html`
-    <settings-ai-page slot="view" id="parent">
-    </settings-ai-page>
+    <settings-ai-page slot="view" id="parent"></settings-ai-page>
   ` : ''}
 
   ${this.showComposeControl_ ? html`
@@ -72,8 +67,7 @@ export function getHtml(this: SettingsAiPageIndexElement) {
   ` : ''}
 
   ${this.showSkillsSettingPage_ ? html`
-    <settings-skills-page slot="view" id="skills"
-        data-parent-view-id="parent"
+    <settings-skills-page slot="view" id="skills" data-parent-view-id="parent"
         route-path="${this.routes_.SKILLS.path}">
     </settings-skills-page>
   ` : ''}
@@ -84,6 +78,15 @@ export function getHtml(this: SettingsAiPageIndexElement) {
         route-path="${this.routes_.DICTATION.path}">
     </settings-dictation-page>
   ` : ''}
+
+<if expr="_google_chrome">
+  ${this.showOnDeviceAiAdvancedSettings_ ? html`
+    <settings-on-device-ai-page slot="view" id="onDeviceAi"
+        data-parent-view-id="parent"
+        route-path="${this.routes_.ON_DEVICE_AI.path}">
+    </settings-on-device-ai-page>
+  ` : ''}
+</if>
 </cr-view-manager>
 <!--_html_template_end_-->`;
 }

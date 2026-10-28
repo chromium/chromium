@@ -511,6 +511,9 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       {"onDeviceAiEnabledLabel",
        IDS_SETTINGS_SYSTEM_FEATURE_ON_DEVICE_AI_ENABLED_LABEL},
+      {"onDeviceAiRowSubLabel", IDS_SETTINGS_ON_DEVICE_AI_ROW_SUB_LABEL},
+      {"onDeviceAiCapabilitiesLabel",
+       IDS_SETTINGS_ON_DEVICE_AI_CAPABILITIES_LABEL},
 #endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);

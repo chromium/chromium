@@ -549,7 +549,11 @@ build_webui("build") {
   }
 
   if (is_chrome_branded) {
-    ts_files += [ "ai_page/on_device_ai_browser_proxy.ts" ]
+    ts_files += [
+      "ai_page/on_device_ai_browser_proxy.ts",
+      "ai_page/on_device_ai_page.html.ts",
+      "ai_page/on_device_ai_page.ts",
+    ]
   }
 
   if (is_linux) {

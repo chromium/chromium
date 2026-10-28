@@ -4,6 +4,9 @@
 
 import 'chrome://settings/settings.js';
 
+// <if expr="_google_chrome">
+import {OnDeviceAiBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+// </if>
 import type {SettingsAiPageElement} from 'chrome://settings/settings.js';
 import {AiPageInteractions, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrefsBrowserProxy, PrefService, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -11,6 +14,9 @@ import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+// <if expr="_google_chrome">
+import {TestOnDeviceAiBrowserProxy} from './test_on_device_ai_browser_proxy.js';
+// </if>
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
@@ -26,6 +32,9 @@ function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
 suite('AiPage', function() {
   let metricsBrowserProxy: TestMetricsBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
+  // <if expr="_google_chrome">
+  let onDeviceAiBrowserProxy: TestOnDeviceAiBrowserProxy;
+  // </if>
   let page: SettingsAiPageElement;
   let prefService: PrefService;
 
@@ -34,6 +43,10 @@ suite('AiPage', function() {
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
+    // <if expr="_google_chrome">
+    onDeviceAiBrowserProxy = new TestOnDeviceAiBrowserProxy();
+    OnDeviceAiBrowserProxyImpl.setInstance(onDeviceAiBrowserProxy);
+    // </if>
 
     loadTimeData.overrideValues({
       showAiPage: true,
@@ -54,6 +67,9 @@ suite('AiPage', function() {
     Router.getInstance().resetRouteForTesting();
     metricsBrowserProxy.reset();
     openWindowProxy.reset();
+    // <if expr="_google_chrome">
+    onDeviceAiBrowserProxy.reset();
+    // </if>
   });
 
   function createPage() {
@@ -314,6 +330,28 @@ suite('AiPage', function() {
     assertEquals(routes.SKILLS, currentRoute);
     assertEquals(routes.AI, currentRoute.parent);
   });
+
+  // <if expr="_google_chrome">
+  test('onDeviceAiRow', () => {
+    loadTimeData.overrideValues({
+      showAiPage: true,
+      showOnDeviceAiAdvancedSettings: true,
+    });
+    resetRouterForTesting();
+    createPage();
+
+    const onDeviceAiRow =
+        page.shadowRoot.querySelector<HTMLElement>('#onDeviceAiRow');
+
+    assertTrue(!!onDeviceAiRow);
+    assertTrue(isVisible(onDeviceAiRow));
+    onDeviceAiRow.click();
+
+    const currentRoute = Router.getInstance().getCurrentRoute();
+    assertEquals(routes.ON_DEVICE_AI, currentRoute);
+    assertEquals(routes.AI, currentRoute.parent);
+  });
+  // </if>
 
   test('GoogleSearchAiModeRow', async () => {
     loadTimeData.overrideValues({

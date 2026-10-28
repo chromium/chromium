@@ -740,6 +740,7 @@ chromium-metrics-reviews@google.com.
   <int value="872535792" label="/parentalControls"/>
   <int value="900733129" label="/content/microphone"/>
   <int value="912274271" label="/siteData"/>
+  <int value="922182629" label="/ai/onDeviceAi"/>
   <int value="943458628" label="/triggeredResetProfileSettings"/>
   <int value="1051104480" label="/cleanup"/>
   <int value="1114615837" label="/accessibility"/>

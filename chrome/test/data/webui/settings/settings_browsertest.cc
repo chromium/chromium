@@ -1410,6 +1410,10 @@ using SettingsAiPageOfficialTest = SettingsBrowserTest;
 IN_PROC_BROWSER_TEST_F(SettingsAiPageOfficialTest, AiPageOfficial) {
   RunTest("settings/ai_page_official_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(SettingsAiPageOfficialTest, OnDeviceAiPage) {
+  RunTest("settings/on_device_ai_page_test.js", "mocha.run()");
+}
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 using SettingsAboutPageTest = SettingsBrowserTest;

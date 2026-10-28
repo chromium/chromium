@@ -439,9 +439,20 @@
   <message name="IDS_SETTINGS_DICTATION_SHORTCUT_SUBLABEL" translateable="false" desc="Sublabel for the keyboard shortcut setting in Dictation settings page.">
     Open talk to type with a keyboard shortcut
   </message>
-
   <!-- Appearance Page -->
   <message name="IDS_SETTINGS_SIDE_PANEL_ALIGNMENT_CONTEXTUAL_TASKS_IN_CHROME" desc="Label for configuring Google Search side panel alignment.">
     Google Search in Chrome
+  </message>
+
+  <!-- On-device AI Settings Page -->
+  <message name="IDS_SETTINGS_SYSTEM_FEATURE_ON_DEVICE_AI_ENABLED_SUB_LABEL" desc="This string describes what turning off the toggle implies.">
+    To power features like scam detection, Chrome can use AI models that run directly on your device. When this is off, these features might not work. <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank" aria-description="$2"&gt;</ph>Learn more about on-device AI<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
+  <!-- TODO(crbug.com/573643364): Make these translatable when finalized. -->
+  <message name="IDS_SETTINGS_ON_DEVICE_AI_ROW_SUB_LABEL" translateable="false" desc="Sublabel for the On-device AI entry point row in Settings > AI page.">
+    To power features like scam detection, Chrome can use AI models that run directly on your device
+  </message>
+  <message name="IDS_SETTINGS_ON_DEVICE_AI_CAPABILITIES_LABEL" translateable="false" desc="Label for the global toggle in the On-device AI settings subpage.">
+    On-device AI capabilities in Chrome
   </message>
 </grit-part>

@@ -206,6 +206,11 @@ function createRoutes(): SettingsRoutes {
     if (loadTimeData.getBoolean('showDictationControl')) {
       r.DICTATION = r.AI.createChild('/ai/dictation');
     }
+    // <if expr="_google_chrome">
+    if (loadTimeData.getBoolean('showOnDeviceAiAdvancedSettings')) {
+      r.ON_DEVICE_AI = r.AI.createChild('/ai/onDeviceAi');
+    }
+    // </if>
   }
 
   if (visibility.appearance !== false) {

@@ -68,6 +68,9 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
       showInlineCueMenuControl_: {type: Boolean},
       showSkillsSettingPage_: {type: Boolean},
       showDictationControl_: {type: Boolean},
+      // <if expr="_google_chrome">
+      showOnDeviceAiAdvancedSettings_: {type: Boolean},
+      // </if>
     };
   }
 
@@ -92,6 +95,10 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
       loadTimeData.getBoolean('showSkillsSettingPage');
   protected accessor showDictationControl_: boolean =
       loadTimeData.getBoolean('showDictationControl');
+  // <if expr="_google_chrome">
+  protected accessor showOnDeviceAiAdvancedSettings_: boolean =
+      loadTimeData.getBoolean('showOnDeviceAiAdvancedSettings');
+  // </if>
 
   private showDefaultViews_() {
     const defaultViews: string[] = ['aiInfoCard'];
@@ -177,6 +184,13 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
           this.$.viewManager.switchView(
               'dictation', 'no-animation', 'no-animation');
           break;
+        // <if expr="_google_chrome">
+        case routes.ON_DEVICE_AI:
+          assert(this.showOnDeviceAiAdvancedSettings_);
+          this.$.viewManager.switchView(
+              'onDeviceAi', 'no-animation', 'no-animation');
+          break;
+        // </if>
         default:
           // Nothing to do. Other parent elements are responsible for updating
           // the displayed contents.

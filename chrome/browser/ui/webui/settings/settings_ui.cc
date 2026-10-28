@@ -679,6 +679,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   // The On Device AI setting is always shown on branded builds.
   // TODO(crbug.com/466442880): Grey out toggle based on device capability and
   // enterprise policy.
+  html_source->AddBoolean(
+      "showOnDeviceAiAdvancedSettings",
+      base::FeatureList::IsEnabled(features::kOnDeviceModelAdvancedSettings));
   show_ai_features_section = true;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

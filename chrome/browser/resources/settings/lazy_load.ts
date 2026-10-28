@@ -7,6 +7,9 @@ import './ai_page/ai_mode_search_page.js';
 import './ai_page/ai_suggestions_page.js';
 import './ai_page/dictation_page.js';
 import './ai_page/offer_writing_help_page.js';
+// <if expr="_google_chrome">
+import './ai_page/on_device_ai_page.js';
+// </if>
 import './ai_page/skills_page.js';
 import './appearance_page/appearance_fonts_page.js';
 import './autofill_page/contact_info/contact_info_page.js';
@@ -165,6 +168,7 @@ export {COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, COMPOSE_PROACTIVE_NUDGE_PRE
 // <if expr="_google_chrome">
 export type {OnDeviceAiBrowserProxy, OnDeviceAiEnabled} from './ai_page/on_device_ai_browser_proxy.js';
 export {OnDeviceAiBrowserProxyImpl} from './ai_page/on_device_ai_browser_proxy.js';
+export {SettingsOnDeviceAiPageElement} from './ai_page/on_device_ai_page.js';
 // </if>
 export {SettingsSkillsPageElement} from './ai_page/skills_page.js';
 export {SettingsAppearanceFontsPageElement} from './appearance_page/appearance_fonts_page.js';

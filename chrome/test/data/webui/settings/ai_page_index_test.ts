@@ -5,10 +5,17 @@
 import 'chrome://settings/settings.js';
 import 'chrome://settings/lazy_load.js';
 
+// <if expr="_google_chrome">
+import {OnDeviceAiBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+// </if>
 import type {SettingsAiPageIndexElement} from 'chrome://settings/settings.js';
 import {loadTimeData, PrefService, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+// <if expr="_google_chrome">
+import {TestOnDeviceAiBrowserProxy} from './test_on_device_ai_browser_proxy.js';
+// </if>
 
 suite('AiPageIndex', function() {
   let index: SettingsAiPageIndexElement;
@@ -31,6 +38,9 @@ suite('AiPageIndex', function() {
   }
 
   setup(function() {
+    // <if expr="_google_chrome">
+    OnDeviceAiBrowserProxyImpl.setInstance(new TestOnDeviceAiBrowserProxy());
+    // </if>
     loadTimeData.overrideValues({
       showAiPage: true,
       showAiPageAiFeatureSection: true,
@@ -42,6 +52,9 @@ suite('AiPageIndex', function() {
       showAiSuggestionsControl: true,
       showInlineCueMenuControl: true,
       showDictationControl: true,
+      // <if expr="_google_chrome">
+      showOnDeviceAiAdvancedSettings: true,
+      // </if>
     });
     resetRouterForTesting();
     return createAiPageIndex();
@@ -90,6 +103,12 @@ suite('AiPageIndex', function() {
     Router.getInstance().navigateTo(routes.DICTATION);
     await microtasksFinished();
     assertActiveViews(['dictation']);
+
+    // <if expr="_google_chrome">
+    Router.getInstance().navigateTo(routes.ON_DEVICE_AI);
+    await microtasksFinished();
+    assertActiveViews(['onDeviceAi']);
+    // </if>
   });
 
   test('aiFeaturesSectionVisibility', async function() {
@@ -153,6 +172,20 @@ suite('AiPageIndex', function() {
     assertFalse(!!index.$.viewManager.querySelector('#dictation[slot=view]'));
   });
 
+  // <if expr="_google_chrome">
+  test('onDeviceAiSectionVisibility', async function() {
+    assertTrue(!!index.$.viewManager.querySelector('#onDeviceAi[slot=view]'));
+
+    loadTimeData.overrideValues({
+      showAiPage: true,
+      showOnDeviceAiAdvancedSettings: false,
+    });
+    resetRouterForTesting();
+    await createAiPageIndex();
+    assertFalse(!!index.$.viewManager.querySelector('#onDeviceAi[slot=view]'));
+  });
+  // </if>
+
   // Test that the child views are properly annotated.
   test('DataParentViewId', function() {
     const childViewsId = [
@@ -160,6 +193,9 @@ suite('AiPageIndex', function() {
       'aiSuggestions',
       'inlineCueMenu',
       'dictation',
+      // <if expr="_google_chrome">
+      'onDeviceAi',
+      // </if>
     ];
     for (const id of childViewsId) {
       assertTrue(!!index.$.viewManager.querySelector(
