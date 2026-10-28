@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
@@ -353,6 +355,11 @@ MLContext::MLContext(
   context_remote_.set_disconnect_with_reason_handler(
       BindOnce(&MLContext::OnLost, WrapWeakPersistent(this)));
 
+  // Non-null when this context's backend runs in this renderer process,
+  // letting dispatch() bypass Mojo (see InRendererContextHandle).
+  in_renderer_context_handle_ =
+      webnn::InRendererContextRegistry::Get(webnn_handle_);
+
   if (create_context_success->compiler_context_remote) {
     // The GPU returned a Compiler remote, so this backend uses a Compiler
     // process. Record it for reconnect; the renderer never decides this.
@@ -467,6 +474,7 @@ void MLContext::OnCompilerContextDisconnected() {
 void MLContext::OnLost(uint32_t custom_reason, const std::string& description) {
   context_remote_.reset();
   compiler_context_remote_.reset();
+  in_renderer_context_handle_.reset();
 
   auto* context_lost_info = MLContextLostInfo::Create();
   if (description.empty()) {
@@ -1294,6 +1302,10 @@ void MLContext::OnGraphCreated(MLGraph* graph) {
 }
 
 void MLContext::DestroyGraph(const blink::WebNNGraphToken& graph_token) {
+  if (in_renderer_context_handle_) {
+    in_renderer_context_handle_->DestroyGraph(graph_token);
+    return;
+  }
   if (context_remote_.is_bound()) {
     context_remote_->DestroyGraph(graph_token);
   }
@@ -1675,6 +1687,7 @@ void MLContext::dispatch(ScriptState* script_state,
   // The inputs and outputs were already verified so we can pass the tensor
   // directly with the input and output tensors.
   HashMap<String, blink::WebNNTensorToken> mojo_inputs;
+  std::vector<std::pair<std::string, blink::WebNNTensorToken>> native_inputs;
   for (const auto& [name, input_tensor] : inputs) {
     if (!input_tensor->IsValid()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -1688,10 +1701,15 @@ void MLContext::dispatch(ScriptState* script_state,
       return;
     }
 
-    mojo_inputs.insert(name, input_tensor->handle());
+    if (in_renderer_context_handle_) {
+      native_inputs.emplace_back(name.Utf8(), input_tensor->handle());
+    } else {
+      mojo_inputs.insert(name, input_tensor->handle());
+    }
   }
 
   HashMap<String, blink::WebNNTensorToken> mojo_outputs;
+  std::vector<std::pair<std::string, blink::WebNNTensorToken>> native_outputs;
   for (const auto& [name, output_tensor] : outputs) {
     if (!output_tensor->IsValid()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -1705,11 +1723,21 @@ void MLContext::dispatch(ScriptState* script_state,
       return;
     }
 
-    mojo_outputs.insert(name, output_tensor->handle());
+    if (in_renderer_context_handle_) {
+      native_outputs.emplace_back(name.Utf8(), output_tensor->handle());
+    } else {
+      mojo_outputs.insert(name, output_tensor->handle());
+    }
   }
 
-  context_remote_->Dispatch(graph->graph_token(), std::move(mojo_inputs),
-                            std::move(mojo_outputs));
+  if (in_renderer_context_handle_) {
+    in_renderer_context_handle_->Dispatch(graph->graph_token(),
+                                          std::move(native_inputs),
+                                          std::move(native_outputs));
+  } else {
+    context_remote_->Dispatch(graph->graph_token(), std::move(mojo_inputs),
+                              std::move(mojo_outputs));
+  }
 }
 
 void MLContext::DidCreateWebNNTensor(

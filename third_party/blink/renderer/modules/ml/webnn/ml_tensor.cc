@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_tensor.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/trace_event/trace_event.h"
@@ -11,6 +12,7 @@
 #include "base/types/expected_macros.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "services/webnn/public/cpp/in_renderer_tensor_handle.h"
 #include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom-blink.h"
@@ -77,9 +79,20 @@ MLTensor::MLTensor(
       execution_context->GetTaskRunner(TaskType::kMachineLearning));
   remote_tensor_.set_disconnect_handler(
       BindOnce(&MLTensor::OnConnectionError, WrapWeakPersistent(this)));
+
+  // Non-null when the tensor's backend runs in this renderer process, letting
+  // writeTensor/readTensor bypass Mojo (see InRendererTensorHandle).
+  in_renderer_handle_ = webnn::InRendererTensorRegistry::Get(webnn_handle_);
 }
 
 MLTensor::~MLTensor() = default;
+
+void MLTensor::Dispose() {
+  if (in_renderer_handle_) {
+    in_renderer_handle_->Destroy();
+    in_renderer_handle_.reset();
+  }
+}
 
 void MLTensor::Trace(Visitor* visitor) const {
   visitor->Trace(ml_context_);
@@ -165,9 +178,17 @@ ScriptPromise<DOMArrayBuffer> MLTensor::ReadTensorImpl(
   pending_resolvers_.insert(resolver);
 
   base::ElapsedTimer read_tensor_timer;
-  remote_tensor_->ReadTensor(blink::BindOnce(
-      &MLTensor::OnDidReadTensor, WrapPersistent(this), std::move(scoped_trace),
-      WrapPersistent(resolver), std::move(read_tensor_timer)));
+  if (in_renderer_handle_) {
+    in_renderer_handle_->BeginReadTensor(blink::BindOnce(
+        &MLTensor::OnReadyToReadTensorFast, WrapPersistent(this),
+        std::move(scoped_trace), WrapPersistent(resolver),
+        std::move(read_tensor_timer)));
+  } else {
+    remote_tensor_->ReadTensor(
+        blink::BindOnce(&MLTensor::OnDidReadTensor, WrapPersistent(this),
+                        std::move(scoped_trace), WrapPersistent(resolver),
+                        std::move(read_tensor_timer)));
+  }
 
   return resolver->Promise();
 }
@@ -201,10 +222,17 @@ ScriptPromise<IDLUndefined> MLTensor::ReadTensorImpl(
   pending_byob_resolvers_.insert(resolver);
 
   base::ElapsedTimer read_tensor_timer;
-  remote_tensor_->ReadTensor(
-      blink::BindOnce(&MLTensor::OnDidReadTensorByob, WrapPersistent(this),
-                      std::move(scoped_trace), WrapPersistent(resolver),
-                      WrapPersistent(dst_data), std::move(read_tensor_timer)));
+  if (in_renderer_handle_) {
+    in_renderer_handle_->BeginReadTensor(blink::BindOnce(
+        &MLTensor::OnReadyToReadTensorByobFast, WrapPersistent(this),
+        std::move(scoped_trace), WrapPersistent(resolver),
+        WrapPersistent(dst_data), std::move(read_tensor_timer)));
+  } else {
+    remote_tensor_->ReadTensor(blink::BindOnce(
+        &MLTensor::OnDidReadTensorByob, WrapPersistent(this),
+        std::move(scoped_trace), WrapPersistent(resolver),
+        WrapPersistent(dst_data), std::move(read_tensor_timer)));
+  }
 
   return resolver->Promise();
 }
@@ -316,6 +344,81 @@ void MLTensor::OnDidReadTensorByob(
   RecordReadTensorTime(std::move(read_tensor_timer));
 }
 
+void MLTensor::OnReadyToReadTensorFast(
+    webnn::ScopedTrace scoped_trace,
+    ScriptPromiseResolver<DOMArrayBuffer>* resolver,
+    base::ElapsedTimer read_tensor_timer,
+    base::span<const uint8_t> src,
+    base::OnceClosure read_complete) {
+  // Releases the tensor's read lock on every exit path.
+  base::ScopedClosureRunner read_complete_runner(std::move(read_complete));
+
+  // Unlike the mojo path, the fast path still delivers the read after
+  // destroy(), which clears `in_renderer_handle_`.
+  if (!in_renderer_handle_) {
+    return;
+  }
+  pending_resolvers_.erase(resolver);
+
+  if (src.size() != descriptor_.PackedByteLength()) {
+    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                     kTensorDestroyedError);
+    return;
+  }
+
+  // Copy directly out of the backend's buffer into a freshly allocated
+  // `DOMArrayBuffer`. `src` is only valid until `read_complete` is run, so
+  // copy before releasing the tensor's lock.
+  DOMArrayBuffer* buffer = DOMArrayBuffer::Create(src);
+  read_complete_runner.RunAndReset();
+
+  resolver->Resolve(buffer);
+
+  RecordReadTensorTime(std::move(read_tensor_timer));
+}
+
+void MLTensor::OnReadyToReadTensorByobFast(
+    webnn::ScopedTrace scoped_trace,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
+    V8AllowSharedBufferSource* dst_data,
+    base::ElapsedTimer read_tensor_timer,
+    base::span<const uint8_t> src,
+    base::OnceClosure read_complete) {
+  // Releases the tensor's read lock on every exit path.
+  base::ScopedClosureRunner read_complete_runner(std::move(read_complete));
+
+  // See OnReadyToReadTensorFast().
+  if (!in_renderer_handle_) {
+    return;
+  }
+  pending_byob_resolvers_.erase(resolver);
+
+  if (src.size() != descriptor_.PackedByteLength()) {
+    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                     kTensorDestroyedError);
+    return;
+  }
+
+  base::span<uint8_t> dst = AsSpan<SharedBufferPolicy::kAllow>(*dst_data);
+  if (dst.size() == 0) {
+    resolver->RejectWithTypeError("Buffer was detached.");
+    return;
+  }
+
+  // Copy directly from the backend's buffer into `dst_data`. Writing into
+  // `dst_data` even though it wasn't transferred is safe because this runs
+  // in a task on the same thread where script executes, so script can't
+  // observe a partially written state (unless `dst_data` is a
+  // SharedArrayBuffer). `src` is only valid until `read_complete` is run,
+  // so copy before releasing the tensor's lock.
+  dst.copy_prefix_from(src);
+  read_complete_runner.RunAndReset();
+
+  resolver->Resolve();
+
+  RecordReadTensorTime(std::move(read_tensor_timer));
+}
+
 void MLTensor::WriteTensorImpl(base::span<const uint8_t> src_data,
                                ExceptionState& exception_state) {
   // Remote context gets automatically unbound when the execution context
@@ -337,6 +440,13 @@ void MLTensor::WriteTensorImpl(base::span<const uint8_t> src_data,
     return;
   }
 
+  // In-renderer fast path: bypass Mojo, relying on FIFO ordering with
+  // `Dispatch()` on the same backend task runner.
+  if (in_renderer_handle_) {
+    in_renderer_handle_->WriteTensor(src_data);
+    return;
+  }
+
   // Copy src data.
   if (ml_context_->write_tensor_producer() &&
       src_data.size() > mojo_base::BigBuffer::kMaxInlineBytes &&
@@ -349,6 +459,7 @@ void MLTensor::WriteTensorImpl(base::span<const uint8_t> src_data,
 }
 
 void MLTensor::OnConnectionError() {
+  Dispose();
   remote_tensor_.reset();
   webnn_scoped_access_.reset();
 

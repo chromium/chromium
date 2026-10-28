@@ -26,6 +26,10 @@ component("cpp") {
     "data_type_limits.h",
     "graph_validation_utils.cc",
     "graph_validation_utils.h",
+    "in_renderer_context_handle.cc",
+    "in_renderer_context_handle.h",
+    "in_renderer_tensor_handle.cc",
+    "in_renderer_tensor_handle.h",
     "ml_number.cc",
     "ml_number.h",
     "ml_tensor_usage.h",
@@ -48,6 +52,7 @@ component("cpp") {
     ":buildflags",
     "//base",
     "//services/webnn/public/mojom:features",
+    "//third_party/blink/public/common/tokens:tokens_headers",
   ]
 
   deps = [

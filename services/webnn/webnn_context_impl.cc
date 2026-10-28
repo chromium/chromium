@@ -19,10 +19,12 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "services/webnn/error.h"
 #include "services/webnn/gpu_task_scheduler.h"
 #include "services/webnn/public/cpp/data_type_limits.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
+#include "services/webnn/public/cpp/in_renderer_context_handle.h"
 #include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
@@ -92,6 +94,70 @@ bool ValidateWebNNTensorsUsage(
 }  // namespace
 
 namespace webnn {
+
+namespace {
+
+// Fast-path handle registered on the in-renderer path so Blink can invoke
+// `WebNNContext` operations directly, bypassing mojo. See
+// `InRendererContextHandle`.
+class ContextInRendererHandle final : public InRendererContextHandle {
+ public:
+  ContextInRendererHandle(
+      base::WeakPtr<WebNNContextImpl> context,
+      scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner)
+      : InRendererContextHandle(owning_task_runner),
+        context_(std::move(context)) {}
+
+  ContextInRendererHandle(const ContextInRendererHandle&) = delete;
+  ContextInRendererHandle& operator=(const ContextInRendererHandle&) = delete;
+
+  void Dispatch(
+      const blink::WebNNGraphToken& graph_token,
+      std::vector<std::pair<std::string, blink::WebNNTensorToken>> named_inputs,
+      std::vector<std::pair<std::string, blink::WebNNTensorToken>>
+          named_outputs) override {
+    owning_task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ContextInRendererHandle::DispatchOnOwningSequence, this,
+                       graph_token, std::move(named_inputs),
+                       std::move(named_outputs)));
+  }
+
+  void DestroyGraph(const blink::WebNNGraphToken& graph_token) override {
+    owning_task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ContextInRendererHandle::DestroyGraphOnOwningSequence,
+                       this, graph_token));
+  }
+
+ private:
+  ~ContextInRendererHandle() override = default;
+
+  void DestroyGraphOnOwningSequence(blink::WebNNGraphToken graph_token) {
+    if (context_) {
+      context_->DestroyGraphFromInRenderer(graph_token);
+    }
+  }
+
+  void DispatchOnOwningSequence(
+      blink::WebNNGraphToken graph_token,
+      std::vector<std::pair<std::string, blink::WebNNTensorToken>> named_inputs,
+      std::vector<std::pair<std::string, blink::WebNNTensorToken>>
+          named_outputs) {
+    if (context_) {
+      context_->DispatchFromInRenderer(
+          graph_token,
+          base::flat_map<std::string, blink::WebNNTensorToken>(
+              std::move(named_inputs)),
+          base::flat_map<std::string, blink::WebNNTensorToken>(
+              std::move(named_outputs)));
+    }
+  }
+
+  const base::WeakPtr<WebNNContextImpl> context_;
+};
+
+}  // namespace
 
 WebNNContextImpl::WebNNContextImpl(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
@@ -171,6 +237,10 @@ base::RepeatingClosure* g_destruction_callback_for_testing = nullptr;
 WebNNContextImpl::~WebNNContextImpl() {
   CHECK(!has_graph_builders())
       << "Graph builders must be cleared in OnDisconnect().";
+
+  if (is_context_provider_in_renderer_) {
+    InRendererContextRegistry::Unregister(handle());
+  }
 
   for (auto impl : tensor_impls_) {
     // Non-interop tensors require manual tracking cleanup since the memory
@@ -267,7 +337,15 @@ void WebNNContextImpl::OnDisconnect() {
 
 void WebNNContextImpl::ReportBadMessageAndDisconnect(std::string_view message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  GetMojoReceiver().ReportBadMessage(message);
+  // `mojo::Receiver::ReportBadMessage()` requires an active mojo message
+  // dispatch context, which doesn't exist when this is reached via the
+  // in-renderer fast path (see InRendererContextHandle / Dispatch()).
+  if (mojo::IsInMessageDispatch()) {
+    GetMojoReceiver().ReportBadMessage(message);
+  } else {
+    LOG(ERROR) << "[WebNN] " << message;
+    ResetMojoReceiver(message);
+  }
   OnDisconnect();
 }
 
@@ -522,6 +600,67 @@ void WebNNContextImpl::CreateTensorFromMailbox(
       fences);
 }
 
+void WebNNContextImpl::RegisterInRendererContextHandle() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(is_context_provider_in_renderer_);
+  InRendererContextRegistry::Register(
+      handle(), base::MakeRefCounted<ContextInRendererHandle>(
+                    AsWeakPtr(), owning_task_runner_));
+}
+
+void WebNNContextImpl::DispatchFromInRenderer(
+    const blink::WebNNGraphToken& graph_token,
+    const base::flat_map<std::string, blink::WebNNTensorToken>& named_inputs,
+    const base::flat_map<std::string, blink::WebNNTensorToken>& named_outputs) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  Dispatch(graph_token, named_inputs, named_outputs);
+}
+
+void WebNNContextImpl::DestroyGraphFromInRenderer(
+    const blink::WebNNGraphToken& graph_token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DestroyGraph(graph_token);
+}
+
+void WebNNContextImpl::DestroyTensorFromInRenderer(
+    const blink::WebNNTensorToken& tensor_token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const auto it = tensor_impls_.find(tensor_token);
+  if (it == tensor_impls_.end()) {
+    return;
+  }
+  // The `WebNNTensor` pipe may still be bound if its disconnect hasn't been
+  // processed yet; reset it before destruction as `OnDisconnect()` would.
+  (*it)->ResetMojoReceiver();
+  RemoveWebNNTensorImpl(tensor_token);
+}
+
+mojo::ReportBadMessageCallback
+WebNNContextImpl::GetDispatchBadMessageCallback() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (mojo::IsInMessageDispatch()) {
+    return GetBadMessageCallbackOnMojoSequence();
+  }
+
+  // `Dispatch()` was invoked directly by the in-renderer fast path, not from
+  // within a real mojo message dispatch, so mojo's per-message bad-message
+  // machinery (which requires an active dispatch context) isn't usable here.
+  return base::BindOnce(
+      [](scoped_refptr<base::SequencedTaskRunner> task_runner,
+         base::WeakPtr<WebNNContextImpl> self, std::string_view error) {
+        task_runner->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](base::WeakPtr<WebNNContextImpl> self, std::string error) {
+                  if (self) {
+                    self->ReportBadMessageAndDisconnect(error);
+                  }
+                },
+                self, std::string(error)));
+      },
+      mojo_task_runner(), AsWeakPtr());
+}
+
 void WebNNContextImpl::Dispatch(
     const blink::WebNNGraphToken& graph_token,
     const base::flat_map<std::string, blink::WebNNTensorToken>& named_inputs,
@@ -590,14 +729,14 @@ void WebNNContextImpl::Dispatch(
 
   graph_impl->RunDispatch(
       std::move(name_to_input_tensor_map), std::move(name_to_output_tensor_map),
-      std::move(scoped_trace), GetBadMessageCallbackOnMojoSequence());
+      std::move(scoped_trace), GetDispatchBadMessageCallback());
 }
 
 void WebNNContextImpl::DestroyGraph(
     const blink::WebNNGraphToken& graph_handle) {
   auto it = graph_impls_.find(graph_handle);
   if (it == graph_impls_.end()) {
-    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidGraph);
+    ReportBadMessageAndDisconnect(kBadMessageInvalidGraph);
     return;
   }
   graph_impls_.erase(it);

@@ -114,6 +114,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
   // context is destroyed.
   void DestroyAccessAndRepresentationAndWait();
 
+  // True when this tensor belongs to a context owned by a
+  // WebNNContextProviderInRenderer (renderer process).
+  bool IsInRenderer() const { return is_in_renderer_; }
+
  protected:
   ~WebNNTensorImpl() override;
 
@@ -181,6 +185,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
 
   const OperandDescriptor descriptor_;
   const MLTensorUsage usage_;
+
+  const bool is_in_renderer_;
 };
 
 }  // namespace webnn

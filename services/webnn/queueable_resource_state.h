@@ -58,12 +58,22 @@ class QueueableResourceState : public QueueableResourceStateBase {
     return resource_content_.get();
   }
 
+  // Replace the underlying resource with `resource`, destroying the old one.
+  // This method may only be called within a `ResourceTask` which took an
+  // exclusive lock on this state.
+  void ReplaceExclusivelyLockedResource(
+      std::unique_ptr<ResourceType> resource) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK(IsLockedExclusive());
+    resource_content_ = std::move(resource);
+  }
+
  private:
   ~QueueableResourceState() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
 
-  const std::unique_ptr<ResourceType> resource_content_
+  std::unique_ptr<ResourceType> resource_content_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 

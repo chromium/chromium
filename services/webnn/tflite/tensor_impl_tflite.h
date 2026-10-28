@@ -9,6 +9,7 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/types/pass_key.h"
+#include "services/webnn/public/cpp/in_renderer_tensor_handle.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom-forward.h"
 #include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/webnn_tensor_impl.h"

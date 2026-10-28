@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/cpp/in_renderer_context_handle.h"
 #include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
@@ -194,6 +195,10 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
 
   // Identifies this `WebNNContext` mojo instance in the service process.
   const blink::WebNNContextToken webnn_handle_;
+
+  // In-renderer fast-path side channel for dispatch() and graph destruction;
+  // see MLTensor's own fast path for the same pattern.
+  scoped_refptr<webnn::InRendererContextHandle> in_renderer_context_handle_;
 
   // Keep a set of unresolved `ScriptPromiseResolver`s which will be
   // rejected when the Mojo pipe is unexpectedly disconnected.

@@ -106,6 +106,11 @@ void WebNNContextProviderInRenderer::CreateContextOnWorker(
       std::move(receiver), context_provider, std::move(options),
       std::move(webgpu_properties), owning_task_runner, main_task_runner);
 
+  // Registered now (fully constructed, still on owning_task_runner) so the
+  // fast-path dispatch handle is visible to Blink by the time it receives
+  // the `CreateContext` reply below.
+  context_impl->RegisterInRendererContextHandle();
+
   main_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&WebNNContextProviderInRenderer::OnCreateWebNNContextImpl,
