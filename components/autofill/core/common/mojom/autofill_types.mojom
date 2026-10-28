@@ -629,12 +629,21 @@ enum JavaScriptModificationType {
   kClearing = 3,
   // The field was non-empty and the old value is a prefix of the new value.
   kPrefixCompletion = 4,
+  // The field was non-empty and the old value is a non-prefix substring of the
+  // new value.
+  kSubstringCompletion = 5,
 };
 
-// Represents a form field modification performed by custom JavaScript autofill.
+// Represents a form field modification performed by custom JavaScript autofill
+// during a detection window.
 struct JavaScriptFieldModification {
   FieldRendererId field_id;
+  // The net modification type comparing the field's value prior to the first
+  // JavaScript modification in the window against its final value at the end of
+  // the window.
   JavaScriptModificationType modification_type;
+  // The timestamp of the first JavaScript modification to this field during the
+  // window.
   mojo_base.mojom.TimeTicks timestamp;
 };
 

@@ -200,7 +200,7 @@ JavaScriptDropdownType DetectJavaScriptDropdown(
 
     // Whether the field that triggered the JavaScript autofill operation had
     // the typed value extended by said operation.
-    bool trigger_field_prefix_completed = false;
+    bool trigger_field_completed = false;
 
     for (const JavaScriptFieldModification& mod : field_modifications) {
       const AutofillField* field = form.GetFieldById(mod.field_id);
@@ -220,18 +220,20 @@ JavaScriptDropdownType DetectJavaScriptDropdown(
         all_address_fields = false;
       }
       if (mod.field_id == trigger_field.global_id() &&
-          mod.modification_type ==
-              mojom::JavaScriptModificationType::kPrefixCompletion) {
-        trigger_field_prefix_completed = true;
+          (mod.modification_type ==
+               mojom::JavaScriptModificationType::kPrefixCompletion ||
+           mod.modification_type ==
+               mojom::JavaScriptModificationType::kSubstringCompletion)) {
+        trigger_field_completed = true;
       }
     }
 
     // Declare the operation as triggered by an address picker if at least 3
     // distinct address fields changed, or if all modified fields were address
-    // fields and the trigger field was prefix completed.
+    // fields and the trigger field was prefix or substring completed.
     constexpr size_t kMinFieldsChangedAddressPicker = 3;
     return modified_address_fields.size() >= kMinFieldsChangedAddressPicker ||
-           (all_address_fields && trigger_field_prefix_completed);
+           (all_address_fields && trigger_field_completed);
   };
 
   auto detect_email_picker = [&] {

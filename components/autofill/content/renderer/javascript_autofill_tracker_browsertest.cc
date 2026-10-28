@@ -246,7 +246,8 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
   ASSERT_EQ(logs.size(), 1u);
   EXPECT_EQ(logs[0].previous_value, u"js_val_3");
 
-  // 7. JS change from non-empty to empty -> should log kClearing.
+  // 7. JS change to a non-prefix substring completion -> should log
+  // kSubstringCompletion.
   EXPECT_CALL(
       autofill_driver(),
       DidDetectJavaScriptAutofill(
@@ -255,12 +256,27 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
               "text_1", mojom::JavaScriptModificationType::kPrefixCompletion)),
           _));
   task_environment_.FastForwardBy(base::Milliseconds(1000));
-  AttachCustomDropdownOption("text_1", "opt_clear", {{"text_1", ""}});
-  SelectDropdownOption("text_1", "opt_clear");
+  AttachCustomDropdownOption("text_1", "opt_substring",
+                             {{"text_1", "prefix_js_val_3_more"}});
+  SelectDropdownOption("text_1", "opt_substring");
   ASSERT_EQ(logs.size(), 1u);
   EXPECT_EQ(logs[0].previous_value, u"js_val_3_more");
 
-  // 8. JS change from empty to non-empty -> should log kEmptyToNonEmpty.
+  // 8. JS change from non-empty to empty -> should log kClearing.
+  EXPECT_CALL(autofill_driver(),
+              DidDetectJavaScriptAutofill(
+                  _, form_util::GetFieldRendererId(text1),
+                  ElementsAre(IsFieldModification(
+                      "text_1",
+                      mojom::JavaScriptModificationType::kSubstringCompletion)),
+                  _));
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
+  AttachCustomDropdownOption("text_1", "opt_clear", {{"text_1", ""}});
+  SelectDropdownOption("text_1", "opt_clear");
+  ASSERT_EQ(logs.size(), 1u);
+  EXPECT_EQ(logs[0].previous_value, u"prefix_js_val_3_more");
+
+  // 9. JS change from empty to non-empty -> should log kEmptyToNonEmpty.
   EXPECT_CALL(autofill_driver(),
               DidDetectJavaScriptAutofill(
                   _, form_util::GetFieldRendererId(text1),

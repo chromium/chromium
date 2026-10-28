@@ -5,6 +5,7 @@
 #include "components/autofill/content/renderer/javascript_autofill_tracker.h"
 
 #include "base/functional/bind.h"
+#include "base/i18n/case_conversion.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
@@ -137,10 +138,17 @@ mojom::JavaScriptModificationType GetJavaScriptModificationType(
   if (new_value.empty()) {
     return mojom::JavaScriptModificationType::kClearing;
   }
-  if (new_value.size() > old_value.size() &&
-      base::StartsWith(new_value, old_value,
-                       base::CompareCase::INSENSITIVE_ASCII)) {
-    return mojom::JavaScriptModificationType::kPrefixCompletion;
+  if (new_value.size() > old_value.size()) {
+    std::u16string lower_old = base::i18n::ToLower(old_value);
+    std::u16string lower_new = base::i18n::ToLower(new_value);
+    if (lower_new.starts_with(lower_old)) {
+      return mojom::JavaScriptModificationType::kPrefixCompletion;
+    }
+    constexpr size_t kMinSubstringMatchSize = 3u;
+    if (lower_old.size() >= kMinSubstringMatchSize &&
+        lower_new.contains(lower_old)) {
+      return mojom::JavaScriptModificationType::kSubstringCompletion;
+    }
   }
   return mojom::JavaScriptModificationType::kReassignment;
 }
