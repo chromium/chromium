@@ -13,7 +13,9 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -21,9 +23,12 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/printing_context.h"
 #include "printing/printing_context_win.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
+
+using testing::ElementsAre;
 
 namespace printing {
 
@@ -47,6 +52,41 @@ class EmfPrintingTest : public testing::Test, public PrintingContext::Delegate {
 };
 
 const uint32_t EMF_HEADER_SIZE = 128;
+
+std::vector<char> CreateTestEmfData() {
+  std::vector<char> data;
+  Emf emf;
+  EXPECT_TRUE(emf.Init());
+  EXPECT_TRUE(emf.context());
+  ::Rectangle(emf.context(), 10, 10, 190, 190);
+
+  BITMAPINFO bmi = {};
+  bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  bmi.bmiHeader.biWidth = 1;
+  bmi.bmiHeader.biHeight = 1;
+  bmi.bmiHeader.biPlanes = 1;
+  bmi.bmiHeader.biBitCount = 32;
+  bmi.bmiHeader.biCompression = BI_RGB;
+  uint32_t pixel = 0x00FF0000;
+  ::StretchDIBits(emf.context(), 0, 0, 10, 10, 0, 0, 1, 1, &pixel, &bmi,
+                  DIB_RGB_COLORS, SRCCOPY);
+
+  ::SetLayout(emf.context(), LAYOUT_RTL);
+  ::Rectangle(emf.context(), 20, 20, 180, 180);
+  EXPECT_TRUE(emf.FinishDocument());
+  uint32_t size = emf.GetDataSize();
+  EXPECT_GT(size, EMF_HEADER_SIZE);
+  EXPECT_TRUE(emf.GetDataAsVector(&data));
+  EXPECT_EQ(data.size(), size);
+  return data;
+}
+
+// To simplify testing, only examine these types and ignore others like
+// `EMR_SAVEDC` and `EMR_SELECTOBJECT`.
+bool IsRecordTypeOfInterest(DWORD type) {
+  return type == EMR_HEADER || type == EMR_RECTANGLE ||
+         type == EMR_STRETCHDIBITS || type == EMR_EOF;
+}
 
 }  // namespace
 
@@ -120,13 +160,7 @@ TEST_F(EmfPrintingTest, Enumerate) {
   Emf::Enumerator emf_enum(emf, context.context(), &page_bounds);
   for (Emf::Enumerator::const_iterator itr = emf_enum.begin();
        itr != emf_enum.end(); ++itr) {
-    // To help debugging.
-    ptrdiff_t index = itr - emf_enum.begin();
-    // If you get this assert, you need to lookup iType in wingdi.h. It starts
-    // with EMR_HEADER.
-    EMR_HEADER;
-    EXPECT_TRUE(itr->SafePlayback(&emf_enum.context_))
-        << " index: " << index << " type: " << itr->record()->iType;
+    itr->SafePlayback(&emf_enum.context_);
   }
   context.DocumentDone();
 }
@@ -201,6 +235,76 @@ TEST(EmfTest, RemainingMetafileSize) {
 
   EXPECT_EQ(emf_enum.context_.remaining_metafile_size, remaining_size);
   EXPECT_EQ(remaining_size, 0u);
+}
+
+TEST(EmfTest, SafePlayback) {
+  std::vector<char> data = CreateTestEmfData();
+  ASSERT_FALSE(HasFailure());
+
+  Emf src_emf;
+  ASSERT_TRUE(src_emf.InitFromData(base::as_byte_span(data)));
+
+  Emf dest_emf;
+  ASSERT_TRUE(dest_emf.Init());
+  ASSERT_TRUE(dest_emf.context());
+  EXPECT_TRUE(src_emf.SafePlayback(dest_emf.context()));
+  ASSERT_TRUE(dest_emf.FinishDocument());
+
+  Emf::Enumerator emf_enum(dest_emf, nullptr, nullptr);
+  std::vector<DWORD> record_types;
+  for (const auto& record : emf_enum) {
+    DWORD type = record.record()->iType;
+    if (IsRecordTypeOfInterest(type)) {
+      record_types.push_back(type);
+    }
+  }
+  EXPECT_THAT(record_types,
+              ElementsAre(EMR_HEADER, EMR_RECTANGLE, EMR_STRETCHDIBITS,
+                          EMR_RECTANGLE, EMR_EOF));
+}
+
+TEST(EmfTest, SafePlaybackSkipsInvalidRecords) {
+  std::vector<char> data = CreateTestEmfData();
+  ASSERT_FALSE(HasFailure());
+
+  // Corrupt `cbBmiSrc` in the `EMR_STRETCHDIBITS` record so
+  // `Emf::Record::SafePlayback()` rejects it while `record->nSize` remains
+  // valid for enumeration.
+  bool found_stretch_dibits = false;
+  base::span<uint8_t> span = base::as_writable_byte_span(data);
+  while (span.size() >= sizeof(ENHMETARECORD)) {
+    auto* record = reinterpret_cast<ENHMETARECORD*>(span.data());
+    if (record->iType == EMR_STRETCHDIBITS) {
+      ASSERT_GE(span.size(), sizeof(EMRSTRETCHDIBITS));
+      auto* sdib_record = reinterpret_cast<EMRSTRETCHDIBITS*>(span.data());
+      sdib_record->cbBmiSrc = 0;
+      found_stretch_dibits = true;
+      break;
+    }
+    ASSERT_LE(record->nSize, span.size());
+    span = span.subspan(record->nSize);
+  }
+  ASSERT_TRUE(found_stretch_dibits);
+
+  Emf src_emf;
+  ASSERT_TRUE(src_emf.InitFromData(base::as_byte_span(data)));
+
+  Emf dest_emf;
+  ASSERT_TRUE(dest_emf.Init());
+  ASSERT_TRUE(dest_emf.context());
+  EXPECT_TRUE(src_emf.SafePlayback(dest_emf.context()));
+  ASSERT_TRUE(dest_emf.FinishDocument());
+
+  Emf::Enumerator emf_enum(dest_emf, nullptr, nullptr);
+  std::vector<DWORD> record_types;
+  for (const auto& record : emf_enum) {
+    DWORD type = record.record()->iType;
+    if (IsRecordTypeOfInterest(type)) {
+      record_types.push_back(type);
+    }
+  }
+  EXPECT_THAT(record_types,
+              ElementsAre(EMR_HEADER, EMR_RECTANGLE, EMR_RECTANGLE, EMR_EOF));
 }
 
 TEST(PostScriptMetaFileTest, SafePlaybackUndersizedComment) {

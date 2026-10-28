@@ -124,11 +124,11 @@ struct Emf::EnumerationContext {
 class COMPONENT_EXPORT(PRINTING_METAFILE) Emf::Record {
  public:
   // Plays the record.
-  bool Play(EnumerationContext* context) const;
+  void Play(EnumerationContext* context) const;
 
   // Plays the record working around quirks with SetLayout,
   // SetWorldTransform and ModifyWorldTransform. See implementation for details.
-  bool SafePlayback(EnumerationContext* context) const;
+  void SafePlayback(EnumerationContext* context) const;
 
   // Access the underlying EMF record.
   const ENHMETARECORD* record() const { return record_; }
