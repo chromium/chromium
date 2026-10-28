@@ -87,6 +87,7 @@ specific_include_rules = {
     "+ios/chrome/browser/power_bookmarks/model",
     "+ios/chrome/browser/prerender/model",
     "+ios/chrome/browser/private_ai/model",
+    "+ios/chrome/browser/private_insights/model",
     "+ios/chrome/browser/promos_manager/model",
     "+ios/chrome/browser/push_notification/model",
     "+ios/chrome/browser/reading_list/model",

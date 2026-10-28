@@ -402,8 +402,11 @@ TEST_F(FcpHttpClientTest, PerformRequestsCancelViaHandle) {
   std::atomic<bool> done{false};
   PostPerformRequestsTask(&client, {{handle.get(), &callback}}, &status, &done);
 
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return test_url_loader_factory_.NumPending() == 1; }));
+  // Reads `pending_requests()` directly so the predicate runs without a nested
+  // `RunLoop`, which keeps it working on iOS.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return test_url_loader_factory_.pending_requests()->size() == 1u;
+  }));
 
   handle->Cancel();
 

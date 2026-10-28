@@ -550,6 +550,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/price_notifications/ui_bundled:unit_tests",
     "//ios/chrome/browser/price_notifications/ui_bundled/cells:unit_tests",
     "//ios/chrome/browser/private_ai/model:unit_tests",
+    "//ios/chrome/browser/private_insights/model:unit_tests",
     "//ios/chrome/browser/profile/model:unit_tests",
     "//ios/chrome/browser/promos_manager/coordinator:unit_tests",
     "//ios/chrome/browser/promos_manager/model:unit_tests",

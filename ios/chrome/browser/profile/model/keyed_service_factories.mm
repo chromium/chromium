@@ -160,6 +160,7 @@
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service_factory.h"
 #import "ios/chrome/browser/power_bookmarks/model/power_bookmark_service_factory.h"
 #import "ios/chrome/browser/private_ai/model/private_ai_service_factory.h"
+#import "ios/chrome/browser/private_insights/model/private_insights_service_factory.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
 #import "ios/chrome/browser/push_notification/model/provisional_push_notification_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_profile_service_factory.h"
@@ -445,6 +446,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   PolicyBlocklistServiceFactory::GetInstance();
   PowerBookmarkServiceFactory::GetInstance();
   PrivateAiServiceFactory::GetInstance();
+  PrivateInsightsServiceFactory::GetInstance();
   PromosManagerFactory::GetInstance();
   ProxyServiceControllerFactory::GetInstance();
   ProvisionalPushNotificationServiceFactory::GetInstance();

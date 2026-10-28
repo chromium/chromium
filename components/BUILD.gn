@@ -848,6 +848,12 @@ test("components_unittests") {
     deps += [ "//components/services/font_data:unit_tests" ]
   }
 
+  # Private Insights (and the FCP client it links) is only used by Chrome for
+  # iOS, not tvOS.
+  if (is_ios && target_platform == "iphoneos") {
+    deps += [ "//components/private_insights:unit_tests" ]
+  }
+
   if (is_win) {
     deps += [ "//components/winhttp:unit_tests" ]
   }
