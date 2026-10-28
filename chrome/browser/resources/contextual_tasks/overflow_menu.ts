@@ -79,8 +79,11 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
   accessor contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow:
       boolean = loadTimeData.getBoolean(
           'contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow');
-  accessor isAimEligible: boolean = false;
-  accessor isCobrowseEligible: boolean = false;
+  accessor isAimEligible: boolean = loadTimeData.valueExists('isAimEligible') &&
+      loadTimeData.getBoolean('isAimEligible');
+  accessor isCobrowseEligible: boolean =
+      loadTimeData.valueExists('isCobrowseEligible') &&
+      loadTimeData.getBoolean('isCobrowseEligible');
 
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
