@@ -19,7 +19,6 @@ DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS = '--disable-domain-blocking-for-3d-apis'
 DISABLE_DIRECT_SEARCH_ENGINE_PREWARM = '--disable-features=Prewarm'
 DISABLE_D3D11_VIDEO_DECODER = '--disable_d3d11_video_decoder=1'
 DISABLE_GPU = '--disable-gpu'
-DISABLE_GPU_COMPOSITING = '--disable-gpu-compositing'
 DISABLE_GPU_PROCESS_CRASH_LIMIT = '--disable-gpu-process-crash-limit'
 DISABLE_SKIA_GRAPHITE = '--disable-skia-graphite'
 DISABLE_SOFTWARE_COMPOSITING_FALLBACK = (

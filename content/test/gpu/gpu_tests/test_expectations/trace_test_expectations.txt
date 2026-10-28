@@ -119,7 +119,7 @@ crbug.com/1096431 [ fuchsia fuchsia-board-qemu-x64 ] TraceTest_Video* [ Skip ]
 crbug.com/1009860 [ win ] SwapChainTraceTest_CanvasUnacceleratedLowLatency2D [ Skip ]
 
 # Software compositing is not supported on Android/ChromeOS/Fuchsia: we skip the
-# tests that disable GPU compositing (--disable-gpu-compositing).
+# tests that disable GPU acceleration (--disable-gpu).
 [ android ] TraceTest_RepeatedWebGLTo2D_SoftwareCompositing [ Skip ]
 [ android ] TraceTest_Canvas2DTabSwitch_SoftwareCompositing [ Skip ]
 [ android ] TraceTest_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Skip ]

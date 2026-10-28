@@ -518,7 +518,7 @@
       "wpt_internal/html/canvas/context-lost"
     ],
     "args": [
-      "--disable-gpu-compositing",
+      "--disable-gpu",
       "--enable-threaded-compositing"
     ],
     "expires": "never"

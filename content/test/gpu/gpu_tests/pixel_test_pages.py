@@ -235,7 +235,10 @@ def CaptureFullScreenshotOnFuchsia(browser: browser_module.Browser) -> bool:
 class PixelTestPages:
   @staticmethod
   def DefaultPages(base_name: str) -> list[PixelTestPage]:
-    sw_compositing_args = [cba.DISABLE_GPU_COMPOSITING]
+    sw_compositing_args = [
+      cba.DISABLE_GPU,
+      '--enable-unsafe-swiftshader',
+    ]
     experimental_hdr_args = [cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES]
 
     switch_tab_test_actions = [
@@ -1118,7 +1121,8 @@ class PixelTestPages:
     ]
     unaccelerated_args = [
       cba.DISABLE_ACCELERATED_2D_CANVAS,
-      cba.DISABLE_GPU_COMPOSITING,
+      cba.DISABLE_GPU,
+      '--enable-unsafe-swiftshader',
     ]
     unaccelerated_canvas_accelerated_compositing_args = [
       cba.DISABLE_ACCELERATED_2D_CANVAS,
@@ -1194,13 +1198,13 @@ class PixelTestPages:
         'pixel_offscreenCanvas_webgl_commit_main.html',
         base_name + '_OffscreenCanvasWebGLSoftwareCompositing',
         crop_action=standard_crop,
-        browser_args=browser_args + [cba.DISABLE_GPU_COMPOSITING],
+        browser_args=browser_args + unaccelerated_args,
       ),
       PixelTestPage(
         'pixel_offscreenCanvas_webgl_commit_worker.html',
         base_name + '_OffscreenCanvasWebGLSoftwareCompositingWorker',
         crop_action=standard_crop,
-        browser_args=browser_args + [cba.DISABLE_GPU_COMPOSITING],
+        browser_args=browser_args + unaccelerated_args,
       ),
       PixelTestPage(
         'pixel_offscreenCanvas_2d_commit_main.html',
@@ -1287,7 +1291,8 @@ class PixelTestPages:
   def LowLatencyPages(base_name: str) -> list[PixelTestPage]:
     unaccelerated_args = [
       cba.DISABLE_ACCELERATED_2D_CANVAS,
-      cba.DISABLE_GPU_COMPOSITING,
+      cba.DISABLE_GPU,
+      '--enable-unsafe-swiftshader',
     ]
 
     standard_crop = ca.NonWhiteContentCropAction(

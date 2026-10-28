@@ -117,7 +117,6 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         'GpuProcess_driver_bug_workarounds_in_gpu_process',
         'chrome:gpu?skip-dawn-info',
       ),
-      ('GpuProcess_readback_webgl_gpu_process', 'chrome:gpu?skip-dawn-info'),
       (
         'GpuProcess_feature_status_under_swiftshader',
         'chrome:gpu?skip-dawn-info',
@@ -338,29 +337,6 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self._ValidateDriverBugWorkarounds(
       'use_gpu_driver_workaround_for_testing', None
     )
-
-  def _GpuProcess_readback_webgl_gpu_process(self, test_path: str) -> None:
-    # Hit test group 1 with entry 152 from kSoftwareRenderingListEntries.
-    self.RestartBrowserIfNecessaryWithArgs(
-      [
-        '--gpu-blocklist-test-group=1',
-        cba.DISABLE_GPU_COMPOSITING,
-      ]
-    )
-    self._Navigate(test_path)
-    feature_status_list = _GetBrowserBridgeProperty(
-      self.tab, 'gpuInfo.featureStatus.featureStatus'
-    )
-    result = True
-    for name, status in feature_status_list.items():
-      if name == 'webgl':
-        result = result and status == 'enabled_readback'
-      elif name == 'webgl2':
-        result = result and status == 'unavailable_off'
-      else:
-        pass
-    if not result:
-      self.fail(f'WebGL readback setup failed: {feature_status_list}')
 
   def _GpuProcess_feature_status_under_swiftshader(
     self, test_path: str

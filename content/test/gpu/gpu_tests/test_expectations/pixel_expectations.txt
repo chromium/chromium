@@ -107,7 +107,7 @@
 # platform/configuration.
 
 # Software compositing is not supported on Android/ChromeOS/Fuchsia: we skip the
-# tests that disable GPU compositing (--disable-gpu-compositing).
+# tests that disable GPU acceleration (--disable-gpu).
 [ android ] Pixel_OffscreenCanvasUnaccelerated2D [ Skip ]
 [ android ] Pixel_OffscreenCanvasUnaccelerated2DWorker [ Skip ]
 [ android ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Skip ]
