@@ -491,12 +491,14 @@ views::ProposedLayout VerticalTabStripRegionView::CalculateProposedLayout(
        .bounds = available});
   if (organizer_panel_view_) {
     gfx::Rect organizer_bounds = available;
-    const int adjustment =
-        base::ClampRound(available.width() * organizer_panel_show_percent_);
-    organizer_bounds.Offset(adjustment - available.width(), 0);
-    layout.child_layouts.push_back({.child_view = organizer_panel_view_.get(),
-                                    .visible = adjustment > 0,
-                                    .bounds = organizer_bounds});
+    constexpr int kOrganizerPanelSlideDistance = 24;
+    const int adjustment = base::ClampRound(
+        kOrganizerPanelSlideDistance * (1.0 - organizer_panel_show_percent_));
+    organizer_bounds.Offset(-adjustment, 0);
+    layout.child_layouts.push_back(
+        {.child_view = organizer_panel_view_.get(),
+         .visible = organizer_panel_show_percent_ > 0.0,
+         .bounds = organizer_bounds});
   }
 
   return layout;
