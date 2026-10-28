@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -32,8 +33,9 @@ import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /** Tests for PassphraseActivity. */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class PassphraseActivityTest {
-    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
+    @Rule public final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
 
     private Context mContext;
 
@@ -89,6 +91,10 @@ public class PassphraseActivityTest {
         final PassphraseDialogFragment fragment =
                 ActivityTestUtils.waitForFragment(activity, PassphraseActivity.FRAGMENT_PASSPHRASE);
         Assert.assertTrue(fragment.isAdded());
+
+        // Finish the activity before resetting the state.
+        activity.finish();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     @Test
@@ -107,6 +113,10 @@ public class PassphraseActivityTest {
         final PassphraseDialogFragment fragment =
                 ActivityTestUtils.waitForFragment(activity, PassphraseActivity.FRAGMENT_PASSPHRASE);
         Assert.assertTrue(fragment.isAdded());
+
+        // Finish the activity before resetting the state.
+        activity.finish();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     private PassphraseActivity launchPassphraseActivity() {
