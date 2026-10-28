@@ -157,6 +157,29 @@ class ConcurrentTest(unittest.TestCase):
     )
     self.assertRaises(TypeError, results.__next__)
 
+  def testBulkForkAndCallAsync_none(self):
+    result = parallel.BulkForkAndCallAsync(_ForkTestHelper, [])
+    self.assertEqual([], result.get())
+
+  def testBulkForkAndCallAsync_many_kwargs(self):
+    parent_pid = os.getpid()
+    args = [(1, i) for i in range(100)]
+    result = parallel.BulkForkAndCallAsync(
+      _ForkTestHelper,
+      args,
+      pickle_me_not=Unpicklable(),
+      test_instance=self,
+      parent_pid=parent_pid,
+    )
+    self.assertEqual([1 + i for i in range(100)], result.get())
+
+  def testBulkForkAndCallAsync_exception(self):
+    parent_pid = os.getpid()
+    result = parallel.BulkForkAndCallAsync(
+      _ForkTestHelper, [(1, 'a', None, self, parent_pid)]
+    )
+    self.assertRaises(TypeError, result.get)
+
 
 if __name__ == '__main__':
   unittest.main()

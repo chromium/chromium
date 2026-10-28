@@ -70,6 +70,19 @@ def _DecodePosition(x):
   return (int(x[:sep_idx]), int(x[sep_idx + 1 :]))
 
 
+_is_niced = False
+
+
+def _RunBcAnalyzerWithLowPriority(target, output_directory):
+  # Results are not needed until later, so lower the priority to give CPU time
+  # to work that is blocking (e.g. demangling and linker map parsing).
+  global _is_niced
+  if not _is_niced and not parallel.DISABLE_ASYNC:
+    os.nice(10)
+    _is_niced = True
+  return bcanalyzer.RunBcAnalyzerOnIntermediates(target, output_directory)
+
+
 class _PathsByType:
   def __init__(self, arch, obj, bc):
     self.arch = arch
@@ -85,6 +98,7 @@ class _BulkObjectFileAnalyzerWorker:
     self._paths_by_name = collections.defaultdict(list)
     self._encoded_string_addresses_by_path_chunks = []
     self._encoded_strings_by_path_chunks = []
+    self._bcanalyzer_results = []
 
   def _ClassifyPaths(self, paths):
     """Classifies |paths| (.o and .a files) by file type into separate lists.
@@ -122,7 +136,7 @@ class _BulkObjectFileAnalyzerWorker:
       runner, batches, output_directory=self._output_directory
     )
 
-  def _RunNm(self, paths_by_type):
+  def _RunNm(self, paths_by_type, paths_by_name):
     """Calls nm to get symbols and (for non-BC files) string addresses."""
     # Downstream functions rely upon .a not being grouped.
     batches = self._MakeBatches(paths_by_type.arch, None)
@@ -134,28 +148,39 @@ class _BulkObjectFileAnalyzerWorker:
     results = self._DoBulkFork(nm.RunNmOnIntermediates, batches)
 
     # Names are still mangled.
-    all_paths_by_name = self._paths_by_name
     total_no_symbols = 0
     for encoded_syms, encoded_strs, num_no_symbols in results:
       total_no_symbols += num_no_symbols
       symbol_names_by_path = parallel.DecodeDictOfLists(encoded_syms)
       for path, names in symbol_names_by_path.items():
         for name in names:
-          all_paths_by_name[name].append(path)
+          paths_by_name[name].append(path)
 
       if encoded_strs != parallel.EMPTY_ENCODED_DICT:
         self._encoded_string_addresses_by_path_chunks.append(encoded_strs)
     if total_no_symbols:
       logging.warning('nm found no symbols in %d objects.', total_no_symbols)
 
-  def _RunLlvmBcAnalyzer(self, paths_by_type):
-    """Calls llvm-bcanalyzer to extract string data (for LLD-LTO)."""
+  def _StartLlvmBcAnalyzer(self, paths_by_type):
+    """Starts llvm-bcanalyzer to extract string data (for LLD-LTO)."""
     BATCH_SIZE = 50  # Arbitrarily chosen.
     batches = self._MakeBatches(paths_by_type.bc, BATCH_SIZE)
-    results = self._DoBulkFork(bcanalyzer.RunBcAnalyzerOnIntermediates, batches)
-    for encoded_strs in results:
-      if encoded_strs != parallel.EMPTY_ENCODED_DICT:
-        self._encoded_strings_by_path_chunks.append(encoded_strs)
+    # Results are needed only by AnalyzeStringLiterals(), so do not wait for
+    # them here.
+    self._bcanalyzer_results.append(
+      parallel.BulkForkAndCallAsync(
+        _RunBcAnalyzerWithLowPriority,
+        batches,
+        output_directory=self._output_directory,
+      )
+    )
+
+  def _FinishLlvmBcAnalyzer(self):
+    for result in self._bcanalyzer_results:
+      for encoded_strs in result.get():
+        if encoded_strs != parallel.EMPTY_ENCODED_DICT:
+          self._encoded_strings_by_path_chunks.append(encoded_strs)
+    self._bcanalyzer_results = []
 
   def AnalyzePaths(self, paths):
     logging.debug('worker: AnalyzePaths() started.')
@@ -166,16 +191,26 @@ class _BulkObjectFileAnalyzerWorker:
       len(paths_by_type.obj),
       len(paths_by_type.bc),
     )
-    self._RunNm(paths_by_type)
     if self._track_string_literals:
-      self._RunLlvmBcAnalyzer(paths_by_type)
+      # Start first since forking is faster while memory usage is low.
+      self._StartLlvmBcAnalyzer(paths_by_type)
+    paths_by_name = collections.defaultdict(list)
+    self._RunNm(paths_by_type, paths_by_name)
+
+    # Demangle now rather than in SortPaths() so that it happens while the
+    # host is busy (e.g. parsing the linker map). Demangling can result in
+    # some merging of lists.
+    paths_by_name = demangle.DemangleKeysAndMergeLists(paths_by_name)
+    # Both are defaultdict(list).
+    if not self._paths_by_name:
+      self._paths_by_name = paths_by_name
+    else:
+      all_paths_by_name = self._paths_by_name
+      for name, paths in paths_by_name.items():
+        all_paths_by_name[name] += paths
     logging.debug('worker: AnalyzePaths() completed.')
 
   def SortPaths(self):
-    # Demangle all names, which can result in some merging of lists.
-    self._paths_by_name = demangle.DemangleKeysAndMergeLists(
-      self._paths_by_name
-    )
     # Sort and uniquefy.
     for key in self._paths_by_name.keys():
       self._paths_by_name[key] = sorted(set(self._paths_by_name[key]))
@@ -217,6 +252,8 @@ class _BulkObjectFileAnalyzerWorker:
   def AnalyzeStringLiterals(self, elf_path, elf_string_ranges):
     logging.debug('worker: AnalyzeStringLiterals() started.')
     string_data = self._ReadElfStringData(elf_path, elf_string_ranges)
+    self._FinishLlvmBcAnalyzer()
+    logging.debug('worker: bcanalyzer completed.')
 
     # [source_idx][batch_idx][section_idx] -> Encoded {path: [string_ranges]}.
     # Build the index before forking so that it is shared by all workers.
@@ -312,9 +349,10 @@ class _BulkObjectFileAnalyzerHost:
   def GetSymbolNames(self):
     self._pipe.send((_MSG_GET_SYMBOL_NAMES,))
     self._pipe.recv()  # None
-    logging.debug('Decoding nm results from forked process')
-    encoded_paths_by_name = self._pipe.recv()
-    return parallel.DecodeDictOfLists(encoded_paths_by_name)
+    logging.debug('Receiving nm results from forked process')
+    # Pickling is faster than EncodeDictOfLists() for this data, and shares
+    # path strings between lists.
+    return self._pipe.recv()
 
   def GetStringPositions(self):
     self._pipe.send((_MSG_GET_STRINGS,))
@@ -389,7 +427,7 @@ class _BulkObjectFileAnalyzerDelegate:
       self._WaitForAnalyzePathJobs()
       self._pipe.send(None)
       paths_by_name = self._worker_analyzer.GetSymbolNames()
-      self._pipe.send(parallel.EncodeDictOfLists(paths_by_name))
+      self._pipe.send(dict(paths_by_name))
     elif message[0] == _MSG_GET_STRINGS:
       self._job_queue.join()
       # Send a None packet so that other side can measure IPC transfer time.

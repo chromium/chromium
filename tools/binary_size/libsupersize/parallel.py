@@ -186,6 +186,34 @@ def BulkForkAndCall(func, arg_tuples, **kwargs):
     pool.join()
 
 
+def BulkForkAndCallAsync(func, arg_tuples, **kwargs):
+  """Like BulkForkAndCall(), but does not block.
+
+  Processes are forked before returning.
+
+  Returns:
+    A Result object (call .get() to get the list of return values)
+  """
+  arg_tuples = list(arg_tuples)
+  if not arg_tuples:
+    return _ImmediateResult([])
+
+  if DISABLE_ASYNC:
+    return _ImmediateResult([func(*args, **kwargs) for args in arg_tuples])
+
+  def CheckForExceptions(values):
+    for value in values:
+      _CheckForException(value)
+    return values
+
+  pool = _MakeProcessPool(arg_tuples, **kwargs)
+  result = pool.map_async(
+    _FuncWrapper(func), range(len(arg_tuples)), chunksize=1
+  )
+  pool.close()
+  return _WrappedResult(result, decode_func=CheckForExceptions)
+
+
 def CallOnThread(func, *args, **kwargs):
   """Calls |func| on a new thread and returns a promise for its return value."""
   if DISABLE_ASYNC:

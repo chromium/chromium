@@ -166,7 +166,8 @@ def DemangleKeysAndMergeLists(name_to_list):
   """Demangles keys of a dict of lists, and returns the result.
 
   Keys may demangle to a common name. When this happens, the corresponding lists
-  are merged in arbitrary order.
+  are merged in arbitrary order. Lists from |name_to_list| may be reused (and
+  modified).
   """
   keys = [key for key in name_to_list if _CanDemangle(key)]
   if not keys:
@@ -176,7 +177,12 @@ def DemangleKeysAndMergeLists(name_to_list):
   key_iter = iter(_DemangleNames(keys))
   ret = collections.defaultdict(list)
   for key, val in name_to_list.items():
-    ret[next(key_iter) if _CanDemangle(key) else key] += val
+    key = next(key_iter) if _CanDemangle(key) else key
+    existing = ret.get(key)
+    if existing is None:
+      ret[key] = val
+    else:
+      existing += val
   assert next(key_iter, None) is None
   logging.info('* %d keys become %d keys' % (len(name_to_list), len(ret)))
   return ret
