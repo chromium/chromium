@@ -250,8 +250,6 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaCapabilitiesStrictMimeTypeValidation);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaCapabilitiesWithParameters);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaEngagementBypassAutoplayPolicies);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaEngagementHTTPSOnly);
-// Enable site-specific media link helpers.
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaLinkHelpers);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaLogToConsole);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaOptimizer);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaPowerExperiment);

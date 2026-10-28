@@ -100,7 +100,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/base_window.h"
@@ -688,16 +687,13 @@ class GlicWebClientHandler
     LogApiRequest(GlicHostApiRequestId::kCreateTab);
     bool open_in_background = create_options->open_in_background;
     std::optional<int32_t> window_id = create_options->window_id;
-    if (base::FeatureList::IsEnabled(media::kMediaLinkHelpers)) {
-      if (auto* tab = GetSharingManagerInternal().GetFocusedTabData().focus()) {
-        const bool replaced =
-            GlicMediaLinkHelper(tab->GetContents()).MaybeReplaceNavigation(url);
-        metric_reporter_.RecordBoolean("MaybeReplaceNavigation.Result",
-                                       replaced);
-        if (replaced) {
-          std::move(callback).Run(nullptr);
-          return;
-        }
+    if (auto* tab = GetSharingManagerInternal().GetFocusedTabData().focus()) {
+      const bool replaced =
+          GlicMediaLinkHelper(tab->GetContents()).MaybeReplaceNavigation(url);
+      metric_reporter_.RecordBoolean("MaybeReplaceNavigation.Result", replaced);
+      if (replaced) {
+        std::move(callback).Run(nullptr);
+        return;
       }
     }
     host().instance_delegate().CreateTab(url, open_in_background, window_id,

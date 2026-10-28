@@ -6955,10 +6955,6 @@ inline constexpr char kHeadlessCaptionEarlyStartName[] =
 inline constexpr char kHeadlessCaptionEarlyStartDescription[] =
     "Start headless captioning as soon as a profile is loaded.";
 
-inline constexpr char kEnableMediaLinkHelpersName[] = "Media Link Helpers";
-inline constexpr char kEnableMediaLinkHelpersDescription[] =
-    "Enable customized per-site media link processing.";
-
 inline constexpr char kEnableShouldShowPromotionName[] =
     "Enable Chrome Web Store Promotion Banner";
 inline constexpr char kEnableShouldShowPromotionDescription[] =
