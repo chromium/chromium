@@ -170,14 +170,33 @@ public class TwaValidator {
      */
     @AnyThread
     public static boolean isTwaInstalledForUrl(GURL url) {
+        return isTwaInstalledForUrl(
+                url,
+                () -> {
+                    Intent targetIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url.getSpec()));
+                    return PackageManagerUtils.queryIntentActivities(targetIntent, 0);
+                });
+    }
+
+    /**
+     * Checks whether there is an installed TWA for the given URL using a supplier of resolve infos.
+     *
+     * @param url The GURL to inspect. Must be a valid HTTP or HTTPS URL.
+     * @param resolveInfoSupplier Supplier of {@link ResolveInfo}s that can handle the navigation.
+     * @return True if there is an installed TWA matching this URL.
+     * @throws IllegalArgumentException If {@code url} is not a valid HTTP or HTTPS URL.
+     */
+    @AnyThread
+    public static boolean isTwaInstalledForUrl(
+            GURL url, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
         Origin origin = Origin.createOrThrow(url.getValidSpecOrEmpty());
         Boolean override = sTwaInstalledOverrideForTesting;
         if (override != null) {
             return override;
         }
         return queryFirstTwaPackage(
-                        url,
                         origin,
+                        resolveInfoSupplier,
                         memoize(() -> InstalledWebappPermissionManager.getAllDelegateApps(origin)))
                 != null;
     }
@@ -193,8 +212,11 @@ public class TwaValidator {
     public static @Nullable String queryFirstTwaPackage(GURL url) {
         Origin origin = Origin.createOrThrow(url.getValidSpecOrEmpty());
         return queryFirstTwaPackage(
-                url,
                 origin,
+                () -> {
+                    Intent targetIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url.getSpec()));
+                    return PackageManagerUtils.queryIntentActivities(targetIntent, 0);
+                },
                 memoize(() -> InstalledWebappPermissionManager.getAllDelegateApps(origin)));
     }
 
@@ -215,22 +237,22 @@ public class TwaValidator {
     }
 
     private static @Nullable String queryFirstTwaPackage(
-            GURL url, Origin origin, Supplier<@Nullable Set<Token>> verifiedDelegateAppsSupplier) {
+            Origin origin,
+            Supplier<List<ResolveInfo>> resolveInfoSupplier,
+            Supplier<@Nullable Set<Token>> verifiedDelegateAppsSupplier) {
         try (TimingMetric unused =
                 TimingMetric.shortUptime("TrustedWebActivity.QueryFirstTwaPackageTime")) {
             Context context = ContextUtils.getApplicationContext();
             String currentBrowserPackage = context.getPackageName();
 
-            Intent targetIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url.getSpec()));
-            List<ResolveInfo> resolveInfos =
-                    PackageManagerUtils.queryIntentActivities(targetIntent, 0);
+            List<ResolveInfo> resolveInfos = resolveInfoSupplier.get();
 
             for (ResolveInfo info : resolveInfos) {
                 if (info.activityInfo == null || info.activityInfo.packageName == null) {
                     continue;
                 }
                 String packageName = info.activityInfo.packageName;
-                // Ignore browsers as a package.
+                // Skip our own package as an optimization.
                 if (currentBrowserPackage.equals(packageName)) {
                     continue;
                 }

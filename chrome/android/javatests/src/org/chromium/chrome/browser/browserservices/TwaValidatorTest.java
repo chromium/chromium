@@ -140,6 +140,29 @@ public class TwaValidatorTest {
 
     @Test
     @MediumTest
+    public void testIsTwaInstalledForUrl_withResolveInfoSupplier() {
+        TwaValidator.setDomainVerificationDelegateForTesting(
+                (context, packageName, origin) -> false);
+
+        ResolveInfo resolveInfo = new ResolveInfo();
+        resolveInfo.activityInfo = new ActivityInfo();
+        resolveInfo.activityInfo.packageName = TEST_SUPPORT_PACKAGE;
+
+        GURL testUrl = new GURL(TEST_URL);
+        GURL emptyUrl = GURL.emptyGURL();
+
+        assertFalse(TwaValidator.isTwaInstalledForUrl(testUrl, () -> List.of(resolveInfo)));
+
+        InstalledWebappPermissionManager.addDelegateApp(TEST_ORIGIN, TEST_SUPPORT_PACKAGE);
+
+        assertTrue(TwaValidator.isTwaInstalledForUrl(testUrl, () -> List.of(resolveInfo)));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> TwaValidator.isTwaInstalledForUrl(emptyUrl, () -> List.of(resolveInfo)));
+    }
+
+    @Test
+    @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.S)
     public void testIsTwaForOrigin_verifiedByDomainVerificationManager_returnsTrue() {
         TwaValidator.setDomainVerificationDelegateForTesting(

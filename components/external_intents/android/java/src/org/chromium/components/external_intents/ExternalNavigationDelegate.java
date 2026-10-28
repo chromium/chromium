@@ -227,8 +227,10 @@ public interface ExternalNavigationDelegate {
      * will be kept inside the browser to be opened by the user on demand at a later time.
      *
      * @param url The {@link GURL} of the current page.
+     * @param resolveInfoSupplier Supplier of {@link ResolveInfo}s that can handle the navigation.
      */
-    boolean allowExternalNavigationForHttpProtocols(GURL url);
+    boolean allowExternalNavigationForHttpProtocols(
+            GURL url, Supplier<List<ResolveInfo>> resolveInfoSupplier);
 
     /**
      * Returns whether the given URL is within the scope of the current PWA/TWA.

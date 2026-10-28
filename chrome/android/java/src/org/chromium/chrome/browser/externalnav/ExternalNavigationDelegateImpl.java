@@ -32,6 +32,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
+import org.chromium.chrome.browser.browserservices.TwaValidator;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.glic.GlicEnabling;
@@ -390,8 +391,11 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
-    public boolean allowExternalNavigationForHttpProtocols(GURL url) {
-        return !OpenInAppUtils.isOpenInAppAvailable() || !UrlUtilities.isHttpOrHttps(url);
+    public boolean allowExternalNavigationForHttpProtocols(
+            GURL url, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
+        return !OpenInAppUtils.isOpenInAppAvailable()
+                || !UrlUtilities.isHttpOrHttps(url)
+                || TwaValidator.isTwaInstalledForUrl(url, resolveInfoSupplier);
     }
 
     /**

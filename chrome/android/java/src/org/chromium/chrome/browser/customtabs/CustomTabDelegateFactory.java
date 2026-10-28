@@ -215,7 +215,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         }
 
         @Override
-        public boolean allowExternalNavigationForHttpProtocols(GURL url) {
+        public boolean allowExternalNavigationForHttpProtocols(
+                GURL url, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
             return true;
         }
 
