@@ -474,12 +474,14 @@ source_set("theme_source") {
     "//url",
   ]
 
-  # //chrome/browser/themes and the ntp_resource_cache are desktop-only; their
-  # headers are only used under #if !BUILDFLAG(IS_ANDROID) in theme_source.cc.
+  # //chrome/browser/themes, the ntp_resource_cache and top_chrome are
+  # desktop-only; their headers are only used under #if !BUILDFLAG(IS_ANDROID)
+  # in theme_source.cc.
   if (!is_android) {
     deps += [
       "//chrome/browser/themes",
       "//chrome/browser/ui/webui/ntp:ntp_resource_cache",
+      "//chrome/browser/ui/webui/top_chrome",
     ]
   }
 
@@ -524,11 +526,14 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/app/theme:theme_resources",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/util",
       "//chrome/common",
       "//chrome/test:test_support",
       "//chrome/test/base:test_theme_provider",
       "//content/test:test_support",
+      "//testing/gmock",
       "//testing/gtest",
     ]
   }

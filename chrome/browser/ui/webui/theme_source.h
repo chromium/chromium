@@ -15,6 +15,9 @@ class Profile;
 
 class ThemeSource : public content::URLDataSource {
  public:
+  // If `profile` is TopChromeWebUIProfile, which is shared by the windows of
+  // all profiles and has no theme of its own, each request is served with the
+  // user profile of the requesting contents. See GetProfileForRequest().
   explicit ThemeSource(Profile* profile);
   ThemeSource(Profile* profile, bool serve_untrusted);
 
@@ -55,8 +58,15 @@ class ThemeSource : public content::URLDataSource {
       network::mojom::CSPDirectiveName directive) override;
 
  private:
-  // Fetches and sends the theme bitmap.
+  // Returns the profile to serve a request with. If this source was created
+  // for TopChromeWebUIProfile, this is the user profile of the requesting
+  // contents, or null if there are no contents or no user profile.
+  Profile* GetProfileForRequest(const content::WebContents::Getter& wc_getter);
+
+  // Fetches and sends the theme bitmap. Serves the default image if `profile`
+  // is null.
   void SendThemeBitmap(content::URLDataSource::GotDataCallback callback,
+                       Profile* profile,
                        int resource_id,
                        float scale);
 
@@ -64,6 +74,7 @@ class ThemeSource : public content::URLDataSource {
   // what the resource bundle supports.  This can rescale the provided bitmap up
   // to the desired size.
   void SendThemeImage(content::URLDataSource::GotDataCallback callback,
+                      Profile* profile,
                       int resource_id,
                       float scale);
 
@@ -78,7 +89,8 @@ class ThemeSource : public content::URLDataSource {
   void SendTypographyCss(content::URLDataSource::GotDataCallback callback);
 #endif
 
-  // The profile this object was initialized with.
+  // The profile this object was initialized with. Null if it was
+  // TopChromeWebUIProfile.
   raw_ptr<Profile, FlakyDanglingUntriaged> profile_;
 
   // Whether this source services chrome-unstrusted://theme.
