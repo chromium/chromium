@@ -172,19 +172,16 @@ struct CompareResult {
   MHTMLFileInfo file;
 };
 
-// A dummy WebContentsDelegate which tracks the results of a find operation.
-class FindTrackingDelegate : public WebContentsDelegate,
-                             public WebContentsObserver {
+// A find-in-page results tracker.
+class FindTrackingObserver : public WebContentsObserver {
  public:
-  explicit FindTrackingDelegate(const std::string& search) : search_(search) {}
+  explicit FindTrackingObserver(const std::string& search) : search_(search) {}
 
-  FindTrackingDelegate(const FindTrackingDelegate&) = delete;
-  FindTrackingDelegate& operator=(const FindTrackingDelegate&) = delete;
+  FindTrackingObserver(const FindTrackingObserver&) = delete;
+  FindTrackingObserver& operator=(const FindTrackingObserver&) = delete;
 
   // Returns number of results.
   int Wait(WebContents* web_contents) {
-    WebContentsDelegate* old_delegate = web_contents->GetDelegate();
-    web_contents->SetDelegate(this);
     Observe(web_contents);
 
     auto options = blink::mojom::FindOptions::New();
@@ -192,10 +189,9 @@ class FindTrackingDelegate : public WebContentsDelegate,
     options->match_case = false;
 
     web_contents->Find(base::UTF8ToUTF16(search_), std::move(options),
-                       /*skip_delay=*/false, [](int request_id) {});
+                       /*skip_delay=*/false,
+                       [this](int request_id) { request_id_ = request_id; });
     run_loop_.Run();
-
-    web_contents->SetDelegate(old_delegate);
 
     return matches_;
   }
@@ -205,7 +201,7 @@ class FindTrackingDelegate : public WebContentsDelegate,
                            const gfx::Rect& selection_rect,
                            int active_match_ordinal,
                            bool final_update) override {
-    if (final_update) {
+    if (request_id == request_id_ && final_update) {
       matches_ = number_of_matches;
       run_loop_.Quit();
     }
@@ -214,6 +210,7 @@ class FindTrackingDelegate : public WebContentsDelegate,
  private:
   std::string search_;
   int matches_ = -1;
+  int request_id_ = -1;
   base::RunLoop run_loop_;
 };
 
@@ -561,8 +558,8 @@ class MHTMLGenerationTest : public ContentBrowserTest,
     }
 
     for (const auto& expected_substring : expected_substrings) {
-      FindTrackingDelegate delegate(expected_substring);
-      int actual_number_of_matches = delegate.Wait(shell()->web_contents());
+      FindTrackingObserver observer(expected_substring);
+      int actual_number_of_matches = observer.Wait(shell()->web_contents());
       EXPECT_EQ(1, actual_number_of_matches)
           << "Verifying that \"" << expected_substring << "\" appears "
           << "exactly once in the text of web contents of "
@@ -570,8 +567,8 @@ class MHTMLGenerationTest : public ContentBrowserTest,
     }
 
     for (const auto& forbidden_substring : forbidden_substrings) {
-      FindTrackingDelegate delegate(forbidden_substring);
-      int actual_number_of_matches = delegate.Wait(shell()->web_contents());
+      FindTrackingObserver observer(forbidden_substring);
+      int actual_number_of_matches = observer.Wait(shell()->web_contents());
       EXPECT_EQ(0, actual_number_of_matches)
           << "Verifying that \"" << forbidden_substring << "\" doesn't "
           << "appear in the text of web contents of "

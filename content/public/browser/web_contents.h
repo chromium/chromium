@@ -1506,11 +1506,10 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // maintained, which may have side effects if find sessions are started by
   // more than one client, e.g., the user finds text using the UI widget, and at
   // the same time runs a parallel find session by executing a DevTools command.
-  // Each call to `Find()` with `options.new_session` set to true drops the
-  // previous session silently without notifying the client.
-  //
-  // TODO(crbug.com/492228028): Fix the above. Notify the client when its
-  // session is ended.
+  // Each call to `Find()` with `options.new_session` set to true ends the
+  // previous session, if it is still running one; its client is notified via
+  // `DidReceiveFindReply()` with `final_update` set to true, per the
+  // guarantee documented there.
   virtual void Find(const std::u16string& search_text,
                     blink::mojom::FindOptionsPtr options,
                     bool skip_delay,

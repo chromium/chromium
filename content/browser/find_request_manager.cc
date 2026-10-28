@@ -366,9 +366,26 @@ void FindRequestManager::Find(
 void FindRequestManager::EmitFindRequest(int request_id,
                                          const std::u16string& search_text,
                                          blink::mojom::FindOptionsPtr options) {
-  // If this is a new find session, clear any queued requests from last session.
-  if (options->new_session)
-    find_request_queue_ = base::queue<FindRequest>();
+  if (options->new_session && !find_request_queue_.empty()) {
+    // Clear any queued requests from the previous session. The front entry is
+    // the one currently being processed (current_request_), and it will get its
+    // guaranteed final reply from FindInternal()/Reset() below once this new
+    // session supersedes it. Entries behind it have not been passed to
+    // FindInternal(), so give each of those its final reply here before they
+    // are discarded.
+    //
+    // Drain the queue into a local vector first so that a re-entrant Find()
+    // call sees an empty queue and cannot pop entries we haven't sent replies
+    // for yet (e.g. an Android WebView app calling findAllAsync() from its
+    // FindListener callback, which runs synchronously).
+    base::queue<FindRequest> stale_requests;
+    std::swap(find_request_queue_, stale_requests);
+    stale_requests.pop();  // front = current_request_; handled by FindInternal
+    while (!stale_requests.empty()) {
+      NotifyFindReply(stale_requests.front().id, /*final_update=*/true);
+      stale_requests.pop();
+    }
+  }
 
   find_request_queue_.emplace(request_id, search_text, std::move(options));
   if (find_request_queue_.size() == 1)
@@ -420,14 +437,17 @@ void FindRequestManager::HandleFinalUpdateForFrame(RenderFrameHostImpl* rfh,
   // This is the final update for this frame for the current find operation.
   pending_initial_replies_.erase(rfh);
   if (request_id == current_session_id_ && !pending_initial_replies_.empty()) {
+    // `pending_initial_replies_` is not yet empty -> this is not yet the final
+    // update.
     NotifyFindReply(request_id, false /* final_update */);
     return;
   }
 
   // This is the final update for all frames for the current find operation.
-  if (request_id == current_request_.id && request_id != current_session_id_) {
+  // `pending_find_next_reply_` holds the frame that a find-next dispatch is
+  // waiting on, clear it once that frame has replied to that specific dispatch.
+  if (request_id == current_request_.id && pending_find_next_reply_ == rfh) {
     DCHECK(!current_request_.options->new_session);
-    DCHECK_EQ(pending_find_next_reply_, rfh);
     pending_find_next_reply_ = nullptr;
   }
 
@@ -700,8 +720,12 @@ void FindRequestManager::FindInternal(const FindRequest& request) {
       // complete (with the current, unchanged results) so that callers of
       // Find() are guaranteed a final reply for every request they issue,
       // then advance the queue.
-      NotifyFindReply(request.id, /*final_update=*/true);
-      AdvanceQueue(request.id);
+      //
+      // Capture the id before notifying: an observer can re-entrantly call
+      // Find(), which may pop this entry from the queue and dangle `request`.
+      const int id = request.id;
+      NotifyFindReply(id, /*final_update=*/true);
+      AdvanceQueue(id);
       return;
     }
 
@@ -712,12 +736,31 @@ void FindRequestManager::FindInternal(const FindRequest& request) {
   }
 
   // This is either an explicit new session, or a "find next" whose search
-  // text doesn't actually match the session we are currently tracking --
+  // text doesn't actually match the session we are currently tracking,
   // e.g. another caller (DevTools, an extension, etc.) started a different
   // find session on this WebContents in the meantime, and this caller's
   // local notion of "same search as before" is stale. Treat it as a fresh
   // session rather than assuming a guarantee the caller can no longer make.
+  //
+  // Capture the ids we need before calling Reset() or notifying anyone.
+  // An observer can re-entrantly call Find(), which (via EmitFindRequest())
+  // may pop `request` from the queue and dangle the reference, and may also
+  // overwrite current_request_ with a newer session.
+  const int superseded_id =
+      (current_session_id_ != kInvalidId &&
+       (!pending_initial_replies_.empty() || pending_find_next_reply_))
+          ? current_request_.id
+          : kInvalidId;
+  const int new_session_id = request.id;
+
+  // Reset state for the new session before notifying about the superseded one.
+  // This ensures Reset() sees a valid `request` reference regardless of what
+  // any re-entrant Find() call below does to the queue.
   Reset(request);
+
+  if (superseded_id != kInvalidId) {
+    NotifyFindReply(superseded_id, /*final_update=*/true);
+  }
 
   // Add and observe eligible RFHs in the WebContents. And, use
   // ForEachRenderFrameHostImpl instead of ForEachAddedFindInPageRenderFrameHost
@@ -741,7 +784,7 @@ void FindRequestManager::FindInternal(const FindRequest& request) {
   // right away, so that callers of Find() are still guaranteed a final
   // reply for every request they issue.
   if (pending_initial_replies_.empty()) {
-    NotifyFindReply(request.id, /*final_update=*/true);
+    NotifyFindReply(new_session_id, /*final_update=*/true);
   }
 }
 

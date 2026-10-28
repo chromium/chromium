@@ -36,6 +36,35 @@ class WebContentsImpl;
 // results from each frame, and facilitates active match traversal. It is
 // instantiated once per top-level WebContents, and is owned by that
 // WebContents.
+//
+// Every call to `Find()` is a "find request" identified by its own request ID
+// that is allocated internally and handed back synchronously via Find()'s
+// `on_request_id` callback. A request with `options.new_session` set to true
+// starts a new "find session", which is a sequence of one or more requests
+// searching for the same text. The session is identified by the ID of the first
+// request. Later requests ("find next"/"find previous") continue that session
+// as long as their search text still matches the one the session started with.
+// Each request gets its own, distinct request ID, but they are not independent
+// of each other and logically belong to the session.
+//
+// A new session fans out its initial request to every eligible frame via
+// `AddFrame()` and `SendFindRequest()`, and tracks which of them have yet to
+// reply in `pending_initial_replies_`. Each frame's match count is aggregated
+// into `number_of_matches_` as replies come in; once every frame has replied,
+// the session is done unless it still needs to resolve which match is "active"
+// (highlighted), in which case `FinalUpdateReceived()` dispatches further
+// requests across frames (tracked via `pending_find_next_reply_`) until it
+// finds one.
+//
+// Only one session (and one "current" request within it) is tracked at a time.
+// However, as this request manager can be accessed by any entity that has a
+// reference to the WebContents, it is possible that `Find()` is called by more
+// than one client, e.g. the user's Ctrl+F alongside a DevTools or
+// extension-driven search. Every time a client starts a new session, it
+// supersedes whatever was previously in flight, including any of that session's
+// own find-next requests still queued but not yet dispatched. A superseded
+// request is guaranteed to receive its final update via
+// `WebContentsObserver::DidReceiveFindReply()`.
 class FindRequestManager {
  public:
   explicit FindRequestManager(WebContentsImpl* web_contents);

@@ -429,15 +429,12 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // WebContents::Find().
   // `request_id` matches the id passed to `Find()`; check it to find the reply
   // for a specific request.
-  // `final_update` is true when this is the last reply for `request_id`
-  // No more than one call with `final_update` true is made for every request
-  // issued through `Find()`, even if the search text was not found or there was
-  // no frame available to search. See also a note in documentation for Find()
-  // about concurrent calls.
-  //
-  // TODO(crbug.com/492228028): Fix this to guarantee that this is called once
-  // with `final_update` set to true, even when the find session is dropped
-  // because another client started a new one.
+  // `final_update` is true when this is the last reply for `request_id`.
+  // Exactly one call with `final_update` true is guaranteed for every request
+  // issued through `Find()`, even if the search text was not found, there was
+  // no frame available to search, or the request's session was superseded by
+  // another one started through a concurrent call to `Find()`. See also a
+  // note in documentation for Find() about concurrent calls.
   virtual void DidReceiveFindReply(int request_id,
                                    int number_of_matches,
                                    const gfx::Rect& selection_rect,

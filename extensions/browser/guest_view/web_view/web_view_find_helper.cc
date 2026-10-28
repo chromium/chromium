@@ -70,7 +70,14 @@ void WebViewFindHelper::EndFindSession(int session_request_id, bool canceled) {
   // For every subsequent find request of the find session.
   for (auto i = find_info->find_next_requests_.begin();
        i != find_info->find_next_requests_.end(); ++i) {
-    DCHECK(i->get());
+    if (!i->get()) {
+      // This find-next request was already finalized on its own. It was still
+      // queued and not started when a new find session superseded this one, and
+      // this one got the final reply and was erased from `find_info_map_`,
+      // invalidating this weak pointer, before this session's own final reply
+      // was processed here. Nothing left to do for it; move on to the next one.
+      continue;
+    }
 
     // Do not call callbacks for subsequent find requests that have not been
     // replied to yet. These requests will get their own final updates in the
@@ -179,13 +186,39 @@ void WebViewFindHelper::FindReply(int request_id,
   CHECK(current_find_session_);
 
   WebViewFindHelper::FindInfo* find_info = find_iterator->second.get();
-  // Handle canceled find requests.
+
+  // This is the guaranteed final reply for a request whose id predates the
+  // current session's one. It might be a session-starter or one of that
+  // session's find-next continuations, but it was superseded before its
+  // session could finish naturally (see FindRequestManager). Report it as
+  // canceled directly, rather than as a normal completion of stale or absent
+  // results. Create a findupdate event for it if it never got the chance to
+  // report any progress of its own before being superseded.
+  if (final_update &&
+      find_info->request_id() < current_find_session_->request_id()) {
+    if (!find_update_event_) {
+      find_update_event_ =
+          std::make_unique<FindUpdateEvent>(find_info->search_text());
+    }
+    DispatchFindUpdateEvent(true /* canceled */, true /* final_update */);
+    EndFindSession(request_id, true /* canceled */);
+    return;
+  }
+
+  // Handle a session-starting request that was abandoned without ever
+  // receiving its own final reply, e.g. it was superseded while one of its
+  // own find-next continuations was still dispatched and pending (so the
+  // check above fires for that continuation instead of for it directly), or
+  // its frame was removed before find-in-page completed.
   if (find_info->options()->new_session &&
       find_info_map_.begin()->first < request_id) {
     CHECK_NE(current_find_session_->request_id(),
              find_info_map_.begin()->first);
-    if (find_update_event_)
-      DispatchFindUpdateEvent(true /* canceled */, true /* final_update */);
+    if (!find_update_event_) {
+      find_update_event_ = std::make_unique<FindUpdateEvent>(
+          find_info_map_.begin()->second->search_text());
+    }
+    DispatchFindUpdateEvent(true /* canceled */, true /* final_update */);
     EndFindSession(find_info_map_.begin()->first, true /* canceled */);
   }
 
