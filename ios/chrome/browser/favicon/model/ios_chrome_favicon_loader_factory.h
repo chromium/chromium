@@ -15,14 +15,15 @@ class IOSChromeFaviconLoaderFactory final
                                                 FaviconLoader> {
  public:
   explicit IOSChromeFaviconLoaderFactory(PassKey key);
+
   // Returns the default factory used to build FaviconLoader. Can be registered
   // with SetTestingFactory to use the FaviconService instance during testing.
-  static TestingFactory GetDefaultFactory();
+  static TestingFactoryByRef GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_FAVICON_MODEL_IOS_CHROME_FAVICON_LOADER_FACTORY_H_

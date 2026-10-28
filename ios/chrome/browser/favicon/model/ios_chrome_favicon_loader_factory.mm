@@ -13,7 +13,7 @@
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildFaviconLoader(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildFaviconLoader(ProfileIOS& profile) {
   return std::make_unique<FaviconLoaderImpl>(
       IOSChromeLargeIconServiceFactory::GetForProfile(profile));
 }
@@ -21,7 +21,7 @@ std::unique_ptr<KeyedService> BuildFaviconLoader(ProfileIOS* profile) {
 }  // namespace
 
 // static
-IOSChromeFaviconLoaderFactory::TestingFactory
+IOSChromeFaviconLoaderFactory::TestingFactoryByRef
 IOSChromeFaviconLoaderFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildFaviconLoader);
 }
@@ -37,6 +37,6 @@ IOSChromeFaviconLoaderFactory::IOSChromeFaviconLoaderFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 IOSChromeFaviconLoaderFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildFaviconLoader(profile);
 }
