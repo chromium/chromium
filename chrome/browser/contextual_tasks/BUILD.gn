@@ -1001,6 +1001,7 @@ source_set("interactive_ui_tests") {
       ":user_data",
       "//chrome/browser/extensions",
       "//chrome/browser/ui/omnibox",
+      "//chrome/browser/ui/tabs:tab_menu",
 
       # TabUnderlineView currently resides under glic/browser_ui.
       "//chrome/browser/glic/browser_ui:glow",

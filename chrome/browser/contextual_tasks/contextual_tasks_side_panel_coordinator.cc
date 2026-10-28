@@ -24,6 +24,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
@@ -1001,22 +1002,25 @@ ContextualTasksSidePanelCoordinator::GetRecentThreads() const {
 
     std::u16string title;
     std::string query_value;
-    if (net::GetValueForKeyInQuery(url, "q", &query_value) &&
-        !query_value.empty()) {
-      title = base::UTF8ToUTF16(query_value);
+    if (net::GetValueForKeyInQuery(url, "q", &query_value)) {
+      title = std::u16string(
+          base::TrimWhitespace(base::UTF8ToUTF16(query_value), base::TRIM_ALL));
     }
     if (title.empty() && contextual_tasks_service_) {
       for (SessionID tab_id :
            contextual_tasks_service_->GetTabsAssociatedWithTask(task_id)) {
         if (std::optional<ContextualTask> task =
                 contextual_tasks_service_->GetContextualTaskForTab(tab_id)) {
-          if (task->GetThread().has_value() &&
-              !task->GetThread()->title.empty()) {
-            title = base::UTF8ToUTF16(task->GetThread()->title);
-            break;
+          const std::optional<Thread> thread = task->GetThread();
+          if (thread && !thread->title.empty()) {
+            title = std::u16string(base::TrimWhitespace(
+                base::UTF8ToUTF16(thread->title), base::TRIM_ALL));
           }
-          if (!task->GetTitle().empty()) {
-            title = base::UTF8ToUTF16(task->GetTitle());
+          if (title.empty() && !task->GetTitle().empty()) {
+            title = std::u16string(base::TrimWhitespace(
+                base::UTF8ToUTF16(task->GetTitle()), base::TRIM_ALL));
+          }
+          if (!title.empty()) {
             break;
           }
         }
