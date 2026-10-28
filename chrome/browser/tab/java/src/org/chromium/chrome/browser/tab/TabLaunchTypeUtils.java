@@ -42,7 +42,8 @@ public final class TabLaunchTypeUtils {
                     TabLaunchType.FROM_REPARENTING_BACKGROUND,
                     TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND,
                     TabLaunchType.FROM_TAB_LIST_INTERFACE_BACKGROUND,
-                    TabLaunchType.FROM_OMNIBOX_BACKGROUND ->
+                    TabLaunchType.FROM_OMNIBOX_BACKGROUND,
+                    TabLaunchType.FROM_UNDO_CLOSURE ->
                     true;
             default -> false;
         };
@@ -62,6 +63,8 @@ public final class TabLaunchTypeUtils {
      *       UI.
      *   <li>{@link TabLaunchType#FROM_BROWSER_ACTIONS}: External browser action restore where
      *       active tab selection and indexing are managed externally by the caller.
+     *   <li>{@link TabLaunchType#FROM_UNDO_CLOSURE}: Tabs restored by undoing their closure;
+     *       selection and indexing are handled by the restore logic.
      * </ul>
      *
      * @param type The launch type to inspect.
@@ -72,7 +75,8 @@ public final class TabLaunchTypeUtils {
         return switch (type) {
             case TabLaunchType.FROM_RESTORE,
                     TabLaunchType.FROM_BROWSER_ACTIONS,
-                    TabLaunchType.FROM_RESTORE_TABS_UI ->
+                    TabLaunchType.FROM_RESTORE_TABS_UI,
+                    TabLaunchType.FROM_UNDO_CLOSURE ->
                     true;
             default -> false;
         };
@@ -146,7 +150,9 @@ public final class TabLaunchTypeUtils {
     public static boolean willAddedTabBeSelected(
             @TabLaunchType int type, boolean isTabIncognito, boolean isIncognitoSelected) {
         assertValidLaunchType(type);
-        if (type == TabLaunchType.FROM_RESTORE) return false;
+        if (type == TabLaunchType.FROM_RESTORE || type == TabLaunchType.FROM_UNDO_CLOSURE) {
+            return false;
+        }
         boolean isBackgroundLaunch = isBackgroundLaunch(type) || isRestoreLaunch(type);
         return !isBackgroundLaunch || (!isIncognitoSelected && isTabIncognito);
     }
@@ -168,7 +174,8 @@ public final class TabLaunchTypeUtils {
                     TabLaunchType.FROM_LAUNCHER_SHORTCUT,
                     TabLaunchType.FROM_STARTUP,
                     TabLaunchType.FROM_APP_WIDGET,
-                    TabLaunchType.FROM_SYNC_BACKGROUND ->
+                    TabLaunchType.FROM_SYNC_BACKGROUND,
+                    TabLaunchType.FROM_UNDO_CLOSURE ->
                     true;
             default -> false;
         };
@@ -225,6 +232,7 @@ public final class TabLaunchTypeUtils {
             case TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW -> "LinkToNewWindow";
             case TabLaunchType.FROM_TIPS_NOTIFICATIONS -> "TipsNotifications";
             case TabLaunchType.FROM_TAB_LIST_INTERFACE_BACKGROUND -> "TabListInterfaceBackground";
+            case TabLaunchType.FROM_UNDO_CLOSURE -> "UndoClosure";
             default -> {
                 assert false : "Unexpected serialization of tabLaunchType: " + tabLaunchType;
                 yield "TypeUnknown";
@@ -279,6 +287,7 @@ public final class TabLaunchTypeUtils {
                     TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP,
                     TabLaunchType.FROM_RECENT_TABS,
                     TabLaunchType.FROM_RECENT_TABS_FOREGROUND,
+                    TabLaunchType.FROM_UNDO_CLOSURE,
                     TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND,
                     TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND,
                     TabLaunchType.FROM_REPARENTING_BACKGROUND,

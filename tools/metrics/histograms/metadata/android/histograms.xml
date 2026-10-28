@@ -306,6 +306,8 @@ chromium-metrics-reviews@google.com.
       summary="tabs opened from Tips Notifications"/>
   <variant name="TypeUnknown"
       summary="tabs opened from a different case than one's listed"/>
+  <variant name="UndoClosure"
+      summary="tabs restored in the background by undoing their closure"/>
   <variant name="Unset" summary="pre-warmed tabs without creation reason"/>
 </variants>
 
