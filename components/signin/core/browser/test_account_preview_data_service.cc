@@ -33,7 +33,7 @@ void TestAccountPreviewDataService::GetPreviewPreferenceForAccount(
   std::move(callback).Run(preference_);
 }
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void TestAccountPreviewDataService::GetPreferredAccountForFRESignin(
     base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
         callback) {
@@ -57,7 +57,7 @@ void TestAccountPreviewDataService::TriggerCallback(
   }
 }
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void TestAccountPreviewDataService::RunPendingPreferredAccountRequests(
     std::optional<AccountPreviewPreference> preference) {
   preferred_account_for_signin_ = std::move(preference);

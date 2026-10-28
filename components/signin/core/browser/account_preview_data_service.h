@@ -103,7 +103,7 @@ class AccountPreviewDataService : public KeyedService {
       base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
           callback) = 0;
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Asynchronous version of `GetPreferredAccountForSignin()` for the First Run
   // Experience (FRE), which returns the stored preferred account immediately if
   // available, or triggers a fetch and waits for the preferred account

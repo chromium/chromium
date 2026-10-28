@@ -87,7 +87,7 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
       const GaiaId& gaia_id,
       base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
           callback) override;
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   void GetPreferredAccountForFRESignin(
       base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
           callback) override;
@@ -237,7 +237,7 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   base::ScopedObservation<IdentityManager, IdentityManager::Observer>
       identity_manager_observation_{this};
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Requests originating from `GetPreferredAccountForSigninWhenReady()` that
   // wait for the preferred account computation to complete.
   std::vector<base::OnceCallback<void(std::optional<AccountPreviewPreference>)>>

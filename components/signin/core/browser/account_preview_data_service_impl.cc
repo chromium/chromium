@@ -324,7 +324,7 @@ void AccountPreviewDataServiceImpl::GetPreviewPreferenceForAccount(
   }
 }
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void AccountPreviewDataServiceImpl::GetPreferredAccountForFRESignin(
     base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
         callback) {
@@ -949,7 +949,7 @@ void AccountPreviewDataServiceImpl::OnAllAccountsFetchCanceled() {
 }
 
 void AccountPreviewDataServiceImpl::FinalizeAllAccountsFetch() {
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   if (!pending_preferred_account_requests_.empty()) {
     std::optional<AccountPreviewPreference> preference =
         GetPreferredAccountForSignin();
@@ -1130,7 +1130,7 @@ void AccountPreviewDataServiceImpl::ClearMemoryData() {
 #if BUILDFLAG(IS_ANDROID)
   deferred_external_app_account_update_callback_.Reset();
 #endif
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   for (auto& callback :
        std::exchange(pending_preferred_account_requests_, {})) {
     std::move(callback).Run(/*preference=*/std::nullopt);

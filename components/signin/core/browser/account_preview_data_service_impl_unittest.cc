@@ -1145,7 +1145,7 @@ TEST_F(AccountPreviewDataServiceTest,
       AccountPreviewSelectionReason::kSyncDataScore, 1);
 }
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 TEST_F(AccountPreviewDataServiceTest,
        GetPreferredAccountForFRESigninRunsImmediatelyIfAlreadyComputed) {
   base::test::ScopedFeatureList feature_list{
@@ -1401,7 +1401,7 @@ TEST_F(AccountPreviewDataServiceTest,
               testing::Optional(testing::Field(
                   &AccountPreviewPreference::gaia_id, account.GetGaiaId())));
 }
-#endif  // BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 TEST_F(AccountPreviewDataServiceTest,
        RecordsSelectionHeuristicScoreMetricsOnPreferredAccountComputed) {
