@@ -14135,18 +14135,26 @@ ALWAYS_INLINE void Element::SetAttributeInternal(
       GetElementData()->Attributes().at(index);
   QualifiedName existing_attribute_name = existing_attribute.GetName();
 
+  // `new_value` may be a reference into `ElementData::Attributes()`, which can
+  // be reallocated if `WillModifyAttribute()` pauses in the debugger and script
+  // mutates attributes. Copy it here (rather than taking `new_value` by value
+  // in `SetAttributeInternal`, which would add refcount churn to the
+  // `AppendAttributeInternal` fast path).
   if (new_value == existing_attribute.Value()) {
     if (reason !=
         AttributeModificationReason::kBySynchronizationOfLazyAttribute) {
-      WillModifyAttribute(existing_attribute_name, new_value, new_value);
-      DidModifyAttribute(existing_attribute_name, new_value, new_value, reason);
+      AtomicString value_copy = new_value;
+      WillModifyAttribute(existing_attribute_name, value_copy, value_copy);
+      DidModifyAttribute(existing_attribute_name, value_copy, value_copy,
+                         reason);
     }
   } else {
     AtomicString existing_attribute_value = existing_attribute.Value();
+    AtomicString value_copy = new_value;
     if (reason !=
         AttributeModificationReason::kBySynchronizationOfLazyAttribute) {
       WillModifyAttribute(existing_attribute_name, existing_attribute_value,
-                          new_value);
+                          value_copy);
     }
     MutableAttributeCollection mutable_attributes =
         EnsureUniqueElementData().Attributes();
@@ -14158,14 +14166,14 @@ ALWAYS_INLINE void Element::SetAttributeInternal(
       index = mutable_attributes.FindIndex(existing_attribute_name);
     }
     if (index != kNotFound) {
-      mutable_attributes[index].SetValue(new_value);
+      mutable_attributes[index].SetValue(value_copy);
     } else {
-      mutable_attributes.Append(existing_attribute_name, new_value);
+      mutable_attributes.Append(existing_attribute_name, value_copy);
     }
     if (reason !=
         AttributeModificationReason::kBySynchronizationOfLazyAttribute) {
       DidModifyAttribute(existing_attribute_name, existing_attribute_value,
-                         new_value, reason);
+                         value_copy, reason);
     }
   }
 }

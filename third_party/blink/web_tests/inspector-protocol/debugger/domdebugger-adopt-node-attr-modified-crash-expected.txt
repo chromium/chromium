@@ -1,0 +1,6 @@
+Tests attribute-modified DOM breakpoint during cross-quirks-mode adoptNode.
+Testing id="Foo"
+Result: Foo
+Testing class="Bar"
+Result: Bar
+
