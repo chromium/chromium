@@ -1102,10 +1102,12 @@ TAG_SMOKE_TEST(SaveProfileEGTest, testUserData_LocalUpdate);
                                        .multiple_submissions_skip_programmatic =
                                            true}];
 
-  // Submit the form which will trigger 4 extra submissions consisting of 3
-  // button click submissions and 1 `form.submit()` programmatic submission,
-  // for a total of 5 submissions.
+  // Submit the form which will trigger 3 extra button click submissions, for a
+  // total of 4 submissions. Wait for all 4 submissions (chained via
+  // `setTimeout`) to complete before reloading the page so the reload does not
+  // cancel pending resubmissions.
   [ChromeEarlGrey tapWebStateElementWithID:@"submit-button"];
+  [ChromeEarlGrey waitForJavaScriptCondition:@"submitCount === 4"];
 
   // Reload the page content which triggers reporting.
   [ChromeEarlGrey reload];
