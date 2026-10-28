@@ -214,8 +214,6 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
   void StopStorageMonitor() override;
   void OpenStorageManagement() override;
   base::FilePath GetFilePathByName(const std::string& name) override;
-  media_device_salt::MediaDeviceSaltService* GetMediaDeviceSaltService(
-      content::BrowserContext* context) override;
   void OpenWifiDialog(WifiConfig wifi_config) override;
   std::string GetSystemLanguage() override;
   void RenderPdfAsJpeg(

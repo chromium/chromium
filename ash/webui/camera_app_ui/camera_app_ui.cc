@@ -150,8 +150,8 @@ void TranslateVideoDeviceId(
         blink::StorageKey::CreateFirstParty(origin),
         base::BindOnce(&GotSalt, origin, source_id, std::move(callback)));
   } else {
-    // If the embedder does not provide a salt service, use the browser
-    // context's unique ID as salt.
+    // There is no salt service for this browser context; use its unique ID as
+    // salt instead. See the comment on the constructor parameter.
     GotSalt(origin, source_id, std::move(callback),
             browser_context->UniqueId());
   }
@@ -238,9 +238,13 @@ bool CameraAppUIShouldEnableLocalOverride(const std::string& url) {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-CameraAppUI::CameraAppUI(content::WebUI* web_ui,
-                         std::unique_ptr<CameraAppUIDelegate> delegate)
-    : ui::MojoWebUIController(web_ui), delegate_(std::move(delegate)) {
+CameraAppUI::CameraAppUI(
+    content::WebUI* web_ui,
+    std::unique_ptr<CameraAppUIDelegate> delegate,
+    media_device_salt::MediaDeviceSaltService* media_device_salt_service)
+    : ui::MojoWebUIController(web_ui),
+      delegate_(std::move(delegate)),
+      media_device_salt_service_(media_device_salt_service) {
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
 
@@ -286,10 +290,9 @@ CameraAppUI::~CameraAppUI() {
 
 void CameraAppUI::BindInterface(
     mojo::PendingReceiver<cros::mojom::CameraAppDeviceProvider> receiver) {
-  content::BrowserContext* browser_context =
-      web_ui()->GetWebContents()->GetBrowserContext();
   provider_ = CreateCameraAppDeviceProvider(
-      browser_context, delegate_->GetMediaDeviceSaltService(browser_context),
+      web_ui()->GetWebContents()->GetBrowserContext(),
+      media_device_salt_service_,
       url::Origin::Create(GURL(kChromeUICameraAppURL)));
   provider_->Bind(std::move(receiver));
 }

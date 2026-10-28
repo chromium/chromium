@@ -9,6 +9,7 @@
 #include "ash/webui/camera_app_ui/camera_app_ui_delegate.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_ui_config.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
 #include "content/public/browser/web_ui.h"
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"
@@ -18,6 +19,10 @@
 namespace media {
 class CameraAppDeviceProviderImpl;
 }  // namespace media
+
+namespace media_device_salt {
+class MediaDeviceSaltService;
+}  // namespace media_device_salt
 
 namespace ash {
 
@@ -36,8 +41,32 @@ class CameraAppUIConfig : public SystemWebAppUIConfig<CameraAppUI> {
 class CameraAppUI : public ui::MojoWebUIController,
                     public content::DevToolsAgentHostObserver {
  public:
-  CameraAppUI(content::WebUI* web_ui,
-              std::unique_ptr<CameraAppUIDelegate> delegate);
+  // `media_device_salt_service` provides the salts used to translate media
+  // device IDs. It has to be the service content itself uses for this browser
+  // context, because the IDs translated here are the ones the renderer was
+  // handed: ChromeContentBrowserClient::GetMediaDeviceIDSalt() looks the
+  // service up for the frame's own browser context, and salts with that
+  // context's unique ID when there is none.
+  //
+  // It is therefore null in exactly the cases where content finds no service
+  // either, today a guest session. Borrowing the original profile's service
+  // there would be wrong rather than merely unavailable: the salt is what
+  // makes a device ID stable across sessions, and a guest session is meant to
+  // leave nothing behind, so content deliberately gives it a salt that dies
+  // with the browser context. The null case follows content and uses the
+  // browser context's unique ID.
+  //
+  // The two agree on the salt only because CameraAppUI auto-grants itself the
+  // cookie permission: content uses the ephemeral salt when cookies are
+  // blocked for the origin, which is not checked here.
+  // TODO(crbug.com/578879212): take the salt from content instead of
+  // reproducing how it picks one.
+  //
+  // If non-null, it must outlive `this`.
+  CameraAppUI(
+      content::WebUI* web_ui,
+      std::unique_ptr<CameraAppUIDelegate> delegate,
+      media_device_salt::MediaDeviceSaltService* media_device_salt_service);
 
   CameraAppUI(const CameraAppUI&) = delete;
   CameraAppUI& operator=(const CameraAppUI&) = delete;
@@ -71,6 +100,9 @@ class CameraAppUI : public ui::MojoWebUIController,
 
  private:
   std::unique_ptr<CameraAppUIDelegate> delegate_;
+
+  const raw_ptr<media_device_salt::MediaDeviceSaltService>
+      media_device_salt_service_;
 
   std::unique_ptr<media::CameraAppDeviceProviderImpl> provider_;
 

@@ -140,6 +140,7 @@
 #include "chromeos/ash/components/media_device_salt/media_device_salt_service_provider.h"
 #include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "components/application_locale_storage/application_locale_storage.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/browser/webui_config_map.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -267,6 +268,36 @@ std::unique_ptr<content::WebUIConfig> MakeHelpAppUIConfig(
       base::Unretained(local_state));
 
   return std::make_unique<HelpAppUIConfig>(create_controller_func);
+}
+
+std::unique_ptr<content::WebUIConfig> MakeCameraAppUIConfig() {
+  CreateWebUIControllerFunc create_controller_func = base::BindRepeating(
+      [](content::WebUI* web_ui,
+         const GURL& url) -> std::unique_ptr<content::WebUIController> {
+        Profile* profile = Profile::FromWebUI(web_ui);
+        const AccountId& account_id =
+            CHECK_DEREF(AnnotatedAccountId::Get(profile->GetOriginalProfile()));
+        // In a guest session the camera app runs in the off-the-record guest
+        // profile, which has no MediaDeviceSaltService: the factory is
+        // kOriginalOnly for guest (crbug.com/40257657). Content salts the
+        // device IDs the renderer is given from that same browser context and
+        // falls back to BrowserContext::UniqueId() when there is no service
+        // -- see ChromeContentBrowserClient::GetMediaDeviceIDSalt() -- so
+        // CameraAppUI has to translate them back with the same fallback. A
+        // service resolved from any other context would use a salt the IDs
+        // were never produced with.
+        media_device_salt::MediaDeviceSaltService* media_device_salt_service =
+            nullptr;
+        if (account_id != user_manager::GuestAccountId()) {
+          media_device_salt_service =
+              MediaDeviceSaltServiceProvider::Get().Find(account_id);
+        }
+        return std::make_unique<CameraAppUI>(
+            web_ui, std::make_unique<ChromeCameraAppUIDelegate>(web_ui),
+            media_device_salt_service);
+      });
+
+  return std::make_unique<CameraAppUIConfig>(create_controller_func);
 }
 
 // `local_state` and `application_locale_storage` must not be null and must
@@ -413,9 +444,7 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
   // Pass `is_stateful=true` for configs that capture dependencies injected via
   // `AshWebUIConfigManager` so they are unregistered before those dependencies
   // are torn down.
-  AddWebUIConfig(MakeComponentConfigWithDelegate<CameraAppUIConfig, CameraAppUI,
-                                                 ChromeCameraAppUIDelegate>(),
-                 /*is_stateful=*/false);
+  AddWebUIConfig(MakeCameraAppUIConfig(), /*is_stateful=*/false);
   AddWebUIConfig(std::make_unique<cellular_setup::MobileSetupUIConfig>(
                      &application_locale_storage_.get()),
                  /*is_stateful=*/true);
