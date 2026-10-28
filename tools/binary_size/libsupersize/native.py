@@ -8,6 +8,7 @@ import calendar
 import collections
 import dataclasses
 import datetime
+import functools
 import itertools
 import logging
 import os
@@ -105,6 +106,8 @@ def _ComputeUnattributedElfSize(elf_info, section_ranges):
 
 def _AddSourcePathsUsingObjectPaths(ninja_source_mapper, raw_symbols):
   logging.info('Looking up source paths from ninja files')
+  # Object paths are shared by many symbols, so cache results.
+  find_source_for_path = functools.cache(ninja_source_mapper.FindSourceForPath)
   for symbol in raw_symbols:
     # Native symbols and pak symbols use object paths.
     object_path = symbol.object_path
@@ -113,7 +116,7 @@ def _AddSourcePathsUsingObjectPaths(ninja_source_mapper, raw_symbols):
 
     # We don't have source info for prebuilt .a files.
     if not os.path.isabs(object_path) and not object_path.startswith('..'):
-      symbol.source_path = ninja_source_mapper.FindSourceForPath(object_path)
+      symbol.source_path = find_source_for_path(object_path)
   assert ninja_source_mapper.unmatched_paths_count == 0, (
     'One or more source file paths could not be found. Likely caused by '
     '.ninja files being generated at a different time than the .map file.'

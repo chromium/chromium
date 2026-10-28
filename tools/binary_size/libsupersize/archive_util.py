@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Logic needed by multiple archive-related modules."""
 
+import functools
 import logging
 import os
 import re
@@ -97,14 +98,19 @@ def NormalizePaths(raw_symbols, gen_dir_regex=None, toolchain_subdirs=None):
   if toolchain_subdirs != None:
     obj_prefixes.extend(f'{t}/obj/' for t in toolchain_subdirs)
     gen_prefixes.extend(f'{t}/gen/' for t in toolchain_subdirs)
+  # Paths are shared by many symbols, so cache results.
+  normalize_object_path = functools.cache(
+    lambda p: _NormalizeObjectPath(p, obj_prefixes)
+  )
+  normalize_source_path = functools.cache(
+    lambda p: _NormalizeSourcePath(p, gen_prefixes, gen_dir_pattern)
+  )
   for symbol in raw_symbols:
     if symbol.object_path:
-      symbol.object_path = _NormalizeObjectPath(
-        symbol.object_path, obj_prefixes
-      )
+      symbol.object_path = normalize_object_path(symbol.object_path)
     if symbol.source_path:
-      symbol.generated_source, symbol.source_path = _NormalizeSourcePath(
-        symbol.source_path, gen_prefixes, gen_dir_pattern
+      symbol.generated_source, symbol.source_path = normalize_source_path(
+        symbol.source_path
       )
 
 
