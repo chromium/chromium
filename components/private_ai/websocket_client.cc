@@ -50,6 +50,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             }
           }
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "privatearatea.pa.googleapis.com"
           last_reviewed: "2025-09-12"
         }
         policy {
