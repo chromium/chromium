@@ -49,7 +49,7 @@ void InitializeResources() {
   // Initialize the process-global ResourceBundle, and manually load the
   // WebEngine locale-agnostic resources.
   const std::string locale = ui::ResourceBundle::InitSharedInstanceWithLocale(
-      base::i18n::GetConfiguredLocale(), nullptr,
+      std::string(base::i18n::GetDefaultIcuLocale().tag_string()), nullptr,
       ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
   ui::SetSupportedResourceScaleFactors({ui::k100Percent});
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(

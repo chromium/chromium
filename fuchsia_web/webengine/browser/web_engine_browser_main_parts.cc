@@ -432,7 +432,7 @@ void WebEngineBrowserMainParts::OnIntlProfileChanged(
 
     std::string loaded_locale =
         ui::ResourceBundle::GetSharedInstance().ReloadLocaleResources(
-            base::i18n::GetConfiguredLocale());
+            std::string(base::i18n::GetDefaultIcuLocale().tag_string()));
 
     VLOG(1) << "Reloaded locale resources: " << loaded_locale;
   }
