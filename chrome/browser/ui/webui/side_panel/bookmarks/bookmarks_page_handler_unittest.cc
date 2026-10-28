@@ -7,17 +7,22 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_test_utils.h"
 #include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
+#include "chrome/browser/ui/bookmarks/bookmark_stats.h"
+#include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -39,6 +44,7 @@
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/views/widget/any_widget_observer.h"
 
 namespace {
@@ -121,6 +127,26 @@ class MockBookmarksPage : public side_panel::mojom::BookmarksPage {
   mojo::Receiver<side_panel::mojom::BookmarksPage> receiver_{this};
 };
 
+class TestBookmarkNavigationWrapper
+    : public bookmarks::BookmarkNavigationWrapper {
+ public:
+  TestBookmarkNavigationWrapper() = default;
+  explicit TestBookmarkNavigationWrapper(base::RepeatingClosure on_navigate)
+      : on_navigate_(std::move(on_navigate)) {}
+  ~TestBookmarkNavigationWrapper() override = default;
+
+  base::WeakPtr<content::NavigationHandle> NavigateTo(
+      NavigateParams* params) override {
+    if (on_navigate_) {
+      on_navigate_.Run();
+    }
+    return nullptr;
+  }
+
+ private:
+  base::RepeatingClosure on_navigate_;
+};
+
 // Helper class to handle the return value of
 // `BookmarksPageHandler::CreateFolder()` through a callback. It resets
 // internally after retrieving the results so that it can be used multiple times
@@ -199,6 +225,10 @@ class BookmarksPageHandlerTest : public ChromeRenderViewHostTestHarness {
     return fake_side_panel_web_contents_.get();
   }
   TabStripModel* tab_strip_model() { return tab_strip_model_.get(); }
+  testing::NiceMock<MockBrowserWindowInterface>&
+  mock_browser_window_interface() {
+    return mock_browser_window_interface_;
+  }
 
   void CreateHandler(int managed_bookmarks_count = 0) {
     CHECK(!handler_);
@@ -885,6 +915,65 @@ TEST_F(BookmarksPageHandlerTest,
               ElementsAre(MatchesNode(node1), MatchesNode(node2)));
 
   histogram_tester.ExpectTotalCount("Bookmarks.AddedPerProfileType", 1);
+}
+
+TEST_F(BookmarksPageHandlerTest, OpenBookmark) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  const bookmarks::BookmarkNode* bookmark_bar = model()->bookmark_bar_node();
+  const bookmarks::BookmarkNode* node = model()->AddURL(
+      bookmark_bar, 0, u"Google", GURL("https://www.google.com"));
+
+  TestBookmarkNavigationWrapper wrapper;
+  bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting(&wrapper);
+  base::ScopedClosureRunner reset_nav_wrapper(base::BindOnce(
+      &bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting, nullptr));
+
+  handler()->OpenBookmark(node->id(), /*parent_folder_depth=*/0,
+                          ui::mojom::ClickModifiers::New(),
+                          side_panel::mojom::ActionSource::kBookmark);
+
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount("SidePanel.Bookmarks.Navigation"));
+  histogram_tester.ExpectUniqueSample(
+      "Bookmarks.LaunchLocation", BookmarkLaunchLocation::kSidePanelFolder, 1);
+}
+
+TEST_F(BookmarksPageHandlerTest, OpenBookmarkSynchronouslyDestroysHandler) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  const bookmarks::BookmarkNode* bookmark_bar = model()->bookmark_bar_node();
+  const bookmarks::BookmarkNode* node = model()->AddURL(
+      bookmark_bar, 0, u"Google", GURL("https://www.google.com"));
+
+  bool handler_destroyed = false;
+  ON_CALL(mock_browser_window_interface(), GetProfile()).WillByDefault([&]() {
+    EXPECT_FALSE(handler_destroyed);
+    return profile();
+  });
+
+  TestBookmarkNavigationWrapper wrapper(base::BindLambdaForTesting([&]() {
+    handler_destroyed = true;
+    ClearHandler();
+  }));
+  bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting(&wrapper);
+  base::ScopedClosureRunner reset_nav_wrapper(base::BindOnce(
+      &bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting, nullptr));
+
+  // Opening a bookmark may synchronously close the side panel and destroy the
+  // handler. Ensure this does not cause a crash or use-after-free, and that
+  // metrics are still recorded.
+  handler()->OpenBookmark(node->id(), /*parent_folder_depth=*/0,
+                          ui::mojom::ClickModifiers::New(),
+                          side_panel::mojom::ActionSource::kBookmark);
+
+  EXPECT_TRUE(handler_destroyed);
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount("SidePanel.Bookmarks.Navigation"));
+  histogram_tester.ExpectUniqueSample(
+      "Bookmarks.LaunchLocation", BookmarkLaunchLocation::kSidePanelFolder, 1);
 }
 
 }  // namespace
