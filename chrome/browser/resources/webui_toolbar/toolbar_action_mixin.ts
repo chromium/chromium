@@ -136,6 +136,11 @@ export const ToolbarActionMixin =
             return;
           }
 
+          // Ensure responsive toolbar controls have been laid out before
+          // registering with TrackedElementManager, which synchronously reads
+          // getBoundingClientRect().
+          this.fire('layout-now');
+
           this.registerHelpBubble(newId, this, {
             secondaryId: this.getSecondaryElementId(),
             onHighlightChanged: (highlighted: boolean) => {

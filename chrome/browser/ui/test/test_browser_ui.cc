@@ -10,6 +10,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/test_switches.h"
 #include "build/build_config.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/views/controls/webview/webview.h"
@@ -136,7 +137,15 @@ ui::test::ActionResult TestBrowserUi::VerifyPixelUi(
   if (auto* const view_el = element->AsA<views::TrackedElementViews>()) {
     view = view_el->view();
   } else if (auto* const webui_el = element->AsA<ui::TrackedElementWebUI>()) {
-    view = webui_el->GetWebView();
+    views::WebView* const web_view = webui_el->GetWebView();
+#ifdef SUPPORTS_PIXEL_TEST
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kVerifyPixels) &&
+        web_view && web_view->GetWebContents()) {
+      content::WaitForCopyableViewInWebContents(web_view->GetWebContents());
+    }
+#endif
+    view = web_view;
     if (!effective_options.region.has_value()) {
       effective_options.region = webui_el->GetBoundsInWebContents();
     } else {

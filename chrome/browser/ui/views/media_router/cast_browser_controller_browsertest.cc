@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_test_accessor.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/browser/mirroring_media_controller_host_impl.h"
 #include "components/prefs/pref_service.h"
@@ -112,6 +113,9 @@ class CastBrowserControllerTest : public UiBrowserTest {
     }));
     if (!element) {
       return false;
+    }
+    if (features::IsWebUIPinnedToolbarActionsEnabled()) {
+      EXPECT_TRUE(FlushWebUIToolbarPipes(browser()));
     }
     return VerifyPixelUi(element, "CastBrowserControllerTest",
                          screenshot_name) != ui::test::ActionResult::kFailed;

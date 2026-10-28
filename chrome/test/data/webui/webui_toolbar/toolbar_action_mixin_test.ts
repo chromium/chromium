@@ -220,6 +220,19 @@ suite('ToolbarActionMixinTest', function() {
     assertEquals('id-2', element.registerCalls[0]![0]);
   });
 
+  test('FiresLayoutNowBeforeRegistering', async function() {
+    let registerCallsAtLayoutNow = -1;
+    element.addEventListener('layout-now', () => {
+      registerCallsAtLayoutNow = element.registerCalls.length;
+    });
+
+    element.state = {id: 'action-1'};
+    await microtasksFinished();
+
+    assertEquals(0, registerCallsAtLayoutNow);
+    assertEquals(1, element.registerCalls.length);
+  });
+
   test('HelpBubbleCallbacksAndUpdateState', async function() {
     element.state = {id: 'action-1'};
     await microtasksFinished();
