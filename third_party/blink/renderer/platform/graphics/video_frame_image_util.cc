@@ -236,6 +236,30 @@ CanvasSnapshotInfo VideoFrameAcceleratedSnapshotPool::GetInfo() const {
   return provider_->GetInfo();
 }
 
+scoped_refptr<CanvasResourceSharedImage>
+VideoFrameAcceleratedSnapshotPool::NewOrRecycledResource() {
+  if (!provider_->image_pool_) {
+    return nullptr;
+  }
+
+  auto resource = provider_->image_pool_->GetImage();
+  if (!resource) {
+    return nullptr;
+  }
+
+  if (!resource->IsInitialized()) {
+    resource->Initialize(provider_->CreateWeakPtr(),
+                         provider_->context_provider_wrapper_,
+                         provider_->hdr_metadata_, /*is_accelerated=*/true);
+    ++provider_->num_inflight_resources_;
+    if (provider_->num_inflight_resources_ > provider_->max_inflight_resources_) {
+      provider_->max_inflight_resources_ = provider_->num_inflight_resources_;
+    }
+  }
+  DCHECK(resource->HasOneRef());
+  return resource;
+}
+
 bool VideoFrameAcceleratedSnapshotPool::ShouldReplaceTargetBuffer(
     PaintImage::ContentId content_id) {
   // If the resource was lost, we can not use it for writes again.
@@ -264,7 +288,7 @@ void VideoFrameAcceleratedSnapshotPool::EnsureResourceReadyForDraw() {
   if (ShouldReplaceTargetBuffer(provider_->cached_content_id_)) {
     provider_->cached_content_id_ = PaintImage::kInvalidContentId;
 
-    provider_->resource_ = provider_->NewOrRecycledResource();
+    provider_->resource_ = NewOrRecycledResource();
 
     // As the image might have just been created, we need to ensure that it is
     // cleared on the next BeginRasterCHROMIUM to satisfy service-side security

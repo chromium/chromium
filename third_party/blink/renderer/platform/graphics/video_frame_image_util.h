@@ -36,6 +36,7 @@ class PaintFlags;
 
 namespace blink {
 class CanvasNon2DResourceProvider;
+class CanvasResourceSharedImage;
 class StaticBitmapImage;
 
 // Pool of accelerated SharedImages used to produce AcceleratedStaticBitmapImage
@@ -65,6 +66,7 @@ class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool {
   void FlushRecording(cc::PaintRecord last_recording);
   void EnsureResourceReadyForDraw();
   bool ShouldReplaceTargetBuffer(cc::PaintImage::ContentId content_id);
+  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
 
   std::unique_ptr<CanvasNon2DResourceProvider> provider_;
 };
