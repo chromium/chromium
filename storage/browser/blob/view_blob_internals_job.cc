@@ -144,7 +144,7 @@ std::string ViewBlobInternalsJob::GenerateHTML(
       AddHTMLBoldText(uuid_entry_pair.first, &out);
       BlobEntry* entry = uuid_entry_pair.second.get();
       GenerateHTMLForBlobData(*entry, entry->content_type(),
-                              entry->content_disposition(), entry->refcount(),
+                              entry->content_disposition(), entry->handle_count(),
                               &out);
     }
     // TODO(crbug.com/40709731): Bring back information about blob URLs.
