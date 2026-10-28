@@ -372,6 +372,10 @@ suite('NewTabPageAppTest', () => {
 
   suite('Theming', () => {
     test('setting theme updates ntp', async () => {
+      // Arrange.
+      app.style.setProperty(
+          '--color-new-tab-page-background', 'rgb(255, 0, 0)');
+
       // Act.
       callbackRouterRemote.setTheme(createTheme());
       await callbackRouterRemote.$.flushForTesting();
@@ -382,6 +386,8 @@ suite('NewTabPageAppTest', () => {
       assertEquals(
           0xffff0000 /* red */,
           (await backgroundManager.whenCalled('setBackgroundColor')).value);
+      assertStyle(
+          $$(app, '#rhsContent')!, 'background-color', 'rgb(255, 0, 0)');
       assertStyle(
           $$(app, '#content')!, '--color-new-tab-page-attribution-foreground',
           'rgba(0, 0, 255, 1.00)');
@@ -414,6 +420,8 @@ suite('NewTabPageAppTest', () => {
 
     test('setting background image shows image', async () => {
       // Arrange.
+      app.style.setProperty(
+          '--color-new-tab-page-background', 'rgb(255, 0, 0)');
       const theme = createTheme();
       theme.backgroundImage = createBackgroundImage('https://img.png');
 
@@ -421,10 +429,13 @@ suite('NewTabPageAppTest', () => {
       backgroundManager.resetResolver('setShowBackgroundImage');
       callbackRouterRemote.setTheme(theme);
       await callbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
 
       // Assert.
       assertEquals(1, backgroundManager.getCallCount('setShowBackgroundImage'));
       assertTrue(await backgroundManager.whenCalled('setShowBackgroundImage'));
+      assertStyle(
+          $$(app, '#rhsContent')!, 'background-color', 'rgba(0, 0, 0, 0)');
 
       // Scrim removal will remove text shadows as background protection is
       // applied to the background element instead.
