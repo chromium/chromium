@@ -99,6 +99,7 @@ source_set("unit_tests") {
 
     # Gather unit tests from subdirectories.
     "//chrome/browser/ash/arc/input_overlay/actions:unit_tests",
+    "//chrome/browser/ash/arc/input_overlay/db:unit_tests",
     "//chrome/browser/ash/arc/input_overlay/ui:unit_tests",
   ]
 }

@@ -63,12 +63,27 @@ DataController::~DataController() = default;
 
 base::FilePath DataController::GetFilePathFromPackageName(
     const std::string& package_name) {
-  base::FilePath file_path(storage_dir_);
-  return file_path.Append(package_name);
+  // `package_name` is provided by the ARC side and must stay a single path
+  // component so that the data file is located directly inside of
+  // `storage_dir_`.
+  const base::FilePath package_path(package_name);
+  if (package_path.empty() || package_path.IsAbsolute() ||
+      package_path.ReferencesParent() ||
+      package_path != package_path.BaseName() ||
+      package_path.value() == base::FilePath::kCurrentDirectory) {
+    LOG(ERROR) << "Invalid package name {" << package_name
+               << "} for the data file path.";
+    return base::FilePath();
+  }
+  return storage_dir_.Append(package_path);
 }
 
 std::unique_ptr<AppDataProto> DataController::ReadProtoFromFile(
     base::FilePath file_path) {
+  if (file_path.empty()) {
+    return nullptr;
+  }
+
   if (auto base_path = CreateOrGetDirectory(file_path.DirName()); !base_path) {
     return nullptr;
   }
@@ -89,6 +104,10 @@ std::unique_ptr<AppDataProto> DataController::ReadProtoFromFile(
 
 bool DataController::WriteProtoToFile(std::unique_ptr<AppDataProto> proto,
                                       base::FilePath file_path) {
+  if (file_path.empty()) {
+    return false;
+  }
+
   std::string proto_str;
   if (!proto->SerializeToString(&proto_str)) {
     return false;

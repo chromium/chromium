@@ -18,3 +18,19 @@ static_library("db") {
     "//content/public/browser",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "data_controller_unittest.cc" ]
+
+  deps = [
+    ":db",
+    "//base",
+    "//chrome/browser/ash/arc/input_overlay/db/proto",
+    "//chrome/browser/profiles",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
