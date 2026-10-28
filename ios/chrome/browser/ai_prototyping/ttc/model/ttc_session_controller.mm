@@ -52,6 +52,19 @@ void TtcSessionController::OnConversationInitialized() {
   }
   conversation_->SendToolSetUpdate(ttc::GetDefaultToolDefinitions());
   SetLifecycle(TTCSessionLifecycle::kLive);
+  if (lifecycle_ != TTCSessionLifecycle::kLive) {
+    return;
+  }
+  // Starts tracking and extracting page context only after session setup and
+  // toolset registration have completed, so `ContextUpdate` is never queued
+  // ahead of `SessionSetupRequest` or `ToolsetUpdate`.
+  if (voice_focused_web_state_tracker_ &&
+      !voice_focused_web_state_tracker_observation_.IsObserving()) {
+    voice_focused_web_state_tracker_observation_.Observe(
+        voice_focused_web_state_tracker_.get());
+    OnVoiceFocusedWebStateChanged(
+        voice_focused_web_state_tracker_->GetActiveWebState());
+  }
 }
 
 void TtcSessionController::OnConversationClosed() {
@@ -91,7 +104,7 @@ void TtcSessionController::OnConversationError(ttc::ErrorCode error) {
 void TtcSessionController::OnVoiceFocusedWebStateChanged(
     web::WebState* web_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (lifecycle_ == TTCSessionLifecycle::kFinished) {
+  if (lifecycle_ != TTCSessionLifecycle::kLive) {
     return;
   }
   web::WebState* current_web_state =
@@ -116,7 +129,7 @@ void TtcSessionController::OnVoiceFocusedWebStateChanged(
 void TtcSessionController::OnPageContextFetched(
     PageContextWrapperCallbackResponse response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (lifecycle_ == TTCSessionLifecycle::kFinished || !response.has_value()) {
+  if (lifecycle_ != TTCSessionLifecycle::kLive || !response.has_value()) {
     return;
   }
   const optimization_guide::proto::PageContext* page_context =
@@ -200,18 +213,6 @@ void TtcSessionController::StartSession() {
     return;
   }
   conversation_->Start();
-  if (lifecycle_ == TTCSessionLifecycle::kFinished) {
-    return;
-  }
-  // The backend queues outgoing frames until the connection is established, so
-  // page context extraction can start before initialization completes.
-  if (voice_focused_web_state_tracker_ &&
-      !voice_focused_web_state_tracker_observation_.IsObserving()) {
-    voice_focused_web_state_tracker_observation_.Observe(
-        voice_focused_web_state_tracker_.get());
-    OnVoiceFocusedWebStateChanged(
-        voice_focused_web_state_tracker_->GetActiveWebState());
-  }
 }
 
 void TtcSessionController::StopSession() {

@@ -163,6 +163,12 @@ class TtcSessionControllerTest : public PlatformTest {
     return tab_ptr;
   }
 
+  // Returns whether `controller` currently holds an active page context
+  // monitor.
+  bool HasActivePageContextMonitor(const TtcSessionController& controller) {
+    return controller.page_context_monitor_ != nullptr;
+  }
+
   // Simulates completion of an asynchronous page context extraction for
   // `controller`'s active monitor using `url` and `title`.
   void SimulateMonitorExtraction(TtcSessionController& controller,
@@ -529,9 +535,73 @@ TEST_F(TtcSessionControllerTest,
   controller.Disconnect();
 }
 
+// Tests that `TtcSessionController` does not start extracting page context or
+// forwarding `AnnotatedPageContent` during `kInitializing`, and only begins
+// tracking after `OnConversationInitialized` transitions the session to `kLive`
+// and sends `SendToolSetUpdate`.
+TEST_F(TtcSessionControllerTest,
+       TestContextNotExtractedBeforeConversationInitialized) {
+  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile.get());
+  SceneState* scene_state = [[SceneState alloc] init];
+  scene_state.activationLevel = SceneActivationLevelForegroundActive;
+  TestBrowser browser(profile.get(), scene_state);
+  browser_list->AddBrowser(&browser);
+
+  const GURL first_url("https://example.com/first");
+  web::FakeWebState* first_tab_ptr =
+      InsertActiveEligibleTab(browser, profile.get(), first_url);
+
+  FakeTTCSessionAudioController* fake_audio =
+      [[FakeTTCSessionAudioController alloc] init];
+  auto mock_backend =
+      std::make_unique<testing::NiceMock<ttc::MockTtcBackend>>();
+  ttc::MockTtcBackend* mock_backend_ptr = mock_backend.get();
+  auto conversation =
+      std::make_unique<TtcConversation>(fake_audio, std::move(mock_backend));
+  TtcSessionController controller(
+      std::move(conversation),
+      std::make_unique<TtcVoiceFocusedWebStateTracker>(browser_list));
+
+  controller.StartSession();
+  EXPECT_EQ(controller.lifecycle(), TTCSessionLifecycle::kInitializing);
+  EXPECT_EQ(controller.GetVoiceFocusedWebState(), first_tab_ptr);
+  EXPECT_FALSE(HasActivePageContextMonitor(controller));
+
+  // Direct calls to `OnVoiceFocusedWebStateChanged` or `OnPageContextFetched`
+  // while still `kInitializing` must be ignored.
+  EXPECT_CALL(*mock_backend_ptr, SendContextUpdate).Times(0);
+  controller.OnVoiceFocusedWebStateChanged(first_tab_ptr);
+  EXPECT_FALSE(HasActivePageContextMonitor(controller));
+
+  auto premature_context =
+      std::make_unique<optimization_guide::proto::PageContext>();
+  premature_context->set_url(first_url.spec());
+  premature_context->set_title("First Tab");
+  premature_context->mutable_annotated_page_content();
+  controller.OnPageContextFetched(base::ok(std::move(premature_context)));
+
+  // Once the conversation initializes, `SendToolSetUpdate` is sent and the
+  // active tab monitor is created.
+  EXPECT_CALL(*mock_backend_ptr, SendToolSetUpdate(Not(IsEmpty()))).Times(1);
+  controller.OnConversationInitialized();
+  EXPECT_EQ(controller.lifecycle(), TTCSessionLifecycle::kLive);
+  EXPECT_TRUE(HasActivePageContextMonitor(controller));
+
+  EXPECT_CALL(*mock_backend_ptr,
+              SendContextUpdate(first_url, "First Tab", testing::_))
+      .Times(1);
+  SimulateMonitorExtraction(controller, first_url, "First Tab");
+
+  CloseAllWebStates(*browser.GetWebStateList(),
+                    WebStateList::ClosingReason::kDefault);
+  controller.Disconnect();
+  browser_list->RemoveBrowser(&browser);
+}
+
 // Tests that `TtcSessionController` tracks active `WebState` changes within the
 // active `Browser` and forwards extracted `AnnotatedPageContent` updates to the
-// backend.
+// backend once the session is `kLive`.
 TEST_F(TtcSessionControllerTest,
        TestActiveWebStateContextForwardedToBackendOnTabSwitch) {
   std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
@@ -558,6 +628,7 @@ TEST_F(TtcSessionControllerTest,
 
   EXPECT_EQ(controller.GetVoiceFocusedWebState(), first_tab_ptr);
   controller.StartSession();
+  controller.OnConversationInitialized();
   EXPECT_EQ(controller.GetVoiceFocusedWebState(), first_tab_ptr);
 
   EXPECT_CALL(*mock_backend_ptr,
