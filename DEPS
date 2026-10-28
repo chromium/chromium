@@ -287,16 +287,9 @@ vars = {
   # CPython 3 CIPD package version for Siso hermetic toolchain.
   'cpython3_version': 'version:3@3.11.9.chromium.38',
 
-  # reclient options.
-  # download reclient binaries, required for 'use_reclient` gn arg.
-  'download_reclient': False,
   # RBE project to download rewrapper config files for. Only needed if
   # different from the project used in 'rbe_instance'
   'rewrapper_cfg_project': Str(''),
-  # reclient CIPD package
-  'reclient_package': 'infra/rbe/client/',
-  # reclient CIPD package version
-  'reclient_version': 're_client_version:0.185.0.db415f21-gomaip',
 
   # screen-ai CIPD packages
   'screen_ai_linux': 'version:153.05',
@@ -1212,16 +1205,6 @@ deps = {
     ],
     'dep_type': 'cipd',
     'condition': 'host_os == "win"',
-  },
-  'src/buildtools/reclient': {
-    'packages': [
-      {
-        'package': Var('reclient_package') + '${{platform}}',
-        'version': Var('reclient_version'),
-      }
-    ],
-    'condition': 'download_reclient and non_git_source',
-    'dep_type': 'cipd',
   },
 
   'src/content/test/data/gpu/meet_effects_videos': {

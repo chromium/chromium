@@ -12,7 +12,6 @@
 /mac/clang-format
 /mac/gn
 /mac_arm64-format/
-/reclient/
 /third_party/libc++/trunk
 /third_party/libc++abi/trunk
 /third_party/libunwind/trunk
