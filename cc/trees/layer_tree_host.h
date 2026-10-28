@@ -717,6 +717,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostDelegate {
 
   bool in_will_commit() const { return inside_will_commit_; }
 
+  void ScheduleLayerForPostCommitDisposal(scoped_refptr<Layer> layer);
+
   bool in_commit() const {
     return commit_completion_event_ && !commit_completion_event_->IsSignaled();
   }
@@ -1064,6 +1066,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostDelegate {
   bool DoUpdateLayers();
   std::unique_ptr<CommitState> ActivateCommitState();
   void WaitForCommitCompletion(bool for_protected_sequence) const;
+  void DisposeLayersAfterCommit();
 
   void UpdateDeferMainFrameUpdateInternal();
   void UpdatePauseRenderingInternal();
@@ -1121,6 +1124,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostDelegate {
   // Track when we're inside `WillCommit` to ensure commit state is not
   // modified.
   bool inside_will_commit_ = false;
+
+  // Layers queued during `WillCommit` to be detached and cleaned up once the
+  // commit completes.
+  LayerList layers_to_dispose_;
 
   // Set to force a commit during BeginMainFrame even if there are no actual
   // rendering changes, to ensure the bits in CommitState are propagated.

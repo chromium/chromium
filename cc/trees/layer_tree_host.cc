@@ -277,6 +277,7 @@ LayerTreeHost::~LayerTreeHost() {
   // Clear any references into the LayerTreeHost.
   mutator_host()->SetMutatorHostDelegate(nullptr);
 
+  layers_to_dispose_.clear();
   if (root_layer()) {
     root_layer()->SetLayerTreeHost(nullptr);
 
@@ -565,6 +566,7 @@ void LayerTreeHost::CommitComplete(int source_frame_number,
   if (!in_commit()) {
     mutator_host()->RemoveStaleTimelines();
     mutator_host()->RemoveStaleTriggers();
+    DisposeLayersAfterCommit();
   }
   if (commit_completion_event_ && commit_completion_event_->IsSignaled())
     WaitForCommitCompletion(/* for_protected_sequence */ false);
@@ -573,6 +575,27 @@ void LayerTreeHost::CommitComplete(int source_frame_number,
   if (did_complete_scale_animation_) {
     client_->DidCompletePageScaleAnimation(source_frame_number);
     did_complete_scale_animation_ = false;
+  }
+}
+
+void LayerTreeHost::ScheduleLayerForPostCommitDisposal(
+    scoped_refptr<Layer> layer) {
+  DCHECK(IsMainThread());
+  CHECK(inside_will_commit_);
+  DCHECK(layer);
+  DCHECK_EQ(layer->layer_tree_host(), this);
+  layers_to_dispose_.push_back(std::move(layer));
+}
+
+void LayerTreeHost::DisposeLayersAfterCommit() {
+  DCHECK(IsMainThread());
+  CHECK(!inside_will_commit_);
+  if (layers_to_dispose_.empty()) {
+    return;
+  }
+  LayerList layers = std::move(layers_to_dispose_);
+  for (auto& layer : layers) {
+    layer->RemoveFromParent();
   }
 }
 
@@ -1302,6 +1325,7 @@ void LayerTreeHost::UpdateBrowserControlsState(
 void LayerTreeHost::AnimateLayers(base::TimeTicks monotonic_time) {
   mutator_host()->RemoveStaleTimelines();
   mutator_host()->RemoveStaleTriggers();
+  DisposeLayersAfterCommit();
 
   std::unique_ptr<MutatorEvents> events = mutator_host()->CreateEvents();
 

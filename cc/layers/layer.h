@@ -785,6 +785,11 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // default layers are not snapped.
   virtual bool IsSnappedToPixelGridInTarget() const;
 
+  // Disconnects any external client held by a subclass. When called while
+  // attached to a LayerTreeHost during `in_will_commit()`, subclasses must only
+  // clear their main-thread client pointer without modifying commit state.
+  virtual void ClearClient() {}
+
   // Internal method that is called when a Layer is attached to a LayerTreeHost.
   // This would happen when
   // a) the Layer is added to an existing Layer tree that is attached to a

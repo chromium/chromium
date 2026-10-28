@@ -19,6 +19,7 @@
 #include "cc/layers/texture_layer_client.h"
 #include "cc/layers/texture_layer_impl.h"
 #include "cc/paint/tone_map_util.h"
+#include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_impl.h"
 
 namespace cc {
@@ -43,6 +44,9 @@ TextureLayer::~TextureLayer() = default;
 
 void TextureLayer::ClearClient() {
   client_.Write(*this) = nullptr;
+  if (IsAttached() && layer_tree_host()->in_will_commit()) {
+    return;
+  }
   ClearTexture();
   UpdateDrawsContent();
 }
