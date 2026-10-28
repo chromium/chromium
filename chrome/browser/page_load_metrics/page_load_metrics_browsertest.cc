@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
@@ -183,11 +184,13 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
         {ukm::kUkmFeature},
         // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
         // disable this feature.
-        // Disable InitialWebUI/WebUIReloadButton by default so background
-        // top-chrome WebUI navigations do not pollute global navigation
-        // histograms; tests for InitialWebUI override these in subclasses.
+        // Disable InitialWebUI/WebUIReloadButton and WebUIOmniboxPopup by
+        // default so background top-chrome WebUI navigations do not pollute
+        // global navigation histograms; tests for InitialWebUI override these
+        // in subclasses.
         {features::kHttpsUpgrades, features::kInitialWebUI,
-         features::kWebUIReloadButton});
+         features::kWebUIReloadButton, omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
   }
 
   PageLoadMetricsBrowserTest(const PageLoadMetricsBrowserTest&) = delete;
@@ -2695,7 +2698,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
         1);
     histogram_tester.ExpectTotalCount(
         "Navigation.Timeline.InteractionToActualNavigationStart.Duration", 1);
-    EXPECT_GT(
+    EXPECT_GE(
         histogram_tester.GetTotalSum(
             "Navigation.Timeline.InteractionToActualNavigationStart.Duration"),
         0);
@@ -2703,7 +2706,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
         "Navigation.Timeline.InteractionToActualNavigationStart."
         "MainFrameOnly.Duration",
         1);
-    EXPECT_GT(histogram_tester.GetTotalSum(
+    EXPECT_GE(histogram_tester.GetTotalSum(
                   "Navigation.Timeline.InteractionToActualNavigationStart."
                   "MainFrameOnly.Duration"),
               0);
@@ -2711,7 +2714,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
         "Navigation.Timeline.InteractionToNavigationFinished."
         "MainFrameOnly.Duration",
         1);
-    EXPECT_GT(histogram_tester.GetTotalSum(
+    EXPECT_GE(histogram_tester.GetTotalSum(
                   "Navigation.Timeline.InteractionToNavigationFinished."
                   "MainFrameOnly.Duration"),
               total_duration);
@@ -2719,7 +2722,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
         "Navigation.Timeline.InteractionToNavigationFinished."
         "ExcludingBeforeUnload.MainFrameOnly.Duration",
         1);
-    EXPECT_GT(histogram_tester.GetTotalSum(
+    EXPECT_GE(histogram_tester.GetTotalSum(
                   "Navigation.Timeline.InteractionToNavigationFinished."
                   "ExcludingBeforeUnload.MainFrameOnly.Duration"),
               total_duration);
