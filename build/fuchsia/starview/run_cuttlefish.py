@@ -325,7 +325,8 @@ def _bind_mount_test_data_root(adb_path, adb_port):
     FUSE filesystem (/sdcard). Bind-mounting the test data root directly
     from underlying media storage bypasses FUSE while ensuring unprivileged
     test processes have permissions for both mmap() and creating temporary
-    directories.
+    directories. Also ensures standard Download directories exist for test
+    output XML artifacts.
     """
     target = f'127.0.0.1:{adb_port}'
     logging.info("Configuring mmap-capable test data root on Starnix...")
@@ -370,6 +371,25 @@ def _bind_mount_test_data_root(adb_path, adb_port):
             f"Successfully bind-mounted {source_root} "
             "over /sdcard/chromium_tests_root"
         )
+
+    # Ensure Download directories exist and are writable so test runners can
+    # write gtest output XML files and adb pull succeeds during list_tests.
+    download_root = '/mnt/pass_through/0/emulated/0/Download'
+    _run_shell_cmd(['mkdir', '-p', download_root])
+    _run_shell_cmd(['chmod', '777', download_root])
+    _run_shell_cmd(
+        ['chcon', '-R', 'u:object_r:media_rw_data_file:s0', download_root]
+    )
+    _run_shell_cmd(
+        [
+            'mkdir',
+            '-p',
+            '/storage/emulated/0/Download',
+            '/sdcard/Download',
+        ]
+    )
+    _run_shell_cmd(['chmod', '777', '/storage/emulated/0/Download'])
+    _run_shell_cmd(['chmod', '777', '/sdcard/Download'])
     return True
 
 

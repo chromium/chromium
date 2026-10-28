@@ -115,7 +115,7 @@ class CuttlefishInstance:
 
         def _starnix_wait_until_fully_booted(device_self, *args, **kwargs):
             try:
-                device_self._cache['external_storage'] = '/data/local/tmp'
+                device_self._cache['external_storage'] = '/sdcard'
                 device_self._cache['current_user'] = 0
                 device_self._cache['needs_su'] = False
             except Exception:
