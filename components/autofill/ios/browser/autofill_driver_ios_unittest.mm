@@ -20,6 +20,7 @@
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_bridge.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_factory_test_api.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/common/features.h"
@@ -137,6 +138,13 @@ using testing::Eq;
 using testing::Optional;
 using testing::Property;
 
+// Origin of the frames used in tests.
+constexpr char kTestFrameOrigin[] = "https://example.com";
+// ID of a frame that is never registered in the frames manager.
+constexpr char kUnregisteredFrameId[] = "22222222222222222222222222222222";
+// Name of the form looked up by `FetchFormsFilteredByName`.
+constexpr char16_t kTestFormName[] = u"form";
+
 class AutofillDriverIOSTest : public web::WebTest {
  protected:
   void SetUp() override {
@@ -145,7 +153,7 @@ class AutofillDriverIOSTest : public web::WebTest {
     OverrideJavaScriptFeatures(
         {autofill::AutofillJavaScriptFeature::GetInstance()});
 
-    GURL url("https://example.com");
+    GURL url(kTestFrameOrigin);
     web_state_.SetCurrentURL(url);
     web_state_.SetBrowserState(GetBrowserState());
     web_state_.SetContentIsHTML(true);
@@ -189,6 +197,14 @@ class AutofillDriverIOSTest : public web::WebTest {
   AutofillDriverIOS* main_frame_driver() { return main_frame_driver_; }
   AutofillDriverIOS* iframe_driver() { return iframe_driver_; }
   FakeAutofillDriverIOSBridge* bridge() { return test_bridge_; }
+
+  // Returns the driver of `frame`, which isn't registered in the frames
+  // manager, so that the driver's `web_frame()` is null, as it is once the
+  // driver's frame is gone.
+  AutofillDriverIOS* DriverForUnregisteredFrame(web::WebFrame* frame) {
+    return test_api(autofill_client_->GetAutofillDriverFactory())
+        .DriverForFrame(frame);
+  }
 
   FormData MakeForm(bool main_frame) {
     FormGlobalId form_id{main_frame ? main_frame_driver()->GetFrameToken()
@@ -417,6 +433,28 @@ TEST_F(AutofillDriverIOSTest, TriggerFormExtractionInAllFrames_Failure) {
   main_frame_driver()->TriggerFormExtractionInAllFrames(future.GetCallback());
 
   EXPECT_FALSE(future.Get());
+}
+
+// Tests that `FetchFormsFilteredByName` runs its completion with `std::nullopt`
+// when the driver's frame is gone, so that callers querying suggestion
+// availability don't stall.
+TEST_F(AutofillDriverIOSTest, FetchFormsFilteredByName_NoWebFrame) {
+  std::unique_ptr<web::FakeWebFrame> unregistered_frame =
+      web::FakeWebFrame::Create(kUnregisteredFrameId, /*is_main_frame=*/false,
+                                GURL(kTestFrameOrigin));
+  AutofillDriverIOS* driver =
+      DriverForUnregisteredFrame(unregistered_frame.get());
+  ASSERT_TRUE(driver);
+  ASSERT_FALSE(driver->web_frame());
+
+  base::test::TestFuture<std::optional<std::vector<FormData>>> future;
+  driver->FetchFormsFilteredByName(kTestFormName, future.GetCallback());
+
+  // Without a frame there is nothing to wait for: the completion must run
+  // synchronously.
+  ASSERT_TRUE(future.IsReady())
+      << "The completion handler did not run synchronously.";
+  EXPECT_EQ(future.Get(), std::nullopt);
 }
 
 // Test that `ApplyFieldAction` directly calls bridge when the frame has not

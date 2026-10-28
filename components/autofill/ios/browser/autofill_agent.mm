@@ -345,6 +345,12 @@ bool HasGuid(const Suggestion::Payload& payload) {
                             frame:frame
                          webState:webState
                 completionHandler:completion];
+    } else if (completion) {
+      // Run `completion` with `NO` when the lookup doesn't yield a single form
+      // so callers querying suggestion availability (e.g.
+      // `FormSuggestionController`'s provider loop on field focus) can advance
+      // to the next provider or clear stale suggestions without stalling.
+      completion(NO);
     }
   };
 

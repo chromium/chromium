@@ -6,12 +6,14 @@
 
 #import <optional>
 #import <string>
+#import <string_view>
 #import <variant>
 
 #import "base/apple/bundle_locations.h"
 #import "base/functional/callback_helpers.h"
 #import "base/json/json_writer.h"
 #import "base/memory/raw_ptr.h"
+#import "base/memory/scoped_refptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/strings/strcat.h"
 #import "base/strings/string_number_conversions.h"
@@ -67,6 +69,7 @@
 #import "ui/base/resource/resource_bundle.h"
 #import "ui/gfx/image/image_unittest_util.h"
 #import "url/gurl.h"
+#import "url/origin.h"
 
 using autofill::AutofillJavaScriptFeature;
 using autofill::FieldDataManager;
@@ -84,6 +87,32 @@ using autofill::AutofillDriverIOS;
 using autofill::AutofillDriverIOSFactory;
 
 constexpr char kTestFrameId[] = "11111111111111111111111111111111";
+
+// Name of the form queried by the suggestion availability tests.
+constexpr char kTestFormName[] = "form";
+// Origin of the fake main frame, which extracted forms must match.
+constexpr char kTestFrameOrigin[] = "https://example.com";
+// JavaScript function that extracts the forms of a frame.
+constexpr char kExtractFormsFunction[] = "autofill.extractForms";
+// Payload returned by `kExtractFormsFunction` that isn't valid JSON, which
+// makes form extraction yield `std::nullopt`.
+constexpr char kInvalidExtractedFormsJson[] = "not json";
+
+// Returns the JSON payload `kExtractFormsFunction` returns when the main frame
+// contains `form_count` field-less forms, all named `kTestFormName`.
+std::string ExtractedFormsJson(size_t form_count) {
+  base::ListValue forms;
+  for (size_t i = 0; i < form_count; ++i) {
+    base::DictValue form;
+    form.Set("name", kTestFormName);
+    form.Set("origin", kTestFrameOrigin);
+    form.Set("host_frame", kTestFrameId);
+    form.Set("renderer_id", base::NumberToString(i + 1));
+    form.Set("fields", base::ListValue());
+    forms.Append(std::move(form));
+  }
+  return base::WriteJson(forms).value_or("");
+}
 
 // Returns the minimal FormData content for testing filling.
 std::vector<autofill::FormFieldData::FillData>
@@ -218,6 +247,35 @@ class AutofillAgentTest : public web::WebTest {
         web::FakeWebFrame::CreateChildWebFrame();
     frame->set_browser_state(GetBrowserState());
     return frame;
+  }
+
+  // Calls `checkIfSuggestionsAvailableForForm:` for a user-initiated focus on
+  // a field of `kTestFormName` in the main frame, while form extraction in that
+  // frame returns `extracted_forms_json`, which must outlive the query.
+  // `completion_callback` receives the value the completion is invoked with.
+  void CheckIfSuggestionsAvailableWithExtractedForms(
+      base::Value* extracted_forms_json,
+      base::OnceCallback<void(BOOL)> completion_callback) {
+    fake_main_frame_->AddJsResultForFunctionCall(extracted_forms_json,
+                                                 kExtractFormsFunction);
+
+    FormSuggestionProviderQuery* form_query =
+        [[FormSuggestionProviderQuery alloc]
+            initWithFormName:base::SysUTF8ToNSString(kTestFormName)
+              formRendererID:FormRendererId(1)
+             fieldIdentifier:@"address"
+             fieldRendererID:FieldRendererId(2)
+                   fieldType:FieldType::kText
+                        type:ActivityType::kFocus
+                  typedValue:@""
+                     frameID:base::SysUTF8ToNSString(kTestFrameId)
+                onlyPassword:NO];
+    [autofill_agent_
+        checkIfSuggestionsAvailableForForm:form_query
+                            hasUserGesture:YES
+                                  webState:&fake_web_state_
+                         completionHandler:base::CallbackToBlock(
+                                               std::move(completion_callback))];
   }
 
   // The prefs_ must outlive the fake_web_state_ and the autofill_agent_,
@@ -610,6 +668,130 @@ TEST_F(AutofillAgentTest, CheckIfSuggestionsAvailable_ContentEditableDisabled) {
   EXPECT_FALSE(completion_handler_called);
 
   web::test::WaitForBackgroundTasks();
+}
+
+// Tests that `checkIfSuggestionsAvailableForForm:` invokes its completion with
+// `NO` when no form named like the queried one is extracted, so that callers
+// querying suggestion availability don't stall.
+TEST_F(AutofillAgentTest, CheckIfSuggestionsAvailable_NoFormExtracted) {
+  base::Value extracted_forms(ExtractedFormsJson(/*form_count=*/0));
+  base::test::TestFuture<BOOL> future;
+
+  CheckIfSuggestionsAvailableWithExtractedForms(&extracted_forms,
+                                                future.GetCallback());
+
+  ASSERT_TRUE(future.Wait()) << "The completion was never invoked.";
+  EXPECT_FALSE(future.Get());
+}
+
+// Tests that `checkIfSuggestionsAvailableForForm:` invokes its completion with
+// `NO` when several forms share the queried form name, so that callers querying
+// suggestion availability don't stall.
+TEST_F(AutofillAgentTest, CheckIfSuggestionsAvailable_MultipleFormsExtracted) {
+  constexpr size_t kAmbiguousFormCount = 2;
+  base::Value extracted_forms(ExtractedFormsJson(kAmbiguousFormCount));
+
+  // Precondition: the payload yields several valid forms named like the
+  // queried one, rather than being discarded as invalid.
+  const GURL frame_url = fake_web_state_.GetLastCommittedURL();
+  const url::Origin frame_origin = fake_main_frame_->GetSecurityOrigin();
+  const std::u16string form_name =
+      base::UTF8ToUTF16(std::string_view(kTestFormName));
+  scoped_refptr<FieldDataManager> field_data_manager =
+      base::MakeRefCounted<FieldDataManager>();
+  std::optional<std::vector<autofill::FormData>> parsed_forms =
+      autofill::ExtractFormsData(
+          base::SysUTF8ToNSString(extracted_forms.GetString()), form_name,
+          frame_url, frame_origin, frame_url, *field_data_manager,
+          kTestFrameId);
+  ASSERT_TRUE(parsed_forms);
+  ASSERT_EQ(kAmbiguousFormCount, parsed_forms->size());
+
+  base::test::TestFuture<BOOL> future;
+  CheckIfSuggestionsAvailableWithExtractedForms(&extracted_forms,
+                                                future.GetCallback());
+
+  ASSERT_TRUE(future.Wait()) << "The completion was never invoked.";
+  EXPECT_FALSE(future.Get());
+}
+
+// Tests that `checkIfSuggestionsAvailableForForm:` invokes its completion with
+// `NO` when form extraction fails, so that callers querying suggestion
+// availability don't stall.
+TEST_F(AutofillAgentTest, CheckIfSuggestionsAvailable_FormExtractionFailed) {
+  base::Value extracted_forms(kInvalidExtractedFormsJson);
+  base::test::TestFuture<BOOL> future;
+
+  CheckIfSuggestionsAvailableWithExtractedForms(&extracted_forms,
+                                                future.GetCallback());
+
+  ASSERT_TRUE(future.Wait()) << "The completion was never invoked.";
+  EXPECT_FALSE(future.Get());
+}
+
+// Tests that an in-flight suggestions query is preserved and fulfilled when a
+// subsequent query completes with `NO` through the fallback branch.
+TEST_F(AutofillAgentTest,
+       CheckIfSuggestionsAvailable_PriorInFlightQueryPreserved) {
+  autofill::FormFieldData field;
+  field.set_form_control_type(autofill::FormControlType::kInputText);
+  field.set_name(u"address");
+  field.set_renderer_id(FieldRendererId(2));
+  field.set_is_focusable(true);
+
+  web::WebFrame* main_frame = fake_web_frames_manager_->GetMainWebFrame();
+  ASSERT_NE(nullptr, main_frame);
+  AutofillDriverIOS* main_frame_driver =
+      AutofillDriverIOS::FromWebStateAndWebFrame(&fake_web_state_, main_frame);
+  ASSERT_NE(nullptr, main_frame_driver);
+  field.set_host_frame(main_frame_driver->GetFrameToken());
+
+  autofill::FormData form;
+  form.set_host_frame(main_frame_driver->GetFrameToken());
+  form.set_renderer_id(autofill::FormRendererId(1));
+  field.set_host_form_id(form.renderer_id());
+  form.set_fields({field});
+  main_frame_driver->FormsSeen({form}, {});
+
+  __block BOOL first_completion_called = NO;
+  __block BOOL first_completion_success = NO;
+
+  // Issue first query via `queryAutofillForForm:`, which puts it in flight.
+  [autofill_agent_
+      queryAutofillForForm:form
+           fieldIdentifier:field.renderer_id()
+                      type:autofill::FormActivityParams::ActivityType::kFocus
+                typedValue:@""
+                     frame:fake_web_frames_manager_->GetMainWebFrame()
+                               ->AsWeakPtr()
+                  webState:fake_web_state_.GetWeakPtr()
+         completionHandler:^(BOOL success) {
+           first_completion_called = YES;
+           first_completion_success = success;
+         }];
+
+  EXPECT_FALSE(first_completion_called);
+
+  // Issue a second query that fails form extraction, invoking its completion
+  // with `NO`.
+  base::Value extracted_forms(ExtractedFormsJson(/*form_count=*/0));
+  base::test::TestFuture<BOOL> second_future;
+  CheckIfSuggestionsAvailableWithExtractedForms(&extracted_forms,
+                                                second_future.GetCallback());
+
+  ASSERT_TRUE(second_future.Wait()) << "The completion was never invoked.";
+  EXPECT_FALSE(second_future.Get());
+
+  // The first query must NOT have been cancelled by the second failed query.
+  EXPECT_FALSE(first_completion_called);
+
+  // When suggestions arrive, the first completion handler is fulfilled.
+  [autofill_agent_ onSuggestionsReady:@[
+    SimpleFormSuggestion(u"", autofill::SuggestionType::kAutocompleteEntry)
+  ]];
+
+  EXPECT_TRUE(first_completion_called);
+  EXPECT_TRUE(first_completion_success);
 }
 
 // Tests that issuing a second suggestion query while one is already in-flight

@@ -432,6 +432,11 @@ void AutofillDriverIOS::FetchFormsFilteredByName(
     const std::u16string& form_name,
     FormFetchCompletion completion) {
   if (!web_frame()) {
+    // Report the failed lookup instead of dropping `completion` so callers
+    // querying suggestion availability (e.g. `AutofillAgent`, on behalf of
+    // `FormSuggestionController`'s provider loop) don't stall waiting for a
+    // reply.
+    std::move(completion).Run(std::nullopt);
     return;
   }
 
