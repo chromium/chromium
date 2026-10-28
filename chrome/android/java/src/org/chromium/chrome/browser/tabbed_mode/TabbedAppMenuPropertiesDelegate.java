@@ -1504,9 +1504,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                     mDecorView.getWidth()
                             < DeviceFormFactor.getNonMultiDisplayMinimumTabletWidthPx(mContext);
             boolean appMenuIconsHiddenForWidth =
-                    ChromeFeatureList.sToolbarTabletResizeRefactor.isEnabled()
-                            && mToolbarManager.areAnyToolbarComponentsMissingForWidth(
-                                    ToolbarUtils.APP_MENU_ICON_ROW_COMPONENTS);
+                    mToolbarManager.areAnyToolbarComponentsMissingForWidth(
+                            ToolbarUtils.APP_MENU_ICON_ROW_COMPONENTS);
             shouldShowIconRow = widthOnTabletBelowMinimum || appMenuIconsHiddenForWidth;
         }
 

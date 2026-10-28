@@ -595,7 +595,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw600dp")
-    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testShouldShowIconRow_Tablet_MissingToolbarComponents() {
         doReturn(true).when(mToolbarManager).areAnyToolbarComponentsMissingForWidth(any());
         setDecorViewWidthDp(600);

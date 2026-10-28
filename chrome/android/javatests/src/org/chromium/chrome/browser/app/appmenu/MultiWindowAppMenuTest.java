@@ -56,7 +56,6 @@ import java.util.List;
 // In phones, the New Window option in the app menu is only enabled when already in multi-window or
 // multi-display mode with Chrome not running in an adjacent window.
 @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-@EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
 public class MultiWindowAppMenuTest {
     @Rule
     public FreshCtaTransitTestRule mCtaTestRule =
