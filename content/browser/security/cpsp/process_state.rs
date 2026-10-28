@@ -520,9 +520,6 @@ impl ProcessState {
         self.process_lock.as_ffi()
     }
 
-    // TODO(crbug.com/522872468): Call from `ProcessState::can_commit_url` once
-    // ported to Rust.
-    #[allow(dead_code)]
     fn can_commit_origin(&self, origin: &UniquePtr<ffi::Origin>) -> bool {
         self.origin_map.get(origin) == Some(&CommitRequestPolicy::CommitAndRequest)
     }
@@ -535,9 +532,6 @@ impl ProcessState {
         self.origin_map.contains_key(origin)
     }
 
-    // TODO(crbug.com/522872468): Call from `ProcessState::can_commit_url` once
-    // ported to Rust.
-    #[allow(dead_code)]
     fn can_commit_scheme(&self, scheme: &str) -> bool {
         self.scheme_map.get(scheme) == Some(&CommitRequestPolicy::CommitAndRequest)
     }
@@ -548,6 +542,41 @@ impl ProcessState {
     fn can_request_scheme(&self, scheme: &str) -> bool {
         // Anything in `scheme_map` must have at least request permissions.
         self.scheme_map.contains_key(scheme)
+    }
+
+    // TODO(crbug.com/522872468): Call from the top-level `can_commit_url` and
+    // `ProcessState::can_request_url` once ported to Rust.
+    #[allow(dead_code)]
+    fn can_commit_url(&self, url: &ffi::GURL) -> bool {
+        debug_assert!(
+            !url.scheme_is_blob() && !url.scheme_is_filesystem(),
+            "inner_url extraction should be done already."
+        );
+
+        // Having permission to a scheme implies permission to all of its URLs.
+        if self.can_commit_scheme(url.scheme()) {
+            return true;
+        }
+
+        #[cfg(IS_CHROMEOS)]
+        {
+            // TODO(crbug.com/40226863): Use Crubit to access
+            // `kExternalFileScheme` instead of a string literal (as CXX does
+            // not support C++ constants).
+            if url.scheme_is("externalfile") {
+                return self
+                    .commit_externalfile_set
+                    .contains(&ffi::normalize_external_file_url(url));
+            }
+        }
+
+        // Check for permission for specific origin.
+        if self.can_commit_origin(&url_rust::origin::ffi::create_origin_from_gurl(url)) {
+            return true;
+        }
+
+        // Unmentioned schemes are disallowed.
+        false
     }
 
     fn has_web_ui_bindings(&self) -> bool {
