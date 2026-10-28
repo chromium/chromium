@@ -31,14 +31,81 @@
 
 #include <memory>
 
+#include "base/base_paths.h"
+#include "base/files/file_path.h"
+#include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/path_service.h"
 #include "remoting/host/linux/peer_connection_bpf_policy_linux.h"
+#include "remoting/host/linux/peer_connection_landlock_policy_linux.h"
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
+#include "sandbox/linux/services/proc_util.h"
+#include "sandbox/linux/services/thread_helpers.h"
+#include "sandbox/linux/services/yama.h"
 #endif
 
 namespace remoting {
 
+#if BUILDFLAG(IS_LINUX)
+namespace {
+
+// Restricts filesystem access of the peer connection process with Landlock.
+// `proc_fd` is a file descriptor of /proc. Returns false if the process should
+// not continue.
+bool ApplyLandlockPolicy(int proc_fd) {
+  if (GetLandlockAbiVersion() <= 0) {
+    // Without Landlock, the peer connection process is still non-dumpable and
+    // sandboxed by Seccomp-BPF. The remaining gap is a short window during the
+    // startup of a peer connection process (before it becomes non-dumpable),
+    // in which another peer connection process could access its /proc entries.
+    // Yama closes that gap if ptrace_scope is at least 1.
+    if (sandbox::Yama::GetStatus() & sandbox::Yama::STATUS_ENFORCING) {
+      LOG(INFO) << "Landlock is not supported by the kernel.";
+    } else {
+      LOG(WARNING) << "Landlock is not supported by the kernel and Yama "
+                   << "ptrace_scope is 0 (or Yama is disabled). Consider "
+                   << "upgrading the kernel, or setting "
+                   << "kernel.yama.ptrace_scope=1, to fully isolate peer "
+                   << "connection processes from each other.";
+    }
+    return true;
+  }
+
+  // Landlock only restricts the calling thread and the threads it creates
+  // afterwards, so it must be applied while the process is single-threaded.
+  if (!sandbox::ThreadHelpers::IsSingleThreaded(proc_fd)) {
+    LOG(ERROR) << "Cannot apply the Landlock policy: the peer connection "
+               << "process is unexpectedly multi-threaded.";
+    return false;
+  }
+  base::FilePath exe_dir;
+  if (!base::PathService::Get(base::DIR_EXE, &exe_dir)) {
+    LOG(ERROR) << "Failed to get the executable directory.";
+    return false;
+  }
+  if (ApplyPeerConnectionLandlockPolicy({exe_dir}) !=
+      PeerConnectionLandlockResult::kApplied) {
+    LOG(ERROR) << "Failed to apply the Landlock policy.";
+    return false;
+  }
+  return true;
+}
+
+}  // namespace
+#endif  // BUILDFLAG(IS_LINUX)
+
 int PeerConnectionProcessMain() {
+#if BUILDFLAG(IS_LINUX)
+  // SandboxBPF::StartSandbox() opens /proc (and crashes if that fails) unless
+  // it is given a file descriptor of /proc. The Landlock policy denies opening
+  // /proc, so open it first. The Seccomp-BPF sandbox closes it before
+  // installing its filters.
+  base::ScopedFD proc_fd = sandbox::ProcUtil::OpenProc();
+  if (!ApplyLandlockPolicy(proc_fd.get())) {
+    return kInitializationFailed;
+  }
+#endif  // BUILDFLAG(IS_LINUX)
+
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
 
@@ -98,6 +165,7 @@ int PeerConnectionProcessMain() {
           sandbox::SandboxBPF::SeccompLevel::MULTI_THREADED)) {
     sandbox::SandboxBPF sandbox(
         std::make_unique<PeerConnectionBpfPolicyLinux>(getpid()));
+    sandbox.SetProcFd(std::move(proc_fd));
     if (!sandbox.StartSandbox(
             sandbox::SandboxBPF::SeccompLevel::MULTI_THREADED)) {
       LOG(ERROR) << "Failed to engage Seccomp-BPF sandbox in the peer "

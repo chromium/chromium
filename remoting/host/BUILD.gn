@@ -714,6 +714,7 @@ static_library("common") {
   if (is_linux) {
     assert(use_glib)
     deps += [
+      "//sandbox/linux:sandbox_services",
       "//sandbox/linux:seccomp_bpf",
       "//ui/base/glib",
     ]
