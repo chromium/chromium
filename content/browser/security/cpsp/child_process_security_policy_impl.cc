@@ -367,12 +367,6 @@ void LogCanAccessDataForOriginCrashKeys(
   base::debug::SetCrashKeyString(GetAccessTypeKey(), access_type);
 }
 
-void LogCanCommitUrlFailureReason(std::string_view failure_reason) {
-  static auto* const failure_reason_key = base::debug::AllocateCrashKeyString(
-      "cpspi_can_commit_url_failure_reason", base::debug::CrashKeySize::Size64);
-  base::debug::SetCrashKeyString(failure_reason_key, failure_reason);
-}
-
 // If a ChildProcessSecurityPolicy query is unable to find the ProcessState,
 // this indicates a bug in the browser process where the caller is not ensuring
 // the ProcessState is alive as long as needed (e.g., by holding a
@@ -2159,6 +2153,14 @@ bool ChildProcessSecurityPolicyImpl::IsMalformedBlobUrl(const GURL& url) {
 
   // This is a malformed blob URL.
   return true;
+}
+
+// static
+void ChildProcessSecurityPolicyImpl::LogCanCommitUrlFailureReason(
+    std::string_view failure_reason) {
+  static auto* const failure_reason_key = base::debug::AllocateCrashKeyString(
+      "cpspi_can_commit_url_failure_reason", base::debug::CrashKeySize::Size64);
+  base::debug::SetCrashKeyString(failure_reason_key, failure_reason);
 }
 
 bool ChildProcessSecurityPolicyImpl::CanReadFile(ChildProcessId child_id,

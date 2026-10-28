@@ -105,6 +105,15 @@ mod ffi {
         #[cxx_name = "CreateOriginWithDefaultPortIfNecessary"]
         fn create_origin_with_default_port_if_necessary(origin: &Origin) -> UniquePtr<Origin>;
 
+        // TODO(crbug.com/522872468): Call from `can_commit_url` once ported to
+        // Rust.
+        // TODO(crbug.com/575911997): Remove this shim once Rust crash key
+        // support is available.
+        #[allow(dead_code)]
+        #[namespace = "content::rust::child_process_security_policy"]
+        #[cxx_name = "LogCanCommitUrlFailureReason"]
+        fn log_can_commit_url_failure_reason(failure_reason: &str);
+
         #[namespace = "storage"]
         type FileSystemType = super::storage_common_rust::FileSystemType;
 

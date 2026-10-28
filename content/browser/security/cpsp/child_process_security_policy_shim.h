@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "build/build_config.h"
+#include "third_party/rust/cxx/v1/cxx.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -45,6 +46,11 @@ std::unique_ptr<url::Origin> CreateOriginWithDefaultPortIfNecessary(
 // as a heap-allocated object for Rust.
 std::unique_ptr<GURL> NormalizeExternalFileUrl(const GURL& url);
 #endif
+
+// Calls `ChildProcessSecurityPolicyImpl::LogCanCommitUrlFailureReason()`.
+// TODO(crbug.com/575911997): Remove this shim once Rust crash key support is
+// available.
+void LogCanCommitUrlFailureReason(::rust::Str failure_reason);
 
 }  // namespace content::rust::child_process_security_policy
 
