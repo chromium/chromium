@@ -90,7 +90,9 @@ void FilledCardInformationBubbleControllerImpl::SetupAndShowBubble(
 void FilledCardInformationBubbleControllerImpl::SetupBubbleState(
     FilledCardInformationBubbleOptions options) {
   was_bubble_shown_ = false;
-  CHECK(options.IsValid(), base::NotFatalUntil::M162);
+  // TODO(crbug.com/578555608): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(options.IsValid());
   options_ = std::move(options);
   is_user_gesture_ = false;
   should_icon_be_visible_ = true;
