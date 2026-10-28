@@ -33,6 +33,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import urllib.request
 
 from typing import Dict
@@ -401,6 +402,30 @@ def _BuildGradleCmd(build_android_deps_dir, task):
     ]
 
 
+def _EnsureGradleWrapper(max_retries=3, retry_delay_sec=5):
+    """Ensures the Gradle wrapper distribution is downloaded with retries.
+
+    On fresh bot caches, the first gradlew invocation downloads the Gradle
+    distribution zip from services.gradle.org without built-in retries.
+    Bootstrapping the wrapper separately before setupRepository allows
+    transient network errors (e.g. connect or read timeouts) to be retried
+    cleanly.
+    """
+    cmd = [_GRADLEW, '--version']
+    for attempt in range(max_retries + 1):
+        try:
+            RunCommandAndGetOutput(cmd)
+            return
+        except Exception as e:
+            if attempt == max_retries:
+                raise
+            delay = retry_delay_sec * (attempt + 1)
+            logging.warning(
+                'Gradle wrapper bootstrap failed (attempt %d/%d), '
+                'retrying in %ds: %s', attempt + 1, max_retries + 1, delay, e)
+            time.sleep(delay)
+
+
 def _ReduceNameLength(path_str):
     """Returns a shorter path string if needed.
 
@@ -574,6 +599,7 @@ def _RunEngine(args):
         if args.ignore_licenses:
             gradle_cmd.append('-PskipLicenses=true')
 
+        _EnsureGradleWrapper()
         RunCommand(gradle_cmd, print_stdout=True)
 
         logging.info('# Reformat %s.',
