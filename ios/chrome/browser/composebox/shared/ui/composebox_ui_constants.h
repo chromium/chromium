@@ -73,4 +73,7 @@ extern NSString* const kComposeboxTabsAccordionAccessibilityIdentifier;
 // Accessibility identifier for the disclaimer in the Shared Tabs sheet.
 extern NSString* const kComposeboxSharedTabsDisclaimerAccessibilityIdentifier;
 
+// Accessibility identifier for the close button in the Shared Tabs sheet.
+extern NSString* const kComposeboxSharedTabsCloseButtonAccessibilityIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_SHARED_UI_COMPOSEBOX_UI_CONSTANTS_H_

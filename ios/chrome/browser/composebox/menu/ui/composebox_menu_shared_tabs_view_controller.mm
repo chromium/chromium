@@ -27,6 +27,15 @@ namespace {
 // Close button symbol size for the header close button.
 const CGFloat kCloseButtonSymbolPointSize = 15.0;
 
+// Size and trailing padding of the header close button.
+const CGFloat kCloseButtonSize = 40.0;
+const CGFloat kCloseButtonTrailingPadding = 16.0;
+
+// Shadow of the header close button, matching Assistant AIM.
+const CGFloat kCloseButtonShadowOpacity = 0.07;
+const CGFloat kCloseButtonShadowRadius = 3.0;
+const CGFloat kCloseButtonShadowOffsetY = 1.0;
+
 // Navigation bar padding.
 const CGFloat kNavigationBarTopPadding = 8.0;
 const CGFloat kNavigationBarTrailingPadding = 4.0;
@@ -130,13 +139,19 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
                                            primaryAction:nil];
   _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
   _closeButton.tintColor = [UIColor clearColor];
+  _closeButton.accessibilityIdentifier =
+      kComposeboxSharedTabsCloseButtonAccessibilityIdentifier;
   [_closeButton addTarget:self
                    action:@selector(didTapCloseButton)
          forControlEvents:UIControlEventTouchUpInside];
-
-  UIBarButtonItem* closeBarButtonItem =
-      [[UIBarButtonItem alloc] initWithCustomView:_closeButton];
-  navigationItem.rightBarButtonItem = closeBarButtonItem;
+  _closeButton.layer.shadowColor = [UIColor blackColor].CGColor;
+  _closeButton.layer.shadowOpacity = kCloseButtonShadowOpacity;
+  _closeButton.layer.shadowOffset = CGSizeMake(0, kCloseButtonShadowOffsetY);
+  _closeButton.layer.shadowRadius = kCloseButtonShadowRadius;
+  // The close button is laid out over the navigation bar rather than as a bar
+  // button item, because the navigation bar resizes and decorates the custom
+  // views of its items, which prevents matching the Assistant AIM header.
+  [self.view addSubview:_closeButton];
 
   [_navigationBar pushNavigationItem:navigationItem animated:NO];
 
@@ -148,7 +163,14 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
     [_navigationBar.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor
                        constant:-kNavigationBarTrailingPadding],
+    [_closeButton.centerYAnchor
+        constraintEqualToAnchor:_navigationBar.centerYAnchor],
+    [_closeButton.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor
+                       constant:-kCloseButtonTrailingPadding],
   ]];
+  AddSizeConstraints(_closeButton,
+                     CGSizeMake(kCloseButtonSize, kCloseButtonSize));
 }
 
 - (void)setUpDisclaimerTextView {
