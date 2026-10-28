@@ -54,6 +54,12 @@ class FullStreamUIPolicyTest : public testing::Test {
  public:
   FullStreamUIPolicyTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {
+    // Run activity log database tasks on the main thread. By default they run
+    // on a BEST_EFFORT thread pool thread, which on Windows has background
+    // priority with very low I/O priority. On loaded bots, database operations
+    // there can take long enough to exceed test timeouts.
+    SetActivityLogTaskRunnerForTesting(
+        base::SingleThreadTaskRunner::GetCurrentDefault().get());
     base::CommandLine no_program_command_line(base::CommandLine::NO_PROGRAM);
     profile_ = std::make_unique<TestingProfile>();
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -75,6 +81,7 @@ class FullStreamUIPolicyTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
     profile_.reset();
     base::RunLoop().RunUntilIdle();
+    SetActivityLogTaskRunnerForTesting(nullptr);
   }
 
   // A wrapper function for CheckReadFilteredData, so that we don't need to

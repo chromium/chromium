@@ -57,6 +57,12 @@ class CountingPolicyTest : public testing::Test {
  public:
   CountingPolicyTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {
+    // Run activity log database tasks on the main thread. By default they run
+    // on a BEST_EFFORT thread pool thread, which on Windows has background
+    // priority with very low I/O priority. On loaded bots, database operations
+    // there can take long enough to exceed test timeouts.
+    SetActivityLogTaskRunnerForTesting(
+        base::SingleThreadTaskRunner::GetCurrentDefault().get());
     profile_ = std::make_unique<TestingProfile>();
     base::CommandLine::ForCurrentProcess()->
         AppendSwitch(switches::kEnableExtensionActivityLogging);
@@ -74,6 +80,7 @@ class CountingPolicyTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
     profile_.reset();
     base::RunLoop().RunUntilIdle();
+    SetActivityLogTaskRunnerForTesting(nullptr);
   }
 
   // Waits for the task queue for the activity log sequence to empty.
