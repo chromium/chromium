@@ -10,6 +10,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -80,10 +81,9 @@ class WebRtcRtpDumpHandler {
   // by this object.
   ReleasedDumps ReleaseDumps();
 
-  // Adds an RTP packet to the dump. The caller must make sure it's a valid RTP
-  // packet.
-  void OnRtpPacket(const uint8_t* packet_header,
-                   size_t header_length,
+  // Adds an RTP packet header to the dump. `packet_length` is the full packet
+  // length, including its payload. The caller must provide a valid RTP header.
+  void OnRtpPacket(base::span<const uint8_t> packet_header,
                    size_t packet_length,
                    bool incoming);
 

@@ -197,8 +197,7 @@ WebRtcRtpDumpHandler::ReleasedDumps WebRtcRtpDumpHandler::ReleaseDumps() {
   return ReleasedDumps(incoming_dump, outgoing_dump);
 }
 
-void WebRtcRtpDumpHandler::OnRtpPacket(const uint8_t* packet_header,
-                                       size_t header_length,
+void WebRtcRtpDumpHandler::OnRtpPacket(base::span<const uint8_t> packet_header,
                                        size_t packet_length,
                                        bool incoming) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
@@ -208,8 +207,7 @@ void WebRtcRtpDumpHandler::OnRtpPacket(const uint8_t* packet_header,
     return;
   }
 
-  dump_writer_->WriteRtpPacket(
-      packet_header, header_length, packet_length, incoming);
+  dump_writer_->WriteRtpPacket(packet_header, packet_length, incoming);
 }
 
 void WebRtcRtpDumpHandler::StopOngoingDumps(base::OnceClosure callback) {

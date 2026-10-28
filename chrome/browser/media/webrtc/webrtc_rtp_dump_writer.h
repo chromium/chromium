@@ -10,6 +10,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -52,10 +53,11 @@ class WebRtcRtpDumpWriter {
 
   virtual ~WebRtcRtpDumpWriter();
 
-  // Adds a RTP packet to the dump. The caller must make sure it's a valid RTP
-  // packet. No validation is done by this method.
-  virtual void WriteRtpPacket(const uint8_t* packet_header,
-                              size_t header_length,
+  // Adds an RTP packet header to the dump. `packet_length` is the full packet
+  // length, including its payload. The caller must provide a valid RTP header;
+  // no validation is done by this method. The header is copied before
+  // returning.
+  virtual void WriteRtpPacket(base::span<const uint8_t> packet_header,
                               size_t packet_length,
                               bool incoming);
 

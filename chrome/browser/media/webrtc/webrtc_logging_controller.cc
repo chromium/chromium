@@ -427,8 +427,7 @@ void WebRtcLoggingController::OnRtpPacket(
   // |rtp_dump_handler_| could be null if we are waiting for the FILE thread to
   // create/ensure the log directory.
   if (rtp_dump_handler_) {
-    rtp_dump_handler_->OnRtpPacket(packet_header.data(), packet_header.size(),
-                                   packet_length, incoming);
+    rtp_dump_handler_->OnRtpPacket(packet_header, packet_length, incoming);
   }
 }
 

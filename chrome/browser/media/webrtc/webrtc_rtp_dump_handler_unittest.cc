@@ -42,11 +42,10 @@ class FakeDumpWriter : public WebRtcRtpDumpWriter {
         max_size_reached_callback_(max_size_reached_callback),
         end_dump_success_(end_dump_success) {}
 
-  void WriteRtpPacket(const uint8_t* packet_header,
-                      size_t header_length,
+  void WriteRtpPacket(base::span<const uint8_t> packet_header,
                       size_t packet_length,
                       bool incoming) override {
-    current_dump_size_ += header_length;
+    current_dump_size_ += packet_header.size();
     if (current_dump_size_ > max_dump_size_)
       max_size_reached_callback_.Run();
   }
@@ -181,7 +180,7 @@ TEST_F(WebRtcRtpDumpHandlerTest, StoppedWhenMaxSizeReached) {
   EXPECT_TRUE(handler_->StartDump(RTP_DUMP_INCOMING, &error));
 
   std::vector<uint8_t> buffer(100, 0);
-  handler_->OnRtpPacket(&buffer[0], buffer.size(), buffer.size(), true);
+  handler_->OnRtpPacket(buffer, buffer.size(), true);
   base::RunLoop().RunUntilIdle();
 
   // Dumping should have been stopped, so ready to release.
@@ -191,8 +190,8 @@ TEST_F(WebRtcRtpDumpHandlerTest, StoppedWhenMaxSizeReached) {
 
 TEST_F(WebRtcRtpDumpHandlerTest, PacketIgnoredIfDumpingNotStarted) {
   std::vector<uint8_t> buffer(100, 0);
-  handler_->OnRtpPacket(&buffer[0], buffer.size(), buffer.size(), true);
-  handler_->OnRtpPacket(&buffer[0], buffer.size(), buffer.size(), false);
+  handler_->OnRtpPacket(buffer, buffer.size(), true);
+  handler_->OnRtpPacket(buffer, buffer.size(), false);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -208,7 +207,7 @@ TEST_F(WebRtcRtpDumpHandlerTest, PacketIgnoredIfDumpingStopped) {
                      base::Unretained(this)));
 
   std::vector<uint8_t> buffer(100, 0);
-  handler_->OnRtpPacket(&buffer[0], buffer.size(), buffer.size(), true);
+  handler_->OnRtpPacket(buffer, buffer.size(), true);
   base::RunLoop().RunUntilIdle();
 }
 

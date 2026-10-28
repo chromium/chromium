@@ -6,7 +6,6 @@
 
 #include <string.h>
 
-#include "base/compiler_specific.h"
 #include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
@@ -252,10 +251,10 @@ WebRtcRtpDumpWriter::~WebRtcRtpDumpWriter() {
   CHECK(success, base::NotFatalUntil::M161);
 }
 
-void WebRtcRtpDumpWriter::WriteRtpPacket(const uint8_t* packet_header,
-                                         size_t header_length,
-                                         size_t packet_length,
-                                         bool incoming) {
+void WebRtcRtpDumpWriter::WriteRtpPacket(
+    base::span<const uint8_t> packet_header,
+    size_t packet_length,
+    bool incoming) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   static const size_t kMaxInMemoryBufferSize = 65536;
@@ -277,7 +276,7 @@ void WebRtcRtpDumpWriter::WriteRtpPacket(const uint8_t* packet_header,
     WriteRtpDumpFileHeaderBigEndian(start_time_, dest_buffer);
   }
 
-  size_t packet_dump_length = kPacketDumpHeaderSize + header_length;
+  size_t packet_dump_length = kPacketDumpHeaderSize + packet_header.size();
 
   // Flushes the buffer to disk if the buffer is full.
   if (dest_buffer->size() + packet_dump_length > dest_buffer->capacity())
@@ -287,10 +286,7 @@ void WebRtcRtpDumpWriter::WriteRtpPacket(const uint8_t* packet_header,
       start_time_, packet_dump_length, packet_length, dest_buffer);
 
   // Writes the actual RTP packet header.
-  base::Extend(*dest_buffer,
-               // TODO(crbug.com/40284755): WriteRtpPacket should receive a
-               // span, not a pointer+length pair.
-               UNSAFE_BUFFERS(base::span(packet_header, header_length)));
+  base::Extend(*dest_buffer, packet_header);
 }
 
 void WebRtcRtpDumpWriter::EndDump(RtpDumpType type,

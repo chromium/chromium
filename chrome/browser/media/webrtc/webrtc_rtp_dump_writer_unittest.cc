@@ -27,6 +27,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/zlib.h"
 
+constexpr char kFirstLine[] = "#!rtpplay1.0 0.0.0.0/0\n";
+constexpr size_t kDumpFileHeaderSize = 4 * sizeof(uint32_t);
 static const size_t kMinimumRtpHeaderLength = 12;
 
 static std::vector<uint8_t> CreateFakeRtpPacketHeader(
@@ -143,9 +145,6 @@ class WebRtcRtpDumpWriterTest : public testing::Test {
   // Tries to read |dump| as a rtpplay dump file and returns the number of
   // packets found in the dump.
   bool ReadDecompressedDump(base::span<uint8_t> dump, size_t* packet_count) {
-    static const char kFirstLine[] = "#!rtpplay1.0 0.0.0.0/0\n";
-    static const size_t kDumpFileHeaderSize = 4 * sizeof(uint32_t);
-
     *packet_count = 0;
     size_t dump_pos = 0;
 
@@ -269,10 +268,8 @@ TEST_F(WebRtcRtpDumpWriterTest, NoDumpFileIfNoPacketDumped) {
 TEST_F(WebRtcRtpDumpWriterTest, WriteAndFlushSmallSizeDump) {
   std::vector<uint8_t> packet_header = CreateFakeRtpPacketHeader(1u, 2u);
 
-  writer_->WriteRtpPacket(
-      &packet_header[0], packet_header.size(), 100, true);
-  writer_->WriteRtpPacket(
-      &packet_header[0], packet_header.size(), 100, false);
+  writer_->WriteRtpPacket(packet_header, 100, true);
+  writer_->WriteRtpPacket(packet_header, 100, false);
 
   // The scope is used to make sure the EXPECT_CALL is checked before exiting
   // the scope.
@@ -290,6 +287,27 @@ TEST_F(WebRtcRtpDumpWriterTest, WriteAndFlushSmallSizeDump) {
   }
 
   VerifyDumps(1, 1);
+
+  // The dump stores only the header bytes, but records the full packet length.
+  for (const auto& path : {incoming_dump_path_, outgoing_dump_path_}) {
+    std::string compressed_dump;
+    ASSERT_TRUE(base::ReadFileToString(path, &compressed_dump));
+    std::vector<uint8_t> dump;
+    ASSERT_TRUE(Decompress(&compressed_dump, &dump));
+    auto reader = base::SpanReader(base::span(dump));
+    constexpr size_t kFileHeaderSize =
+        std::size(kFirstLine) - 1 + kDumpFileHeaderSize;
+    ASSERT_TRUE(reader.Skip(kFileHeaderSize));
+
+    uint16_t dump_length;
+    ASSERT_TRUE(reader.ReadU16BigEndian(dump_length));
+    EXPECT_EQ(dump_length, 8u + packet_header.size());
+    uint16_t packet_length;
+    ASSERT_TRUE(reader.ReadU16BigEndian(packet_length));
+    EXPECT_EQ(packet_length, 100u);
+    ASSERT_TRUE(reader.Skip(sizeof(uint32_t)));  // Elapsed time.
+    EXPECT_EQ(reader.remaining_span(), base::span(packet_header));
+  }
 }
 
 // Flaky test disabled on Windows (https://crbug.com/40669633).
@@ -315,11 +333,9 @@ TEST_F(WebRtcRtpDumpWriterTest, MAYBE_WriteOverMaxLimit) {
 
     // Write enough packets to overflow the in-memory buffer and max limit.
     for (size_t i = 0; i < kPacketCount; ++i) {
-      writer_->WriteRtpPacket(
-          &packet_header[0], packet_header.size(), 100, true);
+      writer_->WriteRtpPacket(packet_header, 100, true);
 
-      writer_->WriteRtpPacket(
-          &packet_header[0], packet_header.size(), 100, false);
+      writer_->WriteRtpPacket(packet_header, 100, false);
     }
 
     EXPECT_CALL(*this, OnEndDumpDone(true, true));
@@ -354,12 +370,9 @@ TEST_F(WebRtcRtpDumpWriterTest, DestroyWriterBeforeEndDumpCallback) {
 TEST_F(WebRtcRtpDumpWriterTest, EndDumpsSeparately) {
   std::vector<uint8_t> packet_header = CreateFakeRtpPacketHeader(1u, 2u);
 
-  writer_->WriteRtpPacket(
-      &packet_header[0], packet_header.size(), 100, true);
-  writer_->WriteRtpPacket(
-      &packet_header[0], packet_header.size(), 100, true);
-  writer_->WriteRtpPacket(
-      &packet_header[0], packet_header.size(), 100, false);
+  writer_->WriteRtpPacket(packet_header, 100, true);
+  writer_->WriteRtpPacket(packet_header, 100, true);
+  writer_->WriteRtpPacket(packet_header, 100, false);
 
   // The scope is used to make sure the EXPECT_CALL is checked before exiting
   // the scope.
