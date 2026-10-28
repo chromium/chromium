@@ -13,5 +13,5 @@ function undefinedBehaviourTest(input, expected, type) {
 }
 
 undefinedBehaviourTest('calc(1e400px * 1e400)', '3.35544e+07px', 'pixel');
-undefinedBehaviourTest('calc(1e400% * 1e400)', '3.43597e+08px', 'percentage');
+undefinedBehaviourTest('calc(1e400% * 1e400)', '3.40282e+38px', 'percentage');
 </script>

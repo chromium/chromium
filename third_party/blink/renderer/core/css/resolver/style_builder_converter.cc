@@ -2224,10 +2224,10 @@ Length StyleBuilderConverter::ConvertLineHeight(StyleResolverState& state,
     float computed_font_size =
         state.StyleBuilder().GetFontDescription().ComputedSize();
     if (primitive_value->IsPercentage()) {
-      return Length::Fixed(
-          (computed_font_size * ClampTo<int>(primitive_value->ComputePercentage(
-                                    AdjustedZoomConversionData(state)))) /
-          100.0);
+      return Length::Fixed(ClampTo<float>(
+          (computed_font_size * primitive_value->ComputePercentage(
+                                    AdjustedZoomConversionData(state))) /
+          100.0));
     }
     if (primitive_value->IsCalculated()) {
       Length zoomed_length =
