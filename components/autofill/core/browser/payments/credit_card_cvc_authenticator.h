@@ -124,11 +124,6 @@ class CreditCardCvcAuthenticator
   bool UserOptedInToFidoFromSettingsPageOnMobile() const override;
 #endif
 
-  payments::FullCardRequest* GetFullCardRequest();
-
-  base::WeakPtr<payments::FullCardRequest::UIDelegate>
-  GetAsFullCardRequestUIDelegate();
-
   // TODO(crbug.com/40100455): Introduce TestApi instead?
   payments::FullCardRequest& full_card_request_for_testing() {
     return *full_card_request_;

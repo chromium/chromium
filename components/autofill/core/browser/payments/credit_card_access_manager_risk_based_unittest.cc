@@ -247,8 +247,8 @@ TEST_F(
 
   // Expect the context_token is set in the full card request.
   EXPECT_EQ(GetCvcAuthenticator()
-                .GetFullCardRequest()
-                ->GetUnmaskRequestDetailsForTesting()
+                .full_card_request_for_testing()
+                .GetUnmaskRequestDetailsForTesting()
                 ->context_token,
             context_token);
 }

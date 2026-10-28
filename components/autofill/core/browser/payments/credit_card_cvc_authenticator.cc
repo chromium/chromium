@@ -162,20 +162,4 @@ bool CreditCardCvcAuthenticator::UserOptedInToFidoFromSettingsPageOnMobile()
 }
 #endif
 
-payments::FullCardRequest* CreditCardCvcAuthenticator::GetFullCardRequest() {
-  // TODO(crbug.com/40622637): iOS and Android clients should use
-  // CreditCardAccessManager to retrieve cards from payments instead of calling
-  // this function directly.
-  if (!full_card_request_) {
-    full_card_request_ =
-        std::make_unique<payments::FullCardRequest>(&client_.get());
-  }
-  return full_card_request_.get();
-}
-
-base::WeakPtr<payments::FullCardRequest::UIDelegate>
-CreditCardCvcAuthenticator::GetAsFullCardRequestUIDelegate() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
 }  // namespace autofill

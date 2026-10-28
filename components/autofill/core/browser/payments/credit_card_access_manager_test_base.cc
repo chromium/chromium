@@ -454,7 +454,7 @@ void CreditCardAccessManagerTestBase::
       CreditCardCvcAuthenticator& cvc_authenticator =
           payments_autofill_client().GetCvcAuthenticator();
       payments::UnmaskRequestDetails* request_details =
-          cvc_authenticator.GetFullCardRequest()->request_.get();
+          cvc_authenticator.full_card_request_for_testing().request_.get();
       EXPECT_EQ(request_details->card.record_type(),
                 CreditCard::RecordType::kVirtualCard);
       EXPECT_EQ(request_details->card.number(),
