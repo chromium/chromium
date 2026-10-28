@@ -240,6 +240,9 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
   // getting an ack from the renderer.
   void OnInputEventAckTimeout();
 
+  // Cancels any active fling and resets scroll tracking state.
+  void ClearScrollTrackingState();
+
   bool is_currently_scrolling_viewport_ = false;
 
   // We access this value quite a lot, so we cache switches::kDisableHangMonitor
