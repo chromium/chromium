@@ -2519,7 +2519,10 @@ void ChromeFileSystemAccessPermissionContext::CheckPathAgainstBlocklist(
   // The only check for content-URIs is that they are not from an internal
   // FileProvider.
   if (path_info.path.IsContentUri()) {
-    std::move(callback).Run(base::IsContentUriFromThisApp(path_info.path));
+    base::ContentUriOwner owner = base::ResolveContentUriOwner(path_info.path);
+    std::move(callback).Run(
+        owner == base::ContentUriOwner::kExportedFromCurrentApp ||
+        owner == base::ContentUriOwner::kNonExportedFromCurrentApp);
     return;
   }
 #endif  // BUILDFLAG(IS_ANDROID)

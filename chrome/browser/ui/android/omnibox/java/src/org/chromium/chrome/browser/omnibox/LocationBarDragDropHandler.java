@@ -19,6 +19,7 @@ import android.webkit.MimeTypeMap;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContentUriOwner;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -266,10 +267,16 @@ public class LocationBarDragDropHandler implements OnDragListener {
             // from opening private files on behalf of an untrusted drop request.
             if (UiAndroidFeatureMap.isEnabled(
                     UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)) {
-                if (ContentResolver.SCHEME_FILE.equalsIgnoreCase(uri.getScheme())
-                        || (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(uri.getScheme())
-                                && ContentUriUtils.isUriFromThisApp(uri))) {
+                String scheme = uri.getScheme();
+                if (ContentResolver.SCHEME_FILE.equalsIgnoreCase(scheme)) {
                     continue;
+                }
+                if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(scheme)) {
+                    @ContentUriOwner int owner = ContentUriUtils.resolveContentUriOwner(uri);
+                    if (owner == ContentUriOwner.EXPORTED_FROM_CURRENT_APP
+                            || owner == ContentUriOwner.NON_EXPORTED_FROM_CURRENT_APP) {
+                        continue;
+                    }
                 }
             }
 

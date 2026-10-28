@@ -35,6 +35,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ContentUriOwner;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
@@ -156,7 +157,9 @@ public class WebAppLaunchHandler {
         }
 
         // Block Chrome's own Content URIs.
-        if (ContentUriUtils.isUriFromThisApp(uri)) {
+        @ContentUriOwner int owner = ContentUriUtils.resolveContentUriOwner(uri);
+        if (owner == ContentUriOwner.EXPORTED_FROM_CURRENT_APP
+                || owner == ContentUriOwner.NON_EXPORTED_FROM_CURRENT_APP) {
             return false;
         }
 

@@ -27,6 +27,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
+import org.chromium.base.ContentUriOwner;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -859,8 +860,13 @@ public class EventForwarder {
                         // from opening private files on behalf of an untrusted paste request.
                         if (UiAndroidFeatureMap.isEnabled(
                                 UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)) {
-                            if (!ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())
-                                    || ContentUriUtils.isUriFromThisApp(uri)) {
+                            if (!ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
+                                continue;
+                            }
+                            @ContentUriOwner
+                            int owner = ContentUriUtils.resolveContentUriOwner(uri);
+                            if (owner == ContentUriOwner.EXPORTED_FROM_CURRENT_APP
+                                    || owner == ContentUriOwner.NON_EXPORTED_FROM_CURRENT_APP) {
                                 continue;
                             }
                         }

@@ -36,6 +36,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ContentUriOwner;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
@@ -985,8 +986,12 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         if (uri.isOpaque()
                 || parsed.isOpaque()
                 || TextUtils.isEmpty(parsed.getAuthority())
-                || !TextUtils.equals(normalized.getAuthority(), parsed.getAuthority())
-                || ContentUriUtils.isUriFromThisApp(parsed, context)) {
+                || !TextUtils.equals(normalized.getAuthority(), parsed.getAuthority())) {
+            return true;
+        }
+        @ContentUriOwner int owner = ContentUriUtils.resolveContentUriOwner(parsed);
+        if (owner == ContentUriOwner.EXPORTED_FROM_CURRENT_APP
+                || owner == ContentUriOwner.NON_EXPORTED_FROM_CURRENT_APP) {
             return true;
         }
         try (ParcelFileDescriptor pfd =

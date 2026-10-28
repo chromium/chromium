@@ -94,6 +94,7 @@ public class PdfUtilsUnitTest {
 
     @Before
     public void setUp() {
+        ContextUtils.initApplicationContextForTests(mContext);
         PdfUtils.setShouldOpenPdfInlineForTesting(true);
         ChromeFileProvider.setGeneratedUriForTesting(Uri.parse(CONTENT_URL));
         mPdfPageUrl = PdfUtils.encodePdfPageUrl(PDF_LINK);

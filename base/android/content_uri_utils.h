@@ -65,10 +65,6 @@ bool IsDocumentUri(const FilePath& content_uri);
 
 }  // namespace internal
 
-// Returns whether `content_uri` is served by a ContentProvider with the same
-// Android UID as the current process.
-BASE_EXPORT bool IsContentUriFromThisApp(const FilePath& content_uri);
-
 // The owner of the ContentProvider that serves a content URI.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base
 enum class ContentUriOwner {

@@ -132,54 +132,42 @@ public class ContentUriUtilsUnitTest {
     }
 
     @Test
-    public void testIsUriFromThisApp_UsesProcessUidNotContextApplicationUid() {
+    public void testResolveContentUriOwner_UsesProcessUidNotContextApplicationUid() {
         ApplicationInfo contextApplication = new ApplicationInfo();
         contextApplication.uid = Process.myUid() + 1;
         when(mMockContext.getApplicationInfo()).thenReturn(contextApplication);
         mockProvider("shared.uid", "org.chromium.other_package", Process.myUid());
 
-        assertTrue(
-                ContentUriUtils.isUriFromThisApp(
-                        Uri.parse("content://shared.uid/path"), mMockContext));
+        assertEquals(
+                ContentUriOwner.NON_EXPORTED_FROM_CURRENT_APP,
+                ContentUriUtils.resolveContentUriOwner(Uri.parse("content://shared.uid/path")));
     }
 
     @Test
-    public void testIsUriFromThisApp_RejectsSamePackageWithDifferentUid() {
+    public void testResolveContentUriOwner_RejectsSamePackageWithDifferentUid() {
         mockProvider("different.uid", "org.chromium.test", Process.myUid() + 1);
 
-        assertFalse(
-                ContentUriUtils.isUriFromThisApp(
-                        Uri.parse("content://different.uid/path"), mMockContext));
+        assertEquals(
+                ContentUriOwner.OTHER_APP,
+                ContentUriUtils.resolveContentUriOwner(Uri.parse("content://different.uid/path")));
     }
 
     @Test
-    public void testIsUriFromThisApp_ReturnsFalseWithoutProviderApplicationInfo() {
+    public void testResolveContentUriOwner_WithoutProviderApplicationInfo() {
         ProviderInfo provider = new ProviderInfo();
         provider.packageName = "org.chromium.test";
         when(mMockPackageManager.resolveContentProvider("missing.info", 0)).thenReturn(provider);
 
-        assertFalse(
-                ContentUriUtils.isUriFromThisApp(
-                        Uri.parse("content://missing.info/path"), mMockContext));
-        assertFalse(
-                ContentUriUtils.isUriFromThisApp(
-                        Uri.parse("content://unresolved/path"), mMockContext));
+        assertEquals(
+                ContentUriOwner.OTHER_APP,
+                ContentUriUtils.resolveContentUriOwner(Uri.parse("content://missing.info/path")));
+        assertEquals(
+                ContentUriOwner.UNRESOLVED,
+                ContentUriUtils.resolveContentUriOwner(Uri.parse("content://unresolved/path")));
     }
 
     @Test
-    public void testIsUriFromThisApp_UserQualifiedAuthorityUsesBareAuthority() {
-        mockProvider("shared.uid", "org.chromium.other_package", Process.myUid());
-
-        assertTrue(
-                ContentUriUtils.isUriFromThisApp(
-                        Uri.parse("content://10@shared.uid/path"), mMockContext));
-        assertTrue(
-                ContentUriUtils.isUriFromThisApp(
-                        Uri.parse("content://10@work@shared.uid/path"), mMockContext));
-    }
-
-    @Test
-    public void testIsUriFromThisApp_OpaqueUriWithAuthorityInStringForm() {
+    public void testResolveContentUriOwner_OpaqueUriWithAuthorityInStringForm() {
         mockProvider("shared.uid", "org.chromium.other_package", Process.myUid());
 
         // An OpaqueUri reports a null authority even though its string form encodes one. The check
@@ -190,17 +178,19 @@ public class ContentUriUtilsUnitTest {
         assertNull(opaque.getAuthority());
         assertEquals("content://shared.uid/path", opaque.toString());
 
-        assertTrue(ContentUriUtils.isUriFromThisApp(opaque, mMockContext));
+        assertEquals(
+                ContentUriOwner.NON_EXPORTED_FROM_CURRENT_APP,
+                ContentUriUtils.resolveContentUriOwner(opaque));
     }
 
     @Test
-    public void testIsUriFromThisApp_OpaqueUriWithoutAuthorityReturnsFalse() {
-        // An OpaqueUri whose string form has no authority (e.g. "content:foo") must return false
-        // without recursing.
+    public void testResolveContentUriOwner_OpaqueUriWithoutAuthority() {
+        // An OpaqueUri whose string form has no authority (e.g. "content:foo") must resolve to
+        // UNRESOLVED without recursing.
         Uri opaque = new Uri.Builder().scheme("content").encodedOpaquePart("foo").build();
         assertNull(opaque.getAuthority());
 
-        assertFalse(ContentUriUtils.isUriFromThisApp(opaque, mMockContext));
+        assertEquals(ContentUriOwner.UNRESOLVED, ContentUriUtils.resolveContentUriOwner(opaque));
     }
 
     @Test
@@ -209,7 +199,7 @@ public class ContentUriUtilsUnitTest {
 
         assertEquals(
                 ContentUriOwner.EXPORTED_FROM_CURRENT_APP,
-                ContentUriUtils.resolveContentUriOwner("content://exported/path"));
+                ContentUriUtils.resolveContentUriOwner(Uri.parse("content://exported/path")));
     }
 
     @Test
@@ -218,7 +208,7 @@ public class ContentUriUtilsUnitTest {
 
         assertEquals(
                 ContentUriOwner.NON_EXPORTED_FROM_CURRENT_APP,
-                ContentUriUtils.resolveContentUriOwner("content://unexported/path"));
+                ContentUriUtils.resolveContentUriOwner(Uri.parse("content://unexported/path")));
     }
 
     @Test
@@ -227,14 +217,14 @@ public class ContentUriUtilsUnitTest {
 
         assertEquals(
                 ContentUriOwner.OTHER_APP,
-                ContentUriUtils.resolveContentUriOwner("content://different.uid/path"));
+                ContentUriUtils.resolveContentUriOwner(Uri.parse("content://different.uid/path")));
     }
 
     @Test
     public void testResolveContentUriOwner_Unresolved() {
         assertEquals(
                 ContentUriOwner.UNRESOLVED,
-                ContentUriUtils.resolveContentUriOwner("content://unresolved/path"));
+                ContentUriUtils.resolveContentUriOwner(Uri.parse("content://unresolved/path")));
     }
 
     @Test
@@ -244,6 +234,10 @@ public class ContentUriUtilsUnitTest {
 
         assertEquals(
                 ContentUriOwner.NON_EXPORTED_FROM_CURRENT_APP,
-                ContentUriUtils.resolveContentUriOwner("content://10@exported@unexported/path"));
+                ContentUriUtils.resolveContentUriOwner(Uri.parse("content://10@unexported/path")));
+        assertEquals(
+                ContentUriOwner.NON_EXPORTED_FROM_CURRENT_APP,
+                ContentUriUtils.resolveContentUriOwner(
+                        Uri.parse("content://10@exported@unexported/path")));
     }
 }

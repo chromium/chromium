@@ -19,7 +19,6 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.net.Uri;
 import android.os.Build;
@@ -38,9 +37,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.TriState;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -98,7 +99,6 @@ public class ShareDelegateImplUnitTest {
             new OverrideContextWrapperTestRule();
 
     @Mock private Context mContext;
-    @Mock private PackageManager mPackageManager;
     @Mock private RenderFrameHost mRenderFrameHost;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private ShareSheetDelegate mShareSheetController;
@@ -185,7 +185,6 @@ public class ShareDelegateImplUnitTest {
         doAnswer(invocation -> new GURL((String) invocation.getArgument(0)))
                 .when(mDomDistillerUrlUtilsJniMock)
                 .getOriginalUrlFromDistillerUrl(anyString());
-        doReturn(mPackageManager).when(mContext).getPackageManager();
         doReturn("org.chromium.chrome").when(mContext).getPackageName();
 
         // TODO(crbug.com/406591712): Update to stubbing share methods when those are added.
@@ -969,14 +968,15 @@ public class ShareDelegateImplUnitTest {
         doReturn(pdfTitle).when(mTab).getTitle();
         doReturn(mock(WindowAndroid.class)).when(mTab).getWindowAndroid();
 
-        // Setup mock package manager to identify this URI as coming from this app.
+        // Setup package manager to identify this URI as coming from this app.
         ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.name = "org.chromium.chrome.browser.util.ChromeFileProvider";
+        providerInfo.authority = "org.chromium.chrome.FileProvider";
         providerInfo.packageName = "org.chromium.chrome";
         providerInfo.applicationInfo = new ApplicationInfo();
         providerInfo.applicationInfo.uid = Process.myUid();
-        doReturn(providerInfo)
-                .when(mPackageManager)
-                .resolveContentProvider("org.chromium.chrome.FileProvider", 0);
+        Shadows.shadowOf(ContextUtils.getApplicationContext().getPackageManager())
+                .addOrUpdateProvider(providerInfo);
 
         createShareDelegate(false, mShareSheetController);
         mShareDelegate.share(mTab, false, ShareOrigin.OVERFLOW_MENU);

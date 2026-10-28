@@ -31,6 +31,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.ContentUriOwner;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
@@ -350,10 +351,12 @@ public class ClipboardImpl extends Clipboard
         if (!ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
             return false;
         }
-        if (ContentUriUtils.isUriFromThisApp(uri) && !uri.equals(expectedOwnAppUri)) {
-            return false;
+        if (uri.equals(expectedOwnAppUri)) {
+            return true;
         }
-        return true;
+        @ContentUriOwner int owner = ContentUriUtils.resolveContentUriOwner(uri);
+        return owner != ContentUriOwner.EXPORTED_FROM_CURRENT_APP
+                && owner != ContentUriOwner.NON_EXPORTED_FROM_CURRENT_APP;
     }
 
     private boolean isTextUriSafeForRead(Uri uri) {
