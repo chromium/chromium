@@ -9,7 +9,7 @@
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/gfx/native_ui_types.h"
 
 @interface AppShimRenderWidgetHostViewMacDelegate () <HistorySwiperDelegate>
@@ -108,10 +108,12 @@
   bool was_executed = false;
   if (direction == history_swiper::kForwards) {
     bridge->host()->ExecuteCommand(
-        IDC_FORWARD, WindowOpenDisposition::kCurrentTab, false, &was_executed);
+        IDC_FORWARD, ui::mojom::WindowOpenDisposition::kCurrentTab, false,
+        &was_executed);
   } else {
-    bridge->host()->ExecuteCommand(IDC_BACK, WindowOpenDisposition::kCurrentTab,
-                                   false, &was_executed);
+    bridge->host()->ExecuteCommand(
+        IDC_BACK, ui::mojom::WindowOpenDisposition::kCurrentTab, false,
+        &was_executed);
   }
   DCHECK(was_executed);
 }
