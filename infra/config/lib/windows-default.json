@@ -1,20 +1,25 @@
 {
     "try": {
+        "3pp-windows-amd64-packager": "Windows-11",
         "win-arm64-compile-dbg": "Windows-11",
         "win-arm64-dbg": "Windows-11",
+        "win-autotest-tester": "Windows-11",
         "win-asan": "Windows-11",
         "win_chromium_compile_dbg_ng": "Windows-11",
         "win-libfuzzer-asan-rel": "Windows-11",
         "win-rel-cft": "Windows-11",
         "win_upload_clang": "Windows-11",
-        "win_upload_rust": "Windows-11"
+        "win_upload_rust": "Windows-11",
+        "win-utr-tester": "Windows-11"
     },
     "ci": {
+        "3pp-windows-amd64-packager": "Windows-11",
         "Win Builder (dbg)": "Windows-11",
         "Windows deterministic": "Windows-11",
         "Libfuzzer Upload Windows ASan": "Windows-11",
         "win-arm64-dbg": "Windows-11",
         "win-asan": "Windows-11",
-        "win-rel-cft": "Windows-11"
+        "win-rel-cft": "Windows-11",
+        "win-upload-perfetto": "Windows-11"
     }
 }
