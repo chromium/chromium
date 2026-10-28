@@ -7,6 +7,7 @@
 #include <memory>
 #include <string_view>
 
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -17,27 +18,26 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper_testing.h"
 #include "chrome/browser/ash/policy/reporting/user_session_activity/user_session_activity_reporter_delegate.h"
 #include "chrome/browser/ash/power/ml/idle_event_notifier.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/user_session_activity.pb.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "components/account_id/account_id.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
-#include "components/session_manager/core/fake_session_manager_delegate.h"
-#include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user.h"
-#include "components/user_manager/user_names.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -67,9 +67,12 @@ class UserSessionActivityReporterTest : public ::testing::Test {
     session_termination_manager_ =
         std::make_unique<ash::SessionTerminationManager>();
 
-    session_manager_ = std::make_unique<session_manager::SessionManager>(
-        std::make_unique<session_manager::FakeSessionManagerDelegate>());
-    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    auto* browser_process = TestingBrowserProcess::GetGlobal();
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        browser_process->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            browser_process));
     user_session_manager_ = std::make_unique<ash::UserSessionManager>(
         TestingBrowserProcess::GetGlobal()->local_state(),
         TestingBrowserProcess::GetGlobal()
@@ -87,8 +90,7 @@ class UserSessionActivityReporterTest : public ::testing::Test {
   void TearDown() override {
     user_session_manager_->Shutdown();
     user_session_manager_.reset();
-    session_manager_.reset();
-    fake_user_manager_.Reset();
+    user_session_test_environment_.reset();
     session_termination_manager_.reset();
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
     ash::SessionManagerClient::Shutdown();
@@ -112,18 +114,26 @@ class UserSessionActivityReporterTest : public ::testing::Test {
   }
 
   user_manager::User* CreateUser(bool is_affiliated) {
-    AccountId account_id = AccountId::FromUserEmail(base::StrCat(
-        {(is_affiliated ? "affiliated" : "unaffiliated"), "@foobar.com"}));
-
-    return fake_user_manager_->AddUserWithAffiliation(account_id,
-                                                      is_affiliated);
+    const AccountId account_id = AccountId::FromUserEmailGaiaId(
+        base::StrCat(
+            {(is_affiliated ? "affiliated" : "unaffiliated"), "@foobar.com"}),
+        GaiaId(is_affiliated ? "1001" : "1002"));
+    user_manager::User* user =
+        user_session_test_environment_->AddRegularUser(account_id);
+    CHECK(user);
+    user_manager::UserManager::Get()->SetUserPolicyStatus(
+        account_id, /*is_managed=*/is_affiliated, is_affiliated);
+    return user;
   }
 
   user_manager::User* CreateManagedGuestUser() {
-    AccountId account_id =
-        AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
-            "managed_guest", policy::DeviceLocalAccountType::kPublicSession));
-    return fake_user_manager_->AddPublicAccountUser(account_id);
+    user_manager::User* user =
+        user_session_test_environment_->AddPublicAccountUser(
+            GenerateDeviceLocalAccountUserId(
+                "managed_guest",
+                policy::DeviceLocalAccountType::kPublicSession));
+    CHECK(user);
+    return user;
   }
 
   void ActiveUserChanged(UserSessionActivityReporter* reporter,
@@ -143,6 +153,10 @@ class UserSessionActivityReporterTest : public ::testing::Test {
   }
 
   // NOTE: InstallAttributes is required to construct BrowserPolicyConnectorAsh.
+  // CrosSettings is needed because otherwise TestingProfile automatically
+  // creates ScopedCrosSettingsTestHelper, which conflicts with
+  // ScopedStubInstallAttributes.
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
 
   content::BrowserTaskEnvironment task_environment_{
@@ -150,9 +164,8 @@ class UserSessionActivityReporterTest : public ::testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
 
   std::unique_ptr<ash::SessionTerminationManager> session_termination_manager_;
-  std::unique_ptr<session_manager::SessionManager> session_manager_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<ash::UserSessionManager> user_session_manager_;
 };
 
@@ -198,6 +211,7 @@ TEST_F(UserSessionActivityReporterTest, StartAndEndSession) {
   policy::ManagedSessionService managed_session_service;
 
   auto* user = CreateAffiliatedUser();
+  user_session_test_environment_->LogIn(user->GetAccountId());
 
   auto delegate =
       std::make_unique<NiceMock<MockUserSessionActivityReporterDelegate>>();
@@ -222,8 +236,9 @@ TEST_F(UserSessionActivityReporterTest, StartAndEndSession) {
                 SetSessionEndEvent(SessionEndEvent_Reason_LOGOUT, user, _));
   }
 
-  std::unique_ptr<UserSessionActivityReporter> reporter = CreateReporter(
-      &managed_session_service, fake_user_manager_.Get(), std::move(delegate));
+  std::unique_ptr<UserSessionActivityReporter> reporter =
+      CreateReporter(&managed_session_service, user_manager::UserManager::Get(),
+                     std::move(delegate));
 
   // Start session by logging in.
   ActiveUserChanged(reporter.get(), user);
@@ -263,8 +278,9 @@ TEST_F(UserSessionActivityReporterTest, ActiveUserChanged_MultiUserSession) {
                                      next_user, _));
   }
 
-  std::unique_ptr<UserSessionActivityReporter> reporter = CreateReporter(
-      &managed_session_service, fake_user_manager_.Get(), std::move(delegate));
+  std::unique_ptr<UserSessionActivityReporter> reporter =
+      CreateReporter(&managed_session_service, user_manager::UserManager::Get(),
+                     std::move(delegate));
 
   // Login `current_user`.
   ActiveUserChanged(reporter.get(), current_user);
@@ -278,6 +294,7 @@ TEST_F(UserSessionActivityReporterTest, ReportWhenSessionEnds) {
   policy::ManagedSessionService managed_session_service;
 
   auto* user = CreateAffiliatedUser();
+  user_session_test_environment_->LogIn(user->GetAccountId());
 
   auto delegate =
       std::make_unique<NiceMock<MockUserSessionActivityReporterDelegate>>();
@@ -288,8 +305,9 @@ TEST_F(UserSessionActivityReporterTest, ReportWhenSessionEnds) {
     run_loop.Quit();
   });
 
-  std::unique_ptr<UserSessionActivityReporter> reporter = CreateReporter(
-      &managed_session_service, fake_user_manager_.Get(), std::move(delegate));
+  std::unique_ptr<UserSessionActivityReporter> reporter =
+      CreateReporter(&managed_session_service, user_manager::UserManager::Get(),
+                     std::move(delegate));
 
   // Trigger session start.
   ActiveUserChanged(reporter.get(), user);
@@ -313,8 +331,9 @@ TEST_F(UserSessionActivityReporterTest,
   // triggers twice.
   EXPECT_CALL(*delegate, ReportSessionActivity()).Times(2);
 
-  std::unique_ptr<UserSessionActivityReporter> reporter = CreateReporter(
-      &managed_session_service, fake_user_manager_.Get(), std::move(delegate));
+  std::unique_ptr<UserSessionActivityReporter> reporter =
+      CreateReporter(&managed_session_service, user_manager::UserManager::Get(),
+                     std::move(delegate));
 
   // Start the reporting timer by starting a session.
   ActiveUserChanged(reporter.get(), user);
@@ -338,8 +357,9 @@ TEST_F(UserSessionActivityReporterTest, PeriodicallyCollectDeviceIdleState) {
   EXPECT_CALL(*delegate, AddActiveIdleState(/*user_is_active=*/_, user, _))
       .Times(2);
 
-  std::unique_ptr<UserSessionActivityReporter> reporter = CreateReporter(
-      &managed_session_service, fake_user_manager_.Get(), std::move(delegate));
+  std::unique_ptr<UserSessionActivityReporter> reporter =
+      CreateReporter(&managed_session_service, user_manager::UserManager::Get(),
+                     std::move(delegate));
 
   // Start the collection timer by starting a session.
   // ActiveUserChanged(reporter.get(), user);
@@ -368,8 +388,8 @@ TEST_F(UserSessionActivityReporterTest, AllowRegularUsersAndManagedGuestUsers) {
                 SetSessionStartEvent(SessionStartEvent_Reason_LOGIN, user, _));
 
     std::unique_ptr<UserSessionActivityReporter> reporter =
-        CreateReporter(&managed_session_service, fake_user_manager_.Get(),
-                       std::move(delegate));
+        CreateReporter(&managed_session_service,
+                       user_manager::UserManager::Get(), std::move(delegate));
 
     // Trigger session start.
     ActiveUserChanged(reporter.get(), user);
@@ -380,26 +400,30 @@ TEST_F(UserSessionActivityReporterTest,
        IgnoreKioskUsersGuestsUsersAndChildUsers) {
   policy::ManagedSessionService managed_session_service;
 
-  AccountId account_id = AccountId::FromUserEmail("testuser@foobar.com");
-
   // Create a list of users with types that should be ignored.
   user_manager::User* kIgnoredUserTypes[] = {
-      fake_user_manager_->AddKioskChromeAppUser(account_id),
-      fake_user_manager_->AddKioskWebAppUser(account_id),
-      fake_user_manager_->AddGuestUser(),
-      fake_user_manager_->AddChildUser(account_id),
+      user_session_test_environment_->AddKioskChromeAppUser(
+          GenerateDeviceLocalAccountUserId(
+              "kiosk_chrome_app", policy::DeviceLocalAccountType::kKioskApp)),
+      user_session_test_environment_->AddKioskWebAppUser(
+          GenerateDeviceLocalAccountUserId(
+              "kiosk_web_app", policy::DeviceLocalAccountType::kWebKioskApp)),
+      user_session_test_environment_->AddGuestUser(),
+      user_session_test_environment_->AddChildUser(
+          AccountId::FromUserEmailGaiaId("child@foobar.com", GaiaId("1003"))),
   };
 
   // Verify the session does NOT start for each type of disallowed user.
   for (auto* user : kIgnoredUserTypes) {
+    ASSERT_TRUE(user);
     auto delegate =
         std::make_unique<NiceMock<MockUserSessionActivityReporterDelegate>>();
 
     EXPECT_CALL(*delegate, SetSessionStartEvent(_, _, _)).Times(0);
 
     std::unique_ptr<UserSessionActivityReporter> reporter =
-        CreateReporter(&managed_session_service, fake_user_manager_.Get(),
-                       std::move(delegate));
+        CreateReporter(&managed_session_service,
+                       user_manager::UserManager::Get(), std::move(delegate));
 
     // Trigger session start.
     ActiveUserChanged(reporter.get(), user);

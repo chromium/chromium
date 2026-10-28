@@ -158,6 +158,7 @@ source_set("unit_tests") {
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
+    "//components/account_id:test_support",
     "//components/policy/proto:",
     "//components/prefs",
     "//components/prefs:test_support",

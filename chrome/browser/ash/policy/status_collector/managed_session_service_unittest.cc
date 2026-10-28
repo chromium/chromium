@@ -4,27 +4,36 @@
 
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "components/session_manager/core/fake_session_manager_delegate.h"
+#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -35,6 +44,20 @@
 using testing::Eq;
 
 namespace policy {
+
+namespace {
+
+constexpr AccountId::Literal kAffiliatedAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("user0@managed.com",
+                                            GaiaId::Literal("1000"));
+constexpr AccountId::Literal kUnaffiliatedAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("user2@managed.com",
+                                            GaiaId::Literal("1002"));
+constexpr AccountId::Literal kSecondaryAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("user3@managed.com",
+                                            GaiaId::Literal("1003"));
+
+}  // namespace
 
 class ManagedSessionServiceTest : public ::testing::Test,
                                   public ManagedSessionService::Observer {
@@ -48,9 +71,14 @@ class ManagedSessionServiceTest : public ::testing::Test,
         test_url_loader_factory_.GetSafeWeakWrapper());
     session_termination_manager_ =
         std::make_unique<::ash::SessionTerminationManager>();
-    session_manager_ = std::make_unique<session_manager::SessionManager>(
-        std::make_unique<session_manager::FakeSessionManagerDelegate>());
-    user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    auto* browser_process = TestingBrowserProcess::GetGlobal();
+    auto delegate =
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            browser_process);
+    session_delegate_ = delegate.get();
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
+            browser_process->local_state(), std::move(delegate));
     user_session_manager_ = std::make_unique<ash::UserSessionManager>(
         TestingBrowserProcess::GetGlobal()->local_state(),
         TestingBrowserProcess::GetGlobal()
@@ -72,49 +100,49 @@ class ManagedSessionServiceTest : public ::testing::Test,
     managed_session_service_.reset();
     user_session_manager_->Shutdown();
     user_session_manager_.reset();
-    session_manager_.reset();
-    user_manager_.Reset();
+    logged_in_ = nullptr;
+    logged_out_ = nullptr;
+    session_delegate_ = nullptr;
+    user_session_test_environment_.reset();
     session_termination_manager_.reset();
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
     ::ash::SessionManagerClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
   }
 
-  std::unique_ptr<TestingProfile> CreateProfile(AccountId account_id,
-                                                bool is_affiliated,
-                                                bool login) {
-    TestingProfile::Builder profile_builder;
-    profile_builder.SetProfileName(account_id.GetUserEmail());
-    auto profile = profile_builder.Build();
-    user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, is_affiliated, user_manager::UserType::kRegular,
-        profile.get());
-    if (login) {
-      user_manager_->LoginUser(account_id, true);
-    }
-    return profile;
+  Profile& GuestLogin() {
+    CHECK(user_session_test_environment_->AddGuestUser());
+    user_session_test_environment_->LogIn(user_manager::GuestAccountId());
+    return GetProfile(user_manager::GuestAccountId());
   }
 
-  std::unique_ptr<TestingProfile> GuestLogin() {
-    user_manager::User* const user = user_manager_->AddGuestUser();
-    TestingProfile::Builder profile_builder;
-    profile_builder.SetProfileName(user->GetAccountId().GetUserEmail());
-    auto profile = profile_builder.Build();
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                                 profile.get());
-    user_manager_->LoginUser(user->GetAccountId(), true);
-    return profile;
+  // Logs in `account_id`, which must have been added, and returns its
+  // profile.
+  Profile& LogIn(const AccountId& account_id, bool is_affiliated) {
+    user_session_test_environment_->LogIn(account_id);
+    // LogIn() resets the policy status.
+    user_manager::UserManager::Get()->SetUserPolicyStatus(
+        account_id, /*is_managed=*/is_affiliated, is_affiliated);
+    return GetProfile(account_id);
+  }
+
+  static Profile& GetProfile(const AccountId& account_id) {
+    return CHECK_DEREF(Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            account_id)));
+  }
+
+  ash::test::UserSessionTestEnvironment& user_session_test_environment() {
+    return *user_session_test_environment_;
+  }
+
+  ash::test::ChromeUserSessionTestEnvironmentDelegate& session_delegate() {
+    return *session_delegate_;
   }
 
   ManagedSessionService* managed_session_service() {
     return managed_session_service_.get();
   }
-
-  session_manager::SessionManager* session_manager() {
-    return session_manager_.get();
-  }
-
-  ash::FakeChromeUserManager* user_manager() { return user_manager_.Get(); }
 
   chromeos::FakePowerManagerClient* power_manager_client() {
     return chromeos::FakePowerManagerClient::Get();
@@ -187,9 +215,10 @@ class ManagedSessionServiceTest : public ::testing::Test,
 
   std::unique_ptr<::ash::SessionTerminationManager>
       session_termination_manager_;
-  std::unique_ptr<session_manager::SessionManager> session_manager_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      user_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+  raw_ptr<ash::test::ChromeUserSessionTestEnvironmentDelegate>
+      session_delegate_ = nullptr;
   std::unique_ptr<ash::UserSessionManager> user_session_manager_;
 
   base::SimpleTestClock test_clock_;
@@ -208,130 +237,151 @@ class ManagedSessionServiceTest : public ::testing::Test,
 TEST_F(ManagedSessionServiceTest, OnSessionStateChanged) {
   managed_session_service()->AddObserver(this);
 
-  session_manager()->SetSessionState(SessionState::LOCKED);
-  session_manager()->SetSessionState(SessionState::ACTIVE);
+  session_manager::SessionManager::Get()->SetSessionState(SessionState::LOCKED);
+  session_manager::SessionManager::Get()->SetSessionState(SessionState::ACTIVE);
 
   EXPECT_TRUE(locked_);
   EXPECT_TRUE(unlocked_);
 
-  session_manager()->SetSessionState(SessionState::LOCKED);
+  session_manager::SessionManager::Get()->SetSessionState(SessionState::LOCKED);
 
   EXPECT_TRUE(locked_);
 
   locked_ = false;
   unlocked_ = false;
 
-  session_manager()->SetSessionState(SessionState::LOCKED);
-  session_manager()->SetSessionState(SessionState::LOGIN_PRIMARY);
+  session_manager::SessionManager::Get()->SetSessionState(SessionState::LOCKED);
+  session_manager::SessionManager::Get()->SetSessionState(
+      SessionState::LOGIN_PRIMARY);
 
   EXPECT_FALSE(locked_);
   EXPECT_TRUE(unlocked_);
 
-  session_manager()->SetSessionState(SessionState::LOCKED);
+  session_manager::SessionManager::Get()->SetSessionState(SessionState::LOCKED);
 
   EXPECT_TRUE(locked_);
 
   locked_ = false;
   unlocked_ = false;
 
-  session_manager()->SetSessionState(SessionState::ACTIVE);
+  session_manager::SessionManager::Get()->SetSessionState(SessionState::ACTIVE);
 
   EXPECT_TRUE(unlocked_);
 }
 
 TEST_F(ManagedSessionServiceTest, OnUserProfileLoadedAffiliatedAndPrimary) {
-  AccountId affiliated_account_id =
-      AccountId::FromUserEmail("user0@managed.com");
-  std::unique_ptr<TestingProfile> affiliated_profile = CreateProfile(
-      affiliated_account_id, true /* affiliated */, true /* login */);
+  ASSERT_TRUE(
+      user_session_test_environment().AddRegularUser(kAffiliatedAccountId));
+  Profile& affiliated_profile =
+      LogIn(kAffiliatedAccountId, /*is_affiliated=*/true);
   managed_session_service()->AddObserver(this);
 
-  session_manager()->NotifyUserProfileLoaded(affiliated_account_id);
+  session_manager::SessionManager::Get()->NotifyUserProfileLoaded(
+      kAffiliatedAccountId);
 
-  EXPECT_TRUE(affiliated_profile->IsSameOrParent(logged_in_));
+  EXPECT_TRUE(affiliated_profile.IsSameOrParent(logged_in_));
 }
 
 TEST_F(ManagedSessionServiceTest, OnUserProfileLoadedAffiliated) {
-  AccountId secondary_account_id =
-      AccountId::FromUserEmail("user3@managed.com");
-  std::unique_ptr<TestingProfile> secondary_profile = CreateProfile(
-      secondary_account_id, true /* affiliated */, false /* login */);
+  // Profiles only exist for logged-in users, so log in an unaffiliated primary
+  // user first: that keeps the affiliated user secondary, which is what this
+  // test is about.
+  ASSERT_TRUE(
+      user_session_test_environment().AddRegularUser(kUnaffiliatedAccountId));
+  ASSERT_TRUE(
+      user_session_test_environment().AddRegularUser(kSecondaryAccountId));
+  LogIn(kUnaffiliatedAccountId, /*is_affiliated=*/false);
+  Profile& secondary_profile =
+      LogIn(kSecondaryAccountId, /*is_affiliated=*/true);
   managed_session_service()->AddObserver(this);
 
-  session_manager()->NotifyUserProfileLoaded(secondary_account_id);
+  session_manager::SessionManager::Get()->NotifyUserProfileLoaded(
+      kSecondaryAccountId);
 
-  EXPECT_TRUE(secondary_profile->IsSameOrParent(logged_in_));
+  EXPECT_TRUE(secondary_profile.IsSameOrParent(logged_in_));
 }
 
 TEST_F(ManagedSessionServiceTest, OnUserProfileLoadedPrimary) {
-  AccountId unaffiliated_account_id =
-      AccountId::FromUserEmail("user2@managed.com");
-  std::unique_ptr<TestingProfile> unaffiliated_profile = CreateProfile(
-      unaffiliated_account_id, false /* affiliated */, true /* login */);
+  ASSERT_TRUE(
+      user_session_test_environment().AddRegularUser(kUnaffiliatedAccountId));
+  Profile& unaffiliated_profile =
+      LogIn(kUnaffiliatedAccountId, /*is_affiliated=*/false);
   managed_session_service()->AddObserver(this);
 
-  session_manager()->NotifyUserProfileLoaded(unaffiliated_account_id);
+  session_manager::SessionManager::Get()->NotifyUserProfileLoaded(
+      kUnaffiliatedAccountId);
 
-  EXPECT_TRUE(unaffiliated_profile->IsSameOrParent(logged_in_));
+  EXPECT_TRUE(unaffiliated_profile.IsSameOrParent(logged_in_));
 }
 
 TEST_F(ManagedSessionServiceTest, OnUserProfileLoadedGuest) {
-  const auto guest_profile = GuestLogin();
+  Profile& guest_profile = GuestLogin();
   managed_session_service()->AddObserver(this);
 
-  session_manager()->NotifyUserProfileLoaded(user_manager::GuestAccountId());
+  session_manager::SessionManager::Get()->NotifyUserProfileLoaded(
+      user_manager::GuestAccountId());
 
-  EXPECT_TRUE(guest_profile->IsSameOrParent(logged_in_));
+  EXPECT_TRUE(guest_profile.IsSameOrParent(logged_in_));
 }
 
 TEST_F(ManagedSessionServiceTest,
        OnProfileWillBeDestroyedAffiliatedAndPrimary) {
-  AccountId affiliated_account_id =
-      AccountId::FromUserEmail("user0@managed.com");
-  std::unique_ptr<TestingProfile> affiliated_profile = CreateProfile(
-      affiliated_account_id, true /* affiliated */, true /* login */);
+  ASSERT_TRUE(
+      user_session_test_environment().AddRegularUser(kAffiliatedAccountId));
+  Profile& affiliated_profile =
+      LogIn(kAffiliatedAccountId, /*is_affiliated=*/true);
   managed_session_service()->AddObserver(this);
 
-  session_manager()->NotifyUserProfileLoaded(affiliated_account_id);
-  affiliated_profile->MaybeSendDestroyedNotification();
+  session_manager::SessionManager::Get()->NotifyUserProfileLoaded(
+      kAffiliatedAccountId);
+  affiliated_profile.MaybeSendDestroyedNotification();
 
-  EXPECT_TRUE(affiliated_profile->IsSameOrParent(logged_out_));
+  EXPECT_TRUE(affiliated_profile.IsSameOrParent(logged_out_));
 }
 
 TEST_F(ManagedSessionServiceTest, OnProfileWillBeDestroyedAffiliated) {
-  AccountId secondary_account_id =
-      AccountId::FromUserEmail("user3@managed.com");
-  std::unique_ptr<TestingProfile> secondary_profile = CreateProfile(
-      secondary_account_id, true /* affiliated */, false /* login */);
+  // Profiles only exist for logged-in users, so log in an unaffiliated primary
+  // user first: that keeps the affiliated user secondary, which is what this
+  // test is about.
+  ASSERT_TRUE(
+      user_session_test_environment().AddRegularUser(kUnaffiliatedAccountId));
+  ASSERT_TRUE(
+      user_session_test_environment().AddRegularUser(kSecondaryAccountId));
+  LogIn(kUnaffiliatedAccountId, /*is_affiliated=*/false);
+  Profile& secondary_profile =
+      LogIn(kSecondaryAccountId, /*is_affiliated=*/true);
   managed_session_service()->AddObserver(this);
 
-  session_manager()->NotifyUserProfileLoaded(secondary_account_id);
-  secondary_profile->MaybeSendDestroyedNotification();
+  session_manager::SessionManager::Get()->NotifyUserProfileLoaded(
+      kSecondaryAccountId);
+  secondary_profile.MaybeSendDestroyedNotification();
 
-  EXPECT_TRUE(secondary_profile->IsSameOrParent(logged_in_));
+  EXPECT_TRUE(secondary_profile.IsSameOrParent(logged_in_));
 }
 
 TEST_F(ManagedSessionServiceTest, OnProfileWillBeDestroyedPrimary) {
-  AccountId unaffiliated_account_id =
-      AccountId::FromUserEmail("user2@managed.com");
-  std::unique_ptr<TestingProfile> unaffiliated_profile = CreateProfile(
-      unaffiliated_account_id, false /* affiliated */, true /* login */);
+  ASSERT_TRUE(
+      user_session_test_environment().AddRegularUser(kUnaffiliatedAccountId));
+  Profile& unaffiliated_profile =
+      LogIn(kUnaffiliatedAccountId, /*is_affiliated=*/false);
   managed_session_service()->AddObserver(this);
 
-  session_manager()->NotifyUserProfileLoaded(unaffiliated_account_id);
-  unaffiliated_profile->MaybeSendDestroyedNotification();
+  session_manager::SessionManager::Get()->NotifyUserProfileLoaded(
+      kUnaffiliatedAccountId);
+  unaffiliated_profile.MaybeSendDestroyedNotification();
 
-  EXPECT_TRUE(unaffiliated_profile->IsSameOrParent(logged_in_));
+  EXPECT_TRUE(unaffiliated_profile.IsSameOrParent(logged_in_));
 }
 
 TEST_F(ManagedSessionServiceTest, OnProfileWillBeDestroyedGuest) {
-  const auto guest_profile = GuestLogin();
+  Profile& guest_profile = GuestLogin();
   managed_session_service()->AddObserver(this);
 
-  session_manager()->NotifyUserProfileLoaded(user_manager::GuestAccountId());
-  guest_profile->MaybeSendDestroyedNotification();
+  session_manager::SessionManager::Get()->NotifyUserProfileLoaded(
+      user_manager::GuestAccountId());
+  guest_profile.MaybeSendDestroyedNotification();
 
-  EXPECT_TRUE(guest_profile->IsSameOrParent(logged_out_));
+  EXPECT_TRUE(guest_profile.IsSameOrParent(logged_out_));
 }
 
 TEST_F(ManagedSessionServiceTest, SuspendDone) {
@@ -345,24 +395,24 @@ TEST_F(ManagedSessionServiceTest, SuspendDone) {
 }
 
 TEST_F(ManagedSessionServiceTest, RemoveObserver) {
-  AccountId account_id = AccountId::FromUserEmail("user0@managed.com");
-  std::unique_ptr<TestingProfile> profile =
-      CreateProfile(account_id, true /* affiliated */, true /* login */);
+  const AccountId account_id = kAffiliatedAccountId;
+  ASSERT_TRUE(user_session_test_environment().AddRegularUser(account_id));
+  Profile& profile = LogIn(account_id, /*is_affiliated=*/true);
   managed_session_service()->AddObserver(this);
 
   managed_session_service()->RemoveObserver(this);
 
-  session_manager()->SetSessionState(SessionState::LOCKED);
-  session_manager()->SetSessionState(SessionState::ACTIVE);
-  session_manager()->SetSessionState(SessionState::LOCKED);
+  session_manager::SessionManager::Get()->SetSessionState(SessionState::LOCKED);
+  session_manager::SessionManager::Get()->SetSessionState(SessionState::ACTIVE);
+  session_manager::SessionManager::Get()->SetSessionState(SessionState::LOCKED);
   EXPECT_FALSE(locked_);
   EXPECT_FALSE(unlocked_);
 
-  session_manager()->NotifyUserProfileLoaded(account_id);
-  EXPECT_FALSE(profile->IsSameOrParent(logged_in_));
+  session_manager::SessionManager::Get()->NotifyUserProfileLoaded(account_id);
+  EXPECT_FALSE(profile.IsSameOrParent(logged_in_));
 
-  profile->MaybeSendDestroyedNotification();
-  EXPECT_FALSE(profile->IsSameOrParent(logged_out_));
+  profile.MaybeSendDestroyedNotification();
+  EXPECT_FALSE(profile.IsSameOrParent(logged_out_));
 }
 
 TEST_F(ManagedSessionServiceTest, LoginFailure) {
@@ -376,24 +426,26 @@ TEST_F(ManagedSessionServiceTest, LoginFailure) {
 }
 
 TEST_F(ManagedSessionServiceTest, LoginBeforeCreate) {
-  AccountId affiliated_account_id =
-      AccountId::FromUserEmail("user0@managed.com");
-  std::unique_ptr<TestingProfile> affiliated_profile = CreateProfile(
-      affiliated_account_id, true /* affiliated */, true /* login */);
+  const AccountId affiliated_account_id = kAffiliatedAccountId;
+  ASSERT_TRUE(
+      user_session_test_environment().AddRegularUser(affiliated_account_id));
+  Profile& affiliated_profile =
+      LogIn(affiliated_account_id, /*is_affiliated=*/true);
 
   ManagedSessionService managed_session_service;
   managed_session_service.AddObserver(this);
 
   ASSERT_EQ(ObservedLoginCount(), 1);
-  EXPECT_TRUE(affiliated_profile->IsSameOrParent(logged_in_));
+  EXPECT_TRUE(affiliated_profile.IsSameOrParent(logged_in_));
 
-  session_manager()->NotifyUserProfileLoaded(affiliated_account_id);
+  session_manager::SessionManager::Get()->NotifyUserProfileLoaded(
+      affiliated_account_id);
 
   EXPECT_EQ(ObservedLoginCount(), 1);
 
-  affiliated_profile->MaybeSendDestroyedNotification();
+  affiliated_profile.MaybeSendDestroyedNotification();
 
-  EXPECT_TRUE(affiliated_profile->IsSameOrParent(logged_out_));
+  EXPECT_TRUE(affiliated_profile.IsSameOrParent(logged_out_));
   ASSERT_EQ(ObservedSessionTerminationCount(), 0);
 
   ::ash::SessionTerminationManager::Get()->StopSession(
@@ -403,29 +455,33 @@ TEST_F(ManagedSessionServiceTest, LoginBeforeCreate) {
 }
 
 TEST_F(ManagedSessionServiceTest, GuestLoginBeforeCreate) {
-  const auto guest_profile = GuestLogin();
+  Profile& guest_profile = GuestLogin();
 
   ManagedSessionService managed_session_service;
   managed_session_service.AddObserver(this);
 
   EXPECT_EQ(ObservedLoginCount(), 1);
-  EXPECT_TRUE(guest_profile->IsSameOrParent(logged_in_));
+  EXPECT_TRUE(guest_profile.IsSameOrParent(logged_in_));
 
   ::ash::SessionTerminationManager::Get()->StopSession(
       login_manager::SessionStopReason::REQUEST_FROM_SESSION_MANAGER);
 
   EXPECT_EQ(ObservedSessionTerminationCount(), 1);
 
-  guest_profile->MaybeSendDestroyedNotification();
+  guest_profile.MaybeSendDestroyedNotification();
 
-  EXPECT_TRUE(guest_profile->IsSameOrParent(logged_out_));
+  EXPECT_TRUE(guest_profile.IsSameOrParent(logged_out_));
 }
 
 TEST_F(ManagedSessionServiceTest, LoggedInProfileNotCreated) {
-  const AccountId account_id = AccountId::FromUserEmail("user0@managed.com");
-  auto* const user = user_manager()->AddUser(account_id);
-  // User logged in but profile is not created.
-  user_manager()->LoginUser(account_id, /*set_profile_created_flag=*/false);
+  // Start the session without creating the profile, which
+  // UserSessionTestEnvironment::LogIn() does in the same step.
+  const AccountId account_id = kAffiliatedAccountId;
+  ASSERT_TRUE(user_session_test_environment().AddRegularUser(account_id));
+  session_manager::SessionManager::Get()->CreateSession(
+      account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id),
+      /*new_user=*/false, /*has_active_session=*/false);
+  session_manager::SessionManager::Get()->SessionStarted();
 
   ManagedSessionService managed_session_service;
   managed_session_service.AddObserver(this);
@@ -433,16 +489,17 @@ TEST_F(ManagedSessionServiceTest, LoggedInProfileNotCreated) {
   EXPECT_EQ(ObservedLoginCount(), 0);
 
   // Simulate user profile loaded.
-  TestingProfile::Builder profile_builder;
-  profile_builder.SetProfileName(account_id.GetUserEmail());
-  auto profile = profile_builder.Build();
-  ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                               profile.get());
-  user_manager()->SimulateUserProfileLoad(account_id);
-  session_manager()->NotifyUserProfileLoaded(account_id);
+  {
+    TestingProfileManager& profile_manager =
+        session_delegate().testing_profile_manager();
+    ash::ScopedAccountIdAnnotator annotator(profile_manager.profile_manager(),
+                                            account_id);
+    profile_manager.CreateTestingProfile(account_id.GetUserEmail());
+  }
+  session_manager::SessionManager::Get()->NotifyUserProfileLoaded(account_id);
 
   ASSERT_EQ(ObservedLoginCount(), 1);
-  EXPECT_TRUE(profile->IsSameOrParent(logged_in_));
+  EXPECT_TRUE(GetProfile(account_id).IsSameOrParent(logged_in_));
 }
 
 TEST_F(ManagedSessionServiceTest, KioskLoginFailure) {
