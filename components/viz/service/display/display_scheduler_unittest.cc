@@ -182,6 +182,12 @@ class TestDisplayScheduler : public DisplayScheduler {
     OnBeginFrameDeadline();
   }
 
+  void ForceSwapForPreviousFrameIfScheduled() {
+    if (!swap_for_previous_frame_task_.IsCancelled()) {
+      swap_for_previous_frame_task_.callback().Run();
+    }
+  }
+
   void ScheduleBeginFrameDeadline() override {
     scheduler_begin_frame_deadline_count_++;
     DisplayScheduler::ScheduleBeginFrameDeadline();
@@ -1300,8 +1306,10 @@ TEST_P(DisplaySchedulerMultipleSwapsperVsyncTest, AllowMultipleSwapsPerVsync) {
   // Late damage for BF2 arrives (after deadline, while idle).
   BeginFrameAck bf2_ack(bf2_args, true);
   damage_tracker_->SurfaceDamagedForTest(root_surface_id, bf2_ack, true);
-  // Should draw synchronously because we are idle and damage is for current
-  // frame (BF2). Swap 2.
+  // Should not draw synchronously inside OnDisplayDamaged, but via posted task.
+  EXPECT_EQ(1, client_.draw_and_swap_count());
+  scheduler_->ForceSwapForPreviousFrameIfScheduled();
+  // Swap 2.
   EXPECT_EQ(2, client_.draw_and_swap_count());
   EXPECT_FALSE(scheduler_->inside_begin_frame_deadline_interval());
   EXPECT_EQ(bf2_args.frame_id, client_.last_params().begin_frame_args.frame_id);
@@ -1371,7 +1379,9 @@ TEST_P(DisplaySchedulerMultipleSwapsperVsyncTest,
   BeginFrameAck bf2_ack(bf2_args, true);
   damage_tracker_->SurfaceDamagedForTest(root_surface_id, bf2_ack, true);
 
-  // Causes Frame2 to be synchronously drawn.
+  // Causes Frame2 to be drawn when the posted immediate swap task runs.
+  EXPECT_EQ(1, client_.draw_and_swap_count());
+  scheduler_->ForceSwapForPreviousFrameIfScheduled();
   EXPECT_EQ(2, client_.draw_and_swap_count());
   EXPECT_FALSE(scheduler_->inside_begin_frame_deadline_interval());
 
@@ -1379,7 +1389,8 @@ TEST_P(DisplaySchedulerMultipleSwapsperVsyncTest,
   BeginFrameAck bf3_ack(bf3_args, true);
   damage_tracker_->SurfaceDamagedForTest(root_surface_id, bf3_ack, true);
 
-  // Should NOT draw synchronously (current frame).
+  // Should NOT schedule an immediate swap for the current frame.
+  scheduler_->ForceSwapForPreviousFrameIfScheduled();
   EXPECT_EQ(2, client_.draw_and_swap_count());
 
   // Trigger deadline for BF3 manually.
@@ -1436,15 +1447,17 @@ TEST_P(DisplaySchedulerMultipleSwapsperVsyncTest,
   // Late damage for Child 1 (BF2) arrives.
   BeginFrameAck bf2_ack_child1(bf2_args, true);
   damage_tracker_->SurfaceDamagedForTest(child1_sid, bf2_ack_child1, true);
-  // Should draw synchronously because we are idle and damage is for current
-  // frame (BF2). Swap 2.
+  EXPECT_EQ(1, client_.draw_and_swap_count());
+  scheduler_->ForceSwapForPreviousFrameIfScheduled();
+  // Swap 2.
   EXPECT_EQ(2, client_.draw_and_swap_count());
   EXPECT_EQ(bf2_args.frame_id, client_.last_params().begin_frame_args.frame_id);
 
   // Late damage for Child 2 (BF2) arrives.
   BeginFrameAck bf2_ack_child2(bf2_args, true);
   damage_tracker_->SurfaceDamagedForTest(child2_sid, bf2_ack_child2, true);
-  // Should NOT draw synchronously again because we already drew BF2.
+  scheduler_->ForceSwapForPreviousFrameIfScheduled();
+  // Should NOT draw again because we already drew BF2.
   EXPECT_EQ(2, client_.draw_and_swap_count());
 }
 
@@ -1478,7 +1491,8 @@ TEST_P(DisplaySchedulerMultipleSwapsperVsyncTest,
   // Late damage for BF2 arrives (after deadline, while idle).
   BeginFrameAck bf2_ack(last_begin_frame_args_, true);
   damage_tracker_->SurfaceDamagedForTest(root_surface_id, bf2_ack, true);
-  // Should NOT draw synchronously because we don't have possible deadlines.
+  scheduler_->ForceSwapForPreviousFrameIfScheduled();
+  // Should NOT draw because we don't have possible deadlines.
   EXPECT_EQ(1, client_.draw_and_swap_count());
 }
 
@@ -1518,6 +1532,7 @@ TEST_P(DisplaySchedulerMultipleSwapsperVsyncTest,
   // Late damage for BF2 arrives (while idle).
   BeginFrameAck bf2_ack(last_begin_frame_args_, true);
   damage_tracker_->SurfaceDamagedForTest(root_surface_id, bf2_ack, true);
+  scheduler_->ForceSwapForPreviousFrameIfScheduled();
 
   // Verify it was resolved as kDrawnLate.
   EXPECT_THAT(client_.GetAndClearDidFinishFrameCalls(),
@@ -1565,6 +1580,7 @@ TEST_P(DisplaySchedulerMultipleSwapsperVsyncTest,
   // Late damage for BF2 arrives.
   BeginFrameAck bf2_ack(last_begin_frame_args_, true);
   damage_tracker_->SurfaceDamagedForTest(root_surface_id, bf2_ack, true);
+  scheduler_->ForceSwapForPreviousFrameIfScheduled();
 
   // Should NOT draw because deadline was missed.
   EXPECT_EQ(1, client().draw_and_swap_count());
