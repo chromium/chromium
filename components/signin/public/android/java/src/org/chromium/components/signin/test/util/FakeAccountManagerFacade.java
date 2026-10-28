@@ -527,6 +527,19 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         setAccounts(Collections.emptyList());
     }
 
+    /** Resets all accounts and test-specific configurations of the fake AccountManagerFacade. */
+    @MainThread
+    public void resetForTesting() {
+        ThreadUtils.checkUiThread();
+        mDidAccountFetchingSucceed = true;
+        mGetAccessTokenError.clear();
+        mAccountToAdd = null;
+        removeAllAccounts();
+        if (mBlockedGetAccountsPromise != null) {
+            unblockGetAccounts();
+        }
+    }
+
     /** Converts an email to a fake gaia Id. */
     public static GaiaId toGaiaId(String email) {
         return new GaiaId("gaia-id-" + email.replace("@", "_at_"));

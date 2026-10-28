@@ -165,15 +165,7 @@ public class SigninTestRule implements TestRule {
         if (mIsSignedIn || (ProfileManager.isInitialized() && getPrimaryAccount() != null)) {
             forceSignOut();
         }
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mFakeAccountManagerFacade.removeAllAccounts();
-                    mFakeAccountManagerFacade.setAddAccountFlowResult(null);
-                    // TODO(crbug.com/40743432): Also reset mDidAccountFetchingSucceed,
-                    // mBlockedGetAccountsPromise, and mGetAccessTokenError in
-                    // FakeAccountManagerFacade.
-                    // See crrev.com/c/8493752/comments/3bd13a48_85275c53
-                });
+        ThreadUtils.runOnUiThreadBlocking(mFakeAccountManagerFacade::resetForTesting);
         mIsSignedIn = false;
     }
 
