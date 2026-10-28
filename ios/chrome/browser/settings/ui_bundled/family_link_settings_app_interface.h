@@ -7,16 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 
 // The app interface for supervised user settings tests.
 @interface FamilyLinkSettingsAppInterface : NSObject
-
-// Sets the parental control setting to filter websites for supervised users.
-// TODO(crbug.com/320981294): Remove in favor of `+setWebFilterType:`.
-+ (void)setSupervisedUserURLFilterBehavior:
-    (supervised_user::FilteringBehavior)behavior;
 
 // Sets the supervised user's web filter type.
 + (void)setWebFilterType:(supervised_user::WebFilterType)filterType;
@@ -32,21 +26,13 @@
 + (void)setFakePermissionCreator;
 
 // Approves a requested website for a supervised user.
-+ (void)approveWebsiteDomain:(const NSURL*)url;
-
-// Sets a supervised user's filtering behaviour to "Allow All Sites".
-// TODO(crbug.com/320981294): Remove in favor of `+setWebFilterType:`.
-+ (void)setFilteringToAllowAllSites;
-
-// Sets a supervised user's filtering behaviour to "Allow Approved Sites".
-// TODO(crbug.com/320981294): Remove in favor of `+setWebFilterType:`.
-+ (void)setFilteringToAllowApprovedSites;
++ (void)approveWebsiteDomain:(NSURL*)url;
 
 // Adds the `url` to a supervised user's allow-list.
-+ (void)addWebsiteToAllowList:(NSURL*)host;
++ (void)addWebsiteToAllowList:(NSURL*)url;
 
 // Adds the `url` to a supervised user's block-list.
-+ (void)addWebsiteToBlockList:(NSURL*)host;
++ (void)addWebsiteToBlockList:(NSURL*)url;
 
 // Sets the behaviour of Safe Search filtering: it sets the default
 // response of the ClassifyUrl endpoint to allow or restrict all requests.

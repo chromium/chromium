@@ -475,7 +475,6 @@ source_set("eg_test_support+eg2") {
   public_deps = [ "//components/content_settings/core/common" ]
   deps = [
     "//base",
-    "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
     "//ios/testing/earl_grey:eg_test_support+eg2",
   ]

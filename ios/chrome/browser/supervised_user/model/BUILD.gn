@@ -149,7 +149,6 @@ source_set("eg2_tests") {
     "//components/policy:policy_code_generate",
     "//components/signin/internal/identity_manager",
     "//components/strings",
-    "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
