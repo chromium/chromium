@@ -5,7 +5,18 @@
 import type {ForeignSession, ForeignSessionTab, ForeignSessionWindow, HistoryAppElement} from 'chrome://history/history.js';
 import type {HistoryEntry, HistoryQuery} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {assertNear} from 'chrome://webui-test/chai_assert.js';
 import {middleOfNode} from 'chrome://webui-test/mouse_mock_interactions.js';
+
+/**
+ * Asserts a laid out length or position in CSS pixels. At fractional device
+ * scale factors, layout rounds to fractions of a device pixel, so the value is
+ * not exact.
+ */
+export function assertPx(
+    expected: number, actual: number, message?: string): void {
+  assertNear(expected, actual, 0.05, message);
+}
 
 
 /**

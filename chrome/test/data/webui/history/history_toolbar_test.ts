@@ -16,6 +16,14 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {TestHistoryBrowserProxy} from './test_browser_proxy.js';
 import {createHistoryEntry, createHistoryInfo} from './test_util.js';
 
+// <if expr="is_android">
+// clang-format off
+import type {HistoryToolbarElement} from 'chrome://history/history.js';
+
+import {assertPx} from './test_util.js';
+// clang-format on
+// </if>
+
 suite('history-toolbar', function() {
   let app: HistoryAppElement;
   let testProxy: TestHistoryBrowserProxy;
@@ -222,3 +230,59 @@ suite('history-toolbar', function() {
                    .includes(toolbar.$.mainToolbar.searchPrompt));
   });
 });
+
+// <if expr="is_android">
+suite('history-toolbar-android', function() {
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    BrowserProxyImpl.setInstance(new TestHistoryBrowserProxy());
+  });
+
+  teardown(function() {
+    document.documentElement.style.removeProperty('--card-max-width');
+    document.documentElement.style.removeProperty('--card-padding-side');
+  });
+
+  // Creates a toolbar in wide mode, independent of the test window size.
+  async function createToolbar(): Promise<HistoryToolbarElement> {
+    const toolbar = document.createElement('history-toolbar');
+    document.body.appendChild(toolbar);
+    await microtasksFinished();
+    toolbar.$.mainToolbar.narrowThreshold = 0;
+    await microtasksFinished();
+    assertFalse(toolbar.$.mainToolbar.narrow);
+    // Skip the field's width transition so its box can be measured.
+    toolbar.searchField.style.transition = 'none';
+    return toolbar;
+  }
+
+  test('SearchFieldAndOverlayMatchCards', async function() {
+    const sideBarWidth = 256;
+    const cardWidth = 300;
+    const cardPadding = 16;
+    document.documentElement.style.setProperty(
+        '--card-max-width', `${cardWidth}px`);
+    document.documentElement.style.setProperty(
+        '--card-padding-side', `${cardPadding}px`);
+    const toolbar = await createToolbar();
+    const toolbarRect = toolbar.getBoundingClientRect();
+    const cardLeft =
+        sideBarWidth + (toolbarRect.width - sideBarWidth - cardWidth) / 2;
+    const fieldRect = toolbar.searchField.getBoundingClientRect();
+    assertPx(cardLeft, fieldRect.left - toolbarRect.left);
+    assertPx(cardLeft + cardWidth, fieldRect.right - toolbarRect.left);
+
+    const overlay =
+        toolbar.shadowRoot.querySelector('cr-toolbar-selection-overlay');
+    assertTrue(!!overlay);
+    const content =
+        overlay.shadowRoot.querySelector<HTMLElement>('#overlay-content');
+    assertTrue(!!content);
+    const contentRect = content.getBoundingClientRect();
+    assertPx(cardLeft - cardPadding, contentRect.left - toolbarRect.left);
+    assertPx(
+        cardLeft + cardWidth + cardPadding,
+        contentRect.right - toolbarRect.left);
+  });
+});
+// </if>

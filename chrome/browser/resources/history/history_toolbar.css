@@ -21,6 +21,13 @@ cr-toolbar {
   --cr-toolbar-left-spacer-width: var(--side-bar-width);
   --cr-toolbar-field-margin: var(--side-bar-width);
   flex: 1;
+<if expr="is_android">
+  /* Search field 6px side padding sits outside --cr-toolbar-field-width. */
+  --cr-toolbar-field-width: calc(var(--card-max-width) - 12px);
+  --cr-toolbar-header-font-weight: 400;
+  --cr-toolbar-search-field-background:
+      var(--color-history-page-search-field-background);
+</if>
 }
 
 :host([has-drawer]) cr-toolbar,
@@ -32,6 +39,14 @@ cr-toolbar-selection-overlay {
   opacity: 0;
   --cr-toolbar-selection-overlay-max-width: var(--card-max-width);
   --cr-toolbar-field-margin: var(--side-bar-width);
+<if expr="is_android">
+  --cr-toolbar-selection-overlay-padding: var(--card-padding-side);
+  background: var(--color-history-page-selection-toolbar-background);
+  border-bottom: none;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+</if>
 }
 
 cr-toolbar-selection-overlay[show] {
