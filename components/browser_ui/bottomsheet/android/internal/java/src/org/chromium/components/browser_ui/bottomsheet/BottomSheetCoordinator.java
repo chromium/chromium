@@ -372,19 +372,7 @@ class BottomSheetCoordinator
         return mMediator.calculateContentBottomPadding(
                 isLargeFormFactorUiEnabled(),
                 isFullHeightResizeContent(),
-                getEffectiveEdgeToEdgeBottomInset());
-    }
-
-    /**
-     * Returns the bottom inset used to offset the sheet vertically. Sheets that cover the bottom
-     * controls handle the bottom safe-area inset internally when expanded (HALF/FULL), so 0 is
-     * returned there; in PEEK mode, the full edge-to-edge bottom inset is still applied so the peek
-     * view remains lifted above the navigation bar.
-     */
-    private @Px int getEffectiveEdgeToEdgeBottomInset() {
-        return contentCoversBottomControls() && getTargetOrCurrentState() != SheetState.PEEK
-                ? 0
-                : getEdgeToEdgeBottomInset();
+                mMediator.getEffectiveEdgeToEdgeBottomInset(getEdgeToEdgeBottomInset()));
     }
 
     @Px
@@ -758,7 +746,8 @@ class BottomSheetCoordinator
             float offset, @StateChangeReason int reason, boolean reportOpenClosed) {
         mCurrentOffsetPx = offset;
 
-        @Px int bottomInset = getEffectiveEdgeToEdgeBottomInset();
+        @Px
+        int bottomInset = mMediator.getEffectiveEdgeToEdgeBottomInset(getEdgeToEdgeBottomInset());
         boolean isSheetOpen = isSheetOpen();
         float translationY =
                 mMediator.calculateSheetTranslationY(
@@ -1450,21 +1439,11 @@ class BottomSheetCoordinator
         }
     }
 
-    private @SheetState int getTargetOrCurrentState() {
-        @SheetState int targetState = getTargetSheetState();
-        if (targetState != SheetState.NONE && targetState != SheetState.SCROLLING) {
-            return targetState;
-        }
-        @SheetState int currentState = getSheetState();
-        if (currentState != SheetState.NONE && currentState != SheetState.SCROLLING) {
-            return currentState;
-        }
-        return SheetState.FULL;
-    }
-
     private void updateContentContainerHeight() {
         assert mWindow != null;
-        @Px int e2eBottomInset = getEffectiveEdgeToEdgeBottomInset();
+        @Px
+        int e2eBottomInset =
+                mMediator.getEffectiveEdgeToEdgeBottomInset(getEdgeToEdgeBottomInset());
         updateViewport(e2eBottomInset);
 
         boolean isLargeFormFactorUiEnabled = isLargeFormFactorUiEnabled();
@@ -1500,7 +1479,7 @@ class BottomSheetCoordinator
         if (!isLargeFormFactorUiEnabled || isFullHeightResizeContent || isFullHeightWrapContent()) {
             return 0;
         }
-        return (int) getSheetHeightForState(getTargetOrCurrentState());
+        return (int) getSheetHeightForState(mMediator.getTargetOrCurrentState());
     }
 
     private boolean contentCoversBottomControls() {

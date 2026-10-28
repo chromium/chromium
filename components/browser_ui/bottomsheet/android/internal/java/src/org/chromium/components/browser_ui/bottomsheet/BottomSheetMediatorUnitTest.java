@@ -1192,4 +1192,63 @@ public class BottomSheetMediatorUnitTest {
                 /* fullHeightPx= */ 500f);
         assertEquals(500, mModel.get(BottomSheetProperties.VISIBLE_BACKGROUND_HEIGHT));
     }
+
+    @Test
+    public void testGetTargetOrCurrentState() {
+        mMediator.setInternalCurrentState(SheetState.PEEK);
+        assertEquals(SheetState.PEEK, mMediator.getTargetOrCurrentState());
+
+        mMediator.setTargetSheetState(SheetState.HALF);
+        assertEquals(SheetState.HALF, mMediator.getTargetOrCurrentState());
+
+        mMediator.setTargetSheetState(SheetState.SCROLLING);
+        assertEquals(SheetState.PEEK, mMediator.getTargetOrCurrentState());
+
+        mMediator.setTargetSheetState(SheetState.NONE);
+        mMediator.setInternalCurrentState(SheetState.SCROLLING);
+        assertEquals(SheetState.FULL, mMediator.getTargetOrCurrentState());
+    }
+
+    @Test
+    public void testGetEffectiveEdgeToEdgeBottomInset() {
+        // 1. null content in a non-PEEK state returns raw inset.
+        mMediator.setSheetContent(null);
+        mMediator.setTargetSheetState(SheetState.HALF);
+        assertEquals(48, mMediator.getEffectiveEdgeToEdgeBottomInset(48));
+
+        // 2. Non-covering content (coversBottomControls unstubbed/false) returns raw inset in
+        // HALF and FULL.
+        mMediator.setSheetContent(mContent);
+        mMediator.setTargetSheetState(SheetState.HALF);
+        assertEquals(48, mMediator.getEffectiveEdgeToEdgeBottomInset(48));
+        mMediator.setTargetSheetState(SheetState.FULL);
+        assertEquals(48, mMediator.getEffectiveEdgeToEdgeBottomInset(48));
+
+        // 3. Covering content.
+        when(mContent.coversBottomControls()).thenReturn(true);
+
+        // Settled PEEK: returns raw inset so peek view remains lifted.
+        mMediator.setInternalCurrentState(SheetState.PEEK);
+        mMediator.setTargetSheetState(SheetState.NONE);
+        assertEquals(48, mMediator.getEffectiveEdgeToEdgeBottomInset(48));
+
+        // Animated PEEK -> HALF: returns 0 once target state is non-PEEK.
+        mMediator.setTargetSheetState(SheetState.HALF);
+        assertEquals(0, mMediator.getEffectiveEdgeToEdgeBottomInset(48));
+
+        // Settled FULL: returns 0.
+        mMediator.setInternalCurrentState(SheetState.FULL);
+        mMediator.setTargetSheetState(SheetState.NONE);
+        assertEquals(0, mMediator.getEffectiveEdgeToEdgeBottomInset(48));
+
+        // Animated FULL -> PEEK: returns 48 once target state is PEEK.
+        mMediator.setTargetSheetState(SheetState.PEEK);
+        assertEquals(48, mMediator.getEffectiveEdgeToEdgeBottomInset(48));
+
+        // SCROLLING with NONE target: falls back to current non-scrolling state (or FULL),
+        // returns 0.
+        mMediator.setTargetSheetState(SheetState.NONE);
+        mMediator.setInternalCurrentState(SheetState.SCROLLING);
+        assertEquals(0, mMediator.getEffectiveEdgeToEdgeBottomInset(48));
+    }
 }

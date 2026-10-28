@@ -249,6 +249,35 @@ class BottomSheetMediator implements TouchHandler {
     }
 
     /**
+     * Resolves the active target state if settling, or the current stationary state, falling back
+     * to {@link SheetState#FULL}.
+     */
+    @SheetState
+    int getTargetOrCurrentState() {
+        if (mTargetState != SheetState.NONE && mTargetState != SheetState.SCROLLING) {
+            return mTargetState;
+        }
+        if (mCurrentState != SheetState.NONE && mCurrentState != SheetState.SCROLLING) {
+            return mCurrentState;
+        }
+        return SheetState.FULL;
+    }
+
+    /**
+     * Resolves the effective edge-to-edge bottom inset for the current content and target/current
+     * state. Sheets that cover the bottom controls handle the bottom safe-area inset internally
+     * when expanded (HALF/FULL), so 0 is returned there; in PEEK mode, the full edge-to-edge bottom
+     * inset is still applied.
+     */
+    @Px
+    int getEffectiveEdgeToEdgeBottomInset(@Px int rawE2eBottomInset) {
+        if (mSheetContent == null) return rawE2eBottomInset;
+        return mSheetContent.coversBottomControls() && getTargetOrCurrentState() != SheetState.PEEK
+                ? 0
+                : rawE2eBottomInset;
+    }
+
+    /**
      * Returns whether the sheet is currently open.
      *
      * @return True if the sheet is open.
