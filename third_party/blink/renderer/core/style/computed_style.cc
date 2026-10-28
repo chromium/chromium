@@ -2240,6 +2240,7 @@ const AppliedTextDecorationVector& ComputedStyle::AppliedTextDecorations()
     const {
   DEFINE_STATIC_LOCAL(Persistent<AppliedTextDecorationVector>, empty,
                       (MakeGarbageCollected<AppliedTextDecorationVector>()));
+  CHECK(IsMainThread());
   if (!HasAppliedTextDecorations()) {
     return *empty;
   }
@@ -2307,6 +2308,7 @@ const ComputedGridTrackList& ComputedStyle::ComputedGridTemplate(
   DEFINE_STATIC_LOCAL(
       Persistent<ComputedGridTrackList>, default_track_list,
       (MakeGarbageCollected<ComputedGridTrackList>(ComputedGridTrackList())));
+  CHECK(IsMainThread());
   return *default_track_list;
 }
 

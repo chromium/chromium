@@ -594,7 +594,8 @@ CounterStyle& CounterStyle::GetDecimal() {
       Persistent<CounterStyle>, decimal,
       (CounterStyleMap::GetUACounterStyleMap()->FindCounterStyleAcrossScopes(
           keywords::kDecimal)));
-  DCHECK(decimal);
+  CHECK(IsMainThread());
+  CHECK(decimal);
   return *decimal;
 }
 

@@ -13,12 +13,14 @@
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
 const StylePath* StylePath::EmptyPath() {
   DEFINE_STATIC_LOCAL(Persistent<StylePath>, empty_path,
                       (MakeGarbageCollected<StylePath>(SVGPathByteStream())));
+  CHECK(IsMainThread());
   return empty_path.Get();
 }
 

@@ -26,12 +26,14 @@
 
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
 static NinePieceImageData& DefaultData() {
   DEFINE_STATIC_LOCAL(Persistent<NinePieceImageData>, data,
                       (MakeGarbageCollected<NinePieceImageData>()));
+  CHECK(IsMainThread());
   data->single_owner = false;
   return *data;
 }
@@ -58,6 +60,7 @@ NinePieceImage::NinePieceImage(StyleImage* image,
 NinePieceImage NinePieceImage::MaskDefaults() {
   DEFINE_STATIC_LOCAL(Persistent<NinePieceImageData>, data,
                       (MakeGarbageCollected<NinePieceImageData>()));
+  CHECK(IsMainThread());
   if (data->single_owner) {
     // First initialization.
     data->image_slices = LengthBox(0);
