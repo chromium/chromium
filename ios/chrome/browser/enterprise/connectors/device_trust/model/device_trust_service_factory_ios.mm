@@ -54,9 +54,9 @@ policy::CloudPolicyStore* GetBrowserCloudPolicyStore() {
   return policy_manager->core()->store();
 }
 
-policy::CloudPolicyStore* GetUserCloudPolicyStore(ProfileIOS* profile) {
+policy::CloudPolicyStore* GetUserCloudPolicyStore(ProfileIOS& profile) {
   policy::UserCloudPolicyManager* policy_manager =
-      profile->GetUserCloudPolicyManager();
+      profile.GetUserCloudPolicyManager();
   if (!policy_manager || !policy_manager->core()) {
     return nullptr;
   }
@@ -64,7 +64,7 @@ policy::CloudPolicyStore* GetUserCloudPolicyStore(ProfileIOS* profile) {
   return policy_manager->core()->store();
 }
 
-std::unique_ptr<KeyedService> CreateDeviceTrustService(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> CreateDeviceTrustService(ProfileIOS& profile) {
   enterprise_connectors::DeviceTrustConnectorService* connector_service =
       DeviceTrustConnectorServiceFactoryIOS::GetForProfile(profile);
 
@@ -112,7 +112,7 @@ std::unique_ptr<KeyedService> CreateDeviceTrustService(ProfileIOS* profile) {
 }  // namespace
 
 // static
-DeviceTrustServiceFactoryIOS::TestingFactory
+DeviceTrustServiceFactoryIOS::TestingFactoryByRef
 DeviceTrustServiceFactoryIOS::GetDefaultFactory() {
   return base::BindOnce(&CreateDeviceTrustService);
 }
@@ -130,6 +130,6 @@ DeviceTrustServiceFactoryIOS::DeviceTrustServiceFactoryIOS(PassKey key)
 
 std::unique_ptr<KeyedService>
 DeviceTrustServiceFactoryIOS::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return CreateDeviceTrustService(profile);
 }

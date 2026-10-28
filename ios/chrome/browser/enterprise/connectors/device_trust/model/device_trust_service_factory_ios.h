@@ -20,12 +20,12 @@ class DeviceTrustServiceFactoryIOS final
 
   // Returns the production factory for tests that explicitly need the real
   // `DeviceTrustService` object graph.
-  static TestingFactory GetDefaultFactory();
+  static TestingFactoryByRef GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_MODEL_DEVICE_TRUST_SERVICE_FACTORY_IOS_H_
