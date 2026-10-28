@@ -26,9 +26,7 @@ std::string NormalizeOutput(std::string output) {
 
 }  // namespace
 
-// TODO(zijiehe): Find out the root cause of the unexpected failure of this test
-// case. See http://crbug.com/750330.
-TEST(EvaluateCapabilityTest, DISABLED_ShouldReturnCrashResult) {
+TEST(EvaluateCapabilityTest, ShouldReturnCrashResult) {
   ASSERT_NE(EvaluateCapability("crash"), 0);
 }
 
