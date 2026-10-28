@@ -26,31 +26,46 @@
 
 namespace {
 
-// Long presses the view with the given `accessibility_id`.
+// Accessibility class name for iOS context menu container.
+NSString* const kUIContextMenuContainerView = @"_UIContextMenuContainerView";
+
+// Long presses the view with the given `accessibility_id` once it is
+// sufficiently visible.
 void LongPressView(NSString* accessibility_id) {
   id<GREYMatcher> matcher = grey_accessibilityID(accessibility_id);
-  [[EarlGrey selectElementWithMatcher:matcher] assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:matcher];
   [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_longPress()];
 }
 
-// Wait for a view that contains a partial match to the given `text`, then tap
+// Waits for a view that contains a partial match to the given `text`, then taps
 // it.
 void WaitForThenTapText(NSString* text) {
-  id item = chrome_test_util::ContainsPartialText(text);
+  id<GREYMatcher> item = chrome_test_util::ContainsPartialText(text);
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:item];
   [[EarlGrey selectElementWithMatcher:item] performAction:grey_tap()];
 }
 
-// Taps a view containing a partial match to the given `text`.
-void TapText(NSString* text) {
-  id item = grey_allOf(chrome_test_util::ContainsPartialText(text),
-                       grey_sufficientlyVisible(), nil);
+// Waits for a context menu item containing a partial match to `text` to become
+// interactable and sufficiently visible, then taps it. Scoping to
+// `_UIContextMenuContainerView` with `grey_userInteractionEnabled()` prevents
+// matching while UIKit context menu morph animations are in flight.
+void WaitForThenTapContextMenuText(NSString* text) {
+  id<GREYMatcher> interactable_context_menu =
+      grey_allOf(grey_kindOfClassName(kUIContextMenuContainerView),
+                 grey_userInteractionEnabled(), nil);
+  id<GREYMatcher> item =
+      grey_allOf(chrome_test_util::ContainsPartialText(text),
+                 grey_ancestor(interactable_context_menu), nil);
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:item];
   [[EarlGrey selectElementWithMatcher:item] performAction:grey_tap()];
 }
 
-// Taps the context menu item with the given label.
-void TapMenuItem(int labelId) {
-  id item = chrome_test_util::ActionSheetItemWithAccessibilityLabelId(labelId);
+// Waits for the action sheet or alert item with `message_id` to be visible,
+// then taps it.
+void TapMenuItem(int message_id) {
+  id<GREYMatcher> item =
+      chrome_test_util::ActionSheetItemWithAccessibilityLabelId(message_id);
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:item];
   [[EarlGrey selectElementWithMatcher:item] performAction:grey_tap()];
 }
 
@@ -91,7 +106,7 @@ void TapMenuItem(int labelId) {
   LongPressView(set_up_list::kDefaultBrowserItemID);
 
   // Tap the menu item to enable notifications.
-  TapText(@"Turn on notifications");
+  WaitForThenTapContextMenuText(@"Turn on notifications");
 
   // Tap the confirmation snackbar.
   WaitForThenTapText(@"notifications turned on");
@@ -105,7 +120,7 @@ void TapMenuItem(int labelId) {
   LongPressView(set_up_list::kDefaultBrowserItemID);
 
   // Tap the menu item to enable notifications.
-  TapText(@"Turn on notifications");
+  WaitForThenTapContextMenuText(@"Turn on notifications");
 
   // Tap cancel action.
   TapMenuItem(IDS_IOS_NOTIFICATIONS_ALERT_CANCEL);
@@ -119,7 +134,7 @@ void TapMenuItem(int labelId) {
   LongPressView(set_up_list::kDefaultBrowserItemID);
 
   // Tap the menu item to enable notifications.
-  TapText(@"Turn on notifications");
+  WaitForThenTapContextMenuText(@"Turn on notifications");
 
   // Tap Go To Settings action.
   TapMenuItem(IDS_IOS_NOTIFICATIONS_ALERT_GO_TO_SETTINGS);
