@@ -452,6 +452,7 @@ chromium-metrics-reviews@google.com.
   <int value="171" label="IDC_CONTENT_CONTEXT_CONTEXTUAL_TASKS_SUBMENU"/>
   <int value="172" label="IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION"/>
   <int value="173" label="IDC_CONTENT_CONTEXT_INDIGO"/>
+  <int value="174" label="IDC_CONTENT_CONTEXT_BROWSE_MEMORY_BANKS"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/renderer_context_menu/render_view_context_menu.cc:RenderViewContextMenuItem) -->

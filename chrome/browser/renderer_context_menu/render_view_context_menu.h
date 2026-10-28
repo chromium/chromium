@@ -361,6 +361,7 @@ class RenderViewContextMenu
   void AppendMediaRouterItem();
   void AppendReadAnythingItem();
   void AppendSaveToMemoryBanksItem();
+  void AppendBrowseMemoryBanksItem();
   bool CanSaveImageToMemoryBanks() const;
   void AppendGlicItems();
   void AppendRotationItems();
@@ -475,6 +476,7 @@ class RenderViewContextMenu
   void ExecOpenInReadAnything();
   void ExecListenToThisPage();
   void ExecSaveToMemoryBanks();
+  void ExecBrowseMemoryBanks();
 
   void MediaPlayerAction(const blink::mojom::MediaPlayerAction& action);
   void SearchForVideoFrame(int event_flags,

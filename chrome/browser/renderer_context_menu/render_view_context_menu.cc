@@ -153,6 +153,7 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webauthn/context_menu_helper.h"
+#include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
@@ -395,6 +396,7 @@
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
+#include "chrome/browser/ui/views/context_hub/memory_banks_palette_bubble_controller.h"
 #include "chrome/browser/ui/views/context_hub/save_to_memory_bank_bubble_controller.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/split_tabs/split_tab_id.h"
@@ -687,13 +689,14 @@ int UmaEnumForCommand(int key, UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_CONTEXTUAL_TASKS_SUBMENU, 171},
        {IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION, 172},
        {IDC_CONTENT_CONTEXT_INDIGO, 173},
+       {IDC_CONTENT_CONTEXT_BROWSE_MEMORY_BANKS, 174},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/metadata/ui/enums.xml.
-       {kUmaMaxValueKey, 174}});
+       {kUmaMaxValueKey, 175}});
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:RenderViewContextMenuItem)
 
   // LINT.IfChange(ContextMenuOptionDesktop)
@@ -2672,6 +2675,7 @@ void RenderViewContextMenu::AppendPageItems() {
 
       // Save to Memory Banks
       AppendSaveToMemoryBanksItem();
+      AppendBrowseMemoryBanksItem();
 
       // Search with google lens
       if (IsRegionSearchEnabled()) {
@@ -2688,6 +2692,7 @@ void RenderViewContextMenu::AppendPageItems() {
 
       // Save to Memory Banks
       AppendSaveToMemoryBanksItem();
+      AppendBrowseMemoryBanksItem();
     }
 
     // Indigo (Try it on)
@@ -2776,6 +2781,7 @@ void RenderViewContextMenu::AppendPageItems() {
   }
 
   AppendSaveToMemoryBanksItem();
+  AppendBrowseMemoryBanksItem();
 
   // Note: `has_sharing_menu_items = true` also implies a separator was added
   // for sharing section.
@@ -2993,6 +2999,17 @@ void RenderViewContextMenu::AppendSaveToMemoryBanksItem() {
            .has_value()) {
     menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS,
                                     IDS_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS);
+  }
+}
+
+void RenderViewContextMenu::AppendBrowseMemoryBanksItem() {
+  if (base::FeatureList::IsEnabled(context_hub::features::kMemoryBanks) &&
+      base::FeatureList::IsEnabled(
+          browser::context_hub::mojom::kMemoryBanksSearchPalette) &&
+      !menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_BROWSE_MEMORY_BANKS)
+           .has_value()) {
+    menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_BROWSE_MEMORY_BANKS,
+                                    IDS_CONTENT_CONTEXT_BROWSE_MEMORY_BANKS);
   }
 }
 
@@ -3827,6 +3844,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       return true;
 
     case IDC_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS:
+    case IDC_CONTENT_CONTEXT_BROWSE_MEMORY_BANKS:
       return true;
 
     case IDC_CONTENT_PASTE_FROM_CLIPBOARD:
@@ -4128,6 +4146,10 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS:
       ExecSaveToMemoryBanks();
+      break;
+
+    case IDC_CONTENT_CONTEXT_BROWSE_MEMORY_BANKS:
+      ExecBrowseMemoryBanks();
       break;
 
     case IDC_CONTENT_CONTEXT_RELOAD_GLIC:
@@ -5186,6 +5208,17 @@ void RenderViewContextMenu::ExecSaveToMemoryBanks() {
         source_web_contents_->GetWeakPtr());
   }
   SaveToMemoryBankBubbleController::GetOrCreateForWebContents(
+      source_web_contents_)
+      ->ShowBubble();
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+void RenderViewContextMenu::ExecBrowseMemoryBanks() {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!GetBrowser() || !source_web_contents_) {
+    return;
+  }
+  MemoryBanksPaletteBubbleController::GetOrCreateForWebContents(
       source_web_contents_)
       ->ShowBubble();
 #endif  // !BUILDFLAG(IS_ANDROID)

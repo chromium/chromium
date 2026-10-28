@@ -646,6 +646,9 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS" desc="The name of the Save to Memory Banks command in the context menu">
           Save to Memory
         </message>
+        <message name="IDS_CONTENT_CONTEXT_BROWSE_MEMORY_BANKS" desc="The name of the Browse Memory Banks command in the context menu">
+          Browse Memory
+        </message>
         <message name="IDS_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_DIALOG_TITLE" desc="The title of a dialog that asks whether to integrate the accessibility image labeling service of Google to Chrome.">
           Get image descriptions from Google?
         </message>
