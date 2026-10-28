@@ -262,7 +262,7 @@ class BASE_EXPORT ThreadGroup {
     // class' destructor.
     void Flush();
 
-    std::vector<RegisteredTaskSource> task_sources_to_release_;
+    absl::InlinedVector<RegisteredTaskSource, 2> task_sources_to_release_;
     absl::InlinedVector<scoped_refptr<WorkerThread>, 2> workers_to_start_;
     bool must_schedule_adjust_max_tasks_ = false;
   };
