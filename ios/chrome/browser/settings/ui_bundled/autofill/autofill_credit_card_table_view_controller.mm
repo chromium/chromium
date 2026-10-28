@@ -34,7 +34,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
@@ -127,9 +126,7 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
-    self.title = l10n_util::GetNSString(IsYourSavedInfoSettingsPageIosEnabled()
-                                            ? IDS_AUTOFILL_PAYMENTS_TITLE
-                                            : IDS_AUTOFILL_PAYMENT_METHODS);
+    self.title = l10n_util::GetNSString(IDS_AUTOFILL_PAYMENTS_TITLE);
     self.shouldDisableDoneButtonOnEdit = YES;
     _browser = browser;
     _personalDataManager = autofill::PersonalDataManagerFactory::GetForProfile(

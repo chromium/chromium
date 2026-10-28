@@ -31,7 +31,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -129,29 +128,12 @@ class AutofillCreditCardTableViewControllerTest
   std::unique_ptr<Browser> browser_;
 };
 
-TEST_F(AutofillCreditCardTableViewControllerTest,
-       TestTitleWithYourSavedInfoPageEnabled) {
-  base::test::ScopedFeatureList feature_list{kYourSavedInfoSettingsPageIos};
-
+TEST_F(AutofillCreditCardTableViewControllerTest, TestTitle) {
   CreateController();
   CheckController();
 
   EXPECT_NSEQ(controller().title,
               l10n_util::GetNSString(IDS_AUTOFILL_PAYMENTS_TITLE));
-}
-
-// TODO(crbug.com/496456595): Remove this test once
-// kYourSavedInfoSettingsPageIos is fully rolled out.
-TEST_F(AutofillCreditCardTableViewControllerTest,
-       TestTitleWithYourSavedInfoPageDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kYourSavedInfoSettingsPageIos);
-
-  CreateController();
-  CheckController();
-
-  EXPECT_NSEQ(controller().title,
-              l10n_util::GetNSString(IDS_AUTOFILL_PAYMENT_METHODS));
 }
 
 // Default test case of no credit cards.

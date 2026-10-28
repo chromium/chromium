@@ -116,16 +116,11 @@ id<GREYMatcher> BottomToolbar() {
 // Helper to open the settings page for Autofill credit cards.
 - (void)openCreditCardsSettings {
   [ChromeEarlGreyUI openSettingsMenu];
-  if ([ChromeEarlGrey isYourSavedInfoSettingsPageIosEnabled]) {
-    [ChromeEarlGreyUI
-        tapSettingsMenuButton:grey_accessibilityID(
-                                  @"kSettingsAutofillAndPasswordsCellId")];
-    [[EarlGrey
-        selectElementWithMatcher:PaymentMethodsButton()]
-        performAction:grey_tap()];
-  } else {
-    [ChromeEarlGreyUI tapSettingsMenuButton:PaymentMethodsButton()];
-  }
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:grey_accessibilityID(
+                                @"kSettingsAutofillAndPasswordsCellId")];
+  [[EarlGrey selectElementWithMatcher:PaymentMethodsButton()]
+      performAction:grey_tap()];
 }
 
 // Helper to open the settings page for the Autofill credit card with `label`.

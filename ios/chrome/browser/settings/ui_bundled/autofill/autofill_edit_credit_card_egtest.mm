@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -67,16 +66,11 @@ id<GREYMatcher> CvcTextField() {
   NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
 
   [ChromeEarlGreyUI openSettingsMenu];
-  if ([ChromeEarlGrey isYourSavedInfoSettingsPageIosEnabled]) {
-    [ChromeEarlGreyUI
-        tapSettingsMenuButton:grey_accessibilityID(
-                                  @"kSettingsAutofillAndPasswordsCellId")];
-    [[EarlGrey
-        selectElementWithMatcher:PaymentMethodsButton()]
-        performAction:grey_tap()];
-  } else {
-    [ChromeEarlGreyUI tapSettingsMenuButton:PaymentMethodsButton()];
-  }
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:grey_accessibilityID(
+                                @"kSettingsAutofillAndPasswordsCellId")];
+  [[EarlGrey selectElementWithMatcher:PaymentMethodsButton()]
+      performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(lastDigits)]
       performAction:grey_tap()];
@@ -210,16 +204,11 @@ id<GREYMatcher> CvcTextField() {
 // Helper to navigate to the edit screen for a given card
 - (void)navigateToEditCard:(NSString*)lastDigits cvcIsSaved:(BOOL)cvcIsSaved {
   [ChromeEarlGreyUI openSettingsMenu];
-  if ([ChromeEarlGrey isYourSavedInfoSettingsPageIosEnabled]) {
-    [ChromeEarlGreyUI
-        tapSettingsMenuButton:grey_accessibilityID(
-                                  @"kSettingsAutofillAndPasswordsCellId")];
-    [[EarlGrey
-        selectElementWithMatcher:PaymentMethodsButton()]
-        performAction:grey_tap()];
-  } else {
-    [ChromeEarlGreyUI tapSettingsMenuButton:PaymentMethodsButton()];
-  }
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:grey_accessibilityID(
+                                @"kSettingsAutofillAndPasswordsCellId")];
+  [[EarlGrey selectElementWithMatcher:PaymentMethodsButton()]
+      performAction:grey_tap()];
 
   // Construct the expected accessibility label
   NSString* expectedLabel = lastDigits;
