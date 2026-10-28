@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 enum class AssistantAimEntrypoint;
+enum class AssistantAimFRENoticeAction;
 enum class AssistantAimHeaderAction;
 enum class AssistantContainerDetent : NSInteger;
 
@@ -41,6 +42,12 @@ enum class AssistantContainerDetent : NSInteger;
 // Records a follow-up query submission in the Assistant AIM bottom sheet with
 // `attachmentCount` attached items.
 - (void)recordFollowupSubmittedWithAttachmentCount:(NSUInteger)attachmentCount;
+
+// Records that the user explicitly removed an auto-added tab attachment.
+- (void)recordAutoAddedTabRemoved;
+
+// Records the user `action` on the first run experience (FRE) notice alert.
+- (void)recordFRENoticeAction:(AssistantAimFRENoticeAction)action;
 
 @end
 

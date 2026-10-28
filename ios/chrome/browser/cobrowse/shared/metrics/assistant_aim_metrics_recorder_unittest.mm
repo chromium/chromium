@@ -256,4 +256,54 @@ TEST_F(AssistantAIMMetricsRecorderTest, FollowupSubmissionsPerSession) {
       kAssistantAimAttachmentsPerSessionHistogram, 2);
 }
 
+// Tests that removing an auto-added tab logs `AutoAddedTabRemoved` as true when
+// the session ends, and logs false when a session ends without removing one.
+TEST_F(AssistantAIMMetricsRecorderTest, AutoAddedTabRemoved) {
+  [recorder_ recordSessionStartedWithEntrypoint:AssistantAimEntrypoint::
+                                                    kLocationBarAction];
+
+  [recorder_ recordAutoAddedTabRemoved];
+  [recorder_ recordSessionEnded];
+
+  histogram_tester_.ExpectUniqueSample(
+      kAssistantAimAutoAddedTabRemovedHistogram, true, 1);
+
+  // Starting a new session should reset `_autoAddedTabRemoved` and log false if
+  // no auto-added tab is removed during the session.
+  [recorder_ recordSessionStartedWithEntrypoint:AssistantAimEntrypoint::
+                                                    kLocationBarAction];
+  [recorder_ recordSessionEnded];
+
+  histogram_tester_.ExpectBucketCount(kAssistantAimAutoAddedTabRemovedHistogram,
+                                      true, 1);
+  histogram_tester_.ExpectBucketCount(kAssistantAimAutoAddedTabRemovedHistogram,
+                                      false, 1);
+  histogram_tester_.ExpectTotalCount(kAssistantAimAutoAddedTabRemovedHistogram,
+                                     2);
+}
+
+// Tests that presentation and actions on the FRE notice alert log
+// `FRENoticeAction`.
+TEST_F(AssistantAIMMetricsRecorderTest, FRENoticeActions) {
+  [recorder_ recordSessionStartedWithEntrypoint:AssistantAimEntrypoint::
+                                                    kLocationBarAction];
+
+  [recorder_ recordFRENoticeAction:AssistantAimFRENoticeAction::kShown];
+  [recorder_
+      recordFRENoticeAction:AssistantAimFRENoticeAction::kLearnMoreTapped];
+  [recorder_ recordFRENoticeAction:AssistantAimFRENoticeAction::kShown];
+  [recorder_ recordFRENoticeAction:AssistantAimFRENoticeAction::kAccepted];
+  [recorder_ recordSessionEnded];
+
+  histogram_tester_.ExpectBucketCount(kAssistantAimFRENoticeActionHistogram,
+                                      AssistantAimFRENoticeAction::kShown, 2);
+  histogram_tester_.ExpectBucketCount(
+      kAssistantAimFRENoticeActionHistogram,
+      AssistantAimFRENoticeAction::kLearnMoreTapped, 1);
+  histogram_tester_.ExpectBucketCount(kAssistantAimFRENoticeActionHistogram,
+                                      AssistantAimFRENoticeAction::kAccepted,
+                                      1);
+  histogram_tester_.ExpectTotalCount(kAssistantAimFRENoticeActionHistogram, 4);
+}
+
 }  // namespace

@@ -495,6 +495,7 @@ class AssistantAIMUIStateProvider
                 }
                  style:UIAlertActionStyleDefault];
   [_tabSharingConsentAlertCoordinator start];
+  [_metricsRecorder recordFRENoticeAction:AssistantAimFRENoticeAction::kShown];
 }
 
 // Stops and clears `_tabSharingConsentAlertCoordinator`.
@@ -505,6 +506,8 @@ class AssistantAIMUIStateProvider
 
 // Persists that the user accepted the tab sharing consent alert.
 - (void)didAcceptTabSharingConsent {
+  [_metricsRecorder
+      recordFRENoticeAction:AssistantAimFRENoticeAction::kAccepted];
   if (self.browser) {
     PrefService* prefs = self.browser->GetProfile()->GetPrefs();
     if (prefs) {
@@ -517,6 +520,8 @@ class AssistantAIMUIStateProvider
 // Handles the "Learn more" action from the tab sharing consent alert by
 // collapsing the container and opening the help page in a new tab.
 - (void)didTapTabSharingConsentLearnMore {
+  [_metricsRecorder
+      recordFRENoticeAction:AssistantAimFRENoticeAction::kLearnMoreTapped];
   [self stopTabSharingConsentAlert];
   if (!self.browser) {
     return;
