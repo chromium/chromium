@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/1329159): Update link once rewrite replaces the draft
-// version.
-// https://drafts.csswg.org/scroll-animations-1/rewrite#viewtimeline-interface
+// https://www.w3.org/TR/scroll-animations-1/#viewtimeline-interface
 [
     Exposed=Window
 ] interface ViewTimeline : ScrollTimeline {
-    [CallWith=Document, RaisesException, MeasureAs=ViewTimelineConstructor] constructor(optional ViewTimelineOptions options = {});
-    readonly attribute Element? subject;
+    [CallWith=Document, RaisesException, MeasureAs=ViewTimelineConstructor] constructor(ViewTimelineOptions options);
+    readonly attribute Element subject;
     readonly attribute CSSNumericValue? startOffset;
     readonly attribute CSSNumericValue? endOffset;
 };

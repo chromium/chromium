@@ -268,7 +268,12 @@ StickinessRange ComputeStickinessRange(
 ViewTimeline* ViewTimeline::Create(Document& document,
                                    ViewTimelineOptions* options,
                                    ExceptionState& exception_state) {
-  Element* subject = options->hasSubject() ? options->subject() : nullptr;
+  if (!options->hasSubject()) {
+    exception_state.ThrowTypeError("Missing subject in ViewTimelineOptions");
+    return nullptr;
+  }
+
+  Element* subject = options->subject();
 
   ScrollAxis axis =
       options->hasAxis() ? options->axis().AsEnum() : ScrollAxis::kBlock;
