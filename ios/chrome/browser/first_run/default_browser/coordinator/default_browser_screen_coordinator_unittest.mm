@@ -13,6 +13,7 @@
 #import "base/functional/bind.h"
 #import "base/metrics/field_trial.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/run_until.h"
 #import "base/test/scoped_command_line.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -41,6 +42,8 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/providers/switcher_info/test_switcher_info.h"
+#import "ios/public/provider/chrome/browser/switcher_info/switcher_info_api.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -88,6 +91,7 @@ class DefaultBrowserScreenCoordinatorTest : public PlatformTest {
     navigation_controller_ = nil;
     browser_.reset();
     profile_ = nullptr;
+    ios::provider::test::ResetSwitcherInfoState();
     PlatformTest::TearDown();
   }
 
@@ -409,6 +413,144 @@ TEST_F(
           segmentation_platform::features::kSegmentationPlatformDeviceSwitcher,
           segmentation_platform::features::kSegmentationPlatformUmaFromSqlDb});
   ConfigureSegmentationLabels();
+  SignIn();
+
+  [coordinator_ start];
+  [coordinator_ stop];
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  EXPECT_EQ(navigation_controller_.topViewController, nil);
+  histogram_tester_.ExpectTotalCount(
+      first_run::kDefaultBrowserPromoSegmentationResultHistogram, 0);
+}
+
+// Tests that when the switcher info signal variation is enabled in a study but
+// the user is signed out, the standard promo is presented without activating
+// the Finch trial.
+TEST_F(DefaultBrowserScreenCoordinatorTest,
+       PresentsStandardPromoWithoutActivatingTrialWhenSignedOutInSwitcherInfo) {
+  EnableVariation(
+      first_run::AndroidSwitcherDefaultBrowserPromoInFREVariationType::
+          kSwitcherInfoSignal);
+  ConfigureSegmentationLabels();
+
+  [coordinator_ start];
+
+  EXPECT_TRUE([navigation_controller_.topViewController
+      isMemberOfClass:[DefaultBrowserScreenViewController class]]);
+  histogram_tester_.ExpectTotalCount(
+      first_run::kDefaultBrowserPromoSegmentationResultHistogram, 0);
+  base::FieldTrial* trial = base::FeatureList::GetFieldTrial(
+      first_run::kAndroidSwitcherDefaultBrowserPromoInFRE);
+  ASSERT_TRUE(trial);
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
+}
+
+// Tests that when the switcher info signal variation is enabled and the API
+// returns `kSwitcher`, the Android Switcher promo is presented and
+// `kAndroidSwitcher` with success latency is recorded.
+TEST_F(DefaultBrowserScreenCoordinatorTest,
+       PresentsAndroidSwitcherPromoWhenSwitcherInfoReturnsSwitcher) {
+  EnableVariation(
+      first_run::AndroidSwitcherDefaultBrowserPromoInFREVariationType::
+          kSwitcherInfoSignal);
+  ios::provider::test::SetSwitcherInfoResult(ios::provider::SwitcherInfoResult{
+      .switcher_status = ios::provider::SwitcherStatus::kSwitcher,
+      .is_chrome_user = true});
+  SignIn();
+
+  [coordinator_ start];
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return navigation_controller_.topViewController != nil; }));
+
+  EXPECT_TRUE([navigation_controller_.topViewController
+      isMemberOfClass:[DefaultBrowserAndroidSwitcherScreenViewController
+                          class]]);
+  ExpectSignalMetrics(
+      first_run::DefaultBrowserPromoSegmentationResult::kAndroidSwitcher,
+      /*is_success=*/true);
+}
+
+// Tests that when the switcher info signal variation is enabled and the API
+// returns `kNotSwitcher`, the standard promo is presented and
+// `kNotAndroidSwitcher` with success latency is recorded.
+TEST_F(DefaultBrowserScreenCoordinatorTest,
+       PresentsStandardPromoWhenSwitcherInfoReturnsNotSwitcher) {
+  EnableVariation(
+      first_run::AndroidSwitcherDefaultBrowserPromoInFREVariationType::
+          kSwitcherInfoSignal);
+  ios::provider::test::SetSwitcherInfoResult(ios::provider::SwitcherInfoResult{
+      .switcher_status = ios::provider::SwitcherStatus::kNotSwitcher,
+      .is_chrome_user = false});
+  SignIn();
+
+  [coordinator_ start];
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return navigation_controller_.topViewController != nil; }));
+
+  EXPECT_TRUE([navigation_controller_.topViewController
+      isMemberOfClass:[DefaultBrowserScreenViewController class]]);
+  ExpectSignalMetrics(
+      first_run::DefaultBrowserPromoSegmentationResult::kNotAndroidSwitcher,
+      /*is_success=*/true);
+}
+
+// Tests that when the switcher info signal variation is enabled and the API
+// returns `kUnknown`, the standard promo is presented and `kNotReady` with
+// failure latency is recorded.
+TEST_F(DefaultBrowserScreenCoordinatorTest,
+       PresentsStandardPromoWhenSwitcherInfoReturnsUnknown) {
+  EnableVariation(
+      first_run::AndroidSwitcherDefaultBrowserPromoInFREVariationType::
+          kSwitcherInfoSignal);
+  ios::provider::test::SetSwitcherInfoResult(ios::provider::SwitcherInfoResult{
+      .switcher_status = ios::provider::SwitcherStatus::kUnknown,
+      .is_chrome_user = false});
+  SignIn();
+
+  [coordinator_ start];
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return navigation_controller_.topViewController != nil; }));
+
+  EXPECT_TRUE([navigation_controller_.topViewController
+      isMemberOfClass:[DefaultBrowserScreenViewController class]]);
+  ExpectSignalMetrics(
+      first_run::DefaultBrowserPromoSegmentationResult::kNotReady,
+      /*is_success=*/false);
+}
+
+// Tests that when the switcher info signal variation is enabled and the API
+// fails (`std::nullopt`), the standard promo is presented and `kFailed` with
+// failure latency is recorded.
+TEST_F(DefaultBrowserScreenCoordinatorTest,
+       PresentsStandardPromoWhenSwitcherInfoFails) {
+  EnableVariation(
+      first_run::AndroidSwitcherDefaultBrowserPromoInFREVariationType::
+          kSwitcherInfoSignal);
+  ios::provider::test::SetSwitcherInfoResult(std::nullopt);
+  SignIn();
+
+  [coordinator_ start];
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return navigation_controller_.topViewController != nil; }));
+
+  EXPECT_TRUE([navigation_controller_.topViewController
+      isMemberOfClass:[DefaultBrowserScreenViewController class]]);
+  ExpectSignalMetrics(first_run::DefaultBrowserPromoSegmentationResult::kFailed,
+                      /*is_success=*/false);
+}
+
+// Tests that stopping the coordinator while a switcher info request is in
+// flight does not present a screen or record metrics when the request later
+// completes.
+TEST_F(DefaultBrowserScreenCoordinatorTest,
+       StopWhileSignalRequestInFlightDoesNotPresentScreenOrRecordMetrics) {
+  EnableVariation(
+      first_run::AndroidSwitcherDefaultBrowserPromoInFREVariationType::
+          kSwitcherInfoSignal);
+  ios::provider::test::SetSwitcherInfoResult(ios::provider::SwitcherInfoResult{
+      .switcher_status = ios::provider::SwitcherStatus::kSwitcher,
+      .is_chrome_user = true});
   SignIn();
 
   [coordinator_ start];

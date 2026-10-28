@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+class AuthenticationService;
+
 namespace segmentation_platform {
 class DeviceSwitcherResultDispatcher;
 }  // namespace segmentation_platform
@@ -44,11 +46,13 @@ class IdentityManager;
 // Whether the user tapped on the UMA link.
 @property(nonatomic, assign) BOOL UMALinkWasTapped;
 
-// Designated initializer with `identityManager` and segmentation `dispatcher`.
-- (instancetype)initWithIdentityManager:
-                    (signin::IdentityManager*)identityManager
-         deviceSwitcherResultDispatcher:
-             (segmentation_platform::DeviceSwitcherResultDispatcher*)dispatcher
+// Designated initializer with `identityManager`, `authenticationService`, and
+// segmentation `dispatcher`.
+- (instancetype)
+           initWithIdentityManager:(signin::IdentityManager*)identityManager
+             authenticationService:(AuthenticationService*)authenticationService
+    deviceSwitcherResultDispatcher:
+        (segmentation_platform::DeviceSwitcherResultDispatcher*)dispatcher
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

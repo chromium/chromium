@@ -46,7 +46,10 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/common/ui/promo_style",
+    "//ios/public/provider/chrome/browser/switcher_info:switcher_info_api",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -79,6 +82,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
     "//ios/chrome/test:test_support",
+    "//ios/chrome/test/providers/switcher_info",
+    "//ios/public/provider/chrome/browser/switcher_info:switcher_info_api",
     "//ios/web/public/test",
     "//testing/gtest",
   ]
