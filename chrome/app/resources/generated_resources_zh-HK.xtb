@@ -289,6 +289,7 @@
 <translation id="1195210374336998651">前往應用程式設定</translation>
 <translation id="1195447618553298278">未知的錯誤。</translation>
 <translation id="1195558154361252544">系統已自動封鎖所有網站的通知，但您允許的網站除外</translation>
+<translation id="1196850329140740621">㩒 [取消聚焦] 掣，其他分頁就會再次顯示</translation>
 <translation id="1197088940767939838">橙色</translation>
 <translation id="11978075283960463">儲存在應用程式中的資料大小：<ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">低視力語音工具</translation>
@@ -770,6 +771,7 @@
 <translation id="1586075235463145108">請先在此裝置啟用 Chrome 自動瀏覽功能</translation>
 <translation id="1587275751631642843">JavaScript 控制器(&amp;J)</translation>
 <translation id="1588438908519853928">正常</translation>
+<translation id="1588626416445753732">你所在地區的熱門搜尋引擎 (隨機排列)</translation>
 <translation id="1588772269240419305">查看標誌和名稱更新</translation>
 <translation id="1588870296199743671">使用其他程式開啟連結…</translation>
 <translation id="1588919647604819635">按一下右鍵資訊卡</translation>
@@ -1257,6 +1259,7 @@
 <translation id="1944921356641260203">找到更新</translation>
 <translation id="1947136734041527201">讓您使用具有身分服務的帳戶來登入網站</translation>
 <translation id="1948528728718281125">已向應用程式、具有相機權限的網站及系統服務授予相機存取權</translation>
+<translation id="1949054568937504107">你所在地區的熱門搜尋引擎</translation>
 <translation id="1949332606889020901">當機 ID</translation>
 <translation id="1949584741547056205">快速解答</translation>
 <translation id="1949980990364952348">應用程式名稱</translation>
@@ -3406,6 +3409,7 @@
 <translation id="3577178956237526436">將左側網站取消靜音</translation>
 <translation id="3577473026931028326">發生錯誤，請再試一次。</translation>
 <translation id="3577487026101678864">開啟檔案同步功能</translation>
+<translation id="3578100826941720337">更多搜尋引擎</translation>
 <translation id="3578230582111850125">選取要問 Gemini 的文字</translation>
 <translation id="3581605050355435601">自動設定 IP 位址</translation>
 <translation id="3581861561942370740">搜尋下載記錄</translation>
@@ -3573,6 +3577,7 @@
 <translation id="3699920817649120894">要停用同步處理和個人化功能嗎？</translation>
 <translation id="3700888195348409686">正在顯示 (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">不允許網站追蹤攝錄機位置</translation>
+<translation id="3701028563242674350">搖動滑鼠游標即可放大</translation>
 <translation id="3701167022068948696">立即修正</translation>
 <translation id="3701515417135397388">在密碼於資料外洩中被盜用時警告你</translation>
 <translation id="3701778844313851487">前往「擴充程式」</translation>
@@ -4835,6 +4840,7 @@
 <translation id="4663373278480897665">已允許使用相機</translation>
 <translation id="4664375726751122009">切換至視覺化檢視</translation>
 <translation id="4665014895760275686">製造商</translation>
+<translation id="4665035764476941598">按此讓其他分頁再次顯示</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> 儲存的所有資料都會被刪除。</translation>
 <translation id="4666472247053585787">在 <ph name="DEVICE_TYPE" /> 上查看手機的通知</translation>
 <translation id="4666911709726371538">更多應用程式</translation>
@@ -5823,6 +5829,7 @@
 <translation id="5425042808445046667">繼續下載</translation>
 <translation id="542570217857307910">現在只要懸停在分頁上就可以展開分頁。如要關閉此功能，請在這裡按一下右鍵。</translation>
 <translation id="5425863515030416387">輕鬆登入所有裝置上的帳戶</translation>
+<translation id="542606797693939821">尋找滑鼠游標</translation>
 <translation id="5427278936122846523">一律翻譯</translation>
 <translation id="5427459444770871191">順時針旋轉(&amp;C)</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (有可用的更新)</translation>
@@ -6684,6 +6691,7 @@
 <translation id="6104929924898022309">使用搜尋鍵變更功能鍵的行為</translation>
 <translation id="6108952804512516814">以 AI 製作</translation>
 <translation id="6110794992500777605">我的捷徑和網站</translation>
+<translation id="611080676871930948">傳送關於閱讀模式的意見</translation>
 <translation id="6111718295497931251">移除「Google 雲端硬碟」存取權</translation>
 <translation id="6112197885362646874">問 Google 關於「<ph name="SEARCH_TERMS" />」的問題</translation>
 <translation id="6112727384379533756">新增票證</translation>
@@ -6934,6 +6942,7 @@
 <translation id="6300478323573969040">必須有至少 12 個字元，其中包含大楷字母、小楷字母、數字和符號。不得有重複字元或者連續 4 個或以上的字元。</translation>
 <translation id="630065524203833229">結束(&amp;X)</translation>
 <translation id="6300718114348072351">無法自動設定「<ph name="PRINTER_NAME" />」。請指定進階打印機詳情。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="6302411260734295784">更多選項</translation>
 <translation id="6302661287897119265">濾鏡</translation>
 <translation id="6303023592034094909">此應用程式有新版本可用</translation>
 <translation id="630308129961693966">選擇網址列位置</translation>
@@ -7054,6 +7063,7 @@
 <translation id="6402042774506839496">請聯絡應用程式開發人員瞭解原因</translation>
 <translation id="6402921224457714577">可要求控制 MIDI 裝置及將其重新編程</translation>
 <translation id="6404511346730675251">編輯書籤</translation>
+<translation id="6405999530973682789">找不到滑鼠游標</translation>
 <translation id="6406303162637086258">模擬瀏覽器重新啟動</translation>
 <translation id="6406506848690869874">同步處理</translation>
 <translation id="6406571339342621375">不要在選單列顯示 Gemini</translation>
@@ -7997,6 +8007,7 @@
 <translation id="7113314569799918830">Chrome 版 Gemini 正擴展至不同地區，但並非所有地區皆可使用</translation>
 <translation id="7113502843173351041">存取您的電郵地址</translation>
 <translation id="7115361495406486998">沒有可用的聯絡人</translation>
+<translation id="7116931001458704701">搖動以尋找游標</translation>
 <translation id="7117228822971127758">請稍後再試</translation>
 <translation id="7118268675952955085">螢幕截圖</translation>
 <translation id="711840821796638741">顯示受管理書籤</translation>
@@ -8670,6 +8681,7 @@
 <translation id="7634337648687970851">目前不支援本機資料復原。</translation>
 <translation id="7634566076839829401">發生錯誤，請再試一次。</translation>
 <translation id="7635048370253485243">已由管理員固定</translation>
+<translation id="7636175154537919400">按一下右鍵即可暫時隱藏其他分頁</translation>
 <translation id="7636346903338549690">已允許使用第三方 Cookie 的網站</translation>
 <translation id="7636919061354591437">在此裝置上安裝</translation>
 <translation id="7637593984496473097">磁碟空間不足</translation>
@@ -9629,6 +9641,7 @@
 <translation id="8345099007452202761">「<ph name="APP_NAME" />」現已推出新版本 (<ph name="VERSION" />)。要立即套用嗎？</translation>
 <translation id="8345848587667658367">您現可查看手機最近的相片、媒體、通知和應用程式</translation>
 <translation id="8347227221149377169">列印工作</translation>
+<translation id="8347654878156675116">搜尋</translation>
 <translation id="8347728744337089388">傳送至你的裝置</translation>
 <translation id="8348430946834215779">盡量使用 HTTPS，並在系統載入不支援 HTTPS 的網站前先接收提醒</translation>
 <translation id="8348896480272971199">請檢查互聯網連線，然後再試一次。</translation>

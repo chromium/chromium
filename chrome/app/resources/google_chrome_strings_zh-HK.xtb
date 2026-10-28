@@ -163,6 +163,7 @@
 <translation id="2482846200327569645"><ph name="EXISTING_USER" />已登入。如要分開保存你的瀏覽資料，請在 Chrome 登入你的個人檔案 (<ph name="USER_EMAIL_ADDRESS" />)。你也可取用<ph name="DEVICE" />上的書籤及其他內容。</translation>
 <translation id="2485422356828889247">解除安裝</translation>
 <translation id="2513154137948333830">必須重新啟動：<ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2521391734665471391">關閉「Google 搜尋」AI 模式</translation>
 <translation id="2523492931736391680">Chrome 助你保障工作成果安全</translation>
 <translation id="2534365042754120737">為保護你的資料，請允許 Chrome 從你最近未瀏覽的網站移除權限。這不會停止通知。</translation>
 <translation id="2556847002339236023">您的機構會在 Chrome 閒置 <ph name="TIMEOUT_DURATION" />後將其關閉。瀏覽資料已刪除，當中可能包括記錄、自動填入資料和下載檔案。</translation>

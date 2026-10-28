@@ -161,6 +161,7 @@
 <translation id="2482846200327569645"><ph name="EXISTING_USER" /> đã đăng nhập. Để tách biệt hoạt động duyệt web của bạn, hãy đăng nhập vào Chrome trong hồ sơ của riêng bạn qua địa chỉ <ph name="USER_EMAIL_ADDRESS" />. Bạn cũng có thể sử dụng dấu trang và nhiều dữ liệu khác trên <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">Gỡ cài đặt</translation>
 <translation id="2513154137948333830">Yêu cầu khởi động lại: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2521391734665471391">Đóng Chế độ AI của Google Tìm kiếm</translation>
 <translation id="2523492931736391680">Bảo mật công việc của bạn trên Chrome</translation>
 <translation id="2534365042754120737">Để bảo vệ dữ liệu của bạn, hãy cho phép Chrome loại bỏ quyền khỏi các trang web mà gần đây bạn không truy cập. Bạn sẽ vẫn nhận được thông báo.</translation>
 <translation id="2556847002339236023">Tổ chức của bạn sẽ đóng Chrome khi Chrome không được dùng đến trong <ph name="TIMEOUT_DURATION" />. Dữ liệu duyệt web đã bị xoá. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống.</translation>

@@ -289,6 +289,7 @@
 <translation id="1195210374336998651">转到应用设置</translation>
 <translation id="1195447618553298278">未知错误。</translation>
 <translation id="1195558154361252544">除您允许的网站外，已自动阻止所有其他网站显示通知</translation>
+<translation id="1196850329140740621">点击“取消聚焦”按钮即可重新显示其他标签页</translation>
 <translation id="1197088940767939838">橙色</translation>
 <translation id="11978075283960463">存储在应用中的数据量：<ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">低视力语音工具</translation>
@@ -769,6 +770,7 @@
 <translation id="1586075235463145108">请先为此设备开启 Chrome 自动浏览功能</translation>
 <translation id="1587275751631642843">JavaScript 控制台(&amp;J)</translation>
 <translation id="1588438908519853928">正常</translation>
+<translation id="1588626416445753732">您所在地区的热门搜索引擎（按随机顺序显示）</translation>
 <translation id="1588772269240419305">查看徽标和名称更新</translation>
 <translation id="1588870296199743671">链接打开方式...</translation>
 <translation id="1588919647604819635">右键点击卡片</translation>
@@ -1248,6 +1250,7 @@
 <translation id="1944921356641260203">发现更新</translation>
 <translation id="1947136734041527201">允许您使用您在身份服务中注册的账号登录网站</translation>
 <translation id="1948528728718281125">允许系统服务以及具有摄像头使用权限的应用和网站使用摄像头</translation>
+<translation id="1949054568937504107">您所在地区的热门搜索引擎</translation>
 <translation id="1949332606889020901">崩溃 ID</translation>
 <translation id="1949584741547056205">快速解答</translation>
 <translation id="1949980990364952348">应用名称</translation>
@@ -3394,6 +3397,7 @@
 <translation id="3577178956237526436">将左侧网站取消静音</translation>
 <translation id="3577473026931028326">出了点问题。请重试。</translation>
 <translation id="3577487026101678864">已开启文件同步</translation>
+<translation id="3578100826941720337">更多搜索引擎</translation>
 <translation id="3578230582111850125">选择文字即可问问 Gemini</translation>
 <translation id="3581605050355435601">自动配置 IP 地址</translation>
 <translation id="3581861561942370740">搜索下载记录</translation>
@@ -3561,6 +3565,7 @@
 <translation id="3699920817649120894">要关闭同步和个性化功能吗？</translation>
 <translation id="3700888195348409686">展示中 (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">不允许网站跟踪您的摄像头位置</translation>
+<translation id="3701028563242674350">晃动鼠标光标可使其变大</translation>
 <translation id="3701167022068948696">立即修正</translation>
 <translation id="3701515417135397388">发现密码遭遇数据泄露时向您发出警告</translation>
 <translation id="3701778844313851487">前往“扩展程序”</translation>
@@ -4822,6 +4827,7 @@
 <translation id="4663373278480897665">已允许使用摄像头</translation>
 <translation id="4664375726751122009">切换到直观视图</translation>
 <translation id="4665014895760275686">制造商</translation>
+<translation id="4665035764476941598">点击此处可重新显示其他标签页</translation>
 <translation id="4665446389743427678">即将删除 <ph name="SITE" /> 存储的所有数据。</translation>
 <translation id="4666472247053585787">在 <ph name="DEVICE_TYPE" /> 上查看手机中的通知</translation>
 <translation id="4666911709726371538">更多应用</translation>
@@ -5810,6 +5816,7 @@
 <translation id="5425042808445046667">继续下载</translation>
 <translation id="542570217857307910">现在，您只需将光标悬停在标签页上，即可展开标签页。如需关闭此功能，请在此处右键点击。</translation>
 <translation id="5425863515030416387">在所有设备上轻松登录</translation>
+<translation id="542606797693939821">查找鼠标指针</translation>
 <translation id="5427278936122846523">一律翻译</translation>
 <translation id="5427459444770871191">顺时针旋转(&amp;C)</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" />（可进行更新）</translation>
@@ -6671,6 +6678,7 @@
 <translation id="6104929924898022309">使用搜索键更改功能键的行为</translation>
 <translation id="6108952804512516814">利用 AI 创建</translation>
 <translation id="6110794992500777605">我的快捷方式和网站</translation>
+<translation id="611080676871930948">发送阅读模式的相关反馈</translation>
 <translation id="6111718295497931251">撤消 Google 云端硬盘访问权限</translation>
 <translation id="6112197885362646874">向 Google 询问“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="6112727384379533756">添加票据</translation>
@@ -7040,6 +7048,7 @@
 <translation id="6402042774506839496">如需了解原因，请与应用开发者联系</translation>
 <translation id="6402921224457714577">网站可以请求控制您的 MIDI 设备以及为其重新编程</translation>
 <translation id="6404511346730675251">修改书签</translation>
+<translation id="6405999530973682789">找不到鼠标光标</translation>
 <translation id="6406303162637086258">模拟浏览器重启</translation>
 <translation id="6406506848690869874">同步</translation>
 <translation id="6406571339342621375">不在菜单栏中显示 Gemini</translation>
@@ -7983,6 +7992,7 @@
 <translation id="7113314569799918830">Chrome 中的 Gemini 正在向更多地区开放，但尚未覆盖所有地区</translation>
 <translation id="7113502843173351041">获取您的电子邮件地址</translation>
 <translation id="7115361495406486998">没有可设为分享对象的联系人</translation>
+<translation id="7116931001458704701">晃动即可找到光标</translation>
 <translation id="7117228822971127758">请稍后重试</translation>
 <translation id="7118268675952955085">屏幕截图</translation>
 <translation id="711840821796638741">显示受管理的书签</translation>
@@ -8657,6 +8667,7 @@
 <translation id="7634337648687970851">目前不支持本地数据恢复。</translation>
 <translation id="7634566076839829401">出了点问题，请重试。</translation>
 <translation id="7635048370253485243">已被您的管理员固定</translation>
+<translation id="7636175154537919400">右键点击即可暂时隐藏其他标签页</translation>
 <translation id="7636346903338549690">经允许可使用第三方 Cookie 的网站</translation>
 <translation id="7636919061354591437">在此设备上安装</translation>
 <translation id="7637593984496473097">磁盘空间不足</translation>
@@ -9618,6 +9629,7 @@
 <translation id="8345099007452202761">“<ph name="APP_NAME" />”已推出新版本 <ph name="VERSION" />，要立即应用更新吗？</translation>
 <translation id="8345848587667658367">您现在可以查看手机中近期的照片、媒体、通知和应用</translation>
 <translation id="8347227221149377169">打印任务</translation>
+<translation id="8347654878156675116">搜索</translation>
 <translation id="8347728744337089388">发送到您的设备(&amp;D)</translation>
 <translation id="8348430946834215779">尽可能使用 HTTPS，并在加载不支持 HTTPS 的网站前收到警告</translation>
 <translation id="8348896480272971199">请检查您的互联网连接，然后重试。</translation>
