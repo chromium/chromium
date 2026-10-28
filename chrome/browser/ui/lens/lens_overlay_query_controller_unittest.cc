@@ -36,6 +36,7 @@
 #include "components/lens/lens_overlay_metrics.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_permission_utils.h"
+#include "components/lens/lens_request_construction.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -5555,6 +5556,12 @@ TEST_F(LensOverlayQueryControllerTest,
   EXPECT_THAT(query_controller.sent_request_headers_history()[3],
               testing::Contains("Origin"));
 
+  histogram_tester.ExpectBucketCount(
+      "Lens.IdentityDelegation.RetriedWithoutAuthOn401",
+      lens::LensIdentityDelegationRetryRequestType::kOverlayClusterInfo, 1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.IdentityDelegation.RetriedWithoutAuthOn401",
+      lens::LensIdentityDelegationRetryRequestType::kOverlayFetchRequest, 1);
   histogram_tester.ExpectUniqueSample(
       "Lens.Overlay.ClusterInfo.Status",
       lens::LensOverlayClusterInfoStatus::kSuccess, 1);

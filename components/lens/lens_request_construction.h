@@ -24,6 +24,19 @@ class GoogleServiceAuthError;
 
 namespace lens {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(LensIdentityDelegationRetryRequestType)
+enum class LensIdentityDelegationRetryRequestType {
+  kComposeboxClusterInfo = 0,
+  kComposeboxFetchRequest = 1,
+  kOverlayClusterInfo = 2,
+  kOverlayFetchRequest = 3,
+  kMaxValue = kOverlayFetchRequest,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensIdentityDelegationRetryRequestType)
+
 // Creates the OAuth headers for Lens requests.
 std::vector<std::string> CreateOAuthHeader(
     GoogleServiceAuthError error,
@@ -38,13 +51,15 @@ std::vector<std::string> CreateVariationsHeaders(
 // "Authorization" header was present and removed.
 bool StripAuthorizationHeader(std::vector<std::string>& headers);
 
-// Returns true and strips the "Authorization" header from `headers` if
+// Returns true, strips the "Authorization" header from `headers`, and records
+// `request_type` to `Lens.IdentityDelegation.RetriedWithoutAuthOn401` if
 // identity delegation is enabled, `response` failed with HTTP 401
 // (HTTP_UNAUTHORIZED), and `headers` contained an "Authorization" header.
 // `response` may be null, in which case this returns false.
 bool ShouldRetryRequestWithoutAuthOn401(
     const endpoint_fetcher::EndpointResponse* response,
-    std::vector<std::string>& headers);
+    std::vector<std::string>& headers,
+    LensIdentityDelegationRetryRequestType request_type);
 
 }  // namespace lens
 
