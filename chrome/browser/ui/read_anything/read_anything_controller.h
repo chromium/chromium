@@ -128,8 +128,6 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
 
   using PresentationState = read_anything::mojom::ReadAnythingPresentationState;
 
-  using DistillationState = read_anything::mojom::ReadAnythingDistillationState;
-
   using ReadAnythingOpenTrigger = read_anything::mojom::ReadAnythingOpenTrigger;
 
   ReadAnythingController(tabs::TabInterface* tab,
@@ -209,20 +207,14 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   // Returns true if the event was handled.
   bool HandleEscapeKey(const input::NativeWebKeyboardEvent& event);
 
-  void OnDistillationStateChanged(DistillationState new_state);
+  // Called when Reading Mode's content becomes empty or non-empty. When it's
+  // empty, Reading Mode switches to (or opens in) the side panel rather than
+  // the immersive overlay, so that the user can still see the page.
+  void OnEmptyStateChanged(bool is_empty);
 
-  // Called when the Reading Mode WebUI reports the result of a distillation
-  // attempt. Coordinates any follow-up work that depends on how Reading Mode
-  // was opened (e.g. logging omnibox entry point metrics).
-  void OnDistillationStatus(read_anything::mojom::DistillationStatus status,
-                            int word_count);
-
-  static constexpr int kMaxWordsDistilled = 25000;
-  static constexpr int kWordsDistilledBuckets = 100;
-
-  // For testing only. Pauses this controller's reactions to distillation state
+  // For testing only. Pauses this controller's reactions to empty state
   // changes.
-  static void SetFreezeDistillationOnCreationForTesting(bool locked);
+  static void SetFreezeEmptyStateOnCreationForTesting(bool locked);
 
   // Lazily creates and returns the WebUIContentsWrapper for the
   // Reading Mode WebUI. Transfers ownership of the WebUIContentsWrapper to the
@@ -380,15 +372,9 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   // the main webpage to be treated as visible for IRM purposes.
   void ReleaseMainContentsCapture();
 
-  DistillationState distillation_state_ = DistillationState::kUndefined;
-
-  // The trigger used the last time Reading Mode was shown. Intentionally not
-  // reset when Reading Mode is hidden, so that a distillation result arriving
-  // after the UI is closed is still attributed to the right entry point.
-  // OnDistillationStatus() resets it to kUnknown after logging the omnibox
-  // distillation metrics, so they are only recorded once per omnibox open.
-  ReadAnythingOpenTrigger last_open_trigger_ =
-      ReadAnythingOpenTrigger::kUnknown;
+  // Whether Reading Mode's content is empty, as last reported by
+  // OnEmptyStateChanged().
+  bool is_showing_empty_state_ = false;
 
   // The handle returned by web_contents_->IncrementCapturerCount. This is
   // used to release the capture when the ReadAnythingController is destroyed.
@@ -397,7 +383,7 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   // managed.
   base::ScopedClosureRunner main_contents_capturer_handle_;
 
-  static bool freeze_distillation_for_testing_;
+  static bool freeze_empty_state_for_testing_;
 };
 
 #endif  // CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_CONTROLLER_H_

@@ -172,6 +172,10 @@ class ReadAnythingUntrustedPageHandler::DomDistillerDelegate
 
 namespace {
 
+// Histogram bounds for Accessibility.ReadAnything.WordsDistilledAfterOmnibox.
+constexpr int kMaxWordsDistilled = 25000;
+constexpr int kWordsDistilledBuckets = 100;
+
 // All AXMode flags of kAXModeWebContentsOnly are needed. |ui::AXMode::kHTML| is
 // needed for retrieveing the `aria-expanded` attribute.
 // |ui::AXMode::kExtendedProperties| is needed for HTML tag, and heading level
@@ -843,7 +847,8 @@ void ReadAnythingUntrustedPageHandler::OnDistillationStateChanged(
   auto* ra_controller = GetReadAnythingController();
   CHECK(ra_controller);
 
-  ra_controller->OnDistillationStateChanged(new_state);
+  ra_controller->OnEmptyStateChanged(
+      new_state == ReadAnythingDistillationState::kDistillationEmpty);
 
   // Translate only once the content is distilled, so that the translation
   // applies to the content shown in Reading Mode.
@@ -1489,10 +1494,24 @@ void ReadAnythingUntrustedPageHandler::OnCollapseSelection(
 void ReadAnythingUntrustedPageHandler::OnDistillationStatus(
     read_anything::mojom::DistillationStatus status,
     int word_count) {
-  if (!read_anything_controller_) {
-    return;
+  if (last_open_trigger_ == ReadAnythingOpenTrigger::kOmniboxChip &&
+      status != read_anything::mojom::DistillationStatus::kStillRunning) {
+    last_open_trigger_ = ReadAnythingOpenTrigger::kUnknown;
+    base::UmaHistogramEnumeration(
+        "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status);
+    base::UmaHistogramCustomCounts(
+        "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", word_count, 1,
+        kMaxWordsDistilled, kWordsDistilledBuckets);
+
+    content::WebContents* web_contents =
+        main_observer_ ? main_observer_->web_contents() : nullptr;
+    if (web_contents && web_contents->GetPrimaryMainFrame()) {
+      ukm::builders::Accessibility_ReadAnything_OmniboxEntryPointDistillation(
+          web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId())
+          .SetDistillationStatus(static_cast<int>(status))
+          .Record(ukm::UkmRecorder::Get());
+    }
   }
-  read_anything_controller_->OnDistillationStatus(status, word_count);
 }
 
 void ReadAnythingUntrustedPageHandler::SetDefaultLanguageCode(
@@ -1510,6 +1529,7 @@ void ReadAnythingUntrustedPageHandler::Activate(
     ReadAnythingOpenTrigger open_trigger,
     std::optional<base::TimeDelta> completed_session_duration) {
   if (active) {
+    last_open_trigger_ = open_trigger;
     if (features::IsReadAnythingImprovedUiEnabled() &&
         open_trigger == ReadAnythingOpenTrigger::kListenToThisPageContextMenu) {
       if (listen_to_this_page_playback_state_ !=

@@ -13,7 +13,7 @@
 
 namespace {
 
-using DistillationState = ReadAnythingController::DistillationState;
+using DistillationState = read_anything::mojom::ReadAnythingDistillationState;
 using PresentationState = ReadAnythingController::PresentationState;
 
 // How long Reading Mode must show content before showing the AI playback IPH.

@@ -114,7 +114,7 @@ class ReadAnythingControllerBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUp() override {
-    ReadAnythingController::SetFreezeDistillationOnCreationForTesting(true);
+    ReadAnythingController::SetFreezeEmptyStateOnCreationForTesting(true);
     InProcessBrowserTest::SetUp();
   }
 
@@ -127,7 +127,7 @@ class ReadAnythingControllerBrowserTest : public InProcessBrowserTest {
   }
 
   void TearDown() override {
-    ReadAnythingController::SetFreezeDistillationOnCreationForTesting(false);
+    ReadAnythingController::SetFreezeEmptyStateOnCreationForTesting(false);
     InProcessBrowserTest::TearDown();
   }
 

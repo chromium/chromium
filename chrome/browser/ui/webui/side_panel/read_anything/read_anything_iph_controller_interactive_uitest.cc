@@ -42,8 +42,8 @@ class ReadAnythingIphCujTestBase
     non_distillable_url_ = GURL("chrome://blank");
 
     feature_list_.InitAndEnableFeatures(GetEnabledFeatures());
-    if (ShouldFreezeDistillationOnCreation()) {
-      ReadAnythingController::SetFreezeDistillationOnCreationForTesting(true);
+    if (ShouldFreezeEmptyStateOnCreation()) {
+      ReadAnythingController::SetFreezeEmptyStateOnCreationForTesting(true);
     }
 
     InteractiveFeaturePromoTest::SetUp();
@@ -60,8 +60,8 @@ class ReadAnythingIphCujTestBase
 
   void TearDownOnMainThread() override {
     EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
-    if (ShouldFreezeDistillationOnCreation()) {
-      ReadAnythingController::SetFreezeDistillationOnCreationForTesting(false);
+    if (ShouldFreezeEmptyStateOnCreation()) {
+      ReadAnythingController::SetFreezeEmptyStateOnCreationForTesting(false);
     }
     InteractiveFeaturePromoTest::TearDownOnMainThread();
   }
@@ -69,7 +69,7 @@ class ReadAnythingIphCujTestBase
  protected:
   virtual std::vector<base::test::FeatureRef> GetEnabledFeatures() const = 0;
 
-  virtual bool ShouldFreezeDistillationOnCreation() const { return false; }
+  virtual bool ShouldFreezeEmptyStateOnCreation() const { return false; }
 
   using PageActionInteractiveTestMixin::InvokePageAction;
 
@@ -95,7 +95,7 @@ class ReadAnythingKeyboardShortcutCUJTest : public ReadAnythingIphCujTestBase {
             feature_engagement::kIPHReadingModeKeyboardShortcutFeature};
   }
 
-  bool ShouldFreezeDistillationOnCreation() const override { return true; }
+  bool ShouldFreezeEmptyStateOnCreation() const override { return true; }
 };
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingKeyboardShortcutCUJTest, ShowAndHideIph) {
@@ -123,7 +123,7 @@ class ReadAnythingPresentationModeCUJTest : public ReadAnythingIphCujTestBase {
             feature_engagement::kIPHReadingModePresentationModeFeature};
   }
 
-  bool ShouldFreezeDistillationOnCreation() const override { return true; }
+  bool ShouldFreezeEmptyStateOnCreation() const override { return true; }
 };
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingPresentationModeCUJTest, ShowAndHideIph) {

@@ -2406,18 +2406,58 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
-                       OnDistillationStatus_ForwardsToController) {
+                       OnDistillationStatus_AfterOmniboxOpen_LogsResultOnce) {
   base::HistogramTester histogram_tester;
   handler_ = CreateHandler();
-  auto status = read_anything::mojom::DistillationStatus::kSuccess;
-  int word_count = 3001;
   SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kReadAnythingOmniboxChip;
   Activate(true, &trigger);
 
-  handler_->OnDistillationStatus(status, word_count);
+  // A still running distillation has no result yet, so it isn't logged.
+  handler_->OnDistillationStatus(
+      read_anything::mojom::DistillationStatus::kStillRunning, 10);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", 0);
+
+  // The result is only logged once per omnibox open, even after closing.
+  handler_->OnDistillationStatus(
+      read_anything::mojom::DistillationStatus::kSuccess, 3001);
+  handler_->OnDistillationStatus(
+      read_anything::mojom::DistillationStatus::kFailure, 3002);
+  Activate(false);
+  handler_->OnDistillationStatus(
+      read_anything::mojom::DistillationStatus::kFailure, 3003);
+
+  // The result is still logged if Reading Mode is closed before it arrives.
+  Activate(true, &trigger);
+  Activate(false);
+  handler_->OnDistillationStatus(
+      read_anything::mojom::DistillationStatus::kSuccess, 20);
 
   histogram_tester.ExpectUniqueSample(
-      "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status, 1);
+      "Accessibility.ReadAnything.DistillationStatusAfterOmnibox",
+      read_anything::mojom::DistillationStatus::kSuccess, 2);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", 2);
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", 3001, 1);
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", 20, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       OnDistillationStatus_AfterOtherOpenTrigger_DoesNotLog) {
+  base::HistogramTester histogram_tester;
+  handler_ = CreateHandler();
+  SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kReadAnythingContextMenu;
+  Activate(true, &trigger);
+
+  handler_->OnDistillationStatus(
+      read_anything::mojom::DistillationStatus::kSuccess, 3001);
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,

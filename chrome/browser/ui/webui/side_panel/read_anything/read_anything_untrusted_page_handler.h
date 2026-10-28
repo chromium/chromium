@@ -494,6 +494,14 @@ class ReadAnythingUntrustedPageHandler :
   const mojo::Receiver<read_anything::mojom::UntrustedPageHandler> receiver_;
   const mojo::Remote<read_anything::mojom::UntrustedPage> page_;
 
+  // The trigger used the last time Reading Mode was shown. Intentionally not
+  // reset when Reading Mode is hidden, so that a distillation result arriving
+  // after the UI is closed is still attributed to the right entry point.
+  // OnDistillationStatus() resets it to kUnknown after logging the omnibox
+  // distillation metrics, so they are only recorded once per omnibox open.
+  ReadAnythingOpenTrigger last_open_trigger_ =
+      ReadAnythingOpenTrigger::kUnknown;
+
   // Whether the tab is going to detach soon.
   bool tab_will_detach_ = false;
 

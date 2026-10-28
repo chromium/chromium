@@ -37,8 +37,6 @@
 #include "content/public/browser/web_contents.h"
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -122,13 +120,13 @@ ReadAnythingControllerGlue::ReadAnythingControllerGlue(
       controller_(controller) {}
 
 // static
-bool ReadAnythingController::freeze_distillation_for_testing_ = false;
+bool ReadAnythingController::freeze_empty_state_for_testing_ = false;
 
 // static
 void ReadAnythingController::
-    SetFreezeDistillationOnCreationForTesting(  // IN-TEST
+    SetFreezeEmptyStateOnCreationForTesting(  // IN-TEST
         bool locked) {
-  freeze_distillation_for_testing_ = locked;
+  freeze_empty_state_for_testing_ = locked;
 }
 
 ReadAnythingController* ReadAnythingController::From(tabs::TabInterface* tab) {
@@ -226,7 +224,6 @@ void ReadAnythingController::RemoveImmersiveActivationObserver(
 }
 
 void ReadAnythingController::OnEntryShown(ReadAnythingOpenTrigger trigger) {
-  last_open_trigger_ = trigger;
   observers_.Notify(&Observer::Activate, /*active=*/true, trigger,
                     /*completed_session_duration=*/std::nullopt);
   // At the moment, services are created for normal, guest, and incognito
@@ -456,9 +453,9 @@ void ReadAnythingController::MaybeUpdateFindBarController() {
 }
 
 void ReadAnythingController::ShowImmersiveUI(ReadAnythingOpenTrigger trigger) {
-  // Show Reading Mode in side panel mode if the distillation is empty and
-  // Reading Mode was inactive.
-  if (distillation_state_ == DistillationState::kDistillationEmpty &&
+  // If Reading Mode's content is empty, open it in the side panel instead so
+  // that the user can still see the page.
+  if (is_showing_empty_state_ &&
       GetPresentationState() == PresentationState::kInactive) {
     base::UmaHistogramEnumeration(
         "Accessibility.ReadAnything.SidePanelTriggeredByEmptyState", trigger);
@@ -808,44 +805,20 @@ bool ReadAnythingController::HandleEscapeKey(
   return false;
 }
 
-void ReadAnythingController::OnDistillationStateChanged(
-    DistillationState new_state) {
-  if (freeze_distillation_for_testing_) {
+void ReadAnythingController::OnEmptyStateChanged(bool is_empty) {
+  if (freeze_empty_state_for_testing_) {
     return;
   }
 
-  distillation_state_ = new_state;
+  is_showing_empty_state_ = is_empty;
 
-  if (new_state == DistillationState::kDistillationEmpty &&
+  if (is_empty &&
       GetPresentationState() == PresentationState::kInImmersiveOverlay) {
     base::UmaHistogramEnumeration(
         "Accessibility.ReadAnything.SidePanelTriggeredByEmptyState",
         ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton);
 
     TogglePresentation(/*is_user_initiated=*/false);
-  }
-}
-
-void ReadAnythingController::OnDistillationStatus(
-    read_anything::mojom::DistillationStatus status,
-    int word_count) {
-  content::WebContents* web_contents = tab_->GetContents();
-  if (last_open_trigger_ == ReadAnythingOpenTrigger::kOmniboxChip) {
-    if (status != read_anything::mojom::DistillationStatus::kStillRunning) {
-      last_open_trigger_ = ReadAnythingOpenTrigger::kUnknown;
-      base::UmaHistogramEnumeration(
-          "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status);
-      base::UmaHistogramCustomCounts(
-          "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", word_count,
-          1, kMaxWordsDistilled, kWordsDistilledBuckets);
-
-      if (web_contents && web_contents->GetPrimaryMainFrame()) {
-        ukm::builders::Accessibility_ReadAnything_OmniboxEntryPointDistillation(
-            web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId())
-            .SetDistillationStatus(static_cast<int>(status))
-            .Record(ukm::UkmRecorder::Get());
-      }
-    }
   }
 }
 

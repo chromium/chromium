@@ -1567,12 +1567,12 @@ class TranslateManagerReadingModeBrowserTest
     : public TranslateManagerBrowserTest {
  public:
   void SetUp() override {
-    ReadAnythingController::SetFreezeDistillationOnCreationForTesting(true);
+    ReadAnythingController::SetFreezeEmptyStateOnCreationForTesting(true);
     TranslateManagerBrowserTest::SetUp();
   }
 
   void TearDown() override {
-    ReadAnythingController::SetFreezeDistillationOnCreationForTesting(false);
+    ReadAnythingController::SetFreezeEmptyStateOnCreationForTesting(false);
     TranslateManagerBrowserTest::TearDown();
   }
 
