@@ -66,6 +66,22 @@ std::string SanitizeProcessPath(std::string_view raw_path);
 // Sanitizes both `executable_path` and `script_path` on `node`.
 void SanitizeProcessNodePaths(ProcessNode& node);
 
+// Returns true if `executable_path` resolves to an allowlisted interpreter
+// binary family (`node`, `nodejs`, `python`, `bash`, `sh`, `zsh`, `ruby`,
+// `perl`, `deno`, `bun`, including version-suffixed binaries like `python3.12`
+// or `node20`).
+bool IsAllowlistedInterpreter(std::string_view executable_path);
+
+// Extracts and sanitizes the script file argument from `argv` when
+// `executable_path` is an allowlisted interpreter:
+// - Omits `script_path` when known inline execution flags or subcommands
+//   are present before the script target or `--` (e.g. `-e`, `-E`, `--eval`,
+//   `-c`, `-lc`, `-ec`, `-s`, `-p`, `-m`, `-i`, bare `-`, or `eval`/`repl`).
+// - Fails closed (returns an empty string) if no allowlisted script file
+//   target can be identified or if `SanitizeProcessPath()` fails closed.
+std::string ExtractInterpreterScript(std::string_view executable_path,
+                                     const std::vector<std::string>& argv);
+
 }  // namespace enterprise_connectors
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_PROCESS_EXTRACTOR_H_
