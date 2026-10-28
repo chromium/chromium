@@ -7,6 +7,10 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 
 class GURL;
@@ -63,13 +67,33 @@ class GlicExperimentalOptInUIHost {
   // at the target URL.
   virtual content::WebContents* GetOrCreateSuitableWebContents() = 0;
 
-  virtual void SetTickClockForTesting(const base::TickClock* tick_clock) {}
+  void SetTickClockForTesting(const base::TickClock* tick_clock) {
+    tick_clock_ = tick_clock;
+  }
 
 #if !BUILDFLAG(IS_ANDROID)
   // Views-desktop specific testing accessors.
   virtual views::Widget* GetWidgetForTesting() = 0;
   virtual GlicExperimentalOptInDialogView* GetDialogViewForTesting() = 0;
 #endif
+
+ protected:
+  void OnDialogOpened() { dialog_open_time_ = tick_clock_->NowTicks(); }
+
+  void RecordShowDurationOnClose() {
+    if (!dialog_open_time_.is_null()) {
+      // Justification: GlicMetricReporter is for web-client sessions; the modal
+      // opt-in dialog UI host runs before Glic web-client initialization.
+      base::UmaHistogramMediumTimes(
+          "Glic.ExperimentalTriggering.OptInDialog.ShowDuration",
+          tick_clock_->NowTicks() - dialog_open_time_);
+      dialog_open_time_ = base::TimeTicks();
+    }
+  }
+
+  raw_ptr<const base::TickClock> tick_clock_{
+      base::DefaultTickClock::GetInstance()};
+  base::TimeTicks dialog_open_time_;
 };
 
 }  // namespace glic

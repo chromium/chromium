@@ -66,9 +66,7 @@ bool DoesURLMatchTarget(const GURL& url,
 class GlicExperimentalOptInUIHostDesktop : public GlicExperimentalOptInUIHost {
  public:
   GlicExperimentalOptInUIHostDesktop(Profile* profile, Delegate* delegate)
-      : profile_(profile),
-        delegate_(delegate),
-        tick_clock_(base::DefaultTickClock::GetInstance()) {}
+      : profile_(profile), delegate_(delegate) {}
 
   ~GlicExperimentalOptInUIHostDesktop() override {
     delegate_ = nullptr;
@@ -132,7 +130,7 @@ class GlicExperimentalOptInUIHostDesktop : public GlicExperimentalOptInUIHost {
       tab_features->tab_dialog_manager()->MaybeActivateDialog();
     }
 
-    dialog_open_time_ = tick_clock_->NowTicks();
+    OnDialogOpened();
     if (tab_interface->IsVisible()) {
       visibility_start_time_ = dialog_open_time_;
     }
@@ -241,10 +239,6 @@ class GlicExperimentalOptInUIHostDesktop : public GlicExperimentalOptInUIHost {
     return target_tab ? target_tab->GetContents() : nullptr;
   }
 
-  void SetTickClockForTesting(const base::TickClock* clock) override {
-    tick_clock_ = clock;
-  }
-
   views::Widget* GetWidgetForTesting() override { return dialog_widget_.get(); }
 
   GlicExperimentalOptInDialogView* GetDialogViewForTesting() override {
@@ -256,12 +250,7 @@ class GlicExperimentalOptInUIHostDesktop : public GlicExperimentalOptInUIHost {
     tab_subscriptions_.clear();
 
     if (dialog_widget_) {
-      if (!dialog_open_time_.is_null()) {
-        base::UmaHistogramMediumTimes(
-            "Glic.ExperimentalTriggering.OptInDialog.ShowDuration",
-            tick_clock_->NowTicks() - dialog_open_time_);
-        dialog_open_time_ = base::TimeTicks();
-      }
+      RecordShowDurationOnClose();
 
       if (!visibility_start_time_.is_null()) {
         visible_duration_ += tick_clock_->NowTicks() - visibility_start_time_;
@@ -301,13 +290,11 @@ class GlicExperimentalOptInUIHostDesktop : public GlicExperimentalOptInUIHost {
 
   raw_ptr<Profile> profile_;
   raw_ptr<Delegate> delegate_;
-  raw_ptr<const base::TickClock> tick_clock_;
   base::WeakPtr<tabs::TabInterface> tab_interface_;
   std::unique_ptr<GlicExperimentalOptInDialogView> dialog_view_;
   std::unique_ptr<views::Widget> dialog_widget_;
 
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
-  base::TimeTicks dialog_open_time_;
   base::TimeTicks visibility_start_time_;
   base::TimeDelta visible_duration_;
 

@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_ui_host_android.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/profiles/profile.h"
@@ -109,6 +110,31 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInUIHostAndroidBrowserTest,
 
   // 4. Run the loop to wait for the PostTask to bounce back to the delegate.
   run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInUIHostAndroidBrowserTest,
+                       RecordsOptInDialogShowDuration) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab);
+
+  testing::StrictMock<MockGlicExperimentalOptInUIHostDelegate> delegate;
+  auto host = GlicExperimentalOptInUIHost::Create(GetProfile(), &delegate);
+  ASSERT_TRUE(host);
+
+  base::HistogramTester histogram_tester;
+
+  host->Show(tab->GetContents());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(delegate, OnUIClosed(false)).WillOnce([&run_loop]() {
+    run_loop.Quit();
+  });
+
+  host->Close(/*accepted=*/false);
+  run_loop.Run();
+
+  histogram_tester.ExpectTotalCount(
+      "Glic.ExperimentalTriggering.OptInDialog.ShowDuration", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInUIHostAndroidBrowserTest,

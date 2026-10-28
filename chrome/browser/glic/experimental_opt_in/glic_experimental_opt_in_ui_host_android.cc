@@ -134,6 +134,7 @@ void GlicExperimentalOptInUIHostAndroid::Show(
   }
 
   java_dialog_.Reset(java_obj);
+  OnDialogOpened();
 }
 
 void GlicExperimentalOptInUIHostAndroid::Close(bool accepted) {
@@ -148,6 +149,7 @@ void GlicExperimentalOptInUIHostAndroid::Close(bool accepted) {
 }
 
 void GlicExperimentalOptInUIHostAndroid::OnDismissed() {
+  RecordShowDurationOnClose();
   java_dialog_.Reset();
   dialog_tab_ = tabs::TabHandle();
   if (opt_in_web_contents_) {
