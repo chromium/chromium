@@ -6867,6 +6867,21 @@
             ]
         }
     ],
+    "EnableContactInfoForChromeOSCustomPassphraseUsers": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SyncEnableContactInfoDataTypeForCustomPassphraseUsers"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableCustomInputStreamBufferSize": [
         {
             "platforms": [
