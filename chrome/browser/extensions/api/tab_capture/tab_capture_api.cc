@@ -7,15 +7,19 @@
 #include "chrome/browser/extensions/api/tab_capture/tab_capture_api.h"
 
 #include <algorithm>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/tab_capture/tab_capture_registry.h"
+#include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/browser_window_util.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
@@ -30,6 +34,8 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/screenshot_access.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
@@ -63,6 +69,22 @@ const char kTabUrlNotSecure[] =
 const char kMediaStreamSource[] = "chromeMediaSource";
 const char kMediaStreamSourceId[] = "chromeMediaSourceId";
 const char kMediaStreamSourceTab[] = "tab";
+
+std::optional<std::string> GetScreenshotRestrictionError(
+    content::WebContents* target_contents) {
+  const base::expected<void, ScreenshotAccessError> access =
+      ExtensionsBrowserClient::Get()->IsScreenshotRestricted(target_contents);
+  if (access.has_value()) {
+    return std::nullopt;
+  }
+  switch (access.error()) {
+    case ScreenshotAccessError::kDisabledByPreferences:
+      return tabs_constants::kScreenshotsDisabled;
+    case ScreenshotAccessError::kDisabledByDlp:
+      return tabs_constants::kScreenshotsDisabledByDlp;
+  }
+  NOTREACHED();
+}
 
 bool OptionsSpecifyAudioOrVideo(const TabCapture::CaptureOptions& options) {
   return (options.audio && *options.audio) || (options.video && *options.video);
@@ -187,6 +209,11 @@ ExtensionFunction::ResponseAction TabCaptureCaptureFunction::Run() {
 
   if (!OptionsSpecifyAudioOrVideo(params->options)) {
     return RespondNow(Error(kNoAudioOrVideo));
+  }
+
+  if (std::optional<std::string> screenshot_error =
+          GetScreenshotRestrictionError(target_contents)) {
+    return RespondNow(Error(std::move(*screenshot_error)));
   }
 
   DesktopMediaID source =
@@ -322,6 +349,11 @@ ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {
   CHECK_NE(-1, caller_process_id);
   CHECK(restrict_to_render_frame_id.has_value() ||
         !should_restrict_to_render_frame);
+
+  if (std::optional<std::string> screenshot_error =
+          GetScreenshotRestrictionError(target_contents)) {
+    return RespondNow(Error(std::move(*screenshot_error)));
+  }
 
   DesktopMediaID source = BuildDesktopMediaID(target_contents, nullptr);
   TabCaptureRegistry* registry = TabCaptureRegistry::Get(browser_context());
