@@ -113,7 +113,8 @@ message ExternalProcessInfo {
   repeated ExternalProcess external_processes = 1;
 }
 
-// First-party built-in browser feature or surface that initiated the event.
+// First-party built-in browser feature or surface that was attached to the
+// target tab at event time (or detached within the 30s grace window).
 message BrowserFeatureInfo {
   enum FeatureType {
     FEATURE_TYPE_UNSPECIFIED = 0;
@@ -123,19 +124,25 @@ message BrowserFeatureInfo {
   FeatureType feature_type = 1;
 }
 
-// Represents the entity that initiated the event.
+// Represents the entity or browser surface that initiated the event or was
+// active/attached on the target tab at event time.
 message EventInitiatorInfo {
   oneof initiator {
     // Populated when the event was driven by a Chrome extension.
     safe_browsing.ExtensionTelemetryReportRequest.ExtensionInfo
         chrome_extension = 1;
 
-    // Populated when one or more CDP actors are attached (wraps repeated
-    // ExternalProcesses):
+    // Populated when one or more external CDP actors have issued commands to
+    // the target tab (currently attached at event time or detached within the
+    // 30s grace window; passive attachments that never issue commands are not
+    // recorded). Precedence: external_process_info takes priority over
+    // browser_feature_info if both conditions are met on the tab.
     ExternalProcessInfo external_process_info = 2;
 
-    // Populated when the event involves a built-in browser feature (e.g.,
-    // native F12 DevTools UI).
+    // Populated when a built-in browser feature (e.g., native F12 DevTools UI)
+    // was attached to the target tab at event time (or detached within the 30s
+    // grace window). Precedence: external_process_info takes priority over
+    // browser_feature_info if both conditions are met on the tab.
     BrowserFeatureInfo browser_feature_info = 3;
   }
 }
