@@ -22,7 +22,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -39,11 +39,11 @@ import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /** Integration tests for {@link AccountManagedStatusFinder}. */
 @RunWith(BaseJUnit4ClassRunner.class)
-@DoNotBatch(reason = "Changes the global state")
+@Batch(Batch.PER_CLASS)
 public class AccountManagedStatusFinderIntegrationTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
+    @Rule public final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
 
     @Mock private Callback<Integer> mMockCallback;
 
@@ -100,8 +100,8 @@ public class AccountManagedStatusFinderIntegrationTest {
     public void testDelayedConsumer() throws Exception {
         AccountInfo accountHostedDomainUnknown =
                 new AccountInfo.Builder(
-                                "test@example.com",
-                                FakeAccountManagerFacade.toGaiaId("test@example.com"))
+                                "delayed.consumer@example.com",
+                                FakeAccountManagerFacade.toGaiaId("delayed.consumer@example.com"))
                         .build();
 
         mSigninTestRule.addAccount(accountHostedDomainUnknown);
@@ -145,8 +145,8 @@ public class AccountManagedStatusFinderIntegrationTest {
     public void testDelayedEnterprise() throws Exception {
         AccountInfo accountHostedDomainUnknown =
                 new AccountInfo.Builder(
-                                "test@example.com",
-                                FakeAccountManagerFacade.toGaiaId("test@example.com"))
+                                "delayed.enterprise@example.com",
+                                FakeAccountManagerFacade.toGaiaId("delayed.enterprise@example.com"))
                         .build();
 
         mSigninTestRule.addAccount(accountHostedDomainUnknown);
