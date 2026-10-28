@@ -22,13 +22,13 @@ const favicon_base::IconType kIconTypeForServerRequests =
     favicon_base::IconType::kTouchIcon;
 const char kGoogleServerClientParam[] = "chrome";
 
-std::unique_ptr<KeyedService> BuildLargeIconService(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildLargeIconService(ProfileIOS& profile) {
   return std::make_unique<favicon::LargeIconServiceImpl>(
       ios::FaviconServiceFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       std::make_unique<image_fetcher::ImageFetcherImpl>(
           image_fetcher::CreateIOSImageDecoder(),
-          profile->GetSharedURLLoaderFactory()),
+          profile.GetSharedURLLoaderFactory()),
       kDipForServerRequests, kIconTypeForServerRequests,
       kGoogleServerClientParam);
 }
@@ -36,7 +36,7 @@ std::unique_ptr<KeyedService> BuildLargeIconService(ProfileIOS* profile) {
 }  // namespace
 
 // static
-IOSChromeLargeIconServiceFactory::TestingFactory
+IOSChromeLargeIconServiceFactory::TestingFactoryByRef
 IOSChromeLargeIconServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildLargeIconService);
 }
@@ -52,6 +52,6 @@ IOSChromeLargeIconServiceFactory::IOSChromeLargeIconServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 IOSChromeLargeIconServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildLargeIconService(profile);
 }
