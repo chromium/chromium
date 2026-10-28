@@ -126,7 +126,6 @@ void ToolController::CreateToolAndValidate(
 
   observation_page_stability_config_ =
       request.GetObservationPageStabilityConfig();
-  skip_observation_delay_ = request.ShouldSkipObservationDelay();
 
   std::unique_ptr<Tool>& tool = create_result.tool;
   CHECK(tool);
@@ -230,13 +229,8 @@ void ToolController::Invoke(ResultCallback result_callback) {
   // alive and focused), return error otherwise.
 
   SetState(State::kInvoking);
-  if (skip_observation_delay_) {
-    journal().Log(tool.JournalURL(), task_->id(),
-                  "ObservationDelay: Skipped by request", {});
-  } else {
-    observation_delayer_ =
-        tool.GetObservationDelayer(observation_page_stability_config_);
-  }
+  observation_delayer_ =
+      tool.GetObservationDelayer(observation_page_stability_config_);
   tool.Invoke(base::BindOnce(&ToolController::DidFinishToolInvoke,
                              weak_ptr_factory_.GetWeakPtr()));
 }
