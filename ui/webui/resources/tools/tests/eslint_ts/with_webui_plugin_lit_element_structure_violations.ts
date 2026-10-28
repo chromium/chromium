@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrLitElement, css} from '//resources/lit/v3_0/lit.rollup.js';
-import type {CSSResultGroup} from '//resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 // Test file for @webui-eslint/lit-element-structure
 
@@ -273,17 +272,10 @@ declare global {
 
 customElements.define(TestError14ElementFoo.is, TestError14ElementFoo);
 
-// Case1.15: Re-exporting (directly or indirectly) from a file containing
-// CrLitElement subclass definitions.
-export {nothing} from '//resources/lit/v3_0/lit.rollup.js';
-export type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-export {css};
-export type {CSSResultGroup};
-
-// Case1.16: Class with constructor parameters.
-export class TestError16Element extends CrLitElement {
+// Case1.15: Class with constructor parameters.
+export class TestError15Element extends CrLitElement {
   static get is() {
-    return 'test-error16';
+    return 'test-error15';
   }
 
   constructor(_param: string) {
@@ -293,14 +285,14 @@ export class TestError16Element extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'test-error16': TestError16Element;
+    'test-error15': TestError15Element;
   }
 }
 
-customElements.define(TestError16Element.is, TestError16Element);
+customElements.define(TestError15Element.is, TestError15Element);
 
-// Case1.17: Instantiating CrLitElement subclass with 'new'.
-const _error17 = new TestError16Element('foo');
+// Case1.16: Instantiating CrLitElement subclass with 'new'.
+const _error16 = new TestError15Element('foo');
 
 
 /* Cases with no violations below. */
@@ -390,25 +382,19 @@ declare global {
 
 customElements.define(TestNoError4ElementFoo.is, TestNoError4ElementFoo);
 
-// Case2.5: Exporting local declarations via 'export {...}' is allowed.
-const localConst = 1;
-interface LocalInterface {}
-export {localConst};
-export type {LocalInterface};
-
-// Case2.6: Mixin class with rest constructor parameters (required by
+// Case2.5: Mixin class with rest constructor parameters (required by
 // TypeScript TS2545 whenever a mixin class defines a constructor).
-export const TestNoError6Mixin =
+export const TestNoError5Mixin =
     <T extends Constructor<CrLitElement>>(superClass: T): T => {
-      class TestNoError6Mixin extends superClass {
+      class TestNoError5Mixin extends superClass {
         constructor(...args: any[]) {
           super(...args);
         }
       }
-      return TestNoError6Mixin;
+      return TestNoError5Mixin;
     };
 
-// Case2.7: Instantiating non-CrLitElement class with 'new' or CrLitElement
+// Case2.6: Instantiating non-CrLitElement class with 'new' or CrLitElement
 // subclass with document.createElement() is allowed.
-const _noError7a = new TestNoError2Element();
-const _noError7b = document.createElement('test-no-error3');
+const _noError6a = new TestNoError2Element();
+const _noError6b = document.createElement('test-no-error3');

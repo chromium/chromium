@@ -49,6 +49,7 @@ export const defaultConfig = [
       '@webui-eslint/lit-use-fire-helper': 'error',
       '@webui-eslint/no-assert-equals-boolean': 'error',
       '@webui-eslint/no-mixed-type-and-value-imports': 'error',
+      '@webui-eslint/no-re-exports': 'error',
       '@webui-eslint/polymer-property-declare': 'error',
       '@webui-eslint/polymer-property-class-member': 'error',
     },

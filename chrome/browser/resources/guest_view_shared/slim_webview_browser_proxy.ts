@@ -5,8 +5,6 @@
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './slim_web_view.mojom-webui.js';
 import type {PageHandlerInterface} from './slim_web_view.mojom-webui.js';
 
-export {PageHandler_PermissionResponseAction as PermissionResponseAction} from './slim_web_view.mojom-webui.js';
-
 export interface BrowserProxy {
   callbackRouter: PageCallbackRouter;
   handler: PageHandlerInterface;

@@ -13,6 +13,7 @@ import {litUseDollarSign} from './lit_use_dollar_sign.js';
 import {litUseFireHelper} from './lit_use_fire_helper.js';
 import {noAssertEqualsBoolean} from './no_assert_equals_boolean.js';
 import {noMixedTypeAndValueImports} from './no_mixed_type_and_value_imports.js';
+import {noReExports} from './no_re_exports.js';
 import {polymerPropertyClassMemberRule} from './polymer_property_class_member.js';
 import {polymerPropertyDeclareRule} from './polymer_property_declare.js';
 import {webComponentMissingDeps} from './web_component_missing_deps.js';
@@ -30,6 +31,7 @@ const rules = {
   'lit-use-fire-helper': litUseFireHelper,
   'no-assert-equals-boolean': noAssertEqualsBoolean,
   'no-mixed-type-and-value-imports': noMixedTypeAndValueImports,
+  'no-re-exports': noReExports,
   'polymer-property-class-member': polymerPropertyClassMemberRule,
   'polymer-property-declare': polymerPropertyDeclareRule,
   'web-component-missing-deps': webComponentMissingDeps,

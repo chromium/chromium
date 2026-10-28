@@ -98,7 +98,7 @@ class EslintTsTest(unittest.TestCase):
     eslint_ts.main(args)
 
   def testSuccess(self):
-    self._run_test(["no_violations.ts"])
+    self._run_test(["no_violations.ts", "lazy_load.ts"])
     actual_contents = self._read_file(
       os.path.join(self._out_dir, "eslint.config.mjs")
     )
@@ -325,7 +325,6 @@ class EslintTsTest(unittest.TestCase):
     _EXPECTED_MISSING_TAG_NAME_REGISTRATION_ERROR = "Tag/class name pair registration to HTMLElementTagNameMap interface missing for %(domName)s ↔ %(className)s"
     _EXPECTED_MISSING_CUSTOM_EVENT_TYPE_PARAMETER_ERROR = "Missing CustomEvent type parameter for %(type)s '%(name)s' (use CustomEvent<void> or CustomEvent<SomeType>)"
     _EXPECTED_INVALID_DOLLAR_SIGN_PROPERTY_ERROR = "Optional or nullable property '%(propertyName)s' is not allowed on the '$' interface of '%(className)s'. Elements accessed via '$' are expected to always exist in the DOM"
-    _EXPECTED_NO_RE_EXPORT_ERROR = "Re-exporting '%(exportName)s' from a file containing a CrLitElement subclass/mixin definition is not allowed. Import directly from the original source file instead"
     _EXPECTED_NO_CONSTRUCTOR_PARAMS_ERROR = "Constructor in CrLitElement subclass %(className)s must not accept parameters"
     _EXPECTED_NO_NEW_CR_LIT_ELEMENT_ERROR = "Do not instantiate CrLitElement subclass '%(className)s' using 'new'. Use document.createElement() or an HTML template instead"
 
@@ -452,19 +451,14 @@ class EslintTsTest(unittest.TestCase):
         'className': 'TestError14ElementFoo',
       },
       # Case 1.15
-      _EXPECTED_NO_RE_EXPORT_ERROR % {'exportName': 'nothing'},
-      _EXPECTED_NO_RE_EXPORT_ERROR % {'exportName': 'PropertyValues'},
-      _EXPECTED_NO_RE_EXPORT_ERROR % {'exportName': 'css'},
-      _EXPECTED_NO_RE_EXPORT_ERROR % {'exportName': 'CSSResultGroup'},
-      # Case 1.16
       _EXPECTED_NO_CONSTRUCTOR_PARAMS_ERROR
       % {
-        'className': 'TestError16Element',
+        'className': 'TestError15Element',
       },
-      # Case 1.17
+      # Case 1.16
       _EXPECTED_NO_NEW_CR_LIT_ELEMENT_ERROR
       % {
-        'className': 'TestError16Element',
+        'className': 'TestError15Element',
       },
     ]
     for e in errors:
@@ -576,14 +570,11 @@ class EslintTsTest(unittest.TestCase):
         'className': 'TestNoError4Element',
       },
       # Case 2.5
-      _EXPECTED_NO_RE_EXPORT_ERROR % {'exportName': 'localConst'},
-      _EXPECTED_NO_RE_EXPORT_ERROR % {'exportName': 'LocalInterface'},
-      # Case 2.6
       _EXPECTED_NO_CONSTRUCTOR_PARAMS_ERROR
       % {
-        'className': 'TestNoError6Mixin',
+        'className': 'TestNoError5Mixin',
       },
-      # Case 2.7
+      # Case 2.6
       _EXPECTED_NO_NEW_CR_LIT_ELEMENT_ERROR
       % {
         'className': 'TestNoError2Element',
@@ -1283,6 +1274,39 @@ class EslintTsTest(unittest.TestCase):
 
     _EXPECTED_ERROR = "Do not mix type and value imports in the same statement. Split them into separate import statements instead"
     self.assertTrue(_EXPECTED_ERROR in str(context.exception))
+
+  def testWebUiEslintPlugin_NoReExports(self):
+    with self.assertRaises(RuntimeError) as context:
+      self._run_test(["with_webui_plugin_no_re_exports_violations.ts"])
+
+    _EXPECTED_STRING = "@webui-eslint/no-re-exports"
+    self.assertTrue(_EXPECTED_STRING in str(context.exception))
+
+    _EXPECTED_ERROR = (
+      "Re-exporting '%(exportName)s' is not allowed, except in top-level "
+      "barrel files (files with only import/export statements). Import "
+      "directly from the original source file instead"
+    )
+
+    errors = [
+      _EXPECTED_ERROR % {'exportName': 'nothing'},
+      _EXPECTED_ERROR % {'exportName': 'PropertyValues'},
+      _EXPECTED_ERROR % {'exportName': 'css'},
+      _EXPECTED_ERROR % {'exportName': 'CSSResultGroup'},
+    ]
+    for e in errors:
+      self.assertTrue(
+        e in str(context.exception), f"Didn't find expected error: {e}"
+      )
+
+    non_errors = [
+      _EXPECTED_ERROR % {'exportName': 'localConst'},
+      _EXPECTED_ERROR % {'exportName': 'LocalInterface'},
+    ]
+    for e in non_errors:
+      self.assertFalse(
+        e in str(context.exception), f'Found unexpected error: {e}'
+      )
 
   def testWebUiEslintPlugin_NoAssertEqualsBoolean(self):
     with self.assertRaises(RuntimeError) as context:
