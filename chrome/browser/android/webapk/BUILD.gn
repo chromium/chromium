@@ -43,6 +43,7 @@ source_set("webapk_sources") {
     "//components/webapps/common",
     "//content/public/browser",
     "//services/metrics/public/cpp:ukm_builders",
+    "//third_party/blink/public/common",
     "//third_party/smhasher:murmurhash2",
     "//ui/android",
   ]

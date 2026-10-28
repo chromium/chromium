@@ -638,6 +638,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/browserservices/permissiondelegation/NotificationPermissionUpdaterTest.java",
       "src/org/chromium/chrome/browser/browserservices/permissiondelegation/PermissionUpdaterTest.java",
       "src/org/chromium/chrome/browser/browserservices/trustedwebactivityui/controller/TrustedWebActivityBrowserControlsVisibilityManagerTest.java",
+      "src/org/chromium/chrome/browser/browserservices/trustedwebactivityui/sharing/TwaSharingControllerTest.java",
       "src/org/chromium/chrome/browser/browserservices/ui/SharedActivityCoordinatorTest.java",
       "src/org/chromium/chrome/browser/browserservices/ui/controller/AuthTabVerifierTest.java",
       "src/org/chromium/chrome/browser/browserservices/ui/controller/CurrentPageVerifierTest.java",

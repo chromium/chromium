@@ -97,6 +97,15 @@ public class TwaSharingController {
         }
 
         final ShareData finalShareData = shareData;
+        // The app's start URL, used to bootstrap the app's service worker if it has never been
+        // installed, e.g. for a preinstalled TWA that has never been launched; see
+        // WebApkPostShareTargetNavigator. For a WebAPK, getUrlToLoad() is already the share target
+        // URL for a share intent (see HostBrowserLauncherParams), so use the manifest start URL.
+        // For a TWA, use the launch URL (the app's start URL by default).
+        final @Nullable String bootstrapUrl =
+                (webApkExtras != null)
+                        ? webApkExtras.manifestStartUrl
+                        : intentDataProvider.getUrlToLoad();
         return mVerifierDelegate
                 .verify(shareTarget.getAction())
                 .then(
@@ -106,7 +115,7 @@ public class TwaSharingController {
                                         return false;
                                     }
                                     if (shareTarget.isShareMethodPost()) {
-                                        return sendPost(finalShareData, shareTarget);
+                                        return sendPost(finalShareData, shareTarget, bootstrapUrl);
                                     }
 
                                     LoadUrlParams params =
@@ -156,14 +165,19 @@ public class TwaSharingController {
                 action, paramTitle, paramText, isPost, isMultipart, filesArray, acceptsArray);
     }
 
-    private boolean sendPost(ShareData shareData, WebApkShareTarget target) {
+    private boolean sendPost(
+            ShareData shareData, WebApkShareTarget target, @Nullable String bootstrapUrl) {
         Tab tab = mTabProvider.getTab();
         if (tab == null) {
             assert false : "Null tab when sharing";
             return false;
         }
         return WebApkPostShareTargetNavigator.navigateIfPostShareTarget(
-                target.getAction(), target, shareData, assertNonNull(tab.getWebContents()));
+                target.getAction(),
+                new GURL(bootstrapUrl),
+                target,
+                shareData,
+                assertNonNull(tab.getWebContents()));
     }
 
     // Copy of HostBrowserLauncherParams#computeStartUrlForGETShareTarget().

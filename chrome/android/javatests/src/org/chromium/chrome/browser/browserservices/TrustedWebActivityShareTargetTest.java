@@ -37,6 +37,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.test.EmbeddedTestServerRule;
+import org.chromium.url.GURL;
 
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
@@ -91,6 +92,9 @@ public class TrustedWebActivityShareTargetTest {
     private Intent mIntent;
     private ShareTarget mGetShareTarget;
 
+    // The TWA's launch URL.
+    private String mTestPage;
+
     // Expected URL when using mGetShareTarget as input.
     private String mExpectedGetRequestUrl;
 
@@ -102,6 +106,7 @@ public class TrustedWebActivityShareTargetTest {
         LibraryLoader.getInstance().ensureInitialized();
         mEmbeddedTestServerRule.setServerUsesHttps(true);
         String testPage = mEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);
+        mTestPage = testPage;
         String shareTestPage = mEmbeddedTestServerRule.getServer().getURL(SHARE_TEST_PAGE);
         mGetShareTarget =
                 new ShareTarget(
@@ -131,6 +136,8 @@ public class TrustedWebActivityShareTargetTest {
         putShareData(mIntent, POST_SHARE_TARGET);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntentNotWaitingForFirstFrame(mIntent);
         assertPostNavigatorCalled();
+        // The TWA's launch URL is passed to bootstrap the app's service worker if needed.
+        Assert.assertEquals(mTestPage, mPostNavigatorNatives.mBootstrapUrl.getSpec());
     }
 
     @Test
@@ -141,6 +148,7 @@ public class TrustedWebActivityShareTargetTest {
         deliverNewIntent(mIntent);
 
         assertPostNavigatorCalled();
+        Assert.assertEquals(mTestPage, mPostNavigatorNatives.mBootstrapUrl.getSpec());
     }
 
     @Test
@@ -224,6 +232,7 @@ public class TrustedWebActivityShareTargetTest {
         public boolean[] mIsValueFileUris;
         public String[] mFilenames;
         public String[] mTypes;
+        public GURL mBootstrapUrl;
 
         @Override
         public void nativeLoadViewForShareTargetPost(
@@ -234,12 +243,14 @@ public class TrustedWebActivityShareTargetTest {
                 String[] filenames,
                 String[] types,
                 String startUrl,
+                GURL bootstrapUrl,
                 WebContents webContents) {
             mNames = names;
             mValues = values;
             mIsValueFileUris = isValueFileUris;
             mFilenames = filenames;
             mTypes = types;
+            mBootstrapUrl = bootstrapUrl;
             mPostNavigatorCallback.notifyCalled();
         }
     }
