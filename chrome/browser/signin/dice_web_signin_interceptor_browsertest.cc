@@ -17,6 +17,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
@@ -2498,6 +2499,138 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   EXPECT_EQ(new_interceptor_delegate->fre_account_id(),
             account_info.GetAccountId());
   EXPECT_EQ(source_interceptor_delegate->fre_browser(), nullptr);
+}
+
+// Tests enterprise forced interception when web sign-in occurs in a popup
+// window (`Browser::TYPE_POPUP`).
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
+                       EnterpriseForcedInterceptionInPopup) {
+  base::HistogramTester histogram_tester;
+  AccountInfo account_info =
+      MakeAccountInfoAvailableAndUpdate("alice@example.com", "example.com");
+
+  // Enforce enterprise profile separation.
+  GetProfile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                      "none");
+  DiceWebSigninInterceptorFactory::GetForProfile(GetProfile())
+      ->SetInterceptedAccountProfileSeparationPoliciesForTesting(
+          policy::ProfileSeparationPolicies("primary_account"));
+
+  SetupGaiaResponses();
+
+  // Create a popup browser window.
+  BrowserWindowInterface* popup_browser = CreateBrowserForPopup(GetProfile());
+  ASSERT_TRUE(popup_browser);
+  content::WebContents* popup_contents =
+      popup_browser->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(popup_contents);
+
+  // Navigate the popup to an intercepted URL.
+  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(popup_browser, intercepted_url));
+
+  // Do the signin interception in the popup.
+  FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
+      GetInterceptorDelegate(GetProfile());
+  source_interceptor_delegate->set_expected_interception_type(
+      WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+
+  Profile* new_profile = InterceptAndWaitProfileCreation(
+      popup_contents, account_info.GetAccountId());
+  ASSERT_TRUE(new_profile);
+
+  CheckHistograms(
+      histogram_tester,
+      SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
+}
+
+// Tests enterprise forced interception when web sign-in occurs in a popup
+// window but `kSupportSigninInterceptionInPopups` is disabled.
+class DiceWebSigninInterceptorPopupDisabledByFlagBrowserTest
+    : public DiceWebSigninInterceptorBrowserTest {
+ public:
+  DiceWebSigninInterceptorPopupDisabledByFlagBrowserTest() {
+    feature_list_.InitAndDisableFeature(
+        switches::kSupportSigninInterceptionInPopups);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorPopupDisabledByFlagBrowserTest,
+                       EnterpriseForcedInterceptionInPopupDisabledByFlag) {
+  base::HistogramTester histogram_tester;
+  AccountInfo account_info =
+      MakeAccountInfoAvailableAndUpdate("alice@example.com", "example.com");
+
+  // Enforce enterprise profile separation.
+  GetProfile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                      "none");
+  DiceWebSigninInterceptorFactory::GetForProfile(GetProfile())
+      ->SetInterceptedAccountProfileSeparationPoliciesForTesting(
+          policy::ProfileSeparationPolicies("primary_account"));
+
+  SetupGaiaResponses();
+
+  // Create a popup browser window.
+  BrowserWindowInterface* popup_browser = CreateBrowserForPopup(GetProfile());
+  ASSERT_TRUE(popup_browser);
+  content::WebContents* popup_contents =
+      popup_browser->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(popup_contents);
+
+  // Navigate the popup to an intercepted URL.
+  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(popup_browser, intercepted_url));
+
+  // Do the signin interception in the popup.
+  DiceWebSigninInterceptor* interceptor =
+      DiceWebSigninInterceptorFactory::GetForProfile(GetProfile());
+  interceptor->MaybeInterceptWebSignin(
+      popup_contents, account_info.GetAccountId(),
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/true,
+      /*is_chrome_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
+
+  CheckHistograms(histogram_tester,
+                  SigninInterceptionHeuristicOutcome::kAbortNoSupportedBrowser);
+}
+
+// Tests that a non-modal consumer interception in a popup without an avatar
+// button finishes cleanly with `kNotDisplayed` and does not crash.
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
+                       ConsumerBubbleNotDisplayedInPopup) {
+  // Create a popup browser window.
+  BrowserWindowInterface* popup_browser = CreateBrowserForPopup(GetProfile());
+  ASSERT_TRUE(popup_browser);
+  content::WebContents* popup_contents =
+      popup_browser->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(popup_contents);
+
+  // Navigate the popup to an intercepted URL.
+  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(popup_browser, intercepted_url));
+
+  AccountInfo intercepted_account =
+      MakeAccountInfoAvailableAndUpdate("alice@example.com", "example.com");
+  AccountInfo primary_account =
+      MakeAccountInfoAvailableAndUpdate("bob@example.com", "example.com");
+
+  WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
+      WebSigninInterceptor::SigninInterceptionType::kMultiUser,
+      intercepted_account, primary_account);
+
+  DiceWebSigninInterceptorDelegate real_delegate;
+  EXPECT_TRUE(real_delegate.IsSigninInterceptionSupported(*popup_contents));
+
+  base::test::TestFuture<SigninInterceptionResult> future;
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> handle =
+      real_delegate.ShowSigninInterceptionBubble(
+          popup_contents, bubble_parameters, future.GetCallback());
+  EXPECT_EQ(handle, nullptr);
+  EXPECT_EQ(future.Get(), SigninInterceptionResult::kNotDisplayed);
 }
 
 // Tests the complete interception flow including profile and browser creation.

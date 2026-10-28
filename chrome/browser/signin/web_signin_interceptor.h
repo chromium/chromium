@@ -199,6 +199,8 @@ class WebSigninInterceptor {
     virtual ~Delegate() = default;
 
     // Returns whether the `web_contents` supports signin interception.
+    // Interception is supported in normal browser windows and popup windows
+    // (which support modal enterprise interception), but not in web apps.
     virtual bool IsSigninInterceptionSupported(
         const content::WebContents& web_contents) = 0;
 

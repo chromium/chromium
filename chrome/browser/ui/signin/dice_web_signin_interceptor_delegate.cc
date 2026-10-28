@@ -7,8 +7,10 @@
 #include <memory>
 
 #include "base/cancelable_callback.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -145,14 +147,14 @@ class ForcedEnterpriseSigninInterceptionHandle
       BrowserWindowInterface* browser,
       const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback)
-      : browser_(browser ? browser->GetWeakPtr() : nullptr),
+      : browser_(CHECK_DEREF(browser).GetWeakPtr()),
+        profile_(CHECK_DEREF(browser->GetProfile())),
         bubble_parameters_(bubble_parameters),
         profile_creation_required_by_policy_(
             bubble_parameters.interception_type ==
             WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced),
         show_link_data_option_(bubble_parameters.show_link_data_option),
         callback_(std::move(callback)) {
-    CHECK(browser_, base::NotFatalUntil::M162);
     CHECK(callback_, base::NotFatalUntil::M162);
     SigninViewController::From(browser_.get())
         ->ShowModalManagedUserNoticeDialog(
@@ -173,13 +175,12 @@ class ForcedEnterpriseSigninInterceptionHandle
   }
 
   ~ForcedEnterpriseSigninInterceptionHandle() override {
-    if (!browser_) {
-      return;
+    if (browser_) {
+      SigninViewController::From(browser_.get())->CloseModalSignin();
     }
-    SigninViewController::From(browser_.get())->CloseModalSignin();
     if (callback_) {
       DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
-          bubble_parameters_, browser_->GetProfile(),
+          bubble_parameters_, &profile_.get(),
           SigninInterceptionResult::kDeclined);
       std::move(callback_).Run(SigninInterceptionResult::kDeclined);
     }
@@ -207,11 +208,12 @@ class ForcedEnterpriseSigninInterceptionHandle
         NOTREACHED();
     }
     DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
-        bubble_parameters_, browser_->GetProfile(), interception_result);
+        bubble_parameters_, &profile_.get(), interception_result);
     std::move(callback_).Run(interception_result);
   }
 
   base::WeakPtr<BrowserWindowInterface> browser_;
+  const raw_ref<Profile> profile_;
   WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters_;
   const bool profile_creation_required_by_policy_;
   const bool show_link_data_option_;
@@ -243,9 +245,16 @@ bool DiceWebSigninInterceptorDelegate::IsSigninInterceptionSupported(
   // Some browsers, such as web apps, don't have an avatar toolbar button to
   // anchor the bubble. Even if a web app has an avatar toolbar button, we
   // still don't support signin interception.
-  return browser_view->toolbar_button_provider()
-                 ->GetAvatarToolbarButtonInterface() != nullptr &&
-         !web_app::AppBrowserController::IsWebApp(browser);
+  if (web_app::AppBrowserController::IsWebApp(browser)) {
+    return false;
+  }
+  if (browser_view->toolbar_button_provider()
+          ->GetAvatarToolbarButtonInterface() != nullptr) {
+    return true;
+  }
+  return browser->GetType() == BrowserWindowInterface::Type::TYPE_POPUP &&
+         base::FeatureList::IsEnabled(
+             switches::kSupportSigninInterceptionInPopups);
 }
 
 std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
@@ -266,25 +275,25 @@ DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble(
     return nullptr;
   }
 
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
+  if (!browser) {
+    std::move(callback).Run(SigninInterceptionResult::kNotDisplayed);
+    return nullptr;
+  }
+
   if (bubble_parameters.interception_type ==
           WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced ||
       bubble_parameters.interception_type ==
           WebSigninInterceptor::SigninInterceptionType::
               kEnterpriseAcceptManagement) {
-    BrowserWindowInterface* browser =
-        GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-            web_contents);
-    if (!browser) {
-      std::move(callback).Run(SigninInterceptionResult::kNotDisplayed);
-      return nullptr;
-    }
     return std::make_unique<ForcedEnterpriseSigninInterceptionHandle>(
         browser, bubble_parameters, std::move(callback));
   }
 
-  BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
-  if (!browser) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view || !browser_view->toolbar_button_provider()
+                            ->GetAvatarToolbarButtonInterface()) {
     std::move(callback).Run(SigninInterceptionResult::kNotDisplayed);
     return nullptr;
   }
