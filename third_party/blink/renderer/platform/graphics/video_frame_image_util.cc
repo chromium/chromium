@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_non_2d_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/flush_for_image_listener.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -235,10 +236,62 @@ CanvasSnapshotInfo VideoFrameAcceleratedSnapshotPool::GetInfo() const {
   return provider_->GetInfo();
 }
 
+bool VideoFrameAcceleratedSnapshotPool::ShouldReplaceTargetBuffer(
+    PaintImage::ContentId content_id) {
+  // If the canvas is single buffered, concurrent read/writes to the resource
+  // are allowed. Note that we ignore the resource lost case as well since
+  // that only indicates that we did not get a sync token for read/write
+  // synchronization which is not a requirement for single buffered canvas.
+  if (provider_->IsSingleBuffered()) {
+    return false;
+  }
+
+  // If the resource was lost, we can not use it for writes again.
+  if (provider_->resource()->IsLost()) {
+    return true;
+  }
+
+  // We have the only ref to the resource which implies there are no active
+  // readers.
+  if (provider_->resource_->HasOneRef()) {
+    return false;
+  }
+
+  // Its possible to have deferred work in skia which uses this resource. Try
+  // flushing once to see if that releases the read refs. We can avoid a copy
+  // by queuing this work before writing to this resource.
+  FlushForImageListener::Get()->NotifyFlushForImage(content_id);
+
+  return !provider_->resource_->HasOneRef();
+}
+
+void VideoFrameAcceleratedSnapshotPool::EnsureResourceReadyForDraw() {
+  DCHECK(provider_->resource_);
+
+  // Since the resource will be updated, the cached snapshot is no longer valid.
+  // Note that this is valid for single buffered mode also, since while the
+  // resource/mailbox remains the same, the snapshot needs an updated sync token
+  // for these writes.
+  provider_->cached_snapshot_.reset();
+
+  // Determine if a new resource is needed.
+  if (ShouldReplaceTargetBuffer(provider_->cached_content_id_)) {
+    provider_->cached_content_id_ = PaintImage::kInvalidContentId;
+
+    provider_->resource_ = provider_->NewOrRecycledResource();
+
+    // As the image might have just been created, we need to ensure that it is
+    // cleared on the next BeginRasterCHROMIUM to satisfy service-side security
+    // requirements (note: as an optimization we could avoid doing this if the
+    // resource was recycled as in that case there are no security implications).
+    provider_->is_cleared_ = false;
+  }
+}
+
 void VideoFrameAcceleratedSnapshotPool::FlushRecording(
     cc::PaintRecord last_recording) {
   if (!provider_->IsGpuContextLost()) {
-    provider_->EnsureResourceReadyForDraw();
+    EnsureResourceReadyForDraw();
 
     const bool needs_clear = !provider_->is_cleared_;
     provider_->is_cleared_ = true;

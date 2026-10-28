@@ -9,6 +9,7 @@
 
 #include "base/functional/function_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "cc/paint/paint_image.h"
 #include "cc/paint/paint_record.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -62,6 +63,8 @@ class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool {
       std::unique_ptr<CanvasNon2DResourceProvider> provider);
 
   void FlushRecording(cc::PaintRecord last_recording);
+  void EnsureResourceReadyForDraw();
+  bool ShouldReplaceTargetBuffer(cc::PaintImage::ContentId content_id);
 
   std::unique_ptr<CanvasNon2DResourceProvider> provider_;
 };
