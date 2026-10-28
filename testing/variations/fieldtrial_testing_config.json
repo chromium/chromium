@@ -11944,6 +11944,24 @@
             ]
         }
     ],
+    "NonGroupFocus": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NonGroupFocus"
+                    ]
+                }
+            ]
+        }
+    ],
     "NonStandardAppearanceValueSliderVertical": [
         {
             "platforms": [
