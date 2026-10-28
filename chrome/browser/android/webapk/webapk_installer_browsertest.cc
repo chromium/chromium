@@ -27,6 +27,7 @@
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/android/webapk/webapk_proto_builder.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
+#include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -651,4 +652,26 @@ IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest,
                         gfx::test::CreateBitmap(1, SK_ColorRED),
                         webapps::WebApkInstallResult::SERVER_ERROR);
   EXPECT_EQ(1u, ukm_recorder.GetEntries("Webapp.AddToHomeScreen", {}).size());
+}
+
+// Tests that OnFinishedInstall does not crash when the WebContents has no
+// AppBannerManager (e.g. the tab was closed during the install).
+IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest,
+                       OnFinishedInstallSucceedsWithoutAppBannerManager) {
+  GURL app_url = embedded_test_server()->GetURL("/empty.html");
+
+  std::unique_ptr<content::WebContents> standalone_web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile()));
+  ASSERT_TRUE(content::NavigateToURL(standalone_web_contents.get(), app_url));
+  ASSERT_FALSE(webapps::AppBannerManager::FromWebContents(
+      standalone_web_contents.get()));
+
+  auto* install_service =
+      WebApkInstallServiceFactory::GetForBrowserContext(profile());
+
+  CallOnFinishedInstall(install_service, standalone_web_contents->GetWeakPtr(),
+                        CreateValidShortcutInfo(app_url),
+                        gfx::test::CreateBitmap(1, SK_ColorRED),
+                        webapps::WebApkInstallResult::SUCCESS);
 }

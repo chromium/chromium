@@ -132,8 +132,12 @@ void WebApkInstallService::OnFinishedInstall(
   if (result == webapps::WebApkInstallResult::SUCCESS && is_same_origin) {
     auto* app_banner_manager =
         webapps::AppBannerManager::FromWebContents(web_contents.get());
-    CHECK(app_banner_manager);
-    app_banner_manager->OnInstall(shortcut_info.display, true);
+
+    // AppBannerManager is owned by TabFeatures, which is destroyed before the
+    // WebContents when a tab closes. Skip if the tab is shutting down.
+    if (app_banner_manager) {
+      app_banner_manager->OnInstall(shortcut_info.display, true);
+    }
   }
 
   if (show_failure_notification) {
