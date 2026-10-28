@@ -243,6 +243,33 @@ implementation mistakes in these patterns in the code base:
   the IPC was sent by an inactive `RenderFrameHost` (e.g., pending deletion),
   acting on `current_frame_host()` may unintentionally apply the action to the
   *new*, potentially cross-origin document.
+* **Missing Navigation Initiators:** The initiator `RenderFrameHost` of a
+  navigation can be deleted or navigate away before the browser handles the
+  request. If the initiator cannot be found, do not substitute
+  `frame_tree_node->current_frame_host()`. That is the target frame, not the
+  initiator. Instead, use the `NavigationRequest`'s `InitiatorNavigationState`
+  to track the state needed after the initiator is gone, or treat the initiator
+  as unknown and fail closed.
+* **Re-entrancy:** A call to a delegate, an observer, a Mojo callback, or the
+  embedder can re-enter and destroy `this`, the frame, the widget, the
+  `FrameTree`, or the `WebContents` while the caller is still on the stack. In
+  general, observers and delegates should not synchronously destroy these
+  objects, and doing so is usually a bug in the observer or delegate. A report
+  about a hypothetical observer that does this is not a vulnerability (see
+  [Threat Model](#threat-model) and https://crbug.com/575343800). Some calls do
+  allow it, though. Code that makes such calls must handle this. Only add
+  handling where a call is actually known to allow deletion. Do not add
+  `WeakPtr` checks speculatively after every external call. Common options:
+  * Forbid deletion by contract: `CHECK` that the object is not destroyed or
+    re-entered during the call, so a violation crashes safely instead of
+    causing memory errors. Examples:
+    `NavigationControllerImpl::ScopedPendingEntryReentrancyGuard`, and the
+    `CHECK(!observers_.is_notifying_observers())` in `~WebContentsImpl()`.
+  * Detect deletion: take a `WeakPtr` before the call and stop if it is null
+    afterward. Drawbacks: every use after every call needs a check, each
+    object that can be destroyed needs its own `WeakPtr`, returning early
+    can leave an operation half done, and every caller on the stack may need
+    to handle the deletion as well.
 
 ## Terminology and Categorization
 
