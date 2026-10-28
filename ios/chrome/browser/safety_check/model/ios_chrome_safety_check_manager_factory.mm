@@ -18,12 +18,12 @@
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildServiceInstance(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildServiceInstance(ProfileIOS& profile) {
   const scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::SequencedTaskRunner::GetCurrentDefault();
 
   return std::make_unique<IOSChromeSafetyCheckManager>(
-      profile->GetPrefs(), GetApplicationContext()->GetLocalState(),
+      profile.GetPrefs(), GetApplicationContext()->GetLocalState(),
       IOSChromePasswordCheckManagerFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile), task_runner);
 }
@@ -31,7 +31,7 @@ std::unique_ptr<KeyedService> BuildServiceInstance(ProfileIOS* profile) {
 }  // namespace
 
 // static
-IOSChromeSafetyCheckManagerFactory::TestingFactory
+IOSChromeSafetyCheckManagerFactory::TestingFactoryByRef
 IOSChromeSafetyCheckManagerFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildServiceInstance);
 }
@@ -48,6 +48,6 @@ IOSChromeSafetyCheckManagerFactory::IOSChromeSafetyCheckManagerFactory(
 
 std::unique_ptr<KeyedService>
 IOSChromeSafetyCheckManagerFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildServiceInstance(profile);
 }
