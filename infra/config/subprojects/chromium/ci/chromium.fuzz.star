@@ -1007,6 +1007,7 @@ browser_asan_win_builder(
     name = "Win ASan Release",
     description_html = "Produces a Windows x64 release Chromium build with AddressSanitizer for ClusterFuzz.",
     clusterfuzz_archive_path = "win32-release_x64/asan-win32-release_x64",
+    clusterfuzz_archive_schema_version = 1,
     max_concurrent_invocations = 7,
 )
 
@@ -1019,20 +1020,6 @@ browser_asan_win_builder(
         "chrome_with_codecs",
     ],
     max_concurrent_invocations = 5,
-)
-
-# TODO(516754681): Deprecate this builder once we confirm builds are green and
-# working correctly on ClusterFuzz.
-browser_asan_win_builder(
-    name = "Win ASan Release Schema v1",
-    description_html = "ASan build of Chrome for Windows in archive schema v1",
-    builderless = True,
-    ssd = None,
-    gardener_rotations = args.ignore_default(None),
-    clusterfuzz_archive_path = "win32-release_x64-schemav1/asan-win32-release_x64",
-    clusterfuzz_archive_schema_version = 1,
-    console_short_name = "schemav1",
-    max_concurrent_invocations = 1,
 )
 
 libfuzzer_linux_builder(

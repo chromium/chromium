@@ -28,7 +28,6 @@ ci/UBSan Release
 ci/UBSan vptr Release
 ci/Win ASan Release
 ci/Win ASan Release Media
-ci/Win ASan Release Schema v1
 ci/chromeos-amd64-generic-asan-rel
 ci/ios-asan
 ci/linux-blink-asan-rel
