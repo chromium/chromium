@@ -12,9 +12,7 @@ import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PLAYI
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.STOPPED;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.LruCache;
@@ -2057,18 +2055,15 @@ public class ReadAloudController
     /**
      * Returns the voice preview text localized to the voice's language.
      *
+     * <p>Falls back to the UI-language string if {@link VoicePreviewMessages} has no translation
+     * for the voice's language.
+     *
      * @param voice Voice being previewed.
      */
     private String getPreviewMessage(PlaybackVoice voice) {
-        String language = voice.getLanguage();
-        if (language == null || language.isEmpty()) {
-            return mActivity.getString(R.string.readaloud_voice_preview_message);
-        }
-        Configuration config = new Configuration(mActivity.getResources().getConfiguration());
-        config.setLocale(Locale.forLanguageTag(language));
-        Context localizedContext = mActivity.createConfigurationContext(config);
-        return localizedContext != null
-                ? localizedContext.getString(R.string.readaloud_voice_preview_message)
+        String message = VoicePreviewMessages.get(voice.getLanguage());
+        return message != null
+                ? message
                 : mActivity.getString(R.string.readaloud_voice_preview_message);
     }
 

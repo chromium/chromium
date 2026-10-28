@@ -30,9 +30,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -2769,95 +2768,108 @@ public class ReadAloudControllerUnitTest {
                 ((NativeVoicePreviewPlayback) previewPlayback).getState());
     }
 
-    public static class LocalizedPreviewTestActivity extends AppCompatActivity {
-        Configuration mOverrideConfig;
-        Context mLocalizedContext;
-
-        @Override
-        public Context createConfigurationContext(Configuration overrideConfiguration) {
-            mOverrideConfig = overrideConfiguration;
-            return mLocalizedContext;
-        }
-    }
-
     @Test
     @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
     public void testPreviewVoice_localizesPreviewMessageToVoiceLanguage() {
-        LocalizedPreviewTestActivity testActivity =
-                Robolectric.buildActivity(LocalizedPreviewTestActivity.class).setup().get();
-        testActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        testActivity.mLocalizedContext = Mockito.mock(Context.class);
-        String spanishPreviewMessage = "Hola, esta es una muestra de voz para leer tus textos web.";
-        doReturn(spanishPreviewMessage)
-                .when(testActivity.mLocalizedContext)
-                .getString(R.string.readaloud_voice_preview_message);
-        mActivity = testActivity;
-
-        mController.destroy();
-        mController = createController();
         when(mNativeBridgeNatives.init(any(), any())).thenReturn(12345L);
         mController.onProfileAvailable(mMockProfile);
 
-        var spanishVoice = new PlaybackVoice("es", "voice_es", "");
-        mController.previewVoice(spanishVoice);
+        String italianPreviewMessage =
+                "Ecco le voci che puoi scegliere per la lettura ad alta voce delle pagine web. Se"
+                        + " ti piace questa voce e vuoi che continui a utilizzarla, tocca il suo"
+                        + " nome.";
+        mController.previewVoice(new PlaybackVoice("it", "voice_it", ""));
         resolvePromises();
-
-        assertEquals("es", testActivity.mOverrideConfig.getLocales().get(0).getLanguage());
         verify(mNativeBridgeNatives)
-                .previewVoice(eq(12345L), eq("voice_es"), eq(spanishPreviewMessage));
+                .previewVoice(eq(12345L), eq("voice_it"), eq(italianPreviewMessage));
 
-        String frenchPreviewMessage = "Bonjour, voici un exemple de voix pour lire vos pages Web.";
-        doReturn(frenchPreviewMessage)
-                .when(testActivity.mLocalizedContext)
-                .getString(R.string.readaloud_voice_preview_message);
-
-        var frenchVoice = new PlaybackVoice("fr", "voice_fr", "");
-        mController.previewVoice(frenchVoice);
+        String indonesianPreviewMessage =
+                "Berikut suara yang dapat dipilih untuk membacakan halaman web Anda. Jika Anda"
+                        + " suka suara ini dan ingin terus menggunakannya, cukup ketuk nama suara"
+                        + " tersebut.";
+        mController.previewVoice(new PlaybackVoice("id", "voice_id", ""));
         resolvePromises();
-
-        assertEquals("fr", testActivity.mOverrideConfig.getLocales().get(0).getLanguage());
         verify(mNativeBridgeNatives).stopVoicePreview(eq(12345L));
         verify(mNativeBridgeNatives)
-                .previewVoice(eq(12345L), eq("voice_fr"), eq(frenchPreviewMessage));
+                .previewVoice(eq(12345L), eq("voice_id"), eq(indonesianPreviewMessage));
+
+        // Region subtags are ignored.
+        mController.previewVoice(new PlaybackVoice("it-IT", "voice_it_it", ""));
+        resolvePromises();
+        verify(mNativeBridgeNatives)
+                .previewVoice(eq(12345L), eq("voice_it_it"), eq(italianPreviewMessage));
     }
 
     @Test
     @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
-    public void testPreviewVoice_fallsBackToDefaultMessageOnInvalidLanguageOrNullContext() {
-        LocalizedPreviewTestActivity testActivity =
-                Robolectric.buildActivity(LocalizedPreviewTestActivity.class).setup().get();
-        testActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mActivity = testActivity;
-
-        mController.destroy();
-        mController = createController();
+    public void testPreviewVoice_fallsBackToDefaultMessageOnMissingOrUnsupportedLanguage() {
         when(mNativeBridgeNatives.init(any(), any())).thenReturn(12345L);
         mController.onProfileAvailable(mMockProfile);
 
         String defaultPreviewMessage =
                 mActivity.getString(R.string.readaloud_voice_preview_message);
 
-        // 1. Empty language falls back to mActivity string without creating config context.
+        // 1. Empty language.
         mController.previewVoice(new PlaybackVoice("", "voice_empty_lang", ""));
         resolvePromises();
-        assertNull(testActivity.mOverrideConfig);
         verify(mNativeBridgeNatives)
                 .previewVoice(eq(12345L), eq("voice_empty_lang"), eq(defaultPreviewMessage));
 
-        // 2. Null language falls back to mActivity string without creating config context.
+        // 2. Null language.
         mController.previewVoice(new PlaybackVoice(null, "voice_null_lang", ""));
         resolvePromises();
-        assertNull(testActivity.mOverrideConfig);
         verify(mNativeBridgeNatives)
                 .previewVoice(eq(12345L), eq("voice_null_lang"), eq(defaultPreviewMessage));
 
-        // 3. Null localizedContext from createConfigurationContext falls back to mActivity string.
-        testActivity.mLocalizedContext = null;
-        mController.previewVoice(new PlaybackVoice("es", "voice_null_ctx", ""));
+        // 3. Language without a bundled translation.
+        mController.previewVoice(new PlaybackVoice("ko", "voice_ko", ""));
         resolvePromises();
-        assertNotNull(testActivity.mOverrideConfig);
         verify(mNativeBridgeNatives)
-                .previewVoice(eq(12345L), eq("voice_null_ctx"), eq(defaultPreviewMessage));
+                .previewVoice(eq(12345L), eq("voice_ko"), eq(defaultPreviewMessage));
+    }
+
+    /** Activity whose UI-language voice preview message is not English. */
+    public static class NonEnglishUiTestActivity extends AppCompatActivity {
+        static final String UI_PREVIEW_MESSAGE = "Non-English UI preview message";
+        private Resources mResources;
+
+        @Override
+        public Resources getResources() {
+            if (mResources == null) {
+                mResources = Mockito.spy(super.getResources());
+                doReturn(UI_PREVIEW_MESSAGE)
+                        .when(mResources)
+                        .getString(R.string.readaloud_voice_preview_message);
+            }
+            return mResources;
+        }
+    }
+
+    @Test
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
+    public void testPreviewVoice_englishVoiceUsesEnglishMessageWithNonEnglishUi() {
+        NonEnglishUiTestActivity testActivity =
+                Robolectric.buildActivity(NonEnglishUiTestActivity.class).setup().get();
+        testActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mActivity = testActivity;
+
+        mController.destroy();
+        mController = createController();
+        when(mNativeBridgeNatives.init(any(), any())).thenReturn(12345L);
+        mController.onProfileAvailable(mMockProfile);
+
+        // The UI-language message is not English.
+        assertEquals(
+                NonEnglishUiTestActivity.UI_PREVIEW_MESSAGE,
+                mActivity.getString(R.string.readaloud_voice_preview_message));
+
+        String englishPreviewMessage =
+                "Here are the voices you can pick for reading out your web pages. If you like this"
+                        + " voice and want me to keep using it just tap the voice name.";
+        mController.previewVoice(new PlaybackVoice("en", "voice_en", ""));
+        resolvePromises();
+        verify(mNativeBridgeNatives)
+                .previewVoice(eq(12345L), eq("voice_en"), eq(englishPreviewMessage));
     }
 
     @Test
