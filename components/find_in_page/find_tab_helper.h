@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_FIND_IN_PAGE_FIND_TAB_HELPER_H_
 #define COMPONENTS_FIND_IN_PAGE_FIND_TAB_HELPER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -117,10 +118,9 @@ class FindTabHelper : public content::WebContentsUserData<FindTabHelper>,
     return last_completed_find_text_;
   }
 
-  void set_last_completed_find_text(
-      const std::u16string& last_completed_find_text) {
-    last_completed_find_text_ = last_completed_find_text;
-  }
+  // Records and resets metrics for the current find session, provided at least
+  // one active search completed during the session.
+  void RecordAndResetSessionMetrics();
 
   gfx::Range selected_range() const { return selected_range_; }
   void set_selected_range(const gfx::Range& selected_range) {
@@ -133,6 +133,7 @@ class FindTabHelper : public content::WebContentsUserData<FindTabHelper>,
   }
 
   bool should_find_match() const { return should_find_match_; }
+  bool should_scroll_to_match() const { return should_scroll_to_match_; }
 
 #if BUILDFLAG(IS_ANDROID)
   // Selects and zooms to the find result nearest to the point (x, y)
@@ -148,9 +149,24 @@ class FindTabHelper : public content::WebContentsUserData<FindTabHelper>,
   // Used to determine if the find session is active for this WebContents.
   bool is_find_session_active() const { return is_find_session_active_; }
 
+  // content::WebContentsObserver:
+  // Receives search replies from WebContents. `final_update` indicates
+  // whether all frames in the page have finished scoping (whether this is the
+  // final result for `request_id`).
+  void DidReceiveFindReply(int request_id,
+                           int number_of_matches,
+                           const gfx::Rect& selection_rect,
+                           int active_match_ordinal,
+                           bool final_update) override;
+
  private:
   explicit FindTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<FindTabHelper>;
+
+  // Records the completion of the current active search (where
+  // `should_find_match_` and `should_scroll_to_match_` were true and a
+  // `final_update` result was received) and updates session metrics state.
+  void OnSearchCompleted();
 
   // True if the Find UI is active for this tab.
   bool find_ui_active_ = false;
@@ -188,8 +204,23 @@ class FindTabHelper : public content::WebContentsUserData<FindTabHelper>,
   // to notify the user more than once that a search came up empty, and we never
   // want to notify the user that a previously successful search's results were
   // removed because, for instance, the page is being torn down during
-  // navigation.
+  // navigation. Also used by session metrics to distinguish new forward
+  // searches from backspaces and repeat/teardown updates on the same query.
   std::u16string last_completed_find_text_;
+
+  // Match count of the most recently completed active search in the current
+  // find session, or std::nullopt if no active search has completed yet.
+  std::optional<int> last_completed_match_count_;
+
+  // Whether at least one "zero-match" condition was triggered during the
+  // current find session. A zero-match constitutes a find request that
+  // yields 0 matches, ignoring repeat searches and backspacing.
+  bool had_zero_match_ = false;
+
+  // Whether the user cleared the search box to an empty query after completing
+  // at least one active search in the current session. Reset if a subsequent
+  // search completes in the same session.
+  bool ended_with_empty_query_ = false;
 
   // The selection within the text.
   gfx::Range selected_range_;
@@ -206,6 +237,11 @@ class FindTabHelper : public content::WebContentsUserData<FindTabHelper>,
   // there is no active search.
   bool should_find_match_ = false;
 
+  // The value of the `scroll_to_match` option for the active search. False
+  // during passive pre-population when the Find bar is first opened (including
+  // when pre-populated from the current page selection).
+  bool should_scroll_to_match_ = false;
+
   // Whether a find session is active for this WebContents.
   bool is_find_session_active_ = false;
 
@@ -213,16 +249,6 @@ class FindTabHelper : public content::WebContentsUserData<FindTabHelper>,
   raw_ptr<Delegate> delegate_ = nullptr;
 
   base::ObserverList<FindResultObserver> observers_;
-
-  // content::WebContentsObserver:
-  // Receives search replies from WebContents. `final_update` indicates
-  // whether all frames in the page have finished scoping (whether this is the
-  // final result for `request_id`).
-  void DidReceiveFindReply(int request_id,
-                           int number_of_matches,
-                           const gfx::Rect& selection_rect,
-                           int active_match_ordinal,
-                           bool final_update) override;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

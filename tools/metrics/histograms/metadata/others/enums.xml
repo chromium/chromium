@@ -74,6 +74,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//services/device/usb/usb_device_handle_usbfs.cc:DetachKernelDriverOutcome) -->
 
+<!-- LINT.IfChange(FindInPageSessionOutcome) -->
+
+<enum name="FindInPageSessionOutcome">
+  <int value="0" label="Matched without seeing zero-match"/>
+  <int value="1" label="Matched after seeing zero-match"/>
+  <int value="2" label="Ended with zero matches"/>
+  <int value="3" label="Ended with empty query without seeing zero-match"/>
+  <int value="4" label="Ended with empty query after seeing zero-match"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/find_in_page/find_types.h:FindInPageSessionOutcome) -->
+
 <!-- LINT.IfChange(FindsResult) -->
 
 <enum name="FindsResult">

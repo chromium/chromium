@@ -2069,6 +2069,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FindInPage.SessionOutcome" enum="FindInPageSessionOutcome"
+    expires_after="2027-04-08">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the outcome of an active Find-in-Page session on Desktop when the
+    session ends (e.g. when the Find bar is closed, the page navigates, or the
+    tab is closed). Only recorded for sessions where at least one user-initiated
+    search query completed (excluding passive pre-population from previous
+    searches or page selection when the Find bar is first opened, unless the
+    user edits the query or explicitly steps through matches). A session has
+    seen a zero-match if any completed search yielded 0 matches. A 0-match
+    result does not count as a zero-match if the query was a prefix of the
+    previous query (e.g. the user backspaced) or the same query repeated.
+  </summary>
+</histogram>
+
 <histogram name="Finds.ExecutionTime" units="ms" expires_after="2027-06-01">
   <owner>wylieb@chromium.org</owner>
   <owner>bjfong@google.com</owner>

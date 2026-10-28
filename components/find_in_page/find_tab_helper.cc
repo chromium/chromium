@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -26,6 +27,9 @@ FindTabHelper::FindTabHelper(WebContents* web_contents)
       content::WebContentsObserver(web_contents) {}
 
 FindTabHelper::~FindTabHelper() {
+  // Ensure session metrics are recorded if the tab is destroyed while a find
+  // session is still active.
+  RecordAndResetSessionMetrics();
   for (auto& observer : observers_)
     observer.OnFindTabHelperDestroyed(this);
 }
@@ -55,6 +59,9 @@ void FindTabHelper::StartFinding(std::u16string search_string,
     delegate_->SetLastSearchText(search_string, &GetWebContents());
 
   if (search_string.empty()) {
+    if (last_completed_match_count_.has_value()) {
+      ended_with_empty_query_ = true;
+    }
     StopFinding(find_in_page::SelectionAction::kClear);
     for (auto& observer : observers_)
       observer.OnFindEmptyText(&GetWebContents());
@@ -75,6 +82,7 @@ void FindTabHelper::StartFinding(std::u16string search_string,
   last_search_case_sensitive_ = case_sensitive;
   find_op_aborted_ = false;
   should_find_match_ = find_match;
+  should_scroll_to_match_ = scroll_to_match;
 
   auto options = blink::mojom::FindOptions::New();
   options->forward = forward_direction;
@@ -100,6 +108,9 @@ void FindTabHelper::StopFinding(SelectionAction selection_action) {
     // previously remembered search (http://crbug.com/42639).
     previous_find_text_ = std::u16string();
   } else {
+    // The find UI is being dismissed; record and reset metrics for this
+    // session.
+    RecordAndResetSessionMetrics();
     find_ui_active_ = false;
     if (!find_text_.empty())
       previous_find_text_ = find_text_;
@@ -109,6 +120,7 @@ void FindTabHelper::StopFinding(SelectionAction selection_action) {
   find_op_aborted_ = true;
   last_search_result_ = FindNotificationDetails();
   should_find_match_ = false;
+  should_scroll_to_match_ = false;
   is_find_session_active_ = false;
 
   content::StopFindAction action;
@@ -126,6 +138,56 @@ void FindTabHelper::StopFinding(SelectionAction selection_action) {
       NOTREACHED();
   }
   GetWebContents().StopFinding(action);
+}
+
+void FindTabHelper::OnSearchCompleted() {
+  const int number_of_matches = last_search_result_.number_of_matches();
+
+  // Check if the current search is a prefix of (or identical to) the previous
+  // search. A prefix match may indicate that a backspace was performed, while
+  // an identical match indicates a repeat search. Neither of these cases is
+  // treated as a "zero-match" instance.
+  const bool is_backspace_or_repeat = base::StartsWith(
+      last_completed_find_text_, find_text_, base::CompareCase::SENSITIVE);
+  if (!is_backspace_or_repeat && number_of_matches == 0) {
+    had_zero_match_ = true;
+  }
+
+  // Update the session's latest match count. Avoid overwriting a positive
+  // match count with 0 on a repeat search of the same text.
+  if (find_text_ != last_completed_find_text_ ||
+      !last_completed_match_count_.has_value() || number_of_matches > 0) {
+    last_completed_match_count_ = number_of_matches;
+  }
+
+  ended_with_empty_query_ = false;
+  last_completed_find_text_ = find_text_;
+}
+
+void FindTabHelper::RecordAndResetSessionMetrics() {
+#if !BUILDFLAG(IS_ANDROID)
+  // Only record metrics if at least one active search completed during the
+  // session.
+  if (last_completed_match_count_.has_value()) {
+    FindSessionOutcome outcome;
+    if (ended_with_empty_query_) {
+      outcome =
+          had_zero_match_
+              ? FindSessionOutcome::kEndedWithEmptyQueryAfterSeeingZeroMatch
+              : FindSessionOutcome::kEndedWithEmptyQueryWithoutSeeingZeroMatch;
+    } else if (*last_completed_match_count_ == 0) {
+      outcome = FindSessionOutcome::kEndedWithZeroMatches;
+    } else if (had_zero_match_) {
+      outcome = FindSessionOutcome::kMatchedAfterSeeingZeroMatch;
+    } else {
+      outcome = FindSessionOutcome::kMatchedWithoutSeeingZeroMatch;
+    }
+    base::UmaHistogramEnumeration("FindInPage.SessionOutcome", outcome);
+  }
+#endif
+  last_completed_match_count_.reset();
+  had_zero_match_ = false;
+  ended_with_empty_query_ = false;
 }
 
 void FindTabHelper::ActivateFindInPageResultForAccessibility() {
@@ -184,6 +246,14 @@ void FindTabHelper::DidReceiveFindReply(int request_id,
                                 active_match_ordinal, final_update);
     for (auto& observer : observers_)
       observer.OnFindResultAvailable(&GetWebContents());
+
+    // Record the completion of the search for session metrics and to suppress
+    // future alerts if the page's contents change. Exclude passive
+    // pre-population when the Find bar is first opened (where either
+    // `should_find_match_` or `should_scroll_to_match_` is false).
+    if (final_update && should_find_match_ && should_scroll_to_match_) {
+      OnSearchCompleted();
+    }
   }
 }
 
