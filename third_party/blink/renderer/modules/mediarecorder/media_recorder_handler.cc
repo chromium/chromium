@@ -522,36 +522,28 @@ bool MediaRecorderHandler::Start(int timeslice,
   DCHECK(media_stream_);
   DCHECK(timeslice_.is_zero());
   DCHECK(!muxer_adapter_);
-
   DCHECK(!is_media_stream_observer_);
-  media_stream_->AddObserver(media_stream_observer_->AsWeakPtr());
-  is_media_stream_observer_ = true;
-
-  timeslice_ = timeslice == std::numeric_limits<int>::max()
-                   ? base::TimeDelta::Max()
-                   : base::Milliseconds(timeslice);
-  slice_origin_timestamp_ = base::TimeTicks::Now();
-
-  audio_bits_per_second_ = audio_bits_per_second;
-  video_bits_per_second_ = video_bits_per_second;
 
   video_tracks_ = media_stream_->VideoComponents();
   audio_tracks_ = media_stream_->AudioComponents();
 
   if (video_tracks_.empty() && audio_tracks_.empty()) {
     LOG(WARNING) << __func__ << ": no media tracks.";
+    Stop();
     return false;
   }
 
   const bool use_video_tracks =
-      !video_tracks_.empty() &&
+      !video_tracks_.empty() && video_tracks_[0] &&
       video_tracks_[0]->GetReadyState() != MediaStreamSource::kReadyStateEnded;
   const bool use_audio_tracks =
-      !audio_tracks_.empty() && audio_tracks_[0]->GetPlatformTrack() &&
+      !audio_tracks_.empty() && audio_tracks_[0] &&
+      audio_tracks_[0]->GetPlatformTrack() &&
       audio_tracks_[0]->GetReadyState() != MediaStreamSource::kReadyStateEnded;
 
   if (!use_video_tracks && !use_audio_tracks) {
     LOG(WARNING) << __func__ << ": no tracks to be recorded.";
+    Stop();
     return false;
   }
 
@@ -564,12 +556,25 @@ bool MediaRecorderHandler::Start(int timeslice,
     const bool video_type_supported = CanSupportVideoType(type);
     const bool audio_type_supported = CanSupportAudioType(type);
     if (use_video_tracks && !video_type_supported) {
+      Stop();
       return false;
     }
     if (use_audio_tracks && !(video_type_supported || audio_type_supported)) {
+      Stop();
       return false;
     }
   }
+
+  media_stream_->AddObserver(media_stream_observer_->AsWeakPtr());
+  is_media_stream_observer_ = true;
+
+  timeslice_ = timeslice == std::numeric_limits<int>::max()
+                   ? base::TimeDelta::Max()
+                   : base::Milliseconds(timeslice);
+  slice_origin_timestamp_ = base::TimeTicks::Now();
+
+  audio_bits_per_second_ = audio_bits_per_second;
+  video_bits_per_second_ = video_bits_per_second;
 
   std::unique_ptr<media::Muxer> muxer;
   media::AudioCodec audio_codec = audio_codec_id_;
@@ -626,8 +631,7 @@ bool MediaRecorderHandler::Start(int timeslice,
     LOG_IF(WARNING, video_tracks_.size() > 1u)
         << "Recording multiple video tracks is not implemented. "
         << "Only recording first video track.";
-    if (!video_tracks_[0])
-      return false;
+    CHECK(video_tracks_[0]);
     UpdateTrackLiveAndEnabled(*video_tracks_[0], /*is_video=*/true);
 
     MediaStreamVideoTrack* const video_track =
@@ -655,8 +659,7 @@ bool MediaRecorderHandler::Start(int timeslice,
     LOG_IF(WARNING, audio_tracks_.size() > 1u)
         << "Recording multiple audio"
         << " tracks is not implemented.  Only recording first audio track.";
-    if (!audio_tracks_[0])
-      return false;
+    CHECK(audio_tracks_[0]);
     UpdateTrackLiveAndEnabled(*audio_tracks_[0], /*is_video=*/false);
 
     audio_recorders_.emplace_back(std::make_unique<AudioTrackRecorder>(
@@ -693,6 +696,8 @@ void MediaRecorderHandler::Stop() {
   timeslice_ = base::Milliseconds(0);
   video_recorders_.clear();
   audio_recorders_.clear();
+  video_tracks_.clear();
+  audio_tracks_.clear();
 }
 
 void MediaRecorderHandler::Pause() {
