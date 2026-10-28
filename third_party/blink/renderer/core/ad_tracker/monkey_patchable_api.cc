@@ -168,13 +168,16 @@ bool IsFunctionAMonkeyPatch(v8::Isolate* isolate,
           handler_obj->TryGetWithNoSideEffects(
               context, V8AtomicString(isolate, "apply"));
 
+      // With an `apply` trap, return early, as only the trap can match: the
+      // target only runs if the trap calls it.
       v8::Local<v8::Value> apply_trap;
-      if (maybe_apply_trap.ToLocal(&apply_trap)) {
-        if (apply_trap == function) {
-          return true;
-        }
+      if (maybe_apply_trap.ToLocal(&apply_trap) &&
+          !apply_trap->IsNullOrUndefined()) {
+        return apply_trap == function;
       }
     }
+    // Without an `apply` trap, the proxy calls its target directly: return
+    // early if it matches, or unwrap it next if it's also a proxy.
     current = proxy->GetTarget();
     if (current == function) {
       return true;

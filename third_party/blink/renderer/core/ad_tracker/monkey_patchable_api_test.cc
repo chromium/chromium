@@ -140,6 +140,49 @@ TEST_F(MonkeyPatchableApiTest,
   EXPECT_FALSE(IsFunctionAMonkeyPatch(isolate, unrelated_func, api_function));
 }
 
+// Tests that the target of a Proxy with an `apply` trap isn't matched, as the
+// target then only runs if the trap calls it.
+TEST_F(MonkeyPatchableApiTest, ProxyWithApplyTrapDoesNotMatchTarget) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimSubresourceRequest script("https://example.com/patch.js",
+                               "text/javascript");
+  LoadURL("https://example.com/");
+  main_resource.Complete(
+      "<html><body><script src='patch.js'></script></body></html>");
+
+  script.Complete(
+      "window.proxyTarget = function(...args) {};"
+      "window.proxyApplyTrap = function(target, thisArg, argumentsList) {"
+      "  return target.apply(thisArg, argumentsList);"
+      "};"
+      "window.history.pushState = new Proxy(window.proxyTarget, {"
+      "  apply: window.proxyApplyTrap"
+      "});");
+  test::RunPendingTasks();
+
+  v8::Isolate* isolate = Window().GetIsolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::Context::Scope context_scope(MainFrame().MainWorldScriptContext());
+
+  MonkeyPatchableApiFunctionInfo info = GetMonkeyPatchableApiFunctionInfo(
+      isolate, MonkeyPatchableApi::kHistoryPushState);
+  EXPECT_TRUE(info.is_monkey_patched);
+
+  v8::Local<v8::Value> apply_trap_val = MainFrame().ExecuteScriptAndReturnValue(
+      WebScriptSource(WebString::FromUtf8("window.proxyApplyTrap")));
+  v8::Local<v8::Function> apply_trap = apply_trap_val.As<v8::Function>();
+
+  v8::Local<v8::Value> target_val = MainFrame().ExecuteScriptAndReturnValue(
+      WebScriptSource(WebString::FromUtf8("window.proxyTarget")));
+  v8::Local<v8::Function> target_func = target_val.As<v8::Function>();
+
+  v8::Local<v8::Function> api_function;
+  ASSERT_TRUE(info.function.ToLocal(&api_function));
+
+  EXPECT_TRUE(IsFunctionAMonkeyPatch(isolate, apply_trap, api_function));
+  EXPECT_FALSE(IsFunctionAMonkeyPatch(isolate, target_func, api_function));
+}
+
 TEST_F(MonkeyPatchableApiTest, NonMatchingMonkeyPatchReturnsFalse) {
   SimRequest main_resource("https://example.com/", "text/html");
   SimSubresourceRequest script("https://example.com/patch.js",
