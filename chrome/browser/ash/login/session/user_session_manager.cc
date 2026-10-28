@@ -2169,7 +2169,9 @@ void UserSessionManager::FetchTokenHandle(Profile* profile,
         login::Sha1AsHexForRefreshToken(user_context_.GetRefreshToken()));
   } else {
     VLOG(1) << "UserSessionManager::OnUserProfileLoaded: existing user";
-    // Existing user.
+    // Existing user. Online sign-in always mints a new refresh token, so mark
+    // the existing token handle stale before fetching a new one.
+    token_handle_store_->SetTokenHandleStale(user_context_.GetAccountId());
     MaybeFetchTokenHandleForExistingUser(token_handle_service);
   }
 }

@@ -784,6 +784,52 @@ TEST_F(TokenHandleStoreMaybeFetchTokenHandleTest,
   EXPECT_FALSE(replied_reauth_required);
 }
 
+TEST_F(TokenHandleStoreMaybeFetchTokenHandleTest,
+       MaybeFetchTokenHandleExecutesFetchForUserIfTokenHandleIsInvalid) {
+  auto injected_known_user =
+      std::make_unique<user_manager::KnownUser>(local_state());
+  injected_known_user->SetStringPref(account_id_, kTokenHandlePref, kFakeToken);
+  injected_known_user->SetStringPref(account_id_, kTokenHandleStatusPref,
+                                     kTokenHandleStatusInvalid);
+  std::unique_ptr<TokenHandleStore> token_handle_store =
+      CreateTokenHandleStore(std::move(injected_known_user));
+  AddFakeResponse(GetTokenInfoFetchResponse(kFakeEmail, kFakeOtherToken),
+                  net::HTTP_OK);
+
+  token_handle_store->MaybeFetchTokenHandle(
+      &token_handle_mapping_store_, GetSharedURLLoaderFactory(), account_id_,
+      kFakeAccessToken, kFakeRefreshTokenHash);
+  local_state()->user_prefs_store()->WaitUntilValueChanges(kKnownUsersPref);
+
+  auto known_user = std::make_unique<user_manager::KnownUser>(local_state());
+  EXPECT_EQ(kFakeOtherToken,
+            *known_user->FindStringPath(account_id_, kTokenHandlePref));
+  EXPECT_EQ(kTokenHandleStatusValid,
+            *known_user->FindStringPath(account_id_, kTokenHandleStatusPref));
+}
+
+TEST_F(TokenHandleStoreMaybeFetchTokenHandleTest,
+       MaybeFetchTokenHandleDoesNotExecuteFetchIfTokenHandleIsValid) {
+  auto injected_known_user =
+      std::make_unique<user_manager::KnownUser>(local_state());
+  injected_known_user->SetStringPref(account_id_, kTokenHandlePref, kFakeToken);
+  injected_known_user->SetStringPref(account_id_, kTokenHandleStatusPref,
+                                     kTokenHandleStatusValid);
+  std::unique_ptr<TokenHandleStore> token_handle_store =
+      CreateTokenHandleStore(std::move(injected_known_user));
+
+  token_handle_store->MaybeFetchTokenHandle(
+      &token_handle_mapping_store_, GetSharedURLLoaderFactory(), account_id_,
+      kFakeAccessToken, kFakeRefreshTokenHash);
+
+  auto known_user = std::make_unique<user_manager::KnownUser>(local_state());
+  EXPECT_EQ(0, url_loader_factory_.NumPending());
+  EXPECT_EQ(kFakeToken,
+            *known_user->FindStringPath(account_id_, kTokenHandlePref));
+  EXPECT_EQ(kTokenHandleStatusValid,
+            *known_user->FindStringPath(account_id_, kTokenHandleStatusPref));
+}
+
 class TokenHandleStoreHistogramTest
     : public TokenHandleStoreMaybeFetchTokenHandleTest {
  public:

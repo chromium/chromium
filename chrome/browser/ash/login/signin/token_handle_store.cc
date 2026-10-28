@@ -158,8 +158,8 @@ void TokenHandleStore::MaybeFetchTokenHandle(
     const std::string& access_token,
     const std::string& refresh_token_hash) {
   // If the user doesn't have a token handle (new user), or the existing token
-  // handle is stale, fetch a new token.
-  if (!HasToken(account_id) || IsTokenHandleStale(account_id)) {
+  // handle is invalid or stale, fetch a new token.
+  if (ShouldObtainHandle(account_id)) {
     FetchTokenHandle(token_handle_mapping_store, url_loader_factory, account_id,
                      access_token, refresh_token_hash);
   }
