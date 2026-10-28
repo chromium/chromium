@@ -27,7 +27,6 @@ source_set("attestation") {
     "//net",
     "//services/network/public/mojom",
     "//third_party/oak:oak_proto",
-    "//third_party/oak:oak_proto_extras",
     "//url",
   ]
 }
