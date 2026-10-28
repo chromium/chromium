@@ -11,8 +11,8 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.Token;
-import org.chromium.base.task.ChainedTasks;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateAttributesRegistry;
 import org.chromium.chrome.browser.tab.TabStateStorageService;
-import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
@@ -62,6 +61,7 @@ public class ModelTrackingOrchestrator {
          * @param activeTabCache Used to cache active tab state for the window.
          * @param hasCipherFactory Whether a cipher factory was provided for OTR data.
          * @param isAuthoritative Whether this store is the authoritative store for the window.
+         * @param tabStateStorageService The storage service for the window.
          */
         ModelTrackingOrchestrator build(
                 String windowTag,
@@ -69,7 +69,8 @@ public class ModelTrackingOrchestrator {
                 TabModelSelector tabModelSelector,
                 ActiveTabCache activeTabCache,
                 boolean hasCipherFactory,
-                boolean isAuthoritative);
+                boolean isAuthoritative,
+                TabStateStorageService tabStateStorageService);
     }
 
     /** Factory for building components keyed by Profile and Collection. */
@@ -113,11 +114,11 @@ public class ModelTrackingOrchestrator {
         int CANCELLED = 4;
     }
 
-    private final String mWindowTag;
     private final PersistentStoreMigrationManager mMigrationManager;
     private final TabModelSelector mTabModelSelector;
     private final ActiveTabCache mActiveTabCache;
     private final boolean mIsAuthoritative;
+    private final TabStateStorageService mTabStateStorageService;
     private final CollectionKeyedFactory<StorageCollectionSynchronizer> mSynchronizerFactory;
     private final CollectionKeyedFactory<CollectionSaveForwarder> mSaveForwarderFactory;
     private final Map<Token, Boolean> mGroupIncognitoStatus = new HashMap<>();
@@ -166,6 +167,7 @@ public class ModelTrackingOrchestrator {
      * @param activeTabCache Used to cache active tab state for the window.
      * @param hasCipherFactory Whether a cipher factory was provided for OTR data.
      * @param isAuthoritative Whether this store is the authoritative store for the window.
+     * @param tabStateStorageService The storage service for the window.
      */
     public ModelTrackingOrchestrator(
             String windowTag,
@@ -173,7 +175,8 @@ public class ModelTrackingOrchestrator {
             TabModelSelector tabModelSelector,
             ActiveTabCache activeTabCache,
             boolean hasCipherFactory,
-            boolean isAuthoritative) {
+            boolean isAuthoritative,
+            TabStateStorageService tabStateStorageService) {
         this(
                 windowTag,
                 migrationManager,
@@ -181,6 +184,7 @@ public class ModelTrackingOrchestrator {
                 activeTabCache,
                 hasCipherFactory,
                 isAuthoritative,
+                tabStateStorageService,
                 StorageCollectionSynchronizer::new,
                 CollectionSaveForwarder::createForTabStripCollection);
     }
@@ -193,13 +197,14 @@ public class ModelTrackingOrchestrator {
             ActiveTabCache activeTabCache,
             boolean hasCipherFactory,
             boolean isAuthoritative,
+            TabStateStorageService tabStateStorageService,
             CollectionKeyedFactory<StorageCollectionSynchronizer> synchronizerFactory,
             CollectionKeyedFactory<CollectionSaveForwarder> saveForwarderFactory) {
-        mWindowTag = windowTag;
         mMigrationManager = migrationManager;
         mTabModelSelector = tabModelSelector;
         mActiveTabCache = activeTabCache;
         mIsAuthoritative = isAuthoritative;
+        mTabStateStorageService = tabStateStorageService;
         mSynchronizerFactory = synchronizerFactory;
         mSaveForwarderFactory = saveForwarderFactory;
 
@@ -288,13 +293,6 @@ public class ModelTrackingOrchestrator {
             onRestoredForModel(/* incognito= */ false);
             onRestoredForModel(/* incognito= */ true);
         }
-
-        Callback<TabModel> clearUnusedNodesForModel = this::clearUnusedNodesForModel;
-        ChainedTasks tasks = new ChainedTasks();
-        for (TabModel model : mTabModelSelector.getModels()) {
-            tasks.add(TaskTraits.UI_DEFAULT, clearUnusedNodesForModel.bind(model));
-        }
-        tasks.start(/* coalesceTasks= */ false);
     }
 
     /** Performs the cleanup required for the synchronizers when the TabStateStore is destroyed. */
@@ -327,11 +325,13 @@ public class ModelTrackingOrchestrator {
         if (mIncognitoSynchronizerManager != null) mIncognitoSynchronizerManager.reset();
     }
 
-    /** Saves the tab through an associated synchronizer. */
+    /**
+     * Saves the tab via the {@link TabStateStorageService}.
+     *
+     * @param tab The tab to save.
+     */
     public void saveTab(Tab tab) {
-        StorageCollectionSynchronizer synchronizer =
-                tab.isOffTheRecord() ? mIncognitoSynchronizer : mRegularSynchronizer;
-        if (synchronizer == null) return;
+        if (!isSynchronizerPresent(tab.isOffTheRecord())) return;
 
         TabStateAttributes attributes =
                 TabStateAttributesRegistry.getAttributesFor(tab, TabStateStore.class);
@@ -343,12 +343,30 @@ public class ModelTrackingOrchestrator {
             attributes.clearTabStateDirtiness();
         }
 
-        synchronizer.saveTab(tab);
+        mTabStateStorageService.saveTabData(tab);
 
         TabModel model = mTabModelSelector.getModel(tab.isOffTheRecord());
         if (model.getCurrentTabSupplier().get() == tab) {
             mActiveTabCache.saveActiveTab(tab);
         }
+    }
+
+    /**
+     * Saves a structural snapshot of the collection tree to storage.
+     *
+     * @param incognito Whether the snapshot is for the incognito model.
+     * @param clearUnusedNodes Whether to prune unreferenced nodes in storage.
+     * @param callback Callback to run once the snapshot has been committed to storage.
+     */
+    public void saveStructureSnapshot(
+            boolean incognito, boolean clearUnusedNodes, Runnable callback) {
+        StorageCollectionSynchronizer synchronizer =
+                incognito ? mIncognitoSynchronizer : mRegularSynchronizer;
+        if (synchronizer == null) {
+            callback.run();
+            return;
+        }
+        synchronizer.saveStructureSnapshot(clearUnusedNodes, callback);
     }
 
     /**
@@ -547,17 +565,6 @@ public class ModelTrackingOrchestrator {
         };
     }
 
-    private void clearUnusedNodesForModel(TabModel model) {
-        Profile profile = model.getProfile();
-        if (profile == null) return;
-
-        TabStateStorageService service = TabStateStorageServiceFactory.getForProfile(profile);
-        if (service == null) return;
-
-        service.clearUnusedNodesForWindow(
-                mWindowTag, model.isOffTheRecord(), model.getTabStripCollection());
-    }
-
     private TabModel getTabModel(boolean incognito) {
         return mTabModelSelector.getModel(incognito);
     }
@@ -676,6 +683,8 @@ public class ModelTrackingOrchestrator {
             } else if (mIsAuthoritative && mState == SynchronizerState.RESTORING) {
                 mState = SynchronizerState.TRACKING;
                 initCollectionTracking(mIncognito);
+                saveStructureSnapshot(
+                        mIncognito, /* clearUnusedNodes= */ true, CallbackUtils.emptyRunnable());
             }
             if (mIncognito) {
                 mLoadIncognitoTabsOnStart = false;

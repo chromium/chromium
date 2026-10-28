@@ -274,7 +274,8 @@ public class TabStateStore implements TabPersistentStore {
                         mTabModelSelector,
                         mActiveTabCache,
                         mHasCipherFactory,
-                        mIsAuthoritative);
+                        mIsAuthoritative,
+                        mTabStateStorageService);
 
         mTabModelSelector.getModel(false).addObserver(mTabModelObserver);
         mTabModelSelector.getModel(true).addObserver(mTabModelObserver);

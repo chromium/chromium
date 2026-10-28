@@ -149,6 +149,7 @@ public class ModelTrackingOrchestratorUnitTest {
                         mActiveTabCache,
                         hasCipherFactory,
                         isAuthoritative,
+                        mTabStateStorageService,
                         mSynchronizerFactory,
                         mSaveForwarderFactory);
     }
@@ -188,6 +189,7 @@ public class ModelTrackingOrchestratorUnitTest {
 
         // When data is loaded, synchronizer is in RESTORING or TRACKING and does not do fullSave.
         verify(mRegularSynchronizer, never()).fullSave(any());
+        verify(mRegularSynchronizer).saveStructureSnapshot(eq(true), any());
         verify(mRegularSynchronizer).consumeCollectionObserverFactory(any());
     }
 
@@ -375,25 +377,6 @@ public class ModelTrackingOrchestratorUnitTest {
     }
 
     @Test
-    public void testRestoreFinished_ClearUnusedNodes() {
-        when(mIncognitoTabModel.getTabModelType()).thenReturn(TabModelType.STANDARD);
-
-        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ true);
-
-        mOrchestrator.onRestoreFinished();
-
-        // Processes the chained task sequence.
-        ShadowLooper.runUiThreadTasks();
-
-        verify(mTabStateStorageService)
-                .clearUnusedNodesForWindow(
-                        eq(WINDOW_TAG), eq(false), eq(mRegularTabStripCollection));
-        verify(mTabStateStorageService)
-                .clearUnusedNodesForWindow(
-                        eq(WINDOW_TAG), eq(true), eq(mIncognitoTabStripCollection));
-    }
-
-    @Test
     public void testSaveTab_RegularTab() {
         createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ true);
 
@@ -407,8 +390,22 @@ public class ModelTrackingOrchestratorUnitTest {
         mRegularTabSupplier.set(tab);
         mOrchestrator.saveTab(tab);
 
-        verify(mRegularSynchronizer).saveTab(eq(tab));
+        verify(mTabStateStorageService).saveTabData(eq(tab));
         verify(mActiveTabCache).saveActiveTab(tab);
+    }
+
+    @Test
+    public void testSaveTab_ModelNotCreated() {
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ true);
+
+        Profile incognitoProfile = mock(Profile.class);
+        when(incognitoProfile.isOffTheRecord()).thenReturn(true);
+        MockTab tab = new MockTab(1, incognitoProfile);
+
+        mOrchestrator.saveTab(tab);
+
+        verify(mTabStateStorageService, never()).saveTabData(any());
+        verify(mActiveTabCache, never()).saveActiveTab(any());
     }
 
     @Test
@@ -427,7 +424,7 @@ public class ModelTrackingOrchestratorUnitTest {
 
         mOrchestrator.saveTab(tab);
 
-        verify(mRegularSynchronizer).saveTab(eq(tab));
+        verify(mTabStateStorageService).saveTabData(eq(tab));
         assertEquals(DirtinessState.CLEAN, attributes.getDirtinessState());
     }
 
@@ -450,7 +447,7 @@ public class ModelTrackingOrchestratorUnitTest {
 
         mOrchestrator.saveTab(tab);
 
-        verify(mRegularSynchronizer).saveTab(eq(tab));
+        verify(mTabStateStorageService).saveTabData(eq(tab));
         assertEquals(DirtinessState.CLEAN, attributes.getDirtinessState());
 
         // Subsequent navigation to the first non-empty URL transitions CLEAN -> UNTIDY once.
@@ -477,7 +474,7 @@ public class ModelTrackingOrchestratorUnitTest {
 
         mOrchestrator.saveTab(tab);
 
-        verify(mRegularSynchronizer).saveTab(eq(tab));
+        verify(mTabStateStorageService).saveTabData(eq(tab));
         assertEquals(DirtinessState.CLEAN, attributes.getDirtinessState());
     }
 
@@ -500,7 +497,7 @@ public class ModelTrackingOrchestratorUnitTest {
 
         mOrchestrator.saveTab(tab);
 
-        verify(mRegularSynchronizer).saveTab(eq(tab));
+        verify(mTabStateStorageService).saveTabData(eq(tab));
         assertEquals(DirtinessState.CLEAN, attributes.getDirtinessState());
     }
 
@@ -525,7 +522,7 @@ public class ModelTrackingOrchestratorUnitTest {
 
         mOrchestrator.saveTab(tab);
 
-        verify(mRegularSynchronizer).saveTab(eq(tab));
+        verify(mTabStateStorageService).saveTabData(eq(tab));
         assertEquals(DirtinessState.UNTIDY, attributes.getDirtinessState());
 
         // TabStateAttributes naturally deduplicates further UNTIDY signals while UNTIDY.

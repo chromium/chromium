@@ -96,7 +96,7 @@ public class TabStateStoreUnitTest {
     @Captor private ArgumentCaptor<Callback<StorageLoadedData>> mCallbackCaptor;
 
     private final ModelTrackingOrchestrator.Factory mModelTrackingOrchestratorFactory =
-            (a, b, c, d, e, f) -> mModelTrackingOrchestrator;
+            (a, b, c, d, e, f, g) -> mModelTrackingOrchestrator;
     private final ActiveTabCache.Factory mActiveTabCacheFactory = (a, b, c) -> mActiveTabCache;
     private final SettableNullableObservableSupplier<Tab> mRegularTabSupplier =
             ObservableSuppliers.createNullable();
