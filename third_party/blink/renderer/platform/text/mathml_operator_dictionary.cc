@@ -105,7 +105,7 @@ constexpr auto kCompactDictionary = std::to_array<EntryRange>(
 
 MathMLOperatorDictionaryCategory FindCategory(
     const String& content,
-    MathMLOperatorDictionaryForm form) {
+    MathMlOperatorDictionaryForm form) {
   DCHECK(!content.Is8Bit());
   // Handle special cases and calculate a BMP code point used for the key.
   uint16_t key{0};
@@ -122,8 +122,9 @@ MathMLOperatorDictionaryCategory FindCategory(
     if (character == uchar::kArabicMathematicalOperatorMeemWithHahWithTatweel ||
         character == uchar::kArabicMathematicalOperatorHahWithDal) {
       // Special handling of non-BMP Arabic operators.
-      if (form == MathMLOperatorDictionaryForm::kPostfix)
+      if (form == MathMlOperatorDictionaryForm::kPostfix) {
         return MathMLOperatorDictionaryCategory::kI;
+      }
       return MathMLOperatorDictionaryCategory::kNone;
     } else if (content[1] == uchar::kCombiningLongSolidusOverlay ||
                content[1] == uchar::kCombiningLongVerticalLineOverlay) {
@@ -151,18 +152,18 @@ MathMLOperatorDictionaryCategory FindCategory(
 
   // Handle special categories that are not encoded in the compact dictionary.
   // https://w3c.github.io/mathml-core/#operator-dictionary-categories-values
-  if (form == MathMLOperatorDictionaryForm::kInfix &&
+  if (form == MathMlOperatorDictionaryForm::kInfix &&
       (key == uchar::kVerticalLine || key == uchar::kTildeOperator)) {
     return MathMLOperatorDictionaryCategory::kForceDefault;
   }
-  if (form == MathMLOperatorDictionaryForm::kPrefix &&
+  if (form == MathMlOperatorDictionaryForm::kPrefix &&
       ((uchar::kDoubleStruckItalicCapitalD <= key &&
         key <= uchar::kDoubleStruckItalicSmallD) ||
        key == uchar::kPartialDifferential ||
        (uchar::kSquareRoot <= key && key <= uchar::kFourthRoot))) {
     return MathMLOperatorDictionaryCategory::kL;
   }
-  if (form == MathMLOperatorDictionaryForm::kInfix &&
+  if (form == MathMlOperatorDictionaryForm::kInfix &&
       (key == uchar::kComma || key == uchar::kColon ||
        key == uchar::kSemiColon)) {
     return MathMLOperatorDictionaryCategory::kM;
@@ -176,10 +177,11 @@ MathMLOperatorDictionaryCategory FindCategory(
     return MathMLOperatorDictionaryCategory::kNone;
   }
   // Bitmasks used to set form 2-bits (infix=00, prefix=01, postfix=10).
-  if (form == MathMLOperatorDictionaryForm::kPrefix)
+  if (form == MathMlOperatorDictionaryForm::kPrefix) {
     key |= 0x1000;
-  else if (form == MathMLOperatorDictionaryForm::kPostfix)
+  } else if (form == MathMlOperatorDictionaryForm::kPostfix) {
     key |= 0x2000;
+  }
   DCHECK_LE(key, 0x2FFF);
 
   // Perform a binary search on the compact dictionary.

@@ -144,13 +144,13 @@ void MathMLOperatorElement::ComputeDictionaryCategory() {
   // https://w3c.github.io/mathml-core/#dfn-form
   const auto& value = FastGetAttribute(mathml_names::kFormAttr);
   bool explicit_form = true;
-  MathMLOperatorDictionaryForm form;
+  MathMlOperatorDictionaryForm form;
   if (EqualIgnoringAsciiCase(value, "prefix")) {
-    form = MathMLOperatorDictionaryForm::kPrefix;
+    form = MathMlOperatorDictionaryForm::kPrefix;
   } else if (EqualIgnoringAsciiCase(value, "infix")) {
-    form = MathMLOperatorDictionaryForm::kInfix;
+    form = MathMlOperatorDictionaryForm::kInfix;
   } else if (EqualIgnoringAsciiCase(value, "postfix")) {
-    form = MathMLOperatorDictionaryForm::kPostfix;
+    form = MathMlOperatorDictionaryForm::kPostfix;
   } else {
     // TODO(crbug.com/1121113): Implement the remaining rules for determining
     // form.
@@ -159,11 +159,11 @@ void MathMLOperatorElement::ComputeDictionaryCategory() {
     bool nextSibling = ElementTraversal::NextSibling(*this);
     bool prevSibling = ElementTraversal::PreviousSibling(*this);
     if (!prevSibling && nextSibling)
-      form = MathMLOperatorDictionaryForm::kPrefix;
+      form = MathMlOperatorDictionaryForm::kPrefix;
     else if (prevSibling && !nextSibling)
-      form = MathMLOperatorDictionaryForm::kPostfix;
+      form = MathMlOperatorDictionaryForm::kPostfix;
     else
-      form = MathMLOperatorDictionaryForm::kInfix;
+      form = MathMlOperatorDictionaryForm::kInfix;
   }
 
   // We then try and find an entry in the operator dictionary to override the
@@ -177,14 +177,14 @@ void MathMLOperatorElement::ComputeDictionaryCategory() {
     if (!explicit_form) {
       // Step 3.
       for (const auto& fallback_form :
-           {MathMLOperatorDictionaryForm::kInfix,
-            MathMLOperatorDictionaryForm::kPostfix,
-            MathMLOperatorDictionaryForm::kPrefix}) {
+           {MathMlOperatorDictionaryForm::kInfix,
+            MathMlOperatorDictionaryForm::kPostfix,
+            MathMlOperatorDictionaryForm::kPrefix}) {
         if (fallback_form == form)
           continue;
         category = FindCategory(
             GetTokenContent().characters,
-            static_cast<MathMLOperatorDictionaryForm>(fallback_form));
+            static_cast<MathMlOperatorDictionaryForm>(fallback_form));
         if (category != MathMLOperatorDictionaryCategory::kNone) {
           properties_.dictionary_category = category;
           return;

@@ -27,7 +27,7 @@ enum class MathMLOperatorDictionaryCategory : uint8_t {
   kUndefined = 15
 };
 
-enum MathMLOperatorDictionaryForm {
+enum class MathMlOperatorDictionaryForm {
   kInfix,
   kPrefix,
   kPostfix,
@@ -39,7 +39,7 @@ enum MathMLOperatorDictionaryForm {
 // https://w3c.github.io/mathml-core/#operator-dictionary
 // The returned value is never MathMLOperatorDictionaryCategory::kUndefined.
 PLATFORM_EXPORT MathMLOperatorDictionaryCategory
-FindCategory(const String& content, MathMLOperatorDictionaryForm);
+FindCategory(const String& content, MathMlOperatorDictionaryForm);
 
 }  // namespace blink
 

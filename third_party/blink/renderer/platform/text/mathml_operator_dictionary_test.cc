@@ -156,22 +156,22 @@ TEST(MathOperatorDictionaryTest, Infix) {
     s.Ensure16Bit();
     if (ch >= uchar::kCombiningMinusSignBelow &&
         ch <= uchar::kGreekCapitalReversedDottedLunateSigmaSymbol) {
-      EXPECT_TRUE(FindCategory(s, MathMLOperatorDictionaryForm::kInfix) ==
+      EXPECT_TRUE(FindCategory(s, MathMlOperatorDictionaryForm::kInfix) ==
                   MathMLOperatorDictionaryCategory::kNone);
     } else if (IsInCategory(category_a, ch)) {
-      EXPECT_TRUE(FindCategory(s, MathMLOperatorDictionaryForm::kInfix) ==
+      EXPECT_TRUE(FindCategory(s, MathMlOperatorDictionaryForm::kInfix) ==
                   MathMLOperatorDictionaryCategory::kA);
     } else if (IsInCategory(category_b, ch)) {
-      EXPECT_TRUE(FindCategory(s, MathMLOperatorDictionaryForm::kInfix) ==
+      EXPECT_TRUE(FindCategory(s, MathMlOperatorDictionaryForm::kInfix) ==
                   MathMLOperatorDictionaryCategory::kB);
     } else if (IsInCategory(category_c, ch)) {
-      EXPECT_TRUE(FindCategory(s, MathMLOperatorDictionaryForm::kInfix) ==
+      EXPECT_TRUE(FindCategory(s, MathMlOperatorDictionaryForm::kInfix) ==
                   MathMLOperatorDictionaryCategory::kC);
     } else if (IsInCategory(category_k, ch)) {
-      EXPECT_TRUE(FindCategory(s, MathMLOperatorDictionaryForm::kInfix) ==
+      EXPECT_TRUE(FindCategory(s, MathMlOperatorDictionaryForm::kInfix) ==
                   MathMLOperatorDictionaryCategory::kDorEorK);
     } else if (IsInCategory(category_m, ch)) {
-      EXPECT_TRUE(FindCategory(s, MathMLOperatorDictionaryForm::kInfix) ==
+      EXPECT_TRUE(FindCategory(s, MathMlOperatorDictionaryForm::kInfix) ==
                   MathMLOperatorDictionaryCategory::kM);
     }
   }
@@ -183,25 +183,25 @@ TEST(MathOperatorDictionaryTest, Prefix) {
     s.Ensure16Bit();
     if (ch >= uchar::kCombiningMinusSignBelow &&
         ch <= uchar::kGreekCapitalReversedDottedLunateSigmaSymbol) {
-      EXPECT_TRUE(FindCategory(s, MathMLOperatorDictionaryForm::kPrefix) ==
+      EXPECT_TRUE(FindCategory(s, MathMlOperatorDictionaryForm::kPrefix) ==
                   MathMLOperatorDictionaryCategory::kNone);
     } else if (IsInCategory(category_d, ch)) {
-      EXPECT_TRUE(FindCategory(s, MathMLOperatorDictionaryForm::kPrefix) ==
+      EXPECT_TRUE(FindCategory(s, MathMlOperatorDictionaryForm::kPrefix) ==
                   MathMLOperatorDictionaryCategory::kDorEorK);
     } else if (IsInCategory(category_f, ch)) {
-      EXPECT_TRUE(FindCategory(s, MathMLOperatorDictionaryForm::kPrefix) ==
+      EXPECT_TRUE(FindCategory(s, MathMlOperatorDictionaryForm::kPrefix) ==
                   MathMLOperatorDictionaryCategory::kForG);
     } else if (IsInCategory(category_h, ch)) {
-      EXPECT_TRUE(FindCategory(s, MathMLOperatorDictionaryForm::kPrefix) ==
+      EXPECT_TRUE(FindCategory(s, MathMlOperatorDictionaryForm::kPrefix) ==
                   MathMLOperatorDictionaryCategory::kH);
     } else if (IsInCategory(category_j, ch)) {
-      EXPECT_TRUE(FindCategory(s, MathMLOperatorDictionaryForm::kPrefix) ==
+      EXPECT_TRUE(FindCategory(s, MathMlOperatorDictionaryForm::kPrefix) ==
                   MathMLOperatorDictionaryCategory::kJ);
     } else if (IsInCategory(category_l, ch)) {
-      EXPECT_TRUE(FindCategory(s, MathMLOperatorDictionaryForm::kPrefix) ==
+      EXPECT_TRUE(FindCategory(s, MathMlOperatorDictionaryForm::kPrefix) ==
                   MathMLOperatorDictionaryCategory::kL);
     } else {
-      EXPECT_TRUE(FindCategory(s, MathMLOperatorDictionaryForm::kPrefix) ==
+      EXPECT_TRUE(FindCategory(s, MathMlOperatorDictionaryForm::kPrefix) ==
                   MathMLOperatorDictionaryCategory::kNone);
     }
   }
@@ -213,23 +213,23 @@ TEST(MathOperatorDictionaryTest, Postfix) {
     s.Ensure16Bit();
     if (ch >= uchar::kCombiningMinusSignBelow &&
         ch <= uchar::kGreekCapitalReversedDottedLunateSigmaSymbol) {
-      EXPECT_TRUE(FindCategory(s, MathMLOperatorDictionaryForm::kPostfix) ==
+      EXPECT_TRUE(FindCategory(s, MathMlOperatorDictionaryForm::kPostfix) ==
                   MathMLOperatorDictionaryCategory::kNone);
     } else if (ch == uchar::kArabicMathematicalOperatorMeemWithHahWithTatweel ||
                ch == uchar::kArabicMathematicalOperatorHahWithDal) {
-      EXPECT_TRUE(FindCategory(s, MathMLOperatorDictionaryForm::kPostfix) ==
+      EXPECT_TRUE(FindCategory(s, MathMlOperatorDictionaryForm::kPostfix) ==
                   MathMLOperatorDictionaryCategory::kI);
     } else if (IsInCategory(category_e, ch)) {
-      EXPECT_TRUE(FindCategory(s, MathMLOperatorDictionaryForm::kPostfix) ==
+      EXPECT_TRUE(FindCategory(s, MathMlOperatorDictionaryForm::kPostfix) ==
                   MathMLOperatorDictionaryCategory::kDorEorK);
     } else if (IsInCategory(category_g, ch)) {
-      EXPECT_TRUE(FindCategory(s, MathMLOperatorDictionaryForm::kPostfix) ==
+      EXPECT_TRUE(FindCategory(s, MathMlOperatorDictionaryForm::kPostfix) ==
                   MathMLOperatorDictionaryCategory::kForG);
     } else if (IsInCategory(category_i, ch)) {
-      EXPECT_TRUE(FindCategory(s, MathMLOperatorDictionaryForm::kPostfix) ==
+      EXPECT_TRUE(FindCategory(s, MathMlOperatorDictionaryForm::kPostfix) ==
                   MathMLOperatorDictionaryCategory::kI);
     } else {
-      EXPECT_TRUE(FindCategory(s, MathMLOperatorDictionaryForm::kPostfix) ==
+      EXPECT_TRUE(FindCategory(s, MathMlOperatorDictionaryForm::kPostfix) ==
                   MathMLOperatorDictionaryCategory::kNone);
     }
   }
