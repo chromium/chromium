@@ -1297,6 +1297,8 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Plus Button"/>
   <int value="19" label="Standalone AIM Module"/>
   <int value="20" label="AIM in Most Visited"/>
+  <int value="21" label="AIM Image Generation Quick Action"/>
+  <int value="22" label="AIM Attach Image Quick Action"/>
 </enum>
 
 <!-- LINT.IfChange(IOSHomeCustomizationBackgroundStyle) -->
