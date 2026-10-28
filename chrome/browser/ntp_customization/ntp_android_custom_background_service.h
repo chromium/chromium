@@ -67,6 +67,7 @@ class NtpAndroidCustomBackgroundService
                                const std::string& collection_id) override;
   void SelectLocalBackgroundImage(const base::FilePath& path) override;
   void ResetCustomBackgroundInfo() override;
+  void RefreshBackgroundIfNeeded() override;
   void OnNextCollectionImageAvailable() override;
   std::optional<int> GetNextRefreshTimestamp() const override;
 

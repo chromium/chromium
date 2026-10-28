@@ -338,6 +338,35 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
 }
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
+       RefreshBackgroundIfNeeded_FetchesNextImage_ForDailyRefresh) {
+  service_->UpdateThemeCollectionPrefsWithColor(
+      GURL(kTestValidUrl), kTestCollectionId, kTestAttribution1,
+      kTestAttribution2, GURL(kTestActionUrl), SK_ColorRED,
+      /*is_daily_refresh=*/true);
+  ASSERT_TRUE(service_->GetCustomBackground().has_value());
+  ASSERT_TRUE(service_->GetCustomBackground()->daily_refresh_enabled);
+
+  service_->RefreshBackgroundIfNeeded();
+
+  GURL expected_url = mock_background_service_->GetNextImageURLForTesting();
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(expected_url.spec()));
+}
+
+TEST_F(NtpAndroidCustomBackgroundServiceTest,
+       RefreshBackgroundIfNeeded_DoesNotFetch_ForSyncedStaticImage) {
+  // Java requests the next image based on SharedPreferences, which may still
+  // hold the local daily refresh while the synced static image downloads. The
+  // stored background has no next image, so no request is made.
+  service_->OnThemeChangedFromSync(CreateTestThemeSpecifics());
+  ASSERT_TRUE(service_->GetCustomBackground().has_value());
+  ASSERT_FALSE(service_->GetCustomBackground()->daily_refresh_enabled);
+
+  service_->RefreshBackgroundIfNeeded();
+
+  EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+}
+
+TEST_F(NtpAndroidCustomBackgroundServiceTest,
        NotifyAboutBackgrounds_RoutesToThemeCollectionBridge_OnStaticImage) {
   MockThemeCollectionBridge mock_theme_bridge;
   MockSyncedThemeBridge mock_synced_bridge;

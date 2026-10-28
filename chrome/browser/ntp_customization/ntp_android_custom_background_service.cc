@@ -181,6 +181,20 @@ void NtpAndroidCustomBackgroundService::ResetCustomBackgroundInfo() {
   NotifySyncBridge();
 }
 
+void NtpAndroidCustomBackgroundService::RefreshBackgroundIfNeeded() {
+  // Only fetch the next image if the stored background is a daily refresh
+  // theme collection. Java requests the next image based on SharedPreferences,
+  // which may still hold the local daily refresh after a synced static image
+  // replaced it in preferences, e.g. while its download is in flight or after
+  // the download failed.
+  std::optional<CustomBackground> background = GetCustomBackground();
+  if (!background.has_value() || !background->daily_refresh_enabled) {
+    return;
+  }
+
+  NtpCustomBackgroundServiceBase::RefreshBackgroundIfNeeded();
+}
+
 void NtpAndroidCustomBackgroundService::OnNextCollectionImageAvailable() {
   auto image = background_service_->next_image();
   if (!active_custom_background_ ||
