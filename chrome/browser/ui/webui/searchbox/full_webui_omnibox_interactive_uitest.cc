@@ -21,6 +21,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -1541,6 +1542,40 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       WaitForPopupState(OmniboxPopupState::kFull),
       InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)));
 }
+
+#if BUILDFLAG(IS_MAC)
+// Verifies that `IDC_FOCUS_LOCATION` (e.g. File > Open Location on Mac) while
+// the omnibox is focused in keyword mode exits keyword mode, restoring the
+// keyword into the text, like pressing Ctrl+L / Cmd+L in the WebUI input.
+// Mac only: File > Open Location only exists on Mac.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       FocusLocationCommandExitsKeywordMode) {
+  if (IsWebUIToolbarEnabled()) {
+    // TODO(crbug.com/546101626): `WebUILocationBar` handles keyword mode
+    // differently.
+    GTEST_SKIP() << "WebUILocationBar restores the wrong text.";
+  }
+  AddKeywordSearchEngine(u"kw");
+  RunTestSequence(
+      // Open an NTP and wait for the popup.
+      WaitForPopupTransitionLockout(),
+      AddInstrumentedTab(kTab1, GURL(chrome::kChromeUINewTabURL)),
+      WaitForWebContentsReady(kTab1), WaitForPopupReady(),
+      // Enter keyword mode via Tab and type a query.
+      InputWebUIText("kw"),
+      InAnyContext(
+          WaitForElementToRender(kPopupWebView, kDefaultMatchKeywordChip)),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_TAB, ui::EF_NONE)),
+      WaitForWebUIKeywordMode(true), WaitForEditModelKeywordSelected(true),
+      InputWebUIText("flowers"),
+      // Run the focus location command, as File > Open Location does.
+      WaitForPopupTransitionLockout(),
+      Do([this]() { chrome::ExecuteCommand(browser(), IDC_FOCUS_LOCATION); }),
+      // Keyword mode is exited, with the keyword restored into the text.
+      WaitForWebUIKeywordMode(false), WaitForWebUIInputValue("kw flowers"),
+      WaitForEditModelKeywordSelected(false), WaitForOmniboxFocus(true));
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 // Verifies focusing the omnibox without typing a draft, selecting a portion of
 // the URL text, switching away to another tab, and switching back restores

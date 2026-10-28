@@ -1585,6 +1585,12 @@ export class OmniboxPopupSearchboxElement extends
     this.isLogicallyFocused_ = isFocused;
     if (isFocused) {
       if (showFullUrl) {
+        // Focus Location requests exit keyword mode if the input already has
+        // focus.
+        if (this.shadowRoot?.activeElement === this.$.input) {
+          this.keywordModeManager.clearKeyword(
+              this.getInputElement().inputElement.value);
+        }
         this.maybeShowFullUrl_();
       }
       if (document.visibilityState === 'visible') {
