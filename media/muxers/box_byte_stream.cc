@@ -75,15 +75,12 @@ void BoxByteStream::WriteU64(uint64_t value) {
   position_ += 8;
 }
 
-void BoxByteStream::WriteBytes(const void* buf, size_t len) {
+void BoxByteStream::WriteBytes(base::span<const uint8_t> data) {
   CHECK(!buffer_.empty());
-  while (!writer_->Write(
-      // TODO(crbug.com/40284755): The caller must have provided a valid buf/len
-      // pair. This method should receive a span instead of a pointer.
-      UNSAFE_TODO(base::span(static_cast<const uint8_t*>(buf), len)))) {
+  while (!writer_->Write(data)) {
     GrowWriter();
   }
-  position_ += len;
+  position_ += data.size();
 }
 
 void BoxByteStream::WriteString(std::string_view value) {
@@ -92,7 +89,7 @@ void BoxByteStream::WriteString(std::string_view value) {
     return;
   }
 
-  WriteBytes(value.data(), value.size());
+  WriteBytes(base::as_byte_span(value));
 
   // Ensure null terminated string.
   if (value.back() != 0) {

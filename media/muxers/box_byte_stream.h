@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/containers/span_writer.h"
 #include "base/containers/stack.h"
 #include "media/base/media_export.h"
@@ -43,7 +44,7 @@ class MEDIA_EXPORT BoxByteStream {
   void WriteU16(uint16_t value);
   void WriteU32(uint32_t value);
   void WriteU64(uint64_t value);
-  void WriteBytes(const void* buf, size_t len);
+  void WriteBytes(base::span<const uint8_t> data);
   void WriteString(std::string_view value);
 
   // Ends a writing session. All pending placeholder values in `size_offsets_`

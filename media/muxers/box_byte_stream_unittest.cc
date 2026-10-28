@@ -5,6 +5,7 @@
 #include "media/muxers/box_byte_stream.h"
 
 #include <algorithm>
+#include <numeric>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -71,7 +72,8 @@ TEST(BoxByteStreamTest, Default) {
         box_byte_stream.WriteU64(data.value);
         break;
       case DataType::kType_Bytes:
-        box_byte_stream.WriteBytes(&data.value, 7);
+        box_byte_stream.WriteBytes(
+            base::byte_span_from_ref(data.value).first<7>());
         break;
       case DataType::kType_String:
         box_byte_stream.WriteString(reinterpret_cast<char*>(data.value));
@@ -145,6 +147,42 @@ TEST(BoxByteStreamTest, Default) {
 
         break;
     }
+  }
+}
+
+TEST(BoxByteStreamTest, WriteBytesAcrossBufferBoundaries) {
+  constexpr size_t kBufferLimit = BoxByteStream::kDefaultBufferLimit;
+  constexpr size_t kBoxHeaderSize = 8;
+  for (size_t payload_size :
+       {size_t{0}, kBufferLimit - kBoxHeaderSize,
+        kBufferLimit - kBoxHeaderSize + 1, kBufferLimit * 4}) {
+    SCOPED_TRACE(payload_size);
+    std::vector<uint8_t> payload(payload_size);
+    std::iota(payload.begin(), payload.end(), uint8_t{0});
+
+    BoxByteStream stream;
+    stream.StartBox(mp4::FOURCC_MDAT);
+    stream.WriteBytes(payload);
+    EXPECT_EQ(stream.size(), kBoxHeaderSize + payload_size);
+    stream.WriteU8(0xab);
+    stream.EndBox();
+    auto written_data = stream.Flush();
+
+    auto reader = base::SpanReader(base::span(written_data));
+    uint32_t box_size;
+    ASSERT_TRUE(reader.ReadU32BigEndian(box_size));
+    EXPECT_EQ(box_size, kBoxHeaderSize + payload_size + 1);
+    EXPECT_EQ(written_data.size(), box_size);
+    uint32_t fourcc;
+    ASSERT_TRUE(reader.ReadU32BigEndian(fourcc));
+    EXPECT_EQ(fourcc, mp4::FOURCC_MDAT);
+    base::span<uint8_t> actual_payload;
+    ASSERT_TRUE(reader.ReadInto(payload_size, actual_payload));
+    EXPECT_EQ(actual_payload, base::span(payload));
+    uint8_t trailing_byte;
+    ASSERT_TRUE(reader.ReadU8BigEndian(trailing_byte));
+    EXPECT_EQ(trailing_byte, 0xab);
+    EXPECT_EQ(reader.remaining(), 0u);
   }
 }
 
@@ -305,7 +343,7 @@ TEST(BoxByteStreamTest, OffsetPlaceholderAndFlush) {
     box_byte_stream.StartBox(mp4::FOURCC_MDAT);
     box_byte_stream.FlushCurrentOffset();
 
-    box_byte_stream.WriteBytes(data.data(), data.size());
+    box_byte_stream.WriteBytes(data);
     box_byte_stream.EndBox();  // for FOURCC_MDAT.
     box_byte_stream.FlushCurrentOffset();
   }

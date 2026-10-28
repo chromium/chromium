@@ -818,7 +818,7 @@ void Mp4MovieAVCDecoderConfigurationBoxWriter::Write(BoxByteStream& writer) {
   std::vector<uint8_t> write_data;
   CHECK(box_->avc_config_record.Serialize(write_data));
 
-  writer.WriteBytes(write_data.data(), write_data.size());
+  writer.WriteBytes(write_data);
 
   writer.EndBox();
 }
@@ -842,7 +842,7 @@ void Mp4MovieElementaryStreamDescriptorBoxWriter::Write(BoxByteStream& writer) {
 
   std::vector<uint8_t> esds =
       mp4::ESDescriptor::CreateEsds(box_->aac_codec_description);
-  writer.WriteBytes(esds.data(), esds.size());
+  writer.WriteBytes(esds);
 
   writer.EndBox();
 }
@@ -869,7 +869,7 @@ void Mp4MovieHEVCDecoderConfigurationBoxWriter::Write(BoxByteStream& writer) {
   std::vector<uint8_t> write_data;
   CHECK(box_->hevc_config_record.Serialize(write_data));
 
-  writer.WriteBytes(write_data.data(), write_data.size());
+  writer.WriteBytes(write_data);
 
   writer.EndBox();
 }
@@ -1040,8 +1040,7 @@ void Mp4MovieAV1CodecConfigurationBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   writer.StartBox(mp4::FOURCC_AV1C);
-  writer.WriteBytes(box_->av1_decoder_configuration_data.data(),
-                    box_->av1_decoder_configuration_data.size());
+  writer.WriteBytes(box_->av1_decoder_configuration_data);
   writer.EndBox();
 }
 
