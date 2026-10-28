@@ -1782,6 +1782,14 @@ ci.thin_tester(
             "webgpu_cts_dedicated_worker_tests": targets.remove(
                 reason = "We only need coverage on one GPU per OS, so remove from lower capacity configs.",
             ),
+            "webgpu_cts_tests": targets.mixin(
+                # The vast majority of coverage is already provided by
+                # webgpu_cts_with_validation_tests, so mark as CI-only to
+                # maintain some amount of coverage of what we ship without
+                # wasting as many resources on a low capacity config. See
+                # crbug.com/578581697.
+                ci_only = True,
+            ),
             "webgpu_cts_service_worker_tests": targets.remove(
                 reason = "We only need coverage on one GPU per OS, so remove from lower capacity configs.",
             ),
@@ -1891,6 +1899,14 @@ ci.thin_tester(
         #     "webgpu_cts_dedicated_worker_tests": targets.remove(
         #         reason = "We only need coverage on one GPU per OS, so remove from lower capacity configs.",
         #     ),
+        #     "webgpu_cts_tests": targets.mixin(
+        #        # The vast majority of coverage is already provided by
+        #        # webgpu_cts_with_validation_tests, so mark as CI-only to
+        #        # maintain some amount of coverage of what we ship without
+        #        # wasting as many resources on a low capacity config. See
+        #        # crbug.com/578581697.
+        #        ci_only = True,
+        #    ),
         #     "webgpu_cts_service_worker_tests": targets.remove(
         #         reason = "We only need coverage on one GPU per OS, so remove from lower capacity configs.",
         #     ),
@@ -2058,6 +2074,14 @@ ci.thin_tester(
         per_test_modifications = {
             "webgpu_cts_dedicated_worker_tests": targets.remove(
                 reason = "We only need coverage on one GPU per OS, so remove from lower capacity configs.",
+            ),
+            "webgpu_cts_tests": targets.mixin(
+                # The vast majority of coverage is already provided by
+                # webgpu_cts_with_validation_tests, so mark as CI-only to
+                # maintain some amount of coverage of what we ship without
+                # wasting as many resources on a low capacity config. See
+                # crbug.com/578581697.
+                ci_only = True,
             ),
             "webgpu_cts_service_worker_tests": targets.remove(
                 reason = "We only need coverage on one GPU per OS, so remove from lower capacity configs.",
