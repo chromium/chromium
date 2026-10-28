@@ -205,18 +205,24 @@ VideoFrameAcceleratedSnapshotPool::Create(const CanvasSnapshotInfo& info) {
     format = viz::SinglePlaneFormat::kRGBA_8888;
   }
 
+  CanvasSnapshotInfo pool_info = info;
+  pool_info.format = format;
   auto provider = base::WrapUnique(new CanvasNon2DResourceProvider(
-      info.size, format, info.alpha_type, info.color_space, info.hdr_metadata,
-      context_provider_wrapper, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
-      base::DoNothing()));
-  auto pool = base::WrapUnique(
-      new VideoFrameAcceleratedSnapshotPool(std::move(provider)));
+      pool_info.size, pool_info.format, pool_info.alpha_type,
+      pool_info.color_space, pool_info.hdr_metadata, context_provider_wrapper,
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, base::DoNothing()));
+  auto pool = base::WrapUnique(new VideoFrameAcceleratedSnapshotPool(
+      pool_info, std::move(context_provider_wrapper), std::move(provider)));
   return pool->IsValid() ? std::move(pool) : nullptr;
 }
 
 VideoFrameAcceleratedSnapshotPool::VideoFrameAcceleratedSnapshotPool(
+    const CanvasSnapshotInfo& info,
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     std::unique_ptr<CanvasNon2DResourceProvider> provider)
-    : provider_(std::move(provider)) {
+    : info_(info),
+      context_provider_wrapper_(std::move(context_provider_wrapper)),
+      provider_(std::move(provider)) {
   CHECK(provider_);
 }
 
@@ -225,25 +231,16 @@ VideoFrameAcceleratedSnapshotPool::~VideoFrameAcceleratedSnapshotPool() =
 
 gpu::raster::RasterInterface*
 VideoFrameAcceleratedSnapshotPool::RasterInterface() const {
-  if (!provider_->context_provider_wrapper_) {
+  if (!context_provider_wrapper_) {
     return nullptr;
   }
-  return provider_->context_provider_wrapper_->ContextProvider()
-      .RasterInterface();
+  return context_provider_wrapper_->ContextProvider().RasterInterface();
 }
 
 bool VideoFrameAcceleratedSnapshotPool::IsValid() const {
   auto* raster_interface = RasterInterface();
   return raster_interface &&
          raster_interface->GetGraphicsResetStatusKHR() == GL_NO_ERROR;
-}
-
-gfx::Size VideoFrameAcceleratedSnapshotPool::Size() const {
-  return provider_->Size();
-}
-
-CanvasSnapshotInfo VideoFrameAcceleratedSnapshotPool::GetInfo() const {
-  return provider_->GetInfo();
 }
 
 scoped_refptr<CanvasResourceSharedImage>
@@ -258,9 +255,8 @@ VideoFrameAcceleratedSnapshotPool::NewOrRecycledResource() {
   }
 
   if (!resource->IsInitialized()) {
-    resource->Initialize(provider_->CreateWeakPtr(),
-                         provider_->context_provider_wrapper_,
-                         provider_->hdr_metadata_, /*is_accelerated=*/true);
+    resource->Initialize(provider_->CreateWeakPtr(), context_provider_wrapper_,
+                         info_.hdr_metadata, /*is_accelerated=*/true);
     ++provider_->num_inflight_resources_;
     if (provider_->num_inflight_resources_ > provider_->max_inflight_resources_) {
       provider_->max_inflight_resources_ = provider_->num_inflight_resources_;
@@ -319,21 +315,18 @@ void VideoFrameAcceleratedSnapshotPool::FlushRecording(
     // Create an ImageDecodeCache for half float images only if the canvas is
     // using half float back storage.
     cc::ImageDecodeCache* cache_f16 = nullptr;
-    if (provider_->GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16) {
-      cache_f16 =
-          provider_->context_provider_wrapper_->ContextProvider()
-              .ImageDecodeCache(kRGBA_F16_SkColorType);
+    if (info_.format == viz::SinglePlaneFormat::kRGBA_F16) {
+      cache_f16 = context_provider_wrapper_->ContextProvider().ImageDecodeCache(
+          kRGBA_F16_SkColorType);
     }
 
     cc::ImageDecodeCache* cache_rgba8 =
-        provider_->context_provider_wrapper_->ContextProvider()
-            .ImageDecodeCache(kN32_SkColorType);
+        context_provider_wrapper_->ContextProvider().ImageDecodeCache(
+            kN32_SkColorType);
 
     CanvasImageProvider image_provider(
-        cache_rgba8, cache_f16, provider_->GetColorSpace(),
-        provider_->GetSharedImageFormat(),
-        cc::PlaybackImageProvider::RasterMode::kGpu,
-        provider_->context_provider_wrapper_);
+        cache_rgba8, cache_f16, info_.color_space, info_.format,
+        cc::PlaybackImageProvider::RasterMode::kGpu, context_provider_wrapper_);
 
     gpu::SyncToken sync_token = RasterInterface()->RasterSharedImage(
         provider_->resource()->GetSharedImage(),

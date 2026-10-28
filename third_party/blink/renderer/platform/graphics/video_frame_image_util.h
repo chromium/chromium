@@ -9,6 +9,7 @@
 
 #include "base/functional/function_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_record.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
@@ -38,6 +39,7 @@ namespace blink {
 class CanvasNon2DResourceProvider;
 class CanvasResourceSharedImage;
 class StaticBitmapImage;
+class WebGraphicsContext3DProviderWrapper;
 
 // Pool of accelerated SharedImages used to produce AcceleratedStaticBitmapImage
 // snapshots from media::VideoFrames.
@@ -53,14 +55,17 @@ class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool {
   ~VideoFrameAcceleratedSnapshotPool();
 
   bool IsValid() const;
-  gfx::Size Size() const;
-  CanvasSnapshotInfo GetInfo() const;
+  gfx::Size Size() const { return info_.size; }
+  CanvasSnapshotInfo GetInfo() const { return info_; }
 
   scoped_refptr<StaticBitmapImage> DoExternalOverdrawAndSnapshot(
       base::FunctionRef<void(cc::PaintCanvas&)> draw_callback);
 
  private:
-  explicit VideoFrameAcceleratedSnapshotPool(
+  VideoFrameAcceleratedSnapshotPool(
+      const CanvasSnapshotInfo& info,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+          context_provider_wrapper,
       std::unique_ptr<CanvasNon2DResourceProvider> provider);
 
   void FlushRecording(cc::PaintRecord last_recording);
@@ -69,6 +74,8 @@ class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool {
   scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
   gpu::raster::RasterInterface* RasterInterface() const;
 
+  const CanvasSnapshotInfo info_;
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   std::unique_ptr<CanvasNon2DResourceProvider> provider_;
 };
 
