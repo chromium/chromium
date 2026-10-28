@@ -27,6 +27,8 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX)
+#include <unistd.h>
+
 #include <memory>
 
 #include "base/logging.h"
@@ -95,7 +97,7 @@ int PeerConnectionProcessMain() {
   if (sandbox::SandboxBPF::SupportsSeccompSandbox(
           sandbox::SandboxBPF::SeccompLevel::MULTI_THREADED)) {
     sandbox::SandboxBPF sandbox(
-        std::make_unique<PeerConnectionBpfPolicyLinux>());
+        std::make_unique<PeerConnectionBpfPolicyLinux>(getpid()));
     if (!sandbox.StartSandbox(
             sandbox::SandboxBPF::SeccompLevel::MULTI_THREADED)) {
       LOG(ERROR) << "Failed to engage Seccomp-BPF sandbox in the peer "

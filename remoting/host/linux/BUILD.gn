@@ -511,6 +511,7 @@ source_set("unit_tests") {
     ":utils",
     ":x11_display_utils",
     "dbus_interfaces:interface_headers",
+    "//base/test:test_support",
     "//dbus",
     "//dbus:dbus_test_service",
     "//remoting/base:errors",

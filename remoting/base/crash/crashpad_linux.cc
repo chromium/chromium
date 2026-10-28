@@ -5,6 +5,7 @@
 #include "remoting/base/crash/crashpad_linux.h"
 
 #include <fcntl.h>
+#include <signal.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -136,6 +137,9 @@ bool CrashpadLinux::InitializeClient(base::ScopedFD handler_socket,
   }
 
   crashpad::CrashpadClient client;
+  // SIGSYS handling is reserved for the Seccomp-BPF sandbox, which uses it to
+  // emulate or deny syscalls.
+  client.SetUnhandledSignals({SIGSYS});
   if (!client.SetHandlerSocket(std::move(handler_socket), handler_pid)) {
     LOG(ERROR) << "Failed to set Crashpad handler socket.";
     return false;
