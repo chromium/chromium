@@ -51,7 +51,10 @@ class ImageFetchTabHelperTest : public PlatformTest {
  protected:
   ImageFetchTabHelperTest()
       : web_client_(std::make_unique<web::FakeWebClient>()) {
-    profile_ = TestProfileIOS::Builder().Build();
+    TestProfileIOS::Builder builder;
+    builder.SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
+    profile_ = std::move(builder).Build();
 
     web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
@@ -73,10 +76,6 @@ class ImageFetchTabHelperTest : public PlatformTest {
 
   // Sets up the network::TestURLLoaderFactory to handle download request.
   void SetUpTestSharedURLLoaderFactory() {
-    profile_->SetSharedURLLoaderFactory(
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_url_loader_factory_));
-
     network::mojom::URLResponseHeadPtr head =
         network::mojom::URLResponseHead::New();
     std::string raw_header = "HTTP/1.1 200 OK\n"

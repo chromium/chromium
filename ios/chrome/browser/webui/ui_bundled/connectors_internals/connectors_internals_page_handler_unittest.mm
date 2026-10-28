@@ -167,9 +167,9 @@ class ConnectorsInternalsPageHandlerTest : public PlatformTest {
     builder.AddTestingFactory(
         EnterpriseProxyServiceFactoryIOS::GetInstance(),
         EnterpriseProxyServiceFactoryIOS::GetDefaultFactory());
-    profile_ = std::move(builder).Build();
-    profile_->SetSharedURLLoaderFactory(
+    builder.SetSharedURLLoaderFactory(
         test_url_loader_factory_.GetSafeWeakWrapper());
+    profile_ = std::move(builder).Build();
     handler_ = std::make_unique<ConnectorsInternalsPageHandler>(
         page_handler_.BindNewPipeAndPassReceiver(), profile_.get());
   }

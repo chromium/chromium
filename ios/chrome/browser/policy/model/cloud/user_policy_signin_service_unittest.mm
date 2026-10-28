@@ -133,10 +133,9 @@ class UserPolicySigninServiceTest : public PlatformTest {
 
     TestProfileIOS::Builder builder;
     builder.SetUserCloudPolicyManager(BuildCloudPolicyManager());
+    builder.SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
     profile_ = std::move(builder).Build();
-    profile_->SetSharedURLLoaderFactory(
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_url_loader_factory_));
 
     manager_ = profile_->GetUserCloudPolicyManager();
     DCHECK(manager_);

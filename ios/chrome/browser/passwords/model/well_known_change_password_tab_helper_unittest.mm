@@ -88,6 +88,8 @@ class WellKnownChangePasswordTabHelperTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(IOSChromeAffiliationServiceFactory::GetInstance(),
                               base::BindRepeating(&MakeMockAffiliationService));
+    builder.SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
     profile_ = std::move(builder).Build();
 
     web::WebState::CreateParams params(profile_.get());
@@ -106,9 +108,6 @@ class WellKnownChangePasswordTabHelperTest : public PlatformTest {
 
     web_state()->SetDelegate(&delegate_);
     WellKnownChangePasswordTabHelper::CreateForWebState(web_state());
-    profile_->SetSharedURLLoaderFactory(
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_url_loader_factory_));
     test_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
 

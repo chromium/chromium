@@ -176,11 +176,9 @@ class DataProtectionTabHelperTest : public PlatformTest {
     builder.AddTestingFactory(
         DataProtectionUrlLookupServiceFactory::GetInstance(),
         base::BindRepeating(&CreateDataProtectionUrlLookupService));
-
+    builder.SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
     profile_ = std::move(builder).Build();
-    profile_->SetSharedURLLoaderFactory(
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_url_loader_factory_));
 
     // Enable real-time lookup by default via prefs.
     profile_->GetPrefs()->SetInteger(

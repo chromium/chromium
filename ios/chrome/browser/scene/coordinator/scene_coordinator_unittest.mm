@@ -71,6 +71,8 @@ class SceneCoordinatorTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
+    builder.SetSharedURLLoaderFactory(
+        test_loader_factory_.GetSafeWeakWrapper());
     profile_ = std::move(builder).Build();
 
     profile_state_ = [[ProfileState alloc] initWithAppState:nil];
@@ -80,10 +82,6 @@ class SceneCoordinatorTest : public PlatformTest {
     scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
     scene_state_.profileState = profile_state_;
     scene_state_.sceneSessionID = "scene";
-
-    profile_->SetSharedURLLoaderFactory(
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_loader_factory_));
 
     coordinator_ = [[SceneCoordinator alloc]
         initWithTabOpener:OCMProtocolMock(@protocol(TabOpening))];

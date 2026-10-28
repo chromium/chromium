@@ -153,14 +153,12 @@ class SceneControllerTest : public PlatformTest {
         tab_groups::TabGroupSyncServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
+    builder.SetSharedURLLoaderFactory(
+        test_loader_factory_.GetSafeWeakWrapper());
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
     UserActivityBrowserAgent::CreateForBrowser(browser_.get());
-
-    profile_->SetSharedURLLoaderFactory(
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_loader_factory_));
 
     mock_scene_handler_ = OCMProtocolMock(@protocol(SceneCommands));
     mock_settings_handler_ = OCMProtocolMock(@protocol(SettingsCommands));

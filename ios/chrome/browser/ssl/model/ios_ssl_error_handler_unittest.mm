@@ -52,13 +52,12 @@ class IOSSSLErrorHandlerWithoutTabHelpersTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    profile_ = TestProfileIOS::Builder().Build();
+    TestProfileIOS::Builder builder;
+    builder.SetSharedURLLoaderFactory(
+        test_loader_factory_.GetSafeWeakWrapper());
+    profile_ = std::move(builder).Build();
 
     web_state_->SetBrowserState(profile_.get());
-
-    profile_->SetSharedURLLoaderFactory(
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_loader_factory_));
     test_loader_factory_.AddResponse(
         captive_portal::CaptivePortalDetector::GetDefaultUrl(), "",
         net::HTTP_NO_CONTENT);

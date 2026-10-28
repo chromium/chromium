@@ -115,6 +115,8 @@ class ChromeWebClientTest : public PlatformTest {
     builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
+    builder.SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
     profile_ = std::move(builder).Build();
   }
 
@@ -128,6 +130,7 @@ class ChromeWebClientTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
+  network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestProfileIOS> profile_;
 };
 
@@ -302,15 +305,11 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageWithSSLInfo) {
   security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
       &web_state);
 
-  // Use a test URLLoaderFactory so that the captive portal detector doesn't
-  // make an actual network request.
-  network::TestURLLoaderFactory test_loader_factory;
-  test_loader_factory.AddResponse(
+  // Configure the test SharedURLLoaderFactory so that the captive portal
+  // detector doesn't make an actual network request.
+  test_url_loader_factory_.AddResponse(
       captive_portal::CaptivePortalDetector::GetDefaultUrl(), "",
       net::HTTP_NO_CONTENT);
-  profile_->SetSharedURLLoaderFactory(
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_loader_factory));
 
   CaptivePortalTabHelper::CreateForWebState(&web_state);
   web_state.SetBrowserState(profile());

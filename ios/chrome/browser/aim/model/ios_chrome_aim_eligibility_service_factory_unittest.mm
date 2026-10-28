@@ -43,16 +43,9 @@ class IOSChromeAimEligibilityServiceFactoryTest : public PlatformTest {
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         IOSChromeAimEligibilityServiceFactory::GetInstance(),
-        base::BindOnce(
-            [](scoped_refptr<network::SharedURLLoaderFactory>
-                   shared_url_loader_factory,
-               ProfileIOS* profile) {
-              static_cast<TestProfileIOS*>(profile)->SetSharedURLLoaderFactory(
-                  std::move(shared_url_loader_factory));
-              return IOSChromeAimEligibilityServiceFactory::GetDefaultFactory()
-                  .Run(profile);
-            },
-            test_url_loader_factory_.GetSafeWeakWrapper()));
+        IOSChromeAimEligibilityServiceFactory::GetDefaultFactory());
+    builder.SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
     profile_ = std::move(builder).Build();
 
     TemplateURLService* template_url_service =
