@@ -5543,6 +5543,132 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_FALSE(observer);
 }
 
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       ReadGrantDestroyedOnHandleTypeChange) {
+  auto file_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPathInfo, HandleType::kFile, AccessTrigger::kOpen);
+  EXPECT_EQ(file_grant->GetStatus(), PermissionStatus::GRANTED);
+
+  auto file_observer =
+      SelfDestructingPermissionGrantObserver::Create(std::move(file_grant));
+
+  // Requesting a read grant for the same path with a different handle type
+  // revokes the existing grant, causing `file_observer` to destroy itself and
+  // drop the last reference to `file_grant`.
+  auto dir_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPathInfo, HandleType::kDirectory,
+      AccessTrigger::kDragAndDrop);
+  EXPECT_FALSE(file_observer);
+  EXPECT_EQ(dir_grant->GetStatus(), PermissionStatus::GRANTED);
+
+  // Verify the newly created directory grant is tracked in the active grants
+  // map by revoking active grants for the path.
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin,
+                                                     kTestPathInfo.path);
+  EXPECT_EQ(dir_grant->GetStatus(), PermissionStatus::ASK);
+
+  // Also verify the reverse transition (directory to file).
+  dir_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPathInfo, HandleType::kDirectory,
+      AccessTrigger::kDragAndDrop);
+  EXPECT_EQ(dir_grant->GetStatus(), PermissionStatus::GRANTED);
+
+  auto dir_observer =
+      SelfDestructingPermissionGrantObserver::Create(std::move(dir_grant));
+  auto new_file_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPathInfo, HandleType::kFile, AccessTrigger::kOpen);
+  EXPECT_FALSE(dir_observer);
+  EXPECT_EQ(new_file_grant->GetStatus(), PermissionStatus::GRANTED);
+
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin,
+                                                     kTestPathInfo.path);
+  EXPECT_EQ(new_file_grant->GetStatus(), PermissionStatus::ASK);
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       WriteGrantDestroyedOnHandleTypeChange) {
+  auto file_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPathInfo, HandleType::kFile, AccessTrigger::kSave);
+  EXPECT_EQ(file_grant->GetStatus(), PermissionStatus::GRANTED);
+
+  auto file_observer =
+      SelfDestructingPermissionGrantObserver::Create(std::move(file_grant));
+
+  // Requesting a write grant for the same path with a different handle type
+  // revokes the existing grant, causing `file_observer` to destroy itself and
+  // drop the last reference to `file_grant`.
+  auto dir_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPathInfo, HandleType::kDirectory, AccessTrigger::kSave);
+  EXPECT_FALSE(file_observer);
+  EXPECT_EQ(dir_grant->GetStatus(), PermissionStatus::GRANTED);
+
+  // Verify the newly created directory grant is tracked in the active grants
+  // map by revoking active grants for the path.
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin,
+                                                     kTestPathInfo.path);
+  EXPECT_EQ(dir_grant->GetStatus(), PermissionStatus::ASK);
+
+  // Also verify the reverse transition (directory to file).
+  dir_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPathInfo, HandleType::kDirectory, AccessTrigger::kSave);
+  EXPECT_EQ(dir_grant->GetStatus(), PermissionStatus::GRANTED);
+
+  auto dir_observer =
+      SelfDestructingPermissionGrantObserver::Create(std::move(dir_grant));
+  auto new_file_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPathInfo, HandleType::kFile, AccessTrigger::kSave);
+  EXPECT_FALSE(dir_observer);
+  EXPECT_EQ(new_file_grant->GetStatus(), PermissionStatus::GRANTED);
+
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin,
+                                                     kTestPathInfo.path);
+  EXPECT_EQ(new_file_grant->GetStatus(), PermissionStatus::ASK);
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       ReadGrantDestroyedOnNotifyEntryRemoved) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kFileSystemAccessRevokeReadOnRemove);
+
+  const auto child_path_info =
+      PathInfo(kTestPathInfo.path.AppendASCII("child.txt"));
+  auto grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, child_path_info, HandleType::kFile, AccessTrigger::kOpen);
+  EXPECT_EQ(grant->GetStatus(), PermissionStatus::GRANTED);
+
+  auto observer =
+      SelfDestructingPermissionGrantObserver::Create(std::move(grant));
+
+  permission_context()->NotifyEntryRemoved(kTestOrigin, kTestPathInfo);
+  EXPECT_FALSE(observer);
+  EXPECT_TRUE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, kTestPathInfo.path));
+  EXPECT_TRUE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, child_path_info.path));
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       WriteGrantDestroyedOnNotifyEntryMoved) {
+  auto grant1 = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPathInfo, HandleType::kFile, AccessTrigger::kSave);
+  EXPECT_EQ(grant1->GetStatus(), PermissionStatus::GRANTED);
+
+  auto grant2 = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPathInfo2, HandleType::kFile, AccessTrigger::kSave);
+  EXPECT_EQ(grant2->GetStatus(), PermissionStatus::GRANTED);
+
+  auto observer1 =
+      SelfDestructingPermissionGrantObserver::Create(std::move(grant1));
+  auto observer2 =
+      SelfDestructingPermissionGrantObserver::Create(std::move(grant2));
+
+  permission_context()->NotifyEntryMoved(kTestOrigin, kTestPathInfo,
+                                         kTestPathInfo2);
+  EXPECT_FALSE(observer1);
+  EXPECT_FALSE(observer2);
+}
+
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
