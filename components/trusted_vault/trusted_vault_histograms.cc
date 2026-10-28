@@ -4,6 +4,7 @@
 
 #include "components/trusted_vault/trusted_vault_histograms.h"
 
+#include <optional>
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
@@ -120,17 +121,20 @@ void RecordTrustedVaultRecoveryFactorRegistrationOutcome(
       registration_outcome);
 }
 
-void RecordTrustedVaultURLFetchResponse(SecurityDomainId security_domain_id,
-                                        TrustedVaultURLFetchReasonForUMA reason,
-                                        int http_response_code,
-                                        int net_error) {
+void RecordTrustedVaultURLFetchResponse(
+    std::optional<SecurityDomainId> security_domain_id,
+    TrustedVaultURLFetchReasonForUMA reason,
+    int http_response_code,
+    int net_error) {
   CHECK_LE(net_error, 0);
   CHECK_GE(http_response_code, 0);
 
   const int value = http_response_code == 0 ? net_error : http_response_code;
   const std::string reason_suffix = GetTrustedVaultURLFetchReasonSuffix(reason);
   const std::string security_domain_name =
-      GetSecurityDomainNameForUma(security_domain_id);
+      security_domain_id.has_value()
+          ? GetSecurityDomainNameForUma(*security_domain_id)
+          : "NoSecurityDomain";
 
   base::UmaHistogramSparse("TrustedVault.SecurityDomainServiceURLFetchResponse",
                            value);

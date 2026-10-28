@@ -21,8 +21,6 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/trusted_vault/test/fake_trusted_vault_access_token_fetcher.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher.h"
-#include "components/trusted_vault/trusted_vault_histograms.h"
-#include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -84,8 +82,8 @@ class TrustedVaultRequestTest : public testing::Test {
         MakeAccessTokenInfo(access_token));
 
     auto request = std::make_unique<TrustedVaultRequest>(
-        GetSecurityDomainId(), account_id, http_method, GURL(kRequestUrl),
-        request_body, max_retry_duration, shared_url_loader_factory_,
+        account_id, http_method, GURL(kRequestUrl), request_body,
+        max_retry_duration, shared_url_loader_factory_,
         std::make_unique<FakeTrustedVaultAccessTokenFetcher>(
             MakeAccessTokenInfo(access_token)),
         /*record_fetch_status_callback=*/base::DoNothing());
@@ -111,8 +109,7 @@ class TrustedVaultRequestTest : public testing::Test {
         CoreAccountId::FromGaiaId(GaiaId("user_id"));
 
     auto request = std::make_unique<TrustedVaultRequest>(
-        GetSecurityDomainId(), account_id,
-        TrustedVaultRequest::HttpMethod::kGet, GURL(kRequestUrl),
+        account_id, TrustedVaultRequest::HttpMethod::kGet, GURL(kRequestUrl),
         /*serialized_request_proto=*/std::nullopt,
         /*max_retry_duration=*/base::Seconds(0), shared_url_loader_factory_,
         std::make_unique<FakeTrustedVaultAccessTokenFetcher>(
@@ -136,10 +133,6 @@ class TrustedVaultRequestTest : public testing::Test {
         GURL(kRequestUrlWithAlternateOutputProto),
         network::URLLoaderCompletionStatus(error), std::move(response_head),
         response_body);
-  }
-
-  SecurityDomainId GetSecurityDomainId() {
-    return SecurityDomainId::kChromeSync;
   }
 
   network::TestURLLoaderFactory::PendingRequest* GetPendingRequest() {
@@ -169,8 +162,7 @@ TEST_F(TrustedVaultRequestTest, ShouldSendGetRequestAndHandleSuccess) {
       /*request_body=*/std::nullopt, completion_callback.Get());
 
   histogram_tester.ExpectUniqueSample(
-      /*name=*/"TrustedVault.AccessTokenFetchSuccess." +
-          GetSecurityDomainNameForUma(GetSecurityDomainId()),
+      /*name=*/"TrustedVault.AccessTokenFetchSuccess",
       /*sample=*/true,
       /*expected_bucket_count=*/1);
 
@@ -430,8 +422,7 @@ TEST_F(TrustedVaultRequestTest, ShouldHandleAccessTokenFetchingFailures) {
         StartNewRequestWithAccessTokenError(fetching_error,
                                             completion_callback.Get());
     histogram_tester.ExpectUniqueSample(
-        /*name=*/"TrustedVault.AccessTokenFetchSuccess." +
-            GetSecurityDomainNameForUma(GetSecurityDomainId()),
+        /*name=*/"TrustedVault.AccessTokenFetchSuccess",
         /*sample=*/false,
         /*expected_bucket_count=*/1);
   }

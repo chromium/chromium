@@ -81,7 +81,6 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
 
   std::unique_ptr<Request> DownloadGaiaPasswordPublicKey(
       const CoreAccountInfo& account_info,
-      SecurityDomainId security_domain,
       DownloadGaiaPasswordPublicKeyCallback callback) override;
 
   std::unique_ptr<Request> RotateSharedKey(

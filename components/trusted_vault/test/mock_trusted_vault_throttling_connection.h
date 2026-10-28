@@ -55,7 +55,6 @@ class MockTrustedVaultThrottlingConnection
   MOCK_METHOD(std::unique_ptr<Request>,
               DownloadGaiaPasswordPublicKey,
               (const CoreAccountInfo& account_info,
-               SecurityDomainId security_domain,
                DownloadGaiaPasswordPublicKeyCallback callback),
               (override));
   MOCK_METHOD(std::unique_ptr<Request>,

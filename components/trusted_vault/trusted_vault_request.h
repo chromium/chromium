@@ -15,8 +15,6 @@
 #include "base/time/time.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
-#include "components/trusted_vault/trusted_vault_histograms.h"
-#include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "net/base/backoff_entry.h"
 #include "url/gurl.h"
@@ -73,7 +71,6 @@ class TrustedVaultRequest : public TrustedVaultConnection::Request {
   // |record_fetch_status_callback| may be used to record fetch outcomes in a
   // histogram metric.
   TrustedVaultRequest(
-      const SecurityDomainId& security_domain_id,
       const CoreAccountId& account_id,
       HttpMethod http_method,
       const GURL& request_url,
@@ -110,7 +107,6 @@ class TrustedVaultRequest : public TrustedVaultConnection::Request {
       HttpStatus status,
       const std::string& response_body);
 
-  const SecurityDomainId security_domain_id_;
   const CoreAccountId account_id_;
   const HttpMethod http_method_;
   const GURL request_url_;

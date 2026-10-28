@@ -383,7 +383,6 @@ class TrustedVaultConnection {
   // |callback| call or until request needs to be cancelled.
   [[nodiscard]] virtual std::unique_ptr<Request> DownloadGaiaPasswordPublicKey(
       const CoreAccountInfo& account_info,
-      SecurityDomainId security_domain,
       DownloadGaiaPasswordPublicKeyCallback callback) = 0;
 
   // Asynchronously attempts to rotate the shared key stored in a security

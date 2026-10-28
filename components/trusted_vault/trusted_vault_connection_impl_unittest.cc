@@ -1510,8 +1510,8 @@ TEST_P(TrustedVaultConnectionImplTest, DownloadGaiaPasswordPublicKeySuccess) {
       future;
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
-      connection()->DownloadGaiaPasswordPublicKey(
-          CoreAccountInfo(), security_domain(), future.GetCallback());
+      connection()->DownloadGaiaPasswordPublicKey(CoreAccountInfo(),
+                                                  future.GetCallback());
   ASSERT_THAT(request, NotNull());
 
   EXPECT_TRUE(RespondToDownloadGaiaPasswordPublicKeyRequest(
@@ -1521,6 +1521,31 @@ TEST_P(TrustedVaultConnectionImplTest, DownloadGaiaPasswordPublicKeySuccess) {
             TrustedVaultDownloadPasswordPublicKeyStatus::kSuccess);
   EXPECT_THAT(future.Get<1>(), ElementsAreArray(expected_public_key.begin(),
                                                 expected_public_key.end()));
+  histogram_tester().ExpectUniqueSample(
+      /*name=*/"TrustedVault.AccessTokenFetchSuccess",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester().ExpectUniqueSample(
+      /*name=*/"TrustedVault.SecurityDomainServiceURLFetchResponse",
+      /*sample=*/net::HTTP_OK,
+      /*expected_bucket_count=*/1);
+  histogram_tester().ExpectUniqueSample(
+      /*name=*/
+      "TrustedVault.SecurityDomainServiceURLFetchResponse.NoSecurityDomain",
+      /*sample=*/net::HTTP_OK,
+      /*expected_bucket_count=*/1);
+  histogram_tester().ExpectUniqueSample(
+      /*name=*/
+      "TrustedVault.SecurityDomainServiceURLFetchResponse."
+      "DownloadGaiaPasswordPublicKey",
+      /*sample=*/net::HTTP_OK,
+      /*expected_bucket_count=*/1);
+  histogram_tester().ExpectUniqueSample(
+      /*name=*/
+      "TrustedVault.SecurityDomainServiceURLFetchResponse."
+      "DownloadGaiaPasswordPublicKey.NoSecurityDomain",
+      /*sample=*/net::HTTP_OK,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_P(TrustedVaultConnectionImplTest,
@@ -1530,8 +1555,8 @@ TEST_P(TrustedVaultConnectionImplTest,
       future;
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
-      connection()->DownloadGaiaPasswordPublicKey(
-          CoreAccountInfo(), security_domain(), future.GetCallback());
+      connection()->DownloadGaiaPasswordPublicKey(CoreAccountInfo(),
+                                                  future.GetCallback());
   ASSERT_THAT(request, NotNull());
 
   EXPECT_TRUE(RespondToDownloadGaiaPasswordPublicKeyRequestWithNetworkError());
@@ -1548,8 +1573,8 @@ TEST_P(TrustedVaultConnectionImplTest,
       future;
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
-      connection()->DownloadGaiaPasswordPublicKey(
-          CoreAccountInfo(), security_domain(), future.GetCallback());
+      connection()->DownloadGaiaPasswordPublicKey(CoreAccountInfo(),
+                                                  future.GetCallback());
   ASSERT_THAT(request, NotNull());
 
   EXPECT_TRUE(RespondToDownloadGaiaPasswordPublicKeyRequest(
@@ -1570,8 +1595,8 @@ TEST_P(TrustedVaultConnectionImplTest,
       future;
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
-      connection()->DownloadGaiaPasswordPublicKey(
-          CoreAccountInfo(), security_domain(), future.GetCallback());
+      connection()->DownloadGaiaPasswordPublicKey(CoreAccountInfo(),
+                                                  future.GetCallback());
   ASSERT_THAT(request, NotNull());
 
   EXPECT_TRUE(RespondToDownloadGaiaPasswordPublicKeyRequest(
@@ -1593,13 +1618,17 @@ TEST_P(TrustedVaultConnectionImplTest,
       future;
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
-      connection->DownloadGaiaPasswordPublicKey(
-          CoreAccountInfo(), security_domain(), future.GetCallback());
+      connection->DownloadGaiaPasswordPublicKey(CoreAccountInfo(),
+                                                future.GetCallback());
   ASSERT_THAT(request, NotNull());
 
   EXPECT_EQ(future.Get<0>(), TrustedVaultDownloadPasswordPublicKeyStatus::
                                  kPersistentAccessTokenFetchError);
   EXPECT_THAT(future.Get<1>(), IsEmpty());
+  histogram_tester().ExpectUniqueSample(
+      /*name=*/"TrustedVault.AccessTokenFetchSuccess",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
 
   // No requests should be sent to the network.
   EXPECT_THAT(GetPendingHTTPRequest(), IsNull());

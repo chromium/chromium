@@ -125,9 +125,8 @@ TrustedVaultThrottlingConnectionImpl::DownloadIsRecoverabilityDegraded(
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultThrottlingConnectionImpl::DownloadGaiaPasswordPublicKey(
     const CoreAccountInfo& account_info,
-    SecurityDomainId security_domain,
     DownloadGaiaPasswordPublicKeyCallback callback) {
-  return delegate_->DownloadGaiaPasswordPublicKey(account_info, security_domain,
+  return delegate_->DownloadGaiaPasswordPublicKey(account_info,
                                                   std::move(callback));
 }
 

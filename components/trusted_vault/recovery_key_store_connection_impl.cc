@@ -140,8 +140,7 @@ class ListRecoveryKeyStoresRequest : public TrustedVaultConnection::Request {
             RecoveryKeyStoreURLFetchReasonForUMA::kListRecoveryKeyStores);
     GURL request_url(kListVaultsUrl);
     request_ = std::make_unique<TrustedVaultRequest>(
-        SecurityDomainId::kPasskeys, account_id_,
-        TrustedVaultRequest::HttpMethod::kGet,
+        account_id_, TrustedVaultRequest::HttpMethod::kGet,
         next_page_token ? net::AppendQueryParameter(request_url, "page_token",
                                                     *next_page_token)
                         : request_url,
@@ -334,9 +333,8 @@ RecoveryKeyStoreConnectionImpl::UpdateRecoveryKeyStore(
           &RecordRecoveryKeyStoreURLFetchResponse,
           RecoveryKeyStoreURLFetchReasonForUMA::kUpdateRecoveryKeyStore);
   auto request = std::make_unique<TrustedVaultRequest>(
-      SecurityDomainId::kPasskeys, account_info.account_id,
-      TrustedVaultRequest::HttpMethod::kPatch, GURL(kUpdateVaultUrl),
-      vault.SerializeAsString(),
+      account_info.account_id, TrustedVaultRequest::HttpMethod::kPatch,
+      GURL(kUpdateVaultUrl), vault.SerializeAsString(),
       /*max_retry_duration=*/base::Seconds(0), URLLoaderFactory(),
       access_token_fetcher_->Clone(), std::move(record_fetch_status_to_uma));
   request->FetchAccessTokenAndSendRequest(

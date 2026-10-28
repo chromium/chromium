@@ -5,6 +5,7 @@
 #include "components/trusted_vault/trusted_vault_connection_impl.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <utility>
 #include <variant>
@@ -37,7 +38,7 @@ namespace trusted_vault {
 namespace {
 
 TrustedVaultRequest::RecordFetchStatusCallback MakeFetchStatusCallback(
-    SecurityDomainId security_domain_id,
+    std::optional<SecurityDomainId> security_domain_id,
     TrustedVaultURLFetchReasonForUMA reason) {
   return base::BindRepeating(&RecordTrustedVaultURLFetchResponse,
                              security_domain_id, reason);
@@ -377,7 +378,7 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
  private:
   void StartOrContinueRequest(const std::string* next_page_token = nullptr) {
     request_ = std::make_unique<TrustedVaultRequest>(
-        security_domain_, account_id_, TrustedVaultRequest::HttpMethod::kGet,
+        account_id_, TrustedVaultRequest::HttpMethod::kGet,
         next_page_token ? net::AppendQueryParameter(base_url_, "page_token",
                                                     *next_page_token)
                         : base_url_,
@@ -741,8 +742,7 @@ TrustedVaultConnectionImpl::DownloadNewKeys(
   // TODO(crbug.com/40255601): consider retries for keys downloading after
   // initial failure returned to the upper layers.
   auto request = std::make_unique<TrustedVaultRequest>(
-      security_domain, account_info.account_id,
-      TrustedVaultRequest::HttpMethod::kGet,
+      account_info.account_id, TrustedVaultRequest::HttpMethod::kGet,
       GetGetSecurityDomainMemberURL(
           trusted_vault_service_url_,
           device_key_pair->public_key().ExportToBytes()),
@@ -769,8 +769,7 @@ TrustedVaultConnectionImpl::DownloadIsRecoverabilityDegraded(
     SecurityDomainId security_domain,
     IsRecoverabilityDegradedCallback callback) {
   auto request = std::make_unique<TrustedVaultRequest>(
-      security_domain, account_info.account_id,
-      TrustedVaultRequest::HttpMethod::kGet,
+      account_info.account_id, TrustedVaultRequest::HttpMethod::kGet,
       GetGetSecurityDomainURL(trusted_vault_service_url_, security_domain),
       /*serialized_request_proto=*/std::nullopt,
       /*max_retry_duration=*/base::Seconds(0), GetOrCreateURLLoaderFactory(),
@@ -788,17 +787,15 @@ TrustedVaultConnectionImpl::DownloadIsRecoverabilityDegraded(
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultConnectionImpl::DownloadGaiaPasswordPublicKey(
     const CoreAccountInfo& account_info,
-    SecurityDomainId security_domain,
     DownloadGaiaPasswordPublicKeyCallback callback) {
   GURL url = GetDownloadGaiaPasswordPublicKeyURL(trusted_vault_service_url_);
   auto request = std::make_unique<TrustedVaultRequest>(
-      security_domain, account_info.account_id,
-      TrustedVaultRequest::HttpMethod::kGet, url,
+      account_info.account_id, TrustedVaultRequest::HttpMethod::kGet, url,
       /*serialized_request_proto=*/std::nullopt,
       /*max_retry_duration=*/base::Seconds(0), GetOrCreateURLLoaderFactory(),
       access_token_fetcher_->Clone(),
       MakeFetchStatusCallback(
-          security_domain,
+          /*security_domain_id=*/std::nullopt,
           TrustedVaultURLFetchReasonForUMA::kDownloadGaiaPasswordPublicKey));
 
   request->FetchAccessTokenAndSendRequest(base::BindOnce(
@@ -814,8 +811,7 @@ TrustedVaultConnectionImpl::RotateSharedKey(
     const trusted_vault_pb::RotateSharedKeyRequest& request,
     RotateSharedKeyCallback callback) {
   auto http_request = std::make_unique<TrustedVaultRequest>(
-      security_domain, account_info.account_id,
-      TrustedVaultRequest::HttpMethod::kPost,
+      account_info.account_id, TrustedVaultRequest::HttpMethod::kPost,
       GetRotateSharedKeyURL(trusted_vault_service_url_, security_domain),
       /*serialized_request_proto=*/request.SerializeAsString(),
       /*max_retry_duration=*/kMaxKeyRotationRetryDuration,
@@ -868,8 +864,7 @@ TrustedVaultConnectionImpl::SendJoinSecurityDomainsRequest(
         authentication_factor_type_and_registration_params,
     JoinSecurityDomainsCallback callback) {
   auto request = std::make_unique<TrustedVaultRequest>(
-      security_domain, account_info.account_id,
-      TrustedVaultRequest::HttpMethod::kPost,
+      account_info.account_id, TrustedVaultRequest::HttpMethod::kPost,
       GetJoinSecurityDomainURL(trusted_vault_service_url_, security_domain),
       /*serialized_request_proto=*/
       CreateJoinSecurityDomainsRequest(

@@ -261,8 +261,8 @@ TEST_F(TrustedVaultThrottlingConnectionImplTest,
     return std::make_unique<TrustedVaultConnection::Request>();
   });
   std::unique_ptr<TrustedVaultConnection::Request> request =
-      throttling_connection()->DownloadGaiaPasswordPublicKey(
-          account_info(), SecurityDomainId::kChromeSync, base::DoNothing());
+      throttling_connection()->DownloadGaiaPasswordPublicKey(account_info(),
+                                                             base::DoNothing());
   EXPECT_THAT(request, NotNull());
 }
 
