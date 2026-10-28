@@ -35,6 +35,17 @@ std::vector<RulingLine> ExtractRulingLines(
     base::span<const chrome_pdf::AccessibilityLineSegment> line_segments,
     base::span<const gfx::RectF> filled_rects);
 
+// Splits each horizontal, left-to-right text run in `text_runs` where a
+// vertical line in `ruling_lines`, such as a table column divider, runs through
+// the whitespace between two words. `ruling_lines` must be ordered as returned
+// by `ExtractRulingLines()`, and `chars` holds the characters of `text_runs`.
+// Returns the split text runs, or an empty vector if no run was split.
+std::vector<chrome_pdf::AccessibilityTextRunInfo>
+SplitTextRunsAtVerticalDividers(
+    base::span<const RulingLine> ruling_lines,
+    base::span<const chrome_pdf::AccessibilityCharInfo> chars,
+    base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs);
+
 }  // namespace pdf
 
 #endif  // COMPONENTS_PDF_RENDERER_PDF_ACCESSIBILITY_TABLE_DETECTOR_H_

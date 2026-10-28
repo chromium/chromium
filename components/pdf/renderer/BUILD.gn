@@ -58,6 +58,7 @@ static_library("renderer") {
     "//third_party/icu",
     "//ui/display",
     "//ui/gfx/geometry",
+    "//ui/gfx/range",
     "//ui/strings:auto_image_annotation_strings",
     "//url",
     "//v8",
@@ -95,6 +96,7 @@ source_set("unit_tests") {
     "//pdf/mojom",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx:test_support",
     "//ui/gfx/geometry",
 
     # TODO(crbug.com/40191420): The V8 dependency should have been propagated

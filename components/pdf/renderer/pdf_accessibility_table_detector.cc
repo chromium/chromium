@@ -8,10 +8,15 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/numerics/safe_conversions.h"
+#include "components/pdf/renderer/pdf_accessibility_text_utils.h"
 #include "pdf/accessibility_structs.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/range/range.h"
+#include "ui/gfx/range/range_f.h"
 
 namespace pdf {
 
@@ -32,6 +37,10 @@ constexpr float kThinRuleMaxThicknessPx = 4.0f;
 
 // Maximum distance between segments on the same line to merge them into one.
 constexpr float kCollinearMergeTolerancePx = 2.0f;
+
+// A vertical ruling line separates two words if it is in the gap between them,
+// or within this many pixels to the left or right of the gap.
+constexpr float kRulingLineGapTolerancePx = 2.0f;
 
 // An axis-aligned line segment. `position` is the fixed perpendicular
 // coordinate (y for horizontal, x for vertical), and `start` to `end` is the
@@ -116,6 +125,149 @@ std::vector<AxisAlignedSegment> MergeAxisAlignedSegments(
   return merged_segments;
 }
 
+// Returns the left edge of each character in the horizontal, left-to-right
+// `run`, followed by the right edge of its last character, so character `i`
+// spans from edge `i` to edge `i + 1`.
+std::vector<float> GetCharEdges(
+    const chrome_pdf::AccessibilityTextRunInfo& run,
+    base::span<const chrome_pdf::AccessibilityCharInfo> run_chars) {
+  std::vector<float> edges;
+  edges.reserve(run_chars.size() + 1);
+  float edge = run.bounds.x();
+  edges.push_back(edge);
+  for (const chrome_pdf::AccessibilityCharInfo& char_info : run_chars) {
+    edge += static_cast<float>(char_info.char_width);
+    edges.push_back(edge);
+  }
+  return edges;
+}
+
+// Returns the range of indices of the lines in `vertical_lines`, which must be
+// sorted by x, whose x is in `x_range`.
+gfx::Range GetVerticalLineIndicesInXRange(
+    base::span<const RulingLine> vertical_lines,
+    const gfx::RangeF& x_range) {
+  auto get_x = [](const RulingLine& line) { return line.start.x(); };
+  auto begin =
+      std::ranges::lower_bound(vertical_lines, x_range.start(), {}, get_x);
+  auto end = std::ranges::upper_bound(begin, vertical_lines.end(),
+                                      x_range.end(), {}, get_x);
+  return gfx::Range(static_cast<size_t>(begin - vertical_lines.begin()),
+                    static_cast<size_t>(end - vertical_lines.begin()));
+}
+
+// Returns whether the vertical `line` overlaps the vertical range of `bounds`.
+bool OverlapsVerticalRange(const RulingLine& line, const gfx::RectF& bounds) {
+  CHECK(!line.is_horizontal);
+  return std::min(line.end.y(), bounds.bottom()) >
+         std::max(line.start.y(), bounds.y());
+}
+
+// Returns the vertical lines in `ruling_lines`, such as table column dividers,
+// sorted by x.
+base::span<const RulingLine> GetVerticalDividers(
+    base::span<const RulingLine> ruling_lines) {
+  // `ruling_lines` must hold horizontal lines first, then vertical lines sorted
+  // by x, for the binary searches in `GetVerticalLineIndicesInXRange()`.
+  CHECK(std::ranges::is_partitioned(ruling_lines, &RulingLine::is_horizontal));
+  auto vertical_begin =
+      std::ranges::partition_point(ruling_lines, &RulingLine::is_horizontal);
+  base::span<const RulingLine> vertical_lines = ruling_lines.subspan(
+      static_cast<size_t>(vertical_begin - ruling_lines.begin()));
+  CHECK(std::ranges::is_sorted(vertical_lines, {}, [](const RulingLine& line) {
+    return line.start.x();
+  }));
+  return vertical_lines;
+}
+
+// Returns whether a line in `vertical_dividers`, sorted by x, lies in the
+// horizontal `gap` between two words of `run` and overlaps the run vertically.
+bool IsSeparatedByVerticalDivider(
+    base::span<const RulingLine> vertical_dividers,
+    const chrome_pdf::AccessibilityTextRunInfo& run,
+    const gfx::RangeF& gap) {
+  const gfx::Range indices = GetVerticalLineIndicesInXRange(
+      vertical_dividers, gfx::RangeF(gap.start() - kRulingLineGapTolerancePx,
+                                     gap.end() + kRulingLineGapTolerancePx));
+  return std::ranges::any_of(
+      vertical_dividers.subspan(indices.start(), indices.length()),
+      [&](const RulingLine& line) {
+        return OverlapsVerticalRange(line, run.bounds);
+      });
+}
+
+// Returns the part of `run` covering the character offsets in `chars`, spanning
+// `x_range` horizontally.
+chrome_pdf::AccessibilityTextRunInfo MakeRunPart(
+    const chrome_pdf::AccessibilityTextRunInfo& run,
+    const gfx::Range& chars,
+    const gfx::RangeF& x_range) {
+  chrome_pdf::AccessibilityTextRunInfo part = run;
+  part.start_index += base::checked_cast<uint32_t>(chars.start());
+  part.len = base::checked_cast<uint32_t>(chars.length());
+  part.bounds = gfx::RectF(x_range.start(), run.bounds.y(), x_range.length(),
+                           run.bounds.height());
+  return part;
+}
+
+// Splits `run` at every space between two words that a line in
+// `vertical_dividers` runs through, and appends all the parts to `split_runs`
+// in order. Each space stays with the part on its left. Appends `run` unchanged
+// if there is no split.
+void AppendRunParts(
+    const chrome_pdf::AccessibilityTextRunInfo& run,
+    base::span<const chrome_pdf::AccessibilityCharInfo> run_chars,
+    base::span<const RulingLine> vertical_dividers,
+    std::vector<chrome_pdf::AccessibilityTextRunInfo>& split_runs) {
+  if (!IsLeftToRightRun(run)) {
+    split_runs.push_back(run);
+    return;
+  }
+
+  // First character of the current part, as an offset into `run`. Each split
+  // moves it to the word after the split.
+  uint32_t part_start = 0;
+
+  // Scan for each span of consecutive whitespace. If a divider separates the
+  // words on either side, append the part ending after the whitespace, and
+  // start the next part at the word after it (on the right).
+  uint32_t i = 0;
+  const std::vector<float> edges = GetCharEdges(run, run_chars);
+  while (i < run.len) {
+    if (!IsWhitespace(run_chars[i])) {
+      ++i;
+      continue;
+    }
+    const uint32_t whitespace_start = i;
+    while (i < run.len && IsWhitespace(run_chars[i])) {
+      ++i;
+    }
+    const uint32_t whitespace_end = i;
+    // Only split between two words.
+    if (whitespace_start == 0 || whitespace_end == run.len ||
+        !IsSeparatedByVerticalDivider(
+            vertical_dividers, run,
+            gfx::RangeF(edges[whitespace_start], edges[whitespace_end]))) {
+      continue;
+    }
+    split_runs.push_back(
+        MakeRunPart(run, gfx::Range(part_start, whitespace_end),
+                    gfx::RangeF(edges[part_start], edges[whitespace_start])));
+    part_start = whitespace_end;
+  }
+
+  // No whitespace was split by a divider, so keep the run unchanged.
+  if (part_start == 0) {
+    split_runs.push_back(run);
+    return;
+  }
+
+  // Add the final (right-most) part if the run was split.
+  split_runs.push_back(
+      MakeRunPart(run, gfx::Range(part_start, run.len),
+                  gfx::RangeF(edges[part_start], run.bounds.right())));
+}
+
 }  // namespace
 
 std::vector<RulingLine> ExtractRulingLines(
@@ -152,6 +304,32 @@ std::vector<RulingLine> ExtractRulingLines(
         {{v.position, v.start}, {v.position, v.end}, /*is_horizontal=*/false});
   }
   return lines;
+}
+
+std::vector<chrome_pdf::AccessibilityTextRunInfo>
+SplitTextRunsAtVerticalDividers(
+    base::span<const RulingLine> ruling_lines,
+    base::span<const chrome_pdf::AccessibilityCharInfo> chars,
+    base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs) {
+  base::span<const RulingLine> vertical_dividers =
+      GetVerticalDividers(ruling_lines);
+  if (vertical_dividers.empty()) {
+    return {};
+  }
+
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> split_runs;
+  for (const chrome_pdf::AccessibilityTextRunInfo& run : text_runs) {
+    auto [run_chars, remaining_chars] = chars.split_at(run.len);
+    AppendRunParts(run, run_chars, vertical_dividers, split_runs);
+    chars = remaining_chars;
+  }
+  // `split_runs` contains at least all of the `text_runs`. If their sizes are
+  // equal then none of the runs were actually split.
+  if (split_runs.size() == text_runs.size()) {
+    return {};
+  }
+  CHECK_GT(split_runs.size(), text_runs.size());
+  return split_runs;
 }
 
 }  // namespace pdf

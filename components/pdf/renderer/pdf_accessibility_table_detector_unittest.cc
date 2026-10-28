@@ -5,6 +5,8 @@
 #include "components/pdf/renderer/pdf_accessibility_table_detector.h"
 
 #include <array>
+#include <string_view>
+#include <utility>
 #include <vector>
 
 #include "pdf/accessibility_structs.h"
@@ -35,6 +37,40 @@ RulingLine CreateHLine(float y, float x_start, float x_end) {
 RulingLine CreateVLine(float x, float y_start, float y_end) {
   return {gfx::PointF(x, y_start), gfx::PointF(x, y_end),
           /*is_horizontal=*/false};
+}
+
+// Returns characters for the ASCII `text`, each `char_width` px wide.
+std::vector<chrome_pdf::AccessibilityCharInfo> CreateChars(
+    std::string_view text,
+    double char_width) {
+  std::vector<chrome_pdf::AccessibilityCharInfo> chars;
+  chars.reserve(text.size());
+  for (char c : text) {
+    chars.push_back({static_cast<uint32_t>(c), char_width});
+  }
+  return chars;
+}
+
+// Returns a left-to-right text run.
+chrome_pdf::AccessibilityTextRunInfo CreateTextRun(uint32_t start_index,
+                                                   uint32_t len,
+                                                   const gfx::RectF& bounds) {
+  chrome_pdf::AccessibilityTextRunInfo run;
+  run.start_index = start_index;
+  run.len = len;
+  run.bounds = bounds;
+  run.direction = chrome_pdf::AccessibilityTextDirection::kLeftToRight;
+  return run;
+}
+
+// Expects `run` to start at `start_index` with `len` characters and `bounds`.
+void ExpectTextRun(const chrome_pdf::AccessibilityTextRunInfo& run,
+                   uint32_t start_index,
+                   uint32_t len,
+                   const gfx::RectF& bounds) {
+  EXPECT_EQ(start_index, run.start_index);
+  EXPECT_EQ(len, run.len);
+  EXPECT_EQ(bounds, run.bounds);
 }
 
 }  // namespace
@@ -138,6 +174,73 @@ TEST(PdfAccessibilityTableDetectorTest, ExtractRulingLinesFromThinFilledRects) {
       ExtractRulingLines(segments, filled_rects),
       testing::ElementsAre(CreateHLine(20.5f, 10, 150),
                            CreateHLine(52, 10, 110), CreateVLine(201, 10, 60)));
+}
+
+// "Left Right" with 10 px characters from x = 100, so the space spans x = 140
+// to 150, followed by "Next" on another line.
+class PdfAccessibilityTableDetectorSplitTest : public testing::Test {
+ protected:
+  PdfAccessibilityTableDetectorSplitTest()
+      : chars_(CreateChars("Left RightNext", 10)),
+        text_runs_({CreateTextRun(0, 10, gfx::RectF(100, 100, 100, 12)),
+                    CreateTextRun(10, 4, gfx::RectF(100, 200, 40, 12))}) {}
+
+  bool Split(
+      const std::vector<chrome_pdf::AccessibilityLineSegment>& segments) {
+    std::vector<chrome_pdf::AccessibilityTextRunInfo> split_runs =
+        SplitTextRunsAtVerticalDividers(ExtractRulingLines(segments, {}),
+                                        chars_, text_runs_);
+    if (split_runs.empty()) {
+      return false;
+    }
+    text_runs_ = std::move(split_runs);
+    return true;
+  }
+
+  std::vector<chrome_pdf::AccessibilityCharInfo> chars_;
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs_;
+};
+
+TEST_F(PdfAccessibilityTableDetectorSplitTest, SplitsAtVerticalDivider) {
+  ASSERT_TRUE(Split({CreateSegment(145, 95, 145, 117)}));
+
+  // The trailing space stays with "Left ", but its bounds end at the space.
+  ASSERT_EQ(3u, text_runs_.size());
+  ExpectTextRun(text_runs_[0], 0, 5, gfx::RectF(100, 100, 40, 12));
+  ExpectTextRun(text_runs_[1], 5, 5, gfx::RectF(150, 100, 50, 12));
+  ExpectTextRun(text_runs_[2], 10, 4, gfx::RectF(100, 200, 40, 12));
+}
+
+TEST_F(PdfAccessibilityTableDetectorSplitTest, SplitsAtMultipleDividers) {
+  chars_ = CreateChars("A B C", 10);
+  text_runs_ = {CreateTextRun(0, 5, gfx::RectF(0, 0, 50, 12))};
+
+  ASSERT_TRUE(
+      Split({CreateSegment(15, 0, 15, 12), CreateSegment(35, 0, 35, 12)}));
+
+  ASSERT_EQ(3u, text_runs_.size());
+  ExpectTextRun(text_runs_[0], 0, 2, gfx::RectF(0, 0, 10, 12));
+  ExpectTextRun(text_runs_[1], 2, 2, gfx::RectF(20, 0, 10, 12));
+  ExpectTextRun(text_runs_[2], 4, 1, gfx::RectF(40, 0, 10, 12));
+}
+
+TEST_F(PdfAccessibilityTableDetectorSplitTest, NoSplitWithoutVerticalLines) {
+  EXPECT_FALSE(Split({CreateSegment(100, 112, 200, 112)}));
+  EXPECT_EQ(2u, text_runs_.size());
+}
+
+TEST_F(PdfAccessibilityTableDetectorSplitTest, NoSplitAtLineOutsideRun) {
+  // The line is in the gap's x range, but above the text.
+  EXPECT_FALSE(Split({CreateSegment(145, 50, 145, 90)}));
+  EXPECT_EQ(2u, text_runs_.size());
+}
+
+TEST_F(PdfAccessibilityTableDetectorSplitTest, NoSplitRightToLeft) {
+  text_runs_[0].direction =
+      chrome_pdf::AccessibilityTextDirection::kRightToLeft;
+
+  EXPECT_FALSE(Split({CreateSegment(145, 95, 145, 117)}));
+  EXPECT_EQ(2u, text_runs_.size());
 }
 
 }  // namespace pdf
