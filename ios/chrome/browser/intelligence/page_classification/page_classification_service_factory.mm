@@ -16,8 +16,8 @@
 namespace {
 
 std::unique_ptr<KeyedService> BuildPageClassificationService(
-    ProfileIOS* profile) {
-  CHECK(!profile->IsOffTheRecord());
+    ProfileIOS& profile) {
+  CHECK(!profile.IsOffTheRecord());
   return std::make_unique<OptimizationGuidePageClassificationService>(
       OptimizationGuideServiceFactory::GetForProfile(profile),
       commerce::ShoppingServiceFactory::GetForProfile(profile));
@@ -26,7 +26,7 @@ std::unique_ptr<KeyedService> BuildPageClassificationService(
 }  // namespace
 
 // static
-PageClassificationServiceFactory::TestingFactory
+PageClassificationServiceFactory::TestingFactoryByRef
 PageClassificationServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildPageClassificationService);
 }
@@ -40,6 +40,6 @@ PageClassificationServiceFactory::PageClassificationServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 PageClassificationServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildPageClassificationService(profile);
 }
