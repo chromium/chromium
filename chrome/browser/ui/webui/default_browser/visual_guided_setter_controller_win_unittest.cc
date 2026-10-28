@@ -12,12 +12,17 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/process/launch.h"
+#include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/multiprocess_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
+#include "base/win/message_window.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/default_browser/win/settings_window_finder_win.h"
 #include "chrome/test/base/testing_profile.h"
@@ -25,6 +30,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/multiprocess_func_list.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -32,6 +38,27 @@
 #include "ui/views/widget/widget_observer.h"
 
 namespace {
+
+base::Process OpenCurrentProcess() {
+  return base::Process::OpenWithAccess(
+      ::GetCurrentProcessId(), PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE);
+}
+
+// Stands in for a Settings process that has gone away.
+MULTIPROCESS_TEST_MAIN(VisualGuidedSetterExitedSettingsProcess) {
+  return 0;
+}
+
+// Leaves every message to ::DefWindowProc().
+bool IgnoreMessage(UINT, WPARAM, LPARAM, LRESULT*) {
+  return false;
+}
+
+// Whether a WM_CLOSE was posted to `hwnd`. Removes it, so it is never handled.
+bool TakePostedClose(HWND hwnd) {
+  MSG msg;
+  return ::PeekMessage(&msg, hwnd, WM_CLOSE, WM_CLOSE, PM_REMOVE) != 0;
+}
 
 class TestSettingsWindowFinderWin : public SettingsWindowFinderWin {
  public:
@@ -77,10 +104,11 @@ class TestSettingsWindowFinderWin : public SettingsWindowFinderWin {
     on_move_size_ = std::move(on_move_size);
   }
 
-  void TriggerFound(HWND hwnd) {
+  // Delivers `hwnd` as the Settings window, or the timeout when it is null.
+  void TriggerFound(HWND hwnd, base::Process process = OpenCurrentProcess()) {
     if (hwnd) {
       if (on_found_) {
-        std::move(on_found_).Run(hwnd);
+        std::move(on_found_).Run(hwnd, std::move(process));
       }
     } else {
       if (on_timeout_) {
@@ -334,6 +362,19 @@ class WindowStateTestControllerWin
   bool chrome_cloaked_ = false;
 };
 
+class SettingsProcessTestControllerWin
+    : public TestVisualGuidedSetterControllerWin {
+ public:
+  explicit SettingsProcessTestControllerWin(views::Widget* parent_widget)
+      : TestVisualGuidedSetterControllerWin(parent_widget) {}
+
+  using VisualGuidedSetterControllerWin::IsValidSettingsProcess;
+
+  void CloseSettingsWindow() override {
+    VisualGuidedSetterControllerWin::CloseSettingsWindow();
+  }
+};
+
 }  // namespace
 
 class VisualGuidedSetterControllerWinTest : public ChromeViewsTestBase {
@@ -380,9 +421,20 @@ class VisualGuidedSetterControllerWinTest : public ChromeViewsTestBase {
     bounds.Offset(-web_contents_->GetViewBounds().OffsetFromOrigin());
     return bounds;
   }
+
   std::unique_ptr<WindowStateTestControllerWin> MakeWindowStateController() {
     auto controller =
         std::make_unique<WindowStateTestControllerWin>(widget_.get());
+    controller->SetWebContents(web_contents_.get());
+    controller->SetAnchorRect(gfx::Rect(400, 300, 600, 400));
+    controller->SetAnchorRectInWebUi(gfx::Rect(0, 0, 600, 400));
+    return controller;
+  }
+
+  std::unique_ptr<SettingsProcessTestControllerWin>
+  MakeSettingsProcessController() {
+    auto controller =
+        std::make_unique<SettingsProcessTestControllerWin>(widget_.get());
     controller->SetWebContents(web_contents_.get());
     controller->SetAnchorRect(gfx::Rect(400, 300, 600, 400));
     controller->SetAnchorRectInWebUi(gfx::Rect(0, 0, 600, 400));
@@ -1218,6 +1270,62 @@ TEST_F(VisualGuidedSetterControllerWinTest, RealClosedPredicateUwpSemantics) {
   EXPECT_TRUE(controller->settings_window_closed());
 
   controller->Stop();
+}
+
+// The process the Settings window was found in vouches for that window, so
+// CloseSettingsWindow() closes it.
+TEST_F(VisualGuidedSetterControllerWinTest, RunningSettingsProcessIsValid) {
+  base::win::MessageWindow window;
+  ASSERT_TRUE(window.Create(base::BindRepeating(&IgnoreMessage)));
+  auto controller = MakeSettingsProcessController();
+  controller->Start();
+  controller->test_finder()->TriggerFound(window.hwnd(), OpenCurrentProcess());
+
+  EXPECT_TRUE(controller->IsValidSettingsProcess(window.hwnd()));
+  controller->CloseSettingsWindow();
+  EXPECT_TRUE(TakePostedClose(window.hwnd()));
+
+  controller->Stop();
+}
+
+// An exited process vouches for no window, so CloseSettingsWindow() leaves the
+// latched one alone.
+TEST_F(VisualGuidedSetterControllerWinTest, ExitedSettingsProcessIsInvalid) {
+  base::Process exited = base::SpawnMultiProcessTestChild(
+      "VisualGuidedSetterExitedSettingsProcess",
+      base::GetMultiProcessTestChildBaseCommandLine(), base::LaunchOptions());
+  ASSERT_TRUE(exited.IsValid());
+  int exit_code = -1;
+  ASSERT_TRUE(base::WaitForMultiprocessTestChildExit(
+      exited, TestTimeouts::action_timeout(), &exit_code));
+  ASSERT_FALSE(exited.IsRunning());
+
+  base::win::MessageWindow window;
+  ASSERT_TRUE(window.Create(base::BindRepeating(&IgnoreMessage)));
+  auto controller = MakeSettingsProcessController();
+  controller->Start();
+  controller->test_finder()->TriggerFound(window.hwnd(), std::move(exited));
+
+  EXPECT_FALSE(controller->IsValidSettingsProcess(window.hwnd()));
+  controller->CloseSettingsWindow();
+  EXPECT_FALSE(TakePostedClose(window.hwnd()));
+
+  controller->Stop();
+}
+
+// Ending the flow closes the process handle, after which no window is vouched
+// for.
+TEST_F(VisualGuidedSetterControllerWinTest, ClosedSettingsProcessIsInvalid) {
+  base::win::MessageWindow window;
+  ASSERT_TRUE(window.Create(base::BindRepeating(&IgnoreMessage)));
+  auto controller = MakeSettingsProcessController();
+  controller->Start();
+  controller->test_finder()->TriggerFound(window.hwnd(), OpenCurrentProcess());
+  ASSERT_TRUE(controller->IsValidSettingsProcess(window.hwnd()));
+
+  controller->Stop();
+
+  EXPECT_FALSE(controller->IsValidSettingsProcess(window.hwnd()));
 }
 
 TEST_F(VisualGuidedSetterControllerWinTest,

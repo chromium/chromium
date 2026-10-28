@@ -6,7 +6,10 @@
 
 #include <windows.h>
 
+#include <optional>
+
 #include "base/functional/callback_helpers.h"
+#include "base/process/process.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -14,12 +17,21 @@
 
 namespace {
 
+// A fake handle that EventTestSettingsWindowFinderWin treats as the Settings
+// window.
+const HWND kSettingsHwnd = reinterpret_cast<HWND>(0x5E771);
+
+base::Process OpenCurrentProcess() {
+  return base::Process::OpenWithAccess(
+      ::GetCurrentProcessId(), PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE);
+}
+
 // Subclass to mock out the real OS interaction.
 class TestSettingsWindowFinderWin : public SettingsWindowFinderWin {
  protected:
-  HWND FindSettingsTopLevelWindow() const override {
+  std::optional<WindowAndProcess> FindSettingsTopLevelWindow() const override {
     // Always simulate that the window is not open initially.
-    return nullptr;
+    return std::nullopt;
   }
 };
 
@@ -32,8 +44,8 @@ class EventTestSettingsWindowFinderWin : public TestSettingsWindowFinderWin {
   using SettingsWindowFinderWin::HandleWinEvent;
 
  protected:
-  bool IsLikelySettingsWindow(HWND hwnd) const override {
-    return hwnd == settings_hwnd_;
+  base::Process MatchSettingsWindow(HWND hwnd) const override {
+    return hwnd == settings_hwnd_ ? OpenCurrentProcess() : base::Process();
   }
   HWND GetRootWindow(HWND hwnd) const override { return hwnd; }
 
@@ -53,7 +65,8 @@ TEST_F(SettingsWindowFinderWinTest, TimeoutTriggersCallback) {
   bool found_called = false;
 
   finder.Start(base::Seconds(5),
-               base::BindLambdaForTesting([&](HWND) { found_called = true; }),
+               base::BindLambdaForTesting(
+                   [&](HWND, base::Process) { found_called = true; }),
                base::BindLambdaForTesting([&]() { timeout_called = true; }));
 
   // Fast-forward just before the timeout.
@@ -145,19 +158,19 @@ TEST_F(SettingsWindowFinderWinTest,
 }
 
 TEST_F(SettingsWindowFinderWinTest, FoundPathIgnoresDestroyEvents) {
-  HWND sentinel = reinterpret_cast<HWND>(0x5E771);
-  EventTestSettingsWindowFinderWin finder(sentinel);
+  EventTestSettingsWindowFinderWin finder(kSettingsHwnd);
   bool found_called = false;
   bool timeout_called = false;
   finder.Start(base::Seconds(5),
-               base::BindLambdaForTesting([&](HWND) { found_called = true; }),
+               base::BindLambdaForTesting(
+                   [&](HWND, base::Process) { found_called = true; }),
                base::BindLambdaForTesting([&]() { timeout_called = true; }));
 
-  finder.HandleWinEvent(EVENT_OBJECT_DESTROY, sentinel, OBJID_WINDOW);
+  finder.HandleWinEvent(EVENT_OBJECT_DESTROY, kSettingsHwnd, OBJID_WINDOW);
   EXPECT_FALSE(found_called);
 
   // Events for non-window objects are ignored too.
-  finder.HandleWinEvent(EVENT_OBJECT_SHOW, sentinel, OBJID_CLIENT);
+  finder.HandleWinEvent(EVENT_OBJECT_SHOW, kSettingsHwnd, OBJID_CLIENT);
   EXPECT_FALSE(found_called);
 
   // With no acceptable event delivered, the finder times out normally.
@@ -170,17 +183,16 @@ TEST_F(SettingsWindowFinderWinTest, FoundPathAcceptsCreateShowAndUncloak) {
   for (DWORD event : {static_cast<DWORD>(EVENT_OBJECT_CREATE),
                       static_cast<DWORD>(EVENT_OBJECT_SHOW),
                       static_cast<DWORD>(EVENT_OBJECT_UNCLOAKED)}) {
-    HWND sentinel = reinterpret_cast<HWND>(0x5E771);
-    EventTestSettingsWindowFinderWin finder(sentinel);
+    EventTestSettingsWindowFinderWin finder(kSettingsHwnd);
     HWND found_hwnd = nullptr;
     bool timeout_called = false;
-    finder.Start(base::Seconds(5), base::BindLambdaForTesting([&](HWND hwnd) {
-                   found_hwnd = hwnd;
-                 }),
+    finder.Start(base::Seconds(5),
+                 base::BindLambdaForTesting(
+                     [&](HWND hwnd, base::Process) { found_hwnd = hwnd; }),
                  base::BindLambdaForTesting([&]() { timeout_called = true; }));
 
-    finder.HandleWinEvent(event, sentinel, OBJID_WINDOW);
-    EXPECT_EQ(found_hwnd, sentinel) << "event=0x" << std::hex << event;
+    finder.HandleWinEvent(event, kSettingsHwnd, OBJID_WINDOW);
+    EXPECT_EQ(found_hwnd, kSettingsHwnd) << "event=0x" << std::hex << event;
 
     // Finding the window cancels the timeout.
     task_environment_.FastForwardBy(base::Seconds(6));
@@ -188,21 +200,36 @@ TEST_F(SettingsWindowFinderWinTest, FoundPathAcceptsCreateShowAndUncloak) {
   }
 }
 
+TEST_F(SettingsWindowFinderWinTest, FoundPathHandsOutTheWindowsProcess) {
+  EventTestSettingsWindowFinderWin finder(kSettingsHwnd);
+  base::Process found_process;
+  finder.Start(base::Seconds(5),
+               base::BindLambdaForTesting([&](HWND, base::Process process) {
+                 found_process = std::move(process);
+               }),
+               base::DoNothing());
+
+  finder.HandleWinEvent(EVENT_OBJECT_SHOW, kSettingsHwnd, OBJID_WINDOW);
+
+  ASSERT_TRUE(found_process.IsValid());
+  EXPECT_EQ(found_process.Pid(), ::GetCurrentProcessId());
+  EXPECT_TRUE(found_process.IsRunning());
+}
+
 // Destroy/hide/cloak transitions of the observed window must notify the
 // owner (closing a UWP window often cloaks or hides its frame rather than
 // destroying it, and emits no location-change event), while the same events
 // for unrelated windows must not.
 TEST_F(SettingsWindowFinderWinTest, ObservedWindowStateChangesNotifyOwner) {
-  HWND sentinel = reinterpret_cast<HWND>(0x5E771);
   for (DWORD event : {static_cast<DWORD>(EVENT_OBJECT_LOCATIONCHANGE),
                       static_cast<DWORD>(EVENT_OBJECT_DESTROY),
                       static_cast<DWORD>(EVENT_OBJECT_HIDE),
                       static_cast<DWORD>(EVENT_OBJECT_CLOAKED)}) {
-    EventTestSettingsWindowFinderWin finder(sentinel);
+    EventTestSettingsWindowFinderWin finder(kSettingsHwnd);
     int notified = 0;
     finder.StartObservingLocationChanges(
-        sentinel, base::BindLambdaForTesting([&]() { ++notified; }));
-    finder.HandleWinEvent(event, sentinel, OBJID_WINDOW);
+        kSettingsHwnd, base::BindLambdaForTesting([&]() { ++notified; }));
+    finder.HandleWinEvent(event, kSettingsHwnd, OBJID_WINDOW);
     EXPECT_EQ(notified, 1) << "event=0x" << std::hex << event;
     // The same event for an unrelated window is ignored.
     finder.HandleWinEvent(event, reinterpret_cast<HWND>(0xBAD), OBJID_WINDOW);
@@ -212,10 +239,9 @@ TEST_F(SettingsWindowFinderWinTest, ObservedWindowStateChangesNotifyOwner) {
 }
 
 TEST_F(SettingsWindowFinderWinTest, FoundReleasesGlobalInstance) {
-  HWND sentinel = reinterpret_cast<HWND>(0x5E771);
-  EventTestSettingsWindowFinderWin finder1(sentinel);
+  EventTestSettingsWindowFinderWin finder1(kSettingsHwnd);
   finder1.Start(base::Seconds(5), base::DoNothing(), base::DoNothing());
-  finder1.HandleWinEvent(EVENT_OBJECT_SHOW, sentinel, OBJID_WINDOW);
+  finder1.HandleWinEvent(EVENT_OBJECT_SHOW, kSettingsHwnd, OBJID_WINDOW);
 
   TestSettingsWindowFinderWin finder2;
   // Since finder1 delivered its window and stopped, finder2 should be able to

@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/process/process.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -155,6 +156,9 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
   virtual bool IsDpiCompatibleForDocking(HWND hwnd,
                                          const gfx::Rect& target_rect) const;
   virtual void CloseSettingsWindow();
+  // Whether `hwnd` belongs to the still-running process the Settings window was
+  // found in. Once a window is destroyed, its HWND value can be reused for
+  // another window.
   virtual bool IsValidSettingsProcess(HWND hwnd) const;
 
   // Low-level Win32 window probes backing the predicates above. Virtual for
@@ -187,7 +191,7 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
  private:
   // Starts the polling and event-hooking logic to find the Settings window.
   void StartFindSettingsWindow();
-  void OnSettingsWindowFound(HWND hwnd);
+  void OnSettingsWindowFound(HWND hwnd, base::Process process);
   void OnFindSettingsTimeout();
 
   // Asynchronously spawns the OS Default Apps settings URI.
@@ -272,7 +276,9 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
   raw_ptr<views::Widget> parent_widget_ = nullptr;
   HWND chrome_hwnd_ = nullptr;
   HWND settings_hwnd_ = nullptr;
-  DWORD settings_pid_ = 0;
+  // Owner of `settings_hwnd_`, held with SYNCHRONIZE so its pid is not
+  // reissued and its exit can be polled. Invalid when no window is latched.
+  base::Process settings_process_;
 
   std::unique_ptr<GuidedSetterOverlayWindowWin> overlay_;
 

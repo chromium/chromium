@@ -7,10 +7,12 @@
 
 #include <windows.h>
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/process/process.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -22,7 +24,11 @@
 // sequenced thread.
 class SettingsWindowFinderWin {
  public:
-  using WindowFoundCallback = base::OnceCallback<void(HWND)>;
+  // Run with the window and the process that owns it, opened with
+  // PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE. While the handle is held
+  // the pid is not reused, and the process's exit can be polled with
+  // base::Process::IsRunning().
+  using WindowFoundCallback = base::OnceCallback<void(HWND, base::Process)>;
 
   SettingsWindowFinderWin();
 
@@ -58,10 +64,16 @@ class SettingsWindowFinderWin {
   virtual void SetMoveSizeCallback(WindowMoveSizeCallback on_move_size);
 
  protected:
-  virtual HWND FindSettingsTopLevelWindow() const;
+  struct WindowAndProcess {
+    HWND hwnd = nullptr;
+    base::Process process;
+  };
 
   // Virtual for testing.
-  virtual bool IsLikelySettingsWindow(HWND hwnd) const;
+  virtual std::optional<WindowAndProcess> FindSettingsTopLevelWindow() const;
+  // Returns the owner of `hwnd` if it is the Settings window, else an invalid
+  // process.
+  virtual base::Process MatchSettingsWindow(HWND hwnd) const;
   virtual HWND GetRootWindow(HWND hwnd) const;
 
   // Instance-side handler for the static WinEventCallback. Exposed to tests

@@ -349,9 +349,12 @@ void VisualGuidedSetterControllerWin::StartFindSettingsWindow() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void VisualGuidedSetterControllerWin::OnSettingsWindowFound(HWND hwnd) {
+void VisualGuidedSetterControllerWin::OnSettingsWindowFound(
+    HWND hwnd,
+    base::Process process) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(hwnd);
+  CHECK(process.IsValid());
 
   if (!find_settings_start_time_.is_null()) {
     base::UmaHistogramTimes("DefaultBrowser.VisualGuide.EventHookDiscoveryTime",
@@ -360,7 +363,7 @@ void VisualGuidedSetterControllerWin::OnSettingsWindowFound(HWND hwnd) {
   }
 
   settings_hwnd_ = hwnd;
-  ::GetWindowThreadProcessId(hwnd, &settings_pid_);
+  settings_process_ = std::move(process);
 
   if ((web_contents() &&
        web_contents()->GetVisibility() != content::Visibility::VISIBLE) ||
@@ -888,12 +891,15 @@ void VisualGuidedSetterControllerWin::CloseSettingsWindow() {
 }
 
 bool VisualGuidedSetterControllerWin::IsValidSettingsProcess(HWND hwnd) const {
-  if (!hwnd) {
+  // While `settings_process_` is held its pid is not reused, even after it
+  // exits, so a pid match below is that process's window. IsRunning() (a
+  // zero-timeout wait on the handle) rules out an exited one up front.
+  if (!hwnd || !settings_process_.IsValid() || !settings_process_.IsRunning()) {
     return false;
   }
   DWORD pid = 0;
   ::GetWindowThreadProcessId(hwnd, &pid);
-  return pid != 0 && (settings_pid_ == 0 || pid == settings_pid_);
+  return pid != 0 && pid == settings_process_.Pid();
 }
 
 std::unique_ptr<SettingsWindowFinderWin>
@@ -922,7 +928,7 @@ void VisualGuidedSetterControllerWin::TearDownInternal() {
   }
 
   settings_hwnd_ = nullptr;
-  settings_pid_ = 0;
+  settings_process_.Close();
   last_applied_settings_rect_.reset();
   settled_settings_rect_.reset();
 
