@@ -8,12 +8,19 @@
 #include <map>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_executor.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/test/test_waitable_event.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/policy/uploading/system_log_uploader_delegate.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -22,6 +29,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "net/http/http_request_headers.h"
+#include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -464,5 +472,56 @@ TEST_F(SystemLogUploaderTest, DeviceSettingsPendingToUntrusted) {
 INSTANTIATE_TEST_SUITE_P(SystemLogUploaderTestInstance,
                          SystemLogUploaderTest,
                          testing::Bool());
+
+class SystemLogUploaderDelegateShutdownTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
+        "SystemLogUploaderDelegateShutdownTest");
+  }
+
+  void TearDown() override {
+    if (base::ThreadPoolInstance::Get()) {
+      base::ThreadPoolInstance::Get()->JoinForTesting();
+      base::ThreadPoolInstance::Set(nullptr);
+    }
+  }
+
+  base::SingleThreadTaskExecutor executor_;
+  scoped_refptr<network::SharedURLLoaderFactory> test_url_loader_factory_ =
+      base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
+};
+
+TEST_F(SystemLogUploaderDelegateShutdownTest,
+       ShutdownWithInFlightLogLoadDoesNotHang) {
+  base::TestWaitableEvent task_started;
+  base::TestWaitableEvent task_can_finish;
+  base::TestWaitableEvent task_finished;
+
+  SystemLogUploaderDelegate delegate(
+      test_url_loader_factory_, base::SequencedTaskRunner::GetCurrentDefault());
+  delegate.SetReadFilesCallbackForTesting(base::BindLambdaForTesting([&]() {
+    task_started.Signal();
+    task_can_finish.Wait();
+    task_finished.Signal();
+  }));
+
+  delegate.LoadSystemLogs(base::DoNothing());
+
+  // Wait until ReadFiles() is actively executing on a ThreadPool worker thread.
+  task_started.Wait();
+
+  // Shut down the ThreadPool (simulating browser shutdown). Because
+  // LoadSystemLogs specifies CONTINUE_ON_SHUTDOWN, ThreadPool shutdown
+  // completes immediately without waiting for ReadFiles() to finish.
+  // Under SKIP_ON_SHUTDOWN (or default traits), Shutdown() would block
+  // waiting for task_can_finish, deadlocking the test.
+  base::ThreadPoolInstance::Get()->Shutdown();
+
+  // Unblock the background thread and wait for it to exit before destroying
+  // test events.
+  task_can_finish.Signal();
+  task_finished.Wait();
+}
 
 }  // namespace policy

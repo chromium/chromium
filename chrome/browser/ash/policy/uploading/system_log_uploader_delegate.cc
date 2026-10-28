@@ -14,9 +14,11 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/policy/uploading/system_log_uploader.h"
 #include "chrome/browser/ash/policy/uploading/upload_job_impl.h"
@@ -117,7 +119,11 @@ std::string ReadAndRedactLogFile(redaction::RedactionTool* redactor,
 
 // Reads the system log files as binary files, redacts data, stores the files
 // as pairs (file name, data) and returns. Called on blocking thread.
-std::unique_ptr<SystemLogUploader::SystemLogs> ReadFiles() {
+std::unique_ptr<SystemLogUploader::SystemLogs> ReadFiles(
+    base::RepeatingClosure read_files_callback_for_testing) {
+  if (read_files_callback_for_testing) {
+    read_files_callback_for_testing.Run();
+  }
   auto system_logs = std::make_unique<SystemLogUploader::SystemLogs>();
   redaction::RedactionTool redactor(
       extension_misc::kBuiltInFirstPartyExtensionIds);
@@ -165,9 +171,17 @@ void SystemLogUploaderDelegate::LoadSystemLogs(
     LogUploadCallback upload_callback) {
   // Run ReadFiles() in the thread that interacts with the file system and
   // return system logs to |upload_callback| on the current thread.
+  // CONTINUE_ON_SHUTDOWN is safe because ReadFiles() only accesses local stack
+  // objects and local log files, with no dependency on singletons,
+  // Profile-scoped objects, or BrowserProcess state.
+  // PostTaskAndReplyWithResult safely drops the reply callback if the UI
+  // sequence is destroyed before completion.
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&ReadFiles), std::move(upload_callback));
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&ReadFiles, read_files_callback_for_testing_),
+      std::move(upload_callback));
 }
 
 std::unique_ptr<UploadJob> SystemLogUploaderDelegate::CreateUploadJob(
@@ -211,10 +225,22 @@ std::unique_ptr<UploadJob> SystemLogUploaderDelegate::CreateUploadJob(
 void SystemLogUploaderDelegate::ZipSystemLogs(
     std::unique_ptr<SystemLogUploader::SystemLogs> system_logs,
     ZippedLogUploadCallback upload_callback) {
+  // CONTINUE_ON_SHUTDOWN is safe because ZipFiles() operates strictly on
+  // temporary files and local stack objects, without referencing singletons,
+  // Profile-scoped objects, or BrowserProcess state.
+  // PostTaskAndReplyWithResult safely drops the reply callback if the UI
+  // sequence is destroyed before completion.
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&ZipFiles, std::move(system_logs)),
       std::move(upload_callback));
+}
+
+void SystemLogUploaderDelegate::SetReadFilesCallbackForTesting(
+    base::RepeatingClosure callback) {
+  read_files_callback_for_testing_ = std::move(callback);
 }
 
 }  // namespace policy

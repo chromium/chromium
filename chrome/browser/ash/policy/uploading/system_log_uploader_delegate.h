@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ash/policy/uploading/system_log_uploader.h"
 
@@ -44,9 +45,15 @@ class SystemLogUploaderDelegate : public SystemLogUploader::Delegate {
   void ZipSystemLogs(std::unique_ptr<SystemLogUploader::SystemLogs> system_logs,
                      ZippedLogUploadCallback upload_callback) override;
 
+  // Sets a callback to be run when the background ReadFiles task starts
+  // executing on ThreadPool. The callback is executed on ThreadPool and
+  // blocks the ReadFiles task.
+  void SetReadFilesCallbackForTesting(base::RepeatingClosure callback);
+
  private:
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  base::RepeatingClosure read_files_callback_for_testing_;
 };
 
 }  // namespace policy
