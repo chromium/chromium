@@ -189,6 +189,7 @@ const CGFloat kSelectionUICornerRadius = 13.0;
                                   animated:(BOOL)animated
                                 completion:(ProceduralBlock)completion {
   _bottomSheet.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [_bottomSheet willMoveToParentViewController:self];
   [self addChildViewController:_bottomSheet];
   [self.view addSubview:_bottomSheet.view];
   [_bottomSheet didMoveToParentViewController:self];

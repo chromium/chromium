@@ -303,6 +303,8 @@ NSString* const kDefaultDetentIdentifier = @"kDefaultDetentIdentifier";
   [self.sheetDelegate lensOverlayBottomSheetDidDismiss:self
                                          gestureDriven:gestureDriven];
   _bottomSheet = nil;
+  _leadingConstraint = nil;
+  _trailingConstraint = nil;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
   if (completion) {
