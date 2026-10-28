@@ -21,6 +21,7 @@ sys.path.extend(
         os.path.join(_THIS_DIR, 'resources'),
         os.path.join(_SRC_DIR, 'third_party'),
         os.path.join(_SRC_DIR, 'third_party', 'pyjson5', 'src'),
+        os.path.join(_SRC_DIR, 'tools', 'grit'),
     ]
 )
 
@@ -242,6 +243,117 @@ class CheckPolicyTestCasePlatformsTest(unittest.TestCase):
         messages = self._RunCheck(['chrome.win:100-'])
         self.assertEqual(len(messages), 1)
         self.assertIn(f'Failed to parse {_TEST_CASES_PATH}', messages[0])
+
+
+class CheckYamlFormatTest(unittest.TestCase):
+    def _RunCheck(self, files):
+        input_api = MockInputApi()
+        input_api.change = MockChange(files)
+        input_api.change.RepositoryRoot = lambda: _SRC_DIR
+        return PRESUBMIT.CheckYamlFormat(input_api, MockOutputApi())
+
+    def testValidPolicyYaml(self):
+        lines = [
+            'caption: Valid Caption',
+            'desc: Valid description.',
+            'owners:',
+            '  - user@google.com',
+            'supported_on:',
+            '  - chrome.*:100-',
+            'type: string',
+        ]
+        files = [MockAffectedFile(_DEFINITION_PATH, lines)]
+        self.assertEqual(self._RunCheck(files), [])
+
+    def testValidMessagesYaml(self):
+        lines = [
+            'doc_feature_foo:',
+            '  text: Valid message text',
+            '  desc: Valid message description',
+        ]
+        files = [MockAffectedFile(PRESUBMIT._MESSAGES_PATH, lines)]
+        self.assertEqual(self._RunCheck(files), [])
+
+    def testDeletedYamlFileIgnored(self):
+        files = [
+            MockAffectedFile(
+                _DEFINITION_PATH,
+                [],
+                action='D',
+            )
+        ]
+        self.assertEqual(self._RunCheck(files), [])
+
+    def testAtomicGroupYamlValidation(self):
+        atomic_group_path = os.path.join(
+            PRESUBMIT._POLICIES_DEFINITIONS_PATH,
+            'Miscellaneous',
+            'policy_atomic_groups.yaml',
+        )
+        valid_lines = [
+            'TestGroup:',
+            '  caption: Valid atomic group caption',
+            '  policies:',
+            '    - PolicyA',
+        ]
+        files = [MockAffectedFile(atomic_group_path, valid_lines)]
+        self.assertEqual(self._RunCheck(files), [])
+
+        invalid_lines = [
+            'TestGroup:',
+            '  caption: Invalid <ph> caption without closing tag',
+            '  policies:',
+            '    - PolicyA',
+        ]
+        files = [MockAffectedFile(atomic_group_path, invalid_lines)]
+        results = self._RunCheck(files)
+        self.assertEqual(len(results), 1)
+        self.assertIn(f'Error in {atomic_group_path}', results[0].message)
+
+    def testInvalidYamlSyntax(self):
+        lines = ['unclosed_bracket: [1, 2,']
+        files = [MockAffectedFile(_DEFINITION_PATH, lines)]
+        results = self._RunCheck(files)
+        self.assertEqual(len(results), 1)
+        self.assertIn(f'Error in {_DEFINITION_PATH}', results[0].message)
+
+    def testInvalidXmlInPolicy(self):
+        lines = [
+            'caption: Valid Caption',
+            'desc: Invalid < XML description',
+            'owners:',
+            '  - user@google.com',
+            'supported_on:',
+            '  - chrome.*:100-',
+            'type: string',
+        ]
+        files = [MockAffectedFile(_DEFINITION_PATH, lines)]
+        results = self._RunCheck(files)
+        self.assertEqual(len(results), 1)
+        self.assertIn(f'Error in {_DEFINITION_PATH}', results[0].message)
+
+    def testConflictingPlaceholders(self):
+        lines = [
+            'caption: Valid Caption',
+            'desc: <ph name="USER">John</ph> and <ph name="USER">Jane</ph>',
+            'owners:',
+            '  - user@google.com',
+            'supported_on:',
+            '  - chrome.*:100-',
+            'type: string',
+        ]
+        files = [MockAffectedFile(_DEFINITION_PATH, lines)]
+        results = self._RunCheck(files)
+        self.assertEqual(len(results), 1)
+        self.assertIn(f'Error in {_DEFINITION_PATH}', results[0].message)
+
+    def testUnrelatedYamlIgnored(self):
+        unrelated_path = os.path.join(
+            'components', 'policy', 'some_folder', 'unrelated.yaml'
+        )
+        lines = ['invalid: [broken syntax']
+        files = [MockAffectedFile(unrelated_path, lines)]
+        self.assertEqual(self._RunCheck(files), [])
 
 
 if __name__ == '__main__':

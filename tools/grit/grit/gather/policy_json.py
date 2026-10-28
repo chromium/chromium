@@ -30,6 +30,11 @@ class StringLoader(importlib.abc.SourceLoader):
     return os.path.join(self.dir, fullname + ".py")
 
 
+class _MockUberclique:
+  def MakeClique(self, msg):
+    return msg
+
+
 class PolicyJson(skeleton_gatherer.SkeletonGatherer):
   '''Collects and translates the following strings from policy_templates.json:
   - captions, descriptions, labels and Android app support details of policies
@@ -369,3 +374,34 @@ class PolicyJson(skeleton_gatherer.SkeletonGatherer):
       }
     else:
       raise Exception('Unknown build')
+
+
+def ValidateForPresubmit(data, is_policy=True):
+  """Validates that a single policy or messages dict can be parsed.
+
+  Used by presubmit checks in components/policy.
+
+  Args:
+    data: The dictionary representing a policy definition or messages.
+    is_policy: Whether data represents a policy definition (True) or
+      messages (False).
+
+  Raises:
+    Exception: If the policy or message schema, XML formatting, or
+      placeholders are invalid.
+  """
+  policy_json = PolicyJson('dummy.json')
+  policy_json._config = {
+    'app_name': 'Chromium',
+    'frame_name': 'Chromium Frame',
+    'os_name': 'ChromiumOS',
+  }
+
+  policy_json.uberclique = _MockUberclique()
+  policy_json.skeleton_ = []
+
+  if is_policy:
+    policy_json._AddItems([data], 'policy', None, 2)
+  else:
+    policy_json.data = {'messages': data}
+    policy_json._AddMessages()

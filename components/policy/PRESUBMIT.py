@@ -657,6 +657,71 @@ def CheckMissingPlaceholders(input_api, output_api):
     return results
 
 
+def CheckYamlFormat(input_api, output_api):
+    """Verifies modified policy YAML syntax and Grit message schemas.
+
+    Args:
+      input_api: The presubmit input API.
+      output_api: The presubmit output API.
+
+    Returns:
+      A list of output_api.PresubmitError objects for any invalid YAML files.
+    """
+    results = []
+    root = input_api.change.RepositoryRoot()
+
+    grit_path = os.path.join(root, 'tools', 'grit')
+    if grit_path not in sys.path:
+        sys.path.append(grit_path)
+    from grit.gather.policy_json import ValidateForPresubmit
+
+    for affected_file in input_api.change.AffectedFiles():
+        if affected_file.Action() == 'D':
+            continue
+        local_path = affected_file.LocalPath()
+        if not local_path.endswith('.yaml'):
+            continue
+        try:
+            if (
+                os.path.commonpath([_TEMPLATES_PATH, local_path])
+                != _TEMPLATES_PATH
+            ):
+                continue
+        except ValueError:
+            continue
+
+        try:
+            data = pyyaml.safe_load('\n'.join(affected_file.NewContents()))
+            if not data or not isinstance(data, dict):
+                continue
+
+            if local_path == _MESSAGES_PATH:
+                ValidateForPresubmit(data, is_policy=False)
+            elif (
+                os.path.commonpath([_POLICIES_DEFINITIONS_PATH, local_path])
+                == _POLICIES_DEFINITIONS_PATH
+            ):
+                if os.path.basename(local_path) == 'policy_atomic_groups.yaml':
+                    for group_name, group_data in data.items():
+                        if isinstance(group_data, dict):
+                            ValidateForPresubmit(
+                                {'name': group_name, **group_data},
+                                is_policy=True,
+                            )
+                else:
+                    if 'name' not in data:
+                        data['name'] = os.path.splitext(
+                            os.path.basename(local_path)
+                        )[0]
+                    ValidateForPresubmit(data, is_policy=True)
+        except Exception as e:
+            results.append(
+                output_api.PresubmitError(f'Error in {local_path}:\n{e}')
+            )
+
+    return results
+
+
 def CheckDevicePolicyProtos(input_api, output_api):
     results = []
     if _SkipPresubmitChecks(
