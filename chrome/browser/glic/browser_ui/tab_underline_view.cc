@@ -90,6 +90,7 @@ TabUnderlineView::TabUnderlineView(
 TabUnderlineView::~TabUnderlineView() = default;
 
 void TabUnderlineView::Show() {
+  colors_ = GetEffectColors();
   AnimatedEffectView::Show();
 }
 
@@ -156,6 +157,9 @@ void TabUnderlineView::PopulateShaderUniforms(
 
 void TabUnderlineView::OnThemeChanged() {
   View::OnThemeChanged();
+  if (!IsShowing()) {
+    return;
+  }
   colors_ = GetEffectColors();
   SchedulePaint();
 }
@@ -260,6 +264,9 @@ void TabUnderlineView::DrawEffect(gfx::Canvas* canvas,
 
 void TabUnderlineView::OnActiveTabChanged(
     BrowserWindowInterface* browser_window_interface) {
+  if (!IsShowing()) {
+    return;
+  }
   colors_ = GetEffectColors();
   SchedulePaint();
 }
