@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
@@ -258,7 +259,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
         if (tab != null
                 && UrlUtilities.isNtpUrl(ChromeTabUtils.getUrlStringOnUiThread(tab))
                 && !activity.isInOverviewMode()) {
-            ChromeTabUtils.waitForNtpLoaded(tab);
+            NewTabPageTestUtils.waitForNtpLoaded(tab);
         }
 
         assertTrue("Deferred startup never completed", waitForDeferredStartup(activity));

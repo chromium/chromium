@@ -102,7 +102,6 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.BottomBarTestUtils;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.omnibox.OmniboxFeatureList;
@@ -717,9 +716,7 @@ public class ToolbarPhoneTest {
         // Load the new tab page.
         mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
         Tab tab = mActivityTestRule.getActivityTab();
-        // TODO(crbug.com/428022848): Hop on once RegularNewTabPageStation can model an NTP
-        // without a search provider logo.
-        ChromeTabUtils.waitForNtpLoaded(tab);
+        NewTabPageTestUtils.waitForNtpLoaded(tab);
         ViewGroup fakeSearchBox = mActivityTestRule.getActivity().findViewById(R.id.search_box);
         assertEquals(true, mToolbar.isLocationBarShownInGeneralNtp());
         assertEquals(View.VISIBLE, fakeSearchBox.getVisibility());

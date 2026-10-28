@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
+import org.chromium.chrome.test.util.NewTabPageTestUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -217,7 +218,7 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
         Tab tab = getActivityTab();
 
         ChromeTabUtils.waitForTabPageLoaded(tab, (String) null);
-        ChromeTabUtils.waitForNtpLoaded(tab);
+        NewTabPageTestUtils.waitForNtpLoaded(tab);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Log.d(TAG, "newIncognitoTabFromMenu <<");
         return tab;

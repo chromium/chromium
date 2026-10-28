@@ -36,7 +36,9 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -258,7 +260,8 @@ public class SigninButtonRenderTest {
     }
 
     private void startActivityOnNtp() {
-        mActivityTestRule.startOnNtp();
+        RegularNewTabPageStation page = mActivityTestRule.startOnNtp();
+        NewTabPageTestUtils.waitForNtpLoaded(page.getTab());
     }
 
     private void setSigninAllowed(boolean allowed) {

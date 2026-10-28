@@ -91,6 +91,7 @@ import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.SettingsTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -193,6 +194,7 @@ public class IdentityDiscControllerTest {
                 () -> mProfileSupplier = ObservableSuppliers.createMonotonic());
         mPage = mActivityTestRule.startOnNtp();
         mTab = mPage.getTab();
+        NewTabPageTestUtils.waitForNtpLoaded(mTab);
         mActivity = mPage.getActivity();
         assertNotNull(mActivity);
         mActivityTestRule.getActivityTestRule().setActivity(mActivity);
