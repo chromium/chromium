@@ -419,6 +419,15 @@ class CheckGlicApiTestRegistrationTest(unittest.TestCase):
     self.assertEqual(results, [])
 
 
+class _MockInputApiWithChange(PRESUBMIT_test_mocks.MockInputApi):
+  """Also exposes InitFiles() files via change.AffectedFiles(), like the real
+  InputApi does. GlicCommonChecks reads files from the change."""
+
+  def InitFiles(self, files):
+    super().InitFiles(files)
+    self.change = PRESUBMIT_test_mocks.MockChange(files)
+
+
 class CheckGlicFeaturesDefaultStateTest(unittest.TestCase):
   def setUp(self):
     self._old_sys_path = sys.path[:]
@@ -433,13 +442,13 @@ class CheckGlicFeaturesDefaultStateTest(unittest.TestCase):
     sys.path = self._old_sys_path
 
   def testNoAffectedFiles(self):
-    mock_input_api = PRESUBMIT_test_mocks.MockInputApi()
+    mock_input_api = _MockInputApiWithChange()
     mock_output_api = PRESUBMIT_test_mocks.MockOutputApi()
     results = PRESUBMIT.CheckChangeOnUpload(mock_input_api, mock_output_api)
     self.assertEqual(results, [])
 
   def testGlicFeatureEnabledByDefaultInGlicDir(self):
-    mock_input_api = PRESUBMIT_test_mocks.MockInputApi()
+    mock_input_api = _MockInputApiWithChange()
     mock_input_api.InitFiles(
       [
         PRESUBMIT_test_mocks.MockFile(
@@ -460,7 +469,7 @@ class CheckGlicFeaturesDefaultStateTest(unittest.TestCase):
     )
 
   def testGlicFeatureWithExplicitEnabledMacros(self):
-    mock_input_api = PRESUBMIT_test_mocks.MockInputApi()
+    mock_input_api = _MockInputApiWithChange()
     mock_input_api.InitFiles(
       [
         PRESUBMIT_test_mocks.MockFile(
@@ -481,7 +490,7 @@ class CheckGlicFeaturesDefaultStateTest(unittest.TestCase):
     self.assertEqual(results, [])
 
   def testGlicFeatureDisabledByDefaultInGlicDir(self):
-    mock_input_api = PRESUBMIT_test_mocks.MockInputApi()
+    mock_input_api = _MockInputApiWithChange()
     mock_input_api.InitFiles(
       [
         PRESUBMIT_test_mocks.MockFile(
@@ -496,8 +505,34 @@ class CheckGlicFeaturesDefaultStateTest(unittest.TestCase):
     results = PRESUBMIT.CheckChangeOnUpload(mock_input_api, mock_output_api)
     self.assertEqual(results, [])
 
-  def testGlicFeatureEnabledByDefaultInChromeCommon(self):
+  def testChromeCommonFeatureSeenFromOtherPresubmitDirectory(self):
+    # GlicCommonChecks may run from chrome/browser/glic/PRESUBMIT.py, where
+    # input_api.AffectedFiles() excludes chrome/common/. The file is only in
+    # the change.
+    from chrome.browser.resources.glic import common_checks
+
     mock_input_api = PRESUBMIT_test_mocks.MockInputApi()
+    mock_input_api.change = PRESUBMIT_test_mocks.MockChange(
+      [
+        PRESUBMIT_test_mocks.MockFile(
+          'chrome/common/chrome_features.cc',
+          [
+            (
+              'BASE_FEATURE(kGlicFeatureInCommon, '
+              'base::FEATURE_ENABLED_BY_DEFAULT);'
+            ),
+          ],
+        ),
+      ]
+    )
+    results = common_checks.GlicCommonChecks(
+      mock_input_api, PRESUBMIT_test_mocks.MockOutputApi()
+    )
+    self.assertEqual(len(results), 1)
+    self.assertIn('kGlicFeatureInCommon', results[0].items[0])
+
+  def testGlicFeatureEnabledByDefaultInChromeCommon(self):
+    mock_input_api = _MockInputApiWithChange()
     mock_input_api.InitFiles(
       [
         PRESUBMIT_test_mocks.MockFile(
@@ -519,7 +554,7 @@ class CheckGlicFeaturesDefaultStateTest(unittest.TestCase):
     )
 
   def testNonGlicFeatureEnabledByDefaultInChromeCommon(self):
-    mock_input_api = PRESUBMIT_test_mocks.MockInputApi()
+    mock_input_api = _MockInputApiWithChange()
     mock_input_api.InitFiles(
       [
         PRESUBMIT_test_mocks.MockFile(
@@ -536,7 +571,7 @@ class CheckGlicFeaturesDefaultStateTest(unittest.TestCase):
     self.assertEqual(results, [])
 
   def testUnrelatedLineChangedDoesNotTriggerError(self):
-    mock_input_api = PRESUBMIT_test_mocks.MockInputApi()
+    mock_input_api = _MockInputApiWithChange()
     mock_file = PRESUBMIT_test_mocks.MockFile(
       'chrome/browser/glic/public/features.cc',
       [
@@ -550,6 +585,68 @@ class CheckGlicFeaturesDefaultStateTest(unittest.TestCase):
     mock_output_api = PRESUBMIT_test_mocks.MockOutputApi()
     results = PRESUBMIT.CheckChangeOnUpload(mock_input_api, mock_output_api)
     self.assertEqual(results, [])
+
+
+class CheckGlicInvocationSourceTest(unittest.TestCase):
+  def setUp(self):
+    self._old_sys_path = sys.path[:]
+    repo_root = PRESUBMIT_test_mocks._REPO_ROOT
+    if repo_root not in sys.path:
+      sys.path.insert(0, repo_root)
+    from chrome.browser.resources.glic import common_checks
+
+    self._common_checks = common_checks
+
+  def tearDown(self):
+    sys.path = self._old_sys_path
+
+  def _RunCheck(self, change_files):
+    # Only the change contains the files; input_api.AffectedFiles() is empty,
+    # as when GlicCommonChecks runs from a PRESUBMIT.py outside chrome/common.
+    mock_input_api = PRESUBMIT_test_mocks.MockInputApi()
+    mock_input_api.change = PRESUBMIT_test_mocks.MockChange(change_files)
+    return self._common_checks._CheckGlicInvocationSource(
+      mock_input_api, PRESUBMIT_test_mocks.MockOutputApi()
+    )
+
+  def _MojomFile(self, changed_line):
+    mock_file = PRESUBMIT_test_mocks.MockFile(
+      'chrome/common/glic_enums.mojom',
+      [
+        'enum FreOverride {',
+        '  kUnspecified = 0,',
+        '  kNewValue = 1,',
+        '};',
+        '',
+        'enum InvocationSource {',
+        '  kOsButton = 0,',
+        '  kNewSource = 1,',
+        '};',
+      ],
+    )
+    mock_file._changed_contents = [(changed_line, '')]
+    return mock_file
+
+  def testNoAffectedFiles(self):
+    self.assertEqual(self._RunCheck([]), [])
+
+  def testUnrelatedFile(self):
+    mock_file = PRESUBMIT_test_mocks.MockFile(
+      'chrome/browser/glic/public/features.cc', ['// Some content']
+    )
+    self.assertEqual(self._RunCheck([mock_file]), [])
+
+  def testGlicEnumsMojomUnrelatedEnumChanged(self):
+    # Line 3 is inside FreOverride.
+    self.assertEqual(self._RunCheck([self._MojomFile(3)]), [])
+
+  def testGlicEnumsMojomInvocationSourceChanged(self):
+    # Line 8 is inside InvocationSource.
+    results = self._RunCheck([self._MojomFile(8)])
+    self.assertEqual(len(results), 1)
+    self.assertEqual(results[0].type, 'warning')
+    self.assertIn('InvocationSource', results[0].message)
+    self.assertIn('go/glic-invocation-source', results[0].message)
 
 
 # Include tool unit tests so they execute with PRESUBMIT_test.py
