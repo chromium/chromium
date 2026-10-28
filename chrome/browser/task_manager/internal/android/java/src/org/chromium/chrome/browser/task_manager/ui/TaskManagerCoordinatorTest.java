@@ -48,6 +48,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.GraphicsMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -377,5 +378,34 @@ public class TaskManagerCoordinatorTest {
 
         assertTrue(mEmptyView.isShown());
         assertFalse(mRecyclerView.isShown());
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    public void testTaskNameTooltipWhenEllipsized() {
+        String shortName = "Short";
+        String longName = "Very long task name that will definitely be ellipsized in a narrow view";
+        PropertyModel task =
+                new PropertyModel.Builder(mTaskModelKeys)
+                        .with(TASK_ID, 1)
+                        .with(TASK_NAME, shortName)
+                        .with(IS_SELECTED, false)
+                        .build();
+        mTasksModel.add(new ListItem(RowType.TASK, task));
+
+        mRecyclerView.measure(
+                View.MeasureSpec.makeMeasureSpec(1024, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(640, View.MeasureSpec.EXACTLY));
+        mRecyclerView.layout(0, 0, 1024, 640);
+
+        View taskView = mRecyclerView.findViewHolderForAdapterPosition(0).itemView;
+        TextView taskName = taskView.findViewById(R.id.task_name);
+        assertNull(taskName.getTooltipText());
+
+        task.set(TASK_NAME, longName);
+        assertEquals(longName, taskName.getTooltipText().toString());
+
+        task.set(TASK_NAME, shortName);
+        assertNull(taskName.getTooltipText());
     }
 }

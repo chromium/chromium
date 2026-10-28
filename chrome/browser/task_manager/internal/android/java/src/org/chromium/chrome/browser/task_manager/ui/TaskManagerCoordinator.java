@@ -15,6 +15,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
+import android.text.Layout;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -161,9 +162,17 @@ class TaskManagerCoordinator {
 
         mAdapter.registerType(
                 TaskManagerProperties.RowType.TASK,
-                (parent) ->
-                        LayoutInflater.from(parent.getContext())
-                                .inflate(R.layout.task_item, parent, false),
+                (parent) -> {
+                    View view =
+                            LayoutInflater.from(parent.getContext())
+                                    .inflate(R.layout.task_item, parent, false);
+                    TextView taskNameView =
+                            view.findViewById(getTaskItemViewId(TaskManagerProperties.TASK_NAME));
+                    taskNameView.addOnLayoutChangeListener(
+                            (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) ->
+                                    updateTaskNameTooltip(taskNameView));
+                    return view;
+                },
                 (model, view, key) -> {
                     mModelChangeProcessors.add(
                             PropertyModelChangeProcessor.create(
@@ -345,6 +354,7 @@ class TaskManagerCoordinator {
 
         if (key == TaskManagerProperties.TASK_NAME) {
             textView.setText(model.get(TaskManagerProperties.TASK_NAME));
+            updateTaskNameTooltip(textView);
         } else if (key == TaskManagerProperties.MEMORY_FOOTPRINT) {
             textView.setText(
                     PropertyStringifier.getMemoryUsageText(
@@ -395,6 +405,14 @@ class TaskManagerCoordinator {
         textView.setCompoundDrawablesRelative(
                 drawable, /* top= */ null, /* end= */ null, /* bottom= */ null);
         textView.setCompoundDrawablePadding(20);
+    }
+
+    private static void updateTaskNameTooltip(TextView textView) {
+        Layout layout = textView.getLayout();
+        if (layout == null) return;
+        boolean isEllipsized = layout.getLineCount() > 0 && layout.getEllipsisCount(0) > 0;
+        @Nullable CharSequence tooltipText = isEllipsized ? textView.getText() : null;
+        textView.setTooltipText(tooltipText);
     }
 
     private static void bindHeaderModelAndTaskView(
