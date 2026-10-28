@@ -30,7 +30,6 @@ namespace blink {
 
 class DOMPointInit;
 class ExceptionState;
-class LineLayoutItem;
 class SVGAnimatedLength;
 class SVGPointTearOff;
 
@@ -61,9 +60,6 @@ class CORE_EXPORT SVGTextContentElement : public SVGGraphicsElement {
   float getRotationOfChar(unsigned charnum, ExceptionState&);
   int getCharNumAtPosition(const DOMPointInit*);
   void selectSubString(unsigned charnum, unsigned nchars, ExceptionState&);
-
-  static SVGTextContentElement* ElementFromLineLayoutItem(
-      const LineLayoutItem&);
 
   SVGAnimatedLength* textLength() { return text_length_.Get(); }
   bool TextLengthIsSpecifiedByUser() {

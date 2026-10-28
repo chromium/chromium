@@ -41,8 +41,6 @@ class SVGFEDisplacementMapElement final
     return ElementType::kSVGFEDisplacementMapElement;
   }
 
-  static ChannelSelectorType StringToChannel(const String&);
-
   SVGAnimatedNumber* scale() { return scale_.Get(); }
   SVGAnimatedString* in1() { return in1_.Get(); }
   SVGAnimatedString* in2() { return in2_.Get(); }

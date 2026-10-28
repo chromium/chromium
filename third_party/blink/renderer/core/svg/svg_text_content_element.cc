@@ -346,11 +346,6 @@ bool SVGTextContentElement::SelfHasRelativeLengths() const {
   return true;
 }
 
-SVGTextContentElement* SVGTextContentElement::ElementFromLineLayoutItem(
-    const LineLayoutItem& line_layout_item) {
-  return nullptr;
-}
-
 SVGAnimatedPropertyBase* SVGTextContentElement::PropertyFromAttribute(
     const QualifiedName& attribute_name) const {
   if (attribute_name == text_length_->AttributeName()) {

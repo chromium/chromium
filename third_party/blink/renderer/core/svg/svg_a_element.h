@@ -95,8 +95,6 @@ class CORE_EXPORT SVGAElement final : public SVGGraphicsElement,
 
   void ParseAttribute(const AttributeModificationParams&) override;
 
-  void SetRel(const AtomicString&);
-
   Member<SVGAnimatedString> svg_target_;
   Member<RelList> rel_list_;
   uint32_t link_relations_ = 0;
