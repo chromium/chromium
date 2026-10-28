@@ -1297,6 +1297,7 @@ libfuzzer_linux_asan_builder(
     name = "android-desktop-x64-libfuzzer-asan",
     description_html = "This builder uploads android desktop libfuzzer fuzzers, for x64 using ASan.",
     ssd = None,
+    free_space = builders.free_space.high,
     # TODO(crbug.com/328559555): add this to the gardener_rotations
     gardener_rotations = args.ignore_default(None),
     build_config = builder_config.build_config.RELEASE,
@@ -1324,6 +1325,7 @@ libfuzzer_linux_builder(
     name = "android-arm64-libfuzzer-hwasan",
     description_html = "This builder uploads android libfuzzer fuzzers, for arm64 using HWASan.",
     ssd = None,
+    free_space = builders.free_space.high,
     # TODO(crbug.com/328559555): add this to the gardener_rotations
     gardener_rotations = args.ignore_default(None),
     build_config = builder_config.build_config.RELEASE,
