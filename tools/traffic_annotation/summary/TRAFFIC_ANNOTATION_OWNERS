@@ -6,13 +6,14 @@ nicolaso@chromium.org
 # Please pick a random reviewer:
 #
 # cat tools/traffic_annotation/summary/TRAFFIC_ANNOTATION_OWNERS \
-#   | tail -n+6 | shuf | head -n 1
+#   | tail -n+11 | shuf | head -n 1
 #
 dullweber@chromium.org
 harrisonsean@chromium.org
 mkwst@chromium.org
 msramek@chromium.org
 olesiamarukhno@google.com
+radchuk@google.com
 rainhard@chromium.org
 sideyilmaz@chromium.org
 
