@@ -275,6 +275,10 @@ class AimEligibilityService
   // Returns the `SearchboxConfig` from the AIMEligibilityResponse.
   virtual const omnibox::SearchboxConfig* GetSearchboxConfig() const;
 
+  // Returns the `LhsRailConfig` from the AIMEligibilityResponse, or nullptr if
+  // not present.
+  virtual const omnibox::LhsRailConfig* GetLhsRailConfig() const;
+
   // NOTE: Following methods are intended for chrome://aim-eligibility-internals
   // for debugging purposes only:
   // Triggers a server request to fetch eligibility from the server.
