@@ -13,7 +13,6 @@
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
-#include "gpu/config/gpu_test_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_implementation.h"
 
@@ -46,11 +45,6 @@ static GLint gl_get_integer(GLenum pname) {
 TEST_F(ANGLEShaderPixelLocalStorageTest, GetIntegerv) {
   if (!gl_.IsInitialized() ||
       !GLTestHelper::HasExtension("GL_ANGLE_shader_pixel_local_storage")) {
-    GTEST_SKIP();
-  }
-
-  // TODO(crbug.com/576783756): Fails on Samsung A13 (Mali-G52).
-  if (GPUTestBotConfig::CurrentConfigMatches("Android ARM 0x74021000")) {
     GTEST_SKIP();
   }
 
@@ -224,11 +218,6 @@ TEST_F(ANGLEShaderPixelLocalStorageTest, LoadStoreTokens) {
 TEST_F(ANGLEShaderPixelLocalStorageTest, DrawAPI) {
   if (!gl_.IsInitialized() ||
       !GLTestHelper::HasExtension("GL_ANGLE_shader_pixel_local_storage")) {
-    GTEST_SKIP();
-  }
-
-  // TODO(crbug.com/576783756): Fails on Samsung A13 (Mali-G52).
-  if (GPUTestBotConfig::CurrentConfigMatches("Android ARM 0x74021000")) {
     GTEST_SKIP();
   }
 
