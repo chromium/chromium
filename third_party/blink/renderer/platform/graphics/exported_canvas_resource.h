@@ -14,12 +14,17 @@
 namespace blink {
 
 class CanvasResource;
+class CanvasResourceSharedImage;
+class ExternalCanvasResource;
 class StaticBitmapImage;
 
 class PLATFORM_EXPORT ExportedCanvasResource
     : public ThreadSafeRefCounted<ExportedCanvasResource> {
  public:
-  explicit ExportedCanvasResource(scoped_refptr<CanvasResource> resource);
+  explicit ExportedCanvasResource(
+      scoped_refptr<CanvasResourceSharedImage> resource);
+  explicit ExportedCanvasResource(
+      scoped_refptr<ExternalCanvasResource> resource);
   ~ExportedCanvasResource();
 
   static void OnPlaceholderReleasedResource(

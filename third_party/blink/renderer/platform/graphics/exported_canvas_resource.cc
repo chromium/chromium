@@ -11,7 +11,14 @@
 namespace blink {
 
 ExportedCanvasResource::ExportedCanvasResource(
-    scoped_refptr<CanvasResource> resource)
+    scoped_refptr<ExternalCanvasResource> resource)
+    : resource_(std::move(resource)) {
+  CHECK(resource_);
+  CHECK(!resource_->is_cross_thread());
+}
+
+ExportedCanvasResource::ExportedCanvasResource(
+    scoped_refptr<CanvasResourceSharedImage> resource)
     : resource_(std::move(resource)) {
   CHECK(resource_);
   CHECK(!resource_->is_cross_thread());
