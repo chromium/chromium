@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] parseHTML testcase 6, "<!-- a --><html><body>x<!-- b --></body></html><!-- c -->"
+  assert_true: [object Comment].isEqual([object HTMLHtmlElement]) fails. Path: [object HTMLDocument] / [object Comment]. expected true got false
+[FAIL] parseHTML testcase 7, "<?a b?><html><body>x<?c d?></body></html><?e f?>"
+  assert_true: [object ProcessingInstruction].isEqual([object HTMLHtmlElement]) fails. Path: [object HTMLDocument] / [object ProcessingInstruction]. expected true got false
+[FAIL] parseHTMLUnsafe testcase 6, "<!-- a --><html><body>x<!-- b --></body></html><!-- c -->"
+  assert_true: [object Comment].isEqual([object HTMLHtmlElement]) fails. Path: [object HTMLDocument] / [object Comment]. expected true got false
+[FAIL] parseHTMLUnsafe testcase 7, "<?a b?><html><body>x<?c d?></body></html><?e f?>"
+  assert_true: [object ProcessingInstruction].isEqual([object HTMLHtmlElement]) fails. Path: [object HTMLDocument] / [object ProcessingInstruction]. expected true got false
+Harness: the test ran to completion.
+

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Blob.text() does not sniff a UTF-16LE byte order mark
+  assert_equals: expected "\\ufffd\\ufffdP\\0" but got "P"
+[FAIL] Blob.text() does not sniff a UTF-16BE byte order mark
+  assert_equals: expected "\\ufffd\\ufffd\\0P" but got "P"
+Harness: the test ran to completion.
+

@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] Inserting a layer block reorders existing layers
+  assert_equals: Color after update expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+[FAIL] Inserting a layer statement reorders existing layers
+  assert_equals: Color after update expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+[FAIL] Inserting a dotted layer statement reorders existing sublayers
+  assert_equals: Color after update expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+[FAIL] Deleting a layer statement reorders existing layers
+  assert_equals: Color after update expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+[FAIL] Deleting a layer block reorders existing layers
+  assert_equals: Color after update expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+[FAIL] Inserting a layer block in a shadow tree reorders existing layers
+  assert_equals: Color after update expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+Harness: the test ran to completion.
+

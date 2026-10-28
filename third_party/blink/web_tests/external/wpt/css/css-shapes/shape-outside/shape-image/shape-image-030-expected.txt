@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] shape-margin: 65536px covers the whole float margin box
+  assert_equals: expected 46400 but got 10
+[FAIL] shape-margin: 65537px covers the whole float margin box
+  assert_equals: expected 46400 but got 372
+[FAIL] shape-margin: 70000px covers the whole float margin box
+  assert_equals: expected 46400 but got 3309
+Harness: the test ran to completion.
+

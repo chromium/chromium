@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Undo in EditContext.
+  assert_equals: Should fire historyUndo beforeinput. expected "historyUndo" but got "insertText"
+[FAIL] Redo in EditContext.
+  assert_equals: Should fire historyRedo beforeinput. expected "historyRedo" but got "insertText"
+Harness: the test ran to completion.
+

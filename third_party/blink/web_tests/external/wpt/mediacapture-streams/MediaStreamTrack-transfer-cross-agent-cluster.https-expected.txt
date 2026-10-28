@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] MediaStreamTrack can be transferred to a same-origin iframe
+  promise_test: Unhandled rejection with value: object "DataCloneError: Failed to execute 'postMessage' on 'Window': MediaStreamTrack could not be serialized."
+[FAIL] MediaStreamTrack cannot be transferred to a cross-site iframe
+  promise_test: Unhandled rejection with value: object "DataCloneError: Failed to execute 'postMessage' on 'Window': MediaStreamTrack could not be serialized."
+Harness: the test ran to completion.
+

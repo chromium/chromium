@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] createWritable throws TypeError when sendGroup is from different transport
+  assert_throws_js: createWritable should throw TypeError when sendGroup is from different transport function "() => {\n    wt2.datagrams.createWritable({ sendGroup: sendGroupFromWt1 });\n  }" threw object "InvalidStateError: Failed to execute 'createWritable' on 'WebTransportDatagramDuplexStream': The sendGroup belongs to a different WebTransport instance." ("InvalidStateError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] createWritable checks the sendGroup before the transport state
+  assert_throws_js: createWritable should throw TypeError, not InvalidStateError function "() => {\n    wt2.datagrams.createWritable({ sendGroup: sendGroupFromWt1 });\n  }" threw object "InvalidStateError: Failed to execute 'createWritable' on 'WebTransportDatagramDuplexStream': No connection." ("InvalidStateError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+Harness: the test ran to completion.
+

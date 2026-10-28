@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Calling StylePropertyMap.append with no values and an unsupported property name throws TypeError
+  assert_throws_js: function "() => styleMap.append(property, ...values)" did not throw
+[FAIL] Calling StylePropertyMap.append with no values and a property that is not list valued throws TypeError
+  assert_throws_js: function "() => styleMap.append(property, ...values)" did not throw
+[FAIL] Calling StylePropertyMap.append with no values and a shorthand property throws TypeError
+  assert_throws_js: function "() => styleMap.append(property, ...values)" did not throw
+[FAIL] Calling StylePropertyMap.append with no values and a custom property throws TypeError
+  assert_throws_js: function "() => styleMap.append(property, ...values)" did not throw
+Harness: the test ran to completion.
+

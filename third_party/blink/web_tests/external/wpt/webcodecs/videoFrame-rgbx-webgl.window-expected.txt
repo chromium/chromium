@@ -1,0 +1,29 @@
+This is a testharness.js-based test.
+[FAIL] texImage2D() (premultiplyAlpha=false) of a RGBX VideoFrame with padding byte 0 is opaque with correct RGB
+  assert_array_equals: RGBX, padding 0x0: pixel 0 (x=0, y=0) expected property 0 to be 255 but got 0 (expected array [255, 0, 0, 255] got [0, 0, 0, 0])
+[FAIL] texImage2D() (premultiplyAlpha=false) of a RGBX VideoFrame with padding byte 127 is opaque with correct RGB
+  assert_array_equals: RGBX, padding 0x7f: pixel 0 (x=0, y=0) expected property 3 to be 255 but got 127 (expected array [255, 0, 0, 255] got [255, 0, 0, 127])
+[FAIL] texImage2D() (premultiplyAlpha=false) of a BGRX VideoFrame with padding byte 0 is opaque with correct RGB
+  assert_array_equals: BGRX, padding 0x0: pixel 0 (x=0, y=0) expected property 0 to be 255 but got 0 (expected array [255, 0, 0, 255] got [0, 0, 0, 0])
+[FAIL] texImage2D() (premultiplyAlpha=false) of a BGRX VideoFrame with padding byte 127 is opaque with correct RGB
+  assert_array_equals: BGRX, padding 0x7f: pixel 0 (x=0, y=0) expected property 3 to be 255 but got 127 (expected array [255, 0, 0, 255] got [255, 0, 0, 127])
+[FAIL] texImage2D() (premultiplyAlpha=true) of a RGBX VideoFrame with padding byte 0 is opaque with correct RGB
+  assert_array_equals: RGBX, padding 0x0: pixel 0 (x=0, y=0) expected property 3 to be 255 but got 0 (expected array [255, 0, 0, 255] got [255, 0, 0, 0])
+[FAIL] texImage2D() (premultiplyAlpha=true) of a RGBX VideoFrame with padding byte 127 is opaque with correct RGB
+  assert_array_equals: RGBX, padding 0x7f: pixel 0 (x=0, y=0) expected property 3 to be 255 but got 127 (expected array [255, 0, 0, 255] got [255, 0, 0, 127])
+[FAIL] texImage2D() (premultiplyAlpha=true) of a BGRX VideoFrame with padding byte 0 is opaque with correct RGB
+  assert_array_equals: BGRX, padding 0x0: pixel 0 (x=0, y=0) expected property 3 to be 255 but got 0 (expected array [255, 0, 0, 255] got [255, 0, 0, 0])
+[FAIL] texImage2D() (premultiplyAlpha=true) of a BGRX VideoFrame with padding byte 127 is opaque with correct RGB
+  assert_array_equals: BGRX, padding 0x7f: pixel 0 (x=0, y=0) expected property 3 to be 255 but got 127 (expected array [255, 0, 0, 255] got [255, 0, 0, 127])
+[FAIL] texImage2D() as RGB (premultiplyAlpha=false) of a RGBX VideoFrame with padding byte 0 is opaque with correct RGB
+  assert_array_equals: RGBX, padding 0x0: pixel 0 (x=0, y=0) expected property 0 to be 255 but got 0 (expected array [255, 0, 0, 255] got [0, 0, 0, 255])
+[FAIL] texImage2D() as RGB (premultiplyAlpha=false) of a RGBX VideoFrame with padding byte 127 is opaque with correct RGB
+  assert_array_equals: RGBX, padding 0x7f: pixel 5 (x=1, y=1) expected property 0 to be 10 but got 20 (expected array [10, 200, 90, 255] got [20, 255, 181, 255])
+[FAIL] texImage2D() as RGB (premultiplyAlpha=false) of a BGRX VideoFrame with padding byte 0 is opaque with correct RGB
+  assert_array_equals: BGRX, padding 0x0: pixel 0 (x=0, y=0) expected property 0 to be 255 but got 0 (expected array [255, 0, 0, 255] got [0, 0, 0, 255])
+[FAIL] texImage2D() as RGB (premultiplyAlpha=false) of a BGRX VideoFrame with padding byte 127 is opaque with correct RGB
+  assert_array_equals: BGRX, padding 0x7f: pixel 5 (x=1, y=1) expected property 0 to be 10 but got 20 (expected array [10, 200, 90, 255] got [20, 255, 181, 255])
+[FAIL] texImage2D() of a cloned RGBX VideoFrame is opaque
+  assert_array_equals: cloned frame: pixel 0 (x=0, y=0) expected property 0 to be 255 but got 0 (expected array [255, 0, 0, 255] got [0, 0, 0, 0])
+Harness: the test ran to completion.
+

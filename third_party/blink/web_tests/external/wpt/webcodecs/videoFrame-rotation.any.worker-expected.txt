@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] An explicit display size is not swapped by the init rotation
+  assert_equals: displayWidth expected 20 but got 10
+Harness: the test ran to completion.
+

@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Appending to filter joins values with spaces (inline)
+  Failed to execute 'append' on 'StylePropertyMap': Property does not support multiple values
+[FAIL] Appending to an existing filter list (inline)
+  Failed to execute 'append' on 'StylePropertyMap': Property does not support multiple values
+[FAIL] Appending to filter joins values with spaces (declared)
+  Failed to execute 'append' on 'StylePropertyMap': Property does not support multiple values
+[FAIL] Appending to an existing filter list (declared)
+  Failed to execute 'append' on 'StylePropertyMap': Property does not support multiple values
+Harness: the test ran to completion.
+

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Navigating a cross-origin iframe that is same origin-domain to its current URL pushes
+  assert_equals: navigation.currentEntry.index expected 1 but got 0
+[FAIL] Navigating a cross-origin iframe that is same origin-domain to its current URL with a fragment pushes
+  assert_equals: navigation.currentEntry.index expected 1 but got 0
+[FAIL] Navigating a same-origin iframe that is not same origin-domain to its current URL with a fragment replaces
+  assert_equals: navigation.currentEntry.index expected 0 but got 1
+Harness: the test ran to completion.
+

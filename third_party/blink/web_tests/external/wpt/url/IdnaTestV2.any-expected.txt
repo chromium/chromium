@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 42 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 49 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] ToASCII("≠ᢙ≯.솣-ᡴⴀ")
   Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("≠ᢙ≯.솣-ᡴႠ")
@@ -17,6 +17,12 @@ Found 42 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] ToASCII("。。Ⴃ≯") A4_2 (ignored)
   Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("。。ⴃ≯") A4_2 (ignored)
+  Failed to construct 'URL': Invalid URL
+[FAIL] ToASCII("ⴍ𿣍ꡨ֮.ⴞ")
+  Failed to construct 'URL': Invalid URL
+[FAIL] ToASCII("Ⴍ𿣍ꡨ֮.Ⴞ")
+  Failed to construct 'URL': Invalid URL
+[FAIL] ToASCII("Ⴍ𿣍ꡨ֮.ⴞ")
   Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("⾆．ꡈ５≯ß")
   Failed to construct 'URL': Invalid URL
@@ -83,6 +89,14 @@ Found 42 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] ToASCII("≮𝟕．謖ss≯")
   Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("≮𝟕．謖Ss≯")
+  Failed to construct 'URL': Invalid URL
+[FAIL] ToASCII("𾢬。ܩ。쯙5")
+  Failed to construct 'URL': Invalid URL
+[FAIL] ToASCII("𾢬。ܩ。쯙5")
+  Failed to construct 'URL': Invalid URL
+[FAIL] ToASCII("𾢬.ܩ.쯙5")
+  Failed to construct 'URL': Invalid URL
+[FAIL] ToASCII("𾢬.ܩ.쯙5")
   Failed to construct 'URL': Invalid URL
 Harness: the test ran to completion.
 

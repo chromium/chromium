@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] A SharedArrayBuffer posted on a BroadcastChannel by a document with a policy fires messageerror at same-origin documents without one
+  assert_equals: this document, without a policy expected "messageerror" but got "[object Null]"
+[FAIL] A SharedArrayBuffer posted on a BroadcastChannel by a document with a policy arrives at same-origin documents with one in its agent cluster and shares memory with them
+  assert_equals: same-origin frame with a policy in the popup expected "[object SharedArrayBuffer]" but got "[object Null]"
+Harness: the test ran to completion.
+

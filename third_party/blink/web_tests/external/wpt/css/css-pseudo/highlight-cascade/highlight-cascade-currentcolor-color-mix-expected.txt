@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] currentcolor in a color-mix() resolves against the inheriting element's own color
+  assert_equals: expected "oklab(0.497548 -0.0610425 -0.167573)" but got "oklab(0.271558 -0.0448113 -0.0118121)"
+Harness: the test ran to completion.
+

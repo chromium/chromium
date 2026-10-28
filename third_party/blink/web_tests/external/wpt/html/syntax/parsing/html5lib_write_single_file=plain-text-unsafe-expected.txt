@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] <svg>\\x00&#xFFFD;</svg><frameset>: U+FFFD after U+0000 NULL in foreign content sets frameset-ok to "not ok"
+  assert_equals: expected "#document\\n| <html>\\n|   <head>\\n|   <body>\\n|     <svg svg>\\n|       \\"\\ufffd\\ufffd\\"" but got "#document\\n| <html>\\n|   <head>\\n|   <frameset>"
+[FAIL] <!DOCTYPE html><body>a<\\x00b: U+0000 NULL after a less-than sign is ignored in body
+  assert_equals: expected "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     \\"a<b\\"" but got "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     \\"a<\\ufffdb\\""
+[FAIL] <svg><foreignObject><![CDATA[a\\x00b]]>: U+0000 NULL in a CDATA section at an HTML integration point is ignored
+  assert_equals: expected "#document\\n| <html>\\n|   <head>\\n|   <body>\\n|     <svg svg>\\n|       <svg foreignObject>\\n|         \\"ab\\"" but got "#document\\n| <html>\\n|   <head>\\n|   <body>\\n|     <svg svg>\\n|       <svg foreignObject>\\n|         \\"a\\ufffdb\\""
+Harness: the test ran to completion.
+

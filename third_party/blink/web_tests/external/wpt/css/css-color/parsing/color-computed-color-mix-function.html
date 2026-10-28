@@ -117,6 +117,9 @@
     fuzzy_test_computed_color(`color-mix(in hsl, hsl(120deg 10% 20%) 0%, hsl(30deg 30% 40%) 0%)`, `color(srgb 0.33 0.36 0.24 / 0)`);
     fuzzy_test_computed_color(`color-mix(in hsl, hsl(120deg 10% 20% / .4) 0%, hsl(30deg 30% 40% / .8) 0%)`, `color(srgb 0.372222 0.411111 0.255556 / 0)`);
 
+    // A naive f32 implementation would yield a chromatic color after conversion from lch to hsl
+    fuzzy_test_computed_color(`color-mix(in hsl, lch(0.1 0 0), hsl(11 33 44))`, `color(srgb 0.25713316 0.19765042 0.18429716)`);
+
     // hwb()
     fuzzy_test_computed_color(`color-mix(in hwb, hwb(120deg 10% 20%), hwb(30deg 30% 40%))`, `color(srgb 0.575 0.7 0.2)`);
     fuzzy_test_computed_color(`color-mix(in hwb, hwb(120deg 10% 20%) 25%, hwb(30deg 30% 40%))`, `color(srgb 0.65 0.6 0.25)`);
@@ -412,6 +415,7 @@
     fuzzy_test_computed_color(`color-mix(in oklch, oklch(none 20 30deg) 0%, oklch(none 60 70deg) 0%)`, `oklch(none 40 50 / 0)`);
     // Percentages adding up to zero result in a transparent midpoint. https://drafts.csswg.org/css-color-5/#ex-mix-zero-sum
     fuzzy_test_computed_color(`color-mix(in oklch, teal 0%, olive 0%)`, `oklch(0.561894 0.109643 152.2691 / 0)`);
+    fuzzy_test_computed_color(`color-mix(in oklch, teal calc(-10%), olive 0%)`, `oklch(0.561894 0.109643 152.2691 / 0)`);
 
     // lab()
     fuzzy_test_computed_color(`color-mix(in lab, lab(10 20 30), lab(50 60 70))`, `lab(30 40 50)`);
@@ -603,19 +607,24 @@
     fuzzy_test_computed_color(`color-mix(in hsl, hsl(0 100% 100%), blue)`, `color(srgb 1 0.5 1)`);                       // hsl -> hsl => does not convert => doesn't make the powerless hue missing: result is pinkish (different if hue was 'none')
     fuzzy_test_computed_color(`color-mix(in hsl, hwb(0 50.0 50.0), blue)`, `color(srgb 0.25 0.25 0.75)`);                // conversion makes the powerless hue missing: result is bluish
     fuzzy_test_computed_color(`color-mix(in hsl, lch(100% 0 0), blue)`, `color(srgb 0.625 0.625 0.875)`);
-    fuzzy_test_computed_color(`color-mix(in hsl, oklch(100% 0 0), blue)`, `color(srgb 0.5625 0.75 0.9375)`);
+    fuzzy_test_computed_color(`color-mix(in hsl, oklch(100% 0 0), blue)`, `color(srgb 0.625 0.625 0.875)`);
     fuzzy_test_computed_color(`color-mix(in hwb, hsl(0 100% 100%), blue)`, `color(srgb 0.5 0.5 1)`);
     fuzzy_test_computed_color(`color-mix(in hwb, hwb(0 50.0 50.0), blue)`, `color(srgb 0.75 0.25 0.75)`);
     fuzzy_test_computed_color(`color-mix(in hwb, lch(100% 0 0), blue)`, `color(srgb 0.5 0.5 1)`);
-    fuzzy_test_computed_color(`color-mix(in hwb, oklch(100% 0 0), blue)`, `color(srgb 0.5 0.75 1)`);
+    fuzzy_test_computed_color(`color-mix(in hwb, oklch(100% 0 0), blue)`, `color(srgb 0.5 0.5 1)`);
     fuzzy_test_computed_color(`color-mix(in lch, hsl(0 100% 100%), blue)`, `lch(64.784 65.6 301.364)`, 0.001);
-    fuzzy_test_computed_color(`color-mix(in lch, hwb(0 50.0 50.0), blue)`, `lch(41.478 65.6 301.364)`, 0.001);
+    fuzzy_test_computed_color(`color-mix(in lch, hwb(0 50.0 50.0), blue)`, `lch(41.4786 65.6 301.364)`, 0.001);
     fuzzy_test_computed_color(`color-mix(in lch, lch(100% 0 0), blue)`, `lch(64.784 65.6 330.682)`, 0.001);
     fuzzy_test_computed_color(`color-mix(in lch, oklch(100% 0 0), blue)`, `lch(64.784 65.6 301.364)`, 0.001);
-    fuzzy_test_computed_color(`color-mix(in oklch, hsl(0 100% 100%), blue)`, `oklch(0.726 0.156 264.052)`, 0.001);
-    fuzzy_test_computed_color(`color-mix(in oklch, hwb(0 50.0 50.0), blue)`, `oklch(0.525 0.156 264.052)`, 0.001);
-    fuzzy_test_computed_color(`color-mix(in oklch, lch(100% 0 0), blue)`, `oklch(0.726 0.156 264.052)`, 0.001);
-    fuzzy_test_computed_color(`color-mix(in oklch, oklch(100% 0 0), blue)`, `oklch(0.726 0.1567 312.026)`, 0.001);
+    fuzzy_test_computed_color(`color-mix(in oklch, hsl(0 100% 100%), blue)`, `oklch(0.726 0.1566 264.052)`, 0.001);
+    fuzzy_test_computed_color(`color-mix(in oklch, hwb(0 50.0 50.0), blue)`, `oklch(0.525 0.1566 264.052)`, 0.001);
+    fuzzy_test_computed_color(`color-mix(in oklch, lch(100% 0 0), blue)`, `oklch(0.726 0.1566 264.052)`, 0.001);
+    fuzzy_test_computed_color(`color-mix(in oklch, oklch(100% 0 0), blue)`, `oklch(0.726 0.15661 312.026)`, 0.001);
+
+    // Nested color-mix() with missing or powerless hues.
+    // https://github.com/w3c/csswg-drafts/issues/14046
+    fuzzy_test_computed_color(`color-mix(in hsl, color-mix(in hsl longer hue, hsl(none 50% 50%), hsl(none 50% 50%)), hsl(180deg 50% 50%))`, `color(srgb 0.25 0.75 0.75)`);
+    fuzzy_test_computed_color(`color-mix(in lch, color-mix(in lch longer hue, hsl(50deg 0% 50%), hsl(50deg 0% 50%)), lch(50% 100% 180deg))`, `lch(51.69448237 75 180)`, 0.001);
 
     // Carry forward analogous sets with all missing components.
     fuzzy_test_computed_color(`color-mix(in oklch, oklab(0.1 none none), oklch(0.3 0.2 90deg))`, `oklch(0.2 0.2 90)`);

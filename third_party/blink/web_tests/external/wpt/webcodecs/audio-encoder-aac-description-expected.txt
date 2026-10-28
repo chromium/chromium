@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] The description of a 48000Hz mono AAC encoder is an AudioSpecificConfig
+  promise_test: Unhandled rejection with value: object "ReferenceError: AudioEncoder is not defined"
+[FAIL] The description of a 44100Hz stereo AAC encoder is an AudioSpecificConfig
+  promise_test: Unhandled rejection with value: object "ReferenceError: AudioEncoder is not defined"
+[FAIL] The decoderConfig of an AAC encoder can be used to configure an AudioDecoder
+  promise_test: Unhandled rejection with value: object "ReferenceError: AudioEncoder is not defined"
+Harness: the test ran to completion.
+

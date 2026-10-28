@@ -19,8 +19,11 @@ dictionary WebInstallResult {};
 interface HTMLInstallElement : HTMLElement {
   [HTMLConstructor] constructor();
 
-  [CEReactions] attribute USVString? manifest;
-  [CEReactions] attribute USVString? manifestId;
+  [CEReactions, ReflectURL] attribute USVString manifest;
+  [CEReactions, ReflectURL] attribute USVString manifestId;
+};
+
+partial interface mixin GlobalEventHandlers {
   attribute EventHandler oninstallresult;
 };
 

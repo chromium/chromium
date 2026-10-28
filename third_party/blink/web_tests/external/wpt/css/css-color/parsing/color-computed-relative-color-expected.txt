@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property color value 'hsl(from lch(0.1 0 0) h s l)'
+  Colors do not match.\nActual:   color(srgb 0.0014299 0.00143053 0.00143033)\nExpected: hsl(none 0% 0.14303169%).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
 [FAIL] Property color value 'color(from color(rec2020 0.25 0.5 0.75) srgb r g b)'
   Colors do not match.\nActual:   color(srgb -0.280133 0.565557 0.799559)\nExpected: color(srgb -0.328686 0.491201 0.76185).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected -0.328686 +/- 0.001, expected -0.328686 but got -0.280133
 [FAIL] Property color value 'color(from color(srgb 0.25 0.5 0.75) rec2020 r g b)'

@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Inserting an option that causes another option to be selected updates selectedcontent.
+  assert_equals: selectedcontent should be updated when inserting an option selects another option. expected "one" but got ""
+[FAIL] Inserting selectedcontent followed by an option updates selectedcontent once.
+  assert_equals: Inserting selectedcontent and an option together should update selectedcontent once. expected 1 but got 2
+[FAIL] Inserting an option followed by selectedcontent updates selectedcontent once.
+  assert_equals: Inserting an option and selectedcontent together should update selectedcontent once. expected 1 but got 2
+[FAIL] Inserting selectedcontent followed by an option that changes selectedness updates every selectedcontent once.
+  assert_equals: The inserted selectedcontent should be updated once. expected 1 but got 2
+[FAIL] Inserting a select that already contains options updates its selectedcontent once.
+  assert_equals: Inserting the select should update selectedcontent once. expected 1 but got 2
+Harness: the test ran to completion.
+

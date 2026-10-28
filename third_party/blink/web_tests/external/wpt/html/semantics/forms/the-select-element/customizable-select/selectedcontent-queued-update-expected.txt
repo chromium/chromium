@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] Removing options queues a single update of selectedcontent.
+  assert_equals: Removing the selected option twice should update selectedcontent once. expected 1 but got 2
+[FAIL] A queued update of selectedcontent does nothing if it was updated in the meantime.
+  assert_equals: The queued update should do nothing once selectedcontent was updated. expected 1 but got 2
+[FAIL] Inserting an option performs a pending update of selectedcontent.
+  assert_equals: Inserting an option should update selectedcontent synchronously. expected "two" but got "one"
+[FAIL] Moving a selectedcontent element twice queues a single update.
+  assert_equals: Moving selectedcontent twice should update it once. expected 1 but got 2
+[FAIL] A queued update of a moved selectedcontent element does nothing if it was updated in the meantime.
+  assert_equals: The queued update should do nothing once selectedcontent was updated. expected 1 but got 2
+[FAIL] Inserting selectedcontent while an update of its select's selectedcontent elements is queued leaves it to that update.
+  assert_equals: Inserting selectedcontent should not update it while an update is queued. expected "" but got "two"
+Harness: the test ran to completion.
+

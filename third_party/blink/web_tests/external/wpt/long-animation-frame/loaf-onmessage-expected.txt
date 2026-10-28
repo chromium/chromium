@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] LoAF script: Window.onmessage event-listener, onmessage from iframe - ORIGIN
+  assert_true: Entry detected expected true got false
+[FAIL] LoAF script: Window.onmessage event-listener, onmessage from iframe - REMOTE_ORIGIN
+  assert_true: Entry detected expected true got false
+[FAIL] LoAF script: Window.onmessage event-listener, onmessage from iframe - HTTP_NOTSAMESITE_ORIGIN
+  assert_true: Entry detected expected true got false
+Harness: the test ran to completion.
+

@@ -15,7 +15,7 @@ Found 67 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Calling CSSMathSum.add with number CSSUnitValues simplifies to a CSSUnitValue
   CSS is not defined
 [FAIL] Calling CSSNumericValue.add with incompatible types throws TypeError
-  assert_throws_js: function "() => new CSS.px(0)[methodName](CSS.px(1), CSS.s(2))" threw object "ReferenceError: CSS is not defined" ("ReferenceError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+  CSS is not defined
 [FAIL] Calling CSSUnitValue.sub with no arguments returns itself
   CSS is not defined
 [FAIL] Calling CSSMathValue.sub with no arguments returns itself
@@ -31,7 +31,7 @@ Found 67 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Calling CSSMathSum.sub with number CSSUnitValues simplifies to a CSSUnitValue
   CSS is not defined
 [FAIL] Calling CSSNumericValue.sub with incompatible types throws TypeError
-  assert_throws_js: function "() => new CSS.px(0)[methodName](CSS.px(1), CSS.s(2))" threw object "ReferenceError: CSS is not defined" ("ReferenceError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+  CSS is not defined
 [FAIL] Calling CSSUnitValue.mul with no arguments returns itself
   CSS is not defined
 [FAIL] Calling CSSMathValue.mul with no arguments returns itself
@@ -47,7 +47,7 @@ Found 67 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Calling CSSMathProduct.mul with number CSSUnitValues simplifies to a CSSUnitValue
   CSS is not defined
 [FAIL] Calling CSSNumericValue.mul with incompatible types throws TypeError
-  assert_throws_js: function "() => new CSS.px(0)[methodName](CSS.px(1), CSS.s(2))" threw object "ReferenceError: CSS is not defined" ("ReferenceError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+  CSS is not defined
 [FAIL] Calling CSSUnitValue.div with no arguments returns itself
   CSS is not defined
 [FAIL] Calling CSSMathValue.div with no arguments returns itself
@@ -63,7 +63,7 @@ Found 67 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Calling CSSMathProduct.div with number CSSUnitValues simplifies to a CSSUnitValue
   CSS is not defined
 [FAIL] Calling CSSNumericValue.div with incompatible types throws TypeError
-  assert_throws_js: function "() => new CSS.px(0)[methodName](CSS.px(1), CSS.s(2))" threw object "ReferenceError: CSS is not defined" ("ReferenceError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+  CSS is not defined
 [FAIL] Calling CSSUnitValue.min with no arguments returns itself
   CSS is not defined
 [FAIL] Calling CSSMathValue.min with no arguments returns itself
@@ -79,7 +79,7 @@ Found 67 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Calling CSSMathMin.min with number CSSUnitValues simplifies to a CSSUnitValue
   CSS is not defined
 [FAIL] Calling CSSNumericValue.min with incompatible types throws TypeError
-  assert_throws_js: function "() => new CSS.px(0)[methodName](CSS.px(1), CSS.s(2))" threw object "ReferenceError: CSS is not defined" ("ReferenceError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+  CSS is not defined
 [FAIL] Calling CSSUnitValue.max with no arguments returns itself
   CSS is not defined
 [FAIL] Calling CSSMathValue.max with no arguments returns itself
@@ -95,7 +95,7 @@ Found 67 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Calling CSSMathMax.max with number CSSUnitValues simplifies to a CSSUnitValue
   CSS is not defined
 [FAIL] Calling CSSNumericValue.max with incompatible types throws TypeError
-  assert_throws_js: function "() => new CSS.px(0)[methodName](CSS.px(1), CSS.s(2))" threw object "ReferenceError: CSS is not defined" ("ReferenceError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+  CSS is not defined
 [FAIL] Calling CSSUnitValue.add with CSSUnitValues with same unit simplifies to a CSSUnitValue
   CSS is not defined
 [FAIL] Calling CSSUnitValue.sub with CSSUnitValues with same unit simplifies to a CSSUnitValue

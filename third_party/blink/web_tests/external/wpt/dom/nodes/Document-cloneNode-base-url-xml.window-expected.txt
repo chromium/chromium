@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Clone of an XHTML document with a <base>
+  assert_equals: shallow expected "http://example.com/foo/bar" but got "http://web-platform.test:8001/dom/nodes/Document-cloneNode-base-url-xml.window.html"
+Harness: the test ran to completion.
+

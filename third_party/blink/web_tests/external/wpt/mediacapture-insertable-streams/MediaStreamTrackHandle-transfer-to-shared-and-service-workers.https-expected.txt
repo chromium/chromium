@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] MediaStreamTrackHandle cannot be transferred to a shared worker
+  promise_test: Unhandled rejection with value: object "ReferenceError: MediaStreamTrackHandle is not defined"
+[FAIL] MediaStreamTrackHandle cannot be transferred to a service worker
+  promise_test: Unhandled rejection with value: object "ReferenceError: MediaStreamTrackHandle is not defined"
+Harness: the test ran to completion.
+

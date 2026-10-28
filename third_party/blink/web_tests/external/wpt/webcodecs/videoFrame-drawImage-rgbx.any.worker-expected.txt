@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Drawing a RGBX VideoFrame with padding byte 0 to a canvas gives opaque correct RGB
+  assert_array_equals: RGBX, padding 0x0: pixel 0 (x=0, y=0) expected property 0 to be 255 but got 0 (expected array [255, 0, 0, 255] got [0, 0, 0, 0])
+[FAIL] Drawing a RGBX VideoFrame with padding byte 127 to a canvas gives opaque correct RGB
+  assert_array_equals: RGBX, padding 0x7f: pixel 0 (x=0, y=0) expected property 3 to be 255 but got 127 (expected array [255, 0, 0, 255] got [255, 0, 0, 127])
+[FAIL] Drawing a BGRX VideoFrame with padding byte 0 to a canvas gives opaque correct RGB
+  assert_array_equals: BGRX, padding 0x0: pixel 0 (x=0, y=0) expected property 0 to be 255 but got 0 (expected array [255, 0, 0, 255] got [0, 0, 0, 0])
+[FAIL] Drawing a BGRX VideoFrame with padding byte 127 to a canvas gives opaque correct RGB
+  assert_array_equals: BGRX, padding 0x7f: pixel 0 (x=0, y=0) expected property 3 to be 255 but got 127 (expected array [255, 0, 0, 255] got [255, 0, 0, 127])
+Harness: the test ran to completion.
+

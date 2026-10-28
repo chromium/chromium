@@ -1,0 +1,94 @@
+This is a testharness.js-based test.
+Found 45 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Convert 4x4 null yellow RGBX frame to RGBX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"rgb","primaries":"bt709","transfer":"iec61966-2-1"} Mismatch at offset 0 R: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 null red RGBX frame to RGBX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"rgb","primaries":"bt709","transfer":"iec61966-2-1"} Mismatch at offset 0 R: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 null blue RGBX frame to RGBX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"rgb","primaries":"bt709","transfer":"iec61966-2-1"} Mismatch at offset 0 B: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 null green RGBX frame to RGBX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"rgb","primaries":"bt709","transfer":"iec61966-2-1"} Mismatch at offset 0 G: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 null white RGBX frame to RGBX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"rgb","primaries":"bt709","transfer":"iec61966-2-1"} Mismatch at offset 0 R: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 smpte170m yellow RGBX frame to RGBX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"smpte170m","primaries":"smpte170m","transfer":"smpte170m"} Mismatch at offset 0 R: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 smpte170m red RGBX frame to RGBX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"smpte170m","primaries":"smpte170m","transfer":"smpte170m"} Mismatch at offset 0 R: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 smpte170m blue RGBX frame to RGBX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"smpte170m","primaries":"smpte170m","transfer":"smpte170m"} Mismatch at offset 0 B: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 smpte170m green RGBX frame to RGBX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"smpte170m","primaries":"smpte170m","transfer":"smpte170m"} Mismatch at offset 0 G: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 smpte170m white RGBX frame to RGBX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"smpte170m","primaries":"smpte170m","transfer":"smpte170m"} Mismatch at offset 0 R: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 bt709 yellow RGBX frame to RGBX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"bt709","primaries":"bt709","transfer":"bt709"} Mismatch at offset 0 R: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 bt709 red RGBX frame to RGBX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"bt709","primaries":"bt709","transfer":"bt709"} Mismatch at offset 0 R: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 bt709 blue RGBX frame to RGBX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"bt709","primaries":"bt709","transfer":"bt709"} Mismatch at offset 0 B: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 bt709 green RGBX frame to RGBX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"bt709","primaries":"bt709","transfer":"bt709"} Mismatch at offset 0 G: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 bt709 white RGBX frame to RGBX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"bt709","primaries":"bt709","transfer":"bt709"} Mismatch at offset 0 R: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 null yellow RGBX frame to BGRA / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"rgb","primaries":"bt709","transfer":"iec61966-2-1"} Mismatch at offset 0 G: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 null red RGBX frame to BGRA / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"rgb","primaries":"bt709","transfer":"iec61966-2-1"} Mismatch at offset 0 B: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 null blue RGBX frame to BGRA / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"rgb","primaries":"bt709","transfer":"iec61966-2-1"} Mismatch at offset 0 R: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 null green RGBX frame to BGRA / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"rgb","primaries":"bt709","transfer":"iec61966-2-1"} Mismatch at offset 0 G: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 null white RGBX frame to BGRA / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"rgb","primaries":"bt709","transfer":"iec61966-2-1"} Mismatch at offset 0 R: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 smpte170m yellow RGBX frame to BGRA / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"smpte170m","primaries":"smpte170m","transfer":"smpte170m"} Mismatch at offset 0 G: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 smpte170m red RGBX frame to BGRA / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"smpte170m","primaries":"smpte170m","transfer":"smpte170m"} Mismatch at offset 0 B: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 smpte170m blue RGBX frame to BGRA / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"smpte170m","primaries":"smpte170m","transfer":"smpte170m"} Mismatch at offset 0 R: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 smpte170m green RGBX frame to BGRA / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"smpte170m","primaries":"smpte170m","transfer":"smpte170m"} Mismatch at offset 0 G: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 smpte170m white RGBX frame to BGRA / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"smpte170m","primaries":"smpte170m","transfer":"smpte170m"} Mismatch at offset 0 R: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 bt709 yellow RGBX frame to BGRA / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"bt709","primaries":"bt709","transfer":"bt709"} Mismatch at offset 0 G: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 bt709 red RGBX frame to BGRA / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"bt709","primaries":"bt709","transfer":"bt709"} Mismatch at offset 0 B: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 bt709 blue RGBX frame to BGRA / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"bt709","primaries":"bt709","transfer":"bt709"} Mismatch at offset 0 R: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 bt709 green RGBX frame to BGRA / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"bt709","primaries":"bt709","transfer":"bt709"} Mismatch at offset 0 G: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 bt709 white RGBX frame to BGRA / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"bt709","primaries":"bt709","transfer":"bt709"} Mismatch at offset 0 R: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 null yellow RGBX frame to BGRX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"rgb","primaries":"bt709","transfer":"iec61966-2-1"} Mismatch at offset 0 G: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 null red RGBX frame to BGRX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"rgb","primaries":"bt709","transfer":"iec61966-2-1"} Mismatch at offset 0 B: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 null blue RGBX frame to BGRX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"rgb","primaries":"bt709","transfer":"iec61966-2-1"} Mismatch at offset 0 R: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 null green RGBX frame to BGRX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"rgb","primaries":"bt709","transfer":"iec61966-2-1"} Mismatch at offset 0 G: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 null white RGBX frame to BGRX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"rgb","primaries":"bt709","transfer":"iec61966-2-1"} Mismatch at offset 0 R: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 smpte170m yellow RGBX frame to BGRX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"smpte170m","primaries":"smpte170m","transfer":"smpte170m"} Mismatch at offset 0 G: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 smpte170m red RGBX frame to BGRX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"smpte170m","primaries":"smpte170m","transfer":"smpte170m"} Mismatch at offset 0 B: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 smpte170m blue RGBX frame to BGRX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"smpte170m","primaries":"smpte170m","transfer":"smpte170m"} Mismatch at offset 0 R: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 smpte170m green RGBX frame to BGRX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"smpte170m","primaries":"smpte170m","transfer":"smpte170m"} Mismatch at offset 0 G: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 smpte170m white RGBX frame to BGRX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"smpte170m","primaries":"smpte170m","transfer":"smpte170m"} Mismatch at offset 0 R: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 bt709 yellow RGBX frame to BGRX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"bt709","primaries":"bt709","transfer":"bt709"} Mismatch at offset 0 G: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 bt709 red RGBX frame to BGRX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"bt709","primaries":"bt709","transfer":"bt709"} Mismatch at offset 0 B: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 bt709 blue RGBX frame to BGRX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"bt709","primaries":"bt709","transfer":"bt709"} Mismatch at offset 0 R: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 bt709 green RGBX frame to BGRX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"bt709","primaries":"bt709","transfer":"bt709"} Mismatch at offset 0 G: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+[FAIL] Convert 4x4 bt709 white RGBX frame to BGRX / srgb
+  assert_approx_equals: Frame: {"format":"RGBX","width":4,"height":4,"matrix":"bt709","primaries":"bt709","transfer":"bt709"} Mismatch at offset 0 R: actual: 255 expected: 0 expected 0 +/- 1 but got 255
+Harness: the test ran to completion.
+

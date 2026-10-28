@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Property place-self value 'safe normal safe normal'
+  assert_true: 'safe normal safe normal' is a supported value for place-self. expected true got false
+[FAIL] Property place-self value 'unsafe normal unsafe normal'
+  assert_true: 'unsafe normal unsafe normal' is a supported value for place-self. expected true got false
+[FAIL] Property place-self value 'safe normal unsafe normal'
+  assert_true: 'safe normal unsafe normal' is a supported value for place-self. expected true got false
+[FAIL] Property place-self value 'normal safe normal'
+  assert_true: 'normal safe normal' is a supported value for place-self. expected true got false
+[FAIL] Property place-self value 'auto safe normal'
+  assert_true: 'auto safe normal' is a supported value for place-self. expected true got false
+Harness: the test ran to completion.
+

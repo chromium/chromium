@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] <!doctype html><a><search>x</a>y
+  assert_equals: expected "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <a>\\n|     <search>\\n|       <a>\\n|         \\"x\\"\\n|       \\"y\\"" but got "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <a>\\n|       <search>\\n|         \\"x\\"\\n|     \\"y\\""
+[FAIL] <!doctype html><a><search>x<p>y<a>z
+  assert_equals: expected "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <a>\\n|     <search>\\n|       <a>\\n|         \\"x\\"\\n|       <p>\\n|         <a>\\n|           \\"y\\"\\n|         <a>\\n|           \\"z\\"" but got "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <a>\\n|       <search>\\n|         \\"x\\"\\n|     <p>\\n|       <a>\\n|         \\"y\\"\\n|       <a>\\n|         \\"z\\""
+[FAIL] <!doctype html><li>a<search><li>b: search is in the special category, so an li start tag does not close the li outside it
+  assert_equals: expected "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <li>\\n|       \\"a\\"\\n|       <search>\\n|         <li>\\n|           \\"b\\"" but got "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <li>\\n|       \\"a\\"\\n|       <search>\\n|     <li>\\n|       \\"b\\""
+[FAIL] <!doctype html><dd>a<search><dt>b: search is in the special category, so a dt start tag does not close the dd outside it
+  assert_equals: expected "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <dd>\\n|       \\"a\\"\\n|       <search>\\n|         <dt>\\n|           \\"b\\"" but got "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <dd>\\n|       \\"a\\"\\n|       <search>\\n|     <dt>\\n|       \\"b\\""
+[FAIL] <!doctype html><x><search></x>y
+  assert_equals: expected "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <x>\\n|       <search>\\n|         \\"y\\"" but got "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <x>\\n|       <search>\\n|     \\"y\\""
+Harness: the test ran to completion.
+

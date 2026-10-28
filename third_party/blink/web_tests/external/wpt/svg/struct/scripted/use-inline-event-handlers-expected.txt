@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Inline onload handler of svg-image in a use element shadow tree doesn't run
+  assert_array_equals: Only the original element's onload handler should run lengths differ, expected array [false] length 1, got [false, false] length 2
+[FAIL] Inline onload handler of html-img in a use element shadow tree doesn't run
+  assert_array_equals: Only the original element's onload handler should run lengths differ, expected array [false] length 1, got [false, false] length 2
+Harness: the test ran to completion.
+

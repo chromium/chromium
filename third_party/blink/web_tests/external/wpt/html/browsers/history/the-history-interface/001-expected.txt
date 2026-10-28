@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] pushState must remove any tasks queued by the history traversal task source
-  assert_equals: expected "test4" but got "test"
-Harness: the test ran to completion.
-

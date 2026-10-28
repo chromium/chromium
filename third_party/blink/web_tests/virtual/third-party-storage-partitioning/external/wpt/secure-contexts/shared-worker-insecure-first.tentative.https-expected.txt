@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Shared worker in subframe
+  assert_false: SharedWorker connection should not generate an error. expected false got true
+[FAIL] Nested worker in shared worker in subframe
+  assert_false: SharedWorker connection should not generate an error. expected false got true
+[FAIL] Nested worker from shared worker in popup
+  assert_false: expected false got "Nested workers not supported."
+Harness: the test ran to completion.
+

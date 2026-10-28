@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] .item 1
+  assert_equals: \n<div class="container">\n  <div class="item safe" style="writing-mode: horizontal-tb; direction: ltr;" data-offset-x="10"></div>\n</div>\noffsetLeft expected 10 but got 15
+[FAIL] .item 2
+  assert_equals: \n<div class="container">\n  <div class="item safe" style="writing-mode: horizontal-tb; direction: rtl;" data-offset-x="10"></div>\n</div>\noffsetLeft expected 10 but got 15
+[FAIL] .item 3
+  assert_equals: \n<div class="container">\n  <div class="item safe" style="writing-mode: veritcal-rl; direction: ltr;" data-offset-x="10"></div>\n</div>\noffsetLeft expected 10 but got 15
+[FAIL] .item 4
+  assert_equals: \n<div class="container">\n  <div class="item safe" style="writing-mode: vertical-rl; direction: rtl;" data-offset-x="10"></div>\n</div>\noffsetLeft expected 10 but got 15
+[FAIL] .item 5
+  assert_equals: \n<div class="container">\n  <div class="item safe" style="writing-mode: vertical-lr; direction: ltr;" data-offset-x="10"></div>\n</div>\noffsetLeft expected 10 but got 15
+[FAIL] .item 6
+  assert_equals: \n<div class="container">\n  <div class="item safe" style="writing-mode: vertical-lr; direction: rtl;" data-offset-x="10"></div>\n</div>\noffsetLeft expected 10 but got 15
+[FAIL] .item 13
+  assert_equals: \n<div class="item safe" style="writing-mode: horizontal-tb; direction: ltr;" data-offset-x="0"></div>\noffsetLeft expected 0 but got -5
+[FAIL] .item 14
+  assert_equals: \n<div class="item safe" style="writing-mode: horizontal-tb; direction: rtl;" data-offset-x="0"></div>\noffsetLeft expected 0 but got -5
+[FAIL] .item 15
+  assert_equals: \n<div class="item safe" style="writing-mode: veritcal-rl; direction: ltr;" data-offset-x="0"></div>\noffsetLeft expected 0 but got -5
+[FAIL] .item 16
+  assert_equals: \n<div class="item safe" style="writing-mode: vertical-rl; direction: rtl;" data-offset-x="0"></div>\noffsetLeft expected 0 but got -5
+[FAIL] .item 17
+  assert_equals: \n<div class="item safe" style="writing-mode: vertical-lr; direction: ltr;" data-offset-x="0"></div>\noffsetLeft expected 0 but got -5
+[FAIL] .item 18
+  assert_equals: \n<div class="item safe" style="writing-mode: vertical-lr; direction: rtl;" data-offset-x="0"></div>\noffsetLeft expected 0 but got -5
+Harness: the test ran to completion.
+

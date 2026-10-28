@@ -1,4 +1,10 @@
 This is a wdspec test.
+[FAIL] test_response_headers_multiple_values[Proxy-Authenticate-header_values0]
+  StopIteration
+[FAIL] test_response_headers_multiple_values[Set-Cookie-header_values1]
+  StopIteration
+[FAIL] test_response_headers_multiple_values[WWW-Authenticate-header_values2]
+  StopIteration
 [FAIL] test_www_authenticate
   asyncio.exceptions.CancelledError
 Harness: the test ran to completion.

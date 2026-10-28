@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] copyTo() of a RGBX VideoFrame
+  assert_equals: expected 255 but got 0
+[FAIL] copyTo() of a RGBX VideoFrame to RGBX
+  assert_equals: expected 255 but got 0
+[FAIL] copyTo() of a clone of a RGBX VideoFrame
+  assert_equals: expected 255 but got 0
+[FAIL] copyTo() of a BGRX VideoFrame
+  assert_equals: expected 255 but got 0
+[FAIL] copyTo() of a BGRX VideoFrame to BGRX
+  assert_equals: expected 255 but got 0
+[FAIL] copyTo() of a clone of a BGRX VideoFrame
+  assert_equals: expected 255 but got 0
+[FAIL] copyTo() of a BGRX VideoFrame to BGRA gives opaque pixels
+  assert_equals: alpha of pixel 0 expected 255 but got 0
+[FAIL] copyTo() of a RGBX VideoFrame to RGBA gives opaque pixels
+  assert_approx_equals: byte 0 of the copy expected 255 +/- 0 but got 0
+[FAIL] copyTo() of a BGRX VideoFrame to RGBA gives opaque pixels
+  assert_approx_equals: byte 0 of the copy expected 255 +/- 1 but got 0
+[FAIL] copyTo() of a RGBX VideoFrame to BGRA gives opaque pixels
+  assert_equals: alpha of pixel 0 expected 255 but got 0
+Harness: the test ran to completion.
+

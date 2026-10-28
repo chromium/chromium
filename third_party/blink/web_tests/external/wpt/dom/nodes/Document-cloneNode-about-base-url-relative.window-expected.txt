@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Clone of an about:blank document with a relative <base>
+  assert_equals: deep expected "http://web-platform.test:8001/dom/nodes/sub/" but got "about:blank"
+[FAIL] A relative <base> inserted into a shallow clone of an about:blank document resolves against the inherited base URL
+  assert_equals: expected "http://web-platform.test:8001/dom/nodes/sub/" but got "about:blank"
+[FAIL] A data: <base> in an about:blank document and its clone falls back to the inherited base URL
+  assert_equals: deep clone expected "http://web-platform.test:8001/dom/nodes/Document-cloneNode-about-base-url-relative.window.html" but got "about:blank"
+Harness: the test ran to completion.
+

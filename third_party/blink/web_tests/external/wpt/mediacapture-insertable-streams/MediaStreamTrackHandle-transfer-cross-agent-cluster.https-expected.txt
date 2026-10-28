@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] MediaStreamTrackHandle can be transferred to a same-origin iframe
+  promise_test: Unhandled rejection with value: object "ReferenceError: MediaStreamTrackHandle is not defined"
+[FAIL] MediaStreamTrackHandle cannot be transferred to a cross-site iframe
+  promise_test: Unhandled rejection with value: object "ReferenceError: MediaStreamTrackHandle is not defined"
+Harness: the test ran to completion.
+

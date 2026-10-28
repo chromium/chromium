@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] texImage2D() of a 0 degrees rotated I420 VideoFrame
+  assert_approx_equals: pixel (1, 1) should be y [255,255,0] but is [254,255,12] expected 0 +/- 8 but got 12
+[FAIL] texImage2D() of a 90 degrees rotated I420 VideoFrame
+  assert_approx_equals: pixel (1, 1) should be b [0,0,255] but is [1,0,243] expected 255 +/- 8 but got 243
+[FAIL] texImage2D() of a 180 degrees rotated I420 VideoFrame
+  assert_approx_equals: pixel (1, 1) should be g [0,255,0] but is [0,255,11] expected 0 +/- 8 but got 11
+[FAIL] texImage2D() of a 270 degrees rotated I420 VideoFrame
+  assert_approx_equals: pixel (5, 1) should be g [0,255,0] but is [0,255,11] expected 0 +/- 8 but got 11
+Harness: the test ran to completion.
+

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] mouse: input behavior for base appearance <select size=4>
+  assert_equals: There should still be one selected option after third click. expected 1 but got 0
+[FAIL] touch: input behavior for base appearance <select size=4>
+  assert_equals: There should still be one selected option after third click. expected 1 but got 0
+Harness: the test ran to completion.
+

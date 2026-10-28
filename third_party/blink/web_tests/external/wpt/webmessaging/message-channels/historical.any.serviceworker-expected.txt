@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] MessagePort should not have an onclose event handler IDL attribute
+  assert_false: MessagePort.prototype expected false got true
+[FAIL] No close event should be fired when an entangled port is closed
+  assert_unreached: close event fired on port1 Reached unreachable code
+Harness: the test ran to completion.
+

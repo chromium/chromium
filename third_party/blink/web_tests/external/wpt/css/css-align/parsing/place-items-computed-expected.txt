@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Property place-items value 'safe normal safe normal'
+  assert_true: 'safe normal safe normal' is a supported value for place-items. expected true got false
+[FAIL] Property place-items value 'unsafe normal unsafe normal'
+  assert_true: 'unsafe normal unsafe normal' is a supported value for place-items. expected true got false
+[FAIL] Property place-items value 'safe normal unsafe normal'
+  assert_true: 'safe normal unsafe normal' is a supported value for place-items. expected true got false
+[FAIL] Property place-items value 'normal safe normal'
+  assert_true: 'normal safe normal' is a supported value for place-items. expected true got false
+Harness: the test ran to completion.
+

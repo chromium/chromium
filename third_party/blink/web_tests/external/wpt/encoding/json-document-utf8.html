@@ -35,6 +35,10 @@ promise_test(async () => {
 }, "text/json with no charset is decoded as UTF-8");
 
 promise_test(async () => {
+  assert_equals(await loadJSON("?type=APPLICATION/JSON"), utf8);
+}, "APPLICATION/JSON with no charset is decoded as UTF-8");
+
+promise_test(async () => {
   assert_not_equals(await loadJSON("?charset=windows-1251"), utf8);
 }, "application/json;charset=windows-1251 honors the explicit charset");
 </script>

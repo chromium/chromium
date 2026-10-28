@@ -163,6 +163,7 @@
 ../../web_tests/external/wpt/jpegxl/resources/basic.jxl
 ../../web_tests/external/wpt/jpegxl/resources/color-management-p3-cicp.jxl
 ../../web_tests/external/wpt/jpegxl/resources/conformance_alpha_nonpremultiplied.jxl
+../../web_tests/external/wpt/jpegxl/resources/conformance_alpha_premultiplied.jxl
 ../../web_tests/external/wpt/jpegxl/resources/conformance_animation_spline.jxl
 ../../web_tests/external/wpt/jpegxl/resources/conformance_cmyk_layers.jxl
 ../../web_tests/external/wpt/jpegxl/resources/conformance_patches.jxl
@@ -179,12 +180,16 @@
 ../../web_tests/external/wpt/jpegxl/resources/hdr_pq_test.jxl
 ../../web_tests/external/wpt/jpegxl/resources/incomplete-codestream-trailing-box.jxl
 ../../web_tests/external/wpt/jpegxl/resources/issue648_palette0.jxl
+../../web_tests/external/wpt/jpegxl/resources/nonpremultiplied_alpha_grid.jxl
+../../web_tests/external/wpt/jpegxl/resources/nonpremultiplied_gray_alpha_grid.jxl
 ../../web_tests/external/wpt/jpegxl/resources/orientation1_identity.jxl
 ../../web_tests/external/wpt/jpegxl/resources/orientation6_rotate_90_cw.jxl
 ../../web_tests/external/wpt/jpegxl/resources/orientation8_rotate_90_ccw.jxl
 ../../web_tests/external/wpt/jpegxl/resources/pq_intensity_target_10000.jxl
 ../../web_tests/external/wpt/jpegxl/resources/pq_intensity_target_255.jxl
 ../../web_tests/external/wpt/jpegxl/resources/pq_intensity_target_600.jxl
+../../web_tests/external/wpt/jpegxl/resources/premultiplied_alpha_grid.jxl
+../../web_tests/external/wpt/jpegxl/resources/premultiplied_gray_alpha_grid.jxl
 ../../web_tests/external/wpt/jpegxl/resources/progressive-1.jxl
 ../../web_tests/external/wpt/jpegxl/resources/progressive-2.jxl
 ../../web_tests/external/wpt/jpegxl/resources/progressive-3.jxl

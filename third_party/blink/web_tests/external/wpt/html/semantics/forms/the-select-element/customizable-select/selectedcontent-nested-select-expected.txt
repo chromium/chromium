@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Removing an ancestor of a nested select enables its selectedcontent element.
+  assert_equals: The selectedcontent should be updated once removing an ancestor enables it. expected "one" but got ""
+Harness: the test ran to completion.
+

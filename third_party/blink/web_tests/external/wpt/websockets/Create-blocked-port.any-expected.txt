@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] WebSocket blocked port test 4190
+  assert_unreached: Reached unreachable code
+[FAIL] WebSocket blocked port test 6679
+  assert_unreached: Reached unreachable code
+Harness: the test ran to completion.
+

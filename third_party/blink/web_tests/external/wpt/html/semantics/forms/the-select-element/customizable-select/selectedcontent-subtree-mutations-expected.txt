@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] selectedcontent moved into a select that becomes multiple before the microtask runs is not updated.
+  assert_equals: selectedcontent should not be updated once its select has the multiple attribute. expected "one" but got "<div>two</div>"
+Harness: the test ran to completion.
+

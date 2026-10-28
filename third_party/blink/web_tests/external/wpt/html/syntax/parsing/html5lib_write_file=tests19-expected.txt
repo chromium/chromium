@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] <!doctype html>�<frameset><frame>: U+FFFD character sets frameset-ok to "not ok"
+  assert_equals: expected "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     \\"\\ufffd\\"" but got "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <frameset>\\n|     <frame>"
+[FAIL] <!doctype html>&#xFFFD;<frameset><frame>: U+FFFD from a character reference sets frameset-ok to "not ok"
+  assert_equals: expected "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     \\"\\ufffd\\"" but got "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <frameset>\\n|     <frame>"
+[FAIL] <!doctype html>&#0;<frameset><frame>: Null character reference becomes U+FFFD and sets frameset-ok to "not ok"
+  assert_equals: expected "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     \\"\\ufffd\\"" but got "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <frameset>\\n|     <frame>"
+[FAIL] <!doctype html><svg>&#xFFFD;</svg><frameset><frame>: U+FFFD in foreign content sets frameset-ok to "not ok"
+  assert_equals: expected "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <svg svg>\\n|       \\"\\ufffd\\"" but got "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <frameset>\\n|     <frame>"
+Harness: the test ran to completion.
+

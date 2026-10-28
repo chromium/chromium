@@ -1,28 +1,64 @@
 This is a testharness.js-based test.
-Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Setting protocol with leading U+0009 (https:)
   assert_equals: property expected "http:" but got "https:"
 [FAIL] Setting protocol with U+0009 before inserted colon (https:)
   assert_equals: property expected "http:" but got "https:"
+[FAIL] Setting search with leading U+0009 updates previously obtained searchParams (https:)
+  assert_array_equals: keys expected property 0 to be "test" but got "\\ttest" (expected array ["test"] got ["\\ttest"])
+[FAIL] Setting search with middle U+0009 updates previously obtained searchParams (https:)
+  assert_array_equals: keys expected property 0 to be "test" but got "te\\tst" (expected array ["test"] got ["te\\tst"])
+[FAIL] Setting search with trailing U+0009 updates previously obtained searchParams (https:)
+  assert_array_equals: keys expected property 0 to be "test" but got "test\\t" (expected array ["test"] got ["test\\t"])
 [FAIL] Setting protocol with leading U+000A (https:)
   assert_equals: property expected "http:" but got "https:"
 [FAIL] Setting protocol with U+000A before inserted colon (https:)
   assert_equals: property expected "http:" but got "https:"
+[FAIL] Setting search with leading U+000A updates previously obtained searchParams (https:)
+  assert_array_equals: keys expected property 0 to be "test" but got "\\ntest" (expected array ["test"] got ["\\ntest"])
+[FAIL] Setting search with middle U+000A updates previously obtained searchParams (https:)
+  assert_array_equals: keys expected property 0 to be "test" but got "te\\nst" (expected array ["test"] got ["te\\nst"])
+[FAIL] Setting search with trailing U+000A updates previously obtained searchParams (https:)
+  assert_array_equals: keys expected property 0 to be "test" but got "test\\n" (expected array ["test"] got ["test\\n"])
 [FAIL] Setting protocol with leading U+000D (https:)
   assert_equals: property expected "http:" but got "https:"
 [FAIL] Setting protocol with U+000D before inserted colon (https:)
   assert_equals: property expected "http:" but got "https:"
+[FAIL] Setting search with leading U+000D updates previously obtained searchParams (https:)
+  assert_array_equals: keys expected property 0 to be "test" but got "\\rtest" (expected array ["test"] got ["\\rtest"])
+[FAIL] Setting search with middle U+000D updates previously obtained searchParams (https:)
+  assert_array_equals: keys expected property 0 to be "test" but got "te\\rst" (expected array ["test"] got ["te\\rst"])
+[FAIL] Setting search with trailing U+000D updates previously obtained searchParams (https:)
+  assert_array_equals: keys expected property 0 to be "test" but got "test\\r" (expected array ["test"] got ["test\\r"])
 [FAIL] Setting protocol with leading U+0009 (wpt++:)
   assert_equals: property expected "wpt--:" but got "wpt++:"
 [FAIL] Setting protocol with U+0009 before inserted colon (wpt++:)
   assert_equals: property expected "wpt--:" but got "wpt++:"
+[FAIL] Setting search with leading U+0009 updates previously obtained searchParams (wpt++:)
+  assert_array_equals: keys expected property 0 to be "test" but got "\\ttest" (expected array ["test"] got ["\\ttest"])
+[FAIL] Setting search with middle U+0009 updates previously obtained searchParams (wpt++:)
+  assert_array_equals: keys expected property 0 to be "test" but got "te\\tst" (expected array ["test"] got ["te\\tst"])
+[FAIL] Setting search with trailing U+0009 updates previously obtained searchParams (wpt++:)
+  assert_array_equals: keys expected property 0 to be "test" but got "test\\t" (expected array ["test"] got ["test\\t"])
 [FAIL] Setting protocol with leading U+000A (wpt++:)
   assert_equals: property expected "wpt--:" but got "wpt++:"
 [FAIL] Setting protocol with U+000A before inserted colon (wpt++:)
   assert_equals: property expected "wpt--:" but got "wpt++:"
+[FAIL] Setting search with leading U+000A updates previously obtained searchParams (wpt++:)
+  assert_array_equals: keys expected property 0 to be "test" but got "\\ntest" (expected array ["test"] got ["\\ntest"])
+[FAIL] Setting search with middle U+000A updates previously obtained searchParams (wpt++:)
+  assert_array_equals: keys expected property 0 to be "test" but got "te\\nst" (expected array ["test"] got ["te\\nst"])
+[FAIL] Setting search with trailing U+000A updates previously obtained searchParams (wpt++:)
+  assert_array_equals: keys expected property 0 to be "test" but got "test\\n" (expected array ["test"] got ["test\\n"])
 [FAIL] Setting protocol with leading U+000D (wpt++:)
   assert_equals: property expected "wpt--:" but got "wpt++:"
 [FAIL] Setting protocol with U+000D before inserted colon (wpt++:)
   assert_equals: property expected "wpt--:" but got "wpt++:"
+[FAIL] Setting search with leading U+000D updates previously obtained searchParams (wpt++:)
+  assert_array_equals: keys expected property 0 to be "test" but got "\\rtest" (expected array ["test"] got ["\\rtest"])
+[FAIL] Setting search with middle U+000D updates previously obtained searchParams (wpt++:)
+  assert_array_equals: keys expected property 0 to be "test" but got "te\\rst" (expected array ["test"] got ["te\\rst"])
+[FAIL] Setting search with trailing U+000D updates previously obtained searchParams (wpt++:)
+  assert_array_equals: keys expected property 0 to be "test" but got "test\\r" (expected array ["test"] got ["test\\r"])
 Harness: the test ran to completion.
 

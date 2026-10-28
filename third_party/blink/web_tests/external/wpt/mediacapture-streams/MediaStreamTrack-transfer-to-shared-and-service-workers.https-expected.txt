@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] MediaStreamTrack cannot be transferred to a shared worker
+  promise_test: Unhandled rejection with value: object "DataCloneError: Failed to execute 'postMessage' on 'MessagePort': MediaStreamTrack could not be serialized."
+[FAIL] MediaStreamTrack cannot be transferred to a service worker
+  promise_test: Unhandled rejection with value: object "DataCloneError: Failed to execute 'postMessage' on 'ServiceWorker': MediaStreamTrack could not be serialized."
+Harness: the test ran to completion.
+

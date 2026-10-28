@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] An option cloned into a selectedcontent element is not in the select's list of options
+  assert_equals: select.options excludes the clone expected 1 but got 2
+Harness: the test ran to completion.
+

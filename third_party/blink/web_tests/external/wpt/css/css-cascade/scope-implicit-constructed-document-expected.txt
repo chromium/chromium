@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+[FAIL] Implicit @scope in a constructed stylesheet adopted by a document matches descendants
+  assert_equals: expected "1" but got "auto"
+[FAIL] Implicit @scope in a constructed stylesheet adopted by a document matches the root element
+  assert_equals: expected "1" but got "auto"
+[FAIL] Explicit :scope with a descendant combinator in implicit @scope in a constructed stylesheet adopted by a document
+  assert_equals: expected "1" but got "auto"
+[FAIL] & with a descendant combinator in implicit @scope in a constructed stylesheet adopted by a document
+  assert_equals: expected "1" but got "auto"
+[FAIL] Child combinator in implicit @scope in a constructed stylesheet adopted by a document matches only the root element
+  assert_equals: expected "1" but got "auto"
+[FAIL] Implicit @scope with a scope end in a constructed stylesheet adopted by a document
+  assert_equals: expected "1" but got "auto"
+[FAIL] Implicit @scope in a constructed stylesheet adopted by a document wins over unscoped rules by proximity
+  assert_equals: expected "1" but got "2"
+[FAIL] Nested @scope inside implicit @scope in a constructed stylesheet adopted by a document
+  assert_equals: expected "1" but got "auto"
+[FAIL] Implicit @scope in a constructed stylesheet adopted by a document does not match in shadow trees
+  assert_equals: expected "1" but got "auto"
+[FAIL] Implicit @scope in a constructed stylesheet adopted by both a document and a shadow root
+  assert_equals: expected "1" but got "auto"
+[FAIL] Implicit @scope in a constructed stylesheet stops matching once the document no longer adopts it
+  assert_equals: expected "1" but got "auto"
+Harness: the test ran to completion.
+

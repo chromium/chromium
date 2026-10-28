@@ -1,0 +1,134 @@
+This is a testharness.js-based test.
+Found 65 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <address>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <blockquote>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <center>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <div>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <figure>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <figcaption>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <footer>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <form>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <header>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <hr>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <legend>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <listing>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <main>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <p>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <plaintext>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <pre>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <summary>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <xmp>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <article>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <aside>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <h1>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <h2>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <h3>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <h4>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <h5>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <h6>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <hgroup>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <nav>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <search>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <section>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <table>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <caption>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <colgroup>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <col>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <thead>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <tbody>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <tfoot>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <tr>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <td>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <th>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <dir>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <dd>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <dl>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <dt>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <menu>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <ol>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <ul>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <li>
+  assert_equals: expected "bidi-override" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <input type=hidden>
+  assert_equals: with dir=rtl expected "normal" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <input type=text>
+  assert_equals: with dir=rtl expected "normal" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <input type=search>
+  assert_equals: with dir=rtl expected "normal" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <input type=tel>
+  assert_equals: with dir=rtl expected "normal" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <input type=url>
+  assert_equals: with dir=rtl expected "normal" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <input type=email>
+  assert_equals: with dir=rtl expected "normal" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <input type=password>
+  assert_equals: with dir=rtl expected "normal" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <input type=date>
+  assert_equals: with dir=rtl expected "normal" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <input type=time>
+  assert_equals: with dir=rtl expected "normal" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <input type=datetime-local>
+  assert_equals: with dir=rtl expected "normal" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <input type=number>
+  assert_equals: with dir=rtl expected "normal" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <input type=range>
+  assert_equals: with dir=rtl expected "normal" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <input type=color>
+  assert_equals: with dir=rtl expected "normal" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <input type=checkbox>
+  assert_equals: with dir=rtl expected "normal" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <input type=radio>
+  assert_equals: with dir=rtl expected "normal" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <input type=file>
+  assert_equals: with dir=rtl expected "normal" but got "isolate"
+[FAIL] ISO-8859-8 UA stylesheet rule for unicode-bidi, for <input type=image>
+  assert_equals: with dir=rtl expected "normal" but got "isolate"
+Harness: the test ran to completion.
+

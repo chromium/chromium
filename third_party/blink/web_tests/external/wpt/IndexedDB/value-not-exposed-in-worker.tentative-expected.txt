@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Reading the get() result in a worker where RTCCertificate is not exposed throws a DataCloneError
+  assert_equals: reading the value throws expected (string) "DataCloneError" but got (object) null
+[FAIL] Reading the getAll() result in a worker where RTCCertificate is not exposed throws a DataCloneError
+  assert_equals: reading the value throws expected (string) "DataCloneError" but got (object) null
+[FAIL] Reading the IDBCursorWithValue value in a worker where RTCCertificate is not exposed throws a DataCloneError
+  assert_equals: reading the value throws expected (string) "DataCloneError" but got (object) null
+[FAIL] Reading the getAllRecords() IDBRecord value in a worker where RTCCertificate is not exposed throws a DataCloneError
+  assert_equals: reading the value throws expected (string) "DataCloneError" but got (object) null
+Harness: the test ran to completion.
+

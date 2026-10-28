@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] e.style['caret-color'] = "auto auto" should not set the property value
+  assert_equals: expected "" but got "auto auto"
+[FAIL] e.style['caret-color'] = "auto rgba(10, 20, 30, 0.4)" should not set the property value
+  assert_equals: expected "" but got "auto rgba(10, 20, 30, 0.4)"
+[FAIL] e.style['caret-color'] = "auto transparent" should not set the property value
+  assert_equals: expected "" but got "auto transparent"
+[FAIL] e.style['caret-color'] = "auto rgb(0, 255, 0)" should not set the property value
+  assert_equals: expected "" but got "auto rgb(0, 255, 0)"
+[FAIL] e.style['caret-color'] = "auto currentcolor" should not set the property value
+  assert_equals: expected "" but got "auto currentcolor"
+Harness: the test ran to completion.
+

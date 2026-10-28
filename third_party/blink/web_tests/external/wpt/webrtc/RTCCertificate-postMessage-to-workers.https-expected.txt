@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] RTCCertificate cannot be posted to a service worker
+  assert_equals: expected "messageerror" but got "message"
+Harness: the test ran to completion.
+

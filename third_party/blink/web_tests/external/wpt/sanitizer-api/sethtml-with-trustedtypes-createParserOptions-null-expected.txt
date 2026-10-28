@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Named policy createParserOptions returning null throws TypeError
+  assert_throws_js: function "() => {\n            policy.createParserOptions({});\n          }" did not throw
+[FAIL] Named policy createParserOptions returning undefined throws TypeError
+  assert_throws_js: function "() => {\n            policy.createParserOptions({});\n          }" did not throw
+Harness: the test ran to completion.
+

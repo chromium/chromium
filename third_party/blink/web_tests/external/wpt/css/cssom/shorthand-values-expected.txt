@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
+[FAIL] The serialization of outline-width: 2px; outline-style: dotted; outline-color: blue; should be canonical.
+  assert_equals: expected "outline: 2px dotted blue;" but got "outline: blue dotted 2px;"
 [FAIL] The serialization of list-style-type: circle; list-style-position: inside; list-style-image: none; should be canonical.
   assert_equals: expected "list-style: inside circle;" but got "list-style: inside none circle;"
 Harness: the test ran to completion.

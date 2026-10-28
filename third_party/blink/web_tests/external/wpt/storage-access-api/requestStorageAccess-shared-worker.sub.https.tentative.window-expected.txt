@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] SharedWorkers don't inherit storage access for fetch
+  assert_false: Worker's fetch is uncredentialed. expected false got true
+[FAIL] SharedWorkers don't observe parent's storage access
+  assert_false: frame lacks storage access before request. expected false got true
+[FAIL] SharedWorker WebSocket doesn't inherit storage access
+  assert_false: Worker's WebSocket handshake omits the unpartitioned cookie. expected false got true
+Harness: the test ran to completion.
+

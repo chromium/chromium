@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] A cross-origin frame without allow="cross-origin-isolated" is not cross-origin isolated and cannot serialize a SharedArrayBuffer
+  assert_object_equals: property "SharedArrayBuffer" expected "function" got "undefined"
+Harness: the test ran to completion.
+

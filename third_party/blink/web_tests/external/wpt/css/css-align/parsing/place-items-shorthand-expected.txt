@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] e.style['place-items'] = "safe normal" should set align-items
+  assert_equals: align-items should be canonical expected "safe normal" but got ""
+[FAIL] e.style['place-items'] = "safe normal" should set justify-items
+  assert_equals: justify-items should be canonical expected "safe normal" but got ""
+[FAIL] e.style['place-items'] = "safe normal" should not set unrelated longhands
+  assert_true: expected true got false
+[FAIL] e.style['place-items'] = "safe normal unsafe normal" should set align-items
+  assert_equals: align-items should be canonical expected "safe normal" but got ""
+[FAIL] e.style['place-items'] = "safe normal unsafe normal" should set justify-items
+  assert_equals: justify-items should be canonical expected "unsafe normal" but got ""
+[FAIL] e.style['place-items'] = "safe normal unsafe normal" should not set unrelated longhands
+  assert_true: expected true got false
+Harness: the test ran to completion.
+

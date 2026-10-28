@@ -9,15 +9,17 @@ function run_checks(element) {
   assert_equals(element.onclick, null);
   let ran = false;
   // attribute change steps
-  element.setAttribute('onclick', 'ran = true;');
+  element.setAttribute('onclick', 'window.ran = true;');
   assert_equals(element.onclick, null);
   element.dispatchEvent(new Event('click'));
-  assert_false(ran);
-  // IDL attribute setter
+  assert_false(window.ran);
+  // IDL attribute setter; determining the target of an event handler only
+  // returns null for a body or frameset element, see
+  // event-handler-attributes-windowless-body.html
   element.onclick = () => ran = true;
-  assert_equals(element.onclick, null);
+  assert_equals(typeof element.onclick, 'function');
   element.dispatchEvent(new Event('click'));
-  assert_false(ran);
+  assert_true(ran);
 }
 
 test(() => {
@@ -29,8 +31,9 @@ test(() => {
 test(() => {
   const doc = new Document();
   doc.appendChild(doc.createElementNS('http://www.w3.org/1999/xhtml', 'html'));
-  doc.documentElement.innerHTML = '<div onclick="assert_unreached();"></div>';
-  run_checks(doc.documentElement.firstChild);
+  const div = doc.documentElement.appendChild(doc.createElementNS('http://www.w3.org/1999/xhtml', 'div'));
+  div.setAttribute('onclick', 'assert_unreached();');
+  run_checks(div);
 }, 'new Document()');
 
 test(() => {

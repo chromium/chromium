@@ -1,0 +1,29 @@
+This is a testharness.js-based test.
+[FAIL] Drawing a VideoFrame made from an OffscreenCanvas with alpha discard gives opaque pixels
+  assert_array_equals: new canvas: transparent quadrant expected property 3 to be 255 but got 0 (expected array [0, 0, 0, 255] got [0, 0, 0, 0])
+[FAIL] Drawing a VideoFrame made from an OffscreenCanvas with alpha discard replaces the canvas background
+  assert_array_equals: white background: transparent quadrant expected property 3 to be 255 but got 0 (expected array [0, 0, 0, 255] got [0, 0, 0, 0])
+[FAIL] Drawing a clone of a VideoFrame made from an OffscreenCanvas with alpha discard gives opaque pixels
+  assert_array_equals: clone: transparent quadrant expected property 3 to be 255 but got 0 (expected array [0, 0, 0, 255] got [0, 0, 0, 0])
+[FAIL] An ImageBitmap of a VideoFrame made from an OffscreenCanvas with alpha discard is opaque
+  assert_array_equals: ImageBitmap: transparent quadrant expected property 3 to be 255 but got 0 (expected array [0, 0, 0, 255] got [0, 0, 0, 0])
+[FAIL] Drawing a VideoFrame made from an ImageBitmap with alpha discard gives opaque pixels
+  assert_array_equals: new canvas: transparent quadrant expected property 3 to be 255 but got 0 (expected array [0, 0, 0, 255] got [0, 0, 0, 0])
+[FAIL] Drawing a VideoFrame made from an ImageBitmap with alpha discard replaces the canvas background
+  assert_array_equals: white background: transparent quadrant expected property 3 to be 255 but got 0 (expected array [0, 0, 0, 255] got [0, 0, 0, 0])
+[FAIL] Drawing a clone of a VideoFrame made from an ImageBitmap with alpha discard gives opaque pixels
+  assert_array_equals: clone: transparent quadrant expected property 3 to be 255 but got 0 (expected array [0, 0, 0, 255] got [0, 0, 0, 0])
+[FAIL] An ImageBitmap of a VideoFrame made from an ImageBitmap with alpha discard is opaque
+  assert_array_equals: ImageBitmap: transparent quadrant expected property 3 to be 255 but got 0 (expected array [0, 0, 0, 255] got [0, 0, 0, 0])
+[FAIL] Drawing a VideoFrame made from an VideoFrame with alpha discard gives opaque pixels
+  assert_array_equals: new canvas: transparent quadrant expected property 3 to be 255 but got 0 (expected array [0, 0, 0, 255] got [0, 0, 0, 0])
+[FAIL] Drawing a VideoFrame made from an VideoFrame with alpha discard replaces the canvas background
+  assert_array_equals: white background: transparent quadrant expected property 3 to be 255 but got 0 (expected array [0, 0, 0, 255] got [0, 0, 0, 0])
+[FAIL] Drawing a clone of a VideoFrame made from an VideoFrame with alpha discard gives opaque pixels
+  assert_array_equals: clone: transparent quadrant expected property 3 to be 255 but got 0 (expected array [0, 0, 0, 255] got [0, 0, 0, 0])
+[FAIL] An ImageBitmap of a VideoFrame made from an VideoFrame with alpha discard is opaque
+  assert_array_equals: ImageBitmap: transparent quadrant expected property 3 to be 255 but got 0 (expected array [0, 0, 0, 255] got [0, 0, 0, 0])
+[FAIL] Discarding the alpha of a VideoFrame does not change the original frame
+  assert_array_equals: discarded copy: transparent quadrant expected property 3 to be 255 but got 0 (expected array [0, 0, 0, 255] got [0, 0, 0, 0])
+Harness: the test ran to completion.
+

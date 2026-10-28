@@ -8,6 +8,8 @@ set -eu
 #
 # Optional jxl-rs fixtures are sourced from:
 #   ${JXL_RS_TESTDATA:-$HOME/jxl-rs/jxl/resources/test}
+# and conformance suite reference images from:
+#   ${JXL_CONFORMANCE_TESTCASES:-$HOME/conformance/testcases}
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 JXL_RS_CLI="${JXL_RS_CLI:-$HOME/jxl-rs/target/release/jxl_cli}"
@@ -167,6 +169,16 @@ copy_if_exists "$JXL_RS_CONF/animation_spline.jxl" \
   "$SCRIPT_DIR/conformance_animation_spline.jxl"
 copy_if_exists "$JXL_RS_CONF/patches.jxl" \
   "$SCRIPT_DIR/conformance_patches.jxl"
+copy_if_exists "$JXL_RS_CONF/alpha_premultiplied.jxl" \
+  "$SCRIPT_DIR/conformance_alpha_premultiplied.jxl"
+
+# For premultiplied alpha images djxl writes the premultiplied color values to
+# the PNG as-is, but PNG alpha is never premultiplied, so a djxl reference would
+# show the colors premultiplied twice. Use the conformance suite's reference
+# image (https://github.com/libjxl/conformance) instead.
+JXL_CONFORMANCE_TESTCASES="${JXL_CONFORMANCE_TESTCASES:-$HOME/conformance/testcases}"
+copy_if_exists "$JXL_CONFORMANCE_TESTCASES/alpha_premultiplied/ref.png" \
+  "$SCRIPT_DIR/conformance_alpha_premultiplied.png"
 
 # PNG references used by reftests.
 decode_png_ref_if_exists \

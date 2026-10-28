@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+[FAIL] VideoDecoder.isConfigSupported() doesn't support vp09.00.10.10 (profile 0 with 10-bit)
+  assert_false: expected false got true
+[FAIL] VideoDecoder.isConfigSupported() doesn't support vp09.00.10.12 (profile 0 with 12-bit)
+  assert_false: expected false got true
+[FAIL] VideoDecoder.isConfigSupported() doesn't support vp09.00.10.08.02 (profile 0 with 4:2:2)
+  assert_false: expected false got true
+[FAIL] VideoEncoder.isConfigSupported() doesn't support vp09.00.10.08.02 (profile 0 with 4:2:2)
+  assert_false: expected false got true
+[FAIL] VideoDecoder.isConfigSupported() doesn't support vp09.00.10.08.03 (profile 0 with 4:4:4)
+  assert_false: expected false got true
+[FAIL] VideoEncoder.isConfigSupported() doesn't support vp09.00.10.08.03 (profile 0 with 4:4:4)
+  assert_false: expected false got true
+[FAIL] VideoDecoder.isConfigSupported() doesn't support vp09.02.10.08 (profile 2 with 8-bit)
+  assert_false: expected false got true
+[FAIL] VideoDecoder.isConfigSupported() doesn't support vp09.02.10.10.02 (profile 2 with 4:2:2)
+  assert_false: expected false got true
+[FAIL] VideoEncoder.isConfigSupported() doesn't support vp09.02.10.10.02 (profile 2 with 4:2:2)
+  assert_false: expected false got true
+[FAIL] VideoDecoder.isConfigSupported() doesn't support vp09.02.10.10.03 (profile 2 with 4:4:4)
+  assert_false: expected false got true
+[FAIL] VideoEncoder.isConfigSupported() doesn't support vp09.02.10.10.03 (profile 2 with 4:4:4)
+  assert_false: expected false got true
+Harness: the test ran to completion.
+

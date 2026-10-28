@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
 Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] Document interface: calling parseHTMLUnsafe((TrustedHTML or DOMString), optional ParseHTMLUnsafeOptions) on iframe.contentDocument with too few arguments must throw TypeError
+[FAIL] Document interface: calling parseHTMLUnsafe((TrustedHTML or DOMString), optional (ParseHTMLUnsafeOptions or TrustedHTMLParserOptions)) on iframe.contentDocument with too few arguments must throw TypeError
   assert_own_property: interface object must have static operation as own property expected property "parseHTMLUnsafe" missing
 [FAIL] Document interface: calling parseHTML(DOMString, optional SetHTMLOptions) on iframe.contentDocument with too few arguments must throw TypeError
   assert_own_property: interface object must have static operation as own property expected property "parseHTML" missing

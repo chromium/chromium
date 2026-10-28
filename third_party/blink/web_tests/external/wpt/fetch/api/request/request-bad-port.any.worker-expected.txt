@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Request on bad port 4190 should throw TypeError.
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Request on bad port 6679 should throw TypeError.
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+Harness: the test ran to completion.
+

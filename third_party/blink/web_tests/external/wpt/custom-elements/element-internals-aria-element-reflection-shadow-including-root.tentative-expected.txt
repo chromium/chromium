@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] ariaActiveDescendantElement on ElementInternals ignores an element with a different shadow-including root
+  assert_equals: disconnected element is not returned expected null but got Element node <div></div>
+[FAIL] ariaActiveDescendantElement on ElementInternals of a disconnected element
+  assert_equals: document element, seen from a disconnected element expected null but got Element node <div></div>
+[FAIL] ariaLabelledByElements on ElementInternals skips elements with a different shadow-including root
+  assert_array_equals: disconnected element is skipped lengths differ, expected array [Element node <div></div>] length 1, got [Element node <div></div>, Element node <div></div>] length 2
+Harness: the test ran to completion.
+

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Document-Isolation-Policy reports go to the report-to endpoints
+  assert_equals: reports sent to endpoint expected 1 but got 0
+Harness: the test ran to completion.
+

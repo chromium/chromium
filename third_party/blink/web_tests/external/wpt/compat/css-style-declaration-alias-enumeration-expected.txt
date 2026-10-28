@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] WebKitBackgroundClip found on CSSStyleDeclaration
-  assert_true: expected true got false
-Harness: the test ran to completion.
-

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Property justify-items value 'unsafe normal'
+  assert_true: 'unsafe normal' is a supported value for justify-items. expected true got false
+[FAIL] Property justify-items value 'safe normal'
+  assert_true: 'safe normal' is a supported value for justify-items. expected true got false
+Harness: the test ran to completion.
+

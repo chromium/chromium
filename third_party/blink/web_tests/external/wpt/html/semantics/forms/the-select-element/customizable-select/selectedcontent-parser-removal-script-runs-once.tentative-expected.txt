@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] An option removed by the parser doesn't cause a not-yet-run script in a selected option to be cloned
+  assert_equals: Script should run exactly once expected 1 but got 3
+Harness: the test ran to completion.
+

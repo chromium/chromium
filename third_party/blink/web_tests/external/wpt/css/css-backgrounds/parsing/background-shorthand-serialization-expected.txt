@@ -1,7 +1,31 @@
 This is a testharness.js-based test.
 [FAIL] all initial values
   assert_equals: expected "none" but got "padding-box border-box"
+[FAIL] initial background-position
+  assert_equals: expected "none" but got "0% 0%"
+[FAIL] initial background-size
+  assert_equals: expected "none" but got "0% 0% / auto"
+[FAIL] initial background-repeat
+  assert_equals: expected "none" but got "repeat"
+[FAIL] initial background-attachment
+  assert_equals: expected "none" but got "scroll"
+[FAIL] initial background-color
+  assert_equals: expected "none" but got "transparent"
+[FAIL] initial component beside a non-initial one
+  assert_equals: expected "red" but got "repeat red"
+[FAIL] initial attachment beside an image
+  assert_equals: expected "url(\\"/favicon.ico\\")" but got "url(\\"/favicon.ico\\") scroll"
+[FAIL] initial keyword not surviving an override
+  assert_equals: expected "" but got "black"
 [FAIL] border-area border-box
   assert_equals: expected "border-area" but got "border-box border-area"
+[FAIL] background-size with every earlier component omitted
+  assert_equals: expected "0% 0% / contain" but got "none 0% 0% / contain"
+[FAIL] horizontal offset from an edge with the initial vertical offset
+  assert_equals: expected "right 10px top 0%" but got "none right 10px"
+[FAIL] vertical offset from an edge with the initial horizontal offset
+  assert_equals: expected "left 0% bottom 20px" but got "none bottom 20px"
+[FAIL] the serialized shorthand parses back to itself
+  assert_array_equals: background: none; background-position-x: right 10px expected property 1 to be "background-position: calc(100% - 10px) 0%" but got "background-position: 100% 10px" (expected array ["background-image: none", "background-position: calc(100% - 10px) 0%", "background-size: auto", "background-repeat: repeat", "background-attachment: scroll", "background-origin: padding-box", "background-clip: border-box", "background-color: rgba(0, 0, 0, 0)"] got ["background-image: none", "background-position: 100% 10px", "background-size: auto", "background-repeat: repeat", "background-attachment: scroll", "background-origin: padding-box", "background-clip: border-box", "background-color: rgba(0, 0, 0, 0)"])
 Harness: the test ran to completion.
 

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] e.style['outline'] = "dashed thin" should set the property value
+  assert_equals: serialization should be canonical expected "thin dashed" but got "dashed thin"
+[FAIL] e.style['outline'] = "medium rgba(10, 20, 30, 0.4)" should set the property value
+  assert_in_array: serialization should be sound value "rgba(10, 20, 30, 0.4) medium" not in array ["medium rgba(10, 20, 30, 0.4)", "rgba(10, 20, 30, 0.4)"]
+[FAIL] e.style['outline'] = "3px ridge rgba(10, 20, 30, 0.4)" should set the property value
+  assert_equals: serialization should be canonical expected "3px ridge rgba(10, 20, 30, 0.4)" but got "rgba(10, 20, 30, 0.4) ridge 3px"
+Harness: the test ran to completion.
+

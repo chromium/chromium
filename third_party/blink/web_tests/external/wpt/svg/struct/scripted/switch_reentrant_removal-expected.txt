@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: assert_true: The unload handler ran during removeChild expected true got false
+[TIMEOUT] SVG switch active child during reentrant removal
+  Test timed out
+Harness: the test ran to completion.
+

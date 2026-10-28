@@ -1,0 +1,7 @@
+This is a wdspec test.
+[FAIL] test_scrollbar_type_overlay
+  AttributeError: 'Emulation' object has no attribute 'set_scrollbar_type_override'
+[FAIL] test_scrollbar_type_classic
+  AttributeError: 'Emulation' object has no attribute 'set_scrollbar_type_override'
+Harness: the test ran to completion.
+
