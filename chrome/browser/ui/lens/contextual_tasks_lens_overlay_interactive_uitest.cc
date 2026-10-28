@@ -1,3 +1,5 @@
+              // Defer the click to the next task to ensure the Promise resolves
+              // before the click event triggers iframe unmounting and teardown.
 // Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -2187,7 +2189,7 @@ class ContextualTasksLensRegionChipInteractiveUiTest
             const app = document.querySelector('lens-chip-app');
             const btn = app?.shadowRoot?.querySelector('#closeButton');
             if (btn && !btn.disabled) {
-              btn.click();
+              setTimeout(() => btn.click(), 0);
               resolve(true);
             } else {
               setTimeout(check, 50);
