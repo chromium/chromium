@@ -752,6 +752,8 @@ chromium-metrics-reviews@google.com.
 
 <enum name="AndroidXWebApiCall">
   <int value="0" label="WebProviderFactory.buildWebContent"/>
+  <int value="1" label="WebContent.executeViewFactory"/>
+  <int value="2" label="WebContent.destroy"/>
 </enum>
 
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/WebApiCallLogger.java:WebApiCall) -->
@@ -760,6 +762,8 @@ chromium-metrics-reviews@google.com.
 
 <enum name="AndroidXWebComposeApiCall">
   <int value="0" label="WebProviderFactory.createWebSurface"/>
+  <int value="1" label="WebSurface.setWebContent"/>
+  <int value="2" label="WebSurface.destroy"/>
 </enum>
 
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/WebApiCallLogger.java:WebComposeApiCall) -->

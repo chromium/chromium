@@ -28,6 +28,8 @@ import java.lang.annotation.RetentionPolicy;
     // LINT.IfChange(WebApiCall)
     @IntDef({
         WebApiCall.BUILD_WEB_CONTENT,
+        WebApiCall.WEB_CONTENT_EXECUTE_VIEW_FACTORY,
+        WebApiCall.WEB_CONTENT_DESTROY,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         WebApiCall.COUNT, // Added to suppress WrongConstant in #recordWebApiCall.
@@ -35,8 +37,10 @@ import java.lang.annotation.RetentionPolicy;
     @Retention(RetentionPolicy.SOURCE)
     public @interface WebApiCall {
         int BUILD_WEB_CONTENT = 0;
+        int WEB_CONTENT_EXECUTE_VIEW_FACTORY = 1;
+        int WEB_CONTENT_DESTROY = 2;
         // Remember to update AndroidXWebApiCall in enums.xml when adding new values here.
-        int COUNT = 1;
+        int COUNT = 3;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebApiCall)
@@ -51,6 +55,8 @@ import java.lang.annotation.RetentionPolicy;
     // LINT.IfChange(WebComposeApiCall)
     @IntDef({
         WebComposeApiCall.CREATE_WEB_SURFACE,
+        WebComposeApiCall.WEB_SURFACE_SET_WEB_CONTENT,
+        WebComposeApiCall.WEB_SURFACE_DESTROY,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         WebComposeApiCall.COUNT, // Added to suppress WrongConstant in #recordWebComposeApiCall.
@@ -58,8 +64,10 @@ import java.lang.annotation.RetentionPolicy;
     @Retention(RetentionPolicy.SOURCE)
     public @interface WebComposeApiCall {
         int CREATE_WEB_SURFACE = 0;
+        int WEB_SURFACE_SET_WEB_CONTENT = 1;
+        int WEB_SURFACE_DESTROY = 2;
         // Remember to update AndroidXWebComposeApiCall in enums.xml when adding new values here.
-        int COUNT = 1;
+        int COUNT = 3;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebComposeApiCall)

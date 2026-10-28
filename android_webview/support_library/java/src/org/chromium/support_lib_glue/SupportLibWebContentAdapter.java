@@ -10,8 +10,10 @@ import android.webkit.WebView;
 import com.android.webview.chromium.WebContentContextWrapper;
 
 import org.chromium.android_webview.AwWebContent;
+import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.support_lib_boundary.web.WebContentBoundaryInterface;
+import org.chromium.support_lib_glue.WebApiCallLogger.WebApiCall;
 
 import java.util.function.Function;
 
@@ -31,16 +33,26 @@ class SupportLibWebContentAdapter implements WebContentBoundaryInterface {
     @Override
     public <T extends WebView> T executeViewFactory(
             Context baseContext, Function<Context, T> factory) {
-        WebContentContextWrapper wrapper = new WebContentContextWrapper(baseContext, mWebContent);
-        T result = factory.apply(wrapper);
-        if (!wrapper.wasUsed()) {
-            throw new IllegalStateException("The factory did not construct a new WebView");
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.Web.WEB_CONTENT_EXECUTE_VIEW_FACTORY")) {
+            WebApiCallLogger.recordWebApiCall(WebApiCall.WEB_CONTENT_EXECUTE_VIEW_FACTORY);
+            WebContentContextWrapper wrapper =
+                    new WebContentContextWrapper(baseContext, mWebContent);
+            T result = factory.apply(wrapper);
+            if (!wrapper.wasUsed()) {
+                throw new IllegalStateException("The factory did not construct a new WebView");
+            }
+            return result;
         }
-        return result;
     }
 
     @Override
     public void destroy() {
-        mWebContent.destroy();
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.Web.WEB_CONTENT_DESTROY")) {
+            WebApiCallLogger.recordWebApiCall(WebApiCall.WEB_CONTENT_DESTROY);
+            mWebContent.destroy();
+        }
     }
 }
