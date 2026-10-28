@@ -575,6 +575,34 @@ chromium-metrics-reviews@google.com.
       label="Connected, Data, Stun, local IPv6, remote MDNS (triplicate)"/>
 </enum>
 
+<enum name="WebRtcPlayoutDelayModeBitmask">
+  <summary>
+    Bitmask of the playout delay modes that were used by a received video
+    stream, as signaled by the min/max delay in the playout-delay RTP header
+    extension. Bit 0 (1): Default, no playout delay signaled. Bit 1 (2): 0/0,
+    lowest possible delay. Bit 2 (4): 0/X, zero min delay and positive max
+    delay, low delay with some buffering in the rendering. Bit 3 (8): X/Y,
+    positive min and max delay. The value 0 is never recorded. Mirrors
+    PlayoutDelayModeBitmask in
+    third_party/webrtc/video/receive_statistics_proxy.cc.
+  </summary>
+  <int value="1" label="Default"/>
+  <int value="2" label="0/0"/>
+  <int value="3" label="Default | 0/0"/>
+  <int value="4" label="0/X"/>
+  <int value="5" label="Default | 0/X"/>
+  <int value="6" label="0/0 | 0/X"/>
+  <int value="7" label="Default | 0/0 | 0/X"/>
+  <int value="8" label="X/Y"/>
+  <int value="9" label="Default | X/Y"/>
+  <int value="10" label="0/0 | X/Y"/>
+  <int value="11" label="Default | 0/0 | X/Y"/>
+  <int value="12" label="0/X | X/Y"/>
+  <int value="13" label="Default | 0/X | X/Y"/>
+  <int value="14" label="0/0 | 0/X | X/Y"/>
+  <int value="15" label="Default | 0/0 | 0/X | X/Y"/>
+</enum>
+
 <enum name="WebRtcScalabilityMode">
   <int value="0" label="Invalid"/>
   <int value="1" label="L1T1"/>

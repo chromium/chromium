@@ -2983,6 +2983,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.Video.PlayoutDelayMode"
+    enum="WebRtcPlayoutDelayModeBitmask" expires_after="2027-10-27">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    The playout delay modes that were used by a received video stream, recorded
+    as a bitmask of all modes that were used during the lifetime of the stream.
+    The playout delay is signaled by the sender as a min/max delay pair in the
+    playout-delay RTP header extension and determines how the received video is
+    buffered and rendered. The modes are: Default (no playout delay signaled),
+    0/0 (lowest possible delay), 0/X (low delay with some buffering in the
+    rendering), and X/Y (both min and max delay are positive). A signaled
+    playout delay remains in effect for subsequent frames without the extension,
+    so the Default mode is only recorded if the stream starts without the
+    extension. Recorded when a video receive stream is stopped, if at least one
+    complete frame was received.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.Video.PliPacketsReceivedPerMinute"
     units="packets/minute" expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
