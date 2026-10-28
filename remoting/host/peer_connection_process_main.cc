@@ -103,8 +103,12 @@ int PeerConnectionProcessMain() {
       return kInitializationFailed;
     }
   } else {
-    LOG(WARNING)
-        << "Seccomp-BPF multi-threaded sandbox not supported on this kernel.";
+    // Running without the sandbox would expose untrusted WebRTC peer traffic
+    // to an unconfined process, so fail closed.
+    LOG(ERROR) << "Multi-threaded Seccomp-BPF sandbox is not supported "
+               << "(requires Linux >= 3.17 and seccomp(2) not being blocked). "
+               << "Refusing to start the peer connection process.";
+    return kInitializationFailed;
   }
 #endif
 

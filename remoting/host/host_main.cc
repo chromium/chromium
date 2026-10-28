@@ -39,6 +39,7 @@
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX)
+#include <sys/prctl.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -316,6 +317,21 @@ int HostMain(int argc, char** argv) {
     process_type = command_line->GetSwitchValueASCII(kProcessTypeSwitchName);
   }
 
+#if BUILDFLAG(IS_LINUX)
+  if (process_type == kProcessTypePeerConnection) {
+    // The peer connection process handles untrusted network traffic, and all
+    // peer connection processes run as the same user. Make this process
+    // non-dumpable as early as possible in HostMain(), so that other processes
+    // running as the same user cannot inspect or modify it via ptrace or
+    // procfs. Note that execve() resets the dumpable flag, so this process is
+    // briefly dumpable before reaching this point; the sandbox restrictions
+    // applied to every peer connection process prevent them from exploiting
+    // that window. The Crashpad handler is launched by the root daemon process
+    // and keeps CAP_SYS_PTRACE, so it can still collect crash dumps.
+    PCHECK(prctl(PR_SET_DUMPABLE, 0) == 0) << "prctl(PR_SET_DUMPABLE) failed";
+  }
+#endif  // BUILDFLAG(IS_LINUX)
+
   if (process_type == kProcessTypeEvaluateCapability) {
     if (command_line->HasSwitch(kEvaluateCapabilitySwitchName)) {
       return EvaluateCapabilityLocally(
@@ -371,6 +387,12 @@ int HostMain(int argc, char** argv) {
       } else {
         LOG(ERROR) << "Invalid Crashpad handler socket switch values.";
       }
+    } else if (process_type == kProcessTypePeerConnection) {
+      // Never spawn a Crashpad handler from the peer connection process. The
+      // handler would run unsandboxed as the same user as other peer
+      // connection processes, and would outlive this process.
+      LOG(WARNING) << "Crashpad handler socket not provided. Crash reporting "
+                   << "is disabled for the peer connection process.";
     } else {
       InitializeCrashpadReporting();
     }
