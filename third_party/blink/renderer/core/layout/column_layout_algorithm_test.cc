@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/block_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 namespace {
@@ -2094,6 +2095,7 @@ TEST_F(ColumnLayoutAlgorithmTest, UnsatisfiableOrphansAndWidows) {
 }
 
 TEST_F(ColumnLayoutAlgorithmTest, WidowsAndAbspos) {
+  ScopedFragmentedOofInCbForTest enable_flag(true);
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -2134,9 +2136,10 @@ TEST_F(ColumnLayoutAlgorithmTest, WidowsAndAbspos) {
           offset:0,0 size:0x20
           offset:0,20 size:0x20
           offset:0,40 size:0x20
-        offset:0,40 size:33x30
+          offset:0,40 size:33x30
       offset:220,0 size:100x70
-        offset:0,0 size:33x3
+        offset:0,0 size:100x0
+          offset:0,0 size:33x3
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }
@@ -4383,6 +4386,7 @@ TEST_F(ColumnLayoutAlgorithmTest, NestedWithTallSpanner) {
 }
 
 TEST_F(ColumnLayoutAlgorithmTest, AbsposFitsInOneColumn) {
+  ScopedFragmentedOofInCbForTest enable_flag(true);
   SetBodyInnerHTML(R"HTML(
     <div id="container">
       <div style="columns:3; width:320px; height:100px; column-gap:10px; column-fill:auto;">
@@ -4399,7 +4403,7 @@ TEST_F(ColumnLayoutAlgorithmTest, AbsposFitsInOneColumn) {
     offset:0,0 size:320x100
       offset:0,0 size:100x100
         offset:0,0 size:222x100
-        offset:0,0 size:111x50
+          offset:0,0 size:111x50
       offset:110,0 size:100x100
         offset:0,0 size:222x100
       offset:220,0 size:100x100
