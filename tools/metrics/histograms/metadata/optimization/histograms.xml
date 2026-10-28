@@ -596,6 +596,9 @@ chromium-metrics-reviews@google.com.
   <variant name="PrivacyPolicyAnnotation"
       summary="Provides information about whether a URL is a privacy policy
                page."/>
+  <variant name="QuickAnswers"
+      summary="Provides information about whether the page is eligible for
+               Quick Answers."/>
   <variant name="ReaderModeEligible"
       summary="Provides information about the eligibility of a URL for
                Reading Mode."/>

@@ -433,6 +433,8 @@ enum OptimizationType {
   // clipboard detection can be expanded to different sets of merchants
   // independently.
   PAYMENT_QR_CODE_MERCHANT_URL_REGEX_ALLOWLIST = 134;
+  // Provides information about whether the page is eligible for Quick Answers.
+  QUICK_ANSWERS = 135;
 }
 
 // Presents semantics for how page load URLs should be matched.
