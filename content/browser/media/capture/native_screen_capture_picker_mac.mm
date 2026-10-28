@@ -893,6 +893,8 @@ void NativeScreenCapturePickerMac::MaybeDeactivatePicker() {
 void CaptureScreenshotFromMacNativePicker(
     DesktopMediaID::Id session_id,
     base::OnceCallback<void(const SkBitmap&)> callback) {
+  auto bound_callback = base::BindPostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault(), std::move(callback));
   if (@available(macOS 14.0, *)) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
@@ -905,13 +907,10 @@ void CaptureScreenshotFromMacNativePicker(
                 std::move(callback).Run(SkBitmap());
               }
             },
-            session_id,
-            base::BindPostTask(
-                base::SingleThreadTaskRunner::GetCurrentDefault(),
-                std::move(callback))));
+            session_id, std::move(bound_callback)));
     return;
   }
-  std::move(callback).Run(SkBitmap());
+  std::move(bound_callback).Run(SkBitmap());
 }
 
 std::unique_ptr<NativeScreenCapturePicker>
