@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Web Install API: Disabled</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+test(() => {
+  assert_false('install' in navigator,
+      'navigator.install should not be present');
+  assert_equals(typeof navigator.install, 'undefined',
+      'navigator.install should be undefined');
+}, 'navigator.install() is not exposed when the feature is disabled');
+</script>

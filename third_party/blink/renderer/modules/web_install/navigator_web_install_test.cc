@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
@@ -119,6 +120,11 @@ class NavigatorWebInstallTest : public testing::Test {
 
  protected:
   void SetUp() override {
+    // WebAppInstallation is disabled by default on Android. This test-only
+    // override exercises implementation code without exposing the API on
+    // Android or weakening the production CHECK.
+    scoped_feature_list_.InitAndEnableFeature(features::kWebAppInstallation);
+
     GetFrame().Loader().CommitNavigation(
         WebNavigationParams::CreateWithEmptyHTMLForTesting(
             KURL("https://example.com")),
@@ -140,6 +146,7 @@ class NavigatorWebInstallTest : public testing::Test {
 
  private:
   test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   MockWebInstallService mock_service_;
 
   std::unique_ptr<DummyPageHolder> holder_;

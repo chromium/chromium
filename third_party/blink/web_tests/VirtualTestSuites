@@ -3741,6 +3741,25 @@
     ],
     "expires": "Mar 1, 2027"
   },
+  {
+    "prefix": "web-install-disabled",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win",
+      "ChromeOS"
+    ],
+    "bases": [],
+    "args": [
+      "--disable-features=WebAppInstallation"
+    ],
+    "owners": [
+      "pwa-team@google.com",
+      "liahiscock@microsoft.com",
+      "kristinlee@microsoft.com"
+    ],
+    "expires": "Mar 1, 2027"
+  },
   "This suite disables unload deprecation and allows tests to run with unload handlers.",
   "It should not expire as long as there are tests that use unload.",
   {
@@ -3971,27 +3990,6 @@
       "web-bluetooth@google.com"
     ],
     "expires": "Jan 1, 2027"
-  },
-  {
-    "prefix": "web-install",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/web-install",
-      "wpt_internal/web-install"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=WebAppInstallation"
-    ],
-    "owners": [
-      "pwa-team@google.com",
-      "liahiscock@microsoft.com"
-    ],
-    "expires": "Jan 1, 2028"
   },
   "Runs the remoteClientDataJSON Permissions Policy tests with its runtime",
   "feature enabled. Requests use invalid client data so policy behavior is",
