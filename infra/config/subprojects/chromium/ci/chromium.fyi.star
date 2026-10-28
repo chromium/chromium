@@ -2680,7 +2680,12 @@ ci.builder(
     schedule = "triggered",
     triggered_by = [],
     builder_spec = builder_config.copy_from("ci/Linux Builder"),
-    gn_args = "ci/Linux Builder",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Linux Builder",
+            "no_devtools_bundled_chromium_deps",
+        ],
+    ),
     targets = targets.bundle(
         targets = [
             "devtools_api_tests",
@@ -2714,7 +2719,12 @@ ci.builder(
     schedule = "triggered",
     triggered_by = [],
     builder_spec = builder_config.copy_from("ci/mac-arm64-rel"),
-    gn_args = "ci/mac-arm64-rel",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/mac-arm64-rel",
+            "no_devtools_bundled_chromium_deps",
+        ],
+    ),
     targets = targets.bundle(
         targets = [
             "devtools_api_tests",
@@ -2750,7 +2760,12 @@ ci.builder(
     schedule = "triggered",
     triggered_by = [],
     builder_spec = builder_config.copy_from("ci/Win x64 Builder"),
-    gn_args = "ci/Win x64 Builder",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Win x64 Builder",
+            "no_devtools_bundled_chromium_deps",
+        ],
+    ),
     targets = targets.bundle(
         targets = [
             "devtools_api_tests",
