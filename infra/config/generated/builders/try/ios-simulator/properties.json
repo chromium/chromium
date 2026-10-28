@@ -58,9 +58,6 @@
     ],
     "use_clang_coverage": true
   },
-  "$build/flakiness": {
-    "check_for_flakiness": true
-  },
   "$build/siso": {
     "configs": [
       "builder"
@@ -81,7 +78,6 @@
     ]
   },
   "builder_group": "tryserver.chromium.mac",
-  "cq": "required",
   "recipe": "chromium/orchestrator",
   "xcode_build_version": "27a266a"
 }
