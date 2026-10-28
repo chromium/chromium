@@ -15,15 +15,15 @@ namespace contextual_cueing {
 namespace {
 
 std::unique_ptr<KeyedService> BuildContextualCueingCapTrackerService(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   return std::make_unique<ContextualCueingCapTrackerService>(
-      profile->GetPrefs());
+      profile.GetPrefs());
 }
 
 }  // namespace
 
 // static
-ContextualCueingCapTrackerServiceFactory::TestingFactory
+ContextualCueingCapTrackerServiceFactory::TestingFactoryByRef
 ContextualCueingCapTrackerServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildContextualCueingCapTrackerService);
 }
@@ -37,7 +37,7 @@ ContextualCueingCapTrackerServiceFactory::
 
 std::unique_ptr<KeyedService>
 ContextualCueingCapTrackerServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildContextualCueingCapTrackerService(profile);
 }
 
