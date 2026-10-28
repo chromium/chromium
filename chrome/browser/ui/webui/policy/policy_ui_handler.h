@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -86,6 +87,9 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
       SetLocalTestPoliciesCallback callback) override;
   void GetPolicyLogs(GetPolicyLogsCallback callback) override;
   void ReloadPolicies() override;
+#if !BUILDFLAG(IS_CHROMEOS)
+  void UploadReport(UploadReportCallback callback) override;
+#endif
 #if !BUILDFLAG(IS_ANDROID)
   void CheckPromotionEligibility(
       CheckPromotionEligibilityCallback callback) override;
@@ -154,8 +158,17 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   void SendStatus();
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  // Called when report has been uploaded, successfully or not.
-  void OnReportUploaded(const std::string& callback_id);
+  // Core logic for uploading the enterprise browser and profile reports.
+  // `on_report_uploaded` is run once the uploads have completed, successfully
+  // or not.
+  void UploadReportImpl(base::OnceClosure on_report_uploaded);
+
+  // Called when report has been uploaded, successfully or not. Runs
+  // `on_report_uploaded` and refreshes the status shown in the UI.
+  void OnReportUploaded(base::OnceClosure on_report_uploaded);
+
+  // Resolves the legacy WebUI `callback_id` of the "uploadReport" message.
+  void OnReportUploadedWebUiWrapper(base::Value callback_id);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

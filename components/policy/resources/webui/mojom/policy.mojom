@@ -219,6 +219,13 @@ interface PolicyPageHandler {
   // fetches pending device and user remote commands.
   ReloadPolicies();
 
+  // Triggers an upload of the enterprise browser and profile reports, as well
+  // as any pending SaaS usage reports. The callback is invoked once the
+  // browser and profile reports have been uploaded, successfully or not.
+  // Report uploading from chrome://policy is not available on ChromeOS.
+  [EnableIfNot=is_chromeos]
+  UploadReport() => ();
+
   // Checks whether the promotion banner should be displayed.
   // Promotion banner is only supported on desktop platforms.
   [EnableIfNot=is_ios|is_android]

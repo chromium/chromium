@@ -875,9 +875,32 @@ IN_PROC_BROWSER_TEST_P(PolicyUITest, ReportButtonOTRProfile) {
       content::EvalJs(otr_contents, kJavaScript).ExtractString();
   EXPECT_EQ("none", visibility);
 
-  // Verify that calling uploadReport does not crash and completes safely.
-  EXPECT_TRUE(content::ExecJs(otr_contents,
-                              "chrome.send('uploadReport', ['test_id']);"));
+  // Verify that uploading a report does not crash and completes, i.e. the
+  // upload button is re-enabled, even though no report scheduler is available.
+  // The (hidden) button is clicked directly so that the request goes through
+  // the same transport as a user-initiated upload.
+  static constexpr char kUploadReport[] = R"JS(
+    new Promise((resolve, reject) => {
+      const button = document.querySelector('policy-app')
+          .shadowRoot.querySelector('#upload-report');
+      if (!button) {
+        reject(new Error('Upload report button not found'));
+        return;
+      }
+      let sawDisabled = false;
+      const observer = new MutationObserver(() => {
+        if (button.disabled) {
+          sawDisabled = true;
+        } else if (sawDisabled) {
+          observer.disconnect();
+          resolve();
+        }
+      });
+      observer.observe(button, {attributes: true, attributeFilter: ['disabled']});
+      button.click();
+    });
+  )JS";
+  EXPECT_TRUE(content::ExecJs(otr_contents, kUploadReport));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 

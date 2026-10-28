@@ -240,15 +240,17 @@ export class PolicyAppElement extends CrLitElement {
     this.showToast_(loadTimeData.getString('copyPoliciesDone'));
   }
 
+  // <if expr="not is_chromeos">
   protected onUploadReportClick_() {
     this.closeActionMenu_();
     this.uploadReportButtonDisabled_ = true;
     this.showToast_(loadTimeData.getString('reportUploading'));
-    sendWithPromise<void>('uploadReport').then(() => {
+    BrowserProxy.uploadReport().then(() => {
       this.uploadReportButtonDisabled_ = false;
       this.showToast_(loadTimeData.getString('reportUploaded'));
     });
   }
+  // </if>
 
   protected onViewLogsClick_() {
     this.closeActionMenu_();

@@ -59,6 +59,7 @@
 #import "ios/chrome/common/channel_info.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "mojo/public/cpp/bindings/callback_helpers.h"
 #import "mojo/public/cpp/bindings/pending_receiver.h"
 #import "mojo/public/cpp/bindings/pending_remote.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -219,9 +220,19 @@ void PolicyUIHandler::RegisterMessages() {
 }
 
 void PolicyUIHandler::HandleUploadReport(const base::ListValue& args) {
-  upload_report_count_ += 1;
   DCHECK_EQ(1u, args.size());
-  const std::string& callback_id = args[0].GetString();
+  UploadReportImpl(
+      base::BindOnce(&PolicyUIHandler::OnReportUploadedWebUiWrapper,
+                     weak_factory_.GetWeakPtr(), args[0].Clone()));
+}
+
+void PolicyUIHandler::UploadReport(UploadReportCallback callback) {
+  UploadReportImpl(
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback)));
+}
+
+void PolicyUIHandler::UploadReportImpl(base::OnceClosure on_report_uploaded) {
+  upload_report_count_ += 1;
 
   auto* browser_controller = GetApplicationContext()
                                  ->GetBrowserPolicyConnector()
@@ -260,21 +271,23 @@ void PolicyUIHandler::HandleUploadReport(const base::ListValue& args) {
     report_count++;
   }
 
+  base::OnceClosure on_done =
+      base::BindOnce(&PolicyUIHandler::OnReportUploaded,
+                     weak_factory_.GetWeakPtr(), std::move(on_report_uploaded));
+
   if (report_count == 0) {
     // Nothing to upload, return immediately.
-    OnReportUploaded(callback_id);
+    std::move(on_done).Run();
     return;
   }
 
   // Upload 1 or 2 reports depending on which type(s) of reporting are enabled.
-  const auto on_report_uploaded = base::BarrierClosure(
-      report_count, base::BindOnce(&PolicyUIHandler::OnReportUploaded,
-                                   weak_factory_.GetWeakPtr(), callback_id));
+  const auto barrier = base::BarrierClosure(report_count, std::move(on_done));
   if (report_scheduler) {
-    report_scheduler->UploadReport(on_report_uploaded);
+    report_scheduler->UploadReport(barrier);
   }
   if (profile_report_scheduler) {
-    profile_report_scheduler->UploadReport(on_report_uploaded);
+    profile_report_scheduler->UploadReport(barrier);
   }
 }
 
@@ -427,10 +440,14 @@ std::optional<std::string> PolicyUIHandler::GetProfileId() {
   return profile_id_service ? profile_id_service->GetProfileId() : std::nullopt;
 }
 
-void PolicyUIHandler::OnReportUploaded(const std::string& callback_id) {
-  web_ui()->ResolveJavascriptCallback(base::Value(callback_id),
-                                      /*response=*/base::Value());
+void PolicyUIHandler::OnReportUploaded(base::OnceClosure on_report_uploaded) {
+  std::move(on_report_uploaded).Run();
   SendStatus();
+}
+
+void PolicyUIHandler::OnReportUploadedWebUiWrapper(base::Value callback_id) {
+  web_ui()->ResolveJavascriptCallback(callback_id,
+                                      /*response=*/base::Value());
 }
 
 base::DictValue PolicyUIHandler::GetPolicyNames() const {

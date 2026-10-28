@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
@@ -69,8 +70,9 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
   // policy::PolicyValueProvider::Observer implementation.
   void OnPolicyStatusChanged() override;
 
-  // Called when report has been uploaded, successfully or not.
-  void OnReportUploaded(const std::string& callback_id);
+  // Called when report has been uploaded, successfully or not. Runs
+  // `on_report_uploaded` and refreshes the status shown in the UI.
+  void OnReportUploaded(base::OnceClosure on_report_uploaded);
 
   // policy::SchemaRegistry::Observer.
   void OnSchemaRegistryUpdated(bool has_new_schemas) override;
@@ -88,6 +90,7 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
       SetLocalTestPoliciesCallback callback) override;
   void GetPolicyLogs(GetPolicyLogsCallback callback) override;
   void ReloadPolicies() override;
+  void UploadReport(UploadReportCallback callback) override;
   void GetPoliciesJson(policy::mojom::GetPoliciesReason reason,
                        GetPoliciesJsonCallback callback) override;
 
@@ -121,6 +124,14 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
 
   // Called to handle the "uploadReport" WebUI message.
   void HandleUploadReport(const base::ListValue& args);
+
+  // Core logic for uploading the enterprise browser and profile reports.
+  // `on_report_uploaded` is run once the uploads have completed, successfully
+  // or not.
+  void UploadReportImpl(base::OnceClosure on_report_uploaded);
+
+  // Resolves the legacy WebUI `callback_id` of the "uploadReport" message.
+  void OnReportUploadedWebUiWrapper(base::Value callback_id);
 
   // Called to handle the "uploadReport" WebUI message. This disables all
   // policy providers except the LocalTestPolicyProvider which contains

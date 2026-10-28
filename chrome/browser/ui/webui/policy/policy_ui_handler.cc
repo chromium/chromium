@@ -92,6 +92,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/buildflags/buildflags.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -481,15 +482,25 @@ void PolicyUIHandler::GetPolicyLogs(GetPolicyLogsCallback callback) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 void PolicyUIHandler::HandleUploadReport(const base::ListValue& args) {
-  upload_report_count_ += 1;
   CHECK_EQ(1u, args.size(), base::NotFatalUntil::M162);
-  const std::string& callback_id = args[0].GetString();
+  UploadReportImpl(
+      base::BindOnce(&PolicyUIHandler::OnReportUploadedWebUiWrapper,
+                     weak_factory_.GetWeakPtr(), args[0].Clone()));
+}
+
+void PolicyUIHandler::UploadReport(UploadReportCallback callback) {
+  UploadReportImpl(
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback)));
+}
+
+void PolicyUIHandler::UploadReportImpl(base::OnceClosure on_report_uploaded) {
+  upload_report_count_ += 1;
 
   auto* browser_controller = g_browser_process->browser_policy_connector()
                                  ->chrome_browser_cloud_management_controller();
   auto* cloud_profile_reporting_service =
       enterprise_reporting::CloudProfileReportingServiceFactory::GetForProfile(
-          Profile::FromWebUI(web_ui()));
+          &profile_.get());
 
   // Upload SaaS usage reports.
   auto* browser_saas_scheduler =
@@ -515,33 +526,31 @@ void PolicyUIHandler::HandleUploadReport(const base::ListValue& args) {
           ? cloud_profile_reporting_service->report_scheduler()
           : nullptr;
 
+  base::OnceClosure on_done =
+      base::BindOnce(&PolicyUIHandler::OnReportUploaded,
+                     weak_factory_.GetWeakPtr(), std::move(on_report_uploaded));
+
   if (report_scheduler && profile_report_scheduler) {
-    const auto on_report_uploaded = base::BarrierClosure(
-        2, base::BindOnce(&PolicyUIHandler::OnReportUploaded,
-                          weak_factory_.GetWeakPtr(), callback_id));
-    report_scheduler->UploadReport(on_report_uploaded);
-    profile_report_scheduler->UploadReport(on_report_uploaded);
+    const auto barrier = base::BarrierClosure(2, std::move(on_done));
+    report_scheduler->UploadReport(barrier);
+    profile_report_scheduler->UploadReport(barrier);
     return;
   }
 
   if (report_scheduler) {
-    report_scheduler->UploadReport(
-        base::BindOnce(&PolicyUIHandler::OnReportUploaded,
-                       weak_factory_.GetWeakPtr(), callback_id));
+    report_scheduler->UploadReport(std::move(on_done));
     return;
   }
 
   if (profile_report_scheduler) {
-    profile_report_scheduler->UploadReport(
-        base::BindOnce(&PolicyUIHandler::OnReportUploaded,
-                       weak_factory_.GetWeakPtr(), callback_id));
+    profile_report_scheduler->UploadReport(std::move(on_done));
     return;
   }
 
   // TODO(335639255): Consider disable the button when neither report
   // scheduler are ready. On at least show an error message to ask people
   // to try again.
-  OnReportUploaded(callback_id);
+  std::move(on_done).Run();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -636,13 +645,16 @@ void PolicyUIHandler::RecordBannerRedirected() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_CHROMEOS)
-void PolicyUIHandler::OnReportUploaded(const std::string& callback_id) {
+void PolicyUIHandler::OnReportUploaded(base::OnceClosure on_report_uploaded) {
+  SendStatus();
+  std::move(on_report_uploaded).Run();
+}
+
+void PolicyUIHandler::OnReportUploadedWebUiWrapper(base::Value callback_id) {
   if (!IsJavascriptAllowed()) {
     return;
   }
-  ResolveJavascriptCallback(base::Value(callback_id),
-                            /*response=*/base::Value());
-  SendStatus();
+  ResolveJavascriptCallback(callback_id, /*response=*/base::Value());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
