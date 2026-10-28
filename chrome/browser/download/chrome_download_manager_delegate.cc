@@ -1302,9 +1302,6 @@ bool ChromeDownloadManagerDelegate::InterceptDownloadIfApplicable(
     if (!blink::IsSupportedMimeType(mime_type) &&
         !IsPdfAndSupported(mime_type, web_contents)) {
       download_message_bridge_->ShowUnsupportedDownloadMessage(web_contents);
-      base::UmaHistogramEnumeration(
-          "Download.Blocked.ContentType.Automotive",
-          download::DownloadContentFromMimeType(mime_type, false));
       return true;
     }
   }

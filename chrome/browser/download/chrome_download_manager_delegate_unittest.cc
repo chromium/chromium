@@ -874,7 +874,6 @@ TEST_F(ChromeDownloadManagerDelegateTest, InterceptDownloadForAutomotive) {
   if (!base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "This test should only run on automotive.";
   }
-  base::HistogramTester histograms;
 
   TestDownloadMessageBridge* message_bridge = new TestDownloadMessageBridge();
   delegate()->SetDownloadMessageBridgeForTesting(
@@ -892,8 +891,6 @@ TEST_F(ChromeDownloadManagerDelegateTest, InterceptDownloadForAutomotive) {
       kUrl, "", "", mime_type, "", 10, false /*is_transient*/,
       false /*is_content_initiated*/, nullptr);
   EXPECT_TRUE(should_intercept);
-  histograms.ExpectUniqueSample("Download.Blocked.ContentType.Automotive",
-                                download::DownloadContent::kPdf, 1);
 
   EXPECT_EQ(1, message_bridge->GetMessageShownCount());
 }
