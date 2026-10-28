@@ -20,7 +20,6 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/device_orientation/ui_bundled/scoped_force_portrait_orientation.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/first_run/public/best_features_item.h"
 #import "ios/chrome/browser/intents/model/intents_constants.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
@@ -49,7 +48,6 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios.h"
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
-#import "ios/chrome/browser/welcome_back/model/features.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
@@ -466,12 +464,6 @@ LensViewFinderTransition TransitionFromPresentationStyle(
     tipsManager->NotifySignal(
         segmentation_platform::tips_manager::signals::kLensUsed);
   }
-
-  // Notify Welcome Back to remove Lens from the eligible features.
-  if (IsWelcomeBackEnabled()) {
-    MarkWelcomeBackFeatureUsed(BestFeaturesItemType::kLensSearch);
-  }
-
   GetApplicationContext()->GetLocalState()->SetTime(prefs::kLensLastOpened,
                                                     base::Time::Now());
 }

@@ -13,7 +13,6 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/first_run/public/best_features_item.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/lens/ui_bundled/features.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
@@ -46,7 +45,6 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
-#import "ios/chrome/browser/welcome_back/model/features.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -340,11 +338,6 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
                                                     base::Time::Now());
 
   [self recordLensUsage];
-
-  // Notify Welcome Back to remove Lens from the eligible features.
-  if (IsWelcomeBackEnabled()) {
-    MarkWelcomeBackFeatureUsed(BestFeaturesItemType::kLensSearch);
-  }
 }
 
 #pragma mark - ChromeLensControllerDelegate

@@ -17,7 +17,6 @@ source_set("incognito") {
     "//base",
     "//components/prefs",
     "//ios/chrome/browser/device_reauth/model",
-    "//ios/chrome/browser/first_run/public:best_features_item",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_util",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/scene/state:incognito_lock_state",
@@ -25,8 +24,6 @@ source_set("incognito") {
     "//ios/chrome/browser/shared/model/prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/ui/table_view:utils",
-    "//ios/chrome/browser/welcome_back/model",
-    "//ios/chrome/browser/welcome_back/model:features",
   ]
 }
 

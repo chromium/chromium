@@ -7,7 +7,6 @@ include_rules = [
   "+ios/chrome/browser/context_menu/ui_bundled",
   "+ios/chrome/browser/default_browser/model",
   "+ios/chrome/browser/feature_engagement/model",
-  "+ios/chrome/browser/first_run/public/best_features_item.h",
   "+ios/chrome/browser/fullscreen/public",
   "+ios/chrome/browser/https_upgrades/model",
   "+ios/chrome/browser/intents/model",
@@ -25,6 +24,5 @@ include_rules = [
   "+ios/chrome/browser/tabs/model/tab_helper_util.h",
   "+ios/chrome/browser/tips_manager/model",
   "+ios/chrome/browser/web/model",
-  "+ios/chrome/browser/welcome_back/model/features.h",
   # keep-sorted end
 ]

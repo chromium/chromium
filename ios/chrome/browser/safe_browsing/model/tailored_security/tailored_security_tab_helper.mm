@@ -11,13 +11,11 @@
 #import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_observer_util.h"
 #import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_util.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#import "ios/chrome/browser/first_run/public/best_features_item.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/safe_browsing/model/tailored_security/tailored_security_service_infobar_delegate.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/welcome_back/model/features.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"
 #import "ios/web/public/navigation/navigation_context.h"
 
@@ -98,11 +96,6 @@ void TailoredSecurityTabHelper::OnSyncNotificationMessageRequest(
   if (is_enabled) {
     ShowInfoBar(safe_browsing::TailoredSecurityServiceMessageState::
                     kConsentedAndFlowEnabled);
-    // Notify Welcome Back to remove Enhanced Safe Browsing from the eligible
-    // features.
-    if (IsWelcomeBackEnabled()) {
-      MarkWelcomeBackFeatureUsed(BestFeaturesItemType::kEnhancedSafeBrowsing);
-    }
   } else {
     ShowInfoBar(safe_browsing::TailoredSecurityServiceMessageState::
                     kConsentedAndFlowDisabled);

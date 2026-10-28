@@ -14,7 +14,6 @@
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#import "ios/chrome/browser/first_run/public/best_features_item.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_item.h"
@@ -30,7 +29,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/welcome_back/model/features.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -119,11 +117,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   switch (type) {
     case ItemTypeSafeBrowsingEnhancedProtection:
       safeBrowsingState = safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION;
-      // Notify Welcome Back to remove Enhanced Safe Browsing from the eligible
-      // features.
-      if (IsWelcomeBackEnabled()) {
-        MarkWelcomeBackFeatureUsed(BestFeaturesItemType::kEnhancedSafeBrowsing);
-      }
       break;
     case ItemTypeSafeBrowsingStandardProtection:
       safeBrowsingState = safe_browsing::SafeBrowsingState::STANDARD_PROTECTION;
