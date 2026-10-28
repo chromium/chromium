@@ -38,6 +38,10 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 namespace em = enterprise_management;
 
 using testing::_;
@@ -205,9 +209,14 @@ TEST_F(RealtimeReportingJobConfigurationTest, ValidatePayload) {
   EXPECT_EQ(GetOSVersion(), request.device().os_version());
   EXPECT_FALSE(GetDeviceName().empty());
   EXPECT_EQ(GetDeviceName(), request.device().name());
-  EXPECT_FALSE(GetDeviceFqdn().empty());
-  EXPECT_EQ(GetDeviceFqdn(), request.device().device_fqdn());
-  EXPECT_EQ(GetNetworkName(), request.device().network_name());
+  if (policy::features::IsEnhancedSecurityEventFieldsEnabled()) {
+    EXPECT_FALSE(GetDeviceFqdn().empty());
+    EXPECT_EQ(GetDeviceFqdn(), request.device().device_fqdn());
+    EXPECT_EQ(GetNetworkName(), request.device().network_name());
+  } else {
+    EXPECT_TRUE(request.device().device_fqdn().empty());
+    EXPECT_TRUE(request.device().network_name().empty());
+  }
 
   EXPECT_EQ(kIds.size(), base::checked_cast<size_t>(request.events_size()));
   int i = -1;
@@ -365,6 +374,27 @@ TEST_F(RealtimeReportingJobConfigurationTest, OnBeforeRetry_InvalidResponse) {
   auto original_payload = configuration_->GetPayload();
   configuration_->OnBeforeRetry(DeviceManagementService::kSuccess, "error");
   EXPECT_EQ(original_payload, configuration_->GetPayload());
+}
+
+TEST_F(RealtimeReportingJobConfigurationTest, EnhancedFieldsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      policy::features::kEnhancedSecurityEventFields);
+
+  auto configuration = std::make_unique<RealtimeReportingJobConfiguration>(
+      &client_, service_.configuration()->GetRealtimeReportingServerUrl(),
+      /*include_device_info=*/true,
+      base::BindOnce(&MockCallbackObserver::OnURLLoadComplete,
+                     base::Unretained(&callback_observer_)));
+  ::chrome::cros::reporting::proto::UploadEventsRequest request;
+  request.mutable_browser()->set_user_agent("dummyAgent");
+  request.add_events()->MergeFrom(CreateEventProto(kIds[0], 0));
+  configuration->AddRequest(std::move(request));
+
+  ::chrome::cros::reporting::proto::UploadEventsRequest parsed_request;
+  parsed_request.ParseFromString(configuration->GetPayload());
+  EXPECT_TRUE(parsed_request.device().device_fqdn().empty());
+  EXPECT_TRUE(parsed_request.device().network_name().empty());
 }
 
 }  // namespace policy
