@@ -222,6 +222,13 @@ id<GREYMatcher> CloseOtherTabsButton() {
       IDS_IOS_CONTENT_CONTEXT_CLOSEOTHERTABS);
 }
 
+// Matcher for the context menu scroll view.
+id<GREYMatcher> ContextMenuScrollView() {
+  return grey_allOf(
+      grey_kindOfClassName(@"UIScrollView"),
+      grey_ancestor(grey_kindOfClassName(@"_UIContextMenuContainerView")), nil);
+}
+
 // Type `text` into the TabGridSearchBar and press enter.
 void PerformTabGridSearch(NSString* text) {
   [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
@@ -646,8 +653,11 @@ TAG_SMOKE_TEST(TabGridTestCase, testCloseAll);
   [self longPressTabWithTitle:kTitle2];
 
   // Tap "Close Other Tabs" in the context menu.
-  [[EarlGrey selectElementWithMatcher:CloseOtherTabsButton()]
-      performAction:grey_tap()];
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(CloseOtherTabsButton(),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
+      onElementWithMatcher:ContextMenuScrollView()] performAction:grey_tap()];
 
   // Wait for the context menu to disappear.
   [self waitForContextMenuToDisappear];
@@ -907,8 +917,9 @@ TAG_SMOKE_TEST(TabGridTestCase, testCloseAll);
   [self longPressTabWithTitle:kTitle1];
 
   // Close Tab.
-  [[EarlGrey selectElementWithMatcher:CloseTabMenuButton()]
-      performAction:grey_tap()];
+  [[[EarlGrey selectElementWithMatcher:CloseTabMenuButton()]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
+      onElementWithMatcher:ContextMenuScrollView()] performAction:grey_tap()];
 
   // Make sure that the tab is no longer present.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kTitle1)]
