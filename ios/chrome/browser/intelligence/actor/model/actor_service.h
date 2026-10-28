@@ -13,6 +13,7 @@
 #import <vector>
 
 #import "base/callback_list.h"
+#import "base/functional/callback_forward.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
@@ -45,9 +46,32 @@ struct TaskSourceInfo;
 
 // Service responsible for handling Actor requests. The normal flow is to
 // `CreateTask` and reuse this ID for an entire Actor task (journey).
-// `ExecuteTools` can be called multiple times on the same task sequentially.
+// `PerformActions` can be called multiple times on the same task sequentially.
 // Must be created and used on a single sequence. Observers passed to
 // `Add*Observer()` must not be nil, `Remove*Observer()` ignores nil.
+//
+// Ordering model. Callers observe a single timeline, and may call any method
+// from anywhere on the service's sequence, including from observer and
+// delegate callbacks:
+// - Commands (`PerformActions`, `RequestTabObservation`, `InterruptTask`,
+//   `StopTask`, `StopAllTasks`) are enqueued and return immediately. They run
+//   in call order, each as its own task, so task logic never runs on the
+//   caller's stack.
+// - Task setup (`CreateTask`, `AddControlledWebState`) applies immediately, so
+//   that the task is usable as soon as the call returns.
+// - Replies and notifications are posted, in the order of the effects that
+//   produced them. Replies run at most once, and never after `Shutdown()`:
+//   commands, replies and lifecycle notifications still pending then are
+//   dropped. Callers holding state keyed on a pending reply must release it in
+//   their own teardown, which always precedes `Shutdown()`.
+//   TODO(crbug.com/567037054): Also drop the task update notifications still
+//   pending at `Shutdown()`.
+// - Registrations (observers and the intervention delegate) apply immediately:
+//   an observer receives a notification if and only if it was posted after
+//   the observer is added and is delivered before it is removed.
+// - Getters return the state applied so far: commands still queued are not
+//   reflected yet, and notifications not delivered yet may be behind. Prefer
+//   replies and notifications over polling getters.
 class ActorService : public KeyedService {
  public:
   explicit ActorService(ProfileIOS* profile);
@@ -61,7 +85,7 @@ class ActorService : public KeyedService {
                          const TaskSourceInfo& source_info,
                          bool allow_incognito_web_states);
 
-  // Submits actions to an active task with a task update string (a short
+  // Enqueues actions for an active task with a task update string (a short
   // blurb which tells the user what the Actor is currently doing in plain
   // language).
   //
@@ -69,21 +93,28 @@ class ActorService : public KeyedService {
   // validation or execution, the sequence is aborted immediately, and
   // subsequent actions will not be run.
   //
-  // If the task does not exist, `callback` is posted with a single
-  // `kTaskWentAway` result. If the task is still executing a previous request,
-  // `callback` is posted with a single `kExecutionEngineExistingAction` result
-  // and the request's target WebStates are not added to the task.
-  void PerformActions(
-      ActorTaskId task_id,
-      const std::vector<optimization_guide::proto::Action>& actions,
-      const std::string& task_update,
-      PerformActionsCallback callback);
+  // `callback` runs at most once, asynchronously, and never after `Shutdown()`.
+  // If the task does not exist when the command runs, the callback runs with a
+  // single `kTaskWentAway` result. If the task is still executing a previous
+  // request, it runs with a single `kExecutionEngineExistingAction` result and
+  // the request's target WebStates are not added to the task.
+  // TODO(crbug.com/567037054): Run `callback` with `kTaskWentAway` when the
+  // task is stopped while the request is in flight, instead of dropping it.
+  void PerformActions(ActorTaskId task_id,
+                      std::vector<optimization_guide::proto::Action> actions,
+                      std::string task_update,
+                      PerformActionsCallback callback);
 
-  // Requests a "tab observation" (nomenclature aligned with
+  // Enqueues a "tab observation" request (nomenclature aligned with
   // `chrome/browser/actor`). Tab is equivalent to WebState and "observation" is
   // equivalent to a PageContext extraction. Not an "observing" pattern. In
   // practice, this is equivalent to requesting a rich actionable mode
-  // extraction on `PageContextWrapper`, with a completion callback.
+  // extraction on `PageContextWrapper`, with a completion callback. `callback`
+  // runs at most once, always asynchronously, and never after `Shutdown()`. If
+  // the task is not active or `web_state` is gone when the command runs, the
+  // callback runs with an empty response.
+  // TODO(crbug.com/568338837): Do not add new callers; move tab observation
+  // internal to `ActorTask`.
   void RequestTabObservation(ActorTaskId task_id,
                              web::WebState* web_state,
                              TabObservationCallback callback);
@@ -96,19 +127,22 @@ class ActorService : public KeyedService {
   void SetTaskInterventionDelegate(ActorTaskId task_id,
                                    id<ActorTaskInterventionDelegate> delegate);
 
-  // Interrupts a task to wait for user input, suspending ongoing actions
-  // without cancelling them. Accepts an optional message to display to the
-  // user.
+  // Enqueues an interrupt of a task to wait for user input, suspending ongoing
+  // actions without cancelling them. Accepts an optional message to display to
+  // the user.
   void InterruptTask(ActorTaskId task_id,
                      ActorTaskInterruptReason reason,
                      std::string_view message = "");
 
-  // Stops a task.
+  // Enqueues a stop of a task. The task remains active, e.g. for getters,
+  // until the command runs. A stop still queued at `Shutdown()` never runs: the
+  // task is then destroyed without `ActorTask::Stop()` nor a stop notification.
   void StopTask(ActorTaskId task_id, ActorTaskStoppedReason reason);
 
   // TODO(crbug.com/517583120): Remove when the temporary actuation prototype is
   // cleaned up.
-  // Stops all active tasks.
+  // Enqueues a stop of the tasks that are active when this is called. Tasks
+  // created afterwards are not stopped.
   void StopAllTasks();
 
   // Returns the aggregated journal for this service.
@@ -117,14 +151,15 @@ class ActorService : public KeyedService {
     return journal_.get();
   }
 
-  // Registers an observer for task updates.
+  // Registers `observer` for updates of all tasks, including future ones.
   void AddTaskUpdatesObserver(id<ActorTaskUpdatesObserver> observer);
 
   // Removes a registered observer for task updates.
   void RemoveTaskUpdatesObserver(id<ActorTaskUpdatesObserver> observer);
 
   // Registers `observer` for updates of the task identified by `task_id` only.
-  // Returns false if there is no active task with `task_id`.
+  // Returns false if there is no active task with `task_id`. A stop enqueued
+  // before this call is still delivered to `observer`.
   bool AddTaskUpdatesObserver(ActorTaskId task_id,
                               id<ActorTaskUpdatesObserver> observer);
 
@@ -141,13 +176,15 @@ class ActorService : public KeyedService {
   // delivered to `observer`.
   void RemoveTaskLifecycleObserver(id<ActorTaskLifecycleObserver> observer);
 
-  // Returns the execution state of the currently active task, or `std::nullopt`
-  // if there are no active tasks.
+  // Returns the execution state of the most recently created active task, or
+  // `std::nullopt` if there are no active tasks.
   std::optional<ActorTaskState> GetActiveTaskState() const;
 
   // Returns the WebState associated with the given ActorTask by its ID, or
   // nullptr if not found or is not in the set of the task's controlled
   // WebStates.
+  // TODO(crbug.com/568338837): Remove once tab observation moves into
+  // `ActorTask`.
   web::WebState* GetWebStateForID(web::WebStateID web_state_id,
                                   ActorTaskId task_id);
 
@@ -158,10 +195,11 @@ class ActorService : public KeyedService {
   std::vector<base::WeakPtr<ActorTaskBackgroundWorker>>
   GetWeakTaskBackgroundWorkers();
 
-  // Returns a weak pointer to this service instance.
+  // Returns a weak pointer to this service instance, which is null after
+  // `Shutdown()`.
   base::WeakPtr<ActorService> GetWeakPtr() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return weak_ptr_factory_.GetWeakPtr();
+    return weak_this_;
   }
 
  private:
@@ -195,7 +233,54 @@ class ActorService : public KeyedService {
 
   // Map of pending PageContext extractions ("observations"). Used to keep the
   // wrapper alive while the extraction is in progress.
+  // TODO(crbug.com/568338837): Move tab observation into `ActorTask` so it is
+  // covered by `pending_act_`.
   std::map<web::WebStateID, PageContextWrapper*> pending_observations_;
+
+  // Posts `method` with `args` as a command. Commands run in call order, each
+  // as its own task, so that task logic never runs on a caller's stack. Bound
+  // to `weak_this_`, so commands still queued at `Shutdown()`, or enqueued
+  // after it, never run.
+  template <typename Method, typename... Args>
+  void EnqueueCommand(Method method, Args&&... args);
+
+  // Posts `reply`, a caller's callback bound to its result, so that callers
+  // are never re-entered from within the service. Bound to `weak_this_`, so
+  // replies still pending at `Shutdown()`, or posted after it, never run.
+  void PostReply(base::OnceClosure reply);
+
+  // Runs a reply posted by `PostReply`.
+  void RunReply(base::OnceClosure reply);
+
+  // Command implementations of the public methods of the same name.
+  void DoPerformActions(ActorTaskId task_id,
+                        std::vector<optimization_guide::proto::Action> actions,
+                        std::string task_update,
+                        PerformActionsCallback callback);
+  void DoRequestTabObservation(ActorTaskId task_id,
+                               base::WeakPtr<web::WebState> weak_web_state,
+                               TabObservationCallback callback);
+  void DoInterruptTask(ActorTaskId task_id,
+                       ActorTaskInterruptReason reason,
+                       std::string message);
+  void DoStopTask(ActorTaskId task_id, ActorTaskStoppedReason reason);
+
+  // Starts a PageContext extraction of `web_state` for the task `task_id`.
+  // `callback` may run synchronously, and is destroyed without running if the
+  // service shuts down first.
+  void StartTabObservation(ActorTaskId task_id,
+                           web::WebState* web_state,
+                           TabObservationCallback callback);
+
+  // Posts `callback` with `response` as a reply.
+  void PostTabObservationReply(TabObservationCallback callback,
+                               PageContextWrapperCallbackResponse response);
+
+  // Returns whether `Shutdown()` ran.
+  bool IsShutDown() const { return !weak_this_; }
+
+  // Returns the active task identified by `task_id`, or nullptr.
+  ActorTask* FindActiveTask(ActorTaskId task_id);
 
   // Posts the lifecycle stop of `task` to lifecycle observers.
   void NotifyTaskStopped(const ActorTask& task);
@@ -234,7 +319,15 @@ class ActorService : public KeyedService {
   // Generator for unique task IDs.
   ActorTaskId::Generator next_task_id_;
 
-  // Weak pointer factory.
+  // Copied by every bind of this service's deferred work (commands, replies
+  // and completions) and by `GetWeakPtr()`. Invalidated in `Shutdown()`, and
+  // copies of an invalidated `WeakPtr` stay invalid, so no work bound before or
+  // after `Shutdown()` runs afterwards. Do not call
+  // `weak_ptr_factory_.GetWeakPtr()`; copy `weak_this_` instead.
+  base::WeakPtr<ActorService> weak_this_;
+
+  // Doomed in `Shutdown()`, after which `weak_ptr_factory_.GetWeakPtr()`
+  // DCHECKs, hence `weak_this_`.
   base::WeakPtrFactory<ActorService> weak_ptr_factory_{this};
 };
 

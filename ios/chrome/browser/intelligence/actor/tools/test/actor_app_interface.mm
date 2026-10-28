@@ -127,7 +127,8 @@ autofill::AutofillDriverIOS* GetMainFrameAutofillDriver() {
                                     completion:completion];
       });
 
-  service->PerformActions(task_id, actions, "Executing EG Test action",
+  service->PerformActions(task_id, std::move(actions),
+                          "Executing EG Test action",
                           std::move(action_performed_callback));
 }
 
@@ -181,7 +182,8 @@ autofill::AutofillDriverIOS* GetMainFrameAutofillDriver() {
                                     completion:completion];
       });
 
-  service->PerformActions(task_id, actions, "Executing EG Test actions",
+  service->PerformActions(task_id, std::move(actions),
+                          "Executing EG Test actions",
                           std::move(action_performed_callback));
 }
 

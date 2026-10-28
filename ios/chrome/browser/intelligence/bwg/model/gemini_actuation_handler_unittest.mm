@@ -976,7 +976,8 @@ TEST_F(GeminiActuationHandlerTest, Disconnect_CancelsInFlightRequest) {
   ASSERT_NE(nil, response);
   EXPECT_EQ(actor::mojom::ActionResultCode::kExecutorDestroyed,
             response.resultCode);
-  EXPECT_FALSE(actor_service_->GetActiveTaskState().has_value());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !actor_service_->GetActiveTaskState().has_value(); }));
 }
 
 // Tests that an external task stop cancels in-flight requests with

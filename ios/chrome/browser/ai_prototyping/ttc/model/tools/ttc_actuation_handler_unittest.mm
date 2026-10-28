@@ -8,6 +8,7 @@
 #import <string>
 
 #import "base/memory/raw_ptr.h"
+#import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
@@ -333,7 +334,8 @@ TEST_F(TtcActuationHandlerTest, TestDisconnectCancelsActiveTasks) {
   handler->Disconnect();
 
   // Verify task is stopped in ActorService.
-  EXPECT_FALSE(actor_service->GetActiveTaskState().has_value());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !actor_service->GetActiveTaskState().has_value(); }));
 
   // Post-disconnect task creation fails since WebStateList is cleared.
   actor::ActorTaskId post_disconnect_id =

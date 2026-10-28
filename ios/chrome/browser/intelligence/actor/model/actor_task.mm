@@ -379,8 +379,6 @@ void ActorTask::ShowInterruptConfirmation(const std::string& message) {
           base::BindOnce(&ActorTask::OnInterruptConfirmationResolved,
                          weak_ptr_factory_.GetWeakPtr())));
 
-  // Must remain the last statement: the delegate may stop, and thereby
-  // destroy, the task.
   [intervention_delegate_ actorTask:task_id_
       requestUserInterventionWithTitle:kDefaultConfirmationTitle
                               subtitle:base::SysUTF8ToNSString(message)

@@ -54,9 +54,9 @@ class AggregatedJournal;
 // - Outbound call-outs (observer notifications and `Act()` replies) are always
 //   posted with snapshot arguments.
 // - Intervention delegate requests are issued from a posted task, so no task
-//   method caller is re-entered. The delegate itself is messaged synchronously
-//   and may stop, and thereby destroy, the task, so the request must be the
-//   last statement of its method.
+//   method caller is re-entered. The delegate is messaged synchronously, and
+//   cannot destroy the task because `ActorService` only enqueues the commands
+//   that do, and is never shut down from a delegate.
 // - Callbacks handed to code outside the actor model (e.g. intervention
 //   delegate completions) are wrapped with `BindPostTaskToCurrentDefault`.
 // Callbacks handed to the engine or timers stay synchronous.

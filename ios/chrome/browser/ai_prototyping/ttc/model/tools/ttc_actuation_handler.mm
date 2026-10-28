@@ -268,7 +268,7 @@ void TtcActuationHandler::DispatchActuationRequest(
   active_callbacks_[task_id] = std::move(callback);
 
   actor_service_->PerformActions(
-      task_id, actions, request.task_update,
+      task_id, std::move(actions), request.task_update,
       base::BindOnce(&TtcActuationHandler::OnPerformActionsFinished,
                      weak_ptr_factory_.GetWeakPtr(), task_id));
 }
