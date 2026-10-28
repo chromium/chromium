@@ -226,44 +226,97 @@ bool Action::ParseFromJson(const base::DictValue& value) {
 }
 
 bool Action::ParseUserAddedActionFromProto(const ActionProto& proto) {
-  id_ = proto.id();
   if (!proto.has_input_element()) {
     return false;
   }
 
-  original_input_ = InputElement::ConvertFromProto(proto.input_element());
-  current_input_ = std::make_unique<InputElement>(*original_input_);
+  auto input_element = InputElement::ConvertFromProto(proto.input_element());
+  if (!IsInputElementValid(*input_element)) {
+    return false;
+  }
 
-  if (!proto.positions().empty()) {
-    std::vector<Position> positions;
-    for (const auto& pos_proto : proto.positions()) {
-      auto position = Position::ConvertFromProto(pos_proto);
-      if (!position) {
-        return false;
-      }
-      positions.emplace_back(*position);
+  // A user-added action is always saved with at least one position.
+  if (proto.positions().empty()) {
+    return false;
+  }
+  std::vector<Position> positions;
+  for (const auto& pos_proto : proto.positions()) {
+    auto position = Position::ConvertFromProto(pos_proto);
+    if (!position) {
+      return false;
     }
-    original_positions_ = positions;
-    current_positions_ = std::move(positions);
+    positions.emplace_back(*position);
+  }
+
+  id_ = proto.id();
+  original_input_ = std::move(input_element);
+  current_input_ = std::make_unique<InputElement>(*original_input_);
+  original_positions_ = positions;
+  current_positions_ = std::move(positions);
+  name_label_index_ = proto.name_index();
+  return true;
+}
+
+bool Action::OverwriteDefaultActionFromProto(const ActionProto& proto) {
+  CHECK(IsDefaultAction(), base::NotFatalUntil::M160);
+  std::unique_ptr<InputElement> input_element;
+  if (proto.has_input_element()) {
+    input_element = InputElement::ConvertFromProto(proto.input_element());
+    if (!IsInputElementValid(*input_element)) {
+      return false;
+    }
+  }
+  // The action must end up with an input element. `current_input_` is not set
+  // yet if this action is newly created by `InitByChangingActionType()`.
+  if (!current_input_ && !input_element) {
+    return false;
+  }
+
+  std::unique_ptr<Position> position;
+  if (!proto.positions().empty()) {
+    // A position can only be customized for an action which has positions.
+    if (current_positions_.empty()) {
+      return false;
+    }
+    position = Position::ConvertFromProto(proto.positions()[0]);
+    if (!position) {
+      return false;
+    }
+  }
+
+  // A keyboard-bound action simulates touch events at its touch positions, so
+  // it must have positions.
+  if (const InputElement& result_input =
+          input_element ? *input_element : *current_input_;
+      IsKeyboardBound(result_input) && IsInputBound(result_input) &&
+      current_positions_.empty()) {
+    return false;
+  }
+
+  if (input_element) {
+    current_input_ = std::move(input_element);
+  }
+  if (position) {
+    current_positions_[0] = *position;
   }
   name_label_index_ = proto.name_index();
   return true;
 }
 
-void Action::OverwriteDefaultActionFromProto(const ActionProto& proto) {
-  CHECK(IsDefaultAction(), base::NotFatalUntil::M160);
-  if (proto.has_input_element()) {
-    auto input_element = InputElement::ConvertFromProto(proto.input_element());
-    CHECK(input_element, base::NotFatalUntil::M160);
-    current_input_ = std::move(input_element);
+bool Action::IsInputElementValid(const InputElement& input_element) const {
+  if (IsKeyboardBound(input_element)) {
+    // A keyboard-bound tap action has one key and a keyboard-bound move
+    // action has `kActionMoveKeysSize` keys.
+    const size_t expected_keys_size =
+        GetType() == ActionType::MOVE ? kActionMoveKeysSize : 1u;
+    if (input_element.keys().size() != expected_keys_size) {
+      LOG(ERROR) << "Require " << expected_keys_size
+                 << " key(s) for the keyboard-bound action. But got "
+                 << input_element.keys().size() << " keys.";
+      return false;
+    }
   }
-  if (!proto.positions().empty()) {
-    auto position = Position::ConvertFromProto(proto.positions()[0]);
-    CHECK(position, base::NotFatalUntil::M160);
-    current_positions_[0] = *position;
-    position.reset();
-  }
-  name_label_index_ = proto.name_index();
+  return true;
 }
 
 bool Action::InitByAddingNewAction(const gfx::Point& target_pos) {

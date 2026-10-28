@@ -65,8 +65,12 @@ class Action {
   virtual bool InitByAddingNewAction(const gfx::Point& target_pos);
   virtual void InitByChangingActionType(Action* action);
 
+  // Returns false and leaves this action unchanged if `proto` doesn't contain
+  // a valid input element and valid positions for this action type.
   bool ParseUserAddedActionFromProto(const ActionProto& proto);
-  void OverwriteDefaultActionFromProto(const ActionProto& proto);
+  // Returns false and leaves this action unchanged if the customized data in
+  // `proto` is not valid for this action type.
+  bool OverwriteDefaultActionFromProto(const ActionProto& proto);
   // 1. Return true & non-empty touch_events:
   //    Call SendEventFinally to send simulated touch event.
   // 2. Return true & empty touch_events:
@@ -224,6 +228,10 @@ class Action {
 
  private:
   friend class TouchInjectorTest;
+
+  // Returns whether `input_element` is a valid input binding for this action
+  // type.
+  bool IsInputElementValid(const InputElement& input_element) const;
 
   void OnTouchReleased();
   void OnTouchCancelled();

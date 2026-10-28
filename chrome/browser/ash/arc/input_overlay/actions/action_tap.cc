@@ -191,7 +191,8 @@ bool ActionTap::InitByAddingNewAction(const gfx::Point& target_pos) {
 
 void ActionTap::InitByChangingActionType(Action* action) {
   Action::InitByChangingActionType(action);
-  auto dom_code = action->current_input()->keys()[0];
+  auto keys = action->current_input()->keys();
+  auto dom_code = keys.size() > 0 ? keys[0] : ui::DomCode::NONE;
   current_input_ = InputElement::CreateActionTapKeyElement(dom_code);
 }
 

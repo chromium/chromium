@@ -824,19 +824,36 @@ void TouchInjector::OverwriteDefaultAction(const ActionProto& proto,
   CHECK(action, base::NotFatalUntil::M160);
   CHECK_LE(proto.id(), kMaxDefaultActionID, base::NotFatalUntil::M160);
   CHECK_EQ(proto.id(), action->id(), base::NotFatalUntil::M160);
-  if (action->GetType() != proto.action_type()) {
-    auto new_action = CreateRawAction(proto.action_type(), this);
-    new_action->InitByChangingActionType(action);
-    new_action->OverwriteDefaultActionFromProto(proto);
-    ReplaceActionInternal(action, std::move(new_action));
-  } else {
-    action->OverwriteDefaultActionFromProto(proto);
+  if (action->GetType() == proto.action_type()) {
+    if (!action->OverwriteDefaultActionFromProto(proto)) {
+      LOG(ERROR) << "Ignore invalid customized data for the action with ID {"
+                 << proto.id() << "}.";
+    }
+    return;
   }
+
+  auto new_action = CreateRawAction(proto.action_type(), this);
+  new_action->InitByChangingActionType(action);
+  if (!new_action->OverwriteDefaultActionFromProto(proto)) {
+    LOG(ERROR) << "Ignore invalid customized data for the action with ID {"
+               << proto.id() << "}.";
+    return;
+  }
+  ReplaceActionInternal(action, std::move(new_action));
 }
 
 void TouchInjector::AddUserAddedActionFromProto(const ActionProto& proto) {
+  if (GetActionById(proto.id())) {
+    LOG(ERROR) << "Ignore action with duplicated ID {" << proto.id() << "}.";
+    return;
+  }
+
   auto action = CreateRawAction(proto.action_type(), this);
-  action->ParseUserAddedActionFromProto(proto);
+  if (!action->ParseUserAddedActionFromProto(proto)) {
+    LOG(ERROR) << "Ignore invalid user-added action with ID {" << proto.id()
+               << "}.";
+    return;
+  }
   actions_.emplace_back(std::move(action));
 }
 

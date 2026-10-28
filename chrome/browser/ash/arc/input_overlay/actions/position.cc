@@ -109,10 +109,25 @@ Position::~Position() = default;
 // static
 std::unique_ptr<Position> Position::ConvertFromProto(
     const PositionProto& proto) {
-  CHECK_EQ(proto.anchor_to_target().size(), 2, base::NotFatalUntil::M160);
+  if (proto.anchor_to_target().size() != 2) {
+    LOG(ERROR) << "Require two elements for anchor_to_target. But got "
+               << proto.anchor_to_target().size() << " elements.";
+    return nullptr;
+  }
+  // The anchor point is the origin (0, 0), so `anchor_to_target` is also the
+  // target position. Enforce the same invariant as the JSON parsing that the
+  // target position is inside of the window.
+  const gfx::PointF target(proto.anchor_to_target()[0],
+                           proto.anchor_to_target()[1]);
+  if (!gfx::RectF(1.0, 1.0).Contains(target)) {
+    LOG(ERROR)
+        << "The target position is located at outside of the window. The value "
+           "should be within [0, 1]. But got target {"
+        << target.x() << ", " << target.y() << "}.";
+    return nullptr;
+  }
   auto position = std::make_unique<Position>(PositionType::kDefault);
-  position->set_anchor_to_target(
-      gfx::Vector2dF(proto.anchor_to_target()[0], proto.anchor_to_target()[1]));
+  position->set_anchor_to_target(target.OffsetFromOrigin());
   return position;
 }
 

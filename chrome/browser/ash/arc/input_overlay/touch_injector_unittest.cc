@@ -1225,6 +1225,265 @@ TEST_F(TouchInjectorTest, TestProtoConversion) {
   }
 }
 
+TEST_F(TouchInjectorTest, TestLoadInvalidActionsFromProto) {
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionTapKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  injector_->ParseActions(json_value->GetDict());
+  CheckActions(injector_.get(), /*expect_size=*/2u,
+               /*expect_types=*/{ActionType::TAP, ActionType::TAP},
+               /*expect_ids=*/{0, 1});
+  auto* action0 = injector_->actions()[0].get();
+  auto* action1 = injector_->actions()[1].get();
+  const auto original_positions = action0->current_positions();
+  const auto original_input = *action1->current_input();
+
+  AppDataProto proto;
+  // Overwrite the default action with a position outside of the window.
+  auto* action_proto = proto.add_actions();
+  action_proto->set_id(0);
+  action_proto->set_action_type(ActionType::TAP);
+  auto* position_proto = action_proto->add_positions();
+  position_proto->add_anchor_to_target(3.7f);
+  position_proto->add_anchor_to_target(-0.4f);
+
+  // User-added action with a position outside of the window.
+  action_proto = proto.add_actions();
+  action_proto->set_id(kMaxDefaultActionID + 1);
+  action_proto->set_action_type(ActionType::TAP);
+  auto* input_element_proto = action_proto->mutable_input_element();
+  input_element_proto->set_input_sources(InputSource::IS_KEYBOARD);
+  input_element_proto->add_dom_codes("Space");
+  position_proto = action_proto->add_positions();
+  position_proto->add_anchor_to_target(1.5f);
+  position_proto->add_anchor_to_target(1.4f);
+
+  // User-added action without an input element.
+  action_proto = proto.add_actions();
+  action_proto->set_id(kMaxDefaultActionID + 2);
+  action_proto->set_action_type(ActionType::TAP);
+  position_proto = action_proto->add_positions();
+  position_proto->add_anchor_to_target(0.5f);
+  position_proto->add_anchor_to_target(0.5f);
+
+  // User-added action without positions.
+  action_proto = proto.add_actions();
+  action_proto->set_id(kMaxDefaultActionID + 3);
+  action_proto->set_action_type(ActionType::TAP);
+  input_element_proto = action_proto->mutable_input_element();
+  input_element_proto->set_input_sources(InputSource::IS_KEYBOARD);
+  input_element_proto->add_dom_codes("Enter");
+
+  // User-added move action with the wrong number of keys.
+  action_proto = proto.add_actions();
+  action_proto->set_id(kMaxDefaultActionID + 4);
+  action_proto->set_action_type(ActionType::MOVE);
+  input_element_proto = action_proto->mutable_input_element();
+  input_element_proto->set_input_sources(InputSource::IS_KEYBOARD);
+  for (const auto* code : {"KeyU", "KeyH", "KeyJ", "KeyK", "KeyL", "KeyN"}) {
+    input_element_proto->add_dom_codes(code);
+  }
+  position_proto = action_proto->add_positions();
+  position_proto->add_anchor_to_target(0.5f);
+  position_proto->add_anchor_to_target(0.5f);
+
+  injector_->OnProtoDataAvailable(proto);
+
+  // The invalid customized data is ignored: no user-added action is created
+  // and the default actions keep the original bindings.
+  CheckActions(injector_.get(), /*expect_size=*/2u,
+               /*expect_types=*/{ActionType::TAP, ActionType::TAP},
+               /*expect_ids=*/{0, 1});
+  EXPECT_EQ(original_positions, action0->current_positions());
+  action1 = injector_->actions()[1].get();
+  ASSERT_TRUE(action1->current_input());
+  EXPECT_EQ(original_input, *action1->current_input());
+  EXPECT_EQ(2u, injector_->GetActiveActionsSize());
+}
+
+TEST_F(TouchInjectorTest, TestLoadActionTypeChangeFromProto) {
+  // Changing the action type without a customized input element falls back to
+  // the input element derived from the current key binding.
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionTapKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  injector_->ParseActions(json_value->GetDict());
+  AppDataProto proto;
+  auto* action_proto = proto.add_actions();
+  action_proto->set_id(1);
+  action_proto->set_action_type(ActionType::MOVE);
+  injector_->OnProtoDataAvailable(proto);
+  CheckActions(injector_.get(), /*expect_size=*/2u,
+               /*expect_types=*/{ActionType::TAP, ActionType::MOVE},
+               /*expect_ids=*/{0, 1});
+  auto* action1 = injector_->actions()[1].get();
+  ASSERT_TRUE(action1->current_input());
+  ASSERT_EQ(kActionMoveKeysSize, action1->current_input()->keys().size());
+  EXPECT_EQ(ui::DomCode::US_B, action1->current_input()->keys()[0]);
+
+  // Changing the type of a mouse-bound action, which has no keys, to a tap
+  // action creates an unbound tap action.
+  auto mouse_json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionMoveMouse, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  auto injector = std::make_unique<TouchInjector>(
+      widget_->GetNativeWindow(),
+      *widget_->GetNativeWindow()->GetProperty(ash::kArcPackageNameKey),
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<AppDataProto>, std::string) {}));
+  injector->ParseActions(mouse_json_value->GetDict());
+  AppDataProto mouse_proto;
+  action_proto = mouse_proto.add_actions();
+  action_proto->set_id(0);
+  action_proto->set_action_type(ActionType::TAP);
+  injector->OnProtoDataAvailable(mouse_proto);
+  CheckActions(injector.get(), /*expect_size=*/2u,
+               /*expect_types=*/{ActionType::TAP, ActionType::MOVE},
+               /*expect_ids=*/{0, 1});
+  auto* action0 = injector->actions()[0].get();
+  ASSERT_TRUE(action0->current_input());
+  ASSERT_EQ(1u, action0->current_input()->keys().size());
+  EXPECT_EQ(ui::DomCode::NONE, action0->current_input()->keys()[0]);
+
+  // Changing the type of an action without positions to a key-bound tap
+  // action is ignored since a key-bound tap action requires positions.
+  AppDataProto invalid_proto;
+  action_proto = invalid_proto.add_actions();
+  action_proto->set_id(1);
+  action_proto->set_action_type(ActionType::TAP);
+  auto* input_element_proto = action_proto->mutable_input_element();
+  input_element_proto->set_input_sources(InputSource::IS_KEYBOARD);
+  input_element_proto->add_dom_codes("Space");
+  injector->OnProtoDataAvailable(invalid_proto);
+  CheckActions(injector.get(), /*expect_size=*/2u,
+               /*expect_types=*/{ActionType::TAP, ActionType::MOVE},
+               /*expect_ids=*/{0, 1});
+  auto* action1_mouse = injector->actions()[1].get();
+  ASSERT_TRUE(action1_mouse->current_input());
+  EXPECT_TRUE(IsMouseBound(*action1_mouse->current_input()));
+}
+
+TEST_F(TouchInjectorTest, TestLoadPositionForActionWithoutLocationFromProto) {
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionMoveMouse, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  injector_->ParseActions(json_value->GetDict());
+  CheckActions(injector_.get(), /*expect_size=*/2u,
+               /*expect_types=*/{ActionType::MOVE, ActionType::MOVE},
+               /*expect_ids=*/{0, 1});
+  // The action with ID 1 has no location.
+  auto* action1 = injector_->actions()[1].get();
+  EXPECT_TRUE(action1->current_positions().empty());
+
+  AppDataProto proto;
+  auto* action_proto = proto.add_actions();
+  action_proto->set_id(1);
+  action_proto->set_action_type(ActionType::MOVE);
+  auto* position_proto = action_proto->add_positions();
+  position_proto->add_anchor_to_target(0.5f);
+  position_proto->add_anchor_to_target(0.5f);
+  injector_->OnProtoDataAvailable(proto);
+
+  // The position update is ignored for an action without positions.
+  EXPECT_TRUE(action1->current_positions().empty());
+}
+
+TEST_F(TouchInjectorTest, TestLoadActionsWithDuplicateIDsFromProto) {
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionTapKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  injector_->ParseActions(json_value->GetDict());
+
+  AppDataProto proto;
+  for (const auto* code : {"KeyM", "KeyN"}) {
+    auto* action_proto = proto.add_actions();
+    action_proto->set_id(kMaxDefaultActionID + 1);
+    action_proto->set_action_type(ActionType::TAP);
+    auto* input_element_proto = action_proto->mutable_input_element();
+    input_element_proto->set_input_sources(InputSource::IS_KEYBOARD);
+    input_element_proto->add_dom_codes(code);
+    auto* position_proto = action_proto->add_positions();
+    position_proto->add_anchor_to_target(0.5f);
+    position_proto->add_anchor_to_target(0.5f);
+  }
+  injector_->OnProtoDataAvailable(proto);
+
+  // Only the first action with the duplicated ID is kept.
+  CheckActions(injector_.get(), /*expect_size=*/3u,
+               /*expect_types=*/
+               {ActionType::TAP, ActionType::TAP, ActionType::TAP},
+               /*expect_ids=*/{0, 1, kMaxDefaultActionID + 1});
+  EXPECT_EQ(ui::DomCode::US_M,
+            injector_->actions()[2]->current_input()->keys()[0]);
+
+  // Adding a new action still assigns the next available ID.
+  const auto bounds = injector_->content_bounds();
+  injector_->AddNewAction(ActionType::TAP,
+                          gfx::Point(bounds.width() / 2, bounds.height() / 2));
+  CheckActions(
+      injector_.get(), /*expect_size=*/4u,
+      /*expect_types=*/
+      {ActionType::TAP, ActionType::TAP, ActionType::TAP, ActionType::TAP},
+      /*expect_ids=*/{0, 1, kMaxDefaultActionID + 1, kMaxDefaultActionID + 2});
+}
+
+TEST_F(TouchInjectorTest, TestEventRewriterWithPositionsFromProto) {
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionTapKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  injector_->ParseActions(json_value->GetDict());
+
+  AppDataProto proto;
+  // User-added action with a position inside of the window.
+  auto* action_proto = proto.add_actions();
+  action_proto->set_id(kMaxDefaultActionID + 1);
+  action_proto->set_action_type(ActionType::TAP);
+  auto* input_element_proto = action_proto->mutable_input_element();
+  input_element_proto->set_input_sources(InputSource::IS_KEYBOARD);
+  input_element_proto->add_dom_codes("Enter");
+  auto* position_proto = action_proto->add_positions();
+  position_proto->add_anchor_to_target(0.5f);
+  position_proto->add_anchor_to_target(0.5f);
+
+  // User-added action with a position outside of the window.
+  action_proto = proto.add_actions();
+  action_proto->set_id(kMaxDefaultActionID + 2);
+  action_proto->set_action_type(ActionType::TAP);
+  input_element_proto = action_proto->mutable_input_element();
+  input_element_proto->set_input_sources(InputSource::IS_KEYBOARD);
+  input_element_proto->add_dom_codes("Space");
+  position_proto = action_proto->add_positions();
+  position_proto->add_anchor_to_target(1.5f);
+  position_proto->add_anchor_to_target(0.25f);
+
+  injector_->OnProtoDataAvailable(proto);
+  injector_->RegisterEventRewriter();
+
+  // Press and release the key bound to the action with the position inside of
+  // the window. The key event is rewritten to touch events inside of the
+  // window content bounds.
+  event_generator_->PressKey(ui::VKEY_RETURN, ui::EF_NONE,
+                             /*source_device_id=*/1);
+  EXPECT_TRUE(event_capturer_.key_events().empty());
+  ASSERT_EQ(1u, event_capturer_.touch_events().size());
+  auto* event = event_capturer_.touch_events()[0].get();
+  EXPECT_EQ(ui::EventType::kTouchPressed, event->type());
+  const auto expect_pos =
+      gfx::PointF(300, 100 + (400 - caption_height_) * 0.5 + caption_height_);
+  EXPECT_POINTF_NEAR(expect_pos, event->root_location_f(), kTolerance);
+  event_generator_->ReleaseKey(ui::VKEY_RETURN, ui::EF_NONE,
+                               /*source_device_id=*/1);
+  EXPECT_TRUE(event_capturer_.key_events().empty());
+  ASSERT_EQ(2u, event_capturer_.touch_events().size());
+  event = event_capturer_.touch_events()[1].get();
+  EXPECT_EQ(ui::EventType::kTouchReleased, event->type());
+  EXPECT_POINTF_NEAR(expect_pos, event->root_location_f(), kTolerance);
+  event_capturer_.Clear();
+
+  // The action with the position outside of the window is not loaded, so the
+  // key event is sent as it is without any simulated touch event.
+  event_generator_->PressKey(ui::VKEY_SPACE, ui::EF_NONE,
+                             /*source_device_id=*/1);
+  event_generator_->ReleaseKey(ui::VKEY_SPACE, ui::EF_NONE,
+                               /*source_device_id=*/1);
+  EXPECT_EQ(2u, event_capturer_.key_events().size());
+  EXPECT_TRUE(event_capturer_.touch_events().empty());
+}
+
 TEST_F(TouchInjectorTest, TestPlayWithGameControlsHistogramHistogramsYes) {
   auto json_value = base::JSONReader::ReadAndReturnValueWithError(
       kValidJsonActionTapKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);

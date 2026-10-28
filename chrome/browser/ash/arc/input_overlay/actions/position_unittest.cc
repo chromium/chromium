@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/arc/input_overlay/actions/position.h"
 
+#include <limits>
+
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -547,8 +549,54 @@ TEST(PositionTest, TestProtoConversion) {
   EXPECT_FLOAT_EQ(proto->anchor_to_target()[0], 0.5);
   EXPECT_FLOAT_EQ(proto->anchor_to_target()[1], 0.5);
   auto deserialized = Position::ConvertFromProto(*proto);
+  ASSERT_TRUE(deserialized);
   EXPECT_VECTOR2DF_EQ(deserialized->anchor_to_target(),
                       gfx::Vector2dF(0.5, 0.5));
+}
+
+TEST(PositionTest, TestConvertFromInvalidProto) {
+  // Require two elements for anchor_to_target.
+  PositionProto empty_proto;
+  EXPECT_FALSE(Position::ConvertFromProto(empty_proto));
+
+  PositionProto one_element_proto;
+  one_element_proto.add_anchor_to_target(0.5f);
+  EXPECT_FALSE(Position::ConvertFromProto(one_element_proto));
+
+  PositionProto three_elements_proto;
+  three_elements_proto.add_anchor_to_target(0.5f);
+  three_elements_proto.add_anchor_to_target(0.5f);
+  three_elements_proto.add_anchor_to_target(0.5f);
+  EXPECT_FALSE(Position::ConvertFromProto(three_elements_proto));
+
+  // Require the target position inside of the window, the same as the JSON
+  // parsing.
+  PositionProto negative_proto;
+  negative_proto.add_anchor_to_target(-0.4f);
+  negative_proto.add_anchor_to_target(0.5f);
+  EXPECT_FALSE(Position::ConvertFromProto(negative_proto));
+
+  PositionProto too_large_proto;
+  too_large_proto.add_anchor_to_target(0.5f);
+  too_large_proto.add_anchor_to_target(3.7f);
+  EXPECT_FALSE(Position::ConvertFromProto(too_large_proto));
+
+  PositionProto right_bottom_corner_proto;
+  right_bottom_corner_proto.add_anchor_to_target(1.0f);
+  right_bottom_corner_proto.add_anchor_to_target(1.0f);
+  EXPECT_FALSE(Position::ConvertFromProto(right_bottom_corner_proto));
+
+  PositionProto nan_proto;
+  nan_proto.add_anchor_to_target(std::numeric_limits<float>::quiet_NaN());
+  nan_proto.add_anchor_to_target(0.5f);
+  EXPECT_FALSE(Position::ConvertFromProto(nan_proto));
+
+  PositionProto origin_proto;
+  origin_proto.add_anchor_to_target(0.0f);
+  origin_proto.add_anchor_to_target(0.0f);
+  auto position = Position::ConvertFromProto(origin_proto);
+  ASSERT_TRUE(position);
+  EXPECT_VECTOR2DF_EQ(position->anchor_to_target(), gfx::Vector2dF(0, 0));
 }
 
 }  // namespace arc::input_overlay
