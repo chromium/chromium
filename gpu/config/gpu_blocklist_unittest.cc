@@ -141,7 +141,88 @@ TEST_F(GpuBlocklistTest, SkiaGraphiteSnapdragonXElite) {
   info.gpu.vendor_id = 0x10de;
   EXPECT_TRUE(is_blocked());
 }
+
+TEST_F(GpuBlocklistTest, NeedsMoreInfoOnWin) {
+  auto software_rendering_list =
+      GpuBlocklist::Create(GetSoftwareRenderingListEntries());
+  auto gpu_driver_bug_list = GpuBlocklist::Create(GetGpuDriverBugListEntries());
+
+  // Synthetic GPUInfo matching CollectBasicGraphicsInfo() on Windows.
+  GPUInfo info;
+  info.gpu.vendor_id = 0x10de;
+  info.gpu.device_id = 0x0640;
+  info.gpu.driver_version = "31.0.15.4601";
+
+  auto needs_more_info = [&]() {
+    software_rendering_list->MakeDecision(GpuControlList::kOsWin, "10.0", info,
+                                          {});
+    gpu_driver_bug_list->MakeDecision(GpuControlList::kOsWin, "10.0", info, {});
+    return software_rendering_list->needs_more_info() ||
+           gpu_driver_bug_list->needs_more_info();
+  };
+
+  // Basic GPUInfo without d3d11_feature_level.
+  EXPECT_TRUE(needs_more_info());
+
+  // Single GPU with d3d11_feature_level specified.
+  info.d3d11_feature_level = D3D_FEATURE_LEVEL_12_0;
+  EXPECT_FALSE(needs_more_info());
+
+  // Dual GPU with d3d11_feature_level specified, but active GPU not specified.
+  GPUInfo::GPUDevice secondary_gpu;
+  secondary_gpu.vendor_id = 0x8086;
+  secondary_gpu.device_id = 0x0166;
+  secondary_gpu.driver_version = "31.0.101.2111";
+  info.secondary_gpus.push_back(secondary_gpu);
+  EXPECT_TRUE(needs_more_info());
+
+  // Dual GPU with active GPU specified.
+  info.gpu.active = true;
+  EXPECT_FALSE(needs_more_info());
+}
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_MAC)
+TEST_F(GpuBlocklistTest, NeedsMoreInfoOnMac) {
+  auto software_rendering_list =
+      GpuBlocklist::Create(GetSoftwareRenderingListEntries());
+  auto gpu_driver_bug_list = GpuBlocklist::Create(GetGpuDriverBugListEntries());
+
+  // Synthetic GPUInfo matching CollectBasicGraphicsInfo() on Mac.
+  GPUInfo info;
+  info.gpu.vendor_id = 0x10de;
+  info.gpu.device_id = 0x0640;
+  info.gpu.driver_vendor = "NVIDIA";
+  info.gpu.driver_version = "1.6.18";
+  info.machine_model_name = "MacBookPro";
+  info.machine_model_version = "7.1";
+
+  auto needs_more_info = [&]() {
+    software_rendering_list->MakeDecision(GpuControlList::kOsMacosx, "10.12.3",
+                                          info, {});
+    gpu_driver_bug_list->MakeDecision(GpuControlList::kOsMacosx, "10.12.3",
+                                      info, {});
+    return software_rendering_list->needs_more_info() ||
+           gpu_driver_bug_list->needs_more_info();
+  };
+
+  // Single GPU with basic GPUInfo.
+  EXPECT_FALSE(needs_more_info());
+
+  // Dual GPU with active GPU not specified.
+  GPUInfo::GPUDevice secondary_gpu;
+  secondary_gpu.vendor_id = 0x8086;
+  secondary_gpu.device_id = 0x0166;
+  secondary_gpu.driver_vendor = "Intel";
+  secondary_gpu.driver_version = "1.6.18";
+  info.secondary_gpus.push_back(secondary_gpu);
+  EXPECT_TRUE(needs_more_info());
+
+  // Dual GPU with active GPU specified.
+  info.gpu.active = true;
+  EXPECT_FALSE(needs_more_info());
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 // Test for invariant "Assume the newly last added entry has the largest ID".
 // See GpuControlList::GpuControlList.
