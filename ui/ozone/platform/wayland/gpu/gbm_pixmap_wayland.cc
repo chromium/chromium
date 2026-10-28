@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/synchronization/lock.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/buffer_usage_util.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -92,14 +93,21 @@ bool GbmPixmapWayland::InitializeBuffer(
   }
 
   if (!gbm_bo_) {
-    // Only log an error for a failing format once to avoid console spam.
+    // Only log an error for a failing format once to avoid console spam. This
+    // may run concurrently on the GPU main and IO threads, so access to the set
+    // of failed formats must be synchronized.
+    static base::NoDestructor<base::Lock> failed_formats_lock;
     static base::NoDestructor<base::flat_set<viz::SharedImageFormat>>
         failed_formats;
 
-    if (failed_formats->contains(format)) {
+    bool inserted;
+    {
+      base::AutoLock lock(*failed_formats_lock);
+      inserted = failed_formats->insert(format).second;
+    }
+    if (!inserted) {
       return false;
     }
-    failed_formats->insert(format);
 
     LOG(ERROR) << "Cannot create bo with format=" << format.ToString()
                << " and usage=" << ui::NativePixmapUsageToString(usage);

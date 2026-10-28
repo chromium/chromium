@@ -9,15 +9,20 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
+#include "base/test/mock_log.h"
+#include "base/threading/simple_thread.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/buffer_types.h"
@@ -29,6 +34,7 @@
 #include "ui/gfx/overlay_plane_data.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gl/gl_utils.h"
+#include "ui/ozone/platform/wayland/gpu/gbm_pixmap_wayland.h"
 #include "ui/ozone/platform/wayland/gpu/gbm_surfaceless_wayland.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
@@ -39,11 +45,15 @@
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_linux_buffer_params.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
+#include "ui/ozone/public/native_pixmap_usage.h"
 #include "ui/ozone/public/surface_ozone_canvas.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
 
 using ::testing::_;
+using ::testing::AnyNumber;
+using ::testing::AtMost;
 using ::testing::Expectation;
+using ::testing::HasSubstr;
 using ::testing::SaveArg;
 using ::testing::Values;
 
@@ -1330,6 +1340,91 @@ TEST_P(WaylandSurfaceFactoryTest, CreateSurfaceCheckGbm) {
   presenter = gl_ozone->CreateSurfacelessViewGLSurface(gl::GetDefaultDisplay(),
                                                        widget_);
   EXPECT_FALSE(presenter);
+}
+
+namespace {
+
+// Repeatedly tries to initialize a pixmap's buffer with a list of formats.
+class InitializeBufferDelegate : public base::DelegateSimpleThread::Delegate {
+ public:
+  InitializeBufferDelegate(scoped_refptr<GbmPixmapWayland> pixmap,
+                           gfx::AcceleratedWidget widget,
+                           std::vector<viz::SharedImageFormat> formats)
+      : pixmap_(std::move(pixmap)),
+        widget_(widget),
+        formats_(std::move(formats)) {}
+  ~InitializeBufferDelegate() override = default;
+
+  // base::DelegateSimpleThread::Delegate:
+  void Run() override {
+    for (int i = 0; i < 100; ++i) {
+      for (const auto& format : formats_) {
+        EXPECT_FALSE(pixmap_->InitializeBuffer(
+            widget_, gfx::Size(16, 16), format,
+            NativePixmapBufferUsage::kScanout, std::nullopt));
+      }
+    }
+  }
+
+ private:
+  const scoped_refptr<GbmPixmapWayland> pixmap_;
+  const gfx::AcceleratedWidget widget_;
+  const std::vector<viz::SharedImageFormat> formats_;
+};
+
+}  // namespace
+
+// Pixmaps may be initialized concurrently on the GPU main and IO threads, so
+// buffer allocation failures must be handled in a thread-safe way.
+TEST_P(WaylandSurfaceFactoryTest, ConcurrentBufferAllocationFailures) {
+  gl::SetGLImplementation(gl::kGLImplementationEGLGLES2);
+
+  auto gbm_device = std::make_unique<MockGbmDevice>();
+  gbm_device->set_allocation_failure(true);
+  buffer_manager_gpu_->use_fake_gbm_device_for_test_ = true;
+  buffer_manager_gpu_->gbm_device_ = std::move(gbm_device);
+  buffer_manager_gpu_->supports_dmabuf_ = true;
+  ASSERT_TRUE(buffer_manager_gpu_->GetGbmDevice());
+
+  const std::vector<viz::SharedImageFormat> kFormatsA = {
+      viz::SinglePlaneFormat::kR_8, viz::SinglePlaneFormat::kRG_88,
+      viz::SinglePlaneFormat::kRGBA_8888, viz::SinglePlaneFormat::kBGRX_8888,
+      viz::SinglePlaneFormat::kRGBA_1010102};
+  const std::vector<viz::SharedImageFormat> kFormatsB = {
+      viz::SinglePlaneFormat::kR_16, viz::SinglePlaneFormat::kRG_1616,
+      viz::SinglePlaneFormat::kRGBX_8888, viz::SinglePlaneFormat::kBGR_565,
+      viz::SinglePlaneFormat::kBGRA_1010102};
+
+  // The error for a failing format must be logged at most once, even when
+  // several threads hit the failure concurrently. The set of failed formats is
+  // process-wide and may already contain some of the formats (e.g. with
+  // --gtest_repeat), so the error may also not be logged at all.
+  base::test::MockLog mock_log;
+  EXPECT_CALL(mock_log, Log(_, _, _, _, _)).Times(AnyNumber());
+  for (const auto& formats : {kFormatsA, kFormatsB}) {
+    for (const auto& format : formats) {
+      EXPECT_CALL(mock_log, Log(logging::LOGGING_ERROR, _, _, _,
+                                HasSubstr("Cannot create bo with format=" +
+                                          format.ToString() + " and usage=")))
+          .Times(AtMost(1));
+    }
+  }
+  mock_log.StartCapturingLogs();
+
+  InitializeBufferDelegate delegate_a(
+      base::MakeRefCounted<GbmPixmapWayland>(buffer_manager_gpu_.get()),
+      widget_, kFormatsA);
+  InitializeBufferDelegate delegate_b(
+      base::MakeRefCounted<GbmPixmapWayland>(buffer_manager_gpu_.get()),
+      widget_, kFormatsB);
+  base::DelegateSimpleThread thread_a(&delegate_a, "InitializeBufferA");
+  base::DelegateSimpleThread thread_b(&delegate_b, "InitializeBufferB");
+  thread_a.Start();
+  thread_b.Start();
+  thread_a.Join();
+  thread_b.Join();
+
+  mock_log.StopCapturingLogs();
 }
 
 class WaylandSurfaceFactoryCompositorV3 : public WaylandSurfaceFactoryTest {};
