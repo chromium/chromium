@@ -28,6 +28,8 @@ namespace ttc {
 class Conversation;
 class SessionController;
 class SessionControllerImpl;
+class SessionView;
+class SessionViewDelegate;
 class TtcActorUiStateManager;
 
 // SupportsUserData lets platform-specific bridges (e.g. the Android JNI
@@ -37,14 +39,20 @@ class TtcKeyedService : public KeyedService, public base::SupportsUserData {
   // Creates the Conversation used by a session.
   using ConversationFactory = base::RepeatingCallback<std::unique_ptr<
       Conversation>(SessionController&, std::unique_ptr<AudioController>)>;
+  // Creates the SessionView used by a session.
+  using SessionViewFactory =
+      base::RepeatingCallback<std::unique_ptr<SessionView>(
+          SessionViewDelegate&)>;
 
   static TtcKeyedService* Get(content::BrowserContext* context);
 
-  // The default ConversationFactory creates a ConversationImpl. Tests can pass
-  // in a factory to provide mock/fake objects.
+  // The default ConversationFactory creates a ConversationImpl, and the default
+  // SessionViewFactory the platform's SessionView. Tests can pass in factories
+  // to provide mock/fake objects.
   explicit TtcKeyedService(
       Profile* profile,
-      ConversationFactory conversation_factory = ConversationFactory());
+      ConversationFactory conversation_factory = ConversationFactory(),
+      SessionViewFactory session_view_factory = SessionViewFactory());
   TtcKeyedService(const TtcKeyedService&) = delete;
   TtcKeyedService& operator=(const TtcKeyedService&) = delete;
   ~TtcKeyedService() override;
@@ -79,6 +87,11 @@ class TtcKeyedService : public KeyedService, public base::SupportsUserData {
       SessionController& session_controller,
       std::unique_ptr<AudioController> audio_controller = nullptr);
 
+  // Creates the SessionView for a session. Never returns null.
+  std::unique_ptr<SessionView> MakeSessionView(
+      base::PassKey<SessionControllerImpl>,
+      SessionViewDelegate& delegate);
+
   // The active session's controller, or null if there's none.
   SessionController* session_controller();
 
@@ -100,6 +113,7 @@ class TtcKeyedService : public KeyedService, public base::SupportsUserData {
  private:
   raw_ptr<Profile> profile_;
   ConversationFactory conversation_factory_;
+  SessionViewFactory session_view_factory_;
   // Must outlive `session_controller_`, which indirectly holds a reference to
   // it, as do the actor tasks created during a session.
   std::unique_ptr<TtcActorUiStateManager> actor_ui_state_manager_;

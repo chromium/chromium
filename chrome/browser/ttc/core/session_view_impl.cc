@@ -70,4 +70,10 @@ void SessionViewImpl::OnVoicePlateCloseClicked() {
   delegate_->EndSessionAsync();
 }
 
+// The desktop voice plate doesn't show transcripts yet; they're only surfaced
+// on Android so far.
+void SessionViewImpl::OnTranscriptionsUpdated(
+    const std::string& user_transcript,
+    const std::string& model_transcript) {}
+
 }  // namespace ttc

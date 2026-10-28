@@ -107,6 +107,8 @@ source_set("impl") {
     "states.cc",
     "tool_controller.cc",
     "tool_controller.h",
+    "transcript_tracker.cc",
+    "transcript_tracker.h",
     "ttc_actor_task_delegate.cc",
     "ttc_actor_task_delegate.h",
     "ttc_actor_ui_state_manager.cc",
@@ -212,6 +214,7 @@ source_set("unit_tests") {
     "page_context_util_unittest.cc",
     "session_controller_impl_unittest.cc",
     "session_journal_impl_unittest.cc",
+    "transcript_tracker_unittest.cc",
     "ttc_actor_task_delegate_unittest.cc",
     "ttc_keyed_service_unittest.cc",
   ]

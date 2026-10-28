@@ -21,6 +21,7 @@
 #include "chrome/browser/ttc/core/session_view_delegate.h"
 #include "chrome/browser/ttc/core/states.h"
 #include "chrome/browser/ttc/core/tool_controller.h"
+#include "chrome/browser/ttc/core/transcript_tracker.h"
 #include "chrome/browser/ttc/core/ttc_page_context_monitor.h"
 #include "chrome/browser/ttc/core/voice_focused_contents_tracker.h"
 #include "components/actor/core/task_id.h"
@@ -99,6 +100,9 @@ class SessionControllerImpl : public SessionController,
  private:
   void OnPageContextFetched(const PageContextResult& result);
 
+  // Passes the transcripts of the current exchange on to the session UI.
+  void NotifyTranscriptsUpdated();
+
   // Safe because TtcKeyedService owns this object and outlives it. Gets
   // assigned on construction.
   const raw_ref<TtcKeyedService> service_;
@@ -121,6 +125,9 @@ class SessionControllerImpl : public SessionController,
   SessionLifecycle session_lifecycle_ = SessionLifecycle::kInitializing;
 
   base::ObserverList<SessionController::Observer> observers_;
+
+  // The transcripts of the current exchange, for the session UI.
+  TranscriptTracker transcript_tracker_;
 
   base::WeakPtrFactory<SessionControllerImpl> weak_ptr_factory_{this};
 };

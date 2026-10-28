@@ -33,24 +33,13 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ttc/android/session_view_android.h"
-#else
-#include "chrome/browser/ttc/core/session_view_impl.h"
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #endif
 
 namespace ttc {
 
 namespace {
-
-std::unique_ptr<SessionView> MakeSessionView(SessionViewDelegate& delegate) {
-#if BUILDFLAG(IS_ANDROID)
-  return std::make_unique<SessionViewAndroid>(delegate);
-#else
-  return std::make_unique<SessionViewImpl>(delegate);
-#endif
-}
 
 void DCheckSessionLifecycleTransition(SessionLifecycle from,
                                       SessionLifecycle to) {
@@ -72,7 +61,9 @@ SessionControllerImpl::SessionControllerImpl(
     TtcKeyedService& service,
     std::unique_ptr<AudioController> audio_controller)
     : service_(service),
-      session_view_(MakeSessionView(*this)),
+      session_view_(
+          service.MakeSessionView(base::PassKey<SessionControllerImpl>(),
+                                  *this)),
       voice_focused_contents_tracker_(
           VoiceFocusedContentsTracker::Create(CHECK_DEREF(service.profile()))),
       actor_task_holder_(*this),
@@ -230,6 +221,7 @@ void SessionControllerImpl::OnModelTurnComplete() {
   for (SessionController::Observer& observer : observers_) {
     observer.OnModelTurnComplete();
   }
+  transcript_tracker_.OnModelTurnComplete();
 }
 
 void SessionControllerImpl::OnModelInterrupted() {
@@ -242,12 +234,16 @@ void SessionControllerImpl::OnInputTranscription(const std::string& text) {
   for (SessionController::Observer& observer : observers_) {
     observer.OnInputTranscription(text);
   }
+  transcript_tracker_.AddUserTranscription(text);
+  NotifyTranscriptsUpdated();
 }
 
 void SessionControllerImpl::OnOutputTranscription(const std::string& text) {
   for (SessionController::Observer& observer : observers_) {
     observer.OnOutputTranscription(text);
   }
+  transcript_tracker_.AddModelTranscription(text);
+  NotifyTranscriptsUpdated();
 }
 
 void SessionControllerImpl::OnModelAudioEnvelopeReady(
@@ -255,6 +251,16 @@ void SessionControllerImpl::OnModelAudioEnvelopeReady(
   for (SessionController::Observer& observer : observers_) {
     observer.OnModelAudioEnvelopeReady(envelope);
   }
+}
+
+void SessionControllerImpl::NotifyTranscriptsUpdated() {
+  // A finished session no longer updates its UI.
+  if (session_lifecycle_ == SessionLifecycle::kFinished) {
+    return;
+  }
+  session_view_->OnTranscriptionsUpdated(
+      transcript_tracker_.user_transcript(),
+      transcript_tracker_.model_transcript());
 }
 
 bool SessionControllerImpl::SetMicMuted(bool muted) {

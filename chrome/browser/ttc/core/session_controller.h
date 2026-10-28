@@ -92,6 +92,9 @@ class SessionController {
   virtual void OnModelTurnStarted() = 0;
   virtual void OnModelTurnComplete() = 0;
   virtual void OnModelInterrupted() = 0;
+  // The backend streams each turn's transcription in increments: `text` is the
+  // next piece of the user's (input) or the model's (output) transcription,
+  // not the whole transcription so far.
   virtual void OnInputTranscription(const std::string& text) = 0;
   virtual void OnOutputTranscription(const std::string& text) = 0;
   virtual void OnModelAudioEnvelopeReady(const AudioEnvelope& envelope) = 0;

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_TTC_ANDROID_SESSION_VIEW_ANDROID_H_
 #define CHROME_BROWSER_TTC_ANDROID_SESSION_VIEW_ANDROID_H_
 
+#include <string>
+
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ttc/core/session_view.h"
 
@@ -28,6 +30,8 @@ class SessionViewAndroid : public SessionView {
   void UpdateAudioLevel(float audio_level) override;
   void OnSessionInitialized() override;
   void OnError(ErrorCode error) override;
+  void OnTranscriptionsUpdated(const std::string& user_transcript,
+                               const std::string& model_transcript) override;
 
  private:
   // Owned by the TtcKeyedService, which outlives the session this view

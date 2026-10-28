@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ttc;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
@@ -39,6 +40,12 @@ public class TtcKeyedService {
          * session is ended by the native side shortly after.
          */
         default void onError(int errorCode) {}
+
+        /**
+         * The transcripts of the current exchange changed. Each is the full text so far of the
+         * user's turn and of the model's reply; either may be empty.
+         */
+        default void onTranscriptionsUpdated(String userTranscript, String modelTranscript) {}
 
         /** The session's microphone was muted or unmuted. */
         default void onMicMutedChanged(boolean muted) {}
@@ -165,6 +172,15 @@ public class TtcKeyedService {
     private void onError(int errorCode) {
         for (Observer observer : mObservers) {
             observer.onError(errorCode);
+        }
+    }
+
+    @CalledByNative
+    private void onTranscriptionsUpdated(
+            @JniType("std::string") String userTranscript,
+            @JniType("std::string") String modelTranscript) {
+        for (Observer observer : mObservers) {
+            observer.onTranscriptionsUpdated(userTranscript, modelTranscript);
         }
     }
 

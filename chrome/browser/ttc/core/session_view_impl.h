@@ -30,6 +30,8 @@ class SessionViewImpl : public SessionView {
   void UpdateAudioLevel(float audio_level) override;
   void OnSessionInitialized() override;
   void OnError(ErrorCode error) override;
+  void OnTranscriptionsUpdated(const std::string& user_transcript,
+                               const std::string& model_transcript) override;
 
  private:
   // Invoked when the user clicks the voice plate's close button.

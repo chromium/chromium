@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
@@ -125,6 +126,14 @@ void TtcKeyedServiceAndroid::OnAudioLevelChanged(float audio_level) {
 void TtcKeyedServiceAndroid::OnError(ErrorCode error) {
   JNIEnv* env = AttachCurrentThread();
   Java_TtcKeyedService_onError(env, java_obj_, static_cast<int32_t>(error));
+}
+
+void TtcKeyedServiceAndroid::OnTranscriptionsUpdated(
+    const std::string& user_transcript,
+    const std::string& model_transcript) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_TtcKeyedService_onTranscriptionsUpdated(env, java_obj_, user_transcript,
+                                               model_transcript);
 }
 
 void TtcKeyedServiceAndroid::OnServiceStateChanged(ServiceState state) {

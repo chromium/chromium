@@ -31,4 +31,10 @@ void SessionViewAndroid::OnError(ErrorCode error) {
   bridge_->OnError(error);
 }
 
+void SessionViewAndroid::OnTranscriptionsUpdated(
+    const std::string& user_transcript,
+    const std::string& model_transcript) {
+  bridge_->OnTranscriptionsUpdated(user_transcript, model_transcript);
+}
+
 }  // namespace ttc

@@ -8,16 +8,20 @@
 #include <cstdint>
 #include <memory>
 #include <numbers>
+#include <string>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "chrome/browser/ttc/core/buildflags.h"
 #include "chrome/browser/ttc/core/features.h"
+#include "chrome/browser/ttc/core/session_view.h"
+#include "chrome/browser/ttc/core/session_view_delegate.h"
 #include "chrome/browser/ttc/core/states.h"
 #if BUILDFLAG(ENABLE_TTC_WEBUI)
 #include "chrome/browser/ttc/core/eval_harness.mojom.h"
@@ -59,6 +63,10 @@ class TtcSessionControllerImplTest : public testing::Test {
  public:
   TtcSessionControllerImplTest() {
     scoped_feature_list_.InitAndEnableFeature(kTtc);
+  }
+
+  void SetUp() override {
+    testing::Test::SetUp();
     service_ = static_cast<TtcKeyedService*>(
         TtcKeyedServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             &profile_,
@@ -73,7 +81,8 @@ class TtcSessionControllerImplTest : public testing::Test {
         Profile::FromBrowserContext(context),
         base::BindRepeating(
             &TtcSessionControllerImplTest::CreateMockConversation,
-            base::Unretained(this)));
+            base::Unretained(this)),
+        session_view_factory_);
   }
 
   std::unique_ptr<Conversation> CreateMockConversation(
@@ -99,6 +108,8 @@ class TtcSessionControllerImplTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfile profile_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  // Used by the service, if set before SetUp(), instead of the platform's.
+  TtcKeyedService::SessionViewFactory session_view_factory_;
   raw_ptr<TtcKeyedService> service_ = nullptr;
   raw_ptr<MockConversation, DisableDanglingPtrDetection> mock_conversation_ =
       nullptr;
@@ -307,6 +318,76 @@ TEST_F(TtcSessionControllerImplTest, FinishedSessionIgnoresMicMute) {
 
   EXPECT_CALL(*mock_conversation_, SetMicMuted(testing::_)).Times(0);
   EXPECT_FALSE(controller.SetMicMuted(true));
+}
+
+namespace {
+
+// What a FakeSessionView has been told.
+struct SessionViewRecord {
+  std::string user_transcript;
+  std::string model_transcript;
+};
+
+class FakeSessionView : public SessionView {
+ public:
+  explicit FakeSessionView(SessionViewRecord& record) : record_(record) {}
+  ~FakeSessionView() override = default;
+
+  // SessionView:
+  void UpdateAudioLevel(float audio_level) override {}
+  void OnSessionInitialized() override {}
+  void OnError(ErrorCode error) override {}
+  void OnTranscriptionsUpdated(const std::string& user_transcript,
+                               const std::string& model_transcript) override {
+    record_->user_transcript = user_transcript;
+    record_->model_transcript = model_transcript;
+  }
+
+ private:
+  const raw_ref<SessionViewRecord> record_;
+};
+
+}  // namespace
+
+// Checks what the session UI is told, through a FakeSessionView.
+class TtcSessionControllerImplViewTest : public TtcSessionControllerImplTest {
+ protected:
+  TtcSessionControllerImplViewTest() {
+    session_view_factory_ =
+        base::BindRepeating(&TtcSessionControllerImplViewTest::CreateFakeView,
+                            base::Unretained(this));
+  }
+
+  std::unique_ptr<SessionView> CreateFakeView(SessionViewDelegate&) {
+    return std::make_unique<FakeSessionView>(record_);
+  }
+
+  SessionViewRecord record_;
+};
+
+// How exchanges are split is covered by TranscriptTracker's tests; this checks
+// that the transcripts reach the session UI.
+TEST_F(TtcSessionControllerImplViewTest, TranscriptsReachView) {
+  SessionControllerImpl controller(*service_);
+
+  controller.OnInputTranscription("What's the weather?");
+  controller.OnOutputTranscription("It's sunny.");
+
+  EXPECT_EQ(record_.user_transcript, "What's the weather?");
+  EXPECT_EQ(record_.model_transcript, "It's sunny.");
+}
+
+TEST_F(TtcSessionControllerImplViewTest, FinishedSessionStopsUpdatingView) {
+  SessionControllerImpl controller(*service_);
+  controller.OnInputTranscription("Hello");
+
+  // A fatal error ends the session.
+  controller.OnError(ErrorCode::kInternalBackendError);
+  ASSERT_EQ(controller.GetSessionLifecycle(), SessionLifecycle::kFinished);
+
+  controller.OnOutputTranscription("Hi");
+  EXPECT_EQ(record_.user_transcript, "Hello");
+  EXPECT_EQ(record_.model_transcript, "");
 }
 
 }  // namespace ttc
