@@ -9,11 +9,20 @@
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
+#include "base/run_loop.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_saver_browser_test_mixin.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/favicon/core/favicon_service.h"
+#include "components/favicon_base/favicon_types.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
+#include "components/keyed_service/core/service_access_type.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/tabs/public/tab_network_state.h"
 #include "content/public/browser/web_contents.h"
@@ -25,9 +34,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/image/image.h"
 
 namespace {
 class MockTabUIHelperSubscriber {
@@ -186,6 +198,50 @@ IN_PROC_BROWSER_TEST_F(TabUIHelperBrowserTest, ShouldHideThrobberIsNotified) {
   EXPECT_CALL(*tab_ui_change_waiter, OnTabUIChange());
   tab_ui_helper->SetCreatedBySessionRestore(true);
   EXPECT_TRUE(tab_ui_helper->ShouldHideThrobber());
+}
+
+IN_PROC_BROWSER_TEST_F(TabUIHelperBrowserTest,
+                       PendingNavigationStateChangeIsNotified) {
+  ASSERT_NE(ui_test_utils::NavigateToURL(
+                browser(), embedded_test_server()->GetURL("/title2.html")),
+            nullptr);
+  tabs::TabInterface* const tab_interface =
+      browser()->tab_strip_model()->GetActiveTab();
+  TabUIHelper* const tab_ui_helper = TabUIHelper::From(tab_interface);
+  ASSERT_EQ(tab_ui_helper->GetTitle(), u"Title Of Awesomeness");
+
+  const GURL pending_navigation_url("https://example.com/deferred");
+  HistoryServiceFactory::GetForProfile(browser()->GetProfile(),
+                                       ServiceAccessType::EXPLICIT_ACCESS)
+      ->AddPage(pending_navigation_url, base::Time::Now(),
+                history::SOURCE_BROWSED);
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  bitmap.eraseColor(SK_ColorRED);
+  FaviconServiceFactory::GetForProfile(browser()->GetProfile(),
+                                       ServiceAccessType::EXPLICIT_ACCESS)
+      ->SetFavicons({pending_navigation_url},
+                    GURL("https://example.com/favicon.ico"),
+                    favicon_base::IconType::kFavicon,
+                    gfx::Image::CreateFrom1xBitmap(bitmap));
+
+  base::RunLoop favicon_run_loop;
+  auto tab_ui_change_waiter =
+      std::make_unique<MockTabUIHelperSubscriber>(tab_ui_helper);
+  EXPECT_CALL(*tab_ui_change_waiter, OnTabUIChange())
+      .WillOnce(testing::Return())
+      .WillOnce([&favicon_run_loop]() { favicon_run_loop.Quit(); });
+
+  tab_ui_helper->SetPendingNavigationState(pending_navigation_url,
+                                           u"Deferred Title");
+  EXPECT_EQ(tab_ui_helper->GetTitle(), u"Deferred Title");
+
+  favicon_run_loop.Run();
+  EXPECT_FALSE(tab_ui_helper->GetFavicon().IsEmpty());
+
+  EXPECT_CALL(*tab_ui_change_waiter, OnTabUIChange()).Times(1);
+  tab_ui_helper->ClearPendingNavigationState();
+  EXPECT_EQ(tab_ui_helper->GetTitle(), u"Title Of Awesomeness");
 }
 
 class TabUIHelperWithPrerenderingTest : public InProcessBrowserTest {

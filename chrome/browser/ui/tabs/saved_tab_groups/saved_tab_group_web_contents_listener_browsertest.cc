@@ -8,6 +8,7 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/data_sharing/public/features.h"
@@ -112,7 +113,9 @@ class ListenerDeferredTest : public InProcessBrowserTest {
     saved_tab_guid_ = tab.saved_tab_guid();
   }
 
-  void AttemptNavigationFromSync(const GURL& url) {
+  void AttemptNavigationFromSync(
+      const GURL& url,
+      std::optional<std::u16string> title = std::nullopt) {
     ASSERT_FALSE(test_tab_->GetContents()->IsLoading());
 
     tab_groups::SavedTabGroupModel* stg_model = saved_tab_group_model();
@@ -132,8 +135,11 @@ class ListenerDeferredTest : public InProcessBrowserTest {
     // Create a new SavedTabGroupTab representing the remote update
     tab_groups::SavedTabGroupTab remote_tab = *existing_tab;
 
-    // Update the URL to simulate the sync change
+    // Update the URL and optional title to simulate the sync change
     remote_tab.SetURL(url);
+    if (title.has_value()) {
+      remote_tab.SetTitle(title.value());
+    }
 
     // Merge the remote tab into the model
     const tab_groups::SavedTabGroupTab* merged_tab =
@@ -215,12 +221,14 @@ IN_PROC_BROWSER_TEST_F(ListenerDeferredTest,
   SaveGroup();
   EXPECT_EQ(GURL(kFirstURL), CurrentTabURL());
 
-  AttemptNavigationFromSync(GURL(kSecondURL));
+  AttemptNavigationFromSync(GURL(kSecondURL), u"Deferred Remote Title");
   EXPECT_EQ(GURL(kFirstURL), CurrentTabURL());
+  EXPECT_EQ(u"Deferred Remote Title", TabUIHelper::From(test_tab_)->GetTitle());
   ForegroundTestTab();
   WaitForNavigationCompleted();
 
   EXPECT_EQ(GURL(kSecondURL), CurrentTabURL());
+  EXPECT_NE(u"Deferred Remote Title", TabUIHelper::From(test_tab_)->GetTitle());
 }
 
 IN_PROC_BROWSER_TEST_F(
