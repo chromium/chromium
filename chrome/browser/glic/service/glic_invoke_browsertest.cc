@@ -945,47 +945,6 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   EXPECT_FALSE(error_future1.IsReady());
 }
 
-// TODO(b/564473727): Test is flaky on Mac.
-// TODO(crbug.com/568827075): Re-enable the test on Linux.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_InvokeTimeoutBehaviors DISABLED_InvokeTimeoutBehaviors
-#else
-#define MAYBE_InvokeTimeoutBehaviors InvokeTimeoutBehaviors
-#endif
-IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, MAYBE_InvokeTimeoutBehaviors) {
-  // 1. Test custom short timeout
-  base::test::TestFuture<GlicInvokeError> short_error_future;
-  GlicInvokeOptions short_options(mojom::InvocationSource::kOsButton);
-  short_options.on_error = short_error_future.GetCallback();
-  short_options.timeout = base::Milliseconds(1);
-  short_options.target.surface = DefaultSurface{
-      GetTabListInterface()->GetActiveTab()->GetBrowserWindowInterface()};
-
-  coordinator().Invoke(std::move(short_options));
-
-  // The first invoke should time out quickly.
-  EXPECT_EQ(short_error_future.Get(), GlicInvokeError::kTimeout);
-
-  // 2. Test that a longer timeout actually takes longer, ensuring the
-  // specified duration isn't being ignored resulting in an instant timeout.
-  base::test::TestFuture<GlicInvokeError> long_error_future;
-  GlicInvokeOptions long_options(mojom::InvocationSource::kOsButton);
-  long_options.on_error = long_error_future.GetCallback();
-  long_options.timeout = base::Milliseconds(100);
-  long_options.target.surface = DefaultSurface{
-      GetTabListInterface()->GetActiveTab()->GetBrowserWindowInterface()};
-
-  base::ElapsedTimer elapsed_timer;
-  coordinator().Invoke(std::move(long_options));
-
-  // Wait for the timeout to occur.
-  EXPECT_EQ(long_error_future.Get(), GlicInvokeError::kTimeout);
-
-  // Verify it took at least some fraction of the longer timeout, proving
-  // it didn't instantly time out like the short one.
-  EXPECT_GE(elapsed_timer.Elapsed(), base::Milliseconds(50));
-}
-
 // TODO(crbug.com/564285975): Re-enable the test.
 #if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
 #define MAYBE_InvokeFailsOnTabClosed DISABLED_InvokeFailsOnTabClosed
@@ -1111,6 +1070,41 @@ class GlicInvokeNeverReadyClientBrowserTest : public GlicInvokeBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeNeverReadyClientBrowserTest,
+                       InvokeTimeoutBehaviors) {
+  // 1. Test custom short timeout
+  base::test::TestFuture<GlicInvokeError> short_error_future;
+  GlicInvokeOptions short_options(mojom::InvocationSource::kOsButton);
+  short_options.on_error = short_error_future.GetCallback();
+  short_options.timeout = base::Milliseconds(1);
+  short_options.target.surface = DefaultSurface{
+      GetTabListInterface()->GetActiveTab()->GetBrowserWindowInterface()};
+
+  coordinator().Invoke(std::move(short_options));
+
+  // The first invoke should time out quickly.
+  EXPECT_EQ(short_error_future.Get(), GlicInvokeError::kTimeout);
+
+  // 2. Test that a longer timeout actually takes longer, ensuring the
+  // specified duration isn't being ignored resulting in an instant timeout.
+  base::test::TestFuture<GlicInvokeError> long_error_future;
+  GlicInvokeOptions long_options(mojom::InvocationSource::kOsButton);
+  long_options.on_error = long_error_future.GetCallback();
+  long_options.timeout = base::Milliseconds(100);
+  long_options.target.surface = DefaultSurface{
+      GetTabListInterface()->GetActiveTab()->GetBrowserWindowInterface()};
+
+  base::ElapsedTimer elapsed_timer;
+  coordinator().Invoke(std::move(long_options));
+
+  // Wait for the timeout to occur.
+  EXPECT_EQ(long_error_future.Get(), GlicInvokeError::kTimeout);
+
+  // Verify it took at least some fraction of the longer timeout, proving
+  // it didn't instantly time out like the short one.
+  EXPECT_GE(elapsed_timer.Elapsed(), base::Milliseconds(50));
+}
 
 // Closing the panel while the client is still loading abandons the toolbar
 // button's invocation right away (kPanelClosed); blank instance removal then
