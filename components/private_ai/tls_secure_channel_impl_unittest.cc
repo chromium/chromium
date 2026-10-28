@@ -557,5 +557,33 @@ TEST_F(TlsSecureChannelImplTest,
   EXPECT_EQ(fake_oak_service_.process_frame_calls_, 1);
 }
 
+TEST_F(TlsSecureChannelImplTest,
+       BackToBackHandshakeFrameAndSocketCloseRecordsHandshakeStatus) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<void> established_future;
+  base::test::TestFuture<base::expected<Response, StatusCode>> response_future;
+
+  fake_oak_service_.next_process_error_ =
+      mojom::TlsHandshakeError::kProtocolError;
+
+  auto channel = CreateChannel(established_future.GetCallback(),
+                               response_future.GetRepeatingCallback());
+
+  WaitForClientHello();
+
+  // Deliver a corrupted handshake frame / TLS alert and an immediate socket
+  // close back-to-back before the async ProcessHandshakeFrame Mojo reply runs.
+  transport()->SimulateIncomingFrame({0x16, 0x03, 0x03, 0x00, 0x02});
+  transport()->SimulateTransportError(TlsWebSocketClient::Error::kSocketClosed);
+
+  auto result = response_future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), StatusCode::kHandshakeFailed);
+  EXPECT_FALSE(established_future.IsReady());
+  EXPECT_EQ(fake_oak_service_.process_frame_calls_, 1);
+  histogram_tester.ExpectUniqueSample("PrivateAi.Tls.HandshakeStatus",
+                                      TlsHandshakeStatus::kProtocolError, 1);
+}
+
 }  // namespace
 }  // namespace private_ai

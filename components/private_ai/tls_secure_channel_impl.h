@@ -142,8 +142,9 @@ class TlsSecureChannelImpl : public SecureChannel {
   const std::string expected_server_name_;
 
   std::vector<Request> pending_requests_ GUARDED_BY_CONTEXT(sequence_checker_);
-  base::circular_deque<std::vector<uint8_t>> pending_incoming_frames_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::circular_deque<
+      base::expected<std::vector<uint8_t>, TlsWebSocketClient::Error>>
+      pending_incoming_frames_ GUARDED_BY_CONTEXT(sequence_checker_);
   bool handshake_frame_in_flight_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool retried_on_cert_error_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   base::TimeTicks start_time_ GUARDED_BY_CONTEXT(sequence_checker_);

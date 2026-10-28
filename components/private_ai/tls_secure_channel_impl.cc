@@ -188,6 +188,11 @@ void TlsSecureChannelImpl::OnIncomingFrameReceived(
     return;
   }
 
+  if (state_ == State::kPerformingHandshake && handshake_frame_in_flight_) {
+    pending_incoming_frames_.push_back(std::move(frame));
+    return;
+  }
+
   if (!frame.has_value()) {
     logger_->LogError(FROM_HERE,
                       "WebSocket transport error during TLS session.");
@@ -216,10 +221,6 @@ void TlsSecureChannelImpl::OnIncomingFrameReceived(
 
   switch (state_) {
     case State::kPerformingHandshake:
-      if (handshake_frame_in_flight_) {
-        pending_incoming_frames_.push_back(std::move(*frame));
-        return;
-      }
       handshake_frame_in_flight_ = true;
       oak_session_->ProcessHandshakeFrame(
           *frame,
@@ -308,10 +309,9 @@ void TlsSecureChannelImpl::OnProcessHandshakeFrameDone(
 
   while (!pending_incoming_frames_.empty() && state_ != State::kClosed &&
          !handshake_frame_in_flight_) {
-    std::vector<uint8_t> next_frame =
-        std::move(pending_incoming_frames_.front());
+    auto next_frame = std::move(pending_incoming_frames_.front());
     pending_incoming_frames_.pop_front();
-    OnIncomingFrameReceived(base::ok(std::move(next_frame)));
+    OnIncomingFrameReceived(std::move(next_frame));
   }
 }
 
