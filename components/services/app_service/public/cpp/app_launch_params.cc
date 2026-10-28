@@ -10,7 +10,7 @@ namespace apps {
 
 AppLaunchParams::AppLaunchParams(const std::string& app_id,
                                  LaunchContainer container,
-                                 WindowOpenDisposition disposition,
+                                 ui::mojom::WindowOpenDisposition disposition,
                                  apps::LaunchSource launch_source,
                                  int64_t display_id)
     : app_id(app_id),
@@ -22,7 +22,7 @@ AppLaunchParams::AppLaunchParams(const std::string& app_id,
 
 AppLaunchParams::AppLaunchParams(const std::string& app_id,
                                  LaunchContainer container,
-                                 WindowOpenDisposition disposition,
+                                 ui::mojom::WindowOpenDisposition disposition,
                                  apps::LaunchSource launch_source,
                                  int64_t display_id,
                                  const std::vector<base::FilePath>& files,
@@ -38,7 +38,7 @@ AppLaunchParams::AppLaunchParams(const std::string& app_id,
 
 AppLaunchParams::AppLaunchParams(const std::string& app_id,
                                  LaunchContainer container,
-                                 WindowOpenDisposition disposition,
+                                 ui::mojom::WindowOpenDisposition disposition,
                                  const GURL& override_url,
                                  apps::LaunchSource launch_source,
                                  int64_t display_id,

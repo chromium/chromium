@@ -16,7 +16,7 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -27,13 +27,13 @@ namespace apps {
 struct AppLaunchParams {
   AppLaunchParams(const std::string& app_id,
                   LaunchContainer container,
-                  WindowOpenDisposition disposition,
+                  ui::mojom::WindowOpenDisposition disposition,
                   apps::LaunchSource launch_source,
                   int64_t display_id = display::kInvalidDisplayId);
 
   AppLaunchParams(const std::string& app_id,
                   LaunchContainer container,
-                  WindowOpenDisposition disposition,
+                  ui::mojom::WindowOpenDisposition disposition,
                   apps::LaunchSource launch_source,
                   int64_t display_id,
                   const std::vector<base::FilePath>& files,
@@ -41,7 +41,7 @@ struct AppLaunchParams {
 
   AppLaunchParams(const std::string& app_id,
                   LaunchContainer container,
-                  WindowOpenDisposition disposition,
+                  ui::mojom::WindowOpenDisposition disposition,
                   const GURL& override_url,
                   apps::LaunchSource launch_source,
                   int64_t display_id,
@@ -67,7 +67,7 @@ struct AppLaunchParams {
 
   // If container is TAB, this field controls how the tab is opened.
   // If container is WINDOW, NEW_WINDOW will force a new window to be opened.
-  WindowOpenDisposition disposition;
+  ui::mojom::WindowOpenDisposition disposition;
 
   // If non-empty, use override_url in place of the application's launch url.
   GURL override_url;
