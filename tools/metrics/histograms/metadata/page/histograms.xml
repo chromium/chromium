@@ -1042,7 +1042,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".subresource-filter-internals"/>
   <variant name=".suggest-internals"/>
   <variant name=".support-tool"/>
-  <variant name=".sync-confirmation"/>
   <variant name=".sync-internals"/>
   <variant name=".sys-internals"/>
   <variant name=".system"/>

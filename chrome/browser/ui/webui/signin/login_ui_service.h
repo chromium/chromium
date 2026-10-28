@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_LOGIN_UI_SERVICE_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_LOGIN_UI_SERVICE_H_
 
-#include "base/observer_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -15,49 +15,12 @@ class BrowserWindowInterface;
 // UIs.
 class LoginUIService : public KeyedService {
  public:
-  // Used when the sync confirmation UI is closed to signify which option was
-  // selected by the user.
-  enum SyncConfirmationUIClosedResult {
-    // TODO(crbug.com/40727110): Rename the first option to make it work better
-    // for the sync-disabled variant of the UI.
-    // Start sync immediately, if sync can be enabled. Otherwise, keep the user
-    // signed in (with sync disabled).
-    SYNC_WITH_DEFAULT_SETTINGS,
-    // Show the user the sync settings before starting sync.
-    CONFIGURE_SYNC_FIRST,
-    // Turn sync on process was aborted, don't start sync or show settings.
-    ABORT_SYNC,
-    // The dialog got closed without any explicit user action. The impact of
-    // this action depends on the particular flow.
-    UI_CLOSED,
-  };
-
-  // Interface for obervers of LoginUIService.
-  class Observer {
-   public:
-    // Called when the sync confirmation UI is closed. |result| indicates the
-    // option chosen by the user in the confirmation UI.
-    virtual void OnSyncConfirmationUIClosed(
-        SyncConfirmationUIClosedResult result) {}
-
-   protected:
-    virtual ~Observer() = default;
-  };
-
   LoginUIService();
 
   LoginUIService(const LoginUIService&) = delete;
   LoginUIService& operator=(const LoginUIService&) = delete;
 
   ~LoginUIService() override;
-
-  // |observer| The observer to add or remove; cannot be NULL.
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-
-  // Called when the sync confirmation UI is closed. |result| indicates the
-  // option chosen by the user in the confirmation UI.
-  void SyncConfirmationUIClosed(SyncConfirmationUIClosedResult result);
 
   // If `error.message()` is not empty, displays login error message in the
   // Modal Signin Error dialog of the browser associated with
@@ -74,15 +37,6 @@ class LoginUIService : public KeyedService {
 #if !BUILDFLAG(IS_CHROMEOS)
   SigninUIError last_login_error_ = SigninUIError::Ok();
 #endif
-
-  // List of observers.
-  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
-  base::ObserverList<
-      Observer,
-      /*check_empty=*/false,
-      /*allow_reentrancy=*/
-      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
-      observer_list_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_LOGIN_UI_SERVICE_H_

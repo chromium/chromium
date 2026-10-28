@@ -424,7 +424,6 @@
       "chrome://profile-picker/*",
       "chrome://read-later.top-chrome/*",
       "chrome://settings/*",
-      "chrome://sync-confirmation/*",
       "chrome://tab-search.top-chrome/*",
       "chrome://tab-strip.top-chrome/*",
       "chrome://vc-background/*",

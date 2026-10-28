@@ -44,13 +44,6 @@ bool SignInWithUI(BrowserWindowInterface* browser,
                   const std::string& email,
                   const std::string& password);
 
-// Waits for sync confirmation dialog to get displayed, then executes javascript
-// to click on confirm button. Returns false if dialog wasn't dismissed before
-// |timeout|.
-[[nodiscard]] bool ConfirmSyncConfirmationDialog(
-    BrowserWindowInterface* browser,
-    base::TimeDelta timeout = kSyncConfirmationDialogTimeout);
-
 // Waits for the history sync optin dialog to get displayed, then executes
 // javascript to click on confirm button.
 // When `wait_for_dismiss` is true, the method returns true if dialog is
@@ -78,20 +71,6 @@ bool SignInWithUI(BrowserWindowInterface* browser,
     BrowserWindowInterface* browser,
     base::TimeDelta timeout = kSyncConfirmationDialogTimeout,
     bool wait_for_dismiss = true);
-
-// Waits for sync confirmation dialog to get displayed, then executes javascript
-// to click on settings button. Returns false if dialog wasn't dismissed before
-// |timeout|.
-[[nodiscard]] bool GoToSettingsSyncConfirmationDialog(
-    BrowserWindowInterface* browser,
-    base::TimeDelta timeout = kSyncConfirmationDialogTimeout);
-
-// Waits for sync confirmation dialog to get displayed, then executes javascript
-// to click on cancel button. Returns false if dialog wasn't dismissed before
-// |timeout|.
-[[nodiscard]] bool CancelSyncConfirmationDialog(
-    BrowserWindowInterface* browser,
-    base::TimeDelta timeout = kSyncConfirmationDialogTimeout);
 
 // Waits for the signin email confirmation dialog to get displayed, then
 // executes javascript to perform |action|. Returns false if failed to dismiss

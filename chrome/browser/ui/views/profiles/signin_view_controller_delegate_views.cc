@@ -17,7 +17,6 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/signin_promo.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -34,7 +33,7 @@
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
-#include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
+#include "chrome/browser/ui/webui/signin/signin_web_dialog_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -76,17 +75,7 @@ const int kModalDialogWidth = 448;
 const int kManagedUserNoticeConfirmationDialogWidth = 780;
 const int kManagedUserNoticeConfirmationDialogHeight = 560;
 #endif
-const int kSyncConfirmationDialogWidth = 512;
-const int kSyncConfirmationDialogHeight = 487;
 const int kSigninErrorDialogHeight = 164;
-
-int GetSyncConfirmationDialogPreferredHeight(Profile* profile) {
-  // If sync is disabled, then the sync confirmation dialog looks like an error
-  // dialog and thus it has the same preferred size.
-  return SyncServiceFactory::IsSyncAllowed(profile)
-             ? kSyncConfirmationDialogHeight
-             : kSigninErrorDialogHeight;
-}
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void CloseModalSigninInBrowser(
@@ -126,19 +115,6 @@ class WidgetAutoResizingLayout : public views::FillLayout {
 };
 
 }  // namespace
-
-// static
-std::unique_ptr<views::WebView>
-SigninViewControllerDelegateViews::CreateSyncConfirmationWebView(
-    BrowserWindowInterface* browser,
-    SyncConfirmationStyle style,
-    bool is_sync_promo) {
-  GURL url = GURL(chrome::kChromeUISyncConfirmationURL);
-  return CreateDialogWebView(
-      browser, AppendSyncConfirmationQueryParams(url, style, is_sync_promo),
-      GetSyncConfirmationDialogPreferredHeight(browser->GetProfile()),
-      kSyncConfirmationDialogWidth, InitializeSigninWebDialogUI(true));
-}
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 std::unique_ptr<views::WebView>
@@ -574,19 +550,6 @@ END_METADATA
 // --------------------------------------------------------------------
 // SigninViewControllerDelegate static methods
 // --------------------------------------------------------------------
-
-// static
-SigninViewControllerDelegate*
-SigninViewControllerDelegate::CreateSyncConfirmationDelegate(
-    BrowserWindowInterface* browser,
-    SyncConfirmationStyle style,
-    bool is_sync_promo) {
-  return new SigninViewControllerDelegateViews(
-      SigninViewControllerDelegateViews::CreateSyncConfirmationWebView(
-          browser, style, is_sync_promo),
-      browser, ui::mojom::ModalType::kWindow, true, false,
-      /*animate_on_resize=*/true);
-}
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // static

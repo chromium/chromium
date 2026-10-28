@@ -332,9 +332,6 @@ base::span<const std::string_view> GetUntestedChromeUrlsForTest() {
       "chrome://signin-dice-web-intercept.top-chrome",
       "chrome://signin-error",
       "chrome://skills",
-      // TODO(crbug.com/40137561): Navigating to chrome://sync-confirmation and
-      // quickly navigating away cause DCHECK failure.
-      "chrome://sync-confirmation",
       "chrome://tab-group-home",
       // TODO(crbug.com/40137562): Navigating to chrome://tab-strip and quickly
       // navigating away cause DCHECK failure.

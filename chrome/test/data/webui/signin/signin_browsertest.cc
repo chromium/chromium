@@ -2,74 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/first_run/first_run_features.h"
-#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
-#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 
 using SigninTest = WebUIMochaBrowserTest;
-
-class SigninTestRefresh : public SigninTest {
- protected:
-  SigninTestRefresh() {
-    feature_list_.InitWithFeatures(
-        {switches::kFirstRunDesktopRefresh,
-         switches::kFirstRunDesktopChoiceScreenRefresh},
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SigninTest, SyncConfirmationDefaultModal) {
-  set_test_loader_host(chrome::kChromeUISyncConfirmationHost);
-  RunTest("signin/sync_confirmation_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(SigninTestRefresh, SyncConfirmationDefaultModal) {
-  set_test_loader_host(chrome::kChromeUISyncConfirmationHost);
-  RunTest("signin/sync_confirmation_refresh_test.js", "mocha.run()");
-}
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-IN_PROC_BROWSER_TEST_F(SigninTest, SyncConfirmationInterceptModal) {
-  set_test_loader_host(chrome::kChromeUISyncConfirmationHost);
-  RunTest(base::StringPrintf(
-              "signin/sync_confirmation_test.js&style=%d",
-              static_cast<int>(SyncConfirmationStyle::kSigninInterceptModal)),
-          "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(SigninTestRefresh, SyncConfirmationInterceptModal) {
-  set_test_loader_host(chrome::kChromeUISyncConfirmationHost);
-  RunTest(base::StringPrintf(
-              "signin/sync_confirmation_refresh_test.js&style=%d",
-              static_cast<int>(SyncConfirmationStyle::kSigninInterceptModal)),
-          "mocha.run()");
-}
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-IN_PROC_BROWSER_TEST_F(SigninTest, SyncConfirmationWindow) {
-  set_test_loader_host(chrome::kChromeUISyncConfirmationHost);
-  RunTest(base::StringPrintf("signin/sync_confirmation_test.js&style=%d",
-                             static_cast<int>(SyncConfirmationStyle::kWindow)),
-          "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(SigninTestRefresh, SyncConfirmationWindow) {
-  set_test_loader_host(chrome::kChromeUISyncConfirmationHost);
-  RunTest(
-      base::StringPrintf("signin/sync_confirmation_refresh_test.js&style=%d",
-                         static_cast<int>(SyncConfirmationStyle::kWindow)),
-      "mocha.run()");
-}
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 IN_PROC_BROWSER_TEST_F(SigninTest, DiceWebSigninIntercept) {

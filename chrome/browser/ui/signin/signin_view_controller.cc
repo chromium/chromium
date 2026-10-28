@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
-#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -667,19 +666,6 @@ void SigninViewController::OnBubbleClosed(views::Widget::ClosedReason reason) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, std::move(bubble_widget_));
   }
-}
-
-void SigninViewController::ShowModalSyncConfirmationDialog(
-    bool is_signin_intercept,
-    bool is_sync_promo) {
-  CloseModalSignin();
-  dialog_ = std::make_unique<SigninModalDialogImpl>(
-      SigninViewControllerDelegate::CreateSyncConfirmationDelegate(
-          &browser_.get(),
-          is_signin_intercept ? SyncConfirmationStyle::kSigninInterceptModal
-                              : SyncConfirmationStyle::kDefaultModal,
-          is_sync_promo),
-      GetOnModalDialogClosedCallback());
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

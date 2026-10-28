@@ -171,8 +171,6 @@ SingleBookmarkUploadDialogPixelTest.InvokeUi
 SearchAIModeSignInPromoViewPixelTest.*
 *SkillsPageScreenshotInteractiveUITest.*
 SplitTabButtonInteractiveTest.ButtonUpdatesOnSplit
-SyncConfirmationUIDialogPixelTest.*
-SyncConfirmationUIWindowPixelTest.*
 SyncPassphraseDialogBrowserTest.*
 TabDialogManagerPixelTest.*
 TabGroupEditorBubbleViewDialogBrowserTest.*

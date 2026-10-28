@@ -16,7 +16,6 @@
 #include "components/signin/public/base/signin_buildflags.h"
 
 class BrowserWindowInterface;
-enum class SyncConfirmationStyle;
 
 namespace content {
 class WebContents;
@@ -41,14 +40,6 @@ class SigninViewControllerDelegate {
   SigninViewControllerDelegate(const SigninViewControllerDelegate&) = delete;
   SigninViewControllerDelegate& operator=(const SigninViewControllerDelegate&) =
       delete;
-
-  // Returns a platform-specific SigninViewControllerDelegate instance that
-  // displays the sync confirmation dialog. The returned object should delete
-  // itself when the window it's managing is closed.
-  static SigninViewControllerDelegate* CreateSyncConfirmationDelegate(
-      BrowserWindowInterface* browser,
-      SyncConfirmationStyle style,
-      bool is_sync_promo);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   // Returns a platform-specific SigninViewControllerDelegate instance that

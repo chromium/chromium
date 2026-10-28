@@ -326,9 +326,6 @@ inline constexpr char kChromeUISubresourceFilterInternalsHost[] =
     "subresource-filter-internals";
 inline constexpr char kChromeUISuggestInternalsHost[] = "suggest-internals";
 inline constexpr char kChromeUISupportToolHost[] = "support-tool";
-inline constexpr char kChromeUISyncConfirmationHost[] = "sync-confirmation";
-inline constexpr char kChromeUISyncConfirmationURL[] =
-    "chrome://sync-confirmation/";
 inline constexpr char kChromeUISyncInternalsHost[] = "sync-internals";
 inline constexpr char kChromeUISystemInfoHost[] = "system";
 inline constexpr char kChromeUIAiOverlayDialogUntrustedHost[] =

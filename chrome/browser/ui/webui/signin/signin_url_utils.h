@@ -9,34 +9,12 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "url/gurl.h"
 
-// Keep enum values in sync with the JS tests defined in signin_browsertest.js.
-enum class SyncConfirmationStyle {
-  kDefaultModal = 0,
-  kSigninInterceptModal = 1,
-  kWindow = 2
-};
-
 // Launch modes supported by the history sync optin screen.
 // Their choice also affects the style of the screen.
 enum class HistorySyncOptinLaunchContext : int {
   kWindow = 0,
   kModal = 1,
 };
-
-// Returns which style the sync confirmation page is using, as a default modal
-// dialog, the signin intercept modal dialog version or as a window.
-SyncConfirmationStyle GetSyncConfirmationStyle(const GURL& url);
-
-// Returns true if the sync confirmation dialog is offered as an option, and
-// false if the user explicitly initiated the flow.
-bool IsSyncConfirmationPromo(const GURL& url);
-
-// Adds the `style` URL query parameters to `url` for the sync confirmation.
-// `is_sync_promo` is true if the sync confirmation dialog is offered as an
-// option. It is false if the user explicitly initiated the flow.
-GURL AppendSyncConfirmationQueryParams(const GURL& url,
-                                       SyncConfirmationStyle style,
-                                       bool is_sync_promo);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 enum class ProfileCustomizationStyle {

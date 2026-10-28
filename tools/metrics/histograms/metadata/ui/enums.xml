@@ -1146,7 +1146,8 @@ chromium-metrics-reviews@google.com.
   <int value="1531448147"
       label="chrome://urgent-password-expiry-notification/"/>
   <int value="1540230808" label="chrome://power/"/>
-  <int value="1554928128" label="chrome://sync-confirmation/?consent-bump"/>
+  <int value="1554928128"
+      label="(Obsolete) chrome://sync-confirmation/?consent-bump"/>
   <int value="1563972074" label="chrome://autofill-internals/"/>
   <int value="1568301017" label="chrome://media-internals/"/>
   <int value="1585293659" label="chrome://system/"/>
@@ -1158,7 +1159,7 @@ chromium-metrics-reviews@google.com.
   <int value="1648729965" label="chrome://vm/"/>
   <int value="1662453825" label="chrome://indexeddb-internals/"/>
   <int value="1673299360" label="chrome://tab-search.top-chrome/"/>
-  <int value="1677735296" label="chrome://sync-confirmation/"/>
+  <int value="1677735296" label="(Obsolete) chrome://sync-confirmation/"/>
   <int value="1687272877" label="chrome://syncresources/"/>
   <int value="1691459037" label="chrome://performance-side-panel.top-chrome/"/>
   <int value="1693406661" label="chrome://kiosk-vision-internals/"/>

@@ -27,13 +27,10 @@ build_webui_tests("build") {
       "profile_picker_main_view_test.ts",
       "profile_switch_test.ts",
       "profile_type_choice_test.ts",
-      "sync_confirmation_refresh_test.ts",
-      "sync_confirmation_test.ts",
       "test_history_sync_optin_browser_proxy.ts",
       "test_manage_profiles_browser_proxy.ts",
       "test_managed_user_profile_notice_browser_proxy.ts",
       "test_profile_customization_browser_proxy.ts",
-      "test_sync_confirmation_browser_proxy.ts",
     ]
   }
 
@@ -68,9 +65,6 @@ build_webui_tests("build") {
             target_gen_dir),
     "chrome://profile-customization/*|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/signin/tsc/profile_customization/*",
-            target_gen_dir),
-    "chrome://sync-confirmation/*|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/signin/tsc/sync_confirmation/*",
             target_gen_dir),
     "chrome://history-sync-optin/*|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/signin/history_sync_optin/tsc/*",

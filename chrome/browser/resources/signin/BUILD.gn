@@ -37,9 +37,6 @@ build_webui("build") {
     "animations/avatar_sign_in_celebration_dark.json",
     "profile_customization/images/profile_customization_illustration.svg",
     "profile_customization/images/profile_customization_illustration_dark.svg",
-    "sync_confirmation/sync_confirmation.html",
-    "sync_confirmation/sync_confirmation_refresh.html",
-    "sync_confirmation/sync_disabled_confirmation.html",
   ]
   if (!is_chromeos) {
     static_files += [
@@ -61,20 +58,8 @@ build_webui("build") {
     ]
   }
 
-  ts_files = [
-    "sync_confirmation/sync_confirmation.ts",
-    "sync_confirmation/sync_confirmation_refresh.ts",
-    "sync_confirmation/sync_confirmation_app.html.ts",
-    "sync_confirmation/sync_confirmation_app_refresh.html.ts",
-    "sync_confirmation/sync_confirmation_app.ts",
-    "sync_confirmation/sync_confirmation_app_refresh.ts",
-    "sync_confirmation/sync_confirmation_browser_proxy.ts",
-    "sync_confirmation/sync_disabled_confirmation_app.html.ts",
-    "sync_confirmation/sync_disabled_confirmation_app.ts",
-  ]
-
   if (!is_chromeos) {
-    ts_files += [
+    ts_files = [
       "managed_user_profile_notice/managed_user_profile_notice_app.html.ts",
       "managed_user_profile_notice/managed_user_profile_notice_app.ts",
       "managed_user_profile_notice/managed_user_profile_notice_app_refresh.html.ts",
@@ -123,9 +108,6 @@ build_webui("build") {
   css_files = [
     "signin_shared.css",
     "signin_vars.css",
-    "sync_confirmation/sync_confirmation_app.css",
-    "sync_confirmation/sync_confirmation_app_refresh.css",
-    "sync_confirmation/sync_disabled_confirmation_app.css",
     "tangible_sync_style_shared.css",
   ]
 

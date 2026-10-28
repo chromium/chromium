@@ -346,8 +346,6 @@ bool ChromeWebUIControllerFactory::IsWebUIAllowedToMakeNetworkRequests(
   // If you are adding a new host to this list, please file a corresponding bug
   // to track its removal. See https://crbug.com/40091019 for the metabug.
   return
-      // https://crbug.com/40571286
-      origin.host() == chrome::kChromeUISyncConfirmationHost ||
       // https://crbug.com/40583261
       origin.host() == chrome::kChromeUIDownloadsHost ||
       // https://crbug.com/376417346

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 
-#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
@@ -12,21 +11,6 @@
 LoginUIService::LoginUIService() = default;
 
 LoginUIService::~LoginUIService() = default;
-
-void LoginUIService::AddObserver(LoginUIService::Observer* observer) {
-  observer_list_.AddObserver(observer);
-}
-
-void LoginUIService::RemoveObserver(LoginUIService::Observer* observer) {
-  observer_list_.RemoveObserver(observer);
-}
-
-void LoginUIService::SyncConfirmationUIClosed(
-    SyncConfirmationUIClosedResult result) {
-  for (Observer& observer : observer_list_) {
-    observer.OnSyncConfirmationUIClosed(result);
-  }
-}
 
 void LoginUIService::DisplayLoginResult(BrowserWindowInterface& browser_window,
                                         const SigninUIError& error) {

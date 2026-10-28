@@ -187,15 +187,6 @@ class SigninViewController {
                               signin_metrics::AccessPoint access_point);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-  // Shows the modal sync confirmation dialog as a browser-modal dialog on top
-  // of the |browser_|'s window.
-  // `is_signin_intercept` is true if the confirmation dialog is shown after
-  // signin intercept, which has a slightly different UI.
-  // `is_sync_promo` is true if the sync confirmation dialog is offered as an
-  // option. It is false if the user explicitly initiated the flow.
-  void ShowModalSyncConfirmationDialog(bool is_signin_intercept,
-                                       bool is_sync_promo);
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   // Shows the modal history sync opt in dialog as a browser-modal dialog on top
   // of the `browser_`'s window. Executes the provided callback when the dialog

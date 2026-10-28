@@ -196,7 +196,6 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/signin",
-      "//chrome/browser/sync",
       "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
@@ -1382,14 +1381,8 @@ source_set("browser_tests") {
       "profile_picker_signin_ui_browsertest.cc",
       "profile_picker_ui_browsertest.cc",
       "profile_type_choice_ui_browsertest.cc",
-      "sync_confirmation_ui_browsertest.cc",
     ]
-    deps += [
-      "//chrome/browser/consent_auditor",
-      "//chrome/browser/consent_auditor:test_support",
-      "//chrome/browser/ui/views/frame:top_container_view",
-      "//components/consent_auditor",
-    ]
+    deps += [ "//chrome/browser/ui/views/frame:top_container_view" ]
   }
 
   if (enable_dice_support) {

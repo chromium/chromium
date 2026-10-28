@@ -35492,14 +35492,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Signin_Abort_Signin">
-  <owner>mahmadi@chromium.org</owner>
-  <description>
-    Recorded when the user closes the tab or exits the browser without choosing
-    any of the other options on the sync confirmation modal.
-  </description>
-</action>
-
 <action name="Signin_Abort_Signin_UINotAvailable">
   <owner>jlebel@chromium.org</owner>
   <owner>arthurmilchior@chromium.org</owner>
@@ -37218,14 +37210,6 @@ should be able to be added at any place in this file.
   <description>
     Recorded when wiping data during child account sign-in process. Only
     recorded on Android.
-  </description>
-</action>
-
-<action name="Signin_Signin_WithAdvancedSyncSettings">
-  <owner>gogerald@chromium.org</owner>
-  <description>
-    Recorded when the user chooses advanced sync settings in the sign in succeed
-    confirmation dialog.
   </description>
 </action>
 

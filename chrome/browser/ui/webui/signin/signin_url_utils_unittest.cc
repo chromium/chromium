@@ -4,60 +4,10 @@
 
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 
-#include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "components/signin/public/base/signin_metrics.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
-TEST(SigninURLUtilsTest, ParseParameterlessSyncConfirmationURL) {
-  GURL url = GURL(chrome::kChromeUISyncConfirmationURL);
-  EXPECT_EQ(SyncConfirmationStyle::kDefaultModal,
-            GetSyncConfirmationStyle(url));
-}
-
-TEST(SigninURLUtilsSyncConfirmationURLTest, GetAndParseURL) {
-  // Modal version.
-  GURL url = AppendSyncConfirmationQueryParams(
-      GURL(chrome::kChromeUISyncConfirmationURL),
-      SyncConfirmationStyle::kDefaultModal, /*is_sync_promo=*/false);
-  EXPECT_TRUE(url.is_valid());
-  EXPECT_EQ(url.GetHost(), chrome::kChromeUISyncConfirmationHost);
-  EXPECT_EQ(SyncConfirmationStyle::kDefaultModal,
-            GetSyncConfirmationStyle(url));
-  EXPECT_FALSE(IsSyncConfirmationPromo(url));
-
-  // Signin Intercept version.
-  url = AppendSyncConfirmationQueryParams(
-      GURL(chrome::kChromeUISyncConfirmationURL),
-      SyncConfirmationStyle::kSigninInterceptModal,
-      /*is_sync_promo=*/false);
-  EXPECT_TRUE(url.is_valid());
-  EXPECT_EQ(url.GetHost(), chrome::kChromeUISyncConfirmationHost);
-  EXPECT_EQ(SyncConfirmationStyle::kSigninInterceptModal,
-            GetSyncConfirmationStyle(url));
-  EXPECT_FALSE(IsSyncConfirmationPromo(url));
-
-  // Window version.
-  url = AppendSyncConfirmationQueryParams(
-      GURL(chrome::kChromeUISyncConfirmationURL),
-      SyncConfirmationStyle::kWindow, /*is_sync_promo=*/false);
-  EXPECT_TRUE(url.is_valid());
-  EXPECT_EQ(url.GetHost(), chrome::kChromeUISyncConfirmationHost);
-  EXPECT_EQ(SyncConfirmationStyle::kWindow, GetSyncConfirmationStyle(url));
-  EXPECT_FALSE(IsSyncConfirmationPromo(url));
-
-  // Promo version
-  url = AppendSyncConfirmationQueryParams(
-      GURL(chrome::kChromeUISyncConfirmationURL),
-      SyncConfirmationStyle::kWindow, /*is_sync_promo=*/true);
-  EXPECT_TRUE(url.is_valid());
-  EXPECT_EQ(url.GetHost(), chrome::kChromeUISyncConfirmationHost);
-  EXPECT_EQ(SyncConfirmationStyle::kWindow, GetSyncConfirmationStyle(url));
-  EXPECT_TRUE(IsSyncConfirmationPromo(url));
-}
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST(SigninURLUtilsTest, ParseParameterlessProfileCustomizationURL) {
