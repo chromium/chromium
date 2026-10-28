@@ -17422,6 +17422,21 @@
             ]
         }
     ],
+    "ThrottleMainFrameTo60HzWebView": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ThrottleMainFrameTo60HzWebView"
+                    ]
+                }
+            ]
+        }
+    ],
     "ToolbarCaptureFixForSPAs": [
         {
             "platforms": [
