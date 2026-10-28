@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/enterprise/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions_core,
@@ -35,6 +36,7 @@ source_set("debugger") {
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chrome/common/extensions",
+    "//components/enterprise/buildflags",
     "//components/pdf/common:util",
     "//components/security_interstitials/content:security_interstitial_page",
     "//content/public/common",
@@ -47,6 +49,10 @@ source_set("debugger") {
     "//ui/strings:ui_strings",
     "//url",
   ]
+
+  if (enterprise_cloud_content_analysis) {
+    deps += [ "//chrome/browser/enterprise/connectors/reporting" ]
+  }
 
   if (is_android) {
     sources += [

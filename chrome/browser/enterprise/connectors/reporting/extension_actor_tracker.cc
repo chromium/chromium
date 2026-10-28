@@ -4,8 +4,11 @@
 
 #include "chrome/browser/enterprise/connectors/reporting/extension_actor_tracker.h"
 
+#include <utility>
+
 #include "base/feature_list.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -21,6 +24,23 @@ namespace {
 
 bool IsExtensionOrigin(const std::optional<url::Origin>& origin) {
   return origin.has_value() && origin->scheme() == extensions::kExtensionScheme;
+}
+
+// Returns true if `command` initiates a top-level tab navigation. CDP commands
+// are defined in `third_party/blink/public/devtools_protocol/domains/Page.pdl`.
+bool IsNavigation(std::string_view command) {
+  return command == extensions::TabsCreateFunction::static_function_name() ||
+         command == extensions::TabsUpdateFunction::static_function_name() ||
+         command == "Page.navigate" || command == "Page.reload";
+}
+
+// Returns true if `command` can actuate a tab and should be tracked. CDP
+// commands and domains are defined in `v8/include/js_protocol.pdl` and
+// `third_party/blink/public/devtools_protocol/domains/`.
+bool IsTracked(std::string_view command) {
+  return IsNavigation(command) || command == "Runtime.evaluate" ||
+         command == "Runtime.callFunctionOn" || command.starts_with("Input.") ||
+         command == "DOM.focus" || command.starts_with("DOM.set");
 }
 
 }  // namespace
@@ -44,7 +64,7 @@ ExtensionActorTracker::ExtensionActorTracker(content::WebContents* web_contents)
 ExtensionActorTracker::~ExtensionActorTracker() = default;
 
 // static
-void ExtensionActorTracker::SetActiveActor(
+void ExtensionActorTracker::SetActiveActorInternal(
     content::WebContents* web_contents,
     const extensions::ExtensionId& extension_id,
     bool is_initial_navigation) {
@@ -54,7 +74,20 @@ void ExtensionActorTracker::SetActiveActor(
   }
   auto* tracker = GetOrCreateForWebContents(web_contents);
   tracker->active_actor_id_ = extension_id;
-  tracker->is_initial_navigation_ = is_initial_navigation;
+  tracker->is_initial_navigation_ |= is_initial_navigation;
+}
+
+// static
+void ExtensionActorTracker::SetActiveActor(
+    content::WebContents* web_contents,
+    const extensions::ExtensionId& extension_id,
+    std::string_view command) {
+  if (!web_contents || !IsTracked(command)) {
+    return;
+  }
+  bool is_initial_navigation =
+      IsNavigation(command) && !web_contents->GetVisibleURL().IsAboutBlank();
+  SetActiveActorInternal(web_contents, extension_id, is_initial_navigation);
 }
 
 // static
@@ -81,45 +114,23 @@ std::optional<extensions::ExtensionId> ExtensionActorTracker::GetActiveActor(
 
 void ExtensionActorTracker::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle) {
-    return;
-  }
-
-  // Download navigations do not commit, so preserve attribution.
-  if (navigation_handle->IsDownload()) {
-    if (IsExtensionOrigin(navigation_handle->GetInitiatorOrigin())) {
-      active_actor_id_ = navigation_handle->GetInitiatorOrigin()->host();
-    }
-    if (navigation_handle->IsInPrimaryMainFrame()) {
-      is_initial_navigation_ = false;
-    }
-    return;
-  }
-
-  // Ignore subframe, uncommitted, and same-document navigations.
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted() ||
-      navigation_handle->IsSameDocument() ||
+  if (!navigation_handle || !navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->GetURL().IsAboutBlank()) {
     return;
   }
 
+  bool is_initial_navigation = std::exchange(is_initial_navigation_, false);
+
   if (IsExtensionOrigin(navigation_handle->GetInitiatorOrigin())) {
     active_actor_id_ = navigation_handle->GetInitiatorOrigin()->host();
-    is_initial_navigation_ = false;
     return;
   }
 
-  // Preserve attribution across the first navigation when a tab is opened or
-  // navigated by an extension API.
-  if (is_initial_navigation_) {
-    is_initial_navigation_ = false;
-    return;
-  }
-
-  // Form submissions preserve attribution so login events reported after the
-  // navigation commits retain the active actor.
-  if (active_actor_id_.has_value() && navigation_handle->IsFormSubmission()) {
+  // Preserve attribution across the initial extension navigation, uncommitted
+  // or same-document navigations, and form submissions.
+  if (is_initial_navigation || !navigation_handle->HasCommitted() ||
+      navigation_handle->IsSameDocument() ||
+      (active_actor_id_.has_value() && navigation_handle->IsFormSubmission())) {
     return;
   }
 
@@ -153,8 +164,8 @@ void ExtensionActorTracker::DidOpenRequestedURL(
   // Propagate attribution to child tabs/popups (`window.open`), or clear any
   // stale attribution.
   if (active_actor_id_.has_value()) {
-    SetActiveActor(new_contents, *active_actor_id_,
-                   /*is_initial_navigation=*/true);
+    SetActiveActorInternal(new_contents, *active_actor_id_,
+                           /*is_initial_navigation=*/true);
   } else {
     ClearActiveActor(new_contents);
   }

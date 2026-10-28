@@ -38,6 +38,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -90,6 +91,10 @@
 #include "components/pdf/common/pdf_util.h"
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/reporting/extension_actor_tracker.h"
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 using content::DevToolsAgentHost;
 using content::RenderProcessHost;
@@ -849,6 +854,12 @@ void ExtensionDevToolsClientHost::SendMessageToBackend(
       }
     }
   }
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+  enterprise_connectors::ExtensionActorTracker::SetActiveActor(
+      agent_host_->GetWebContents(), extension_id(), method);
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+
   base::DictValue protocol_request;
   int request_id = ++last_request_id_;
   pending_requests_[request_id] = function;
