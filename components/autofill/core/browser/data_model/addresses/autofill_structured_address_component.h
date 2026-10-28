@@ -23,9 +23,6 @@ class RE2;
 
 namespace autofill {
 
-struct AddressToken;
-struct SortedTokenComparisonResult;
-
 // Represents the validation status of value stored in the AutofillProfile.
 // The associated integer values used to store the verification code in SQL and
 // should not be modified.
@@ -353,11 +350,6 @@ class AddressComponent {
   // subcomponents are owned by the corresponding `AddressComponentsStore` and
   // not by `this`
   void RegisterSynthesizedSubcomponent(AddressComponent* synthesized_component);
-
-  // Returns a vector containing sorted normalized tokens of the
-  // value of the component. The tokens are lazily calculated when first
-  // needed.
-  const std::vector<AddressToken> GetSortedTokens() const;
 
   // Recursively unsets all subcomponents.
   void RecursivelyUnsetSubcomponents();

@@ -978,10 +978,6 @@ void AddressComponent::RegisterSynthesizedSubcomponent(
   synthesized_subcomponents_.push_back(synthesized_component);
 }
 
-const std::vector<AddressToken> AddressComponent::GetSortedTokens() const {
-  return TokenizeValue(GetValue());
-}
-
 bool AddressComponent::IsMergeableWithComponent(
     const AddressComponent& newer_component) const {
   const AddressCountryCode common_country_code =
