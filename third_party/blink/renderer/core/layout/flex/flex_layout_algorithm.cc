@@ -1877,8 +1877,6 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
     LayoutUnitDiffuser space_between_items = ContentDistributionSpace(
         justify_content, main_axis_free_space, line_items_size);
 
-    bool need_to_set_effective_gap_size = true;
-
     LayoutUnit main_axis_offset =
         (is_column_ ? BorderScrollbarPadding().block_start
                     : BorderScrollbarPadding().inline_start) +
@@ -2041,11 +2039,12 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
                           current_space_between + gap_between_items_;
 
       // For gap decoration purposes, we only need to set the effective gap size
-      // once per line.
-      if (need_to_set_effective_gap_size && item_index_in_line > 0) {
+      // once per line. Use the space after the first item, since that is the
+      // space between the first two items. With `space-between`, the space
+      // after the last item is zero.
+      if (item_index_in_line == 0 && line_items_size > 1) {
         flex_line.effective_gap_between_items =
             current_space_between + gap_between_items_;
-        need_to_set_effective_gap_size = false;
       }
 
       const BoxStrut logical_margins =
