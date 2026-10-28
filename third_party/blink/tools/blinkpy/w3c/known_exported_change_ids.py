@@ -38,6 +38,12 @@ _RAW_KNOWN_EXPORTED_CHANGE_IDS = {
     'I7c368ddaabcc257192042770dfda59d18611c6cb',
     # Duplicated changes without `No-Export: true` footer.
     'I8d3bffc13d0ca43c1ca18b0f5e4ecd4ff659267b',
+    # https://crrev.com/c/8498308 and its revert. Not needed because the
+    # relanded change was exported.
+    'I7fbd5603437c6e0f4689f9eba4fae0448ca87d15',
+    'Ia10b1ff781651d883a2469e50057fa421380a2d9',
+    # Forgot `No-Export: true` again.
+    'I42dc955c5e54b233848e0b92b85cc1907da3ddcd',
 }
 
 
