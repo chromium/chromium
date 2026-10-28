@@ -86,7 +86,6 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
 
   bool HasTickmarks() const;
   Vector<gfx::Rect> GetTickmarks() const;
-  bool IsScrollableAreaActive() const;
 
   gfx::Point ConvertFromRootFrame(const gfx::Point&) const;
 

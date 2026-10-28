@@ -73,8 +73,6 @@ class CORE_EXPORT ScrollbarThemeMac : public ScrollbarTheme {
   using ScrollbarTheme::OverlayScrollbarsEnabled;
   bool UsesOverlayScrollbars() const override;
 
-  void SetNewPainterForScrollbar(Scrollbar&);
-
   void PaintThumb(const PaintInfo&,
                   const Scrollbar& scrollbar,
                   const gfx::Rect& rect) override;

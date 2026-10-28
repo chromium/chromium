@@ -134,10 +134,6 @@ Vector<gfx::Rect> Scrollbar::GetTickmarks() const {
   return Vector<gfx::Rect>();
 }
 
-bool Scrollbar::IsScrollableAreaActive() const {
-  return scrollable_area_ && scrollable_area_->IsActive();
-}
-
 bool Scrollbar::IsLeftSideVerticalScrollbar() const {
   if (orientation_ == kVerticalScrollbar && scrollable_area_)
     return scrollable_area_->ShouldPlaceVerticalScrollbarOnLeft();

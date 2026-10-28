@@ -201,14 +201,6 @@ ProgrammaticScrollAnimator& ScrollableArea::GetProgrammaticScrollAnimator()
   return *programmatic_scroll_animator_;
 }
 
-ScrollbarOrientation ScrollableArea::ScrollbarOrientationFromDirection(
-    mojom::blink::ScrollDirectionPhysical direction) const {
-  return (direction == mojom::blink::ScrollDirectionPhysical::kUp ||
-          direction == mojom::blink::ScrollDirectionPhysical::kDown)
-             ? kVerticalScrollbar
-             : kHorizontalScrollbar;
-}
-
 float ScrollableArea::ScrollStep(ui::ScrollGranularity granularity,
                                  ScrollbarOrientation orientation) const {
   switch (granularity) {
@@ -1210,13 +1202,6 @@ void ScrollableArea::OnScrollFinished(bool enqueue_scrollend) {
       ->LocalFrameRoot()
       .GetEventHandler()
       .MarkHoverStateDirty();
-}
-
-void ScrollableArea::SnapAfterScrollbarScrolling(
-    ScrollbarOrientation orientation,
-    cc::ScrollSourceType source_type) {
-  SnapAtCurrentPosition(orientation == kHorizontalScrollbar,
-                        orientation == kVerticalScrollbar, source_type);
 }
 
 bool ScrollableArea::SnapAtCurrentPosition(bool scrolled_x,

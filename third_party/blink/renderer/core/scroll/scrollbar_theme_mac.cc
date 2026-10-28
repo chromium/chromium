@@ -153,10 +153,6 @@ bool ScrollbarThemeMac::IsScrollbarRegistered(Scrollbar& scrollbar) const {
   return GetScrollbarSet().Contains(&scrollbar);
 }
 
-void ScrollbarThemeMac::SetNewPainterForScrollbar(Scrollbar& scrollbar) {
-  UpdateEnabledState(scrollbar);
-}
-
 WebThemeEngine::ExtraParams GetPaintParams(const Scrollbar& scrollbar,
                                            bool overlay) {
   WebThemeEngine::ScrollbarExtraParams scrollbar_extra;

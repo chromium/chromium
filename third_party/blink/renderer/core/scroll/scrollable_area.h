@@ -183,7 +183,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   }
   virtual bool SnapContainerDataNeedsUpdate() const { return false; }
   virtual void SetSnapContainerDataNeedsUpdate(bool) {}
-  void SnapAfterScrollbarScrolling(ScrollbarOrientation, cc::ScrollSourceType);
   virtual void UpdateFocusDataForSnapAreas() {}
 
   // SnapAtCurrentPosition(), SnapForEndPosition(), SnapForDirection(), and
@@ -558,8 +557,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   void OnScrollFinished(bool enqueue_scrollend);
 
   float ScrollStep(ui::ScrollGranularity, ScrollbarOrientation) const;
-  std::unique_ptr<cc::SnapSelectionStrategy> PageSnap(
-      ScrollbarOrientation) const;
 
   // Injects a gesture scroll event based on the given parameters for mouse
   // events on a scrollbar of this scrollable area.
@@ -653,9 +650,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   explicit ScrollableArea(
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner);
-
-  ScrollbarOrientation ScrollbarOrientationFromDirection(
-      mojom::blink::ScrollDirectionPhysical) const;
 
   // Needed to let the animators call scrollOffsetChanged.
   friend class ScrollAnimatorCompositorCoordinator;
