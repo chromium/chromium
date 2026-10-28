@@ -61,7 +61,7 @@ class BASE_EXPORT WorkIdProvider {
 
   std::atomic_uint work_id_;
 
-  THREAD_CHECKER(thread_checker_);
+  EXPENSIVE_THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace base

@@ -33,8 +33,6 @@ ScopedValidateThreadChecker::ScopedValidateThreadChecker(
       << (bound_at ? "\nWas attached to thread at:\n" + bound_at->ToString()
                    : "");
 }
-
-ScopedValidateThreadChecker::~ScopedValidateThreadChecker() = default;
 #endif  // DCHECK_IS_ON()
 
 }  // namespace base

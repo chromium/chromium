@@ -84,8 +84,14 @@
   base::ScopedValidateThreadChecker BASE_UNIQUIFY( \
       scoped_validate_thread_checker_)(name, ##__VA_ARGS__);
 #define DETACH_FROM_THREAD(name) (name).DetachFromThread()
+#if EXPENSIVE_DCHECKS_ARE_ON()
+#define EXPENSIVE_THREAD_CHECKER(name) THREAD_CHECKER(name)
+#else
+#define EXPENSIVE_THREAD_CHECKER(name) base::ThreadCheckerDoNothing name
+#endif
 #else  // DCHECK_IS_ON()
 #define THREAD_CHECKER(name) static_assert(true, "")
+#define EXPENSIVE_THREAD_CHECKER(name) static_assert(true, "")
 #define DCHECK_CALLED_ON_VALID_THREAD(name, ...) EAT_CHECK_STREAM_PARAMS()
 #define DETACH_FROM_THREAD(name)
 #endif  // DCHECK_IS_ON()
@@ -137,12 +143,17 @@ class BASE_EXPORT SCOPED_LOCKABLE ScopedValidateThreadChecker {
   ScopedValidateThreadChecker(const ThreadChecker& checker,
                               std::string_view msg)
       EXCLUSIVE_LOCK_FUNCTION(checker);
+  explicit ScopedValidateThreadChecker(const ThreadCheckerDoNothing& checker)
+      EXCLUSIVE_LOCK_FUNCTION(checker) {}
+  ScopedValidateThreadChecker(const ThreadCheckerDoNothing& checker,
+                              std::string_view msg)
+      EXCLUSIVE_LOCK_FUNCTION(checker) {}
 
   ScopedValidateThreadChecker(const ScopedValidateThreadChecker&) = delete;
   ScopedValidateThreadChecker& operator=(const ScopedValidateThreadChecker&) =
       delete;
 
-  ~ScopedValidateThreadChecker() UNLOCK_FUNCTION();
+  ~ScopedValidateThreadChecker() UNLOCK_FUNCTION() {}
 };
 #endif
 

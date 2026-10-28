@@ -127,7 +127,7 @@ class BASE_EXPORT WorkTracker {
   ConditionVariable active_sync_work_cv_ =
       active_sync_work_lock_.CreateConditionVariable();
 
-  THREAD_CHECKER(thread_checker_);
+  EXPENSIVE_THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace base::sequence_manager::internal

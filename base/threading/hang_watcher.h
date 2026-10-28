@@ -81,7 +81,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] WatchHangsInScope {
   bool took_effect_ = true;
 
   // This object should always be constructed and destructed on the same thread.
-  THREAD_CHECKER(thread_checker_);
+  EXPENSIVE_THREAD_CHECKER(thread_checker_);
 
   // The deadline set by the previous WatchHangsInScope created on this
   // thread. Stored so it can be restored when this WatchHangsInScope is
@@ -537,7 +537,7 @@ class BASE_EXPORT HangWatchDeadline {
 
   RepeatingCallback<uint64_t(void)> switch_bits_callback_for_testing_;
 
-  THREAD_CHECKER(thread_checker_);
+  EXPENSIVE_THREAD_CHECKER(thread_checker_);
 
   FRIEND_TEST_ALL_PREFIXES(HangWatchDeadlineTest, BitsPreservedThroughExtract);
 };
@@ -632,7 +632,7 @@ class BASE_EXPORT HangWatchState {
  private:
   // The thread that creates the instance should be the class that updates
   // the deadline.
-  THREAD_CHECKER(thread_checker_);
+  EXPENSIVE_THREAD_CHECKER(thread_checker_);
 
   const AutoReset<HangWatchState*> resetter_;
 

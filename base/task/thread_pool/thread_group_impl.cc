@@ -263,7 +263,7 @@ class ThreadGroupImpl::WorkerDelegate : public WorkerThread::Delegate,
   bool incremented_max_tasks_for_shutdown_ GUARDED_BY(outer_->lock_) = false;
 
   // Verifies that specific calls are always made from the worker thread.
-  THREAD_CHECKER(worker_thread_checker_);
+  EXPENSIVE_THREAD_CHECKER(worker_thread_checker_);
 };
 
 ThreadGroupImpl::ThreadGroupImpl(

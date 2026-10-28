@@ -32,7 +32,7 @@ class BASE_EXPORT AssociatedThreadId
   AssociatedThreadId();
 
   // TODO(eseckler): Replace thread_checker with sequence_checker everywhere.
-  THREAD_CHECKER(thread_checker);
+  EXPENSIVE_THREAD_CHECKER(thread_checker);
   SEQUENCE_CHECKER(sequence_checker);
 
   static scoped_refptr<AssociatedThreadId> CreateUnbound() {
