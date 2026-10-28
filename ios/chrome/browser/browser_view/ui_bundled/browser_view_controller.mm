@@ -1004,13 +1004,11 @@ bool IsFullscreenNextIAEnabled() {
     self.view.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
   }
 
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
-  __weak __typeof(self) weakSelf = self;
-  UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
-                                   UITraitCollection* previousCollection) {
-    [weakSelf updateUIOnTraitChange:previousCollection];
-  };
-  [self registerForTraitChanges:traits withHandler:handler];
+  [self
+      registerForTraitChanges:
+          @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]
+                   withAction:@selector(
+                                  sizeClassDidChange:previousTraitCollection:)];
 }
 
 - (void)viewSafeAreaInsetsDidChange {
@@ -1879,24 +1877,19 @@ bool IsFullscreenNextIAEnabled() {
   return webState->GetView();
 }
 
-// Notifies or modifies BVC owned UI elements when a UITrait has been changed.
-- (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
-  if (!IsChromeNextIaEnabled() &&
-      base::FeatureList::IsEnabled(kEnableTraitCollectionWorkAround)) {
-    [self updateTraitsIfNeeded];
-  }
-
+// Notifies or modifies BVC owned UI elements when a size class UITrait has
+// changed.
+- (void)sizeClassDidChange:(id<UITraitEnvironment>)traitEnvironment
+    previousTraitCollection:(UITraitCollection*)previousTraitCollection {
   // After `-shutdown` is called, profile is invalid and will cause a
   // crash.
   if (_isShutdown) {
     return;
   }
 
-  if (self.traitCollection.horizontalSizeClass ==
-          previousTraitCollection.horizontalSizeClass &&
-      self.traitCollection.verticalSizeClass ==
-          previousTraitCollection.verticalSizeClass) {
-    return;
+  if (!IsChromeNextIaEnabled() &&
+      base::FeatureList::IsEnabled(kEnableTraitCollectionWorkAround)) {
+    [self updateTraitsIfNeeded];
   }
 
   if (IsFullscreenRefactoringEnabled() &&
@@ -1907,11 +1900,13 @@ bool IsFullscreenNextIAEnabled() {
 
   self.fullscreenController->BrowserTraitCollectionChangedBegin();
 
+  const CGFloat secondaryToolbarHeightWithInset =
+      [self secondaryToolbarHeightWithInset];
   if (self.currentWebState) {
     UIEdgeInsets contentPadding =
         self.currentWebState->GetWebViewProxy().contentInset;
     contentPadding.bottom = AlignValueToLowerPixel(
-        self.footerFullscreenProgress * [self secondaryToolbarHeightWithInset]);
+        self.footerFullscreenProgress * secondaryToolbarHeightWithInset);
     self.currentWebState->GetWebViewProxy().contentInset = contentPadding;
   }
 
@@ -1922,7 +1917,7 @@ bool IsFullscreenNextIAEnabled() {
 
   // Change the height of the secondary toolbar to show/hide it.
   self.secondaryToolbarHeightConstraint.constant =
-      [self secondaryToolbarHeightWithInset];
+      secondaryToolbarHeightWithInset;
   [self updateFootersForFullscreenProgress:self.footerFullscreenProgress];
 
   // If the device's size class has changed from RegularXRegular to another and

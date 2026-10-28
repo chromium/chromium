@@ -102,12 +102,9 @@ inline LayoutStateBrowserPassKey PassKey() {
   viewController.infobarBannerOverlayContainerViewController =
       _infobarBannerOverlayContainerCoordinator.viewController;
 
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
-    UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class,
-    UITraitUserInterfaceIdiom.class
-  ]);
   [viewController
-      registerForTraitChanges:traits
+      registerForTraitChanges:
+          @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]
                    withTarget:self
                        action:@selector(updateForTraitEnvironment:)];
 

@@ -60,17 +60,11 @@ constexpr CGFloat kNoSafeAreaTabStripTopMargin = 16.0;
   if (IsFullscreenRefactoringEnabled()) {
     self.view.translatesAutoresizingMaskIntoConstraints = NO;
   }
-  // Register for trait changes that affect the tab strip visibility.
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
-    UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class,
-    UITraitUserInterfaceIdiom.class
-  ]);
-  __weak __typeof(self) weakSelf = self;
-  UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
-                                   UITraitCollection* previousCollection) {
-    [weakSelf updateUIOnTraitChange:previousCollection];
-  };
-  [self registerForTraitChanges:traits withHandler:handler];
+  // Register for size class changes that affect tab strip visibility.
+  [self
+      registerForTraitChanges:
+          @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]
+                   withAction:@selector(sizeClassDidChange)];
 }
 
 - (UIViewController*)childViewControllerForStatusBarHidden {
@@ -130,7 +124,14 @@ constexpr CGFloat kNoSafeAreaTabStripTopMargin = 16.0;
   // TODO:(crbug.com/472278494): This fires frequently in stable.
   CHECK_EQ(_browserViewController, browserViewController);
 
-  [self updateCurrentBVCLayoutInsetsWithTopInset:[self topInset]];
+  [self updateCurrentBVCLayoutInsets];
+}
+
+- (void)updateCurrentBVCLayoutInsets {
+  // `topInset` is only used when the tab strip can be shown, so avoid querying
+  // `SafeAreaProvider` when the value would be discarded.
+  CGFloat topInset = CanShowTabStrip(self) ? [self topInset] : 0;
+  [self updateCurrentBVCLayoutInsetsWithTopInset:topInset];
 }
 
 - (void)updateCurrentBVCLayoutInsetsWithTopInset:(CGFloat)topInset {
@@ -156,10 +157,11 @@ constexpr CGFloat kNoSafeAreaTabStripTopMargin = 16.0;
 
 - (void)viewSafeAreaInsetsDidChange {
   [super viewSafeAreaInsetsDidChange];
-  [self updateCurrentBVCLayoutInsetsWithTopInset:[self topInset]];
-  if (_tabStripViewController) {
-    [self updateForFullscreenProgress:_fullscreenProgress];
+  if (!_tabStripViewController || !CanShowTabStrip(self)) {
+    [self updateCurrentBVCLayoutInsets];
+    return;
   }
+  [self updateLayoutWithTopInset:[self topInset]];
 }
 
 #pragma mark - FullscreenUIElement
@@ -244,13 +246,18 @@ constexpr CGFloat kNoSafeAreaTabStripTopMargin = 16.0;
 
 #pragma mark - Private
 
-// Updates the UI when the trait collection changes.
-- (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
+// Updates the UI when the size class changes.
+- (void)sizeClassDidChange {
   [self updateStatusBarBackgroundViews];
-  [self updateCurrentBVCLayoutInsetsWithTopInset:[self topInset]];
   if (_tabStripViewController) {
-    _tabStripViewController.view.hidden = !CanShowTabStrip(self);
+    bool canShowTabStrip = CanShowTabStrip(self);
+    _tabStripViewController.view.hidden = !canShowTabStrip;
+    if (canShowTabStrip) {
+      [self updateLayoutWithTopInset:[self topInset]];
+      return;
+    }
   }
+  [self updateCurrentBVCLayoutInsets];
 }
 
 // Ensures the status bar background views are created and installed in the
@@ -370,7 +377,7 @@ constexpr CGFloat kNoSafeAreaTabStripTopMargin = 16.0;
   [_tabStripViewController didMoveToParentViewController:self];
 
   // Set default frame to ensure valid initial position.
-  CGFloat topInset = [self topInset];
+  CGFloat topInset = CanShowTabStrip(self) ? [self topInset] : 0;
   CGRect frame = self.view.bounds;
   frame.origin.y = topInset;
   frame.size.height = TabStripCollectionViewConstants.height;
@@ -445,13 +452,12 @@ constexpr CGFloat kNoSafeAreaTabStripTopMargin = 16.0;
   [self updateStatusBarBackgroundViews];
 
   // Notify the BVC about the layout inset changes.
-  [self updateCurrentBVCLayoutInsetsWithTopInset:[self topInset]];
-
-  if (!_tabStripViewController) {
+  if (!_tabStripViewController || !CanShowTabStrip(self)) {
+    [self updateCurrentBVCLayoutInsets];
     return;
   }
 
-  [self updateForFullscreenProgress:_fullscreenProgress];
+  [self updateLayoutWithTopInset:[self topInset]];
 }
 
 - (void)setInfobarBannerOverlayContainerViewController:
