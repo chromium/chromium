@@ -8,7 +8,7 @@ import common
 import java_types
 import parse_common
 
-_MODIFIER_KEYWORDS = (r'(?:(?:' + '|'.join([
+_MODIFIER_KEYWORD = (r'\b(?:' + '|'.join([
     'abstract',
     'default',
     'final',
@@ -18,7 +18,11 @@ _MODIFIER_KEYWORDS = (r'(?:(?:' + '|'.join([
     'public',
     'static',
     'synchronized',
-]) + r')\s+)*')
+    'transient',
+    'volatile',
+]) + r')\b')
+
+_MODIFIER_KEYWORDS = r'(?:' + _MODIFIER_KEYWORD + r'\s+)*'
 
 _CLASSES_REGEX = re.compile(
     r'^((?:(?!\b(?:class|interface|enum)\b)'
@@ -379,6 +383,74 @@ def _parse_fields(contents, parsed_classes):
                                  const_value=const_value))
 
 
+_ANNOTATION_STR = r'@[\w.]+(?:\((?:[^")]|"(?:\\.|[^\\"])*")*\))?'
+_MODIFIER_OR_ANNOTATION_REGEX = re.compile(r'\s*(?:(?P<modifier>' +
+                                           _MODIFIER_KEYWORD +
+                                           r')\s+|(?P<annotation>' +
+                                           _ANNOTATION_STR + r')\s*)')
+_ACCESSED_BY_NATIVE_REGEX = re.compile(
+    r'(?P<pre>(?:(?:' + _MODIFIER_KEYWORD + r')\s+|' + _ANNOTATION_STR +
+    r'\s*)*)'
+    r'@AccessedByNative\b(?:\((?:[^")]|"(?:\\.|[^\\"])*")*\))?'
+    r'(?P<decl>(?:' + _ANNOTATION_STR + r'|[^@;={}()])*?)'
+    r'\s*(?<![\w$])(?P<name>[A-Za-z_$][\w$]*)\s*[=;]')
+
+
+def _parse_accessed_by_native_fields(contents, parsed_classes):
+  if '@AccessedByNative' not in contents:
+    return
+
+  pos = parsed_classes[0]._start_idx
+  for match in parse_common.find_iter_with_note(_ACCESSED_BY_NATIVE_REGEX,
+                                                contents,
+                                                pos=pos):
+    parsed_class = parse_common.find_owning_class(parsed_classes, match)
+    type_resolver = parsed_class.type_resolver
+
+    prev = contents[pos:match.start()].rstrip()
+    if prev and prev[-1] not in ';{}':
+      raise parse_common.ParseError(
+          f'Could not parse @AccessedByNative field:\n{match.group(0)}')
+
+    modifiers = set()
+    kept_annotations = []
+    for segment in (match.group('pre'), match.group('decl')):
+      idx = 0
+      while m := _MODIFIER_OR_ANNOTATION_REGEX.match(segment, idx):
+        if mod := m.group('modifier'):
+          modifiers.add(mod)
+        else:
+          kept_annotations.append(m.group('annotation'))
+        idx = m.end()
+
+    raw_type = match.group('decl')[idx:].strip()
+    if not raw_type or len(parse_common.split_by_delimiter(raw_type, ',')) > 1:
+      raise parse_common.ParseError(
+          f'Could not parse @AccessedByNative field:\n{match.group(0)}')
+
+    type_str = ' '.join(kept_annotations + [raw_type])
+    name = match.group('name')
+    java_type = _parse_type(type_resolver, type_str)
+    if java_type.is_safe_pointer():
+      raise parse_common.ParseError(
+          f'@AccessedByNative is not supported on safe pointer fields '
+          f'({java_type.java_class.name}): {name}')
+
+    parsed_class.fields.append(
+        parse_common.ParsedField(name=name,
+                                 java_type=java_type,
+                                 static='static' in modifiers,
+                                 final='final' in modifiers))
+
+  unmatched = contents[:pos] + _ACCESSED_BY_NATIVE_REGEX.sub('', contents[pos:])
+  unmatched_lines = unmatched.splitlines()
+  for i, line in enumerate(unmatched_lines):
+    if '@AccessedByNative' in line:
+      context = '\n'.join(unmatched_lines[i:i + 5])
+      raise parse_common.ParseError(
+          'Could not parse @AccessedByNative field:\n' + context)
+
+
 def parse_java_file(filename,
                     contents,
                     *,
@@ -410,6 +482,7 @@ def parse_java_file(filename,
       type_resolver, contents, iter_methods=_iter_java_proxy_methods)
   jni_namespace = parse_common.parse_jni_namespace(contents)
 
+  _parse_accessed_by_native_fields(contents, parsed_classes)
   _parse_called_by_natives_or_javap(
       contents,
       parsed_classes,

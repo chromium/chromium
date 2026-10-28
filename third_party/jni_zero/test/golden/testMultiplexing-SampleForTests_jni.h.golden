@@ -692,6 +692,32 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleForTests() {}
 #endif
 
 
+// FieldId Accessors
+inline jfieldID org_jni_1zero_SampleForTests_fieldId_mJavaField(JNIEnv* env) {
+  static std::atomic<jfieldID> cached_field_id(nullptr);
+  jclass clazz = org_jni_1zero_SampleForTests_clazz(env);
+  JNI_ZERO_DCHECK(clazz);
+  ::jni_zero::internal::InitializeFieldID<::jni_zero::internal::FieldID::TYPE_INSTANCE>(env, clazz, "mJavaField", "I", &cached_field_id);
+  return cached_field_id.load(std::memory_order_relaxed);
+}
+
+inline jfieldID org_jni_1zero_SampleForTests_fieldId_mFinalField(JNIEnv* env) {
+  static std::atomic<jfieldID> cached_field_id(nullptr);
+  jclass clazz = org_jni_1zero_SampleForTests_clazz(env);
+  JNI_ZERO_DCHECK(clazz);
+  ::jni_zero::internal::InitializeFieldID<::jni_zero::internal::FieldID::TYPE_INSTANCE>(env, clazz, "mFinalField", "Z", &cached_field_id);
+  return cached_field_id.load(std::memory_order_relaxed);
+}
+
+inline jfieldID org_jni_1zero_SampleForTests_fieldId_sJavaStringField(JNIEnv* env) {
+  static std::atomic<jfieldID> cached_field_id(nullptr);
+  jclass clazz = org_jni_1zero_SampleForTests_clazz(env);
+  JNI_ZERO_DCHECK(clazz);
+  ::jni_zero::internal::InitializeFieldID<::jni_zero::internal::FieldID::TYPE_STATIC>(env, clazz, "sJavaStringField", "Ljava/lang/String;", &cached_field_id);
+  return cached_field_id.load(std::memory_order_relaxed);
+}
+
+
 // Weak Native to Java functions
 [[gnu::weak]] inline jobject JniWeak_org_jni_1zero_SampleForTests_Constructor__int__int(
     JNIEnv* env,
@@ -1321,6 +1347,23 @@ using namespace ::jni_zero::tests;
 template<>
 class _CalledByNativesStatics<::org::jni_zero::JSampleForTests> {
   public:
+  static std::string Get_sJavaStringField(JNIEnv* env) {
+    jclass clazz = org_jni_1zero_SampleForTests_clazz(env);
+    JNI_ZERO_DCHECK(clazz);
+    jfieldID field_id = org_jni_1zero_SampleForTests_fieldId_sJavaStringField(env);
+    return jni_zero::FromJniType<std::string>(
+        env,
+        jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, env->GetStaticObjectField(clazz, field_id)));
+  }
+  static void Set_sJavaStringField(JNIEnv* env, std::string const& value) {
+    jclass clazz = org_jni_1zero_SampleForTests_clazz(env);
+    JNI_ZERO_DCHECK(clazz);
+    jni_zero::ScopedJavaLocalRef<jobject> converted_value = jni_zero::ToJniType(
+        env,
+        std::move(value));
+    jfieldID field_id = org_jni_1zero_SampleForTests_fieldId_sJavaStringField(env);
+    env->SetStaticObjectField(clazz, field_id, converted_value.obj());
+  }
   static ::jni_zero::ScopedJavaLocalRef<::org::jni_zero::JSampleForTests> New(
       JNIEnv* env,
       JniIntWrapper foo,
@@ -1389,6 +1432,21 @@ class _CalledByNativesStatics<::org::jni_zero::JSampleForTests> {
 template<>
 class _CalledByNatives<::org::jni_zero::JSampleForTests> {
   public:
+  int32_t Get_mJavaField(JNIEnv* env) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::org::jni_zero::JSampleForTests>*>(this);
+    jfieldID field_id = org_jni_1zero_SampleForTests_fieldId_mJavaField(env);
+    return env->GetIntField(this_obj->obj(), field_id);
+  }
+  void Set_mJavaField(JNIEnv* env, JniIntWrapper value) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::org::jni_zero::JSampleForTests>*>(this);
+    jfieldID field_id = org_jni_1zero_SampleForTests_fieldId_mJavaField(env);
+    env->SetIntField(this_obj->obj(), field_id, as_jint(value));
+  }
+  bool Get_mFinalField(JNIEnv* env) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::org::jni_zero::JSampleForTests>*>(this);
+    jfieldID field_id = org_jni_1zero_SampleForTests_fieldId_mFinalField(env);
+    return env->GetBooleanField(this_obj->obj(), field_id);
+  }
   ::jni_zero::ScopedJavaLocalRef<::org::jni_zero::JSampleForTests_InnerStructA> addStructA(
       JNIEnv* env,
       const ::jni_zero::JavaRef<::org::jni_zero::JSampleForTests_InnerStructA>& a,

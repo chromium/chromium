@@ -175,6 +175,10 @@ class SampleForTests {
     // ---------------------------------------------------------------------------------------------
     // Java fields which are accessed from C++ code only must be annotated with @AccessedByNative to
     // prevent them being eliminated when unreferenced code is stripped.
+    @AccessedByNative
+    private static @JniType("std::string") String sJavaStringField = "initial";
+
+    @AccessedByNative private final boolean mFinalField = true;
     @AccessedByNative private int mJavaField;
 
     // This "struct" will be created by the native side using |createInnerStructA|,

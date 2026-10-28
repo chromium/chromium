@@ -75,6 +75,7 @@ import javax.tools.Diagnostic;
  * </ul>
  */
 @SupportedAnnotationTypes({
+    "org.jni_zero.AccessedByNative",
     "org.jni_zero.CalledByNative",
     "org.jni_zero.CalledByNativeUnchecked",
     "org.jni_zero.CalledByNativeForTesting",
@@ -122,6 +123,8 @@ public class JniZeroValidatorProcessor extends AbstractProcessor {
                 for (Element element : roundEnv.getElementsAnnotatedWith(annotation)) {
                     if (element.getKind() == ElementKind.METHOD) {
                         mImpl.checkCalledByNativeMethod((ExecutableElement) element);
+                    } else if (element.getKind() == ElementKind.FIELD) {
+                        mImpl.checkAccessedByNativeField((VariableElement) element);
                     }
                 }
             }
@@ -199,6 +202,13 @@ public class JniZeroValidatorProcessor extends AbstractProcessor {
 
         void checkCalledByNativeMethod(ExecutableElement methodElement) {
             checkJniMethodTrees(methodElement);
+        }
+
+        void checkAccessedByNativeField(VariableElement fieldElement) {
+            VariableTree varTree = (VariableTree) mTrees.getTree(fieldElement);
+            if (varTree != null) {
+                checkTypeTrees(fieldElement.asType(), fieldElement, varTree.getType());
+            }
         }
 
         private void checkJniMethodTrees(ExecutableElement methodElement) {

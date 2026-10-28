@@ -11,6 +11,9 @@ public class JniProcessorTest {
 
     public static class WithJni implements OuterClass {
         // Annotation Processor should fail if changed to just "Nested".
+        @AccessedByNative public OuterClass.Nested mNestedField;
+
+        // Annotation Processor should fail if changed to just "Nested".
         @CalledByNative
         public List<OuterClass.Nested> getNestedList() {
             return null;

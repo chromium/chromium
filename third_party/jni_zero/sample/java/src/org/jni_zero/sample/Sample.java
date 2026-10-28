@@ -6,6 +6,7 @@ package org.jni_zero.sample;
 
 import android.util.Log;
 
+import org.jni_zero.AccessedByNative;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniPtr;
@@ -27,6 +28,12 @@ public class Sample {
     public static JniPtr<NativeObjectToken> sLastReceivedPtr;
     public static JniRawPtr<NativeObjectToken> sLastReceivedRawPtr;
     public static JniUniquePtr<NativeObjectToken> sLastReceivedUniquePtr;
+    @AccessedByNative public static int sAccessedInt;
+
+    @AccessedByNative
+    public final @JniType("int32_t") Integer mFinalBoxed = 10;
+
+    @AccessedByNative public int mAccessedValue;
 
     @JniType("::jni_zero::sample::NativeObject")
     public interface NativeObjectToken extends JniTypeToken {}
@@ -78,6 +85,10 @@ public class Sample {
 
     public static int getDeletedCount() {
         return SampleJni.get().getDeletedCount();
+    }
+
+    public int updateAccessedFields(int delta) {
+        return SampleJni.get().updateAccessedFields(this, delta);
     }
 
     public static void doSingleBasicCall() {
@@ -164,5 +175,7 @@ public class Sample {
         int getValue(JniPtr<NativeObjectToken> self);
 
         int getDeletedCount();
+
+        int updateAccessedFields(Sample sample, int delta);
     }
 }

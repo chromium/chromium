@@ -439,6 +439,15 @@ int main() {
   clazz =
       jni_zero::tests::Java_SampleForTests_getClass(env, my_java_object, clazz);
 
+  SampleForTestsJni::Set_sJavaStringField(
+      env, SampleForTestsJni::Get_sJavaStringField(env));
+  ScopedJavaLocalRef<JSampleForTests> typed_java_object =
+      SampleForTestsJni::New(env, 1, 2);
+  if (typed_java_object->Get_mFinalField(env)) {
+    typed_java_object->Set_mJavaField(
+        env, typed_java_object->Get_mJavaField(env) + 1);
+  }
+
   return 0;
 }
 

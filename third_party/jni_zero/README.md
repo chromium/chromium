@@ -300,6 +300,42 @@ Calling methods like: `Java_ClassName_methodName(env, ...)`.
 This syntax still works, but support will be dropped when all usages are
 migrated. It does not use `jobject` subclasses.
 
+### Accessing Java Fields
+
+Annotate fields with `@AccessedByNative` to generate `Get_<field>` and
+`Set_<field>` accessors in `${OriginalClassName}_jni.h` (`final` fields only
+generate `Get_<field>`):
+
+- **Static Fields:** `MyClassJni::Get_sField(env)` /
+  `MyClassJni::Set_sField(env, value)`
+- **Instance Fields:** `obj->Get_mField(env)` / `obj->Set_mField(env, value)`
+
+`@JniType` can also be used on fields for automatic type conversion.
+
+#### Example:
+
+**Java**
+
+```java
+class MyClass {
+  @AccessedByNative static int sCount;
+  @AccessedByNative final @JniType("std::string") String mName = "default";
+  @AccessedByNative int mValue;
+}
+```
+
+**C++**
+
+```c++
+void Example(JNIEnv* env, const jni_zero::JavaRef<JMyClass>& obj) {
+  MyClassJni::Set_sCount(env, MyClassJni::Get_sCount(env) + 1);
+
+  std::string name = obj->Get_mName(env);
+  obj->Set_mValue(env, 42);
+  int32_t value = obj->Get_mValue(env);
+}
+```
+
 ### Automatic Type Conversions using @JniType {#jnitype}
 
 Normally, JNI Zero maps Java types to C++ types as follows:
@@ -478,10 +514,10 @@ JNI Zero provides the `gen-register-natives` command to scan precompiled `.jar`
 files (extracted from AARs), find all `native` methods using `javap`, and
 generate a C++ header with a custom `RegisterNatives` function.
 
-### Exposing Java Methods
+### Exposing Java Methods and Fields
 
 JNI Zero ships with R8 configs that disable renaming of symbols that use
-`@CalledByNative`.
+`@CalledByNative` or `@AccessedByNative`.
 
 ### Testing Mockable Natives
 

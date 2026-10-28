@@ -67,7 +67,8 @@ def _jni_field_function_name(field, is_setter):
 
 
 def _field_id_accessor_name(java_class, field):
-  return f'{java_class.to_cpp()}_fieldId_{common.jni_mangle(field.name)}'
+  escaped_class = java_class.class_without_prefix.to_cpp()
+  return f'{escaped_class}_fieldId_{common.jni_mangle(field.name)}'
 
 
 def field_accessor(sb, jni_class, field):
@@ -632,6 +633,12 @@ def _mirrored_field_getter(sb, java_type, field):
 
     with sb.statement():
       sb('return ')
+      if field.java_type.converted_type:
+        convert_type.from_jni_expression(sb,
+                                         getter_part,
+                                         field.java_type,
+                                         release_ref=True)
+        return
       if field.java_type.is_primitive():
         sb(getter_part)
         return
@@ -666,7 +673,9 @@ def _mirrored_field_setter(sb, java_type, field):
 
     param_rvalue = 'value'
     if field.java_type.converted_type:
-      convert_type.to_jni_assignment(sb, 'converted_value', 'value',
+      if not field.java_type.is_primitive():
+        param_rvalue = f'std::move({param_rvalue})'
+      convert_type.to_jni_assignment(sb, 'converted_value', param_rvalue,
                                      field.java_type)
       param_rvalue = 'converted_value'
 

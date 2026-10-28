@@ -1266,6 +1266,78 @@ public class MySingleton {
           '@CalledByNative\nfun get(): JniUniquePtr<NativeFoo> = TODO()\n',
           enable_safe_pointers=True)
 
+  def testParseAccessedByNativeFields(self):
+    contents = """
+package org.jni_zero;
+import java.util.List;
+@NullMarked
+public class FieldTest {
+  private int mIgnoredField = 42;
+
+  @AccessedByNative
+  private static volatile long sCount = 0;
+
+  @AccessedByNative
+  public static final String CONST_NAME = computeName();
+
+  @SuppressWarnings({"NullAway", "unused;"})
+  @JniType("std::string")
+  @AccessedByNative
+  private @Nullable String mConverted;
+
+  private @AccessedByNative transient Outer.@Nullable Inner[] mNestedArray;
+
+  @AccessedByNative
+  private List<String> mList;
+
+  static class Inner {
+    @AccessedByNative("Inner")
+    int mInnerField;
+  }
+}
+"""
+    expected = """\
+public class FieldTest {
+  public @JniType("std::string") @Nullable String mConverted;
+  public List<String> mList;
+  public @Nullable Outer.Inner[] mNestedArray;
+  public static long sCount;
+  public static final String CONST_NAME;
+}
+public class FieldTest.Inner {
+  public int mInnerField;
+}
+"""
+    parsed_file = _parse_java_file('FieldTest.java', contents)
+    self._assert_golden(expected, parsed_file)
+
+  def testParseAccessedByNativeErrors(self):
+
+    def parse_members(members, **kwargs):
+      contents = f'package org.jni_zero;\npublic class FieldTest {{\n{members}}}\n'
+      return _parse_java_file('FieldTest.java', contents, **kwargs)
+
+    for members in [
+        '@AccessedByNative\nvoid notAField() {}\n',
+        '@AccessedByNative\nint a, b;\n',
+        'void broken() @AccessedByNative int x;\n',
+    ]:
+      with self.assertRaisesRegex(parse_common.ParseError,
+                                  'Could not parse @AccessedByNative field'):
+        parse_members(members)
+
+    for wrapper in ['JniPtr', 'JniRawPtr', 'JniUniquePtr']:
+      members = f"""
+  @JniType("::foo::Foo")
+  public interface NativeFoo extends JniTypeToken {{}}
+  @AccessedByNative
+  private {wrapper}<NativeFoo> mPtr;
+"""
+      with self.assertRaisesRegex(
+          parse_common.ParseError,
+          '@AccessedByNative is not supported on safe pointer fields'):
+        parse_members(members, enable_safe_pointers=True)
+
 
 if __name__ == '__main__':
   unittest.main()

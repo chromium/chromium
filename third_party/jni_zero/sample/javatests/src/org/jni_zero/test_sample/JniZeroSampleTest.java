@@ -82,4 +82,16 @@ public final class JniZeroSampleTest {
         Assert.assertEquals(initialDeleted + 1, Sample.getDeletedCount());
         Assert.assertThrows(IllegalStateException.class, () -> Sample.getValue(obj));
     }
+
+    @Test
+    public void testAccessedByNativeFields() {
+        Sample.sAccessedInt = 5;
+        Sample sample = new Sample();
+        sample.mAccessedValue = 20;
+
+        int updatedStatic = sample.updateAccessedFields(/* delta= */ 3);
+        Assert.assertEquals(8, updatedStatic);
+        Assert.assertEquals(8, Sample.sAccessedInt);
+        Assert.assertEquals(33, sample.mAccessedValue);
+    }
 }

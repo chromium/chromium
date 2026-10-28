@@ -456,25 +456,33 @@ class JniObject:
 
   def CollectClassesThatRequireAccessors(self):
     ret = set()
+
+    def add_array_element_class(java_type):
+      if java_type.java_class:
+        if upper_bound_type := java_type.java_class.upper_bound_type:
+          ret.add(upper_bound_type.java_class)
+        else:
+          ret.add(java_type.java_class)
+
     for c in self.jni_classes:
       ret.add(c.java_class)
+      for f in c.fields:
+        if (not f.final and f.java_type.is_object_array()
+            and f.java_type.converted_type):
+          add_array_element_class(f.java_type)
       # jclasses required for @JniType conversions.
       for cbn in c.called_by_natives:
         for param in cbn.params:
-          java_type = param.java_type
           # Arrays with @JniType need class accessors, but users will likely
           # need the class accessors when not using @JniType as well.
-          if java_type.is_array() and java_type.java_class:
-            if upper_bound_type := java_type.java_class.upper_bound_type:
-              ret.add(upper_bound_type.java_class)
-            else:
-              ret.add(java_type.java_class)
+          if param.java_type.is_array():
+            add_array_element_class(param.java_type)
 
     # jclasses required for @JniType conversions.
     for native in self.proxy_natives:
       return_type = native.return_type
       if return_type.is_object_array() and return_type.converted_type:
-        ret.add(return_type.java_class)
+        add_array_element_class(return_type)
     # Filter out those ones that have a global variable for.
     ret = [c for c in ret if c not in java_types.JCLASS_GLOBALS_CLASSES]
     ret.sort()

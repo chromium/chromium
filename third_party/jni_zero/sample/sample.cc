@@ -96,6 +96,16 @@ static int32_t JNI_Sample_GetDeletedCount(JNIEnv* env) {
   return g_native_object_deleted_count;
 }
 
+static int32_t JNI_Sample_UpdateAccessedFields(JNIEnv* env,
+                                               const JavaRef<JSample>& sample,
+                                               int32_t delta) {
+  SampleJni::Set_sAccessedInt(env, SampleJni::Get_sAccessedInt(env) + delta);
+  int32_t next =
+      sample->Get_mAccessedValue(env) + sample->Get_mFinalBoxed(env) + delta;
+  sample->Set_mAccessedValue(env, next);
+  return SampleJni::Get_sAccessedInt(env);
+}
+
 }  // namespace jni_zero::sample
 
 DEFINE_JNI(Sample)
