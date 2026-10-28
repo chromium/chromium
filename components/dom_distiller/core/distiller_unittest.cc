@@ -8,13 +8,13 @@
 #include <optional>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "components/dom_distiller/core/article_distillation_update.h"
 #include "components/dom_distiller/core/distiller_page.h"
 #include "components/dom_distiller/core/extraction_utils.h"
 #include "components/dom_distiller/core/fake_distiller_page.h"
@@ -60,22 +60,17 @@ class DistillerTest : public testing::Test {
   ~DistillerTest() override = default;
 
   void OnDistillArticleDone(std::unique_ptr<DistilledArticleProto> proto,
-                            DistillationParseResult /*result*/) {
+                            DistillationParseResult result) {
     article_proto_ = std::move(proto);
-  }
-
-  void OnDistillArticleUpdate(const ArticleDistillationUpdate& article_update) {
-    in_sequence_updates_.push_back(article_update);
+    parse_result_ = result;
   }
 
   void DistillPage(const std::string& url,
                    std::unique_ptr<DistillerPage> distiller_page) {
-    distiller_->DistillPage(
-        GURL(url), std::move(distiller_page),
-        base::BindOnce(&DistillerTest::OnDistillArticleDone,
-                       base::Unretained(this)),
-        base::BindRepeating(&DistillerTest::OnDistillArticleUpdate,
-                            base::Unretained(this)));
+    distiller_->DistillPage(GURL(url), std::move(distiller_page),
+                            base::BindOnce(&DistillerTest::OnDistillArticleDone,
+                                           base::Unretained(this)),
+                            base::DoNothing());
   }
 
  protected:
@@ -83,7 +78,7 @@ class DistillerTest : public testing::Test {
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
   std::unique_ptr<DistillerImpl> distiller_;
   std::unique_ptr<DistilledArticleProto> article_proto_;
-  std::vector<ArticleDistillationUpdate> in_sequence_updates_;
+  std::optional<DistillationParseResult> parse_result_;
 };
 
 ACTION_P3(DistillerPageOnDistillationDone, distiller_page, url, result) {
@@ -111,10 +106,12 @@ std::unique_ptr<DistillerPage> CreateMockDistillerPageWithPendingJSCallback(
 }
 
 TEST_F(DistillerTest, DistillPage) {
+  base::HistogramTester histogram_tester;
   base::Value result = CreateDistilledValueReturnedFromJS(kTitle, kContent);
   distiller_ = std::make_unique<DistillerImpl>(DistillerOptions());
   DistillPage(kURL, CreateMockDistillerPage(&result, GURL(kURL)));
   base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DistillationParseResult::kSuccess, parse_result_);
   EXPECT_EQ(kTitle, article_proto_->title());
   ASSERT_EQ(article_proto_->pages_size(), 1);
   const DistilledPageProto& first_page = article_proto_->pages(0);
@@ -123,6 +120,7 @@ TEST_F(DistillerTest, DistillPage) {
   EXPECT_EQ(kTextContent, first_page.text_content());
   EXPECT_EQ(kTextDirection, first_page.text_direction());
   EXPECT_EQ(2, first_page.word_count());
+  histogram_tester.ExpectUniqueSample("DomDistiller.WordCount", 2, 1);
 }
 
 TEST_F(DistillerTest, DistillPageMissingTextDirection) {
@@ -136,13 +134,16 @@ TEST_F(DistillerTest, DistillPageMissingTextDirection) {
 }
 
 TEST_F(DistillerTest, SinglePageDistillationFailure) {
+  base::HistogramTester histogram_tester;
   // To simulate failure return a null value.
   base::Value null_value;
   distiller_ = std::make_unique<DistillerImpl>(DistillerOptions());
   DistillPage(kURL, CreateMockDistillerPage(&null_value, GURL(kURL)));
   base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DistillationParseResult::kNoData, parse_result_);
   EXPECT_EQ("", article_proto_->title());
   EXPECT_EQ(0, article_proto_->pages_size());
+  histogram_tester.ExpectTotalCount("DomDistiller.WordCount", 0);
 }
 
 TEST_F(DistillerTest, CancelWithDelayedJSCallback) {

@@ -5,28 +5,19 @@
 #ifndef COMPONENTS_DOM_DISTILLER_CORE_DISTILLER_H_
 #define COMPONENTS_DOM_DISTILLER_CORE_DISTILLER_H_
 
-#include <stddef.h>
-
-#include <map>
 #include <memory>
-#include <optional>
-#include <string>
-#include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "components/dom_distiller/core/article_distillation_update.h"
 #include "components/dom_distiller/core/distiller_options.h"
 #include "components/dom_distiller/core/distiller_page.h"
 #include "components/dom_distiller/core/proto/distilled_article.pb.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
 namespace dom_distiller {
 
-class DistillerImpl;
+class ArticleDistillationUpdate;
+class DistilledPageProto;
 
 class Distiller {
  public:
@@ -67,7 +58,7 @@ class DistillerFactoryImpl : public DistillerFactory {
   DistillerOptions options_;
 };
 
-// Distills a article from a page and associated pages.
+// Distills an article from a page.
 class DistillerImpl : public Distiller {
  public:
   explicit DistillerImpl(const DistillerOptions& options);
@@ -78,101 +69,21 @@ class DistillerImpl : public Distiller {
                    DistillationFinishedCallback finished_cb,
                    const DistillationUpdateCallback& update_cb) override;
 
-  void SetMaxNumPagesInArticle(size_t max_num_pages);
-
   DistillerImpl(const DistillerImpl&) = delete;
   DistillerImpl& operator=(const DistillerImpl&) = delete;
 
  private:
-  // In case of multiple pages, the Distiller maintains state of multiple pages
-  // as page numbers relative to the page number where distillation started.
-  // E.g. if distillation starts at page 2 for a 3 page article. The relative
-  // page numbers assigned to pages will be [-1,0,1].
-
-  // Class representing the state of a page under distillation.
-  struct DistilledPageData {
-    DistilledPageData();
-    virtual ~DistilledPageData();
-    // Relative page number of the page.
-    int page_num;
-    scoped_refptr<base::RefCountedData<DistilledPageProto>>
-        distilled_page_proto;
-
-    DistilledPageData(const DistilledPageData&) = delete;
-    DistilledPageData& operator=(const DistilledPageData&) = delete;
-  };
-
   void OnPageDistillationFinished(
-      int page_num,
       const GURL& page_url,
       std::unique_ptr<DistilledPageProto> distilled_page,
       DistillationParseResult result);
-
-  // Distills the next page.
-  void DistillNextPage();
-
-  // Adds the |url| to |pages_to_be_distilled| if |page_num| is a valid relative
-  // page number and |url| is valid. Ignores duplicate pages and urls.
-  void AddToDistillationQueue(int page_num, const GURL& url);
-
-  // Check if |page_num| is a valid relative page number, i.e. page with
-  // |page_num| is either under distillation or has already completed
-  // distillation.
-  bool IsPageNumberInUse(int page_num) const;
-
-  bool AreAllPagesFinished() const;
-
-  // Total number of pages in the article that the distiller knows of, this
-  // includes pages that are pending distillation.
-  size_t TotalPageCount() const;
-
-  // Runs |finished_cb_| if all distillation callbacks and image fetches are
-  // complete.
-  void RunDistillerCallbackIfDone();
-
-  // Checks if page |distilled_page_data| has finished distillation, including
-  // all image fetches.
-  void AddPageIfDone(int page_num);
-
-  DistilledPageData* GetPageAtIndex(size_t index) const;
-
-  // Create an ArticleDistillationUpdate for the current distillation
-  // state.
-  const ArticleDistillationUpdate CreateDistillationUpdate() const;
 
   std::unique_ptr<DistillerPage> distiller_page_;
 
   DistillerOptions options_;
   DistillationFinishedCallback finished_cb_;
-  DistillationUpdateCallback update_cb_;
 
-  // Set of pages that are under distillation or have finished distillation.
-  // |started_pages_index_| and |finished_pages_index_| maintains the mapping
-  // from page number to the indices in |pages_|.
-  std::vector<std::unique_ptr<DistilledPageData>> pages_;
-
-  // Maps page numbers of finished pages to the indices in |pages_|.
-  std::map<int, size_t> finished_pages_index_;
-
-  // Maps page numbers of pages under distillation to the indices in |pages_|.
-  // If a page is |started_pages_| that means it is still waiting for an action
-  // (distillation or image fetch) to finish.
-  absl::flat_hash_map<int, size_t> started_pages_index_;
-
-  // The list of pages that are still waiting for distillation to start.
-  // This is a map, to make distiller prefer distilling lower page numbers
-  // first.
-  std::map<int, GURL> waiting_pages_;
-
-  // Set to keep track of which urls are already seen by the distiller. Used to
-  // prevent distiller from distilling the same url twice.
-  absl::flat_hash_set<std::string> seen_urls_;
-
-  size_t max_pages_in_article_;
-
-  bool destruction_allowed_;
-  std::optional<DistillationParseResult> last_error_ =
-      DistillationParseResult::kSuccess;
+  bool destruction_allowed_ = true;
 
   base::WeakPtrFactory<DistillerImpl> weak_factory_{this};
 };
