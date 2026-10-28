@@ -5,7 +5,15 @@
 package org.chromium.chrome.browser.tab;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -22,39 +30,89 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSystemClock;
 
+import org.chromium.base.UnownedUserDataHost;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProviderSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.security_state.SecurityStateModelJni;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.net.NetError;
+import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link TabStateBrowserControlsVisibilityDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowSystemClock.class})
+@DisableFeatures(ChromeFeatureList.ANDROID_SETTINGS_URL)
 public class TabStateBrowserControlsVisibilityDelegateTest {
+    private static final String SAME_ORIGIN_MINIMIZATION_NOT_IMPLEMENTED =
+            "Same-origin Omnibox minimization is not implemented yet, crbug.com/578150286";
+    private static final int HIDDEN_TOP_CONTROLS_OFFSET = -56;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabImpl mTabImpl;
-    @Mock private WebContents mWebContents;
+
+    @Mock(extraInterfaces = {WebContentsObserver.Observable.class})
+    private WebContents mWebContents;
+
+    @Mock private Profile mProfile;
     @Mock private NavigationHandle mNavigationHandle1;
     @Mock private NavigationHandle mNavigationHandle2;
     @Mock private NavigationHandle mNavigationHandle3;
     @Mock private SecurityStateModel.Natives mSecurityStateModelNatives;
+    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private BrowserControlsStateProvider mOtherBrowserControlsStateProvider;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private WindowAndroid mOtherWindowAndroid;
+    @Mock private TabBrowserControlsConstraintsHelper.Natives mConstraintsHelperJniMock;
+    @Mock private TabDelegateFactory mTabDelegateFactory;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
+
+    private MockTab mTab;
+    private boolean mIsTabHidden;
+    private WebContentsObserver mWebContentsObserver;
+
+    // Held here because UnownedUserDataHost keeps only weak references to its data.
+    private MonotonicObservableSupplier<BrowserControlsStateProvider> mProviderSupplier;
+    private MonotonicObservableSupplier<BrowserControlsStateProvider> mOtherProviderSupplier;
 
     @Before
     public void setup() {
         SecurityStateModelJni.setInstanceForTesting(mSecurityStateModelNatives);
+        TabBrowserControlsConstraintsHelperJni.setInstanceForTesting(mConstraintsHelperJniMock);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
+    }
+
+    private static MonotonicObservableSupplier<BrowserControlsStateProvider> attachProvider(
+            WindowAndroid window, BrowserControlsStateProvider provider) {
+        UnownedUserDataHost host = new UnownedUserDataHost();
+        when(window.getUnownedUserDataHost()).thenReturn(host);
+        when(window.getOcclusionSupplier()).thenReturn(ObservableSuppliers.alwaysFalse());
+        MonotonicObservableSupplier<BrowserControlsStateProvider> supplier =
+                ObservableSuppliers.createMonotonic(provider);
+        BrowserControlsStateProviderSupplier.attach(host, supplier);
+        return supplier;
     }
 
     @Test
@@ -489,6 +547,295 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
         try (var ignored = expectBrowserControlLocked()) {
             tabObserver.onDidStartNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle1);
         }
+    }
+
+    private TabStateBrowserControlsVisibilityDelegate createWiredDelegate(
+            GURL initialUrl, float hiddenRatio, int topControlsOffset) {
+        mProviderSupplier = attachProvider(mWindowAndroid, mBrowserControlsStateProvider);
+        mIsTabHidden = false;
+        mTab =
+                new MockTab(1, mProfile) {
+                    @Override
+                    public boolean isHidden() {
+                        return mIsTabHidden;
+                    }
+
+                    @Override
+                    public void show(@TabSelectionType int type) {
+                        mIsTabHidden = false;
+                        for (TabObserver observer : mObservers) {
+                            observer.onShown(this, type);
+                        }
+                    }
+
+                    @Override
+                    public void willShowBrowserControls() {
+                        boolean hasViewTransitionOptIn = getWebContents().hasViewTransitionOptIn();
+                        for (TabObserver observer : mObservers) {
+                            observer.onWillShowBrowserControls(this, hasViewTransitionOptIn);
+                        }
+                    }
+                };
+        mTab.setIsTabInBrowser(true);
+        when(mWebContents.getVisibleUrl()).thenReturn(initialUrl);
+        when(mWebContents.getLastCommittedUrl()).thenReturn(initialUrl);
+        when(mBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(hiddenRatio);
+
+        TabHelpers.initTabHelpers(mTab, /* parentTab= */ null);
+        TabBrowserControlsOffsetHelper.get(mTab)
+                .setOffsets(
+                        topControlsOffset,
+                        /* contentOffset= */ topControlsOffset + 56,
+                        /* topControlsMinHeightOffset= */ 0,
+                        /* bottomControlsOffset= */ 0,
+                        /* bottomControlsMinHeightOffset= */ 0);
+
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                new TabStateBrowserControlsVisibilityDelegate(mTab);
+        when(mTabDelegateFactory.createBrowserControlsVisibilityDelegate(mTab))
+                .thenReturn(delegate);
+        mTab.updateAttachment(mWindowAndroid, mTabDelegateFactory);
+        mTab.setWebContentsOverrideForTesting(mWebContents);
+        mTab.setIsInitialized(true);
+        TabBrowserControlsConstraintsHelper.updateVisibilityDelegate(mTab);
+
+        TabWebContentsObserver tabWebContentsObserver = TabWebContentsObserver.from(mTab);
+        tabWebContentsObserver.initWebContents(mWebContents);
+        mWebContentsObserver = tabWebContentsObserver.getWebContentsObserverForTesting();
+
+        delegate.updateVisibilityConstraints();
+        ShadowLooper.idleMainLooper();
+        clearInvocations(mConstraintsHelperJniMock);
+        return delegate;
+    }
+
+    private TabStateBrowserControlsVisibilityDelegate createWiredHiddenControlsDelegate(
+            GURL initialUrl) {
+        return createWiredDelegate(initialUrl, /* hiddenRatio= */ 1.0f, HIDDEN_TOP_CONTROLS_OFFSET);
+    }
+
+    private NavigationHandle startNavigation(GURL targetUrl) {
+        NavigationHandle navigation =
+                NavigationHandle.createForTesting(
+                        targetUrl,
+                        /* isInPrimaryMainFrame= */ true,
+                        /* isSameDocument= */ false,
+                        /* isRendererInitiated= */ true,
+                        PageTransition.LINK,
+                        /* hasUserGesture= */ true,
+                        /* isReload= */ false);
+        mWebContentsObserver.didStartNavigationInPrimaryMainFrame(navigation);
+        return navigation;
+    }
+
+    private void finishNavigation(
+            NavigationHandle navigation, GURL committedUrl, boolean isSameOrigin) {
+        when(mWebContents.getVisibleUrl()).thenReturn(committedUrl);
+        when(mWebContents.getLastCommittedUrl()).thenReturn(committedUrl);
+        navigation.didFinish(
+                committedUrl,
+                /* isErrorPage= */ false,
+                /* hasCommitted= */ true,
+                /* isPrimaryMainFrameFragmentNavigation= */ false,
+                /* isDownload= */ false,
+                /* isValidSearchFormUrl= */ false,
+                PageTransition.LINK,
+                NetError.OK,
+                /* errorDescription= */ "",
+                /* httpStatuscode= */ 200,
+                /* isExternalProtocol= */ false,
+                /* isPdf= */ false,
+                /* mimeType= */ "",
+                /* currentPage= */ null,
+                isSameOrigin,
+                /* responseHeaders= */ Collections.emptyMap(),
+                /* ignoredDuplicateNavigationCount= */ 0);
+        mWebContentsObserver.didFinishNavigationInPrimaryMainFrame(navigation);
+    }
+
+    private void verifyControlsLockedShown() {
+        verify(mConstraintsHelperJniMock, atLeastOnce())
+                .updateState(
+                        same(mWebContents),
+                        eq(BrowserControlsState.SHOWN),
+                        eq(BrowserControlsState.BOTH),
+                        eq(true),
+                        any());
+    }
+
+    private void verifyControlsNeverLockedShown() {
+        verify(mConstraintsHelperJniMock, never())
+                .updateState(any(), eq(BrowserControlsState.SHOWN), anyInt(), anyBoolean(), any());
+    }
+
+    @Test
+    @DisabledTest(message = SAME_ORIGIN_MINIMIZATION_NOT_IMPLEMENTED)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    public void testSameOriginMinimization_SameOriginNavigationKeepsControlsHidden() {
+        GURL page1 = JUnitTestGURLs.BLUE_1;
+        GURL page2 = JUnitTestGURLs.BLUE_2;
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(page1);
+
+        NavigationHandle navigation = startNavigation(page2);
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+        // No renderer push on navigation start.
+        verify(mConstraintsHelperJniMock, never())
+                .updateState(any(), anyInt(), anyInt(), anyBoolean(), any());
+
+        finishNavigation(navigation, page2, /* isSameOrigin= */ true);
+
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+        // The new page already starts hidden, so the commit push only syncs BOTH constraints.
+        verify(mConstraintsHelperJniMock)
+                .updateState(
+                        same(mWebContents),
+                        eq(BrowserControlsState.BOTH),
+                        eq(BrowserControlsState.BOTH),
+                        eq(true),
+                        any());
+
+        // The slow-load fallback does not fire after the commit.
+        ShadowSystemClock.advanceBy(1, TimeUnit.SECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+        verifyControlsNeverLockedShown();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    public void testSameOriginMinimization_VisibleSameOriginLocksControls() {
+        GURL page1 = JUnitTestGURLs.BLUE_1;
+        GURL page2 = JUnitTestGURLs.BLUE_2;
+        // Controls are visible (ratio 0.0f) rather than fully off-screen.
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredDelegate(page1, /* hiddenRatio= */ 0.0f, /* topControlsOffset= */ 0);
+
+        NavigationHandle navigation = startNavigation(page2);
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+        verifyControlsLockedShown();
+
+        finishNavigation(navigation, page2, /* isSameOrigin= */ true);
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    public void testSameOriginMinimization_CrossOriginLocksControls() {
+        GURL page1 = JUnitTestGURLs.BLUE_1;
+        GURL crossOrigin = JUnitTestGURLs.RED_1;
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(page1);
+
+        NavigationHandle navigation = startNavigation(crossOrigin);
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+        verifyControlsLockedShown();
+
+        finishNavigation(navigation, crossOrigin, /* isSameOrigin= */ false);
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    public void testSameOriginMinimization_FlagDisabledParityWithBaseline() {
+        GURL page1 = JUnitTestGURLs.BLUE_1;
+        GURL page2 = JUnitTestGURLs.BLUE_2;
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(page1);
+
+        // Start navigation: locks to SHOWN and pushes (SHOWN, BOTH, true).
+        NavigationHandle navigation = startNavigation(page2);
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+        verify(mConstraintsHelperJniMock)
+                .updateState(
+                        same(mWebContents),
+                        eq(BrowserControlsState.SHOWN),
+                        eq(BrowserControlsState.BOTH),
+                        eq(true),
+                        any());
+        clearInvocations(mConstraintsHelperJniMock);
+
+        // Finish navigation: pushes (SHOWN, BOTH, true) once (no unconditional update(SHOWN,false)
+        // when topControlsOffset != 0).
+        finishNavigation(navigation, page2, /* isSameOrigin= */ true);
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+        verify(mConstraintsHelperJniMock)
+                .updateState(
+                        same(mWebContents),
+                        eq(BrowserControlsState.SHOWN),
+                        eq(BrowserControlsState.BOTH),
+                        eq(true),
+                        any());
+        clearInvocations(mConstraintsHelperJniMock);
+
+        // After 3s load delay: unlocks to BOTH and pushes (BOTH, BOTH, true).
+        ShadowSystemClock.advanceBy(3, TimeUnit.SECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+        verify(mConstraintsHelperJniMock)
+                .updateState(
+                        same(mWebContents),
+                        eq(BrowserControlsState.BOTH),
+                        eq(BrowserControlsState.BOTH),
+                        eq(true),
+                        any());
+    }
+
+    @Test
+    @DisabledTest(message = SAME_ORIGIN_MINIMIZATION_NOT_IMPLEMENTED)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    public void testSameOriginMinimization_ReadsControlsOfTabsCurrentWindow() {
+        GURL page1 = JUnitTestGURLs.BLUE_1;
+        GURL page2 = JUnitTestGURLs.BLUE_2;
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(page1);
+
+        NavigationHandle firstNav = startNavigation(page2);
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+        finishNavigation(firstNav, page2, /* isSameOrigin= */ true);
+
+        // The tab moves to another window, whose controls are fully visible.
+        when(mOtherBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(0.0f);
+        mOtherProviderSupplier =
+                attachProvider(mOtherWindowAndroid, mOtherBrowserControlsStateProvider);
+        mTab.updateAttachment(mOtherWindowAndroid, /* tabDelegateFactory= */ null);
+
+        NavigationHandle secondNav = startNavigation(page1);
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+        verifyControlsLockedShown();
+        finishNavigation(secondNav, page1, /* isSameOrigin= */ true);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    public void testSameOriginMinimization_SubdomainChangeTreatedAsCrossOrigin() {
+        GURL httpsRoot = new GURL("https://example.com/page1");
+        GURL httpsSubdomain = new GURL("https://sub.example.com/page2");
+
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(httpsRoot);
+
+        NavigationHandle subdomainNav = startNavigation(httpsSubdomain);
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+        verifyControlsLockedShown();
+        finishNavigation(subdomainNav, httpsSubdomain, /* isSameOrigin= */ false);
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    public void testSameOriginMinimization_SchemeChangeTreatedAsCrossOrigin() {
+        GURL httpRoot = new GURL("http://example.com/page1");
+        GURL httpsRoot = new GURL("https://example.com/page1");
+
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(httpRoot);
+
+        NavigationHandle schemeNav = startNavigation(httpsRoot);
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+        verifyControlsLockedShown();
+        finishNavigation(schemeNav, httpsRoot, /* isSameOrigin= */ false);
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
     }
 
     HistogramWatcher expectBrowserControlLocked() {
