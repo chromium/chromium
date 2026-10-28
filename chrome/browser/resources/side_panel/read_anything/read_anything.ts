@@ -93,7 +93,7 @@ export {WebSpeechTtsClient} from './read_aloud/webspeech_tts_client.js';
 export type {WordBoundaryState} from './read_aloud/word_boundaries.js';
 export {WordBoundaries} from './read_aloud/word_boundaries.js';
 export {getWordCount, isBlockTrackingEnabled, LOG_EMPTY_DELAY_MS, playFromSelectionTimeout, spinnerDebounceTimeout} from './shared/common.js';
-export {getNearestTextBoundaryPoint, getRectsForSegments, getTextNodeOffsets} from './shared/dom_queries.js';
+export {getFirstTextNodeAtOrAfter, getLastTextNodeBefore, getNearestTextBoundaryPoint, getRectsForSegments, getTextNodeOffsets} from './shared/dom_queries.js';
 export {getNewIndex, isActivationKey, isArrow, isBackwardArrow, isForwardArrow, isHorizontalArrow, isLineFocusShortcut, isPlayPauseShortcut, isVerticalArrow} from './shared/keyboard_util.js';
 export type {MetricsBrowserProxy} from './shared/metrics_browser_proxy.js';
 export {MetricsBrowserProxyImpl, ReadAloudSettingsChange, ReadAnythingMathMlDistillationStatus, ReadAnythingNewPage, ReadAnythingSettingsAction, ReadAnythingSettingsChange, ReadAnythingSpeechError, ReadAnythingVoiceType} from './shared/metrics_browser_proxy.js';

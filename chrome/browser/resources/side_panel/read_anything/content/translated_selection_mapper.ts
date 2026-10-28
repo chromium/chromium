@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import {isBlockTrackingEnabled} from '../shared/common.js';
+import {getFirstTextNodeAtOrAfter, getLastTextNodeBefore, isBackwardSelection} from '../shared/dom_queries.js';
 
+import type {BlockRange} from './node_store.js';
 import {NodeStore} from './node_store.js';
 import type {ReadingModeSelection, SelectionWithIds} from './read_anything_types.js';
 
@@ -14,6 +16,16 @@ import type {ReadingModeSelection, SelectionWithIds} from './read_anything_types
 interface BoundaryPoint {
   node: Node;
   offset: number;
+}
+
+// A text node with selectable text, and the AXNodeID of the innermost block
+// that contains it. The searches for the first and last selected text return
+// both: the text nodes are needed to check that text between them is selected,
+// and the block IDs are found while checking that the text is selectable, so
+// returning them avoids finding them again (see getEnclosingBlockId_).
+interface SelectableText {
+  textNode: Text;
+  blockId: number;
 }
 
 // Maps selections between the reading mode panel and the main panel one block
@@ -38,6 +50,24 @@ interface BoundaryPoint {
 // feature is disabled or the current page isn't a PDF.
 export class TranslatedSelectionMapper {
   private nodeStore_: NodeStore = NodeStore.getInstance();
+
+  // Returns the AX selection of all of the text in the blocks that contain the
+  // text selected in the reading mode panel, i.e. the selection that would be
+  // made by selecting those blocks in the untranslated reading mode panel. The
+  // returned selection is always forward. Returns null if no text in a block is
+  // selected, if TranslatePdf is disabled, or if the page isn't a PDF.
+  getAxSelection(selection: ReadingModeSelection, contentContainer: Node):
+      SelectionWithIds|null {
+    if (!isBlockTrackingEnabled()) {
+      return null;
+    }
+    const blocks = this.getBlockRangeForSelection_(selection, contentContainer);
+    if (!blocks) {
+      return null;
+    }
+    return this.nodeStore_.getAxSelectionForBlockRange(
+        blocks.startBlockId, blocks.endBlockId);
+  }
 
   // Returns the forward selection in the reading mode panel that selects the
   // whole blocks that contain the text selected by the given forward AX
@@ -78,6 +108,122 @@ export class TranslatedSelectionMapper {
     };
   }
 
+  // Returns the AXNodeID of the innermost block that contains the given node,
+  // or null if the node isn't in a block in the content container.
+  private getEnclosingBlockId_(node: Node, contentContainer: Node): number
+      |null {
+    if (!contentContainer.contains(node)) {
+      return null;
+    }
+    for (let current: Node|null = node; current && current !== contentContainer;
+         current = current.parentNode) {
+      if (current.nodeType !== Node.ELEMENT_NODE) {
+        continue;
+      }
+      const id = this.nodeStore_.getAxId(current);
+      if (id !== undefined && this.nodeStore_.isBlock(id)) {
+        return id;
+      }
+    }
+    return null;
+  }
+
+  // Returns the first and last blocks that contain selected text, or null if
+  // no text in a block is selected.
+  private getBlockRangeForSelection_(
+      selection: ReadingModeSelection, contentContainer: Node): BlockRange
+      |null {
+    // A collapsed selection doesn't select any text.
+    if (selection.anchorNode === selection.focusNode &&
+        selection.anchorOffset === selection.focusOffset) {
+      return null;
+    }
+
+    const anchor = {node: selection.anchorNode, offset: selection.anchorOffset};
+    const focus = {node: selection.focusNode, offset: selection.focusOffset};
+    const isBackward = isBackwardSelection(
+        anchor.node, anchor.offset, focus.node, focus.offset);
+    const start = isBackward ? focus : anchor;
+    const end = isBackward ? anchor : focus;
+
+    // The searches skip whitespace and text outside of blocks, so an endpoint
+    // in whitespace, even in another block, doesn't make a search fail; that
+    // block just isn't included unless other text in it is selected. If any
+    // text in a block is selected, it's at or after the start and before the
+    // end, so both searches find text. So if either search finds nothing, no
+    // text in a block is selected.
+    const startText =
+        this.getFirstSelectableTextAtOrAfter_(start, end, contentContainer);
+    const endText =
+        this.getLastSelectableTextBefore_(start, end, contentContainer);
+    if (!startText || !endText) {
+      return null;
+    }
+
+    // If no text in a block is selected, e.g. if only whitespace is selected,
+    // the searches go past each other: the first search finds text after the
+    // selection, and the last search finds text before it.
+    if (startText.textNode !== endText.textNode &&
+        !(startText.textNode.compareDocumentPosition(endText.textNode) &
+          Node.DOCUMENT_POSITION_FOLLOWING)) {
+      return null;
+    }
+
+    return {startBlockId: startText.blockId, endBlockId: endText.blockId};
+  }
+
+  // Returns the first text node at or after the start of the selection from
+  // start to end that has selectable text, along with the AXNodeID of its
+  // block. See getSelectableTextBlockId_. The text node can be after the end
+  // if no text in a block is selected.
+  private getFirstSelectableTextAtOrAfter_(
+      start: BoundaryPoint, end: BoundaryPoint,
+      contentContainer: Node): SelectableText|null {
+    // Save the block ID found for the returned text node, so that it doesn't
+    // need to be found again.
+    let blockId: number|null = null;
+    const textNode = getFirstTextNodeAtOrAfter(
+        start.node, start.offset, contentContainer, candidate => {
+          blockId = this.getSelectableTextBlockId_(
+              candidate, start, end, contentContainer);
+          return blockId !== null;
+        });
+    return (textNode && blockId !== null) ? {textNode, blockId} : null;
+  }
+
+  // Returns the last text node before the end of the selection from start to
+  // end that has selectable text, along with the AXNodeID of its block. See
+  // getSelectableTextBlockId_. The text node can be before the start if no
+  // text in a block is selected.
+  private getLastSelectableTextBefore_(
+      start: BoundaryPoint, end: BoundaryPoint,
+      contentContainer: Node): SelectableText|null {
+    // Save the block ID found for the returned text node, so that it doesn't
+    // need to be found again.
+    let blockId: number|null = null;
+    const textNode = getLastTextNodeBefore(
+        end.node, end.offset, contentContainer, candidate => {
+          blockId = this.getSelectableTextBlockId_(
+              candidate, start, end, contentContainer);
+          return blockId !== null;
+        });
+    return (textNode && blockId !== null) ? {textNode, blockId} : null;
+  }
+
+  // Returns the AXNodeID of the innermost block that contains the text node,
+  // or null if the text node isn't in a block or the part of its text that's
+  // selected by the selection from start to end is only whitespace. See
+  // getSelectedText. The whitespace is checked first, since it's cheaper than
+  // finding the block.
+  private getSelectableTextBlockId_(
+      textNode: Text, start: BoundaryPoint, end: BoundaryPoint,
+      contentContainer: Node): number|null {
+    if (!hasNonEmptyText(getSelectedText(textNode, start, end))) {
+      return null;
+    }
+    return this.getEnclosingBlockId_(textNode, contentContainer);
+  }
+
   // Returns the element for the given block if it's shown in the content
   // container.
   private getBlockElement_(blockId: number, contentContainer: Node): Element
@@ -89,6 +235,22 @@ export class TranslatedSelectionMapper {
     }
     return node;
   }
+}
+
+// Returns whether the text has any characters other than whitespace, i.e.
+// whether it's non-empty after trimming whitespace.
+function hasNonEmptyText(text: string): boolean {
+  return text.trim().length > 0;
+}
+
+// Returns the selected part of the text node's text. It starts at the start
+// point if that's in the text node, or else at the start of the text, and ends
+// at the end point if that's in the text node, or else at the end of the text.
+function getSelectedText(
+    textNode: Text, start: BoundaryPoint, end: BoundaryPoint): string {
+  const startOffset = (start.node === textNode) ? start.offset : 0;
+  const endOffset = (end.node === textNode) ? end.offset : textNode.length;
+  return textNode.data.substring(startOffset, endOffset);
 }
 
 // Returns the boundary point just before the given node in its parent. The

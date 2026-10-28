@@ -6,7 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {NodeStore, ReadingModeSelection, SelectionWithIds} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {TranslatedSelectionMapper} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertNull, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertNull, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {setupTestEnvironment} from './common.js';
 import type {TestContentBrowserProxy} from './test_content_browser_proxy.js';
@@ -33,6 +33,7 @@ suite('TranslatedSelectionMapper', () => {
   let block10: HTMLElement;
   let text11: Text;
   let text13: Text;
+  let whitespace: Text;
   let block20: HTMLElement;
   let text21: Text;
   let text41: Text;
@@ -88,7 +89,7 @@ suite('TranslatedSelectionMapper', () => {
     text13 = createText('world', 13);
     block10 =
         createElement('p', 10, [text11, createElement('a', 12, [text13])]);
-    const whitespace = document.createTextNode('\n');
+    whitespace = document.createTextNode('\n');
     text21 = createText('Second', 21);
     block20 = createElement('p', 20, [text21]);
     text41 = createText('Loose', 41);
@@ -107,6 +108,142 @@ suite('TranslatedSelectionMapper', () => {
 
   teardown(() => {
     contentContainer.remove();
+  });
+
+  suite('getAxSelection', () => {
+    test('selects all text in the block with the selection', () => {
+      assertDeepEquals(
+          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 13, focusOffset: 5},
+          mapper.getAxSelection(
+              select(text11, 1, text11, 3), contentContainer));
+    });
+
+    test('selects all text in the blocks across the selection', () => {
+      assertDeepEquals(
+          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 21, focusOffset: 6},
+          mapper.getAxSelection(
+              select(text13, 2, text21, 3), contentContainer));
+    });
+
+    test('returns a forward selection for a backward selection', () => {
+      assertDeepEquals(
+          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 21, focusOffset: 6},
+          mapper.getAxSelection(
+              select(text21, 3, text11, 1), contentContainer));
+    });
+
+    test('handles element endpoints', () => {
+      // From before block 10 to after block 20.
+      assertDeepEquals(
+          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 21, focusOffset: 6},
+          mapper.getAxSelection(
+              select(contentContainer, 0, contentContainer, 3),
+              contentContainer));
+    });
+
+    test('handles element endpoints in different blocks', () => {
+      // From the start of block 10 to inside text 21.
+      assertDeepEquals(
+          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 21, focusOffset: 6},
+          mapper.getAxSelection(
+              select(block10, 0, text21, 3), contentContainer));
+      // From inside text 13 to the end of block 20.
+      assertDeepEquals(
+          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 21, focusOffset: 6},
+          mapper.getAxSelection(
+              select(text13, 2, block20, 1), contentContainer));
+      // Backward, from the end of block 20 to inside text 11.
+      assertDeepEquals(
+          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 21, focusOffset: 6},
+          mapper.getAxSelection(
+              select(block20, 1, text11, 1), contentContainer));
+    });
+
+    test('handles element endpoints that contain the other endpoint', () => {
+      // From inside text 13 to the end of block 10, which contains text 13.
+      assertDeepEquals(
+          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 13, focusOffset: 5},
+          mapper.getAxSelection(
+              select(text13, 2, block10, 2), contentContainer));
+      // From the start of block 20 to inside text 21, which block 20 contains.
+      assertDeepEquals(
+          {anchorNodeId: 21, anchorOffset: 0, focusNodeId: 21, focusOffset: 6},
+          mapper.getAxSelection(
+              select(block20, 0, text21, 3), contentContainer));
+      // TODO(crbug.com/578130985): Also test backward selections, e.g. from
+      // inside text 13 to the start of block 10, or from the end of block 20 to
+      // inside text 21. isBackwardSelection treats them as forward when one
+      // endpoint's node contains the other's, so they currently return null.
+    });
+
+    test('skips blocks without selected text', () => {
+      // Starts at the end of block 10.
+      assertDeepEquals(
+          {anchorNodeId: 21, anchorOffset: 0, focusNodeId: 31, focusOffset: 5},
+          mapper.getAxSelection(
+              select(text13, text13.length, text31, 2), contentContainer));
+      // Ends at the start of block 20.
+      assertDeepEquals(
+          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 13, focusOffset: 5},
+          mapper.getAxSelection(
+              select(text11, 1, text21, 0), contentContainer));
+    });
+
+    test('handles endpoints in whitespace between blocks', () => {
+      // Ends in the whitespace after block 10.
+      assertDeepEquals(
+          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 13, focusOffset: 5},
+          mapper.getAxSelection(
+              select(text11, 1, whitespace, 1), contentContainer));
+      // Starts in the whitespace before block 20.
+      assertDeepEquals(
+          {anchorNodeId: 21, anchorOffset: 0, focusNodeId: 21, focusOffset: 6},
+          mapper.getAxSelection(
+              select(whitespace, 0, text21, 3), contentContainer));
+    });
+
+    test('handles endpoints in whitespace in another block', () => {
+      const leading = document.createTextNode('  ');
+      block20.prepend(leading);
+
+      // Ends in the whitespace at the start of block 20, so block 20 isn't
+      // included.
+      assertDeepEquals(
+          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 13, focusOffset: 5},
+          mapper.getAxSelection(
+              select(text11, 1, leading, 1), contentContainer));
+      // Starts in the same whitespace, so block 20 is included because its
+      // text is selected.
+      assertDeepEquals(
+          {anchorNodeId: 21, anchorOffset: 0, focusNodeId: 31, focusOffset: 5},
+          mapper.getAxSelection(
+              select(leading, 1, text31, 2), contentContainer));
+    });
+
+    test('returns null if no text is selected', () => {
+      // Collapsed.
+      assertNull(mapper.getAxSelection(
+          select(text11, 2, text11, 2), contentContainer));
+      // Only whitespace between blocks.
+      assertNull(mapper.getAxSelection(
+          select(whitespace, 0, whitespace, 1), contentContainer));
+    });
+
+    test('returns null if only text outside of blocks is selected', () => {
+      assertNull(mapper.getAxSelection(
+          select(text41, 0, text41, 3), contentContainer));
+    });
+
+    test('maps translated text by its block', () => {
+      // Translation replaces the text nodes but keeps the block element.
+      const translated = document.createTextNode('Bonjour le monde');
+      block10.replaceChildren(translated);
+
+      assertDeepEquals(
+          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 13, focusOffset: 5},
+          mapper.getAxSelection(
+              select(translated, 0, translated, 7), contentContainer));
+    });
   });
 
   suite('getReadingModeSelection', () => {
@@ -178,6 +315,11 @@ suite('TranslatedSelectionMapper', () => {
       contentBrowserProxy.translatePdfEnabled = false;
     });
 
+    test('getAxSelection returns null', () => {
+      assertNull(mapper.getAxSelection(
+          select(text11, 1, text11, 3), contentContainer));
+    });
+
     test('getReadingModeSelection returns null', () => {
       assertNull(mapper.getReadingModeSelection(
           selectIds(11, 1, 11, 3), contentContainer));
@@ -187,6 +329,11 @@ suite('TranslatedSelectionMapper', () => {
   suite('when the page is not a PDF', () => {
     setup(() => {
       visualBrowserProxy.pdf = false;
+    });
+
+    test('getAxSelection returns null', () => {
+      assertNull(mapper.getAxSelection(
+          select(text11, 1, text11, 3), contentContainer));
     });
 
     test('getReadingModeSelection returns null', () => {

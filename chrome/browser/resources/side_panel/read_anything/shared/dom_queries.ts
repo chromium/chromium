@@ -153,46 +153,64 @@ export function getNearestTextBoundaryPoint(
 }
 
 // Returns the first text node in the container at or after the boundary point
-// (node, offset), in document order, or null if there is none. If the point is
-// inside a text node (offset < length), that text node is returned.
+// (node, offset), in document order, skipping text nodes that don't satisfy
+// isValidTarget, or null if there is none. If the point is inside a text node
+// (offset < length), that text node is the first one considered.
 export function getFirstTextNodeAtOrAfter(
-    node: Node, offset: number, container: Node): Text|null {
+    node: Node, offset: number, container: Node,
+    isValidTarget?: (text: Text) => boolean): Text|null {
+  // isValidTarget isn't passed to the searches below, so that it's called only
+  // once on the text node found, by the check after the branches.
+  let first: Text|null;
   if (node instanceof Text) {
-    return offset < node.length ? node : getNextTextNode(node, container);
-  }
-
-  if (offset < node.childNodes.length) {
+    first = offset < node.length ? node : getNextTextNode(node, container);
+  } else if (offset < node.childNodes.length) {
     // The point is before the child at the offset, so the result is the first
     // text node in the child's subtree, or the first one after it.
     const child = node.childNodes[offset]!;
-    return child instanceof Text ? child : getNextTextNode(child, container);
+    first = child instanceof Text ? child : getNextTextNode(child, container);
+  } else {
+    // The point is after all of the node's children, so the result is the
+    // first text node after the node's subtree.
+    first = getNextTextNode(getLastDescendant(node), container);
   }
 
-  // The point is after all of the node's children, so the result is the first
-  // text node after the node's subtree.
-  return getNextTextNode(getLastDescendant(node), container);
+  if (!first || !isValidTarget || isValidTarget(first)) {
+    return first;
+  }
+  return getNextTextNode(first, container, isValidTarget);
 }
 
 // Returns the last text node in the container before the boundary point
-// (node, offset), in document order, or null if there is none. If the point is
-// inside a text node (offset > 0), that text node is returned.
+// (node, offset), in document order, skipping text nodes that don't satisfy
+// isValidTarget, or null if there is none. If the point is inside a text node
+// (offset > 0), that text node is the first one considered.
 export function getLastTextNodeBefore(
-    node: Node, offset: number, container: Node): Text|null {
-  if (node instanceof Text) {
-    return offset > 0 ? node : getPreviousTextNode(node, container);
-  }
-
+    node: Node, offset: number, container: Node,
+    isValidTarget?: (text: Text) => boolean): Text|null {
+  // isValidTarget isn't passed to the searches below, so that it's called only
+  // once on the text node found, by the check after the branches.
+  let last: Text|null;
   const index = Math.min(offset, node.childNodes.length);
-  if (index > 0) {
+  if (node instanceof Text) {
+    last = offset > 0 ? node : getPreviousTextNode(node, container);
+  } else if (index > 0) {
     // The point is after the child before the offset, so the result is the
     // last text node in the child's subtree, or the last one before it.
-    const last = getLastDescendant(node.childNodes[index - 1]!);
-    return last instanceof Text ? last : getPreviousTextNode(last, container);
+    const descendant = getLastDescendant(node.childNodes[index - 1]!);
+    last = descendant instanceof Text ?
+        descendant :
+        getPreviousTextNode(descendant, container);
+  } else {
+    // The point is before all of the node's children, so the result is the
+    // last text node before the node.
+    last = getPreviousTextNode(node, container);
   }
 
-  // The point is before all of the node's children, so the result is the last
-  // text node before the node.
-  return getPreviousTextNode(node, container);
+  if (!last || !isValidTarget || isValidTarget(last)) {
+    return last;
+  }
+  return getPreviousTextNode(last, container, isValidTarget);
 }
 
 // Returns the last node in document order within the given node's subtree,
@@ -209,30 +227,30 @@ function getLastDescendant(node: Node): Node {
 // document order, skipping text nodes that don't satisfy isValidTarget. Returns
 // null if there is none.
 export function getNextTextNode(
-    node: Node, container: Node,
-    isValidTarget?: (node: Node) => boolean): Text|null {
+    node: Node, container: Node, isValidTarget?: (text: Text) => boolean): Text|
+    null {
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
   walker.currentNode = node;
-  let next = walker.nextNode();
+  let next = textNodeOrNull(walker.nextNode());
   while (next && isValidTarget && !isValidTarget(next)) {
-    next = walker.nextNode();
+    next = textNodeOrNull(walker.nextNode());
   }
-  return textNodeOrNull(next);
+  return next;
 }
 
 // Returns the previous text node in the container before the given node, in
 // document order, skipping text nodes that don't satisfy isValidTarget. Returns
 // null if there is none.
 export function getPreviousTextNode(
-    node: Node, container: Node,
-    isValidTarget?: (node: Node) => boolean): Text|null {
+    node: Node, container: Node, isValidTarget?: (text: Text) => boolean): Text|
+    null {
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
   walker.currentNode = node;
-  let prev = walker.previousNode();
+  let prev = textNodeOrNull(walker.previousNode());
   while (prev && isValidTarget && !isValidTarget(prev)) {
-    prev = walker.previousNode();
+    prev = textNodeOrNull(walker.previousNode());
   }
-  return textNodeOrNull(prev);
+  return prev;
 }
 
 // Narrows a TreeWalker result to Text. The walkers above only show text nodes,
