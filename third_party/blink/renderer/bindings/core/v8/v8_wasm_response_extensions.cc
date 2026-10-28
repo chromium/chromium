@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -40,6 +41,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "v8/include/v8-exception.h"
 
 namespace blink {
 
@@ -555,8 +557,8 @@ void StreamFromResponseCallback(
                                   WasmStreamingInputType::kReponseEmpty);
     // Since the status is 2xx (ok), this must be status 204 (No Content),
     // status 205 (Reset Content) or a malformed status 200 (OK).
-    auto exception = V8ThrowException::CreateWasmCompileError(
-        args.GetIsolate(), "Empty WebAssembly module");
+    auto exception = v8::Exception::WasmCompileError(
+        V8String(args.GetIsolate(), "Empty WebAssembly module"));
     PropagateExceptionToWasmStreaming(script_state, exception, streaming);
     return;
   }

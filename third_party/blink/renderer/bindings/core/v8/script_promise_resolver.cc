@@ -137,13 +137,6 @@ void ScriptPromiseResolverBase::RejectWithRangeError(const String& message) {
       script_state_->GetIsolate(), AddContext(exception_context_, message)));
 }
 
-void ScriptPromiseResolverBase::RejectWithWasmCompileError(
-    const String& message) {
-  ScriptState::Scope scope(script_state_.Get());
-  Reject(V8ThrowException::CreateWasmCompileError(
-      script_state_->GetIsolate(), AddContext(exception_context_, message)));
-}
-
 void ScriptPromiseResolverBase::Detach() {
   // Reset state even if we're already kDone. The resolver_ will not have been
   // reset yet if this was marked kDone due to resolve/reject, and an explicit

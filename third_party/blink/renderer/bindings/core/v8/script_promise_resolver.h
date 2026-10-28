@@ -117,9 +117,6 @@ class CORE_EXPORT ScriptPromiseResolverBase
   void RejectWithTypeError(const String& message);
   void RejectWithRangeError(const String& message);
 
-  // Reject with WebAssembly Error object.
-  void RejectWithWasmCompileError(const String& message);
-
   ScriptState* GetScriptState() const { return script_state_.Get(); }
 
   template <typename IDLResolvedType>

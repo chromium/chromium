@@ -74,10 +74,6 @@ NOINLINE void ExceptionState::ThrowSyntaxError(const char* message) {
   ThrowSyntaxError(String(message));
 }
 
-NOINLINE void ExceptionState::ThrowWasmCompileError(const char* message) {
-  ThrowWasmCompileError(String(message));
-}
-
 NOINLINE void ExceptionState::ThrowDOMException(DOMExceptionCode exception_code,
                                                 const char* message) {
   ThrowDOMException(exception_code, String(message));
@@ -178,17 +174,6 @@ void ExceptionState::ThrowSyntaxError(const String& message) {
   SetExceptionInfo(ToExceptionCode(ESErrorType::kSyntaxError), message);
   if (isolate_) {
     V8ThrowException::ThrowSyntaxError(isolate_, message);
-  }
-}
-
-void ExceptionState::ThrowWasmCompileError(const String& message) {
-#if DCHECK_IS_ON()
-  DCHECK_AT(!assert_no_exceptions_, location_)
-      << "WebAssembly.CompileError should not be thrown.";
-#endif
-  SetExceptionInfo(ToExceptionCode(ESErrorType::kWasmCompileError), message);
-  if (isolate_) {
-    V8ThrowException::ThrowWasmCompileError(isolate_, message);
   }
 }
 
