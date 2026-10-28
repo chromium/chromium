@@ -2269,6 +2269,10 @@ void ContextualTasksSidePanelCoordinator::UpdateOpenState(bool is_open) {
       }
     } else {
       tabs_with_closed_panel_.insert(active_tab->GetHandle());
+      if (it != task_id_to_web_contents_cache_.end() &&
+          !IsPanelOpenOnTabOfTask(task->GetTaskId())) {
+        it->second->is_open = false;
+      }
       CloseLensSessionForTab(active_tab);
     }
     return;

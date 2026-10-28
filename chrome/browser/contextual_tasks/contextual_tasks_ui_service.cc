@@ -1030,6 +1030,9 @@ void ContextualTasksUiService::OnThreadLinkClicked(
     tabs::TabInterface* active_tab = tab_list->GetActiveTab();
     if (contextual_tasks::IsContextualTasksClobberActiveTabEnabled() &&
         active_tab && active_tab->GetContents()) {
+      if (task_id.is_valid()) {
+        AssociateWebContentsToTask(active_tab->GetContents(), task_id);
+      }
       OMNIBOX_LOG("nav_trace")
           << "ContextualTasks navigation trace: OnThreadLinkClicked "
              "clobbering active tab: "
@@ -1823,6 +1826,9 @@ bool ContextualTasksUiService::HandleCitationClick(
   // enabled, load the URL into the active tab.
   if (contextual_tasks::IsContextualTasksClobberActiveTabEnabled() &&
       active_tab && active_tab->GetContents()) {
+    if (task_id.is_valid()) {
+      AssociateWebContentsToTask(active_tab->GetContents(), task_id);
+    }
     OMNIBOX_LOG("nav_trace")
         << "ContextualTasks HandleCitationClick: clobbering active tab: "
         << url;
@@ -2167,11 +2173,20 @@ void ContextualTasksUiService::OpenUrl(
         browser ? TabListInterface::From(browser) : nullptr;
     tabs::TabInterface* active_tab =
         tab_list ? tab_list->GetActiveTab() : nullptr;
-    if (active_tab && active_tab->GetContents()) {
+    if (active_tab && active_tab->GetContents() &&
+        !IsContextualTasksUrl(
+            active_tab->GetContents()->GetLastCommittedURL())) {
+      if (auto* controller = ContextualTasksPanelController::From(browser)) {
+        if (auto current_task = controller->GetCurrentTask()) {
+          AssociateWebContentsToTask(active_tab->GetContents(),
+                                     current_task->GetTaskId());
+        }
+      }
       OMNIBOX_LOG("nav_trace") << "ContextualTasks navigation trace: OpenUrl "
                                   "clobbering active tab: "
                                << url;
       content::NavigationController::LoadURLParams load_params(url_params);
+      load_params.frame_tree_node_id = content::FrameTreeNodeId();
       load_params.override_user_agent =
           content::NavigationController::UA_OVERRIDE_TRUE;
       load_params.transition_type = ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL;

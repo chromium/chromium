@@ -5397,6 +5397,8 @@ TEST_F(ContextualTasksUiServiceTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kContextualTasksClobberActiveTab);
 
+  auto source_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
   tabs::MockTabInterface active_tab;
@@ -5413,6 +5415,8 @@ TEST_F(ContextualTasksUiServiceTest,
       content::OpenURLParams::CreateBrowserInitiated(
           target_url, WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
+  params.frame_tree_node_id =
+      source_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId();
 
   real_service_->OpenUrlForTesting(params, blink::mojom::WindowFeatures(),
                                    &browser);

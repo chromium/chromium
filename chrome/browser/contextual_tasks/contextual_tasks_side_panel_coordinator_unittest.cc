@@ -1130,6 +1130,44 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
       "ContextualTasks.Session.Duration.EphemeralToolbarButton", 1);
 }
 
+TEST_F(
+    ContextualTasksSidePanelCoordinatorTest,
+    Close_ScopedToTab_ClosedOnAllTabs_KeepsPanelClosedForNewlyAssociatedTab) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{kContextualTasksSidePanelTabState, {}},
+       {kContextualTasksEphemeralBrandedEntryPoint,
+        {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}}},
+      {});
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  tabs::TabInterface* tab_a = tab_list_->GetActiveTab();
+  tabs::TabInterface* tab_b = CreateMockTab();
+  SessionID tab_a_id =
+      sessions::SessionTabHelper::IdForTab(tab_a->GetContents());
+  SessionID tab_b_id =
+      sessions::SessionTabHelper::IdForTab(tab_b->GetContents());
+
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+  ON_CALL(*mock_controller_, GetTabsAssociatedWithTask(task.GetTaskId()))
+      .WillByDefault(Return(std::vector<SessionID>{tab_a_id}));
+  CreateCachedWebContentsForTesting(task.GetTaskId(), /*is_open=*/true);
+  SetActiveTab(tab_a);
+  UpdateWebContentsForActiveTab();
+
+  // Close the panel on the only associated tab of the task.
+  coordinator_->Close();
+  EXPECT_FALSE(ShouldBeOpen());
+
+  // If a second tab is later associated with the task while no tab has an open
+  // panel, switching to that second tab should keep the panel closed.
+  ON_CALL(*mock_controller_, GetTabsAssociatedWithTask(task.GetTaskId()))
+      .WillByDefault(Return(std::vector<SessionID>{tab_a_id, tab_b_id}));
+  SetActiveTab(tab_b);
+  EXPECT_FALSE(ShouldBeOpen());
+}
+
 TEST_F(ContextualTasksSidePanelCoordinatorTest,
        Close_TabStateDisabled_ClosesPanelOnAllTabsOfTask) {
   base::test::ScopedFeatureList feature_list;

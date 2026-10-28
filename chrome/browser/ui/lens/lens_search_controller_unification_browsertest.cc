@@ -31,6 +31,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/pwn_open_url_helper.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -102,7 +103,7 @@ class LensSearchControllerUnificationBrowserTest : public InProcessBrowserTest {
         {{contextual_tasks::kContextualTasks, {}},
          {lens::features::kLensSidePanelUnification,
           {{"allow-signed-out", "true"}}}},
-        {});
+        {contextual_tasks::kContextualTasksClobberActiveTab});
     InProcessBrowserTest::SetUp();
   }
 
@@ -228,14 +229,36 @@ class LensSearchControllerUnificationBrowserTest : public InProcessBrowserTest {
                  .ExtractString() == "complete";
     }));
 
-    // Now, we want to watch for a new tab.
-    ui_test_utils::AllBrowserTabAddedWaiter tab_waiter;
-
-    // Trigger window.open in the webview.
     GURL target_url = embedded_test_server()->GetURL("/title1.html");
     std::string open_script =
         base::StringPrintf("window.open('%s')", target_url.spec().c_str());
 
+    if (contextual_tasks::IsContextualTasksClobberActiveTabEnabled()) {
+      content::WebContents* active_contents =
+          browser()->GetTabStripModel()->GetActiveWebContents();
+      ASSERT_TRUE(active_contents);
+      int initial_tab_count = browser()->GetTabStripModel()->count();
+      content::TestNavigationObserver nav_observer(active_contents);
+
+      ASSERT_TRUE(
+          content::ExecJs(panel_wc, base::StringPrintf(R"(
+        const app = document.querySelector('contextual-tasks-app');
+        const webview = app ? app.shadowRoot.getElementById('threadFrame')
+                            : null;
+        webview.executeScript({code: "%s"});
+      )",
+                                                       open_script.c_str())));
+
+      nav_observer.Wait();
+      EXPECT_EQ(browser()->GetTabStripModel()->count(), initial_tab_count);
+      EXPECT_EQ(active_contents->GetVisibleURL(), target_url);
+      return;
+    }
+
+    // Now, we want to watch for a new tab.
+    ui_test_utils::AllBrowserTabAddedWaiter tab_waiter;
+
+    // Trigger window.open in the webview.
     ASSERT_TRUE(
         content::ExecJs(panel_wc, base::StringPrintf(R"(
       const app = document.querySelector('contextual-tasks-app');
@@ -424,6 +447,34 @@ IN_PROC_BROWSER_TEST_F(LensSearchControllerUnificationBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(LensSearchControllerUnificationBrowserTest,
                        LinkClickInPanelOpensNewTabWhenAimIneligible) {
+  VerifyLinkClickInPanelOpensNewTab(/*aim_eligible=*/false,
+                                    /*cobrowse_eligible=*/false);
+}
+
+class LensSearchControllerUnificationClobberActiveTabBrowserTest
+    : public LensSearchControllerUnificationBrowserTest {
+ public:
+  void SetUp() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{contextual_tasks::kContextualTasks, {}},
+         {contextual_tasks::kContextualTasksClobberActiveTab, {}},
+         {lens::features::kLensSidePanelUnification,
+          {{"allow-signed-out", "true"}}}},
+        {});
+    InProcessBrowserTest::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    LensSearchControllerUnificationClobberActiveTabBrowserTest,
+    LinkClickInPanelClobbersActiveTabWhenCobrowseIneligible) {
+  VerifyLinkClickInPanelOpensNewTab(/*aim_eligible=*/true,
+                                    /*cobrowse_eligible=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LensSearchControllerUnificationClobberActiveTabBrowserTest,
+    LinkClickInPanelClobbersActiveTabWhenAimIneligible) {
   VerifyLinkClickInPanelOpensNewTab(/*aim_eligible=*/false,
                                     /*cobrowse_eligible=*/false);
 }
