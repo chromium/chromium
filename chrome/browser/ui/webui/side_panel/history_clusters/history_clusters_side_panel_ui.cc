@@ -10,12 +10,10 @@
 #include "base/feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
-#include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/cr_components/history_clusters/history_clusters_util.h"
-#include "chrome/browser/ui/webui/cr_components/history_embeddings/history_embeddings_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/history_clusters/history_clusters_handler.h"
 #include "chrome/common/url_constants.h"
@@ -26,7 +24,6 @@
 #include "chrome/grit/side_panel_shared_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/history_clusters/core/features.h"
-#include "components/history_embeddings/core/history_embeddings_features.h"
 #include "components/page_image_service/image_service.h"
 #include "components/page_image_service/image_service_handler.h"
 #include "components/strings/grit/components_strings.h"
@@ -71,12 +68,6 @@ HistoryClustersSidePanelUI::HistoryClustersSidePanelUI(content::WebUI* web_ui)
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
-
-  source->AddBoolean(
-      "enableHistoryEmbeddings",
-      history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile) &&
-          history_embeddings::GetFeatureParameters().enable_side_panel);
-  history_embeddings::PopulateSourceForWebUI(source, profile);
 
   webui::SetupWebUIDataSource(
       source, kSidePanelHistoryClustersResources,
@@ -127,23 +118,6 @@ void HistoryClustersSidePanelUI::BindInterface(
   image_service_handler_ =
       std::make_unique<page_image_service::ImageServiceHandler>(
           std::move(pending_page_handler), std::move(image_service_weak));
-}
-
-void HistoryClustersSidePanelUI::BindInterface(
-    mojo::PendingReceiver<history_embeddings::mojom::PageHandlerFactory>
-        pending_page_handler_factory) {
-  history_embeddings_handler_factory_receiver_.reset();
-  history_embeddings_handler_factory_receiver_.Bind(
-      std::move(pending_page_handler_factory));
-}
-
-void HistoryClustersSidePanelUI::CreatePageHandler(
-    mojo::PendingRemote<history_embeddings::mojom::Page> page,
-    mojo::PendingReceiver<history_embeddings::mojom::PageHandler> receiver) {
-  history_embeddings_handler_ = std::make_unique<HistoryEmbeddingsHandler>(
-      std::move(receiver), std::move(page),
-      Profile::FromWebUI(web_ui())->GetWeakPtr(), web_ui(),
-      /*for_side_panel=*/true);
 }
 
 base::WeakPtr<HistoryClustersSidePanelUI>

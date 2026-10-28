@@ -19,15 +19,12 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/resources/cr_components/history/history.mojom-forward.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom.h"
-#include "ui/webui/resources/cr_components/history_embeddings/history_embeddings.mojom.h"
 
 class BrowsingHistoryHandler;
 
 namespace history_clusters {
 class HistoryClustersHandler;
 }
-
-class HistoryEmbeddingsHandler;
 
 namespace page_image_service {
 class ImageServiceHandler;
@@ -52,7 +49,6 @@ class HistorySidePanelUIConfig
 };
 
 class HistorySidePanelUI : public TopChromeWebUIController,
-                           public history_embeddings::mojom::PageHandlerFactory,
                            public history_clusters::mojom::PageHandlerFactory {
  public:
   explicit HistorySidePanelUI(content::WebUI* web_ui);
@@ -70,9 +66,6 @@ class HistorySidePanelUI : public TopChromeWebUIController,
   void BindInterface(
       mojo::PendingReceiver<page_image_service::mojom::PageImageServiceHandler>
           pending_page_handler);
-  void BindInterface(
-      mojo::PendingReceiver<history_embeddings::mojom::PageHandlerFactory>
-          pending_page_handler_factory);
 
   // Gets a weak pointer to this object.
   base::WeakPtr<HistorySidePanelUI> GetWeakPtr();
@@ -94,23 +87,14 @@ class HistorySidePanelUI : public TopChromeWebUIController,
       history_clusters_handler_;
   std::unique_ptr<page_image_service::ImageServiceHandler>
       image_service_handler_;
-  // history_embeddings::mojom::PageHandlerFactory:
-  void CreatePageHandler(
-      mojo::PendingRemote<history_embeddings::mojom::Page> page,
-      mojo::PendingReceiver<history_embeddings::mojom::PageHandler> receiver)
-      override;
   // history_clusters::mojom::PageHandlerFactory:
   void CreatePageHandler(
       mojo::PendingRemote<history_clusters::mojom::Page> page,
       mojo::PendingReceiver<history_clusters::mojom::PageHandler> receiver)
       override;
 
-  std::unique_ptr<HistoryEmbeddingsHandler> history_embeddings_handler_;
-
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
 
-  mojo::Receiver<history_embeddings::mojom::PageHandlerFactory>
-      history_embeddings_handler_factory_receiver_{this};
   mojo::Receiver<history_clusters::mojom::PageHandlerFactory>
       history_clusters_handler_factory_receiver_{this};
 

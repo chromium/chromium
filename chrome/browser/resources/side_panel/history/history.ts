@@ -5,7 +5,4 @@
 import './app.js';
 
 export {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
-export {browserProxyFactory as historyEmbeddingsBrowserProxyFactory} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
-export type {BrowserProxy as HistoryEmbeddingsBrowserProxy} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
-export {PageHandlerRemote as HistoryEmbeddingsPageHandlerRemote} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
 export type {HistoryAppElement} from './app.js';

@@ -14,7 +14,6 @@ source_set("history_clusters") {
     "//components/page_image_service",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
-    "//ui/webui/resources/cr_components/history_embeddings:mojo_bindings",
   ]
 }
 
@@ -24,7 +23,6 @@ source_set("impl") {
   deps = [
     "//base",
     "//chrome/app:command_ids",
-    "//chrome/browser/history_embeddings",
     "//chrome/browser/page_image_service",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/side_panel/history_clusters:resources",
@@ -32,12 +30,10 @@ source_set("impl") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/webui:favicon_source",
     "//chrome/browser/ui/webui/cr_components/history_clusters",
-    "//chrome/browser/ui/webui/cr_components/history_embeddings",
     "//chrome/browser/ui/webui/history_clusters",
     "//chrome/common",
     "//components/favicon_base",
     "//components/history_clusters/core",
-    "//components/history_embeddings/core",
     "//components/strings:components_strings",
     "//content/public/common",
     "//ui/webui",

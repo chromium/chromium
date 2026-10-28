@@ -288,27 +288,8 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
     }
   }
   if (history_embeddings::IsHistoryEmbeddingsFeatureEnabled()) {
-    if (history_clusters_service &&
-        history_clusters_service->is_journeys_feature_flag_enabled()) {
-      if (HistorySidePanelCoordinator::IsSupported()) {
-        RegisterWebUIControllerInterfaceBinder<
-            history_embeddings::mojom::PageHandlerFactory, HistoryUI,
-            HistorySidePanelUI>(map);
-      } else {
-        RegisterWebUIControllerInterfaceBinder<
-            history_embeddings::mojom::PageHandlerFactory, HistoryUI,
-            HistoryClustersSidePanelUI>(map);
-      }
-    } else {
-      if (HistorySidePanelCoordinator::IsSupported()) {
-        RegisterWebUIControllerInterfaceBinder<
-            history_embeddings::mojom::PageHandlerFactory, HistorySidePanelUI,
-            HistoryUI>(map);
-      } else {
-        RegisterWebUIControllerInterfaceBinder<
-            history_embeddings::mojom::PageHandlerFactory, HistoryUI>(map);
-      }
-    }
+    RegisterWebUIControllerInterfaceBinder<
+        history_embeddings::mojom::PageHandlerFactory, HistoryUI>(map);
   }
 
   if (HistorySidePanelCoordinator::IsSupported()) {
