@@ -24,8 +24,9 @@ using MappedType = typename Map::mapped_type;
 // Returns a pointer to the const value associated with the given key if it
 // exists, or null otherwise.
 template <typename Map, typename Key = Map::key_type>
-constexpr const internal::MappedType<Map>* FindOrNull(const Map& map,
-                                                      const Key& key) {
+[[nodiscard]] constexpr const internal::MappedType<Map>* FindOrNull(
+    const Map& map,
+    const Key& key) {
   auto it = map.find(key);
   return it != map.end() ? &it->second : nullptr;
 }
@@ -33,7 +34,8 @@ constexpr const internal::MappedType<Map>* FindOrNull(const Map& map,
 // Returns a pointer to the value associated with the given key if it exists, or
 // null otherwise.
 template <typename Map, typename Key = Map::key_type>
-constexpr internal::MappedType<Map>* FindOrNull(Map& map, const Key& key) {
+[[nodiscard]] constexpr internal::MappedType<Map>* FindOrNull(Map& map,
+                                                              const Key& key) {
   auto it = map.find(key);
   return it != map.end() ? &it->second : nullptr;
 }
@@ -48,7 +50,8 @@ template <typename Map,
           typename Key = Map::key_type,
           typename MappedElementType =
               std::pointer_traits<internal::MappedType<Map>>::element_type>
-constexpr MappedElementType* FindPtrOrNull(const Map& map, const Key& key) {
+[[nodiscard]] constexpr MappedElementType* FindPtrOrNull(const Map& map,
+                                                         const Key& key) {
   auto it = map.find(key);
   return it != map.end() ? base::to_address(it->second) : nullptr;
 }
