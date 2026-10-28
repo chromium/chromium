@@ -43,6 +43,8 @@ import org.chromium.support_lib_boundary.web.WebContentConfig;
 import org.chromium.support_lib_boundary.web.WebProviderFactoryBoundaryInterface;
 import org.chromium.support_lib_boundary.web.WebSurfaceEvent;
 import org.chromium.support_lib_boundary.web.util.WebFeatures;
+import org.chromium.support_lib_glue.WebApiCallLogger.WebApiCall;
+import org.chromium.support_lib_glue.WebApiCallLogger.WebComposeApiCall;
 
 import java.lang.reflect.InvocationHandler;
 import java.util.ArrayList;
@@ -400,11 +402,9 @@ public class SupportLibWebViewChromiumFactory
         ApiCall.SET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST,
         ApiCall.GET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST,
         ApiCall.NAVIGATION_GET_RESPONSE_HEADERS,
-        ApiCall.BUILD_WEB_CONTENT,
         ApiCall.NAVIGATION_GET_NAVIGATION_START_UPTIME_MILLIS,
         ApiCall.CREATE_SHARED_ARRAY_BUFFER,
         ApiCall.WEB_MESSAGE_PAYLOAD_GET_AS_SHARED_ARRAY_BUFFER,
-        ApiCall.CREATE_WEB_SURFACE,
         ApiCall.REDIRECT_PARAMETERS_GET_RESPONSE_HEADERS,
         ApiCall.REDIRECT_PARAMETERS_GET_STATUS_CODE,
         ApiCall.NAVIGATION_STATE_GET_URL,
@@ -649,11 +649,13 @@ public class SupportLibWebViewChromiumFactory
         int SET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST = 204;
         int GET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST = 205;
         int NAVIGATION_GET_RESPONSE_HEADERS = 206;
-        int BUILD_WEB_CONTENT = 207;
+        // Moved to WebApiCallLogger.WebApiCall.BUILD_WEB_CONTENT.
+        @Deprecated int BUILD_WEB_CONTENT = 207;
         int NAVIGATION_GET_NAVIGATION_START_UPTIME_MILLIS = 208;
         int CREATE_SHARED_ARRAY_BUFFER = 209;
         int WEB_MESSAGE_PAYLOAD_GET_AS_SHARED_ARRAY_BUFFER = 210;
-        int CREATE_WEB_SURFACE = 211;
+        // Moved to WebApiCallLogger.WebComposeApiCall.CREATE_WEB_SURFACE.
+        @Deprecated int CREATE_WEB_SURFACE = 211;
         int REDIRECT_PARAMETERS_GET_RESPONSE_HEADERS = 212;
         int REDIRECT_PARAMETERS_GET_STATUS_CODE = 213;
         int NAVIGATION_STATE_GET_URL = 214;
@@ -734,8 +736,9 @@ public class SupportLibWebViewChromiumFactory
     @Override
     public /* WebContentBoundaryInterface */ InvocationHandler buildWebContent(
             Consumer<BiConsumer<@WebContentConfig Integer, Object>> buildConfig) {
-        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.BUILD_WEB_CONTENT")) {
-            recordApiCall(ApiCall.BUILD_WEB_CONTENT);
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.Web.BUILD_WEB_CONTENT")) {
+            WebApiCallLogger.recordWebApiCall(WebApiCall.BUILD_WEB_CONTENT);
             WebContentBuilder builder = new WebContentBuilder();
             buildConfig.accept(builder);
             AwWebContent webContent = builder.build();
@@ -747,8 +750,9 @@ public class SupportLibWebViewChromiumFactory
     @Override
     public /* WebSurfaceBoundaryInterface */ InvocationHandler createWebSurface(
             BiConsumer<@WebSurfaceEvent Integer, @Nullable Object> eventListener) {
-        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.CREATE_WEB_SURFACE")) {
-            recordApiCall(ApiCall.CREATE_WEB_SURFACE);
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.WebCompose.CREATE_WEB_SURFACE")) {
+            WebApiCallLogger.recordWebComposeApiCall(WebComposeApiCall.CREATE_WEB_SURFACE);
             return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                     new SupportLibWebSurfaceAdapter(eventListener));
         }

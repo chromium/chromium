@@ -7075,6 +7075,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.AndroidX.Web.ApiCall"
+    enum="AndroidXWebApiCall" expires_after="never">
+<!-- expires-never: used in server pipeline to monitor WebView API usage -->
+
+  <owner>bewise@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records calls to WebView APIs backing the AndroidX androidx.web library
+    (e.g. WebContent). Logged each time a tracked method in
+    org.chromium.support_lib_boundary.web is called. Note that
+    androidx.web:web-compose also uses WebContent in addition to the WebSurface
+    APIs tracked by &quot;Android.WebView.AndroidX.WebCompose.ApiCall&quot;.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.AndroidX.WebCompose.ApiCall"
+    enum="AndroidXWebComposeApiCall" expires_after="never">
+<!-- expires-never: used in server pipeline to monitor WebView API usage -->
+
+  <owner>bewise@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records calls to WebSurface WebView APIs backing the AndroidX
+    androidx.web:web-compose library. Logged each time a tracked
+    WebSurface-related method in org.chromium.support_lib_boundary.web is
+    called.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.ApiCall" enum="WebViewApiCall"
     expires_after="never">
 <!-- expires-never: used in server pipeline to monitor WebView API usage -->

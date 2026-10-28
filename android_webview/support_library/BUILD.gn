@@ -55,6 +55,7 @@ android_library("support_lib_glue_java") {
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewRendererAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewRendererClientAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebkitToCompatConverterAdapter.java",
+    "java/src/org/chromium/support_lib_glue/WebApiCallLogger.java",
     "java/src/org/chromium/support_lib_glue/WebContentBuilder.java",
   ]
 

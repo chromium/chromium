@@ -748,6 +748,22 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="UNKNOWN_ERROR"/>
 </enum>
 
+<!-- LINT.IfChange(AndroidXWebApiCall) -->
+
+<enum name="AndroidXWebApiCall">
+  <int value="0" label="WebProviderFactory.buildWebContent"/>
+</enum>
+
+<!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/WebApiCallLogger.java:WebApiCall) -->
+
+<!-- LINT.IfChange(AndroidXWebComposeApiCall) -->
+
+<enum name="AndroidXWebComposeApiCall">
+  <int value="0" label="WebProviderFactory.createWebSurface"/>
+</enum>
+
+<!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/WebApiCallLogger.java:WebComposeApiCall) -->
+
 <enum name="AndroidXWebkitApiCall">
 <!-- LINT.IfChange(AndroidXWebkitApiCall) -->
 
@@ -995,11 +1011,11 @@ chromium-metrics-reviews@google.com.
   <int value="204" label="Profile.setCrossOriginIsolatedAllowList"/>
   <int value="205" label="Profile.getCrossOriginIsolatedAllowList"/>
   <int value="206" label="Navigation.getResponseHeaders"/>
-  <int value="207" label="WebViewProviderFactory.buildWebContent"/>
+  <int value="207" label="(Obsolete) WebViewProviderFactory.buildWebContent"/>
   <int value="208" label="Navigation.getNavigationStartUptimeMillis"/>
   <int value="209" label="WebViewCompat.createSharedArrayBuffer"/>
   <int value="210" label="WebMessagePayload.getAsSharedArrayBuffer"/>
-  <int value="211" label="WebViewProviderFactory.createWebSurface"/>
+  <int value="211" label="(Obsolete) WebViewProviderFactory.createWebSurface"/>
   <int value="212" label="NavigationRedirectParameters.getResponseHeaders"/>
   <int value="213" label="NavigationRedirectParameters.getStatusCode"/>
   <int value="214" label="NavigationState.getUrl"/>
