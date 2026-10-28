@@ -87,7 +87,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleTypeUse() {}
     return ::jni_zero::internal::CreateJavaJniUniquePtr(env, reinterpret_cast<jlong>(return_value.release()), _deleter).ReleaseLocal(); \
   }                                                                                                \
                                                                                                    \
-  JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleTypeUse_1makeRaw( \
+  JNI_ZERO_BOUNDARY_EXPORT int64_t Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleTypeUse_1makeRaw( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
     /* Lambda required to make "if constexpr" work properly. */                                    \
@@ -106,7 +106,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleTypeUse() {}
       }                                                                                            \
     };                                                                                             \
     ::jni_zero::JniRawPtr<::my::cpp::Define> return_value = dependent_context(0);                  \
-    return ::jni_zero::internal::CreateJavaJniRawPtr(env, reinterpret_cast<jlong>(return_value.get())).ReleaseLocal(); \
+    return ::jni_zero::internal::WrapRawPtr(reinterpret_cast<jlong>(return_value.get()));          \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleTypeUse_1useIt( \

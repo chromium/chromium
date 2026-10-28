@@ -4,7 +4,6 @@
 
 package org.jni_zero;
 
-import org.jni_zero.JniZero.SafePointersTracker;
 import org.jni_zero.internal.Nullable;
 
 /**
@@ -16,7 +15,7 @@ import org.jni_zero.internal.Nullable;
 class JniUniquePtrImpl<T extends JniTypeToken> extends JniPtrImplBase<T>
         implements JniUniquePtr<T> {
     private final long mDeleter;
-    private final @Nullable SafePointersTracker mTracker;
+    private final @Nullable Tracker mTracker;
 
     JniUniquePtrImpl(long nativePointer, long deleter) {
         this(nativePointer, deleter, null);
@@ -27,7 +26,8 @@ class JniUniquePtrImpl<T extends JniTypeToken> extends JniPtrImplBase<T>
         super(nativePointer);
         assert nativePointer != 0;
         mDeleter = deleter;
-        mTracker = JniZero.createSafePointersTracker(this, creationContext);
+        TrackerFactory factory = sTrackerFactory;
+        mTracker = factory == null ? null : factory.create(this, creationContext);
     }
 
     @Override

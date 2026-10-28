@@ -14,6 +14,7 @@
 #include "third_party/jni_zero/test/test_jni/SampleForAnnotationProcessor_jni.h"
 #include "third_party/jni_zero/test/test_jni/SampleForKotlinTests_jni.h"
 #include "third_party/jni_zero/test/test_jni/SampleForTests_jni.h"
+#include "third_party/jni_zero/test/test_jni/SampleSafePointersKotlin_jni.h"
 
 #if defined(__cpp_concepts) && __cpp_concepts >= 201907L
 // Tests for concepts.
@@ -228,6 +229,24 @@ static ScopedJavaLocalRef<jobject> JNI_SampleForKotlinTests_Any(
     const JavaRef<jobject>& o) {
   return nullptr;
 }
+
+static jni_zero::JniRawPtr<KotlinNativeObj>
+JNI_SampleSafePointersKotlin_BorrowRaw(JNIEnv* env) {
+  return nullptr;
+}
+
+static jni_zero::JniRawPtr<KotlinNativeObj>
+JNI_SampleSafePointersKotlin_MaybeBorrowRaw(JNIEnv* env) {
+  return nullptr;
+}
+
+static jni_zero::JniUniquePtr<KotlinNativeObj>
+JNI_SampleSafePointersKotlin_CreateOwned(JNIEnv* env) {
+  return nullptr;
+}
+
+static void JNI_SampleSafePointersKotlin_UseNullablePtr(JNIEnv* env,
+                                                        KotlinNativeObj* ptr) {}
 
 }  // namespace jni_zero::tests
 
@@ -448,9 +467,13 @@ int main() {
         env, typed_java_object->Get_mJavaField(env) + 1);
   }
 
+  jni_zero::tests::KotlinNativeObj kotlin_obj;
+  jni_zero::tests::Java_SampleSafePointersKotlin_onPtr(env, my_java_object,
+                                                       &kotlin_obj, nullptr);
   return 0;
 }
 
 DEFINE_JNI(SampleForAnnotationProcessor)
 DEFINE_JNI(SampleForKotlinTests)
 DEFINE_JNI(SampleForTests)
+DEFINE_JNI(SampleSafePointersKotlin)

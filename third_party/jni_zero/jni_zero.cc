@@ -425,11 +425,8 @@ ScopedJavaLocalRef<jobject> CreateJavaJniRawPtr(JNIEnv* env,
   if (!ptr) {
     return nullptr;
   }
-  if (internal::g_raw_ptr_wrap_fn) {
-    internal::g_raw_ptr_wrap_fn(static_cast<uintptr_t>(ptr));
-  }
   return Java_JniRawPtrImpl_Constructor(
-      env, ptr, CreationContextToJava(env, creation_context));
+      env, WrapRawPtr(ptr), CreationContextToJava(env, creation_context));
 }
 
 void ReleaseJavaJniPtr(JNIEnv* env, const JavaRef<jobject>& obj) {

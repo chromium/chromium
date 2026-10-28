@@ -31,8 +31,9 @@ class _Context:
         java_types.JavaClass('org/jni_zero/CheckDiscard'),
         java_types.JavaClass('org/jni_zero/JniTestInstanceHolder'),
     ]
-    if any(p.java_type.is_safe_pointer() for n in jni_obj.proxy_natives
-           for p in n.params):
+    if any(n.return_type.java_class == java_types.JNI_RAW_PTR_CLASS or any(
+        p.java_type.is_safe_pointer() for p in n.params)
+           for n in jni_obj.proxy_natives):
       imports.append(java_types.JNI_ZERO_INTERNAL_CLASS)
     if not is_per_file:
       imports.append(gen_jni_class)
@@ -58,8 +59,12 @@ override fun {native.name}({sig_params})""")
     if native.first_param_cpp_type:
       if not native.params[0].java_type.is_safe_pointer():
         sb(f'assert({native.params[0].name} != 0L)\n')
+    is_raw_ptr_ret = (
+        native.return_type.java_class == java_types.JNI_RAW_PTR_CLASS)
     if not native.return_type.is_void():
       sb('return ')
+    if is_raw_ptr_ret:
+      sb('JniZeroInternal.createRawPtr(')
     sb(method_fqn)
     with sb.param_list() as plist:
       for p in native.params:
@@ -69,8 +74,12 @@ override fun {native.name}({sig_params})""")
           plist.append(p.name)
       if native.needs_implicit_array_element_class_param:
         plist.append(_implicit_array_class_param(native, ctx.type_resolver))
-    # "as Any?" would be a "redundant cast" warning.
-    if not native.return_type.is_primitive() and return_type_str != 'Any?':
+    if is_raw_ptr_ret:
+      sb(')')
+    # "as Any?" (or casting createRawPtr's JniRawPtr<*>! to JniRawPtr<*>)
+    # would be a "redundant cast" warning.
+    if (not native.return_type.is_primitive() and not is_raw_ptr_ret
+        and return_type_str != 'Any?'):
       sb(f' as {return_type_str}')
     sb('\n')
 

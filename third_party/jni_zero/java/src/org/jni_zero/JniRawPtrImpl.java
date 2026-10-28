@@ -4,7 +4,6 @@
 
 package org.jni_zero;
 
-import org.jni_zero.JniZero.SafePointersTracker;
 import org.jni_zero.internal.Nullable;
 
 /**
@@ -13,7 +12,7 @@ import org.jni_zero.internal.Nullable;
  * <p>Enforces explicit lifecycle tracking and safe pointer invalidation.
  */
 class JniRawPtrImpl<T extends JniTypeToken> extends JniPtrImplBase<T> implements JniRawPtr<T> {
-    final @Nullable SafePointersTracker mTracker;
+    final @Nullable Tracker mTracker;
 
     JniRawPtrImpl(long nativePointer) {
         this(nativePointer, null);
@@ -23,7 +22,8 @@ class JniRawPtrImpl<T extends JniTypeToken> extends JniPtrImplBase<T> implements
     JniRawPtrImpl(long nativePointer, @Nullable String creationContext) {
         super(nativePointer);
         assert nativePointer != 0;
-        mTracker = JniZero.createSafePointersTracker(this, creationContext);
+        TrackerFactory factory = sTrackerFactory;
+        mTracker = factory == null ? null : factory.create(this, creationContext);
     }
 
     @Override
@@ -44,8 +44,9 @@ class JniRawPtrImpl<T extends JniTypeToken> extends JniPtrImplBase<T> implements
             }
             long ptr = mNativePtr;
             mNativePtr = 0;
-            if (JniZero.isRawPtrHooksEnabled()) {
-                CommonApisJni.get().releaseRawPtr(ptr);
+            RawPtrReleaser releaser = sRawPtrReleaser;
+            if (releaser != null) {
+                releaser.release(ptr);
             }
         }
     }

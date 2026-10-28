@@ -134,14 +134,11 @@ if (enable_java_templates && is_android) {
     supports_android = true
     sources = [
       "java/src/org/jni_zero/AccessedByNative.java",
-      "java/src/org/jni_zero/CalledByNative.java",
       "java/src/org/jni_zero/CalledByNativeForTesting.java",
       "java/src/org/jni_zero/CalledByNativeUnchecked.java",
       "java/src/org/jni_zero/CommonApis.java",
       "java/src/org/jni_zero/JNINamespace.java",
       "java/src/org/jni_zero/JniPtrImpl.java",
-      "java/src/org/jni_zero/JniRawPtr.java",
-      "java/src/org/jni_zero/JniRawPtrImpl.java",
       "java/src/org/jni_zero/JniTestInstancesSnapshot.java",
       "java/src/org/jni_zero/JniType.java",
       "java/src/org/jni_zero/JniUniquePtr.java",
@@ -149,25 +146,28 @@ if (enable_java_templates && is_android) {
       "java/src/org/jni_zero/JniZero.java",
       "java/src/org/jni_zero/NativeClassQualifiedName.java",
       "java/src/org/jni_zero/NativeMethods.java",
-      "java/src/org/jni_zero/UsedReflectively.java",
     ]
-    proguard_configs = [ "proguard.flags" ]
   }
 
   # Classes referenced by generated code.
   java_library("gendeps_java") {
     supports_android = true
     sources = [
+      "java/src/org/jni_zero/CalledByNative.java",
       "java/src/org/jni_zero/CheckDiscard.java",
       "java/src/org/jni_zero/JniPtr.java",
       "java/src/org/jni_zero/JniPtrImplBase.java",
+      "java/src/org/jni_zero/JniRawPtr.java",
+      "java/src/org/jni_zero/JniRawPtrImpl.java",
       "java/src/org/jni_zero/JniStaticTestMocker.java",
       "java/src/org/jni_zero/JniTestInstanceHolder.java",
       "java/src/org/jni_zero/JniTypeToken.java",
       "java/src/org/jni_zero/JniZeroInternal.java",
+      "java/src/org/jni_zero/UsedReflectively.java",
       "java/src/org/jni_zero/internal/NullUnmarked.java",
       "java/src/org/jni_zero/internal/Nullable.java",
     ]
+    proguard_configs = [ "proguard.flags" ]
   }
 
   java_annotation_processor("validator_processor") {

@@ -17,6 +17,22 @@ import org.jni_zero.internal.Nullable;
  * JniZeroInternal#getNativePtr(JniPtr)}.
  */
 abstract class JniPtrImplBase<T extends JniTypeToken> implements JniPtr<T> {
+    interface Tracker {
+        void destroy();
+    }
+
+    interface TrackerFactory {
+        @Nullable
+        Tracker create(Object target, @Nullable String creationContext);
+    }
+
+    interface RawPtrReleaser {
+        void release(long ptr);
+    }
+
+    static @Nullable TrackerFactory sTrackerFactory;
+    static @Nullable RawPtrReleaser sRawPtrReleaser;
+
     long mNativePtr;
 
     JniPtrImplBase(long nativePtr) {

@@ -71,6 +71,11 @@ class CPPClass {
   std::map<long, std::string> map_;
 };
 
+class KotlinNativeObj {
+ public:
+  void UsePtr(JNIEnv* env) {}
+};
+
 }  // namespace jni_zero::tests
 
 #endif  // _JNI_ZERO_SAMPLE_FOR_TESTS_H_

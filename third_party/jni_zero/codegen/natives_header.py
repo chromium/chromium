@@ -248,7 +248,7 @@ def entry_point_method(sb,
 
     if return_type.is_safe_pointer():
       # Construct the Java wrapper object on the native side and return it as
-      # a local ref.
+      # a local ref (or raw jlong for JniRawPtr, wrapped in the Java proxy).
       if return_type.java_class == java_types.JNI_UNIQUE_PTR_CLASS:
         sb('auto _deleter = return_value.deleter_address();\n')
         with sb.statement():
@@ -257,8 +257,8 @@ def entry_point_method(sb,
              '_deleter).ReleaseLocal()')
       elif return_type.java_class == java_types.JNI_RAW_PTR_CLASS:
         with sb.statement():
-          sb('return ::jni_zero::internal::CreateJavaJniRawPtr(env, '
-             'reinterpret_cast<jlong>(return_value.get())).ReleaseLocal()')
+          sb('return ::jni_zero::internal::WrapRawPtr('
+             'reinterpret_cast<jlong>(return_value.get()))')
       else:
         raise ValueError(
             'JniPtr cannot be a @NativeMethods return type; this should have '

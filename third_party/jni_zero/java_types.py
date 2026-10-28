@@ -431,7 +431,7 @@ class JavaType:
         num_generics = 1  # Parser drops Class<T> generics.
       if num_generics and (
           self.java_class.full_name_with_slashes.startswith('java/')
-          or self.is_safe_pointer()):
+          or self.java_class in (JNI_PTR_CLASS, JNI_RAW_PTR_CLASS)):
         ret += '<' + ', '.join(['*'] * num_generics) + '>'
     if self.nullable:
       ret += '?'
@@ -580,7 +580,10 @@ class JavaSignature:
 
   def to_proxy(self, *, unwrap_safe_pointers=False):
     """Converts to types used over JNI boundary."""
-    return_type = self.return_type.to_proxy()
+    if unwrap_safe_pointers and self.return_type.java_class == JNI_RAW_PTR_CLASS:
+      return_type = LONG
+    else:
+      return_type = self.return_type.to_proxy()
     param_list = self.param_list.to_proxy(
         unwrap_safe_pointers=unwrap_safe_pointers)
     return JavaSignature.from_params(return_type, param_list)
