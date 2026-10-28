@@ -32,8 +32,7 @@ BASE_FEATURE(kAppStoreBillingDebug, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAllowJITInstallationWhenAppIconIsMissing,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDelayNativePaymentAppScrimShow,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDelayNativePaymentAppScrimShow, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnforceFullDelegation, base::FEATURE_DISABLED_BY_DEFAULT);
 
