@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/embedder/home_modules/app_bundle_promo_ephemeral_module.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
@@ -36,6 +37,10 @@ class HomeModulesCardRegistryIOSTest : public testing::Test {
         profile_pref_service_.registry());
     HomeModulesCardRegistryIOS::RegisterLocalStatePrefs(
         local_state_pref_service_.registry());
+    profile_pref_service_.registry()->RegisterDictionaryPref(
+        kTipsSignalHistory);
+    local_state_pref_service_.registry()->RegisterDictionaryPref(
+        kTipsSignalHistory);
   }
 
  protected:
@@ -179,6 +184,33 @@ TEST_F(HomeModulesCardRegistryIOSTest,
   ExpectCardRegistered(
       registry_.get(), kTipsNotificationsEphemeralModule,
       {kNotOptInTipsNotifications, kTipsOptInPromptNotReceivedRecently});
+}
+
+// Tests that `HomeModulesCardRegistryIOS::ClearTipsPrefs` clears Tips prefs and
+// re-registers exhausted Tips modules when `HomeModulesCardRegistry::Create` is
+// called.
+TEST_F(HomeModulesCardRegistryIOSTest, TestClearTipsPrefs) {
+  registry_ = HomeModulesCardRegistry::Create(&profile_pref_service_,
+                                              &local_state_pref_service_);
+  for (int i = 0; i < kTipsEphemeralCardModuleMaxImpressionCount; ++i) {
+    registry_->NotifyCardShown(kLensEphemeralModuleSearchVariation);
+  }
+
+  // Without resetting, `kLensEphemeralModule` is no longer registered after
+  // reaching its max impression count.
+  registry_ = HomeModulesCardRegistry::Create(&profile_pref_service_,
+                                              &local_state_pref_service_);
+  EXPECT_THAT(ExtractCardNames(registry_->get_all_cards_by_priority()),
+              testing::Not(testing::Contains(kLensEphemeralModule)));
+
+  // After calling `ClearTipsPrefs`, `kLensEphemeralModule` prefs are cleared so
+  // the card is registered again on the next `Create()`.
+  HomeModulesCardRegistryIOS::ClearTipsPrefs(&profile_pref_service_,
+                                             &local_state_pref_service_);
+  registry_ = HomeModulesCardRegistry::Create(&profile_pref_service_,
+                                              &local_state_pref_service_);
+  EXPECT_THAT(ExtractCardNames(registry_->get_all_cards_by_priority()),
+              testing::Contains(kLensEphemeralModule));
 }
 
 }  // namespace segmentation_platform::home_modules

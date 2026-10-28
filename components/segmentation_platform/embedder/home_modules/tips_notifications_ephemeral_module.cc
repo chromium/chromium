@@ -53,6 +53,14 @@ void TipsNotificationsEphemeralModule::RegisterProfilePrefs(
 }
 
 // static
+void TipsNotificationsEphemeralModule::ClearProfilePrefs(
+    PrefService* profile_prefs) {
+  profile_prefs->ClearPref(
+      kTipsNotificationsEphemeralModuleImpressionCounterPref);
+  profile_prefs->ClearPref(kTipsNotificationsEphemeralModuleInteractedPref);
+}
+
+// static
 bool TipsNotificationsEphemeralModule::IsModuleLabel(std::string_view label) {
   return label == kTipsNotificationsEphemeralModule;
 }

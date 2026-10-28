@@ -52,6 +52,14 @@ void NTPCustomizationEphemeralModule::RegisterProfilePrefs(
 }
 
 // static
+void NTPCustomizationEphemeralModule::ClearProfilePrefs(
+    PrefService* profile_prefs) {
+  profile_prefs->ClearPref(
+      kNTPCustomizationEphemeralModuleImpressionCounterPref);
+  profile_prefs->ClearPref(kNTPCustomizationEphemeralModuleInteractedPref);
+}
+
+// static
 bool NTPCustomizationEphemeralModule::IsModuleLabel(std::string_view label) {
   return label == kNTPCustomizationEphemeralModule;
 }

@@ -62,6 +62,7 @@ BASE_FEATURE(kEnableThirdPartyKeyboardWorkaround,
              base::FEATURE_ENABLED_BY_DEFAULT);
 NSString* const kTipsMagicStackLensShopWithImage =
     @"TipsMagicStackLensShopWithImage";
+NSString* const kResetMagicStackTipsState = @"ResetMagicStackTipsState";
 NSString* const kUniversalOptOutEligibilityOverride =
     @"UniversalOptOutEligibilityOverride";
 NSString* const kInactiveTabsDemoMode = @"InactiveTabsDemoMode";
@@ -332,6 +333,16 @@ std::optional<int> GetForcedInactivityThresholdForSafetyCheckNotifications() {
 bool ShouldDisplayLensShopTipWithImage() {
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:kTipsMagicStackLensShopWithImage];
+}
+
+bool ShouldResetMagicStackTipsState() {
+  NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
+  bool value = [standardDefaults boolForKey:kResetMagicStackTipsState];
+  if (value) {
+    [standardDefaults setBool:NO forKey:kResetMagicStackTipsState];
+    [standardDefaults synchronize];
+  }
+  return value;
 }
 
 bool ShouldUseInactiveTabsDemoThreshold() {

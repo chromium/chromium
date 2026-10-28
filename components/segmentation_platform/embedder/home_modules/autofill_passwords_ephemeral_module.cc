@@ -59,6 +59,14 @@ void AutofillPasswordsEphemeralModule::RegisterProfilePrefs(
 }
 
 // static
+void AutofillPasswordsEphemeralModule::ClearProfilePrefs(
+    PrefService* profile_prefs) {
+  profile_prefs->ClearPref(
+      kAutofillPasswordsEphemeralModuleImpressionCounterPref);
+  profile_prefs->ClearPref(kAutofillPasswordsEphemeralModuleInteractedPref);
+}
+
+// static
 bool AutofillPasswordsEphemeralModule::IsModuleLabel(std::string_view label) {
   return label == kAutofillPasswordsEphemeralModule;
 }

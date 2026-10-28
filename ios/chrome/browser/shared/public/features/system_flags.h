@@ -149,6 +149,10 @@ std::optional<int> GetForcedInactivityThresholdForSafetyCheckNotifications();
 // image.
 bool ShouldDisplayLensShopTipWithImage();
 
+// Returns true if the Magic Stack Tips state should be reset on startup.
+// Calling this method resets the flag to false.
+bool ShouldResetMagicStackTipsState();
+
 // Whether Inactive Tabs should be in Demo mode, where tabs are
 // considered inactive after a minute.
 bool ShouldUseInactiveTabsDemoThreshold();

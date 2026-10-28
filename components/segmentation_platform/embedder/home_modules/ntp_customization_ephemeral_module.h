@@ -32,6 +32,9 @@ class NTPCustomizationEphemeralModule : public CardSelectionInfo {
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  // Clears the profile prefs for the `NTPCustomizationEphemeralModule`.
+  static void ClearProfilePrefs(PrefService* profile_prefs);
+
   // Returns `true` if the given label corresponds to a
   // `NTPCustomizationEphemeralModule` variation.
   static bool IsModuleLabel(std::string_view label);

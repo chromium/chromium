@@ -203,6 +203,22 @@ void HomeModulesCardRegistryIOS::RegisterProfilePrefs(
 }
 
 // static
+void HomeModulesCardRegistryIOS::ClearTipsPrefs(
+    PrefService* profile_prefs,
+    PrefService* local_state_prefs) {
+  AddressBarPositionEphemeralModule::ClearProfilePrefs(profile_prefs);
+  AutofillPasswordsEphemeralModule::ClearProfilePrefs(profile_prefs);
+  EnhancedSafeBrowsingEphemeralModule::ClearProfilePrefs(profile_prefs);
+  SavePasswordsEphemeralModule::ClearProfilePrefs(profile_prefs);
+  LensEphemeralModule::ClearProfilePrefs(profile_prefs);
+  NTPThemeEphemeralModule::ClearProfilePrefs(profile_prefs);
+  TipsNotificationsEphemeralModule::ClearProfilePrefs(profile_prefs);
+  NTPCustomizationEphemeralModule::ClearProfilePrefs(profile_prefs);
+  profile_prefs->ClearPref(kTipsSignalHistory);
+  local_state_prefs->ClearPref(kTipsSignalHistory);
+}
+
+// static
 bool HomeModulesCardRegistryIOS::IsEphemeralTipsModuleLabel(
     std::string_view label) {
   return AddressBarPositionEphemeralModule::IsModuleLabel(label) ||

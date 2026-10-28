@@ -137,6 +137,16 @@ void LensEphemeralModule::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 // static
+void LensEphemeralModule::ClearProfilePrefs(PrefService* profile_prefs) {
+  profile_prefs->ClearPref(kLensEphemeralModuleImpressionCounterPref);
+  profile_prefs->ClearPref(kLensEphemeralModuleInteractedPref);
+  profile_prefs->ClearPref(kLensEphemeralModuleSearchVariationInteractedPref);
+  profile_prefs->ClearPref(kLensEphemeralModuleShopVariationInteractedPref);
+  profile_prefs->ClearPref(
+      kLensEphemeralModuleTranslateVariationInteractedPref);
+}
+
+// static
 bool LensEphemeralModule::IsModuleLabel(std::string_view label) {
   return kLensEphemeralModuleVariationLabels.contains(label) ||
          label == kLensEphemeralModule;

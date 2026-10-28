@@ -31,6 +31,10 @@ class HomeModulesCardRegistryIOS : public HomeModulesCardRegistry {
   // Registers all the local state prefs needed for the iOS ephemeral cards.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
+  // Clears all profile and local-state prefs for the Magic Stack Tips modules.
+  static void ClearTipsPrefs(PrefService* profile_prefs,
+                             PrefService* local_state_prefs);
+
   // Returns `true` if the given `label` corresponds to any of the Tips
   // ephemeral module classes on iOS.
   static bool IsEphemeralTipsModuleLabel(std::string_view label);

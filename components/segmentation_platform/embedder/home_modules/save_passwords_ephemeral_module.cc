@@ -58,6 +58,13 @@ void SavePasswordsEphemeralModule::RegisterProfilePrefs(
 }
 
 // static
+void SavePasswordsEphemeralModule::ClearProfilePrefs(
+    PrefService* profile_prefs) {
+  profile_prefs->ClearPref(kSavePasswordsEphemeralModuleImpressionCounterPref);
+  profile_prefs->ClearPref(kSavePasswordsEphemeralModuleInteractedPref);
+}
+
+// static
 bool SavePasswordsEphemeralModule::IsModuleLabel(std::string_view label) {
   return label == kSavePasswordsEphemeralModule;
 }

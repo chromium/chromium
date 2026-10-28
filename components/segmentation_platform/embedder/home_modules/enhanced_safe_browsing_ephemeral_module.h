@@ -29,6 +29,9 @@ class EnhancedSafeBrowsingEphemeralModule : public CardSelectionInfo {
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  // Clears the profile prefs for the `EnhancedSafeBrowsingEphemeralModule`.
+  static void ClearProfilePrefs(PrefService* profile_prefs);
+
   // Returns `true` if the given label corresponds to an
   // `EnhancedSafeBrowsingEphemeralModule` variation.
   static bool IsModuleLabel(std::string_view label);

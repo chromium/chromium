@@ -57,6 +57,14 @@ void AddressBarPositionEphemeralModule::RegisterProfilePrefs(
 }
 
 // static
+void AddressBarPositionEphemeralModule::ClearProfilePrefs(
+    PrefService* profile_prefs) {
+  profile_prefs->ClearPref(
+      kAddressBarPositionEphemeralModuleImpressionCounterPref);
+  profile_prefs->ClearPref(kAddressBarPositionEphemeralModuleInteractedPref);
+}
+
+// static
 bool AddressBarPositionEphemeralModule::IsModuleLabel(std::string_view label) {
   return label == kAddressBarPositionEphemeralModule;
 }

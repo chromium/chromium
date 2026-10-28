@@ -59,6 +59,14 @@ void EnhancedSafeBrowsingEphemeralModule::RegisterProfilePrefs(
 }
 
 // static
+void EnhancedSafeBrowsingEphemeralModule::ClearProfilePrefs(
+    PrefService* profile_prefs) {
+  profile_prefs->ClearPref(
+      kEnhancedSafeBrowsingEphemeralModuleImpressionCounterPref);
+  profile_prefs->ClearPref(kEnhancedSafeBrowsingEphemeralModuleInteractedPref);
+}
+
+// static
 bool EnhancedSafeBrowsingEphemeralModule::IsModuleLabel(
     std::string_view label) {
   return label == kEnhancedSafeBrowsingEphemeralModule;

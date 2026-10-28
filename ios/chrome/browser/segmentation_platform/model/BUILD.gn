@@ -19,6 +19,7 @@ source_set("model") {
     "//components/prefs",
     "//components/segmentation_platform/embedder",
     "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/embedder/home_modules",
     "//components/segmentation_platform/embedder/home_modules:constants",
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal:optimization_guide_segmentation_handler",
@@ -38,6 +39,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile:incognito_session_tracker",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
   ]

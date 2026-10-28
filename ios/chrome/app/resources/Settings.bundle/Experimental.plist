@@ -444,6 +444,16 @@
 			<key>DefaultValue</key>
 			<false/>
 		</dict>
+        <dict>
+            <key>Type</key>
+            <string>PSToggleSwitchSpecifier</string>
+            <key>Title</key>
+            <string>Reset Magic Stack Tips State</string>
+            <key>Key</key>
+            <string>ResetMagicStackTipsState</string>
+            <key>DefaultValue</key>
+            <false/>
+        </dict>
 		<dict>
 			<key>DefaultValue</key>
 			<false/>

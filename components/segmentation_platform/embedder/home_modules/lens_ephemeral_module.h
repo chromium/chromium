@@ -37,6 +37,9 @@ class LensEphemeralModule : public CardSelectionInfo {
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  // Clears the profile prefs for the `LensEphemeralModule`.
+  static void ClearProfilePrefs(PrefService* profile_prefs);
+
   // Returns `true` if the given label corresponds to a
   // `LensEphemeralModule` variation.
   static bool IsModuleLabel(std::string_view label);

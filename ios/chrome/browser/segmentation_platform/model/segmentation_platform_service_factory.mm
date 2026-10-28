@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 
+#import <string_view>
 #import <utility>
 
 #import "base/feature_list.h"
@@ -16,8 +17,10 @@
 #import "base/task/thread_pool.h"
 #import "base/time/default_clock.h"
 #import "components/pref_registry/pref_registry_syncable.h"
+#import "components/prefs/pref_service.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
+#import "components/segmentation_platform/embedder/home_modules/home_modules_card_registry_ios.h"
 #import "components/segmentation_platform/embedder/input_delegate/shopping_service_input_delegate.h"
 #import "components/segmentation_platform/embedder/input_delegate/tab_rank_dispatcher.h"
 #import "components/segmentation_platform/embedder/input_delegate/tab_session_source.h"
@@ -38,6 +41,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/incognito_session_tracker.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -133,6 +137,11 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
   params->ukm_data_manager =
       UkmDatabaseClientHolder::GetClientInstance(profile).GetUkmDataManager();
   params->profile_prefs = profile->GetPrefs();
+
+  if (experimental_flags::ShouldResetMagicStackTipsState()) {
+    home_modules::HomeModulesCardRegistryIOS::ClearTipsPrefs(
+        profile->GetPrefs(), GetApplicationContext()->GetLocalState());
+  }
 
   auto home_modules_card_registry =
       home_modules::HomeModulesCardRegistry::Create(

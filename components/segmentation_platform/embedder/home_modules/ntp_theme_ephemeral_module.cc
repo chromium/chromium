@@ -52,6 +52,12 @@ void NTPThemeEphemeralModule::RegisterProfilePrefs(
 }
 
 // static
+void NTPThemeEphemeralModule::ClearProfilePrefs(PrefService* profile_prefs) {
+  profile_prefs->ClearPref(kNTPThemeEphemeralModuleImpressionCounterPref);
+  profile_prefs->ClearPref(kNTPThemeEphemeralModuleInteractedPref);
+}
+
+// static
 bool NTPThemeEphemeralModule::IsModuleLabel(std::string_view label) {
   return label == kNTPThemeEphemeralModule;
 }
