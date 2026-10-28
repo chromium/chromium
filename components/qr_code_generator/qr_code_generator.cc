@@ -36,7 +36,7 @@ base::expected<GeneratedCode, Error> GenerateCode(
     return base::unexpected(Error::kUnknownError);
   }
 
-  rs_std::SliceRef<const uint8_t> rs_in(in);
+  rs::SliceRef<const uint8_t> rs_in(in);
   auto result = ::qr_code::QrCode::new_(rs_in);
   if (!result.has_value()) {
     return base::unexpected(RustErrorToCppError(result.err()));

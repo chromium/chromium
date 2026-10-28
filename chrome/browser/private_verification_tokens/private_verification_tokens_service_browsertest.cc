@@ -179,7 +179,7 @@ class PrivateVerificationTokensEndToEndBrowserTest
       if (decoded.has_value()) {
         redemption_count_++;
         auto metadata = test_issuer_->verify_wire_token(
-            rs_std::SliceRef<const uint8_t>(*decoded));
+            rs::SliceRef<const uint8_t>(*decoded));
         last_recovered_metadata_ =
             metadata.has_value() ? std::make_optional(*metadata) : std::nullopt;
       }
@@ -208,7 +208,7 @@ class PrivateVerificationTokensEndToEndBrowserTest
         last_issuance_request_accept_ = accept_it->second;
       }
       auto batch_response = test_issuer_->issue_batch_from_bytes(
-          rs_std::SliceRef<const uint8_t>(base::as_byte_span(request.content)),
+          rs::SliceRef<const uint8_t>(base::as_byte_span(request.content)),
           /*hidden_metadata=*/0);
       auto response = std::make_unique<net::test_server::BasicHttpResponse>();
       response->set_code(net::HTTP_OK);

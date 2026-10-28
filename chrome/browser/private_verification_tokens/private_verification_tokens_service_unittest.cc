@@ -893,7 +893,7 @@ TEST_F(PrivateVerificationTokensServiceEmptyDatabaseTest,
         }
 
         auto response = test_issuer().issue_batch_from_bytes(
-            rs_std::SliceRef<const uint8_t>(base::as_byte_span(request_body)),
+            rs::SliceRef<const uint8_t>(base::as_byte_span(request_body)),
             /*hidden_metadata=*/0);
         ASSERT_TRUE(response.has_value());
         test_url_loader_factory.AddResponse(
@@ -1007,7 +1007,7 @@ TEST_F(PrivateVerificationTokensServiceEmptyDatabaseTest,
           }
         }
         auto response = test_issuer().issue_batch_from_bytes(
-            rs_std::SliceRef<const uint8_t>(base::as_byte_span(request_body)),
+            rs::SliceRef<const uint8_t>(base::as_byte_span(request_body)),
             /*hidden_metadata=*/0);
         ASSERT_TRUE(response.has_value());
         test_url_loader_factory.AddResponse(
@@ -1098,7 +1098,7 @@ TEST_F(PrivateVerificationTokensServiceEmptyDatabaseTest,
           }
         }
         auto response = test_issuer().issue_batch_from_bytes(
-            rs_std::SliceRef<const uint8_t>(base::as_byte_span(request_body)),
+            rs::SliceRef<const uint8_t>(base::as_byte_span(request_body)),
             /*hidden_metadata=*/0);
         ASSERT_TRUE(response.has_value());
         test_url_loader_factory.AddResponse(
@@ -1268,7 +1268,7 @@ TEST_F(PrivateVerificationTokensServiceTest, MaybeFetchTokens_Metrics_Success) {
           }
         }
         auto response = test_issuer().issue_batch_from_bytes(
-            rs_std::SliceRef<const uint8_t>(base::as_byte_span(request_body)),
+            rs::SliceRef<const uint8_t>(base::as_byte_span(request_body)),
             /*hidden_metadata=*/0);
         ASSERT_TRUE(response.has_value());
         test_url_loader_factory.AddResponse(

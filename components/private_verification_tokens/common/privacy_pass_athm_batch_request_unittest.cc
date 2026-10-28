@@ -52,14 +52,14 @@ void VerifyFinalizedTokenMetadata(
     uint8_t expected_metadata) {
   EXPECT_EQ(finalized_token_bytes.size(), kSingleTokenSize);
   auto recovered_metadata = issuer.verify_wire_token(
-      rs_std::SliceRef<const uint8_t>(finalized_token_bytes));
+      rs::SliceRef<const uint8_t>(finalized_token_bytes));
   ASSERT_TRUE(recovered_metadata.has_value());
   EXPECT_EQ(*recovered_metadata, expected_metadata);
 }
 
 TEST(PrivacyPassAthmBatchRequestTest, RoundtripBatchIssuance) {
   auto issuer = PrivacyPassAthmIssuer::try_new(
-      kNumBuckets, rs_std::SliceRef<const uint8_t>(DeploymentIdBytes()));
+      kNumBuckets, rs::SliceRef<const uint8_t>(DeploymentIdBytes()));
   ASSERT_TRUE(issuer.has_value());
 
   constexpr int32_t kBatchSize = 10;
@@ -81,7 +81,7 @@ TEST(PrivacyPassAthmBatchRequestTest, RoundtripBatchIssuance) {
 
   const uint8_t hidden_metadata = 1;
   auto batch_response = issuer->issue_batch_from_bytes(
-      rs_std::SliceRef<const uint8_t>(batch_request->request_body()),
+      rs::SliceRef<const uint8_t>(batch_request->request_body()),
       hidden_metadata);
   ASSERT_TRUE(batch_response.has_value());
 
@@ -104,7 +104,7 @@ TEST(PrivacyPassAthmBatchRequestTest, RoundtripBatchIssuance) {
 
 TEST(PrivacyPassAthmBatchRequestTest, InvalidBatchParameters) {
   auto issuer = PrivacyPassAthmIssuer::try_new(
-      kNumBuckets, rs_std::SliceRef<const uint8_t>(DeploymentIdBytes()));
+      kNumBuckets, rs::SliceRef<const uint8_t>(DeploymentIdBytes()));
   ASSERT_TRUE(issuer.has_value());
 
   // Zero batch size.
@@ -134,7 +134,7 @@ TEST(PrivacyPassAthmBatchRequestTest, InvalidBatchParameters) {
 
 TEST(PrivacyPassAthmBatchRequestTest, SingleUseFinalization) {
   auto issuer = PrivacyPassAthmIssuer::try_new(
-      kNumBuckets, rs_std::SliceRef<const uint8_t>(DeploymentIdBytes()));
+      kNumBuckets, rs::SliceRef<const uint8_t>(DeploymentIdBytes()));
   ASSERT_TRUE(issuer.has_value());
 
   IssuerConfig issuer_config =
@@ -154,7 +154,7 @@ TEST(PrivacyPassAthmBatchRequestTest, SingleUseFinalization) {
       issuer_config.public_key.version());
 
   auto token_resp = issuer->issue_batch_from_bytes(
-      rs_std::SliceRef<const uint8_t>(batch_request->request_body()),
+      rs::SliceRef<const uint8_t>(batch_request->request_body()),
       /*hidden_metadata=*/1);
   ASSERT_TRUE(token_resp.has_value());
 
@@ -172,7 +172,7 @@ TEST(PrivacyPassAthmBatchRequestTest, SingleUseFinalization) {
 
 TEST(PrivacyPassAthmBatchRequestTest, MalformedResponseBody) {
   auto issuer = PrivacyPassAthmIssuer::try_new(
-      kNumBuckets, rs_std::SliceRef<const uint8_t>(DeploymentIdBytes()));
+      kNumBuckets, rs::SliceRef<const uint8_t>(DeploymentIdBytes()));
   ASSERT_TRUE(issuer.has_value());
 
   IssuerConfig issuer_config =

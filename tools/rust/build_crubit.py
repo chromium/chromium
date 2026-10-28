@@ -455,6 +455,23 @@ def GetNativeLibsRustFlags():
     ]
 
 
+def GetMacFrameworkRustFlags():
+    """Returns rustflags that link the macOS frameworks that Crubit needs.
+
+    `rs_bindings_from_cc` links Abseil, and Abseil's time zone code (used by
+    `absl::InitializeLog()`) needs CoreFoundation on macOS.  Crubit's cargo
+    build links the Abseil static libraries, but no macOS frameworks.
+    CoreFoundation is a system framework, so linking it into a binary that
+    does not use it is harmless.
+    """
+    if not IS_MAC:
+        return []
+    return [
+        '-Clink-arg=-framework',
+        '-Clink-arg=CoreFoundation',
+    ]
+
+
 def GetCrubitRustFlags():
     """Returns the Crubit-specific rustflags.
 
@@ -473,6 +490,7 @@ def GetCrubitRustFlags():
         GetRustcDriverRpathFlags()
         + GetCxxRuntimeRustFlags()
         + GetNativeLibsRustFlags()
+        + GetMacFrameworkRustFlags()
     )
 
 

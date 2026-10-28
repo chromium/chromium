@@ -98,7 +98,7 @@ source_set("my_cpp_code") {
 
 void foo() {
   // ...
-  rs_std::SliceRef<const uint8_t> rs_in(in);
+  rs::SliceRef<const uint8_t> rs_in(in);
   auto result = ::qr_code::QrCode::new_(rs_in);
   // ...
 }
@@ -218,9 +218,9 @@ but if needed other targets can depend on `//build/rust/crubit`.
 C++ bindings for Rust standard library are placed in a C++ namespace
 that corresponds to the original Rust crate as follows:
 
-* `std` crate => `rs_std` namespace
-* `alloc` crate => `rs_alloc` namespace
-* `core` crate => `rs_core` namespace
+* `std` crate => `rs::std` namespace
+* `alloc` crate => `rs::alloc` namespace
+* `core` crate => `rs::core` namespace
 
 The bindings can be `#include`d from the following paths:
 

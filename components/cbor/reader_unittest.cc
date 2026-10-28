@@ -1681,7 +1681,7 @@ TEST(CBORReaderRustTest, FfiStreamingDecoderSubmitsChunks) {
   // Test providing a CBOR text string:
   // 0x62 (Text string of length 2), 'b', 'b'
   std::vector<uint8_t> data = {0x62, 'b', 'b'};
-  rs_std::SliceRef<const uint8_t> slice(data);
+  rs::SliceRef<const uint8_t> slice(data);
   auto res = decoder.next_event(slice);
   ASSERT_TRUE(res.has_value());
   ASSERT_EQ(res.value().tag, cbor::rust::CborEvent::Tag::String);
@@ -1691,7 +1691,7 @@ TEST(CBORReaderRustTest, FfiStreamingDecoderSubmitsChunks) {
   // 0x44 (Byte string of length 4), 0x01, 0x02, 0x03, 0x04
   auto decoder2 = cbor::rust::Decoder::new_();
   std::vector<uint8_t> bytes_data = {0x44, 0x01, 0x02, 0x03, 0x04};
-  rs_std::SliceRef<const uint8_t> bytes_slice(bytes_data);
+  rs::SliceRef<const uint8_t> bytes_slice(bytes_data);
   auto res_b1 = decoder2.next_event(bytes_slice);
   ASSERT_TRUE(res_b1.has_value());
   ASSERT_EQ(res_b1.value().tag, cbor::rust::CborEvent::Tag::BytesStart);
@@ -1716,7 +1716,7 @@ TEST(CBORReaderRustTest, FfiStreamingDecoderIncompleteCborDataRollback) {
 
   // When incomplete, next_event returns IncompleteCborData without consuming
   // data:
-  rs_std::SliceRef<const uint8_t> partial_slice(str_partial);
+  rs::SliceRef<const uint8_t> partial_slice(str_partial);
   auto res = decoder.next_event(partial_slice);
   ASSERT_TRUE(res.has_value());
   EXPECT_EQ(res.value().tag, cbor::rust::CborEvent::Tag::NeedsMoreData);
@@ -1731,7 +1731,7 @@ TEST(CBORReaderRustTest, FfiStreamingDecoderAllowInvalidUtf8) {
   auto decoder = cbor::rust::Decoder::with_config(config);
 
   std::vector<uint8_t> data = {0x61, 0xFF};
-  rs_std::SliceRef<const uint8_t> slice(data);
+  rs::SliceRef<const uint8_t> slice(data);
   auto res = decoder.next_event(slice);
   ASSERT_TRUE(res.has_value());
   ASSERT_EQ(res.value().tag, cbor::rust::CborEvent::Tag::InvalidUtf8);

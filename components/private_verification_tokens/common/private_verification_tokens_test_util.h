@@ -36,7 +36,7 @@ inline std::optional<PrivacyPassAthmIssuer> CreateTestIssuer(
     std::string_view deployment_id) {
   auto res = PrivacyPassAthmIssuer::try_new(
       num_buckets,
-      rs_std::SliceRef<const uint8_t>(base::as_byte_span(deployment_id)));
+      rs::SliceRef<const uint8_t>(base::as_byte_span(deployment_id)));
   if (res.has_value()) {
     return std::move(*res);
   }

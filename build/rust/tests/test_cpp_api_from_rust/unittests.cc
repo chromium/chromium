@@ -15,8 +15,7 @@ TEST(RustCcBindingsFromRs, TestI32) {
 TEST(RustCcBindingsFromRs, TestChar) {
   char cpp_char = 'x';
   uint32_t cpp_char_as_int = static_cast<uint32_t>(cpp_char);
-  ::rs_std::char_ rust_char =
-      rust_lib::get_ascii_char_or_panic(cpp_char_as_int);
+  ::rs::char_ rust_char = rust_lib::get_ascii_char_or_panic(cpp_char_as_int);
   uint32_t rust_char_as_int = static_cast<uint32_t>(rust_char);
   EXPECT_EQ(rust_char_as_int, cpp_char_as_int);
 }

@@ -337,7 +337,7 @@ class WebBundleParser::MetadataParser
   std::optional<uint64_t> start_reading_offset_;
   ParseMetadataCallback result_callback_;
   ParsingCompleteCallback complete_callback_;
-  rs_std::Vec<rust::SectionOffsetEntry> metadata_sections_to_read_;
+  rs::Vec<rust::SectionOffsetEntry> metadata_sections_to_read_;
   uint64_t responses_section_offset_ = 0;
   uint64_t responses_section_length_ = 0;
   mojom::BundleMetadataPtr metadata_;

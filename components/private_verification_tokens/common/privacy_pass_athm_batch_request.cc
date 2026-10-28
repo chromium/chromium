@@ -27,11 +27,10 @@ PrivacyPassAthmBatchRequest::Create(const IssuerConfig& issuer_config,
   }
 
   auto client_result = PrivacyPassBatchClient::try_new(
-      rs_std::SliceRef<const uint8_t>(issuer_config.public_key.public_key()),
-      rs_std::SliceRef<const uint8_t>(
-          issuer_config.public_key.public_key_proof()),
+      rs::SliceRef<const uint8_t>(issuer_config.public_key.public_key()),
+      rs::SliceRef<const uint8_t>(issuer_config.public_key.public_key_proof()),
       num_buckets,
-      rs_std::SliceRef<const uint8_t>(
+      rs::SliceRef<const uint8_t>(
           base::as_byte_span(issuer_config.deployment_id)),
       issuer_config.public_key.version(),
       static_cast<size_t>(issuer_config.batch_size));
@@ -64,7 +63,7 @@ PrivacyPassAthmBatchRequest::Finalize(base::span<const uint8_t> response_body) {
 
   auto finalize_result =
       std::exchange(batch_client_, std::nullopt)
-          ->finalize(rs_std::SliceRef<const uint8_t>(response_body));
+          ->finalize(rs::SliceRef<const uint8_t>(response_body));
   if (!finalize_result.has_value()) {
     if (finalize_result.error() == AthmStatus::MakeInvalidInput()) {
       return base::unexpected(
