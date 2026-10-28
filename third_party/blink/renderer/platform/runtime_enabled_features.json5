@@ -769,7 +769,6 @@
     },
     {
       name: "AttributionReporting",
-      status: "stable",
       base_feature: "none",
       public: true,
     },
