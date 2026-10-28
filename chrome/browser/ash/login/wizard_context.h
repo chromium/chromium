@@ -14,6 +14,7 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
+#include "components/account_id/account_id.h"
 
 class PrefService;
 
@@ -305,6 +306,9 @@ class WizardContext {
   // should be updated before showing the GAIA screen. If the GAIA screen is
   // already shown, a call to reload GAIA webview may be necessary.
   GaiaConfig gaia_config;
+
+  // Account ID of the user going through onboarding or post-login OOBE screens.
+  std::optional<AccountId> onboarding_account_id;
 };
 
 // Returns |true| if this is an OOBE flow after enterprise enrollment.

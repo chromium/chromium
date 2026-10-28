@@ -95,6 +95,7 @@
 #include "chrome/browser/ash/login/signin/token_handle_store.h"
 #include "chrome/browser/ash/login/signin/token_handle_store_factory.h"
 #include "chrome/browser/ash/login/startup_utils.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/net/alwayson_vpn_pre_connect_url_allowlist_service.h"
 #include "chrome/browser/ash/net/alwayson_vpn_pre_connect_url_allowlist_service_factory.h"
@@ -1984,8 +1985,14 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
 
   if (start_session_type_ == StartSessionType::kPrimary) {
     user_manager::KnownUser known_user(&local_state_.get());
-    const AccountId account_id =
-        ProfileHelper::Get()->GetUserByProfile(profile)->GetAccountId();
+    const AccountId account_id = CHECK_DEREF(
+        ash::AnnotatedAccountId::Get(profile->GetOriginalProfile()));
+    if (auto* host = LoginDisplayHost::default_host();
+        host && host->GetWizardContext()) {
+      WizardContext& wizard_context = *host->GetWizardContext();
+      CHECK(!wizard_context.onboarding_account_id.has_value());
+      wizard_context.onboarding_account_id = account_id;
+    }
     std::string pending_screen =
         known_user.GetPendingOnboardingScreen(account_id);
     if (!pending_screen.empty() &&
