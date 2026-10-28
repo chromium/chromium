@@ -3611,6 +3611,11 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     SetFontDescription(description);
   }
 
+  // -internal-unbounded
+  bool IsUnboundedElementActive() const {
+    return InternalUnbounded() == EInternalUnbounded::kActive;
+  }
+
   // z-index
   void SetZIndex(int v) {
     SetHasAutoZIndexInternal(false);

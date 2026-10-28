@@ -1511,6 +1511,111 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, DynamicBoundsSync) {
   }
 }
 
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, NestedOutOfFlowBoundsSync) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  std::string script = R"(
+    document.body.innerHTML = `
+      <div id="parent" unbounded
+           style="width:100px; height:100px; position:relative;">
+        <div id="child" style="width:100px; height:100px; position:absolute;
+             top:0; left:100px; z-index:1; display:none;"></div>
+        <div id="hidden_container" style="visibility:hidden; display:none;">
+          <div id="visible_grandchild"
+               style="width:100px; height:100px; position:absolute;
+               top:0; left:200px; visibility:visible;"></div>
+        </div>
+        <div id="hidden_descendant"
+             style="width:100px; height:100px; position:absolute;
+             top:0; left:300px; visibility:hidden; display:none;"></div>
+      </div>
+    `;
+    const parent = document.getElementById('parent');
+    parent.showUnboundedElement();
+  )";
+
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
+  WaitForFrameReady();
+
+  UnboundedSurfaceWindow* window =
+      primary_main_frame_host()->GetUnboundedSurfaceWindow();
+  ASSERT_TRUE(window);
+
+  // Initial bounds should only be parent (100x100)
+  {
+    gfx::Rect bounds = window->GetBounds();
+    EXPECT_EQ(100, bounds.width());
+    EXPECT_EQ(100, bounds.height());
+  }
+
+  // Show nested out-of-flow child
+  std::string update_script = R"(
+    document.getElementById('child').style.display = 'block';
+  )";
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), update_script));
+
+  std::ignore = EvalJs(primary_main_frame_host(),
+                       "new Promise(r => requestAnimationFrame(() => "
+                       "requestAnimationFrame(r)))");
+
+  {
+    gfx::Rect bounds = window->GetBounds();
+    EXPECT_EQ(200, bounds.width());
+    EXPECT_EQ(100, bounds.height());
+  }
+
+  // Show hidden_container with visible_grandchild. Grandchild should expand
+  // bounds even though its intermediate parent is visibility:hidden.
+  std::string grandchild_script = R"(
+    document.getElementById('hidden_container').style.display = 'block';
+  )";
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), grandchild_script));
+
+  std::ignore = EvalJs(primary_main_frame_host(),
+                       "new Promise(r => requestAnimationFrame(() => "
+                       "requestAnimationFrame(r)))");
+
+  {
+    gfx::Rect bounds = window->GetBounds();
+    EXPECT_EQ(300, bounds.width());
+    EXPECT_EQ(100, bounds.height());
+  }
+
+  // Show hidden_descendant while it still has visibility:hidden. Bounds
+  // should NOT expand.
+  std::string hidden_script = R"(
+    document.getElementById('hidden_descendant').style.display = 'block';
+  )";
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), hidden_script));
+
+  std::ignore = EvalJs(primary_main_frame_host(),
+                       "new Promise(r => requestAnimationFrame(() => "
+                       "requestAnimationFrame(r)))");
+
+  {
+    gfx::Rect bounds = window->GetBounds();
+    EXPECT_EQ(300, bounds.width());
+    EXPECT_EQ(100, bounds.height());
+  }
+
+  // Make hidden_descendant visible. Now bounds should expand.
+  std::string make_visible_script = R"(
+    document.getElementById('hidden_descendant').style.visibility = 'visible';
+  )";
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), make_visible_script));
+
+  std::ignore = EvalJs(primary_main_frame_host(),
+                       "new Promise(r => requestAnimationFrame(() => "
+                       "requestAnimationFrame(r)))");
+
+  {
+    gfx::Rect bounds = window->GetBounds();
+    EXPECT_EQ(400, bounds.width());
+    EXPECT_EQ(100, bounds.height());
+  }
+}
+
 // TODO(crbug.com/534380085): Flaky/failing on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_NestedChildBoundsExpansionTriggersRedraw \

@@ -1279,7 +1279,8 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       (element && IsA<SVGForeignObjectElement>(*element)) || is_in_top_layer ||
       builder.StyleType() == kPseudoIdBackdrop ||
       builder.StyleType() == kPseudoIdViewTransition ||
-      IsCanvasWithContentDrawable(element)) {
+      IsCanvasWithContentDrawable(element) ||
+      builder.IsUnboundedElementActive()) {
     builder.SetForcesStackingContext(true);
   }
 

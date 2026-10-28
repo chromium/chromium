@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://crbug.com/508672616">
+<link rel="match" href="appearance-ref.html">
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/unbounded-utils.js"></script>
+
+<style>
+  div {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50px;
+    height: 200px;
+    background: green;
+  }
+  #wrapper {
+    top: 100px;
+    left: 100px;
+  }
+  #target {
+    position: static;
+    overflow: hidden;
+    line-height: 0;
+  }
+  #root_clipped_descendant {
+    position: relative;
+    z-index: 1;
+    left: 200px;
+    background: red;
+  }
+  #abspos {
+    left: 50px;
+    display: none;
+  }
+  #filtered_inline {
+    filter: drop-shadow(100px 0 0 green);
+  }
+  #inline_child {
+    display: inline-block;
+    width: 50px;
+    height: 200px;
+    background: green;
+  }
+  #hidden_container {
+    visibility: hidden;
+    display: none;
+  }
+  #visible_grandchild {
+    left: 100px;
+    visibility: visible;
+  }
+  #hidden_descendant {
+    left: 200px;
+    background: red;
+    visibility: hidden;
+    display: none;
+  }
+  #clipped_container {
+    width: 50px;
+    height: 50px;
+    overflow: hidden;
+  }
+  #clipped_descendant {
+    left: 200px;
+    background: red;
+  }
+  #cover {
+    top: 100px;
+    left: 100px;
+    width: 200px;
+    height: 200px;
+    background: red;
+  }
+</style>
+
+<div id="wrapper">
+  <div id="target" unbounded>
+    <div id="root_clipped_descendant"></div>
+    <div id="abspos">
+      <span id="filtered_inline"><span id="inline_child"></span></span>
+    </div>
+    <div id="hidden_container">
+      <div id="visible_grandchild"></div>
+    </div>
+    <div id="hidden_descendant"></div>
+    <div id="clipped_container">
+      <div id="clipped_descendant"></div>
+    </div>
+  </div>
+</div>
+<div id="cover"></div>
+
+<!--
+  The 200x200 red #cover at (100, 100) is covered by four 50x200 green strips:
+  1. x: 0..50   - #target itself (overflow: hidden, position: static).
+  2. x: 50..100  - #abspos (out-of-flow, escapes #target's overflow: hidden).
+  3. x: 100..150 - #visible_grandchild (inside visibility: hidden parent).
+  4. x: 150..200 - #filtered_inline's drop-shadow (tests filter overflow on an
+                   inline non-box descendant).
+
+  #root_clipped_descendant (position: relative, left: 200px) and
+  #clipped_descendant (inside #clipped_container, left: 200px) are clipped out
+  and must not expand the unbounded window to x: 300..350.
+-->
+
+<script>
+// Wait 10 animation frames after changing bounds to allow the renderer <-> browser
+// IPC round-trip for unbounded surface reallocation to complete.
+async function waitForFrames() {
+  for (let i = 0; i < 10; i++) {
+    await new Promise(requestAnimationFrame);
+  }
+}
+
+unbounded_appearance_test(async () => {
+  await showUnboundedElement(target);
+  await waitForFrames();
+
+  let beforetoggleHit = false;
+  target.addEventListener('beforetoggle', (e) => {
+    if (e.newState === 'closed') {
+      beforetoggleHit = true;
+      e.preventDefault();
+      abspos.style.display = 'block';
+      hidden_container.style.display = 'block';
+      hidden_descendant.style.display = 'block';
+    }
+  }, {once: true});
+
+  // Click at (325, 200), which is over #root_clipped_descendant (and
+  // #clipped_descendant) at left: 200px relative to #wrapper (x: 300..350).
+  // Because those descendants are clipped by #target and #clipped_container,
+  // (325, 200) must be outside the unbounded window bounds and trigger
+  // light-dismiss.
+  await new test_driver.Actions()
+      .pointerMove(325, 200, {origin: 'viewport'})
+      .pointerDown()
+      .pointerUp()
+      .send();
+
+  await waitForFrames();
+  visual_assert_true(beforetoggleHit, 'beforetoggle not fired');
+});
+</script>

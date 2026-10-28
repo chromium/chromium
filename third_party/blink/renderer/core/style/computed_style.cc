@@ -2953,6 +2953,9 @@ bool ComputedStyle::CalculateIsStackingContextWithoutContainment() const {
   if (ForcesStackingContext()) {
     return true;
   }
+  if (IsUnboundedElementActive()) {
+    return true;
+  }
   if (StyleType() == kPseudoIdBackdrop) {
     return true;
   }

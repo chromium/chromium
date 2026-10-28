@@ -103,6 +103,7 @@
 #include "third_party/blink/renderer/core/layout/grid_lanes/layout_grid_lanes.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_custom_scrollbar_part.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
@@ -2200,12 +2201,63 @@ bool DoesParentFrameAllowUnboundedElementEscape(const Frame* parent,
 
 }  // namespace
 
+static void ExpandUnboundedBoundsForDescendants(
+    const LayoutBoxModelObject& root,
+    const PaintLayer& layer,
+    PhysicalRect& overflow) {
+  for (const PaintLayer* child = layer.FirstChild(); child;
+       child = child->NextSibling()) {
+    const auto& child_object = child->GetLayoutObject();
+    if (child_object.Style().Visibility() == EVisibility::kVisible) {
+      // `MapToVisualRectInAncestorSpace` below already expands `child_rect` for
+      // filters when `child_object` is a box, but not when it is an inline.
+      // Avoid including filters here for boxes so filters aren't applied twice.
+      PhysicalRect child_rect =
+          child_object.IsBox()
+              ? child_object.VisualOverflowRect()
+              : child_object.VisualOverflowRectIncludingFilters();
+      if (child_object.MapToVisualRectInAncestorSpace(&root, child_rect)) {
+        // `MapToVisualRectInAncestorSpace` applies clips and scroll offsets for
+        // ancestors up to `root`, but does not apply `root`'s own clip or
+        // scroll offset. Apply them here if `root` is in `child_object`'s
+        // containing block chain.
+        if (const auto* root_box = DynamicTo<LayoutBox>(&root)) {
+          const LayoutObject* current = &child_object;
+          LayoutObject::AncestorSkipInfo skip_info(&root);
+          while (current) {
+            const LayoutObject* container = current->Container(&skip_info);
+            if (skip_info.AncestorSkipped() || !container) {
+              break;
+            }
+            if (container == &root) {
+              if (root_box->ContainedContentsScroll(*current)) {
+                child_rect.Move(-root_box->ScrolledContentOffset());
+              }
+              if (root_box->HasClipRelatedProperty()) {
+                child_rect.Intersect(root_box->ClippingRect());
+              }
+              break;
+            }
+            current = container;
+          }
+        }
+        overflow.Unite(child_rect);
+      }
+    }
+
+    ExpandUnboundedBoundsForDescendants(root, *child, overflow);
+  }
+}
+
 gfx::Rect LayoutObject::AbsoluteBoundingBoxRectForUnboundedElement() const {
   NOT_DESTROYED();
   DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
   gfx::Rect result;
   if (const auto* box_model = DynamicTo<LayoutBoxModelObject>(this)) {
     PhysicalRect overflow = box_model->VisualOverflowRectIncludingFilters();
+    if (const auto* layer = box_model->Layer()) {
+      ExpandUnboundedBoundsForDescendants(*box_model, *layer, overflow);
+    }
     // Intersect with the clip-path bounding box so that the browser-side window
     // bounds match the clipped/visible area of the element rather than its
     // unclipped layout size. This prevents size/origin mismatches in the

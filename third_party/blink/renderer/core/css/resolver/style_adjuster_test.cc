@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -554,6 +555,31 @@ TEST_F(StyleAdjusterTest, AdjustForCanvasDrawableDescendant) {
             GetLayoutObjectByElementId("immediate_span")->Style().Contain());
   EXPECT_EQ(kContainsNone,
             GetLayoutObjectByElementId("nested_span")->Style().Contain());
+}
+
+TEST_F(StyleAdjusterTest, UnboundedElementForcesStackingContext) {
+  ScopedUnboundedElementForTest unbounded_element_enabled(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id="target" style="width: 100px; height: 100px;"></div>
+  )HTML");
+
+  auto* html_element = To<HTMLElement>(GetElementById("target"));
+
+  EXPECT_FALSE(GetLayoutObjectByElementId("target")->IsStackingContext());
+
+  html_element->setAttribute(html_names::kUnboundedAttr, g_empty_atom);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetLayoutObjectByElementId("target")->IsStackingContext());
+
+  html_element->SetUnboundedElementActive(true,
+                                          UnboundedEvents::kFireNonCancelable);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetLayoutObjectByElementId("target")->IsStackingContext());
+
+  html_element->SetUnboundedElementActive(false,
+                                          UnboundedEvents::kFireNonCancelable);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetLayoutObjectByElementId("target")->IsStackingContext());
 }
 
 }  // namespace blink
