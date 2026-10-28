@@ -64,9 +64,9 @@ class HostedDomainFetcher {
   const raw_ptr<ChromeAccountManagerService> account_manager_;
 };
 
-std::unique_ptr<KeyedService> BuildManagedBookmarkModel(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildManagedBookmarkModel(ProfileIOS& profile) {
   return std::make_unique<bookmarks::ManagedBookmarkService>(
-      profile->GetPrefs(),
+      profile.GetPrefs(),
       base::BindRepeating(
           &HostedDomainFetcher::HostedDomainForPrimaryIdentity,
           std::make_unique<HostedDomainFetcher>(
@@ -77,7 +77,7 @@ std::unique_ptr<KeyedService> BuildManagedBookmarkModel(ProfileIOS* profile) {
 }  // namespace
 
 // static
-ManagedBookmarkServiceFactory::TestingFactory
+ManagedBookmarkServiceFactory::TestingFactoryByRef
 ManagedBookmarkServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildManagedBookmarkModel);
 }
@@ -92,6 +92,6 @@ ManagedBookmarkServiceFactory::ManagedBookmarkServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 ManagedBookmarkServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildManagedBookmarkModel(profile);
 }
