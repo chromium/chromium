@@ -4,6 +4,8 @@
 
 #include "chrome/browser/actor/actor_surface_impl.h"
 
+#include <memory>
+
 #include "base/check.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "content/public/browser/web_contents.h"
@@ -19,7 +21,9 @@ ActorSurfaceImpl::ActorSurfaceImpl(ActorSurfaceHandle handle,
 
 ActorSurfaceImpl::ActorSurfaceImpl(ActorSurfaceHandle handle,
                                    content::WebContents* headless_contents)
-    : handle_(handle), headless_contents_(headless_contents) {
+    : handle_(handle),
+      headless_contents_(headless_contents),
+      actor_tab_data_(std::make_unique<ActorTabData>()) {
   CHECK(headless_contents_);
   ActorSurfaceHandle::Register(handle_, this);
 }
@@ -57,18 +61,20 @@ ActorTabData* ActorSurfaceImpl::GetActorTabData() const {
     CHECK(tab);
     return ActorTabData::From(tab);
   }
-  // TODO(b/567721071): Implement ActorTabData for headless surfaces.
-  return nullptr;
+  return actor_tab_data_.get();
 }
 
 void ActorSurfaceImpl::SetTab(tabs::TabHandle tab) {
   tab_ = tab;
   headless_contents_ = nullptr;
+  // The tab's own `ActorTabData` takes over.
+  actor_tab_data_.reset();
 }
 
 void ActorSurfaceImpl::SetHeadless() {
   headless_contents_ = GetWebContents();
   tab_.reset();
+  actor_tab_data_ = std::make_unique<ActorTabData>();
 }
 
 }  // namespace actor

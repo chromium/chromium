@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_ACTOR_SURFACE_IMPL_H_
 #define CHROME_BROWSER_ACTOR_ACTOR_SURFACE_IMPL_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
@@ -16,6 +17,8 @@ class WebContents;
 }  // namespace content
 
 namespace actor {
+
+class ActorTabData;
 
 // Holds either a tab handle or a headless WebContents, never both. Created,
 // owned, and mutated per-profile by ActorSurfaceRegistry. Registers its
@@ -58,6 +61,9 @@ class ActorSurfaceImpl final : public ActorSurface {
   // Set when this surface is backed by a headless WebContents; mutually
   // exclusive with `tab_`.
   raw_ptr<content::WebContents> headless_contents_ = nullptr;
+
+  // Set only when the surface has no tab; a tab keeps its own `ActorTabData`.
+  std::unique_ptr<ActorTabData> actor_tab_data_;
 };
 
 }  // namespace actor

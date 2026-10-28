@@ -783,7 +783,6 @@ void ActorKeyedService::RequestActorSurfaceObservation(
               }
 
               if (ActorSurface* actor_surface = actor_surface_handle.Get()) {
-                // Null for headless surfaces.
                 if (ActorTabData* tab_data = actor_surface->GetActorTabData()) {
                   tab_data->DidObserveContent(
                       fetch_result.annotated_page_content_result->proto,

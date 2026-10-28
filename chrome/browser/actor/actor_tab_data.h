@@ -23,10 +23,15 @@ namespace ui {
 class DomNodeGeometry;
 }
 
-// Represents a data that the actor service stores for a tab.
+// Represents data that the actor service stores for a tab, or for a surface
+// without a tab.
 class ActorTabData {
  public:
+  // Registers as user data on `tab`, so `From(tab)` finds it.
   explicit ActorTabData(tabs::TabInterface* tab);
+  // Data for a surface without a tab, owned by that surface. Not registered as
+  // user data; reach it through `From(ActorSurfaceHandle)`.
+  ActorTabData();
   ~ActorTabData();
 
   DECLARE_USER_DATA(ActorTabData);
@@ -58,7 +63,9 @@ class ActorTabData {
   std::unique_ptr<ui::DomNodeGeometry> last_observed_dom_node_geometry_;
   std::optional<gfx::Point> last_renderer_resolved_target_;
 
-  ::ui::ScopedUnownedUserData<ActorTabData> scoped_unowned_user_data_;
+  // Only set when the data belongs to a tab.
+  std::optional<::ui::ScopedUnownedUserData<ActorTabData>>
+      scoped_unowned_user_data_;
 };
 
 }  // namespace actor

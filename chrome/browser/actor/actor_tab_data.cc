@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/rand_util.h"
@@ -36,7 +37,11 @@ double ShouldRecordApcComparison() {
 DEFINE_USER_DATA(ActorTabData);
 
 ActorTabData::ActorTabData(tabs::TabInterface* tab)
-    : scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {}
+    : scoped_unowned_user_data_(std::in_place,
+                                tab->GetUnownedUserDataHost(),
+                                *this) {}
+
+ActorTabData::ActorTabData() = default;
 
 ActorTabData::~ActorTabData() = default;
 

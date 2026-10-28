@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_surface_impl.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -101,11 +103,23 @@ TEST_F(ActorSurfaceTest, TabBackedWithoutActorTabDataReturnsNull) {
   EXPECT_EQ(surface.GetActorTabData(), nullptr);
 }
 
-TEST_F(ActorSurfaceTest, HeadlessReturnsNullActorTabData) {
-  ActorSurfaceImpl surface(ActorSurfaceHandle::CreateForTesting(),
-                           web_contents());
+TEST_F(ActorSurfaceTest, WithoutTabOwnsActorTabData) {
+  const ActorSurfaceHandle handle = ActorSurfaceHandle::CreateForTesting();
+  ActorSurfaceImpl surface(handle, web_contents());
 
-  EXPECT_EQ(surface.GetActorTabData(), nullptr);
+  ActorTabData* tab_data = surface.GetActorTabData();
+  ASSERT_TRUE(tab_data);
+  EXPECT_EQ(ActorTabData::From(handle), tab_data);
+  EXPECT_EQ(tab_data->GetLastObservedPageContent(), nullptr);
+
+  optimization_guide::proto::AnnotatedPageContent content;
+  content.mutable_main_frame_data()->set_title("title");
+  tab_data->DidObserveContent(content, ApcSource::kActor);
+
+  const optimization_guide::proto::AnnotatedPageContent* observed =
+      ActorTabData::From(handle)->GetLastObservedPageContent();
+  ASSERT_TRUE(observed);
+  EXPECT_EQ(observed->main_frame_data().title(), "title");
 }
 
 }  // namespace
