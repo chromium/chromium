@@ -7800,6 +7800,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "omnibox-post-frame-autocomplete-start",
+    "owners": [ "pnoland@chromium.org", "chrome-mobile-search@google.com" ],
+    "expiry_milestone": 166
+  },
+  {
     "name": "omnibox-prefetch-selected-suggestions-omt-android",
     "owners": [
       "thesalsa@google.com",

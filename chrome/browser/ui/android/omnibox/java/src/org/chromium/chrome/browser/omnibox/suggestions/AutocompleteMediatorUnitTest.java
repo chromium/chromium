@@ -824,6 +824,7 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_POST_FRAME_AUTOCOMPLETE_START)
     public void onTextChanged_nonEmptyTextTriggersSuggestions() {
         GURL url = JUnitTestGURLs.BLUE_1;
         @PageClassification int pageClassification = PageClassification.BLANK;
@@ -840,6 +841,7 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_POST_FRAME_AUTOCOMPLETE_START)
     public void onTextChanged_cancelsPendingRequests() {
         GURL url = JUnitTestGURLs.BLUE_1;
         @PageClassification int pageClassification = PageClassification.BLANK;
@@ -854,6 +856,101 @@ public class AutocompleteMediatorUnitTest {
         session.getAutocompleteInput().setUserText("nottest");
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verifyAutocompleteStart(url, pageClassification, "nottest", 4, false);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_POST_FRAME_AUTOCOMPLETE_START)
+    public void onTextChanged_postFrameStart_triggersSuggestionsAfterNextFrame() {
+        GURL url = JUnitTestGURLs.BLUE_1;
+        @PageClassification int pageClassification = PageClassification.BLANK;
+        var session = createSession(url, url.getSpec(), pageClassification);
+        mMediator.beginInput(session);
+
+        when(mTextStateProvider.shouldAutocomplete()).thenReturn(true);
+        when(mTextStateProvider.getSelectionStart()).thenReturn(4);
+        when(mTextStateProvider.getSelectionEnd()).thenReturn(4);
+
+        session.getAutocompleteInput().setUserText("test");
+        // The request is deferred until the next frame has been produced; nothing should have
+        // been started synchronously.
+        verify(mAutocompleteController, never()).start(any(), any(), anyInt(), anyBoolean());
+
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        verifyAutocompleteStart(url, pageClassification, "test", 4, false);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_POST_FRAME_AUTOCOMPLETE_START)
+    public void onTextChanged_postFrameStart_coalescesEditsWithinFrame() {
+        GURL url = JUnitTestGURLs.BLUE_1;
+        @PageClassification int pageClassification = PageClassification.BLANK;
+        var session = createSession(url, url.getSpec(), pageClassification);
+        mMediator.beginInput(session);
+
+        when(mTextStateProvider.shouldAutocomplete()).thenReturn(true);
+        when(mTextStateProvider.getSelectionStart()).thenReturn(4);
+        when(mTextStateProvider.getSelectionEnd()).thenReturn(4);
+
+        session.getAutocompleteInput().setUserText("test");
+        session.getAutocompleteInput().setUserText("nottest");
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        // Only the most recent edit should result in an autocomplete request.
+        verifyAutocompleteStart(url, pageClassification, "nottest", 4, false);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_POST_FRAME_AUTOCOMPLETE_START)
+    public void onTextChanged_postFrameStart_endInputCancelsPendingRequest() {
+        GURL url = JUnitTestGURLs.BLUE_1;
+        @PageClassification int pageClassification = PageClassification.BLANK;
+        var session = createSession(url, url.getSpec(), pageClassification);
+        mMediator.beginInput(session);
+
+        when(mTextStateProvider.shouldAutocomplete()).thenReturn(true);
+        when(mTextStateProvider.getSelectionStart()).thenReturn(4);
+        when(mTextStateProvider.getSelectionEnd()).thenReturn(4);
+
+        session.getAutocompleteInput().setUserText("test");
+        mMediator.endInput();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        verify(mAutocompleteController, never()).start(any(), any(), anyInt(), anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_POST_FRAME_AUTOCOMPLETE_START)
+    public void onTextChanged_postFrameStart_reentrantEditSchedulesFollowUpRequest() {
+        GURL url = JUnitTestGURLs.BLUE_1;
+        @PageClassification int pageClassification = PageClassification.BLANK;
+        var session = createSession(url, url.getSpec(), pageClassification);
+        mMediator.beginInput(session);
+
+        when(mTextStateProvider.shouldAutocomplete()).thenReturn(true);
+        when(mTextStateProvider.getSelectionStart()).thenReturn(4);
+        when(mTextStateProvider.getSelectionEnd()).thenReturn(4);
+
+        // Simulate a text change arriving synchronously from within the autocomplete start, i.e.
+        // a new request being scheduled re-entrantly while the previous one is executing. Not
+        // currently reachable in production (the only caller is a user text change), but the
+        // scheduling contract should hold regardless of what the action does.
+        // The mediator passes the same mutable AutocompleteInput to every start() call, so record
+        // the text each call saw instead of capturing the shared argument.
+        List<String> startedUserTexts = new ArrayList<>();
+        doAnswer(
+                        inv -> {
+                            String userText = session.getAutocompleteInput().getUserText();
+                            startedUserTexts.add(userText);
+                            if ("test".equals(userText)) {
+                                session.getAutocompleteInput().setUserText("nottest");
+                            }
+                            return null;
+                        })
+                .when(mAutocompleteController)
+                .start(any(), any(), anyInt(), anyBoolean());
+
+        session.getAutocompleteInput().setUserText("test");
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        assertEquals(List.of("test", "nottest"), startedUserTexts);
     }
 
     @Test

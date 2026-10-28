@@ -272,6 +272,15 @@ public class OmniboxFeatures {
     public static final CachedFlag sResetSuggestionsScroll =
             newFlag(OmniboxFeatureList.RESET_SUGGESTIONS_SCROLL, FeatureState.DISABLED_IN_PROD);
 
+    /**
+     * Starts the typed-text autocomplete request right after the next frame is drawn rather than
+     * after a fixed delay. See b/578525544.
+     */
+    private static final CachedFlag sOmniboxPostFrameAutocompleteStart =
+            newFlag(
+                    OmniboxFeatureList.OMNIBOX_POST_FRAME_AUTOCOMPLETE_START,
+                    FeatureState.ENABLED_IN_TEST);
+
     public static final CachedFlag sOmniboxDisableTabsForCanvas =
             newFlag(
                     OmniboxFeatureList.OMNIBOX_DISABLE_TABS_FOR_CANVAS,
@@ -424,6 +433,14 @@ public class OmniboxFeatures {
      */
     public static boolean isZeroSuggestPrefetchOnPageLoadAndTabSwitchEnabled() {
         return sZeroSuggestPrefetchOnPageLoadAndTabSwitch.isEnabled();
+    }
+
+    /**
+     * Returns whether the typed-text autocomplete request should be started right after the next
+     * frame is drawn, rather than after a fixed delay.
+     */
+    public static boolean isPostFrameAutocompleteStartEnabled() {
+        return sOmniboxPostFrameAutocompleteStart.isEnabled();
     }
 
     /**

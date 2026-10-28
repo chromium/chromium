@@ -678,6 +678,13 @@ BASE_FEATURE(kServeJavaCachedZeroSuggest, ENABLED);
 // of the Omnibox suggestion list to the top during any re-layout.
 BASE_FEATURE(kResetSuggestionsScroll, DISABLED);
 
+// If enabled, the typed-text autocomplete request is started right after the
+// next frame is drawn (i.e. once the location bar has repainted with the new
+// character), rather than after a fixed 30ms delay. The fixed delay is the
+// single largest component of keystroke-to-suggestions latency
+// (b/578525544).
+BASE_FEATURE(kOmniboxPostFrameAutocompleteStart, DISABLED);
+
 // Kill switch for special handling for session-less voice search queries
 // (e.g. from NTP fakebox). This special case was added to address b/541295247.
 BASE_FEATURE(kOmniboxSessionlessVoiceSearch, ENABLED);
@@ -723,6 +730,7 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kAIMSuppressVerbatimMatch,
       &kAim3pEntrypoint,
       &kResetSuggestionsScroll,
+      &kOmniboxPostFrameAutocompleteStart,
       &kExactMatchFavicons,
       &kStarterPackExpansion,
       &kOmniboxSearchPrefetchOnEnterKeyDown,

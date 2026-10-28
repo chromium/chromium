@@ -3892,6 +3892,12 @@ inline constexpr char kOmniboxVoicePlateIntentDescription[] =
     "the Google app Voice Plate for voice capture and transcription, then "
     "navigates directly to the results";
 
+inline constexpr char kOmniboxPostFrameAutocompleteStartName[] =
+    "Omnibox post-frame autocomplete start";
+inline constexpr char kOmniboxPostFrameAutocompleteStartDescription[] =
+    "Starts the Omnibox autocomplete request right after the next frame is "
+    "drawn following a keystroke, instead of after a fixed 30ms delay.";
+
 inline constexpr char kContextualSearchBoxUsesContextualSearchProviderName[] =
     "Contextual search box uses contextual search provider";
 inline constexpr char

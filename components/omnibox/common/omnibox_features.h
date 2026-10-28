@@ -293,6 +293,9 @@ BASE_DECLARE_FEATURE(kSuppressIntermediateACUpdatesOnLowEndDevices);
 // Delay focusTab to prioritize navigation (https://crbug.com/374852568).
 BASE_DECLARE_FEATURE(kPostDelayedTaskFocusTab);
 BASE_DECLARE_FEATURE(kResetSuggestionsScroll);
+// If enabled, typed-text autocomplete requests are started right after the
+// next frame is drawn, instead of after a fixed 30ms delay.
+BASE_DECLARE_FEATURE(kOmniboxPostFrameAutocompleteStart);
 BASE_DECLARE_FEATURE(kOmniboxSessionlessVoiceSearch);
 BASE_DECLARE_FEATURE(kSuppressStatusIconDuringHttpNavigation);
 BASE_DECLARE_FEATURE(kOmniboxAndroidIntranetRedirect);

@@ -7181,6 +7181,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxVoicePlateIntentDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxVoicePlateIntent)},
 
+    {"omnibox-post-frame-autocomplete-start",
+     flag_descriptions::kOmniboxPostFrameAutocompleteStartName,
+     flag_descriptions::kOmniboxPostFrameAutocompleteStartDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxPostFrameAutocompleteStart)},
+
     {"omnibox-diagnostics", flag_descriptions::kOmniboxDiagnosticsName,
      flag_descriptions::kOmniboxDiagnosticsDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kDiagnostics,

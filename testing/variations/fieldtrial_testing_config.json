@@ -12538,6 +12538,21 @@
             ]
         }
     ],
+    "OmniboxPostFrameAutocompleteStart": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxPostFrameAutocompleteStart"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxPrefetchSelectedSuggestionsOmtAndroid": [
         {
             "platforms": [

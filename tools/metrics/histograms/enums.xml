@@ -10532,6 +10532,7 @@ from previous Chrome versions.
   <int value="-1346055284" label="WebSerialWiredDevicesAndroid:enabled"/>
   <int value="-1345931804" label="TabbedAppOverflowMenuIcons:disabled"/>
   <int value="-1345569802" label="GlicMessageFirstFre:enabled"/>
+  <int value="-1345489958" label="OmniboxPostFrameAutocompleteStart:disabled"/>
   <int value="-1345471133" label="JourneysOmniboxAction:enabled"/>
   <int value="-1344775211"
       label="SyncChromeOSExplicitPassphraseSharing:disabled"/>
@@ -11416,6 +11417,7 @@ from previous Chrome versions.
   <int value="-1083796957" label="(Obsolete) PermissionsAIv1:disabled"/>
   <int value="-1083736482" label="OmniboxCompactSuggestions:enabled"/>
   <int value="-1083547717" label="NotificationExpansionAnimation:disabled"/>
+  <int value="-1083517855" label="OmniboxPostFrameAutocompleteStart:enabled"/>
   <int value="-1083146397" label="AutofillTypeSpecificPopupWidth:enabled"/>
   <int value="-1082602234" label="ReadAnythingReadAloud:enabled"/>
   <int value="-1082472229" label="LauncherContinueSectionWithRecents:disabled"/>
