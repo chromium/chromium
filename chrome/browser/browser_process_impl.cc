@@ -58,6 +58,7 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/gpu/gpu_mode_manager.h"
+#include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/icon_manager.h"
 #include "chrome/browser/intranet_redirect_detector.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -1477,6 +1478,11 @@ void BrowserProcessImpl::StartAutoupdateTimer() {
 #if !BUILDFLAG(IS_CHROMEOS)
 activity_reporter::ActivityReporter* BrowserProcessImpl::activity_reporter() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!activity_reporter_ && headless::IsHeadlessMode()) {
+    // Headless Chrome is not user-visible, so its use must not be reported as
+    // active use of the browser.
+    activity_reporter_ = activity_reporter::CreateActivityReporterDisabled();
+  }
   if (!activity_reporter_) {
     activity_reporter_ = activity_reporter::CreateActivityReporter(
         base::BindRepeating(
