@@ -98,11 +98,16 @@ void AttemptUserExit() {
   PrefService* state = g_browser_process->local_state();
   if (state) {
     ash::BootTimesRecorder::Get()->OnLogoutStarted(state);
-
-    if (SetLocaleForNextStart(state)) {
-      TRACE_EVENT0("shutdown", "CommitPendingWrite");
-      state->CommitPendingWrite();
-    }
+    SetLocaleForNextStart(state);
+    // Flush kLogoutStartedLast and any locale update before asking
+    // session_manager to stop the session. ShutdownPreThreadsStop() and
+    // BrowserProcessImpl::StartTearDown() will write and flush Local State
+    // again later in teardown (via ImportantFileWriter's atomic temp-file
+    // rename, preserving kLogoutStartedLast), but session_manager SIGABRTs a
+    // browser that has not exited 3 s after SIGTERM, which can happen before
+    // those later flushes run.
+    TRACE_EVENT0("shutdown", "CommitPendingWrite");
+    state->CommitPendingWrite();
   }
   ash::SessionTerminationManager::SetSendStopRequestToSessionManager();
   // On ChromeOS, always terminate the browser, regardless of the result of
@@ -138,7 +143,7 @@ bool UpdatePending() {
          update_engine::UPDATED_NEED_REBOOT;
 }
 
-bool SetLocaleForNextStart(PrefService* local_state) {
+void SetLocaleForNextStart(PrefService* local_state) {
   // If a policy mandates the login screen locale, use it.
   ash::CrosSettings* cros_settings = ash::CrosSettings::Get();
   const base::ListValue* login_screen_locales = nullptr;
@@ -149,7 +154,7 @@ bool SetLocaleForNextStart(PrefService* local_state) {
     std::string login_screen_locale = login_screen_locales->front().GetString();
     local_state->SetString(language::prefs::kApplicationLocale,
                            login_screen_locale);
-    return true;
+    return;
   }
 
   // Login screen should show up in owner's locale.
@@ -160,10 +165,7 @@ bool SetLocaleForNextStart(PrefService* local_state) {
   if (!owner_locale.empty() && pref_locale != owner_locale &&
       !local_state->IsManagedPreference(language::prefs::kApplicationLocale)) {
     local_state->SetString(language::prefs::kApplicationLocale, owner_locale);
-    return true;
   }
-
-  return false;
 }
 
 void StopSession() {
