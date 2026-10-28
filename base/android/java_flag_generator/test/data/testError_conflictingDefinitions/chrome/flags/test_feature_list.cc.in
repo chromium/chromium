@@ -1,0 +1,11 @@
+namespace foo {
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+BASE_FEATURE(kFoo, "DesktopFoo", base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+BASE_FEATURE(kFoo, "MobileFoo", base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+const base::Feature* const kFeaturesExposedToJava[] = {&kFoo};
+static int64_t JNI_SampleFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
+}
+}  // namespace foo

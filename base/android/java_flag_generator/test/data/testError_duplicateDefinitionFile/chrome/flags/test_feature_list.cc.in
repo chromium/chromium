@@ -1,0 +1,8 @@
+// FEATURE_DEFINITION_FILE: //third_party/bar/bar_features.cc
+// FEATURE_DEFINITION_FILE: //third_party/bar/bar_features.cc
+namespace foo {
+const base::Feature* const kFeaturesExposedToJava[] = {&bar::kBarFeature};
+static int64_t JNI_SampleFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
+}
+}  // namespace foo

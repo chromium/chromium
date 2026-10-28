@@ -1,0 +1,14 @@
+// Uses the same FeatureMap as //chrome/flags/test_feature_list.cc.
+namespace more {
+
+BASE_FEATURE(kMoreFeature, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::Feature* const kFeaturesExposedToJava[] = {
+    &kMoreFeature,
+};
+
+static int64_t JNI_ChromeFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
+}
+
+}  // namespace more

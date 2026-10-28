@@ -1,0 +1,18 @@
+#include "components/foo/foo_features.h"
+
+// FEATURE_DEFINITION_FILE: //third_party/generated/generated_features.cc
+
+namespace foo {
+
+const base::Feature* const kFeaturesExposedToJava[] = {
+    &kFooFeature,
+    &kGeneratedFeature,
+    &kMissingFeature,
+    &bar::kOtherMissingFeature,
+};
+
+static int64_t JNI_SampleFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
+}
+
+}  // namespace foo

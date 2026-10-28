@@ -1,0 +1,2 @@
+// Searched even though it defines no exposed feature.
+BASE_FEATURE(kUnusedFeature, base::FEATURE_DISABLED_BY_DEFAULT);

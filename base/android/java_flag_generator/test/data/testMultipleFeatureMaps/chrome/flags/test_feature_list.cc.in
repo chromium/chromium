@@ -1,0 +1,13 @@
+namespace chrome {
+
+BASE_FEATURE(kChromeFeature, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::Feature* const kFeaturesExposedToJava[] = {
+    &kChromeFeature,
+};
+
+static int64_t JNI_ChromeFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
+}
+
+}  // namespace chrome

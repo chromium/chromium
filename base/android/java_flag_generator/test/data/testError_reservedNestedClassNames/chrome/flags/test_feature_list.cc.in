@@ -1,0 +1,15 @@
+namespace foo {
+BASE_FEATURE(kSampleFeatures, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kString, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNullMarked, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSampleFeatureMap, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::Feature* const kFeaturesExposedToJava[] = {
+    &kSampleFeatures,
+    &kString,
+    &kNullMarked,
+    &kSampleFeatureMap,
+};
+static int64_t JNI_SampleFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
+}
+}  // namespace foo

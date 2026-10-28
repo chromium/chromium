@@ -1,0 +1,54 @@
+#include "chrome/flags/test_feature_list.h"
+
+#define DEFINE_SYNC_AUTOFILL_AI_FEATURE(feature_name) \
+  BASE_FEATURE(feature_name, base::FEATURE_ENABLED_BY_DEFAULT)
+
+namespace foo {
+
+BASE_FEATURE(kDerivedName, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCustomName, "CustomFeatureName",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_RUNTIME_MUTABLE_FEATURE(kRuntimeMutable,
+                             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_RUNTIME_MUTABLE_FEATURE(kRuntimeMutableCustomName,
+                             "RuntimeMutableFeatureName",
+                             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kCountryRestricted,
+                                       base::FEATURE_DISABLED_FOR_COUNTRIES,
+                                       "us", "ca");
+DEFINE_SYNC_AUTOFILL_AI_FEATURE(kDefinedByMacro);
+
+BASE_FEATURE(kPlatformDependent,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+BASE_FEATURE(kDefinedTwice, base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+BASE_FEATURE(kDefinedTwice, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+// Definitions of features that are not exposed to Java are not validated.
+BASE_FEATURE(kNotExposed, kNotAStringLiteral,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The generated class lists the features in this order.
+const base::Feature* const kFeaturesExposedToJava[] = {
+    &kCustomName,
+    &kDerivedName,
+    &kRuntimeMutable,
+    &kRuntimeMutableCustomName,
+    &kCountryRestricted,
+    &kDefinedByMacro,
+    &kPlatformDependent,
+    &kDefinedTwice,
+};
+
+static int64_t JNI_SampleFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
+}
+
+}  // namespace foo

@@ -1,0 +1,17 @@
+#define DEFINE_CUSTOM_FEATURE(feature, name) Define(feature, name)
+namespace foo {
+BASE_FEATURE(kNotALiteral, kName, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kConcatenated, "Foo" "Bar", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTooManyArgs, "Name", base::FEATURE_DISABLED_BY_DEFAULT, 1);
+DEFINE_CUSTOM_FEATURE(kCustomMacro, "CustomName");
+BASE_FEATURE(kNotExposed, kName, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::Feature* const kFeaturesExposedToJava[] = {
+    &kNotALiteral,
+    &kConcatenated,
+    &kTooManyArgs,
+    &kCustomMacro,
+};
+static int64_t JNI_SampleFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
+}
+}  // namespace foo

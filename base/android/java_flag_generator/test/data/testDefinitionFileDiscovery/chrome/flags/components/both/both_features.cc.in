@@ -1,0 +1,5 @@
+// Not searched: shadowed by //components/both/both_features.cc.
+namespace both {
+BASE_FEATURE(kIncludedFromBothLocations, "FromIncludingFile",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace both

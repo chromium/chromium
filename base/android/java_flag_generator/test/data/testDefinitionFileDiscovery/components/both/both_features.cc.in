@@ -1,0 +1,6 @@
+// Found through an #include, which is resolved relative to the source root
+// before the including file.
+namespace both {
+BASE_FEATURE(kIncludedFromBothLocations, "FromSourceRoot",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace both

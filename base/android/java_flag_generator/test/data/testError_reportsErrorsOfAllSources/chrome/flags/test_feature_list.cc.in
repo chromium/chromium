@@ -1,0 +1,6 @@
+namespace foo {
+const base::Feature* const kFeaturesExposedToJava[] = {&kMissing};
+static int64_t JNI_SampleFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
+}
+}  // namespace foo

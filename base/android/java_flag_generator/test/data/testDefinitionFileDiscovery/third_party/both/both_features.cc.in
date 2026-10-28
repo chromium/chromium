@@ -1,0 +1,6 @@
+// Listed in a FEATURE_DEFINITION_FILE comment. Exists in both the source tree
+// and $root_gen_dir, and the source tree takes precedence.
+namespace both {
+BASE_FEATURE(kListedInBothLocations, "FromSourceTree",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace both

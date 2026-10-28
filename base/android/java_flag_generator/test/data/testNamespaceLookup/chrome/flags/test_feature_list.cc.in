@@ -1,0 +1,58 @@
+#include "chrome/flags/test_feature_list.h"
+
+BASE_FEATURE(kGlobal, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kShadowed, "GlobalShadowed", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kExplicitlyGlobal, "GlobalExplicitlyGlobal",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+namespace real {
+BASE_FEATURE(kAliased, base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace real
+
+namespace chrome {
+
+namespace features {
+BASE_FEATURE(kInOuterNamespace, base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace features
+
+namespace android {
+BASE_FEATURE(kShadowed, "InnerShadowed", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kExplicitlyGlobal, "InnerExplicitlyGlobal",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+inline namespace v1 {
+BASE_FEATURE(kInInlineNamespace, base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace v1
+}  // namespace android
+
+}  // namespace chrome
+
+namespace chrome::android::nested {
+BASE_FEATURE(kInNestedNamespace, base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace chrome::android::nested
+
+namespace alias = real;
+
+namespace chrome::android {
+namespace {
+
+const base::Feature* const kFeaturesExposedToJava[] = {
+    // Unqualified names are looked up from the innermost namespace outwards.
+    &kGlobal,
+    &kShadowed,
+    &kInInlineNamespace,
+    // Qualified names are relative to the enclosing namespaces.
+    &features::kInOuterNamespace,
+    &nested::kInNestedNamespace,
+    // A leading "::" refers to the global namespace.
+    &::kExplicitlyGlobal,
+    // As a fallback, a unique definition with the same identifier is used.
+    &alias::kAliased,
+};
+
+}  // namespace
+
+static int64_t JNI_SampleFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
+}
+
+}  // namespace chrome::android

@@ -1,0 +1,17 @@
+namespace foo {
+
+BASE_FEATURE(kFooFeature, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::Feature* const kFeaturesExposedToJava[] = {
+    &kFooFeature,
+};
+
+// Ignored, since feature_map_class_name is set.
+static int64_t JNI_FirstFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFirstFeatureMap());
+}
+static int64_t JNI_SecondFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetSecondFeatureMap());
+}
+
+}  // namespace foo

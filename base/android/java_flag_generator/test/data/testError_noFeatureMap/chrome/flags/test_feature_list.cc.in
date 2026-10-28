@@ -1,0 +1,4 @@
+namespace foo {
+BASE_FEATURE(kFoo, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::Feature* const kFeaturesExposedToJava[] = {&kFoo};
+}  // namespace foo

@@ -1,0 +1,4 @@
+// Found through an #include, relative to the source root.
+namespace foo {
+BASE_FEATURE(kFooFeature, base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace foo

@@ -1,0 +1,31 @@
+#include "chrome/flags/test_feature_list.h"
+
+#include <vector>
+
+#include "chrome/flags/feature_list_entries.inc"
+#include "components/both/both_features.h"
+#include "components/foo/foo_features.h"
+#include "components/no_definitions/no_definitions.h"  // Has no .cc file.
+#include "components/unused/unused_features.h"
+#include "local_features.h"
+
+// FEATURE_DEFINITION_FILE: //third_party/bar/bar_features.cc
+// FEATURE_DEFINITION_FILE: //third_party/both/both_features.cc
+// FEATURE_DEFINITION_FILE: //third_party/generated/generated_features.cc
+
+namespace chrome {
+
+const base::Feature* const kFeaturesExposedToJava[] = {
+    &bar::kBarFeature,
+    &both::kIncludedFromBothLocations,
+    &both::kListedInBothLocations,
+    &foo::kFooFeature,
+    &generated::kGeneratedFeature,
+    &kLocalFeature,
+};
+
+static int64_t JNI_SampleFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
+}
+
+}  // namespace chrome

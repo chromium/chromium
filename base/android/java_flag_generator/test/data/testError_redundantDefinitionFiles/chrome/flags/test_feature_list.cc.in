@@ -1,0 +1,9 @@
+#include "components/foo/foo_features.h"
+// FEATURE_DEFINITION_FILE: //components/foo/foo_features.cc
+// FEATURE_DEFINITION_FILE: //chrome/flags/test_feature_list.cc
+namespace foo {
+const base::Feature* const kFeaturesExposedToJava[] = {&kFooFeature};
+static int64_t JNI_SampleFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
+}
+}  // namespace foo

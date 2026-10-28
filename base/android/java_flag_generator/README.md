@@ -86,3 +86,20 @@ Any ALL_CAPS macro call whose name contains `FEATURE` (but not `DECLARE` or
 For `BASE_FEATURE` and `BASE_RUNTIME_MUTABLE_FEATURE`, the feature name is the
 second argument when it is a string literal; otherwise the feature name is
 derived from the identifier (`kFoo` -> `"Foo"`).
+
+## Changing the generator
+
+* Golden tests that run the generator end to end live in
+  `test/integration_tests.py`. To update the expected output in `test/golden/`,
+  run:
+  ```sh
+  REBASELINE=1 base/android/java_flag_generator/test/integration_tests.py
+  ```
+* The inputs of each of these tests live in `test/data/<test name>/`, which
+  becomes the source root (`//`) of the test. Files generated in
+  `$root_gen_dir` go under `out/Test/gen/` in that directory. Input files end
+  with an extra `.in` (e.g. `foo_features.cc.in`) so that presubmit checks and
+  formatters for C++ ignore them.
+* Unit tests for the C++ lexer and parser live in `test/parse_test.py`.
+* Both run as part of the presubmit checks of this directory (see
+  `PRESUBMIT.py`).

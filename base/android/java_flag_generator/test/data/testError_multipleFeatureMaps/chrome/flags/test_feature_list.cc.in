@@ -1,0 +1,10 @@
+namespace foo {
+BASE_FEATURE(kFoo, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::Feature* const kFeaturesExposedToJava[] = {&kFoo};
+static int64_t JNI_SecondFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetSecondFeatureMap());
+}
+static int64_t JNI_FirstFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFirstFeatureMap());
+}
+}  // namespace foo

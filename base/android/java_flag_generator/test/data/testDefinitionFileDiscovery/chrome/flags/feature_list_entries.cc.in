@@ -1,0 +1,2 @@
+// Not searched: only .h includes are mapped to .cc files.
+BASE_FEATURE(kNotSearched, base::FEATURE_DISABLED_BY_DEFAULT);

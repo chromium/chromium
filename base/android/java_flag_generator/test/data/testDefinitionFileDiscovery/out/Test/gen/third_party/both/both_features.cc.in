@@ -1,0 +1,5 @@
+// Not searched: shadowed by //third_party/both/both_features.cc.
+namespace both {
+BASE_FEATURE(kListedInBothLocations, "FromRootGenDir",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace both

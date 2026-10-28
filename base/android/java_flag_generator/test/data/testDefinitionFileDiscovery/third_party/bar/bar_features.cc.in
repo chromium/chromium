@@ -1,0 +1,4 @@
+// Listed in a FEATURE_DEFINITION_FILE comment. Exists in the source tree.
+namespace bar {
+BASE_FEATURE(kBarFeature, base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace bar

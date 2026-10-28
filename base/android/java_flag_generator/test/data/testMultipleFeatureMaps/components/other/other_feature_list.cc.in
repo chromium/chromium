@@ -1,0 +1,13 @@
+namespace other {
+
+BASE_FEATURE(kOtherFeature, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::Feature* const kFeaturesExposedToJava[] = {
+    &kOtherFeature,
+};
+
+static int64_t JNI_OtherFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
+}
+
+}  // namespace other

@@ -1,0 +1,4 @@
+// Found through an #include, relative to the including file.
+namespace chrome {
+BASE_FEATURE(kLocalFeature, base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace chrome

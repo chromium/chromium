@@ -1,0 +1,4 @@
+// Listed in a FEATURE_DEFINITION_FILE comment. Exists only in $root_gen_dir.
+namespace generated {
+BASE_FEATURE(kGeneratedFeature, base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace generated
