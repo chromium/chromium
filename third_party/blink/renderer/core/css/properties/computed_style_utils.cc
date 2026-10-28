@@ -66,8 +66,11 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 #include "third_party/blink/renderer/core/layout/grid_lanes/layout_grid_lanes.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/layout_inline.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -823,40 +826,52 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
     return ZoomAdjustedPixelValueForLength(offset, style);
   }
 
-  auto& document = layout_object->GetDocument();
-  const auto* box = DynamicTo<LayoutBox>(layout_object);
-  if (layout_object->IsOutOfFlowPositioned()) {
-    // LayoutBox::InsetsForGetComputedStyle() requires there to be physical
-    // fragments to get the right insets. If there are none, return early as
-    // this is considered an error case.
-    CHECK(box);
-    if (!box->PhysicalFragmentCount()) {
-      return ZoomAdjustedPixelValueForLength(offset, style);
+  DCHECK(layout_object->IsOutOfFlowPositioned() ||
+         layout_object->IsRelPositioned());
+  if (layout_object->IsOutOfFlowPositioned() ||
+      RuntimeEnabledFeatures::UsedPositionRelativeInsetsEnabled()) {
+    const auto* box_fragment = ([&]() -> const PhysicalBoxFragment* {
+      if (const auto* box = DynamicTo<LayoutBox>(layout_object)) {
+        if (box->PhysicalFragmentCount()) {
+          return box->GetPhysicalFragment(0);
+        }
+      } else if (const auto* layout_inline =
+                     DynamicTo<LayoutInline>(layout_object)) {
+        InlineCursor cursor;
+        cursor.MoveTo(*layout_inline);
+        if (cursor) {
+          return cursor.Current().BoxFragment();
+        }
+      }
+      return nullptr;
+    })();
+
+    if (box_fragment) {
+      const LayoutUnit inset = ([&]() {
+        const PhysicalBoxStrut insets = box_fragment->UsedPositionInsets();
+        switch (property.PropertyID()) {
+          case CSSPropertyID::kLeft:
+            return insets.left;
+          case CSSPropertyID::kTop:
+            return insets.top;
+          case CSSPropertyID::kRight:
+            return insets.right;
+          case CSSPropertyID::kBottom:
+            return insets.bottom;
+          default:
+            NOTREACHED();
+        }
+      })();
+      return ZoomAdjustedPixelValue(inset, style);
     }
 
-    const PhysicalBoxStrut& insets = box->InsetsForGetComputedStyle();
-    LayoutUnit inset;
-    switch (property.PropertyID()) {
-      case CSSPropertyID::kLeft:
-        inset = insets.left;
-        break;
-      case CSSPropertyID::kTop:
-        inset = insets.top;
-        break;
-      case CSSPropertyID::kRight:
-        inset = insets.right;
-        break;
-      case CSSPropertyID::kBottom:
-        inset = insets.bottom;
-        break;
-      default:
-        NOTREACHED();
-    }
-    return ZoomAdjustedPixelValue(inset, style);
+    return ZoomAdjustedPixelValueForLength(offset, style);
   }
 
   DCHECK(layout_object->IsRelPositioned());
 
+  auto& document = layout_object->GetDocument();
+  const auto* box = DynamicTo<LayoutBox>(layout_object);
   const bool is_horizontal_property =
       property.PropertyID() == CSSPropertyID::kLeft ||
       property.PropertyID() == CSSPropertyID::kRight;

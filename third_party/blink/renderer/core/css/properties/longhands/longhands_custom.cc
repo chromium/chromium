@@ -2102,7 +2102,7 @@ const CSSValue* Bottom::ParseSingleValue(
 
 bool Bottom::IsLayoutDependent(const ComputedStyle* style,
                                LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsBox();
+  return layout_object && layout_object->IsBoxModelObject();
 }
 
 const CSSValue* Bottom::CSSValueFromComputedStyleInternal(
@@ -5561,7 +5561,7 @@ const CSSValue* InsetBlockEnd::ParseSingleValue(
 
 bool InsetBlockEnd::IsLayoutDependent(const ComputedStyle* style,
                                       LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsBox();
+  return layout_object && layout_object->IsBoxModelObject();
 }
 
 const CSSValue* InsetBlockStart::ParseSingleValue(
@@ -5575,7 +5575,7 @@ const CSSValue* InsetBlockStart::ParseSingleValue(
 
 bool InsetBlockStart::IsLayoutDependent(const ComputedStyle* style,
                                         LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsBox();
+  return layout_object && layout_object->IsBoxModelObject();
 }
 
 const CSSValue* InsetInlineEnd::ParseSingleValue(
@@ -5589,7 +5589,7 @@ const CSSValue* InsetInlineEnd::ParseSingleValue(
 
 bool InsetInlineEnd::IsLayoutDependent(const ComputedStyle* style,
                                        LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsBox();
+  return layout_object && layout_object->IsBoxModelObject();
 }
 
 const CSSValue* InsetInlineStart::ParseSingleValue(
@@ -5603,7 +5603,7 @@ const CSSValue* InsetInlineStart::ParseSingleValue(
 
 bool InsetInlineStart::IsLayoutDependent(const ComputedStyle* style,
                                          LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsBox();
+  return layout_object && layout_object->IsBoxModelObject();
 }
 
 const blink::Color InternalVisitedBackgroundColor::ColorIncludingFallback(
@@ -6431,7 +6431,7 @@ const CSSValue* Left::ParseSingleValue(
 
 bool Left::IsLayoutDependent(const ComputedStyle* style,
                              LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsBox();
+  return layout_object && layout_object->IsBoxModelObject();
 }
 
 const CSSValue* Left::CSSValueFromComputedStyleInternal(
@@ -8704,7 +8704,7 @@ const CSSValue* Right::ParseSingleValue(
 
 bool Right::IsLayoutDependent(const ComputedStyle* style,
                               LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsBox();
+  return layout_object && layout_object->IsBoxModelObject();
 }
 
 const CSSValue* Right::CSSValueFromComputedStyleInternal(
@@ -10575,7 +10575,7 @@ const CSSValue* Top::ParseSingleValue(
 
 bool Top::IsLayoutDependent(const ComputedStyle* style,
                             LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsBox();
+  return layout_object && layout_object->IsBoxModelObject();
 }
 
 const CSSValue* Top::CSSValueFromComputedStyleInternal(

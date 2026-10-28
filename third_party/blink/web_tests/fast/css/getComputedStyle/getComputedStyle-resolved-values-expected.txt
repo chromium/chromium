@@ -506,9 +506,9 @@ line-height: normal
 width: auto
 height: auto
 top: 0px
-right: auto
+right: -50px
 bottom: 0px
-left: 10%
+left: 50px
 margin-top: 0px
 margin-right: 0px
 margin-bottom: 0px
