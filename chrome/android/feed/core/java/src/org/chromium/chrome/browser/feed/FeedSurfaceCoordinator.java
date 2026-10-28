@@ -953,7 +953,9 @@ public class FeedSurfaceCoordinator
                             (resId) -> {
                                 return AppCompatResources.getDrawable(mActivity, resId);
                             },
-                            gutterPadding);
+                            gutterPadding,
+                            ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.FEED_CONTAINMENT_CLIP_FIRST_CARD));
             view.addItemDecoration(mItemDecoration);
         }
 

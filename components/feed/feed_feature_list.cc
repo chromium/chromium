@@ -50,6 +50,9 @@ BASE_FEATURE(kRefreshFeedOnRestart, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFeedContainment, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// See b/577835384.
+BASE_FEATURE(kFeedContainmentClipFirstCard, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kFeedRecyclerBinderUnmountOnDetach,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

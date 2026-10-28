@@ -69,6 +69,11 @@ BASE_DECLARE_FEATURE(kRefreshFeedOnRestart);
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedContainment);
 
+// Feature that clips the top corners of the first card to the rounded top of
+// the feed containment.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
+BASE_DECLARE_FEATURE(kFeedContainmentClipFirstCard);
+
 // Feature that unmount RecyclerBinder on view detach to fix a memory leak.
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedRecyclerBinderUnmountOnDetach);

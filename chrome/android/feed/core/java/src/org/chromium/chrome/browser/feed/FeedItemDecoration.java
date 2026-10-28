@@ -11,11 +11,13 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.view.ViewOutlineProvider;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 
 // Used to draw the background for the feed containment.
 @NullMarked
@@ -36,13 +38,19 @@ public class FeedItemDecoration extends RecyclerView.ItemDecoration {
     private final Drawable mAllRoundedBackground;
     private final int mGutterPadding;
     private final int mAdditionalBottomCardPadding;
+    // Whether the first card is clipped to the rounded top of the containment, so a full-bleed
+    // image at the top of that card doesn't paint over the curve.
+    private final boolean mClipFirstCardTopCorners;
+    private final @Nullable RoundedCornerOutlineProvider mTopRoundedOutlineProvider;
 
     public FeedItemDecoration(
             Context context,
             FeedSurfaceCoordinator coordinator,
             DrawableProvider drawableProvider,
-            int gutterPadding) {
+            int gutterPadding,
+            boolean clipFirstCardTopCorners) {
         mCoordinator = coordinator;
+        mClipFirstCardTopCorners = clipFirstCardTopCorners;
 
         mTopRoundedBackground =
                 drawableProvider.getDrawable(R.drawable.home_surface_ui_background_top_rounded);
@@ -75,6 +83,23 @@ public class FeedItemDecoration extends RecyclerView.ItemDecoration {
         mAdditionalBottomCardPadding =
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.feed_containment_bottom_card_padding);
+        if (mClipFirstCardTopCorners) {
+            // Uses getDimensionPixelSize() because that's how the containment's <shape> drawables
+            // resolve their corner radius, so the clip and the background curve line up exactly.
+            mTopRoundedOutlineProvider =
+                    new RoundedCornerOutlineProvider(
+                            context.getResources()
+                                    .getDimensionPixelSize(
+                                            R.dimen.home_surface_ui_background_radius));
+            // Only round the top corners. The bottom edge of the outline is pushed past the view.
+            mTopRoundedOutlineProvider.setRoundingEdges(
+                    /* leftEdge= */ true,
+                    /* topEdge= */ true,
+                    /* rightEdge= */ true,
+                    /* bottomEdge= */ false);
+        } else {
+            mTopRoundedOutlineProvider = null;
+        }
     }
 
     @Override
@@ -84,6 +109,9 @@ public class FeedItemDecoration extends RecyclerView.ItemDecoration {
         if (mCoordinator.useStaggeredLayout()) {
             drawBackgroundForStaggeredLayout(canvas, parent);
         } else {
+            if (mClipFirstCardTopCorners) {
+                updateFirstCardClip(parent);
+            }
             drawBackgroundForStandardLayout(canvas, parent);
         }
     }
@@ -260,6 +288,45 @@ public class FeedItemDecoration extends RecyclerView.ItemDecoration {
     private int getColumnIndex(View view) {
         var listLayoutHelper = mCoordinator.getHybridListRenderer().getListLayoutHelper();
         return assumeNonNull(listLayoutHelper).getColumnIndex(view);
+    }
+
+    // Clips the card at the top of the containment to the containment's rounded top and removes
+    // the clip from every other view. This runs in onDraw(), before the children are drawn, so
+    // the clip follows the first card through header visibility changes, dismiss/undo and view
+    // recycling within the same frame. Exits once both the current first card and any previously
+    // clipped card have been updated.
+    private void updateFirstCardClip(RecyclerView parent) {
+        assert mTopRoundedOutlineProvider != null;
+        // A card is only at the top of the containment when the feed header is hidden.
+        int firstCardPosition =
+                mCoordinator.isHeaderVisible()
+                        ? RecyclerView.NO_POSITION
+                        : mCoordinator.getHeaderPosition();
+        int matchedCards = 0;
+        for (int i = 0; i < parent.getChildCount(); ++i) {
+            View child = parent.getChildAt(i);
+            int position = parent.getChildAdapterPosition(child);
+            // Leave views that are animating out, like a dismissed card, as they are.
+            if (position == RecyclerView.NO_POSITION) continue;
+
+            if (position == firstCardPosition && belongsToFeedContainment(position)) {
+                if (child.getOutlineProvider() != mTopRoundedOutlineProvider) {
+                    child.setOutlineProvider(mTopRoundedOutlineProvider);
+                }
+                // setClipToOutline() damages the parent even if the value doesn't change.
+                if (!child.getClipToOutline()) {
+                    child.setClipToOutline(true);
+                }
+                matchedCards++;
+            } else if (child.getOutlineProvider() == mTopRoundedOutlineProvider) {
+                // Restore the View defaults. Assumes feed item views don't set their own outline.
+                child.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
+                child.setClipToOutline(false);
+                matchedCards++;
+            }
+
+            if (matchedCards == 2) return;
+        }
     }
 
     private boolean belongsToFeedContainment(int position) {

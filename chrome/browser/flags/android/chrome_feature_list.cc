@@ -236,6 +236,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &feed::kAndroidOpenIncognitoAsWindow,
     &feed::kFeedAudioOverviews,
     &feed::kFeedContainment,
+    &feed::kFeedContainmentClipFirstCard,
     &feed::kFeedImageMemoryCacheSizePercentage,
     &feed::kFeedLoadingPlaceholder,
     &feed::kFeedNoViewCache,
