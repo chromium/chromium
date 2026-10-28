@@ -129,7 +129,7 @@ SoftwareImageDecodeCacheUtils::DoDecodeImage(
   if (paint_image.HasGainmapInfo()) {
     target_gainmap_info = SkImageInfo::Make(
         paint_image.GetSupportedDecodeSize(target_size, AuxImage::kGainmap),
-        color_type, kPremul_SkAlphaType);
+        color_type, kOpaque_SkAlphaType);
   }
 
   sk_sp<SkImage> target_image;
@@ -269,10 +269,12 @@ SoftwareImageDecodeCacheUtils::GenerateCacheEntryFromCandidate(
     auto canvas = SkCanvas::MakeRasterDirect(
         target_gainmap_pixmap.info(), target_gainmap_pixmap.writable_addr(),
         target_gainmap_pixmap.rowBytes());
+    SkPaint paint;
+    paint.setBlendMode(SkBlendMode::kSrc);
     canvas->drawImageRect(
         decoded_gainmap_image, src_gainmap_rect,
         SkRect::MakeSize(SkSize::Make(target_gainmap_info.dimensions())),
-        SkSamplingOptions(SkFilterMode::kLinear), nullptr,
+        SkSamplingOptions(SkFilterMode::kLinear), &paint,
         SkCanvas::kStrict_SrcRectConstraint);
   }
 

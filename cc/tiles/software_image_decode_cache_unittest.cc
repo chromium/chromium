@@ -4,17 +4,22 @@
 
 #include "cc/tiles/software_image_decode_cache.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/discardable_memory_allocator.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/test_discardable_memory_allocator.h"
 #include "base/threading/thread_restrictions.h"
 #include "cc/base/features.h"
 #include "cc/paint/draw_image.h"
@@ -1418,6 +1423,77 @@ TEST_F(SoftwareImageDecodeCacheTest, GetDecodedImageForDrawScaleWithGainmap) {
     cache_.DrawWithImageFinished(draw_image, decoded_draw_image);
     cache_.UnrefImage(draw_image);
   }
+}
+
+class DirtyDiscardableMemoryAllocator
+    : public base::TestDiscardableMemoryAllocator {
+ public:
+  std::unique_ptr<base::DiscardableMemory> AllocateLockedDiscardableMemory(
+      size_t size) override {
+    auto memory =
+        base::TestDiscardableMemoryAllocator::AllocateLockedDiscardableMemory(
+            size);
+    // SAFETY: `memory` was just allocated with `size` bytes.
+    UNSAFE_BUFFERS(
+        std::ranges::fill(base::span(memory->data_as<uint8_t>(), size), 0xABu));
+    return memory;
+  }
+};
+
+// Verifies that GenerateCacheEntryFromCandidate() the scaled gainmap writes
+// over any existing pixel data.
+TEST_F(SoftwareImageDecodeCacheTest,
+       GenerateCacheEntryFromCandidateOverwritesGainmapMemory) {
+  auto* old_allocator = base::DiscardableMemoryAllocator::GetInstance();
+  base::DiscardableMemoryAllocator::SetInstance(nullptr);
+  DirtyDiscardableMemoryAllocator dirty_allocator;
+  base::DiscardableMemoryAllocator::SetInstance(&dirty_allocator);
+
+  constexpr int kBaseSize = 100;
+  constexpr int kGainSize = 50;
+  PaintImage paint_image = CreatePaintImageWithGainmap(
+      gfx::Size(kBaseSize, kBaseSize), gfx::Size(kGainSize, kGainSize));
+
+  // Decode and lock the original-size entry so it serves as a candidate for the
+  // scaled decode below.
+  DrawImage orig_draw_image(
+      paint_image,
+      /*use_dark_mode=*/false, SkIRect::MakeWH(kBaseSize, kBaseSize),
+      PaintFlags::FilterQuality::kHigh,
+      CreateMatrix(SkSize::Make(1.0f, 1.0f), /*is_decomposable=*/true),
+      PaintImage::kDefaultFrameIndex, DefaultTargetColorParams());
+  DecodedDrawImage orig_decoded =
+      cache_.GetDecodedImageForDraw(orig_draw_image);
+  ASSERT_TRUE(orig_decoded.image());
+  ASSERT_TRUE(orig_decoded.gainmap_image());
+
+  // Request a 0.25x scaled draw image, which scales both the base image and
+  // the gainmap via GenerateCacheEntryFromCandidate() into dirty discardable
+  // memory pre-filled with 0xAB.
+  DrawImage scaled_draw_image(
+      paint_image,
+      /*use_dark_mode=*/false, SkIRect::MakeWH(kBaseSize, kBaseSize),
+      PaintFlags::FilterQuality::kHigh,
+      CreateMatrix(SkSize::Make(0.25f, 0.25f), /*is_decomposable=*/true),
+      PaintImage::kDefaultFrameIndex, DefaultTargetColorParams());
+  DecodedDrawImage scaled_decoded =
+      cache_.GetDecodedImageForDraw(scaled_draw_image);
+  ASSERT_TRUE(scaled_decoded.image());
+  ASSERT_TRUE(scaled_decoded.gainmap_image());
+
+  // All pixels should be zeros and none of the 0xAB pattern should be visible.
+  SkPixmap gainmap_pixmap;
+  ASSERT_TRUE(scaled_decoded.gainmap_image()->peekPixels(&gainmap_pixmap));
+  for (int y = 0; y < gainmap_pixmap.height(); ++y) {
+    for (int x = 0; x < gainmap_pixmap.width(); ++x) {
+      ASSERT_EQ(0u, *gainmap_pixmap.addr32(x, y));
+    }
+  }
+
+  cache_.DrawWithImageFinished(scaled_draw_image, scaled_decoded);
+  cache_.DrawWithImageFinished(orig_draw_image, orig_decoded);
+  base::DiscardableMemoryAllocator::SetInstance(nullptr);
+  base::DiscardableMemoryAllocator::SetInstance(old_allocator);
 }
 
 TEST_F(SoftwareImageDecodeCacheTest,
