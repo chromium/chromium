@@ -1306,6 +1306,8 @@ bool MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
       bitrate_allocation_.GetSumBitrate(), frame_rate_, input_format_,
       input_visible_size_);
   bitstream_buffer_queue_.clear();
+  sample_metadata_queue_.clear();
+  has_not_accepted_sample_ = false;
   // Reset the input frame counter since MFT was notified to end the streaming
   // and restart with new frame size.
   input_since_keyframe_count_ = 0;
@@ -2572,15 +2574,29 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
   hr = output_data_buffer.pSample->GetBufferByIndex(0, &output_buffer);
   RETURN_ON_HR_FAILURE(hr, "Couldn't get buffer by index", );
 
+  DCHECK(!sample_metadata_queue_.empty());
   base::TimeDelta timestamp;
   LONGLONG sample_time;
   hr = output_data_buffer.pSample->GetSampleTime(&sample_time);
   if (SUCCEEDED(hr)) {
     timestamp =
         base::Microseconds(sample_time / kOneMicrosecondInMFSampleTimeUnits);
+    if (std::ranges::any_of(sample_metadata_queue_,
+                            [timestamp](const OutOfBandMetadata& md) {
+                              return md.timestamp == timestamp;
+                            })) {
+      // Hardware MFTs may drop frames internally without emitting an
+      // METransformHaveOutput event. Pop any skipped metadata entries preceding
+      // the output sample's timestamp and notify the client of dropped frames.
+      while (sample_metadata_queue_.front().timestamp != timestamp) {
+        const auto dropped_metadata = sample_metadata_queue_.front();
+        sample_metadata_queue_.pop_front();
+        if (!dropped_metadata.discard_output) {
+          DropFrame(dropped_metadata.timestamp);
+        }
+      }
+    }
   }
-
-  DCHECK(!sample_metadata_queue_.empty());
   const auto metadata = sample_metadata_queue_.front();
   sample_metadata_queue_.pop_front();
   if (metadata.discard_output) {
@@ -2797,7 +2813,18 @@ void MediaFoundationVideoEncodeAccelerator::MediaEventHandler(
     }
     case METransformDrainComplete: {
       DCHECK(pending_input_queue_.empty());
-      DCHECK(sample_metadata_queue_.empty());
+      // Hardware MFTs may drop frames internally or complete drain without
+      // producing a 1:1 output sample for every input frame. Notify the client
+      // of any non-discarded dropped frames and clear leftover metadata so
+      // active encode callbacks are not leaked across Flush().
+      while (!sample_metadata_queue_.empty()) {
+        const auto metadata = sample_metadata_queue_.front();
+        sample_metadata_queue_.pop_front();
+        if (!metadata.discard_output) {
+          DropFrame(metadata.timestamp);
+        }
+      }
+      has_not_accepted_sample_ = false;
       DCHECK_EQ(state_, kFlushing);
       // Reset the need input counter after drain complete.
       encoder_needs_input_counter_ = 0;
