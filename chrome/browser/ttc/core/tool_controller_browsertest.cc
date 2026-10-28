@@ -1619,9 +1619,12 @@ IN_PROC_BROWSER_TEST_F(ToolControllerScrollPageBrowserTest,
 IN_PROC_BROWSER_TEST_F(ToolControllerScrollPageBrowserTest,
                        DocumentDownAndUpViewport) {
   EXPECT_TRUE(ScrollPage("document", "down", /*selector=*/std::nullopt).Ok());
-  EXPECT_EQ(EvalInt("document.scrollingElement.scrollHeight - "
-                    "document.scrollingElement.clientHeight"),
-            EvalInt("window.scrollY"));
+  // On fractional device scale factors (e.g. Android), Blink rounds
+  // scrollHeight and clientHeight to CSS integers independently whereas
+  // window.scrollY rounds the physical-pixel-clamped max scroll offset once.
+  EXPECT_NEAR(EvalInt("document.scrollingElement.scrollHeight - "
+                      "document.scrollingElement.clientHeight"),
+              EvalInt("window.scrollY"), 1);
 
   EXPECT_TRUE(ScrollPage("document", "up", /*selector=*/std::nullopt).Ok());
   EXPECT_EQ(0, EvalInt("window.scrollY"));
@@ -1643,9 +1646,9 @@ IN_PROC_BROWSER_TEST_F(ToolControllerScrollPageBrowserTest,
 IN_PROC_BROWSER_TEST_F(ToolControllerScrollPageBrowserTest,
                        DocumentRightAndLeftViewport) {
   EXPECT_TRUE(ScrollPage("document", "right", /*selector=*/std::nullopt).Ok());
-  EXPECT_EQ(EvalInt("document.scrollingElement.scrollWidth - "
-                    "document.scrollingElement.clientWidth"),
-            EvalInt("window.scrollX"));
+  EXPECT_NEAR(EvalInt("document.scrollingElement.scrollWidth - "
+                      "document.scrollingElement.clientWidth"),
+              EvalInt("window.scrollX"), 1);
 
   EXPECT_TRUE(ScrollPage("document", "left", /*selector=*/std::nullopt).Ok());
   EXPECT_EQ(0, EvalInt("window.scrollX"));
