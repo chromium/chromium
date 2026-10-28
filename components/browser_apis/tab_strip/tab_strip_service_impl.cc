@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/containers/adapters.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/types/expected.h"
@@ -238,8 +239,11 @@ void TabStripServiceImpl::CloseTabs(
 
   // Close from last to first, that way the removals won't change the index of
   // the next target.
-  std::ranges::sort(tab_strip_indices, std::ranges::greater());
-  for (auto idx : tab_strip_indices) {
+  // We intentionally avoid using std::ranges::greater() to sort, which would
+  // bypass libc++'s pre-instantiated sort for arithmetic types and inflate
+  // binary size.
+  std::ranges::sort(tab_strip_indices);
+  for (auto idx : base::Reversed(tab_strip_indices)) {
     tab_strip_model_adapter().CloseTab(idx);
   }
 }
