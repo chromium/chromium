@@ -1162,8 +1162,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                 () -> {
                     try {
                         Criteria.checkThat(
-                                mPanel.getPanelHeightFromState(PanelState.PEEKED),
-                                Matchers.equalTo(defaultHeight));
+                                (double) mPanel.getPanelHeightFromState(PanelState.PEEKED),
+                                Matchers.closeTo(defaultHeight, /* error= */ 0.001));
                     } catch (CriteriaNotSatisfiedException ex) {
                         throw new AssertionError(
                                 "Error - Peek Height or Bar Height is not the normal expected value"
@@ -1183,8 +1183,10 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                 () -> {
                     try {
                         Criteria.checkThat(
-                                mPanel.getPanelHeightFromState(PanelState.PEEKED),
-                                Matchers.equalTo(defaultHeight + arbitraryGestureNavHeight));
+                                (double) mPanel.getPanelHeightFromState(PanelState.PEEKED),
+                                Matchers.closeTo(
+                                        defaultHeight + arbitraryGestureNavHeight,
+                                        /* error= */ 0.001));
                     } catch (CriteriaNotSatisfiedException ex) {
                         throw new AssertionError(
                                 "When EdgeToEdge is active the Peek position should be inset for"
