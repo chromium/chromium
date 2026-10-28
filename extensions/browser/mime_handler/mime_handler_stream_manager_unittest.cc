@@ -26,6 +26,7 @@
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/render_frame_host_test_support.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
@@ -67,6 +68,7 @@ using ::testing::SaveArg;
 
 constexpr char kOriginalUrl1[] = "https://original_url1";
 constexpr char kOriginalUrl2[] = "https://original_url2";
+constexpr char kOriginalUrl3[] = "https://original_url3";
 constexpr char kAuthTokenHeaderName[] = "X-Auth-Token";
 constexpr char kAuthTokenHeaderValue[] = "s3cr3t";
 constexpr char kContentTypeHeaderName[] = "Content-Type";
@@ -153,17 +155,26 @@ class MimeHandlerStreamManagerTest : public content::RenderViewHostTestHarness {
         ->GetNavigationId();
   }
 
-  void SetUpStreamWithCachedBody(content::RenderFrameHost* embedder_host) {
+  // With `body_complete` false the body producer stays open, so the cache
+  // keeps caching until `CloseBodyProducer()`.
+  void SetUpStreamWithCachedBody(content::RenderFrameHost* embedder_host,
+                                 bool body_complete) {
     mojo::ScopedDataPipeProducerHandle producer;
     mojo::ScopedDataPipeConsumerHandle consumer;
     ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(64u, producer, consumer));
     ASSERT_EQ(MOJO_RESULT_OK, producer->WriteAllData(base::as_byte_span(
                                   std::string("cached-body-bytes"))));
-    producer.reset();
+    if (body_complete) {
+      producer.reset();
+    } else {
+      body_producer_ = std::move(producer);
+    }
     scoped_refptr<MimeHandlerBodyCache> cache =
         MimeHandlerBodyCache::Create(std::move(consumer), nullptr);
     ASSERT_TRUE(cache);
-    ASSERT_TRUE(base::test::RunUntil([&] { return cache->is_complete(); }));
+    if (body_complete) {
+      ASSERT_TRUE(base::test::RunUntil([&] { return cache->is_complete(); }));
+    }
 
     auto stream = GenerateSampleStreamContainer(1);
     stream->SetBodyCache(std::move(cache));
@@ -233,8 +244,11 @@ class MimeHandlerStreamManagerTest : public content::RenderViewHostTestHarness {
         ->TriggerOnUnloaded(extension.get(), reason);
   }
 
+  void CloseBodyProducer() { body_producer_.reset(); }
+
  private:
   std::unique_ptr<TestExtensionsBrowserClient> extensions_browser_client_;
+  mojo::ScopedDataPipeProducerHandle body_producer_;
 };
 
 // Verify adding and getting a `StreamContainer`.
@@ -1237,8 +1251,7 @@ TEST_F(MimeHandlerStreamManagerTest,
   auto* embedder_host = NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
   auto* initiator_host =
       CreateAndNavigateChild(embedder_host, GURL(kOriginalUrl2));
-  auto* child_host =
-      CreateAndNavigateChild(embedder_host, GURL("https://original_url3"));
+  auto* child_host = CreateAndNavigateChild(embedder_host, GURL(kOriginalUrl3));
   ASSERT_NE(embedder_host->GetProcess(), initiator_host->GetProcess());
   ASSERT_NE(initiator_host->GetProcess(), child_host->GetProcess());
 
@@ -1472,6 +1485,39 @@ TEST_F(MimeHandlerStreamManagerTest,
   // A different frame is never marked.
   EXPECT_FALSE(
       manager->IsPendingNativeFallback(content::FrameTreeNodeId(), pdf_url));
+}
+
+// A native fallback whose body is still caching when its embedder frame stops
+// being active, because the host page navigated away, must not re-navigate
+// that frame.
+TEST_F(MimeHandlerStreamManagerTest,
+       AbortAndFallbackToNativeHandler_IgnoresInactiveFrame) {
+  content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  const GURL pdf_url(kOriginalUrl1);
+  content::RenderFrameHost* host_page =
+      NavigateAndCommit(main_rfh(), GURL(kOriginalUrl2));
+  content::RenderFrameHost* embedder_host =
+      CreateAndNavigateChild(host_page, pdf_url);
+  const content::FrameTreeNodeId embedder_ftn =
+      embedder_host->GetFrameTreeNodeId();
+  ASSERT_NO_FATAL_FAILURE(
+      SetUpStreamWithCachedBody(embedder_host, /*body_complete=*/false));
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  manager->AbortAndFallbackToNativeHandler(embedder_host);
+  ASSERT_TRUE(manager->IsPendingNativeFallback(embedder_ftn, pdf_url));
+
+  content::LeaveInPendingDeletionState(embedder_host);
+  NavigateAndCommit(host_page, GURL(kOriginalUrl3));
+  ASSERT_FALSE(embedder_host->IsActive());
+  ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
+
+  CloseBodyProducer();
+
+  // The registration is dropped once the body is ready; nothing navigates.
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return !manager->IsPendingNativeFallback(embedder_ftn, pdf_url);
+  }));
+  EXPECT_FALSE(web_contents()->GetController().GetPendingEntry());
 }
 
 TEST_F(MimeHandlerStreamManagerTest,
@@ -2014,7 +2060,8 @@ TEST_F(MimeHandlerStreamManagerTest,
   const GURL pdf_url(kOriginalUrl1);
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), pdf_url);
-  ASSERT_NO_FATAL_FAILURE(SetUpStreamWithCachedBody(embedder_host));
+  ASSERT_NO_FATAL_FAILURE(
+      SetUpStreamWithCachedBody(embedder_host, /*body_complete=*/true));
   auto* manager = mime_handler_stream_manager();
 
   manager->AbortAndFallbackToNativeHandler(embedder_host);
@@ -2039,7 +2086,8 @@ TEST_F(MimeHandlerStreamManagerTest,
   const GURL pdf_url(kOriginalUrl1);
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), pdf_url);
-  ASSERT_NO_FATAL_FAILURE(SetUpStreamWithCachedBody(embedder_host));
+  ASSERT_NO_FATAL_FAILURE(
+      SetUpStreamWithCachedBody(embedder_host, /*body_complete=*/true));
   auto* manager = mime_handler_stream_manager();
 
   auto canceled_navigation =

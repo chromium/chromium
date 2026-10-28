@@ -837,10 +837,11 @@ void MimeHandlerStreamManager::OnGotFallbackDataPipe(
 
   // If the page moved this frame elsewhere while the body was buffering, the
   // user is no longer looking at the document the handler gave up, and the
-  // fallback navigation would drag them back to it.
+  // fallback navigation would drag them back to it. The controller of
+  // `web_contents()` can only navigate active frames.
   content::RenderFrameHost* embedder_host =
       content::RenderFrameHost::FromID(embedder_info.global_id);
-  if (!embedder_host ||
+  if (!embedder_host || !embedder_host->IsActive() ||
       !embedder_host->GetLastCommittedURL().EqualsIgnoringRef(original_url)) {
     pending_native_fallback_frames_.erase(embedder_ftn);
     return;

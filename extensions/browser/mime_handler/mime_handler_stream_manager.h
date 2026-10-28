@@ -385,7 +385,8 @@ class MimeHandlerStreamManager
   void DeleteSelfIfNoStreams();
 
   // Continues `AbortAndFallbackToNativeHandler()` once the body cache is
-  // ready. Does nothing if its stream was deleted while waiting.
+  // ready. Does nothing if its stream was deleted while waiting, or if the
+  // embedder frame left the stream's original URL or is no longer active.
   void OnGotFallbackDataPipe(EmbedderHostInfo embedder_info,
                              base::WeakPtr<StreamContainer> stream,
                              mojo::ScopedDataPipeConsumerHandle body);
