@@ -7,6 +7,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -684,6 +685,73 @@ INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     ActorPageStabilityMinWaitTest,
     testing::Bool());
+
+// Tests `ToolRequest::SetSkipObservationDelay()`, which lets a tool complete
+// without waiting for the page to settle.
+class ActorSkipObservationDelayTest : public ActorPageStabilityTestBase {
+ public:
+  ActorSkipObservationDelayTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{::features::kGlicActor, {}},
+         // Effectively disable the timeouts so that the only way a tool
+         // completes while a fetch is pending is if the delay is skipped.
+         {kActorPageStability, {{kActorPageStabilityTimeout.name, "300s"}}},
+         {kActorObservationDelay,
+          {{kActorObservationDelayTimeout.name, "300s"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// By default, a click that kicks off a network fetch doesn't complete until the
+// fetch resolves.
+IN_PROC_BROWSER_TEST_F(ActorSkipObservationDelayTest, WaitsByDefault) {
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
+  ASSERT_EQ(GetOutputText(), "INITIAL");
+
+  std::optional<int> button_id = GetDOMNodeId(*main_frame(), "#btnFetch");
+  ASSERT_TRUE(button_id);
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*main_frame(), button_id.value());
+  ActResultFuture result;
+  task().Act(ToRequestList(action), result.GetCallback());
+
+  fetch_response().WaitForRequest();
+  // The page stability monitor blocks on in-flight network requests, and the
+  // fetch isn't responded to until `Respond()` below, so the click can't have
+  // completed yet.
+  Sleep(TestTimeouts::tiny_timeout());
+  EXPECT_FALSE(result.IsReady());
+
+  Respond("NETWORK DONE");
+  ExpectOkResult(result);
+  EXPECT_EQ(GetOutputText(), "NETWORK DONE");
+}
+
+// When the request asks to skip the observation delay, the click completes
+// even though the fetch it started never resolves.
+IN_PROC_BROWSER_TEST_F(ActorSkipObservationDelayTest,
+                       CompletesWithoutWaitingWhenSkipped) {
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
+  ASSERT_EQ(GetOutputText(), "INITIAL");
+
+  std::optional<int> button_id = GetDOMNodeId(*main_frame(), "#btnFetch");
+  ASSERT_TRUE(button_id);
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*main_frame(), button_id.value());
+  action->SetSkipObservationDelay(true);
+  ActResultFuture result;
+  task().Act(ToRequestList(action), result.GetCallback());
+
+  // The fetch is never responded to.
+  fetch_response().WaitForRequest();
+  ExpectOkResult(result);
+  EXPECT_EQ(GetOutputText(), "INITIAL");
+}
 
 }  // namespace
 
