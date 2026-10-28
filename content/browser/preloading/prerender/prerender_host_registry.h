@@ -410,11 +410,6 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver,
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner();
 
-  // Returns the current memory limit. Returns base::MemoryLimit::Default()
-  // (100%) if stateful memory pressure or Prerender2 memory controls are
-  // disabled.
-  base::MemoryLimit GetCurrentMemoryLimit() const;
-
   // Returns the baseline unscaled maximum capacity limit for `limit_group`.
   int GetMaxLimit(PrerenderLimitGroup limit_group) const;
 

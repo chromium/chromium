@@ -1070,6 +1070,15 @@ TEST_F(PrerenderHostRegistryLegacyMemoryControlsTest,
 
   EXPECT_FALSE(registry().FindNonReservedHostById(prerender_host_id));
 
+  // Reset memory limit back to normal (100%).
+  {
+    base::RunLoop run_loop;
+    test_registry_.NotifyUpdateMemoryLimitAsync(base::MemoryLimit::Default(),
+                                                base::DoNothing());
+    test_registry_.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   // Verify that after critical memory pressure cancellation in legacy mode,
   // future prerenders are not prevented from being created.
   const GURL prerendering_url2("https://example.com/next2");

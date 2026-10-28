@@ -649,8 +649,7 @@ PrerenderHostId PrerenderHostRegistry::CreateAndStartHost(
     }
 
     // Don't prerender under critical memory pressure.
-    if (GetCurrentMemoryLimit() <=
-        base::MemoryLimit::CriticalPressureThreshold()) {
+    if (memory_limit() <= base::MemoryLimit::CriticalPressureThreshold()) {
       builder.RejectAsNotEligible(
           attributes, PrerenderFinalStatus::kMemoryPressureOnTrigger);
       return PrerenderHostId();
@@ -2088,6 +2087,10 @@ int PrerenderHostRegistry::GetScaledLimit(
     PrerenderLimitGroup limit_group) const {
   const int max_limit = GetMaxLimit(limit_group);
 
+  if (!base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    return max_limit;
+  }
+
   // Check feature parameters to determine if memory limit scaling is enabled
   // for the specified limit group.
   bool should_scale = false;
@@ -2102,15 +2105,7 @@ int PrerenderHostRegistry::GetScaledLimit(
       should_scale = kPrerenderScaleEmbedder.Get();
       break;
   }
-  return should_scale ? GetCurrentMemoryLimit().Scale(max_limit) : max_limit;
-}
-
-base::MemoryLimit PrerenderHostRegistry::GetCurrentMemoryLimit() const {
-  if (!base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
-    return base::MemoryLimit::Default();
-  }
-
-  return memory_limit();
+  return should_scale ? memory_limit().Scale(max_limit) : max_limit;
 }
 
 void PrerenderHostRegistry::SetTaskRunnerForTesting(
