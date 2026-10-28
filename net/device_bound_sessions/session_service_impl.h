@@ -338,10 +338,10 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       RegistrationResult result);
 
   // Helper for restoring the key for the session identified by
-  // `session_key`. If restoring the key succeeds, calls `callback` with
-  // the key. If restoring the key fails, deletes the session and calls
-  // `callback` with `std::nullopt`. The key is unwrapped at `priority`, but
-  // never below `kUserVisible`.
+  // `session_key`. Always runs `callback`: with the key if it was restored
+  // and the session still exists, or with `std::nullopt` otherwise.
+  // Persistent unwrap errors also delete the session. The key is unwrapped at
+  // `priority`, but never below `kUserVisible`.
   void RestoreSessionKey(
       const SessionKey& session_key,
       OnAccessCallback on_access_callback,
@@ -352,9 +352,9 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
 
   // Callback after unwrapping a session key. `on_access_callback` is
   // used to notify the browser that this request led to usage of a
-  // session. If restoring the key succeeds, calls `callback` with
-  // the key. If restoring the key fails, deletes the session and calls
-  // `callback` with `std::nullopt`.
+  // session. Always runs `callback`: with the key if it was restored and the
+  // session still exists, or with `std::nullopt` otherwise. Persistent unwrap
+  // errors also delete the session.
   void OnSessionKeyRestored(
       const SessionKey& session_key,
       OnAccessCallback on_access_callback,

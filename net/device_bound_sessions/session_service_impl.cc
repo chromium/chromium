@@ -633,12 +633,11 @@ void SessionServiceImpl::CheckFederatedProviderKey(
   }
 
   Session* provider_session = GetSession(provider_session_key);
-  if (!provider_session) {
-    // Provider session not found, fail the registration.
-    std::move(callback).Run(base::unexpected(
-        SessionError::kInvalidFederatedSessionProviderSessionMissing));
-    return;
-  }
+  // `provider_session` must exist because this is either called synchronously
+  // from `GetFederatedProviderSessionIfValid` (which checks it), or from
+  // `OnSessionKeyRestored`, which only passes a key if the session still
+  // exists (otherwise `provider_key` is `std::nullopt`, handled above).
+  CHECK(provider_session);
 
   std::optional<std::string> thumbprint =
       GetJwkThumbprint(*key_service_, *provider_key);
@@ -1589,6 +1588,7 @@ void SessionServiceImpl::OnSessionKeyRestored(
   auto* session = GetSession(session_key);
   if (!session) {
     UnblockWaitingRequests(session_key, RefreshResult::kFatalError);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -1638,9 +1638,9 @@ void SessionServiceImpl::RefreshSessionInternal(
 
   Session* session = GetSession(session_key);
   // `session` must exist because this is either called synchronously from
-  // `StartSessionRefresh` (which checks `session`), or asynchronously after
-  // `OnSessionKeyRestored` which also checks `session` and returns early if
-  // null.
+  // `StartSessionRefresh` (which checks `session`), or asynchronously from
+  // `OnSessionKeyRestored`, which only passes a key if `session` still
+  // exists (otherwise `key_id` is `std::nullopt`, handled above).
   CHECK(session);
 
   if (params.trigger == RefreshTrigger::kMissingCookie) {
