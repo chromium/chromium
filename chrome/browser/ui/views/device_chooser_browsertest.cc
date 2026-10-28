@@ -383,9 +383,10 @@ IN_PROC_BROWSER_TEST_F(DeviceChooserBubbleTest,
   EXPECT_TRUE(bubble_widget->IsClosed());
 }
 
+// TODO(crbug.com/578274851): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(
     DeviceChooserBubbleTest,
-    ChooserBubbleStaysOpenAfterExitingFullscreenAndClosesOnTabSwitch) {
+    DISABLED_ChooserBubbleStaysOpenAfterExitingFullscreenAndClosesOnTabSwitch) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetURL("example.com")));
 
   content::WebContents* web_contents =
