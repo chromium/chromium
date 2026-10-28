@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html class="testwait">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+</head>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+#spacer { height: 60000px }
+#target { width: 50px; height: 50px; color: rgb(10, 20, 30) }
+</style>
+<body>
+<iframe id=iframe width=300 height=100 srcdoc=
+"<!doctype html>
+  <style>
+    @keyframes clippy {
+      from { clip-path: inset(0px) }
+      to { clip-path: inset(10px) }
+    }
+    #item2, #item3 {
+      animation: clippy 1000s
+    }
+    div {
+      width: 20px; height: 10px;
+    }
+  </style>
+  <div id=wrapper>
+    <div id=item1 slot=a></div>
+    <div id=item2 slot=a></div>
+    <div id=item3 slot=a></div>
+  </div>"></iframe>
+<div id=spacer></div>
+<div id=target></div>
+<script>
+const frame = () => new Promise(r => requestAnimationFrame(r));
+const task = ms => new Promise(r => setTimeout(r, ms));
+
+window.onload = async () => {
+  promise_test(async t => {
+    const child_doc = iframe.contentDocument;
+    const  [wrapper, item1, item2, item3] =
+        ['wrapper', 'item1', 'item2', 'item3'].map(
+            id => child_doc.getElementById(id));
+    wrapper.attachShadow({ mode: 'open' }).innerHTML =
+       '<slot name=a></slot>';
+    await frame(); await frame();
+    const anim1 = item2.getAnimations()[0];
+    anim1.effect.target = target;
+    const anim2 = target.animate(
+        [
+          { backgroundColor: 'currentcolor' },
+          { backgroundColor: 'rgb(200, 0, 0)' }
+        ],
+        { duration: 1e7, easing: 'steps(1, end)' });
+    anim2.currentTime = -1e7;
+    await anim2.ready;
+    await frame(); await frame(); await frame();
+    await task(50);
+    target.style.color = 'rgb(1, 2, 3)';
+    getComputedStyle(target).color;
+    anim2.effect.target = item1;
+    item2.slot = 'b';
+    target.style.color = 'rgb(4, 5, 6)';
+    getComputedStyle(target).color;
+    document.documentElement.classList.remove('testwait');
+  }, 'Cross-document animation target changes with shadow DOM slot ' +
+     'reassignment do not crash');
+
+};
+</script>
+</body>
+</html>

@@ -107,9 +107,12 @@ bool CompositorAnimationCurve::PopulateKeyframes(Animation* animation,
 
 scoped_refptr<CompositorAnimationCurve>
 CompositorAnimationCurve::UpdateKeyframeSnapshot(Animation* animation) {
+  scoped_refptr<CompositorAnimationCurve> scoped_ref =
+      base::WrapRefCounted(this);
+
 #if !EXPENSIVE_DCHECKS_ARE_ON()
   if (!HasStyleDependency()) {
-    return base::WrapRefCounted(this);
+    return scoped_ref;
   }
 #endif
 
@@ -132,7 +135,7 @@ CompositorAnimationCurve::UpdateKeyframeSnapshot(Animation* animation) {
     return maybe_copy;
   }
 
-  return base::WrapRefCounted(this);
+  return scoped_ref;
 }
 
 wtf_size_t CompositorAnimationCurve::ComputeKeyframeIndex(double progress) {

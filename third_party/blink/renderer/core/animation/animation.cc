@@ -1472,7 +1472,8 @@ void Animation::setEffect(AnimationEffect* new_effect) {
   if (new_effect == old_effect)
     return;
 
-  if (old_effect) {
+  if (old_effect &&
+      !RuntimeEnabledFeatures::SyncCrossDocumentAnimationTimingEnabled()) {
     Element* old_target = nullptr;
     Element* new_target = nullptr;
     if (auto* keyframe_effect = DynamicTo<KeyframeEffect>(new_effect)) {
@@ -2480,11 +2481,19 @@ void Animation::SetOutdated() {
   outdated_ = true;
   if (timeline_) {
     timeline_->SetOutdatedAnimation(this);
-  } else {
-    // Animations without a timeline will not be ticked on a subsequent frame.
-    // Synchronously update so that the animation is not left in an outdated
-    // state, which could trigger a style invalidation post-style and layout,
-    // e.g. mid-paint (see crbug.com/567645136).
+  }
+  KeyframeEffect* keyframe_effect = DynamicTo<KeyframeEffect>(content_.Get());
+  Element* target = keyframe_effect ? keyframe_effect->EffectTarget() : nullptr;
+  bool cross_document_target =
+      RuntimeEnabledFeatures::SyncCrossDocumentAnimationTimingEnabled() &&
+      target && timeline_ && timeline_->GetDocument() != &target->GetDocument();
+  if (!timeline_ || cross_document_target) {
+    // Animations without a timeline or targeting an element in a different
+    // document from the timeline will not be ticked when the target document
+    // updates its animation timing. Synchronously update so that the animation
+    // is not left in an outdated state, which could trigger a style
+    // invalidation post-style and layout, e.g. mid-paint (see
+    // crbug.com/567645136).
     Update(kTimingUpdateOnDemand);
   }
 }

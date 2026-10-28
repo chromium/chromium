@@ -162,6 +162,7 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
 
   void ApplyEffects();
   void ClearEffects();
+  void InvalidateEffectTargetStyle();
   void UpdateChildrenAndEffects() const override;
   void Attach(AnimationEffectOwner*) override;
   void Detach() override;

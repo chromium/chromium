@@ -49,6 +49,8 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -57,7 +59,10 @@
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -738,7 +743,7 @@ void KeyframeEffect::ApplyEffects() {
   }
 
   if (changed) {
-    effect_target_->SetNeedsAnimationStyleRecalc();
+    InvalidateEffectTargetStyle();
   }
 }
 
@@ -750,10 +755,49 @@ void KeyframeEffect::ClearEffects() {
   sampled_effect_ = nullptr;
   if (GetAnimation())
     GetAnimation()->RestartAnimationOnCompositor();
-  if (!effect_target_->GetDocument().Lifecycle().InDetach()) {
-    effect_target_->SetNeedsAnimationStyleRecalc();
-  }
+  InvalidateEffectTargetStyle();
   Invalidate();
+}
+
+void KeyframeEffect::InvalidateEffectTargetStyle() {
+  if (!effect_target_) {
+    return;
+  }
+  Document& target_document = effect_target_->GetDocument();
+  if (target_document.Lifecycle().InDetach()) {
+    return;
+  }
+  if (!RuntimeEnabledFeatures::SyncCrossDocumentAnimationTimingEnabled()) {
+    effect_target_->SetNeedsAnimationStyleRecalc();
+    return;
+  }
+
+  // Guard against a change in a child document synchronously invalidating the style of an
+  // ancestor document, as it would create a lifecycle violation. If the ancestor is already
+  // marked as having a clean style, then defer dirtying the style bit until the next
+  // update cycle. This is similar to how we don't allow script execution during style and
+  // layout, as the script could invaldiate the lifecycle state (crbug.com/574193110).
+  auto is_upstream = [&target_document](const Document* doc) {
+    return doc && doc != &target_document && doc->GetFrame() &&
+           target_document.GetFrame() &&
+           doc->GetFrame()->Tree().IsDescendantOf(target_document.GetFrame());
+  };
+  Animation* animation = GetAnimation();
+  const Document* animation_document =
+      animation ? animation->GetDocument() : nullptr;
+  const Document* owning_document =
+      (animation && animation->OwningElement())
+          ? &animation->OwningElement()->GetDocument()
+          : nullptr;
+  if (target_document.Lifecycle().GetState() >=
+          DocumentLifecycle::kStyleClean &&
+      (is_upstream(animation_document) || is_upstream(owning_document))) {
+    target_document.GetAgent().event_loop()->EnqueueMicrotask(
+        BindOnce(&Element::SetNeedsAnimationStyleRecalc,
+                 WrapWeakPersistent(effect_target_.Get())));
+    return;
+  }
+  effect_target_->SetNeedsAnimationStyleRecalc();
 }
 
 void KeyframeEffect::UpdateChildrenAndEffects() const {
@@ -782,12 +826,22 @@ void KeyframeEffect::AttachTarget(Animation* animation) {
   if (!effect_target_ || !animation)
     return;
   effect_target_->EnsureElementAnimations().Animations().insert(animation);
-  effect_target_->SetNeedsAnimationStyleRecalc();
+  InvalidateEffectTargetStyle();
 }
 
 void KeyframeEffect::DetachTarget(Animation* animation) {
-  if (effect_target_ && animation)
-    effect_target_->GetElementAnimations()->Animations().erase(animation);
+  if (effect_target_ && animation) {
+    ElementAnimations* element_animations =
+        effect_target_->GetElementAnimations();
+    element_animations->Animations().erase(animation);
+    if (RuntimeEnabledFeatures::SyncCrossDocumentAnimationTimingEnabled() &&
+        animation->GetNativePaintWorkletReasons() !=
+            Animation::kNoPaintWorklet) {
+      element_animations->RecalcCompositedStatus(
+          effect_target_,
+          Animation::CompositorPendingReason::kPendingEffectChange);
+    }
+  }
   // If we have sampled this effect previously, we need to purge that state.
   // ClearEffects takes care of clearing the cached sampled effect, informing
   // the target that it needs to refresh its style, and doing any necessary
