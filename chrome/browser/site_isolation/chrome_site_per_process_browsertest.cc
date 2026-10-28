@@ -1614,7 +1614,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
   // device scale factor, but the secondary has unit device scale factor.
   // Note: this test could really work with any two scale factors, so long as
   // they're different.
-  std::string display_spec("0+0-500x500*2,0+501-500x500");
+  std::string display_spec("0+0-800x600*2,0+601-800x600");
   ash::ShellTestApi shell_test_api;
   display::test::DisplayManagerTestApi(shell_test_api.display_manager())
       .UpdateDisplay(display_spec);

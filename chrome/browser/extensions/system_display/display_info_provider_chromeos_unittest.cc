@@ -500,7 +500,7 @@ TEST_F(DisplayInfoProviderChromeosTest, GetRotation) {
 }
 
 TEST_F(DisplayInfoProviderChromeosTest, GetDPI) {
-  UpdateDisplay("500x600,400x520*2");
+  UpdateDisplay("500x600,400x640*2");
   DisplayUnitInfoList result;
   result = GetAllDisplaysInfo();
 
@@ -510,7 +510,7 @@ TEST_F(DisplayInfoProviderChromeosTest, GetDPI) {
   EXPECT_EQ(96, result[0].dpi_x);
   EXPECT_EQ(96, result[0].dpi_y);
 
-  EXPECT_EQ("500,0 200x260", SystemInfoDisplayBoundsToString(result[1].bounds));
+  EXPECT_EQ("500,0 200x320", SystemInfoDisplayBoundsToString(result[1].bounds));
   // DPI should be 96 (native dpi) * 200 (display) / 400 (native) when ui scale
   // is 2.
   EXPECT_EQ(96 / 2, result[1].dpi_x);
@@ -527,13 +527,13 @@ TEST_F(DisplayInfoProviderChromeosTest, GetDPI) {
   EXPECT_EQ(96, result[0].dpi_x);
   EXPECT_EQ(96, result[0].dpi_y);
 
-  EXPECT_EQ("0,0 200x260", SystemInfoDisplayBoundsToString(result[1].bounds));
+  EXPECT_EQ("0,0 200x320", SystemInfoDisplayBoundsToString(result[1].bounds));
   EXPECT_EQ(96 / 2, result[1].dpi_x);
   EXPECT_EQ(96 / 2, result[1].dpi_y);
 }
 
 TEST_F(DisplayInfoProviderChromeosTest, GetVisibleArea) {
-  UpdateDisplay("640x720*2/o, 400x520/o");
+  UpdateDisplay("800x1280*2/o, 400x520/o");
   DisplayUnitInfoList result;
   result = GetAllDisplaysInfo();
 
@@ -545,7 +545,7 @@ TEST_F(DisplayInfoProviderChromeosTest, GetVisibleArea) {
   ASSERT_TRUE(DisplayExists(display_id)) << display_id << " not found";
 
   // Default overscan is 5%.
-  EXPECT_EQ("304,0 380x494", SystemInfoDisplayBoundsToString(result[1].bounds));
+  EXPECT_EQ("380,0 380x494", SystemInfoDisplayBoundsToString(result[1].bounds));
   EXPECT_EQ("13,10,13,10", SystemInfoDisplayInsetsToString(result[1].overscan));
 
   GetDisplayManager()->SetOverscanInsets(display_id,
@@ -555,7 +555,7 @@ TEST_F(DisplayInfoProviderChromeosTest, GetVisibleArea) {
   ASSERT_EQ(2u, result.size());
 
   EXPECT_EQ(base::NumberToString(display_id), result[1].id);
-  EXPECT_EQ("304,0 310x450", SystemInfoDisplayBoundsToString(result[1].bounds));
+  EXPECT_EQ("380,0 310x450", SystemInfoDisplayBoundsToString(result[1].bounds));
   EXPECT_EQ("20,30,50,60", SystemInfoDisplayInsetsToString(result[1].overscan));
 
   // Set insets for the primary screen. Note that it has 2x scale.
@@ -563,8 +563,8 @@ TEST_F(DisplayInfoProviderChromeosTest, GetVisibleArea) {
       << "Display id must be convertible to integer: " << result[0].id;
   ASSERT_TRUE(DisplayExists(display_id)) << display_id << " not found";
 
-  EXPECT_EQ("0,0 304x342", SystemInfoDisplayBoundsToString(result[0].bounds));
-  EXPECT_EQ("9,8,9,8", SystemInfoDisplayInsetsToString(result[0].overscan));
+  EXPECT_EQ("0,0 380x608", SystemInfoDisplayBoundsToString(result[0].bounds));
+  EXPECT_EQ("16,10,16,10", SystemInfoDisplayInsetsToString(result[0].overscan));
 
   GetDisplayManager()->SetOverscanInsets(display_id,
                                          gfx::Insets::TLBR(10, 20, 30, 40));
@@ -573,16 +573,17 @@ TEST_F(DisplayInfoProviderChromeosTest, GetVisibleArea) {
   ASSERT_EQ(2u, result.size());
 
   EXPECT_EQ(base::NumberToString(display_id), result[0].id);
-  EXPECT_EQ("0,0 260x320", SystemInfoDisplayBoundsToString(result[0].bounds));
+  EXPECT_EQ("0,0 340x600", SystemInfoDisplayBoundsToString(result[0].bounds));
   EXPECT_EQ("10,20,30,40", SystemInfoDisplayInsetsToString(result[0].overscan));
 
-  // Oversized stored insets on 640x720*2 report the clamped DIP overscan
-  // (160x180 px = 80x90 DIP).
+  // Oversized stored insets on 800x1280*2 report the clamped DIP overscan
+  // (200x320 px = 100x160 DIP).
   GetDisplayManager()->SetOverscanInsets(display_id, gfx::Insets(500));
   result = GetAllDisplaysInfo();
   ASSERT_EQ(2u, result.size());
-  EXPECT_EQ("0,0 160x180", SystemInfoDisplayBoundsToString(result[0].bounds));
-  EXPECT_EQ("90,80,90,80", SystemInfoDisplayInsetsToString(result[0].overscan));
+  EXPECT_EQ("0,0 200x320", SystemInfoDisplayBoundsToString(result[0].bounds));
+  EXPECT_EQ("160,100,160,100",
+            SystemInfoDisplayInsetsToString(result[0].overscan));
 }
 
 TEST_F(DisplayInfoProviderChromeosTest, GetMirroring) {
@@ -720,7 +721,7 @@ TEST_F(DisplayInfoProviderChromeosTest, Layout) {
 }
 
 TEST_F(DisplayInfoProviderChromeosTest, UnifiedModeLayout) {
-  UpdateDisplay("500x300,400x500,300x600,200x300");
+  UpdateDisplay("500x300,400x500,300x600,200x400");
   GetDisplayManager()->SetUnifiedDesktopEnabled(true);
   EXPECT_TRUE(GetDisplayManager()->IsInUnifiedMode());
 
@@ -751,7 +752,7 @@ TEST_F(DisplayInfoProviderChromeosTest, UnifiedModeLayout) {
   EXPECT_EQ(0, default_layout[2].offset);
 
   // Create a 2x2 matrix layout.
-  // [3][200 x 300] [1][400 x 500]
+  // [3][200 x 400] [1][400 x 500]
   // [2][300 x 600] [0][500 x 300]
   DisplayLayoutList layout;
   layout.resize(3u);
@@ -766,7 +767,7 @@ TEST_F(DisplayInfoProviderChromeosTest, UnifiedModeLayout) {
   layout[2].position = api::system_display::LayoutPosition::kRight;
 
   EXPECT_TRUE(provider_->SetDisplayLayout(layout).has_value());
-  EXPECT_EQ(gfx::Size(650, 743),
+  EXPECT_EQ((gfx::Size{650, 800}),
             display::Screen::Get()->GetPrimaryDisplay().size());
   EXPECT_EQ(
       displays[2].id,
@@ -998,7 +999,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginTopOutside) {
 
 TEST_F(DisplayInfoProviderChromeosTest,
        SetBoundsOriginLeftButSharesBottomSide) {
-  UpdateDisplay("1200x600,1000x100");
+  UpdateDisplay("1200x600,1000x200");
 
   const display::Display& secondary =
       display::test::DisplayManagerTestApi(display_manager())
@@ -1010,44 +1011,44 @@ TEST_F(DisplayInfoProviderChromeosTest,
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
 
-  EXPECT_EQ("-650,600 1000x100", secondary.bounds().ToString());
+  EXPECT_EQ("-650,600 1000x200", secondary.bounds().ToString());
 }
 
 TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginRightButSharesTopSide) {
-  UpdateDisplay("1200x600,1000x100");
+  UpdateDisplay("1200x600,1000x200");
 
   const display::Display& secondary =
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
   info.bounds_origin_x = 850;
-  info.bounds_origin_y = -150;
+  info.bounds_origin_y = -250;
 
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
 
-  EXPECT_EQ("850,-100 1000x100", secondary.bounds().ToString());
+  EXPECT_EQ("850,-200 1000x200", secondary.bounds().ToString());
 }
 
 TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginTopButSharesLeftSide) {
-  UpdateDisplay("1200x600,1000x100/l");
+  UpdateDisplay("1200x600,1000x200/l");
 
   const display::Display& secondary =
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.bounds_origin_x = -150;
+  info.bounds_origin_x = -250;
   info.bounds_origin_y = -650;
 
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
 
-  EXPECT_EQ("-100,-650 100x1000", secondary.bounds().ToString());
+  EXPECT_EQ("-200,-650 200x1000", secondary.bounds().ToString());
 }
 
 TEST_F(DisplayInfoProviderChromeosTest,
        SetBoundsOriginBottomButSharesRightSide) {
-  UpdateDisplay("1200x600,1000x100/l");
+  UpdateDisplay("1200x600,1000x200/l");
 
   const display::Display& secondary =
       display::test::DisplayManagerTestApi(display_manager())
@@ -1059,7 +1060,7 @@ TEST_F(DisplayInfoProviderChromeosTest,
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
 
-  EXPECT_EQ("1200,450 100x1000", secondary.bounds().ToString());
+  EXPECT_EQ("1200,450 200x1000", secondary.bounds().ToString());
 }
 
 TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginPrimaryHiDPI) {
@@ -1677,7 +1678,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetMIXEDMode) {
   }
 
   // Add more displays.
-  UpdateDisplay("200x150,600x550,700x650");
+  UpdateDisplay("400x300,600x550,700x650");
   display::DisplayIdList id_list =
       display_manager()->GetConnectedDisplayIdList();
   EXPECT_EQ(3U, id_list.size());

@@ -130,7 +130,7 @@ TEST_F(ArcSerializationDelegateTest, RootNodeBoundsOnExternalDisplay) {
 }
 
 TEST_F(ArcSerializationDelegateTest, BoundsScalingPiArc) {
-  UpdateDisplay("400x300*2");  // 2x device scale factor.
+  UpdateDisplay("800x600*2");  // 2x device scale factor.
 
   // With default_scale_cancellation, Android has default (1x) scale factor.
   wm_helper->SetDefaultScaleCancellation(true);
@@ -151,7 +151,7 @@ TEST_F(ArcSerializationDelegateTest, BoundsScalingPiArc) {
 }
 
 TEST_F(ArcSerializationDelegateTest, BoundsScalingFromRvcArcAndLater) {
-  UpdateDisplay("400x300*2");  // 2x device scale factor.
+  UpdateDisplay("800x600*2");  // 2x device scale factor.
 
   // Without default_scale_cancellation, Android use the same (2x) scale factor.
   wm_helper->SetDefaultScaleCancellation(false);

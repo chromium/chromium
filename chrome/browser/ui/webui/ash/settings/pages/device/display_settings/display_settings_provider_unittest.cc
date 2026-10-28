@@ -469,7 +469,7 @@ TEST_F(DisplaySettingsProviderTest, NewDisplayConnectedHistogram) {
           kNewDisplayConnected,
       1);
 
-  UpdateDisplay("300x200");
+  UpdateDisplay("320x200");
   provider_->OnDisplayAdded(display::Display(id));
 
   // Expect not to count new display is connected since it's already saved
