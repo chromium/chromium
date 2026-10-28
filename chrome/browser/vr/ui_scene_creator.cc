@@ -351,7 +351,7 @@ void UiSceneCreator::CreateWebVrRoot() {
   scene_->AddUiElement(kRoot, std::move(element));
 }
 
-void UiSceneCreator::CreateExternalPromptNotifcationOverlay() {
+void UiSceneCreator::CreateExternalPromptNotificationOverlay() {
 #if !BUILDFLAG(IS_ANDROID)
   auto phase = kPhaseForeground;
   auto icon = Create<VectorIcon>(kNone, phase, 100);
@@ -455,7 +455,7 @@ void UiSceneCreator::CreateExternalPromptNotifcationOverlay() {
 void UiSceneCreator::CreateWebVrSubtree() {
   CreateWebVrOverlayElements();
   CreateWebVrTimeoutScreen();
-  CreateExternalPromptNotifcationOverlay();
+  CreateExternalPromptNotificationOverlay();
 
   // Note, this cannot be a descendant of the viewport aware root, otherwise it
   // will fade out when the viewport aware elements reposition.

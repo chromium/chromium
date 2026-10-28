@@ -33,7 +33,7 @@ class UiSceneCreator {
   void CreateWebVrSubtree();
   void CreateWebVrOverlayElements();
   void CreateWebVrTimeoutScreen();
-  void CreateExternalPromptNotifcationOverlay();
+  void CreateExternalPromptNotificationOverlay();
 
   raw_ptr<UiScene> scene_;
   raw_ptr<Ui> ui_;
