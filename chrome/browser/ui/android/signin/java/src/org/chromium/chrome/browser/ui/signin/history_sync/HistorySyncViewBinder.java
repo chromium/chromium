@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.signin.history_sync;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper.ScreenMode;
@@ -68,5 +69,11 @@ class HistorySyncViewBinder {
         } else {
             throw new IllegalArgumentException("Unknown property key: " + key);
         }
+    }
+
+    public static void setMinorModeButtonShownMetricRecordedForTesting(boolean isRecorded) {
+        boolean oldValue = sMinorModeButtonShownMetricRecorded;
+        sMinorModeButtonShownMetricRecorded = isRecorded;
+        ResettersForTesting.register(() -> sMinorModeButtonShownMetricRecorded = oldValue);
     }
 }

@@ -42,10 +42,10 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -69,16 +69,17 @@ import org.chromium.ui.test.util.ViewUtils;
 /** Tests for the standalone history sync consent dialog */
 @RunWith(ContentJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DoNotBatch(reason = "This test relies on native initialization")
+@Batch(Batch.PER_CLASS)
 public class HistorySyncTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Rule
+    @Rule(order = 0)
+    public final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
+
+    @Rule(order = 1)
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
-    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     private static final @SigninAccessPoint int SIGNIN_ACCESS_POINT = SigninAccessPoint.WEB_SIGNIN;
     private static final int MINOR_MODE_RESTRICTIONS_FETCH_DEADLINE_MS = 1000;
@@ -96,6 +97,7 @@ public class HistorySyncTest {
         mActivityTestRule.launchActivity(null);
         SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelperMock);
+        HistorySyncViewBinder.setMinorModeButtonShownMetricRecordedForTesting(false);
     }
 
     @After
@@ -107,7 +109,6 @@ public class HistorySyncTest {
                         mHistorySyncCoordinator = null;
                     });
         }
-        mSigninTestRule.forceSignOut();
         ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
     }
 

@@ -10,6 +10,7 @@ import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -232,5 +233,6 @@ public class MinorModeHelper implements IdentityManager.Observer {
     /** Disable timeout to show sync buttons on FRE for testing */
     public static void disableTimeoutForTesting() {
         sDisableHistorySyncOptInTimeoutForTesting = true;
+        ResettersForTesting.register(() -> sDisableHistorySyncOptInTimeoutForTesting = false);
     }
 }
