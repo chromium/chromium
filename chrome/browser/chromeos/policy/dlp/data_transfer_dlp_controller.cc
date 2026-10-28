@@ -643,13 +643,26 @@ void DataTransferDlpController::ContinuePasteIfClipboardRestrictionsAllow(
   DlpRulesManager::Level level =
       IsDataTransferAllowed(*dlp_rules_manager_, data_src, data_dst, size,
                             &src_pattern, &dst_pattern, &rule_metadata);
-  // Reporting doesn't need to be added here because PasteIfAllowed is called
-  // after IsClipboardReadAllowed
+  // `PasteIfAllowed()` can reach `kBlock` with non-empty data even after
+  // `IsClipboardReadAllowed()` allowed the read: e.g.,
+  // `IsClipboardReadAllowed()` checks the UTF-8 byte size from
+  // `ui::ClipboardData::CalculateSize()`, whereas `PasteIfAllowed()` receives
+  // the UTF-16 byte size from `content::ClipboardPasteData::size()`, or
+  // `CacheBasicPasteSource()` resolves a source `RenderFrameHost` endpoint when
+  // `ClipboardData::source()` was null.
+  if (level == DlpRulesManager::Level::kBlock) {
+    if (ShouldNotifyOnPaste(data_dst)) {
+      NotifyBlockedPaste(data_src, data_dst);
+    }
+    MaybeReportEvent(data_src, data_dst, src_pattern, dst_pattern,
+                     DlpRulesManager::Level::kBlock,
+                     /*is_clipboard_event=*/true, rule_metadata);
+    std::move(paste_cb).Run(false);
+    return;
+  }
 
-  // If it's blocked, the data should be empty & PasteIfAllowed should not be
-  // called.
-  CHECK_NE(level, DlpRulesManager::Level::kBlock, base::NotFatalUntil::M161);
-
+  // Reporting doesn't need to be added here because `PasteIfAllowed()` is
+  // called after `IsClipboardReadAllowed()`.
   if (level == DlpRulesManager::Level::kAllow ||
       level == DlpRulesManager::Level::kReport) {
     std::move(paste_cb).Run(true);
