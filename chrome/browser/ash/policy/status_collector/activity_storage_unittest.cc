@@ -6,11 +6,16 @@
 
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/pref_service_factory.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/prefs/testing_pref_store.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -180,6 +185,29 @@ TEST_F(ActivityStorageTest, AddActivityPeriod) {
                                       MakeUTCTime("26-MAR-2020 7:00pm")),
                            EqActivity(MakeUTCTime("28-MAR-2020 12:00am"),
                                       MakeUTCTime("28-MAR-2020 12:15am"))));
+}
+
+TEST_F(ActivityStorageTest, InitializationStatusError) {
+  auto user_prefs = base::MakeRefCounted<TestingPrefStore>();
+  user_prefs->set_read_error(PersistentPrefStore::PREF_READ_ERROR_JSON_PARSE);
+
+  auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
+  pref_registry->RegisterDictionaryPref(kPrefName);
+
+  PrefServiceFactory factory;
+  factory.set_user_prefs(user_prefs);
+  std::unique_ptr<PrefService> pref_service = factory.Create(pref_registry);
+  ASSERT_EQ(pref_service->GetInitializationStatus(),
+            PrefService::INITIALIZATION_STATUS_ERROR);
+
+  ActivityStorage storage(pref_service.get(), kPrefName, base::Days(0));
+  storage.AddActivityPeriod(MakeLocalTime("28-MAR-2020 4:30pm"),
+                            MakeLocalTime("28-MAR-2020 11:30pm"));
+
+  EXPECT_THAT(
+      storage.GetActivityPeriodsWithNoId(),
+      UnorderedElementsAre(EqActivity(MakeUTCTime("28-MAR-2020 12:00am"),
+                                      MakeUTCTime("28-MAR-2020 7:00am"))));
 }
 
 }  // namespace policy

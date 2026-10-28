@@ -10,6 +10,7 @@
 
 #include "base/base64.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -31,12 +32,12 @@ ActivityStorage::ActivityStorage(PrefService* pref_service,
       pref_name_(pref_name),
       day_start_offset_(day_start_offset) {
   CHECK(pref_service_, base::NotFatalUntil::M160);
-  const PrefService::PrefInitializationStatus pref_service_status =
-      pref_service_->GetInitializationStatus();
-  // TODO(crbug.com/576535698): CHECK-exclusion: Convert to a CHECK once we are
-  // confident it won't be triggered.
-  DCHECK(pref_service_status != PrefService::INITIALIZATION_STATUS_WAITING &&
-         pref_service_status != PrefService::INITIALIZATION_STATUS_ERROR);
+  // `INITIALIZATION_STATUS_ERROR` is intentionally allowed because disk or
+  // JSON read errors on `Preferences` / `Local State` are tolerated at runtime
+  // on ChromeOS (`JsonPrefStore` initializes an empty in-memory dict).
+  CHECK_NE(pref_service_->GetInitializationStatus(),
+           PrefService::INITIALIZATION_STATUS_WAITING,
+           base::NotFatalUntil::M160);
 }
 
 ActivityStorage::~ActivityStorage() = default;
