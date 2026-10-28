@@ -415,7 +415,9 @@ void TtcMesClient::SendContextUpdate(
   auto* ctx = frame.mutable_context_update();
   ctx->mutable_active_tab()->set_url(url.spec());
   ctx->mutable_active_tab()->set_title(title);
-  *ctx->mutable_annotated_page_content() = apc;
+  if (apc.ByteSizeLong() > 0) {
+    *ctx->mutable_annotated_page_content() = apc;
+  }
   SendFrame(frame);
 }
 

@@ -78,7 +78,8 @@ class TtcBackend {
   // Submits a user text query to the backend server.
   virtual void SendTextInput(const std::string& text) = 0;
 
-  // Sends active tab context update to the backend server.
+  // Sends active tab context update to the backend server. `apc` is empty if
+  // the page's content is unavailable.
   virtual void SendContextUpdate(
       const GURL& url,
       const std::string& title,

@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ttc/core/page_context.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
+#include "content/public/browser/web_contents_observer.h"
 
 namespace content {
 class Page;
@@ -32,16 +33,20 @@ class SessionJournal;
 // object exists.
 //
 // Extracted page context is never emitted for a page whose URL is not
-// supported (see IsUrlSupportedForPageContext()).
+// supported (see IsUrlSupportedForPageContext()). Instead, a
+// kPageContextNotEligible error is emitted.
 // TODO(b/555804152): Monitor for additional non-navigation, in-page changes.
 class TtcPageContextMonitor
-    : public page_content_annotations::PageContentExtractionService::Observer {
+    : public page_content_annotations::PageContentExtractionService::Observer,
+      public content::WebContentsObserver {
  public:
   // Invoked whenever the page shown in the monitored tab changes in a way
   // that invalidates previously obtained page context.
   using PageContextInvalidatedCallback = base::RepeatingClosure;
 
-  // Invoked when fresh page context is extracted for the monitored page.
+  // Invoked when fresh page context is extracted for the monitored page, or
+  // with an error when page context can't be provided for it, e.g. because its
+  // renderer crashed or its URL isn't supported.
   using PageContextFetchedCallback =
       base::RepeatingCallback<void(const PageContextResult&)>;
 
@@ -62,6 +67,10 @@ class TtcPageContextMonitor
       content::Page& page,
       page_content_annotations::PageContent page_content) override;
 
+  // content::WebContentsObserver:
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
+
  private:
   // Requests page context for the monitored page on construction. If PCES
   // already has content cached for the page, `on_page_context_fetched_` is
@@ -80,10 +89,6 @@ class TtcPageContextMonitor
   void NotifyPageContextFetched(base::WeakPtr<content::Page> page,
                                 PageContextResult result,
                                 bool is_url_supported);
-
-  // Weak because the monitored WebContents may be destroyed before the owner
-  // of this object learns about it and destroys this object.
-  const base::WeakPtr<content::WebContents> web_contents_;
 
   const raw_ref<SessionJournal> journal_;
 

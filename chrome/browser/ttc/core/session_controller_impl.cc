@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/no_destructor.h"
 #include "base/state_transitions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -27,8 +28,10 @@
 #include "components/actor/core/journal_details_builder.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/ttc/app/public/conversation.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ttc/android/session_view_android.h"
@@ -311,8 +314,25 @@ actor::TaskId SessionControllerImpl::GetActorTaskId() const {
 void SessionControllerImpl::OnPageContextFetched(
     const PageContextResult& result) {
   if (!result.has_value()) {
-    // TODO(b/555804152): Signal to the model when page context cannot be
-    // fetched or is ineligible.
+    // Replace the model's context with just the tab, so that it doesn't keep
+    // using context of a page that's no longer shown. Only share the origin of
+    // a page whose context may not be shared.
+    // TODO(b/555804152): Tell the model why there's no page content.
+    content::WebContents* contents = GetVoiceFocusedWebContents();
+    if (!contents) {
+      return;
+    }
+    content::RenderFrameHost* main_frame = contents->GetPrimaryMainFrame();
+    if (result.error() == page_content_annotations::FetchPageContextError::
+                              kPageContextNotEligible) {
+      conversation_->SendContextUpdate(
+          main_frame->GetLastCommittedOrigin().GetURL(),
+          /*title=*/std::string(), /*apc=*/{});
+    } else {
+      conversation_->SendContextUpdate(main_frame->GetLastCommittedURL(),
+                                       base::UTF16ToUTF8(contents->GetTitle()),
+                                       /*apc=*/{});
+    }
     return;
   }
   const optimization_guide::proto::AnnotatedPageContent& apc =

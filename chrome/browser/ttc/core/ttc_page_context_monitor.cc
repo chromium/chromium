@@ -51,7 +51,7 @@ TtcPageContextMonitor::TtcPageContextMonitor(
     SessionJournal& journal,
     PageContextInvalidatedCallback on_page_context_invalidated,
     PageContextFetchedCallback on_page_context_fetched)
-    : web_contents_(web_contents.GetWeakPtr()),
+    : content::WebContentsObserver(&web_contents),
       journal_(journal),
       extraction_service_(CHECK_DEREF(
           page_content_annotations::PageContentExtractionServiceFactory::
@@ -72,9 +72,9 @@ TtcPageContextMonitor::TtcPageContextMonitor(
 TtcPageContextMonitor::~TtcPageContextMonitor() = default;
 
 void TtcPageContextMonitor::FetchPageContext() {
-  CHECK(web_contents_);
+  CHECK(web_contents());
 
-  content::Page& page = web_contents_->GetPrimaryPage();
+  content::Page& page = web_contents()->GetPrimaryPage();
   // PCES may have a cached extraction for this page. If so, use it; if not,
   // fetch one async.
   if (std::optional<page_content_annotations::ExtractedPageContentResult>
@@ -138,8 +138,22 @@ void TtcPageContextMonitor::OnPageContentExtracted(
               false)));
 }
 
+void TtcPageContextMonitor::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
+  // The page's content is gone, and PCES won't report anything for the page
+  // until it's reloaded. Report it as not eligible, which only shares its
+  // origin, rather than checking whether its URL is supported: the crashed
+  // main document no longer has one.
+  journal_->Log("TtcPageContextRendererGone", {});
+  pending_cached_notification_.Cancel();
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  on_page_context_fetched_.Run(
+      base::unexpected(page_content_annotations::FetchPageContextError::
+                           kPageContextNotEligible));
+}
+
 bool TtcPageContextMonitor::IsMonitoredPage(const content::Page& page) const {
-  return web_contents_ && &page == &web_contents_->GetPrimaryPage();
+  return web_contents() && &page == &web_contents()->GetPrimaryPage();
 }
 
 void TtcPageContextMonitor::MaybeNotifyPageContextFetched(
@@ -170,6 +184,9 @@ void TtcPageContextMonitor::NotifyPageContextFetched(
                   actor::JournalDetailsBuilder().Add("url", url).Build());
     // TODO(b/555804152): Figure out how to send specific error messages to
     // the server.
+    on_page_context_fetched_.Run(
+        base::unexpected(page_content_annotations::FetchPageContextError::
+                             kPageContextNotEligible));
     return;
   }
   journal_->Log("TtcPageContextUpdated",

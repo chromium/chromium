@@ -91,6 +91,13 @@ std::vector<std::string> CollectText(
   return text;
 }
 
+// Matches an AnnotatedPageContent without any content.
+auto IsEmptyPageContent() {
+  return testing::Property(
+      "ByteSizeLong",
+      &optimization_guide::proto::AnnotatedPageContent::ByteSizeLong, 0u);
+}
+
 class PageContextMonitorBrowserTest : public TtcCoreBrowserTestBase {
  public:
   PageContextMonitorBrowserTest() = default;
@@ -345,9 +352,9 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // A session on a page whose URL is not supported (e.g. non-NTP chrome:// pages,
-// data: and about: URLs) must never send page context to the conversation,
-// whether PCES extracts the page's content or not, and must resume sending
-// context once the page navigates to a supported URL.
+// data: and about: URLs) must never send the page's content or title to the
+// conversation, whether PCES extracts the page's content or not, and must
+// resume sending context once the page navigates to a supported URL.
 IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
                        UnsupportedUrlsAreNotFetchedOrEmitted) {
   page_content_annotations::PageContentExtractionService* extraction_service =
@@ -361,7 +368,10 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   auto start_session_expecting_no_context = [&]() {
     ttc_service().StartSession();
     ASSERT_TRUE(conversation());
-    EXPECT_CALL(*conversation(), SendContextUpdate).Times(0);
+    // Only the page's origin may be sent, without its title or content.
+    EXPECT_CALL(*conversation(), SendContextUpdate(testing::_, std::string(),
+                                                   IsEmptyPageContent()))
+        .Times(testing::AnyNumber());
     EXPECT_TRUE(ExpectPageChange().Wait());
   };
 
@@ -469,9 +479,10 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
 }
 
 // A session on a page for which the actor safety lists block a navigation from
-// the page's URL to itself must never send page context to the conversation,
-// whether the page's content is extracted during the session or already cached,
-// and must resume sending context once the page navigates to an allowed URL.
+// the page's URL to itself must never send the page's content or title to the
+// conversation, whether the page's content is extracted during the session or
+// already cached, and must resume sending context once the page navigates to an
+// allowed URL.
 IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
                        SafetyListBlockedUrlsAreNotFetchedOrEmitted) {
   actor::SetSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
@@ -491,7 +502,10 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   auto start_session_expecting_no_context = [&]() {
     ttc_service().StartSession();
     ASSERT_TRUE(conversation());
-    EXPECT_CALL(*conversation(), SendContextUpdate).Times(0);
+    // Only the page's origin may be sent, without its title or content.
+    EXPECT_CALL(*conversation(), SendContextUpdate(testing::_, std::string(),
+                                                   IsEmptyPageContent()))
+        .Times(testing::AnyNumber());
     EXPECT_TRUE(ExpectPageChange().Wait());
   };
 
@@ -543,6 +557,31 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
       .WillOnce(base::test::RunOnceClosure(sent.GetCallback()));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), allowed_url));
   EXPECT_TRUE(navigated.Wait());
+  EXPECT_TRUE(sent.Wait());
+}
+
+// A renderer crash must replace the conversation's context for the page with
+// just the page's origin, since the page's content is gone.
+IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
+                       RendererCrashSendsContextWithoutContent) {
+  const GURL url = embedded_test_server()->GetURL("/simple.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  StartSession();
+  {
+    base::test::TestFuture<void> sent;
+    EXPECT_CALL(*conversation(), SendContextUpdate(url, "OK", testing::_))
+        .WillOnce(base::test::RunOnceClosure(sent.GetCallback()));
+    EXPECT_TRUE(sent.Wait());
+    EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
+  }
+
+  base::test::TestFuture<void> sent;
+  EXPECT_CALL(*conversation(),
+              SendContextUpdate(url::Origin::Create(url).GetURL(),
+                                std::string(), IsEmptyPageContent()))
+      .WillOnce(base::test::RunOnceClosure(sent.GetCallback()));
+  content::CrashTab(web_contents());
   EXPECT_TRUE(sent.Wait());
 }
 
