@@ -572,7 +572,7 @@ crbug.com/angleproject/482223016 [ no-passthrough ] conformance/glsl/misc/shader
 
 # Persistent flaking on Windows and Mac/M1
 crbug.com/365680830 [ arch-x86_64 angle-d3d11 graphite-enabled win ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
-crbug.com/365680830 [ mac arch-arm64 angle-metal ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
+crbug.com/365680830 [ angle-metal arch-arm64 no-asan sequoia ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
 
 
 ####################
@@ -626,7 +626,6 @@ crbug.com/41496274 [ win11 qualcomm-0x36334330 angle-d3d11 ] deqp/functional/gle
 crbug.com/41496274 [ win11 qualcomm-0x36334330 angle-d3d11 ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
 crbug.com/41496274 [ win11 qualcomm-0x36334330 angle-d3d11 ] deqp/functional/gles3/transformfeedback/random_separate_triangles.html [ Failure ]
 
-crbug.com/545084625 [ win10 intel-0x4680 angle-d3d11 passthrough ] conformance2/rendering/blitframebuffer-test.html [ RetryOnFailure ]
 
 
 ######################
@@ -693,13 +692,13 @@ crbug.com/374696517 [ mac amd-0x7340 angle-metal ] deqp/functional/gles3/uniform
 
 ## Mac Intel ##
 
-crbug.com/679692 [ angle-metal intel mac no-asan ] conformance2/textures/misc/angle-stuck-depth-textures.html [ Failure ]
 crbug.com/1334684 [ angle-metal intel sequoia ] deqp/functional/gles3/shaderbuiltinvar.html [ Failure ]
 
 
 
 # WebGL: INVALID_ENUM: getShaderParameter
-crbug.com/444250724 [ mac angle-metal graphite-enabled intel-0x3e9b ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
+crbug.com/444250724 [ amd-0x7340 angle-metal graphite-enabled sonoma ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
+crbug.com/444250724 [ angle-metal graphite-enabled intel-0x3e9b sequoia ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 
 
 ## Mac / Apple Silicon ##
@@ -714,14 +713,9 @@ crbug.com/444250724 [ mac angle-metal graphite-enabled intel-0x3e9b ] conformanc
 
 ## Linux NVIDIA ##
 
-crbug.com/1115314 [ linux nvidia-0x2184 angle-opengl passthrough ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
-crbug.com/40144307 [ linux nvidia-0x2783 angle-opengl passthrough ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
-crbug.com/535817988 [ linux nvidia angle-opengl passthrough ] conformance/extensions/oes-texture-float-linear.html [ RetryOnFailure ]
 
 ## Linux / OpenGL / GTX 1660 ##
 
-crbug.com/498282277 [ linux angle-opengl nvidia-0x2184 ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ RetryOnFailure ]
-crbug.com/498282277 [ linux angle-opengl nvidia-0x2184 ] conformance2/textures/canvas/tex-2d-rg8-rg-unsigned_byte.html [ RetryOnFailure ]
 
 ## Linux AMD RX 5500 XT ##
 
@@ -732,7 +726,6 @@ crbug.com/40167934 [ linux amd display-server-wayland ] conformance/extensions/k
 crbug.com/541251909 [ linux amd display-server-wayland ] conformance2/extensions/ext-render-snorm.html [ Failure ]
 crbug.com/541251909 [ linux amd display-server-wayland ] conformance2/extensions/ext-texture-norm16.html [ Failure ]
 crbug.com/541251909 [ linux amd display-server-wayland ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
-crbug.com/541251909 [ linux amd display-server-wayland ] conformance2/rendering/rasterizer-discard-and-implicit-clear.html [ Failure ]
 
 ## Linux AMD RX 7600 ##
 
@@ -870,7 +863,6 @@ crbug.com/568282113 [ android android-pixel-10 ] conformance2/textures/misc/texe
 crbug.com/551573368 [ android android-pixel-10 ] deqp/functional/gles3/integerstatequery.html [ Failure ]
 crbug.com/551573368 [ android android-pixel-10 ] deqp/functional/gles3/shaderbuiltinvar.html [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 ] deqp/functional/gles3/shaderstruct.html [ Failure ]
-crbug.com/527094637 [ android android-pixel-10 ] deqp/functional/gles3/uniformbuffers/random.html [ Failure ]
 # New failures from OS upgrade.
 crbug.com/513192891 [ android android-pixel-10 ] conformance/rendering/out-of-bounds-array-buffers.html [ Failure ]
 crbug.com/513192894 [ android android-pixel-10 ] conformance2/textures/misc/tex-unpack-params.html [ Failure ]
@@ -902,7 +894,6 @@ crbug.com/416408899 [ android android-brya passthrough ] conformance2/renderbuff
 crbug.com/416417899 [ android android-brya passthrough ] deqp/functional/gles3/negativebufferapi.html [ Failure ]
 crbug.com/416417899 [ android android-brya passthrough ] deqp/functional/gles3/negativetextureapi.html [ Failure ]
 crbug.com/416417899 [ android android-brya passthrough ] deqp/functional/gles3/shaderoperator/unary_operator_00.html [ Failure ]
-crbug.com/416408899 [ android android-brya passthrough angle-vulkan ] conformance2/textures/misc/copy-texture-image-same-texture.html [ Failure ]
 
 #####################
 # ChromeOS failures #
@@ -1013,7 +1004,6 @@ crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/canvas/drawi
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/extensions/ext-disjoint-timer-query-webgl2.html [ Failure ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/extensions/webgl-stencil-texturing.html [ Failure ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/misc/uninitialized-test-2.html [ Failure ]
-crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/textures/misc/copy-texture-image-same-texture.html [ Failure ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/transform_feedback/transform_feedback.html [ Failure ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] deqp/functional/gles3/fbomultisample.2_samples.html [ Failure ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] deqp/functional/gles3/fbomultisample.4_samples.html [ Failure ]
