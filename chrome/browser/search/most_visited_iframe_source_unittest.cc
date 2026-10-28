@@ -5,6 +5,8 @@
 #include "chrome/browser/search/most_visited_iframe_source.h"
 
 #include <memory>
+#include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
@@ -24,8 +26,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-const char kNonInstantOrigin[] = "http://evil";
-const char kInstantOrigin[] = "chrome-search://instant";
+constexpr std::string_view kNonInstantOrigin = "http://evil";
+constexpr std::string_view kInstantOrigin = "chrome-search://instant";
 
 class TestMostVisitedIframeSource : public MostVisitedIframeSource {
  public:
@@ -34,12 +36,12 @@ class TestMostVisitedIframeSource : public MostVisitedIframeSource {
   using MostVisitedIframeSource::SendResource;
   using MostVisitedIframeSource::ShouldServiceRequest;
 
-  void set_origin(std::string origin) { origin_ = origin; }
+  void set_origin(std::string_view origin) { origin_ = origin; }
 
  protected:
   std::string GetSource() override { return "test"; }
 
-  bool ServesPath(const std::string& path) const override {
+  bool ServesPath(std::string_view path) const override {
     return path == "/valid.html" || path == "/valid.js";
   }
 
@@ -97,7 +99,7 @@ class MostVisitedIframeSourceTest : public testing::Test {
                        base::Unretained(this)));
   }
 
-  bool ShouldService(const std::string& path, int process_id) {
+  bool ShouldService(std::string_view path, int process_id) {
     return source()->ShouldServiceRequest(GURL(path), &profile_, process_id);
   }
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SEARCH_INSTANT_BROWSERTEST_BASE_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
@@ -35,7 +36,7 @@ class InstantBrowserTestBase : public InProcessBrowserTest {
   // TLD.
   // It will always use an instant-enabled configuration using a
   // search_terms_replacement_key.
-  void SetUserSelectedDefaultSearchProvider(const std::string& base_url);
+  void SetUserSelectedDefaultSearchProvider(std::string_view base_url);
 
   raw_ptr<InstantService, DanglingUntriaged> instant_service_;
   raw_ptr<TemplateURLService, DanglingUntriaged> template_url_service_;

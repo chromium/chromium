@@ -15,7 +15,6 @@ HistoryEntry::~HistoryEntry() = default;
 HistoryEntry& HistoryEntry::operator=(const HistoryEntry&) = default;
 HistoryEntry& HistoryEntry::operator=(HistoryEntry&&) = default;
 bool HistoryEntry::operator==(const HistoryEntry& rhs) const {
-  return this->id.ToString() == rhs.id.ToString() &&
-         this->subject == rhs.subject && this->style == rhs.style &&
-         this->mood == rhs.mood;
+  return this->id == rhs.id && this->subject == rhs.subject &&
+         this->style == rhs.style && this->mood == rhs.mood;
 }
