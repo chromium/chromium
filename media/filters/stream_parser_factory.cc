@@ -51,7 +51,9 @@ typedef bool (*CodecIDValidatorFunction)(std::string_view codecs_id,
 struct CodecInfo {
   enum Type { UNKNOWN, AUDIO, VIDEO };
 
-  // Update tools/metrics/histograms/enums.xml if new values are added.
+  // Update tools/metrics/histograms/metadata/media/enums.xml if new values are
+  // added.
+  // LINT.IfChange(MSECodec)
   enum HistogramTag {
     HISTOGRAM_UNKNOWN,
     HISTOGRAM_VP8,
@@ -76,6 +78,7 @@ struct CodecInfo {
     HISTOGRAM_IAMF,
     HISTOGRAM_MAX = HISTOGRAM_IAMF  // Must be equal to largest logged entry.
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:MSECodec)
 
   const char* pattern;
   Type type;

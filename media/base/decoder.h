@@ -16,6 +16,7 @@ namespace media {
 
 // List of known AudioDecoder implementations; recorded to UKM, always add new
 // values to the end and do not reorder or delete values from this list.
+// LINT.IfChange(AudioDecoderType)
 enum class AudioDecoderType : int {
   kUnknown = 0,          // Decoder name string is not recognized or n/a.
   kFFmpeg = 1,           // FFmpegAudioDecoder
@@ -34,6 +35,7 @@ enum class AudioDecoderType : int {
   // Keep this at the end and equal to the last entry.
   kMaxValue = kIamf,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:AudioDecoderType)
 
 // List of known VideoDecoder implementations; recorded to UKM, always add new
 // values to the end and do not reorder or delete values from this list.

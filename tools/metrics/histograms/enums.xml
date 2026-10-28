@@ -507,6 +507,8 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="3" label="kIAMF_BASE"/>
 </enum>
 
+<!-- LINT.IfChange(AudioDecoderType) -->
+
 <enum name="AudioDecoderType">
   <int value="0" label="kUnknown"/>
   <int value="1" label="kFFmpeg"/>
@@ -519,7 +521,11 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="8" label="kMediaFoundation"/>
   <int value="9" label="kPassthroughDTS"/>
   <int value="10" label="kSymphonia"/>
+  <int value="11" label="kOpus"/>
+  <int value="12" label="kIamf"/>
 </enum>
+
+<!-- LINT.ThenChange(//media/base/decoder.h:AudioDecoderType) -->
 
 <enum name="AudioEffectType">
   <int value="0" label="None"/>

@@ -2070,6 +2070,8 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="PLATFORM_FAILURE"/>
 </enum>
 
+<!-- LINT.IfChange(MSECodec) -->
+
 <enum name="MSECodec">
   <int value="0" label="(Unknown)"/>
   <int value="1" label="VP8"/>
@@ -2087,7 +2089,14 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="FLAC"/>
   <int value="14" label="AV1"/>
   <int value="15" label="MPEG_H_AUDIO"/>
+  <int value="16" label="DTS"/>
+  <int value="17" label="DTSXP2"/>
+  <int value="18" label="DTSE"/>
+  <int value="19" label="AC4"/>
+  <int value="20" label="IAMF"/>
 </enum>
+
+<!-- LINT.ThenChange(//media/filters/stream_parser_factory.cc:MSECodec) -->
 
 <enum name="OSStatus_Audio">
   <int value="-1852797029" label="IllegalOperationError_ActiveStream"/>
