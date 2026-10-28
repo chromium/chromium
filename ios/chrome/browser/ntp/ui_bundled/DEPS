@@ -14,6 +14,7 @@ include_rules = [
   "+ios/chrome/browser/composebox/model",
   "+ios/chrome/browser/composebox/public",
   "+ios/chrome/browser/composebox/shared/coordinator",
+  "+ios/chrome/browser/composebox/ui",
   "+ios/chrome/browser/content_notification/model/content_notification_util.h",
   "+ios/chrome/browser/content_suggestions",
   "+ios/chrome/browser/context_menu/ui_bundled/link_preview",

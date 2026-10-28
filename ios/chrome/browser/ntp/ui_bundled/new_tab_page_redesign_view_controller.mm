@@ -177,6 +177,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   BOOL _isGoogleDefaultSearchEngine;
   BOOL _isAIMAllowed;
   BOOL _aimImageGenerationAllowed;
+  BOOL _aimAttachImagesAllowed;
   BOOL _fuseboxEligible;
   BOOL _didNotifyLensBadgeDisplay;
   BOOL _lensButtonWithNewBadgeTapped;
@@ -309,10 +310,13 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
         [[NewTabPageQuickActionsViewController alloc] init];
     _quickActionsViewController.layoutGuideCenter = self.layoutGuideCenter;
     _quickActionsViewController.NTPShortcutsHandler = self.NTPShortcutsHandler;
-    if (GetAimButtonRefactorArm() ==
-        AimButtonRefactorArm::kImageGenerationQuickAction) {
+
+    AimButtonRefactorArm arm = GetAimButtonRefactorArm();
+    if (arm == AimButtonRefactorArm::kImageGenerationQuickAction ||
+        arm == AimButtonRefactorArm::kAttachImageQuickAction) {
       [_quickActionsViewController
-          setAIMImageGenerationAllowed:_aimImageGenerationAllowed];
+          setAIMImageGenerationAllowed:_aimImageGenerationAllowed
+                   attachImagesAllowed:_aimAttachImagesAllowed];
     }
     [_quickActionsViewController setAIMTitle:_aimTitle
                                         icon:_aimIcon
@@ -1441,15 +1445,20 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   [self updateActionButtons];
 }
 
-- (void)setAIMImageGenerationAllowed:(BOOL)aimImageGenerationAllowed {
-  CHECK_EQ(GetAimButtonRefactorArm(),
-           AimButtonRefactorArm::kImageGenerationQuickAction);
-  if (aimImageGenerationAllowed == _aimImageGenerationAllowed) {
+- (void)setAIMImageGenerationAllowed:(BOOL)imageGenerationAllowed
+                 attachImagesAllowed:(BOOL)attachmentsAllowed {
+  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
+  CHECK(arm == AimButtonRefactorArm::kImageGenerationQuickAction ||
+        arm == AimButtonRefactorArm::kAttachImageQuickAction);
+  if (imageGenerationAllowed == _aimImageGenerationAllowed &&
+      attachmentsAllowed == _aimAttachImagesAllowed) {
     return;
   }
-  _aimImageGenerationAllowed = aimImageGenerationAllowed;
+  _aimImageGenerationAllowed = imageGenerationAllowed;
+  _aimAttachImagesAllowed = attachmentsAllowed;
   [_quickActionsViewController
-      setAIMImageGenerationAllowed:aimImageGenerationAllowed];
+      setAIMImageGenerationAllowed:imageGenerationAllowed
+               attachImagesAllowed:attachmentsAllowed];
 }
 
 - (void)setAIMTitle:(NSString*)title
