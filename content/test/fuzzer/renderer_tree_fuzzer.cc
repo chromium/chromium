@@ -8,8 +8,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include <array>
 #include <memory>
 #include <random>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
@@ -17,6 +19,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/values.h"
 #include "content/test/fuzzer/fuzzer_support.h"
 #include "testing/libfuzzer/libfuzzer_exports.h"
@@ -118,9 +121,9 @@ class NodeList : public std::vector<std::unique_ptr<Node>> {
                                                    size_t size) {
     auto nodes = std::make_unique<NodeList>();
 
-    std::optional<base::Value> value(base::JSONReader::Read(
-        std::string(reinterpret_cast<const char*>(data), size),
-        base::JSON_PARSE_CHROMIUM_EXTENSIONS));
+    std::optional<base::Value> value(
+        base::JSONReader::Read({reinterpret_cast<const char*>(data), size},
+                               base::JSON_PARSE_CHROMIUM_EXTENSIONS));
     if (value && value->is_list())
       nodes->ParseJsonList(value->GetList());
 
@@ -172,36 +175,32 @@ class NodeList : public std::vector<std::unique_ptr<Node>> {
 class Element : public Node {
  public:
   static std::unique_ptr<Node> CreateRandom(Random* rnd) {
-    static std::vector<std::string> tagNames;
-    if (tagNames.empty()) {
-      tagNames.insert(
-          tagNames.begin(),
-          {"a",        "abbr",       "address",  "area",       "article",
-           "aside",    "audio",      "b",        "base",       "bdi",
-           "bdo",      "blockquote", "body",     "br",         "button",
-           "canvas",   "caption",    "cite",     "code",       "col",
-           "colgroup", "command",    "datalist", "dd",         "del",
-           "details",  "dfn",        "div",      "dl",         "dt",
-           "em",       "embed",      "fieldset", "figcaption", "figure",
-           "footer",   "form",       "h1",       "h2",         "h3",
-           "h4",       "h5",         "h6",       "head",       "header",
-           "hgroup",   "hr",         "html",     "i",          "iframe",
-           "img",      "input",      "ins",      "kbd",        "keygen",
-           "label",    "legend",     "li",       "link",       "map",
-           "mark",     "menu",       "meta",     "meter",      "nav",
-           "noscript", "object",     "ol",       "optgroup",   "option",
-           "output",   "p",          "param",    "pre",        "progress",
-           "q",        "rp",         "rt",       "ruby",       "s",
-           "samp",     "script",     "section",  "small",      "source",
-           "span",     "strong",     "style",    "sub",        "summary",
-           "sup",      "table",      "tbody",    "td",         "textarea",
-           "tfoot",    "th",         "thead",    "time",       "title",
-           "tr",       "track",      "u",        "ul",         "var",
-           "video",    "wbr"});
-    }
+    static constexpr auto kTagNames = std::to_array<std::string_view>(
+        {"a",        "abbr",       "address",  "area",       "article",
+         "aside",    "audio",      "b",        "base",       "bdi",
+         "bdo",      "blockquote", "body",     "br",         "button",
+         "canvas",   "caption",    "cite",     "code",       "col",
+         "colgroup", "command",    "datalist", "dd",         "del",
+         "details",  "dfn",        "div",      "dl",         "dt",
+         "em",       "embed",      "fieldset", "figcaption", "figure",
+         "footer",   "form",       "h1",       "h2",         "h3",
+         "h4",       "h5",         "h6",       "head",       "header",
+         "hgroup",   "hr",         "html",     "i",          "iframe",
+         "img",      "input",      "ins",      "kbd",        "keygen",
+         "label",    "legend",     "li",       "link",       "map",
+         "mark",     "menu",       "meta",     "meter",      "nav",
+         "noscript", "object",     "ol",       "optgroup",   "option",
+         "output",   "p",          "param",    "pre",        "progress",
+         "q",        "rp",         "rt",       "ruby",       "s",
+         "samp",     "script",     "section",  "small",      "source",
+         "span",     "strong",     "style",    "sub",        "summary",
+         "sup",      "table",      "tbody",    "td",         "textarea",
+         "tfoot",    "th",         "thead",    "time",       "title",
+         "tr",       "track",      "u",        "ul",         "var",
+         "video",    "wbr"});
 
     return std::unique_ptr<Element>(
-        new Element(tagNames[(*rnd)() % tagNames.size()]));
+        new Element(kTagNames[(*rnd)() % kTagNames.size()]));
   }
 
   Element(const Element&) = delete;
@@ -215,19 +214,15 @@ class Element : public Node {
 
  protected:
   void WriteHtml(std::string* out) override {
-    *out += "<" + tag_name_;
+    base::StrAppend(out, {"<", tag_name_});
     if (!attrs_.empty()) {
       for (auto p : attrs_) {
-        *out += " ";
-        *out += p.first;
-        *out += "='";
-        *out += p.second;
-        *out += "'";
+        base::StrAppend(out, {" ", p.first, "='", p.second, "'"});
       }
     }
     *out += ">";
     children_.WriteHtml(out);
-    *out += "</" + tag_name_ + ">";
+    base::StrAppend(out, {"</", tag_name_, ">"});
   }
 
   base::Value ToJson() override {
@@ -274,7 +269,7 @@ class Element : public Node {
   friend class NodeList;
 
   Element() : tag_name_("__invalid__") {}
-  explicit Element(const std::string& tag_name) : tag_name_(tag_name) {}
+  explicit Element(std::string_view tag_name) : tag_name_(tag_name) {}
 
   std::string tag_name_;
   NodeList children_;
