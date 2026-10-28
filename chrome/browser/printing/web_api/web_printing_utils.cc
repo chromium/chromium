@@ -4,8 +4,7 @@
 
 #include "chrome/browser/printing/web_api/web_printing_utils.h"
 
-#include <algorithm>
-
+#include "base/containers/linear_find.h"
 #include "printing/backend/print_backend.h"
 
 namespace printing::internal {
@@ -13,12 +12,8 @@ namespace printing::internal {
 const AdvancedCapability* FindAdvancedCapability(
     const PrinterSemanticCapsAndDefaults& caps,
     std::string_view capability_name) {
-  auto itr = std::ranges::find(caps.advanced_capabilities, capability_name,
-                               &AdvancedCapability::name);
-  if (itr != caps.advanced_capabilities.end()) {
-    return &*itr;
-  }
-  return nullptr;
+  return base::LinearFind(caps.advanced_capabilities, capability_name,
+                          &AdvancedCapability::name);
 }
 
 }  // namespace printing::internal

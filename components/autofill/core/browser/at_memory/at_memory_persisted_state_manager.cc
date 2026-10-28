@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/linear_find.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
@@ -37,11 +38,10 @@ namespace {
 const Suggestion* FindParentSuggestion(
     const Suggestion& suggestion,
     base::span<const Suggestion> suggestions) {
-  const auto it =
-      std::ranges::find_if(suggestions, [&suggestion](const Suggestion& entry) {
+  return base::LinearFindIf(
+      suggestions, [&suggestion](const Suggestion& entry) {
         return std::ranges::contains(entry.children, suggestion);
       });
-  return it != suggestions.end() ? &(*it) : nullptr;
 }
 
 const Suggestion* FindParentSuggestion(

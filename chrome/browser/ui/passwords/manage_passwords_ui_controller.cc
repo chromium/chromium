@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/containers/linear_find.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -165,9 +166,8 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyFormVector(
 const password_manager::InteractionsStats* FindStatsByUsername(
     base::span<const password_manager::InteractionsStats> stats,
     const std::u16string& username) {
-  auto it = std::ranges::find(
-      stats, username, &password_manager::InteractionsStats::username_value);
-  return it == stats.end() ? nullptr : &*it;
+  return base::LinearFind(stats, username,
+                          &password_manager::InteractionsStats::username_value);
 }
 
 void MaybeShowPasswordManagerShortcutIPH(BrowserWindowInterface* browser) {

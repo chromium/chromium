@@ -23,6 +23,7 @@
 #include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/linear_find.h"
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -157,11 +158,10 @@ class AttributeTypeAssignment {
 base::optional_ref<const AutofillFieldWithAttributeType> FindField(
     base::span<const AutofillFieldWithAttributeType> haystack LIFETIME_BOUND,
     const FieldGlobalId& needle) {
-  auto it = std::ranges::find(haystack, needle,
-                              [](const AutofillFieldWithAttributeType& f) {
-                                return f.field->global_id();
-                              });
-  return it != haystack.end() ? &*it : nullptr;
+  return base::LinearFind(haystack, needle,
+                          [](const AutofillFieldWithAttributeType& f) {
+                            return f.field->global_id();
+                          });
 }
 
 DenseSet<AttributeType> FindAttributesForField(

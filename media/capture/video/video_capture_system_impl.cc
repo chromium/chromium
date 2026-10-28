@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/containers/linear_find.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/trace_event/trace_event.h"
@@ -136,14 +137,10 @@ VideoCaptureErrorOrDevice VideoCaptureSystemImpl::CreateDevice(
 const VideoCaptureDeviceInfo* VideoCaptureSystemImpl::LookupDeviceInfoFromId(
     const std::string& device_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  auto iter = std::ranges::find(devices_descriptors_cache_, device_id,
-                                [](const VideoCaptureDeviceInfo& device_info) {
-                                  return device_info.descriptor.device_id;
-                                });
-  if (iter == devices_descriptors_cache_.end()) {
-    return nullptr;
-  }
-  return &(*iter);
+  return base::LinearFind(devices_descriptors_cache_, device_id,
+                          [](const VideoCaptureDeviceInfo& device_info) {
+                            return device_info.descriptor.device_id;
+                          });
 }
 
 void VideoCaptureSystemImpl::DevicesInfoReady(

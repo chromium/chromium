@@ -9,6 +9,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/linear_find.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -371,8 +372,7 @@ KerberosClient::TestInterface* FakeKerberosClient::GetTestInterface() {
 
 FakeKerberosClient::AccountData* FakeKerberosClient::GetAccountData(
     const std::string& principal_name) {
-  auto it = std::ranges::find(accounts_, AccountData(principal_name));
-  return it != accounts_.end() ? &*it : nullptr;
+  return base::LinearFind(accounts_, AccountData(principal_name));
 }
 
 FakeKerberosClient::AccountData::AccountData(const std::string& principal_name)

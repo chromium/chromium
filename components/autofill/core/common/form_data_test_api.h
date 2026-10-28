@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_COMMON_FORM_DATA_TEST_API_H_
 
 #include "base/check.h"
+#include "base/containers/linear_find.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/numerics/safe_conversions.h"
@@ -23,15 +24,13 @@ class FormDataTestApi {
   FormFieldData& field(int i) { return form_->fields_[to_index(i)]; }
 
   FormFieldData* FindFieldById(const FieldGlobalId& field_id) {
-    auto it = std::ranges::find(fields(), field_id, &FormFieldData::global_id);
-    return it != fields().end() ? &*it : nullptr;
+    return base::LinearFind(fields(), field_id, &FormFieldData::global_id);
   }
 
   // Finds a field in the FormData by its name or id.
   // Returns a pointer to the field if found, otherwise returns nullptr.
   FormFieldData* FindFieldByNameForTest(std::u16string_view name_or_id) {
-    auto it = std::ranges::find(fields(), name_or_id, &FormFieldData::name);
-    return it != fields().end() ? &*it : nullptr;
+    return base::LinearFind(fields(), name_or_id, &FormFieldData::name);
   }
 
   void Resize(size_t n) { form_->fields_.resize(n); }

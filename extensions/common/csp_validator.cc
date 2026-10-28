@@ -16,6 +16,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/linear_find.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -686,14 +687,11 @@ bool DoesCSPDisallowRemoteCode(const std::string& extension_id,
     // Find the first matching directive. As per
     // http://www.w3.org/TR/CSP/#parse-a-csp-policy, duplicate directive names
     // are ignored.
-    auto it = std::ranges::find_if(
+    mapping->directive = base::LinearFindIf(
         csp_parser.directives(),
         [mapping](const CSPParser::Directive& directive) {
           return mapping->status.Matches(directive.directive_name);
         });
-
-    if (it != csp_parser.directives().end())
-      mapping->directive = &(*it);
   }
 
   auto fallback_if_necessary = [](DirectiveMapping* from,

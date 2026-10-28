@@ -6,6 +6,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/linear_find.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
@@ -3817,12 +3818,10 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithRequestMonitor, testRequestHeader) {
   const std::vector<net::test_server::HttpRequest> captured_requests =
       requests();
   auto find_request = [&](std::string_view path) {
-    const auto it =
-        std::ranges::find_if(captured_requests, [&](const auto& request) {
-          return request.GetURL().GetPath() == path &&
-                 request.method == net::test_server::METHOD_GET;
-        });
-    return it == captured_requests.end() ? nullptr : &(*it);
+    return base::LinearFindIf(captured_requests, [&](const auto& request) {
+      return request.GetURL().GetPath() == path &&
+             request.method == net::test_server::METHOD_GET;
+    });
   };
 
   auto check_headers = [&](const net::test_server::HttpRequest* request) {
@@ -3863,12 +3862,10 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithRequestMonitor,
   const std::vector<net::test_server::HttpRequest> captured_requests =
       requests();
   auto find_request = [&](std::string_view path) {
-    const auto it =
-        std::ranges::find_if(captured_requests, [&](const auto& request) {
-          return request.GetURL().GetPath() == path &&
-                 request.method == net::test_server::METHOD_GET;
-        });
-    return it == captured_requests.end() ? nullptr : &(*it);
+    return base::LinearFindIf(captured_requests, [&](const auto& request) {
+      return request.GetURL().GetPath() == path &&
+             request.method == net::test_server::METHOD_GET;
+    });
   };
 
   auto* main_request = find_request(GetGuestURL().GetPath());

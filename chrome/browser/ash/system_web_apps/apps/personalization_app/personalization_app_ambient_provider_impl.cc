@@ -31,6 +31,7 @@
 #include "ash/webui/personalization_app/mojom/personalization_app_mojom_traits.h"
 #include "base/barrier_closure.h"
 #include "base/check.h"
+#include "base/containers/linear_find.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -691,26 +692,15 @@ void PersonalizationAppAmbientProviderImpl::OnMachineStatisticsReady() {
 ash::PersonalAlbum*
 PersonalizationAppAmbientProviderImpl::FindPersonalAlbumById(
     const std::string& album_id) {
-  auto it = std::ranges::find(personal_albums_.albums, album_id,
-                              &ash::PersonalAlbum::album_id);
-
-  if (it == personal_albums_.albums.end()) {
-    return nullptr;
-  }
-
-  return &(*it);
+  return base::LinearFind(personal_albums_.albums, album_id,
+                          &ash::PersonalAlbum::album_id);
 }
 
 ash::ArtSetting* PersonalizationAppAmbientProviderImpl::FindArtAlbumById(
     const std::string& album_id) {
-  auto it = std::ranges::find(settings_->art_settings, album_id,
-                              &ash::ArtSetting::album_id);
-  // Album does not exist any more.
-  if (it == settings_->art_settings.end()) {
-    return nullptr;
-  }
-
-  return &(*it);
+  // Album may not exist any more.
+  return base::LinearFind(settings_->art_settings, album_id,
+                          &ash::ArtSetting::album_id);
 }
 
 void PersonalizationAppAmbientProviderImpl::ResetLocalSettings() {

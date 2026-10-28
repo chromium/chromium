@@ -16,6 +16,7 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/containers/linear_find.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -191,14 +192,7 @@ bool GetDisplayModeForNextResolution(const ManagedDisplayInfo& info,
 // if the corresponding info was not found.
 const ManagedDisplayInfo* FindInfoById(const DisplayInfoList& display_info_list,
                                        int64_t id) {
-  const auto iter =
-      std::ranges::find(display_info_list, id, &ManagedDisplayInfo::id);
-
-  if (iter == display_info_list.end()) {
-    return nullptr;
-  }
-
-  return &(*iter);
+  return base::LinearFind(display_info_list, id, &ManagedDisplayInfo::id);
 }
 
 // Validates that:
@@ -2386,11 +2380,7 @@ void DisplayManager::CreateUnifiedDesktopDisplayInfo(
 }
 
 Display* DisplayManager::FindDisplayForId(int64_t id) {
-  auto iter = std::ranges::find(active_display_list_, id, &Display::id);
-  if (iter != active_display_list_.end()) {
-    return &(*iter);
-  }
-  return nullptr;
+  return base::LinearFind(active_display_list_, id, &Display::id);
 }
 
 void DisplayManager::AddMirrorDisplayInfoIfAny(

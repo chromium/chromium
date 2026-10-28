@@ -4,9 +4,9 @@
 
 #include "chromecast/browser/cast_web_view_default.h"
 
-#include <algorithm>
 #include <utility>
 
+#include "base/containers/linear_find.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
@@ -264,9 +264,8 @@ const blink::MediaStreamDevice* GetRequestedDeviceOrDefault(
     const blink::MediaStreamDevices& devices,
     const std::vector<std::string>& requested_device_ids) {
   if (!requested_device_ids.empty() && !requested_device_ids.front().empty()) {
-    auto it = std::ranges::find(devices, requested_device_ids.front(),
-                                &blink::MediaStreamDevice::id);
-    return it != devices.end() ? &(*it) : nullptr;
+    return base::LinearFind(devices, requested_device_ids.front(),
+                            &blink::MediaStreamDevice::id);
   }
 
   if (!devices.empty())

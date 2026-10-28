@@ -4,8 +4,7 @@
 
 #include "components/signin/core/browser/dice_response_params.h"
 
-#include <algorithm>
-
+#include "base/containers/linear_find.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 
@@ -123,10 +122,9 @@ DiceResponseParams::SigninInfo::GetInitiator() const {
   }
 
   const GaiaId& initiator_id = linked_accounts_metadata_.initiator_id;
-  auto it = std::ranges::find_if(accounts_, [&](const SigninAccount& account) {
+  return base::LinearFindIf(accounts_, [&](const SigninAccount& account) {
     return account.account_info.gaia_id == initiator_id;
   });
-  return it == accounts_.end() ? nullptr : &*it;
 }
 
 void DiceResponseParams::SigninInfo::AddAccount(SigninAccount account) {

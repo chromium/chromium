@@ -11,6 +11,7 @@
 
 #import "base/containers/extend.h"
 #import "base/containers/flat_set.h"
+#import "base/containers/linear_find.h"
 #import "base/containers/to_vector.h"
 #import "base/memory/raw_ptr_exclusion.h"
 #import "base/strings/strcat.h"
@@ -80,25 +81,21 @@ namespace {
 // found.
 FormFieldData* GetFieldWithPlaceholder(const std::u16string& placeholder,
                                        std::vector<FormFieldData>* fields) {
-  auto it =
-      std::ranges::find(*fields, placeholder, &FormFieldData::placeholder);
-  return it != fields->end() ? &(*it) : nullptr;
+  return base::LinearFind(*fields, placeholder, &FormFieldData::placeholder);
 }
 
 // Gets a mutable pointer to the first field with `id_attr` among `fields`.
 FormFieldData* GetMutableFieldWithId(const std::string& id_attr,
                                      std::vector<FormFieldData>* fields) {
-  auto it = std::ranges::find(*fields, base::UTF8ToUTF16(id_attr),
-                              &FormFieldData::id_attribute);
-  return it != fields->end() ? &*it : nullptr;
+  return base::LinearFind(*fields, base::UTF8ToUTF16(id_attr),
+                          &FormFieldData::id_attribute);
 }
 
 // Gets a const pointer to the first field with `id_attr` among `fields`.
 const FormFieldData* GetFieldWithId(const std::string& id_attr,
                                     const std::vector<FormFieldData>& fields) {
-  auto it = std::ranges::find(fields, base::UTF8ToUTF16(id_attr),
-                              &FormFieldData::id_attribute);
-  return it != fields.end() ? &(*it) : nullptr;
+  return base::LinearFind(fields, base::UTF8ToUTF16(id_attr),
+                          &FormFieldData::id_attribute);
 }
 
 // Set the fill data for the `field`.

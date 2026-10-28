@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/lens/lens_search_contextualization_controller.h"
 
+#include "base/containers/linear_find.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_split.h"
 #include "base/task/bind_post_task.h"
@@ -510,20 +511,10 @@ void LensSearchContextualizationController::UpdatePageContext(
   // TODO(crbug.com/399215935): Ideally, this check should ensure that any of
   // the content date has not changed. For now, we only check if the
   // primary_content_type bytes have changed.
-  auto old_page_content_it = std::ranges::find_if(
-      page_contents_, [&primary_content_type](const auto& page_content) {
-        return page_content.content_type_ == primary_content_type;
-      });
-  auto new_page_content_it = std::ranges::find_if(
-      page_contents, [&primary_content_type](const auto& page_content) {
-        return page_content.content_type_ == primary_content_type;
-      });
-  const lens::PageContent* old_page_content =
-      old_page_content_it != page_contents_.end() ? &(*old_page_content_it)
-                                                  : nullptr;
-  const lens::PageContent* new_page_content =
-      new_page_content_it != page_contents.end() ? &(*new_page_content_it)
-                                                 : nullptr;
+  const lens::PageContent* old_page_content = base::LinearFind(
+      page_contents_, primary_content_type, &lens::PageContent::content_type_);
+  const lens::PageContent* new_page_content = base::LinearFind(
+      page_contents, primary_content_type, &lens::PageContent::content_type_);
 
   if (primary_content_type_ == primary_content_type && old_page_content &&
       new_page_content) {

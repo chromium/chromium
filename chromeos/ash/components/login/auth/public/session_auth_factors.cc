@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/linear_find.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
@@ -124,16 +125,13 @@ const cryptohome::AuthFactor* SessionAuthFactors::FindFactorByType(
 const cryptohome::AuthFactor* SessionAuthFactors::FindOnlinePasswordFactor()
     const {
   DCHECK(keys_.empty());
-  const auto& result = std::ranges::find_if(session_factors_, [](auto& f) {
+  return base::LinearFindIf(session_factors_, [](auto& f) {
     if (f.ref().type() != cryptohome::AuthFactorType::kPassword)
       return false;
     auto label = f.ref().label().value();
     return label == kCryptohomeGaiaKeyLabel ||
            (label.find(kCryptohomeGaiaKeyLegacyLabelPrefix) == 0);
   });
-  if (result == session_factors_.end())
-    return nullptr;
-  return &(*result);
 }
 
 const cryptohome::AuthFactor* SessionAuthFactors::FindLocalPasswordFactor()
@@ -155,15 +153,12 @@ const cryptohome::AuthFactor* SessionAuthFactors::FindPasswordFactor(
   DCHECK(keys_.empty());
   DCHECK_NE(label.value(), kCryptohomePinLabel);
 
-  const auto& result =
-      std::ranges::find_if(session_factors_, [&label](auto& f) {
-        if (f.ref().type() != cryptohome::AuthFactorType::kPassword)
-          return false;
-        return f.ref().label() == label;
-      });
-  if (result == session_factors_.end())
-    return nullptr;
-  return &(*result);
+  return base::LinearFindIf(session_factors_, [&label](auto& f) {
+    if (f.ref().type() != cryptohome::AuthFactorType::kPassword) {
+      return false;
+    }
+    return f.ref().label() == label;
+  });
 }
 
 const cryptohome::AuthFactor* SessionAuthFactors::FindKioskFactor() const {

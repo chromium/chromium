@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "base/containers/linear_find.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -22,8 +23,7 @@ namespace {
 // nullptr if a matching task does not exist in `tasks`.
 FocusModeTask* FindTaskById(const TaskId& task_id,
                             std::vector<FocusModeTask>& tasks) {
-  auto iter = std::ranges::find(tasks, task_id, &FocusModeTask::task_id);
-  return (iter == tasks.end()) ? nullptr : &(*iter);
+  return base::LinearFind(tasks, task_id, &FocusModeTask::task_id);
 }
 
 void NotifyCompletedTask(

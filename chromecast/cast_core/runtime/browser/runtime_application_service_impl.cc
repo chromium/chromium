@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/containers/linear_find.h"
 #include "base/functional/callback_helpers.h"
 #include "base/immediate_crash.h"
 #include "base/logging.h"
@@ -161,12 +162,8 @@ cast::common::StopReason::Type ToProtoType(
 const cast::common::Dictionary::Entry* FindEntry(
     const std::string& key,
     const cast::common::Dictionary& dict) {
-  auto iter = std::ranges::find(dict.entries(), key,
-                                &cast::common::Dictionary::Entry::key);
-  if (iter == dict.entries().end()) {
-    return nullptr;
-  }
-  return &*iter;
+  return base::LinearFind(dict.entries(), key,
+                          &cast::common::Dictionary::Entry::key);
 }
 
 bool GetFlagEntry(const std::string& key,

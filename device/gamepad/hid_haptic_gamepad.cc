@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/containers/linear_find.h"
 #include "device/gamepad/hid_writer.h"
 
 namespace device {
@@ -87,11 +88,9 @@ bool HidHapticGamepad::IsHidHaptic(uint16_t vendor_id, uint16_t product_id) {
 const HidHapticGamepad::HapticReportData* HidHapticGamepad::GetHapticReportData(
     uint16_t vendor_id,
     uint16_t product_id) {
-  const auto* find_it =
-      std::ranges::find_if(kHapticReportData, [=](const HapticReportData& d) {
-        return d.vendor_id == vendor_id && d.product_id == product_id;
-      });
-  return find_it == std::end(kHapticReportData) ? nullptr : &*find_it;
+  return base::LinearFindIf(kHapticReportData, [=](const HapticReportData& d) {
+    return d.vendor_id == vendor_id && d.product_id == product_id;
+  });
 }
 
 void HidHapticGamepad::DoShutdown() {

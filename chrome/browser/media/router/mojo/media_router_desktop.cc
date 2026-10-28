@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/linear_find.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -993,9 +994,9 @@ const MediaSink* MediaRouterDesktop::GetSinkById(
         sinks_query.second->cached_sink_list();
     CHECK_LE(std::ranges::count(sinks, sink_id, &MediaSink::id), 1,
              base::NotFatalUntil::M161);
-    auto sink_it = std::ranges::find(sinks, sink_id, &MediaSink::id);
-    if (sink_it != sinks.end()) {
-      return &(*sink_it);
+    if (const MediaSink* sink =
+            base::LinearFind(sinks, sink_id, &MediaSink::id)) {
+      return sink;
     }
   }
   return nullptr;
@@ -1003,9 +1004,8 @@ const MediaSink* MediaRouterDesktop::GetSinkById(
 
 const MediaRoute* MediaRouterDesktop::GetRoute(
     const MediaRoute::Id& route_id) const {
-  auto it =
-      std::ranges::find(current_routes_, route_id, &MediaRoute::media_route_id);
-  return it == current_routes_.end() ? nullptr : &*it;
+  return base::LinearFind(current_routes_, route_id,
+                          &MediaRoute::media_route_id);
 }
 
 void MediaRouterDesktop::NotifyNewObserversOfExistingRoutes() {

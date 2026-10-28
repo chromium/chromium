@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "base/byte_size.h"
+#include "base/containers/linear_find.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -977,16 +978,10 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
  protected:
   network::TestURLLoaderFactory::PendingRequest* GetPendingRequestByUrl(
       const GURL& url) {
-    auto& pending_requests = *test_url_loader_factory_.pending_requests();
-    auto it = std::ranges::find(pending_requests, url,
-                                [](const auto& pending_request) {
-                                  return pending_request.request.url;
-                                });
-    if (it == pending_requests.end()) {
-      return nullptr;
-    }
-    network::TestURLLoaderFactory::PendingRequest* request = &*it;
-    return request;
+    return base::LinearFind(*test_url_loader_factory_.pending_requests(), url,
+                            [](const auto& pending_request) {
+                              return pending_request.request.url;
+                            });
   }
 
   void VerifyCommonRequestState(

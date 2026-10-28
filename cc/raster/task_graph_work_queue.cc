@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "base/containers/linear_find.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
@@ -82,11 +83,10 @@ class DependentIterator {
     } while (graph_->edges[current_index_].task != task_);
 
     // Now find the node for the dependent of this edge.
-    auto it = std::ranges::find(graph_->nodes,
-                                graph_->edges[current_index_].dependent.get(),
-                                &TaskGraph::Node::task);
-    CHECK(it != graph_->nodes.end());
-    current_node_ = &(*it);
+    current_node_ = base::LinearFind(
+        graph_->nodes, graph_->edges[current_index_].dependent.get(),
+        &TaskGraph::Node::task);
+    CHECK(current_node_);
 
     return *this;
   }

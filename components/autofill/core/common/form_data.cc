@@ -10,6 +10,7 @@
 #include <tuple>
 
 #include "base/base64.h"
+#include "base/containers/linear_find.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/pickle.h"
@@ -144,12 +145,7 @@ bool FormData::IdenticalAndEquivalentDomElements(
 
 const FormFieldData* FormData::FindFieldByGlobalId(
     const FieldGlobalId& global_id) const {
-  auto fields_it =
-      std::ranges::find(fields(), global_id, &FormFieldData::global_id);
-
-  // If the field is found, return a pointer to the field, otherwise return
-  // nullptr.
-  return fields_it != fields().end() ? &*fields_it : nullptr;
+  return base::LinearFind(fields(), global_id, &FormFieldData::global_id);
 }
 
 bool FormHasNonEmptyPasswordField(const FormData& form) {

@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/linear_find.h"
 #include "base/containers/span.h"
 #include "base/containers/stack.h"
 #include "base/memory/raw_ref.h"
@@ -64,9 +65,8 @@ FormData* FormForest::GetFormData(FormGlobalId form, FrameData* frame_data) {
   if (!frame_data) {
     return nullptr;
   }
-  auto it = std::ranges::find(frame_data->child_forms, form.renderer_id,
-                              &FormData::renderer_id);
-  return it != frame_data->child_forms.end() ? &*it : nullptr;
+  return base::LinearFind(frame_data->child_forms, form.renderer_id,
+                          &FormData::renderer_id);
 }
 
 FormForest::FrameAndForm FormForest::GetRoot(FormGlobalId form) {

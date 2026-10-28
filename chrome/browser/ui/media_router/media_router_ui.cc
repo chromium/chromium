@@ -10,6 +10,7 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/check.h"
+#include "base/containers/linear_find.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -436,9 +437,8 @@ void MediaRouterUI::UpdateSinks() {
 
   std::vector<UIMediaSink> media_sinks;
   for (const MediaSinkWithCastModes& sink : GetEnabledSinks()) {
-    auto route_it =
-        std::ranges::find(routes(), sink.sink.id(), &MediaRoute::media_sink_id);
-    const MediaRoute* route = route_it == routes().end() ? nullptr : &*route_it;
+    const MediaRoute* route =
+        base::LinearFind(routes(), sink.sink.id(), &MediaRoute::media_sink_id);
     media_sinks.push_back(ConvertToUISink(sink, route, issue_));
   }
   model_.set_media_sinks(std::move(media_sinks));

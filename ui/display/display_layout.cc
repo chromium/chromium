@@ -14,6 +14,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/linear_find.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -53,8 +54,7 @@ DisplayIdList DisplayListToDisplayIdList(const Displays& displays) {
 
 // Returns nullptr if display with |id| is not found.
 Display* FindDisplayById(Displays* display_list, int64_t id) {
-  auto iter = std::ranges::find(*display_list, id, &Display::id);
-  return iter == display_list->end() ? nullptr : &(*iter);
+  return base::LinearFind(*display_list, id, &Display::id);
 }
 
 // Returns the tree depth of the display with ID |display_id| from the tree root
@@ -156,10 +156,9 @@ void MaybeReparentTargetDisplay(
     Display* parent_display = FindDisplayById(display_list, parent_display_id);
     DCHECK(parent_display);
 
-    auto target_display_placement_itr = std::ranges::find(
+    target_display_placement = base::LinearFind(
         *placement_list, target_display->id(), &DisplayPlacement::display_id);
-    CHECK(target_display_placement_itr != placement_list->end());
-    target_display_placement = &(*target_display_placement_itr);
+    CHECK(target_display_placement);
     if (AreDisplaysTouching(*target_display, *parent_display,
                             target_display_placement->position)) {
       return;

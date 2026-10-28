@@ -17,6 +17,7 @@
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "ash/style/typography.h"
 #include "base/auto_reset.h"
+#include "base/containers/linear_find.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -51,10 +52,8 @@ using Action = clipboard_history_util::Action;
 const ClipboardHistoryItem* GetClipboardHistoryItemImpl(
     const base::UnguessableToken& item_id,
     const ClipboardHistory* clipboard_history) {
-  const auto& items = clipboard_history->GetItems();
-  const auto& item_iter =
-      std::ranges::find(items, item_id, &ClipboardHistoryItem::id);
-  return item_iter == items.cend() ? nullptr : &(*item_iter);
+  return base::LinearFind(clipboard_history->GetItems(), item_id,
+                          &ClipboardHistoryItem::id);
 }
 
 // Creates a label with the text "Ctrl+V" to be displayed under the contents of

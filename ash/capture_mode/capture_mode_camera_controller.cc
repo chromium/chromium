@@ -30,6 +30,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/check.h"
+#include "base/containers/linear_find.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -170,8 +171,7 @@ bool ShouldCameraActLikeAMirror(const CameraInfo& camera_info) {
 // nullptr if no such item exists.
 const CameraInfo* GetCameraInfoById(const CameraId& id,
                                     const CameraInfoList& list) {
-  const auto iter = std::ranges::find(list, id, &CameraInfo::camera_id);
-  return iter == list.end() ? nullptr : &(*iter);
+  return base::LinearFind(list, id, &CameraInfo::camera_id);
 }
 
 // Returns the widget init params needed to create the camera preview widget.

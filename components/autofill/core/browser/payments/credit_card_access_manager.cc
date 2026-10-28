@@ -19,6 +19,7 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/linear_find.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -1901,13 +1902,10 @@ CreditCardAccessManager::GetCardUnmaskChallengeOptionForChallengeId(
         card_record_type == CreditCard::RecordType::kMaskedServerCard);
   std::vector<CardUnmaskChallengeOption>& challenge_options =
       risk_based_authentication_response_.card_unmask_challenge_options;
-  auto card_unmask_challenge_options_it = std::ranges::find(
+  return base::LinearFind(
       challenge_options,
       CardUnmaskChallengeOption::ChallengeOptionId(challenge_id),
       &CardUnmaskChallengeOption::id);
-  return card_unmask_challenge_options_it != challenge_options.end()
-             ? &(*card_unmask_challenge_options_it)
-             : nullptr;
 }
 
 bool CreditCardAccessManager::ShouldLogServerCardUnmaskAttemptMetrics(

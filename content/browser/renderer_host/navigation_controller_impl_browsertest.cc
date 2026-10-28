@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/linear_find.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -15562,12 +15563,8 @@ class RequestMonitoringNavigationBrowserTest
       const GURL& url_to_find) {
     DCHECK(url_to_find.SchemeIsHTTPOrHTTPS());
 
-    auto it = std::ranges::find(accumulated_requests_, url_to_find,
-                                &net::test_server::HttpRequest::GetURL);
-    if (it == accumulated_requests_.end()) {
-      return nullptr;
-    }
-    return &*it;
+    return base::LinearFind(accumulated_requests_, url_to_find,
+                            &net::test_server::HttpRequest::GetURL);
   }
 
  protected:

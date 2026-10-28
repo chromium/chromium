@@ -12,6 +12,7 @@
 
 #include "base/check_deref.h"
 #include "base/check_op.h"
+#include "base/containers/linear_find.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -230,9 +231,7 @@ PasswordFormMetricsRecorder::FillingSource ComputeFillingSource(
 
 const FormFieldData* FindFieldByRendererId(const FormData& form,
                                            autofill::FieldRendererId field_id) {
-  auto field =
-      std::ranges::find(form.fields(), field_id, &FormFieldData::renderer_id);
-  return field == form.fields().end() ? nullptr : &*field;
+  return base::LinearFind(form.fields(), field_id, &FormFieldData::renderer_id);
 }
 
 PasswordFormMetricsRecorder::ClassificationCorrectness

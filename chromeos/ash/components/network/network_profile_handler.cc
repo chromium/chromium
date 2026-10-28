@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "base/containers/linear_find.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -171,13 +172,7 @@ void NetworkProfileHandler::RemoveProfile(const std::string& profile_path) {
 
 const NetworkProfile* NetworkProfileHandler::GetProfileForPath(
     const std::string& profile_path) const {
-  ProfileList::const_iterator found =
-      std::ranges::find(profiles_, profile_path, &NetworkProfile::path);
-
-  if (found == profiles_.end()) {
-    return nullptr;
-  }
-  return &*found;
+  return base::LinearFind(profiles_, profile_path, &NetworkProfile::path);
 }
 
 const NetworkProfile* NetworkProfileHandler::GetProfileForUserhash(

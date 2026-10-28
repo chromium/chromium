@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "base/containers/linear_find.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_util.h"
@@ -85,11 +86,7 @@ size_t WebViewsInfo::GetSize() const {
 }
 
 const WebViewInfo* WebViewsInfo::GetForId(const std::string& id) const {
-  auto it = std::ranges::find(views_info, id, &WebViewInfo::id);
-  if (it == views_info.end()) {
-    return nullptr;
-  }
-  return &*it;
+  return base::LinearFind(views_info, id, &WebViewInfo::id);
 }
 
 Status WebViewsInfo::FillFromTargetsInfo(const base::ListValue& target_infos) {
@@ -138,6 +135,5 @@ bool WebViewsInfo::ContainsTargetType(WebViewInfo::Type type) const {
 }
 
 const WebViewInfo* WebViewsInfo::FindFirst(WebViewInfo::Type type) const {
-  auto it = std::ranges::find(views_info, type, &WebViewInfo::type);
-  return it == views_info.end() ? nullptr : &(*it);
+  return base::LinearFind(views_info, type, &WebViewInfo::type);
 }

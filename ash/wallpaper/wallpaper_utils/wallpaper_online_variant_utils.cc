@@ -4,10 +4,9 @@
 
 #include "ash/wallpaper/wallpaper_utils/wallpaper_online_variant_utils.h"
 
-#include <algorithm>
-
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/wallpaper/wallpaper_constants.h"
+#include "base/containers/linear_find.h"
 
 namespace ash {
 
@@ -59,24 +58,19 @@ const OnlineWallpaperVariant* FirstValidVariant(
     const std::vector<OnlineWallpaperVariant>& variants,
     ScheduleCheckpoint checkpoint) {
   // Attempt to find the exact 1:1 match for |variant| and |checkpoint|.
-  auto iter =
-      std::ranges::find_if(variants, [checkpoint](const auto& variant) {
-        return IsSuitableOnlineWallpaperVariantInternal(
-            variant, checkpoint,
-            /*match_subtype=*/false);
-      });
-  if (iter != variants.end()) {
-    return &(*iter);
+  if (const auto* exact_match =
+          base::LinearFindIf(variants, [checkpoint](const auto& variant) {
+            return IsSuitableOnlineWallpaperVariantInternal(
+                variant, checkpoint,
+                /*match_subtype=*/false);
+          })) {
+    return exact_match;
   }
   // Attempt to find a subtype |variant| for |checkpoint|.
-  iter = std::ranges::find_if(variants, [checkpoint](const auto& variant) {
+  return base::LinearFindIf(variants, [checkpoint](const auto& variant) {
     return IsSuitableOnlineWallpaperVariantInternal(variant, checkpoint,
                                                     /*match_subtype=*/true);
   });
-  if (iter != variants.end()) {
-    return &(*iter);
-  }
-  return nullptr;
 }
 
 bool IsTimeOfDayWallpaper(const std::string& collection_id) {

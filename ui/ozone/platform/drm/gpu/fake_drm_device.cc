@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/linear_find.h"
 #include "base/logging.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -123,15 +124,13 @@ ScopedDrmObjectPropertyPtr CreatePropertyObject(
 
 template <class Type>
 Type* FindObjectById(uint32_t id, std::vector<Type>& properties) {
-  auto it = std::ranges::find(properties, id, &Type::id);
-  return it != properties.end() ? &(*it) : nullptr;
+  return base::LinearFind(properties, id, &Type::id);
 }
 
 // The const version of FindObjectById().
 template <class Type>
 const Type* FindObjectById(uint32_t id, const std::vector<Type>& properties) {
-  auto it = std::ranges::find(properties, id, &Type::id);
-  return it != properties.end() ? &(*it) : nullptr;
+  return base::LinearFind(properties, id, &Type::id);
 }
 
 // TODO(dnicoara): Generate all IDs internal to FakeDrmDevice.
