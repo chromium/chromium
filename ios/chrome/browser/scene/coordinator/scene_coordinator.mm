@@ -1130,6 +1130,7 @@ inline LayoutStateScenePassKey PassKey() {
 
 - (void)openAIMenu {
   DCHECK(self.currentBrowser);
+  [_AIPrototypingCoordinator stop];
   _AIPrototypingCoordinator = [[AIPrototypingCoordinator alloc]
       initWithBaseViewController:self.activeViewController
                          browser:self.currentBrowser];

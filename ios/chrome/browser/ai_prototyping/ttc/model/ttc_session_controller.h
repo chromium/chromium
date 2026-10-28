@@ -112,6 +112,11 @@ class TtcSessionController : public TtcConversation::Delegate,
  private:
   friend class TtcSessionControllerTest;
 
+  // Transitions `lifecycle_` to `kFinished` immediately and posts
+  // `StopSession()` asynchronously so conversation/backend teardown does not
+  // run while a `TtcConversation` or `TtcBackend` callback is on the stack.
+  void StopSessionAsync();
+
   // Updates `lifecycle_` and notifies registered observers if the state
   // changed.
   void SetLifecycle(TTCSessionLifecycle lifecycle);
@@ -156,6 +161,10 @@ class TtcSessionController : public TtcConversation::Delegate,
   // Registered observers receiving session lifecycle, audio level, and error
   // updates.
   base::ObserverList<TtcSessionControllerObserver> observers_;
+
+  // Whether `StopSession()` has already torn down the active conversation and
+  // page context tracking.
+  bool is_stopped_ = false;
 
   // Whether a fatal error has already been reported during this session.
   bool fatal_error_reported_ = false;

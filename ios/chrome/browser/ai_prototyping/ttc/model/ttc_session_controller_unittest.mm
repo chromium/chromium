@@ -10,6 +10,7 @@
 #import <string>
 #import <utility>
 
+#import "base/test/run_until.h"
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/ttc/app/public/error_codes.h"
@@ -433,8 +434,9 @@ TEST_F(TtcSessionControllerTest, TestConversationEnergyForwardedToObserver) {
   controller.Disconnect();
 }
 
-// Tests that conversation errors are forwarded to session observers and stop
-// the session when fatal.
+// Tests that conversation errors are forwarded to session observers, transition
+// the lifecycle to `kFinished` immediately when fatal, and stop the underlying
+// conversation asynchronously so the delegate callback unwinds first.
 TEST_F(TtcSessionControllerTest, TestConversationErrorForwardedToObserver) {
   FakeTTCSessionAudioController* fake_audio =
       [[FakeTTCSessionAudioController alloc] init];
@@ -452,7 +454,10 @@ TEST_F(TtcSessionControllerTest, TestConversationErrorForwardedToObserver) {
   EXPECT_EQ(observer.error_count(), 1);
   EXPECT_EQ(observer.last_error(), ttc::ErrorCode::kInternalBackendError);
   EXPECT_EQ(controller.lifecycle(), TTCSessionLifecycle::kFinished);
-  EXPECT_TRUE(fake_audio.didStopCapture);
+  EXPECT_FALSE(fake_audio.didStopCapture);
+
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return fake_audio.didStopCapture; }));
 
   // Subsequent fatal errors must be ignored once a fatal error is reported.
   conversation_ptr->delegate()->OnConversationError(
@@ -462,8 +467,8 @@ TEST_F(TtcSessionControllerTest, TestConversationErrorForwardedToObserver) {
   controller.Disconnect();
 }
 
-// Tests that `OnConversationClosed` stops the session and transitions lifecycle
-// to `kFinished`.
+// Tests that `OnConversationClosed` transitions lifecycle to `kFinished`
+// immediately and stops the underlying conversation asynchronously.
 TEST_F(TtcSessionControllerTest, TestConversationDidCloseStopsSession) {
   FakeTTCSessionAudioController* fake_audio =
       [[FakeTTCSessionAudioController alloc] init];
@@ -482,7 +487,10 @@ TEST_F(TtcSessionControllerTest, TestConversationDidCloseStopsSession) {
 
   EXPECT_EQ(controller.lifecycle(), TTCSessionLifecycle::kFinished);
   EXPECT_EQ(observer.last_lifecycle(), TTCSessionLifecycle::kFinished);
-  EXPECT_TRUE(fake_audio.didStopCapture);
+  EXPECT_FALSE(fake_audio.didStopCapture);
+
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return fake_audio.didStopCapture; }));
 
   controller.Disconnect();
 }

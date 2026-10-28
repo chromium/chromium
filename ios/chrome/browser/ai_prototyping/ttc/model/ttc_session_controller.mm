@@ -13,9 +13,11 @@
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/location.h"
 #import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
 #import "base/strings/to_string.h"
+#import "base/task/sequenced_task_runner.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/ttc/app/public/error_codes.h"
 #import "components/ttc/app/ttc_backend.h"
@@ -68,12 +70,12 @@ void TtcSessionController::OnConversationInitialized() {
 }
 
 void TtcSessionController::OnConversationClosed() {
-  StopSession();
+  StopSessionAsync();
 }
 
 void TtcSessionController::OnAudioEnergyUpdated(float energy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (lifecycle_ == TTCSessionLifecycle::kFinished || observers_.empty()) {
+  if (lifecycle_ == TTCSessionLifecycle::kFinished) {
     return;
   }
   for (TtcSessionControllerObserver& observer : observers_) {
@@ -95,7 +97,7 @@ void TtcSessionController::OnConversationError(ttc::ErrorCode error) {
     observer.OnSessionError(this, error);
   }
   if (is_fatal) {
-    StopSession();
+    StopSessionAsync();
   }
 }
 
@@ -217,6 +219,10 @@ void TtcSessionController::StartSession() {
 
 void TtcSessionController::StopSession() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_stopped_) {
+    return;
+  }
+  is_stopped_ = true;
   if (page_context_monitor_) {
     page_context_monitor_->Disconnect();
     page_context_monitor_.reset();
@@ -238,6 +244,17 @@ void TtcSessionController::Disconnect() {
   RemoveBackgroundObserver();
   observers_.Clear();
   journal_.reset();
+}
+
+void TtcSessionController::StopSessionAsync() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SetLifecycle(TTCSessionLifecycle::kFinished);
+  // Stopping the conversation closes the backend and audio session, so it must
+  // be deferred asynchronously to avoid tearing down `TtcConversation` or
+  // `TtcBackend` while a delegate callback is still on the stack.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&TtcSessionController::StopSession,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TtcSessionController::SetLifecycle(TTCSessionLifecycle lifecycle) {
