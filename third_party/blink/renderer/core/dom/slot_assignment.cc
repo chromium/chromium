@@ -61,6 +61,7 @@ void SlotAssignment::DidRemoveSlot(HTMLSlotElement& slot) {
   if (owner_->IsManualSlotting()) {
     auto& candidates = slot.ManuallyAssignedNodes();
     if (candidates.size()) {
+      SetNeedsAssignmentRecalc();
       slot.DidSlotChangeAfterRemovedFromShadowTree();
     }
     return;
@@ -400,12 +401,23 @@ HTMLSlotElement* SlotAssignment::FindSlotByName(
 }
 
 HTMLSlotElement* SlotAssignment::FindSlotInManualSlotting(Node& node) {
+  if (!node.IsChildOfShadowHost() || node.parentElement() != owner_->host()) {
+    return nullptr;
+  }
+  // User-agent manual-slotting shadow roots (<details>, <select>, <optgroup>)
+  // do not set `node.ManuallyAssignedSlot()` in `HTMLSlotElement::Assign()` so
+  // they do not clobber imperative author `slot.assign()` associations. Look
+  // up the node directly in the UA slots' `ManuallyAssignedNodes()` sets.
+  if (owner_->IsUserAgent()) {
+    for (HTMLSlotElement* slot : Slots()) {
+      if (slot->ManuallyAssignedNodes().Contains(&node)) {
+        return slot;
+      }
+    }
+    return nullptr;
+  }
   auto* slot = node.ManuallyAssignedSlot();
-  if (slot && slot->ContainingShadowRoot() == owner_ &&
-      node.IsChildOfShadowHost() && node.parentElement() == owner_->host())
-    return slot;
-
-  return nullptr;
+  return (slot && slot->ContainingShadowRoot() == owner_) ? slot : nullptr;
 }
 
 void SlotAssignment::CollectSlots() {
