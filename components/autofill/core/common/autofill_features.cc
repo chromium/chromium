@@ -1087,7 +1087,9 @@ BASE_FEATURE(kAutofillSupportStandaloneZipCodeGlobally,
 
 // Kill switch: When enabled, AskForValuesToFill() throttling is skipped for
 // browser-initiated and explicit user triggers.
-// TODO(crbug.com/547562303): Clean up after September 15, 2026.
+// TODO(crbug.com/547562303): Clean up once crrev.com/c/8256627 (unthrottled
+// trigger source in TouchToFillAutofillDelegateAndroidImpl) has landed and
+// rolled out.
 BASE_FEATURE(kAutofillThrottleAskForValuesToFillByTriggerSource,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
