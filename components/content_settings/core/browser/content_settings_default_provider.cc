@@ -77,6 +77,10 @@ constexpr char kObsoleteFederatedIdentityDefaultPref[] =
 constexpr char kObsoletePrivateNetworkGuardDefaultPref[] =
     "profile.default_content_setting_values.private_network_guard";
 
+// Deprecated 10/2026. Remove after 10/2027.
+constexpr char kObsoleteTopLevelStorageAccessDefaultPref[] =
+    "profile.default_content_setting_values.top_level_storage_access";
+
 constexpr char kGeolocationMigrateDefaultValue[] =
     "profile.default_content_setting_values.migrate_geolocation";
 
@@ -168,6 +172,10 @@ void DefaultProvider::RegisterProfilePrefs(
 #endif  // !BUILDFLAG(IS_IOS)
   registry->RegisterIntegerPref(kObsoleteFederatedIdentityDefaultPref, 0);
   registry->RegisterIntegerPref(kObsoletePrivateNetworkGuardDefaultPref, 0);
+  // TODO(https://crbug.com/561405994): Register
+  // `kObsoleteTopLevelStorageAccessDefaultPref` here once
+  // `ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS` is removed from
+  // `ContentSettingsRegistry`.
 
 #if !BUILDFLAG(IS_IOS)
   // TODO(https://crbug.com/367181093): clean this up.
@@ -424,6 +432,7 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
 #endif  // !BUILDFLAG(IS_IOS)
   prefs_->ClearPref(kObsoleteFederatedIdentityDefaultPref);
   prefs_->ClearPref(kObsoletePrivateNetworkGuardDefaultPref);
+  prefs_->ClearPref(kObsoleteTopLevelStorageAccessDefaultPref);
 
 #if !BUILDFLAG(IS_IOS)
   // TODO(https://crbug.com/367181093): clean this up.

@@ -164,6 +164,8 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
       "profile.content_settings.exceptions.top_level_3pcd_support";
   static char kObsoleteTopLevelTpcdOriginTrialExceptionsPref[] =
       "profile.content_settings.exceptions.top_level_3pcd_origin_trial";
+  static char kObsoleteTopLevelStorageAccessExceptionsPref[] =
+      "profile.content_settings.exceptions.top_level_storage_access";
   static const char kGeolocationPrefPath[] =
       "profile.content_settings.exceptions.geolocation";
   static const char kGetDisplayMediaSetSelectAllScreensAllowedForUrlsPref[] =
@@ -194,6 +196,8 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
   prefs->SetDict(kObsoleteTopLevelTpcdTrialExceptionsPref, pref_data.Clone());
   prefs->SetDict(kObsoleteTopLevelTpcdOriginTrialExceptionsPref,
                  pref_data.Clone());
+  prefs->SetDict(kObsoleteTopLevelStorageAccessExceptionsPref,
+                 pref_data.Clone());
   prefs->SetDict(kGeolocationPrefPath, std::move(pref_data));
   prefs->SetList(kGetDisplayMediaSetSelectAllScreensAllowedForUrlsPref,
                  std::move(pref_list));
@@ -214,6 +218,8 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
   EXPECT_FALSE(prefs->HasPrefPath(kObsoleteTopLevelTpcdTrialExceptionsPref));
   EXPECT_FALSE(
       prefs->HasPrefPath(kObsoleteTopLevelTpcdOriginTrialExceptionsPref));
+  EXPECT_FALSE(
+      prefs->HasPrefPath(kObsoleteTopLevelStorageAccessExceptionsPref));
   EXPECT_FALSE(prefs->HasPrefPath(
       kGetDisplayMediaSetSelectAllScreensAllowedForUrlsPref));
   EXPECT_TRUE(prefs->HasPrefPath(kGeolocationPrefPath));

@@ -194,6 +194,8 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
       "profile.default_content_setting_values.top_level_3pcd_support";
   static const char kObsoleteTopLevelTpcdOriginTrialDefaultPref[] =
       "profile.default_content_setting_values.top_level_3pcd_origin_trial";
+  static const char kObsoleteTopLevelStorageAccessDefaultPref[] =
+      "profile.default_content_setting_values.top_level_storage_access";
 #if !BUILDFLAG(IS_ANDROID)
   static const char kMouselockPrefPath[] =
       "profile.default_content_setting_values.mouselock";
@@ -227,6 +229,8 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
                     CONTENT_SETTING_ALLOW);
   prefs->SetInteger(kObsoleteTopLevelTpcdOriginTrialDefaultPref,
                     CONTENT_SETTING_ALLOW);
+  prefs->SetInteger(kObsoleteTopLevelStorageAccessDefaultPref,
+                    CONTENT_SETTING_ALLOW);
 
   // Instantiate a new DefaultProvider; can't use |provider_| because we want to
   // test the constructor's behavior after setting the above.
@@ -238,6 +242,7 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
   EXPECT_FALSE(prefs->HasPrefPath(kObsoleteTpcdTrialDefaultPref));
   EXPECT_FALSE(prefs->HasPrefPath(kObsoleteTopLevelTpcdTrialDefaultPref));
   EXPECT_FALSE(prefs->HasPrefPath(kObsoleteTopLevelTpcdOriginTrialDefaultPref));
+  EXPECT_FALSE(prefs->HasPrefPath(kObsoleteTopLevelStorageAccessDefaultPref));
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(prefs->HasPrefPath(kMouselockPrefPath));
   EXPECT_FALSE(prefs->HasPrefPath(kObsoletePluginsDefaultPref));
