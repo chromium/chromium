@@ -909,6 +909,13 @@ inline constexpr char kAutofillCardScanningBugfixesDescription[] =
     "preventing a crash when camera permissions change after the scan card "
     "suggestion is selected.";
 
+inline constexpr char kAutofillCustomFormControlScriptsName[] =
+    "Autofill custom form control scripts";
+inline constexpr char kAutofillCustomFormControlScriptsDescription[] =
+    "When enabled, Autofill runs site-specific scripts to detect and fill "
+    "custom form controls, such as select-like widgets that aren't <select> "
+    "elements.";
+
 inline constexpr char kAutofillDisableBnplCountryCheckForTestingName[] =
     "Disable the country check for BNPL testing";
 inline constexpr char kAutofillDisableBnplCountryCheckForTestingDescription[] =

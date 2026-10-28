@@ -14372,6 +14372,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          trusted_vault::kTrustedVaultSharedRecoveryFactorsAndEncryption)},
 
+    {"autofill-custom-form-control-scripts",
+     flag_descriptions::kAutofillCustomFormControlScriptsName,
+     flag_descriptions::kAutofillCustomFormControlScriptsDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillCustomFormControlScripts)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

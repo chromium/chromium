@@ -12626,6 +12626,7 @@ from previous Chrome versions.
   <int value="-720304697" label="LauncherImageSearch:enabled"/>
   <int value="-719819631" label="TranslateUI:disabled"/>
   <int value="-719698123" label="LegacyTLSWarnings:enabled"/>
+  <int value="-719148301" label="AutofillCustomFormControlScripts:enabled"/>
   <int value="-719147284" label="ExperimentalProductivityFeatures:disabled"/>
   <int value="-719062737" label="SearchAggregatorProvider:disabled"/>
   <int value="-718884399" label="NewTabPageUIMd:enabled"/>
@@ -16666,6 +16667,7 @@ from previous Chrome versions.
   <int value="497039057" label="AdaptiveChargingForTesting:disabled"/>
   <int value="497137719" label="OmniboxVoiceSearchAlwaysVisible:disabled"/>
   <int value="497150691" label="AssistEmojiEnhanced:disabled"/>
+  <int value="497855272" label="AutofillCustomFormControlScripts:disabled"/>
   <int value="498150771" label="ContextualPageActions:disabled"/>
   <int value="499517390"
       label="NtpHistoryClustersModuleSuggestionChipHeader:enabled"/>
