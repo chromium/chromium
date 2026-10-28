@@ -12,6 +12,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -234,7 +235,8 @@ class TlsSecureChannelImplTest : public testing::Test {
   FakeOakTlsSessionService fake_oak_service_;
   FakeTlsCertificateRepository cert_repo_;
   TlsCertificates certs_;
-  std::vector<FakeTlsWebSocketClient*> created_transports_;
+  std::vector<raw_ptr<FakeTlsWebSocketClient, DanglingUntriaged>>
+      created_transports_;
 };
 
 TEST_F(TlsSecureChannelImplTest, SuccessfulHandshakeAndDataTransfer) {
