@@ -66,7 +66,9 @@ export function getHtml(this: GlicSelectionOverlayElement) {
           style="${this.floatingPromptStyle}">
         ${this.enableSelectionOverlayPromptBox ? html`
           <div class="searchbox-row">
-            <div class="searchbox-pill">
+            <div class="searchbox-pill"
+                @click="${this.onSearchboxPillClick}"
+                @pointerdown="${this.onPromptPointerdown}">
               <div class="sparkle-icon">
                 <img src="/spark.svg" width="20" height="20">
               </div>
@@ -76,14 +78,12 @@ export function getHtml(this: GlicSelectionOverlayElement) {
                   aria-label="$i18n{askGemini}"
                   @input="${this.onPromptInput}"
                   @keydown="${this.onInputKeydown}"
-                  @pointerdown="${this.onPromptPointerdown}"
                   autocomplete="off">
               <cr-icon-button id="submitPromptButton"
                   ?hidden="${!this.hasPromptText}"
                   title="$i18n{submitPrompt}"
                   aria-label="$i18n{submitPrompt}"
-                  @click="${this.onSubmitPromptClick}"
-                  @pointerdown="${this.onPromptPointerdown}">
+                  @click="${this.onSubmitPromptClick}">
               </cr-icon-button>
             </div>
             ${this.enableSelectionOverlayDogfoodFeedback ? html`

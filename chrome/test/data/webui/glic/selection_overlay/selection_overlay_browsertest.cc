@@ -20,6 +20,12 @@ class GlicSelectionOverlayWebUIBrowserTest : public WebUIMochaBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(GlicSelectionOverlayWebUIBrowserTest,
+                       GlicSelectionOverlay) {
+  RunTest("glic/selection_overlay/glic_selection_overlay_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(GlicSelectionOverlayWebUIBrowserTest,
                        InlineFulfillmentHost) {
   RunTest("glic/selection_overlay/inline_fulfillment_host_test.js",
           "mocha.run()");

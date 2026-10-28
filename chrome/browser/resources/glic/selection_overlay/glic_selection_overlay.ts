@@ -589,8 +589,13 @@ export class GlicSelectionOverlayElement extends
     }
   }
 
-  protected onSubmitPromptClick() {
+  protected onSubmitPromptClick(event: Event) {
+    event.stopPropagation();
     this.submitPromptInput_();
+  }
+
+  protected onSearchboxPillClick() {
+    this.focusPromptInput_();
   }
 
   private focusPromptInput_() {
