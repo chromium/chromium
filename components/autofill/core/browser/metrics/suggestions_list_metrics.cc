@@ -7,6 +7,8 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
+#include <utility>
 
 #include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
@@ -22,20 +24,22 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace autofill::autofill_metrics {
 
 void LogSuggestionsCount(base::span<const Suggestion> suggestions) {
-  absl::flat_hash_map<FillingProduct, size_t> suggestions_count;
+  std::array<size_t, std::to_underlying(FillingProduct::kMaxValue) + 1>
+      suggestions_count{};
   for (const Suggestion& suggestion : suggestions) {
     if (!IsManagementFooterOption(suggestion)) {
-      ++suggestions_count[GetFillingProductFromSuggestionType(suggestion.type)];
+      ++suggestions_count[std::to_underlying(
+          GetFillingProductFromSuggestionType(suggestion.type))];
     }
   }
 
-  for (const auto& [product, count] : suggestions_count) {
-    if (product != FillingProduct::kNone) {
+  for (const FillingProduct product : FillingProductSet::all()) {
+    const size_t count = suggestions_count[std::to_underlying(product)];
+    if (product != FillingProduct::kNone && count > 0) {
       base::UmaHistogramCounts100(
           base::StrCat(
               {"Autofill.SuggestionsCount.", FillingProductToString(product)}),
@@ -150,13 +154,14 @@ void LogAddressAutofillOnTypingSuggestionAccepted(
   base::UmaHistogramEnumeration(
       "Autofill.AddressSuggestionOnTyping.AddressFieldTypeUsed",
       field_type_used, FieldType::MAX_VALID_FIELD_TYPE);
-  FieldTypeSet field_types = autofill_trigger_field
-                                 ? autofill_trigger_field->Type().GetTypes()
-                                 : FieldTypeSet{};
+  static constexpr FieldTypeSet kIrrelevantTypes{NO_SERVER_DATA, UNKNOWN_TYPE,
+                                                 EMPTY_TYPE};
+  const FieldTypeSet field_types =
+      autofill_trigger_field ? autofill_trigger_field->Type().GetTypes()
+                             : FieldTypeSet{};
   base::UmaHistogramBoolean(
       "Autofill.AddressSuggestionOnTypingAcceptance.FieldClassication",
-      !FieldTypeSet{NO_SERVER_DATA, UNKNOWN_TYPE, EMPTY_TYPE}.contains_all(
-          field_types));
+      !kIrrelevantTypes.contains_all(field_types));
   if (autofill_trigger_field) {
     base::UmaHistogramCounts100(
         "Autofill.AddressSuggestionOnTypingAcceptance.NumberOfCharactersTyped",
