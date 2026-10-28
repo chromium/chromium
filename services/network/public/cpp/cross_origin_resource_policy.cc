@@ -64,18 +64,14 @@ CrossOriginResourcePolicy::ParsedHeader ParseHeaderByHttpResponseHeaders(
   return ParseHeaderByString(header_value);
 }
 
-std::string GetDomain(const url::Origin& origin) {
-  return net::registry_controlled_domains::GetDomainAndRegistry(
-      origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-}
-
 bool ShouldAllowSameSite(const url::Origin& initiator,
                          const url::Origin& target_origin) {
   // Different sites might be served from the same IP address - they should
-  // still be considered to be different sites - see also
-  // https://url.spec.whatwg.org/#host-same-site which excludes IP addresses by
-  // imposing the requirement that one of the addresses has to have a non-null
-  // registrable domain.
+  // still be considered to be different sites. Note that this intentionally
+  // diverges from https://html.spec.whatwg.org/#schemelessly-same-site (which
+  // replaced https://url.spec.whatwg.org/#host-same-site and considers
+  // identical IP hosts to be schemelessly same-site); exact same-origin IP
+  // requests are still allowed earlier in `IsBlockedInternal`.
   if (initiator.GetURL().HostIsIPAddress() ||
       target_origin.GetURL().HostIsIPAddress()) {
     return false;
@@ -84,10 +80,14 @@ bool ShouldAllowSameSite(const url::Origin& initiator,
   // https://fetch.spec.whatwg.org/#cross-origin-resource-policy-header, step 5
   // says to allow "CORP: same-site" responses
   // > [...] If the following are true:
-  // > - request’s origin’s host is same site with request’s current URL’s host
+  // > - request’s origin is schemelessly same site with request’s current URL’s
+  // >   origin
   // > - [...]
-  if (GetDomain(initiator) != GetDomain(target_origin))
+  if (!net::registry_controlled_domains::SameDomainOrHost(
+          initiator, target_origin,
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
     return false;
+  }
 
   // https://fetch.spec.whatwg.org/#cross-origin-resource-policy-header, step 5
   // says to allow "CORP: same-site" responses
@@ -208,10 +208,10 @@ std::optional<mojom::BlockedByResponseReason> IsBlockedInternal(
 
   // From https://fetch.spec.whatwg.org/#cross-origin-resource-policy-header:
   // > 5. If the following are true
-  // >      * request’s origin’s host is same site with request’s current URL’s
-  // >        host
+  // >      * request’s origin is schemelessly same site with request’s current
+  // >        URL’s origin
   // >      * request’s origin’s scheme is "https" or response’s HTTPS state is
-  // >      "none"
+  // >        "none"
   // >    then return allowed.
   if (ShouldAllowSameSite(initiator, target_origin))
     return std::nullopt;

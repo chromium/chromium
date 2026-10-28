@@ -189,11 +189,43 @@ TEST(CrossOriginResourcePolicyTest, ShouldAllowSameSite) {
   // IP addresses.
   //
   // Different sites might be served from the same IP address - they should
-  // still be considered to be different sites - see also
-  // https://url.spec.whatwg.org/#host-same-site which excludes IP addresses by
-  // imposing the requirement that one of the addresses has to have a non-null
-  // registrable domain.
+  // still be considered to be different sites. Note that this intentionally
+  // diverges from https://html.spec.whatwg.org/#schemelessly-same-site (which
+  // replaced https://url.spec.whatwg.org/#host-same-site and considers
+  // identical IP hosts to be schemelessly same-site).
   EXPECT_FALSE(ShouldAllowSameSite("http://127.0.0.1", "http://127.0.0.1"));
+
+  // Single-label hosts have a null registrable domain: they are same-site
+  // only with themselves.
+  EXPECT_TRUE(ShouldAllowSameSite("https://localhost", "https://localhost"));
+  EXPECT_TRUE(ShouldAllowSameSite("http://localhost", "http://localhost"));
+  EXPECT_TRUE(
+      ShouldAllowSameSite("http://localhost:1234", "http://localhost:5678"));
+  EXPECT_TRUE(ShouldAllowSameSite("https://localhost", "http://localhost"));
+  EXPECT_FALSE(ShouldAllowSameSite("http://localhost", "https://localhost"));
+  EXPECT_TRUE(ShouldAllowSameSite("http://intranet", "http://intranet"));
+  EXPECT_TRUE(ShouldAllowSameSite("https://intranet", "http://intranet"));
+  EXPECT_FALSE(ShouldAllowSameSite("http://localhost", "http://intranet"));
+  EXPECT_FALSE(ShouldAllowSameSite("http://intranet1", "http://intranet2"));
+  EXPECT_FALSE(ShouldAllowSameSite("https://intranet1", "https://intranet2"));
+
+  // Public suffixes have a null registrable domain: they are same-site only
+  // with themselves.
+  EXPECT_TRUE(ShouldAllowSameSite("https://github.io", "http://github.io"));
+  EXPECT_FALSE(ShouldAllowSameSite("https://github.io", "https://appspot.com"));
+  EXPECT_FALSE(ShouldAllowSameSite("https://co.uk", "https://org.uk"));
+  EXPECT_FALSE(ShouldAllowSameSite("https://foo.co.uk", "https://co.uk"));
+  EXPECT_FALSE(ShouldAllowSameSite("https://com", "https://org"));
+
+  // Opaque origins are never same-site with anything else.
+  EXPECT_FALSE(ShouldAllowSameSite("data:text/html,test", "http://localhost"));
+  EXPECT_FALSE(ShouldAllowSameSite("data:text/html,test", "http://github.io"));
+  EXPECT_FALSE(ShouldAllowSameSite("data:text/html,test", "https://github.io"));
+  EXPECT_FALSE(ShouldAllowSameSite("data:text/html,foo", "data:text/html,bar"));
+
+  // Origins with an empty host are never same-site.
+  EXPECT_FALSE(ShouldAllowSameSite("file:///path", "http://localhost"));
+  EXPECT_FALSE(ShouldAllowSameSite("file:///path1", "file:///path2"));
 }
 
 // Tracks the reporting expectations for tests with COEP and
