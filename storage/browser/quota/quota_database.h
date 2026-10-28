@@ -261,7 +261,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
 
   QuotaError EnsureOpened();
   void OnSqliteError(int sqlite_error_code, sql::Statement* statement);
-  bool MoveLegacyDatabase();
   bool OpenDatabase();
   bool EnsureDatabaseVersion();
   bool ResetStorage();
@@ -285,7 +284,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
 
   const std::unique_ptr<StorageDirectory> storage_directory_;
   const base::FilePath db_file_path_;
-  const base::FilePath legacy_db_file_path_;
 
   std::unique_ptr<sql::Database> db_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<sql::MetaTable> meta_table_
