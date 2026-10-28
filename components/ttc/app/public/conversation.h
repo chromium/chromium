@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TTC_APP_PUBLIC_CONVERSATION_H_
-#define CHROME_BROWSER_TTC_APP_PUBLIC_CONVERSATION_H_
+#ifndef COMPONENTS_TTC_APP_PUBLIC_CONVERSATION_H_
+#define COMPONENTS_TTC_APP_PUBLIC_CONVERSATION_H_
 
 #include <string>
 
@@ -15,6 +15,8 @@ class AnnotatedPageContent;
 }  // namespace optimization_guide::proto
 
 namespace ttc {
+
+class SessionJournal;
 
 // Manages a voice/multimodal conversation session with the TTC model.
 // Wires audio input/output to the model backend for bidirectional streaming,
@@ -48,8 +50,11 @@ class Conversation {
   // or sent to the model; the model can still finish a reply in progress.
   virtual void SetMicMuted(bool muted) = 0;
   virtual bool IsMicMuted() const = 0;
+
+  // Returns the journal for recording events in this session.
+  virtual SessionJournal& GetJournal() = 0;
 };
 
 }  // namespace ttc
 
-#endif  // CHROME_BROWSER_TTC_APP_PUBLIC_CONVERSATION_H_
+#endif  // COMPONENTS_TTC_APP_PUBLIC_CONVERSATION_H_

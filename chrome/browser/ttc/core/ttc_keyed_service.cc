@@ -10,11 +10,11 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "chrome/browser/ttc/app/public/audio_controller.h"
-#include "chrome/browser/ttc/app/public/conversation.h"
 #include "chrome/browser/ttc/app/public/make_conversation.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
 #include "chrome/browser/ttc/core/ttc_actor_ui_state_manager.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service_factory.h"
+#include "components/ttc/app/public/conversation.h"
 
 namespace ttc {
 

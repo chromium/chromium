@@ -26,6 +26,7 @@ ConversationImpl::ConversationImpl(
       session_controller_(session_controller) {
   CHECK(backend_);
   CHECK(audio_controller_);
+  backend_->BindConversation(*this);
 }
 
 ConversationImpl::~ConversationImpl() {
@@ -73,6 +74,10 @@ void ConversationImpl::SetMicMuted(bool muted) {
 
 bool ConversationImpl::IsMicMuted() const {
   return !audio_controller_->is_capturing();
+}
+
+SessionJournal& ConversationImpl::GetJournal() {
+  return session_controller_->GetJournal();
 }
 
 void ConversationImpl::OnCapturedAudio(base::span<const int16_t> pcm_data,

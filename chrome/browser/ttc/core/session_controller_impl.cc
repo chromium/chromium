@@ -19,7 +19,6 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/app/public/audio_controller.h"
-#include "chrome/browser/ttc/app/public/conversation.h"
 #include "chrome/browser/ttc/core/session_journal_impl.h"
 #include "chrome/browser/ttc/core/session_view.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
@@ -27,6 +26,7 @@
 #include "chrome/browser/ttc/core/voice_focused_contents_tracker.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/ttc/app/public/conversation.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -69,13 +69,13 @@ SessionControllerImpl::SessionControllerImpl(
     TtcKeyedService& service,
     std::unique_ptr<AudioController> audio_controller)
     : service_(service),
+      session_view_(MakeSessionView(*this)),
+      voice_focused_contents_tracker_(
+          VoiceFocusedContentsTracker::Create(CHECK_DEREF(service.profile()))),
       actor_task_holder_(*this),
       journal_(CHECK_DEREF(actor::ActorKeyedService::Get(service.profile()))
                    .GetJournal(),
                actor_task_holder_.task_id()),
-      session_view_(MakeSessionView(*this)),
-      voice_focused_contents_tracker_(
-          VoiceFocusedContentsTracker::Create(CHECK_DEREF(service.profile()))),
       tool_controller_(*this) {
   GetJournal().Log("TtcSessionStart", {});
 

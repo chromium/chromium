@@ -9,7 +9,6 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ttc/app/public/conversation.h"
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/test_utils.h"
@@ -17,6 +16,7 @@
 #include "chrome/browser/ttc/core/ttc_keyed_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/ttc/app/public/conversation.h"
 #include "content/public/browser/browser_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

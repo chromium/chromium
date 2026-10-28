@@ -8,11 +8,11 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ttc/app/public/conversation.h"
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
@@ -21,6 +21,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/ttc/app/public/conversation.h"
 #include "components/ttc/app/public/error_codes.h"
 #include "components/ttc/app/public/tool_types.h"
 #include "content/public/browser/browser_context.h"
@@ -33,8 +34,10 @@ namespace ttc {
 namespace {
 class FakeConversation : public Conversation {
  public:
-  explicit FakeConversation(base::RepeatingClosure on_stopped = {})
-      : on_stopped_(std::move(on_stopped)) {}
+  explicit FakeConversation(SessionController& session_controller,
+                            base::RepeatingClosure on_stopped = {})
+      : session_controller_(session_controller),
+        on_stopped_(std::move(on_stopped)) {}
   ~FakeConversation() override = default;
 
   void Start() override { is_started_ = true; }
@@ -52,10 +55,14 @@ class FakeConversation : public Conversation {
   void OnPageContextInvalidated() override {}
   void SetMicMuted(bool muted) override {}
   bool IsMicMuted() const override { return false; }
+  SessionJournal& GetJournal() override {
+    return session_controller_->GetJournal();
+  }
 
   bool is_started() const { return is_started_; }
 
  private:
+  const raw_ref<SessionController> session_controller_;
   bool is_started_ = false;
   base::RepeatingClosure on_stopped_;
 };
@@ -86,9 +93,10 @@ class TtcKeyedServiceUnitTest : public testing::Test {
   }
 
   std::unique_ptr<Conversation> CreateFakeConversation(
-      SessionController&,
+      SessionController& session_controller,
       std::unique_ptr<AudioController>) {
     return std::make_unique<FakeConversation>(
+        session_controller,
         base::BindRepeating(&TtcKeyedServiceUnitTest::OnConversationStopped,
                             base::Unretained(this)));
   }

@@ -16,7 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ttc/app/public/audio_controller.h"
-#include "chrome/browser/ttc/app/public/conversation.h"
+#include "components/ttc/app/public/conversation.h"
 #include "components/ttc/app/ttc_backend.h"
 #include "url/gurl.h"
 
@@ -61,6 +61,7 @@ class ConversationImpl : public Conversation,
   void OnPageContextInvalidated() override;
   void SetMicMuted(bool muted) override;
   bool IsMicMuted() const override;
+  SessionJournal& GetJournal() override;
 
   // AudioController::Observer implementation:
   void OnCapturedAudio(base::span<const int16_t> pcm_data,

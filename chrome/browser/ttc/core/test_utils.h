@@ -13,11 +13,12 @@
 #include <vector>
 
 #include "base/scoped_observation.h"
-#include "chrome/browser/ttc/app/public/conversation.h"
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/ttc/app/public/conversation.h"
+#include "components/ttc/app/public/session_journal.h"
 #include "components/ttc/app/public/tool_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
@@ -41,6 +42,7 @@ class MockConversation : public Conversation {
   MOCK_METHOD(void, OnPageContextInvalidated, (), (override));
   MOCK_METHOD(void, SetMicMuted, (bool), (override));
   MOCK_METHOD(bool, IsMicMuted, (), (const, override));
+  MOCK_METHOD(SessionJournal&, GetJournal, (), (override));
 };
 
 // Records the entries added to an actor journal while it's alive.

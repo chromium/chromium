@@ -8,15 +8,17 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ref.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ttc/app/public/conversation.h"
 #include "chrome/browser/ttc/core/eval_harness.mojom.h"
 #include "chrome/browser/ttc/core/features.h"
+#include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/ttc/app/public/conversation.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -28,8 +30,10 @@ namespace {
 
 class FakeConversation : public Conversation {
  public:
-  explicit FakeConversation(std::unique_ptr<AudioController> audio_controller)
-      : audio_controller_(std::move(audio_controller)) {}
+  FakeConversation(SessionController& session_controller,
+                   std::unique_ptr<AudioController> audio_controller)
+      : session_controller_(session_controller),
+        audio_controller_(std::move(audio_controller)) {}
   ~FakeConversation() override = default;
 
   void Start() override {}
@@ -42,8 +46,12 @@ class FakeConversation : public Conversation {
   void OnPageContextInvalidated() override {}
   void SetMicMuted(bool muted) override {}
   bool IsMicMuted() const override { return false; }
+  SessionJournal& GetJournal() override {
+    return session_controller_->GetJournal();
+  }
 
  private:
+  const raw_ref<SessionController> session_controller_;
   std::unique_ptr<AudioController> audio_controller_;
 };
 
@@ -59,11 +67,11 @@ class HarnessPageHandlerTest : public testing::Test {
               return std::make_unique<TtcKeyedService>(
                   Profile::FromBrowserContext(context),
                   base::BindRepeating(
-                      [](SessionController&,
+                      [](SessionController& session_controller,
                          std::unique_ptr<AudioController> audio_controller)
                           -> std::unique_ptr<Conversation> {
                         return std::make_unique<FakeConversation>(
-                            std::move(audio_controller));
+                            session_controller, std::move(audio_controller));
                       }));
             })));
   }

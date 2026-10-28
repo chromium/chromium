@@ -6,6 +6,7 @@
 # core. This is enforced via DEPS.
 source_set("public") {
   public = [
+    "conversation.h",
     "debug_sink.h",
     "error_codes.h",
     "server_journal_event.h",
@@ -21,5 +22,6 @@ source_set("public") {
     "//base",
     "//components/actor/public/mojom:mojo_bindings",
     "//components/actor/public/mojom:mojo_bindings_shared",
+    "//url",
   ]
 }

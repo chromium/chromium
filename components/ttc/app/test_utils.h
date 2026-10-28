@@ -20,6 +20,8 @@
 
 namespace ttc {
 
+class Conversation;
+
 // A TtcBackend that records the connection state set by Connect()/Close() so
 // that is_transport_connected() behaves like the real thing by default.
 class MockTtcBackend : public TtcBackend {
@@ -30,6 +32,7 @@ class MockTtcBackend : public TtcBackend {
   // Returns the observer passed to the last Connect() call.
   TtcBackend::Observer* observer() const { return observer_; }
 
+  MOCK_METHOD(void, BindConversation, (Conversation&), (override));
   MOCK_METHOD(void, Connect, (TtcBackend::Observer*), (override));
   MOCK_METHOD(void, Close, (), (override));
   MOCK_METHOD(bool, is_transport_connected, (), (const, override));

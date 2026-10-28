@@ -23,6 +23,7 @@ class AnnotatedPageContent;
 
 namespace ttc {
 
+class Conversation;
 struct ServerJournalEvent;
 
 // Generic interface for communicating with a TTC model backend.
@@ -60,6 +61,9 @@ class TtcBackend {
   };
 
   virtual ~TtcBackend() = default;
+
+  // Binds the owning `conversation` to this backend after construction.
+  virtual void BindConversation(Conversation& conversation) {}
 
   // Starts the streaming session with the backend. `observer` must be non-null
   // and must outlive the connection.

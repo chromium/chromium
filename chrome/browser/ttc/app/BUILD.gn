@@ -8,7 +8,6 @@ source_set("public") {
   public = [
     "public/audio_controller.h",
     "public/audio_envelope.h",
-    "public/conversation.h",
     "public/make_conversation.h",
   ]
   sources = [ "public/audio_envelope.cc" ]

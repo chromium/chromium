@@ -23,6 +23,8 @@
 
 namespace ttc {
 
+class Conversation;
+
 // Client for establishing and maintaining a bidirectional streaming session
 // with the Model Execution Service (MES) for TTC using RemoteModelExecutor.
 // Implements the TtcBackend interface.
@@ -32,14 +34,15 @@ class TtcMesClient
  public:
   using Observer = TtcBackend::Observer;
 
-  explicit TtcMesClient(optimization_guide::RemoteModelExecutor* model_executor,
-                        SessionJournal* journal = nullptr);
+  explicit TtcMesClient(
+      optimization_guide::RemoteModelExecutor* model_executor);
   ~TtcMesClient() override;
 
   TtcMesClient(const TtcMesClient&) = delete;
   TtcMesClient& operator=(const TtcMesClient&) = delete;
 
   // TtcBackend implementation:
+  void BindConversation(Conversation& conversation) override;
   void Connect(Observer* observer) override;
   void SendToolSetUpdate(const std::vector<ToolDefinition>& tools) override;
   void SendAudioChunk(base::span<const int16_t> audio_data) override;
@@ -86,7 +89,7 @@ class TtcMesClient
            SessionJournal::Track track);
 
   raw_ptr<optimization_guide::RemoteModelExecutor> model_executor_ = nullptr;
-  raw_ptr<SessionJournal> journal_ = nullptr;
+  raw_ptr<Conversation> conversation_ = nullptr;
   // Set by Connect(); null until then.
   raw_ptr<Observer> observer_ = nullptr;
 

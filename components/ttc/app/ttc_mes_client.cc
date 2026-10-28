@@ -23,6 +23,7 @@
 #include "components/actor/core/journal_details_builder.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/ttc/app/public/conversation.h"
 #include "components/ttc/app/public/server_journal_event.h"
 #include "components/ttc/features.h"
 
@@ -148,12 +149,15 @@ ServerJournalEvent ToServerJournalEvent(
 }  // namespace
 
 TtcMesClient::TtcMesClient(
-    optimization_guide::RemoteModelExecutor* model_executor,
-    SessionJournal* journal)
-    : model_executor_(model_executor), journal_(journal) {}
+    optimization_guide::RemoteModelExecutor* model_executor)
+    : model_executor_(model_executor) {}
 
 TtcMesClient::~TtcMesClient() {
   Close();
+}
+
+void TtcMesClient::BindConversation(Conversation& conversation) {
+  conversation_ = &conversation;
 }
 
 void TtcMesClient::Connect(Observer* observer) {
@@ -597,8 +601,8 @@ void TtcMesClient::LogServerFrame(
 void TtcMesClient::Log(std::string_view event_name,
                        std::vector<actor::mojom::JournalDetailsPtr> details,
                        SessionJournal::Track track) {
-  if (journal_) {
-    journal_->Log(event_name, std::move(details), track);
+  if (conversation_) {
+    conversation_->GetJournal().Log(event_name, std::move(details), track);
   }
 }
 
