@@ -30,11 +30,13 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.GlowSpec;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link BottomSheetMediator}. */
@@ -53,7 +55,10 @@ public class BottomSheetMediatorUnitTest {
     @Before
     public void setUp() {
         mModel = new PropertyModel.Builder(BottomSheetProperties.ALL_KEYS).build();
-        mMediator = new BottomSheetMediator(mModel);
+        mMediator =
+                new BottomSheetMediator(
+                        mModel, ContextUtils.getApplicationContext().getResources());
+        mMediator.setSheetContainerDimensions(500, 1000);
         mMediator.addObserver(mObserver);
     }
 
@@ -245,7 +250,8 @@ public class BottomSheetMediatorUnitTest {
 
     @Test
     public void testNotifyContainerSizeChanged() {
-        mMediator.notifyContainerSizeChanged(1080, 1920);
+        mMediator.setSheetContainerDimensions(1080, 1920);
+        mMediator.notifyContainerSizeChanged();
         verify(mObserver).onContainerSizeChanged(1080, 1920);
     }
 
@@ -286,111 +292,71 @@ public class BottomSheetMediatorUnitTest {
     @Test
     public void testGetTargetSheetState_Expanding() {
         float peek = 60f;
-        float half = 500f;
         float full = 1000f;
 
+        when(mContent.getPeekHeight()).thenReturn(HeightMode.DEFAULT);
+        when(mContent.getHalfHeightRatio()).thenReturn(0.5f);
+        when(mContent.getFullHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
+        when(mContent.swipeToDismissEnabled()).thenReturn(true);
+        mMediator.setSheetContent(mContent);
         mMediator.setScrollingStartState(SheetState.PEEK);
 
         // Sheet height at 300 (between peek 60 and half 500) crosses the threshold ((500-60)*0.4 =
         // 176 -> 60+176 = 236).
         int target =
                 mMediator.getTargetSheetState(
-                        /* sheetHeight= */ 300f,
-                        /* yVelocity= */ 0f,
-                        /* isHalfStateEnabled= */ true,
-                        /* isPeekStateEnabled= */ true,
-                        /* swipeToDismissEnabled= */ true,
-                        peek,
-                        half,
-                        full);
+                        /* sheetHeight= */ 300f, /* yVelocity= */ 0f, peek, full);
         assertEquals(SheetState.HALF, target);
 
         // Sheet height at 200 has not crossed threshold -> returns prevState PEEK.
         target =
                 mMediator.getTargetSheetState(
-                        /* sheetHeight= */ 200f,
-                        /* yVelocity= */ 0f,
-                        /* isHalfStateEnabled= */ true,
-                        /* isPeekStateEnabled= */ true,
-                        /* swipeToDismissEnabled= */ true,
-                        peek,
-                        half,
-                        full);
+                        /* sheetHeight= */ 200f, /* yVelocity= */ 0f, peek, full);
         assertEquals(SheetState.PEEK, target);
 
         // Half state disabled: moves from PEEK to FULL if threshold crossed.
+        when(mContent.getHalfHeightRatio()).thenReturn((float) HeightMode.DISABLED);
         target =
                 mMediator.getTargetSheetState(
-                        /* sheetHeight= */ 600f,
-                        /* yVelocity= */ 0f,
-                        /* isHalfStateEnabled= */ false,
-                        /* isPeekStateEnabled= */ true,
-                        /* swipeToDismissEnabled= */ true,
-                        peek,
-                        half,
-                        full);
+                        /* sheetHeight= */ 600f, /* yVelocity= */ 0f, peek, full);
         assertEquals(SheetState.FULL, target);
     }
 
     @Test
     public void testGetTargetSheetState_Collapsing() {
         float peek = 60f;
-        float half = 500f;
         float full = 1000f;
 
+        when(mContent.getPeekHeight()).thenReturn(HeightMode.DEFAULT);
+        when(mContent.getHalfHeightRatio()).thenReturn(0.5f);
+        when(mContent.getFullHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
+        when(mContent.swipeToDismissEnabled()).thenReturn(true);
+        mMediator.setSheetContent(mContent);
         mMediator.setScrollingStartState(SheetState.HALF);
 
         // Moving downward from HALF to PEEK (distance 440, threshold 176 -> height < 500 - 176 =
         // 324).
         int target =
                 mMediator.getTargetSheetState(
-                        /* sheetHeight= */ 200f,
-                        /* yVelocity= */ -100f,
-                        /* isHalfStateEnabled= */ true,
-                        /* isPeekStateEnabled= */ true,
-                        /* swipeToDismissEnabled= */ true,
-                        peek,
-                        half,
-                        full);
+                        /* sheetHeight= */ 200f, /* yVelocity= */ -100f, peek, full);
         assertEquals(SheetState.PEEK, target);
 
         // Sheet height at 400 has not crossed threshold -> returns prevState HALF.
         target =
                 mMediator.getTargetSheetState(
-                        /* sheetHeight= */ 400f,
-                        /* yVelocity= */ -100f,
-                        /* isHalfStateEnabled= */ true,
-                        /* isPeekStateEnabled= */ true,
-                        /* swipeToDismissEnabled= */ true,
-                        peek,
-                        half,
-                        full);
+                        /* sheetHeight= */ 400f, /* yVelocity= */ -100f, peek, full);
         assertEquals(SheetState.HALF, target);
 
         // Sheet height below minOffset -> minSwipableState (HIDDEN if swipeToDismissEnabled).
         target =
                 mMediator.getTargetSheetState(
-                        /* sheetHeight= */ 0f,
-                        /* yVelocity= */ -100f,
-                        /* isHalfStateEnabled= */ true,
-                        /* isPeekStateEnabled= */ true,
-                        /* swipeToDismissEnabled= */ true,
-                        peek,
-                        half,
-                        full);
+                        /* sheetHeight= */ 0f, /* yVelocity= */ -100f, peek, full);
         assertEquals(SheetState.HIDDEN, target);
 
         // Sheet height at or above full height -> FULL.
         target =
                 mMediator.getTargetSheetState(
-                        /* sheetHeight= */ 1000f,
-                        /* yVelocity= */ 0f,
-                        /* isHalfStateEnabled= */ true,
-                        /* isPeekStateEnabled= */ true,
-                        /* swipeToDismissEnabled= */ true,
-                        peek,
-                        half,
-                        full);
+                        /* sheetHeight= */ 1000f, /* yVelocity= */ 0f, peek, full);
         assertEquals(SheetState.FULL, target);
     }
 
@@ -624,17 +590,19 @@ public class BottomSheetMediatorUnitTest {
 
     @Test
     public void testIsHalfStateEnabled() {
-        assertFalse(mMediator.isHalfStateEnabled(/* isSmallScreen= */ false));
+        assertFalse(mMediator.isHalfStateEnabled());
 
         when(mContent.getHalfHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
         when(mContent.getFullHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
         mMediator.setSheetContent(mContent);
 
-        assertTrue(mMediator.isHalfStateEnabled(/* isSmallScreen= */ false));
-        assertFalse(mMediator.isHalfStateEnabled(/* isSmallScreen= */ true));
+        assertTrue(mMediator.isHalfStateEnabled());
+        BottomSheetMediator.setSmallScreenForTesting(true);
+        assertFalse(mMediator.isHalfStateEnabled());
+        BottomSheetMediator.setSmallScreenForTesting(false);
 
         when(mContent.getHalfHeightRatio()).thenReturn((float) HeightMode.DISABLED);
-        assertFalse(mMediator.isHalfStateEnabled(/* isSmallScreen= */ false));
+        assertFalse(mMediator.isHalfStateEnabled());
     }
 
     @Test
@@ -647,6 +615,23 @@ public class BottomSheetMediatorUnitTest {
 
         when(mContent.getFullHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
         assertFalse(mMediator.isFullHeightWrapContent());
+    }
+
+    @Test
+    public void testIsFullHeightResizeContent() {
+        assertFalse(mMediator.isFullHeightResizeContent());
+
+        when(mContent.getHalfHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
+        when(mContent.getFullHeightRatio()).thenReturn((float) HeightMode.RESIZE_CONTENT);
+        mMediator.setSheetContent(mContent);
+        assertTrue(mMediator.isFullHeightResizeContent());
+
+        BottomSheetMediator.setSmallScreenForTesting(true);
+        assertFalse(mMediator.isFullHeightResizeContent());
+        BottomSheetMediator.setSmallScreenForTesting(false);
+
+        when(mContent.getHalfHeightRatio()).thenReturn((float) HeightMode.DISABLED);
+        assertFalse(mMediator.isFullHeightResizeContent());
     }
 
     @Test
@@ -665,49 +650,43 @@ public class BottomSheetMediatorUnitTest {
 
     @Test
     public void testGetOpeningState() {
-        assertEquals(SheetState.HIDDEN, mMediator.getOpeningState(/* isSmallScreen= */ false));
+        assertEquals(SheetState.HIDDEN, mMediator.getOpeningState());
 
         when(mContent.getPeekHeight()).thenReturn(HeightMode.DEFAULT);
         when(mContent.getHalfHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
         when(mContent.getFullHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
         mMediator.setSheetContent(mContent);
-        assertEquals(SheetState.PEEK, mMediator.getOpeningState(/* isSmallScreen= */ false));
+        assertEquals(SheetState.PEEK, mMediator.getOpeningState());
 
         when(mContent.getPeekHeight()).thenReturn(HeightMode.DISABLED);
-        assertEquals(SheetState.HALF, mMediator.getOpeningState(/* isSmallScreen= */ false));
-        assertEquals(SheetState.FULL, mMediator.getOpeningState(/* isSmallScreen= */ true));
+        assertEquals(SheetState.HALF, mMediator.getOpeningState());
+        BottomSheetMediator.setSmallScreenForTesting(true);
+        assertEquals(SheetState.FULL, mMediator.getOpeningState());
+        BottomSheetMediator.setSmallScreenForTesting(false);
     }
 
     @Test
     public void testRatiosAndHeights() {
         assertEquals(0f, mMediator.getHiddenRatio(), 0.001f);
-        assertEquals(
-                0.25f,
-                mMediator.getPeekRatio(/* maxSheetHeight= */ 400, /* peekHeight= */ 100),
-                0.001f);
-        assertEquals(
-                0f, mMediator.getPeekRatio(/* maxSheetHeight= */ 0, /* peekHeight= */ 100), 0.001f);
+        mMediator.setSheetContainerDimensions(500, 400);
+        assertEquals(0.25f, mMediator.getPeekRatio(/* peekHeight= */ 100), 0.001f);
+        mMediator.setSheetContainerDimensions(500, 0);
+        assertEquals(0f, mMediator.getPeekRatio(/* peekHeight= */ 100), 0.001f);
+        mMediator.setSheetContainerDimensions(500, 1000);
 
         when(mContent.getHalfHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
         when(mContent.getFullHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
         mMediator.setSheetContent(mContent);
 
-        assertEquals(
-                0.75f,
-                mMediator.getHalfRatio(/* containerHeight= */ 1000, /* isSmallScreen= */ false),
-                0.001f);
-        assertEquals(
-                0f,
-                mMediator.getHalfRatio(/* containerHeight= */ 1000, /* isSmallScreen= */ true),
-                0.001f);
+        assertEquals(0.75f, mMediator.getHalfRatio(), 0.001f);
+        BottomSheetMediator.setSmallScreenForTesting(true);
+        assertEquals(0f, mMediator.getHalfRatio(), 0.001f);
+        BottomSheetMediator.setSmallScreenForTesting(false);
 
         when(mContent.getHalfHeightRatio()).thenReturn(0.6f);
         when(mContent.getFullHeightRatio()).thenReturn(0.85f);
         mMediator.setSheetContent(mContent);
-        assertEquals(
-                0.6f,
-                mMediator.getHalfRatio(/* containerHeight= */ 1000, /* isSmallScreen= */ false),
-                0.001f);
+        assertEquals(0.6f, mMediator.getHalfRatio(), 0.001f);
     }
 
     @Test
@@ -717,41 +696,110 @@ public class BottomSheetMediatorUnitTest {
         mMediator.setSheetContent(mContent);
 
         assertEquals(
-                60,
-                mMediator.getPeekHeight(
-                        /* containerHeight= */ 1000,
-                        /* maxSheetHeight= */ 1000,
-                        /* toolbarHeight= */ 60,
-                        /* handlebarHeight= */ 16));
+                60, mMediator.getPeekHeight(/* toolbarHeight= */ 60, /* handlebarHeight= */ 16));
 
         // With handlebar
         when(mContent.showHandlebar()).thenReturn(true);
         assertEquals(
-                76,
-                mMediator.getPeekHeight(
-                        /* containerHeight= */ 1000,
-                        /* maxSheetHeight= */ 1000,
-                        /* toolbarHeight= */ 60,
-                        /* handlebarHeight= */ 16));
+                76, mMediator.getPeekHeight(/* toolbarHeight= */ 60, /* handlebarHeight= */ 16));
 
         // Custom peek height
         when(mContent.getPeekHeight()).thenReturn(200);
         assertEquals(
-                216,
-                mMediator.getPeekHeight(
-                        /* containerHeight= */ 1000,
-                        /* maxSheetHeight= */ 1000,
-                        /* toolbarHeight= */ 60,
-                        /* handlebarHeight= */ 16));
+                216, mMediator.getPeekHeight(/* toolbarHeight= */ 60, /* handlebarHeight= */ 16));
 
         // Custom peek height capped to max sheet height
+        mMediator.setSheetContainerDimensions(500, 150);
         assertEquals(
-                150,
-                mMediator.getPeekHeight(
-                        /* containerHeight= */ 1000,
-                        /* maxSheetHeight= */ 150,
-                        /* toolbarHeight= */ 60,
-                        /* handlebarHeight= */ 16));
+                150, mMediator.getPeekHeight(/* toolbarHeight= */ 60, /* handlebarHeight= */ 16));
+    }
+
+    @Test
+    public void testIsSmallScreen() {
+        // At 1000px container height, (1 - 0.75) * 1000 = 250 >= min_full_half_distance -> false.
+        assertFalse(mMediator.isSmallScreen());
+
+        // At 200px container height, (1 - 0.75) * 200 = 50 < min_full_half_distance -> true.
+        mMediator.setSheetContainerDimensions(500, 200);
+        assertTrue(mMediator.isSmallScreen());
+
+        // Custom half ratio 0.25 at 200px -> (1 - 0.25) * 200 = 150 >= 140 -> false.
+        when(mContent.getHalfHeightRatio()).thenReturn(0.25f);
+        mMediator.setSheetContent(mContent);
+        assertFalse(mMediator.isSmallScreen());
+    }
+
+    @Test
+    public void testGetMaxSheetHeight() {
+        mMediator.setSheetContainerDimensions(500, 1000);
+        assertEquals(1000, mMediator.getMaxSheetHeight());
+
+        mMediator.setIsLargeFormFactor(true);
+        when(mContent.supportsLargeFormFactor()).thenReturn(true);
+        mMediator.setSheetContent(mContent);
+        int desktopBottomMargin =
+                ContextUtils.getApplicationContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_sheet_desktop_bottom_margin);
+        assertEquals(1000 - desktopBottomMargin, mMediator.getMaxSheetHeight());
+    }
+
+    @Test
+    public void testGetMaxSheetWidthAndHorizontalLayout() {
+        // Default narrow container (500px <= threshold 680dp) uses full width.
+        mMediator.setSheetContainerDimensions(500, 1000);
+        assertEquals(500, mMediator.getMaxSheetWidth());
+        assertTrue(mMediator.isFullWidth());
+        mMediator.sizeAndPositionSheetInParent();
+        assertEquals(500, mModel.get(BottomSheetProperties.SHEET_WIDTH_PX));
+        assertEquals(0f, mModel.get(BottomSheetProperties.SHEET_TRANSLATION_X), 0.0f);
+
+        // Wide container (> 680dp) uses narrow width when not LFF and not alwaysFullWidth.
+        int narrowWidth =
+                ContextUtils.getApplicationContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_sheet_narrow_width);
+        mMediator.setSheetContainerDimensions(1000, 1000);
+        assertEquals(narrowWidth, mMediator.getMaxSheetWidth());
+        assertFalse(mMediator.isFullWidth());
+        mMediator.sizeAndPositionSheetInParent();
+        assertEquals(narrowWidth, mModel.get(BottomSheetProperties.SHEET_WIDTH_PX));
+        assertEquals(
+                (1000 - narrowWidth) / 2f,
+                mModel.get(BottomSheetProperties.SHEET_TRANSLATION_X),
+                MathUtils.EPSILON);
+
+        // RTL inverts horizontal translation offset.
+        try {
+            LocalizationUtils.setRtlForTesting(true);
+            mMediator.sizeAndPositionSheetInParent();
+            assertEquals(
+                    -200f,
+                    mModel.get(BottomSheetProperties.SHEET_TRANSLATION_X),
+                    MathUtils.EPSILON);
+        } finally {
+            LocalizationUtils.setRtlForTesting(false);
+        }
+
+        // alwaysFullWidth overrides narrow width.
+        mMediator.setAlwaysFullWidth(true);
+        assertEquals(1000, mMediator.getMaxSheetWidth());
+        assertTrue(mMediator.isFullWidth());
+        mMediator.setAlwaysFullWidth(false);
+
+        // Large form factor popup UI clamps to lffWidth and edgeGap.
+        mMediator.setIsLargeFormFactor(true);
+        when(mContent.supportsLargeFormFactor()).thenReturn(true);
+        mMediator.setSheetContent(mContent);
+        int lffWidth =
+                ContextUtils.getApplicationContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_sheet_large_form_factor_width);
+        assertEquals(lffWidth, mMediator.getMaxSheetWidth());
+
+        // Constrained container width clamps LFF width with dedicated edge gap (400 - 2 * 16).
+        mMediator.setSheetContainerDimensions(400, 1000);
+        assertEquals(368, mMediator.getMaxSheetWidth());
     }
 
     @Test
@@ -839,8 +887,7 @@ public class BottomSheetMediatorUnitTest {
                         /* colorModal= */ Color.BLUE,
                         /* maxOffset= */ 1000f,
                         /* minOffset= */ 0f,
-                        /* currentOffset= */ 500f,
-                        /* isSmallScreen= */ false);
+                        /* currentOffset= */ 500f);
 
         // When non resizable, modal color is used
         assertEquals(Color.BLUE, color);
@@ -858,8 +905,7 @@ public class BottomSheetMediatorUnitTest {
                         /* colorModal= */ Color.BLUE,
                         /* maxOffset= */ 1000f,
                         /* minOffset= */ 0f,
-                        /* currentOffset= */ 500f,
-                        /* isSmallScreen= */ false);
+                        /* currentOffset= */ 500f);
 
         assertEquals(Color.GREEN, color);
     }
@@ -888,7 +934,6 @@ public class BottomSheetMediatorUnitTest {
                         /* currentX= */ 100f,
                         /* offsetFromBrowserControls= */ 10f,
                         /* isHiding= */ false,
-                        /* containerWidth= */ 500,
                         defaultViewport));
 
         // isHiding -> false
@@ -897,7 +942,6 @@ public class BottomSheetMediatorUnitTest {
                         /* currentX= */ 100f,
                         /* offsetFromBrowserControls= */ 0f,
                         /* isHiding= */ true,
-                        /* containerWidth= */ 500,
                         defaultViewport));
 
         // isSheetOpen -> true
@@ -907,7 +951,6 @@ public class BottomSheetMediatorUnitTest {
                         /* currentX= */ 100f,
                         /* offsetFromBrowserControls= */ 0f,
                         /* isHiding= */ false,
-                        /* containerWidth= */ 500,
                         defaultViewport));
         mMediator.setIsSheetOpenForTesting(false);
 
@@ -918,7 +961,6 @@ public class BottomSheetMediatorUnitTest {
                         /* currentX= */ 100f,
                         /* offsetFromBrowserControls= */ 0f,
                         /* isHiding= */ false,
-                        /* containerWidth= */ 500,
                         viewport));
 
         // Outside viewport bounds
@@ -927,7 +969,6 @@ public class BottomSheetMediatorUnitTest {
                         /* currentX= */ 20f,
                         /* offsetFromBrowserControls= */ 0f,
                         /* isHiding= */ false,
-                        /* containerWidth= */ 500,
                         viewport));
     }
 
@@ -1049,7 +1090,6 @@ public class BottomSheetMediatorUnitTest {
         assertEquals(
                 572f,
                 mMediator.calculateSheetTranslationY(
-                        /* containerHeight= */ 1000,
                         /* currentOffsetPx= */ 400f,
                         /* browserControlsOffset= */ 20f,
                         /* e2eBottomInset= */ 48),
@@ -1059,7 +1099,6 @@ public class BottomSheetMediatorUnitTest {
         assertEquals(
                 0f,
                 mMediator.calculateSheetTranslationY(
-                        /* containerHeight= */ 1000,
                         /* currentOffsetPx= */ 980f,
                         /* browserControlsOffset= */ 0f,
                         /* e2eBottomInset= */ 48),
@@ -1071,7 +1110,6 @@ public class BottomSheetMediatorUnitTest {
         assertEquals(
                 552f,
                 mMediator.calculateSheetTranslationY(
-                        /* containerHeight= */ 1000,
                         /* currentOffsetPx= */ 400f,
                         /* browserControlsOffset= */ 0f,
                         /* e2eBottomInset= */ 48),
@@ -1082,7 +1120,6 @@ public class BottomSheetMediatorUnitTest {
         assertEquals(
                 959f,
                 mMediator.calculateSheetTranslationY(
-                        /* containerHeight= */ 1000,
                         /* currentOffsetPx= */ 20.5f,
                         /* browserControlsOffset= */ 0f,
                         /* e2eBottomInset= */ 48),
@@ -1092,7 +1129,6 @@ public class BottomSheetMediatorUnitTest {
         assertEquals(
                 1000f,
                 mMediator.calculateSheetTranslationY(
-                        /* containerHeight= */ 1000,
                         /* currentOffsetPx= */ 0f,
                         /* browserControlsOffset= */ 0f,
                         /* e2eBottomInset= */ 48),
