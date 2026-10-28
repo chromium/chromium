@@ -267,6 +267,8 @@ struct BASE_EXPORT MemoryConsumerTraits {
   //
   // kNone is the default because it is by far the common case. Consumers that
   // explicitly allocate on a limit increase must set kImmediate.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base.memory_coordinator
+  // GENERATED_JAVA_PREFIX_TO_STRIP: k
   enum class RecoveryBehavior : uint8_t {
     // The consumer takes no action to use more memory when its limit is raised.
     kNone,

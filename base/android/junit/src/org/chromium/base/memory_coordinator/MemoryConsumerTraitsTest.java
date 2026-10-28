@@ -25,6 +25,7 @@ public class MemoryConsumerTraitsTest {
                         .setSupportsMemoryLimit(SupportsMemoryLimit.YES)
                         .setInProcess(InProcess.YES)
                         .setIsStateful(IsStateful.YES)
+                        .setRecoveryBehavior(RecoveryBehavior.IMMEDIATE)
                         .setReleaseMemoryCpuCost(ReleaseMemoryCpuCost.EXPENSIVE)
                         .build();
 
@@ -36,6 +37,7 @@ public class MemoryConsumerTraitsTest {
         assertEquals(SupportsMemoryLimit.YES, traits.getSupportsMemoryLimit());
         assertEquals(InProcess.YES, traits.getInProcess());
         assertEquals(IsStateful.YES, traits.getIsStateful());
+        assertEquals(RecoveryBehavior.IMMEDIATE, traits.getRecoveryBehavior());
         assertEquals(ReleaseMemoryCpuCost.EXPENSIVE, traits.getReleaseMemoryCpuCost());
     }
 
@@ -51,6 +53,7 @@ public class MemoryConsumerTraitsTest {
         assertEquals(SupportsMemoryLimit.YES, passive.getSupportsMemoryLimit());
         assertEquals(InProcess.NA, passive.getInProcess());
         assertEquals(ReleaseGCReferences.NO, passive.getReleaseGCReferences());
+        assertEquals(RecoveryBehavior.NA, passive.getRecoveryBehavior());
         assertEquals(ReleaseMemoryCpuCost.NA, passive.getReleaseMemoryCpuCost());
     }
 
@@ -97,6 +100,7 @@ public class MemoryConsumerTraitsTest {
                         .setSupportsMemoryLimit(SupportsMemoryLimit.YES)
                         .setInProcess(InProcess.YES)
                         .setIsStateful(IsStateful.YES)
+                        .setRecoveryBehavior(RecoveryBehavior.IMMEDIATE)
                         .setReleaseMemoryCpuCost(ReleaseMemoryCpuCost.EXPENSIVE)
                         .build();
 
@@ -113,5 +117,6 @@ public class MemoryConsumerTraitsTest {
         assertEquals(GarbageCollectsV8Heap.NO, (packed >> 14) & 0x1);
         assertEquals(IsStateful.YES, (packed >> 15) & 0x1);
         assertEquals(ReleaseMemoryCpuCost.EXPENSIVE, (packed >> 16) & 0x3);
+        assertEquals(RecoveryBehavior.IMMEDIATE, (packed >> 18) & 0x3);
     }
 }
