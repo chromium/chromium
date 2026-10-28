@@ -16,8 +16,8 @@
 namespace {
 
 std::unique_ptr<KeyedService> BuildInProcessCategoryClassificationService(
-    ProfileIOS* profile) {
-  CHECK(!profile->IsOffTheRecord());
+    ProfileIOS& profile) {
+  CHECK(!profile.IsOffTheRecord());
   if (!contextual_cueing::
           IsGeminiContextualSuggestionsCuesOnDeviceClassifierEnabled()) {
     return nullptr;
@@ -34,7 +34,7 @@ std::unique_ptr<KeyedService> BuildInProcessCategoryClassificationService(
 }  // namespace
 
 // static
-InProcessCategoryClassificationServiceFactory::TestingFactory
+InProcessCategoryClassificationServiceFactory::TestingFactoryByRef
 InProcessCategoryClassificationServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildInProcessCategoryClassificationService);
 }
@@ -52,6 +52,6 @@ InProcessCategoryClassificationServiceFactory::
 
 std::unique_ptr<KeyedService>
 InProcessCategoryClassificationServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildInProcessCategoryClassificationService(profile);
 }
