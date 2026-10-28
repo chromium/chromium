@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/webui/theme_colors_source_manager.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager_factory.h"
 #include "chrome/browser/ui/webui/theme_source.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/browser_controls_adapter_impl.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/toolbar_state_fetcher_impl.h"
@@ -101,6 +102,8 @@ constexpr char kTouchUi[] = "touchUi";
 constexpr char kInitialWebUISurfaceSyncEnabled[] =
     "initialWebUISurfaceSyncEnabled";
 constexpr char kIsFallbackPrewarming[] = "isFallbackPrewarming";
+constexpr char kIsProfileEligibleForGlic[] = "isProfileEligibleForGlic";
+constexpr char kCanShowAvatarForProfile[] = "canShowAvatarForProfile";
 
 // Retrieves the current toolbar state from the provider's fetcher
 // and populates a nested dictionary `initialState`.
@@ -258,15 +261,12 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
   source->AddBoolean("enableAppMenuButton",
                      features::IsWebUIAppMenuButtonEnabled());
 
-  // Glic button is enabled only when both the WebUI Glic flag is active and
-  // the current profile is eligible for Glic.
-  source->AddBoolean("enableGlicButton",
-                     features::IsWebUIGlicButtonEnabled() &&
-                         glic::GlicEnabling::IsProfileEligible(profile));
-  source->AddBoolean(
-      "enableAvatarButton",
-      features::IsWebUIAvatarButtonEnabled() &&
-          AvatarToolbarButtonInterface::CanShowForProfile(profile));
+  // Whether the Glic and avatar buttons are shown also depends on the profile
+  // of the window, which is set in the initial state of each frame in
+  // WebUIRenderFrameCreated().
+  source->AddBoolean("enableGlicButton", features::IsWebUIGlicButtonEnabled());
+  source->AddBoolean("enableAvatarButton",
+                     features::IsWebUIAvatarButtonEnabled());
   source->AddBoolean("enableMediaButton",
                      features::IsWebUIMediaButtonEnabled());
   source->AddBoolean("enableExtensionsContainer",
@@ -511,6 +511,16 @@ void WebUIToolbarUI::WebUIRenderFrameCreated(content::RenderFrameHost* rfh) {
     PopulateInitialState(values, nullptr);
     values.Set(kIsFallbackPrewarming, true);
   }
+  // These depend on the profile of the window, so they are set for each frame
+  // instead of in the WebUIDataSource, which is shared by the toolbars in the
+  // same BrowserContext. With features::kTopChromeWebUISharedRenderer, those
+  // toolbars can be for windows of different profiles.
+  Profile* user_profile = webui::GetUserProfile(web_ui()->GetWebContents());
+  values.Set(kIsProfileEligibleForGlic,
+             glic::GlicEnabling::IsProfileEligible(user_profile));
+  values.Set(kCanShowAvatarForProfile,
+             AvatarToolbarButtonInterface::CanShowForProfile(user_profile));
+
   std::string json_string;
   base::JSONWriter::Write(values, &json_string);
   rfh->SetWebUIProperty("initialState", json_string);

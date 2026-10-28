@@ -61,6 +61,8 @@ export enum ToolbarStateKey {
   TOUCH_UI = 'touchUi',
   INITIAL_WEBUI_SURFACE_SYNC_ENABLED = 'initialWebUISurfaceSyncEnabled',
   IS_FALLBACK_PREWARMING = 'isFallbackPrewarming',
+  IS_PROFILE_ELIGIBLE_FOR_GLIC = 'isProfileEligibleForGlic',
+  CAN_SHOW_AVATAR_FOR_PROFILE = 'canShowAvatarForProfile',
 }
 
 /**
@@ -78,6 +80,8 @@ export interface ToolbarFlatStateSchema {
   [ToolbarStateKey.TOUCH_UI]: boolean;
   [ToolbarStateKey.INITIAL_WEBUI_SURFACE_SYNC_ENABLED]: boolean;
   [ToolbarStateKey.IS_FALLBACK_PREWARMING]: boolean;
+  [ToolbarStateKey.IS_PROFILE_ELIGIBLE_FOR_GLIC]: boolean;
+  [ToolbarStateKey.CAN_SHOW_AVATAR_FOR_PROFILE]: boolean;
 }
 
 /**

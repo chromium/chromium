@@ -131,17 +131,21 @@ export class ToolbarAppElement extends AppElementBase {
       loadTimeData.getBoolean('enablePinnedToolbarActions');
   protected accessor isExtensionsContainerEnabled_: boolean =
       loadTimeData.getBoolean('enableExtensionsContainer');
+  private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private initialState_: InitialStateReader =
+      this.browserProxy_.getInitialState();
   protected accessor isGlicButtonEnabled_: boolean =
-      loadTimeData.getBoolean('enableGlicButton');
+      loadTimeData.getBoolean('enableGlicButton') &&
+      this.initialState_.getBoolean(
+          ToolbarStateKey.IS_PROFILE_ELIGIBLE_FOR_GLIC);
   protected accessor isAvatarButtonEnabled_: boolean =
-      loadTimeData.getBoolean('enableAvatarButton');
+      loadTimeData.getBoolean('enableAvatarButton') &&
+      this.initialState_.getBoolean(
+          ToolbarStateKey.CAN_SHOW_AVATAR_FOR_PROFILE);
   protected accessor isPerformanceInterventionButtonEnabled_: boolean =
       loadTimeData.getBoolean('enablePerformanceInterventionButton');
   protected accessor isMediaButtonEnabled_: boolean =
       loadTimeData.getBoolean('enableMediaButton');
-  private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
-  private initialState_: InitialStateReader =
-      this.browserProxy_.getInitialState();
   /**
    * Tracks whether the element has received its first toolbar state
    * update from the browser and completed its initial visual render.
