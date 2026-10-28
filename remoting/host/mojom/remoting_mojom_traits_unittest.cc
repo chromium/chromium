@@ -851,7 +851,7 @@ TEST(RemotingMojomTraitsTest, SessionPoliciesRoundTripAndValidation) {
   input.host_username_match_required = false;
   input.allow_remote_input = true;
   input.allow_webauthn_forwarding = false;
-  input.allow_gnubby_forwarding = true;
+  input.allow_security_key_forwarding = true;
   input.allow_terminal_mode = false;
   input.audio_mode = SessionPolicies::AudioMode::kHostToClient;
 

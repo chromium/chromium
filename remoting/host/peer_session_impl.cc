@@ -191,8 +191,8 @@ void PeerSessionImpl::Start(
 
   DesktopEnvironmentOptions options = desktop_environment_options_;
 
-  bool allow_gnubby = desktop_environment_options_.enable_security_key();
-  if (allow_gnubby) {
+  bool allow_security_key = desktop_environment_options_.enable_security_key();
+  if (allow_security_key) {
     security_key_auth_handler_ = SecurityKeyAuthHandler::Create();
   }
 
@@ -1331,14 +1331,14 @@ void PeerSessionImpl::OnSecurityKeyConnection(
     mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  bool allow_gnubby = desktop_environment_options_.enable_security_key();
+  bool allow_security_key = desktop_environment_options_.enable_security_key();
 
   if (!security_key_auth_handler_) {
     LOG(WARNING) << "Security key forwarding is not supported. Binding request "
                     "rejected.";
     return;
   }
-  if (!allow_gnubby) {
+  if (!allow_security_key) {
     LOG(WARNING) << "Security key forwarding is disabled by policy or option. "
                  << "Binding request rejected.";
     return;

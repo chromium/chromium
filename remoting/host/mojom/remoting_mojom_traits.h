@@ -1707,9 +1707,9 @@ class StructTraits<remoting::mojom::SessionPoliciesDataView,
     return policies.allow_webauthn_forwarding;
   }
 
-  static std::optional<bool> allow_gnubby_forwarding(
+  static std::optional<bool> allow_security_key_forwarding(
       const ::remoting::SessionPolicies& policies) {
-    return policies.allow_gnubby_forwarding;
+    return policies.allow_security_key_forwarding;
   }
 
   static std::optional<bool> allow_terminal_mode(

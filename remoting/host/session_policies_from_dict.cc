@@ -68,7 +68,7 @@ std::optional<SessionPolicies> SessionPoliciesFromDict(
       dict.FindBool(policy::key::kRemoteAccessHostAllowFileTransfer);
   session_policies.allow_uri_forwarding =
       dict.FindBool(policy::key::kRemoteAccessHostAllowUrlForwarding);
-  session_policies.allow_gnubby_forwarding =
+  session_policies.allow_security_key_forwarding =
       dict.FindBool(policy::key::kRemoteAccessHostAllowGnubbyAuth);
   session_policies.maximum_session_duration = maximum_session_duration;
   session_policies.curtain_required =

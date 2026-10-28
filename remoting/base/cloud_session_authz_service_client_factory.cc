@@ -229,9 +229,9 @@ void CloudSessionAuthzServiceClient::OnVerifySessionTokenResponse(
       session_policies.allow_webauthn_forwarding =
           response->session_policies().allow_web_authn_forwarding();
     }
-    if (response->session_policies().has_allow_gnubby_forwarding()) {
-      session_policies.allow_gnubby_forwarding =
-          response->session_policies().allow_gnubby_forwarding();
+    if (response->session_policies().has_allow_security_key_forwarding()) {
+      session_policies.allow_security_key_forwarding =
+          response->session_policies().allow_security_key_forwarding();
     }
     if (response->session_policies().has_allow_terminal_remoting()) {
       session_policies.allow_terminal_mode =

@@ -83,9 +83,9 @@ message SessionPolicies {
   // Defaults to true.
   optional bool allow_web_authn_forwarding = 9;
 
-  // Allow host-side Gnubby (Security Key) requests to be handled by the client
-  // browser. Defaults to true.
-  optional bool allow_gnubby_forwarding = 10;
+  // Allow host-side Security Key requests to be handled by the client browser.
+  // Defaults to true.
+  optional bool allow_security_key_forwarding = 10;
 
   // Allow remoting a terminal from the remote machine. Defaults to true.
   optional bool allow_terminal_remoting = 11;

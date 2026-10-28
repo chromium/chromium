@@ -326,7 +326,7 @@ TEST_F(ClientSessionTest, AppliesSessionPoliciesToDesktopEnvironmentOptions) {
   SessionPolicies remote_policies;
   remote_policies.curtain_required = true;
   remote_policies.allow_webauthn_forwarding = true;
-  remote_policies.allow_gnubby_forwarding = false;
+  remote_policies.allow_security_key_forwarding = false;
   remote_policies.audio_mode = SessionPolicies::AudioMode::kClientToHost;
 
   desktop_environment_options_.set_enable_remote_webauthn(true);

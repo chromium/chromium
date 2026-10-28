@@ -181,8 +181,9 @@ void DesktopEnvironmentOptions::ApplySessionPolicies(
       policies.allow_webauthn_forwarding.has_value()) {
     set_enable_remote_webauthn(*policies.allow_webauthn_forwarding);
   }
-  if (enable_security_key() && policies.allow_gnubby_forwarding.has_value()) {
-    set_enable_security_key(*policies.allow_gnubby_forwarding);
+  if (enable_security_key() &&
+      policies.allow_security_key_forwarding.has_value()) {
+    set_enable_security_key(*policies.allow_security_key_forwarding);
   }
   if (!policies.is_host_to_client_audio_allowed()) {
     set_audio_playback_mode(AudioPlaybackMode::kLocalOnly);

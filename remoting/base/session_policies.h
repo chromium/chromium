@@ -109,11 +109,11 @@ struct SessionPolicies {
   // WebAuthn forwarding extension if needed.
   std::optional<bool> allow_webauthn_forwarding;
 
-  // Allow the client to service security key (gnubby) requests generated on the
-  // host machine.
+  // Allow the client to service security key requests generated on the host
+  // machine.
   // A nullopt value means to use the default value, which is true (allowed).
   // Corresponding Chrome policy: RemoteAccessHostAllowGnubbyAuth
-  std::optional<bool> allow_gnubby_forwarding;
+  std::optional<bool> allow_security_key_forwarding;
 
   // Allow the client to establish terminal sessions on supported platforms.
   // A nullopt value means to use the default value, which is true (allowed).

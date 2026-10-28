@@ -638,7 +638,8 @@ bool mojo::StructTraits<remoting::mojom::SessionPoliciesDataView,
   out_policies->allow_remote_input = data_view.allow_remote_input();
   out_policies->allow_webauthn_forwarding =
       data_view.allow_webauthn_forwarding();
-  out_policies->allow_gnubby_forwarding = data_view.allow_gnubby_forwarding();
+  out_policies->allow_security_key_forwarding =
+      data_view.allow_security_key_forwarding();
   out_policies->allow_terminal_mode = data_view.allow_terminal_mode();
   if (!data_view.ReadAudioMode(&out_policies->audio_mode)) {
     return false;

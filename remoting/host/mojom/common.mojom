@@ -157,10 +157,10 @@ struct SessionPolicies {
   // A null value means to use the default value, which is true (allowed).
   bool? allow_webauthn_forwarding;
 
-  // Allow the client to service security key (gnubby) requests generated on
-  // the host machine.
+  // Allow the client to service security key requests generated on the host
+  // machine.
   // A null value means to use the default value, which is true (allowed).
-  bool? allow_gnubby_forwarding;
+  bool? allow_security_key_forwarding;
 
   // Allow the client to establish terminal sessions on supported platforms.
   // A null value means to use the default value, which is true (allowed).

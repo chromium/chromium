@@ -89,8 +89,8 @@ std::ostream& operator<<(std::ostream& os,
      << ", allow_uri_forwarding: " << session_policies.allow_uri_forwarding
      << ", allow_webauthn_forwarding: "
      << session_policies.allow_webauthn_forwarding
-     << ", allow_gnubby_forwarding: "
-     << session_policies.allow_gnubby_forwarding
+     << ", allow_security_key_forwarding: "
+     << session_policies.allow_security_key_forwarding
      << ", maximum_session_duration: "
      << session_policies.maximum_session_duration
      << ", curtain_required: " << session_policies.curtain_required
