@@ -3050,12 +3050,17 @@ std::unique_ptr<FormStructure> BrowserAutofillManager::ValidateSubmittedForm(
       FormStructure::Clone(*cached_submitted_form, /*pass_key=*/{});
   submitted_form->UpdateFormData(form, base::PassKey<BrowserAutofillManager>());
 
-  // The form signature should match between query and upload requests to the
-  // server. On many websites, form elements are dynamically added, removed, or
-  // rearranged via JavaScript between page load and form submission, so we
-  // copy over the |form_signature_field_names_| corresponding to the query
-  // request.
+  // The form signatures should match between query and upload requests to the
+  // server, because the server stores votes and serves predictions keyed by
+  // these signatures. On many websites, form elements are dynamically added,
+  // removed, or rearranged via JavaScript between page load and form
+  // submission, and `UpdateFormData()` recomputes all signatures from the
+  // submitted form. Therefore, copy over the signatures that were used in the
+  // query request: the `form_signature()` and the
+  // `structural_form_signature()`.
   submitted_form->set_form_signature(cached_submitted_form->form_signature());
+  submitted_form->set_structural_form_signature(
+      cached_submitted_form->structural_form_signature());
 
   return submitted_form;
 }

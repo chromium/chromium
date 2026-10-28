@@ -231,6 +231,7 @@ using upload_contents_matchers::FieldAutofillTypeIs;
 using upload_contents_matchers::FieldsAre;
 using upload_contents_matchers::FormSignatureIs;
 using upload_contents_matchers::ObservedSubmissionIs;
+using upload_contents_matchers::StructuralFormSignatureIs;
 using UkmAutofillKeyMetricsType = ukm::builders::Autofill_KeyMetrics;
 
 constexpr Suggestion::Icon kAddressEntryIcon = Suggestion::Icon::kAccount;
@@ -6911,6 +6912,35 @@ TEST_F(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
                         FieldAutofillTypeIs({FieldType::EMPTY_TYPE})),
               ObservedSubmissionIs(true))),
           _, _));
+  FormSubmitted(form_);
+}
+
+// Test that if the form changes between the query and the submission (without
+// the change being reported via `FormsSeen()`), the upload carries the
+// query-time `form_signature()` and the query-time
+// `structural_form_signature()`, not the signatures of the submitted form.
+TEST_F(BrowserAutofillManagerVotingTest,
+       SubmissionOfChangedFormUsesQueryTimeSignatures) {
+  SimulateTypingFirstNameIntoFirstField();
+  const FormSignature query_form_signature = CalculateFormSignature(form_);
+  const FormSignature query_structural_signature =
+      CalculateStructuralFormSignature(form_);
+
+  // Grow the form by one field without notifying the manager via FormsSeen(),
+  // e.g. because a script inserted the field right before the submission.
+  test_api(form_).Append(CreateTestFormField(
+      "Zip code", "zip", "", FormControlType::kInputText, "postal-code"));
+  ASSERT_NE(query_form_signature, CalculateFormSignature(form_));
+  ASSERT_NE(query_structural_signature,
+            CalculateStructuralFormSignature(form_));
+
+  EXPECT_CALL(crowdsourcing_manager(),
+              StartUploadRequest(
+                  FirstElementIs(AllOf(
+                      FormSignatureIs(query_form_signature),
+                      StructuralFormSignatureIs(query_structural_signature),
+                      ObservedSubmissionIs(true))),
+                  _, _));
   FormSubmitted(form_);
 }
 

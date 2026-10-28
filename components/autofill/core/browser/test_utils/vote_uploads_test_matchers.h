@@ -33,13 +33,22 @@ inline ::testing::Matcher<AutofillUploadContents> AutofillUsedIs(
       "autofill_used", &AutofillUploadContents::autofill_used, autofill_used);
 }
 
-// Creates a matcher for an `AutofillUploadContents`'s form_signature method
+// Creates a matcher for an `AutofillUploadContents`'s `form_signature()` method
 // against `form_signature`.
 inline ::testing::Matcher<AutofillUploadContents> FormSignatureIs(
     FormSignature form_signature) {
   return ::testing::Property("form_signature",
                              &AutofillUploadContents::form_signature,
                              form_signature.value());
+}
+
+// Creates a matcher for an `AutofillUploadContents`'s
+// `structural_form_signature()` method against `structural_form_signature`.
+inline ::testing::Matcher<AutofillUploadContents> StructuralFormSignatureIs(
+    FormSignature structural_form_signature) {
+  return ::testing::Property("structural_form_signature",
+                             &AutofillUploadContents::structural_form_signature,
+                             structural_form_signature.value());
 }
 
 // Creates a matcher that matches `matchers` against the fields of an
