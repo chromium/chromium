@@ -544,19 +544,6 @@ Profile* IbanBubbleControllerImpl::GetProfile() {
   return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 }
 
-AutofillBubbleHandler* IbanBubbleControllerImpl::GetAutofillBubbleHandler() {
-  // We may be in a non-tab WebContents such as a side panel or extension popup;
-  // in those cases we cannot access the AutofillBubbleHandler.
-  tabs::TabInterface* tab =
-      tabs::TabInterface::MaybeGetFromContents(web_contents());
-  if (!tab) {
-    return nullptr;
-  }
-  BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
-  CHECK(browser);
-  return AutofillBubbleHandler::Get(browser->GetUnownedUserDataHost());
-}
-
 void IbanBubbleControllerImpl::ShowIconOnly() {
   CHECK(current_bubble_type_ != IbanBubbleType::kInactive);
   if (current_bubble_type_ == IbanBubbleType::kLocalSave ||

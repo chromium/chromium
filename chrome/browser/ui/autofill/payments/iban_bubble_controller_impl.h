@@ -23,7 +23,6 @@
 
 namespace autofill {
 
-class AutofillBubbleHandler;
 enum class IbanBubbleType;
 
 // Implementation of per-tab class to control the IBAN save bubble, manage saved
@@ -131,8 +130,6 @@ class IbanBubbleControllerImpl
   friend class content::WebContentsUserData<IbanBubbleControllerImpl>;
 
   Profile* GetProfile();
-
-  AutofillBubbleHandler* GetAutofillBubbleHandler();
 
   // Sets up the controller's state for a local IBAN save prompt.
   void SetupLocalSave(Iban iban,

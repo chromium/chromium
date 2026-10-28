@@ -20,6 +20,7 @@ class WebContents;
 namespace autofill {
 
 class AutofillBubbleBase;
+class AutofillBubbleHandler;
 
 // Interface that exposes controller functionality to all autofill bubbles.
 class AutofillBubbleControllerBase : public BubbleControllerBase,
@@ -117,6 +118,8 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
   void ResetBubbleViewAndInformBubbleManager();
 
   AutofillBubbleBase* bubble_view() const { return bubble_view_; }
+
+  AutofillBubbleHandler* GetAutofillBubbleHandler();
 
   // True if anytime, the bubble was shown to the user in the lifecycle of the
   // bubble.

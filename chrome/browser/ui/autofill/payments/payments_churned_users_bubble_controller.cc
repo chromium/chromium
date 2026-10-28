@@ -16,7 +16,6 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/url_constants.h"
@@ -127,18 +126,13 @@ void PaymentsChurnedUsersBubbleController::OnAcceptButton() {
 void PaymentsChurnedUsersBubbleController::ShowConfirmationBubbleView() {
   HideBubble(/*initiated_by_bubble_manager=*/false);
 #if !BUILDFLAG(IS_ANDROID)
-  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents());
-  if (!tab) {
-    return;
-  }
-  BrowserWindowInterface* browser_window = tab->GetBrowserWindowInterface();
-  if (!browser_window) {
+  AutofillBubbleHandler* handler = GetAutofillBubbleHandler();
+  if (!handler) {
     return;
   }
   if (AutofillBubbleBase* bubble_view =
-          AutofillBubbleHandler::Get(browser_window->GetUnownedUserDataHost())
-              ->ShowPaymentsChurnedUsersConfirmationBubble(web_contents(),
-                                                           this)) {
+          handler->ShowPaymentsChurnedUsersConfirmationBubble(web_contents(),
+                                                              this)) {
     SetBubbleView(*bubble_view);
   }
 #endif
@@ -195,17 +189,12 @@ PaymentsChurnedUsersBubbleController::GetWeakPtr() {
 
 void PaymentsChurnedUsersBubbleController::DoShowBubble() {
 #if !BUILDFLAG(IS_ANDROID)
-  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents());
-  if (!tab) {
-    return;
-  }
-  BrowserWindowInterface* browser_window = tab->GetBrowserWindowInterface();
-  if (!browser_window) {
+  AutofillBubbleHandler* handler = GetAutofillBubbleHandler();
+  if (!handler) {
     return;
   }
   AutofillBubbleBase* created_bubble =
-      AutofillBubbleHandler::Get(browser_window->GetUnownedUserDataHost())
-          ->ShowPaymentsChurnedUsersBubble(web_contents(), this, is_reshow_);
+      handler->ShowPaymentsChurnedUsersBubble(web_contents(), this, is_reshow_);
   if (created_bubble) {
     SetBubbleView(*created_bubble);
     autofill_metrics::LogPaymentsChurnedUsersUiShowResult(

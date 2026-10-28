@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
 #include "chrome/browser/ui/browser_actions.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -261,13 +260,6 @@ void OfferNotificationBubbleControllerImpl::UpdatePageActionIcon() {
       action_id, BrowserActions::From(browser)->root_action_item());
   action->SetEnabled(ShouldShowPageAction());
 #endif  // BUILDFLAG(IS_ANDROID)
-}
-
-AutofillBubbleHandler*
-OfferNotificationBubbleControllerImpl::GetAutofillBubbleHandler() {
-  BrowserWindowInterface* browser = tab_interface_->GetBrowserWindowInterface();
-  CHECK(browser);
-  return AutofillBubbleHandler::Get(browser->GetUnownedUserDataHost());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(OfferNotificationBubbleControllerImpl);

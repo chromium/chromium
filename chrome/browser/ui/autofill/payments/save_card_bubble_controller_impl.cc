@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
@@ -889,20 +888,6 @@ SaveCardBubbleControllerImpl::GetPageActionTooltipText() {
   return GetSavePaymentIconTooltipText();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-AutofillBubbleHandler*
-SaveCardBubbleControllerImpl::GetAutofillBubbleHandler() {
-  // We may be in a non-tab WebContents such as a side panel or extension popup;
-  // in those cases we cannot access the AutofillBubbleHandler.
-  tabs::TabInterface* tab =
-      tabs::TabInterface::MaybeGetFromContents(web_contents());
-  if (!tab) {
-    return nullptr;
-  }
-  BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
-  CHECK(browser);
-  return AutofillBubbleHandler::Get(browser->GetUnownedUserDataHost());
-}
 
 void SaveCardBubbleControllerImpl::DoShowBubble() {
   if (!IsWebContentsActive()) {

@@ -5,9 +5,8 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
+#include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/bubble_manager.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -15,6 +14,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_properties_provider.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -209,6 +209,31 @@ void AutofillBubbleControllerBase::ResetBubbleViewAndInformBubbleManager() {
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+AutofillBubbleHandler*
+AutofillBubbleControllerBase::GetAutofillBubbleHandler() {
+#if !BUILDFLAG(IS_ANDROID)
+  // We may be in a non-tab WebContents such as a side panel or extension popup;
+  // in those cases we cannot access the AutofillBubbleHandler.
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  if (!tab) {
+    return nullptr;
+  }
+  BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
+  if (!browser) {
+    return nullptr;
+  }
+  if (AutofillBubbleHandler* handler =
+          AutofillBubbleHandler::Get(browser->GetUnownedUserDataHost())) {
+    return handler;
+  }
+  if (BrowserWindow* browser_window = BrowserWindow::FromBrowser(browser)) {
+    return browser_window->GetAutofillBubbleHandler();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+  return nullptr;
 }
 
 }  // namespace autofill
