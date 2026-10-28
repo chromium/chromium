@@ -180,7 +180,7 @@ void AddTreeLevelDataToViewStructure(
 // static
 WebContents* WebContents::FromJavaWebContents(
     const JavaRef<jobject>& jweb_contents_android) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M165);
   if (jweb_contents_android.is_null())
     return NULL;
 

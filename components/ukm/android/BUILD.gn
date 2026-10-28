@@ -10,6 +10,8 @@ android_library("java") {
   sources = [ "java/src/org/chromium/components/ukm/UkmRecorder.java" ]
 
   deps = [
+    "//base:java_exception_reporter_java",
+    "//base:tasks_java",
     "//build/android:build_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

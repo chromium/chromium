@@ -12,6 +12,10 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.JavaExceptionReporter;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
@@ -71,6 +75,15 @@ public class UkmRecorder {
         if (mWebContents.isDestroyed()) {
             // https://crbug.com/356429588
             assert false;
+            return;
+        }
+        if (!ThreadUtils.runningOnUiThread()) {
+            // TODO(crbug.com/577164526): Remove once bug is resolved.
+            final RuntimeException exception =
+                    new RuntimeException("UkmRecorder.record called on wrong thread");
+            PostTask.postTask(
+                    TaskTraits.UI_BEST_EFFORT,
+                    () -> JavaExceptionReporter.reportException(exception));
             return;
         }
         assumeNonNull(mMetrics);
