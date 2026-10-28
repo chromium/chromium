@@ -40,7 +40,6 @@
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/content/browser/mojo_safe_browsing_impl.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
@@ -152,45 +151,6 @@
 namespace {
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-// Helper method for ExposeInterfacesToRenderer() that checks the latest
-// SafeBrowsing pref value on the UI thread before hopping over to the IO
-// thread.
-void MaybeCreateSafeBrowsingForRenderer(
-    int process_id,
-    base::RepeatingCallback<scoped_refptr<safe_browsing::UrlCheckerDelegate>(
-        bool safe_browsing_enabled,
-        bool should_check_on_sb_disabled,
-        const std::vector<std::string>& allowlist_domains)>
-        get_checker_delegate,
-    mojo::PendingReceiver<safe_browsing::mojom::SafeBrowsing> receiver) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  content::RenderProcessHost* render_process_host =
-      content::RenderProcessHost::FromID(process_id);
-  if (!render_process_host)
-    return;
-
-  PrefService* pref_service =
-      Profile::FromBrowserContext(render_process_host->GetBrowserContext())
-          ->GetPrefs();
-
-  std::vector<std::string> allowlist_domains =
-      safe_browsing::GetURLAllowlistByPolicy(pref_service);
-
-  bool safe_browsing_enabled =
-      safe_browsing::IsSafeBrowsingEnabled(*pref_service);
-
-  safe_browsing::MojoSafeBrowsingImpl::MaybeCreate(
-      process_id,
-      base::BindRepeating(get_checker_delegate, safe_browsing_enabled,
-                          // Navigation initiated from renderer should never
-                          // check when safe browsing is disabled, because
-                          // enterprise check only supports mainframe URL.
-                          /*should_check_on_sb_disabled=*/false,
-                          allowlist_domains),
-      std::move(receiver));
-}
-
 // TODO(crbug.com/486154580): Switch to ENABLE_EXTENSIONS_CORE when safe
 // browsing is better supported on desktop Android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -261,14 +221,6 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
   if (safe_browsing_service_ &&
       !AreKeyedServicesDisabledForProfileByDefault(Profile::FromBrowserContext(
           render_process_host->GetBrowserContext()))) {
-    registry->AddInterface<safe_browsing::mojom::SafeBrowsing>(
-        base::BindRepeating(
-            &MaybeCreateSafeBrowsingForRenderer,
-            render_process_host->GetDeprecatedID(),
-            base::BindRepeating(
-                &ChromeContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
-                base::Unretained(this))),
-        ui_task_runner);
 // TODO(crbug.com/486154580): Switch to ENABLE_EXTENSIONS_CORE when safe
 // browsing is better supported on desktop Android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)

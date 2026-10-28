@@ -79,8 +79,6 @@ source_set("browser") {
     "client_report_util.h",
     "content_unsafe_resource_util.cc",
     "content_unsafe_resource_util.h",
-    "mojo_safe_browsing_impl.cc",
-    "mojo_safe_browsing_impl.h",
     "safe_browsing_controller_client.cc",
     "safe_browsing_controller_client.h",
     "safe_browsing_network_context.cc",

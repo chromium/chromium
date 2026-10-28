@@ -12,13 +12,6 @@ import "services/network/public/mojom/http_request_headers.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "url/mojom/url.mojom";
 
-// Provided by the browser and used by renderers to perform SafeBrowsing URL
-// checks.
-interface SafeBrowsing {
-  // Bind an additional pipe to this instance of the SafeBrowsing interface.
-  Clone(pending_receiver<SafeBrowsing> receiver);
-};
-
 // Used to store the name and value of an HTML Element's attribute.
 struct AttributeNameValue {
   string name;
