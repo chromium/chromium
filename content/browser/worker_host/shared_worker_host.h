@@ -417,7 +417,7 @@ class CONTENT_EXPORT SharedWorkerHost
 
   const base::UnguessableToken reporting_source_;
 
-  // Set at construction time and should not change afterwards.
+  // Set at construction time and should not change afterwards. Never null.
   const scoped_refptr<PolicyContainerHost> creator_policy_container_host_;
 
   // The worker's own client security state, applied to subresource fetches.

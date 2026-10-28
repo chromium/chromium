@@ -200,6 +200,7 @@ SharedWorkerHost::SharedWorkerHost(
       network_restrictions_id_(base::UnguessableToken::Create()) {
   CHECK(GetProcessHost(), base::NotFatalUntil::M160);
   CHECK(GetProcessHost()->IsInitializedAndNotDead(), base::NotFatalUntil::M160);
+  CHECK(creator_policy_container_host_);
 
   GetProcessHost()->AddObserver(this);
 
@@ -287,25 +288,10 @@ void SharedWorkerHost::Start(
   if (result.final_response_url.SchemeIsLocal()) {
     // TODO(crbug.com/40053797): Inherit from the file creator instead
     // once creator policies are persisted through the filesystem store.
-    if (creator_policy_container_host_) {
-      worker_client_security_state_ =
-          DeriveClientSecurityState(creator_policy_container_host_->policies(),
-                                    LocalNetworkAccessRequestContext::kWorker);
-    } else {
-      // Create a maximally restricted client security state if the policy
-      // container is missing.
-      worker_client_security_state_ = network::mojom::ClientSecurityState::New(
-          network::CrossOriginEmbedderPolicy(
-              network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp),
-          /*is_web_secure_context=*/false,
-          network::mojom::IPAddressSpace::kUnknown,
-          network::mojom::LocalNetworkAccessRequestPolicy::kBlock,
-          network::DocumentIsolationPolicy(
-              network::mojom::DocumentIsolationPolicyValue::
-                  kIsolateAndRequireCorp));
-    }
-
-    policy_container_host = std::move(creator_policy_container_host_);
+    worker_client_security_state_ =
+        DeriveClientSecurityState(creator_policy_container_host_->policies(),
+                                  LocalNetworkAccessRequestContext::kWorker);
+    policy_container_host = creator_policy_container_host_;
   } else {
     CHECK(result.main_script_load_params->response_head);
 
@@ -510,8 +496,7 @@ void SharedWorkerHost::Start(
   factory_->CreateSharedWorker(
       std::move(info), token_, instance_.creator_storage_key(),
       instance_.worker_storage_key().origin(),
-      creator_policy_container_host_ &&
-          creator_policy_container_host_->policies().is_web_secure_context,
+      creator_policy_container_host_->policies().is_web_secure_context,
       GetContentClient()->browser()->GetUserAgent(),
       GetContentClient()->browser()->GetUserAgentMetadata(),
       devtools_handle_->pause_on_start(), devtools_handle_->dev_tools_token(),
