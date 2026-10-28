@@ -26,13 +26,16 @@
 #include <emmintrin.h>
 #elif defined(__ARM_NEON__)
 #include <arm_neon.h>
-#include <string.h>
 #endif
 
+#include <array>
 #include <cstdint>
 
+#include "base/bit_cast.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/numerics/byte_conversions.h"
 
 namespace blink {
 
@@ -46,9 +49,16 @@ struct ConvertTo8BitHashReader {
   static constexpr size_t kCompressionFactor = 2;
   static constexpr size_t kExpansionFactor = 1;
 
-  // SAFETY: rapidhash callback.
+  // SAFETY: rapidhash provides at least 16 readable bytes.
   UNSAFE_BUFFER_USAGE ALWAYS_INLINE static uint64_t Read64(const uint8_t* ptr) {
-    const uint16_t* p = reinterpret_cast<const uint16_t*>(ptr);
+    return Read64(base::span<const uint8_t, 16>(base::unchecked, ptr, 16u));
+  }
+
+  ALWAYS_INLINE static uint64_t Read64(base::span<const uint8_t, 16> bytes) {
+    const std::array<uint64_t, 2> buffer = {
+        base::U64FromNativeEndian(bytes.first<8>()),
+        base::U64FromNativeEndian(bytes.last<8>())};
+    const auto p = base::bit_cast<std::array<uint16_t, 8>>(buffer);
     DCHECK_LE(p[0], 0xff);
     DCHECK_LE(p[1], 0xff);
     DCHECK_LE(p[2], 0xff);
@@ -58,11 +68,10 @@ struct ConvertTo8BitHashReader {
     DCHECK_LE(p[6], 0xff);
     DCHECK_LE(p[7], 0xff);
 #ifdef __SSE2__
-    __m128i x = _mm_loadu_si128(reinterpret_cast<const __m128i*>(p));
+    __m128i x = base::bit_cast<__m128i>(p);
     return _mm_cvtsi128_si64(_mm_packus_epi16(x, x));
 #elif defined(__ARM_NEON__)
-    uint16x8_t x;
-    memcpy(&x, p, sizeof(x));
+    uint16x8_t x = base::bit_cast<uint16x8_t>(p);
     return vget_lane_u64(vreinterpret_u64_u8(vmovn_u16(x)), 0);
 #else
     return (uint64_t{p[0]}) | (uint64_t{p[1]} << 8) | (uint64_t{p[2]} << 16) |
@@ -72,19 +81,24 @@ struct ConvertTo8BitHashReader {
 #endif
   }
 
-  // SAFETY: rapidhash callback.
+  // SAFETY: rapidhash provides at least 8 readable bytes.
   UNSAFE_BUFFER_USAGE ALWAYS_INLINE static uint64_t Read32(const uint8_t* ptr) {
-    const uint16_t* p = reinterpret_cast<const uint16_t*>(ptr);
+    return Read32(base::span<const uint8_t, 8>(base::unchecked, ptr, 8u));
+  }
+
+  ALWAYS_INLINE static uint64_t Read32(base::span<const uint8_t, 8> bytes) {
+    const auto p = base::bit_cast<std::array<uint16_t, 4>>(
+        base::U64FromNativeEndian(bytes));
     DCHECK_LE(p[0], 0xff);
     DCHECK_LE(p[1], 0xff);
     DCHECK_LE(p[2], 0xff);
     DCHECK_LE(p[3], 0xff);
 #ifdef __SSE2__
-    __m128i x = _mm_loadu_si64(reinterpret_cast<const __m128i*>(p));
+    const std::array<uint64_t, 2> padded = {base::bit_cast<uint64_t>(p), 0};
+    __m128i x = base::bit_cast<__m128i>(padded);
     return _mm_cvtsi128_si64(_mm_packus_epi16(x, x));
 #elif defined(__ARM_NEON__)
-    uint16x4_t x;
-    memcpy(&x, p, sizeof(x));
+    uint16x4_t x = base::bit_cast<uint16x4_t>(p);
     uint16x8_t x_wide = vcombine_u16(x, x);
     return vget_lane_u32(vreinterpret_u32_u8(vmovn_u16(x_wide)), 0);
 #else

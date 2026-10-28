@@ -25,6 +25,8 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 
+#include <array>
+
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -112,6 +114,41 @@ TEST(StringHasherTest, DeprecatedCaseFoldingHash) {
   EXPECT_TRUE(EqualCaseFoldingHash("Longer string 123", "longEr String 123"));
   EXPECT_TRUE(EqualCaseFoldingHash(String::FromUtf8("Ünicode"),
                                    String::FromUtf8("ünicode")));
+}
+
+TEST(StringHasherTest, Latin1ReaderFixedSpans) {
+  constexpr std::array<uint16_t, 8> kCharacters = {0x00, 0x7f, 0x80, 0xff,
+                                                   0xe9, 0x01, 0xfe, 0x41};
+  alignas(16) std::array<uint8_t, 31> storage;
+  for (size_t offset = 0; offset < 16; ++offset) {
+    SCOPED_TRACE(offset);
+    auto bytes = base::span(storage).subspan(offset).first<16>();
+    bytes.copy_from(base::as_bytes(base::span(kCharacters)));
+    EXPECT_EQ(0x41fe01e9ff807f00ull, ConvertTo8BitHashReader::Read64(bytes));
+    EXPECT_EQ(0xff807f00ull, ConvertTo8BitHashReader::Read32(bytes.first<8>()));
+    EXPECT_EQ(0x41fe01e9ull, ConvertTo8BitHashReader::Read32(bytes.last<8>()));
+  }
+}
+
+TEST(StringHasherTest, Latin1HashLengthsAndAlignment) {
+  std::array<LChar, 128> narrow;
+  for (size_t i = 0; i < narrow.size(); ++i) {
+    narrow[i] = static_cast<LChar>(i * 37);
+  }
+  alignas(16) std::array<UChar, 135> storage;
+  for (size_t offset = 0; offset < 8; ++offset) {
+    SCOPED_TRACE(offset);
+    auto wide = base::span(storage).subspan(offset).first<128>();
+    for (size_t i = 0; i < narrow.size(); ++i) {
+      wide[i] = narrow[i];
+    }
+    for (size_t length = 0; length <= narrow.size(); ++length) {
+      SCOPED_TRACE(length);
+      EXPECT_EQ(HashString24(base::span(narrow).first(length)),
+                HashString24<ConvertTo8BitHashReader>(
+                    base::as_bytes(wide.first(length))));
+    }
+  }
 }
 
 TEST(StringHasherTest, ContractionAndExpansion) {

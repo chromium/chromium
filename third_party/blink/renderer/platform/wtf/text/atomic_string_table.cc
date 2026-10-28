@@ -116,22 +116,13 @@ ALWAYS_INLINE static uint16_t Compress2UCharsToUint16(
 
 ALWAYS_INLINE static uint32_t Compress4UCharsToUint32(
     base::span<const UChar, 4> chars) {
-  return static_cast<uint32_t>(static_cast<uint8_t>(chars[0])) |
-         (static_cast<uint32_t>(static_cast<uint8_t>(chars[1])) << 8) |
-         (static_cast<uint32_t>(static_cast<uint8_t>(chars[2])) << 16) |
-         (static_cast<uint32_t>(static_cast<uint8_t>(chars[3])) << 24);
+  return static_cast<uint32_t>(
+      ConvertTo8BitHashReader::Read32(base::as_bytes(chars)));
 }
 
 ALWAYS_INLINE static uint64_t Compress8UCharsToUint64(
     base::span<const UChar, 8> chars) {
-  return static_cast<uint64_t>(static_cast<uint8_t>(chars[0])) |
-         (static_cast<uint64_t>(static_cast<uint8_t>(chars[1])) << 8) |
-         (static_cast<uint64_t>(static_cast<uint8_t>(chars[2])) << 16) |
-         (static_cast<uint64_t>(static_cast<uint8_t>(chars[3])) << 24) |
-         (static_cast<uint64_t>(static_cast<uint8_t>(chars[4])) << 32) |
-         (static_cast<uint64_t>(static_cast<uint8_t>(chars[5])) << 40) |
-         (static_cast<uint64_t>(static_cast<uint8_t>(chars[6])) << 48) |
-         (static_cast<uint64_t>(static_cast<uint8_t>(chars[7])) << 56);
+  return ConvertTo8BitHashReader::Read64(base::as_bytes(chars));
 }
 
 ALWAYS_INLINE static std::pair<uint64_t, uint64_t> ComputeSmallStringSignature(
