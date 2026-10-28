@@ -443,6 +443,51 @@ TEST_F(NavigationManagerImplTest,
   EXPECT_TRUE(test::WaitForWebViewContainingText(web_state(), "Echo"));
 }
 
+// Tests that calling Reload with the current URL after a pushState navigation
+// to a URL with a fragment reloads the page without crashing on DCHECKs,
+// keeping GetLastCommittedItemIndex at the pushed item index.
+TEST_F(NavigationManagerImplTest, ReloadAfterPushStateWithFragment) {
+  GURL initial_url = test_server_->GetURL("/echo");
+  ASSERT_TRUE(LoadUrl(initial_url));
+
+  // Push state to a URL with a fragment.
+  GURL hash_url = test_server_->GetURL("/echo#section2");
+  web::test::ExecuteJavaScript(@"history.pushState(null, '', '#section2');",
+                               web_state());
+
+  // Wait for the pushState navigation to commit.
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        return navigation_manager()->GetLastCommittedItem() &&
+               navigation_manager()->GetLastCommittedItem()->GetURL() ==
+                   hash_url;
+      }));
+
+  // Modify DOM text to verify that the subsequent reload replaces page content.
+  web::test::ExecuteJavaScript(@"document.body.innerText = 'Modified';",
+                               web_state());
+  ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "Modified"));
+
+  // Reload via NavigationManager::Reload (e.g. pull-to-refresh).
+  ASSERT_TRUE(ExecuteBlockAndWaitForLoad(hash_url, ^{
+    navigation_manager()->Reload(web::ReloadType::NORMAL,
+                                 /*check_for_repost=*/false);
+
+    // During the reload, GetLastCommittedItem must remain non-null and point to
+    // the pushed URL without failing DCHECK_EQ(0, GetItemCount()).
+    EXPECT_EQ(1, navigation_manager()->GetLastCommittedItemIndex());
+    NavigationItem* item = navigation_manager()->GetLastCommittedItem();
+    EXPECT_NE(nullptr, item);
+    if (item) {
+      EXPECT_EQ(hash_url, item->GetURL());
+    }
+  }));
+
+  // Verify that the document reloaded from the server.
+  EXPECT_TRUE(test::WaitForWebViewContainingText(web_state(), "Echo"));
+  EXPECT_EQ(hash_url, navigation_manager()->GetLastCommittedItem()->GetURL());
+}
+
 // Tests that LoadURLWithParams on a detached NavigationManager with empty
 // history attaches the web view without restoring items.
 TEST_F(NavigationManagerImplTest, LoadURLFromDetachedStateWithEmptyHistory) {

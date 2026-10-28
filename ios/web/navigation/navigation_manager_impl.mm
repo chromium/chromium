@@ -395,6 +395,14 @@ void NavigationManagerImpl::AddPendingItem(
   if (proxy.backForwardList.currentItem && isCurrentURLSameAsPending &&
       !is_form_post && !is_error_navigation) {
     pending_item_index_ = web_view_cache_.GetCurrentItemIndex();
+    // For non-back/forward navigations (e.g. reloads or loading the current
+    // URL), `currentItem` has not moved to a different history entry and is
+    // still the last committed item.
+    if ((last_committed_item_index_ == -1 ||
+         !(navigation_type & ui::PAGE_TRANSITION_FORWARD_BACK)) &&
+        !empty_window_open_item_) {
+      last_committed_item_index_ = pending_item_index_;
+    }
 
     // If `currentItem` is not already associated with a NavigationItemImpl,
     // associate the newly created item with it. Otherwise, discard the new item
@@ -932,14 +940,6 @@ void NavigationManagerImpl::LoadURLWithParams(
   DCHECK(!(params.transition_type & ui::PAGE_TRANSITION_FORWARD_BACK));
   delegate_->ClearDialogs();
   delegate_->RecordPageStateInNavigationItem();
-
-  // Same-document navigations such as `history.pushState()` advance
-  // `WKBackForwardList` without calling `CommitPendingItem()`. Sync
-  // `last_committed_item_index_` before `AddPendingItem()` potentially sets
-  // `pending_item_index_`.
-  if (pending_item_index_ == -1 && !empty_window_open_item_) {
-    last_committed_item_index_ = web_view_cache_.GetCurrentItemIndex();
-  }
 
   NavigationInitiationType initiation_type =
       params.is_renderer_initiated

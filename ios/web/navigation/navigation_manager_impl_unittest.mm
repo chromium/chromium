@@ -2453,6 +2453,72 @@ TEST_P(NavigationManagerTest, ReusePendingItemForHistoryNavigation) {
   EXPECT_EQ(original_item0, manager_->GetPendingItem());
 }
 
+// Tests that AddPendingItem syncs last_committed_item_index_ when
+// WKBackForwardList contains a committed item but last_committed_item_index_ is
+// still -1 (e.g. when an earlier navigation's CommitPendingItem was skipped),
+// preventing a DCHECK failure in GetLastCommittedItemImpl.
+TEST_P(NavigationManagerTest, AddPendingItemSyncsUnsetLastCommittedItemIndex) {
+  [mock_wk_list_ setCurrentURL:@"http://www.0.com"];
+  OCMStub([mock_web_view_ URL])
+      .andReturn([[NSURL alloc] initWithString:@"http://www.0.com"]);
+
+  EXPECT_EQ(1, manager_->GetItemCount());
+  EXPECT_EQ(-1, manager_->GetPendingItemIndex());
+
+  // Calling AddPendingItem with the same URL (e.g. reload) should sync
+  // last_committed_item_index_ and not crash on DCHECK_EQ(0, GetItemCount()).
+  manager_->AddPendingItem(
+      GURL("http://www.0.com"), Referrer(), ui::PAGE_TRANSITION_RELOAD,
+      web::NavigationInitiationType::RENDERER_INITIATED,
+      /*is_post_navigation=*/false, /*is_error_navigation=*/false,
+      web::HttpsUpgradeType::kNone);
+
+  EXPECT_EQ(0, manager_->GetPendingItemIndex());
+  EXPECT_EQ(0, manager_->GetLastCommittedItemIndex());
+  EXPECT_NE(nullptr, manager_->GetLastCommittedItem());
+}
+
+// Tests that AddPendingItem syncs last_committed_item_index_ when reloading
+// after history.pushState() has advanced WKBackForwardList without calling
+// CommitPendingItem().
+TEST_P(NavigationManagerTest,
+       AddPendingItemReloadSyncsLastCommittedItemIndexAfterPushState) {
+  // Commit item 0.
+  manager_->AddPendingItem(
+      GURL("http://www.0.com"), Referrer(), ui::PAGE_TRANSITION_TYPED,
+      web::NavigationInitiationType::BROWSER_INITIATED,
+      /*is_post_navigation=*/false, /*is_error_navigation=*/false,
+      web::HttpsUpgradeType::kNone);
+  [mock_wk_list_ setCurrentURL:@"http://www.0.com"];
+  manager_->CommitPendingItem();
+  EXPECT_EQ(0, manager_->GetLastCommittedItemIndex());
+
+  // Simulate history.pushState() advancing the WKBackForwardList to
+  // index 1 without calling CommitPendingItem().
+  [mock_wk_list_ setCurrentURL:@"http://www.0.com/#pushed"
+                  backListURLs:@[ @"http://www.0.com" ]
+               forwardListURLs:nil];
+  OCMStub([mock_web_view_ URL])
+      .andReturn([[NSURL alloc] initWithString:@"http://www.0.com/#pushed"]);
+
+  EXPECT_EQ(2, manager_->GetItemCount());
+  // Before reload, GetLastCommittedItemIndex returns 1 via web_view_cache_.
+  EXPECT_EQ(1, manager_->GetLastCommittedItemIndex());
+
+  // Reloading the pushed URL should sync last_committed_item_index_ to 1.
+  manager_->AddPendingItem(
+      GURL("http://www.0.com/#pushed"), Referrer(), ui::PAGE_TRANSITION_RELOAD,
+      web::NavigationInitiationType::RENDERER_INITIATED,
+      /*is_post_navigation=*/false, /*is_error_navigation=*/false,
+      web::HttpsUpgradeType::kNone);
+
+  EXPECT_EQ(1, manager_->GetPendingItemIndex());
+  EXPECT_EQ(1, manager_->GetLastCommittedItemIndex());
+  ASSERT_NE(nullptr, manager_->GetLastCommittedItem());
+  EXPECT_EQ(GURL("http://www.0.com/#pushed"),
+            manager_->GetLastCommittedItem()->GetURL());
+}
+
 // Tests that transient URL rewriters are only applied to a new pending item.
 TEST_P(NavigationManagerTest, TransientURLRewritersOnlyUsedForPendingItem) {
   manager_->AddPendingItem(
@@ -2697,11 +2763,12 @@ TEST_P(NavigationManagerTest, CanGoToOffset) {
   [mock_wk_list_ moveCurrentToIndex:1];
   OCMStub([mock_web_view_ URL])
       .andReturn([[NSURL alloc] initWithString:@"http://www.url.com/1"]);
-  manager_->AddPendingItem(
-      GURL("http://www.url.com/1"), Referrer(), ui::PAGE_TRANSITION_LINK,
-      web::NavigationInitiationType::BROWSER_INITIATED,
-      /*is_post_navigation=*/false, /*is_error_navigation=*/false,
-      web::HttpsUpgradeType::kNone);
+  manager_->AddPendingItem(GURL("http://www.url.com/1"), Referrer(),
+                           ui::PAGE_TRANSITION_FORWARD_BACK,
+                           web::NavigationInitiationType::BROWSER_INITIATED,
+                           /*is_post_navigation=*/false,
+                           /*is_error_navigation=*/false,
+                           web::HttpsUpgradeType::kNone);
 
   EXPECT_EQ(3, manager_->GetItemCount());
   EXPECT_EQ(2, manager_->GetLastCommittedItemIndex());
