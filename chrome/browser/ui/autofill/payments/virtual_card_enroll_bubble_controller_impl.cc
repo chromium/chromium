@@ -22,7 +22,6 @@
 #include "components/autofill/core/browser/payments/autofill_virtual_card_enrollment_bottom_sheet_delegate_mobile.h"
 #include "components/infobars/core/infobar.h"  // nogncheck
 #else
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -350,23 +349,17 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
     return;
   }
 
-  BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-          web_contents());
-
+  AutofillBubbleHandler* autofill_bubble_handler = GetAutofillBubbleHandler();
   if (enrollment_status_ == EnrollmentStatus::kCompleted) {
     SetBubbleView(
-        *BrowserWindow::FromBrowser(browser)
-             ->GetAutofillBubbleHandler()
-             ->ShowVirtualCardEnrollConfirmationBubble(web_contents(), this));
+        *autofill_bubble_handler->ShowVirtualCardEnrollConfirmationBubble(
+            web_contents(), this));
   } else {
     // For reprompts after link clicks, `is_user_gesture` is set to false.
     bool user_gesture_reprompt = reprompt_required_ ? false : is_user_gesture_;
 
-    SetBubbleView(*BrowserWindow::FromBrowser(browser)
-                       ->GetAutofillBubbleHandler()
-                       ->ShowVirtualCardEnrollBubble(web_contents(), this,
-                                                     user_gesture_reprompt));
+    SetBubbleView(*autofill_bubble_handler->ShowVirtualCardEnrollBubble(
+        web_contents(), this, user_gesture_reprompt));
   }
   CHECK(bubble_view(), base::NotFatalUntil::M162);
 

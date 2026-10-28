@@ -22,9 +22,7 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/common/url_constants.h"
@@ -39,12 +37,11 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/visibility.h"
 #include "ui/base/l10n/l10n_util.h"
 
-// TODO(crbug.com/441742849): Refactor this class implementation and possibly
-// others to remove `FindBrowserWithTab()`.
 namespace autofill {
 
 namespace {
@@ -244,11 +241,7 @@ AutofillAiImportDataControllerImpl::GetPageActionIconType() {
 
 void AutofillAiImportDataControllerImpl::DoShowBubble() {
   auto get_bubble = [this]() -> AutofillBubbleBase& {
-    BrowserWindowInterface* browser =
-        GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-            web_contents());
-    auto* bubble_handler =
-        BrowserWindow::FromBrowser(browser)->GetAutofillBubbleHandler();
+    auto* bubble_handler = GetAutofillBubbleHandler();
     if (IsSaveUpdatePrompt()) {
       return *bubble_handler->ShowSaveAutofillAiDataBubble(web_contents(),
                                                            this);
@@ -359,9 +352,10 @@ void AutofillAiImportDataControllerImpl::OnLegalMessageLinkClicked(
 
 void AutofillAiImportDataControllerImpl::OpenUrlAndReopenBubbleOnReturn(
     const GURL& url) {
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
   if (BrowserWindowInterface* browser =
-          GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-              web_contents())) {
+          tab ? tab->GetBrowserWindowInterface() : nullptr) {
     reopen_bubble_when_web_contents_becomes_visible_ = true;
     ShowSingletonTab(browser, url);
   }

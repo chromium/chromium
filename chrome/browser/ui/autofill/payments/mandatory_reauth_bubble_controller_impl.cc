@@ -18,9 +18,6 @@
 #include "chrome/browser/mandatory_reauth/android/internal/jni/MandatoryReauthOptInBottomSheetControllerBridge_jni.h"
 #else
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/tabs/public/tab_interface.h"
@@ -291,12 +288,7 @@ void MandatoryReauthBubbleControllerImpl::DoShowBubble() {
   }
   SetBubbleView(*view_android_.get());
 #else
-  BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-          web_contents());
-  AutofillBubbleHandler* autofill_bubble_handler =
-      BrowserWindow::FromBrowser(browser)->GetAutofillBubbleHandler();
-  SetBubbleView(*autofill_bubble_handler->ShowMandatoryReauthBubble(
+  SetBubbleView(*GetAutofillBubbleHandler()->ShowMandatoryReauthBubble(
       web_contents(), this, /*is_user_gesture=*/false, current_bubble_type_));
 #endif  // BUILDFLAG(IS_ANDROID)
 }
