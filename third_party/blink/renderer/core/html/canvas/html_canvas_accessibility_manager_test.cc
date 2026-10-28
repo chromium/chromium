@@ -35,8 +35,7 @@ class HTMLCanvasAccessibilityManagerTest : public PageTestBase {
     GetDocument().GetSettings()->SetScriptEnabled(true);
     GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
         html_content);
-    canvas_element_ =
-        To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));
+    canvas_element_ = To<HTMLCanvasElement>(GetElementById("c"));
     UpdateAllLifecyclePhasesForTest();
   }
 
@@ -334,8 +333,7 @@ TEST_F(HTMLCanvasAccessibilityManagerTest,
   GetDocument().GetSettings()->SetScriptEnabled(true);
   GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<body><canvas id='c' width=300 height=200></canvas></body>");
-  canvas_element_ =
-      To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));
+  canvas_element_ = To<HTMLCanvasElement>(GetElementById("c"));
 
   // Verify that the layout object is indeed null.
   ASSERT_FALSE(canvas_element_->GetLayoutObject());
@@ -670,7 +668,7 @@ TEST_F(HTMLCanvasAccessibilityManagerTest,
       HTMLCanvasAccessibilityManager::HeuristicResult::kHasFallbackContent);
 
   // Removing the fallback element content dynamically updates heuristic.
-  auto* button = GetDocument().getElementById(AtomicString("btn"));
+  auto* button = GetElementById("btn");
   ASSERT_TRUE(button);
   canvas_element_->RemoveChild(button);
   UpdateAllLifecyclePhasesForTest();

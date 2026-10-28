@@ -19,8 +19,7 @@ class HTMLCanvasResourceTrackerTest : public RenderingTest {
 TEST_F(HTMLCanvasResourceTrackerTest, AddCanvasElement) {
   GetDocument().GetSettings()->SetScriptEnabled(true);
   SetBodyInnerHTML("<canvas id='canvas'></canvas>");
-  auto* canvas = To<HTMLCanvasElement>(
-      GetDocument().getElementById(AtomicString("canvas")));
+  auto* canvas = To<HTMLCanvasElement>(GetElementById("canvas"));
   auto* context = GetDocument().GetExecutionContext();
   const auto& resource_map =
       CanvasResourceTracker::For(v8::Isolate::GetCurrent())->GetResourceMap();

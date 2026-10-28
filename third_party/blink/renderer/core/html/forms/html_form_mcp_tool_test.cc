@@ -912,12 +912,9 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_Select_Multiple) {
   ASSERT_TRUE(form_element);
   ASSERT_TRUE(IsValidWebMCPForm(*form_element));
 
-  HTMLOptionElement* o1 = DynamicTo<HTMLOptionElement>(
-      GetDocument().getElementById(AtomicString("o1")));
-  HTMLOptionElement* o2 = DynamicTo<HTMLOptionElement>(
-      GetDocument().getElementById(AtomicString("o2")));
-  HTMLOptionElement* o3 = DynamicTo<HTMLOptionElement>(
-      GetDocument().getElementById(AtomicString("o3")));
+  HTMLOptionElement* o1 = DynamicTo<HTMLOptionElement>(GetElementById("o1"));
+  HTMLOptionElement* o2 = DynamicTo<HTMLOptionElement>(GetElementById("o2"));
+  HTMLOptionElement* o3 = DynamicTo<HTMLOptionElement>(GetElementById("o3"));
   ASSERT_TRUE(o1);
   ASSERT_TRUE(o2);
   ASSERT_TRUE(o3);
@@ -961,12 +958,9 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_Select_Multiple_MenuList) {
   ASSERT_TRUE(form_element);
   ASSERT_TRUE(IsValidWebMCPForm(*form_element));
 
-  HTMLOptionElement* o1 = DynamicTo<HTMLOptionElement>(
-      GetDocument().getElementById(AtomicString("o1")));
-  HTMLOptionElement* o2 = DynamicTo<HTMLOptionElement>(
-      GetDocument().getElementById(AtomicString("o2")));
-  HTMLOptionElement* o3 = DynamicTo<HTMLOptionElement>(
-      GetDocument().getElementById(AtomicString("o3")));
+  HTMLOptionElement* o1 = DynamicTo<HTMLOptionElement>(GetElementById("o1"));
+  HTMLOptionElement* o2 = DynamicTo<HTMLOptionElement>(GetElementById("o2"));
+  HTMLOptionElement* o3 = DynamicTo<HTMLOptionElement>(GetElementById("o3"));
   ASSERT_TRUE(o1);
   ASSERT_TRUE(o2);
   ASSERT_TRUE(o3);
@@ -2680,8 +2674,7 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_FormAssociatedCustom) {
   HTMLFormElement* form_element = GetFormElement("form");
   ASSERT_TRUE(form_element);
 
-  auto* my_input = DynamicTo<HTMLElement>(
-      GetDocument().getElementById(AtomicString("my-input")));
+  auto* my_input = DynamicTo<HTMLElement>(GetElementById("my-input"));
   ASSERT_TRUE(my_input);
   EXPECT_EQ(CustomElementState::kCustom, my_input->GetCustomElementState());
   ASSERT_TRUE(my_input->GetCustomElementDefinition());

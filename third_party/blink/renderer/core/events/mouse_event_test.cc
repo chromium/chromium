@@ -105,7 +105,7 @@ TEST_F(MouseEventTest, LayerXY) {
         )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Node* target = GetDocument().getElementById(AtomicString("target"));
+  Node* target = GetElementById("target");
 
   MouseEventInit& mouse_event_init = *MouseEventInit::Create();
   MouseEvent* mouse_event = MakeGarbageCollected<MouseEvent>(
@@ -128,7 +128,7 @@ TEST_F(MouseEventTest, LayerXYWithTransform) {
         )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Node* target = GetDocument().getElementById(AtomicString("inner"));
+  Node* target = GetElementById("inner");
 
   MouseEventInit& mouse_event_init = *MouseEventInit::Create();
   MouseEvent* mouse_event = MakeGarbageCollected<MouseEvent>(

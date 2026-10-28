@@ -69,7 +69,7 @@ TEST_F(VisibleUnitsTest, caretMinOffset) {
   const char* body_content = "<p id=one>one</p>";
   SetBodyContent(body_content);
 
-  Element* one = GetDocument().getElementById(AtomicString("one"));
+  Element* one = GetElementById("one");
 
   EXPECT_EQ(0, CaretMinOffset(one->firstChild()));
 }
@@ -79,7 +79,7 @@ TEST_F(VisibleUnitsTest, caretMinOffsetWithFirstLetter) {
       "<style>#one:first-letter { font-size: 200%; }</style><p id=one>one</p>";
   SetBodyContent(body_content);
 
-  Element* one = GetDocument().getElementById(AtomicString("one"));
+  Element* one = GetElementById("one");
 
   EXPECT_EQ(0, CaretMinOffset(one->firstChild()));
 }
@@ -95,8 +95,8 @@ TEST_F(VisibleUnitsTest, characterAfter) {
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
 
-  Element* one = GetDocument().getElementById(AtomicString("one"));
-  Element* two = GetDocument().getElementById(AtomicString("two"));
+  Element* one = GetElementById("one");
+  Element* two = GetElementById("two");
 
   EXPECT_EQ(
       0, CharacterAfter(CreateVisiblePositionInDomTree(*one->firstChild(), 1)));
@@ -225,8 +225,8 @@ TEST_F(VisibleUnitsTest, characterBefore) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Node* one = GetDocument().getElementById(AtomicString("one"))->firstChild();
-  Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
+  Node* one = GetElementById("one")->firstChild();
+  Node* two = GetElementById("two")->firstChild();
   Node* five = shadow_root->getElementById(AtomicString("five"))->firstChild();
 
   EXPECT_EQ('2', CharacterBefore(CreateVisiblePositionInDomTree(*one, 0)));
@@ -251,8 +251,8 @@ TEST_F(VisibleUnitsTest, endOfDocument) {
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
 
-  Element* one = GetDocument().getElementById(AtomicString("one"));
-  Element* two = GetDocument().getElementById(AtomicString("two"));
+  Element* one = GetElementById("one");
+  Element* two = GetElementById("two");
 
   EXPECT_EQ(Position(two->firstChild(), 2),
             EndOfDocument(CreateVisiblePositionInDomTree(*one->firstChild(), 0))
@@ -302,8 +302,8 @@ TEST_F(VisibleUnitsTest, isEndOfEditableOrNonEditableContent) {
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
 
-  Element* one = GetDocument().getElementById(AtomicString("one"));
-  Element* two = GetDocument().getElementById(AtomicString("two"));
+  Element* one = GetElementById("one");
+  Element* two = GetElementById("two");
 
   EXPECT_FALSE(IsEndOfEditableOrNonEditableContent(
       CreateVisiblePositionInDomTree(*one->firstChild(), 1)));
@@ -320,10 +320,9 @@ TEST_F(VisibleUnitsTest, isEndOfEditableOrNonEditableContentWithInput) {
   const char* body_content = "<input id=sample value=ab>cde";
   SetBodyContent(body_content);
 
-  Node* text =
-      ToTextControl(GetDocument().getElementById(AtomicString("sample")))
-          ->InnerEditorElement()
-          ->firstChild();
+  Node* text = ToTextControl(GetElementById("sample"))
+                   ->InnerEditorElement()
+                   ->firstChild();
 
   EXPECT_FALSE(IsEndOfEditableOrNonEditableContent(
       CreateVisiblePositionInDomTree(*text, 0)));
@@ -438,7 +437,7 @@ TEST_F(VisibleUnitsTest, mostBackwardCaretPositionAfterAnchor) {
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
 
-  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* host = GetElementById("host");
 
   EXPECT_EQ(Position::LastPositionInNode(*host),
             MostForwardCaretPosition(Position::AfterNode(*host)));
@@ -452,8 +451,7 @@ TEST_F(VisibleUnitsTest, mostBackwardCaretPositionFirstLetter) {
       "<style>p:first-letter {color:red;}</style><p id=sample> (2)45 </p>";
   SetBodyContent(body_content);
 
-  Node* sample =
-      GetDocument().getElementById(AtomicString("sample"))->firstChild();
+  Node* sample = GetElementById("sample")->firstChild();
 
   EXPECT_EQ(Position(sample->parentNode(), 0),
             MostBackwardCaretPosition(Position(sample, 0)));
@@ -489,7 +487,7 @@ TEST_F(VisibleUnitsTest, mostBackwardCaretPositionFirstLetterSplit) {
       "<style>p:first-letter {color:red;}</style><p id=sample>abc</p>";
   SetBodyContent(body_content);
 
-  Node* sample = GetDocument().getElementById(AtomicString("sample"));
+  Node* sample = GetElementById("sample");
   Node* first_letter = sample->firstChild();
   // Split "abc" into "a" "bc"
   auto* remaining = To<Text>(first_letter)->splitText(1, ASSERT_NO_EXCEPTION);
@@ -519,7 +517,7 @@ TEST_F(VisibleUnitsTest, mostForwardCaretPositionAfterAnchor) {
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* host = GetElementById("host");
   Element* three = shadow_root->getElementById(AtomicString("three"));
 
   EXPECT_EQ(Position::AfterNode(*host),
@@ -558,8 +556,7 @@ TEST_F(VisibleUnitsTest, mostForwardCaretPositionFirstLetter) {
       "<style>p:first-letter {color:red;}</style><p id=sample> (2)45 </p>";
   SetBodyContent(body_content);
 
-  Node* sample =
-      GetDocument().getElementById(AtomicString("sample"))->firstChild();
+  Node* sample = GetElementById("sample")->firstChild();
 
   EXPECT_EQ(Position(GetDocument().body(), 0),
             MostForwardCaretPosition(
@@ -591,10 +588,10 @@ TEST_F(VisibleUnitsTest, nextPositionOf) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Element* zero = GetDocument().getElementById(AtomicString("zero"));
-  Element* one = GetDocument().getElementById(AtomicString("one"));
-  Element* two = GetDocument().getElementById(AtomicString("two"));
-  Element* three = GetDocument().getElementById(AtomicString("three"));
+  Element* zero = GetElementById("zero");
+  Element* one = GetElementById("one");
+  Element* two = GetElementById("two");
+  Element* three = GetElementById("three");
   Element* four = shadow_root->getElementById(AtomicString("four"));
   Element* five = shadow_root->getElementById(AtomicString("five"));
 
@@ -631,7 +628,7 @@ TEST_F(VisibleUnitsTest, nextPositionOf) {
 
 TEST_F(VisibleUnitsTest, nextPositionOfTable) {
   SetBodyContent("<table id='table'></table>");
-  Element* table = GetDocument().getElementById(AtomicString("table"));
+  Element* table = GetElementById("table");
   // Couldn't include the <br> in the HTML above since the parser would have
   // messed up the structure in the DOM.
   table->SetInnerHTMLWithoutTrustedTypes("<br>");
@@ -656,11 +653,10 @@ TEST_F(VisibleUnitsTest, previousPositionOf) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Node* zero = GetDocument().getElementById(AtomicString("zero"))->firstChild();
-  Node* one = GetDocument().getElementById(AtomicString("one"))->firstChild();
-  Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
-  Node* three =
-      GetDocument().getElementById(AtomicString("three"))->firstChild();
+  Node* zero = GetElementById("zero")->firstChild();
+  Node* one = GetElementById("one")->firstChild();
+  Node* two = GetElementById("two")->firstChild();
+  Node* three = GetElementById("three")->firstChild();
   Node* four = shadow_root->getElementById(AtomicString("four"))->firstChild();
   Node* five = shadow_root->getElementById(AtomicString("five"))->firstChild();
 
@@ -730,8 +726,7 @@ TEST_F(VisibleUnitsTest, previousPositionOfOneCharPerLine) {
       "<div id=sample style='font-size: 500px'>A&#x714a;&#xfa67;</div>";
   SetBodyContent(body_content);
 
-  Node* sample =
-      GetDocument().getElementById(AtomicString("sample"))->firstChild();
+  Node* sample = GetElementById("sample")->firstChild();
 
   // In case of each line has one character, VisiblePosition are:
   // [C,Dn]   [C,Up]  [B, Dn]   [B, Up]
@@ -754,8 +749,7 @@ TEST_F(VisibleUnitsTest, previousPositionOfNoPreviousPosition) {
       " "  // This whitespace causes no previous position.
       "<div id='anchor'> bar</div>"
       "</span>");
-  const Position position(
-      GetDocument().getElementById(AtomicString("anchor"))->firstChild(), 1);
+  const Position position(GetElementById("anchor")->firstChild(), 1);
   EXPECT_EQ(
       Position(),
       PreviousPositionOf(CreateVisiblePosition(position)).DeepEquivalent());
@@ -764,7 +758,7 @@ TEST_F(VisibleUnitsTest, previousPositionOfNoPreviousPosition) {
 TEST_F(VisibleUnitsTest, rendersInDifferentPositionAfterAnchor) {
   const char* body_content = "<p id='sample'>00</p>";
   SetBodyContent(body_content);
-  Element* sample = GetDocument().getElementById(AtomicString("sample"));
+  Element* sample = GetElementById("sample");
 
   EXPECT_FALSE(RendersInDifferentPosition(Position(), Position()));
   EXPECT_FALSE(
@@ -781,8 +775,8 @@ TEST_F(VisibleUnitsTest, rendersInDifferentPositionAfterAnchorWithHidden) {
       "<p><span id=one>11</span><span id=two style='display:none'>  "
       "</span></p>";
   SetBodyContent(body_content);
-  Element* one = GetDocument().getElementById(AtomicString("one"));
-  Element* two = GetDocument().getElementById(AtomicString("two"));
+  Element* one = GetElementById("one");
+  Element* two = GetElementById("two");
 
   EXPECT_TRUE(RendersInDifferentPosition(Position::LastPositionInNode(*one),
                                          Position(two, 0)))
@@ -794,8 +788,8 @@ TEST_F(VisibleUnitsTest,
   const char* body_content =
       "<p><span id=one>11</span><span id=two>  </span></p>";
   SetBodyContent(body_content);
-  Element* one = GetDocument().getElementById(AtomicString("one"));
-  Element* two = GetDocument().getElementById(AtomicString("two"));
+  Element* one = GetElementById("one");
+  Element* two = GetElementById("two");
 
   EXPECT_FALSE(RendersInDifferentPosition(Position::LastPositionInNode(*one),
                                           Position(two, 0)));
@@ -809,8 +803,8 @@ TEST_F(VisibleUnitsTest, renderedOffset) {
       "<div contenteditable><span id='sample1'>1</span><span "
       "id='sample2'>22</span></div>";
   SetBodyContent(body_content);
-  Element* sample1 = GetDocument().getElementById(AtomicString("sample1"));
-  Element* sample2 = GetDocument().getElementById(AtomicString("sample2"));
+  Element* sample1 = GetElementById("sample1");
+  Element* sample2 = GetElementById("sample2");
 
   EXPECT_FALSE(
       RendersInDifferentPosition(Position::AfterNode(*sample1->firstChild()),
@@ -829,8 +823,8 @@ TEST_F(VisibleUnitsTest, startOfDocument) {
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
 
-  Node* one = GetDocument().getElementById(AtomicString("one"))->firstChild();
-  Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
+  Node* one = GetElementById("one")->firstChild();
+  Node* two = GetElementById("two")->firstChild();
 
   EXPECT_EQ(Position(one, 0),
             CreateVisiblePosition(StartOfDocument(Position(*one, 0)))

@@ -847,8 +847,8 @@ class WebFormControlElementSetAutofillValueTest
   }
 
   WebFormControlElement TestElement() {
-    HTMLFormControlElement* control_element = DynamicTo<HTMLFormControlElement>(
-        GetDocument().getElementById(AtomicString("testElement")));
+    HTMLFormControlElement* control_element =
+        DynamicTo<HTMLFormControlElement>(GetElementById("testElement"));
     DCHECK(control_element);
     return WebFormControlElement(control_element);
   }
@@ -884,8 +884,8 @@ TEST_F(WebFormControlElementTest,
   GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<input type='text' id=testElement maxlength='5'>");
 
-  auto element = WebFormControlElement(To<HTMLFormControlElement>(
-      GetDocument().getElementById(AtomicString("testElement"))));
+  auto element = WebFormControlElement(
+      To<HTMLFormControlElement>(GetElementById("testElement")));
 
   element.SetSuggestedValue("valueTooLong");
   EXPECT_EQ(element.SuggestedValue().Ascii(), "value");
@@ -899,8 +899,8 @@ TEST_F(WebFormControlElementTest,
   GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<textarea id=testElement maxlength='5'></textarea>");
 
-  auto element = WebFormControlElement(To<HTMLFormControlElement>(
-      GetDocument().getElementById(AtomicString("testElement"))));
+  auto element = WebFormControlElement(
+      To<HTMLFormControlElement>(GetElementById("testElement")));
 
   element.SetSuggestedValue("valueTooLong");
   EXPECT_EQ(element.SuggestedValue().Ascii(), "value");

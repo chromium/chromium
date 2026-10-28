@@ -216,8 +216,8 @@ TEST_F(WebNodeTest, IsFocusableInDisplayLock) {
       <input id=input2>
     </div>
   )HTML");
-  auto* input1 = GetDocument().getElementById(AtomicString("input1"));
-  auto* input2 = GetDocument().getElementById(AtomicString("input2"));
+  auto* input1 = GetElementById("input1");
+  auto* input2 = GetElementById("input2");
   WebNode web_input1(input1);
   WebNode web_input2(input2);
 

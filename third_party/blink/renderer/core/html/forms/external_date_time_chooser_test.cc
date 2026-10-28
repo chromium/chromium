@@ -87,8 +87,7 @@ TEST_F(ExternalDateTimeChooserTest,
       )HTML");
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
-  auto* input =
-      To<HTMLInputElement>(GetDocument().getElementById(AtomicString("test")));
+  auto* input = To<HTMLInputElement>(GetElementById("test"));
   ASSERT_TRUE(input);
 
   DateTimeChooserParameters params;
@@ -110,8 +109,7 @@ TEST_F(ExternalDateTimeChooserTest, IsPickerVisible) {
       "<input id=test type=date>");
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
-  auto* input =
-      To<HTMLInputElement>(GetDocument().getElementById(AtomicString("test")));
+  auto* input = To<HTMLInputElement>(GetElementById("test"));
   ASSERT_TRUE(input);
 
   DateTimeChooserParameters params;
@@ -143,8 +141,7 @@ TEST_F(ExternalDateTimeChooserTest, FinePointerFocusability) {
 
   SetBodyContent("<input id=test type=date>");
 
-  auto* input =
-      To<HTMLInputElement>(GetDocument().getElementById(AtomicString("test")));
+  auto* input = To<HTMLInputElement>(GetElementById("test"));
   ASSERT_TRUE(input);
 
   ShadowRoot* shadow = input->UserAgentShadowRoot();
@@ -172,8 +169,7 @@ TEST_F(ExternalDateTimeChooserTest, NonFinePointerFocusability) {
 
   SetBodyContent("<input id=test type=date>");
 
-  auto* input =
-      To<HTMLInputElement>(GetDocument().getElementById(AtomicString("test")));
+  auto* input = To<HTMLInputElement>(GetElementById("test"));
   ASSERT_TRUE(input);
 
   ShadowRoot* shadow = input->UserAgentShadowRoot();

@@ -174,8 +174,7 @@ TEST_P(HTMLFormControlElementFormControlTypeTest, FormControlType) {
   SCOPED_TRACE(testing::Message() << html);
   GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
       html.c_str());
-  auto* form_control = To<HTMLFormControlElement>(
-      GetDocument().getElementById(AtomicString("x")));
+  auto* form_control = To<HTMLFormControlElement>(GetElementById("x"));
   EXPECT_EQ(form_control->FormControlType(), expected_type())
       << form_control->type().Ascii();
 }

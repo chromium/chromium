@@ -17,8 +17,7 @@ class VisibleUnitsSentenceTest : public EditingTestBase {};
 
 TEST_F(VisibleUnitsSentenceTest, EndOfSentenceVisiblePosition) {
   SetBodyContent("<div id=sample>First sentence. Second sentence.</div>");
-  Node* text =
-      GetDocument().getElementById(AtomicString("sample"))->firstChild();
+  Node* text = GetElementById("sample")->firstChild();
 
   VisiblePosition vp = CreateVisiblePosition(Position(*text, 0));
   VisiblePosition result = EndOfSentence(vp);
@@ -30,8 +29,7 @@ TEST_F(VisibleUnitsSentenceTest, EndOfSentenceVisiblePosition) {
 
 TEST_F(VisibleUnitsSentenceTest, EndOfSentenceVisiblePositionInFlatTree) {
   SetBodyContent("<div id=sample>First sentence. Second sentence.</div>");
-  Node* text =
-      GetDocument().getElementById(AtomicString("sample"))->firstChild();
+  Node* text = GetElementById("sample")->firstChild();
 
   VisiblePositionInFlatTree vp =
       CreateVisiblePosition(PositionInFlatTree(*text, 0));

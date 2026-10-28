@@ -66,7 +66,7 @@ void WebElementTest::AddScript(String js) {
 }
 
 WebElement WebElementTest::TestElement() {
-  Element* element = GetDocument().getElementById(AtomicString("testElement"));
+  Element* element = GetElementById("testElement");
   DCHECK(element);
   return WebElement(element);
 }
@@ -137,7 +137,7 @@ TEST_F(WebElementTest, SelectedTextOfContentEditable) {
       R"(<div>Foo</div>
          <div id=testElement contenteditable>Some <b>rich text</b> here.</div>
          <div>Bar</div>)");
-  auto* element = GetDocument().getElementById(AtomicString("testElement"));
+  auto* element = GetElementById("testElement");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   Selection().SelectSubString(*element, 2, 15);
@@ -174,8 +174,7 @@ TEST_F(WebElementTest, SelectedTextOfTextArea) {
       R"(<div>Foo</div>
          <textarea id=testElement>Some plain text here.</textarea>
          <div>Bar</div>)");
-  auto* element = blink::To<HTMLTextAreaElement>(
-      GetDocument().getElementById(AtomicString("testElement")));
+  auto* element = blink::To<HTMLTextAreaElement>(GetElementById("testElement"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   element->Focus();
 
@@ -234,7 +233,7 @@ TEST_F(WebElementTest, SelectTextOfContentEditable) {
 TEST_F(WebElementTest,
        SimulateAccessibilityClickDispatchesPointerMouseAndClickEvents) {
   InsertHTML("<button id=testElement>Press</button>");
-  auto* element = GetDocument().getElementById(AtomicString("testElement"));
+  auto* element = GetElementById("testElement");
   ASSERT_TRUE(element);
 
   Persistent<EventTypeRecorder> recorder =
@@ -266,7 +265,7 @@ TEST_F(WebElementTest, SimulateAccessibilityClickDoesNotGrantUserGesture) {
 
   Persistent<EventTypeRecorder> recorder =
       MakeGarbageCollected<EventTypeRecorder>();
-  auto* element = GetDocument().getElementById(AtomicString("testElement"));
+  auto* element = GetElementById("testElement");
   ASSERT_TRUE(element);
   element->addEventListener(event_type_names::kClick, recorder);
 
@@ -283,8 +282,7 @@ TEST_F(WebElementTest, SimulateAccessibilityClickDoesNotMoveFocus) {
     <input id=initialFocus>
     <button id=testElement>Press</button>
   )HTML");
-  auto* initially_focused =
-      GetDocument().getElementById(AtomicString("initialFocus"));
+  auto* initially_focused = GetElementById("initialFocus");
   ASSERT_TRUE(initially_focused);
   initially_focused->Focus();
   ASSERT_EQ(initially_focused, GetDocument().FocusedElement());
@@ -441,7 +439,7 @@ TEST_F(WebElementTest, PasteTextIntoContentEditable) {
   InsertHTML(
       "<div id=testElement contenteditable>Some <b>rich text</b> here.</div>"
       "<textarea>Some plain text here.</textarea>");
-  auto* element = GetDocument().getElementById(AtomicString("testElement"));
+  auto* element = GetElementById("testElement");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Selection().SelectSubString(*element->firstElementChild(), 0, 9);
   ASSERT_EQ(Selection().SelectedText(), String("rich text"));
@@ -465,8 +463,7 @@ TEST_F(WebElementTest, PasteTextIntoTextArea) {
   InsertHTML(
       "<div contenteditable>Some <b>rich text</b> here.</div>"
       "<textarea id=testElement>Some plain text here.</textarea>");
-  auto* element = blink::To<HTMLTextAreaElement>(
-      GetDocument().getElementById(AtomicString("testElement")));
+  auto* element = blink::To<HTMLTextAreaElement>(GetElementById("testElement"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   element->Focus();
   element->setSelectionStart(5);
@@ -494,8 +491,7 @@ TEST_F(WebElementTest, PasteTextIntoTextArea) {
 // used.
 TEST_F(WebElementTest, PasteTextWithSmartReplace) {
   InsertHTML("<textarea id=testElement>Hello</textarea>");
-  auto* element = blink::To<HTMLTextAreaElement>(
-      GetDocument().getElementById(AtomicString("testElement")));
+  auto* element = blink::To<HTMLTextAreaElement>(GetElementById("testElement"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   element->Focus();
   element->setSelectionStart(5);
@@ -519,7 +515,7 @@ TEST_F(WebElementTest, PasteTextIsNoOpWhenPasteIsCancelled) {
         e.target.textContent = 'UPPERCASE TEXT';
         e.preventDefault();
       }))");
-  auto* element = GetDocument().getElementById(AtomicString("testElement"));
+  auto* element = GetElementById("testElement");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Selection().SelectSubString(*element->firstElementChild(), 0, 9);
   ASSERT_EQ(Selection().SelectedText(), String("rich text"));
@@ -540,7 +536,7 @@ TEST_F(WebElementTest, PasteTextIsNoOpWhenBeforeInputIsCancelled) {
         e.target.textContent = 'UPPERCASE TEXT';
         e.preventDefault();
       }))");
-  auto* element = GetDocument().getElementById(AtomicString("testElement"));
+  auto* element = GetElementById("testElement");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Selection().SelectSubString(*element->firstElementChild(), 0, 9);
   ASSERT_EQ(Selection().SelectedText(), String("rich text"));
@@ -559,7 +555,7 @@ TEST_F(WebElementTest, ShadowRoot) {
     InsertHTML("<span id=testElement></span>");
     EXPECT_TRUE(TestElement().ShadowRoot().IsNull())
         << "No ShadowRoot initially.";
-    auto* element = GetDocument().getElementById(AtomicString("testElement"));
+    auto* element = GetElementById("testElement");
     element->AttachShadowRootForTesting(ShadowRootMode::kOpen);
     EXPECT_FALSE(TestElement().ShadowRoot().IsNull())
         << "Should return V1 open ShadowRoot.";
@@ -569,7 +565,7 @@ TEST_F(WebElementTest, ShadowRoot) {
     InsertHTML("<p id=testElement></p>");
     EXPECT_TRUE(TestElement().ShadowRoot().IsNull())
         << "No ShadowRoot initially.";
-    auto* element = GetDocument().getElementById(AtomicString("testElement"));
+    auto* element = GetElementById("testElement");
     element->AttachShadowRootForTesting(ShadowRootMode::kClosed);
     EXPECT_FALSE(TestElement().ShadowRoot().IsNull())
         << "Should return V1 closed ShadowRoot.";

@@ -47,8 +47,7 @@ class CanvasAccessibilityUkmMetricsTest
     PageTestBase::SetUp();
     GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
         "<body><canvas id='c'></canvas></body>");
-    canvas_element_ =
-        To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));
+    canvas_element_ = To<HTMLCanvasElement>(GetElementById("c"));
     UpdateAllLifecyclePhasesForTest();
   }
 
@@ -149,8 +148,7 @@ class CanvasAccessibilityUkmMetricsValueTest : public PageTestBase {
     PageTestBase::SetUp();
     GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
         "<body><canvas id='c' width=300 height=300></canvas></body>");
-    canvas_element_ =
-        To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));
+    canvas_element_ = To<HTMLCanvasElement>(GetElementById("c"));
     UpdateAllLifecyclePhasesForTest();
   }
 

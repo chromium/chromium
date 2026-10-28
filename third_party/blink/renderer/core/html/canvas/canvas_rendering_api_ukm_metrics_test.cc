@@ -24,8 +24,7 @@ class CanvasRenderingAPIUkmMetricsTest : public PageTestBase {
     PageTestBase::SetUp();
     GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
         "<body><canvas id='c'></canvas></body>");
-    canvas_element_ =
-        To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));
+    canvas_element_ = To<HTMLCanvasElement>(GetElementById("c"));
     UpdateAllLifecyclePhasesForTest();
   }
 

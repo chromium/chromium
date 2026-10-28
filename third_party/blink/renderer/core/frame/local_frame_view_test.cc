@@ -102,9 +102,8 @@ class LocalFrameViewTest : public RenderingTest {
 
 TEST_F(LocalFrameViewTest, SetPaintInvalidationDuringUpdateAllLifecyclePhases) {
   SetBodyInnerHTML("<div id='a' style='color: blue'>A</div>");
-  GetDocument()
-      .getElementById(AtomicString("a"))
-      ->setAttribute(html_names::kStyleAttr, AtomicString("color: green"));
+  GetElementById("a")->setAttribute(html_names::kStyleAttr,
+                                    AtomicString("color: green"));
   GetAnimationMockChromeClient().has_scheduled_animation_ = false;
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(GetAnimationMockChromeClient().has_scheduled_animation_);
@@ -113,9 +112,8 @@ TEST_F(LocalFrameViewTest, SetPaintInvalidationDuringUpdateAllLifecyclePhases) {
 TEST_F(LocalFrameViewTest,
        SetPaintInvalidationDuringUpdateLifecyclePhasesToPrePaintClean) {
   SetBodyInnerHTML("<div id='a' style='color: blue'>A</div>");
-  GetDocument()
-      .getElementById(AtomicString("a"))
-      ->setAttribute(html_names::kStyleAttr, AtomicString("color: green"));
+  GetElementById("a")->setAttribute(html_names::kStyleAttr,
+                                    AtomicString("color: green"));
   GetAnimationMockChromeClient().has_scheduled_animation_ = false;
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
@@ -125,17 +123,11 @@ TEST_F(LocalFrameViewTest,
 TEST_F(LocalFrameViewTest, SetPaintInvalidationOutOfUpdateAllLifecyclePhases) {
   SetBodyInnerHTML("<div id='a' style='color: blue'>A</div>");
   GetAnimationMockChromeClient().has_scheduled_animation_ = false;
-  GetDocument()
-      .getElementById(AtomicString("a"))
-      ->GetLayoutObject()
-      ->SetShouldDoFullPaintInvalidation();
+  GetElementById("a")->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
   EXPECT_TRUE(GetAnimationMockChromeClient().has_scheduled_animation_);
   GetAnimationMockChromeClient().has_scheduled_animation_ = false;
   UpdateAllLifecyclePhasesForTest();
-  GetDocument()
-      .getElementById(AtomicString("a"))
-      ->GetLayoutObject()
-      ->SetShouldDoFullPaintInvalidation();
+  GetElementById("a")->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
   EXPECT_TRUE(GetAnimationMockChromeClient().has_scheduled_animation_);
   GetAnimationMockChromeClient().has_scheduled_animation_ = false;
   UpdateAllLifecyclePhasesForTest();
@@ -296,7 +288,7 @@ TEST_F(LocalFrameViewTest,
 
   Element* body = GetDocument().body();
   Element* html = GetDocument().documentElement();
-  Element* div = GetDocument().getElementById(AtomicString("div"));
+  Element* div = GetElementById("div");
 
   // Only body has fixed background. No main thread scrolling.
   body->setAttribute(html_names::kClassAttr, AtomicString("fixed-background"));
@@ -353,7 +345,7 @@ TEST_F(LocalFrameViewTest,
 
   Element* body = GetDocument().body();
   Element* html = GetDocument().documentElement();
-  Element* div = GetDocument().getElementById(AtomicString("div"));
+  Element* div = GetElementById("div");
 
   // When not prefer compositing, we use main thread scrolling when there is
   // any object with fixed-attachment background.

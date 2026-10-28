@@ -154,7 +154,7 @@ TEST_F(VisibleUnitsWordTest, StartOfWordAdjacentContentEditableSpans) {
       "<span contenteditable=\"true\" id=\"target\">SpanNumber2</span>"
       "<span contenteditable=\"true\">SpanNumber3</span>"
       "</div>");
-  const Element* target = GetDocument().getElementById(AtomicString("target"));
+  const Element* target = GetElementById("target");
   const Position position(target->firstChild(), 5);
   const Position result = StartOfWordPosition(position);
   ASSERT_FALSE(result.IsNull());
@@ -170,7 +170,7 @@ TEST_F(VisibleUnitsWordTest, EndOfWordAdjacentContentEditableSpans) {
       "<span contenteditable=\"true\" id=\"target\">SpanNumber2</span>"
       "<span contenteditable=\"true\">SpanNumber3</span>"
       "</div>");
-  const Element* target = GetDocument().getElementById(AtomicString("target"));
+  const Element* target = GetElementById("target");
   const Position position(target->firstChild(), 5);
   const Position result = EndOfWordPosition(position);
   ASSERT_FALSE(result.IsNull());
@@ -207,10 +207,9 @@ TEST_F(VisibleUnitsWordTest, StartOfWordShadowDom) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Node* one = GetDocument().getElementById(AtomicString("one"))->firstChild();
-  Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
-  Node* three =
-      GetDocument().getElementById(AtomicString("three"))->firstChild();
+  Node* one = GetElementById("one")->firstChild();
+  Node* two = GetElementById("two")->firstChild();
+  Node* three = GetElementById("three")->firstChild();
   Node* four = shadow_root->getElementById(AtomicString("four"))->firstChild();
   Node* five = shadow_root->getElementById(AtomicString("five"))->firstChild();
   Node* space =
@@ -430,10 +429,9 @@ TEST_F(VisibleUnitsWordTest, EndOfWordShadowDom) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Node* one = GetDocument().getElementById(AtomicString("one"))->firstChild();
-  Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
-  Node* three =
-      GetDocument().getElementById(AtomicString("three"))->firstChild();
+  Node* one = GetElementById("one")->firstChild();
+  Node* two = GetElementById("two")->firstChild();
+  Node* three = GetElementById("three")->firstChild();
   Node* four = shadow_root->getElementById(AtomicString("four"))->firstChild();
   Node* five = shadow_root->getElementById(AtomicString("five"))->firstChild();
 
