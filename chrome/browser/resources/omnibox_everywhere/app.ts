@@ -582,15 +582,12 @@ export class OmniboxEverywhereAppElement extends
       const searchbox =
           this.shadowRoot?.querySelector<OmniboxEverywhereOmniboxElement>(
               'omnibox-everywhere-omnibox');
-      if (searchbox) {
-        const inputElement = searchbox.getInputElement();
-        if (inputElement && inputElement.getInputValue()) {
-          inputElement.setInputText('');
-          searchbox.clearAutocompleteMatches();
-          searchbox.focusInput();
-          e.preventDefault();
-          return;
-        }
+      if (searchbox && searchbox.getInputText()) {
+        searchbox.setInputText('');
+        searchbox.clearAutocompleteMatches();
+        searchbox.focusInput();
+        e.preventDefault();
+        return;
       }
     }
 

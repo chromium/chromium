@@ -33,6 +33,7 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
           ?input-has-matches="${this.hasMatches()}"
           ?allow-file-paste="${this.canAddFileContext_()}"
           @focusin="${this.onInputFocusin_}"
+          @searchbox-input-empty-changed="${this.onSearchboxInputEmptyChanged_}"
           @searchbox-input-files-pasted="${this.onSearchboxInputFilesPasted_}"
           @searchbox-input-text-updated="${this.onSearchboxInputTextUpdated_}"
           @input-focus-changed="${this.onInputFocusChanged}">
