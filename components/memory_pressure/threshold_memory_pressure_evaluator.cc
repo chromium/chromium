@@ -14,7 +14,7 @@
 #include "components/memory_pressure/memory_pressure_voter.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #endif
 
 namespace memory_pressure {
@@ -210,11 +210,12 @@ void ThresholdMemoryPressureEvaluator::RecordCommitHistograms(
   base::ByteSize commit_limit = sample.total_commit_bytes;
   base::ByteSize commit_available = sample.available_commit_bytes;
 
-  base::UmaHistogramCounts10M("Memory.CommitLimitMB",
-                              base::saturated_cast<int>(commit_limit.InMiB()));
-  base::UmaHistogramCounts10M(
-      "Memory.CommitAvailableMB",
-      base::saturated_cast<int>(commit_available.InMiB()));
+  // Cache the histograms to avoid acquiring the global histogram lookup lock on
+  // every memory pressure poll after initialization.
+  UMA_HISTOGRAM_COUNTS_10M("Memory.CommitLimitMB",
+                           base::saturated_cast<int>(commit_limit.InMiB()));
+  UMA_HISTOGRAM_COUNTS_10M("Memory.CommitAvailableMB",
+                           base::saturated_cast<int>(commit_available.InMiB()));
 
   int percentage_used;
   if (commit_limit.is_zero()) {
@@ -229,7 +230,7 @@ void ThresholdMemoryPressureEvaluator::RecordCommitHistograms(
         percentage_remaining > 100 ? 0u : 100 - percentage_remaining);
   }
 
-  base::UmaHistogramPercentage("Memory.CommitPercentageUsed", percentage_used);
+  UMA_HISTOGRAM_PERCENTAGE("Memory.CommitPercentageUsed", percentage_used);
 }
 #endif  // BUILDFLAG(IS_WIN)
 

@@ -188,6 +188,29 @@ TEST_F(ThresholdMemoryPressureEvaluatorTest, RecordCommitHistogramsBasic) {
 }
 
 TEST_F(ThresholdMemoryPressureEvaluatorTest,
+       RecordCommitHistogramsRepeatedSamples) {
+  base::HistogramTester histogram_tester;
+
+  for (int i = 0; i < 2; ++i) {
+    TestThresholdMemoryPressureEvaluator evaluator;
+    evaluator.RecordCommitHistograms(evaluator.CreateSample(
+        /*phys_left=*/base::GiB(4), /*commit_limit=*/base::GiB(4),
+        /*commit_available=*/base::GiB(2)));
+    evaluator.RecordCommitHistograms(evaluator.CreateSample(
+        /*phys_left=*/base::GiB(4), /*commit_limit=*/base::GiB(8),
+        /*commit_available=*/base::GiB(2)));
+  }
+
+  histogram_tester.ExpectBucketCount(kCommitLimitMBHistogramName, 4096, 2);
+  histogram_tester.ExpectBucketCount(kCommitLimitMBHistogramName, 8192, 2);
+  histogram_tester.ExpectTotalCount(kCommitLimitMBHistogramName, 4);
+  histogram_tester.ExpectUniqueSample(kCommitAvailableMBHistogramName, 2048, 4);
+  histogram_tester.ExpectBucketCount(kCommitPercentageUsedHistogramName, 50, 2);
+  histogram_tester.ExpectBucketCount(kCommitPercentageUsedHistogramName, 75, 2);
+  histogram_tester.ExpectTotalCount(kCommitPercentageUsedHistogramName, 4);
+}
+
+TEST_F(ThresholdMemoryPressureEvaluatorTest,
        RecordCommitHistogramsDivisionByZero) {
   base::HistogramTester histogram_tester;
   TestThresholdMemoryPressureEvaluator evaluator;
