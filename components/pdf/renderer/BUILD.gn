@@ -22,6 +22,8 @@ static_library("renderer") {
     "internal_plugin_renderer_helpers.cc",
     "pdf_accessibility_table_detector.cc",
     "pdf_accessibility_table_detector.h",
+    "pdf_accessibility_text_utils.cc",
+    "pdf_accessibility_text_utils.h",
     "pdf_accessibility_tree.cc",
     "pdf_accessibility_tree_builder.cc",
     "pdf_accessibility_tree_builder.h",

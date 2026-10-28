@@ -30,6 +30,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/pdf/renderer/pdf_accessibility_text_utils.h"
 #include "components/pdf/renderer/pdf_accessibility_tree_builder.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdf_features.h"
@@ -330,14 +331,6 @@ bool DoBoundsOverlapOnLine(float top1,
     return (coverage + kComparisonEpsilon) >= kLineCoverageThreshold;
   }
   return coverage > kLineCoverageThreshold;
-}
-
-bool IsLeftToRightRun(const chrome_pdf::AccessibilityTextRunInfo& run) {
-  // `kNone` is assigned to single-character runs, whose direction cannot be
-  // inferred. Treat them as LTR, the default, like `PDFiumPage` does.
-  return run.direction ==
-             chrome_pdf::AccessibilityTextDirection::kLeftToRight ||
-         run.direction == chrome_pdf::AccessibilityTextDirection::kNone;
 }
 
 // This class is used as part of our heuristic to determine which text runs live
@@ -1855,9 +1848,8 @@ ListMarkerPrefix GetListMarkerPrefix(
   ListMarkerPrefix prefix;
   size_t prefix_char_count = 0;
   // Skip leading whitespace before the marker.
-  while (
-      prefix_char_count < chars.size() &&
-      base::IsUnicodeWhitespace(chars[prefix_char_count].unicode_character)) {
+  while (prefix_char_count < chars.size() &&
+         IsWhitespace(chars[prefix_char_count])) {
     ++prefix_char_count;
   }
   // Record the marker chars' width and skip them. Combined markers are always
@@ -1870,9 +1862,8 @@ ListMarkerPrefix GetListMarkerPrefix(
     ++prefix_char_count;
   }
   // Skip trailing whitespace between the marker and the item text.
-  while (
-      prefix_char_count < chars.size() &&
-      base::IsUnicodeWhitespace(chars[prefix_char_count].unicode_character)) {
+  while (prefix_char_count < chars.size() &&
+         IsWhitespace(chars[prefix_char_count])) {
     ++prefix_char_count;
   }
   prefix.char_count = prefix_char_count;
@@ -1896,7 +1887,7 @@ std::string GetListMarkerName(const TextRunContext& run_context,
         {std::string_view(text).substr(0, first_whitespace), " "});
   }
   for (const auto& char_info : run_context.chars) {
-    if (base::IsUnicodeWhitespace(char_info.unicode_character)) {
+    if (IsWhitespace(char_info)) {
       continue;
     }
     uint32_t code_point = char_info.unicode_character;
