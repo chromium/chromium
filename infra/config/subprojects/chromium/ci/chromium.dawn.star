@@ -2967,12 +2967,12 @@ ci.thin_tester(
             # unexpectedly slow compared to UHD 630. Fix this and remove these modifications.
             "dawn_end2end_validation_layers_tests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 8,
+                    shards = 16,
                 ),
             ),
             "dawn_end2end_no_dxc_validation_layers_tests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 8,
+                    shards = 16,
                 ),
             ),
         },
