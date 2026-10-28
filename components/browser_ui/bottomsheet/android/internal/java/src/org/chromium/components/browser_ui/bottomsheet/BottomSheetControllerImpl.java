@@ -274,7 +274,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
                         // trigger an update to account for this possibility.
                         ScrimManager scrimManager = mScrimManagerSupplier.get();
                         assumeNonNull(scrimManager);
-                        adjustBottomSheetZAxis(mScrimVisible);
+                        adjustBottomSheetZAxis();
                         if (!shouldShowScrim(mBottomSheet.getCurrentSheetContent())) {
                             updateBackPressStateChangedSupplier();
                             return;
@@ -439,7 +439,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
                         .getBackPressStateChangedSupplier()
                         .removeObserver(mContentBackPressStateChangedObserver);
                 mBottomSheet.showContent(null);
-                adjustBottomSheetZAxis(mScrimVisible);
+                adjustBottomSheetZAxis();
             }
         } else {
             showNextContent(true);
@@ -462,7 +462,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     public void setBottomControlsOffset(int bottomControlsOffset) {
         if (mBottomControlsOffset == bottomControlsOffset) return;
         mBottomControlsOffset = bottomControlsOffset;
-        adjustBottomSheetZAxis(mScrimVisible);
+        adjustBottomSheetZAxis();
     }
 
     @Override
@@ -793,7 +793,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
 
         if (assumeNonNull(mContentQueue).isEmpty()) {
             mBottomSheet.showContent(null);
-            adjustBottomSheetZAxis(mScrimVisible);
+            adjustBottomSheetZAxis();
             return;
         }
 
@@ -814,7 +814,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         if (nextContent != null) {
             recordBottomSheetShownMetric();
         }
-        adjustBottomSheetZAxis(mScrimVisible);
+        adjustBottomSheetZAxis();
         mBottomSheet.setSheetState(mBottomSheet.getOpeningState(), animate);
     }
 
@@ -906,34 +906,26 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     private void onScrimVisibilityChanged(boolean visible) {
         if (mScrimVisible == visible) return;
         mScrimVisible = visible;
-        adjustBottomSheetZAxis(visible);
+        adjustBottomSheetZAxis();
     }
 
-    private void adjustBottomSheetZAxis(boolean scrimVisible) {
+    private void adjustBottomSheetZAxis() {
         if (mBottomSheet == null) return;
         assumeNonNull(mBottomSheetContainer);
-        BottomSheetContent content = mBottomSheet.getCurrentSheetContent();
+        boolean shouldCover = shouldCoverBottomControls();
+        mIsAnchoredToBottomControls = !shouldCover;
+        mBottomSheetContainer.setZ(shouldCover ? 1.0f : 0.0f);
+        mBottomSheet.setBottomMargin(shouldCover ? 0 : mBottomControlsOffset);
+    }
+
+    private boolean shouldCoverBottomControls() {
+        if (mBottomSheet == null) return false;
+        if (mScrimVisible && mBottomSheet.isSheetOpen()) return true;
         // Apply coverage on presentation without waiting for `isSheetOpen()`. When opening from
         // closed, `isSheetOpen()` is false during measurement and animation; covering immediately
         // prevents layout jumps on open. Dismissal clears `content`, restoring margins.
-        boolean shouldCover =
-                (scrimVisible && mBottomSheet.isSheetOpen())
-                        || (content != null && content.coversBottomControls());
-        if (shouldCover) {
-            // Scrimmed bottom sheet or sheet requesting to cover bottom controls. Draw the bottom
-            // sheet container on top of all sibling views, originating from the bottom of the
-            // screen.
-            mIsAnchoredToBottomControls = false;
-            mBottomSheetContainer.setZ(1.0f);
-            mBottomSheet.setBottomMargin(0);
-        } else {
-            // Unscrimmed bottom sheet. Draw the bottom sheet container in its "natural" order; i.e.
-            // in the order specified in res_app/layout/main.xml. Draw originating from the top of
-            // the bottom controls.
-            mIsAnchoredToBottomControls = true;
-            mBottomSheetContainer.setZ(0.0f);
-            mBottomSheet.setBottomMargin(mBottomControlsOffset);
-        }
+        BottomSheetContent content = mBottomSheet.getCurrentSheetContent();
+        return content != null && content.coversBottomControls();
     }
 
     /**
