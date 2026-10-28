@@ -22,7 +22,7 @@
 #include "testing/platform_test.h"
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
 #include "ui/base/cocoa/window_size_constants.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/display/screen.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 
@@ -251,14 +251,15 @@ class DummyNativeWidgetNSWindowHost
     std::move(callback).Run(
         remote_cocoa::mojom::ValidateUserInterfaceItemResult::New());
   }
-  void WillExecuteCommand(int32_t command,
-                          WindowOpenDisposition window_open_disposition,
-                          bool is_before_first_responder,
-                          ExecuteCommandCallback callback) override {
+  void WillExecuteCommand(
+      int32_t command,
+      ui::mojom::WindowOpenDisposition window_open_disposition,
+      bool is_before_first_responder,
+      ExecuteCommandCallback callback) override {
     std::move(callback).Run(false);
   }
   void ExecuteCommand(int32_t command,
-                      WindowOpenDisposition window_open_disposition,
+                      ui::mojom::WindowOpenDisposition window_open_disposition,
                       bool is_before_first_responder,
                       ExecuteCommandCallback callback) override {
     std::move(callback).Run(false);

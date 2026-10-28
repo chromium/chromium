@@ -17,7 +17,7 @@
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/infobars/core/infobar_manager.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -45,7 +45,8 @@ AutofillSaveCardInfoBarDelegateMobile::FromInfobarDelegate(
 
 void AutofillSaveCardInfoBarDelegateMobile::OnLegalMessageLinkClicked(
     GURL url) {
-  infobar()->owner()->OpenURL(url, WindowOpenDisposition::kNewForegroundTab);
+  infobar()->owner()->OpenURL(
+      url, ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 }
 
 bool AutofillSaveCardInfoBarDelegateMobile::IsChromeBrandingEnabled() const {
