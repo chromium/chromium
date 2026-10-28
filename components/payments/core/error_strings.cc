@@ -43,6 +43,7 @@ const char kSpcLocaleDoesNotMatch[] = "None of the supplied locales match the \"
 const char kSpcUserOptedOut[] = "User opted out of the process.";
 const char kTotalRequired[] = "Total required.";
 const char kUserCancelled[] = "User closed the Payment Request UI.";
+const char kWebAuthnExtensionsNotSupported[] = "The \"secure-payment-confirmation\" method does not support the provided WebAuthn extension(s).";
 const char kWebAuthnOperationTimedOutOrNotAllowed[] = "The operation either timed out or was not allowed. See: https://www.w3.org/TR/webauthn-2/#sctn-privacy-considerations-client.";
 // clang-format on
 }  // namespace errors

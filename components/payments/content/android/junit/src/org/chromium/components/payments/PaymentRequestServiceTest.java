@@ -1058,7 +1058,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
                                         .WEB_AUTHN_EXTENSIONS_NOT_SUPPORTED)
                         .build());
         assertErrorAndReason(
-                ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA, PaymentErrorReason.NOT_SUPPORTED);
+                ErrorStrings.WEB_AUTHN_EXTENSIONS_NOT_SUPPORTED, PaymentErrorReason.NOT_SUPPORTED);
         Mockito.verify(mJourneyLogger, Mockito.times(1))
                 .setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
     }

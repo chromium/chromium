@@ -573,7 +573,7 @@ public class PaymentRequestService
                         == SecurePaymentConfirmationRequestValidationError
                                 .WEB_AUTHN_EXTENSIONS_NOT_SUPPORTED) {
                     disconnectFromClientWithDebugMessage(
-                            ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
+                            ErrorStrings.WEB_AUTHN_EXTENSIONS_NOT_SUPPORTED,
                             PaymentErrorReason.NOT_SUPPORTED);
                 } else {
                     disconnectFromClientWithDebugMessage(
