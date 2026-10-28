@@ -19,12 +19,12 @@ class PhotosServiceFactory final
   explicit PhotosServiceFactory(PassKey key);
 
   // Returns the default factory.
-  static TestingFactory GetDefaultFactory();
+  static TestingFactoryByRef GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_PHOTOS_MODEL_PHOTOS_SERVICE_FACTORY_H_

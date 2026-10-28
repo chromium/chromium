@@ -18,13 +18,13 @@
 namespace {
 
 // Build a PhotosService instance.
-std::unique_ptr<KeyedService> BuildPhotosService(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildPhotosService(ProfileIOS& profile) {
   PhotosServiceConfiguration* configuration =
       [[PhotosServiceConfiguration alloc] init];
   ApplicationContext* application_context = GetApplicationContext();
   configuration.singleSignOnService =
       application_context->GetSingleSignOnService();
-  configuration.prefService = profile->GetPrefs();
+  configuration.prefService = profile.GetPrefs();
   configuration.identityManager =
       IdentityManagerFactory::GetForProfile(profile);
   configuration.accountManagerService =
@@ -35,7 +35,8 @@ std::unique_ptr<KeyedService> BuildPhotosService(ProfileIOS* profile) {
 }  // namespace
 
 // static
-PhotosServiceFactory::TestingFactory PhotosServiceFactory::GetDefaultFactory() {
+PhotosServiceFactory::TestingFactoryByRef
+PhotosServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildPhotosService);
 }
 
@@ -51,6 +52,6 @@ PhotosServiceFactory::PhotosServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> PhotosServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildPhotosService(profile);
 }
