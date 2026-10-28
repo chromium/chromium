@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -37,6 +38,8 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -726,6 +729,50 @@ public class BookmarkUtilsTest {
     @DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG)
     public void testIsDesktopBookmarksDialogEnabled_featureDisabled() {
         assertFalse(BookmarkUtils.isDesktopBookmarksDialogEnabled());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R, qualifiers = "sw800dp")
+    public void testMakeTranslucentIfFloating_tabletWidth() {
+        TranslucentRecordingActivity activity =
+                Robolectric.buildActivity(TranslucentRecordingActivity.class).create().get();
+
+        BookmarkUtils.makeTranslucentIfFloating(activity);
+
+        assertTrue(activity.mTranslucent);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R, qualifiers = "sw360dp")
+    public void testMakeTranslucentIfFloating_phoneWidth() {
+        TranslucentRecordingActivity activity =
+                Robolectric.buildActivity(TranslucentRecordingActivity.class).create().get();
+
+        BookmarkUtils.makeTranslucentIfFloating(activity);
+
+        assertFalse(activity.mTranslucent);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.Q, qualifiers = "sw800dp")
+    public void testMakeTranslucentIfFloating_preR() {
+        TranslucentRecordingActivity activity =
+                Robolectric.buildActivity(TranslucentRecordingActivity.class).create().get();
+
+        BookmarkUtils.makeTranslucentIfFloating(activity);
+
+        assertFalse(activity.mTranslucent);
+    }
+
+    /** Real setTranslucent() is a no-op under Robolectric; record it to test the decision. */
+    private static class TranslucentRecordingActivity extends Activity {
+        boolean mTranslucent;
+
+        @Override
+        public boolean setTranslucent(boolean translucent) {
+            mTranslucent = translucent;
+            return true;
+        }
     }
 
     @Test

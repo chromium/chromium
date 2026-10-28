@@ -77,6 +77,7 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
     @Initializer
     protected void onProfileAvailable(Profile profile) {
         super.onProfileAvailable(profile);
+        BookmarkUtils.makeTranslucentIfFloating(this);
         BookmarkModel bookmarkModel = BookmarkModel.getForProfile(profile);
 
         List<String> bookmarkIdsAsStrings =

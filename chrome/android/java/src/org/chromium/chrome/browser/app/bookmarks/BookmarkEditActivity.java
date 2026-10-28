@@ -120,6 +120,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
     @Initializer
     protected void onProfileAvailable(Profile profile) {
         super.onProfileAvailable(profile);
+        BookmarkUtils.makeTranslucentIfFloating(this);
         mProfile = profile;
         mModel = BookmarkModel.getForProfile(profile);
         mBookmarkManagerOpener = new BookmarkManagerOpenerImpl();
