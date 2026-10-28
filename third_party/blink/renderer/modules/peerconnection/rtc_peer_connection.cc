@@ -391,6 +391,10 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
 
   if (RuntimeEnabledFeatures::RtcRtpHeaderEncryptionPolicyEnabled()) {
     switch (configuration->rtpHeaderEncryptionPolicy().AsEnum()) {
+      case V8RTCRtpHeaderEncryptionPolicy::Enum::kDisable:
+        web_configuration.crypto_options.srtp.cryptex_policy =
+            webrtc::CryptoOptions::Srtp::CryptexPolicy::kDisabled;
+        break;
       case V8RTCRtpHeaderEncryptionPolicy::Enum::kNegotiate:
         web_configuration.crypto_options.srtp.cryptex_policy =
             webrtc::CryptoOptions::Srtp::CryptexPolicy::kNegotiate;
@@ -1466,6 +1470,10 @@ RTCConfiguration* RTCPeerConnection::getConfiguration(
 
   if (RuntimeEnabledFeatures::RtcRtpHeaderEncryptionPolicyEnabled()) {
     switch (webrtc_configuration.crypto_options.srtp.cryptex_policy) {
+      case webrtc::CryptoOptions::Srtp::CryptexPolicy::kDisabled:
+        result->setRtpHeaderEncryptionPolicy(
+            V8RTCRtpHeaderEncryptionPolicy::Enum::kDisable);
+        break;
       case webrtc::CryptoOptions::Srtp::CryptexPolicy::kNegotiate:
         result->setRtpHeaderEncryptionPolicy(
             V8RTCRtpHeaderEncryptionPolicy::Enum::kNegotiate);
@@ -1474,8 +1482,6 @@ RTCConfiguration* RTCPeerConnection::getConfiguration(
         result->setRtpHeaderEncryptionPolicy(
             V8RTCRtpHeaderEncryptionPolicy::Enum::kRequire);
         break;
-      default:
-        NOTREACHED();
     }
   }
 

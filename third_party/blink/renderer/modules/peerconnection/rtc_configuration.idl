@@ -27,6 +27,7 @@ enum RTCRtcpMuxPolicy {
 // https://w3c.github.io/webrtc-extensions/#rtp-header-extension-encryption-policy
 
 enum RTCRtpHeaderEncryptionPolicy {
+    "disable",
     "negotiate",
     "require"
 };
