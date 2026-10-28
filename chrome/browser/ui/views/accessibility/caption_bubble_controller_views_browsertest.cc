@@ -48,7 +48,9 @@
 #include "media/base/media_switches.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/buildflags.h"
+#include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/font.h"
@@ -58,13 +60,16 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scrollbar/scroll_bar.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)
@@ -247,10 +252,15 @@ class CaptionBubbleControllerViewsTest
                        : nullptr;
   }
 
-  views::MdTextButton* GetScrollLockButton() {
+  views::MdTextButton* GetJumpToBottomButton() {
     return controller_
-               ? controller_->caption_bubble_->GetScrollLockButtonForTesting()
+               ? controller_->caption_bubble_->GetJumpToBottomButtonForTesting()
                : nullptr;
+  }
+
+  void DisableControlsAnimation() {
+    GetController()->caption_bubble_->controls_animation_.SetSlideDuration(
+        base::TimeDelta());
   }
 
   views::View* GetTranslateIconAndText() {
@@ -453,6 +463,10 @@ class CaptionBubbleControllerViewsTest
         ->GetPrimaryMainFrame();
   }
 
+  bool PressKeyOnBubble(const ui::KeyEvent& event) {
+    return GetBubble()->OnKeyPressed(event);
+  }
+
  private:
   // TODO(https://crbug.com/423465927): Explore a better approach to make the
   // existing tests run with the prewarm feature enabled.
@@ -490,7 +504,7 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, ShowsCaptionInBubble) {
 
 IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, LaysOutCaptionLabel) {
   // A short caption is bottom-aligned with the bubble. The bubble bounds
-  // are inset by 18 dip on the the sides and 24 dip on the bottom. The label
+  // are inset by 18 dip on the sides and 24 dip on the bottom. The label
   // top can change, but the bubble height and width should not change.
   OnPartialTranscription("Cats rock");
   gfx::Rect label_bounds = GetLabel()->GetBoundsInScreen();
@@ -499,7 +513,7 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, LaysOutCaptionLabel) {
   int bubble_width = bubble_bounds.width();
   EXPECT_EQ(label_bounds.x() - 18, bubble_bounds.x());  // left
   EXPECT_EQ(label_bounds.right() + 18, bubble_bounds.right());
-  EXPECT_EQ(label_bounds.bottom() + 24, bubble_bounds.bottom());
+  EXPECT_EQ(label_bounds.bottom() + 24, bubble_bounds.bottom());  // bottom
 
   // Ensure overflow by using a very long caption, should still be aligned
   // with the bottom of the bubble.
@@ -514,7 +528,7 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, LaysOutCaptionLabel) {
   bubble_bounds = GetBubble()->GetBoundsInScreen();
   EXPECT_EQ(label_bounds.x() - 18, bubble_bounds.x());  // left
   EXPECT_EQ(label_bounds.right() + 18, bubble_bounds.right());
-  EXPECT_EQ(label_bounds.bottom() + 24, bubble_bounds.bottom());
+  EXPECT_EQ(label_bounds.bottom() + 24, bubble_bounds.bottom());  // bottom
   EXPECT_EQ(bubble_height, bubble_bounds.height());
   EXPECT_EQ(bubble_width, bubble_bounds.width());
 }
@@ -1466,7 +1480,7 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, LiveTranslateLabel) {
   ASSERT_FALSE(GetTranslateArrowIcon()->GetVisible());
   ASSERT_FALSE(GetTargetLanguageButton()->GetVisible());
   if (GetParam()) {
-    ASSERT_FALSE(GetScrollLockButton()->GetVisible());
+    ASSERT_FALSE(GetJumpToBottomButton()->GetVisible());
   }
 
   browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
@@ -1477,7 +1491,7 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, LiveTranslateLabel) {
   ASSERT_TRUE(GetTargetLanguageButton()->GetVisible());
   EXPECT_EQ("English", base::UTF16ToUTF8(GetTargetLanguageButton()->GetText()));
   if (GetParam()) {
-    ASSERT_FALSE(GetScrollLockButton()->GetVisible());
+    ASSERT_FALSE(GetJumpToBottomButton()->GetVisible());
   }
 
   browser()->GetProfile()->GetPrefs()->SetString(
@@ -1489,7 +1503,7 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, LiveTranslateLabel) {
   ASSERT_TRUE(GetTranslateArrowIcon()->GetVisible());
   ASSERT_TRUE(GetTargetLanguageButton()->GetVisible());
   if (GetParam()) {
-    ASSERT_FALSE(GetScrollLockButton()->GetVisible());
+    ASSERT_FALSE(GetJumpToBottomButton()->GetVisible());
   }
   EXPECT_EQ("French", base::UTF16ToUTF8(GetSourceLanguageButton()->GetText()));
   EXPECT_EQ("English", base::UTF16ToUTF8(GetTargetLanguageButton()->GetText()));
@@ -1645,8 +1659,8 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, HeaderView) {
 
   // The left header container should contain the translate
   // header{{icon, text}, source language button, arrow icon,
-  // target language button and scroll/lock button, if scrolling enabled}.
-  EXPECT_EQ(GetParam() ? 2u : 1u, left_header_container->children().size());
+  // target language button}.
+  EXPECT_EQ(1u, left_header_container->children().size());
   views::View* translate_header_container =
       left_header_container->children()[0];
   EXPECT_EQ(4u, translate_header_container->children().size());
@@ -1660,7 +1674,7 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, HeaderView) {
   ASSERT_FALSE(GetTranslateArrowIcon()->GetVisible());
   ASSERT_FALSE(GetTargetLanguageButton()->GetVisible());
   if (GetParam()) {
-    ASSERT_FALSE(GetScrollLockButton()->GetVisible());
+    ASSERT_FALSE(GetJumpToBottomButton()->GetVisible());
   }
   ASSERT_EQ(4, static_cast<views::BoxLayout*>(
                    left_header_container->GetLayoutManager())
@@ -1772,7 +1786,7 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, TranslateSynonyms) {
   EXPECT_TRUE(IsWidgetVisible());
   ASSERT_TRUE(GetTargetLanguageButton()->GetVisible());
   if (GetParam()) {
-    ASSERT_FALSE(GetScrollLockButton()->GetVisible());
+    ASSERT_FALSE(GetJumpToBottomButton()->GetVisible());
   }
 
   auto* target_language_label = GetTargetLanguageLabel();
@@ -1905,6 +1919,480 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
       "pandas use their bushy tails for balance and as a cozy blanket in cold "
       "weather.",
       GetLabelText());
+}
+
+IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, ScrollableBubble) {
+  if (!GetParam()) {
+    OnPartialTranscription("Short text.");
+    EXPECT_EQ(nullptr, GetScrollView());
+    EXPECT_EQ(nullptr, GetJumpToBottomButton());
+    return;
+  }
+
+  const int line_height = 24;
+  GetController();
+  ASSERT_NE(nullptr, GetJumpToBottomButton());
+  ASSERT_NE(nullptr, GetJumpToBottomButton()->GetProperty(views::kMarginsKey));
+  EXPECT_EQ(0, GetJumpToBottomButton()->GetProperty(views::kMarginsKey)->top());
+  EXPECT_EQ(2,
+            GetJumpToBottomButton()->GetProperty(views::kMarginsKey)->bottom());
+  OnPartialTranscription("Short text.");
+  ASSERT_NE(nullptr, GetScrollView());
+  EXPECT_EQ(gfx::Size(536, 96), GetBubble()->GetPreferredSize({}));
+  EXPECT_FALSE(GetJumpToBottomButton()->GetVisible());
+  EXPECT_TRUE(GetExpandButton()->GetVisible());
+  EXPECT_FALSE(GetCollapseButton()->GetVisible());
+  EXPECT_EQ(nullptr, GetScrollView()->layer());
+
+  // Make a 500-char line that wraps nicely.
+  std::string line(497, 'a');
+  auto make_lines = [&](int start, int count) {
+    std::string result;
+    for (int i = start; i < start + count; i++) {
+      result += base::NumberToString(i) + line + " ";
+    }
+    return result;
+  };
+
+  // 1. Overflow in collapsed mode (4 lines > 2-line collapsed viewport), then
+  // expand so content fits in the 8-line expanded viewport without overflowing.
+  // Dispatch touchpad ScrollEvents between line wraps to verify auto-scrolling
+  // continues at the bottom by default, after clicking Jump to bottom, and
+  // after manually scrolling to the bottom, and that Jump to bottom has
+  // non-empty bounds immediately when first shown.
+  if (GetScrollView()->contents()->layer()) {
+    EXPECT_TRUE(
+        GetScrollView()->contents()->layer()->main_side_scrolling_enabled());
+  }
+  OnPartialTranscription(make_lines(10, 2));
+  views::test::RunScheduledLayout(GetBubble());
+  gfx::Point scroll_point = GetScrollView()->GetLocalBounds().CenterPoint();
+  views::View::ConvertPointToTarget(
+      GetScrollView(), GetCaptionWidget()->GetRootView(), &scroll_point);
+  const gfx::PointF scroll_point_f(scroll_point);
+  ui::ScrollEvent fling_cancel(ui::EventType::kScrollFlingCancel,
+                               scroll_point_f, scroll_point_f,
+                               ui::EventTimeForNow(), ui::EF_NONE, 0, 0, 0, 0,
+                               /*finger_count=*/2);
+  GetCaptionWidget()->OnScrollEvent(&fling_cancel);
+  ui::ScrollEvent touchpad_scroll_down(ui::EventType::kScroll, scroll_point_f,
+                                       scroll_point_f, ui::EventTimeForNow(),
+                                       ui::EF_NONE, 0, -2 * line_height, 0,
+                                       -2 * line_height, /*finger_count=*/2);
+  GetCaptionWidget()->OnScrollEvent(&touchpad_scroll_down);
+  EXPECT_TRUE(GetScrollView()->is_scrolling());
+
+  OnPartialTranscription(make_lines(10, 3));
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_TRUE(GetScrollView()->vertical_scroll_bar()->GetVisible());
+  EXPECT_EQ(line_height, GetScrollView()->CurrentOffset().y());
+  EXPECT_FALSE(GetJumpToBottomButton()->GetVisible());
+  EXPECT_TRUE(GetExpandButton()->GetVisible());
+
+  // Scroll up via touchpad ScrollEvent before Jump to bottom has ever been
+  // shown -> pauses auto-scroll and lays out Jump to bottom with non-empty
+  // bounds immediately.
+  ui::ScrollEvent touchpad_scroll_up(
+      ui::EventType::kScroll, scroll_point_f, scroll_point_f,
+      ui::EventTimeForNow(), ui::EF_NONE, 0, line_height, 0, line_height,
+      /*finger_count=*/2);
+  GetCaptionWidget()->OnScrollEvent(&touchpad_scroll_up);
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_EQ(0, GetScrollView()->CurrentOffset().y());
+  EXPECT_TRUE(GetJumpToBottomButton()->GetVisible());
+  EXPECT_FALSE(GetJumpToBottomButton()->bounds().IsEmpty());
+  EXPECT_FALSE(GetExpandButton()->GetVisible());
+
+  // Clicking Jump to bottom resumes auto-scrolling when the 4th line arrives.
+  ClickButton(GetJumpToBottomButton());
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_EQ(line_height, GetScrollView()->CurrentOffset().y());
+  EXPECT_FALSE(GetJumpToBottomButton()->GetVisible());
+
+  OnPartialTranscription(make_lines(10, 4));
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_TRUE(GetScrollView()->vertical_scroll_bar()->GetVisible());
+  EXPECT_EQ(2 * line_height, GetScrollView()->CurrentOffset().y());
+  EXPECT_FALSE(GetJumpToBottomButton()->GetVisible());
+
+  // Manually scrolling up and then back to the bottom via touchpad ScrollEvent
+  // resumes auto-scrolling when a 5th line arrives.
+  GetCaptionWidget()->OnScrollEvent(&touchpad_scroll_up);
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_TRUE(GetJumpToBottomButton()->GetVisible());
+  GetCaptionWidget()->OnScrollEvent(&touchpad_scroll_down);
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_EQ(2 * line_height, GetScrollView()->CurrentOffset().y());
+  EXPECT_FALSE(GetJumpToBottomButton()->GetVisible());
+
+  OnPartialTranscription(make_lines(10, 5));
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_EQ(3 * line_height, GetScrollView()->CurrentOffset().y());
+  EXPECT_FALSE(GetJumpToBottomButton()->GetVisible());
+
+  // When paused and new transcription shrinks to fit within the viewport (2
+  // lines in 2-line collapsed mode), layout unpauses auto-scroll, hides Jump to
+  // bottom, and lays out the Expand button without leaving layout dirty.
+  GetCaptionWidget()->OnScrollEvent(&touchpad_scroll_up);
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_TRUE(GetJumpToBottomButton()->GetVisible());
+  OnPartialTranscription(make_lines(10, 2));
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_FALSE(GetBubble()->needs_layout());
+  EXPECT_FALSE(GetScrollView()->vertical_scroll_bar()->GetVisible());
+  EXPECT_FALSE(GetJumpToBottomButton()->GetVisible());
+  EXPECT_TRUE(GetExpandButton()->GetVisible());
+  EXPECT_FALSE(GetExpandButton()->bounds().IsEmpty());
+
+  OnPartialTranscription(make_lines(10, 4));
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_EQ(2 * line_height, GetScrollView()->CurrentOffset().y());
+
+  // Expanding when 4 lines fit into the 8-line expanded viewport must keep
+  // auto-scroll unpaused and show the collapse chevron (not Jump to bottom).
+  // Clicking Expand with the mouse (without prior focus on Expand) must not
+  // focus Collapse or later transfer focus to Jump to bottom when scrolling up.
+  auto* focus_manager = GetBubble()->GetFocusManager();
+  focus_manager->SetKeyboardAccessible(true);
+  focus_manager->ClearFocus();
+  ClickButton(GetExpandButton());
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_FALSE(GetScrollView()->vertical_scroll_bar()->GetVisible());
+  EXPECT_FALSE(GetJumpToBottomButton()->GetVisible());
+  EXPECT_TRUE(GetCollapseButton()->GetVisible());
+  EXPECT_FALSE(GetCollapseButton()->HasFocus());
+  EXPECT_NE(GetCollapseButton(), focus_manager->GetStoredFocusView());
+
+  // 2. Overflow in expanded mode (10 lines > 8-line expanded viewport, since
+  // title hides at >= 8 lines). Auto-scrolls to bottom (offset = 2 *
+  // line_height).
+  OnPartialTranscription(make_lines(10, 10));
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_TRUE(GetScrollView()->vertical_scroll_bar()->GetVisible());
+  EXPECT_EQ(2 * line_height, GetScrollView()->CurrentOffset().y());
+  EXPECT_FALSE(GetJumpToBottomButton()->GetVisible());
+  EXPECT_TRUE(GetCollapseButton()->GetVisible());
+
+  // Verify 6dp scrollbar thumb thickness, minimum thumb length, alignment with
+  // the right edge of CaptionBubble, that the bubble size matches the
+  // non-scrollable bubble (536x240 in expanded mode), that label width matches
+  // non-scrollable (18dp inset), and that the custom scrollbar is ignored/leaf
+  // in the accessibility tree.
+  views::ScrollBar* scroll_bar = GetScrollView()->vertical_scroll_bar();
+  EXPECT_EQ(6, scroll_bar->GetThickness());
+  ASSERT_FALSE(scroll_bar->children().empty());
+  EXPECT_EQ(32, scroll_bar->children()[0]->GetPreferredSize({}).height());
+  EXPECT_GE(scroll_bar->children()[0]->height(), 32);
+  EXPECT_TRUE(scroll_bar->GetViewAccessibility().GetIsIgnored());
+  EXPECT_TRUE(scroll_bar->GetViewAccessibility().IsLeaf());
+  EXPECT_EQ(gfx::Size(536, 240), GetBubble()->GetPreferredSize({}));
+  EXPECT_EQ(GetHeader()->GetBoundsInScreen().bottom(),
+            GetScrollView()->GetBoundsInScreen().y());
+  EXPECT_EQ(GetBubble()->GetBoundsInScreen().right(),
+            scroll_bar->GetBoundsInScreen().right());
+  EXPECT_EQ(GetBubble()->GetBoundsInScreen().right() - 18,
+            GetLabel()->GetBoundsInScreen().right());
+
+  // 3. Scroll up programmatically after mouse-clicking Expand -> pauses
+  // auto-scroll, shows Jump to bottom flush below the viewport with a 24dp
+  // footer (matching the expand/collapse button height), hides Collapse
+  // chevron, and does NOT focus Jump to bottom.
+  GetScrollView()->ScrollToOffset(gfx::PointF(0, line_height));
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_EQ(line_height, GetScrollView()->CurrentOffset().y());
+  EXPECT_TRUE(GetJumpToBottomButton()->GetVisible());
+  EXPECT_FALSE(GetCollapseButton()->GetVisible());
+  EXPECT_FALSE(GetExpandButton()->GetVisible());
+  EXPECT_FALSE(GetJumpToBottomButton()->HasFocus());
+  EXPECT_NE(GetJumpToBottomButton(), focus_manager->GetStoredFocusView());
+  EXPECT_EQ(GetScrollView()->GetBoundsInScreen().bottom(),
+            GetJumpToBottomButton()->GetBoundsInScreen().y());
+  EXPECT_EQ(GetBubble()->GetBoundsInScreen().bottom() - 2,
+            GetJumpToBottomButton()->GetBoundsInScreen().bottom());
+
+  // New transcription while paused (11 lines, max offset = 3 * line_height)
+  // does not snap to bottom.
+  OnPartialTranscription(make_lines(10, 11));
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_EQ(line_height, GetScrollView()->CurrentOffset().y());
+  EXPECT_TRUE(GetJumpToBottomButton()->GetVisible());
+
+  // 4. Focus transfer (active and stored) & Keyboard / Mouse-wheel scrolling.
+  DisableControlsAnimation();
+  auto is_focused = [&](views::View* view) {
+    return view->HasFocus() || focus_manager->GetStoredFocusView() == view;
+  };
+
+  // When Expand/Collapse has keyboard focus, toggling it preserves focus on the
+  // swapped button and scrolling up transfers focus to Jump to bottom.
+  ClickButton(GetJumpToBottomButton());
+  views::test::RunScheduledLayout(GetBubble());
+  ClickButton(GetCollapseButton());
+  views::test::RunScheduledLayout(GetBubble());
+  GetExpandButton()->RequestFocus();
+  EXPECT_TRUE(is_focused(GetExpandButton()));
+  ClickButton(GetExpandButton());
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_TRUE(is_focused(GetCollapseButton()));
+  GetScrollView()->ScrollToOffset(gfx::PointF(0, line_height));
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_TRUE(is_focused(GetJumpToBottomButton()));
+
+  // Verify stored-focus handoff when the bubble is inactive does not steal
+  // active focus.
+  focus_manager->ClearFocus();
+  focus_manager->SetStoredFocusView(GetJumpToBottomButton());
+  GetScrollView()->ScrollToOffset(gfx::PointF(0, 3 * line_height));
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_EQ(GetCollapseButton(), focus_manager->GetStoredFocusView());
+  GetScrollView()->ScrollToOffset(gfx::PointF(0, line_height));
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_EQ(GetJumpToBottomButton(), focus_manager->GetStoredFocusView());
+
+  GetJumpToBottomButton()->RequestFocus();
+  EXPECT_TRUE(is_focused(GetJumpToBottomButton()));
+
+  // Clicking Jump to bottom scrolls to bottom, hides Jump to bottom, shows
+  // Collapse button, and transfers focus directly to Collapse button.
+  ClickButton(GetJumpToBottomButton());
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_EQ(3 * line_height, GetScrollView()->CurrentOffset().y());
+  EXPECT_FALSE(GetJumpToBottomButton()->GetVisible());
+  EXPECT_TRUE(GetCollapseButton()->GetVisible());
+  EXPECT_TRUE(is_focused(GetCollapseButton()));
+
+  // Pressing Up arrow scrolls up by 1 line (line_height), pauses auto-scroll,
+  // and transfers focus from Collapse button to Jump to bottom button.
+  GetScrollView()->OnKeyPressed(
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_UP, ui::EF_NONE));
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_EQ(2 * line_height, GetScrollView()->CurrentOffset().y());
+  EXPECT_TRUE(GetJumpToBottomButton()->GetVisible());
+  EXPECT_FALSE(GetCollapseButton()->GetVisible());
+  EXPECT_TRUE(is_focused(GetJumpToBottomButton()));
+
+  // Pressing End key scrolls to bottom and transfers focus back to Collapse.
+  GetScrollView()->OnKeyPressed(
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_END, ui::EF_NONE));
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_EQ(3 * line_height, GetScrollView()->CurrentOffset().y());
+  EXPECT_FALSE(GetJumpToBottomButton()->GetVisible());
+  EXPECT_TRUE(GetCollapseButton()->GetVisible());
+  EXPECT_TRUE(is_focused(GetCollapseButton()));
+
+  // Pressing Up arrow on CaptionBubble forwards to ScrollView.
+  PressKeyOnBubble(
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_UP, ui::EF_NONE));
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_EQ(2 * line_height, GetScrollView()->CurrentOffset().y());
+  EXPECT_TRUE(GetJumpToBottomButton()->GetVisible());
+
+  // Scroll back to bottom, then scroll up with a MouseWheelEvent.
+  ClickButton(GetJumpToBottomButton());
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_EQ(3 * line_height, GetScrollView()->CurrentOffset().y());
+  ui::MouseWheelEvent wheel_up(gfx::Vector2d(0, 120), gfx::Point(10, 10),
+                               gfx::Point(10, 10), ui::EventTimeForNow(),
+                               ui::EF_NONE, ui::EF_NONE);
+  GetScrollView()->OnMouseWheel(wheel_up);
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_LT(GetScrollView()->CurrentOffset().y(), 3 * line_height);
+  EXPECT_TRUE(GetJumpToBottomButton()->GetVisible());
+
+  // 5. Hit-testing: text area is draggable (HTCAPTION), visible Jump to bottom
+  // button and visible scrollbar are interactive (HTCLIENT), and faded-out
+  // scrollbar (opacity 0) falls back to HTCAPTION.
+  views::FrameView* frame_view =
+      GetCaptionWidget()->non_client_view()->frame_view();
+  gfx::Point label_point = GetLabel()->GetBoundsInScreen().CenterPoint();
+  views::View::ConvertPointFromScreen(frame_view, &label_point);
+  EXPECT_EQ(HTCAPTION, frame_view->NonClientHitTest(label_point));
+
+  gfx::Point button_point =
+      GetJumpToBottomButton()->GetBoundsInScreen().CenterPoint();
+  views::View::ConvertPointFromScreen(frame_view, &button_point);
+  EXPECT_EQ(HTCLIENT, frame_view->NonClientHitTest(button_point));
+
+  gfx::Point scrollbar_point =
+      GetScrollView()->vertical_scroll_bar()->GetBoundsInScreen().CenterPoint();
+  views::View::ConvertPointFromScreen(frame_view, &scrollbar_point);
+  GetScrollView()->vertical_scroll_bar()->layer()->SetOpacity(1.0f);
+  EXPECT_EQ(HTCLIENT, frame_view->NonClientHitTest(scrollbar_point));
+  GetScrollView()->vertical_scroll_bar()->layer()->SetOpacity(0.0f);
+  EXPECT_EQ(HTCAPTION, frame_view->NonClientHitTest(scrollbar_point));
+  GetScrollView()->vertical_scroll_bar()->layer()->SetOpacity(1.0f);
+
+  // 6. Resume and collapse: collapsing snaps to bottom of 2-line viewport.
+  ClickButton(GetJumpToBottomButton());
+  views::test::RunScheduledLayout(GetBubble());
+  ASSERT_TRUE(GetCollapseButton()->GetVisible());
+  ClickButton(GetCollapseButton());
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_FALSE(GetJumpToBottomButton()->GetVisible());
+  EXPECT_TRUE(GetExpandButton()->GetVisible());
+  EXPECT_EQ(GetScrollView()->vertical_scroll_bar()->GetMaxPosition(),
+            GetScrollView()->CurrentOffset().y());
+
+  // Re-expand for subsequent checks.
+  ClickButton(GetExpandButton());
+  views::test::RunScheduledLayout(GetBubble());
+
+  // 7. Scroll anchoring across top-line truncation (max_lines = 9 in test, so
+  // CommitPartialText retains the last 9 lines).
+  OnFinalTranscription(make_lines(10, 10));
+  OnPartialTranscription(make_lines(20, 2));
+  views::test::RunScheduledLayout(GetBubble());
+  // Total lines = 9 retained + 2 partial = 11 lines (max offset = 3 * 24).
+  ASSERT_EQ(11u, GetNumLinesInLabel());
+  GetScrollView()->ScrollToOffset(gfx::PointF(0, 2 * line_height));
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_TRUE(GetJumpToBottomButton()->GetVisible());
+  EXPECT_EQ(2 * line_height, GetScrollView()->CurrentOffset().y());
+
+  // Finalize the 2 lines: CommitPartialText truncates 2 lines from the top
+  // (11 -> 9 lines, 2 * line_height = 48px). The scroll offset adjusts upward
+  // by 2 * line_height (from 48 to 0) so the same text remains anchored in the
+  // viewport and auto-scroll stays paused.
+  OnFinalTranscription(make_lines(20, 2));
+  views::test::RunScheduledLayout(GetBubble());
+  ASSERT_EQ(9u, GetNumLinesInLabel());
+  EXPECT_EQ(0, GetScrollView()->CurrentOffset().y());
+  EXPECT_TRUE(GetJumpToBottomButton()->GetVisible());
+
+  // 8. Text scaling (textScaleFactor != 1.0) while paused updates display width
+  // and line height immediately without overflowing the bubble or overlapping
+  // the header, and keeps the scrollbar thumb functional at 50% collapsed.
+  ui::CaptionStyle caption_style;
+  caption_style.text_size = "200%";
+  GetController()->UpdateCaptionStyle(caption_style);
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_TRUE(GetJumpToBottomButton()->GetVisible());
+  EXPECT_EQ(line_height * 2, GetLabel()->GetLineHeight());
+  EXPECT_EQ(8 * line_height * 2, GetScrollView()->height());
+  EXPECT_GE(GetScrollView()->GetBoundsInScreen().y(),
+            GetHeader()->GetBoundsInScreen().bottom());
+  EXPECT_LE(GetJumpToBottomButton()->GetBoundsInScreen().bottom(),
+            GetBubble()->GetBoundsInScreen().bottom());
+  const int scroll_view_y_200 = GetScrollView()->GetBoundsInScreen().y();
+  ClickButton(GetJumpToBottomButton());
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_EQ(scroll_view_y_200, GetScrollView()->GetBoundsInScreen().y());
+  GetScrollView()->ScrollToOffset(gfx::PointF(0, 0));
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_TRUE(GetJumpToBottomButton()->GetVisible());
+
+  caption_style.text_size = "50%";
+  GetController()->UpdateCaptionStyle(caption_style);
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_TRUE(GetJumpToBottomButton()->GetVisible());
+  EXPECT_EQ(line_height / 2, GetLabel()->GetLineHeight());
+  EXPECT_EQ(8 * (line_height / 2), GetScrollView()->height());
+  EXPECT_GE(GetScrollView()->GetBoundsInScreen().y(),
+            GetHeader()->GetBoundsInScreen().bottom());
+  EXPECT_LE(GetJumpToBottomButton()->GetBoundsInScreen().bottom(),
+            GetBubble()->GetBoundsInScreen().bottom());
+  const int scroll_view_y_50 = GetScrollView()->GetBoundsInScreen().y();
+  ClickButton(GetJumpToBottomButton());
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_EQ(scroll_view_y_50, GetScrollView()->GetBoundsInScreen().y());
+
+  ClickButton(GetCollapseButton());
+  views::test::RunScheduledLayout(GetBubble());
+  ASSERT_FALSE(scroll_bar->children().empty());
+  views::View* thumb = scroll_bar->children()[0];
+  EXPECT_LT(thumb->height(), scroll_bar->GetTrackBounds().height());
+  scroll_bar->ScrollToThumbPosition(0, /*scroll_to_middle=*/false);
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_EQ(0, GetScrollView()->CurrentOffset().y());
+  EXPECT_TRUE(GetJumpToBottomButton()->GetVisible());
+  scroll_bar->ScrollToThumbPosition(
+      scroll_bar->GetTrackBounds().height() - thumb->height(),
+      /*scroll_to_middle=*/false);
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_EQ(scroll_bar->GetMaxPosition(), GetScrollView()->CurrentOffset().y());
+  EXPECT_FALSE(GetJumpToBottomButton()->GetVisible());
+  ClickButton(GetExpandButton());
+  views::test::RunScheduledLayout(GetBubble());
+
+  caption_style.text_size = "100%";
+  GetController()->UpdateCaptionStyle(caption_style);
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_EQ(line_height, GetLabel()->GetLineHeight());
+
+  // 9. Language pack download progress, error state, and model switch while
+  // paused all reset is_scroll_paused_ and hide Jump to bottom.
+#if !BUILDFLAG(IS_CHROMEOS)
+  speech::SodaInstaller::GetInstance()->NeverDownloadSodaForTesting();
+  GetScrollView()->ScrollToOffset(gfx::PointF(0, 0));
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_TRUE(GetJumpToBottomButton()->GetVisible());
+  OnSodaProgress(50);
+  EXPECT_FALSE(GetJumpToBottomButton()->GetVisible());
+  OnSodaInstalled();
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_FALSE(GetJumpToBottomButton()->GetVisible());
+  EXPECT_TRUE(GetCollapseButton()->GetVisible());
+#endif
+
+  GetScrollView()->ScrollToOffset(gfx::PointF(0, 0));
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_TRUE(GetJumpToBottomButton()->GetVisible());
+  OnError();
+  EXPECT_FALSE(GetJumpToBottomButton()->GetVisible());
+  OnPartialTranscription(make_lines(10, 10));
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_FALSE(GetJumpToBottomButton()->GetVisible());
+  EXPECT_TRUE(GetCollapseButton()->GetVisible());
+
+  // Populate media_1 with overflowing text (10 lines) while media_0 is
+  // overflowing and unpaused with Collapse button focused -> SetModel must not
+  // transiently pause scroll, show Jump to bottom, or fire kFocus AX events.
+  // Then switch back to media_0 and pause scroll, then switch back to
+  // already-populated media_1 -> SetModel resets is_scroll_paused_ and
+  // auto-scrolls media_1 to the bottom.
+  GetCollapseButton()->RequestFocus();
+  EXPECT_TRUE(is_focused(GetCollapseButton()));
+  bool jump_to_bottom_visibility_changed = false;
+  base::CallbackListSubscription visibility_sub =
+      GetJumpToBottomButton()->AddVisibleChangedCallback(
+          base::BindLambdaForTesting(
+              [&]() { jump_to_bottom_visibility_changed = true; }));
+  views::test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
+  CaptionBubbleContext* media_0 = GetCaptionBubbleContext();
+  auto media_1 = CaptionBubbleContextBrowser::Create(
+      browser()->GetTabStripModel()->GetActiveWebContents());
+  OnPartialTranscription(make_lines(10, 10), media_1.get());
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_FALSE(jump_to_bottom_visibility_changed);
+  EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kFocus,
+                                   GetJumpToBottomButton()));
+  EXPECT_TRUE(is_focused(GetCollapseButton()));
+  EXPECT_EQ(2 * line_height, GetScrollView()->CurrentOffset().y());
+
+  OnPartialTranscription(make_lines(10, 10), media_0);
+  views::test::RunScheduledLayout(GetBubble());
+  GetScrollView()->ScrollToOffset(gfx::PointF(0, line_height));
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_TRUE(GetJumpToBottomButton()->GetVisible());
+
+  OnPartialTranscription(make_lines(10, 11), media_1.get());
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_EQ(3 * line_height, GetScrollView()->CurrentOffset().y());
+  EXPECT_FALSE(GetJumpToBottomButton()->GetVisible());
+  EXPECT_TRUE(GetCollapseButton()->GetVisible());
+
+  // Pause scroll on media_1, then switch to media_2 with short non-overflowing
+  // text -> SetModel resets is_scroll_paused_ and scrolls to 0.
+  GetScrollView()->ScrollToOffset(gfx::PointF(0, line_height));
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_TRUE(GetJumpToBottomButton()->GetVisible());
+  auto media_2 = CaptionBubbleContextBrowser::Create(
+      browser()->GetTabStripModel()->GetActiveWebContents());
+  OnPartialTranscription("Short text.", media_2.get());
+  views::test::RunScheduledLayout(GetBubble());
+  EXPECT_EQ(0, GetScrollView()->CurrentOffset().y());
+  EXPECT_FALSE(GetJumpToBottomButton()->GetVisible());
+  EXPECT_TRUE(GetCollapseButton()->GetVisible());
 }
 
 INSTANTIATE_TEST_SUITE_P(CaptionBubbleControllerViewsSuite,

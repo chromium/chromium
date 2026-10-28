@@ -42,7 +42,7 @@ class CaptionBubbleEventObserver;
 class CaptionBubbleFrameView;
 class CaptionBubbleLabel;
 class CaptionBubbleScrollView;
-class ScrollLockButton;
+class JumpToBottomButton;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. These should be the same as
@@ -112,11 +112,10 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   views::Label* GetLabelForTesting();
   views::ScrollView* GetScrollViewForTesting();
   views::Label* GetDownloadProgressLabelForTesting();
-  views::Label* GetScrollLockLabelForTesting();
   bool IsGenericErrorMessageVisibleForTesting() const;
   views::Button* GetCloseButtonForTesting();
   views::Button* GetBackToTabButtonForTesting();
-  views::MdTextButton* GetScrollLockButtonForTesting();
+  views::MdTextButton* GetJumpToBottomButtonForTesting();
   views::View* GetHeaderForTesting();
   TranslationViewWrapperBase* GetTranslationViewWrapperForTesting();
   void SetNewFontListGetterForTesting(NewFontListGetter callback);
@@ -146,6 +145,8 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   std::u16string GetAccessibleWindowTitle() const override;
   void OnThemeChanged() override;
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
+  void Layout(PassKey) override;
 
  private:
   friend class CaptionBubbleControllerViewsTest;
@@ -161,7 +162,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
                    bool show_first_button);
   // TranslationViewWrapperBase::Delegate:
   void CaptionSettingsButtonPressed() override;
-  void ScrollLockButtonPressed();
+  void JumpToBottomButtonPressed();
 
   // Called by CaptionBubbleModel to notify this object that the model's text
   // has changed. Sets the text of the caption bubble to the model's text.
@@ -202,7 +203,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
 
   // Returns the number of lines in the caption bubble label that are rendered.
   size_t GetNumLinesInLabel() const;
-  int GetNumLinesVisible();
+  int GetNumLinesVisible() const;
 
   // Internal service methods.
   void MaybeScrollToBottom();
@@ -213,7 +214,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
 
   // The following methods set the caption bubble style based on the user's
   // preferences, which are stored in `caption_style_`.
-  double GetTextScaleFactor();
+  double GetTextScaleFactor() const;
   const gfx::FontList GetFontList(int font_size);
   void SetTextSizeAndFontFamily();
   void SetTextColor();
@@ -250,16 +251,24 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   void UpdateAccessibleName();
 
   bool IsScrollabilityEnabled() const;
-  void ResetScrollIfLocked(gfx::PointF current_offset,
-                           views::ScrollView* scrollable);
+  bool ShouldShowJumpToBottom() const;
+  // Updates the visibility and focus of the scroll controls ("Jump to bottom"
+  // button, expand/collapse buttons, scrollbar opacity, and trailing fade
+  // gradient mask) based on the current scroll and error state.
+  void UpdateScrollControlsVisibility();
+  // Called when `scrollable_`'s scroll offset changes.
+  void OnContentsScrolled();
+  // Called after `scrollable_` completes a layout pass to auto-scroll to the
+  // bottom (when not paused) and refresh scroll controls.
+  void OnScrollViewLayoutComplete();
 
   // Unowned. Owned by views hierarchy.
   raw_ptr<CaptionBubbleLabel> label_;
-  raw_ptr<CaptionBubbleScrollView> scrollable_;
+  raw_ptr<CaptionBubbleScrollView> scrollable_ = nullptr;
   raw_ptr<views::Label> title_;
   raw_ptr<views::Label> generic_error_text_;
   raw_ptr<views::Label> download_progress_label_;
-  raw_ptr<ScrollLockButton> scroll_lock_button_;
+  raw_ptr<JumpToBottomButton> jump_to_bottom_button_ = nullptr;
   raw_ptr<views::View> header_container_;
   raw_ptr<views::View> left_header_container_;
   raw_ptr<views::View> translate_header_container_;
@@ -312,6 +321,10 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   std::unique_ptr<CaptionBubbleEventObserver> caption_bubble_event_observer_;
 
   base::CallbackListSubscription title_text_changed_callback_;
+  base::CallbackListSubscription contents_scrolled_subscription_;
+  // Whether auto-scrolling is paused because the user scrolled up away from the
+  // bottom of overflowing caption text.
+  bool is_scroll_paused_ = false;
 
   NewFontListGetter new_font_list_getter_;
 

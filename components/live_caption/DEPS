@@ -1,6 +1,7 @@
 include_rules = [
   "+ash/constants",
   "+base",
+  "+cc/paint",
   "+chromeos/startup",
   "+components/keyed_service/core",
   "+components/language/core/common",
@@ -27,6 +28,7 @@ include_rules = [
   "+testing/gtest",
   "+third_party/blink/public/mojom/on_device_translation",
   "+third_party/re2",
+  "+third_party/skia",
   "+ui/accessibility",
   "+ui/base",
   "+ui/color",

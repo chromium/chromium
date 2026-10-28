@@ -172,6 +172,9 @@ if (!is_android && !is_ios) {
     if (toolkit_views) {
       sources += [ "views/caption_bubble_unittest.cc" ]
       deps += [
+        "//ui/compositor",
+        "//ui/events",
+        "//ui/events:test_support",
         "//ui/gfx",
         "//ui/views",
         "//ui/views:test_support",
