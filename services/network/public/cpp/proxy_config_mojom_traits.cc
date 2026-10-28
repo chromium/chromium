@@ -160,6 +160,7 @@ bool StructTraits<network::mojom::DynamicRoutingConfigDataView,
                   net::ProxyConfig::DynamicRoutingConfig>::
     Read(network::mojom::DynamicRoutingConfigDataView data,
          net::ProxyConfig::DynamicRoutingConfig* out) {
+  out->is_update_in_progress = data.is_update_in_progress();
   return data.ReadRoutingRules(&out->routing_rules);
 }
 

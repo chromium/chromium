@@ -1501,6 +1501,36 @@ TEST_F(PrefProxyConfigTrackerImplTest, DynamicRoutingConfigStatusChanged) {
 
   proxy_config_service_->RemoveObserver(&observer);
 }
+
+// Verifies that if EnterpriseProxyService already has an active dynamic routing
+// state before PrefProxyConfigTrackerImpl is constructed, that initial state is
+// immediately propagated to ProxyConfigService without needing a subsequent
+// OnDynamicProxyConfigsStatusChanged() notification.
+TEST_F(PrefProxyConfigTrackerImplTest, DynamicRoutingConfigInitialState) {
+  // Simulate EnterpriseProxyService already having an in-progress refresh and
+  // cached routing rules prior to tracker construction.
+  net::ProxyConfig::DynamicRoutingConfig initial_dynamic_config;
+  initial_dynamic_config.is_update_in_progress = true;
+  net::ProxyConfig::DynamicRoutingRule rule;
+  rule.proxy_list.AddProxyChain(net::ProxyUriToProxyChain(
+      "https://proxy.example.com:443", net::ProxyServer::SCHEME_HTTPS));
+  initial_dynamic_config.routing_rules.push_back(rule);
+
+  EXPECT_CALL(mock_enterprise_proxy_service_, GetDynamicRoutingConfig())
+      .WillRepeatedly(testing::Return(initial_dynamic_config));
+
+  InitConfigService(net::ProxyConfigService::CONFIG_UNSET);
+
+  // Without firing NotifyObservers(), GetLatestProxyConfig() should already
+  // return CONFIG_VALID with the initial dynamic routing config attached.
+  net::ProxyConfigWithAnnotation actual_config;
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            proxy_config_service_->GetLatestProxyConfig(&actual_config));
+  EXPECT_TRUE(
+      actual_config.value().dynamic_routing_config().is_update_in_progress);
+  EXPECT_EQ(
+      1u, actual_config.value().dynamic_routing_config().routing_rules.size());
+}
 #endif
 
 }  // namespace

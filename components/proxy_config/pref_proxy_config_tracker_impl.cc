@@ -492,6 +492,7 @@ PrefProxyConfigTrackerImpl::PrefProxyConfigTrackerImpl(
     enterprise_proxy_observation_.Observe(enterprise_proxy_service);
     active_dynamic_routing_config_ =
         enterprise_proxy_observation_.GetSource()->GetDynamicRoutingConfig();
+    OnProxyConfigChanged(pref_config_state_, pref_config_);
   }
 }
 #endif  // BUILDFLAG(ENTERPRISE_PROXY)

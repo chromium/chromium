@@ -68,6 +68,7 @@ struct DynamicRoutingRule {
 
 // These fields mirror those of `net::ProxyConfig::DynamicRoutingConfig`.
 struct DynamicRoutingConfig {
+  bool is_update_in_progress = false;
   array<DynamicRoutingRule> routing_rules;
 };
 

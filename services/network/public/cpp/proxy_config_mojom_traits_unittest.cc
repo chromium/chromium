@@ -245,6 +245,21 @@ TEST(ProxyConfigTraitsTest, DynamicRoutingConfig) {
   net::ProxyConfig::DynamicRoutingConfig config;
   config.routing_rules = {rule};
 
+  for (bool is_update_in_progress : {false, true}) {
+    SCOPED_TRACE(is_update_in_progress);
+    config.is_update_in_progress = is_update_in_progress;
+    net::ProxyConfig proxy_config;
+    proxy_config.set_dynamic_routing_config(config);
+    net::ProxyConfigWithAnnotation annotated_config(
+        proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS);
+    EXPECT_TRUE(TestProxyConfigRoundTrip(annotated_config));
+  }
+}
+
+TEST(ProxyConfigTraitsTest, DynamicRoutingConfig_UpdateInProgressEmptyRules) {
+  net::ProxyConfig::DynamicRoutingConfig config;
+  config.is_update_in_progress = true;
+
   net::ProxyConfig proxy_config;
   proxy_config.set_dynamic_routing_config(config);
   net::ProxyConfigWithAnnotation annotated_config(proxy_config,

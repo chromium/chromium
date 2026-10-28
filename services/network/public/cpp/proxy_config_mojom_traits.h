@@ -174,6 +174,10 @@ template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
     StructTraits<network::mojom::DynamicRoutingConfigDataView,
                  net::ProxyConfig::DynamicRoutingConfig> {
+  static bool is_update_in_progress(
+      const net::ProxyConfig::DynamicRoutingConfig& r) {
+    return r.is_update_in_progress;
+  }
   static const std::vector<net::ProxyConfig::DynamicRoutingRule>& routing_rules(
       const net::ProxyConfig::DynamicRoutingConfig& r) {
     return r.routing_rules;
