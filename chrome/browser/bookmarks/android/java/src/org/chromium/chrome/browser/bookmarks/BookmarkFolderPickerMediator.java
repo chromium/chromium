@@ -82,7 +82,25 @@ class BookmarkFolderPickerMediator {
     private boolean mCanMoveAllToReadingList;
     private @Nullable BookmarkItem mCurrentParentItem;
     private final boolean mIsFromBookmarkDialog;
+    private final boolean mIsDesktopDialog;
 
+    /**
+     * @param context The context for resources and the query handler.
+     * @param bookmarkModel The bookmark model to read folders from and move bookmarks with.
+     * @param bookmarkIds The bookmarks being moved.
+     * @param finishRunnable Finishes the picker without moving anything.
+     * @param bookmarkUiPrefs Row display preferences, observed for changes.
+     * @param model The model bound to the picker view.
+     * @param modelList The list backing the folder rows.
+     * @param addNewFolderCoordinator Shows the add-new-folder dialog.
+     * @param improvedBookmarkRowCoordinator Builds the folder rows.
+     * @param shoppingService Supports the query handler's shopping data queries.
+     * @param isFromBookmarkDialog Whether the picker was launched from another bookmark dialog.
+     * @param isDesktopDialog Whether the hosting activity uses the desktop dialog rather than the
+     *     full-screen presentation.
+     * @param restoredFolderId The folder to show instead of the default one, e.g. after the
+     *     activity was recreated. Ignored if it no longer exists.
+     */
     BookmarkFolderPickerMediator(
             Context context,
             BookmarkModel bookmarkModel,
@@ -94,7 +112,9 @@ class BookmarkFolderPickerMediator {
             BookmarkAddNewFolderCoordinator addNewFolderCoordinator,
             ImprovedBookmarkRowCoordinator improvedBookmarkRowCoordinator,
             ShoppingService shoppingService,
-            boolean isFromBookmarkDialog) {
+            boolean isFromBookmarkDialog,
+            boolean isDesktopDialog,
+            @Nullable BookmarkId restoredFolderId) {
         mContext = context;
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.addObserver(mBookmarkModelObserver);
@@ -102,6 +122,7 @@ class BookmarkFolderPickerMediator {
         mBookmarkIds.removeIf(id -> mBookmarkModel.getBookmarkById(id) == null);
         mFinishRunnable = finishRunnable;
         mIsFromBookmarkDialog = isFromBookmarkDialog;
+        mIsDesktopDialog = isDesktopDialog;
         mQueryHandler =
                 new ImprovedBookmarkQueryHandler(
                         mBookmarkModel,
@@ -158,7 +179,15 @@ class BookmarkFolderPickerMediator {
         mBookmarkModel.finishLoadingBookmarkModel(
                 () -> {
                     mCanMoveAllToReadingList = allItemsSupportReadingList(bookmarkItems);
-                    populateFoldersForParentId(bookmarkIdToShow);
+                    BookmarkId folderToShow = bookmarkIdToShow;
+                    if (restoredFolderId != null) {
+                        BookmarkItem restoredFolder =
+                                mBookmarkModel.getBookmarkById(restoredFolderId);
+                        if (restoredFolder != null && restoredFolder.isFolder()) {
+                            folderToShow = restoredFolderId;
+                        }
+                    }
+                    populateFoldersForParentId(folderToShow);
                 });
     }
 
@@ -174,6 +203,11 @@ class BookmarkFolderPickerMediator {
     void destroy() {
         mBookmarkModel.removeObserver(mBookmarkModelObserver);
         mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
+    }
+
+    /** Returns the folder being shown, or null if the model hasn't loaded yet. */
+    @Nullable BookmarkId getCurrentFolderId() {
+        return mCurrentParentItem == null ? null : mCurrentParentItem.getId();
     }
 
     void populateFoldersForParentId(BookmarkId parentId) {
@@ -237,7 +271,7 @@ class BookmarkFolderPickerMediator {
         if (mCurrentParentItem.getId().equals(mBookmarkModel.getRootFolderId())) {
             title =
                     mContext.getString(
-                            BookmarkUtils.isDesktopBookmarksDialogEnabled()
+                            mIsDesktopDialog
                                     ? R.string.folder_picker_root_desktop
                                     : R.string.folder_picker_root);
         } else {
@@ -276,7 +310,7 @@ class BookmarkFolderPickerMediator {
     }
 
     void updateNavigationIconForCurrentParent() {
-        if (mCurrentParentItem == null || !BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
+        if (mCurrentParentItem == null || !mIsDesktopDialog) {
             return;
         }
 

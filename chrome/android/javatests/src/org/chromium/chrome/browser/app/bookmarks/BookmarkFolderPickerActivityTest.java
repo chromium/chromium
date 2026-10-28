@@ -43,6 +43,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkFolderPickerMetrics.BookmarkFolderPickerOutcome;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
@@ -218,6 +219,7 @@ public class BookmarkFolderPickerActivityTest {
     @MediumTest
     @Feature({"Bookmark"})
     @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testCloseButton_Desktop()
             throws ExecutionException, TimeoutException, InterruptedException {
         var histogramWatcher =

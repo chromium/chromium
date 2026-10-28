@@ -17,9 +17,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** View binder for the folder picker activity. */
 @NullMarked
 public class BookmarkFolderPickerViewBinder {
-    public static void bind(PropertyModel model, View view, PropertyKey key) {
+    public static void bind(
+            PropertyModel model, View view, PropertyKey key, boolean isDesktopDialog) {
         if (key == BookmarkFolderPickerProperties.TOOLBAR_TITLE) {
-            if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
+            if (isDesktopDialog) {
                 TextView title = view.findViewById(R.id.title);
                 if (title != null) {
                     title.setText(model.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
@@ -31,7 +32,7 @@ public class BookmarkFolderPickerViewBinder {
                 }
             }
         } else if (key == BookmarkFolderPickerProperties.NAVIGATION_ICON_VISIBLE) {
-            if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
+            if (isDesktopDialog) {
                 View backButton = view.findViewById(R.id.back_button);
                 if (backButton != null) {
                     boolean visible =
@@ -66,7 +67,7 @@ public class BookmarkFolderPickerViewBinder {
         } else if (key == BookmarkFolderPickerProperties.ADD_NEW_FOLDER_BUTTON_ENABLED) {
             boolean enabled =
                     model.get(BookmarkFolderPickerProperties.ADD_NEW_FOLDER_BUTTON_ENABLED);
-            if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
+            if (isDesktopDialog) {
                 View newFolderButton = view.findViewById(R.id.new_folder_button);
                 if (newFolderButton != null) {
                     newFolderButton.setEnabled(enabled);

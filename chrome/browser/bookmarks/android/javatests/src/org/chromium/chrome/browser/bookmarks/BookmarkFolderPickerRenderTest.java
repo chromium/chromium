@@ -237,7 +237,10 @@ public class BookmarkFolderPickerRenderTest {
                                     mBookmarkUiPrefs,
                                     mImprovedBookmarkRowCoordinator,
                                     mShoppingService,
-                                    /* isFromBookmarkDialog= */ false);
+                                    /* isFromBookmarkDialog= */ false,
+                                    /* isDesktopDialog= */ BookmarkUtils
+                                            .isDesktopBookmarksDialogEnabled(),
+                                    /* restoredFolderId= */ null);
 
                     if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
                         // The desktop layout has no background of its own; production draws it

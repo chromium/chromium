@@ -41,9 +41,16 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
     private final View mView;
     private final RecyclerView mRecyclerView;
     private final BookmarkFolderPickerMediator mMediator;
+    private final boolean mIsDesktopDialog;
 
     private final SimpleRecyclerViewAdapter mAdapter = new SimpleRecyclerViewAdapter(mModelList);
 
+    /**
+     * @param isDesktopDialog Whether the hosting activity uses the desktop dialog rather than the
+     *     full-screen presentation.
+     * @param restoredFolderId The folder to show instead of the default one, e.g. after the
+     *     activity was recreated. Ignored if it no longer exists.
+     */
     public BookmarkFolderPickerCoordinator(
             Context context,
             BookmarkModel bookmarkModel,
@@ -53,11 +60,14 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
             BookmarkUiPrefs bookmarkUiPrefs,
             ImprovedBookmarkRowCoordinator improvedBookmarkRowCoordinator,
             ShoppingService shoppingService,
-            boolean isFromBookmarkDialog) {
+            boolean isFromBookmarkDialog,
+            boolean isDesktopDialog,
+            @Nullable BookmarkId restoredFolderId) {
         mContext = context;
         mBookmarkModel = bookmarkModel;
+        mIsDesktopDialog = isDesktopDialog;
         int layoutId =
-                BookmarkUtils.isDesktopBookmarksDialogEnabled()
+                mIsDesktopDialog
                         ? R.layout.bookmark_folder_picker_desktop
                         : R.layout.bookmark_folder_picker;
         mView = LayoutInflater.from(mContext).inflate(layoutId, null);
@@ -80,7 +90,10 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
                 BookmarkManagerViewBinder::bindSectionHeaderView);
 
         PropertyModel model = new PropertyModel(BookmarkFolderPickerProperties.ALL_KEYS);
-        PropertyModelChangeProcessor.create(model, mView, BookmarkFolderPickerViewBinder::bind);
+        PropertyModelChangeProcessor.create(
+                model,
+                mView,
+                (m, v, k) -> BookmarkFolderPickerViewBinder.bind(m, v, k, mIsDesktopDialog));
 
         mMediator =
                 new BookmarkFolderPickerMediator(
@@ -94,9 +107,11 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
                         addNewFolderCoordinator,
                         improvedBookmarkRowCoordinator,
                         shoppingService,
-                        isFromBookmarkDialog);
+                        isFromBookmarkDialog,
+                        mIsDesktopDialog,
+                        restoredFolderId);
 
-        if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
+        if (mIsDesktopDialog) {
             View backButton = mView.findViewById(R.id.back_button);
             if (backButton != null) {
                 backButton.setOnClickListener(
@@ -154,6 +169,11 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
         mMediator.updateNavigationIconForCurrentParent();
     }
 
+    /** Returns the folder being shown, or null if the model hasn't loaded yet. */
+    public @Nullable BookmarkId getCurrentFolderId() {
+        return mMediator.getCurrentFolderId();
+    }
+
     // Delegate setup methods.
 
     /** Handle option menu selections. */
@@ -169,7 +189,7 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
 
     View buildCompactRow(ViewGroup parent) {
         View row = ImprovedBookmarkRow.buildCompactRow(parent);
-        if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
+        if (mIsDesktopDialog) {
             View container = row.findViewById(R.id.container);
             if (container != null
                     && container.getLayoutParams() instanceof MarginLayoutParams marginParams) {
@@ -187,7 +207,7 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
                         ? R.layout.bookmark_section_header_v2
                         : R.layout.bookmark_section_header;
         View view = LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);
-        if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
+        if (mIsDesktopDialog) {
             view.setPaddingRelative(0, view.getPaddingTop(), 0, view.getPaddingBottom());
             if (view.getLayoutParams() instanceof MarginLayoutParams marginParams) {
                 marginParams.topMargin = 0;
