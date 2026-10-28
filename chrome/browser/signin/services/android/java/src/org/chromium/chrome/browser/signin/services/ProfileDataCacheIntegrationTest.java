@@ -27,9 +27,9 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -60,12 +60,12 @@ import java.util.Set;
  * implementations of {@link IdentityManager}.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-@DoNotBatch(reason = "Integration test suite that changes the list of accounts")
+@Batch(Batch.PER_CLASS)
 public class ProfileDataCacheIntegrationTest {
     private static final int LARGE_ACCOUNTS_LIST_SIZE = 10;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
+    @Rule public final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
 
     @Mock private ExternalAuthUtils mExternalAuthUtils;
     @Mock private ProfileDataCache.Observer mObserver;
