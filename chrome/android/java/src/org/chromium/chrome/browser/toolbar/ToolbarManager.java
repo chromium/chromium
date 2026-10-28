@@ -2587,7 +2587,7 @@ public class ToolbarManager
     public boolean maybeShowBottomBarPromo(Profile profile) {
         // The host manager is only created when the bottom bar is on.
         if (mBottomBarHostManager != null) {
-            return mBottomBarHostManager.maybeShowBottomBarPromo(profile);
+            return mBottomBarHostManager.maybeClaimPromoSlotForEducation(profile);
         }
         return mBottomBarEducationDialogCoordinator != null
                 && mBottomBarEducationDialogCoordinator.maybeShow(profile);

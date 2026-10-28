@@ -76,8 +76,8 @@ public class BottomBarHostManager {
     }
 
     /** Returns whether the bottom bar claimed the startup promo slot for its education. */
-    public boolean maybeShowBottomBarPromo(Profile profile) {
-        return mBottomBar != null && mBottomBar.maybeShowBottomBarPromo(profile);
+    public boolean maybeClaimPromoSlotForEducation(Profile profile) {
+        return mBottomBar != null && mBottomBar.maybeClaimPromoSlotForEducation(profile);
     }
 
     /** Notifies the bottom bar that the startup promo flow has finished. */

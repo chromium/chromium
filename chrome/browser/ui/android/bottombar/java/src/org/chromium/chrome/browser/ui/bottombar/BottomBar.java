@@ -36,7 +36,7 @@ public interface BottomBar {
      * @param profile The profile to check the education's eligibility against.
      * @return Whether the startup promo slot was claimed.
      */
-    boolean maybeShowBottomBarPromo(Profile profile);
+    boolean maybeClaimPromoSlotForEducation(Profile profile);
 
     /**
      * Notifies the bottom bar that the startup promo flow has finished.

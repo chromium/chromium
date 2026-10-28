@@ -813,10 +813,10 @@ public class ToolbarManagerUnitTest {
 
     @Test
     public void testMaybeShowBottomBarPromo_delegatesToBottomBarHostManager() {
-        when(mBottomBarHostManager.maybeShowBottomBarPromo(mProfile)).thenReturn(true);
+        when(mBottomBarHostManager.maybeClaimPromoSlotForEducation(mProfile)).thenReturn(true);
         assertTrue(mToolbarManager.maybeShowBottomBarPromo(mProfile));
 
-        when(mBottomBarHostManager.maybeShowBottomBarPromo(mProfile)).thenReturn(false);
+        when(mBottomBarHostManager.maybeClaimPromoSlotForEducation(mProfile)).thenReturn(false);
         assertFalse(mToolbarManager.maybeShowBottomBarPromo(mProfile));
     }
 

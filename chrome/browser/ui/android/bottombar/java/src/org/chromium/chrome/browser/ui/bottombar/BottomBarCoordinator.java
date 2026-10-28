@@ -217,7 +217,7 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
     }
 
     @Override
-    public boolean maybeShowBottomBarPromo(Profile profile) {
+    public boolean maybeClaimPromoSlotForEducation(Profile profile) {
         if (!BottomBarConfigUtils.isBottomBarEnabled(mView.getContext())) {
             return false;
         }

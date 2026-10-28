@@ -531,7 +531,7 @@ public class BottomBarCoordinatorUnitTest {
         ChromeFeatureList.ANDROID_BOTTOM_BAR,
         ChromeFeatureList.ANDROID_BOTTOM_BAR + ":education_enabled/true"
     })
-    public void testMaybeShowBottomBarPromo_EducationEnabled_ClaimsSlot() {
+    public void testMaybeClaimPromoSlotForEducation_EducationEnabled_ClaimsSlot() {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mTab.isOffTheRecord()).thenReturn(false);
         mTabSupplier.set(mTab);
@@ -541,7 +541,7 @@ public class BottomBarCoordinatorUnitTest {
         when(mTracker.wouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION))
                 .thenReturn(true);
 
-        assertTrue(mCoordinator.maybeShowBottomBarPromo(mProfile));
+        assertTrue(mCoordinator.maybeClaimPromoSlotForEducation(mProfile));
     }
 
     @Test
@@ -549,7 +549,7 @@ public class BottomBarCoordinatorUnitTest {
         ChromeFeatureList.ANDROID_BOTTOM_BAR,
         ChromeFeatureList.ANDROID_BOTTOM_BAR + ":education_enabled/true"
     })
-    public void testMaybeShowBottomBarPromo_EducationEnabled_DoesNotClaimSlot() {
+    public void testMaybeClaimPromoSlotForEducation_EducationEnabled_DoesNotClaimSlot() {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mTab.isOffTheRecord()).thenReturn(false);
         mTabSupplier.set(mTab);
@@ -559,7 +559,7 @@ public class BottomBarCoordinatorUnitTest {
         when(mTracker.wouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION))
                 .thenReturn(false);
 
-        assertFalse(mCoordinator.maybeShowBottomBarPromo(mProfile));
+        assertFalse(mCoordinator.maybeClaimPromoSlotForEducation(mProfile));
     }
 
     @Test
@@ -567,7 +567,7 @@ public class BottomBarCoordinatorUnitTest {
         ChromeFeatureList.ANDROID_BOTTOM_BAR,
         ChromeFeatureList.ANDROID_BOTTOM_BAR + ":education_enabled/true"
     })
-    public void testMaybeShowBottomBarPromo_EducationEnabled_IncognitoReturnsFalse() {
+    public void testMaybeClaimPromoSlotForEducation_EducationEnabled_IncognitoReturnsFalse() {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mTab.isOffTheRecord()).thenReturn(true);
         mTabSupplier.set(mTab);
@@ -577,18 +577,18 @@ public class BottomBarCoordinatorUnitTest {
         when(mTracker.wouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION))
                 .thenReturn(true);
 
-        assertFalse(mCoordinator.maybeShowBottomBarPromo(mProfile));
+        assertFalse(mCoordinator.maybeClaimPromoSlotForEducation(mProfile));
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
-    public void testMaybeShowBottomBarPromo_EducationDisabled_ReturnsFalse() {
+    public void testMaybeClaimPromoSlotForEducation_EducationDisabled_ReturnsFalse() {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mTab.isOffTheRecord()).thenReturn(false);
         mTabSupplier.set(mTab);
 
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
 
-        assertFalse(mCoordinator.maybeShowBottomBarPromo(mProfile));
+        assertFalse(mCoordinator.maybeClaimPromoSlotForEducation(mProfile));
     }
 }

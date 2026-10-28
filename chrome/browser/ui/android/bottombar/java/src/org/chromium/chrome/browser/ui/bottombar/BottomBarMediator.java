@@ -231,7 +231,7 @@ public class BottomBarMediator
                 BottomBarMetrics.recordGlicTimeToAppear(0);
                 mGlicTimeToAppearRecorded = true;
             }
-            maybeShowIphs();
+            maybeShowEducation();
         }
     }
 
@@ -248,7 +248,7 @@ public class BottomBarMediator
     public void onStartupPromoFlowFinished(boolean promoShown) {
         mStartupPromoFlowFinished = true;
         if (!promoShown || mEducationClaimedPromoSlot) {
-            maybeShowIphs();
+            maybeShowEducation();
         }
     }
 
@@ -266,7 +266,7 @@ public class BottomBarMediator
         return false;
     }
 
-    private void maybeShowIphs() {
+    private void maybeShowEducation() {
         if (!mStartupPromoFlowFinished) return;
         boolean isBottomBarVisible = mIsVisible == TriState.TRUE;
 
@@ -446,7 +446,7 @@ public class BottomBarMediator
     @Override
     public void onButtonVisibilityChanged(int actionId, boolean visible) {
         if (actionId == ActionId.GLIC && visible) {
-            maybeShowIphs();
+            maybeShowEducation();
         }
     }
 
