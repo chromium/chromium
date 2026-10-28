@@ -7017,6 +7017,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "AccountPreviewPreferredAccountSingleAccountPromoFetchTimeout": "0s"
+                    },
                     "enable_features": [
                         "EnableAccountPreviewPreferredAccount"
                     ]
