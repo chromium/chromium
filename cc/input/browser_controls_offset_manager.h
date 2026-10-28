@@ -145,13 +145,9 @@ class CC_EXPORT BrowserControlsOffsetManager {
   // whether the scroll update received from the browser process corresponds to
   // a scroll that continues after the user lifts their finger off the screen
   // (e.g. fling).
-  //
-  // TODO(anandrv): Remove the default value for the `is_inertial` parameter
-  // once snap animation is always enabled.
   gfx::Vector2dF ScrollBy(const gfx::Vector2dF& pending_delta,
-                          bool is_inertial = false);
-  void ScrollEnd(
-      const gfx::Vector2dF& compensated_scroll_delta = gfx::Vector2dF());
+                          bool is_inertial);
+  void ScrollEnd(const gfx::Vector2dF& compensated_scroll_delta);
 
   // The caller should ensure that |Pinch{Begin,End}| are called within
   // the scope of |Scroll{Begin,End}|.

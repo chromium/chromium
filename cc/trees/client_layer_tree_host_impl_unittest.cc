@@ -1177,21 +1177,24 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
 
   // Hide the browser controls by a bit, the scrollable size should increase but
   // the actual content bounds shouldn't.
-  host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 25));
+  host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 25),
+                                                   /*is_inertial=*/false);
   ExpectViewportGeometries(0.5f);
   EXPECT_EQ(gfx::SizeF(50, 75), active_tree->ScrollableSize());
 
   // Fully hide the browser controls.
-  host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 25));
+  host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 25),
+                                                   /*is_inertial=*/false);
   ExpectViewportGeometries(0);
   EXPECT_EQ(gfx::SizeF(50, 100), active_tree->ScrollableSize());
 
   // Scrolling additionally shouldn't have any effect.
-  host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 25));
+  host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 25),
+                                                   /*is_inertial=*/false);
   ExpectViewportGeometries(0);
   EXPECT_EQ(gfx::SizeF(50, 100), active_tree->ScrollableSize());
 
-  host_impl_->browser_controls_manager()->ScrollEnd();
+  host_impl_->browser_controls_manager()->ScrollEnd(gfx::Vector2dF());
   GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
 }
 
@@ -1250,7 +1253,8 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
 
   // Hide the browser controls by a bit, the scrollable size should increase but
   // the actual content bounds shouldn't.
-  host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 25));
+  host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 25),
+                                                   /*is_inertial=*/false);
   EXPECT_EQ(0.5f, active_tree->CurrentTopControlsShownRatio());
   EXPECT_EQ(25, host_impl_->browser_controls_manager()->ContentTopOffset());
   EXPECT_EQ(gfx::Vector2dF(0, 25),
@@ -1263,7 +1267,8 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
   EXPECT_EQ(gfx::RectF(0, 0, 180, 180), original_outer_clip->clip);
 
   // Fully hide the browser controls.
-  host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 25));
+  host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 25),
+                                                   /*is_inertial=*/false);
   EXPECT_EQ(0, active_tree->CurrentTopControlsShownRatio());
   EXPECT_EQ(0, host_impl_->browser_controls_manager()->ContentTopOffset());
   EXPECT_EQ(gfx::Vector2dF(0, 50),
@@ -1276,7 +1281,8 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
   EXPECT_EQ(gfx::RectF(0, 0, 180, 200), original_outer_clip->clip);
 
   // Scrolling additionally shouldn't have any effect.
-  host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 25));
+  host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 25),
+                                                   /*is_inertial=*/false);
   EXPECT_EQ(0, active_tree->CurrentTopControlsShownRatio());
   EXPECT_EQ(0, host_impl_->browser_controls_manager()->ContentTopOffset());
   EXPECT_EQ(gfx::Vector2dF(0, 50),
@@ -1288,7 +1294,7 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
   EXPECT_EQ(gfx::RectF(0, 0, 160, 200), parent_clip->clip);
   EXPECT_EQ(gfx::RectF(0, 0, 180, 200), original_outer_clip->clip);
 
-  host_impl_->browser_controls_manager()->ScrollEnd();
+  host_impl_->browser_controls_manager()->ScrollEnd(gfx::Vector2dF());
   GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
 }
 
@@ -1447,7 +1453,8 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
   // Hide the browser controls by a bit, the scrollable size should increase but
   // the actual content bounds shouldn't.
   {
-    host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 25));
+    host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 25),
+                                                     /*is_inertial=*/false);
     ExpectViewportGeometries(0.5f);
     EXPECT_EQ(gfx::SizeF(50, 75), active_tree->ScrollableSize());
     EXPECT_EQ(gfx::Size(50, 15), scrollbar_layer->bounds());
@@ -1457,7 +1464,8 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
 
   // Fully hide the browser controls.
   {
-    host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 25));
+    host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 25),
+                                                     /*is_inertial=*/false);
     ExpectViewportGeometries(0);
     EXPECT_EQ(gfx::SizeF(50, 100), active_tree->ScrollableSize());
     EXPECT_EQ(gfx::Size(50, 15), scrollbar_layer->bounds());
@@ -1467,7 +1475,8 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
 
   // Additional scrolling shouldn't have any effect.
   {
-    host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 25));
+    host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 25),
+                                                     /*is_inertial=*/false);
     ExpectViewportGeometries(0);
     EXPECT_EQ(gfx::SizeF(50, 100), active_tree->ScrollableSize());
     EXPECT_EQ(gfx::Size(50, 15), scrollbar_layer->bounds());
@@ -1475,7 +1484,7 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
               scrollbar_layer->ComputeThumbQuadRect());
   }
 
-  host_impl_->browser_controls_manager()->ScrollEnd();
+  host_impl_->browser_controls_manager()->ScrollEnd(gfx::Vector2dF());
   GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
 }
 
@@ -1498,8 +1507,9 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
   // fixed container size delta is (1) non-zero, and (2) fractional, and
   // (3) matches the movement of the browser controls.
   host_impl_->browser_controls_manager()->ScrollBegin();
-  host_impl_->browser_controls_manager()->ScrollBy(top_controls_scroll_delta);
-  host_impl_->browser_controls_manager()->ScrollEnd();
+  host_impl_->browser_controls_manager()->ScrollBy(top_controls_scroll_delta,
+                                                   /*is_inertial=*/false);
+  host_impl_->browser_controls_manager()->ScrollEnd(gfx::Vector2dF());
 
   GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
   auto* property_trees = host_impl_->active_tree()->property_trees();
@@ -1620,7 +1630,8 @@ TEST_P(LayerTreeHostImplBrowserControlsTest, FixedContainerDelta) {
   // Scroll down, the browser controls hiding should expand the viewport size so
   // the delta should be equal to the scroll distance.
   host_impl_->browser_controls_manager()->ScrollBegin();
-  host_impl_->browser_controls_manager()->ScrollBy(top_controls_scroll_delta);
+  host_impl_->browser_controls_manager()->ScrollBy(top_controls_scroll_delta,
+                                                   /*is_inertial=*/false);
   EXPECT_FLOAT_EQ(top_controls_height_ - top_controls_scroll_delta.y(),
                   host_impl_->browser_controls_manager()->ContentTopOffset());
 
@@ -1639,9 +1650,12 @@ TEST_P(LayerTreeHostImplBrowserControlsTest, FixedContainerDelta) {
                              ui::ScrollInputType::kTouchscreen)
                 .thread);
   host_impl_->browser_controls_manager()->ScrollBegin();
-  host_impl_->browser_controls_manager()->ScrollBy(top_controls_scroll_delta);
-  host_impl_->browser_controls_manager()->ScrollBy(top_controls_scroll_delta);
-  host_impl_->browser_controls_manager()->ScrollBy(top_controls_scroll_delta);
+  host_impl_->browser_controls_manager()->ScrollBy(top_controls_scroll_delta,
+                                                   /*is_inertial=*/false);
+  host_impl_->browser_controls_manager()->ScrollBy(top_controls_scroll_delta,
+                                                   /*is_inertial=*/false);
+  host_impl_->browser_controls_manager()->ScrollBy(top_controls_scroll_delta,
+                                                   /*is_inertial=*/false);
   EXPECT_EQ(0, host_impl_->browser_controls_manager()->ContentTopOffset());
   EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, top_controls_height_),
                       property_trees->outer_viewport_container_bounds_delta());
@@ -1657,13 +1671,14 @@ TEST_P(LayerTreeHostImplBrowserControlsTest, FixedContainerDelta) {
                        ui::ScrollInputType::kTouchscreen)
           .thread);
   host_impl_->browser_controls_manager()->ScrollBegin();
-  host_impl_->browser_controls_manager()->ScrollBy(-top_controls_scroll_delta);
+  host_impl_->browser_controls_manager()->ScrollBy(-top_controls_scroll_delta,
+                                                   /*is_inertial=*/false);
   EXPECT_EQ(top_controls_scroll_delta.y(),
             host_impl_->browser_controls_manager()->ContentTopOffset());
   EXPECT_VECTOR2DF_EQ(
       gfx::Vector2dF(0, top_controls_height_ - top_controls_scroll_delta.y()),
       property_trees->outer_viewport_container_bounds_delta());
-  host_impl_->browser_controls_manager()->ScrollEnd();
+  host_impl_->browser_controls_manager()->ScrollEnd(gfx::Vector2dF());
   GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
 }
 
@@ -1936,7 +1951,8 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
   EXPECT_EQ(1, host_impl_->active_tree()->CurrentTopControlsShownRatio());
 
   // forcefully hide the browser controls by 25px
-  host_impl_->browser_controls_manager()->ScrollBy(scroll_delta);
+  host_impl_->browser_controls_manager()->ScrollBy(scroll_delta,
+                                                   /*is_inertial=*/false);
   GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
 
   EXPECT_FLOAT_EQ(
@@ -2123,8 +2139,9 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
                 .thread);
 
   host_impl_->browser_controls_manager()->ScrollBegin();
-  host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 50));
-  host_impl_->browser_controls_manager()->ScrollEnd();
+  host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 50),
+                                                   /*is_inertial=*/false);
+  host_impl_->browser_controls_manager()->ScrollEnd(gfx::Vector2dF());
   EXPECT_EQ(0, host_impl_->browser_controls_manager()->ContentTopOffset());
   // Now that browser controls have moved, expect the clip to resize.
   auto* property_trees = host_impl_->active_tree()->property_trees();
@@ -2144,7 +2161,7 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
   float scroll_increment_y = -25;
   host_impl_->browser_controls_manager()->ScrollBegin();
   host_impl_->browser_controls_manager()->ScrollBy(
-      gfx::Vector2dF(0, scroll_increment_y));
+      gfx::Vector2dF(0, scroll_increment_y), /*is_inertial=*/false);
   EXPECT_FLOAT_EQ(-scroll_increment_y,
                   host_impl_->browser_controls_manager()->ContentTopOffset());
   // Now that browser controls have moved, expect the clip to resize.
@@ -2152,8 +2169,8 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
             property_trees->inner_viewport_container_bounds_delta());
 
   host_impl_->browser_controls_manager()->ScrollBy(
-      gfx::Vector2dF(0, scroll_increment_y));
-  host_impl_->browser_controls_manager()->ScrollEnd();
+      gfx::Vector2dF(0, scroll_increment_y), /*is_inertial=*/false);
+  host_impl_->browser_controls_manager()->ScrollEnd(gfx::Vector2dF());
   EXPECT_FLOAT_EQ(-2 * scroll_increment_y,
                   host_impl_->browser_controls_manager()->ContentTopOffset());
   // Now that browser controls have moved, expect the clip to resize.
