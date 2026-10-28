@@ -138,11 +138,11 @@ class MockToastManager : public ToastManager {
               RequestFocusOnActiveToastButton,
               (std::string_view id),
               (override));
-  MOCK_METHOD(bool, IsToastShown, (std::string_view id), (const override));
+  MOCK_METHOD(bool, IsToastShown, (std::string_view id), (const, override));
   MOCK_METHOD(bool,
               IsToastButtonFocused,
               (std::string_view id),
-              (const override));
+              (const, override));
   MOCK_METHOD(std::unique_ptr<ScopedToastPause>,
               CreateScopedPause,
               (),

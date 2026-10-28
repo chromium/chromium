@@ -78,7 +78,7 @@ class MockNativeDisplayDelegate : public TestNativeDisplayDelegate {
   MOCK_METHOD(void,
               GetSeamlessRefreshRates,
               (int64_t, display::GetSeamlessRefreshRatesCallback),
-              (const override));
+              (const, override));
 
   MOCK_METHOD(void,
               Configure,

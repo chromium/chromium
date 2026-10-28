@@ -53,7 +53,7 @@ class MockMahiManager : public chromeos::MahiManager {
   MOCK_METHOD(std::optional<base::UnguessableToken>,
               GetMediaAppPDFClientId,
               (),
-              (const override));
+              (const, override));
   MOCK_METHOD(bool, AllowRepeatingAnswers, (), (override));
   MOCK_METHOD(void,
               AnswerQuestionRepeating,

@@ -30,23 +30,23 @@ class MockSavedDeskDelegate : public SavedDeskDelegate {
   MOCK_METHOD(void,
               GetAppLaunchDataForSavedDesk,
               (aura::Window*, GetAppLaunchDataCallback),
-              (const override));
+              (const, override));
   MOCK_METHOD(desks_storage::DeskModel*, GetDeskModel, (), (override));
   MOCK_METHOD(desks_storage::AdminTemplateService*,
               GetAdminTemplateService,
               (),
               (override));
-  MOCK_METHOD(bool, IsWindowPersistable, (aura::Window*), (const override));
+  MOCK_METHOD(bool, IsWindowPersistable, (aura::Window*), (const, override));
   MOCK_METHOD(std::optional<gfx::ImageSkia>,
               MaybeRetrieveIconForSpecialIdentifier,
               (const std::string&, const ui::ColorProvider*),
-              (const override));
+              (const, override));
   MOCK_METHOD(void,
               GetIconForAppId,
               (const std::string&,
                int,
                base::OnceCallback<void(const gfx::ImageSkia&)>),
-              (const override));
+              (const, override));
   MOCK_METHOD(void,
               LaunchAppsFromSavedDesk,
               (std::unique_ptr<DeskTemplate>),
@@ -54,9 +54,9 @@ class MockSavedDeskDelegate : public SavedDeskDelegate {
   MOCK_METHOD(bool,
               IsWindowSupportedForSavedDesk,
               (aura::Window*),
-              (const override));
+              (const, override));
   MOCK_METHOD(std::string, GetAppShortName, (const std::string&), (override));
-  MOCK_METHOD(bool, IsAppAvailable, (const std::string&), (const override));
+  MOCK_METHOD(bool, IsAppAvailable, (const std::string&), (const, override));
 };
 
 constexpr char kAdminTemplateJson[] = R"json({

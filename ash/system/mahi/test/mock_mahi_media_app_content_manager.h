@@ -41,13 +41,13 @@ class MockMahiMediaAppContentManager
               (base::UnguessableToken, ash::MahiMediaAppClient*),
               (override));
   MOCK_METHOD(void, RemoveClient, (base::UnguessableToken), (override));
-  MOCK_METHOD(bool, ObservingWindow, (const aura::Window*), (const override));
+  MOCK_METHOD(bool, ObservingWindow, (const aura::Window*), (const, override));
   MOCK_METHOD(bool,
               ActivateClientWindow,
               (const base::UnguessableToken),
               (override));
   MOCK_METHOD(void, SetSelectedText, (const std::string&), (override));
-  MOCK_METHOD(std::string, GetSelectedText, (), (const override));
+  MOCK_METHOD(std::string, GetSelectedText, (), (const, override));
 };
 }  // namespace mahi
 

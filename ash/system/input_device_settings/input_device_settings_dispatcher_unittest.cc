@@ -111,7 +111,7 @@ class MockInputController : public ui::StubInputController {
               DisableInputDevices,
               (),
               (override));
-  MOCK_METHOD(bool, AreInputDevicesEnabled, (), (const override));
+  MOCK_METHOD(bool, AreInputDevicesEnabled, (), (const, override));
 };
 
 const ui::InputDevice CreateInputDevice(int id,
