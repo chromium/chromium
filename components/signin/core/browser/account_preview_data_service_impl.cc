@@ -66,7 +66,7 @@ bool IsPreferredAccountSelectionEnabled() {
           switches::kEnableAccountPreviewPreferredAccount)) {
     return true;
   }
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return base::FeatureList::IsEnabled(
       switches::kEnableAccountPreviewPreferredAccountFRE);
 #else
