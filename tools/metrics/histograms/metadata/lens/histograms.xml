@@ -112,7 +112,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Lens.Composebox.ClusterInfo.ResponseTime" units="ms"
     expires_after="2027-03-21">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded when a Composebox ClusterInfo response is received. Measures the
@@ -123,7 +123,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Lens.Composebox.ClusterInfo.Status"
     enum="LensComposeboxClusterInfoStatus" expires_after="2027-03-21">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded when a Composebox ClusterInfo fetch request completes, fails, is
@@ -133,7 +133,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Lens.Composebox.ContextUpload.FailureResponseTime" units="ms"
     expires_after="2027-03-21">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded when a context upload request fails. Measures the time elapsed
@@ -144,7 +144,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Lens.Composebox.ContextUpload.SuccessResponseTime" units="ms"
     expires_after="2027-04-11">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded when a context upload request succeeds. Measures the time elapsed
@@ -155,7 +155,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Lens.Composebox.ContextUpload.TerminalStatus"
     enum="ContextUploadTerminalStatus" expires_after="2027-03-21">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded exactly once per contextual file upload request (or upon file
@@ -177,7 +177,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Lens.Composebox.ImageUpload.Java.C2paDetected" enum="Boolean"
     expires_after="2027-04-18">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Records whether C2PA metadata was detected in an image attachment during
@@ -187,7 +187,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Lens.Composebox.ImageUpload.{UploadType}.C2paDetected"
     enum="Boolean" expires_after="2027-02-07">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded when an image is processed for {UploadType}. Logs whether C2PA
@@ -199,7 +199,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Lens.Composebox.ImageUpload.{UploadType}.DownscaleAndEncodeFailed"
     enum="Boolean" expires_after="2027-04-11">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded when a {UploadType} request is created. Logs whether the background
@@ -210,7 +210,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Lens.Composebox.ImageUpload.{UploadType}.InputImageInvalid"
     enum="Boolean" expires_after="2027-04-11">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded when a {UploadType} is processed. Logs whether the input bitmap was
@@ -221,7 +221,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Lens.Composebox.ImageUpload.{UploadType}.InputMaxDimension"
     units="pixels" expires_after="2027-04-11">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded when a {UploadType} is processed. Logs the maximum dimension (width
@@ -232,7 +232,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Lens.Composebox.ImageUpload.{UploadType}.LimitMaxDimension"
     units="pixels" expires_after="2027-04-11">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded when a {UploadType} is processed. Logs the maximum allowed
@@ -244,7 +244,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Lens.Composebox.ImageUpload.{UploadType}.ProcessedMaxDimension"
     units="pixels" expires_after="2027-04-11">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded when a {UploadType} request is created. Logs the maximum dimension
@@ -255,7 +255,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Lens.Composebox.SearchUrl.ContextFilesAttached" units="files"
     expires_after="2027-03-21">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded when a Composebox Search URL is generated with context attachments.
@@ -265,7 +265,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Lens.Composebox.SearchUrl.ContextFilesValidatedAndIncluded"
     units="files" expires_after="2027-03-21">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded when a Composebox Search URL is generated with context attachments.
@@ -276,7 +276,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Lens.Composebox.SearchUrl.HasClusterInfo" enum="Boolean"
     expires_after="2027-03-21">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded when a Composebox Search URL is requested for multimodal context.
@@ -317,7 +317,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Lens.IdentityDelegation.AccountErrorReason"
     enum="LensIdentityDelegationAccountErrorReason" expires_after="2027-09-01">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded when FetchIdentityDelegationHeaders resolves to Account Error (i.e.
@@ -335,7 +335,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Lens.IdentityDelegation.AccountErrorReason.{CookieJarFreshness}"
     enum="LensIdentityDelegationAccountErrorReason" expires_after="2027-09-01">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded alongside Lens.IdentityDelegation.AccountErrorReason, split by
@@ -353,7 +353,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Lens.IdentityDelegation.CookieJarAccountCount"
     units="accounts" expires_after="2027-09-01">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded each time FetchIdentityDelegationHeaders reads the Gaia cookie jar.
@@ -365,7 +365,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Lens.IdentityDelegation.CookieJarAccountsFresh" enum="Boolean"
     expires_after="2027-09-01">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded each time FetchIdentityDelegationHeaders reads the Gaia cookie jar.
@@ -377,7 +377,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Lens.IdentityDelegation.FetchHeadersStatus"
     enum="LensIdentityDelegationFetchStatus" expires_after="2027-09-01">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded when FetchIdentityDelegationHeaders completes. Tracks the overall
@@ -388,7 +388,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Lens.IdentityDelegation.FetchHeadersStatus.{ChromeSignInState}"
     enum="LensIdentityDelegationFetchStatus" expires_after="2027-09-01">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded when FetchIdentityDelegationHeaders completes, alongside
@@ -419,7 +419,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Lens.IdentityDelegation.TimeToFetchCookies" units="ms"
     expires_after="2027-09-01">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded when the cookie query in FetchIdentityDelegationHeaders finishes.
@@ -430,7 +430,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Lens.IdentityDelegation.TimeToFetchHeaders" units="ms"
     expires_after="2027-09-01">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded when FetchIdentityDelegationHeaders finishes. Measures the elapsed
@@ -441,7 +441,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Lens.IdentityDelegation.TimeToFetchHeaders.{Status}"
     units="ms" expires_after="2027-09-01">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded when FetchIdentityDelegationHeaders finishes, sliced by {Status}.
@@ -453,7 +453,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Lens.IdentityDelegation.TimeToGenerateSapisidHash"
     units="microseconds" expires_after="2027-09-01">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded when GenerateSapisidHash successfully computes a hash. Measures the
@@ -534,7 +534,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Lens.Overlay.ByInvocationSource.{InvocationSource}.ContextMenuOption.Shown"
     enum="LensOverlayContextMenuOption" expires_after="2027-04-11">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded once when a context menu option is shown in the Lens overlay. This
@@ -637,7 +637,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Lens.Overlay.ClusterInfo.ResponseTime" units="ms"
     expires_after="2027-03-21">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded when a Lens Overlay ClusterInfo response is received. Measures the
@@ -648,7 +648,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Lens.Overlay.ClusterInfo.Status"
     enum="LensOverlayClusterInfoStatus" expires_after="2027-03-21">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded when a Lens Overlay ClusterInfo fetch request completes or fails.
@@ -657,7 +657,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Lens.Overlay.ContextMenuOption.Shown"
     enum="LensOverlayContextMenuOption" expires_after="2027-02-28">
-  <owner>hujasonx@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded once when a context menu option is shown in the Lens overlay. This

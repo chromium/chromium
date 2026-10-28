@@ -4227,7 +4227,7 @@
   },
   {
     "name": "enable-lens-in-omnibox-copied-image",
-    "owners": [ "radunitescu@google.com", "hujasonx@chromium.org" ],
+    "owners": [ "radunitescu@google.com", "hujasonx@google.com" ],
     "expiry_milestone": 160
   },
   {
