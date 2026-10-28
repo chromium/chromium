@@ -632,13 +632,14 @@ TEST_F(HangWatcherTest, BestEffortHistograms) {
   hang_watcher.TriggerSynchronousMonitoring();
   EXPECT_THAT(
       histogram_tester.GetAllSamplesForPrefix("HangWatcher.IsThreadHung"),
-      UnorderedElementsAre(
-          Pair("HangWatcher.IsThreadHung.RendererProcess.MainThread.BestEffort",
-               BucketsAre(Bucket(true, /*count=*/1))),
-          Pair("HangWatcher.IsThreadHung.Any",
-               BucketsAre(Bucket(true, /*count=*/1))),
-          Pair("HangWatcher.IsThreadHung.AnyCritical",
-               BucketsAre(Bucket(false, /*count=*/1)))));
+      UnorderedElementsAre(Pair("HangWatcher.IsThreadHung.RendererProcess."
+                                "MainThread.BestEffort",
+                                BucketsAre(Bucket(true, /*count=*/1))),
+                           Pair("HangWatcher.IsThreadHung.Any",
+                                BucketsAre(Bucket(true, /*count=*/1))),
+                           Pair("HangWatcher.IsThreadHung.AnyCritical",
+                                BucketsAre(Bucket(false, /*count=*/1)))));
+  internal::SetSharedLastForegroundTimeForMetrics(nullptr);
 }
 
 // Checks that the browser process emits Shutdown histograms on shutdown.
