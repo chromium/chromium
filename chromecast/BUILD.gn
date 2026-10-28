@@ -43,9 +43,6 @@ group("all") {
   if (is_linux) {
     deps += [ "//chromecast/tracing" ]
   }
-  if (enable_external_mojo_services) {
-    deps += [ "//chromecast/external_mojo/external_service_support:standalone_mojo_broker" ]
-  }
 
   # No other targets should depend on this target, since it's just a convenience
   # target for the Chromecast internal build infrastructure.
@@ -575,7 +572,6 @@ buildflag_header("chromecast_buildflags") {
   _command_line_flags = string_join(",", default_command_line_flags)
   flags = [
     "DEFAULT_COMMAND_LINE_FLAGS=\"$_command_line_flags\"",
-    "ENABLE_EXTERNAL_MOJO_SERVICES=$enable_external_mojo_services",
     "IS_CAST_DESKTOP_BUILD=$is_cast_desktop_build",
     "USE_ANDROID_USER_AGENT=$use_android_user_agent",
     "USE_CHROMECAST_CDMS=$use_chromecast_cdms",
