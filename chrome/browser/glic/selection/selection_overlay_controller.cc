@@ -110,7 +110,10 @@ selection::SuggestedActionIcon GetIconForTool(
     case optimization_guide::proto::SMART_SELECTION_TOOL_QUICK_ANSWERS:
       return selection::SuggestedActionIcon::kExplain;
     case optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME:
-      return selection::SuggestedActionIcon::kSpark;
+      return base::FeatureList::IsEnabled(
+                 features::kGlicSelectionOverlayPromptBox)
+                 ? selection::SuggestedActionIcon::kNone
+                 : selection::SuggestedActionIcon::kSpark;
     default:
       return selection::SuggestedActionIcon::kNone;
   }

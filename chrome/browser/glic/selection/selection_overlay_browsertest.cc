@@ -337,13 +337,13 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   ASSERT_EQ(actions.size(), 3u);
   EXPECT_FALSE(actions[0]->id.is_empty());
   EXPECT_EQ(actions[0]->title, "Explain");
-  EXPECT_EQ(actions[0]->icon, selection::SuggestedActionIcon::kSpark);
+  EXPECT_EQ(actions[0]->icon, selection::SuggestedActionIcon::kNone);
   EXPECT_FALSE(actions[1]->id.is_empty());
   EXPECT_EQ(actions[1]->title, "Summarize");
-  EXPECT_EQ(actions[1]->icon, selection::SuggestedActionIcon::kSpark);
+  EXPECT_EQ(actions[1]->icon, selection::SuggestedActionIcon::kNone);
   EXPECT_FALSE(actions[2]->id.is_empty());
   EXPECT_EQ(actions[2]->title, "Create Image");
-  EXPECT_EQ(actions[2]->icon, selection::SuggestedActionIcon::kSpark);
+  EXPECT_EQ(actions[2]->icon, selection::SuggestedActionIcon::kNone);
   EXPECT_NE(actions[0]->id, actions[1]->id);
   EXPECT_NE(actions[1]->id, actions[2]->id);
 }
