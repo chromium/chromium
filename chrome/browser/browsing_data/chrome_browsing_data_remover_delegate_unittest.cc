@@ -2931,12 +2931,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
             tester.last_clear_mode());
 }
 
-// TODO(juliatuttle): This isn't actually testing the no-monitor case, since
-// BrowsingDataRemoverTest now creates one unconditionally, since it's needed
-// for some unrelated test cases. This should be fixed so it tests the no-
-// monitor case again.
-TEST_F(ChromeBrowsingDataRemoverDelegateTest,
-       DISABLED_DomainReliability_NoMonitor) {
+// Tests that removing history and cookies without a monitor override executes
+// the default clearing path and completes without crashing or hanging.
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, DomainReliability_NoMonitor) {
   BlockUntilBrowsingDataRemoved(
       base::Time(), base::Time::Max(),
       constants::DATA_TYPE_HISTORY |
