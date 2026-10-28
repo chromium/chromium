@@ -381,6 +381,20 @@ const char exampleURL[] = "https://example.com";
                  @"URL should be opened by Handoff on cold start");
 }
 
+// Tests that a `UIOpenURLContext` opens the specified URL on cold start.
+- (void)testColdStartOpenURLContext {
+  GURL webURL = GURL(exampleURL);
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.additional_args.push_back(base::StringPrintf(
+      "--%s=%s", test_switches::kTestOpenURLAtStartup, webURL.spec().c_str()));
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  [ChromeEarlGrey waitForWebStateVisibleURL:webURL];
+  GREYAssertTrue([ChromeEarlGrey webStateVisibleURL] == webURL,
+                 @"URL should be opened via UIOpenURLContext on cold start");
+}
+
 // Tests that a `UIApplicationShortcutItem` (`OpenNewIncognitoSearch`) opens an
 // incognito tab on cold start.
 - (void)testColdStartShortcutNewIncognitoSearch {

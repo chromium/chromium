@@ -91,8 +91,8 @@ void RecordExternalActionMetrics(NSURL* url) {
 
 @implementation TaskRequestForStandardURLContext
 
-- (void)recordStartupMetrics {
-  [super recordStartupMetrics];
+- (void)recordMetrics {
+  [super recordMetrics];
 
   NSURL* url = self.URLContext.URL;
   if (!url) {

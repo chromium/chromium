@@ -38,19 +38,21 @@ NSDate* ExtractCommandTimeFromSharedDefaults(UIOpenURLContext* URLContext) {
 
 }  // namespace
 
-@implementation TaskRequestForXCallbackURLContext {
-  NSDate* _commandTime;
-}
+@implementation TaskRequestForXCallbackURLContext
 
-- (NSDate*)commandTime {
-  if (!_commandTime) {
-    _commandTime = ExtractCommandTimeFromSharedDefaults(self.URLContext);
+- (instancetype)initWithURLContext:(UIOpenURLContext*)URLContext
+                        sceneState:(SceneState*)sceneState
+                       isColdStart:(BOOL)isColdStart {
+  if ((self = [super initWithURLContext:URLContext
+                             sceneState:sceneState
+                            isColdStart:isColdStart])) {
+    _commandTime = ExtractCommandTimeFromSharedDefaults(URLContext);
   }
-  return _commandTime;
+  return self;
 }
 
-- (void)recordStartupMetrics {
-  [super recordStartupMetrics];
+- (void)recordMetrics {
+  [super recordMetrics];
 
   base::UmaHistogramEnumeration(kAppLaunchSource, AppLaunchSource::X_CALLBACK);
 

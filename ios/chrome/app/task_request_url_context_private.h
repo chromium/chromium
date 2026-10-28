@@ -18,9 +18,17 @@ class GURL;
 // TaskRequestForURLContext for use by its subclasses.
 @interface TaskRequestForURLContext ()
 
+// The URL opening context associated with this task request.
 @property(nonatomic, strong, readonly) UIOpenURLContext* URLContext;
 
-- (void)recordStartupMetrics;
+// Initializes the task request with the given URL context, scene state, and
+// cold start status.
+- (instancetype)initWithURLContext:(UIOpenURLContext*)URLContext
+                        sceneState:(SceneState*)sceneState
+                       isColdStart:(BOOL)isColdStart;
+
+// Records metrics for the URL context.
+- (void)recordMetrics;
 
 // Handles the command associated with the request using the given scene state.
 - (void)handleCommandWithSceneState:(SceneState*)sceneState;

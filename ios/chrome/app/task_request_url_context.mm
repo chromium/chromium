@@ -8,17 +8,12 @@
 
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
-#import "base/metrics/histogram_macros.h"
-#import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
-#import "ios/chrome/app/application_delegate/url_opener.h"
-#import "ios/chrome/app/application_delegate/url_opener_params.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/startup/app_startup_utils.h"
@@ -33,13 +28,11 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/app_group/widget_constants.h"
-#import "ios/chrome/common/x_callback_url.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
@@ -96,26 +89,19 @@ bool IsShowDefaultBrowserSettings(NSURL* url) {
   return false;
 }
 
-// Records metrics for opening a URL context at runtime.
-void RecordRuntimeMetrics(NSURL* url,
-                          MobileSessionCallerApp caller_app,
-                          bool is_first_run) {
-  if (is_first_run) {
-    base::UmaHistogramEnumeration("FirstRun.LaunchSource",
-                                  GetLaunchSource(caller_app, url),
-                                  first_run::LAUNCH_SIZE);
-  }
-}
-
 }  // namespace
 
 @interface TaskRequestForURLContext ()
 
+// Lazily computed caller application for `_URLContext`. Must not be accessed
+// before `ChromeMain` has initialized URL scheme registries.
 @property(nonatomic, assign, readonly) MobileSessionCallerApp callerApp;
 
 @end
 
-@implementation TaskRequestForURLContext
+@implementation TaskRequestForURLContext {
+  std::optional<MobileSessionCallerApp> _callerApp;
+}
 
 + (instancetype)taskRequestWithURLContext:(UIOpenURLContext*)URLContext
                                sceneState:(SceneState*)sceneState
@@ -144,23 +130,34 @@ void RecordRuntimeMetrics(NSURL* url,
                        isColdStart:(BOOL)isColdStart {
   if ((self = [super initWithSceneState:sceneState isColdStart:isColdStart])) {
     _URLContext = URLContext;
-
-    _callerApp = GetCallerApp(_URLContext.options.sourceApplication,
-                              /*secure_source_app_id=*/nil,
-                              net::GURLWithNSURL(_URLContext.URL));
     [self extractGaiaID];
-    [self recordStartupMetrics];
   }
   return self;
 }
 
-- (void)recordStartupMetrics {
-  base::UmaHistogramEnumeration("Startup.MobileSessionStartFromApps",
-                                _callerApp, MOBILE_SESSION_CALLER_APP_COUNT);
+- (MobileSessionCallerApp)callerApp {
+  if (!_callerApp.has_value()) {
+    _callerApp = GetCallerApp(_URLContext.options.sourceApplication,
+                              /*secure_source_app_id=*/nil,
+                              net::GURLWithNSURL(_URLContext.URL));
+  }
+  return _callerApp.value();
+}
+
+- (void)recordMetrics {
+  MobileSessionCallerApp callerApp = self.callerApp;
+  base::UmaHistogramEnumeration("Startup.MobileSessionStartFromApps", callerApp,
+                                MOBILE_SESSION_CALLER_APP_COUNT);
 
   if (IsShowDefaultBrowserSettings(_URLContext.URL)) {
-    base::UmaHistogramEnumeration("Startup.ShowDefaultPromoFromApps",
-                                  _callerApp, MOBILE_SESSION_CALLER_APP_COUNT);
+    base::UmaHistogramEnumeration("Startup.ShowDefaultPromoFromApps", callerApp,
+                                  MOBILE_SESSION_CALLER_APP_COUNT);
+  }
+
+  if (self.sceneState.profileState.appState.startupInformation.isFirstRun) {
+    base::UmaHistogramEnumeration("FirstRun.LaunchSource",
+                                  GetLaunchSource(callerApp, _URLContext.URL),
+                                  first_run::LAUNCH_SIZE);
   }
 }
 
@@ -179,7 +176,7 @@ void RecordRuntimeMetrics(NSURL* url,
   if (IsIncognitoModeForced(prefService)) {
     return ApplicationModeForTabOpening::INCOGNITO;
   }
-  if (_callerApp == CALLER_APP_GOOGLE_CHROME &&
+  if (self.callerApp == CALLER_APP_GOOGLE_CHROME &&
       defaultMode != ApplicationModeForTabOpening::INCOGNITO) {
     return ApplicationModeForTabOpening::CURRENT;
   }
@@ -226,9 +223,7 @@ void RecordRuntimeMetrics(NSURL* url,
   SceneState* sceneState = self.sceneState;
   CHECK(sceneState);
 
-  const BOOL isFirstRun =
-      sceneState.profileState.appState.startupInformation.isFirstRun;
-  RecordRuntimeMetrics(_URLContext.URL, _callerApp, isFirstRun);
+  [self recordMetrics];
 
   if (!self.isColdStart) {
     NSSet* URLContextSet = [NSSet setWithObject:_URLContext];

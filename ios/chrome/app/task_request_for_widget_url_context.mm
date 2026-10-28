@@ -92,8 +92,8 @@ std::optional<WidgetKitExtensionAction> ActionForWidgetURL(NSURL* url) {
   return ActionForWidgetURL(self.URLContext.URL);
 }
 
-- (void)recordStartupMetrics {
-  [super recordStartupMetrics];
+- (void)recordMetrics {
+  [super recordMetrics];
 
   UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
                             START_ACTION_WIDGET_KIT_COMMAND,

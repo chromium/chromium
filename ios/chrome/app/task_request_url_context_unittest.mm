@@ -104,8 +104,9 @@ class TaskRequestForURLContextTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
 };
 
-// Test that Startup.MobileSessionStartFromApps is logged with the expected
-// caller app, including uppercase schemes and first-party bundle IDs.
+// Tests that Startup.MobileSessionStartFromApps is logged during execute with
+// the expected caller app, including uppercase schemes and first-party bundle
+// IDs.
 TEST_F(TaskRequestForURLContextTest, TestStartupMobileSessionStartFromApps) {
   struct TestCase {
     NSString* url_string;
@@ -132,14 +133,17 @@ TEST_F(TaskRequestForURLContextTest, TestStartupMobileSessionStartFromApps) {
                                                  sceneState:scene_state_
                                                 isColdStart:YES];
     EXPECT_NE(request, nil);
+    histogram_tester.ExpectTotalCount("Startup.MobileSessionStartFromApps", 0);
+
+    [request execute];
 
     histogram_tester.ExpectUniqueSample("Startup.MobileSessionStartFromApps",
                                         test_case.expected_caller_app, 1);
   }
 }
 
-// Tests that Startup.ShowDefaultPromoFromApps is logged when URL contains the
-// default browser settings query item.
+// Tests that Startup.ShowDefaultPromoFromApps is logged during execute when URL
+// contains the default browser settings query item.
 TEST_F(TaskRequestForURLContextTest, TestStartupShowDefaultPromoFromApps) {
   base::HistogramTester histogram_tester;
   NSURL* url = [NSURL
@@ -151,6 +155,9 @@ TEST_F(TaskRequestForURLContextTest, TestStartupShowDefaultPromoFromApps) {
                                                sceneState:scene_state_
                                               isColdStart:YES];
   EXPECT_NE(request, nil);
+  histogram_tester.ExpectTotalCount("Startup.ShowDefaultPromoFromApps", 0);
+
+  [request execute];
 
   histogram_tester.ExpectTotalCount("Startup.ShowDefaultPromoFromApps", 1);
   histogram_tester.ExpectBucketCount("Startup.ShowDefaultPromoFromApps",
@@ -181,7 +188,8 @@ TEST_F(TaskRequestForURLContextTest, TestFirstRunLaunchSource) {
                                      first_run::LAUNCH_BY_OTHERS, 1);
 }
 
-// Tests that WidgetKit URLs log the launch source and WidgetKit action metrics.
+// Tests that WidgetKit URLs log the launch source and WidgetKit action metrics
+// during execute.
 TEST_F(TaskRequestForURLContextTest, TestWidgetKitActionMetrics) {
   struct TestCase {
     NSString* url_string;
@@ -207,6 +215,11 @@ TEST_F(TaskRequestForURLContextTest, TestWidgetKitActionMetrics) {
                                                  sceneState:scene_state_
                                                 isColdStart:YES];
     EXPECT_NE(request, nil);
+    histogram_tester.ExpectTotalCount(kUMAMobileSessionStartActionHistogram, 0);
+    histogram_tester.ExpectTotalCount(kAppLaunchSource, 0);
+    histogram_tester.ExpectTotalCount(kWidgetKitActionHistogram, 0);
+
+    [request execute];
 
     histogram_tester.ExpectUniqueSample(kUMAMobileSessionStartActionHistogram,
                                         START_ACTION_WIDGET_KIT_COMMAND, 1);
@@ -218,7 +231,7 @@ TEST_F(TaskRequestForURLContextTest, TestWidgetKitActionMetrics) {
 }
 
 // Tests that X-Callback URLs log the launch source and X-Callback action
-// metrics.
+// metrics during execute.
 TEST_F(TaskRequestForURLContextTest, TestXCallbackURLMetrics) {
   struct TestCase {
     NSString* url_string;
@@ -241,6 +254,10 @@ TEST_F(TaskRequestForURLContextTest, TestXCallbackURLMetrics) {
                                                  sceneState:scene_state_
                                                 isColdStart:YES];
     EXPECT_NE(request, nil);
+    histogram_tester.ExpectTotalCount(kUMAMobileSessionStartActionHistogram, 0);
+    histogram_tester.ExpectTotalCount(kAppLaunchSource, 0);
+
+    [request execute];
 
     histogram_tester.ExpectUniqueSample(kUMAMobileSessionStartActionHistogram,
                                         test_case.expected_action, 1);
@@ -249,8 +266,9 @@ TEST_F(TaskRequestForURLContextTest, TestXCallbackURLMetrics) {
   }
 }
 
-// Tests that X-Callback app-group-command URLs log the application group
-// command delay metric.
+// Tests that X-Callback app-group-command URLs cache `commandTime` on
+// initialization and log the application group command delay metric during
+// execute.
 TEST_F(TaskRequestForURLContextTest, TestXCallbackAppGroupCommandDelayMetric) {
   base::HistogramTester histogram_tester;
 
@@ -284,6 +302,15 @@ TEST_F(TaskRequestForURLContextTest, TestXCallbackAppGroupCommandDelayMetric) {
                                                sceneState:scene_state_
                                               isColdStart:YES];
   EXPECT_NE(request, nil);
+  histogram_tester.ExpectTotalCount(kUMAMobileSessionStartActionHistogram, 0);
+  histogram_tester.ExpectTotalCount(kAppLaunchSource, 0);
+  histogram_tester.ExpectTotalCount("Startup.ApplicationGroupCommandDelay", 0);
+
+  // Clear shared defaults before execution to verify `commandTime` was cached
+  // at initialization time.
+  [sharedDefaults removeObjectForKey:commandDictionaryPreference];
+
+  [request execute];
 
   histogram_tester.ExpectUniqueSample(kUMAMobileSessionStartActionHistogram,
                                       START_ACTION_XCALLBACK_APPGROUP_COMMAND,
@@ -291,17 +318,14 @@ TEST_F(TaskRequestForURLContextTest, TestXCallbackAppGroupCommandDelayMetric) {
   histogram_tester.ExpectUniqueSample(kAppLaunchSource,
                                       AppLaunchSource::X_CALLBACK, 1);
 
-  // Verify that the command delay was recorded.
+  // Verify that the command delay was recorded during execute.
   histogram_tester.ExpectTotalCount("Startup.ApplicationGroupCommandDelay", 1);
   histogram_tester.ExpectUniqueSample("Startup.ApplicationGroupCommandDelay", 5,
                                       1);
-
-  // Clean up.
-  [sharedDefaults removeObjectForKey:commandDictionaryPreference];
 }
 
 // Tests that standard HTTP/HTTPS, File, and External Action URLs log launch
-// source, startup metrics, and user actions.
+// source, startup metrics, and user actions during execute.
 TEST_F(TaskRequestForURLContextTest, TestSimpleURLMetrics) {
   struct TestCase {
     NSString* url_string;
@@ -334,6 +358,14 @@ TEST_F(TaskRequestForURLContextTest, TestSimpleURLMetrics) {
                                                  sceneState:scene_state_
                                                 isColdStart:YES];
     EXPECT_NE(request, nil);
+    histogram_tester.ExpectTotalCount(kUMAMobileSessionStartActionHistogram, 0);
+    histogram_tester.ExpectTotalCount(kAppLaunchSource, 0);
+    if (test_case.expected_user_action) {
+      EXPECT_EQ(
+          user_action_tester.GetActionCount(test_case.expected_user_action), 0);
+    }
+
+    [request execute];
 
     histogram_tester.ExpectUniqueSample(kUMAMobileSessionStartActionHistogram,
                                         test_case.expected_action, 1);
@@ -349,7 +381,8 @@ TEST_F(TaskRequestForURLContextTest, TestSimpleURLMetrics) {
 }
 
 // Tests that External Action URLs correctly parse path components, handle
-// feature flags, and log IOS.ExternalAction metrics and user actions.
+// feature flags, and log IOS.ExternalAction metrics and user actions during
+// execute.
 TEST_F(TaskRequestForURLContextTest, TestExternalActionMetrics) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -388,6 +421,12 @@ TEST_F(TaskRequestForURLContextTest, TestExternalActionMetrics) {
                                                  sceneState:scene_state_
                                                 isColdStart:YES];
     EXPECT_NE(request, nil);
+    histogram_tester.ExpectTotalCount(kExternalActionHistogram, 0);
+    histogram_tester.ExpectTotalCount(kAppLaunchSource, 0);
+    EXPECT_EQ(
+        user_action_tester.GetActionCount("MobileExternalActionURLOpened"), 0);
+
+    [request execute];
 
     histogram_tester.ExpectUniqueSample(kExternalActionHistogram,
                                         test_case.expected_action, 1);
