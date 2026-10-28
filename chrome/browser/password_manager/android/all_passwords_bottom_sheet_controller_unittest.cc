@@ -430,6 +430,10 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
        OnCredentialSelectedTriggersPhishGuard) {
   if (base::android::device_info::is_automotive()) {
     auto authenticator = std::make_unique<MockDeviceAuthenticator>();
+    ON_CALL(client(), IsReauthBeforeFillingRequired)
+        .WillByDefault(Return(true));
+    ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy)
+        .WillByDefault(Return(true));
     ON_CALL(*authenticator, AuthenticateWithMessage)
         .WillByDefault(
             base::test::RunOnceCallbackRepeatedly<1>(/*auth_succeeded=*/true));
