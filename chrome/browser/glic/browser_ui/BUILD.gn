@@ -350,6 +350,9 @@ if (!is_android) {
       "//content/test:test_support",
       "//testing/gmock",
       "//testing/gtest",
+      "//ui/compositor",
+      "//ui/gfx:gfx_switches",
+      "//ui/gfx/animation",
       "//ui/views",
       "//url",
     ]

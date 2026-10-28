@@ -24,6 +24,9 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "gpu/config/gpu_switches.h"
+#include "ui/compositor/compositor.h"
+#include "ui/compositor/layer.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/gfx/switches.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -147,27 +150,30 @@ class TestFactory : public TabUnderlineView::Factory {
   }
 };
 
-class TabUnderlineViewBrowserTest : public GlicBrowserTest {
+class TabUnderlineViewBrowserTestBase : public GlicBrowserTest {
  public:
   using PlatformBrowserTest::browser;
   using PlatformBrowserTest::CreateBrowser;
   using PlatformBrowserTest::CreateIncognitoBrowser;
 
-  TabUnderlineViewBrowserTest() {
+  explicit TabUnderlineViewBrowserTestBase(bool enable_gpu_rasterization) {
     const std::string multitab_feature_name =
         mojom::features::kGlicMultiTab.name;
     const std::string underline_feature_name =
         features::kGlicMultitabUnderlines.name;
     // Toggling `UiGpuRasterization` is only possible via command line.
-    const std::string enabled_features =
-        base::StrCat({multitab_feature_name, ",", underline_feature_name, ",",
-                      "UiGpuRasterization"});
-    features_.InitFromCommandLine(enabled_features,
-                                  /*disabled_features=*/
-                                  "ContextualTasks,GlicForceSimplifiedBorder,"
-                                  "GlicForceNonSkSLBorder");
+    std::string enabled_features =
+        base::StrCat({multitab_feature_name, ",", underline_feature_name});
+    std::string disabled_features =
+        "ContextualTasks,GlicForceSimplifiedBorder,GlicForceNonSkSLBorder";
+    if (enable_gpu_rasterization) {
+      base::StrAppend(&enabled_features, {",UiGpuRasterization"});
+    } else {
+      base::StrAppend(&disabled_features, {",UiGpuRasterization"});
+    }
+    features_.InitFromCommandLine(enabled_features, disabled_features);
   }
-  ~TabUnderlineViewBrowserTest() override = default;
+  ~TabUnderlineViewBrowserTestBase() override = default;
 
   void SetUpOnMainThread() override {
     GlicBrowserTest::SetUpOnMainThread();
@@ -223,10 +229,61 @@ class TabUnderlineViewBrowserTest : public GlicBrowserTest {
     return views::AsViewClass<AlertIndicatorButton>(button);
   }
 
+  void VerifyRampUpWithSkippedAnimation() {
+    auto* underline = GetUnderlineOfActiveTab();
+    ASSERT_TRUE(underline);
+    TesterImpl* tester = static_cast<TesterImpl*>(underline->tester());
+
+    ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+    ASSERT_OK(WaitForGlicClient(instance));
+    instance->host().SetContextAccessIndicator(true);
+    tester->WaitForAnimationStart();
+    EXPECT_TRUE(underline->IsShowing());
+    ASSERT_TRUE(underline->layer());
+    ASSERT_TRUE(underline->layer()->GetCompositor());
+    EXPECT_TRUE(
+        underline->layer()->GetCompositor()->HasAnimationObserver(underline));
+
+    // T=0s.
+    tester->AdvanceTimeAndTickAnimation(base::TimeDelta());
+    EXPECT_NEAR(underline->opacity_for_testing(), 0.f,
+                kFloatComparisonTolerance);
+    EXPECT_NEAR(underline->progress_for_testing(), 0.f,
+                kFloatComparisonTolerance);
+
+    // T=0.123s.
+    tester->AdvanceTimeAndTickAnimation(base::Seconds(0.123));
+    // Fast opacity ramp up is 0.2s; 0.123/0.2=0.615.
+    EXPECT_NEAR(underline->opacity_for_testing(), 0.615f,
+                kFloatComparisonTolerance);
+    EXPECT_NEAR(underline->progress_for_testing(), 0.f,
+                kFloatComparisonTolerance);
+    EXPECT_TRUE(
+        underline->layer()->GetCompositor()->HasAnimationObserver(underline));
+
+    // T=1s (steady state reached after 0.2s ramp up).
+    tester->AdvanceTimeAndTickAnimation(base::Seconds(0.877));
+    EXPECT_NEAR(underline->opacity_for_testing(), 1.f,
+                kFloatComparisonTolerance);
+    EXPECT_NEAR(underline->progress_for_testing(), 0.f,
+                kFloatComparisonTolerance);
+    EXPECT_TRUE(underline->IsShowing());
+    EXPECT_FALSE(
+        underline->layer()->GetCompositor()->HasAnimationObserver(underline));
+  }
+
  private:
   base::test::ScopedFeatureList features_;
   TestFactory test_factory_;
 };
+
+class TabUnderlineViewBrowserTest : public TabUnderlineViewBrowserTestBase {
+ public:
+  TabUnderlineViewBrowserTest()
+      : TabUnderlineViewBrowserTestBase(/*enable_gpu_rasterization=*/true) {}
+  ~TabUnderlineViewBrowserTest() override = default;
+};
+
 }  // namespace
 
 // Exercise the default user journey: toggles the underline animation and waits
@@ -559,6 +616,81 @@ IN_PROC_BROWSER_TEST_F(TabUnderlineViewBrowserTest,
   underline1->Show();
   EXPECT_TRUE(underline1->IsShowing());
   EXPECT_NE(underline1->colors(), active_colors);
+}
+
+namespace {
+class TabUnderlineViewWithoutHardwareAccelerationBrowserTest
+    : public TabUnderlineViewBrowserTestBase {
+ public:
+  TabUnderlineViewWithoutHardwareAccelerationBrowserTest()
+      : TabUnderlineViewBrowserTestBase(/*enable_gpu_rasterization=*/false) {}
+  ~TabUnderlineViewWithoutHardwareAccelerationBrowserTest() override = default;
+};
+}  // namespace
+
+// Ensures that when there is no hardware acceleration, the effect animation
+// cycle is skipped, the view detaches as a CompositorAnimationObserver once
+// the 200ms opacity ramp up completes, and ramp down still animates cleanly.
+IN_PROC_BROWSER_TEST_F(TabUnderlineViewWithoutHardwareAccelerationBrowserTest,
+                       BasicRampingUpAndDown) {
+  ASSERT_NO_FATAL_FAILURE(VerifyRampUpWithSkippedAnimation());
+
+  auto* underline = GetUnderlineOfActiveTab();
+  ASSERT_TRUE(underline);
+  TesterImpl* tester = static_cast<TesterImpl*>(underline->tester());
+
+  ASSERT_OK(CloseGlicForTabAndWait(GetTabListInterface()->GetActiveTab()));
+  tester->WaitForRampDownStarted();
+  EXPECT_TRUE(
+      underline->layer()->GetCompositor()->HasAnimationObserver(underline));
+
+  // Set T0 for ramping down.
+  tester->AdvanceTimeAndTickAnimation(base::TimeDelta());
+  EXPECT_NEAR(underline->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
+
+  // For opacity, T=0.123s; 1-(0.123/0.2)=0.385.
+  tester->AdvanceTimeAndTickAnimation(base::Seconds(0.123));
+  EXPECT_NEAR(underline->opacity_for_testing(), 0.385f,
+              kFloatComparisonTolerance);
+
+  // Finish ramp down.
+  tester->AdvanceTimeAndTickAnimation(base::Seconds(0.877));
+  EXPECT_NEAR(underline->opacity_for_testing(), 0.f, kFloatComparisonTolerance);
+  EXPECT_FALSE(underline->IsShowing());
+}
+
+namespace {
+class TabUnderlineViewPrefersReducedMotionBrowserTest
+    : public TabUnderlineViewBrowserTestBase {
+ public:
+  TabUnderlineViewPrefersReducedMotionBrowserTest()
+      : TabUnderlineViewBrowserTestBase(/*enable_gpu_rasterization=*/true) {}
+  ~TabUnderlineViewPrefersReducedMotionBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    TabUnderlineViewBrowserTestBase::SetUpCommandLine(command_line);
+    command_line->RemoveSwitch(switches::kForcePrefersNoReducedMotion);
+    command_line->AppendSwitch(switches::kForcePrefersReducedMotion);
+  }
+};
+}  // namespace
+
+// Ensures that when PrefersReducedMotion is true, the effect animation cycle
+// is skipped and the view detaches as a CompositorAnimationObserver once the
+// 200ms opacity ramp up completes.
+IN_PROC_BROWSER_TEST_F(TabUnderlineViewPrefersReducedMotionBrowserTest,
+                       BasicRampingUpAndDown) {
+  ASSERT_TRUE(gfx::Animation::PrefersReducedMotion());
+  ASSERT_NO_FATAL_FAILURE(VerifyRampUpWithSkippedAnimation());
+
+  auto* underline = GetUnderlineOfActiveTab();
+  ASSERT_TRUE(underline);
+  TesterImpl* tester = static_cast<TesterImpl*>(underline->tester());
+
+  ASSERT_OK(CloseGlicForTabAndWait(GetTabListInterface()->GetActiveTab()));
+  tester->WaitForRampDownStarted();
+  tester->FinishRampDown();
+  EXPECT_FALSE(underline->IsShowing());
 }
 
 }  // namespace glic

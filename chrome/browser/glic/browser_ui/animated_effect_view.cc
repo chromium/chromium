@@ -181,8 +181,9 @@ void AnimatedEffectView::OnAnimationStep(base::TimeTicks timestamp) {
   // (CompositorAnimationObserver::NotifyFailure()).
   bool opacity_ramp_up_done =
       opacity_ == 1.f && !opacity_since_first_frame.is_zero();
-  bool show_steady_state = IsCycleDone(timestamp) && opacity_ramp_up_done &&
-                           first_ramp_down_frame_.is_null();
+  bool cycle_done = IsCycleDone(timestamp) || skip_animation_cycle_;
+  bool show_steady_state =
+      cycle_done && opacity_ramp_up_done && first_ramp_down_frame_.is_null();
 
   if (show_steady_state) {
     // If skipping the animation the class does not need to be an animation
