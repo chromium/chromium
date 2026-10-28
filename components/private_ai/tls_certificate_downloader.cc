@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/originating_process_id.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -139,9 +140,13 @@ TlsCertificateDownloader::GetURLLoaderFactory() {
     if (!network_context) {
       return nullptr;
     }
+    auto params = network::mojom::URLLoaderFactoryParams::New();
+    params->process_id = network::OriginatingProcessId::browser();
+    params->automatically_assign_isolation_info = true;
+    params->is_orb_enabled = false;
     network_context->CreateURLLoaderFactory(
         url_loader_factory_remote_.BindNewPipeAndPassReceiver(),
-        network::mojom::URLLoaderFactoryParams::New());
+        std::move(params));
   }
   return url_loader_factory_remote_.get();
 }
