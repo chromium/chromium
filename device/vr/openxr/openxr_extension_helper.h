@@ -21,6 +21,7 @@
 #include "device/vr/openxr/openxr_stage_bounds_provider.h"
 #include "device/vr/openxr/openxr_unbounded_space_provider.h"
 #include "device/vr/public/mojom/xr_session.mojom-forward.h"
+#include "device/vr/vr_export.h"
 #include "third_party/openxr/dev/xr_android.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
@@ -134,7 +135,7 @@ class OpenXrExtensionEnumeration {
   std::vector<XrExtensionProperties> extension_properties_;
 };
 
-class OpenXrExtensionHelper {
+class DEVICE_VR_EXPORT OpenXrExtensionHelper {
  public:
   // Gets the set of extensions required to support WebXR Layers.
   static std::vector<const char*> GetRequiredExtensionsForLayers();

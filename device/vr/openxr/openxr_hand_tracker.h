@@ -14,6 +14,7 @@
 #include "device/vr/public/mojom/openxr_interaction_profile_type.mojom-forward.h"
 #include "device/vr/public/mojom/xr_hand_tracking_data.mojom-forward.h"
 #include "device/vr/public/mojom/xr_session.mojom-shared.h"
+#include "device/vr/vr_export.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace gfx {
@@ -52,7 +53,7 @@ class OpenXrHandController {
       OpenXrButtonType type) const = 0;
 };
 
-class OpenXrHandTracker {
+class DEVICE_VR_EXPORT OpenXrHandTracker {
  public:
   OpenXrHandTracker(const OpenXrExtensionHelper& extension_helper,
                     XrSession session,
@@ -75,7 +76,8 @@ class OpenXrHandTracker {
   bool IsDataValid() const;
 
   // Used to allow subclasses to append to the `next` chain of
-  // XrHandJointLocationsEXT.
+  // XrHandJointLocationsEXT. Called once, when the first Update() creates the
+  // hand tracker (not from the constructor, where overrides aren't reached).
   virtual void ExtendLocationsNextChain(XrNextChainBuilder& next_chain) {}
 
   // Gets the `base_from_grip` transform, where the `base` space is the one that

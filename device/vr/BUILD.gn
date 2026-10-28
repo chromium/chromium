@@ -437,6 +437,7 @@ if (enable_openxr) {
       sources = [
         "openxr/linux/openxr_graphics_binding_vulkan_unittest.cc",
         "openxr/linux/openxr_platform_helper_linux_unittest.cc",
+        "openxr/openxr_hand_tracker_unittest.cc",
       ]
 
       deps = [
