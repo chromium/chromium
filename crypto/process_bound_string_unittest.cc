@@ -39,6 +39,7 @@ TYPED_TEST(ProcessBoundTest, DefaultConstructed) {
   EXPECT_EQ(0u, str.size());
   EXPECT_EQ(TypeParam(), str.value());
   EXPECT_TRUE(str.secure_value().empty());
+  EXPECT_FALSE(str.is_encrypted());
 }
 
 TYPED_TEST(ProcessBoundTest, TestCases) {
@@ -62,10 +63,12 @@ TEST(ProcessBound, Copy) {
 
   EXPECT_EQ(str2.value(), str.value());
   EXPECT_EQ(str.value(), "hello");
+  EXPECT_EQ(str2.is_encrypted(), str.is_encrypted());
 }
 
 TEST(ProcessBound, Move) {
   crypto::ProcessBound<std::string> str(std::string("hello"));
+  bool was_encrypted = str.is_encrypted();
 
   // Move constructor
   auto str2 = std::move(str);
@@ -73,6 +76,7 @@ TEST(ProcessBound, Move) {
   EXPECT_EQ(str2.value(), "hello");
   EXPECT_EQ(str2.size(), 5u);
   EXPECT_FALSE(str2.empty());
+  EXPECT_EQ(str2.is_encrypted(), was_encrypted);
 
   // Intentional use-after-move to validate moved-from state matches default
   // constructor.
@@ -84,6 +88,8 @@ TEST(ProcessBound, Move) {
   EXPECT_EQ(str.value(), "");
   // NOLINTNEXTLINE(bugprone-use-after-move)
   EXPECT_TRUE(str.secure_value().empty());
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  EXPECT_EQ(str.is_encrypted(), false);
 
   // Move assignment
   crypto::ProcessBound<std::string> str3(std::string("world"));
@@ -92,6 +98,7 @@ TEST(ProcessBound, Move) {
   EXPECT_EQ(str3.value(), "hello");
   EXPECT_EQ(str3.size(), 5u);
   EXPECT_FALSE(str3.empty());
+  EXPECT_EQ(str3.is_encrypted(), was_encrypted);
 
   // NOLINTNEXTLINE(bugprone-use-after-move)
   EXPECT_TRUE(str2.empty());
@@ -101,6 +108,8 @@ TEST(ProcessBound, Move) {
   EXPECT_EQ(str2.value(), "");
   // NOLINTNEXTLINE(bugprone-use-after-move)
   EXPECT_TRUE(str2.secure_value().empty());
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  EXPECT_EQ(str2.is_encrypted(), false);
 
   // Indirect through a pointer so this is not optimized away as a self-move.
   crypto::ProcessBound<std::string>* alias = &str3;
@@ -109,6 +118,7 @@ TEST(ProcessBound, Move) {
   EXPECT_EQ(str3.value(), "hello");
   EXPECT_EQ(str3.size(), 5u);
   EXPECT_FALSE(str3.empty());
+  EXPECT_EQ(str3.is_encrypted(), was_encrypted);
 }
 
 using ProcessBoundEncryptionTest = ::testing::Test;
@@ -129,6 +139,7 @@ TEST_F(ProcessBoundEncryptionTest, Encryption) {
     crypto::ProcessBound<std::string> process_bound(std::string("hello"));
     crypto::SecureString secure = process_bound.secure_value();
     constexpr std::array<uint8_t, 5> kPlainText = {'h', 'e', 'l', 'l', 'o'};
+    EXPECT_TRUE(process_bound.is_encrypted());
     EXPECT_THAT(process_bound.maybe_encrypted_data_,
                 ::testing::Not(ContainsSubsequence(kPlainText)));
     EXPECT_STREQ(secure.c_str(), "hello");
@@ -147,6 +158,7 @@ TEST_F(ProcessBoundEncryptionTest, Encryption) {
 TEST_F(ProcessBoundEncryptionTest, EmptyString) {
   crypto::ProcessBound<std::string> process_bound("");
   crypto::SecureString secure = process_bound.secure_value();
+  EXPECT_TRUE(process_bound.is_encrypted());
   EXPECT_TRUE(process_bound.maybe_encrypted_data_.empty());
   EXPECT_TRUE(secure.empty());
   const char* data = secure.data();
@@ -159,5 +171,17 @@ TEST_F(ProcessBoundEncryptionTest, EmptyString) {
 }
 
 #endif  // #if BUILDFLAG(IS_WIN)
+
+// Ensure that passing `encrypted=false` really bypasses encryption, for
+// performance.
+TEST_F(ProcessBoundEncryptionTest, Unencrypted) {
+  crypto::ProcessBound<std::string> process_bound(std::string("hello"),
+                                                  /*encrypted=*/false);
+  constexpr std::array<uint8_t, 5> kPlainText = {'h', 'e', 'l', 'l', 'o'};
+  EXPECT_FALSE(process_bound.is_encrypted());
+  EXPECT_THAT(process_bound.maybe_encrypted_data_,
+              ::testing::ElementsAreArray(kPlainText));
+  EXPECT_STREQ(process_bound.secure_value().c_str(), "hello");
+}
 
 }  // namespace crypto

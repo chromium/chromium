@@ -6,12 +6,19 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "net/base/features.h"
 
 namespace net {
 
-CookieStore::CookieStore() = default;
+CookieStore::CookieStore() {
+  // Initialize the feature at startup so that clients are assigned to
+  // experiment groups before seeing specific cookies.
+  base::FeatureList::IsEnabled(
+      features::kCookieProcessBoundEncryptOnlyImportant);
+}
 
 CookieStore::~CookieStore() = default;
 

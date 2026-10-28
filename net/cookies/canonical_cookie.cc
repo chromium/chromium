@@ -142,6 +142,19 @@ CookieSameSiteForMetrics CookieSameSiteToCookieSameSiteForMetrics(
   return static_cast<CookieSameSiteForMetrics>((static_cast<int>(enum_in) + 1));
 }
 
+bool ShouldEncryptCookieValue(bool secure, bool httponly) {
+  if (secure) {
+    // No need to check the feature: cookie is always encrypted.
+    return true;
+  }
+  if (!base::FeatureList::IsEnabled(
+          features::kCookieProcessBoundEncryptOnlyImportant)) {
+    // Without the feature, all cookies are encrypted.
+    return true;
+  }
+  return httponly && features::kCookieProcessBoundEncryptHttpOnly.Get();
+}
+
 }  // namespace
 
 CookieAccessParams::CookieAccessParams(CookieAccessSemantics access_semantics,
@@ -206,7 +219,9 @@ CanonicalCookie::CanonicalCookie(
                  std::move(partition_key),
                  source_scheme,
                  source_port),
-      value_(std::move(value)),
+      value_(crypto::ProcessBoundString(
+          std::move(value),
+          ShouldEncryptCookieValue(secure, httponly))),
       expiry_date_(expiration),
       last_access_date_(last_access),
       last_update_date_(last_update),

@@ -438,6 +438,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   static std::string BuildCookieAttributesLine(const CanonicalCookie& cookie);
 
  private:
+  friend class CanonicalCookieValueEncryptionTest;
   FRIEND_TEST_ALL_PREFIXES(CanonicalCookieTest,
                            TestGetAndAdjustPortForTrustworthyUrls);
 

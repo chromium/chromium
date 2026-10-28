@@ -1105,6 +1105,13 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(DiskCacheBackend,
 // the full SQLite cookie store load.
 NET_EXPORT BASE_DECLARE_FEATURE(kCookieMonsterPerKeyDelete);
 
+// When enabled, CanonicalCookie only encrypts cookie values in memory (via
+// crypto::ProcessBoundString) for important cookies. Cookies marked Secure are
+// always important. Cookies marked HttpOnly are considered important if the
+// kCookieProcessBoundEncryptHttpOnly param is true.
+NET_EXPORT BASE_DECLARE_FEATURE(kCookieProcessBoundEncryptOnlyImportant);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kCookieProcessBoundEncryptHttpOnly);
+
 // Enables the Rust implementation of the HTTP chunked decoder, called via FFI.
 NET_EXPORT BASE_DECLARE_FEATURE(kHttpChunkedDecoderInRust);
 

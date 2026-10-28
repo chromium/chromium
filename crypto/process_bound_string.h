@@ -86,12 +86,20 @@ class CRYPTO_EXPORT ProcessBound {
   }
 
   // Create a process bound string. Takes a copy of the string passed in.
-  explicit ProcessBound(const StringType& value)
+  // If `encrypted` is false, the string will NOT be encrypted. This lets
+  // ProcessBound hold either encrypted or unencrypted strings without the
+  // overhead of a variant wrapper. If it's true, the string will be encrypted
+  // only on supported platforms.
+  explicit ProcessBound(const StringType& value, bool encrypted = true)
       : original_size_(value.size()) {
     std::vector<CharType> data(value.begin(), value.end());
-    data.resize(internal::MaybeRoundUp(data.size()));
-    encrypted_ =
-        internal::MaybeEncryptBuffer(base::as_writable_byte_span(data));
+    if (encrypted) {
+      data.resize(internal::MaybeRoundUp(data.size()));
+      encrypted_ =
+          internal::MaybeEncryptBuffer(base::as_writable_byte_span(data));
+    } else {
+      encrypted_ = false;
+    }
     maybe_encrypted_data_ = std::move(data);
   }
 
@@ -110,9 +118,14 @@ class CRYPTO_EXPORT ProcessBound {
   size_t size() const { return original_size_; }
   bool empty() const { return size() == 0; }
 
+  // Returns true if the string is encrypted (ie. the platform supports
+  // encryption and the ProcessBound was created with `encrypted = true`).
+  bool is_encrypted() const { return encrypted_; }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ProcessBoundEncryptionTest, Encryption);
   FRIEND_TEST_ALL_PREFIXES(ProcessBoundEncryptionTest, EmptyString);
+  FRIEND_TEST_ALL_PREFIXES(ProcessBoundEncryptionTest, Unencrypted);
 
   template <typename DecryptedStringType>
   DecryptedStringType DecryptData() const {

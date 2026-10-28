@@ -10,10 +10,12 @@
 #include <vector>
 
 #include "base/byte_size.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
@@ -6815,6 +6817,129 @@ TEST(CanonicalCookieTest, IsWebEquivalentTo) {
     EXPECT_TRUE(test_case.lhs->IsWebEquivalentTo(*test_case.lhs));
     EXPECT_TRUE(test_case.rhs->IsWebEquivalentTo(*test_case.rhs));
   }
+}
+
+namespace {
+
+enum class ProcessBoundEncryptionState {
+  kAlwaysEncrypt,
+  kEncryptSecure,
+  kEncryptSecureAndHttpOnly,
+};
+
+}  // namespace
+
+class CanonicalCookieValueEncryptionTest
+    : public ::testing::TestWithParam<ProcessBoundEncryptionState> {
+ protected:
+  CanonicalCookieValueEncryptionTest() {
+    switch (GetParam()) {
+      case ProcessBoundEncryptionState::kAlwaysEncrypt:
+        scoped_feature_list_.InitAndDisableFeature(
+            features::kCookieProcessBoundEncryptOnlyImportant);
+        break;
+      case ProcessBoundEncryptionState::kEncryptSecure:
+        scoped_feature_list_.InitAndEnableFeatureWithParameters(
+            features::kCookieProcessBoundEncryptOnlyImportant,
+            {{"CookieProcessBoundEncryptHttpOnly", "false"}});
+        break;
+      case ProcessBoundEncryptionState::kEncryptSecureAndHttpOnly:
+        scoped_feature_list_.InitAndEnableFeatureWithParameters(
+            features::kCookieProcessBoundEncryptOnlyImportant,
+            {{"CookieProcessBoundEncryptHttpOnly", "true"}});
+        break;
+    }
+  }
+
+  std::unique_ptr<CanonicalCookie> CreateTestCookie(bool secure,
+                                                    bool httponly) {
+    return CanonicalCookie::CreateUnsafeCookieForTesting(
+        "A", "secret_value", "www.example.com", "/test", base::Time::Now(),
+        base::Time(), base::Time(), base::Time(), secure, httponly,
+        CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+        CookieSourceType::kOther);
+  }
+
+  void ExpectCookieIsEncrypted(const CanonicalCookie& cookie,
+                               bool expect_encrypted) const {
+    // Encryption is only supported on Windows. `is_encrypted()` will always
+    // return false on other platforms.
+#if BUILDFLAG(IS_WIN)
+    EXPECT_EQ(cookie.value_.value_or({}).is_encrypted(), expect_encrypted);
+#endif
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::TaskEnvironment task_env_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    FeatureEnabled,
+    CanonicalCookieValueEncryptionTest,
+    ::testing::Values(ProcessBoundEncryptionState::kAlwaysEncrypt,
+                      ProcessBoundEncryptionState::kEncryptSecure,
+                      ProcessBoundEncryptionState::kEncryptSecureAndHttpOnly));
+
+TEST_P(CanonicalCookieValueEncryptionTest, EmptyCookie) {
+  // Default-constructed cookie has an empty unencrypted string.
+  CanonicalCookie default_cookie;
+  ExpectCookieIsEncrypted(default_cookie, false);
+  EXPECT_EQ("", default_cookie.Value());
+  EXPECT_EQ(base::ByteSize(0), default_cookie.ValueSize());
+}
+
+TEST_P(CanonicalCookieValueEncryptionTest, NonSensitiveCookie) {
+  std::unique_ptr<CanonicalCookie> cookie =
+      CreateTestCookie(/*secure=*/false, /*httponly=*/false);
+  ASSERT_TRUE(cookie);
+  switch (GetParam()) {
+    case ProcessBoundEncryptionState::kEncryptSecure:
+    case ProcessBoundEncryptionState::kEncryptSecureAndHttpOnly:
+      ExpectCookieIsEncrypted(*cookie, false);
+      break;
+    case ProcessBoundEncryptionState::kAlwaysEncrypt:
+      ExpectCookieIsEncrypted(*cookie, true);
+      break;
+  }
+  EXPECT_EQ("secret_value", cookie->Value());
+  EXPECT_EQ(base::ByteSize(12), cookie->ValueSize());
+}
+
+TEST_P(CanonicalCookieValueEncryptionTest, SecureCookie) {
+  std::unique_ptr<CanonicalCookie> cookie =
+      CreateTestCookie(/*secure=*/true, /*httponly=*/false);
+  ASSERT_TRUE(cookie);
+  ExpectCookieIsEncrypted(*cookie, true);
+  EXPECT_EQ("secret_value", cookie->Value());
+  EXPECT_EQ(base::ByteSize(12), cookie->ValueSize());
+}
+
+TEST_P(CanonicalCookieValueEncryptionTest, HttpOnlyCookie) {
+  std::unique_ptr<CanonicalCookie> cookie =
+      CreateTestCookie(/*secure=*/false, /*httponly=*/true);
+  ASSERT_TRUE(cookie);
+  switch (GetParam()) {
+    case ProcessBoundEncryptionState::kEncryptSecure:
+      ExpectCookieIsEncrypted(*cookie, false);
+      break;
+    case ProcessBoundEncryptionState::kEncryptSecureAndHttpOnly:
+    case ProcessBoundEncryptionState::kAlwaysEncrypt:
+      ExpectCookieIsEncrypted(*cookie, true);
+      break;
+  }
+  EXPECT_EQ("secret_value", cookie->Value());
+  EXPECT_EQ(base::ByteSize(12), cookie->ValueSize());
+}
+
+TEST_P(CanonicalCookieValueEncryptionTest, SecureHttpOnlyCookie) {
+  std::unique_ptr<CanonicalCookie> cookie =
+      CreateTestCookie(/*secure=*/true, /*httponly=*/true);
+  ASSERT_TRUE(cookie);
+  ExpectCookieIsEncrypted(*cookie, true);
+  EXPECT_EQ("secret_value", cookie->Value());
+  EXPECT_EQ(base::ByteSize(12), cookie->ValueSize());
 }
 
 }  // namespace net
