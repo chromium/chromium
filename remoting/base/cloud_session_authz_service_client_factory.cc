@@ -25,6 +25,8 @@ namespace remoting {
 
 namespace {
 
+using CloudSessionPolicies =
+    google::internal::remoting::cloud::v1alpha::SessionPolicies;
 using Duration = google::internal::remoting::cloud::v1alpha::Duration;
 using GenerateHostTokenResponse =
     google::internal::remoting::cloud::v1alpha::GenerateHostTokenResponse;
@@ -36,6 +38,24 @@ using VerifySessionTokenResponse =
 base::TimeDelta fromProtoDuration(const Duration& duration) {
   return base::Seconds(duration.seconds()) +
          base::Nanoseconds(duration.nanos());
+}
+
+SessionPolicies::AudioMode FromProtoAudioMode(
+    CloudSessionPolicies::AudioMode audio_mode) {
+  switch (audio_mode) {
+    case CloudSessionPolicies::AUDIO_MODE_UNSPECIFIED:
+      return SessionPolicies::AudioMode::kUnspecified;
+    case CloudSessionPolicies::AUDIO_MODE_NONE:
+      return SessionPolicies::AudioMode::kNone;
+    case CloudSessionPolicies::AUDIO_MODE_CLIENT_TO_HOST:
+      return SessionPolicies::AudioMode::kClientToHost;
+    case CloudSessionPolicies::AUDIO_MODE_HOST_TO_CLIENT:
+      return SessionPolicies::AudioMode::kHostToClient;
+    case CloudSessionPolicies::AUDIO_MODE_BOTH:
+      return SessionPolicies::AudioMode::kBoth;
+    default:
+      return SessionPolicies::AudioMode::kUnspecified;
+  }
 }
 
 class CloudSessionAuthzServiceClient : public SessionAuthzServiceClient {
@@ -216,6 +236,10 @@ void CloudSessionAuthzServiceClient::OnVerifySessionTokenResponse(
     if (response->session_policies().has_allow_terminal_remoting()) {
       session_policies.allow_terminal_mode =
           response->session_policies().allow_terminal_remoting();
+    }
+    if (response->session_policies().has_audio_mode()) {
+      session_policies.audio_mode =
+          FromProtoAudioMode(response->session_policies().audio_mode());
     }
     if (response->session_policies().has_clipboard_size_bytes()) {
       session_policies.clipboard_size_bytes =

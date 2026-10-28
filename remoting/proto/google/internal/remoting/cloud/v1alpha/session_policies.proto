@@ -31,6 +31,24 @@ message SessionPolicies {
     optional int32 end = 2;
   }
 
+  // Specifies the allowed direction(s) for audio remoting in the session.
+  enum AudioMode {
+    // Unspecified audio mode.
+    AUDIO_MODE_UNSPECIFIED = 0;
+
+    // Audio remoting is disabled in both directions.
+    AUDIO_MODE_NONE = 1;
+
+    // Only client-to-host (microphone) audio remoting is allowed.
+    AUDIO_MODE_CLIENT_TO_HOST = 2;
+
+    // Only host-to-client (playback) audio remoting is allowed.
+    AUDIO_MODE_HOST_TO_CLIENT = 3;
+
+    // Audio remoting is allowed in both directions.
+    AUDIO_MODE_BOTH = 4;
+  }
+
   // Allow transferring files between the host and the client. Defaults to true.
   optional bool allow_file_transfer = 1;
 
@@ -71,4 +89,8 @@ message SessionPolicies {
 
   // Allow remoting a terminal from the remote machine. Defaults to true.
   optional bool allow_terminal_remoting = 11;
+
+  // Restrict the direction of audio remoted between the host and the client.
+  // Defaults to AUDIO_MODE_BOTH.
+  optional AudioMode audio_mode = 12;
 }
