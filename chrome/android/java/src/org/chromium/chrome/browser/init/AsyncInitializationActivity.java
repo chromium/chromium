@@ -29,6 +29,8 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LoaderErrors;
 import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.Initializer;
@@ -796,7 +798,13 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         assert mFirstDrawComplete;
         assert !mStartupDelayed;
         TraceEvent.instant("onFirstDrawComplete");
-        mNativeInitializationController.firstDrawComplete();
+        if (ChromeFeatureList.sAsyncFirstFrameDrawn.isEnabled()) {
+            PostTask.postTask(
+                    TaskTraits.UI_USER_BLOCKING,
+                    mNativeInitializationController::firstDrawComplete);
+        } else {
+            mNativeInitializationController.firstDrawComplete();
+        }
     }
 
     @Override

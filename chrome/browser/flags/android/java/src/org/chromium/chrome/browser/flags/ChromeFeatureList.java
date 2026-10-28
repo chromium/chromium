@@ -342,6 +342,7 @@ public abstract class ChromeFeatureList {
     public static final String APP_SPECIFIC_HISTORY = "AppSpecificHistory";
     public static final String APP_SPECIFIC_HISTORY_VIEW_INTENT = "AppSpecificHistoryViewIntent";
     public static final String ARCHIVED_TABS_TEARDOWN = "ArchivedTabsTeardown";
+    public static final String ASYNC_FIRST_FRAME_DRAWN = "AsyncFirstFrameDrawn";
     public static final String ASYNC_NOTIFICATION_MANAGER = "AsyncNotificationManager";
     public static final String ASYNC_NOTIFICATION_MANAGER_FOR_DOWNLOAD =
             "AsyncNotificationManagerForDownload";
@@ -1026,6 +1027,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(APP_SPECIFIC_HISTORY_VIEW_INTENT, true);
     public static final CachedFlag sArchivedTabsTeardown =
             newCachedFlag(ARCHIVED_TABS_TEARDOWN, /* defaultValue= */ false);
+    public static final CachedFlag sAsyncFirstFrameDrawn =
+            newCachedFlag(ASYNC_FIRST_FRAME_DRAWN, /* defaultValue= */ false);
     public static final CachedFlag sAsyncNotificationManager =
             newCachedFlag(ASYNC_NOTIFICATION_MANAGER, false, true);
     public static final CachedFlag sAsyncNotificationManagerForDownload =
@@ -1512,6 +1515,7 @@ public abstract class ChromeFeatureList {
                     sAppSpecificHistory,
                     sAppSpecificHistoryViewIntent,
                     sArchivedTabsTeardown,
+                    sAsyncFirstFrameDrawn,
                     sAsyncNotificationManager,
                     sAutomotiveBackButtonBarStreamline,
                     sAvoidRecreateOnTouchscreenOrColorModeChange,
