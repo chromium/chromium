@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
@@ -71,7 +72,9 @@ void CardUnmaskPromptViews::Show() {
     delete this;
     return;
   }
-  constrained_window::ShowWebModalDialogViews(this, web_contents_.get());
+  views::Widget* widget =
+      constrained_window::ShowWebModalDialogViews(this, web_contents_.get());
+  extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
 }
 
 void CardUnmaskPromptViews::ControllerGone() {

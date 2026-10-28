@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
@@ -301,7 +302,9 @@ base::WeakPtr<CardUnmaskOtpInputDialogView> CreateAndShowOtpInputDialog(
     content::WebContents* web_contents) {
   CardUnmaskOtpInputDialogViews* dialog_view =
       new CardUnmaskOtpInputDialogViews(controller);
-  constrained_window::ShowWebModalDialogViews(dialog_view, web_contents);
+  views::Widget* widget =
+      constrained_window::ShowWebModalDialogViews(dialog_view, web_contents);
+  extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
   return dialog_view->GetWeakPtr();
 }
 
