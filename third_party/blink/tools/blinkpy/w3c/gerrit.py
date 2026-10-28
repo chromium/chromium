@@ -201,7 +201,7 @@ class GerritAPI:
         return [
             cl
             for cl in open_cls
-            if is_submittable_or_forces_export(cl) and cl.is_exportable()
+            if cl.is_exportable() and is_submittable_or_forces_export(cl)
         ]
 
     @property

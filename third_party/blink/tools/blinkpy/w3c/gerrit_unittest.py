@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import copy
 import json
 import unittest
 
@@ -111,7 +112,25 @@ class GerritAPITest(unittest.TestCase):
             'submittable': False,
             'owner': {'email': 'test@chromium.org'},
         }
-        payload = [non_submittable_cl, submittable_cl, force_export_cl]
+        empty_cl = {
+            'change_id': 'Iempty',
+            'subject': 'empty change',
+            'revisions': {},
+            '_number': 638251,
+            'owner': {'email': 'test@chromium.org'},
+        }
+        non_exportable_cl = copy.deepcopy(force_export_cl)
+        non_exportable_cl['change_id'] = 'Inonexportable'
+        non_exportable_cl['revisions']['1']['files'] = {
+            RELATIVE_WEB_TESTS + 'foo/bar.html': '',
+        }
+        payload = [
+            non_submittable_cl,
+            empty_cl,
+            submittable_cl,
+            force_export_cl,
+            non_exportable_cl,
+        ]
         host.web.urls = {
             url: RESPONSE_PREFIX + b'\n' + json.dumps(payload).encode(),
         }
