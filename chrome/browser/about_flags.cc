@@ -12272,6 +12272,15 @@ const FeatureEntry kFeatureEntries[] = {
          kContextualTasksUpdatedEntryPointsVariations,
          "ContextualTasksUpdatedEntryPoints")},
 
+    {"contextual-tasks-ephemeral-pin-button-refactor",
+     contextual_tasks::flag_descriptions::
+         kContextualTasksEphemeralPinButtonRefactorName,
+     contextual_tasks::flag_descriptions::
+         kContextualTasksEphemeralPinButtonRefactorDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         contextual_tasks::kContextualTasksEphemeralPinButtonRefactor)},
+
     {"contextual-tasks-ephemeral-pinning-visible-when-permanently-pinned",
      contextual_tasks::flag_descriptions::
          kEphemeralPinningVisibleWhenPermanentlyPinnedName,

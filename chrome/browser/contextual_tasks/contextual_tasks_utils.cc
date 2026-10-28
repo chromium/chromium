@@ -41,11 +41,14 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_controller.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/lens/contextual_input.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
+#include "ui/actions/actions.h"
 #endif
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
@@ -700,20 +703,39 @@ void UpdatePinButtonVisibilityState(BrowserWindowInterface* browser_window) {
       actions::ActionManager::Get().FindAction(
           kActionSidePanelShowContextualTasks, scope_action);
 
-  if (action_item) {
-      // If it's not eligible, actively pull it out of the pinned model space.
-      // Do not pull it out if the user is currently in an incognito window, as
-      // this would unpin it for the parent profile.
-      if (!browser_window->GetProfile()->IsOffTheRecord()) {
-        if (auto* model =
-                PinnedToolbarActionsModel::Get(browser_window->GetProfile())) {
-          if (model->Contains(kActionSidePanelShowContextualTasks)) {
-            action_item->SetVisible(
-                contextual_tasks::EntryPointEligibilityManager::
-                    IsPinningEligible(browser_window->GetProfile()));
-          }
-        }
+  if (!action_item) {
+    return;
+  }
+
+  const bool is_pinning_eligible =
+      contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(
+          browser_window->GetProfile());
+  if (IsContextualTasksEphemeralPinButtonRefactorEnabled()) {
+    action_item->SetProperty(
+        actions::kActionItemPinnableKey,
+        static_cast<std::underlying_type_t<actions::ActionPinnableState>>(
+            is_pinning_eligible ? actions::ActionPinnableState::kPinnable
+                                : actions::ActionPinnableState::kNotPinnable));
+
+    bool should_show_ephemeral = false;
+    if (auto* ephemeral_controller =
+            ContextualTasksEphemeralButtonController::From(browser_window)) {
+      should_show_ephemeral = ephemeral_controller->ShouldShowEphemeralButton();
+    }
+    action_item->SetVisible(is_pinning_eligible || should_show_ephemeral);
+    return;
+  }
+
+  // If it's not eligible, actively pull it out of the pinned model space.
+  // Do not pull it out if the user is currently in an incognito window, as
+  // this would unpin it for the parent profile.
+  if (!browser_window->GetProfile()->IsOffTheRecord()) {
+    if (auto* model =
+            PinnedToolbarActionsModel::Get(browser_window->GetProfile())) {
+      if (model->Contains(kActionSidePanelShowContextualTasks)) {
+        action_item->SetVisible(is_pinning_eligible);
       }
+    }
   }
 }
 #endif

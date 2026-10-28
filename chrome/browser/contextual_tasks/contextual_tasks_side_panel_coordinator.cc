@@ -2016,7 +2016,8 @@ bool ContextualTasksSidePanelCoordinator::ShouldPreserveTaskOnClose() const {
   const bool can_resume_from_pinned_button =
       contextual_tasks::IsContextualTasksPinningV2Enabled() &&
       contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled() &&
-      contextual_tasks::GetEffectivePinState(browser_window_->GetProfile());
+      (contextual_tasks::GetEffectivePinState(browser_window_->GetProfile()) ||
+       contextual_tasks::IsContextualTasksEphemeralPinButtonRefactorEnabled());
   return contextual_tasks::kShowEntryPoint.Get() ==
              contextual_tasks::EntryPointOption::kToolbarEphemeralBranded ||
          can_resume_from_pinned_button;
@@ -2793,7 +2794,9 @@ void ContextualTasksSidePanelCoordinator::OnEligibilityChange(
     tabs_with_closed_panel_.clear();
   }
 #if !BUILDFLAG(IS_ANDROID)
-  if (browser_window_ && BrowserActions::From(browser_window_)) {
+  if (IsContextualTasksEphemeralPinButtonRefactorEnabled()) {
+    UpdatePinButtonVisibilityState(browser_window_);
+  } else if (browser_window_ && BrowserActions::From(browser_window_)) {
     if (auto* action_item = actions::ActionManager::Get().FindAction(
             kActionSidePanelShowContextualTasks,
             BrowserActions::From(browser_window_)->root_action_item())) {

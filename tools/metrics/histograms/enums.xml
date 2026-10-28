@@ -11843,6 +11843,8 @@ from previous Chrome versions.
   <int value="-958063963" label="DeduplicateNativePaymentApps:disabled"/>
   <int value="-957490473"
       label="PreinstalledWebAppAlwaysMigrateCalculator:disabled"/>
+  <int value="-957421738"
+      label="ContextualTasksEphemeralPinButtonRefactor:enabled"/>
   <int value="-957200826" label="enable-spdy-proxy-auth"/>
   <int value="-956696029" label="scheduler-configuration"/>
   <int value="-956563847" label="QueryTilesDisableCountryOverride:enabled"/>
@@ -15133,6 +15135,8 @@ from previous Chrome versions.
   <int value="31776417" label="EnableIkev2Vpn:disabled"/>
   <int value="31848187" label="ViewsTaskManager:disabled"/>
   <int value="32057053" label="EnterpriseReportingInBrowser:disabled"/>
+  <int value="32264644"
+      label="ContextualTasksEphemeralPinButtonRefactor:disabled"/>
   <int value="32352055" label="WebUIOmniboxAimPopupDisableAnimation:enabled"/>
   <int value="32488630" label="EphemeralTab:enabled"/>
   <int value="32557641" label="HTTPAuthCommittedInterstitials:disabled"/>

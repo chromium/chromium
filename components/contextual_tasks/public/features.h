@@ -26,6 +26,7 @@ BASE_DECLARE_FEATURE(kContextualTasksDriveOAuthScope);
 BASE_DECLARE_FEATURE(kEnableContextualTasksPinButtonInToolbar);
 BASE_DECLARE_FEATURE(kEnableContextualTasksPinButtonOnSrp);
 BASE_DECLARE_FEATURE(kContextualTasksPinningV2);
+BASE_DECLARE_FEATURE(kContextualTasksEphemeralPinButtonRefactor);
 BASE_DECLARE_FEATURE(kContextualTasksPinnedButtonActiveIndicator);
 BASE_DECLARE_FEATURE(kContextualTasksUnifyPinButtonLogos);
 BASE_DECLARE_FEATURE(kEphemeralPinningVisibleWhenPermanentlyPinned);
@@ -624,6 +625,12 @@ extern bool IsContextualTasksPinButtonInToolbarEnabled();
 // toolbar buttons for the right-hand Search in Chrome side panel) is enabled.
 extern bool IsContextualTasksPinningV2Enabled();
 
+// Returns whether the ephemeral pin button refactor is enabled under Pinning
+// V2, routing the unpinned ephemeral toolbar button through
+// PinnedToolbarActions::ShowActionEphemerallyInToolbar instead of
+// ContextualTasksButton.
+extern bool IsContextualTasksEphemeralPinButtonRefactorEnabled();
+
 // Returns whether the permanent pinned contextual tasks toolbar button should
 // show an active indicator when the active tab has an ongoing thread/session.
 extern bool IsContextualTasksPinnedButtonActiveIndicatorEnabled();
@@ -703,6 +710,8 @@ extern const char kEnableContextualTasksPinButtonOnSrpName[];
 extern const char kEnableContextualTasksPinButtonOnSrpDescription[];
 extern const char kContextualTasksPinningV2Name[];
 extern const char kContextualTasksPinningV2Description[];
+extern const char kContextualTasksEphemeralPinButtonRefactorName[];
+extern const char kContextualTasksEphemeralPinButtonRefactorDescription[];
 extern const char kContextualTasksPinnedButtonActiveIndicatorName[];
 extern const char kContextualTasksPinnedButtonActiveIndicatorDescription[];
 extern const char kContextualTasksHideMenuOnAiPageName[];

@@ -80,6 +80,12 @@ BASE_FEATURE(kEnableContextualTasksPinButtonOnSrp,
 // toolbar buttons for the new right-hand Search in Chrome (SiC) side panel.
 BASE_FEATURE(kContextualTasksPinningV2, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Routes the unpinned Contextual Tasks ephemeral toolbar button through
+// PinnedToolbarActions::ShowActionEphemerallyInToolbar in Pinning V2 instead of
+// the separate ContextualTasksButton view.
+BASE_FEATURE(kContextualTasksEphemeralPinButtonRefactor,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Shows an active indicator (blue icon and underline pill) on the permanent
 // pinned contextual tasks toolbar button when the active tab has an ongoing
 // thread/session.
@@ -910,6 +916,12 @@ bool IsContextualTasksPinningV2Enabled() {
   return base::FeatureList::IsEnabled(kContextualTasksPinningV2);
 }
 
+bool IsContextualTasksEphemeralPinButtonRefactorEnabled() {
+  return IsContextualTasksPinningV2Enabled() &&
+         base::FeatureList::IsEnabled(
+             kContextualTasksEphemeralPinButtonRefactor);
+}
+
 bool IsContextualTasksPinnedButtonActiveIndicatorEnabled() {
   return base::FeatureList::IsEnabled(
       kContextualTasksPinnedButtonActiveIndicator);
@@ -1256,6 +1268,12 @@ const char kContextualTasksPinningV2Name[] = "Contextual Tasks Pinning V2";
 const char kContextualTasksPinningV2Description[] =
     "Consolidates the pinning and ephemeral toolbar buttons for the new "
     "right-hand Search in Chrome (SiC) side panel.";
+
+const char kContextualTasksEphemeralPinButtonRefactorName[] =
+    "Contextual Tasks Ephemeral Pin Button Refactor";
+const char kContextualTasksEphemeralPinButtonRefactorDescription[] =
+    "Routes the unpinned Contextual Tasks ephemeral toolbar button through "
+    "PinnedToolbarActions in Pinning V2 instead of ContextualTasksButton.";
 
 const char kContextualTasksPinnedButtonActiveIndicatorName[] =
     "Contextual Tasks Pinned Button Active Indicator";
