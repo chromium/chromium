@@ -1893,7 +1893,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Blocked by policy"/>
 </enum>
 
-<!-- LINT.ThenChange(/chrome/browser/password_manager/remote_actor/remote_actor_credential_sharing_impl.h:RemoteActorCredentialSharingResult) -->
+<!-- LINT.ThenChange(/components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_result.h:RemoteActorCredentialSharingResult) -->
 
 <enum name="ReusedPasswordType">
   <int value="0" label="Saved password"/>
