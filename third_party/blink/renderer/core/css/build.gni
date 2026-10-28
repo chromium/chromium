@@ -930,6 +930,7 @@ blink_core_tests_css = [
   "fixed_size_cache_test.cc",
   "font_display_auto_lcp_align_test.cc",
   "font_face_cache_test.cc",
+  "font_face_set_worker_test.cc",
   "font_size_functions_test.cc",
   "font_update_invalidation_test.cc",
   "force_dark_test.cc",

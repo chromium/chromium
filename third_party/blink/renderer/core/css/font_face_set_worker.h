@@ -46,7 +46,9 @@ class CORE_EXPORT FontFaceSetWorker final
   void Trace(Visitor*) const override;
 
  protected:
-  bool InActiveContext() const override { return true; }
+  bool InActiveContext() const override {
+    return GetExecutionContext() != nullptr;
+  }
   FontSelector* GetFontSelector() const override {
     // TODO(Fserb): tracking down crbug.com/988125, can be DCHECK later.
     CHECK(GetWorker()->GetThread()->IsCurrentThread());
