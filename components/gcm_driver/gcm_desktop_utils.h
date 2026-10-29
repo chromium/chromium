@@ -21,7 +21,7 @@ class FilePath;
 namespace network {
 class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
-}
+}  // namespace network
 
 namespace os_crypt_async {
 class OSCryptAsync;

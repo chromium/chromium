@@ -126,13 +126,15 @@ base::DictValue SetGCMInternalsInfo(const gcm::GCMClient::GCMStatistics* stats,
     device_info.Set(kConnectionClientCreated, stats->connection_client_created);
 
     base::ListValue registered_app_ids;
-    for (const std::string& app_id : stats->registered_app_ids)
+    for (const std::string& app_id : stats->registered_app_ids) {
       registered_app_ids.Append(app_id);
+    }
 
     device_info.Set(kRegisteredAppIds, std::move(registered_app_ids));
 
-    if (stats->connection_client_created)
+    if (stats->connection_client_created) {
       device_info.Set(kConnectionState, stats->connection_state);
+    }
     if (!stats->last_checkin.is_null()) {
       device_info.Set(kLastCheckin,
                       base::UTF16ToUTF8(base::TimeFormatFriendlyDateAndTime(

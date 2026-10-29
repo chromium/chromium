@@ -30,12 +30,12 @@ class PrefService;
 namespace base {
 class FilePath;
 class SequencedTaskRunner;
-}
+}  // namespace base
 
 namespace network {
 class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
-}
+}  // namespace network
 
 namespace fcm {
 enum class FcmDecryptionResult;
@@ -53,8 +53,7 @@ class GCMClientFactory;
 class GCMDelayedTaskController;
 
 // GCMDriver implementation for desktop and Chrome OS, using GCMClient.
-class GCMDriverDesktop : public GCMDriver,
-                         protected InstanceIDHandler {
+class GCMDriverDesktop : public GCMDriver, protected InstanceIDHandler {
  public:
   GCMDriverDesktop(
       std::unique_ptr<GCMClientFactory> gcm_client_factory,

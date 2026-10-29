@@ -67,8 +67,7 @@ GCMProfileService::GCMProfileService(
 #endif  // BUILDFLAG(USE_GCM_FROM_PLATFORM)
 
 GCMProfileService::GCMProfileService(std::unique_ptr<GCMDriver> gcm_driver)
-    : driver_(std::move(gcm_driver)) {
-}
+    : driver_(std::move(gcm_driver)) {}
 
 GCMProfileService::~GCMProfileService() = default;
 

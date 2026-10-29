@@ -64,9 +64,9 @@ class GCMClientImplTest;
 // with MCS) and other pieces of GCM infrastructure like Registration and
 // Checkins. It also allows for registering user delegates that host
 // applications that send and receive messages.
-class GCMClientImpl
-    : public GCMClient, public GCMStatsRecorder::Delegate,
-      public ConnectionFactory::ConnectionListener {
+class GCMClientImpl : public GCMClient,
+                      public GCMStatsRecorder::Delegate,
+                      public ConnectionFactory::ConnectionListener {
  public:
   // State representation of the GCMClient.
   // Any change made to this enum should have corresponding change in the

@@ -55,8 +55,9 @@ void RequestProxyResolvingSocketFactoryOnUIThread(
     base::WeakPtr<gcm::GCMProfileService> service,
     mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
         receiver) {
-  if (!service)
+  if (!service) {
     return;
+  }
   return profile->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->CreateProxyResolvingSocketFactory(std::move(receiver));
@@ -185,8 +186,8 @@ void GCMProfileServiceTest::CreateGCMProfileService() {
       GCMProfileServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile_.get(),
           base::BindRepeating(&BuildGCMProfileService, os_crypt_.get())));
-  gcm_profile_service_->driver()->AddAppHandler(
-      kTestAppID, gcm_app_handler_.get());
+  gcm_profile_service_->driver()->AddAppHandler(kTestAppID,
+                                                gcm_app_handler_.get());
 }
 
 void GCMProfileServiceTest::RegisterAndWaitForCompletion(

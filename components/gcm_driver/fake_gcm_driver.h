@@ -12,7 +12,7 @@
 namespace base {
 class FilePath;
 class SequencedTaskRunner;
-}
+}  // namespace base
 
 namespace gcm {
 
@@ -48,8 +48,7 @@ class FakeGCMDriver : public GCMDriver {
 
  protected:
   // GCMDriver implementation:
-  GCMClient::Result EnsureStarted(
-      GCMClient::StartMode start_mode) override;
+  GCMClient::Result EnsureStarted(GCMClient::StartMode start_mode) override;
   void RegisterImpl(const std::string& app_id,
                     const std::vector<std::string>& sender_ids) override;
   void UnregisterImpl(const std::string& app_id) override;

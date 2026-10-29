@@ -379,8 +379,9 @@ void GCMDriverDesktop::IOWorker::GetGCMStatistics(
   gcm::GCMClient::GCMStatistics stats;
 
   if (gcm_client_) {
-    if (clear_logs == GCMDriver::CLEAR_LOGS)
+    if (clear_logs == GCMDriver::CLEAR_LOGS) {
       gcm_client_->ClearActivityLogs();
+    }
     stats = gcm_client_->GetStatistics();
   }
 
@@ -408,16 +409,18 @@ void GCMDriverDesktop::IOWorker::AddInstanceIDData(
     const std::string& extra_data) {
   DCHECK(io_thread_->RunsTasksInCurrentSequence());
 
-  if (gcm_client_)
+  if (gcm_client_) {
     gcm_client_->AddInstanceIDData(app_id, instance_id, extra_data);
+  }
 }
 
 void GCMDriverDesktop::IOWorker::RemoveInstanceIDData(
     const std::string& app_id) {
   DCHECK(io_thread_->RunsTasksInCurrentSequence());
 
-  if (gcm_client_)
+  if (gcm_client_) {
     gcm_client_->RemoveInstanceIDData(app_id);
+  }
 }
 
 void GCMDriverDesktop::IOWorker::GetInstanceIDData(const std::string& app_id) {
@@ -425,8 +428,9 @@ void GCMDriverDesktop::IOWorker::GetInstanceIDData(const std::string& app_id) {
 
   std::string instance_id;
   std::string extra_data;
-  if (gcm_client_)
+  if (gcm_client_) {
     gcm_client_->GetInstanceIDData(app_id, &instance_id, &extra_data);
+  }
 
   ui_thread_->PostTask(
       FROM_HERE, base::BindOnce(&GCMDriverDesktop::GetInstanceIDDataFinished,
@@ -613,8 +617,9 @@ void GCMDriverDesktop::Stop() {
   DCHECK(ui_thread_->RunsTasksInCurrentSequence());
 
   // No need to stop GCM service if not started yet.
-  if (!gcm_started_)
+  if (!gcm_started_) {
     return;
+  }
 
   RemoveCachedData();
 
@@ -1010,8 +1015,9 @@ void GCMDriverDesktop::GetInstanceIDDataFinished(
 
   callbacks.pop();
 
-  if (!callbacks.size())
+  if (!callbacks.size()) {
     get_instance_id_data_callbacks_.erase(iter);
+  }
 }
 
 void GCMDriverDesktop::GetTokenFinished(const std::string& app_id,
@@ -1053,8 +1059,9 @@ void GCMDriverDesktop::AddHeartbeatInterval(const std::string& scope,
   DCHECK(ui_thread_->RunsTasksInCurrentSequence());
 
   // The GCM service has not been initialized.
-  if (!delayed_task_controller_)
+  if (!delayed_task_controller_) {
     return;
+  }
 
   if (!delayed_task_controller_->CanRunTaskWithoutDelay()) {
     // The GCM service was initialized but has not started yet.
@@ -1074,8 +1081,9 @@ void GCMDriverDesktop::RemoveHeartbeatInterval(const std::string& scope) {
   DCHECK(ui_thread_->RunsTasksInCurrentSequence());
 
   // The GCM service has not been initialized.
-  if (!delayed_task_controller_)
+  if (!delayed_task_controller_) {
     return;
+  }
 
   if (!delayed_task_controller_->CanRunTaskWithoutDelay()) {
     // The GCM service was initialized but has not started yet.
@@ -1095,15 +1103,18 @@ GCMClient::Result GCMDriverDesktop::EnsureStarted(
     GCMClient::StartMode start_mode) {
   DCHECK(ui_thread_->RunsTasksInCurrentSequence());
 
-  if (gcm_started_)
+  if (gcm_started_) {
     return GCMClient::SUCCESS;
+  }
 
   // Have any app requested the service?
-  if (app_handlers().empty())
+  if (app_handlers().empty()) {
     return GCMClient::UNKNOWN_ERROR;
+  }
 
-  if (!delayed_task_controller_)
+  if (!delayed_task_controller_) {
     delayed_task_controller_ = std::make_unique<GCMDelayedTaskController>();
+  }
 
   // Note that we need to pass weak pointer again since the existing weak
   // pointer in IOWorker might have been invalidated when GCM is stopped.
@@ -1132,8 +1143,9 @@ void GCMDriverDesktop::MessageReceived(const std::string& app_id,
   DCHECK(ui_thread_->RunsTasksInCurrentSequence());
 
   // Drop the event if the service has been stopped.
-  if (!gcm_started_)
+  if (!gcm_started_) {
     return;
+  }
 
   DispatchMessage(app_id, message);
 }
@@ -1142,12 +1154,14 @@ void GCMDriverDesktop::MessagesDeleted(const std::string& app_id) {
   DCHECK(ui_thread_->RunsTasksInCurrentSequence());
 
   // Drop the event if the service has been stopped.
-  if (!gcm_started_)
+  if (!gcm_started_) {
     return;
+  }
 
   GCMAppHandler* handler = GetAppHandler(app_id);
-  if (handler)
+  if (handler) {
     handler->OnMessagesDeleted(app_id);
+  }
 }
 
 void GCMDriverDesktop::MessageSendError(
@@ -1156,12 +1170,14 @@ void GCMDriverDesktop::MessageSendError(
   DCHECK(ui_thread_->RunsTasksInCurrentSequence());
 
   // Drop the event if the service has been stopped.
-  if (!gcm_started_)
+  if (!gcm_started_) {
     return;
+  }
 
   GCMAppHandler* handler = GetAppHandler(app_id);
-  if (handler)
+  if (handler) {
     handler->OnSendError(app_id, send_error_details);
+  }
 }
 
 void GCMDriverDesktop::SendAcknowledged(const std::string& app_id,
@@ -1169,12 +1185,14 @@ void GCMDriverDesktop::SendAcknowledged(const std::string& app_id,
   DCHECK(ui_thread_->RunsTasksInCurrentSequence());
 
   // Drop the event if the service has been stopped.
-  if (!gcm_started_)
+  if (!gcm_started_) {
     return;
+  }
 
   GCMAppHandler* handler = GetAppHandler(app_id);
-  if (handler)
+  if (handler) {
     handler->OnSendAcknowledged(app_id, message_id);
+  }
 }
 
 void GCMDriverDesktop::GCMClientReady() {
@@ -1191,11 +1209,13 @@ void GCMDriverDesktop::OnConnected(const net::IPEndPoint& ip_endpoint) {
   connected_ = true;
 
   // Drop the event if the service has been stopped.
-  if (!gcm_started_)
+  if (!gcm_started_) {
     return;
+  }
 
-  for (GCMConnectionObserver& observer : connection_observer_list_)
+  for (GCMConnectionObserver& observer : connection_observer_list_) {
     observer.OnConnected(ip_endpoint);
+  }
 }
 
 void GCMDriverDesktop::OnDisconnected() {
@@ -1204,18 +1224,21 @@ void GCMDriverDesktop::OnDisconnected() {
   connected_ = false;
 
   // Drop the event if the service has been stopped.
-  if (!gcm_started_)
+  if (!gcm_started_) {
     return;
+  }
 
-  for (GCMConnectionObserver& observer : connection_observer_list_)
+  for (GCMConnectionObserver& observer : connection_observer_list_) {
     observer.OnDisconnected();
+  }
 }
 
 void GCMDriverDesktop::OnStoreReset() {
   // Defensive copy in case OnStoreReset calls Add/RemoveAppHandler.
   std::vector<GCMAppHandler*> app_handler_values;
-  for (const auto& key_value : app_handlers())
+  for (const auto& key_value : app_handlers()) {
     app_handler_values.push_back(key_value.second);
+  }
   for (GCMAppHandler* app_handler : app_handler_values) {
     app_handler->OnStoreReset();
     // app_handler might now have been deleted.
@@ -1226,22 +1249,27 @@ void GCMDriverDesktop::OnActivityRecorded(
     const GCMClient::GCMStatistics& stats) {
   DCHECK(ui_thread_->RunsTasksInCurrentSequence());
 
-  if (gcm_statistics_recording_callback_)
+  if (gcm_statistics_recording_callback_) {
     gcm_statistics_recording_callback_.Run(stats);
+  }
 }
 
 bool GCMDriverDesktop::TokenTupleComparer::operator()(
     const TokenTuple& a,
     const TokenTuple& b) const {
-  if (std::get<0>(a) < std::get<0>(b))
+  if (std::get<0>(a) < std::get<0>(b)) {
     return true;
-  if (std::get<0>(a) > std::get<0>(b))
+  }
+  if (std::get<0>(a) > std::get<0>(b)) {
     return false;
+  }
 
-  if (std::get<1>(a) < std::get<1>(b))
+  if (std::get<1>(a) < std::get<1>(b)) {
     return true;
-  if (std::get<1>(a) > std::get<1>(b))
+  }
+  if (std::get<1>(a) > std::get<1>(b)) {
     return false;
+  }
 
   return std::get<2>(a) < std::get<2>(b);
 }

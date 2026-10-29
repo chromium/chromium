@@ -110,12 +110,15 @@ GCMClient::Result ToGCMClientResult(MCSClient::MessageSendStatus status) {
 }
 
 MessageType DecodeMessageType(const std::string& value) {
-  if (kMessageTypeDeletedMessagesKey == value)
+  if (kMessageTypeDeletedMessagesKey == value) {
     return DELETED_MESSAGES;
-  if (kMessageTypeSendErrorKey == value)
+  }
+  if (kMessageTypeSendErrorKey == value) {
     return SEND_ERROR;
-  if (kMessageTypeDataMessage == value)
+  }
+  if (kMessageTypeDataMessage == value) {
     return DATA_MESSAGE;
+  }
   return UNKNOWN;
 }
 
@@ -228,8 +231,9 @@ void GCMClientImpl::Start(StartMode start_mode) {
   }
 
   // Bail out if the loading is not started or completed.
-  if (state_ != INITIALIZED)
+  if (state_ != INITIALIZED) {
     return;
+  }
 
   // Once the loading is completed, the check-in will be initiated.
   // If we're in lazy start mode, don't create a new store since none is really
@@ -281,15 +285,17 @@ void GCMClientImpl::OnLoadCompleted(
     scoped_refptr<RegistrationInfo> registration =
         RegistrationInfo::BuildFromString(key, value, &registration_id);
     // TODO(jianli): Add UMA to track the error case.
-    if (registration)
+    if (registration) {
       registrations_.emplace(std::move(registration), registration_id);
+    }
   }
 
   for (const auto& [key, value] : result->instance_id_data) {
     std::string instance_id;
     std::string extra_data;
-    if (DeserializeInstanceIDData(value, &instance_id, &extra_data))
+    if (DeserializeInstanceIDData(value, &instance_id, &extra_data)) {
       instance_id_data_[key] = std::make_pair(instance_id, extra_data);
+    }
   }
 
   load_result_ = std::move(result);
@@ -353,8 +359,9 @@ void GCMClientImpl::InitializeMCSClient() {
   std::vector<GURL> endpoints;
   endpoints.push_back(gservices_settings_.GetMCSMainEndpoint());
   GURL fallback_endpoint = gservices_settings_.GetMCSFallbackEndpoint();
-  if (fallback_endpoint.is_valid())
+  if (fallback_endpoint.is_valid()) {
     endpoints.push_back(fallback_endpoint);
+  }
   connection_factory_ = internals_builder_->BuildConnectionFactory(
       endpoints, fcm::GetBackoffPolicy(), get_socket_factory_callback_,
       io_task_runner_, &recorder_, network_connection_tracker_);
@@ -402,8 +409,9 @@ void GCMClientImpl::StartMCSLogin() {
 }
 
 void GCMClientImpl::DestroyStoreWhenNotNeeded() {
-  if (state_ != LOADED || start_mode_ != DELAYED_START)
+  if (state_ != LOADED || start_mode_ != DELAYED_START) {
     return;
+  }
 
   gcm_store_->Destroy(base::BindOnce(&GCMClientImpl::DestroyStoreCallback,
                                      weak_ptr_factory_.GetWeakPtr()));
@@ -461,8 +469,9 @@ void GCMClientImpl::GetInstanceIDData(const std::string& app_id,
   DCHECK(instance_id && extra_data);
 
   auto iter = instance_id_data_.find(app_id);
-  if (iter == instance_id_data_.end())
+  if (iter == instance_id_data_.end()) {
     return;
+  }
   *instance_id = iter->second.first;
   *extra_data = iter->second.second;
 }
@@ -484,8 +493,9 @@ void GCMClientImpl::StartCheckin() {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
   // Make sure no checkin is in progress.
-  if (checkin_request_)
+  if (checkin_request_) {
     return;
+  }
 
   checkin_proto::ChromeBuildProto chrome_build_proto;
   fcm::ToCheckinProtoVersion(chrome_build_info_, &chrome_build_proto);
@@ -567,8 +577,9 @@ void GCMClientImpl::SchedulePeriodicCheckin() {
   periodic_checkin_ptr_factory_.InvalidateWeakPtrs();
 
   base::TimeDelta time_to_next_checkin = GetTimeToNextCheckin();
-  if (time_to_next_checkin.is_negative())
+  if (time_to_next_checkin.is_negative()) {
     time_to_next_checkin = base::TimeDelta();
+  }
 
   io_task_runner_->PostDelayedTask(
       FROM_HERE,
@@ -727,8 +738,9 @@ void GCMClientImpl::Register(
   if (gcm_registration_info) {
     std::string senders;
     for (const auto& kv : gcm_registration_info->sender_ids) {
-      if (!senders.empty())
+      if (!senders.empty()) {
         senders.append(",");
+      }
       senders.append(kv);
     }
     request_handler = std::make_unique<GCMRegistrationRequestHandler>(senders);
@@ -817,8 +829,9 @@ void GCMClientImpl::OnRegisterCompleted(
       registration_info, result == SUCCESS ? registration_id : std::string(),
       result);
 
-  if (iter != pending_registration_requests_.end())
+  if (iter != pending_registration_requests_.end()) {
     pending_registration_requests_.erase(iter);
+  }
 }
 
 bool GCMClientImpl::ValidateRegistration(
@@ -830,13 +843,15 @@ bool GCMClientImpl::ValidateRegistration(
   // Must have a cached registration.
   RegistrationInfoMap::const_iterator registrations_iter =
       registrations_.find(registration_info);
-  if (registrations_iter == registrations_.end())
+  if (registrations_iter == registrations_.end()) {
     return false;
+  }
 
   // Cached registration ID must match.
   const std::string& cached_registration_id = registrations_iter->second;
-  if (registration_id != cached_registration_id)
+  if (registration_id != cached_registration_id) {
     return false;
+  }
 
   // For GCM registration, we also match the sender IDs since multiple
   // registrations are not supported.
@@ -1055,8 +1070,9 @@ GCMClient::GCMStatistics GCMClientImpl::GetStatistics() const {
   stats.last_checkin = last_checkin_time_;
   stats.next_checkin =
       last_checkin_time_ + gservices_settings_.GetCheckinInterval();
-  if (connection_factory_)
+  if (connection_factory_) {
     stats.connection_state = connection_factory_->GetConnectionStateString();
+  }
   if (mcs_client_) {
     stats.send_queue_size = mcs_client_->GetSendQueueSize();
     stats.resend_queue_size = mcs_client_->GetResendQueueSize();
@@ -1218,8 +1234,9 @@ void GCMClientImpl::HandleIncomingDataMessage(
   IncomingMessage incoming_message;
   incoming_message.sender_id = data_message_stanza.from();
   incoming_message.message_id = data_message_stanza.persistent_id();
-  if (data_message_stanza.has_token())
+  if (data_message_stanza.has_token()) {
     incoming_message.collapse_key = data_message_stanza.token();
+  }
   incoming_message.data = message_data;
   incoming_message.raw_data = data_message_stanza.raw_data();
 
@@ -1233,8 +1250,9 @@ void GCMClientImpl::HandleIncomingDeletedMessages(
   int deleted_count = 0;
   auto count_iter = message_data.find(kDeletedCountKey);
   if (count_iter != message_data.end()) {
-    if (!base::StringToInt(count_iter->second, &deleted_count))
+    if (!base::StringToInt(count_iter->second, &deleted_count)) {
       deleted_count = 0;
+    }
   }
 
   recorder_.RecordDataMessageReceived(app_id, data_message_stanza.from(),

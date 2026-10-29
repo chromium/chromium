@@ -143,8 +143,9 @@ void GCMDriverAndroid::GetGCMStatistics(GetGCMStatisticsCallback callback,
                                         ClearActivityLogs clear_logs) {
   DCHECK(!callback.is_null());
 
-  if (clear_logs == CLEAR_LOGS)
+  if (clear_logs == CLEAR_LOGS) {
     recorder_.Clear();
+  }
 
   GCMClient::GCMStatistics stats;
   stats.is_recording = recorder_.is_recording();

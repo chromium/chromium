@@ -40,7 +40,8 @@ class FakeGCMClient : public GCMClient {
   static std::string GenerateGCMRegistrationID(
       const std::vector<std::string>& sender_ids);
   static std::string GenerateInstanceIDToken(
-      const std::string& authorized_entity, const std::string& scope);
+      const std::string& authorized_entity,
+      const std::string& scope);
 
   FakeGCMClient(const scoped_refptr<base::SequencedTaskRunner>& ui_thread,
                 const scoped_refptr<base::SequencedTaskRunner>& io_thread);
