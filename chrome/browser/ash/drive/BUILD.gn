@@ -89,10 +89,10 @@ static_library("test_support") {
   deps = [
     "//base/test:test_support",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
+    "//chromeos/ash/components/browser_context_helper",
     "//components/drive",
     "//components/prefs",
     "//components/user_manager",

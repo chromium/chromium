@@ -14,10 +14,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -39,7 +39,8 @@ FakeDriveFsHelper::FakeDriveFsHelper(Profile* profile,
       drive::FakeDriveFsHelper::kPredefinedProfileSalt);
   fake_drivefs_.RegisterMountingForAccountId(
       base::BindLambdaForTesting([profile]() {
-        auto* user = ash::ProfileHelper::Get()->GetUserByProfile(profile);
+        auto* user =
+            ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
         if (!user)
           return std::string();
 
