@@ -275,7 +275,7 @@ class PageContentExtractionService : public KeyedService,
       content::Page& page,
       PageContent page_content,
       const std::vector<uint8_t>& screenshot_data,
-      std::optional<int> tab_id);
+      std::optional<int64_t> tab_id);
 
  private:
   friend class AnnotatedPageContentRequest;

@@ -77,7 +77,7 @@ class TestPageContentExtractionService : public PageContentExtractionService {
   void OnPageContentExtracted(content::Page& page,
                               PageContent page_content,
                               const std::vector<uint8_t>& screenshot_data,
-                              std::optional<int> tab_id) override {
+                              std::optional<int64_t> tab_id) override {
     PageContentExtractionService::OnPageContentExtracted(
         page, page_content, screenshot_data, tab_id);
     extraction_count_++;

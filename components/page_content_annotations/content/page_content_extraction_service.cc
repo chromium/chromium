@@ -209,7 +209,7 @@ void PageContentExtractionService::OnPageContentExtracted(
     content::Page& page,
     PageContent page_content,
     const std::vector<uint8_t>& screenshot_data,
-    std::optional<int> tab_id) {
+    std::optional<int64_t> tab_id) {
   for (auto& observer : observers_) {
     observer.OnPageContentExtracted(page, page_content);
   }
