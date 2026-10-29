@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_SESSION_MANAGER_SESSION_MANAGER_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_SESSION_MANAGER_SESSION_MANAGER_CLIENT_H_
 
+#include <cstdint>
 #include <map>
 #include <optional>
 #include <string>
@@ -18,7 +19,6 @@
 #include "base/types/expected.h"
 #include "chromeos/ash/components/dbus/login_manager/policy_descriptor.pb.h"
 #include "chromeos/dbus/common/dbus_callback.h"
-#include "components/policy/proto/device_management_backend.pb.h"
 #include "third_party/cros_system_api/dbus/login_manager/dbus-constants.h"
 
 namespace arc {
