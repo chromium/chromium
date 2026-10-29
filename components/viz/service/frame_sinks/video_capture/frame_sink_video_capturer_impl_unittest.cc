@@ -971,6 +971,10 @@ class FrameSinkVideoCapturerTest
     PropagateMojoTasks();
   }
 
+  base::TimeDelta GetDelayBeforeNextRefreshAttempt() const {
+    return capturer_->GetDelayBeforeNextRefreshAttempt();
+  }
+
   gfx::Rect ExpandRectToI420SubsampleBoundaries(const gfx::Rect& rect) {
     return FrameSinkVideoCapturerImpl::ExpandRectToI420SubsampleBoundaries(
         rect);
@@ -2627,6 +2631,120 @@ TEST_P(FrameSinkVideoCapturerTest,
   // ASSERT rather than EXPECT: `at()` below is fatal if the entry is missing.
   ASSERT_EQ(bounds.size(), 1u);
   EXPECT_EQ(bounds.at(kCropId), frame->visible_rect());
+
+  StopCapture();
+}
+
+// Tests that RefreshEntireSourceNow() invalidates the marked frame so the next
+// capture issues a new CopyOutputRequest instead of reusing the cached frame.
+TEST_P(FrameSinkVideoCapturerTest, RefreshEntireSourceNowBypassesResurrection) {
+  frame_sink_.SetCopyOutputColor(SkColorSetARGB(255, 128, 128, 128));
+  EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kVideoCaptureTarget))
+      .WillRepeatedly(Return(&frame_sink_));
+
+  capturer_->ChangeTarget(kVideoCaptureTarget,
+                          /*sub_capture_target_version=*/0);
+
+  MockConsumer consumer;
+  EXPECT_CALL(consumer, OnFrameCapturedMock()).Times(3);
+  EXPECT_CALL(consumer, OnStopped()).Times(1);
+  StartCapture(&consumer);
+
+  // 1. Initial frame capture on start.
+  ASSERT_EQ(1, frame_sink_.num_copy_results());
+  frame_sink_.SendCopyOutputResult(0);
+  ASSERT_EQ(1, consumer.num_frames_received());
+  consumer.SendDoneNotification(0);
+
+  // 2. Request a refresh frame on unchanged content. This reuses the marked
+  // frame without issuing a new CopyOutputRequest.
+  AdvanceClockToNextVsync();
+  capturer_->RequestRefreshFrame();
+  PropagateMojoTasks();
+  EXPECT_FALSE(IsRefreshRetryTimerRunning());
+  EXPECT_EQ(1, frame_sink_.num_copy_results());
+  EXPECT_EQ(2, consumer.num_frames_received());
+  consumer.SendDoneNotification(1);
+
+  // 3. Update resolution constraints, which calls RefreshEntireSourceNow() and
+  // forces a new CopyOutputRequest instead of reusing the marked frame.
+  AdvanceClockToNextVsync();
+  capturer_->SetResolutionConstraints(size_set_.capture_size,
+                                      size_set_.capture_size, false);
+  EXPECT_EQ(2, frame_sink_.num_copy_results());
+  frame_sink_.SendCopyOutputResult(1);
+  EXPECT_EQ(3, consumer.num_frames_received());
+  consumer.SendDoneNotification(2);
+
+  StopCapture();
+}
+
+// Tests that GetDelayBeforeNextRefreshAttempt() clamps the retry delay to
+// kMaxRefreshDelay when the capture period is long.
+TEST_P(FrameSinkVideoCapturerTest,
+       DelayBeforeNextRefreshAttemptIsClampedToMax) {
+  EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kVideoCaptureTarget))
+      .WillRepeatedly(Return(&frame_sink_));
+
+  capturer_->ChangeTarget(kVideoCaptureTarget,
+                          /*sub_capture_target_version=*/0);
+
+  MockConsumer consumer;
+  EXPECT_CALL(consumer, OnFrameCapturedMock()).Times(1);
+  EXPECT_CALL(consumer, OnStopped()).Times(1);
+  StartCapture(&consumer);
+  frame_sink_.SendCopyOutputResult(0);
+  ASSERT_EQ(1, consumer.num_frames_received());
+  consumer.SendDoneNotification(0);
+
+  // Set a 10-second capture period, which exceeds kMaxRefreshDelay (1 second).
+  capturer_->SetMinCapturePeriod(base::Seconds(10));
+
+  EXPECT_EQ(FrameSinkVideoCapturerImpl::kMaxRefreshDelay,
+            GetDelayBeforeNextRefreshAttempt());
+
+  StopCapture();
+}
+
+// Tests that lowering SetMinCapturePeriod while the refresh retry timer is
+// running runs RefreshNow() right away.
+TEST_P(FrameSinkVideoCapturerTest,
+       SetMinCapturePeriodWakesUpPendingRefreshRetry) {
+  frame_sink_.SetCopyOutputColor(SkColorSetARGB(255, 128, 128, 128));
+  EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kVideoCaptureTarget))
+      .WillRepeatedly(Return(&frame_sink_));
+
+  capturer_->ChangeTarget(kVideoCaptureTarget,
+                          /*sub_capture_target_version=*/0);
+
+  MockConsumer consumer;
+  EXPECT_CALL(consumer, OnFrameCapturedMock()).Times(2);
+  EXPECT_CALL(consumer, OnStopped()).Times(1);
+  StartCapture(&consumer);
+  frame_sink_.SendCopyOutputResult(0);
+  ASSERT_EQ(1, consumer.num_frames_received());
+  consumer.SendDoneNotification(0);
+
+  // Set a 500ms min capture period so an immediate refresh is rate-limited.
+  capturer_->SetMinCapturePeriod(base::Milliseconds(500));
+
+  // Request a refresh frame immediately. Because 500ms has not elapsed since
+  // the last capture, the oracle rate-limits it and starts the retry timer.
+  capturer_->RequestRefreshFrame();
+  EXPECT_TRUE(IsRefreshRetryTimerRunning());
+
+  // Advance 100ms, which is still within the 500ms capture period.
+  task_runner_->FastForwardBy(base::Milliseconds(100));
+  EXPECT_TRUE(IsRefreshRetryTimerRunning());
+
+  // Lower the min capture period to 50ms. Because 100ms has elapsed since the
+  // last frame, the capturer runs the pending refresh right away and stops the
+  // retry timer.
+  capturer_->SetMinCapturePeriod(base::Milliseconds(50));
+  PropagateMojoTasks();
+
+  EXPECT_FALSE(IsRefreshRetryTimerRunning());
+  EXPECT_EQ(2, consumer.num_frames_received());
 
   StopCapture();
 }

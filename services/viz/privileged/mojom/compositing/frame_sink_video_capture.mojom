@@ -225,8 +225,11 @@ interface FrameSinkVideoCapturer {
   // stream" signal provided by FrameSinkVideoConsumer.OnStopped().
   Stop();
 
-  // Requests the capturer send a duplicate of the last frame. This is used to
-  // resolve occasional "picture loss" issues consumer-side.
+  // Requests that the capturer send a frame with the current source content to
+  // the consumer. If the source content has not changed, the capturer can
+  // reuse the last captured frame without a new GPU readback. If the oracle
+  // rate-limits the capture or the target is not ready, the capturer schedules
+  // a retry within 1 second (`kMaxRefreshDelay`).
   RequestRefreshFrame();
 
   // Invalidates all used buffers.

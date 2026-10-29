@@ -74,6 +74,19 @@ class GmbVideoFramePoolContextProvider;
 // media::VideoCaptureOracle, this capturer will make a CopyOutputRequest on the
 // surface. Successful CopyOutputResults are then copied into pooled shared
 // memory for efficient transport to the consumer.
+//
+// Refresh, retry, and frame resurrection:
+// - Both compositor updates (OnFrameDamaged) and refresh requests
+//   (Start, RequestRefreshFrame, RefreshNow) can trigger a frame capture.
+// - A capture cannot start when the oracle rate-limits it, the frame pool is
+//   full, or the target is not ready. In these cases,
+//   MaybeScheduleRefreshFrame() starts a retry timer capped at
+//   `kMaxRefreshDelay` (1 second).
+// - When the surface has not changed, a refresh reuses `marked_frame_` instead
+//   of running a new GPU readback, if the content version and capture size
+//   match (CanResurrectFrame). InvalidateEntireSource() and
+//   RefreshEntireSourceNow() increment `content_version_` to force a new
+//   capture.
 class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
     : public CapturableFrameSink::Client,
       public VideoCaptureOverlay::FrameSource,
@@ -129,11 +142,10 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   void Start(mojo::PendingRemote<mojom::FrameSinkVideoConsumer> consumer,
              mojom::BufferFormatPreference buffer_format_preference) final;
   void Stop() final;
-  // If currently stopped, starts the refresh frame timer to guarantee a frame
-  // representing the most up-to-date content will be sent to the consumer in
-  // the near future. This refresh operation will be canceled if a compositing
-  // event triggers a frame capture in the meantime, and will result in a frame
-  // sent to the consumer with a delay of up to one second.
+  // Requests a frame with the current surface content. If the content has not
+  // changed, this call can reuse `marked_frame_` without a GPU copy request.
+  // If the oracle rate-limits the capture or the target is not ready, the
+  // capturer schedules a retry.
   void RequestRefreshFrame() final;
   void InvalidateBuffers() final;
   void CreateOverlay(int32_t stacking_index,
@@ -144,11 +156,9 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   gfx::Size GetSourceSize() final;
   void InvalidateRect(const gfx::Rect& rect) final;
   void OnOverlayConnectionLost(VideoCaptureOverlay* overlay) final;
-  // Executes a refresh capture, if conditions permit. Otherwise, schedules a
-  // later retry. Note that the retry "polling" should be a short-term state,
-  // since it only occurs until the oracle allows the next frame capture to take
-  // place. If a refresh was already pending, it is canceled in favor of this
-  // new refresh.
+  // Runs an immediate refresh capture (`kRefreshDemand`) and stops any pending
+  // retry timer. If the capture cannot start right away, the capturer schedules
+  // a retry.
   void RefreshNow() final;
 
   // Default configuration.
@@ -179,9 +189,8 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // exceeding 60% of the design limit is considered "red line" operation.
   static constexpr float kTargetPipelineUtilization = 0.6f;
 
-  // The maximum refresh delay. Provides an upper limit for how long the
-  // capture source will remain idle. Callers of the API that request a refresh
-  // frame may end up waiting up to this long.
+  // The maximum refresh delay. Bounds how long the capture source stays idle
+  // before the retry timer attempts another refresh frame.
   static constexpr base::TimeDelta kMaxRefreshDelay = base::Seconds(1);
 
   // Calculate content rectangle
@@ -208,22 +217,20 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   using OracleFrameNumber =
       decltype(std::declval<media::VideoCaptureOracle>().next_frame_number());
 
-  // If the refresh timer is not currently running, this schedules a call
-  // to RefreshInternal with kRefreshRequest as the event.
+  // If `refresh_frame_retry_timer_` is not running, starts it with
+  // GetDelayBeforeNextRefreshAttempt() to retry the capture.
   void MaybeScheduleRefreshFrame();
 
-  // Sets the `dirty_rect_` to maximum size and updates the content version.
+  // Marks the entire source dirty and increments `content_version_` so the next
+  // capture cannot reuse `marked_frame_`.
   void InvalidateEntireSource();
 
-  // Returns the delay that should be used when setting the refresh timer. This
-  // is based on the current oracle prediction for frame duration and is
-  // bounded by `kMaxRefreshDelay`.
+  // Returns the retry delay: `2 * max(estimated_frame_duration,
+  // min_capture_period)`, capped at `kMaxRefreshDelay`.
   base::TimeDelta GetDelayBeforeNextRefreshAttempt() const;
 
-  // Called whenever a major damage event, such as a capture parameter change, a
-  // resolved target change, etc., occurs. This marks the entire source as dirty
-  // and ensures the consumer will receive a refresh frame with up-to-date
-  // content.
+  // Marks the entire source dirty and runs RefreshNow() to force a new capture
+  // instead of reusing `marked_frame_`.
   void RefreshEntireSourceNow();
 
   // CapturableFrameSink::Client implementation:
@@ -241,8 +248,8 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // to the frame sink manager.
   void ResolveTarget();
 
-  // Helper method that actually implements the refresh logic. `event` is used
-  // to determine if the refresh is urgent for scheduling purposes.
+  // Resolves the target, updates the source size if needed, and attempts a
+  // refresh capture for `event` (`kRefreshRequest` or `kRefreshDemand`).
   void RefreshInternal(media::VideoCaptureOracle::Event event);
 
   // Returns a list of the overlays in rendering order.
@@ -478,13 +485,15 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   int64_t next_capture_frame_number_ = 0;
   int64_t next_delivery_frame_number_ = 0;
 
-  // This timer is started whenever the consumer needs another frame delivered.
-  // This might be because: 1) the consumer was just started and needs an
-  // initial frame; 2) the capture target changed; 3) the oracle rejected
-  // an event for timing reasons; 4) to satisfy explicit requests for a refresh
-  // frame, when RequestRefreshFrame() has been called.
+  // Schedules a retry when the consumer needs a frame, but capture cannot
+  // start right away. This happens when:
+  // 1) the consumer just started and needs an initial frame,
+  // 2) the capture target changed or is not yet resolved,
+  // 3) the oracle rate-limited a capture event,
+  // 4) the frame pool is full, or
+  // 5) an explicit refresh request must wait before it can run.
   //
-  // Note: This is always set, but the instance is overridden for unit testing.
+  // Note: This is always set, but unit tests override the timer instance.
   std::optional<base::OneShotTimer> refresh_frame_retry_timer_;
 
   raw_ptr<GmbVideoFramePoolContextProvider>
@@ -495,16 +504,17 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // frames in-flight at any one time.
   std::unique_ptr<VideoFramePool> frame_pool_;
 
-  // Increased every time the source content changes or a forced refresh is
-  // requested.
+  // Incremented whenever source content changes (OnFrameDamaged,
+  // InvalidateRect) or a full refresh is forced (InvalidateEntireSource).
   int64_t content_version_ = 0;
 
+  // The content version of `marked_frame_`, or -1 when `marked_frame_` is null.
   int64_t content_version_in_marked_frame_ = -1;
 
-  // The frame that is currently marked. Marked frame is the frame that has the
-  // most recent content version (with video overlays already applied), and thus
-  // can be directly returned to the consumer if the current content version
-  // matches the content version in the marked frame.
+  // The most recent captured frame, with video overlays already blended. When
+  // CanResurrectFrame() is true (`content_version_ ==
+  // content_version_in_marked_frame_` and the frame size matches), refresh
+  // captures reuse this frame instead of issuing a new GPU CopyOutputRequest.
   scoped_refptr<media::VideoFrame> marked_frame_ = nullptr;
 
   // Number of frames that are currently in flight (i.e. in use by consumer).
