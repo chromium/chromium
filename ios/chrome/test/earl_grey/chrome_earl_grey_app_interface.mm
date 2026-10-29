@@ -20,6 +20,7 @@
 #import "base/ios/ios_util.h"
 #import "base/json/json_writer.h"
 #import "base/no_destructor.h"
+#import "base/path_service.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -72,6 +73,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
@@ -1854,10 +1856,12 @@ class InAppWaiter {
 
 + (void)setUserDefaultsObject:(id)value forKey:(NSString*)defaultName {
   [[NSUserDefaults standardUserDefaults] setObject:value forKey:defaultName];
+  [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 + (void)removeUserDefaultsObjectForKey:(NSString*)key {
   [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
+  [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 + (id)userDefaultsObjectForKey:(NSString*)key {
@@ -2090,6 +2094,29 @@ class InAppWaiter {
 + (bool)hasFirstRunSentinel {
   base::ScopedAllowBlockingForTesting allow_blocking;
   return HasFirstRunSentinel();
+}
+
+#pragma mark - Post Restore Utilities
+
++ (void)writeDeviceRestoreSentinel {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath user_data_path;
+  CHECK(base::PathService::Get(ios::DIR_USER_DATA, &user_data_path));
+  base::FilePath backed_up_path =
+      user_data_path.Append(FILE_PATH_LITERAL("BackedUpSentinel"));
+  CHECK(base::WriteFile(backed_up_path, ""));
+}
+
++ (void)removeDeviceRestoreSentinel {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath user_data_path;
+  CHECK(base::PathService::Get(ios::DIR_USER_DATA, &user_data_path));
+  base::FilePath backed_up_path =
+      user_data_path.Append(FILE_PATH_LITERAL("BackedUpSentinel"));
+  base::FilePath not_backed_up_path =
+      user_data_path.Append(FILE_PATH_LITERAL("NotBackedUpSentinel"));
+  base::DeleteFile(backed_up_path);
+  base::DeleteFile(not_backed_up_path);
 }
 
 #pragma mark - Notification Utilities

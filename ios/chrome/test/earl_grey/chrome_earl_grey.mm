@@ -2248,6 +2248,16 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface hasFirstRunSentinel];
 }
 
+#pragma mark - Post Restore Utilities
+
+- (void)writeDeviceRestoreSentinel {
+  [ChromeEarlGreyAppInterface writeDeviceRestoreSentinel];
+}
+
+- (void)removeDeviceRestoreSentinel {
+  [ChromeEarlGreyAppInterface removeDeviceRestoreSentinel];
+}
+
 #pragma mark - Notification Utilities
 
 - (void)requestTipsNotification:(TipsNotificationType)type {

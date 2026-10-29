@@ -786,10 +786,12 @@ enum class TipsNotificationType;
 
 #pragma mark - Default Utilities (EG2)
 
-// Stores a value for the provided key in NSUserDefaults.
+// Stores `value` for the provided `defaultName` in `NSUserDefaults` and
+// synchronizes it immediately.
 + (void)setUserDefaultsObject:(id)value forKey:(NSString*)defaultName;
 
-// Removes the object for the provided `key` in NSUserDefaults.
+// Removes the object for the provided `key` in `NSUserDefaults` and
+// synchronizes changes immediately.
 + (void)removeUserDefaultsObjectForKey:(NSString*)key;
 
 // Returns the value for provided key from NSUserDefaults.
@@ -936,6 +938,15 @@ enum class TipsNotificationType;
 
 // Whether the first run sentinel exists.
 + (bool)hasFirstRunSentinel;
+
+#pragma mark - Post Restore Utilities
+
+// Writes the `BackedUpSentinel` file, used to simulate that an iOS device
+// backup/restore state has occurred prior to app launch.
++ (void)writeDeviceRestoreSentinel;
+
+// Removes the `BackedUpSentinel` and `NotBackedUpSentinel` files.
++ (void)removeDeviceRestoreSentinel;
 
 #pragma mark - Notification Utilities
 

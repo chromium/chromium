@@ -18,19 +18,19 @@ namespace {
 base::TimeDelta kPromoAppearanceTimeout = base::Seconds(7);
 NSString* const kDefaultBrowserKey = @"DefaultBrowserUtils";
 
-// Matcher for the title.
+// Matcher for the post restore default browser promo title.
 id<GREYMatcher> TitleMatcher() {
   return grey_text(
       l10n_util::GetNSString(IDS_IOS_POST_RESTORE_DEFAULT_BROWSER_PROMO_TITLE));
 }
 
-// Matcher for the "Open Settings" button.
+// Matcher for the primary action button (`Open Settings`).
 id<GREYMatcher> PrimaryActionMatcher() {
   return grey_text(l10n_util::GetNSString(
       IDS_IOS_POST_RESTORE_DEFAULT_BROWSER_PRIMARY_ACTION));
 }
 
-// Matcher for the "No Thanks" button.
+// Matcher for the secondary action button (`No Thanks`).
 id<GREYMatcher> SecondaryActionMatcher() {
   return grey_text(l10n_util::GetNSString(
       IDS_IOS_POST_RESTORE_DEFAULT_BROWSER_SECONDARY_ACTION));
@@ -43,8 +43,17 @@ id<GREYMatcher> SecondaryActionMatcher() {
 
 @implementation PostRestoreDefaultBrowserPromoTestCase
 
+// Cleans up `NSUserDefaults` and device restore sentinels after each test case.
+- (void)tearDownHelper {
+  [ChromeEarlGrey removeUserDefaultsObjectForKey:kDefaultBrowserKey];
+  [ChromeEarlGrey removeDeviceRestoreSentinel];
+  [super tearDownHelper];
+}
+
 #pragma mark - Helpers
 
+// Asserts that the title, primary action button, and secondary action button
+// of the post-restore promo are sufficiently visible.
 - (void)checkThatCommonElementsAreVisible {
   [[EarlGrey selectElementWithMatcher:TitleMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -54,6 +63,8 @@ id<GREYMatcher> SecondaryActionMatcher() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Asserts that the title, primary action button, and secondary action button
+// of the post-restore promo are not visible.
 - (void)checkThatCommonElementsAreNotVisible {
   [[EarlGrey selectElementWithMatcher:TitleMatcher()]
       assertWithMatcher:grey_notVisible()];
@@ -63,6 +74,8 @@ id<GREYMatcher> SecondaryActionMatcher() {
       assertWithMatcher:grey_notVisible()];
 }
 
+// Relaunches the app simulating a post-device-restore state with the
+// `IPH_iOSPromoPostRestoreDefaultBrowser` feature enabled.
 - (void)simulateRestore {
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
@@ -80,16 +93,19 @@ id<GREYMatcher> SecondaryActionMatcher() {
 
 #pragma mark - Tests
 
-// Verifies that the promo appears for users who had Chrome set as their default
-// browser before a restore. Verifies that secondary action button dismisses the
-// promo.
-// TODO(crbug.com/418750327): Test is failing on iPhone and iPad.
-- (void)DISABLED_testPromoAppears {
+// Verifies that the post-restore default browser promo appears when Chrome was
+// previously set as default browser and that dismissing it hides the promo.
+- (void)testPromoAppears {
   // Simulate setting Chrome as default browser.
   NSMutableDictionary<NSString*, NSObject*>* storage = [[ChromeEarlGrey
       userDefaultsObjectForKey:kDefaultBrowserKey] mutableCopy];
+  if (!storage) {
+    storage = [[NSMutableDictionary alloc] init];
+  }
   storage[@"lastHTTPURLOpenTime"] = [NSDate date];
   [ChromeEarlGrey setUserDefaultsObject:storage forKey:kDefaultBrowserKey];
+
+  [ChromeEarlGrey writeDeviceRestoreSentinel];
 
   [self simulateRestore];
 
@@ -99,13 +115,12 @@ id<GREYMatcher> SecondaryActionMatcher() {
   [[EarlGrey selectElementWithMatcher:SecondaryActionMatcher()]
       performAction:grey_tap()];
   [self checkThatCommonElementsAreNotVisible];
-
-  [ChromeEarlGrey removeUserDefaultsObjectForKey:kDefaultBrowserKey];
 }
 
-// Verifies that the promo does not appear after a restore if the user did not
-// previously set Chrome as their default browser.
+// Verifies that the post-restore promo does not appear if Chrome was not
+// previously set as default browser.
 - (void)testPromoDoesNotAppear_defaultBrowserNotEnabled {
+  [ChromeEarlGrey writeDeviceRestoreSentinel];
   [self simulateRestore];
   [self checkThatCommonElementsAreNotVisible];
 }
