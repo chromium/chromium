@@ -322,7 +322,7 @@ public class TabGridDialogTest {
                 addBlankTabs(cta, false, 1);
             }
         } else {
-            LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
+            LayoutTestUtils.waitForBrowsingLayout(cta);
         }
     }
 
@@ -1706,7 +1706,7 @@ public class TabGridDialogTest {
         clickThroughConfirmationDialog();
 
         // Rather than destroying the activity the GTS should be showing.
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.HUB);
+        LayoutTestUtils.waitForHubLayout(cta);
         verifyTabSwitcherCardCount(cta, 0);
     }
 
@@ -1856,7 +1856,7 @@ public class TabGridDialogTest {
                                             withId(R.id.tab_grid_dialog_toolbar_container))))
                     .perform(click());
             waitForDialogHidingAnimation(cta);
-            LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
+            LayoutTestUtils.waitForBrowsingLayout(cta);
 
             openDialogFromStripAndVerify(cta, 4, null);
         }

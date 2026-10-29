@@ -471,7 +471,7 @@ public class ShowNtpAtStartupTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> cta.findViewById(R.id.tab_switcher_button).performClick());
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.HUB);
+        LayoutTestUtils.waitForHubLayout(cta);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     cta.getTabModelSelector()
@@ -492,7 +492,7 @@ public class ShowNtpAtStartupTest {
         NewTabPageTestUtils.waitForNtpLoaded(ntpTab);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> cta.getLayoutManager().showLayout(LayoutType.HUB, false));
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.HUB);
+        LayoutTestUtils.waitForHubLayout(cta);
         ThreadUtils.runOnUiThreadBlocking(() -> cta.onBackPressed());
         NewTabPageTestUtils.waitForNtpLoaded(ntpTab);
         assertFalse(

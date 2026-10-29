@@ -6,37 +6,45 @@ package org.chromium.chrome.test.transit.layouts;
 
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.compositor.layouts.Layout;
+import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 
 import java.util.function.Supplier;
 
 /** Check that the current LayoutType is the expected one. */
 public class LayoutTypeVisibleCondition extends Condition {
-    private final Supplier<ChromeTabbedActivity> mActivitySupplier;
+    private final @Nullable Supplier<ChromeTabbedActivity> mActivitySupplier;
+    private final @Nullable LayoutManager mLayoutManager;
     private final @LayoutType int mExpectedLayoutType;
 
     public LayoutTypeVisibleCondition(
             Supplier<ChromeTabbedActivity> activitySupplier, @LayoutType int expectedLayoutType) {
         super(/* isRunOnUiThread= */ true);
         mActivitySupplier = dependOnSupplier(activitySupplier, "Activity");
+        mLayoutManager = null;
+        mExpectedLayoutType = expectedLayoutType;
+    }
+
+    /** For callers that hold a {@link LayoutManager} rather than the Activity. */
+    public LayoutTypeVisibleCondition(
+            LayoutManager layoutManager, @LayoutType int expectedLayoutType) {
+        super(/* isRunOnUiThread= */ true);
+        mActivitySupplier = null;
+        mLayoutManager = layoutManager;
         mExpectedLayoutType = expectedLayoutType;
     }
 
     @Override
     protected ConditionStatus checkWithSuppliers() throws Exception {
-        Layout activeLayout = mActivitySupplier.get().getLayoutManager().getActiveLayout();
-        if (activeLayout == null) {
-            return whetherEquals(
-                    mExpectedLayoutType,
-                    LayoutType.NONE,
-                    LayoutTypeVisibleCondition::getLayoutTypeName);
-        }
-
-        @LayoutType int layoutType = activeLayout.getLayoutType();
-        boolean isStartingToHide = activeLayout.isStartingToHide();
-        boolean isStartingToShow = activeLayout.isStartingToShow();
+        LayoutManager layoutManager =
+                mLayoutManager != null
+                        ? mLayoutManager
+                        : mActivitySupplier.get().getLayoutManager();
+        @LayoutType int layoutType = layoutManager.getActiveLayoutType();
+        boolean isStartingToHide = layoutManager.isLayoutStartingToHide(layoutType);
+        boolean isStartingToShow = layoutManager.isLayoutStartingToShow(layoutType);
         String expectedDescription = getLayoutTypeName(mExpectedLayoutType);
         String actualDescription = getLayoutTypeName(layoutType);
         if (isStartingToHide) {

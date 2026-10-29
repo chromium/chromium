@@ -210,7 +210,6 @@ android_library("chrome_test_java_helper") {
     "//chrome/browser/ui/android/hats:java",
     "//chrome/browser/ui/android/hats/test:test_support_java",
     "//chrome/browser/ui/android/layouts:java",
-    "//chrome/browser/ui/android/layouts/test:java",
     "//chrome/browser/ui/android/logo:java",
     "//chrome/browser/ui/android/multiwindow:java",
     "//chrome/browser/ui/android/native_page:java",

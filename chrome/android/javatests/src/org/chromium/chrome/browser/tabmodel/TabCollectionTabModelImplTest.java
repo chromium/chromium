@@ -43,11 +43,9 @@ import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabGroupCollectionData;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -3907,10 +3905,9 @@ public class TabCollectionTabModelImplTest {
 
         // Exit the tab switcher to fulfill AutoResetCtaTransitTestRule for future tests.
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        LayoutManagerChrome layoutManager = cta.getLayoutManager();
-        LayoutTestUtils.waitForLayout(layoutManager, LayoutType.HUB);
+        LayoutTestUtils.waitForHubLayout(cta);
         clickFirstCardFromTabSwitcher(cta);
-        LayoutTestUtils.waitForLayout(layoutManager, LayoutType.BROWSING);
+        LayoutTestUtils.waitForBrowsingLayout(cta);
 
         ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
     }
@@ -4239,7 +4236,7 @@ public class TabCollectionTabModelImplTest {
 
         // Exit the tab switcher to fulfill AutoResetCtaTransitTestRule for future tests.
         TabUiTestHelper.clickNthCardFromTabSwitcher(mActivityTestRule.getActivity(), 0);
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
+        LayoutTestUtils.waitForBrowsingLayout(cta);
 
         ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
     }

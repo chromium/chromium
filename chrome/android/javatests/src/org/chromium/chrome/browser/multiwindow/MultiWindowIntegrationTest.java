@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -174,7 +173,7 @@ public class MultiWindowIntegrationTest {
         waitForTabs("CTA2", cta2, 1, blankTab);
 
         // Once all the tabs from one activity have been removed, the tab switcher should be shown.
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.HUB);
+        LayoutTestUtils.waitForHubLayout(cta);
 
         // The activity should also remain alive.
         Assert.assertFalse("The original activity should not be finishing!", cta.isFinishing());

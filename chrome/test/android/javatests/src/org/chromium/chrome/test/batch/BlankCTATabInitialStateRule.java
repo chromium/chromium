@@ -10,10 +10,10 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -218,6 +218,14 @@ public class BlankCTATabInitialStateRule implements TestRule {
                             return newTab;
                         });
         ChromeTabUtils.waitForTabPageLoaded(createdTab, "about:blank");
-        LayoutTestUtils.waitForLayout(getActivity().getLayoutManager(), LayoutType.BROWSING);
+        // LayoutTestUtils is in chrome_java_transit, which this target can't depend on.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    LayoutManagerChrome layoutManager = getActivity().getLayoutManager();
+                    return layoutManager.isLayoutVisible(LayoutType.BROWSING)
+                            && !layoutManager.isLayoutStartingToShow(LayoutType.BROWSING)
+                            && !layoutManager.isLayoutStartingToHide(LayoutType.BROWSING);
+                },
+                "BROWSING layout never finished showing");
     }
 }

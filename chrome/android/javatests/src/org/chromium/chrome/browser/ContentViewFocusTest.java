@@ -32,7 +32,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -191,8 +190,7 @@ public class ContentViewFocusTest {
         Assert.assertNotNull("'tab_switcher_button' view is not found.", tabSwitcherButton);
         TouchCommon.singleClickView(
                 mActivityTestRule.getActivity().findViewById(R.id.tab_switcher_button));
-        LayoutTestUtils.waitForLayout(
-                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.HUB);
+        LayoutTestUtils.waitForHubLayout(mActivityTestRule.getActivity());
 
         // Make sure the view loses focus. It is immediately given focus back
         // because it's the only focusable view.
@@ -203,8 +201,7 @@ public class ContentViewFocusTest {
         Assert.assertNotNull("'tab_switcher_button' view is not found.", tabSwitcherButton);
         TouchCommon.singleClickView(
                 mActivityTestRule.getActivity().findViewById(R.id.tab_switcher_button));
-        LayoutTestUtils.waitForLayout(
-                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
+        LayoutTestUtils.waitForBrowsingLayout(mActivityTestRule.getActivity());
 
         Assert.assertTrue("Content view didn't regain focus", blockForFocusChanged());
         Assert.assertFalse("Unexpected focus change", haveFocusChanges());

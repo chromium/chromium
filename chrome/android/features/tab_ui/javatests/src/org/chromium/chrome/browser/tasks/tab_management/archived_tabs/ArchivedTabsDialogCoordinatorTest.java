@@ -68,7 +68,6 @@ import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
@@ -381,8 +380,7 @@ public class ArchivedTabsDialogCoordinatorTest {
                                 viewHolder.itemView.performClick();
                             }
                         });
-        LayoutTestUtils.waitForLayout(
-                mCtaTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
+        LayoutTestUtils.waitForBrowsingLayout(mCtaTestRule.getActivity());
         Tab activityTab = mCtaTestRule.getActivity().getActivityTabProvider().get();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> assertEquals(mRegularTabModel.getTabAt(2), activityTab));
@@ -680,8 +678,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         assertEquals(2, getTabCountOnUiThread(mRegularTabModel));
         assertEquals(1, getTabCountOnUiThread(mArchivedTabModel));
 
-        LayoutTestUtils.waitForLayout(
-                mCtaTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
+        LayoutTestUtils.waitForBrowsingLayout(mCtaTestRule.getActivity());
         Tab activityTab = mCtaTestRule.getActivity().getActivityTabProvider().get();
         CriteriaHelper.pollUiThread(() -> activityTab.getId() == tabId);
         assertEquals(1, mUserActionTester.getActionCount("Tabs.RestoreSingleTab"));

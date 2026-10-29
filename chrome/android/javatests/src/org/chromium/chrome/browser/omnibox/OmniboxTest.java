@@ -544,6 +544,8 @@ public class OmniboxTest {
 
     private void waitForTabSelectedAndRestored(Tab expected) {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        // Not waitForBrowsingLayout(): the restored Omnibox is focused, which hides toolbar
+        // buttons that CtaPageStation expects.
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
         CriteriaHelper.pollUiThread(
                 () -> {

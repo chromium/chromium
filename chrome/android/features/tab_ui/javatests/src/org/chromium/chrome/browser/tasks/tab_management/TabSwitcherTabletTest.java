@@ -121,7 +121,7 @@ public class TabSwitcherTabletTest {
                                     null,
                                     0);
                         });
-                LayoutTestUtils.waitForLayout(layoutManager, LayoutType.BROWSING);
+                LayoutTestUtils.waitForBrowsingLayout(cta);
             } else {
                 if (selector.getCurrentModel().isIncognito()) {
                     clickIncognitoToggleButton();
@@ -129,7 +129,7 @@ public class TabSwitcherTabletTest {
                 exitSwitcherWithTabClick(0);
             }
         } else {
-            LayoutTestUtils.waitForLayout(layoutManager, LayoutType.BROWSING);
+            LayoutTestUtils.waitForBrowsingLayout(cta);
         }
     }
 
@@ -301,7 +301,7 @@ public class TabSwitcherTabletTest {
         // Close the last tab.
         tabSwitcher.closeTabAtIndex(0, TabSwitcherStation.class);
 
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.HUB);
+        LayoutTestUtils.waitForHubLayout(cta);
 
         // Check whether empty view show up.
         @IdRes int tabSwitcherAncestorId = TabUiTestHelper.getTabSwitcherAncestorId(cta);
@@ -367,8 +367,7 @@ public class TabSwitcherTabletTest {
 
     private void exitSwitcherWithTabClick(int index) {
         TabUiTestHelper.clickNthCardFromTabSwitcher(mActivityTestRule.getActivity(), index);
-        LayoutTestUtils.waitForLayout(
-                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
+        LayoutTestUtils.waitForBrowsingLayout(mActivityTestRule.getActivity());
     }
 
     private void ensureHubLayout() {

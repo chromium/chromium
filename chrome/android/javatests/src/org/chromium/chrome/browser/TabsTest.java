@@ -246,8 +246,7 @@ public class TabsTest {
                 BottomBarTestUtils.findViewById(
                         mActivityTestRule.getActivity(), R.id.tab_switcher_button);
         onViewWaiting(Matchers.is(tabSwitcherBtn)).check(matches(isDisplayed())).perform(click());
-        LayoutTestUtils.waitForLayout(
-                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.HUB);
+        LayoutTestUtils.waitForHubLayout(mActivityTestRule.getActivity());
 
         int newTabButtonId =
                 BottomBarTestUtils.isBottomBarVisible(mActivityTestRule.getActivity())
@@ -256,8 +255,7 @@ public class TabsTest {
         View newTabBtn =
                 BottomBarTestUtils.findViewById(mActivityTestRule.getActivity(), newTabButtonId);
         onViewWaiting(Matchers.is(newTabBtn)).check(matches(isDisplayed())).perform(click());
-        LayoutTestUtils.waitForLayout(
-                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
+        LayoutTestUtils.waitForBrowsingLayout(mActivityTestRule.getActivity());
 
         int currentTabCount =
                 runOnUiThreadBlocking(

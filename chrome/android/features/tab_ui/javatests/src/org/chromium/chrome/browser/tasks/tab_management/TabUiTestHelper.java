@@ -135,7 +135,7 @@ public class TabUiTestHelper {
                                         null);
                     });
         }
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
+        LayoutTestUtils.waitForBrowsingLayout(cta);
     }
 
     /**
@@ -237,7 +237,7 @@ public class TabUiTestHelper {
                                 withId(R.id.tab_list_recycler_view),
                                 withParent(withId(R.id.tab_grid_dialog_recycler_view_container))))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(index, click()));
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
+        LayoutTestUtils.waitForBrowsingLayout(cta);
     }
 
     /**

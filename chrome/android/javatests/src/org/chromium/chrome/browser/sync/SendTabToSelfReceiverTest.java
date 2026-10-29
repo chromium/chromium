@@ -13,7 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.chromium.chrome.browser.layouts.LayoutTestUtils.waitForLayout;
+import static org.chromium.chrome.browser.layouts.LayoutTestUtils.waitForBrowsingLayout;
 
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
@@ -364,7 +364,7 @@ public class SendTabToSelfReceiverTest {
 
         // Click on the STTS tab card to select/interact with it
         TabUiTestHelper.clickNthCardFromTabSwitcher(mSyncTestRule.getActivity(), 1);
-        waitForLayout(mSyncTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
+        waitForBrowsingLayout(mSyncTestRule.getActivity());
 
         // Re-open the Tab Switcher to verify the label is gone
         TabUiTestHelper.enterTabSwitcher(mSyncTestRule.getActivity());
@@ -505,7 +505,7 @@ public class SendTabToSelfReceiverTest {
         // Click on the tab card to activate it.
         // Note: The auto-opened tab is at index 1. Index 0 is the default tab.
         TabUiTestHelper.clickNthCardFromTabSwitcher(mSyncTestRule.getActivity(), 1);
-        waitForLayout(mSyncTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
+        waitForBrowsingLayout(mSyncTestRule.getActivity());
 
         // Verify that the histograms were logged.
         watcher.assertExpected();
@@ -745,7 +745,7 @@ public class SendTabToSelfReceiverTest {
 
         // Click on the tab card to activate it.
         TabUiTestHelper.clickNthCardFromTabSwitcher(mSyncTestRule.getActivity(), 1);
-        waitForLayout(mSyncTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
+        waitForBrowsingLayout(mSyncTestRule.getActivity());
 
         // Verify that the data was removed after activation.
         Assert.assertNull(
@@ -804,7 +804,7 @@ public class SendTabToSelfReceiverTest {
 
         // Click on the tab card to activate it.
         TabUiTestHelper.clickNthCardFromTabSwitcher(mSyncTestRule.getActivity(), 1);
-        waitForLayout(mSyncTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
+        waitForBrowsingLayout(mSyncTestRule.getActivity());
 
         // Verify that the data was removed after activation upon showing the tab.
         Assert.assertNull(
@@ -972,7 +972,7 @@ public class SendTabToSelfReceiverTest {
 
         // Click on the received tab card (index 1) from the tab switcher.
         TabUiTestHelper.clickNthCardFromTabSwitcher(mSyncTestRule.getActivity(), 1);
-        waitForLayout(mSyncTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
+        waitForBrowsingLayout(mSyncTestRule.getActivity());
 
         // Verify that the received tab (index 1) is selected.
         Assert.assertEquals(

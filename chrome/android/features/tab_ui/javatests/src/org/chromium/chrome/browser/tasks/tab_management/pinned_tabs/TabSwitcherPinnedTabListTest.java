@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -159,7 +158,7 @@ public class TabSwitcherPinnedTabListTest {
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
 
         // Should exit GTS and navigate to browsing mode for targetTabId.
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
+        LayoutTestUtils.waitForBrowsingLayout(cta);
         int currentTabId =
                 ThreadUtils.runOnUiThreadBlocking(() -> cta.getActivityTabProvider().get().getId());
         assertEquals(targetTabId, currentTabId);

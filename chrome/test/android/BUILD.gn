@@ -137,6 +137,7 @@ android_library("chrome_java_transit") {
   resources_package = "org.chromium.chrome"
 
   sources = [
+    "javatests/src/org/chromium/chrome/browser/layouts/LayoutTestUtils.java",
     "javatests/src/org/chromium/chrome/test/transit/AddToGroupSubmenuFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/AppMenuFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/AppMenuSubmenuFacility.java",
@@ -455,7 +456,6 @@ android_library("chrome_java_integration_test_support") {
     "//chrome/browser/ui/android/bottombar:java",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/android/layouts:java",
-    "//chrome/browser/ui/android/layouts/test:java",
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/ui/android/omnibox:java",
     "//chrome/browser/ui/android/theme:java",
