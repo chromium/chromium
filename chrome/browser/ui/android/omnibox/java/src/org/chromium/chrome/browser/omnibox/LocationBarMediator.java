@@ -3719,7 +3719,7 @@ public class LocationBarMediator
 
         @Override
         public boolean hasSpaceToShow() {
-            if (!mIsTablet || !ChromeFeatureList.sToolbarTabletResizeRefactor.isEnabled()) {
+            if (!mIsTablet) {
                 return true;
             }
             return mHasSpaceToShow;
@@ -3732,8 +3732,6 @@ public class LocationBarMediator
 
         @Override
         public int updateVisibility(int availableWidth) {
-            assert ChromeFeatureList.sToolbarTabletResizeRefactor.isEnabled();
-
             mHasSpaceToShow = availableWidth >= mButtonWidth;
             if (mShouldShowButton.get() && mHasSpaceToShow) {
                 mUpdateButtonVisibility.onResult(true);
