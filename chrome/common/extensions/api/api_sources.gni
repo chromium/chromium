@@ -77,7 +77,6 @@ if (enable_extensions) {
   ]
   schema_sources_ += [
     "autofill_private.idl",
-    "autotest_private.webidl",
     "bookmark_manager_private.json",
     "braille_display_private.webidl",
     "command_line_private.json",

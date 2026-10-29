@@ -10,6 +10,7 @@ assert(enable_extensions_core)
 
 chromeos_schema_sources_ = [
   "accessibility_private.json",
+  "autotest_private.webidl",
   "certificate_provider.webidl",
   "certificate_provider_internal.webidl",
   "echo_private.json",

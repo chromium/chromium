@@ -64,15 +64,6 @@
     // "desktop_android" is not supported.
     "platforms": ["chromeos", "linux", "mac", "win"]
   },
-  "autotestPrivate": {
-    "channel": "stable",
-    "extension_types": ["extension"],
-    "allowlist": [
-      "05D1DBD6E8B9C4690FFA7D50E6F60C5290DC662A", // http://crbug.com/40617899
-      "0D209B5E4401BB8E7873B5AB5B1346A1CB067015", // http://crbug.com/40488405
-      "93CFDA3681E923AD7AB291CEDD98248396B5496C"  // http://crbug.com/40558770
-    ]
-  },
   "background": {
     "channel": "stable",
     "extension_types": [

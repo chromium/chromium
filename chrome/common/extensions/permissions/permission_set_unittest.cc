@@ -861,7 +861,9 @@ TEST(PermissionsTest, PermissionMessages) {
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
   skip.insert(APIPermissionID::kArcAppsPrivate);
 #endif
+#if BUILDFLAG(IS_CHROMEOS)
   skip.insert(APIPermissionID::kAutoTestPrivate);
+#endif
   skip.insert(APIPermissionID::kBrailleDisplayPrivate);
   skip.insert(APIPermissionID::kCecPrivate);
   skip.insert(APIPermissionID::kChromeosInfoPrivate);

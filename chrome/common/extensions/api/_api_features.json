@@ -122,10 +122,6 @@
     // "desktop_android" is not supported.
     "platforms": ["chromeos", "linux", "mac", "win"]
   }],
-  "autotestPrivate": {
-    "dependencies": ["permission:autotestPrivate"],
-    "contexts": ["privileged_extension"]
-  },
   "bookmarkManagerPrivate": {
     "channel": "stable",
     "contexts": ["webui"],

@@ -63,6 +63,7 @@ static_library("autotest_private") {
     "//chromeos/ash/components/signin:identity_manager_provider",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/extensions/common/api",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/components/quick_answers/public/cpp",
     "//chromeos/components/quick_answers/public/cpp:prefs",

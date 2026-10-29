@@ -22,6 +22,8 @@ using extensions::mojom::APIPermissionID;
 constexpr APIPermissionInfo::InitInfo kPermissionsToRegister[] = {
     {APIPermissionID::kAccessibilityPrivate, "accessibilityPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
+    {APIPermissionID::kAutoTestPrivate, "autotestPrivate",
+     APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kCertificateProvider, "certificateProvider",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kEchoPrivate, "echoPrivate",
