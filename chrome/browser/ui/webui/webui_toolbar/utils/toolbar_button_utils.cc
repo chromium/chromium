@@ -320,6 +320,7 @@ ActionItemToPinnedToolbarAction(actions::ActionItem* item) {
                           ? omnibox::kSearchSparkIcon
                           : omnibox::kSearchSparkOldIcon) ||
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+            icon == &vector_icons::kGoogleGLogoMonochromeIcon ||
             item->GetImage().IsImage()
 #else
             icon == &vector_icons::kGoogleColorIcon

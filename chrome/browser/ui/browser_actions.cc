@@ -686,6 +686,14 @@ void BrowserActions::InitializeSidePanelActions() {
       contextual_tasks_image = ui::ImageModel::FromVectorIcon(
           vector_icons::kGoogleColorIcon, ui::kColorIcon);
 #endif
+    } else if (contextual_tasks::ShouldUseGraySuperGIconForPinButtons()) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      contextual_tasks_image = ui::ImageModel::FromVectorIcon(
+          vector_icons::kGoogleGLogoMonochromeIcon, ui::kColorIcon);
+#else
+      contextual_tasks_image = ui::ImageModel::FromVectorIcon(
+          vector_icons::kGoogleColorIcon, ui::kColorIcon);
+#endif
     }
     root_action_item_->AddChild(
         actions::ActionItem::Builder(
@@ -699,10 +707,12 @@ void BrowserActions::InitializeSidePanelActions() {
                       contextual_tasks::ContextualTasksPanelController::From(
                           bwi);
                   if (controller) {
-                    // Only mark the "icon changed" promo as used when in the
+                    // Only mark the "icon changed" promo as used when in a
                     // Super G arm, so clicking the old pinned icon before the
                     // flag is enabled does not suppress the promo later.
-                    if (contextual_tasks::ShouldUseSuperGIconForPinButtons()) {
+                    if (contextual_tasks::ShouldUseSuperGIconForPinButtons() ||
+                        contextual_tasks::
+                            ShouldUseGraySuperGIconForPinButtons()) {
                       if (auto* const user_ed =
                               BrowserUserEducationInterface::From(bwi)) {
                         user_ed->NotifyFeaturePromoFeatureUsed(

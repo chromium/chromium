@@ -392,6 +392,7 @@ int GetContextualTasksEphemeralButtonAutoDismissTimeMinutes();
 enum class UnifyPinButtonLogoOption {
   kSpark,
   kSuperG,
+  kGraySuperG,
 };
 
 extern const base::FeatureParam<UnifyPinButtonLogoOption>
@@ -404,6 +405,10 @@ bool ShouldUseSparkIconForPinButtons();
 // Returns whether both the toolbar and ephemeral pin buttons should be
 // unified to use the Super G logo.
 bool ShouldUseSuperGIconForPinButtons();
+
+// Returns whether both the toolbar and ephemeral pin buttons should be
+// unified to use the gray (monochrome) Super G logo.
+bool ShouldUseGraySuperGIconForPinButtons();
 
 // UI Options to expand the contextual tasks side panel to tab.
 extern const base::FeatureParam<ExpandButtonOption, true> kExpandButtonOptions;

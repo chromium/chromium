@@ -372,6 +372,13 @@ void ContextualTasksButton::OnShouldUpdatePosition() {
                         : omnibox::kSearchSparkOldIcon);
     } else if (contextual_tasks::ShouldUseSuperGIconForPinButtons()) {
       SetImageModel(views::Button::STATE_NORMAL, GetButtonImage());
+    } else if (contextual_tasks::ShouldUseGraySuperGIconForPinButtons()) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      SetVectorIcon(vector_icons::kGoogleGLogoMonochromeIcon);
+#else
+      SetVectorIcon(features::IsRoundedIconsEnabled() ? kChromeProductIcon
+                                                      : kBrowserLogoOldIcon);
+#endif
     } else {
       const gfx::VectorIcon& contextual_tasks_icon =
           contextual_tasks::IsContextualTasksSidePanelRightAligned(
@@ -812,6 +819,19 @@ ui::ImageModel ContextualTasksButton::GetButtonImage() {
         features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
                                           : omnibox::kSearchSparkOldIcon,
         icon_color_id,
+        GetShape() == EphemeralButtonShape::kCircle ? GetIconSize()
+                                                    : kGLogoPillShapeIconSize);
+  }
+  if (contextual_tasks::ShouldUseGraySuperGIconForPinButtons()) {
+    const gfx::VectorIcon& gray_super_g_icon =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        vector_icons::kGoogleGLogoMonochromeIcon;
+#else
+        features::IsRoundedIconsEnabled() ? kChromeProductIcon
+                                          : kBrowserLogoOldIcon;
+#endif
+    return ui::ImageModel::FromVectorIcon(
+        gray_super_g_icon, icon_color_id,
         GetShape() == EphemeralButtonShape::kCircle ? GetIconSize()
                                                     : kGLogoPillShapeIconSize);
   }
