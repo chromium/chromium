@@ -20,11 +20,12 @@
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/signin_partition_manager_factory.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/login_display_host_webui.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_dialogs.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/login/auth/challenge_response/cert_utils.h"
 #include "chromeos/ash/components/login/auth/public/auth_types.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
@@ -187,7 +188,8 @@ void LockScreenReauthHandler::LoadAuthenticatorParam(
 void LockScreenReauthHandler::LoadGaia(const login::GaiaContext& context,
                                        const bool force_reauth_gaia_page) {
   LOG_ASSERT(Profile::FromWebUI(web_ui()) ==
-             ProfileHelper::Get()->GetLockScreenProfile());
+             Profile::FromBrowserContext(
+                 BrowserContextHelper::Get()->GetLockScreenBrowserContext()));
   // Start a new session with SigninPartitionManager, generating a unique
   // StoragePartition.
   login::SigninPartitionManager* signin_partition_manager =
@@ -404,8 +406,9 @@ void LockScreenReauthHandler::OnReauthDialogReadyForTesting() {
 
 void LockScreenReauthHandler::CheckCredentials(
     std::unique_ptr<UserContext> user_context) {
-  Profile* profile =
-      ProfileHelper::Get()->GetProfileByAccountId(user_context->GetAccountId());
+  Profile* profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          user_context->GetAccountId()));
   if (!profile) {
     LOG(ERROR) << "Invalid account id";
     return;

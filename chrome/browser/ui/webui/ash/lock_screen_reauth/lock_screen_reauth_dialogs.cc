@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/login/profile_auth_data.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/signin_partition_manager_factory.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
@@ -283,7 +282,7 @@ LockScreenStartReauthDialog::LockScreenStartReauthDialog()
   enable_system_httpauth_ = HttpAuthDialog::Enable();
 
   g_browser_process->profile_manager()->CreateProfileAsync(
-      ProfileHelper::GetLockScreenProfileDir(),
+      BrowserContextHelper::Get()->GetLockScreenBrowserContextPath(),
       base::BindOnce(&LockScreenStartReauthDialog::OnProfileInitialized,
                      weak_factory_.GetWeakPtr()));
 }
