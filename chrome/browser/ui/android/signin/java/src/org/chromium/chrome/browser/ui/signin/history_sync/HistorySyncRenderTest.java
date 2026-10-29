@@ -35,8 +35,8 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -54,6 +54,7 @@ import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -67,7 +68,7 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures({ChromeFeatureList.USE_ALTERNATE_HISTORY_SYNC_ILLUSTRATION})
 @EnableFeatures({ChromeFeatureList.ANDROID_FRE_LAYOUT_UPDATE})
-@DoNotBatch(reason = "This test relies on native initialization")
+@Batch(Batch.PER_CLASS)
 public class HistorySyncRenderTest {
     /** Parameter provider for night mode, orientation, and FRE state. */
     public static class NightModeOrientationAndFreParameterProvider implements ParameterProvider {
@@ -131,11 +132,12 @@ public class HistorySyncRenderTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Rule
+    @Rule(order = 0)
+    public final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
+
+    @Rule(order = 1)
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
-    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule
     public final RenderTestRule mRenderTestRule =
@@ -184,6 +186,7 @@ public class HistorySyncRenderTest {
                     });
         }
         ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
+        NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
     }
 
     @Test
