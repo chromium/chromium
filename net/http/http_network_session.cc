@@ -62,22 +62,12 @@ spdy::SettingsMap AddDefaultHttp2Settings(spdy::SettingsMap http2_settings) {
 
   // For other setting parameters, set default values only if |http2_settings|
   // does not have a value set for given setting.
-  auto it = http2_settings.find(spdy::SETTINGS_HEADER_TABLE_SIZE);
-  if (it == http2_settings.end()) {
-    http2_settings[spdy::SETTINGS_HEADER_TABLE_SIZE] = kSpdyMaxHeaderTableSize;
-  }
-
-  it = http2_settings.find(spdy::SETTINGS_INITIAL_WINDOW_SIZE);
-  if (it == http2_settings.end()) {
-    http2_settings[spdy::SETTINGS_INITIAL_WINDOW_SIZE] =
-        kSpdyStreamMaxRecvWindowSize;
-  }
-
-  it = http2_settings.find(spdy::SETTINGS_MAX_HEADER_LIST_SIZE);
-  if (it == http2_settings.end()) {
-    http2_settings[spdy::SETTINGS_MAX_HEADER_LIST_SIZE] =
-        kSpdyMaxHeaderListSize;
-  }
+  http2_settings.try_emplace(spdy::SETTINGS_HEADER_TABLE_SIZE,
+                             kSpdyMaxHeaderTableSize);
+  http2_settings.try_emplace(spdy::SETTINGS_INITIAL_WINDOW_SIZE,
+                             kSpdyStreamMaxRecvWindowSize);
+  http2_settings.try_emplace(spdy::SETTINGS_MAX_HEADER_LIST_SIZE,
+                             kSpdyMaxHeaderListSize);
 
   return http2_settings;
 }
@@ -249,9 +239,9 @@ HttpNetworkSession::~HttpNetworkSession() {
 
 void HttpNetworkSession::StartResponseDrainer(
     std::unique_ptr<HttpResponseBodyDrainer> drainer) {
-  DCHECK(!response_drainers_.contains(drainer.get()));
   HttpResponseBodyDrainer* drainer_ptr = drainer.get();
-  response_drainers_.insert(std::move(drainer));
+  auto [_, inserted] = response_drainers_.insert(std::move(drainer));
+  DCHECK(inserted);
   drainer_ptr->Start(this);
 }
 

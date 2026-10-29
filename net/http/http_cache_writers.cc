@@ -144,7 +144,7 @@ void HttpCache::Writers::AddTransaction(
   ParallelWritingPattern writers_pattern;
   DCHECK(CanAddWriters(&writers_pattern));
 
-  DCHECK_EQ(0u, all_writers_.count(transaction));
+  DCHECK(!all_writers_.contains(transaction));
 
   // Set truncation related information.
   response_info_truncation_ = info.response_info;
@@ -178,7 +178,7 @@ void HttpCache::Writers::AddTransaction(
 void HttpCache::Writers::SetNetworkTransaction(
     Transaction* transaction,
     std::unique_ptr<HttpTransaction> network_transaction) {
-  DCHECK_EQ(1u, all_writers_.count(transaction));
+  DCHECK(all_writers_.contains(transaction));
   DCHECK(network_transaction);
   DCHECK(!network_transaction_);
   network_transaction_ = std::move(network_transaction);

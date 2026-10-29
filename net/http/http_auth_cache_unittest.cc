@@ -51,11 +51,8 @@ bool DoesUrlMatchFilter(const std::set<std::string>& domains, const GURL& url) {
   std::string url_registerable_domain =
       registry_controlled_domains::GetDomainAndRegistry(
           url, registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  bool found_domain = (domains.find(url_registerable_domain != ""
-                                        ? url_registerable_domain
-                                        : url.GetHost()) != domains.end());
-
-  return found_domain;
+  return domains.contains(
+      url_registerable_domain != "" ? url_registerable_domain : url.GetHost());
 }
 
 }  // namespace

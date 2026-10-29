@@ -2685,8 +2685,9 @@ bool HttpNetworkTransaction::ContentEncodingsValid() const {
   // When "Accept-Encoding" is not specified, it is parsed as "*".
   // If "*" encoding is advertised, then any encoding should be "accepted".
   // This does not mean, that it will be successfully decoded.
-  if (allowed_encodings.find("*") != allowed_encodings.end())
+  if (allowed_encodings.contains("*")) {
     return true;
+  }
 
   bool result = true;
   for (auto const& encoding : used_encodings) {
@@ -2696,7 +2697,7 @@ bool HttpNetworkTransaction::ContentEncodingsValid() const {
     if (source_type == SourceStreamType::kUnknown) {
       continue;
     }
-    if (allowed_encodings.find(encoding) == allowed_encodings.end()) {
+    if (!allowed_encodings.contains(encoding)) {
       result = false;
       break;
     }

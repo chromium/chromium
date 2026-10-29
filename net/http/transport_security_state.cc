@@ -238,7 +238,7 @@ base::DictValue TransportSecurityState::NetLogUpgradeToSSLParam(
   dict.Set("get_sts_state_result", GetSTSState(host, &sts_state));
   dict.Set("should_upgrade_to_ssl", sts_state.ShouldUpgradeToSSL());
   dict.Set("host_found_in_hsts_bypass_list",
-           hsts_host_bypass_list_.find(host) != hsts_host_bypass_list_.end());
+           hsts_host_bypass_list_.contains(host));
   return dict;
 }
 
@@ -403,12 +403,7 @@ bool TransportSecurityState::DeleteDynamicDataForHost(std::string_view host) {
   }
 
   const HashedHost hashed_host = HashHost(canonicalized_host);
-  bool deleted = false;
-  auto sts_interator = enabled_sts_hosts_.find(hashed_host);
-  if (sts_interator != enabled_sts_hosts_.end()) {
-    enabled_sts_hosts_.erase(sts_interator);
-    deleted = true;
-  }
+  bool deleted = enabled_sts_hosts_.erase(hashed_host) > 0;
 
   if (deleted) {
     DirtyNotify();
@@ -517,8 +512,7 @@ bool TransportSecurityState::GetStaticSTSState(std::string_view host,
 
   PreloadResult result;
   if (DecodeHSTSPreload(host, &result) &&
-      hsts_host_bypass_list_.find(host) == hsts_host_bypass_list_.end() &&
-      result.force_https) {
+      !hsts_host_bypass_list_.contains(host) && result.force_https) {
     sts_result->domain = host.substr(result.hostname_offset);
     sts_result->include_subdomains = result.sts_include_subdomains;
     sts_result->last_observed = base::GetBuildTime();

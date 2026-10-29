@@ -668,7 +668,7 @@ void HttpAuthController::TakeAuthInfo(std::optional<AuthChallengeInfo>* other) {
 
 bool HttpAuthController::IsAuthSchemeDisabled(HttpAuth::Scheme scheme) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return disabled_schemes_.find(scheme) != disabled_schemes_.end();
+  return disabled_schemes_.contains(scheme);
 }
 
 void HttpAuthController::DisableAuthScheme(HttpAuth::Scheme scheme) {

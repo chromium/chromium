@@ -1012,9 +1012,8 @@ TEST_P(HttpStreamFactoryTest, JobNotifiesProxy) {
   const ProxyRetryInfoMap& retry_info =
       session->proxy_resolution_service()->proxy_retry_info();
   EXPECT_EQ(1u, retry_info.size());
-  auto iter = retry_info.find(
-      ProxyChain(ProxyUriToProxyServer("bad:99", ProxyServer::SCHEME_HTTP)));
-  EXPECT_TRUE(iter != retry_info.end());
+  EXPECT_TRUE(retry_info.contains(
+      ProxyChain(ProxyUriToProxyServer("bad:99", ProxyServer::SCHEME_HTTP))));
 }
 
 // This test requests a stream for an https:// URL using an HTTP proxy.
@@ -1161,8 +1160,8 @@ TEST_P(HttpStreamFactoryTest, QuicProxyMarkedAsBad) {
     EXPECT_EQ(1u, retry_info.size()) << quic_proxy_test_mock_error;
     EXPECT_TRUE(requester.used_proxy_info().is_direct());
 
-    auto iter = retry_info.find(quic_proxy_chain);
-    EXPECT_TRUE(iter != retry_info.end()) << quic_proxy_test_mock_error;
+    EXPECT_TRUE(retry_info.contains(quic_proxy_chain))
+        << quic_proxy_test_mock_error;
   }
 }
 

@@ -275,11 +275,9 @@ HttpCache::ActiveEntry::~ActiveEntry() {
 void HttpCache::ActiveEntry::FinalizeDoomed() {
   CHECK(doomed_);
 
-  auto it =
-      cache_->doomed_entries_.find(base::raw_ref<ActiveEntry>::from_ptr(this));
-  CHECK(it != cache_->doomed_entries_.end());
-
-  cache_->doomed_entries_.erase(it);
+  size_t removed =
+      cache_->doomed_entries_.erase(base::raw_ref<ActiveEntry>::from_ptr(this));
+  CHECK_GT(removed, 0u);
 }
 
 void HttpCache::ActiveEntry::Deactivate() {
@@ -313,7 +311,7 @@ void HttpCache::ActiveEntry::SlowDeactivate() {
 
 bool HttpCache::ActiveEntry::TransactionInReaders(
     Transaction* transaction) const {
-  return readers_.count(transaction) > 0;
+  return readers_.contains(transaction);
 }
 
 void HttpCache::ActiveEntry::ReleaseWriters() {
@@ -1021,8 +1019,7 @@ int HttpCache::GetBackendForTransaction(Transaction* transaction) {
 }
 
 void HttpCache::DoomActiveEntry(const std::string& key) {
-  auto it = active_entries_.find(key);
-  if (it == active_entries_.end()) {
+  if (!active_entries_.contains(key)) {
     return;
   }
 
@@ -1049,8 +1046,8 @@ int HttpCache::DoomEntry(const std::string& key, Transaction* transaction) {
   // We keep track of doomed entries so that we can ensure that they are
   // cleaned up properly when the cache is destroyed.
   ActiveEntry& entry = entry_ref.get();
-  DCHECK_EQ(0u, doomed_entries_.count(entry_ref));
-  doomed_entries_.insert(std::move(entry_ref));
+  auto [_, inserted] = doomed_entries_.insert(std::move(entry_ref));
+  DCHECK(inserted);
 
   entry.Doom();
 
@@ -1107,7 +1104,7 @@ void HttpCache::DoomMainEntryForUrl(
 
   // Defer to DoomEntry if there is an active entry, otherwise call
   // AsyncDoomEntry without triggering a callback.
-  if (active_entries_.count(*key)) {
+  if (active_entries_.contains(*key)) {
     DoomEntry(*key, nullptr);
   } else {
     AsyncDoomEntry(*key, nullptr);
@@ -1115,7 +1112,7 @@ void HttpCache::DoomMainEntryForUrl(
 }
 
 bool HttpCache::HasActiveEntry(const std::string& key) {
-  return active_entries_.find(key) != active_entries_.end();
+  return active_entries_.contains(key);
 }
 
 scoped_refptr<HttpCache::ActiveEntry> HttpCache::GetActiveEntry(
@@ -1162,14 +1159,11 @@ scoped_refptr<HttpCache::ActiveEntry> HttpCache::ActivateEntry(
 HttpCache::PendingOp* HttpCache::GetPendingOp(const std::string& key) {
   DCHECK(!HasActiveEntry(key));
 
-  auto it = pending_ops_.find(key);
-  if (it != pending_ops_.end()) {
-    return it->second;
+  auto [it, inserted] = pending_ops_.try_emplace(key, nullptr);
+  if (inserted) {
+    it->second = new PendingOp();
   }
-
-  PendingOp* operation = new PendingOp();
-  pending_ops_[key] = operation;
-  return operation;
+  return it->second;
 }
 
 void HttpCache::DeletePendingOp(PendingOp* pending_op) {
@@ -1179,9 +1173,8 @@ void HttpCache::DeletePendingOp(PendingOp* pending_op) {
   }
 
   if (!key.empty()) {
-    auto it = pending_ops_.find(key);
-    CHECK(it != pending_ops_.end());
-    pending_ops_.erase(it);
+    size_t removed = pending_ops_.erase(key);
+    CHECK_GT(removed, 0u);
   } else {
     for (auto it = pending_ops_.begin(); it != pending_ops_.end(); ++it) {
       if (it->second == pending_op) {
@@ -1371,9 +1364,8 @@ void HttpCache::DoneWithEntry(scoped_refptr<ActiveEntry>& entry,
 
   // Transaction is reading from the entry.
   DCHECK(!entry->HasWriters());
-  auto readers_it = entry->readers().find(transaction);
-  CHECK(readers_it != entry->readers().end());
-  entry->readers().erase(readers_it);
+  size_t removed = entry->readers().erase(transaction);
+  CHECK_GT(removed, 0u);
   ProcessQueuedTransactions(entry);
 }
 

@@ -441,7 +441,7 @@ void HttpResponseHeaders::MergeWithHeaders(std::string raw_headers,
     --k;
 
     std::string name = base::ToLowerASCII(header_name(parsed_[i]));
-    if (headers_to_remove.find(name) == headers_to_remove.end()) {
+    if (!headers_to_remove.contains(name)) {
       // It's ok to preserve this header in the final result.
       raw_headers.append(subrange(parsed_[i].name_begin, parsed_[k].value_end));
       raw_headers.push_back('\0');
@@ -927,7 +927,7 @@ std::vector<uint8_t> HttpResponseHeaders::Serialize(
     --k;
 
     std::string header = base::ToLowerASCII(header_name(parsed_[i]));
-    if (filter_headers.find(header) == filter_headers.end()) {
+    if (!filter_headers.contains(header)) {
       // Make sure there is a null after the value.
       blob.append(subrange(parsed_[i].name_begin, parsed_[k].value_end));
       blob.push_back('\0');

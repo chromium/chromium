@@ -98,13 +98,12 @@ AlternativeServiceInfoVector GetAlternativeServiceToPersist(
   if (canonical_suffix) {
     // Don't save if have already saved information associated with the same
     // canonical suffix.
-    std::pair<std::string, NetworkAnonymizationKey> index(
-        *canonical_suffix, server_info_key.network_anonymization_key);
-    if (persisted_canonical_suffix_set->find(index) !=
-        persisted_canonical_suffix_set->end()) {
+    if (!persisted_canonical_suffix_set
+             ->emplace(*canonical_suffix,
+                       server_info_key.network_anonymization_key)
+             .second) {
       return AlternativeServiceInfoVector();
     }
-    persisted_canonical_suffix_set->emplace(std::move(index));
   }
   return notbroken_alternative_service_info_vector;
 }

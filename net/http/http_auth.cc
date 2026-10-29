@@ -71,8 +71,9 @@ void HttpAuth::ChooseBestChallenge(
       continue;
     }
     if (cur.get() && (!best.get() || best->score() < cur->score()) &&
-        (disabled_schemes.find(cur->auth_scheme()) == disabled_schemes.end()))
+        !disabled_schemes.contains(cur->auth_scheme())) {
       best.swap(cur);
+    }
   }
   handler->swap(best);
 }
@@ -89,8 +90,9 @@ HttpAuth::AuthorizationResult HttpAuth::HandleChallengeResponse(
 
   challenge_used->clear();
   HttpAuth::Scheme current_scheme = handler->auth_scheme();
-  if (disabled_schemes.find(current_scheme) != disabled_schemes.end())
+  if (disabled_schemes.contains(current_scheme)) {
     return HttpAuth::AUTHORIZATION_RESULT_REJECT;
+  }
   const auto current_scheme_name = SchemeToString(current_scheme);
   const std::string_view header_name = GetChallengeHeaderName(target);
   size_t iter = 0;

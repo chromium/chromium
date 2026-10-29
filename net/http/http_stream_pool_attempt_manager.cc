@@ -1831,7 +1831,7 @@ void HttpStreamPool::AttemptManager::OnJobDone(Job* job) {
               [](Job* job, raw_ptr<Job> other_job) { return other_job == job; },
               job))
           .is_null());
-  DCHECK_EQ(preconnect_jobs_.count(job), 0u);
+  DCHECK(!preconnect_jobs_.contains(job));
 
   limit_ignoring_jobs_.erase(job);
   ip_based_pooling_disabling_jobs_.erase(job);
@@ -2069,8 +2069,7 @@ HttpStreamPool::AttemptManager::ExtractTcpBasedAttempt(
     TcpBasedAttempt* raw_attempt,
     int rv) {
   TcpBasedAttemptSlot* slot = raw_attempt->slot();
-  auto it = tcp_based_attempt_slots_.find(slot);
-  CHECK(it != tcp_based_attempt_slots_.end());
+  CHECK(tcp_based_attempt_slots_.contains(slot));
 
   std::unique_ptr<TcpBasedAttempt> attempt = slot->TakeAttempt(raw_attempt);
 
