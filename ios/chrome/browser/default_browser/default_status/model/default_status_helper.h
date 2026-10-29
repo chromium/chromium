@@ -7,14 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import <optional>
+
 #import "base/functional/callback.h"
 
 class PrefRegistrySimple;
 class PrefService;
-
-namespace base {
-class Time;
-}  // namespace base
 
 // This helper contains the necessary logic to integrate with the default status
 // system API. At a high level, the integration works as follows:
@@ -31,90 +29,27 @@ class Time;
 //      relevant metrics and prefs are recorded.
 namespace default_status {
 
-enum class DefaultStatusAPIResult;
-enum class DefaultStatusRetention;
-
-// The number of cohorts to split the clients into.
+// The number of cohorts clients are split into to spread out calls to the
+// default status API.
 extern const int kCohortCount;
 
-// The cohort this client belongs to for the purpose of reporting the result of
-// the default status system API call.
-extern const char kDefaultStatusAPICohort[];
-
-// The timestamp of the last successful call to the default status API call. A
-// successful call is one that does not yield an error, regardless of the
-// default status result.
-extern const char kDefaultStatusAPILastSuccessfulCall[];
-
-// The timestamp after which the default status API should be called again for
-// this client.
-extern const char kDefaultStatusAPINextRetry[];
-
-// The result of the last successful default status API call. The value is of
-// type `DefaultStatusAPIResult` and defaults to
-// `DefaultStatusAPIResult::kUnknown`.
-extern const char kDefaultStatusAPIResult[];
-
-// Registers the prefs associated with the default status helper.
+// Registers the prefs associated with the default status helper in `registry`.
 void RegisterDefaultStatusPrefs(PrefRegistrySimple* registry);
 
-// Do not call these functions; they are exposed for unit testing only.
-namespace internal {
-
-// Returns true if the current client is too recent (based on time since
-// completing the first run experience) to be assigned to a cohort.
-bool IsNewClient();
-
-// Returns true if the current client is already part of a cohort.
-bool HasCohortAssigned(PrefService* local_state);
-
-// Returns a random cohort number between 1 and the maximum number of cohorts.
-int GenerateRandomCohort();
-
-// Returns a base::Time representing the first day of the next reporting window
-// for the given cohort number. By default, if the current date is already
-// within the specified cohort's reporting window, then the first day of the
-// current month is returned. If `after_current_month` is set to true, the
-// computation to find the next reporting window starts at the beginning of next
-// month. All time computations are in UTC.
-base::Time GetCohortNextStartDate(int cohort_number,
-                                  bool after_current_month = false);
-
-// If eligible (correct system API availability, minimum client age met, no
-// cohort already assigned), randomly assigns the client to a reporting cohort
-// and sets the default status API call's next retry date to that cohort's next
-// reporting window.
-void AssignNewCohortIfNeeded(PrefService* local_state);
-
-// Converts the system's default status enum value to the one used by this
-// helper.
-
-DefaultStatusAPIResult SystemToLocalEnum(
-    UIApplicationCategoryDefaultStatus system_enum) API_AVAILABLE(ios(18.4));
-
-// Returns the retention type based on the previous and current default status
-// result.
-DefaultStatusRetention DetermineRetentionStatus(DefaultStatusAPIResult previous,
-                                                DefaultStatusAPIResult current);
-
-// Initiates the system API call if this client is outside the cooldown period,
-// and logs all relevant metrics based on the result.
-void QueryDefaultStatusIfReadyAndLogResults(PrefService* local_state);
-
-// Use in tests only. The specified callback will be invoked instead of making a
-// real call to the default status API.
-
-void OverrideSystemCallForTesting(
-    base::OnceCallback<UIApplicationCategoryDefaultStatus(NSError**)> cb)
-    API_AVAILABLE(ios(18.4));
-
-}  // namespace internal
-
-// Queries the system API to determine whether this is the default browser, and
-// logs the result. This is NOT meant to be used by feature code, as the system
-// call is rate limited. Instead, use the helpers in default browser utils to
-// check whether this is the likely the default browser.
+// Queries the system API to determine whether Chrome is the default browser,
+// and logs the result. This is NOT meant to be used by feature code, as the
+// system call is rate limited. Instead, use the helpers in default browser
+// utils to check whether Chrome is likely the default browser.
 void TriggerDefaultStatusCheck();
+
+// Executes the default status check using `local_state`, invoking `system_call`
+// instead of the system API when the check is ready, and optionally forcing
+// initial cohort assignment to `cohort_override` when set.
+void TriggerDefaultStatusCheckForTesting(
+    PrefService* local_state,
+    base::OnceCallback<UIApplicationCategoryDefaultStatus(NSError**)>
+        system_call,
+    std::optional<int> cohort_override) API_AVAILABLE(ios(18.4));
 
 }  // namespace default_status
 

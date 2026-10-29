@@ -6,8 +6,13 @@
 
 #import <UIKit/UIKit.h>
 
+#import <optional>
+#import <string_view>
+#import <utility>
+
 #import "base/check.h"
 #import "base/check_is_test.h"
+#import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/rand_util.h"
 #import "base/time/time.h"
@@ -34,72 +39,59 @@ namespace default_status {
 const int kCohortCount = 4;
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/histograms.xml:CohortNumber)
 
-const char kDefaultStatusAPICohort[] = "DefaultStatusAPICohort";
-
-const char kDefaultStatusAPILastSuccessfulCall[] =
-    "DefaultStatusAPILastSuccessfulCall";
-
-const char kDefaultStatusAPINextRetry[] = "DefaultStatusAPINextRetry";
-
-const char kDefaultStatusAPIResult[] = "DefaultStatusAPIResult";
-
-void RegisterDefaultStatusPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(kDefaultStatusAPICohort, 0);
-  registry->RegisterTimePref(kDefaultStatusAPILastSuccessfulCall, base::Time());
-  registry->RegisterTimePref(kDefaultStatusAPINextRetry, base::Time());
-  registry->RegisterIntegerPref(
-      kDefaultStatusAPIResult,
-      static_cast<int>(DefaultStatusAPIResult::kUnknown));
-}
-
-namespace internal {
-
 namespace {
 
 // The minimum time required since completing the first run experience to be
 // assigned to a cohort.
-const base::TimeDelta kMinimumNewClientFirstRunAge = base::Days(28);
+constexpr base::TimeDelta kMinimumNewClientFirstRunAge = base::Days(28);
 
-// Gets the system call to use/override for testing. Uses a function so the
-// static variable can be contained inside the function.
+// The cohort this client belongs to for reporting the result of the default
+// status system API call.
+constexpr std::string_view kDefaultStatusAPICohort = "DefaultStatusAPICohort";
 
-base::OnceCallback<UIApplicationCategoryDefaultStatus(NSError**)>&
-GetSystemCallForTesting() API_AVAILABLE(ios(18.4)) {
-  static base::NoDestructor<
-      base::OnceCallback<UIApplicationCategoryDefaultStatus(NSError**)>>
-      g_system_call_for_testing;
-  return *g_system_call_for_testing;
-}
+// The timestamp of the last successful call to the default status API. A
+// successful call is one that does not yield an error, regardless of the
+// default status result.
+constexpr std::string_view kDefaultStatusAPILastSuccessfulCall =
+    "DefaultStatusAPILastSuccessfulCall";
 
-// Performs the actual system call to the default status check API. Wrapped in
-// its own function to facilitate mocking in tests.
+// The timestamp after which the default status API should be called again for
+// this client.
+constexpr std::string_view kDefaultStatusAPINextRetry =
+    "DefaultStatusAPINextRetry";
 
-UIApplicationCategoryDefaultStatus MakeSystemCall(NSError** error)
+// The result of the last successful default status API call. The value is of
+// type `DefaultStatusAPIResult` and defaults to
+// `DefaultStatusAPIResult::kUnknown`.
+constexpr std::string_view kDefaultStatusAPIResult = "DefaultStatusAPIResult";
+
+// Queries the real `UIApplication` default status API.
+UIApplicationCategoryDefaultStatus QuerySystemDefaultStatus(NSError** error)
     API_AVAILABLE(ios(18.4)) {
-  if (GetSystemCallForTesting()) {
-    CHECK_IS_TEST();
-    return std::move(GetSystemCallForTesting()).Run(error);  // IN-TEST
-  }
   return [[UIApplication sharedApplication]
       defaultStatusForCategory:UIApplicationCategoryWebBrowser
                          error:error];
 }
 
-}  // namespace
-
+// Returns true if the current client is too recent (based on time since
+// completing the first run experience) to be assigned to a cohort.
 bool IsNewClient() {
   return IsFirstRunRecent(kMinimumNewClientFirstRunAge);
 }
 
+// Returns true if the current client is already part of a cohort.
 bool HasCohortAssigned(PrefService* local_state) {
   return local_state->GetInteger(kDefaultStatusAPICohort) != 0;
 }
 
+// Returns a random cohort number between 1 and `kCohortCount`.
 int GenerateRandomCohort() {
-  // The arguments passed to RandInt are inclusive.
   return base::RandIntInclusive(1, kCohortCount);
 }
 
+// Returns a `base::Time` representing the first day of the next reporting
+// window for `cohort_number` in UTC. When `after_current_month` is true, the
+// search starts at the beginning of next month.
 base::Time GetCohortNextStartDate(int cohort_number, bool after_current_month) {
   DUMP_WILL_BE_CHECK(cohort_number > 0 && cohort_number <= kCohortCount);
 
@@ -109,7 +101,7 @@ base::Time GetCohortNextStartDate(int cohort_number, bool after_current_month) {
   base::Time::Exploded target_date;
   target_date.year = now_exploded.year;
   target_date.month = now_exploded.month;
-  // Day of week does not matter when converting back to base::Time.
+  // Day of week does not matter when converting back to `base::Time`.
   target_date.day_of_week = 0;
   target_date.day_of_month = 1;
   target_date.hour = 0;
@@ -119,28 +111,19 @@ base::Time GetCohortNextStartDate(int cohort_number, bool after_current_month) {
 
   // Determine which cohort number the current month corresponds to. This
   // requires a modulo on the cohort count, but because the cohort number is
-  // 1-based, substract one before and add one after.
+  // 1-based, subtract one before and add one after.
   int current_cohort = (now_exploded.month - 1) % kCohortCount + 1;
 
   if (current_cohort == cohort_number && !after_current_month) {
-    // If the current cohort is the same as the specified cohort, the target
-    // month is the current month.
     target_date.year = now_exploded.year;
     target_date.month = now_exploded.month;
   } else {
-    // Otherwise, find the "cohort cycle" in which the target month is - the
-    // target month is the start of that cycle plus the cohort number. If the
-    // specified cohort is after the current cohort, then the target month is
-    // later in this cohort cycle. If it's before, it means the desired cohort
-    // has already passed this cycle, so the target month is in the next.
     int target_cycle = (now_exploded.month - 1) / kCohortCount;
     if (current_cohort >= cohort_number) {
       ++target_cycle;
     }
     int target_month = target_cycle * kCohortCount + cohort_number;
 
-    // If the target month is greater than 12, decrease it by 12 and bump the
-    // target year.
     if (target_month > 12) {
       ++target_date.year;
       target_month -= 12;
@@ -154,25 +137,24 @@ base::Time GetCohortNextStartDate(int cohort_number, bool after_current_month) {
   return result;
 }
 
-void AssignNewCohortIfNeeded(PrefService* local_state) {
-  if (!@available(iOS 18.4, *)) {
-    return;
-  }
-
-  if (IsNewClient()) {
-    return;
-  }
-
+// Assigns `local_state` to a reporting cohort (using `cohort_override` when
+// provided) and schedules the initial reporting window if no cohort is
+// assigned yet.
+void AssignNewCohortIfNeeded(PrefService* local_state,
+                             std::optional<int> cohort_override) {
   if (HasCohortAssigned(local_state)) {
     return;
   }
 
-  int cohort = GenerateRandomCohort();
+  int cohort = cohort_override.value_or(GenerateRandomCohort());
+  DUMP_WILL_BE_CHECK(cohort > 0 && cohort <= kCohortCount);
   local_state->SetInteger(kDefaultStatusAPICohort, cohort);
-  base::Time next_retry = GetCohortNextStartDate(cohort);
+  base::Time next_retry =
+      GetCohortNextStartDate(cohort, /*after_current_month=*/false);
   local_state->SetTime(kDefaultStatusAPINextRetry, next_retry);
 }
 
+// Converts `system_enum` to `DefaultStatusAPIResult`.
 DefaultStatusAPIResult SystemToLocalEnum(
     UIApplicationCategoryDefaultStatus system_enum) API_AVAILABLE(ios(18.4)) {
   switch (system_enum) {
@@ -181,130 +163,144 @@ DefaultStatusAPIResult SystemToLocalEnum(
     case UIApplicationCategoryDefaultStatusNotDefault:
       return DefaultStatusAPIResult::kIsNotDefault;
     case UIApplicationCategoryDefaultStatusUnavailable:
-      // If the call was unavailable, the default status of the user is
-      // considered unknown.
       return DefaultStatusAPIResult::kUnknown;
     default:
       return DefaultStatusAPIResult::kUnknown;
   }
 }
 
+// Returns the retention type based on `previous` and `current`.
 DefaultStatusRetention DetermineRetentionStatus(
     DefaultStatusAPIResult previous,
     DefaultStatusAPIResult current) {
   DUMP_WILL_BE_CHECK(previous != DefaultStatusAPIResult::kUnknown &&
                      current != DefaultStatusAPIResult::kUnknown);
   if (previous == DefaultStatusAPIResult::kIsDefault) {
-    if (current == DefaultStatusAPIResult::kIsDefault) {
-      return DefaultStatusRetention::kRemainedDefault;
-    } else {
-      return DefaultStatusRetention::kBecameNonDefault;
-    }
-  } else {
-    if (current == DefaultStatusAPIResult::kIsDefault) {
-      return DefaultStatusRetention::kBecameDefault;
-    } else {
-      return DefaultStatusRetention::kRemainedNonDefault;
-    }
+    return current == DefaultStatusAPIResult::kIsDefault
+               ? DefaultStatusRetention::kRemainedDefault
+               : DefaultStatusRetention::kBecameNonDefault;
   }
+  return current == DefaultStatusAPIResult::kIsDefault
+             ? DefaultStatusRetention::kBecameDefault
+             : DefaultStatusRetention::kRemainedNonDefault;
 }
 
-void QueryDefaultStatusIfReadyAndLogResults(PrefService* local_state) {
-  if (@available(iOS 18.4, *)) {
-    int cohort_number = local_state->GetInteger(kDefaultStatusAPICohort);
-    DUMP_WILL_BE_CHECK(cohort_number > 0 && cohort_number <= kCohortCount);
+// Invokes `system_call` if the client is outside the cooldown period and logs
+// the resulting metrics and prefs.
+void QueryDefaultStatusIfReadyAndLogResults(
+    PrefService* local_state,
+    base::OnceCallback<UIApplicationCategoryDefaultStatus(NSError**)>
+        system_call) API_AVAILABLE(ios(18.4)) {
+  int cohort_number = local_state->GetInteger(kDefaultStatusAPICohort);
+  DUMP_WILL_BE_CHECK(cohort_number > 0 && cohort_number <= kCohortCount);
 
-    base::Time now = base::Time::Now();
-    base::Time next_retry = local_state->GetTime(kDefaultStatusAPINextRetry);
-    if (now < next_retry) {
-      return;
-    }
+  base::Time now = base::Time::Now();
+  base::Time next_retry = local_state->GetTime(kDefaultStatusAPINextRetry);
+  if (now < next_retry) {
+    return;
+  }
 
-    NSError* error = nil;
-    UIApplicationCategoryDefaultStatus default_status = MakeSystemCall(&error);
+  NSError* error = nil;
+  UIApplicationCategoryDefaultStatus default_status =
+      std::move(system_call).Run(&error);
 
-    if (error) {
-      if ([error code] == UIApplicationCategoryDefaultErrorRateLimited) {
-        DUMP_WILL_BE_CHECK(
-            error.userInfo
-                [UIApplicationCategoryDefaultRetryAvailabilityDateErrorKey] !=
-            nil);
-        RecordDefaultStatusAPIOutcomeType(
-            DefaultStatusAPIOutcomeType::kCooldownError);
-        next_retry = base::Time::FromNSDate(
-            error.userInfo
-                [UIApplicationCategoryDefaultRetryAvailabilityDateErrorKey]);
-        local_state->SetTime(kDefaultStatusAPINextRetry, next_retry);
-        int days_left = (next_retry - now).InDays();
-        RecordCooldownErrorDaysLeft(days_left);
-      } else {
-        RecordDefaultStatusAPIOutcomeType(
-            DefaultStatusAPIOutcomeType::kOtherError);
-      }
-    } else {
-      RecordDefaultStatusAPIOutcomeType(DefaultStatusAPIOutcomeType::kSuccess);
-
-      DefaultStatusAPIResult current_result = SystemToLocalEnum(default_status);
-      DUMP_WILL_BE_CHECK(current_result != DefaultStatusAPIResult::kUnknown);
-
-      base::Time cohort_start = GetCohortNextStartDate(cohort_number);
-      int next_cohort_number = cohort_number % kCohortCount + 1;
-      base::Time next_cohort_start = GetCohortNextStartDate(next_cohort_number);
-      bool is_within_cohort_window =
-          now >= cohort_start && now < next_cohort_start;
-      bool is_default = current_result == DefaultStatusAPIResult::kIsDefault;
-      RecordDefaultStatusAPIResult(is_default, cohort_number,
-                                   is_within_cohort_window);
-      RecordHeuristicAssessments(is_default);
-
-      DefaultStatusAPIResult previous_result =
-          static_cast<DefaultStatusAPIResult>(
-              local_state->GetInteger(kDefaultStatusAPIResult));
-      if (previous_result != DefaultStatusAPIResult::kUnknown) {
-        base::Time last_successful_call =
-            local_state->GetTime(kDefaultStatusAPILastSuccessfulCall);
-        RecordDaysSinceLastSuccessfulCall(
-            (now - last_successful_call).InDays());
-        RecordDefaultStatusRetention(
-            DetermineRetentionStatus(previous_result, current_result));
-      }
-
-      local_state->SetTime(kDefaultStatusAPILastSuccessfulCall, now);
-      local_state->SetInteger(kDefaultStatusAPIResult,
-                              static_cast<int>(current_result));
-      next_retry =
-          GetCohortNextStartDate(cohort_number, /*after_current_month=*/true);
+  if (error) {
+    if (error.code == UIApplicationCategoryDefaultErrorRateLimited) {
+      DUMP_WILL_BE_CHECK(
+          error.userInfo
+              [UIApplicationCategoryDefaultRetryAvailabilityDateErrorKey] !=
+          nil);
+      RecordDefaultStatusAPIOutcomeType(
+          DefaultStatusAPIOutcomeType::kCooldownError);
+      next_retry = base::Time::FromNSDate(
+          error.userInfo
+              [UIApplicationCategoryDefaultRetryAvailabilityDateErrorKey]);
       local_state->SetTime(kDefaultStatusAPINextRetry, next_retry);
+      int days_left = (next_retry - now).InDays();
+      RecordCooldownErrorDaysLeft(days_left);
+    } else {
+      RecordDefaultStatusAPIOutcomeType(
+          DefaultStatusAPIOutcomeType::kOtherError);
     }
+    return;
   }
+
+  RecordDefaultStatusAPIOutcomeType(DefaultStatusAPIOutcomeType::kSuccess);
+
+  DefaultStatusAPIResult current_result = SystemToLocalEnum(default_status);
+  DUMP_WILL_BE_CHECK(current_result != DefaultStatusAPIResult::kUnknown);
+
+  base::Time cohort_start =
+      GetCohortNextStartDate(cohort_number, /*after_current_month=*/false);
+  int next_cohort_number = cohort_number % kCohortCount + 1;
+  base::Time next_cohort_start =
+      GetCohortNextStartDate(next_cohort_number, /*after_current_month=*/false);
+  bool is_within_cohort_window = now >= cohort_start && now < next_cohort_start;
+  bool is_default = current_result == DefaultStatusAPIResult::kIsDefault;
+  RecordDefaultStatusAPIResult(is_default, cohort_number,
+                               is_within_cohort_window);
+  RecordHeuristicAssessments(is_default);
+
+  DefaultStatusAPIResult previous_result = static_cast<DefaultStatusAPIResult>(
+      local_state->GetInteger(kDefaultStatusAPIResult));
+  if (previous_result != DefaultStatusAPIResult::kUnknown) {
+    base::Time last_successful_call =
+        local_state->GetTime(kDefaultStatusAPILastSuccessfulCall);
+    RecordDaysSinceLastSuccessfulCall((now - last_successful_call).InDays());
+    RecordDefaultStatusRetention(
+        DetermineRetentionStatus(previous_result, current_result));
+  }
+
+  local_state->SetTime(kDefaultStatusAPILastSuccessfulCall, now);
+  local_state->SetInteger(kDefaultStatusAPIResult,
+                          static_cast<int>(current_result));
+  next_retry =
+      GetCohortNextStartDate(cohort_number, /*after_current_month=*/true);
+  local_state->SetTime(kDefaultStatusAPINextRetry, next_retry);
 }
 
-void OverrideSystemCallForTesting(  // IN-TEST
-    base::OnceCallback<UIApplicationCategoryDefaultStatus(NSError**)> cb)
-    API_AVAILABLE(ios(18.4)) {
-  CHECK_IS_TEST();
-  internal::GetSystemCallForTesting() = std::move(cb);
+// Runs the default status check pipeline for `local_state`.
+void RunDefaultStatusCheck(
+    PrefService* local_state,
+    base::OnceCallback<UIApplicationCategoryDefaultStatus(NSError**)>
+        system_call,
+    std::optional<int> cohort_override) API_AVAILABLE(ios(18.4)) {
+  CHECK(local_state);
+  if (IsNewClient() || !IsRunDefaultStatusCheckEnabled()) {
+    return;
+  }
+
+  AssignNewCohortIfNeeded(local_state, cohort_override);
+  QueryDefaultStatusIfReadyAndLogResults(local_state, std::move(system_call));
 }
 
-}  // namespace internal
+}  // namespace
+
+void RegisterDefaultStatusPrefs(PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(kDefaultStatusAPICohort, 0);
+  registry->RegisterTimePref(kDefaultStatusAPILastSuccessfulCall, base::Time());
+  registry->RegisterTimePref(kDefaultStatusAPINextRetry, base::Time());
+  registry->RegisterIntegerPref(
+      kDefaultStatusAPIResult,
+      static_cast<int>(DefaultStatusAPIResult::kUnknown));
+}
 
 void TriggerDefaultStatusCheck() {
-  if (!IsRunDefaultStatusCheckEnabled()) {
-    return;
+  if (@available(iOS 18.4, *)) {
+    ApplicationContext* application_context = GetApplicationContext();
+    RunDefaultStatusCheck(application_context->GetLocalState(),
+                          base::BindOnce(&QuerySystemDefaultStatus),
+                          /*cohort_override=*/std::nullopt);
   }
+}
 
-  if (!@available(iOS 18.4, *)) {
-    return;
-  }
-
-  if (internal::IsNewClient()) {
-    return;
-  }
-
-  ApplicationContext* applicationContext = GetApplicationContext();
-  PrefService* localState = applicationContext->GetLocalState();
-  internal::AssignNewCohortIfNeeded(localState);
-  internal::QueryDefaultStatusIfReadyAndLogResults(localState);
+void TriggerDefaultStatusCheckForTesting(
+    PrefService* local_state,
+    base::OnceCallback<UIApplicationCategoryDefaultStatus(NSError**)>
+        system_call,
+    std::optional<int> cohort_override) API_AVAILABLE(ios(18.4)) {
+  CHECK_IS_TEST();
+  RunDefaultStatusCheck(local_state, std::move(system_call), cohort_override);
 }
 
 }  // namespace default_status

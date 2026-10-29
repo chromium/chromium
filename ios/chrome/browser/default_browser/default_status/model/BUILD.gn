@@ -15,15 +15,14 @@ source_set("model") {
     "default_status_helper_metrics.mm",
     "default_status_helper_types.h",
   ]
-  deps = []
-  public_deps = [
-    "//base",
+  deps = [
     "//components/prefs",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/public/features",
   ]
+  public_deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
@@ -36,6 +35,9 @@ source_set("unit_tests") {
     ":model",
     "//base/test:test_support",
     "//components/prefs:test_support",
+    "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/shared/model/utils:test_support",
+    "//ios/chrome/browser/shared/public/features",
+    "//testing/gtest",
   ]
 }
