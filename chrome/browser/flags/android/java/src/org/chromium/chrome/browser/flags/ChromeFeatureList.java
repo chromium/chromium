@@ -1027,7 +1027,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sArchivedTabsTeardown =
             newCachedFlag(ARCHIVED_TABS_TEARDOWN, /* defaultValue= */ false);
     public static final CachedFlag sAsyncFirstFrameDrawn =
-            newCachedFlag(ASYNC_FIRST_FRAME_DRAWN, /* defaultValue= */ false);
+            newCachedFlag(
+                    ASYNC_FIRST_FRAME_DRAWN,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sAsyncNotificationManager =
             newCachedFlag(ASYNC_NOTIFICATION_MANAGER, false, true);
     public static final CachedFlag sAsyncNotificationManagerForDownload =

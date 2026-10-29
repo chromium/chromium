@@ -1382,6 +1382,21 @@
             ]
         }
     ],
+    "AsyncFirstFrameDrawn": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AsyncFirstFrameDrawn"
+                    ]
+                }
+            ]
+        }
+    ],
     "AsyncNavigationInterceptUnlaunch": [
         {
             "platforms": [
