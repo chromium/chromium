@@ -859,7 +859,7 @@ void ChromePaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {
       AutofillSnackbarType::kMandatoryReauth,
       base::BindOnce(
           [](base::WeakPtr<content::WebContents> contents) {
-            if (contents) {
+            if (!contents) {
               return;
             }
             // For mandatory reauth snackbar, we will show Android credit card
