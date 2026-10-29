@@ -48,9 +48,13 @@ bool MergeAXTreeUpdates(std::vector<AXTreeUpdate>& src,
       "Accessibility.Performance.MergeAXTreeUpdates");
 
   size_t merge_count = 0;
+  size_t last_merge_target = 0;
   for (size_t i = 1; i < src.size(); i++) {
-    if (AXTreeUpdatesCanBeMerged(src[i - 1], src[i]))
+    if (AXTreeUpdatesCanBeMerged(src[last_merge_target], src[i])) {
       merge_count++;
+    } else {
+      last_merge_target = i;
+    }
   }
 
   // Doing a single merge isn't necessarily worth it because

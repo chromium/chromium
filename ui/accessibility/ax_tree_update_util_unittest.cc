@@ -285,6 +285,74 @@ TEST(AXTreeUpdateUtilTest, MergeAXTreeUpdates_AtLeastTwoMerges) {
   }
 }
 
+TEST(AXTreeUpdateUtilTest, MergeAXTreeUpdates_AccumulatorAsymmetry) {
+  std::vector<AXTreeUpdate> src;
+
+  // Update 0: focus is set on node 1 (has_tree_data = true, focus_id = 1).
+  {
+    AXTreeUpdate u;
+    u.has_tree_data = true;
+    u.tree_data.focus_id = 1;
+    AXNodeData node;
+    node.id = 1;
+    u.nodes.push_back(node);
+    src.push_back(u);
+  }
+
+  // Update 1: plain node-only update (has_tree_data = false,
+  // default-constructed tree_data with focus_id == kInvalidAXNodeID). Merges
+  // into Update 0.
+  {
+    AXTreeUpdate u;
+    u.has_tree_data = false;
+    AXNodeData node;
+    node.id = 2;
+    u.nodes.push_back(node);
+    src.push_back(u);
+  }
+
+  // Update 2: focus is blurred/cleared back to kInvalidAXNodeID
+  // (has_tree_data = true, focus_id = kInvalidAXNodeID). Its tree_data matches
+  // Update 1's default-constructed tree_data pairwise, but differs from the
+  // accumulated target Update 0 (focus_id == 1).
+  {
+    AXTreeUpdate u;
+    u.has_tree_data = true;
+    u.tree_data.focus_id = kInvalidAXNodeID;
+    AXNodeData node;
+    node.id = 3;
+    u.nodes.push_back(node);
+    src.push_back(u);
+  }
+
+  // Update 3: plain node-only update (has_tree_data = false). Merges into
+  // Update 2.
+  {
+    AXTreeUpdate u;
+    u.has_tree_data = false;
+    AXNodeData node;
+    node.id = 4;
+    u.nodes.push_back(node);
+    src.push_back(u);
+  }
+
+  std::vector<AXTreeUpdate> dst;
+  // Without tracking last_merge_target in pass 1, pass 1 overestimates
+  // merge_count as 3 (sizing dst to 1) while pass 2 requires 2 destination
+  // slots, triggering an out-of-bounds vector write.
+  EXPECT_TRUE(MergeAXTreeUpdates(src, &dst));
+  ASSERT_EQ(2u, dst.size());
+  EXPECT_EQ(2u, dst[0].nodes.size());
+  EXPECT_EQ(1, dst[0].nodes[0].id);
+  EXPECT_EQ(2, dst[0].nodes[1].id);
+  EXPECT_EQ(1, dst[0].tree_data.focus_id);
+
+  EXPECT_EQ(2u, dst[1].nodes.size());
+  EXPECT_EQ(3, dst[1].nodes[0].id);
+  EXPECT_EQ(4, dst[1].nodes[1].id);
+  EXPECT_EQ(kInvalidAXNodeID, dst[1].tree_data.focus_id);
+}
+
 TEST(AXTreeUpdateUtilTest, IsValidAXTreeUpdateFromRenderer) {
   AXTreeUpdate valid_update;
   valid_update.root_id = 1;
