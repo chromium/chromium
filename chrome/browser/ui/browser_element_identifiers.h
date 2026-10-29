@@ -233,7 +233,6 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kTabGroupEditorBubbleSaveToggleId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kTabGroupHeaderAttentionIndicatorElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kTabGroupHeaderElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kTabDeclutterButtonElementId);
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kTabSearchBubbleElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kTabSearchButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kTabStripActionContainerElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kTabStripComboButtonElementId);
@@ -297,5 +296,17 @@ DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kSidePanelReadingMarkedAsReadEventId);
 DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kTabGroupedCustomEventId);
 DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kTabGroupSavedCustomEventId);
 DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kVerticalTabStripCollapsedCustomEventId);
+
+// Aliases
+//
+// If for historical reasons there is a surface or element which changed name
+// but needs to work both with and without the new version of the feature
+// enabled, you can (temporarily) alias it here. Please put a TODO to eliminate
+// the old name once the feature is shipped.
+
+// TODO(https://crbug.com/579025166): Once the Organizer Panel is shipped, this
+// surface won't exist and this can be removed.
+inline constexpr ui::ElementIdentifier kTabSearchBubbleElementId =
+    kOrganizerPanelElementId;
 
 #endif  // CHROME_BROWSER_UI_BROWSER_ELEMENT_IDENTIFIERS_H_
