@@ -30,6 +30,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/optional_ref.h"
 #include "components/back_forward_cache/disabled_reason_id.h"
 #include "content/browser/back_forward_cache/back_forward_cache_can_store_document_result.h"
 #include "content/browser/back_forward_cache/back_forward_cache_disable.h"
@@ -66,7 +67,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "net/base/filename_util.h"
-#include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
@@ -250,14 +251,14 @@ bool CanExecuteGlobalCommands(
 void GotManifest(std::optional<std::string> manifest_id,
                  std::unique_ptr<PageHandler::GetAppManifestCallback> callback,
                  const GURL& manifest_url,
-                 ::blink::mojom::ManifestPtr input_manifest,
+                 base::optional_ref<const blink::Manifest> input_manifest,
                  blink::mojom::ManifestDebugInfoPtr debug_info) {
   if (manifest_id &&
       (!input_manifest ||
-       manifest_id.value() != input_manifest->id.possibly_invalid_spec())) {
+       manifest_id.value() != input_manifest->id().possibly_invalid_spec())) {
     std::move(callback)->sendFailure(protocol::Response::InvalidParams(
         std::string("Page manifest id ") +
-        (input_manifest ? input_manifest->id.possibly_invalid_spec() : "none") +
+        (input_manifest ? input_manifest->id().possibly_invalid_spec() : "") +
         " does not match the input " + manifest_id.value()));
     return;
   }
@@ -310,31 +311,32 @@ void GotManifest(std::optional<std::string> manifest_id,
   };
 
   auto manifest = Page::WebAppManifest::Create();
-  if (input_manifest->background_color.has_value()) {
+  if (input_manifest->background_color().has_value()) {
     manifest.SetBackgroundColor(color_utils::SkColorToRgbaString(
-        static_cast<SkColor>(input_manifest->background_color.value())));
+        static_cast<SkColor>(input_manifest->background_color().value())));
   }
-  if (input_manifest->description) {
+  if (input_manifest->description()) {
     manifest.SetDescription(
-        base::UTF16ToUTF8(input_manifest->description.value()));
+        base::UTF16ToUTF8(input_manifest->description().value()));
   }
   // TODO(crbug.com/331214986): Fill the WebAppManifest.dir (direction).
-  manifest.SetDisplay(base::ToString(input_manifest->display));
-  if (!input_manifest->display_override.empty()) {
+  manifest.SetDisplay(base::ToString(input_manifest->display()));
+  if (!input_manifest->display_override().empty()) {
     auto display_overrides = std::make_unique<protocol::Array<std::string>>();
-    for (const auto& display_override : input_manifest->display_override) {
+    for (const auto& display_override : input_manifest->display_override()) {
       display_overrides->push_back(base::ToString(display_override.display()));
     }
-    // TODO(crbug.com/469012990): Extend CDP for display override URL patterns.
+    // TODO(crbug.com/469012990): Extend CDP for display override URL
+    // patterns.
     manifest.SetDisplayOverrides(std::move(display_overrides));
   }
-  if (!input_manifest->file_handlers.empty()) {
+  if (!input_manifest->file_handlers().empty()) {
     auto file_handlers = std::make_unique<protocol::Array<Page::FileHandler>>();
-    for (const auto& input_file_handler : input_manifest->file_handlers) {
+    for (const auto& input_file_handler : input_manifest->file_handlers()) {
       auto file_handler = Page::FileHandler::Create();
-      if (!input_file_handler->accept.empty()) {
+      if (!input_file_handler.accept.empty()) {
         auto accepts = std::make_unique<protocol::Array<Page::FileFilter>>();
-        for (const auto& input_accept : input_file_handler->accept) {
+        for (const auto& input_accept : input_file_handler.accept) {
           auto accept = Page::FileFilter::Create();
           accept.SetName(base::UTF16ToUTF8(input_accept.first));
           if (!input_accept.second.empty()) {
@@ -350,71 +352,72 @@ void GotManifest(std::optional<std::string> manifest_id,
       }
       file_handlers->push_back(
           file_handler
-              .SetAction(input_file_handler->action.possibly_invalid_spec())
-              .SetName(base::UTF16ToUTF8(input_file_handler->name))
-              .SetLaunchType(base::ToString(input_file_handler->launch_type))
+              .SetAction(input_file_handler.action.possibly_invalid_spec())
+              .SetName(base::UTF16ToUTF8(input_file_handler.name))
+              .SetLaunchType(base::ToString(input_file_handler.launch_type))
               .Build());
     }
   }
-  if (!input_manifest->icons.empty()) {
-    manifest.SetIcons(convert_icons(input_manifest->icons));
+  if (!input_manifest->icons().empty()) {
+    manifest.SetIcons(convert_icons(input_manifest->icons()));
   }
-  manifest.SetId(input_manifest->id.possibly_invalid_spec());
+  manifest.SetId(input_manifest->id().possibly_invalid_spec());
   // TODO(crbug.com/331214986): Fill the WebAppManifest.lang.
-  if (input_manifest->launch_handler) {
+  if (input_manifest->launch_handler()) {
     manifest.SetLaunchHandler(
         Page::LaunchHandler::Create()
             .SetClientMode(base::ToString(
-                input_manifest->launch_handler.value().parsed_client_mode()))
+                input_manifest->launch_handler()->parsed_client_mode()))
             .Build());
   }
-  if (input_manifest->name) {
-    manifest.SetName(base::UTF16ToUTF8(input_manifest->name.value()));
+  if (input_manifest->name()) {
+    manifest.SetName(base::UTF16ToUTF8(input_manifest->name().value()));
   }
-  manifest.SetOrientation(base::ToString(input_manifest->orientation));
+  manifest.SetOrientation(base::ToString(input_manifest->orientation()));
   manifest.SetPreferRelatedApplications(
-      input_manifest->prefer_related_applications);
-  if (!input_manifest->protocol_handlers.empty()) {
+      input_manifest->prefer_related_applications());
+  if (!input_manifest->protocol_handlers().empty()) {
     auto protocol_handlers =
         std::make_unique<protocol::Array<Page::ProtocolHandler>>();
     for (const auto& input_protocol_handler :
-         input_manifest->protocol_handlers) {
+         input_manifest->protocol_handlers()) {
       protocol_handlers->push_back(
           Page::ProtocolHandler::Create()
-              .SetProtocol(base::UTF16ToUTF8(input_protocol_handler->protocol))
-              .SetUrl(input_protocol_handler->url.possibly_invalid_spec())
+              .SetProtocol(base::UTF16ToUTF8(input_protocol_handler.protocol))
+              .SetUrl(input_protocol_handler.url.possibly_invalid_spec())
               .Build());
     }
     manifest.SetProtocolHandlers(std::move(protocol_handlers));
   }
-  if (!input_manifest->scope_extensions.empty()) {
+  if (!input_manifest->scope_extensions().empty()) {
     auto scope_extensions =
         std::make_unique<protocol::Array<Page::ScopeExtension>>();
-    for (const auto& input_scope_extension : input_manifest->scope_extensions) {
+    for (const auto& input_scope_extension :
+         input_manifest->scope_extensions()) {
       scope_extensions->push_back(
           Page::ScopeExtension::Create()
-              .SetOrigin(input_scope_extension->origin.Serialize())
-              .SetHasOriginWildcard(input_scope_extension->has_origin_wildcard)
+              .SetOrigin(input_scope_extension.origin.Serialize())
+              .SetHasOriginWildcard(input_scope_extension.has_origin_wildcard)
               .Build());
     }
     manifest.SetScopeExtensions(std::move(scope_extensions));
   }
-  if (!input_manifest->screenshots.empty()) {
+  if (!input_manifest->screenshots().empty()) {
     auto screenshots = std::make_unique<protocol::Array<Page::Screenshot>>();
-    for (const auto& input_screenshot : input_manifest->screenshots) {
+    for (const auto& input_screenshot : input_manifest->screenshots()) {
       auto screenshot = Page::Screenshot::Create();
-      if (input_screenshot->label) {
-        screenshot.SetLabel(base::UTF16ToUTF8(input_screenshot->label.value()));
+      if (input_screenshot.label) {
+        screenshot.SetLabel(base::UTF16ToUTF8(input_screenshot.label.value()));
       }
       screenshots->push_back(
-          screenshot.SetImage(convert_icon(input_screenshot->image))
-              .SetFormFactor(base::ToString(input_screenshot->form_factor))
+          screenshot.SetImage(convert_icon(input_screenshot.image))
+              .SetFormFactor(base::ToString(input_screenshot.form_factor))
               .Build());
     }
     manifest.SetScreenshots(std::move(screenshots));
   }
-  if (input_manifest->share_target) {
-    const auto& input_share_target = input_manifest->share_target.value();
+  if (input_manifest->share_target()) {
+    const auto& input_share_target = input_manifest->share_target().value();
     auto share_target = Page::ShareTarget::Create();
     if (input_share_target.params.title) {
       share_target.SetTitle(
@@ -430,16 +433,16 @@ void GotManifest(std::optional<std::string> manifest_id,
     }
     manifest.SetShareTarget(
         share_target
-            .SetAction(
-                input_manifest->share_target->action.possibly_invalid_spec())
-            .SetMethod(base::ToString(input_manifest->share_target->method))
-            .SetEnctype(base::ToString(input_manifest->share_target->action))
+            .SetAction(input_share_target.action.possibly_invalid_spec())
+            .SetMethod(base::ToString(input_share_target.method))
+            .SetEnctype(base::ToString(input_share_target.action))
             .Build());
   }
-  if (!input_manifest->related_applications.empty()) {
+  if (!input_manifest->related_applications().empty()) {
     auto related_apps =
         std::make_unique<protocol::Array<Page::RelatedApplication>>();
-    for (const auto& input_related_app : input_manifest->related_applications) {
+    for (const auto& input_related_app :
+         input_manifest->related_applications()) {
       auto related_app = Page::RelatedApplication::Create();
       if (input_related_app.id) {
         related_app.SetId(base::UTF16ToUTF8(input_related_app.id.value()));
@@ -450,10 +453,10 @@ void GotManifest(std::optional<std::string> manifest_id,
     }
     manifest.SetRelatedApplications(std::move(related_apps));
   }
-  manifest.SetScope(input_manifest->scope.possibly_invalid_spec());
-  if (!input_manifest->shortcuts.empty()) {
+  manifest.SetScope(input_manifest->scope().possibly_invalid_spec());
+  if (!input_manifest->shortcuts().empty()) {
     auto shortcuts = std::make_unique<protocol::Array<Page::Shortcut>>();
-    for (const auto& input_shortcut : input_manifest->shortcuts) {
+    for (const auto& input_shortcut : input_manifest->shortcuts()) {
       shortcuts->push_back(
           Page::Shortcut::Create()
               .SetName(base::UTF16ToUTF8(input_shortcut.name))
@@ -462,18 +465,16 @@ void GotManifest(std::optional<std::string> manifest_id,
     }
     manifest.SetShortcuts(std::move(shortcuts));
   }
-  manifest.SetStartUrl(input_manifest->start_url.possibly_invalid_spec());
-  if (input_manifest->theme_color.has_value()) {
+  manifest.SetStartUrl(input_manifest->start_url().possibly_invalid_spec());
+  if (input_manifest->theme_color().has_value()) {
     manifest.SetThemeColor(color_utils::SkColorToRgbaString(
-        static_cast<SkColor>(input_manifest->theme_color.value())));
+        static_cast<SkColor>(input_manifest->theme_color().value())));
   }
 
-  std::unique_ptr<Page::AppManifestParsedProperties> parsed;
-  if (!blink::IsEmptyManifest(input_manifest)) {
-    parsed = Page::AppManifestParsedProperties::Create()
-                 .SetScope(input_manifest->scope.possibly_invalid_spec())
-                 .Build();
-  }
+  std::unique_ptr<Page::AppManifestParsedProperties> parsed =
+      Page::AppManifestParsedProperties::Create()
+          .SetScope(input_manifest->scope().possibly_invalid_spec())
+          .Build();
 
   std::move(callback)->sendSuccess(
       manifest_url.possibly_invalid_spec(), std::move(errors),

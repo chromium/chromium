@@ -22,6 +22,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "content/browser/manifest/manifest_manager_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -2157,7 +2158,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
 
   base::HistogramTester tester;
   mojo::test::BadMessageObserver bad_message_observer;
-  base::test::TestFuture<const GURL&, blink::mojom::ManifestPtr,
+  base::test::TestFuture<const GURL&, base::optional_ref<const blink::Manifest>,
                          blink::mojom::ManifestDebugInfoPtr>
       debug_future;
 
@@ -2171,8 +2172,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
                             blink::ManifestInvariantError::kIdCrossOrigin, 1);
 
   auto [url, manifest, debug_info] = debug_future.Take();
-  ASSERT_TRUE(manifest);
-  EXPECT_TRUE(blink::IsEmptyManifest(manifest));
+  EXPECT_FALSE(manifest.has_value());
 
   test_api.ClearBinderForName(blink::mojom::ManifestManager::Name_);
 }

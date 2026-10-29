@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/page_manifest_manager.h"
 #include "content/public/browser/page_user_data.h"
@@ -53,8 +54,12 @@ class CONTENT_EXPORT ManifestManagerHost
   base::CallbackListSubscription GetAllSpecifiedManifests(
       AllManifestsCallbackList::CallbackType callback) override;
 
-  void RequestManifestDebugInfo(
-      blink::mojom::ManifestManager::RequestManifestDebugInfoCallback callback);
+  using RequestManifestDebugInfoCallback =
+      base::OnceCallback<void(const GURL&,
+                              base::optional_ref<const blink::Manifest>,
+                              blink::mojom::ManifestDebugInfoPtr)>;
+
+  void RequestManifestDebugInfo(RequestManifestDebugInfoCallback callback);
 
   void BindObserver(
       mojo::PendingAssociatedReceiver<blink::mojom::ManifestUrlChangeObserver>
@@ -104,7 +109,7 @@ class CONTENT_EXPORT ManifestManagerHost
                                          blink::mojom::ManifestPtr manifest);
 
   void OnRequestManifestDebugInfoResponse(
-      blink::mojom::ManifestManager::RequestManifestDebugInfoCallback callback,
+      RequestManifestDebugInfoCallback callback,
       const GURL& url,
       blink::mojom::ManifestPtr parsed_manifest,
       blink::mojom::ManifestDebugInfoPtr debug_info);

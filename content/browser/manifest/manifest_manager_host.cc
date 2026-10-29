@@ -117,12 +117,11 @@ base::CallbackListSubscription ManifestManagerHost::GetAllSpecifiedManifests(
 }
 
 void ManifestManagerHost::RequestManifestDebugInfo(
-    blink::mojom::ManifestManager::RequestManifestDebugInfoCallback callback) {
+    RequestManifestDebugInfoCallback callback) {
   if (page().GetMainDocument().GetLastCommittedURL().SchemeIs(
           url::kAboutScheme)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), GURL(),
-                                  blink::mojom::Manifest::New(),
+        FROM_HERE, base::BindOnce(std::move(callback), GURL(), std::nullopt,
                                   blink::mojom::ManifestDebugInfo::New()));
     return;
   }
@@ -132,10 +131,11 @@ void ManifestManagerHost::RequestManifestDebugInfo(
 }
 
 void ManifestManagerHost::OnRequestManifestDebugInfoResponse(
-    blink::mojom::ManifestManager::RequestManifestDebugInfoCallback callback,
+    RequestManifestDebugInfoCallback callback,
     const GURL& url,
     blink::mojom::ManifestPtr parsed_manifest,
     blink::mojom::ManifestDebugInfoPtr debug_info) {
+  std::optional<blink::Manifest> manifest;
   if (parsed_manifest && !blink::IsEmptyManifest(*parsed_manifest)) {
     base::expected<blink::Manifest, blink::ManifestInvariantError> converted =
         blink::ManifestFromMojom(*parsed_manifest);
@@ -144,13 +144,11 @@ void ManifestManagerHost::OnRequestManifestDebugInfoResponse(
                                     converted.error());
       mojo::ReportBadMessage(
           blink::ManifestInvariantErrorToString(converted.error()));
-      parsed_manifest = blink::mojom::Manifest::New();
     } else {
-      parsed_manifest = blink::ManifestToMojom(*converted);
+      manifest = std::move(*converted);
     }
   }
-  std::move(callback).Run(url, std::move(parsed_manifest),
-                          std::move(debug_info));
+  std::move(callback).Run(url, manifest, std::move(debug_info));
 }
 
 blink::mojom::ManifestManager& ManifestManagerHost::GetManifestManager() {
