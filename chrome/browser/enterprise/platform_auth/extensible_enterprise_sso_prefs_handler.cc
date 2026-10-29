@@ -15,6 +15,7 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -32,6 +33,8 @@
 #include "base/threading/thread.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_metadata.h"
+#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
+#include "chrome/browser/enterprise/platform_auth/platform_auth_provider_manager.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -267,6 +270,12 @@ std::string ConfigToString(const Config& config) {
                        ", urls: ", OptionalListToString(url_specs), "}"});
 }
 
+bool IsOktaConfig(const Config& config) {
+  const SsoExtensionMetadata* metadata =
+      FindSsoExtensionMetadata(config.team_id, config.extension_id);
+  return metadata && metadata->idp_name == kOktaIdentityProvider;
+}
+
 }  // namespace
 
 ExtensibleEnterpriseSSOPrefsHandler::ExtensibleEnterpriseSSOPrefsHandler(
@@ -335,9 +344,18 @@ void ExtensibleEnterpriseSSOPrefsHandler::OnConfigRead(
                                    << ConfigToString(current_config_.value());
   }
 
+  if (base::FeatureList::IsEnabled(kPingSso)) {
+    // Whether the manager should be enabled depends on `current_config_`.
+    PlatformAuthProviderManager::EnableOrDisableIfNecessary(local_state_);
+  }
+
   // TODO(b/573090861): Deprecate kExtensibleEnterpriseSSOConfiguredHosts in
   // favour of using GetCurrentConfig().
-  if (!current_config_.has_value() || !current_config_->hosts.has_value()) {
+  // `prefs::kExtensibleEnterpriseSSOConfiguredHosts` effectively controls Okta
+  // SSO, so if the config is invalid or does not come from Okta it must be
+  // cleared.
+  if (!current_config_.has_value() || !current_config_->hosts.has_value() ||
+      !IsOktaConfig(current_config_.value())) {
     local_state_->SetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts, {});
     return;
   }
@@ -368,8 +386,6 @@ ExtensibleEnterpriseSSOPrefsHandler::ParseConfig(
     return std::nullopt;
   }
 
-  // If the extension or team IDs don't match any supported IdPs return an empty
-  // result.
   std::optional<std::string> extension_id =
       ParseCfString(config.extension_id.get());
   if (!extension_id.has_value()) {
@@ -382,17 +398,6 @@ ExtensibleEnterpriseSSOPrefsHandler::ParseConfig(
   if (!team_id.has_value()) {
     LOG_POLICY(WARNING, EXTENSIBLE_SSO) << "Failed to parse SSO extension MDM "
                                            "payload: team_id is invalid.";
-    return std::nullopt;
-  }
-
-  // Only Okta is supported for now since request proxying in
-  // `PlatformAuthProxyingURLLoaderFactory` only handles Okta SSO requests.
-  const SsoExtensionMetadata* metadata =
-      FindSsoExtensionMetadata(*team_id, *extension_id);
-  if (!metadata || metadata->idp_name != kOktaIdentityProvider) {
-    LOG_POLICY(WARNING, EXTENSIBLE_SSO)
-        << "Failed to parse SSO extension MDM "
-           "payload: extension does not match any supported IdP.";
     return std::nullopt;
   }
 

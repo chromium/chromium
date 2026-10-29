@@ -39,8 +39,12 @@
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/enterprise/platform_auth/cloud_ap_provider_win.h"
 #elif BUILDFLAG(IS_MAC)
+#include "base/features.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_metadata.h"
+#include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_prefs_handler.h"
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_provider_mac.h"
+#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #elif BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/platform_auth/entra_provider_android.h"
 #endif
@@ -72,6 +76,8 @@ bool ShouldBeEnabled(PrefService* local_state) {
 
 #elif BUILDFLAG(IS_MAC)
 
+using MdmConfig = ExtensibleEnterpriseSSOPrefsHandler::Config;
+
 bool ShouldBeEnabled(PrefService* local_state) {
   // If the device is not managed we shouldn't enable the Manager.
   if (!policy::ManagementServiceFactory::GetForPlatform()->IsManaged()) {
@@ -85,8 +91,21 @@ bool ShouldBeEnabled(PrefService* local_state) {
     return false;
   }
 
-  // TODO(b/564412659): Return false if there is no valid MDM config or the
-  // config does not match any known IdP.
+  if (base::FeatureList::IsEnabled(kPingSso)) {
+    // If there is no valid config there is no need to enable the manager.
+    const std::optional<MdmConfig> current_mdm_config =
+        ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig();
+    if (!current_mdm_config.has_value()) {
+      return false;
+    }
+
+    const SsoExtensionMetadata* idp_metadata = FindSsoExtensionMetadata(
+        current_mdm_config->team_id, current_mdm_config->extension_id);
+    if (!idp_metadata) {
+      // Only support known IdPs.
+      return false;
+    }
+  }
 
   return true;
 }

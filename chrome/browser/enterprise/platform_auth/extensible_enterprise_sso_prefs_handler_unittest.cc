@@ -23,8 +23,10 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/current_thread.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_metadata.h"
+#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "chrome/browser/enterprise/platform_auth/scoped_cf_prefs_observer_override.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -159,6 +161,10 @@ class TestCFWrapper : public CFPreferencesObserver {
 class ExtensibleEnterpriseSSOPrefsHandlerTest : public testing::Test {
  protected:
   ExtensibleEnterpriseSSOPrefsHandlerTest() {
+    // Keeps the handler from toggling the global `PlatformAuthProviderManager`,
+    // whose logic is covered by its own tests.
+    feature_list_.InitAndDisableFeature(kPingSso);
+
     ExtensibleEnterpriseSSOPrefsHandler::RegisterPrefs(
         pref_service_.registry());
 
@@ -190,6 +196,13 @@ class ExtensibleEnterpriseSSOPrefsHandlerTest : public testing::Test {
     SetHostsPropertyOverride(HostsToScopedPropList(hosts));
   }
 
+  // Sets a Ping payload with the given `urls` entry.
+  void SetPingConfigOverride(ScopedPropList urls) {
+    SetConfigOverride(StringToScopedPropList(kPingSsoExtensionId),
+                      StringToScopedPropList(kPingSsoTeamId),
+                      /* hosts= */ ScopedPropList(), std::move(urls));
+  }
+
   void SetConfigOverride(ScopedPropList extension_id,
                          ScopedPropList team_id,
                          ScopedPropList hosts,
@@ -211,6 +224,13 @@ class ExtensibleEnterpriseSSOPrefsHandlerTest : public testing::Test {
     });
   }
 
+  // Reads the config and waits until it has been applied, since there is no
+  // observable signal when the parsed config doesn't change the hosts pref.
+  void ReadConfigAndWait() {
+    prefs_handler_->UpdatePrefs();
+    task_environment_.RunUntilIdle();
+  }
+
   void SendNotification() {
     if (notification_callback_) {
       notification_callback_.Run();
@@ -223,6 +243,7 @@ class ExtensibleEnterpriseSSOPrefsHandlerTest : public testing::Test {
     testing::Test::TearDown();
   }
 
+  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   CFPreferencesObserver::RawConfig config_;
   std::unique_ptr<ExtensibleEnterpriseSSOPrefsHandler> prefs_handler_;
@@ -408,26 +429,6 @@ TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest,
 }
 
 TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest,
-       GetCurrentConfigClearedByInvalidConfig) {
-  const std::vector<std::string_view> hosts = {kExampleHost};
-  SetHostsPropertyOverride(hosts);
-  prefs_handler_->UpdatePrefs();
-  WaitUntilPrefsChange(hosts.size());
-  ASSERT_TRUE(
-      ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig().has_value());
-
-  SetConfigOverride(StringToScopedPropList(kInvalidPropID),
-                    StringToScopedPropList(kOktaSsoTeamId),
-                    HostsToScopedPropList(hosts),
-                    /* urls= */ ScopedPropList());
-  prefs_handler_->UpdatePrefs();
-  WaitUntilPrefsChange(0);
-
-  EXPECT_EQ(ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig(),
-            std::nullopt);
-}
-
-TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest,
        GetCurrentConfigTracksHandlerLifetime) {
   const std::vector<std::string_view> hosts = {kExampleHost};
   SetHostsPropertyOverride(hosts);
@@ -444,6 +445,60 @@ TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest,
       std::make_unique<ExtensibleEnterpriseSSOPrefsHandler>(&pref_service_);
   EXPECT_EQ(ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig(),
             std::nullopt);
+}
+
+TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest,
+       NonOktaConfigWithoutHostsClearsConfiguredHosts) {
+  const std::vector<std::string_view> hosts = {kExampleHost, kWildcardHost};
+  SetHostsPropertyOverride(hosts);
+  prefs_handler_->UpdatePrefs();
+  WaitUntilPrefsChange(hosts.size());
+
+  SetPingConfigOverride(UrlsToScopedPropList({kHttpsUrl}));
+  prefs_handler_->UpdatePrefs();
+  WaitUntilPrefsChange(0);
+
+  const std::optional<ExtensibleEnterpriseSSOPrefsHandler::Config> config =
+      ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig();
+  ASSERT_TRUE(config.has_value());
+  EXPECT_EQ(config->extension_id, kPingSsoExtensionId);
+  EXPECT_EQ(config->team_id, kPingSsoTeamId);
+}
+
+TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest,
+       NonOktaConfigDoesNotSetConfiguredHosts) {
+  SetConfigOverride(StringToScopedPropList(kMicrosoftSsoExtensionId),
+                    StringToScopedPropList(kMicrosoftSsoTeamId),
+                    HostsToScopedPropList({kExampleHost, kWildcardHost}),
+                    /* urls= */ ScopedPropList());
+  ReadConfigAndWait();
+
+  ASSERT_TRUE(
+      ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig().has_value());
+  EXPECT_TRUE(
+      pref_service_.GetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts)
+          .empty());
+}
+
+TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest,
+       NonOktaConfigWithHostsClearsConfiguredHosts) {
+  const std::vector<std::string_view> hosts = {kExampleHost, kWildcardHost};
+  SetHostsPropertyOverride(hosts);
+  prefs_handler_->UpdatePrefs();
+  WaitUntilPrefsChange(hosts.size());
+
+  SetConfigOverride(StringToScopedPropList(kMicrosoftSsoExtensionId),
+                    StringToScopedPropList(kMicrosoftSsoTeamId),
+                    HostsToScopedPropList(hosts),
+                    /* urls= */ ScopedPropList());
+  prefs_handler_->UpdatePrefs();
+  WaitUntilPrefsChange(0);
+
+  const std::optional<ExtensibleEnterpriseSSOPrefsHandler::Config> config =
+      ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig();
+  ASSERT_TRUE(config.has_value());
+  EXPECT_EQ(config->extension_id, kMicrosoftSsoExtensionId);
+  EXPECT_EQ(config->team_id, kMicrosoftSsoTeamId);
 }
 
 struct ConfigTestParams {
@@ -705,7 +760,6 @@ INSTANTIATE_TEST_SUITE_P(
                 },
             .expected_config = std::nullopt,
         },
-        // Microsoft is a supported IdP, but host syncing is Okta-only.
         ParseConfigTestParams{
             .name = "MicrosoftIdp",
             .raw_config =
@@ -716,7 +770,13 @@ INSTANTIATE_TEST_SUITE_P(
                     .hosts = HostsToScopedPropList({kExampleHost}),
                     .urls = ScopedPropList(),
                 },
-            .expected_config = std::nullopt,
+            .expected_config =
+                Config{
+                    .extension_id = kMicrosoftSsoExtensionId,
+                    .team_id = kMicrosoftSsoTeamId,
+                    .hosts = std::vector<std::string>{kExampleHost},
+                    .urls = std::nullopt,
+                },
         },
         ParseConfigTestParams{
             .name = "MismatchedIdps",
@@ -727,9 +787,14 @@ INSTANTIATE_TEST_SUITE_P(
                     .hosts = HostsToScopedPropList({kExampleHost}),
                     .urls = ScopedPropList(),
                 },
-            .expected_config = std::nullopt,
+            .expected_config =
+                Config{
+                    .extension_id = kOktaSsoExtensionId,
+                    .team_id = kMicrosoftSsoTeamId,
+                    .hosts = std::vector<std::string>{kExampleHost},
+                    .urls = std::nullopt,
+                },
         },
-        // Ping is a supported IdP, but host syncing is Okta-only.
         ParseConfigTestParams{
             .name = "PingIdp",
             .raw_config =
@@ -739,18 +804,30 @@ INSTANTIATE_TEST_SUITE_P(
                     .hosts = HostsToScopedPropList({kExampleHost}),
                     .urls = UrlsToScopedPropList({kHttpsUrl}),
                 },
-            .expected_config = std::nullopt,
+            .expected_config =
+                Config{
+                    .extension_id = kPingSsoExtensionId,
+                    .team_id = kPingSsoTeamId,
+                    .hosts = std::vector<std::string>{kExampleHost},
+                    .urls = std::vector<GURL>{GURL(kHttpsUrl)},
+                },
         },
         ParseConfigTestParams{
-            .name = "MismatchedOktaAndPingIdps",
+            .name = "UnknownIdp",
             .raw_config =
                 {
-                    .extension_id = StringToScopedPropList(kOktaSsoExtensionId),
-                    .team_id = StringToScopedPropList(kPingSsoTeamId),
+                    .extension_id = StringToScopedPropList(kInvalidPropID),
+                    .team_id = StringToScopedPropList(kInvalidPropID),
                     .hosts = HostsToScopedPropList({kExampleHost}),
-                    .urls = ScopedPropList(),
+                    .urls = UrlsToScopedPropList({kHttpsUrl}),
                 },
-            .expected_config = std::nullopt,
+            .expected_config =
+                Config{
+                    .extension_id = kInvalidPropID,
+                    .team_id = kInvalidPropID,
+                    .hosts = std::vector<std::string>{kExampleHost},
+                    .urls = std::vector<GURL>{GURL(kHttpsUrl)},
+                },
         },
         UrlsTestParams("ValidUrls",
                        UrlsToScopedPropList({kHttpsUrl, kHttpUrl,
