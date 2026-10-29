@@ -13,8 +13,9 @@ desc: |-
   - If set to <ph name="COMPUTER_NAME_VALUE">computer_name</ph>, the certificate's Subject Common Name is set to the machine's hostname. Note: Setting this property to <ph name="COMPUTER_NAME_VALUE">computer_name</ph> uses a device-level property in a profile-scoped certificate, which has privacy implications on unmanaged or shared devices as the machine hostname will be included in the certificate.
 
   This policy has no effect if <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME">ProvisionManagedClientCertificateForUser</ph> is disabled or unset.
+supported_on:
+- chrome.*:159-
 future_on:
-- chrome.*
 - chrome_os
 - android
 - ios

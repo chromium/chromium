@@ -13,8 +13,9 @@ desc: |-
   - If set to <ph name="COMPUTER_NAME_VALUE">computer_name</ph>, the certificate's Subject Common Name is set to the machine's hostname.
 
   This policy has no effect if <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME">ProvisionManagedClientCertificateForBrowser</ph> is disabled or unset.
+supported_on:
+- chrome.*:159-
 future_on:
-- chrome.*
 - android
 - ios
 features:

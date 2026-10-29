@@ -14,7 +14,7 @@ bool IsManagedUserClientCertificateInPrefsEnabled() {
   return base::FeatureList::IsEnabled(kManagedUserClientCertificateInPrefs);
 }
 
-BASE_FEATURE(kClientCertCommonNameAttribute, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kClientCertCommonNameAttribute, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsClientCertCommonNameAttributeEnabled() {
   return base::FeatureList::IsEnabled(kClientCertCommonNameAttribute);
