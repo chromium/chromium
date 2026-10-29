@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -30,13 +29,22 @@
 
 namespace zoom {
 
+DEFINE_USER_DATA(ZoomViewController);
+
 ZoomViewController::ZoomViewController(
     tabs::TabInterface& tab_interface,
     page_actions::PageActionController& page_action_controller)
     : tab_interface_(tab_interface),
-      page_action_controller_(page_action_controller) {}
+      page_action_controller_(page_action_controller),
+      scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
+}
 
 ZoomViewController::~ZoomViewController() = default;
+
+// static
+ZoomViewController* ZoomViewController::From(tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
 
 void ZoomViewController::UpdatePageActionIconAndBubbleVisibility(
     bool prefer_to_show_bubble,

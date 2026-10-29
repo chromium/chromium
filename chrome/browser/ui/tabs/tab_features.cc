@@ -545,8 +545,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   }
 
   if (page_action_controller_->ActionExists(kActionShowZoomBubble)) {
-    zoom_view_controller_ = std::make_unique<zoom::ZoomViewController>(
-        tab, *page_action_controller_);
+    zoom_view_controller_ =
+        GetUserDataFactory().CreateInstance<zoom::ZoomViewController>(
+            tab, tab, *page_action_controller_);
   }
 
   if (page_action_controller_->ActionExists(kActionInstallPwa)) {

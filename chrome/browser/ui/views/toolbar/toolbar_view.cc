@@ -61,7 +61,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -2056,9 +2055,8 @@ views::BubbleAnchor ToolbarView::GetPageActionBubbleAnchor(
 }
 
 void ToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {
-  auto* zoom_view_controller = browser_->GetActiveTabInterface()
-                                   ->GetTabFeatures()
-                                   ->zoom_view_controller();
+  auto* zoom_view_controller =
+      zoom::ZoomViewController::From(browser_->GetActiveTabInterface());
   CHECK(zoom_view_controller);
   zoom_view_controller->UpdatePageActionIconAndBubbleVisibility(
       /*prefer_to_show_bubble=*/can_show_bubble, /*from_user_gesture=*/false);

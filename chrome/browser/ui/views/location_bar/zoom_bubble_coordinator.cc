@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_manager.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
@@ -259,11 +258,10 @@ void ZoomBubbleCoordinator::UpdateZoomBubbleStateAndIconVisibility(
   // UpdateZoomIconVisibility() sees the correct value bubble state value.
   UpdateBubbleVisibilityState(base::to_address(browser_), is_bubble_visible);
 
-  auto* tab_feature = tab_interface->GetTabFeatures();
-  CHECK(tab_feature);
-  tab_feature->zoom_view_controller()->UpdateBubbleVisibility(
+  auto* zoom_view_controller = zoom::ZoomViewController::From(tab_interface);
+  CHECK(zoom_view_controller);
+  zoom_view_controller->UpdateBubbleVisibility(
       /*prefer_to_show_bubble=*/is_bubble_visible,
       /*from_user_gesture=*/false);
-  tab_feature->zoom_view_controller()->UpdatePageActionIconVisibility(
-      is_bubble_visible);
+  zoom_view_controller->UpdatePageActionIconVisibility(is_bubble_visible);
 }

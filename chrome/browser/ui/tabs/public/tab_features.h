@@ -476,10 +476,6 @@ class TabFeatures {
     return manage_passwords_page_action_controller_.get();
   }
 
-  zoom::ZoomViewController* zoom_view_controller() {
-    return zoom_view_controller_.get();
-  }
-
   LensOverlayController* lens_overlay_controller();
   const LensOverlayController* lens_overlay_controller() const;
 

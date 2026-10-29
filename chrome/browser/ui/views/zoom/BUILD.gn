@@ -7,7 +7,10 @@ assert(!is_android, "Zoom Page actions are for desktop platforms only")
 source_set("zoom") {
   sources = [ "zoom_view_controller.h" ]
 
-  public_deps = [ "//components/tabs:public" ]
+  public_deps = [
+    "//components/tabs:public",
+    "//ui/base/unowned_user_data",
+  ]
 }
 
 source_set("impl") {

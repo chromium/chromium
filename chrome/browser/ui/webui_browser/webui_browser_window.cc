@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_base.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/views/find_bar_host.h"
 #include "chrome/browser/ui/views/find_bar_owner.h"
@@ -1007,7 +1006,7 @@ void WebUIBrowserWindow::ZoomChangedForActiveTab(bool can_show_bubble) {
     return;
   }
 
-  auto* zoom_view_controller = tab->GetTabFeatures()->zoom_view_controller();
+  auto* zoom_view_controller = zoom::ZoomViewController::From(tab);
   if (!zoom_view_controller) {
     return;
   }

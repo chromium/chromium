@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_ZOOM_ZOOM_VIEW_CONTROLLER_H_
 
 #include "components/tabs/public/tab_interface.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class ZoomBubbleCoordinator;
 
@@ -24,6 +25,12 @@ namespace zoom {
 // on the current state.
 class ZoomViewController {
  public:
+  DECLARE_USER_DATA(ZoomViewController);
+
+  // Returns the ZoomViewController associated with `tab`, or nullptr if none
+  // exists (or if `tab` is null).
+  static ZoomViewController* From(tabs::TabInterface* tab);
+
   explicit ZoomViewController(
       tabs::TabInterface& tab_interface,
       page_actions::PageActionController& page_action_controller);
@@ -76,6 +83,10 @@ class ZoomViewController {
   // Unowned reference to the page action controller that will coordinate
   // requests from this object.
   const raw_ref<page_actions::PageActionController> page_action_controller_;
+
+  // Registers this instance with `tab_interface_`'s UnownedUserDataHost for
+  // its lifetime.
+  ui::ScopedUnownedUserData<ZoomViewController> scoped_unowned_user_data_;
 };
 
 }  // namespace zoom

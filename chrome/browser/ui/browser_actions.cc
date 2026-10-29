@@ -956,9 +956,7 @@ void BrowserActions::InitializePageActionIconActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                bwi->GetActiveTabInterface()
-                    ->GetTabFeatures()
-                    ->zoom_view_controller()
+                zoom::ZoomViewController::From(bwi->GetActiveTabInterface())
                     ->UpdateBubbleVisibility(
                         /*prefer_to_show_bubble=*/true,
                         /*from_user_gesture=*/true);

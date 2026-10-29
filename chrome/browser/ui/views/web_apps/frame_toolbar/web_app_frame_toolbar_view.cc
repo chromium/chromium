@@ -10,7 +10,6 @@
 #include "base/notreached.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_action/page_action_properties_provider.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
@@ -362,10 +361,8 @@ views::BubbleAnchor WebAppFrameToolbarView::GetPageActionBubbleAnchor(
 }
 
 void WebAppFrameToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {
-  auto* zoom_view_controller = browser_view_->browser()
-                                   ->GetActiveTabInterface()
-                                   ->GetTabFeatures()
-                                   ->zoom_view_controller();
+  auto* zoom_view_controller = zoom::ZoomViewController::From(
+      browser_view_->browser()->GetActiveTabInterface());
   CHECK(zoom_view_controller);
   zoom_view_controller->UpdatePageActionIconAndBubbleVisibility(
       /*prefer_to_show_bubble=*/can_show_bubble, /*from_user_gesture=*/false);
