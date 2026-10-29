@@ -354,7 +354,7 @@ class TestAutofillClientTemplate : public T {
   std::u16string_view GetPageTitle() const override { return page_title_; }
 
   security_state::SecurityLevel GetSecurityLevelForUmaHistograms() override {
-    return security_level_;
+    return security_state::SecurityLevel::NONE;
   }
 
   translate::LanguageState* GetLanguageState() override {
@@ -718,10 +718,6 @@ class TestAutofillClientTemplate : public T {
     test_sync_service_ = test_sync_service;
   }
 
-  void set_security_level(security_state::SecurityLevel security_level) {
-    security_level_ = security_level;
-  }
-
   void set_last_committed_primary_main_frame_url(const GURL& url) {
     last_committed_primary_main_frame_url_ = url;
     last_committed_primary_main_frame_origin_ = url::Origin::Create(url);
@@ -912,9 +908,6 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<consent_auditor::FakeConsentAuditor> consent_auditor_;
 
   GeoIpCountryCode variation_config_country_code_;
-
-  security_state::SecurityLevel security_level_ =
-      security_state::SecurityLevel::NONE;
 
   bool format_for_large_keyboard_accessory_ = false;
 
