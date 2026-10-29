@@ -16780,6 +16780,25 @@
             ]
         }
     ],
+    "SkipUrlInvalidationForUnchangedSameDocumentReplacement": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261029_CANARY_DEV",
+                    "enable_features": [
+                        "SkipUrlInvalidationForUnchangedSameDocumentReplacement"
+                    ]
+                }
+            ]
+        }
+    ],
     "SmartSuggestions": [
         {
             "platforms": [
