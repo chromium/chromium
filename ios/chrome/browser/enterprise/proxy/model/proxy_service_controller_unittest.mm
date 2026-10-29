@@ -273,10 +273,19 @@ class ProxyServiceControllerTest : public PlatformTest {
   base::test::TestFuture<NSString*, NSString*, NSError*> credentials_future_;
 };
 
-// Test that initial routing rules are applied to the proxy provider when the
-// controller is created.
+// Tests that initial routing rules are applied to the proxy provider when the
+// controller is created on iOS 18.1+, and not applied on older OS versions.
 TEST_F(ProxyServiceControllerTest, AppliesInitialRoutesOnCreation) {
   NiceMock<enterprise_net::MockEnterpriseProxyService> mock_service;
+  if (!@available(iOS 18.1, *)) {
+    EXPECT_CALL(mock_service, GetDynamicRoutingConfig()).Times(0);
+    TestProxyConfigurationProvider provider(personal_profile_);
+    enterprise_net::EnterpriseProxyErrorService error_service(&mock_service);
+    ProxyServiceController controller(&mock_service, &error_service, &provider);
+    EXPECT_TRUE(provider.rules().empty());
+    return;
+  }
+
   EXPECT_CALL(mock_service, GetDynamicRoutingConfig())
       .WillOnce(Return(CreateSampleRoutingConfig(kFirstDestinationPattern)));
 
@@ -289,10 +298,21 @@ TEST_F(ProxyServiceControllerTest, AppliesInitialRoutesOnCreation) {
             std::vector<std::string>{std::string(kFirstDestinationPattern)});
 }
 
-// Test that route update notifications propagate from the enterprise service
-// and update the rules in the proxy provider.
+// Tests that route update notifications propagate from the enterprise service
+// and update the rules in the proxy provider on iOS 18.1+, and are ignored on
+// older OS versions.
 TEST_F(ProxyServiceControllerTest, DynamicRoutingUpdatesPropagate) {
   NiceMock<enterprise_net::MockEnterpriseProxyService> mock_service;
+  if (!@available(iOS 18.1, *)) {
+    EXPECT_CALL(mock_service, GetDynamicRoutingConfig()).Times(0);
+    TestProxyConfigurationProvider provider(personal_profile_);
+    enterprise_net::EnterpriseProxyErrorService error_service(&mock_service);
+    ProxyServiceController controller(&mock_service, &error_service, &provider);
+    mock_service.NotifyObservers();
+    EXPECT_TRUE(provider.rules().empty());
+    return;
+  }
+
   EXPECT_CALL(mock_service, GetDynamicRoutingConfig())
       .WillOnce(Return(CreateSampleRoutingConfig(kFirstDestinationPattern)))
       .WillOnce(Return(CreateSampleRoutingConfig(kSecondDestinationPattern)));
@@ -308,9 +328,13 @@ TEST_F(ProxyServiceControllerTest, DynamicRoutingUpdatesPropagate) {
             std::vector<std::string>{std::string(kSecondDestinationPattern)});
 }
 
-// Test that when renewed routes are empty, the proxy provider configuration is
+// Tests that when renewed routes are empty, the proxy provider configuration is
 // cleared.
 TEST_F(ProxyServiceControllerTest, ClearsRoutesWhenUpdatedWithEmptyConfig) {
+  if (!@available(iOS 18.1, *)) {
+    GTEST_SKIP() << "Dynamic proxy routing requires iOS 18.1+.";
+  }
+
   NiceMock<enterprise_net::MockEnterpriseProxyService> mock_service;
   EXPECT_CALL(mock_service, GetDynamicRoutingConfig())
       .WillOnce(Return(CreateSampleRoutingConfig(kFirstDestinationPattern)))

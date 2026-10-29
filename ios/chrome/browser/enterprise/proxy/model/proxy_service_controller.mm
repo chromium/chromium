@@ -181,6 +181,12 @@ void ProxyServiceController::OnDynamicProxyConfigsStatusChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(enterprise_proxy_service_);
   CHECK(proxy_configuration_provider_);
+  // WebKit has a bug prior to iOS 18.1 where it does not deliver proxy
+  // authentication challenges, so dynamic proxy routing configurations are not
+  // applied on older OS versions.
+  if (!@available(iOS 18.1, *)) {
+    return;
+  }
   proxy_configuration_provider_->UpdateProxyConfiguration(
       web::TranslateProvisioningDomainRoutingConfig(
           enterprise_proxy_service_->GetDynamicRoutingConfig()));

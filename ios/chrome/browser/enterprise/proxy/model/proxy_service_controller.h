@@ -81,7 +81,9 @@ class ProxyServiceController
 
   // EnterpriseProxyService::Observer:
   // Translates dynamic routing configs from `enterprise_proxy_service_` and
-  // forwards them to `proxy_configuration_provider_`.
+  // forwards them to `proxy_configuration_provider_`. No-op prior to iOS 18.1
+  // because a WebKit bug prevents proxy authentication challenges from being
+  // delivered on older OS versions.
   void OnDynamicProxyConfigsStatusChanged() override;
 
  private:
