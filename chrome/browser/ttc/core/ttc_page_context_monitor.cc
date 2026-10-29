@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
+#include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/page_context_util.h"
@@ -49,10 +50,12 @@ PageContextResult BuildPageContextResult(
 TtcPageContextMonitor::TtcPageContextMonitor(
     content::WebContents& web_contents,
     SessionJournal& journal,
+    const actor::EnterprisePolicyChecker* enterprise_policy_checker,
     PageContextInvalidatedCallback on_page_context_invalidated,
     PageContextFetchedCallback on_page_context_fetched)
     : content::WebContentsObserver(&web_contents),
       journal_(journal),
+      enterprise_policy_checker_(enterprise_policy_checker),
       extraction_service_(CHECK_DEREF(
           page_content_annotations::PageContentExtractionServiceFactory::
               GetForProfile(Profile::FromBrowserContext(
@@ -75,6 +78,18 @@ void TtcPageContextMonitor::FetchPageContext() {
   CHECK(web_contents());
 
   content::Page& page = web_contents()->GetPrimaryPage();
+  const GURL& url = page.GetMainDocument().GetLastCommittedURL();
+
+  // If enterprise policy explicitly blocks the URL, suppress context extraction
+  // immediately: do not trigger async extraction, and do not notify cached
+  // context.
+  if (enterprise_policy_checker_ &&
+      enterprise_policy_checker_->Evaluate(url) ==
+          actor::EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked) {
+    journal_->Log("TtcPageContextEnterpriseBlocked",
+                  actor::JournalDetailsBuilder().Add("url", url).Build());
+    return;
+  }
   // PCES may have a cached extraction for this page. If so, use it; if not,
   // fetch one async.
   if (std::optional<page_content_annotations::ExtractedPageContentResult>
@@ -164,6 +179,7 @@ void TtcPageContextMonitor::MaybeNotifyPageContextFetched(
   }
   IsUrlSupportedForPageContext(
       weak_page->GetMainDocument().GetLastCommittedURL(),
+      enterprise_policy_checker_,
       base::BindOnce(&TtcPageContextMonitor::NotifyPageContextFetched,
                      weak_ptr_factory_.GetWeakPtr(), weak_page,
                      std::move(result)));

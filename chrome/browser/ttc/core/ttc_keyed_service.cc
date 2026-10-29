@@ -10,6 +10,8 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_enterprise_policy_checker.h"
+#include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "chrome/browser/ttc/app/public/make_conversation.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
@@ -37,6 +39,10 @@ TtcKeyedService::TtcKeyedService(Profile* profile,
     : profile_(profile),
       conversation_factory_(std::move(conversation_factory)),
       session_view_factory_(std::move(session_view_factory)),
+      enterprise_policy_checker_(
+          profile_
+              ? std::make_unique<actor::ActorEnterprisePolicyChecker>(profile_)
+              : nullptr),
       actor_ui_state_manager_(std::make_unique<TtcActorUiStateManager>()) {}
 
 TtcKeyedService::~TtcKeyedService() = default;
@@ -51,6 +57,17 @@ bool TtcKeyedService::SetMicMuted(bool muted) {
 
 bool TtcKeyedService::IsMicMuted() const {
   return session_controller_ && session_controller_->IsMicMuted();
+}
+
+const actor::EnterprisePolicyChecker*
+TtcKeyedService::enterprise_policy_checker() const {
+  return enterprise_policy_checker_.get();
+}
+
+void TtcKeyedService::SetEnterprisePolicyCheckerForTesting(
+    std::unique_ptr<actor::EnterprisePolicyChecker> checker) {
+  CHECK(!is_session_active());
+  enterprise_policy_checker_ = std::move(checker);
 }
 
 void TtcKeyedService::Shutdown() {

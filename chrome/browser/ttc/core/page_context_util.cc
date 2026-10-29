@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/actor/core/safety_list_manager.h"
 #include "content/public/common/url_constants.h"
@@ -41,9 +42,18 @@ bool IsSchemeAndHostSupported(const GURL& url) {
 
 }  // namespace
 
-void IsUrlSupportedForPageContext(const GURL& url,
-                                  base::OnceCallback<void(bool)> callback) {
+void IsUrlSupportedForPageContext(
+    const GURL& url,
+    const actor::EnterprisePolicyChecker* enterprise_policy_checker,
+    base::OnceCallback<void(bool)> callback) {
   if (!IsSchemeAndHostSupported(url)) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  if (enterprise_policy_checker &&
+      enterprise_policy_checker->Evaluate(url) ==
+          actor::EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked) {
     std::move(callback).Run(false);
     return;
   }
@@ -59,6 +69,12 @@ void IsUrlSupportedForPageContext(const GURL& url,
       url, url, base::BindOnce([](actor::SafetyListManager::Decision decision) {
                   return decision != actor::SafetyListManager::Decision::kBlock;
                 }).Then(std::move(callback)));
+}
+
+void IsUrlSupportedForPageContext(const GURL& url,
+                                  base::OnceCallback<void(bool)> callback) {
+  IsUrlSupportedForPageContext(url, /*enterprise_policy_checker=*/nullptr,
+                               std::move(callback));
 }
 
 }  // namespace ttc

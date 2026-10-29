@@ -7,12 +7,17 @@
 
 #include "base/cancelable_callback.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ttc/core/page_context.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "content/public/browser/web_contents_observer.h"
+
+namespace actor {
+class EnterprisePolicyChecker;
+}
 
 namespace content {
 class Page;
@@ -53,6 +58,7 @@ class TtcPageContextMonitor
   TtcPageContextMonitor(
       content::WebContents& web_contents,
       SessionJournal& journal,
+      const actor::EnterprisePolicyChecker* enterprise_policy_checker,
       PageContextInvalidatedCallback on_page_context_invalidated,
       PageContextFetchedCallback on_page_context_fetched);
   ~TtcPageContextMonitor() override;
@@ -91,6 +97,9 @@ class TtcPageContextMonitor
                                 bool is_url_supported);
 
   const raw_ref<SessionJournal> journal_;
+
+  const raw_ptr<const actor::EnterprisePolicyChecker>
+      enterprise_policy_checker_;
 
   const raw_ref<page_content_annotations::PageContentExtractionService>
       extraction_service_;

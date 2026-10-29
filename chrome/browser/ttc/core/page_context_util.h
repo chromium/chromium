@@ -9,16 +9,29 @@
 
 class GURL;
 
+namespace actor {
+class EnterprisePolicyChecker;
+}
+
 namespace ttc {
 
 // Determines whether TTC may surface page context for a page at `url`, and
 // invokes `callback` with the result.
 //
-// Only the New Tab Page and HTTP(S) pages are supported, and the URL must not
-// be blocked by the actor safety lists (actor::SafetyListManager), evaluated
-// as a navigation from `url` to itself. The safety list check fails open: if
-// the lists have not been loaded (or failed to parse), the URL is not blocked
-// by them.
+// Only the New Tab Page and HTTP(S) pages are supported. If
+// `enterprise_policy_checker` is provided, the URL must not be explicitly
+// blocked by enterprise policy. Additionally, the URL must not be blocked by
+// the actor safety lists (actor::SafetyListManager), evaluated as a
+// navigation from `url` to itself. The safety list check fails open: if the
+// lists have not been loaded (or failed to parse), the URL is not blocked by
+// them.
+void IsUrlSupportedForPageContext(
+    const GURL& url,
+    const actor::EnterprisePolicyChecker* enterprise_policy_checker,
+    base::OnceCallback<void(bool)> callback);
+
+// Convenience overload that performs page context checks without enterprise
+// policy evaluation.
 void IsUrlSupportedForPageContext(const GURL& url,
                                   base::OnceCallback<void(bool)> callback);
 

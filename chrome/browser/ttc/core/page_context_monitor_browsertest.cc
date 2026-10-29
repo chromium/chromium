@@ -11,11 +11,14 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ttc/core/page_context_util.h"
@@ -176,6 +179,13 @@ class PageContextMonitorBrowserTest : public TtcCoreBrowserTestBase {
     return future;
   }
 
+  void FlushMessageLoop() {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   // Navigates to an arbitrary page but blocks it from firing the load event.
   void NavigateButBlockLoad() {
     // The test page embeds `subframe_url()` in an iframe, so holding back the
@@ -202,9 +212,12 @@ class PageContextMonitorBrowserTest : public TtcCoreBrowserTestBase {
     ASSERT_TRUE(subframe_manager_->WaitForNavigationFinished());
   }
 
-  bool IsUrlSupported(const GURL& url) {
+  bool IsUrlSupported(const GURL& url,
+                      const actor::EnterprisePolicyChecker*
+                          enterprise_policy_checker = nullptr) {
     base::test::TestFuture<bool> supported;
-    IsUrlSupportedForPageContext(url, supported.GetCallback());
+    IsUrlSupportedForPageContext(url, enterprise_policy_checker,
+                                 supported.GetCallback());
     return supported.Get();
   }
 
@@ -540,13 +553,13 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
       web_contents()->GetPrimaryPage(), extracted.GetCallback(),
       /*trigger_if_not_cached=*/true);
   ASSERT_TRUE(extracted.Wait());
-  base::RunLoop().RunUntilIdle();
+  FlushMessageLoop();
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
 
   // Neither must a new session, which finds the extracted content cached.
   ttc_service().EndSession();
   ASSERT_NO_FATAL_FAILURE(start_session_expecting_no_context());
-  base::RunLoop().RunUntilIdle();
+  FlushMessageLoop();
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
 
   // Navigating from a blocked page to an allowed one during a session must
@@ -583,6 +596,97 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
       .WillOnce(base::test::RunOnceClosure(sent.GetCallback()));
   content::CrashTab(web_contents());
   EXPECT_TRUE(sent.Wait());
+}
+
+// Enterprise policy explicitly blocking URLs must prevent page context from
+// being fetched or emitted to the conversation, whether the page's content is
+// extracted during the session or already cached, and must resume sending
+// context once the page navigates to an allowed URL.
+IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
+                       EnterprisePolicyBlockedUrlsAreNotFetchedOrEmitted) {
+  auto mock_checker = std::make_unique<actor::MockPolicyChecker>(
+      actor::EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked);
+  actor::MockPolicyChecker* raw_checker = mock_checker.get();
+  ttc_service().SetEnterprisePolicyCheckerForTesting(std::move(mock_checker));
+
+  page_content_annotations::PageContentExtractionService* extraction_service =
+      page_content_annotations::PageContentExtractionServiceFactory::
+          GetForProfile(profile());
+  ASSERT_TRUE(extraction_service);
+
+  auto start_session_expecting_no_context = [&]() {
+    ttc_service().StartSession();
+    ASSERT_TRUE(conversation());
+    // Only the page's origin may be sent, without its title or content.
+    EXPECT_CALL(*conversation(), SendContextUpdate(testing::_, std::string(),
+                                                   IsEmptyPageContent()))
+        .Times(testing::AnyNumber());
+    EXPECT_TRUE(ExpectPageChange().Wait());
+  };
+
+  const GURL blocked_url =
+      embedded_test_server()->GetURL("blocked.com", "/simple.html");
+  const GURL allowed_url =
+      embedded_test_server()->GetURL("allowed.com", "/simple.html");
+
+  ASSERT_FALSE(IsUrlSupported(blocked_url, raw_checker));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), blocked_url));
+
+  // Starting a session on a blocked page must not send context even once PCES
+  // extracts the page's content.
+  ASSERT_NO_FATAL_FAILURE(start_session_expecting_no_context());
+  base::test::TestFuture<
+      std::optional<page_content_annotations::ExtractedPageContentResult>>
+      extracted;
+  extraction_service->GetExtractedPageContentAndEligibilityForPageAsync(
+      web_contents()->GetPrimaryPage(), extracted.GetCallback(),
+      /*trigger_if_not_cached=*/true);
+  ASSERT_TRUE(extracted.Wait());
+  FlushMessageLoop();
+  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
+
+  // Neither must a new session, which finds the extracted content cached.
+  ttc_service().EndSession();
+  ASSERT_NO_FATAL_FAILURE(start_session_expecting_no_context());
+  FlushMessageLoop();
+  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
+
+  // If the policy unblocks or allows the page, navigating to it sends context.
+  raw_checker->set_reason(
+      actor::EnterprisePolicyChecker::UrlBlockReason::kExplicitlyAllowed);
+  ASSERT_TRUE(IsUrlSupported(allowed_url, raw_checker));
+
+  auto navigated = ExpectPageChange();
+  base::test::TestFuture<void> sent;
+  EXPECT_CALL(*conversation(), SendContextUpdate(allowed_url, "OK", testing::_))
+      .WillOnce(base::test::RunOnceClosure(sent.GetCallback()));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), allowed_url));
+  EXPECT_TRUE(navigated.Wait());
+  EXPECT_TRUE(sent.Wait());
+  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
+
+  // Navigating back to a blocked page during an active session invalidates old
+  // context and suppresses sending new page context.
+  raw_checker->set_reason(
+      actor::EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked);
+  ASSERT_FALSE(IsUrlSupported(blocked_url, raw_checker));
+
+  EXPECT_CALL(*conversation(), SendContextUpdate(testing::_, std::string(),
+                                                 IsEmptyPageContent()))
+      .Times(testing::AnyNumber());
+  navigated = ExpectPageChange();
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), blocked_url));
+  EXPECT_TRUE(navigated.Wait());
+
+  base::test::TestFuture<
+      std::optional<page_content_annotations::ExtractedPageContentResult>>
+      extracted_blocked;
+  extraction_service->GetExtractedPageContentAndEligibilityForPageAsync(
+      web_contents()->GetPrimaryPage(), extracted_blocked.GetCallback(),
+      /*trigger_if_not_cached=*/true);
+  ASSERT_TRUE(extracted_blocked.Wait());
+  FlushMessageLoop();
+  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
 }
 
 // Extracted page context includes the content of a cross-site iframe.

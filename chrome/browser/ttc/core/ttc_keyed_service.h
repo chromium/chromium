@@ -19,6 +19,10 @@
 
 class Profile;
 
+namespace actor {
+class EnterprisePolicyChecker;
+}
+
 namespace content {
 class BrowserContext;
 }
@@ -108,12 +112,18 @@ class TtcKeyedService : public KeyedService, public base::SupportsUserData {
   // for TTC sessions.
   TtcActorUiStateManager& actor_ui_state_manager();
 
+  // The EnterprisePolicyChecker used for policy gating in TTC sessions.
+  const actor::EnterprisePolicyChecker* enterprise_policy_checker() const;
+  void SetEnterprisePolicyCheckerForTesting(
+      std::unique_ptr<actor::EnterprisePolicyChecker> checker);
+
   base::WeakPtr<TtcKeyedService> GetWeakPtr();
 
  private:
   raw_ptr<Profile> profile_;
   ConversationFactory conversation_factory_;
   SessionViewFactory session_view_factory_;
+  std::unique_ptr<actor::EnterprisePolicyChecker> enterprise_policy_checker_;
   // Must outlive `session_controller_`, which indirectly holds a reference to
   // it, as do the actor tasks created during a session.
   std::unique_ptr<TtcActorUiStateManager> actor_ui_state_manager_;

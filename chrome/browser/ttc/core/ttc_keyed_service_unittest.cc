@@ -12,6 +12,8 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ttc/core/session_controller.h"
@@ -210,6 +212,17 @@ TEST_F(TtcKeyedServiceUnitTest, TabToolWithoutTrackedContentsFails) {
   ASSERT_FALSE(response.Ok());
   EXPECT_EQ(response.error().code,
             actor::mojom::ActionResultCode::kTabWentAway);
+}
+
+TEST_F(TtcKeyedServiceUnitTest, EnterprisePolicyChecker) {
+  // A regular profile should have a non-null enterprise policy checker.
+  EXPECT_NE(service_->enterprise_policy_checker(), nullptr);
+
+  auto mock_checker = std::make_unique<actor::MockPolicyChecker>(
+      actor::EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked);
+  actor::MockPolicyChecker* raw_checker = mock_checker.get();
+  service_->SetEnterprisePolicyCheckerForTesting(std::move(mock_checker));
+  EXPECT_EQ(service_->enterprise_policy_checker(), raw_checker);
 }
 
 }  // namespace ttc
