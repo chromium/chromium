@@ -998,4 +998,83 @@ suite('ProfilePickerProfilesReorderingTest', function() {
       ],
     });
   });
+
+  function getMenuMoveButtons(card: ProfileCardElement): {
+    moveLeftButton: HTMLButtonElement|null,
+    moveRightButton: HTMLButtonElement|null,
+  } {
+    const menu = card.shadowRoot.querySelector('profile-card-menu')!;
+    return {
+      moveLeftButton:
+          menu.shadowRoot.querySelector<HTMLButtonElement>('#moveLeftButton'),
+      moveRightButton:
+          menu.shadowRoot.querySelector<HTMLButtonElement>('#moveRightButton'),
+    };
+  }
+
+  test('ProfileReorder_ContextMenuMoveSingleProfile', async function() {
+    await setupProfileReorderingTest(1);
+
+    const card = mainViewElement.shadowRoot.querySelector<ProfileCardElement>(
+        'profile-card')!;
+    const {moveLeftButton, moveRightButton} = getMenuMoveButtons(card);
+    assertFalse(!!moveLeftButton);
+    assertFalse(!!moveRightButton);
+  });
+
+  test('ProfileReorder_ContextMenuMoveMultipleProfiles', async function() {
+    await setupProfileReorderingTest(3);
+    assertProfileNamesOrder(
+        mainViewElement.getProfileListForTesting(),
+        ['profile0', 'profile1', 'profile2'], 'Initial order check');
+
+    const cards = Array.from(
+        mainViewElement.shadowRoot.querySelectorAll<ProfileCardElement>(
+            'profile-card'));
+    assertEquals(cards.length, 3);
+
+    // Check available move options on all 3 cards: extremities only have one
+    // move direction, while middle cards have both.
+    assertFalse(!!getMenuMoveButtons(cards[0]!).moveLeftButton);
+    assertTrue(!!getMenuMoveButtons(cards[0]!).moveRightButton);
+    assertTrue(!!getMenuMoveButtons(cards[1]!).moveLeftButton);
+    assertTrue(!!getMenuMoveButtons(cards[1]!).moveRightButton);
+    assertTrue(!!getMenuMoveButtons(cards[2]!).moveLeftButton);
+    assertFalse(!!getMenuMoveButtons(cards[2]!).moveRightButton);
+
+    // Move first profile right: [profile0, profile1, profile2] ->
+    // [profile1, profile0, profile2].
+    getMenuMoveButtons(cards[0]!).moveRightButton!.click();
+    let args = await browserProxy.whenCalled('updateProfileOrder');
+    assertDeepEquals(args, [0, 1]);
+    await microtasksFinished();
+    assertProfileNamesOrder(
+        mainViewElement.getProfileListForTesting(),
+        ['profile1', 'profile0', 'profile2'],
+        'Order after moving first profile right');
+
+    // Move middle profile right: [profile1, profile0, profile2] ->
+    // [profile1, profile2, profile0].
+    browserProxy.resetResolver('updateProfileOrder');
+    getMenuMoveButtons(cards[1]!).moveRightButton!.click();
+    args = await browserProxy.whenCalled('updateProfileOrder');
+    assertDeepEquals(args, [1, 2]);
+    await microtasksFinished();
+    assertProfileNamesOrder(
+        mainViewElement.getProfileListForTesting(),
+        ['profile1', 'profile2', 'profile0'],
+        'Order after moving middle profile right');
+
+    // Move last profile left: [profile1, profile2, profile0] ->
+    // [profile1, profile0, profile2].
+    browserProxy.resetResolver('updateProfileOrder');
+    getMenuMoveButtons(cards[2]!).moveLeftButton!.click();
+    args = await browserProxy.whenCalled('updateProfileOrder');
+    assertDeepEquals(args, [2, 1]);
+    await microtasksFinished();
+    assertProfileNamesOrder(
+        mainViewElement.getProfileListForTesting(),
+        ['profile1', 'profile0', 'profile2'],
+        'Order after moving last profile left');
+  });
 });

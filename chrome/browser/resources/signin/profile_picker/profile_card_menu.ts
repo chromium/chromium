@@ -22,6 +22,8 @@ import type {ManageProfilesBrowserProxy, ProfileState} from './manage_profiles_b
 import {ManageProfilesBrowserProxyImpl} from './manage_profiles_browser_proxy.js';
 import {getCss} from './profile_card_menu.css.js';
 import {getHtml} from './profile_card_menu.html.js';
+import {isProfilesReorderingEnabled} from './profile_picker_flags.js';
+import {MoveProfileDirection} from './profile_picker_main_view.js';
 import {createDummyProfileState} from './profile_picker_util.js';
 
 export interface Statistics {
@@ -76,6 +78,8 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
   static override get properties() {
     return {
       profileState: {type: Object},
+      profileIndex: {type: Number},
+      profilesCount: {type: Number},
 
       /**
        * Results of profile statistics, keyed by the suffix of the corresponding
@@ -95,6 +99,8 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
   }
 
   accessor profileState: ProfileState = createDummyProfileState();
+  accessor profileIndex: number = -1;
+  accessor profilesCount: number = 0;
   private accessor statistics_: Statistics = {
     BrowsingHistory: 0,
     Passwords: 0,
@@ -233,6 +239,25 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
   protected onCustomizeButtonClick_() {
     this.manageProfilesBrowserProxy_.openManageProfileSettingsSubPage(
         this.profileState.profilePath);
+    this.$.actionMenu.close();
+  }
+
+  protected canMoveLeft_(): boolean {
+    return isProfilesReorderingEnabled() && this.profileIndex > 0;
+  }
+
+  protected canMoveRight_(): boolean {
+    return isProfilesReorderingEnabled() && this.profileIndex >= 0 &&
+        this.profileIndex < this.profilesCount - 1;
+  }
+
+  protected onMoveLeftButtonClick_() {
+    this.fire('move-profile', {direction: MoveProfileDirection.LEFT});
+    this.$.actionMenu.close();
+  }
+
+  protected onMoveRightButtonClick_() {
+    this.fire('move-profile', {direction: MoveProfileDirection.RIGHT});
     this.$.actionMenu.close();
   }
 }

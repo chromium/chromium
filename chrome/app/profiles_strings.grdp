@@ -1074,6 +1074,12 @@
     <message name="IDS_PROFILE_PICKER_PROFILE_MENU_CUSTOMIZE_TEXT" desc="Text of the customize button in profile card menu">
       Edit
     </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_MENU_MOVE_LEFT_TEXT" desc="Text of the move left button in the profile card menu in the Profile Picker. Clicking this button reorders the profiles list by moving the profile one position to the left.">
+      Move left
+    </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_MENU_MOVE_RIGHT_TEXT" desc="Text of the move right button in the profile card menu in the Profile Picker. Clicking this button reorders the profiles list by moving the profile one position to the right.">
+      Move right
+    </message>
     <message name="IDS_PROFILE_PICKER_ASK_ON_STARTUP" desc="Text for the checkbox on the profile picker main view">
       Show on startup
     </message>

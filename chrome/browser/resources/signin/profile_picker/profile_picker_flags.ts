@@ -33,3 +33,7 @@ export function isGlicVersion(): boolean {
 export function isUseRefreshedUI(): boolean {
   return loadTimeData.getBoolean('useRefreshedUI');
 }
+
+export function isProfilesReorderingEnabled(): boolean {
+  return loadTimeData.getBoolean('profilesReorderingEnabled');
+}

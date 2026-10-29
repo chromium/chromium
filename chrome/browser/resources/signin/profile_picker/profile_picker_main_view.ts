@@ -29,10 +29,16 @@ import {DragDropReorderTileListDelegate} from './drag_drop_reorder_tile_list_del
 import type {ManageProfilesBrowserProxy, ProfileState} from './manage_profiles_browser_proxy.js';
 import {ManageProfilesBrowserProxyImpl} from './manage_profiles_browser_proxy.js';
 import {navigateTo, NavigationMixin, Routes} from './navigation_mixin.js';
-import {isAskOnStartupAllowed, isGlicVersion, isProfileCreationAllowed, isUseRefreshedUI} from './profile_picker_flags.js';
+import type {ProfileCardElement} from './profile_card.js';
+import {isAskOnStartupAllowed, isGlicVersion, isProfileCreationAllowed, isProfilesReorderingEnabled, isUseRefreshedUI} from './profile_picker_flags.js';
 import {getCss} from './profile_picker_main_view.css.js';
 import {getHtml} from './profile_picker_main_view.html.js';
 import type {SigninErrorDialogElement} from './signin_error_dialog.js';
+
+export enum MoveProfileDirection {
+  LEFT = -1,
+  RIGHT = 1,
+}
 
 export interface ProfilePickerMainViewElement {
   $: {
@@ -221,7 +227,7 @@ export class ProfilePickerMainViewElement extends
    * one.
    */
   private initializeDragDelegate_() {
-    if (loadTimeData.getBoolean('profilesReorderingEnabled')) {
+    if (isProfilesReorderingEnabled()) {
       if (this.dragDelegate_) {
         this.dragDelegate_.clearListeners();
       }
@@ -298,6 +304,27 @@ export class ProfilePickerMainViewElement extends
     }
 
     this.dragDelegate_.toggleDrag(e.detail.toggle);
+  }
+
+  protected onMoveProfile_(e: CustomEvent<{direction: MoveProfileDirection}>) {
+    if (!isProfilesReorderingEnabled()) {
+      return;
+    }
+
+    const card = e.currentTarget as ProfileCardElement;
+    const initialIndex = card.profileIndex;
+    const finalIndex = initialIndex + e.detail.direction;
+    if (initialIndex < 0 || initialIndex >= this.profilesList_.length ||
+        finalIndex < 0 || finalIndex >= this.profilesList_.length) {
+      return;
+    }
+
+    const [movedProfile] = this.profilesList_.splice(initialIndex, 1);
+    assert(movedProfile);
+    this.profilesList_.splice(finalIndex, 0, movedProfile);
+    this.requestUpdate();
+    this.manageProfilesBrowserProxy_.updateProfileOrder(
+        initialIndex, finalIndex);
   }
 
   protected onDisableAllPickerButtons_() {

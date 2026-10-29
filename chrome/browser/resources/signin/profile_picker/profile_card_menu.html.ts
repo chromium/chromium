@@ -22,6 +22,20 @@ export function getHtml(this: ProfileCardMenuElement) {
     <cr-icon icon="cr:delete" aria-hidden="true"></cr-icon>
     $i18n{profileMenuRemoveText}
   </button>
+  ${this.canMoveLeft_() ? html`
+    <button id="moveLeftButton" class="dropdown-item"
+        @click="${this.onMoveLeftButtonClick_}">
+      <cr-icon icon="cr:chevron-left" aria-hidden="true"></cr-icon>
+      $i18n{profileMenuMoveLeftText}
+    </button>
+  ` : ''}
+  ${this.canMoveRight_() ? html`
+    <button id="moveRightButton" class="dropdown-item"
+        @click="${this.onMoveRightButtonClick_}">
+      <cr-icon icon="cr:chevron-right" aria-hidden="true"></cr-icon>
+      $i18n{profileMenuMoveRightText}
+    </button>
+  ` : ''}
 </cr-action-menu>
 
 <cr-dialog id="removeConfirmationDialog" ignore-enter-key>

@@ -54,7 +54,8 @@ export function getHtml(this: ProfileCardElement) {
     </div>
   </div>
   <profile-card-menu .profileState="${this.profileState}"
-      ?hidden="${isGlicVersion()}">
+      .profileIndex="${this.profileIndex}"
+      .profilesCount="${this.profilesCount}" ?hidden="${isGlicVersion()}">
   </profile-card-menu>
 </div>
 <cr-tooltip id="gaiaNameTooltip" for="gaiaName" manual-mode offset="0"

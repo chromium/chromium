@@ -5,16 +5,18 @@
 import 'chrome://profile-picker/profile_picker.js';
 
 import type {ProfileCardMenuElement, ProfileState, Statistics, StatisticsResult} from 'chrome://profile-picker/profile_picker.js';
-import {ManageProfilesBrowserProxyImpl} from 'chrome://profile-picker/profile_picker.js';
+import {loadTimeData, ManageProfilesBrowserProxyImpl, MoveProfileDirection} from 'chrome://profile-picker/profile_picker.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {assertEquals, assertFalse, assertNotEquals, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
 
 enum MenuButtonIndex {
   CUSTOMIZE = 0,
   DELETE = 1,
+  MOVE_LEFT = 2,
+  MOVE_RIGHT = 3,
 }
 
 suite('ProfileCardMenuTest', function() {
@@ -27,6 +29,9 @@ suite('ProfileCardMenuTest', function() {
   setup(function() {
     browserProxy = new TestManageProfilesBrowserProxy();
     ManageProfilesBrowserProxyImpl.setInstance(browserProxy);
+    loadTimeData.overrideValues({
+      profilesReorderingEnabled: true,
+    });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     profileCardMenuElement = document.createElement('profile-card-menu');
     const testProfileState: ProfileState = {
@@ -106,6 +111,52 @@ suite('ProfileCardMenuTest', function() {
     menuButtons[MenuButtonIndex.DELETE]!.click();
     assertFalse(profileCardMenuElement.$.actionMenu.open);
     assertTrue(profileCardMenuElement.$.removeConfirmationDialog.open);
+  });
+
+  test('ProfileCardMenuActionMenuReorderingDisabled', async function() {
+    loadTimeData.overrideValues({
+      profilesReorderingEnabled: false,
+    });
+    profileCardMenuElement.profileIndex = 1;
+    profileCardMenuElement.profilesCount = 3;
+    await microtasksFinished();
+
+    profileCardMenuElement.$.moreActionsButton.click();
+    assertTrue(profileCardMenuElement.$.actionMenu.open);
+    const menuButtons = profileCardMenuElement.shadowRoot.querySelectorAll(
+        '#actionMenu > .dropdown-item');
+    assertEquals(menuButtons.length, 2);
+  });
+
+  test('ProfileCardMenuMoveButtons', async function() {
+    profileCardMenuElement.profileIndex = 1;
+    profileCardMenuElement.profilesCount = 3;
+    await microtasksFinished();
+
+    profileCardMenuElement.$.moreActionsButton.click();
+    assertTrue(profileCardMenuElement.$.actionMenu.open);
+    const menuButtons =
+        profileCardMenuElement.shadowRoot.querySelectorAll<HTMLButtonElement>(
+            '#actionMenu > .dropdown-item');
+    assertEquals(menuButtons.length, 4);
+
+    const moveLeftPromise =
+        eventToPromise('move-profile', profileCardMenuElement);
+    menuButtons[MenuButtonIndex.MOVE_LEFT]!.click();
+    const moveLeftEvent =
+        await moveLeftPromise as CustomEvent<{direction: MoveProfileDirection}>;
+    assertEquals(moveLeftEvent.detail.direction, MoveProfileDirection.LEFT);
+    assertFalse(profileCardMenuElement.$.actionMenu.open);
+
+    profileCardMenuElement.$.moreActionsButton.click();
+    assertTrue(profileCardMenuElement.$.actionMenu.open);
+    const moveRightPromise =
+        eventToPromise('move-profile', profileCardMenuElement);
+    menuButtons[MenuButtonIndex.MOVE_RIGHT]!.click();
+    const moveRightEvent = await moveRightPromise as
+        CustomEvent<{direction: MoveProfileDirection}>;
+    assertEquals(moveRightEvent.detail.direction, MoveProfileDirection.RIGHT);
+    assertFalse(profileCardMenuElement.$.actionMenu.open);
   });
 
   // Click on the cancel button in the remove confirmation dialog closes the

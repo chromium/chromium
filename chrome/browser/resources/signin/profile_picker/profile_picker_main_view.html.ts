@@ -24,8 +24,11 @@ ${isGlicVersion() ? html`
       ${this.profilesList_.map((item, index) => html`
         <profile-card class="profile-item" data-index="${index}"
             .profileState="${item}" .disabled="${this.pickerButtonsDisabled_}"
+            .profileIndex="${index}"
+            .profilesCount="${this.profilesList_.length}"
             @toggle-drag="${this.onToggleDrag_}"
-            @disable-all-picker-buttons="${this.onDisableAllPickerButtons_}">
+            @disable-all-picker-buttons="${this.onDisableAllPickerButtons_}"
+            @move-profile="${this.onMoveProfile_}">
         </profile-card>
       `)}
       <cr-button id="addProfile" class="profile-item"

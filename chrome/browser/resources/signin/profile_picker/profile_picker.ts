@@ -12,4 +12,4 @@ export {ProfileCardElement} from './profile_card.js';
 export {ProfileCardMenuElement} from './profile_card_menu.js';
 export type {Statistics, StatisticsResult} from './profile_card_menu.js';
 export {ProfilePickerAppElement} from './profile_picker_app.js';
-export {ProfilePickerMainViewElement} from './profile_picker_main_view.js';
+export {MoveProfileDirection, ProfilePickerMainViewElement} from './profile_picker_main_view.js';
