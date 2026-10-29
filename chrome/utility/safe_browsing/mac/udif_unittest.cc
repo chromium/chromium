@@ -90,10 +90,6 @@ class UDIFParserTest
   bool IsRustEnabled() const { return std::get<1>(GetParam()); }
 
   void RunReadAllTest(size_t buffer_size) {
-    if (IsRustEnabled()) {
-      GTEST_SKIP() << "TODO(crbug.com/575525008): Remove once Rust UDIFParser "
-                      "is implemented.";
-    }
     const UDIFTestCase& test_case = GetTestCase();
     if (!(test_case.expected_results & UDIFTestCase::READ_UDIF_DATA)) {
       return;
@@ -152,12 +148,6 @@ TEST_P(UDIFParserTest, ParseUDIF) {
   for (size_t i = 0; i < udif.GetNumberOfPartitions(); ++i) {
     SCOPED_TRACE(base::StringPrintf("partition %zu", i));
     EXPECT_EQ(test_case.expected_partitions[i], udif.GetPartitionType(i));
-  }
-
-  if (IsRustEnabled()) {
-    // TODO(crbug.com/575525008): Remove early return once Rust
-    // UDIFPartitionReadStream is implemented.
-    return;
   }
 
   for (size_t i = 0; i < udif.GetNumberOfPartitions(); ++i) {
