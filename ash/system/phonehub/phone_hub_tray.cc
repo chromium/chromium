@@ -120,6 +120,8 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf)
   eche_icon->SetImageHorizontalAlignment(
       views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
   eche_icon->SetMinimumImageSize(gfx::Size(kEcheIconMinSize, kEcheIconMinSize));
+  eche_icon->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME));
   eche_icon->SetVisible(false);
   eche_loading_indicator_ = eche_icon->AddChildView(
       std::make_unique<EcheIconLoadingIndicatorView>(eche_icon.get()));

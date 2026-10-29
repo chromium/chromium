@@ -38,6 +38,7 @@
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -804,14 +805,14 @@ TEST_F(PhoneHubTrayTest, ShowAndHideNudge) {
       Shell::Get()->anchored_nudge_manager()->IsNudgeShown(kPhoneHubNudgeId));
 }
 
-// TODO(crbug.com/405272123): Re-enable once the eche icon has an
-// accessible name when visible_name is empty.
-TEST_F(PhoneHubTrayTest, DISABLED_EcheIconActivatesCallback) {
+TEST_F(PhoneHubTrayTest, EcheIconActivatesCallback) {
   bool launched_app_window = false;
   phone_hub_tray_->SetEcheIconActivationCallback(
       base::BindLambdaForTesting([&]() { launched_app_window = true; }));
   phone_hub_tray_->OnAppStreamUpdate(phonehub::proto::AppStreamUpdate());
   phone_hub_manager_.fake_icon_decoder()->FinishLastCall();
+
+  views::RunAccessibilityPaintChecks(phone_hub_tray_->GetWidget());
 
   LeftClickOn(phone_hub_tray_->eche_icon_);
 
@@ -834,12 +835,21 @@ TEST_F(PhoneHubTrayTest, TrayPressedMetrics) {
 }
 
 TEST_F(PhoneHubTrayTest, AccessibleNames) {
+  const std::u16string tray_accessible_name =
+      l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME);
   {
     ui::AXNodeData node_data;
     phone_hub_tray_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              tray_accessible_name);
+  }
+  {
+    ui::AXNodeData eche_node_data;
+    phone_hub_tray_->eche_icon_->GetViewAccessibility().GetAccessibleNodeData(
+        &eche_node_data);
     EXPECT_EQ(
-        node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-        l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME));
+        eche_node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+        tray_accessible_name);
   }
 
   Shell::Get()->focus_cycler()->FocusWidget(phone_hub_tray_->GetWidget());
@@ -861,6 +871,31 @@ TEST_F(PhoneHubTrayTest, AccessibleNames) {
     EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
               phone_hub_tray()->GetAccessibleNameForBubble());
   }
+
+  phonehub::proto::AppStreamUpdate app_stream_update;
+  app_stream_update.mutable_foreground_app()->set_visible_name("Test App");
+  phone_hub_tray_->OnAppStreamUpdate(app_stream_update);
+  phone_hub_manager_.fake_icon_decoder()->FinishLastCall();
+  {
+    ui::AXNodeData eche_node_data;
+    phone_hub_tray_->eche_icon_->GetViewAccessibility().GetAccessibleNodeData(
+        &eche_node_data);
+    EXPECT_EQ(
+        eche_node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+        u"Test App");
+  }
+
+  phone_hub_tray_->OnAppStreamUpdate(phonehub::proto::AppStreamUpdate());
+  phone_hub_manager_.fake_icon_decoder()->FinishLastCall();
+  {
+    ui::AXNodeData eche_node_data;
+    phone_hub_tray_->eche_icon_->GetViewAccessibility().GetAccessibleNodeData(
+        &eche_node_data);
+    EXPECT_EQ(
+        eche_node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+        tray_accessible_name);
+  }
+  views::RunAccessibilityPaintChecks(phone_hub_tray_->GetWidget());
 }
 
 }  // namespace ash

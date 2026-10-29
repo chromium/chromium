@@ -529,7 +529,9 @@ void EcheTray::SetIcon(const gfx::Image& icon,
             gfx::ImageSkiaOperations::CreateResizedImage(
                 icon.AsImageSkia(), skia::ImageOperations::RESIZE_BEST,
                 gfx::Size(kIconSize, kIconSize))));
-    icon_view->SetTooltipText(tooltip_text);
+    const std::u16string text =
+        tooltip_text.empty() ? GetAccessibleName() : tooltip_text;
+    icon_view->SetTooltipText(text);
     SetIconVisibility(true);
   }
 }
