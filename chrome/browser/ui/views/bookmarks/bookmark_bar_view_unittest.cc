@@ -20,9 +20,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
-#include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_controller.h"
-#include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_controller_impl.h"
-#include "chrome/browser/ui/bookmarks/controllers/desktop_bookmark_bar_ui_controller_injector.h"
+#include "chrome/browser/ui/bookmarks/controllers/desktop_bookmark_bar_injector.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
@@ -34,6 +32,7 @@
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/browser_apis/ui_controllers/bookmark_bar/bookmark_bar_ui_controller.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
@@ -175,13 +174,10 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
   std::unique_ptr<BookmarkBarView> CreateBookmarkModelAndBookmarkBarView() {
     WaitForBookmarkModelToLoad();
 
-    auto injector =
-        std::make_unique<DesktopBookmarkBarUIControllerInjector>(browser());
-    auto controller =
-        std::make_unique<BookmarkBarUIControllerImpl>(std::move(injector));
-
     auto bookmark_bar_view = std::make_unique<BookmarkBarView>(
-        browser(), std::move(controller), nullptr);
+        browser(),
+        DesktopBookmarkBarInjector::CreateBookmarkBarUIController(browser()),
+        nullptr);
     test_helper_ =
         std::make_unique<BookmarkBarViewTestHelper>(bookmark_bar_view.get());
     return bookmark_bar_view;
@@ -837,7 +833,10 @@ TEST_F(BookmarkBarViewTest, MAYBE_AccessibleRoleDescription) {
 class BookmarkBarViewWithCounter : public BookmarkBarView {
  public:
   explicit BookmarkBarViewWithCounter(BrowserWindowInterface* browser)
-      : BookmarkBarView(browser, nullptr, nullptr) {}
+      : BookmarkBarView(
+            browser,
+            DesktopBookmarkBarInjector::CreateBookmarkBarUIController(browser),
+            nullptr) {}
 
   size_t GetSchedulePaintCount() const { return schedule_paint_count_; }
 

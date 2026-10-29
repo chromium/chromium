@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_BOOKMARKS_CONTROLLERS_ADAPTERS_DESKTOP_BOOKMARK_BAR_ACTION_ADAPTER_H_
-#define CHROME_BROWSER_UI_BOOKMARKS_CONTROLLERS_ADAPTERS_DESKTOP_BOOKMARK_BAR_ACTION_ADAPTER_H_
+#ifndef CHROME_BROWSER_UI_BOOKMARKS_CONTROLLERS_DESKTOP_BOOKMARK_BAR_ACTION_ADAPTER_H_
+#define CHROME_BROWSER_UI_BOOKMARKS_CONTROLLERS_DESKTOP_BOOKMARK_BAR_ACTION_ADAPTER_H_
 
 #include <memory>
 #include <vector>
@@ -11,9 +11,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/bookmarks/controllers/adapters/bookmark_bar_action_adapter.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_context_menu.h"
-#include "ui/base/window_open_disposition.h"
+#include "components/browser_apis/ui_controllers/bookmark_bar/adapters/action_adapter.h"
 
 class BrowserWindowInterface;
 
@@ -21,19 +20,19 @@ namespace bookmarks {
 class BookmarkNode;
 }
 
-class DesktopBookmarkBarActionAdapter : public BookmarkBarActionAdapter,
+class DesktopBookmarkBarActionAdapter : public bookmark_bar_api::ActionAdapter,
                                         public BookmarkContextMenuObserver {
  public:
   explicit DesktopBookmarkBarActionAdapter(BrowserWindowInterface* browser);
   ~DesktopBookmarkBarActionAdapter() override;
 
-  // BookmarkBarActionAdapter overrides:
-  void OpenAppsPage(WindowOpenDisposition disposition) override;
+  // bookmark_bar_api::ActionAdapter overrides:
+  void OpenAppsPage(ui::mojom::WindowOpenDisposition disposition) override;
   void OpenBookmark(const bookmarks::BookmarkNode* node,
-                    WindowOpenDisposition disposition) override;
-  void NotifyFolderOpened() override;
+                    ui::mojom::WindowOpenDisposition disposition) override;
+  void RecordFolderOpened() override;
   void OpenFolderNodes(const std::vector<const bookmarks::BookmarkNode*>& nodes,
-                       WindowOpenDisposition disposition) override;
+                       ui::mojom::WindowOpenDisposition disposition) override;
   void ShowContextMenu(
       const std::vector<const bookmarks::BookmarkNode*>& selection,
       const gfx::Point& point,
@@ -56,4 +55,4 @@ class DesktopBookmarkBarActionAdapter : public BookmarkBarActionAdapter,
   base::OnceClosure on_context_menu_closed_callback_;
 };
 
-#endif  // CHROME_BROWSER_UI_BOOKMARKS_CONTROLLERS_ADAPTERS_DESKTOP_BOOKMARK_BAR_ACTION_ADAPTER_H_
+#endif  // CHROME_BROWSER_UI_BOOKMARKS_CONTROLLERS_DESKTOP_BOOKMARK_BAR_ACTION_ADAPTER_H_

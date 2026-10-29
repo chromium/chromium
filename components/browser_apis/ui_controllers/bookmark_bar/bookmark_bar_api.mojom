@@ -1,0 +1,97 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module bookmark_bar_api.mojom;
+
+import "components/browser_apis/bookmarks/bookmarks_api.mojom";
+import "mojo/public/mojom/base/empty.mojom";
+import "mojo/public/mojom/base/error.mojom";
+import "ui/base/mojom/menu_source_type.mojom";
+import "ui/base/mojom/window_open_disposition.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Identifies a bookmark node, or a permanent folder.
+union NodeId {
+  // The ID of a bookmark or folder. It can't be the root or a permanent folder;
+  // permanent folders are named with `permanent_folder` instead.
+  int64 node_id;
+  // A permanent folder, such as the bookmark bar. It names every node of that
+  // type, both local and account, and methods act on all of them together.
+  bookmarks_api.mojom.PermanentFolderType permanent_folder;
+};
+
+// Which of the bookmark bar's built-in items are enabled, besides the user's
+// bookmarks. These match the "Show ..." options in the bookmark bar's context
+// menu, with policy and feature checks applied. They are facts about the
+// browser, not instructions to the UI: the UI combines them with its own state
+// to decide what to show (e.g. the managed bookmarks folder is only shown if it
+// also has bookmarks in it).
+struct DisplayOptions {
+  // Whether the apps page shortcut is enabled.
+  bool apps_shortcut_enabled;
+  // Whether saved tab groups are enabled for the bookmark bar.
+  bool tab_groups_enabled;
+  // Whether managed bookmarks are enabled for the bookmark bar.
+  bool managed_bookmarks_enabled;
+};
+
+struct DisplayOptionsSnapshot {
+  DisplayOptions options;
+  // Updates are sent through this stream. It's associated with the controller
+  // interface, so updates are ordered with the replies.
+  pending_associated_receiver<BookmarkBarObserver> stream;
+};
+
+// Pushes bookmark bar updates from the browser to a bookmark bar UI.
+//
+// Caller: BookmarkBarUIControllerImpl in the browser process.
+// Callee: a bookmark bar UI that called
+// BookmarkBarUIController.GetDisplayOptions(),
+// which returns the receiving end of this interface. That can be the WebUI
+// bookmark bar in a renderer. In-process Views clients use the C++
+// BookmarkBarUIControllerObserver instead, which gets the same events.
+//
+// The browser uses it to report changes to the display options, and that a
+// context menu shown through BookmarkBarUIController.ShowContextMenu() has
+// closed, so the UI can update itself.
+interface BookmarkBarObserver {
+  // Called when any field of the display options changes.
+  OnDisplayOptionsChanged(DisplayOptions options);
+
+  // Called when a context menu shown by ShowContextMenu() closes, or when it
+  // couldn't be shown after ShowContextMenu() returned.
+  OnContextMenuClosed();
+};
+
+// Browser actions for a single bookmark bar in a browser window. The bookmark
+// bar UI owns its instance. The caller decides what an input means; the
+// controller only carries it out.
+[GenerateDirectReturnStub]
+interface BookmarkBarUIController {
+  // Gets the current display options and subscribes to updates.
+  GetDisplayOptions() => result<DisplayOptionsSnapshot, mojo_base.mojom.Error>;
+
+  // Opens the apps page.
+  OpenAppsPage(ui.mojom.WindowOpenDisposition disposition)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+
+  // Opens the bookmark with `node_id`. Fails if the node doesn't exist.
+  OpenBookmark(int64 node_id, ui.mojom.WindowOpenDisposition disposition)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+
+  // Opens every bookmark in `folder`. Fails if the folder doesn't exist.
+  OpenAllInFolder(NodeId folder, ui.mojom.WindowOpenDisposition disposition)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+
+  // Records that the caller opened a folder menu.
+  RecordFolderOpened() => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+
+  // Shows the context menu for `target` at `point`, in screen coordinates.
+  // Returns once the menu has been requested. Fails if `target` doesn't
+  // exist. Closing is reported through BookmarkBarObserver.
+  ShowContextMenu(NodeId target,
+                  gfx.mojom.Point point,
+                  ui.mojom.MenuSourceType source_type)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+};

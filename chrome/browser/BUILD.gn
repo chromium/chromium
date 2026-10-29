@@ -3070,7 +3070,6 @@ source_set("browser") {
       "//chrome/browser/ui:scoped_tabbed_browser_displayer",
       "//chrome/browser/ui:singleton_tabs",
       "//chrome/browser/ui:tab_ui_helper",
-      "//chrome/browser/ui:ui_controller_factory",
       "//chrome/browser/ui:uma_browsing_activity_observer",
       "//chrome/browser/ui:unload_controller",
       "//chrome/browser/ui:unload_controller_impl",

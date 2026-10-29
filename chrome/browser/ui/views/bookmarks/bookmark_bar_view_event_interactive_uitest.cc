@@ -40,9 +40,7 @@
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
-#include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_controller.h"
-#include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_controller_impl.h"
-#include "chrome/browser/ui/bookmarks/controllers/desktop_bookmark_bar_ui_controller_injector.h"
+#include "chrome/browser/ui/bookmarks/controllers/desktop_bookmark_bar_injector.h"
 #include "chrome/browser/ui/bookmarks/test_bookmark_navigation_wrapper.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -64,6 +62,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/browser_apis/ui_controllers/bookmark_bar/bookmark_bar_ui_controller.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/gcm_driver/fake_gcm_profile_service.h"
 #include "components/prefs/pref_service.h"
@@ -487,12 +486,11 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase,
     auto container = std::make_unique<views::View>();
     container->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
-    auto injector = std::make_unique<DesktopBookmarkBarUIControllerInjector>(
-        &browser_window_interface_);
-    auto controller =
-        std::make_unique<BookmarkBarUIControllerImpl>(std::move(injector));
     auto bb_view = std::make_unique<BookmarkBarView>(
-        &browser_window_interface_, std::move(controller), nullptr);
+        &browser_window_interface_,
+        DesktopBookmarkBarInjector::CreateBookmarkBarUIController(
+            &browser_window_interface_),
+        nullptr);
     // Real bookmark bars get a BookmarkBarViewBackground. Set an opaque
     // background here just to avoid triggering subpixel rendering issues.
     bb_view->SetBackground(views::CreateSolidBackground(SK_ColorWHITE));

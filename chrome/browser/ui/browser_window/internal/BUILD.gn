@@ -95,7 +95,6 @@ source_set("internal") {
       "//chrome/browser/ui:browser_manager_service",
       "//chrome/browser/ui:browser_tab_menu_model_delegate",
       "//chrome/browser/ui:browser_window_theme_observer",
-      "//chrome/browser/ui:ui_controller_factory",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/animation",
       "//chrome/browser/ui/bookmarks",

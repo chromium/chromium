@@ -1,0 +1,7 @@
+include_rules = [
+  "+components/bookmarks",
+  "+components/browser_apis/bookmarks/bookmarks_api.mojom",
+  "+mojo/public",
+  "+ui/base",
+  "+ui/gfx/geometry",
+]

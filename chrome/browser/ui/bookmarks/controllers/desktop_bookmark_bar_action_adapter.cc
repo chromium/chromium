@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/bookmarks/controllers/adapters/desktop_bookmark_bar_action_adapter.h"
+#include "chrome/browser/ui/bookmarks/controllers/desktop_bookmark_bar_action_adapter.h"
 
 #include "base/check.h"
 #include "base/containers/to_vector.h"
@@ -32,7 +32,7 @@ DesktopBookmarkBarActionAdapter::DesktopBookmarkBarActionAdapter(
 DesktopBookmarkBarActionAdapter::~DesktopBookmarkBarActionAdapter() = default;
 
 void DesktopBookmarkBarActionAdapter::OpenAppsPage(
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(chrome::kChromeUIAppsURL), disposition,
@@ -44,7 +44,7 @@ void DesktopBookmarkBarActionAdapter::OpenAppsPage(
 
 void DesktopBookmarkBarActionAdapter::OpenBookmark(
     const bookmarks::BookmarkNode* node,
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   if (!node) {
     return;
   }
@@ -60,14 +60,14 @@ void DesktopBookmarkBarActionAdapter::OpenBookmark(
   chrome::UpdateBookmarkBarVisibilityPrefOnUserAction(browser_->GetProfile());
 }
 
-void DesktopBookmarkBarActionAdapter::NotifyFolderOpened() {
+void DesktopBookmarkBarActionAdapter::RecordFolderOpened() {
   chrome::UpdateBookmarkBarVisibilityPrefOnUserAction(browser_->GetProfile());
   RecordBookmarkFolderOpen(BookmarkLaunchLocation::kAttachedBar);
 }
 
 void DesktopBookmarkBarActionAdapter::OpenFolderNodes(
     const std::vector<const bookmarks::BookmarkNode*>& nodes,
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   if (nodes.empty()) {
     return;
   }

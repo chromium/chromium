@@ -1,0 +1,72 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [ "bookmark_bar_api.mojom" ]
+
+  public_deps = [
+    "//components/browser_apis/bookmarks:mojom",
+    "//mojo/public/mojom/base",
+    "//ui/base/mojom",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/gfx/geometry/mojom",
+  ]
+
+  webui_module_path = "/"
+}
+
+# The controller interface and the adapters each embedder implements.
+source_set("bookmark_bar") {
+  sources = [
+    "adapters/action_adapter.h",
+    "adapters/model_adapter.h",
+    "adapters/platform_adapters_provider.h",
+    "adapters/preferences_adapter.h",
+    "bookmark_bar_ui_controller.h",
+    "bookmark_bar_ui_controller_observer.h",
+  ]
+
+  public_deps = [
+    ":mojom",
+    "//base",
+    "//ui/base:types",
+    "//ui/base/mojom:ui_base_types",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "bookmark_bar_ui_controller_impl.cc",
+    "bookmark_bar_ui_controller_impl.h",
+  ]
+
+  public_deps = [ ":bookmark_bar" ]
+
+  deps = [
+    "//base",
+    "//components/bookmarks/browser",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "bookmark_bar_ui_controller_impl_unittest.cc" ]
+
+  deps = [
+    ":bookmark_bar",
+    ":impl",
+    "//base",
+    "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+}
