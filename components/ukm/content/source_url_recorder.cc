@@ -19,6 +19,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 namespace ukm {
@@ -61,7 +62,7 @@ class SourceUrlRecorderWebContentsObserver
                            content::RenderFrameHost* source_render_frame_host,
                            const GURL& url,
                            const content::Referrer& referrer,
-                           WindowOpenDisposition disposition,
+                           ui::mojom::WindowOpenDisposition disposition,
                            ui::PageTransition transition,
                            bool started_from_context_menu,
                            bool renderer_initiated) override;
@@ -243,7 +244,7 @@ void SourceUrlRecorderWebContentsObserver::DidOpenRequestedURL(
     content::RenderFrameHost* source_render_frame_host,
     const GURL& url,
     const content::Referrer& referrer,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     ui::PageTransition transition,
     bool started_from_context_menu,
     bool renderer_initiated) {

@@ -31,7 +31,6 @@
 #include "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace translate {

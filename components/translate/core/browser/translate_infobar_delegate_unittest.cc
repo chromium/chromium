@@ -25,6 +25,7 @@
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace translate {
 
@@ -52,7 +53,7 @@ class TestInfoBarManager : public infobars::InfoBarManager {
 
   // infobars::InfoBarManager:
   void OpenURL(const GURL& url,
-               WindowOpenDisposition disposition,
+               ui::mojom::WindowOpenDisposition disposition,
                const std::string& text_fragment) override {
     NOTREACHED();
   }
