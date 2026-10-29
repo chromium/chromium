@@ -5322,11 +5322,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "fluid-resize",
-    "owners": [ "lungc@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "flyout-in-bookmarks-bar",
     "owners": [ "massan@google.com", "mschillaci@google.com", "clank-app-team@google.com" ],
     "expiry_milestone": 165

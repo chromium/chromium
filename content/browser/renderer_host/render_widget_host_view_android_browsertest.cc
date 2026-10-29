@@ -151,15 +151,7 @@ IN_PROC_BROWSER_TEST_F(InputOnVizBrowserTest, TransfersStateOnTouchDown) {
 }
 
 class RenderWidgetHostViewAndroidFluidResizeBrowserTest
-    : public RenderWidgetHostViewAndroidBrowserTest {
- public:
-  RenderWidgetHostViewAndroidFluidResizeBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kFluidResize);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+    : public RenderWidgetHostViewAndroidBrowserTest {};
 
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAndroidFluidResizeBrowserTest,
                        ResizeDefersSynchronizationToNextFrame) {

@@ -1730,12 +1730,6 @@ TEST_F(RenderWidgetHostViewAndroidRotationTest,
 // Initializes to Portrait.
 class RenderWidgetHostViewAndroidFluidResizeTest
     : public RenderWidgetHostViewAndroidRotationTest {
- public:
-  RenderWidgetHostViewAndroidFluidResizeTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kFluidResize);
-  }
-  ~RenderWidgetHostViewAndroidFluidResizeTest() override = default;
-
  protected:
   // testing::Test:
   void SetUp() override {
@@ -1753,9 +1747,6 @@ class RenderWidgetHostViewAndroidFluidResizeTest
     RenderWidgetHostViewAndroidRotationTest::TearDown();
     base::android::device_info::reset_is_desktop_for_testing();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that a fullscreen resize synchronizes immediately via

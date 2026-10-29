@@ -557,7 +557,7 @@ public class CompositorView extends FrameLayout
             requestId = mDrawRequestId;
         }
 
-        if (isFluidResizeEnabledAndLff()) {
+        if (shouldUseFluidResize()) {
             // Fluid resize requires atomic synchronization. We hold onto the callback until we
             // have a frame that matches the new window size. This avoids black gutters.
             // However, to prevent permanent deadlocks/ANRs (especially if the native side fails
@@ -619,7 +619,7 @@ public class CompositorView extends FrameLayout
 
         boolean isWidthShrink = oldWidth > 0 && width < oldWidth;
         boolean isHeightShrink = oldHeight > 0 && height < oldHeight;
-        boolean isFluidResize = isFluidResizeEnabledAndLff();
+        boolean isFluidResize = shouldUseFluidResize();
 
         boolean shouldPause =
                 (isWidthShrink || isHeightShrink)
@@ -768,11 +768,7 @@ public class CompositorView extends FrameLayout
     void onPhysicalBackingSizeChanged(WebContents webContents, int width, int height) {
         CompositorViewJni.get()
                 .onPhysicalBackingSizeChanged(
-                        mNativeCompositorView,
-                        webContents,
-                        width,
-                        height,
-                        isFluidResizeEnabledAndLff());
+                        mNativeCompositorView, webContents, width, height, shouldUseFluidResize());
     }
 
     void onControlsResizeViewChanged(WebContents webContents, boolean controlsResizeView) {
@@ -1003,9 +999,8 @@ public class CompositorView extends FrameLayout
         mCompositorSurfaceManager = manager;
     }
 
-    private boolean isFluidResizeEnabledAndLff() {
-        return ChromeFeatureList.sFluidResize.isEnabled()
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext());
+    private boolean shouldUseFluidResize() {
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext());
     }
 
     @NativeMethods

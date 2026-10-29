@@ -521,8 +521,6 @@ BASE_FEATURE(kFileChooserMinWindowSize, base::FEATURE_ENABLED_BY_DEFAULT);
 // however this might not be true on WebView, see crbug.com/378779896 for more
 // details.
 #if BUILDFLAG(IS_ANDROID)
-// Enable AL device fluid resize.
-BASE_FEATURE(kFluidResize, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFocusRenderWidgetHostViewAndroidOnActionDown,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
@@ -1693,9 +1691,8 @@ bool IsFluidResizeEnabled() {
   // path is more efficient and results in fewer artifacts.
   // By contrast, the continuous resize logic is optimized for the "live" window
   // dragging seen on tablets and desktops.
-  return base::FeatureList::IsEnabled(features::kFluidResize) &&
-         (base::android::device_info::is_tablet() ||
-          base::android::device_info::is_desktop());
+  return base::android::device_info::is_tablet() ||
+         base::android::device_info::is_desktop();
 }
 #endif
 
