@@ -165,18 +165,12 @@ void OpenAddressManualFillView() {
 // Tests that the input accessory view continues working after a picker is
 // present.
 - (void)testInputAccessoryBarIsPresentAfterPickers {
-  // TODO(crbug.com/40934806): Test fails on iPhone.
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iPhone.");
-  }
-
   // Add the profile to be used.
   [AutofillAppInterface saveExampleProfile];
 
   // Bring up the keyboard by tapping the city, which is the element before the
   // picker.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormElementCity)];
+  FocusWebElementWithId(kFormElementCity);
 
   // Open the address manual fill view and verify that the address table view
   // controller is visible.
@@ -190,35 +184,29 @@ void OpenAddressManualFillView() {
   [ChromeEarlGrey waitForNotSufficientlyVisibleElementWithMatcher:
                       manual_fill::ProfilesTableViewMatcher()];
 
-  // On iPad the picker is a table view in a popover, we need to
-  // dismiss that first.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // Tap in the web view so the popover dismisses.
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-        performAction:grey_tapAtPoint(CGPointMake(0, 0))];
+  // Tap in the web view so the picker dismisses.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:grey_tapAtPoint(CGPointMake(0, 0))];
 
-    // Verify the table view is not visible.
+  // On iPad the picker is a table view in a popover, verify it is dismissed.
+  if ([ChromeEarlGrey isIPadIdiom]) {
     [[EarlGrey
         selectElementWithMatcher:grey_allOf(
                                      grey_kindOfClass([UITableView class]),
                                      grey_not(grey_notVisible()), nil)]
         assertWithMatcher:grey_nil()];
-
-    // Dismissing the popover by tapping on the webView, then tapping on the
-    // form element below in quick succession seems to end up dismissing the
-    // keyboard on iOS15+. This may be because the state element is still
-    // focused. Instead, wait a moment for the focus to be dismissed.
-    base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
   }
 
-  // Bring up the regular keyboard again.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormElementCity)];
+  // Bring up the regular keyboard again. `FocusWebElementWithId()` retries
+  // tapping `kFormElementCity` until it acquires DOM focus, avoiding the race
+  // where a single tap immediately after dismissing the `state` picker fails to
+  // focus the field.
+  FocusWebElementWithId(kFormElementCity);
 
   // Verify the manual fill icon is visible, and therefore also the input
   // accessory bar.
-  [[EarlGrey selectElementWithMatcher:KeyboardAccessoryExpandButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:KeyboardAccessoryExpandButton()];
 
   // Verify the status of the icon.
   [[EarlGrey selectElementWithMatcher:KeyboardAccessoryExpandButton()]
