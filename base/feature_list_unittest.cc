@@ -1832,9 +1832,7 @@ TEST_F(FeatureListTest,
   ASSERT_FALSE(feature_list->IsRuntimeMutabilityEnabledForTesting(
       kRuntimeMutableFeature));
 
-  // Attempting to enable runtime mutability once it has been disabled will
-  // create the override entry (so that we can CHECK that it isn't registered
-  // twice), but otherwise has no effect.
+  // Enable runtime mutability for the feature.
   feature_list->EnableRuntimeMutability(kRuntimeMutableFeature,
                                         /*pre_mutation_callback=*/{},
                                         /*post_mutation_callback=*/{});
@@ -1850,7 +1848,6 @@ TEST_F(FeatureListTest,
 }
 #endif  // defined(GTEST_HAS_DEATH_TEST)
 
-#if defined(GTEST_HAS_DEATH_TEST)
 TEST_F(FeatureListTest, RuntimeMutability_EarlyAccess) {
   test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithNullFeatureAndFieldTrialLists();
@@ -1858,36 +1855,102 @@ TEST_F(FeatureListTest, RuntimeMutability_EarlyAccess) {
   ASSERT_TRUE(kRuntimeMutableFeature.IsRuntimeMutable());
   ASSERT_FALSE(kRuntimeMutableFeature.WasAccessedEarly());
 
-  // Access the feature before enabling runtime mutability.
-  EXPECT_DEATH(FeatureList::IsEnabled(kRuntimeMutableFeature),
-               "");  // CHECK messages are stripped from release builds.
+  // Accessing the feature before a FeatureList is initialized returns its
+  // default state and records early access without crashing.
+  EXPECT_TRUE(FeatureList::IsEnabled(kRuntimeMutableFeature));
+  EXPECT_TRUE(kRuntimeMutableFeature.WasAccessedEarly());
+  EXPECT_EQ(&kRuntimeMutableFeature,
+            FeatureList::GetEarlyAccessedFeatureForTesting());
 }
-#endif  // defined(GTEST_HAS_DEATH_TEST)
+
+TEST_F(FeatureListTest, RuntimeMutability_DisallowedByEarlyAccessInstance) {
+  test::ScopedFeatureList clear_feature_list;
+  clear_feature_list.InitWithNullFeatureAndFieldTrialLists();
+
+  ASSERT_TRUE(kRuntimeMutableFeature.IsRuntimeMutable());
+  ASSERT_FALSE(kRuntimeMutableFeature.WasAccessedEarly());
+
+  auto early_access_feature_list = std::make_unique<FeatureList>();
+  early_access_feature_list->InitFromCommandLine("OnByDefault",
+                                                 kRuntimeMutableFeature.name);
+  FeatureList::SetEarlyAccessInstance(std::move(early_access_feature_list),
+                                      {"DcheckIsFatal", "OnByDefault"});
+
+  // Accessing a runtime-mutable feature not on the early-access allowlist
+  // returns its default state and default param value, and records early access
+  // without crashing.
+  EXPECT_TRUE(FeatureList::IsEnabled(kRuntimeMutableFeature));
+  EXPECT_TRUE(kRuntimeMutableFeature.WasAccessedEarly());
+  EXPECT_EQ(&kRuntimeMutableFeature,
+            FeatureList::GetEarlyAccessedFeatureForTesting());
+  EXPECT_EQ(12345, kRuntimeMutableFeatureParam.Get());
+
+  FeatureList::ResetEarlyFeatureAccessTrackerForTesting();
+}
+
+TEST_F(FeatureListTest,
+       RuntimeMutability_EnableRuntimeMutability_AfterEarlyAccess) {
+  std::unique_ptr<base::RuntimeFieldTrialInfo> override_info;
+  test::ScopedFeatureList scoped_feature_list;
+  {
+    test::ScopedFeatureList null_feature_list;
+    null_feature_list.InitWithNullFeatureAndFieldTrialLists();
+
+    ASSERT_TRUE(kRuntimeMutableFeature.IsRuntimeMutable());
+    ASSERT_FALSE(kRuntimeMutableFeature.WasAccessedEarly());
+
+    // Query the feature early before a FeatureList is registered.
+    EXPECT_TRUE(FeatureList::IsEnabled(kRuntimeMutableFeature));
+    EXPECT_TRUE(kRuntimeMutableFeature.WasAccessedEarly());
+  }
+
+  auto feature_list = std::make_unique<FeatureList>();
+  ASSERT_FALSE(feature_list->IsRuntimeMutabilityEnabledForTesting(
+      kRuntimeMutableFeature));
+
+  // Enabling runtime mutability after an early access succeeds.
+  feature_list->EnableRuntimeMutability(kRuntimeMutableFeature,
+                                        /*pre_mutation_callback=*/{},
+                                        /*post_mutation_callback=*/{});
+  EXPECT_TRUE(feature_list->IsRuntimeMutabilityEnabledForTesting(
+      kRuntimeMutableFeature));
+
+  // Note: `ScopedFeatureList::InitWithFeatureList()` resets
+  // `EarlyFeatureAccessTracker` via `ClearInstanceForTesting()` before calling
+  // `SetInstance()`.
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  EXPECT_TRUE(FeatureList::IsEnabled(kRuntimeMutableFeature));
+
+  // Subsequent runtime state updates take effect as expected.
+  override_info = std::make_unique<base::RuntimeFieldTrialInfo>(
+      "TrialA", "GroupA", base::FieldTrialParams(), nullptr);
+  auto update =
+      FeatureList::GetInstance()
+          ->PrepareRuntimeMutableFeatureStateUpdateForTesting(
+              pass_key(), override_info.get(), kRuntimeMutableFeature.name,
+              FeatureList::OVERRIDE_DISABLE_FEATURE);
+  ASSERT_TRUE(update.has_value());
+  update->RunPreMutationCallback();
+  update->UpdateState();
+  update->RunPostMutationCallback();
+  EXPECT_FALSE(FeatureList::IsEnabled(kRuntimeMutableFeature));
+}
 
 #if defined(GTEST_HAS_DEATH_TEST)
 TEST_F(FeatureListTest,
-       RuntimeMutability_EnableRuntimeMutability_AfterEarlyAccess) {
+       RuntimeMutability_IsEnabledWithoutEnableRuntimeMutability) {
   auto feature_list = std::make_unique<FeatureList>();
   ASSERT_TRUE(kRuntimeMutableFeature.IsRuntimeMutable());
   ASSERT_FALSE(feature_list->IsRuntimeMutabilityEnabledForTesting(
       kRuntimeMutableFeature));
-  ASSERT_FALSE(kRuntimeMutableFeature.WasAccessedEarly());
 
-  // Mark the feature as early-accessed and having runtime mutability enabled.
-  // This should never happen in practice, as FeatureList::IsEnabled() will
-  // CHECK if the feature is runtime-mutable and accessed early.
-  SetFeatureStateForTesting(
-      kRuntimeMutableFeature,
-      internal::kCachedLogEarlyMask | internal::kRuntimeMutabilityMask);
-  ASSERT_TRUE(kRuntimeMutableFeature.WasAccessedEarly());
+  test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
-  // Attempting to enable runtime mutability for an early-accessed feature will
-  // disable runtime mutability and log an error.
-  EXPECT_DEATH(
-      feature_list->EnableRuntimeMutability(kRuntimeMutableFeature,
-                                            /*pre_mutation_callback=*/{},
-                                            /*post_mutation_callback=*/{}),
-      "");  // CHECK messages are stripped from release builds.
+  // Querying a runtime-mutable feature after FeatureList initialization
+  // without having called EnableRuntimeMutability() fails with a CHECK.
+  EXPECT_DEATH(FeatureList::IsEnabled(kRuntimeMutableFeature),
+               "");  // CHECK messages are stripped from release builds.
 }
 #endif  // defined(GTEST_HAS_DEATH_TEST)
 

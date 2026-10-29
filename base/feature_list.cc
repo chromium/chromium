@@ -512,16 +512,11 @@ void FeatureList::EnableRuntimeMutability(
          "components (shared libraries) without a corresponding export "
          "statement";
 
-  // Load the cached value to check the feature's runtime mutability flags.
-  Feature::FeatureStateCache cached_value =
-      feature.cached_value.load(std::memory_order_relaxed);
-
   // Feature was not declared as runtime mutable. This is a programming error.
-  CHECK(FeatureIsRuntimeMutable(cached_value));
+  CHECK(feature.IsRuntimeMutable());
 
-  // Runtime mutable features must be registered exactly once, during feature
-  // list initialization, and before first use.
-  CHECK(!FeatureWasAccessedEarly(cached_value));
+  // Runtime mutable features must be registered at most once per FeatureList
+  // initialization.
   bool inserted =
       runtime_mutable_overrides_
           .try_emplace(feature.name, feature, std::move(pre_mutation_callback),
@@ -868,7 +863,6 @@ bool FeatureList::IsEnabled(const Feature& feature) {
 
   if (!g_feature_list_instance ||
       !g_feature_list_instance->AllowFeatureAccess(feature)) {
-    CHECK(!feature.IsRuntimeMutable());
     RegisterFeatureAccess(feature, internal::kCachedLogEarlyMask);
     EarlyFeatureAccessTracker::GetInstance()->AccessedFeature(
         feature, g_feature_list_instance &&
