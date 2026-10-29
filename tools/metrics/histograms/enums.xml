@@ -12042,6 +12042,7 @@ from previous Chrome versions.
       label="kAutofillRationalizeRepeatedServerPredictions:disabled"/>
   <int value="-896686564" label="AIPromptAPI:enabled"/>
   <int value="-896040242" label="PrefetchFontLookupTables:enabled"/>
+  <int value="-895148554" label="FREStringChanges:disabled"/>
   <int value="-895071695" label="DesktopScreenshots:enabled"/>
   <int value="-894774400" label="FiltersInRecentsV2:enabled"/>
   <int value="-894222549"
@@ -16590,6 +16591,7 @@ from previous Chrome versions.
   <int value="466421847" label="WebuiRefresh2026:enabled"/>
   <int value="467078443" label="FwupdDeveloperMode:disabled"/>
   <int value="467291749" label="LensOverlayVirtualFocusNavigation:disabled"/>
+  <int value="467690315" label="FREStringChanges:enabled"/>
   <int value="468615932"
       label="ContextualTasksEphemeralButtonAutoDismiss:enabled"/>
   <int value="468665559" label="TrilinearFiltering:disabled"/>

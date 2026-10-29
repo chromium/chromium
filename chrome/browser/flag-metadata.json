@@ -5454,6 +5454,11 @@
     "expiry_milestone": 81
   },
   {
+    "name": "fre-string-changes",
+    "owners": ["mschillaci@google.com", "jhimawan@google.com", "nehasapre@google.com", "clank-app-team@google.com"],
+    "expiry_milestone": 165
+  },
+  {
     "name": "fs-no-broadcast-experiment",
     "owners": [ "alionadangla@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 150

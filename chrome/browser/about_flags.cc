@@ -4490,6 +4490,22 @@ const FeatureEntry::FeatureVariation
         {"Remote group operations", kCrossWindowTabGroupOperationsRemoteGroup,
          nullptr}};
 
+const FeatureEntry::FeatureParam kFREStringChanges_Personalized[] = {
+    {"personalized", "true"},
+};
+const FeatureEntry::FeatureParam kFREStringChanges_Safety[] = {
+    {"safety", "true"},
+};
+const FeatureEntry::FeatureParam kFREStringChanges_Seamlessness[] = {
+    {"seamlessness", "true"},
+};
+
+const FeatureEntry::FeatureVariation kFREStringChangesVariations[] = {
+    {"Personalized", kFREStringChanges_Personalized, nullptr},
+    {"Safety", kFREStringChanges_Safety, nullptr},
+    {"Seamlessness", kFREStringChanges_Seamlessness, nullptr},
+};
+
 const FeatureEntry::FeatureParam kXplatSyncedSetupThemes_ObservationOnly[] = {
     {"observation_only", "true"},
 };
@@ -14328,6 +14344,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMixedFixedIntervalMatcherName,
      flag_descriptions::kMixedFixedIntervalMatcherDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kMixedFixedIntervalMatcher)},
+
+    {"fre-string-changes", flag_descriptions::kFREStringChangesName,
+     flag_descriptions::kFREStringChangesDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kFREStringChanges,
+                                    kFREStringChangesVariations,
+                                    "FREStringChanges")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"persistent-widget-api", flag_descriptions::kPersistentWidgetAPIName,

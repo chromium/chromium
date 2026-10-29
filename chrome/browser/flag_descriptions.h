@@ -5768,6 +5768,10 @@ inline constexpr char kEdgeToEdgeAutomotiveDescription[] =
     "When this is enabled, edge to edge logic will be enabled on automotive "
     "devices.";
 
+inline constexpr char kFREStringChangesName[] = "FRE String Changes";
+inline constexpr char kFREStringChangesDescription[] =
+    "Enables new title and content strings for the FRE flow on Android.";
+
 inline constexpr char kForceWebGpuAdapterName[] = "Use WebGPU adapter";
 inline constexpr char kForceWebGpuAdapterDescription[] =
     "Force WebGPU to use a specific graphics adapter backend.";

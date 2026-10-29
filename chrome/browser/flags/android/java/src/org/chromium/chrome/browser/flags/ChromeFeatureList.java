@@ -628,6 +628,7 @@ public abstract class ChromeFeatureList {
     public static final String FORCE_TRANSLUCENT_NOTIFICATION_TRAMPOLINE =
             "ForceTranslucentNotificationTrampoline";
     public static final String FORCE_WEB_CONTENTS_DARK_MODE = "WebContentsForceDark";
+    public static final String FRE_STRING_CHANGES = "FREStringChanges";
     public static final String FULLSCREEN_INSETS_API_MIGRATION = "FullscreenInsetsApiMigration";
     public static final String FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE =
             "FullscreenInsetsApiMigrationOnAutomotive";
@@ -1789,6 +1790,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ENABLE_SWIPE_TO_SWITCH_PANE, false);
     public static final MutableFlagWithSafeDefault sEnableToolbarPositioningInResizeMode =
             newMutableFlagWithSafeDefault(ENABLE_TOOLBAR_POSITIONING_IN_RESIZE_MODE, true);
+    public static final MutableFlagWithSafeDefault sFREStringChanges =
+            newMutableFlagWithSafeDefault(FRE_STRING_CHANGES, false);
     public static final MutableFlagWithSafeDefault sFlyoutInBookmarksBar =
             newMutableFlagWithSafeDefault(FLYOUT_IN_BOOKMARKS_BAR, false);
     public static final MutableFlagWithSafeDefault sGlicNoWebview =
@@ -1888,6 +1891,9 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_THEME_MODULE_FORCE_DEPENDENCIES =
             "force_theme_module_dependencies";
     public static final String ANDROID_THEME_RESOURCE_PROVIDER_FORCE_LIGHT = "force_light_theme";
+    public static final String FRE_STRING_CHANGES_PERSONALIZED = "personalized";
+    public static final String FRE_STRING_CHANGES_SAFETY = "safety";
+    public static final String FRE_STRING_CHANGES_SEAMLESSNESS = "seamlessness";
     public static final String IPH_BOOKMARK_BAR_VISIBILITY_VARIANT =
             "IPH_BookmarkBarVisibility_x_variant";
     public static final String NTP_AURORA_CHANGE_BUTTON_COLOR = "change_button_color";
@@ -1918,6 +1924,12 @@ public abstract class ChromeFeatureList {
                     Map.entry(
                             ANDROID_THEME_RESOURCE_PROVIDER,
                             Map.of(ANDROID_THEME_RESOURCE_PROVIDER_FORCE_LIGHT, "false")),
+                    Map.entry(
+                            FRE_STRING_CHANGES,
+                            Map.ofEntries(
+                                    Map.entry(FRE_STRING_CHANGES_PERSONALIZED, "false"),
+                                    Map.entry(FRE_STRING_CHANGES_SAFETY, "false"),
+                                    Map.entry(FRE_STRING_CHANGES_SEAMLESSNESS, "false"))),
                     Map.entry(
                             IPH_BOOKMARK_BAR_VISIBILITY,
                             Map.of(IPH_BOOKMARK_BAR_VISIBILITY_VARIANT, "medium")),
@@ -1956,6 +1968,12 @@ public abstract class ChromeFeatureList {
                             Map.entry(
                                     ANDROID_THEME_RESOURCE_PROVIDER,
                                     Map.of(ANDROID_THEME_RESOURCE_PROVIDER_FORCE_LIGHT, "false")),
+                            Map.entry(
+                                    FRE_STRING_CHANGES,
+                                    Map.ofEntries(
+                                            Map.entry(FRE_STRING_CHANGES_PERSONALIZED, "false"),
+                                            Map.entry(FRE_STRING_CHANGES_SAFETY, "false"),
+                                            Map.entry(FRE_STRING_CHANGES_SEAMLESSNESS, "false"))),
                             Map.entry(
                                     IPH_BOOKMARK_BAR_VISIBILITY,
                                     Map.of(IPH_BOOKMARK_BAR_VISIBILITY_VARIANT, "medium")),
@@ -2539,6 +2557,12 @@ public abstract class ChromeFeatureList {
             sCrossWindowTabGroupOperationsRemoteGroupOperations =
                     sCrossWindowTabGroupOperations.newBooleanParam(
                             "remote_group_operations", false);
+    public static final MutableBooleanParamWithSafeDefault sFREStringChangesPersonalized =
+            sFREStringChanges.newBooleanParam(FRE_STRING_CHANGES_PERSONALIZED, false);
+    public static final MutableBooleanParamWithSafeDefault sFREStringChangesSafety =
+            sFREStringChanges.newBooleanParam(FRE_STRING_CHANGES_SAFETY, false);
+    public static final MutableBooleanParamWithSafeDefault sFREStringChangesSeamlessness =
+            sFREStringChanges.newBooleanParam(FRE_STRING_CHANGES_SEAMLESSNESS, false);
     public static final MutableBooleanParamWithSafeDefault sInlinePdfV2EnableFormFilling =
             sInlinePdfV2.newBooleanParam("enable_form_filling", false);
     public static final MutableIntParamWithSafeDefault sLongScreenshotsNumViewportsCriticalMemory =

@@ -220,6 +220,7 @@ BASE_DECLARE_FEATURE(kEnableToolbarPositioningInResizeMode);
 BASE_DECLARE_FEATURE(kEnableXAxisActivityTransition);
 BASE_DECLARE_FEATURE(kEnforceIncognitoIsolation);
 BASE_DECLARE_FEATURE(kExcludeChromeInIncognitoShareSheet);
+BASE_DECLARE_FEATURE(kFREStringChanges);
 BASE_DECLARE_FEATURE(kFixToolbarHairlineRegression);
 BASE_DECLARE_FEATURE(kFlyoutInBookmarksBar);
 BASE_DECLARE_FEATURE(kForceTranslucentNotificationTrampoline);
@@ -442,6 +443,21 @@ inline constexpr base::FeatureParam<bool>
     kEnableAndroidSidePanelDisableAnimations(&kEnableAndroidSidePanel,
                                              "disable_animations",
                                              false);
+
+inline constexpr base::FeatureParam<bool> kFREStringChangesPersonalized(
+    &kFREStringChanges,
+    "personalized",
+    /*default_value=*/false);
+
+inline constexpr base::FeatureParam<bool> kFREStringChangesSafety(
+    &kFREStringChanges,
+    "safety",
+    /*default_value=*/false);
+
+inline constexpr base::FeatureParam<bool> kFREStringChangesSeamlessness(
+    &kFREStringChanges,
+    "seamlessness",
+    /*default_value=*/false);
 
 inline constexpr base::FeatureParam<int> kGestureUserEducationPageDelay(
     &kGestureUserEducationBackSwipe,
