@@ -48,9 +48,11 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class MultiTabReorderStrategy extends ReorderStrategyBase {
+    private final List<StripLayoutView> mInteractingViews = new ArrayList<>();
     private final List<StripLayoutTab> mInteractingTabs = new ArrayList<>();
     private final List<StripLayoutTab> mPinnedTabs = new ArrayList<>();
     private final List<StripLayoutTab> mUnpinnedTabs = new ArrayList<>();
+    private final List<StripLayoutView> mUnpinnedViews = new ArrayList<>();
     private final HashSet<Integer> mInteractingTabIds = new HashSet<>();
     @Nullable private StripLayoutTab mPrimaryInteractingStripTab;
     private final Supplier<Boolean> mInReorderModeSupplier;
@@ -112,7 +114,7 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
         }
         assumeNonNull(mPrimaryInteractingStripTab);
 
-        for (StripLayoutView view : mInteractingTabs) {
+        for (StripLayoutView view : mInteractingViews) {
             view.setIsForegrounded(/* isForegrounded= */ true);
         }
 
@@ -214,16 +216,16 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
             boolean isDraggingPinnedToUnpinnedEnd =
                     mInteractingTabs.get(mInteractingTabs.size() - 1).getIsPinned() && towardEnd;
             if (isDraggingUnpinnedToPinnedStart) {
-                float limit = getDragOffsetLimit(firstTabInBlock, firstView, offset > 0);
+                float limit = getDragOffsetLimit(mInteractingViews.get(0), firstView, offset > 0);
                 offset = isRtl ? Math.min(limit, offset) : Math.max(limit, offset);
-                for (StripLayoutTab tab : mInteractingTabs) {
-                    tab.setOffsetX(offset);
+                for (StripLayoutView view : mInteractingViews) {
+                    view.setOffsetX(offset);
                 }
             } else if (isDraggingPinnedToUnpinnedEnd) {
                 float limit = getDragOffsetLimit(lastTabInBlock, lastView, offset > 0);
                 offset = isRtl ? Math.max(limit, offset) : Math.min(limit, offset);
-                for (StripLayoutTab tab : mInteractingTabs) {
-                    tab.setOffsetX(offset);
+                for (StripLayoutView view : mInteractingViews) {
+                    view.setOffsetX(offset);
                 }
             } else {
                 // case 3. Drag is not near a strip edge and not crossing the pinned/unpinned
@@ -233,13 +235,13 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
                 if (reordered) {
                     setOffsetXForPartitionAndAnchorOther(offset, tabToReorder.getIsPinned());
                 } else {
-                    for (StripLayoutTab tab : mInteractingTabs) {
+                    for (StripLayoutView view : mInteractingViews) {
                         // If no reorder occurs, simply include deltaX and scrollOffsetDelta(Pinned
                         // tab only) to x-offset.
-                        tab.setOffsetX(
-                                tab.getOffsetX()
+                        view.setOffsetX(
+                                view.getOffsetX()
                                         + deltaX
-                                        + (tab.getIsPinned() ? scrollOffsetDelta : 0f));
+                                        + (isViewPinned(view) ? scrollOffsetDelta : 0f));
                     }
                 }
             }
@@ -248,9 +250,9 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
     }
 
     private void setOffsetXForPartitionAndAnchorOther(float offset, boolean isPinned) {
-        List<StripLayoutTab> tabs = isPinned ? mPinnedTabs : mUnpinnedTabs;
-        for (StripLayoutTab tab : tabs) {
-            tab.setOffsetX(offset);
+        List<? extends StripLayoutView> views = isPinned ? mPinnedTabs : mUnpinnedViews;
+        for (StripLayoutView view : views) {
+            view.setOffsetX(offset);
         }
         setOffsetXForNonReorderedPartition(isPinned);
     }
@@ -262,10 +264,11 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
         assumeNonNull(tab);
         if (mModel.isTabInTabGroup(tab)) return false;
 
+        StripLayoutView firstUnpinnedView = mUnpinnedViews.get(0);
         float firstUnpinnedPosition =
-                firstUnpinnedTab.getIdealX()
-                        + (rtl ? getEffectiveTabWidth(/* isPinned= */ false) : 0f)
-                        + firstUnpinnedTab.getOffsetX()
+                firstUnpinnedView.getIdealX()
+                        + (rtl ? getEffectiveViewWidth(firstUnpinnedView) : 0f)
+                        + firstUnpinnedView.getOffsetX()
                         + deltaX;
         boolean crossIntoPinnedBoundary =
                 MathUtils.flipSignIf(
@@ -304,16 +307,14 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
         // Fake a successful reorder in the target direction.
         float offset = MathUtils.flipSignIf(Float.MAX_VALUE, toLeft);
         List<StripLayoutTab> tabsToReorder =
-                reorderingView instanceof StripLayoutTab tab && tab.getIsPinned()
-                        ? mPinnedTabs
-                        : mUnpinnedTabs;
+                isViewPinned(reorderingView) ? mPinnedTabs : mUnpinnedTabs;
         reorderBlockIfThresholdReached(stripViews, groupTitles, stripTabs, offset, tabsToReorder);
 
         // Animate the reordering views and ensure they are foregrounded.
-        updateInteractingTabsForNonDragReorder(tabDelegate, /* isReordering= */ true);
-        for (StripLayoutTab tab : mInteractingTabs) {
-            if (tab != reorderingView) {
-                animateViewSliding(tab);
+        updateInteractingViewsForNonDragReorder(tabDelegate, /* isReordering= */ true);
+        for (StripLayoutView view : mInteractingViews) {
+            if (view != reorderingView) {
+                animateViewSliding(view);
             }
         }
         animateViewSliding(
@@ -321,18 +322,22 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
                 new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        updateInteractingTabsForNonDragReorder(
+                        updateInteractingViewsForNonDragReorder(
                                 tabDelegate, /* isReordering= */ false);
                         clearReorderState();
                     }
                 });
     }
 
-    private void updateInteractingTabsForNonDragReorder(
+    private void updateInteractingViewsForNonDragReorder(
             StripLayoutTabDelegate tabDelegate, boolean isReordering) {
-        for (StripLayoutTab tab : mInteractingTabs) {
-            tab.setIsForegrounded(isReordering);
-            tabDelegate.setIsTabNonDragReordering(tab, isReordering);
+        for (StripLayoutView view : mInteractingViews) {
+            view.setIsForegrounded(isReordering);
+            if (view instanceof StripLayoutTab tab) {
+                tabDelegate.setIsTabNonDragReordering(tab, isReordering);
+            } else {
+                view.setIsNonDragReordering(isReordering);
+            }
         }
     }
 
@@ -345,18 +350,17 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
         ArrayList<Animator> animationList = new ArrayList<>();
         Runnable onAnimationEnd =
                 () -> {
-                    for (StripLayoutTab tab : mInteractingTabs) {
-                        if (tab != null) {
-                            tab.setIsForegrounded(false);
+                    for (StripLayoutView view : mInteractingViews) {
+                        if (view != null) {
+                            view.setIsForegrounded(false);
                         }
                     }
                     clearReorderState();
                 };
-        List<StripLayoutView> interactingViews = new ArrayList<>(mInteractingTabs);
         handleStopReorderMode(
                 stripViews,
                 groupTitles,
-                interactingViews,
+                mInteractingViews,
                 mPrimaryInteractingStripTab,
                 animationList,
                 onAnimationEnd);
@@ -379,6 +383,7 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
 
     private void setupReorderState(StripLayoutTab[] stripTabs, List<Tab> selectedTabs) {
         // Ensure state is clean before starting a new reorder.
+        assert mInteractingViews.isEmpty();
         assert mInteractingTabs.isEmpty();
         assert mInteractingTabIds.isEmpty();
 
@@ -391,19 +396,35 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
                 mPinnedTabs.add(stripTab);
             } else {
                 mUnpinnedTabs.add(stripTab);
+                mUnpinnedViews.add(stripTab);
             }
         }
+        mInteractingViews.addAll(mPinnedTabs);
+        mInteractingViews.addAll(mUnpinnedViews);
         mIsPrimaryPinned =
                 TriStateUtils.from(
                         Objects.requireNonNull(mPrimaryInteractingStripTab).getIsPinned());
         mHasMixedPinState = TriStateUtils.from(mPinnedTabs.size() > 0 && mUnpinnedTabs.size() > 0);
     }
 
+    private float getEffectiveViewWidth(StripLayoutView view) {
+        if (view instanceof StripLayoutTab tab) {
+            return tab.isCollapsed() ? 0f : getEffectiveTabWidth(tab.getIsPinned());
+        }
+        return view.getWidth();
+    }
+
+    private static boolean isViewPinned(StripLayoutView view) {
+        return view instanceof StripLayoutTab tab && tab.getIsPinned();
+    }
+
     private void clearReorderState() {
+        mInteractingViews.clear();
         mInteractingTabs.clear();
         mInteractingTabIds.clear();
         mPinnedTabs.clear();
         mUnpinnedTabs.clear();
+        mUnpinnedViews.clear();
         mIsPrimaryPinned = TriState.NOT_SET;
         mHasMixedPinState = TriState.NOT_SET;
         mPrimaryInteractingStripTab = null;
@@ -485,28 +506,27 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
         if (mHasMixedPinState != TriState.TRUE) return;
 
         boolean rtl = LocalizationUtils.isLayoutRtl();
-        StripLayoutTab anchorTab;
         if (anchorOnPinned) {
-            anchorTab = mPinnedTabs.get(mPinnedTabs.size() - 1);
+            StripLayoutTab anchorTab = mPinnedTabs.get(mPinnedTabs.size() - 1);
             float anchorX =
                     anchorTab.getIdealX()
                             + anchorTab.getOffsetX()
-                            + (rtl ? 0f : getEffectiveTabWidth(/* isPinned= */ true));
-            for (StripLayoutTab tab : mUnpinnedTabs) {
-                float tabWidth = getEffectiveTabWidth(tab.getIsPinned());
-                if (rtl) anchorX -= tabWidth;
-                tab.setOffsetX(anchorX - tab.getIdealX());
-                if (!rtl) anchorX += tabWidth;
+                            + (rtl ? 0f : getEffectiveViewWidth(anchorTab));
+            for (StripLayoutView view : mUnpinnedViews) {
+                float viewWidth = getEffectiveViewWidth(view);
+                if (rtl) anchorX -= viewWidth;
+                view.setOffsetX(anchorX - view.getIdealX());
+                if (!rtl) anchorX += viewWidth;
             }
         } else {
-            anchorTab = mUnpinnedTabs.get(0);
+            StripLayoutView anchorView = mUnpinnedViews.get(0);
             float anchorX =
-                    anchorTab.getIdealX()
-                            + anchorTab.getOffsetX()
-                            + (rtl ? getEffectiveTabWidth(anchorTab.getIsPinned()) : 0f);
+                    anchorView.getIdealX()
+                            + anchorView.getOffsetX()
+                            + (rtl ? getEffectiveViewWidth(anchorView) : 0f);
             for (int i = mPinnedTabs.size() - 1; i >= 0; i--) {
                 StripLayoutTab tab = mPinnedTabs.get(i);
-                float tabWidth = getEffectiveTabWidth(tab.getIsPinned());
+                float tabWidth = getEffectiveViewWidth(tab);
                 if (!rtl) anchorX -= tabWidth;
                 tab.setOffsetX(anchorX - tab.getIdealX());
                 if (rtl) anchorX += tabWidth;
@@ -608,7 +628,7 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
             // Case 3a: Maybe drag past collapsed group.
             if (Math.abs(offset) <= getGroupSwapThreshold(interactingGroupTitle)) return false;
             moveAdjacentGroupPastBlock(interactingGroupTitle, adjTab.getIsPinned(), towardEnd);
-            animateViewSliding(interactingGroupTitle);
+            animateGroupSliding(interactingGroupTitle, stripTabs);
             return true;
         } else {
             // Case 3b: Maybe merge into group.

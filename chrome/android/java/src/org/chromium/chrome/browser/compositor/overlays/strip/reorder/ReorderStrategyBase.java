@@ -592,6 +592,28 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
     }
 
     /**
+     * Animates the group title and (if expanded) its tabs sliding to their new positions.
+     *
+     * @param groupTitle The {@link StripLayoutGroupTitle} of the group to animate.
+     * @param stripTabs The list of {@link StripLayoutTab}.
+     */
+    protected void animateGroupSliding(
+            StripLayoutGroupTitle groupTitle, StripLayoutTab[] stripTabs) {
+        List<Animator> animators = new ArrayList<>();
+        if (!groupTitle.isCollapsed()) {
+            // Only need to animate tabs when expanded.
+            List<Tab> tabs = mModel.getTabsInGroup(groupTitle.getTabGroupId());
+            for (Tab tab : tabs) {
+                // Find using the IDs, since the provided stripTabs may be stale.
+                StripLayoutTab stripTab = StripLayoutUtils.findTabById(stripTabs, tab.getId());
+                if (stripTab != null) animators.add(getViewSlidingAnimator(stripTab));
+            }
+        }
+        animators.add(getViewSlidingAnimator(groupTitle));
+        mAnimationHost.queueAnimations(animators, /* listener= */ null);
+    }
+
+    /**
      * Returns {@code true} if the drag is toward the end of the strip; {@code false} otherwise.
      *
      * @param isPinned Whether the tab is pinned; currently always false for grouped tabs.
