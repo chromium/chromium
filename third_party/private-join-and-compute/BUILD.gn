@@ -45,12 +45,6 @@ component("ec_commutative_cipher") {
     "src/private_join_and_compute/crypto/ec_point.cc",
     "src/private_join_and_compute/crypto/elgamal.cc",
     "src/private_join_and_compute/crypto/openssl.inc",
-    "src/private_join_and_compute/util/status.inc",
-    "src/private_join_and_compute/util/status_macros.h",
-    "util/canonical_errors.cc",
-    "util/canonical_errors.h",
-    "util/status.h",
-    "util/statusor.h",
   ]
   deps = [
     "//base",
