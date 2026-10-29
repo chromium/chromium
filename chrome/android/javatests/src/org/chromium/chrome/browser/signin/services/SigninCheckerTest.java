@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,9 +19,9 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -37,26 +36,19 @@ import org.chromium.components.signin.test.util.TestAccounts;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DoNotBatch(
-        reason = "Tests sign-in checks done at Chrome start-up or when accounts change on device.")
+@Batch(Batch.PER_CLASS)
 public class SigninCheckerTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
+    @Rule(order = 0)
+    public final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
 
-    @Rule
+    @Rule(order = 1)
     public final FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
-
-    @After
-    public void tearDown() {
-        if (mSigninTestRule.getPrimaryAccount() != null) {
-            mSigninTestRule.forceSignOut();
-        }
-    }
 
     private void initSigninChecker() {
         ThreadUtils.runOnUiThreadBlocking(
