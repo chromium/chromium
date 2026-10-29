@@ -8,6 +8,7 @@
 #include "third_party/nearby/src/internal/platform/implementation/webrtc.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/synchronization/lock.h"
@@ -57,6 +58,10 @@ class WebRtcMedium : public api::WebRtcMedium {
       std::string_view self_id,
       const location::nearby::connections::LocationHint& location_hint) override;
 
+  std::unique_ptr<webrtc::PeerConnectionObserver>
+  CreatePeerConnectionObserverWrapperForTesting(
+      webrtc::PeerConnectionObserver* observer);
+
  private:
   void FetchIceServers(webrtc::PeerConnectionObserver* observer,
                        PeerConnectionCallback callback);
@@ -91,6 +96,11 @@ class WebRtcMedium : public api::WebRtcMedium {
   // the passed task runner the first time a Peer Connection is requested.
   webrtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
       peer_connection_factory_ GUARDED_BY(peer_connection_factory_lock_);
+
+  // Owns `PeerConnectionObserverWrapper` instances passed to WebRTC
+  // `PeerConnection`s so they outlive `chrome_signaling_thread_`.
+  std::vector<std::unique_ptr<webrtc::PeerConnectionObserver>>
+      observer_wrappers_ GUARDED_BY(peer_connection_factory_lock_);
 
   mojo::SharedRemote<network::mojom::P2PSocketManager> p2p_socket_manager_;
   mojo::SharedRemote<::sharing::mojom::MdnsResponderFactory>

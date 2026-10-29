@@ -11,6 +11,8 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/webrtc/api/data_channel_interface.h"
+#include "third_party/webrtc/api/make_ref_counted.h"
 #include "unicode/locid.h"
 
 namespace nearby::chrome {
@@ -33,6 +35,26 @@ class MockPeerConnectionObserver : public webrtc::PeerConnectionObserver {
               OnSignalingChange,
               (webrtc::PeerConnectionInterface::SignalingState new_state),
               (override));
+};
+
+class MockDataChannel : public webrtc::DataChannelInterface {
+ public:
+  MOCK_METHOD(void,
+              RegisterObserver,
+              (webrtc::DataChannelObserver*),
+              (override));
+  MOCK_METHOD(void, UnregisterObserver, (), (override));
+  MOCK_METHOD(std::string, label, (), (const, override));
+  MOCK_METHOD(bool, reliable, (), (const, override));
+  MOCK_METHOD(int, id, (), (const, override));
+  MOCK_METHOD(DataState, state, (), (const, override));
+  MOCK_METHOD(uint32_t, messages_sent, (), (const, override));
+  MOCK_METHOD(uint64_t, bytes_sent, (), (const, override));
+  MOCK_METHOD(uint32_t, messages_received, (), (const, override));
+  MOCK_METHOD(uint64_t, bytes_received, (), (const, override));
+  MOCK_METHOD(uint64_t, buffered_amount, (), (const, override));
+  MOCK_METHOD(void, Close, (), (override));
+  MOCK_METHOD(bool, Send, (const webrtc::DataBuffer&), (override));
 };
 
 class FakeReceiveMessagesSession
@@ -372,6 +394,55 @@ TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessagesTwice) {
       },
       [](bool success) {}));
   loop_2.Run();
+}
+
+TEST_F(WebRtcMediumTest, RejectsExtraIncomingDataChannels) {
+  testing::StrictMock<MockPeerConnectionObserver> observer;
+  std::unique_ptr<webrtc::PeerConnectionObserver> wrapper =
+      GetMedium().CreatePeerConnectionObserverWrapperForTesting(&observer);
+
+  auto first_channel =
+      webrtc::make_ref_counted<testing::StrictMock<MockDataChannel>>();
+  auto second_channel =
+      webrtc::make_ref_counted<testing::StrictMock<MockDataChannel>>();
+  auto third_channel =
+      webrtc::make_ref_counted<testing::StrictMock<MockDataChannel>>();
+
+  webrtc::scoped_refptr<webrtc::DataChannelInterface> forwarded_channel;
+  EXPECT_CALL(observer, OnDataChannel(testing::_))
+      .WillOnce([&](webrtc::scoped_refptr<webrtc::DataChannelInterface> dc) {
+        forwarded_channel = std::move(dc);
+      });
+  wrapper->OnDataChannel(first_channel);
+  ASSERT_TRUE(forwarded_channel);
+
+  // Subsequent incoming data channels on the same PeerConnection must be closed
+  // immediately without forwarding to `observer`.
+  EXPECT_CALL(*second_channel, Close());
+  wrapper->OnDataChannel(second_channel);
+
+  EXPECT_CALL(*third_channel, Close());
+  wrapper->OnDataChannel(third_channel);
+}
+
+TEST_F(WebRtcMediumTest, RejectsIncomingDataChannelAfterLocalOffer) {
+  testing::StrictMock<MockPeerConnectionObserver> observer;
+  std::unique_ptr<webrtc::PeerConnectionObserver> wrapper =
+      GetMedium().CreatePeerConnectionObserverWrapperForTesting(&observer);
+
+  EXPECT_CALL(
+      observer,
+      OnSignalingChange(
+          webrtc::PeerConnectionInterface::SignalingState::kHaveLocalOffer));
+  wrapper->OnSignalingChange(
+      webrtc::PeerConnectionInterface::SignalingState::kHaveLocalOffer);
+
+  // When the local peer is the offerer, any unsolicited remote-opened data
+  // channel must be closed and ignored.
+  auto unsolicited_channel =
+      webrtc::make_ref_counted<testing::StrictMock<MockDataChannel>>();
+  EXPECT_CALL(*unsolicited_channel, Close());
+  wrapper->OnDataChannel(unsolicited_channel);
 }
 
 }  // namespace
