@@ -37,8 +37,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/switches.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 using testing::AllOf;
 using testing::Eq;
@@ -161,7 +161,7 @@ class AutofillServerTest : public InProcessBrowserTest {
     NavigateParams params(
         browser(), embedded_https_test_server().GetURL("a.com", relative_url),
         ui::PAGE_TRANSITION_LINK);
-    params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     ui_test_utils::NavigateToURL(&params);
   }
 

@@ -24,7 +24,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "net/base/backoff_entry.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -103,7 +103,7 @@ class BackgroundContentsService
   // BackgroundContents::Delegate implementation.
   void AddWebContents(std::unique_ptr<content::WebContents> new_contents,
                       const GURL& target_url,
-                      WindowOpenDisposition disposition,
+                      ui::mojom::WindowOpenDisposition disposition,
                       const blink::mojom::WindowFeatures& window_features,
                       bool* was_blocked) override;
   void OnBackgroundContentsNavigated(BackgroundContents* contents) override;

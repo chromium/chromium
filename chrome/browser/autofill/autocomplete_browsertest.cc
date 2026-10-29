@@ -47,8 +47,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/switches.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 
 namespace autofill {
@@ -137,8 +137,8 @@ class AutocompleteTest : public InProcessBrowserTest {
   // Uses the browser to open the file named `filename` based on the given
   // `disposition`.
   void NavigateToFile(const char* filename,
-                      const WindowOpenDisposition& disposition =
-                          WindowOpenDisposition::kNewForegroundTab) {
+                      const ui::mojom::WindowOpenDisposition& disposition =
+                          ui::mojom::WindowOpenDisposition::kNewForegroundTab) {
     GURL url =
         embedded_test_server()->GetURL(base::StrCat({"/autofill/", filename}));
     NavigateParams params(active_browser_, url, ui::PAGE_TRANSITION_LINK);
@@ -294,7 +294,8 @@ IN_PROC_BROWSER_TEST_F(AutocompleteTest,
 
   std::string prefix = "Some";
   std::string test_value = "SomeName!";
-  NavigateToFile(kSimpleFormFileName, WindowOpenDisposition::kOffTheRecord);
+  NavigateToFile(kSimpleFormFileName,
+                 ui::mojom::WindowOpenDisposition::kOffTheRecord);
   ASSERT_TRUE(autofill_manager()->forms_seen_waiter().Wait(1));
   FillInputAndSubmit(test_value);
   EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, ""),

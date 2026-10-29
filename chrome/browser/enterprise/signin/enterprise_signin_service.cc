@@ -22,7 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"
 #include "google_apis/gaia/gaia_urls.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 namespace enterprise_signin {
@@ -143,7 +143,7 @@ void EnterpriseSigninService::OpenOrActivateGaiaReauthTab() {
     chrome::BrowserCommandController::From(browser)
         ->ExecuteCommandWithDisposition(
             IDC_SHOW_SIGNIN_WHEN_PAUSED,
-            WindowOpenDisposition::kNewForegroundTab);
+            ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   }
 }
 

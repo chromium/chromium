@@ -36,7 +36,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 using ::testing::Return;
 using ::testing::ReturnRef;
@@ -167,7 +167,8 @@ IN_PROC_BROWSER_TEST_F(DataProtectionNavigationControllerTest,
       browser()->GetProfile()));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), main_url(), WindowOpenDisposition::kNewForegroundTab,
+      browser(), main_url(),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   EXPECT_FALSE(safe_browsing::SafeBrowsingNavigationObserver::FromWebContents(
@@ -338,7 +339,7 @@ IN_PROC_BROWSER_TEST_P(DataProtectionNavigationControllerPolicyTest,
   // recorded by the observer.
   const GURL url = embedded_test_server()->GetURL("/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   EXPECT_TRUE(safe_browsing::SafeBrowsingNavigationObserver::FromWebContents(
       contents()));

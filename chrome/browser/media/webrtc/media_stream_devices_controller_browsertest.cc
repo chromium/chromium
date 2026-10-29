@@ -44,7 +44,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 using ::blink::mojom::MediaStreamRequestResult;
 using ::content_settings::PageSpecificContentSettings;
@@ -869,7 +869,8 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
                        WebContentsDestroyedDuringRequest) {
   InitWithUrl(embedded_test_server()->GetURL("/simple.html"));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::kNewBackgroundTab,
+      browser(), GURL("about:blank"),
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
 
   prompt_factory()->set_response_type(

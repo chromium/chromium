@@ -18,8 +18,8 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/bounds_animator.h"
@@ -679,7 +679,7 @@ void ContentAnalysisDialogDelegate::AddLinksToDialogMessage() {
               }
               web_contents->OpenURL(
                   content::OpenURLParams::CreateBrowserInitiated(
-                      url, WindowOpenDisposition::kNewForegroundTab,
+                      url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                       ui::PAGE_TRANSITION_LINK),
                   /*navigation_handle_callback=*/{});
             },
@@ -839,7 +839,8 @@ void ContentAnalysisDialogDelegate::LearnMoreLinkClickedCallback(
   web_contents_getter_.Run()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           (*delegate_base_->GetCustomLearnMoreUrl()),
-          WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK),
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+          ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }
 

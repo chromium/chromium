@@ -22,8 +22,8 @@
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -237,7 +237,7 @@ TEST_F(ExtensionActorTrackerTest,
 
   tracker()->DidOpenRequestedURL(
       child_wc.get(), main_rfh(), GURL("https://example.com/popup"),
-      content::Referrer(), WindowOpenDisposition::kNewForegroundTab,
+      content::Referrer(), ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui::PAGE_TRANSITION_LINK, /*started_from_context_menu=*/false,
       /*renderer_initiated=*/true);
 

@@ -69,8 +69,8 @@
 #include "extensions/common/permissions/permission_set.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/image/image_family.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -415,7 +415,8 @@ void BackgroundModeManager::LaunchBackgroundApplication(
   web_app::LaunchExtensionOrWebApp(
       profile,
       CreateAppLaunchParamsUserContainer(
-          profile, extension, WindowOpenDisposition::kNewForegroundTab,
+          profile, extension,
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           apps::LaunchSource::kFromBackgroundMode),
       base::DoNothing());
 #else

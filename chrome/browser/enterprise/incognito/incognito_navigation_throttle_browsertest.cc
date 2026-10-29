@@ -33,7 +33,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 using testing::NotNull;
 
@@ -105,7 +105,7 @@ class IncognitoNavigationThrottleBrowserTest
   void NavigateToSimplePage(BrowserWindowInterface* browser) {
     GURL url(embedded_test_server()->GetURL("/simple_page.html"));
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser, url, WindowOpenDisposition::kNewForegroundTab,
+        browser, url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   }
 
@@ -262,7 +262,8 @@ IN_PROC_BROWSER_TEST_F(IncognitoNavigationThrottleBrowserTest,
   // Navigate to a Top Chrome WebUI URL. Content is allowed.
   const GURL top_chrome_url(chrome::kChromeUITabSearchURL);
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      incognito_browser(), top_chrome_url, WindowOpenDisposition::kCurrentTab,
+      incognito_browser(), top_chrome_url,
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   content::WebContents* web_contents =

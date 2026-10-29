@@ -31,8 +31,8 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace {
 
@@ -87,20 +87,21 @@ class UnifiedAutoplayBrowserTest : public InProcessBrowserTest {
   }
 
   content::WebContents* OpenNewTab(const GURL& url, bool from_context_menu) {
-    return OpenInternal(
-        url, from_context_menu, WindowOpenDisposition::kNewForegroundTab,
-        false /* is_renderer_initiated */, true /* user_gesture */);
+    return OpenInternal(url, from_context_menu,
+                        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                        false /* is_renderer_initiated */,
+                        true /* user_gesture */);
   }
 
   content::WebContents* OpenNewWindow(const GURL& url, bool from_context_menu) {
     return OpenInternal(
-        url, from_context_menu, WindowOpenDisposition::kNewWindow,
+        url, from_context_menu, ui::mojom::WindowOpenDisposition::kNewWindow,
         false /* is_renderer_initiated */, true /* user_gesture */);
   }
 
   content::WebContents* OpenFromRenderer(const GURL& url, bool user_gesture) {
     return OpenInternal(url, false /* from_context_menu */,
-                        WindowOpenDisposition::kNewForegroundTab,
+                        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                         true /* is_renderer_initiated */, user_gesture);
   }
 
@@ -135,11 +136,12 @@ class UnifiedAutoplayBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  content::WebContents* OpenInternal(const GURL& url,
-                                     bool from_context_menu,
-                                     WindowOpenDisposition disposition,
-                                     bool is_renderer_initiated,
-                                     bool user_gesture) {
+  content::WebContents* OpenInternal(
+      const GURL& url,
+      bool from_context_menu,
+      ui::mojom::WindowOpenDisposition disposition,
+      bool is_renderer_initiated,
+      bool user_gesture) {
     content::WebContents* active_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
 

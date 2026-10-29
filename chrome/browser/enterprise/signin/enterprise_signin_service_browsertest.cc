@@ -29,8 +29,8 @@
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/ozone_buildflags.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_OZONE)
@@ -135,7 +135,7 @@ class EnterpriseSigninServiceTest : public InteractiveBrowserTest {
   auto NewTab(BrowserWindowInterface* browser, GURL url) {
     return Steps(Do([browser, url = std::move(url)]() {
       ui_test_utils::NavigateToURLWithDisposition(
-          browser, url, WindowOpenDisposition::kNewBackgroundTab,
+          browser, url, ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
           ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     }));

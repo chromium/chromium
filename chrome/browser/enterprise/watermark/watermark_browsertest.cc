@@ -54,8 +54,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/test/base/scoped_channel_override.h"
@@ -505,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
   NavigateParams params(browser(), GURL("chrome://version"),
                         ui::PAGE_TRANSITION_LINK);
   params.tabstrip_index = 1;
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
   EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
                    ->GetContentsContainerViews()[0]
@@ -545,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
   NavigateParams params(browser(), GURL("https://nowatermark.com"),
                         ui::PAGE_TRANSITION_LINK);
   params.tabstrip_index = 1;
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
   EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
                    ->GetContentsContainerViews()[0]

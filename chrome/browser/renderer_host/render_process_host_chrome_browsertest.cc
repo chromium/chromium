@@ -42,7 +42,7 @@
 #include "media/base/media_switches.h"
 #include "net/base/filename_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "content/public/browser/browser_child_process_host.h"
@@ -125,7 +125,7 @@ class ChromeRenderProcessHostTest : public extensions::ExtensionBrowserTest {
   // associated with the tab.
   WebContents* OpenBackgroundTab(const GURL& page) {
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), page, WindowOpenDisposition::kNewBackgroundTab,
+        browser(), page, ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
     TabStripModel* tab_strip = browser()->tab_strip_model();
@@ -344,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest, DISABLED_ProcessPerTab) {
   // Create another omnibox tab.  It should share the process with the other
   // WebUI.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), omnibox, WindowOpenDisposition::kNewForegroundTab,
+      browser(), omnibox, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   tab_count++;
   EXPECT_EQ(tab_count, browser()->tab_strip_model()->count());
@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest, DISABLED_ProcessPerTab) {
   // Create another omnibox tab.  It should share the process with the other
   // WebUI.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), omnibox, WindowOpenDisposition::kNewForegroundTab,
+      browser(), omnibox, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   tab_count++;
   EXPECT_EQ(tab_count, browser()->tab_strip_model()->count());

@@ -26,8 +26,8 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace default_browser {
@@ -54,7 +54,8 @@ class DefaultBrowserVisualGuidedSetter::ExecutionRunner
 
     NavigateParams navigation_params(base::to_address(profile_), url,
                                      ui::PAGE_TRANSITION_LINK);
-    navigation_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    navigation_params.disposition =
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     navigation_params.window_action = NavigateParams::WindowAction::kShowWindow;
     Navigate(&navigation_params);
 
@@ -120,7 +121,7 @@ class DefaultBrowserVisualGuidedSetter::ExecutionRunner
                             GURL(chrome::kChromeUINewTabURL),
                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
       params.source_contents = contents;
-      params.disposition = WindowOpenDisposition::kCurrentTab;
+      params.disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
       Navigate(&params);
     }
     Finish(DefaultBrowserState::IS_DEFAULT);

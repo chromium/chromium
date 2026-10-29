@@ -19,7 +19,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/safe_browsing/buildflags.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/test/bind.h"
@@ -1581,7 +1581,7 @@ IN_PROC_BROWSER_TEST_P(JavascriptOptimizerBubbleBrowserTest,
   // Open new tab and go to the same site.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_https_test_server().GetURL("/simple.html"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   // TODO: crbug.com/457420369 - Use reload functionality to check settings
   // application instead of opening a new tab

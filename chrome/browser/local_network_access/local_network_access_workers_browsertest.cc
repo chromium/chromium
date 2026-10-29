@@ -21,7 +21,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_CHROMEOS)
@@ -396,7 +396,8 @@ class ChromeAppLocalNetworkAccessWorkersBrowserTest
         ->BrowserAppLauncher()
         ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
             extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-            WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest));
+            ui::mojom::WindowOpenDisposition::kNewWindow,
+            apps::LaunchSource::kFromTest));
   }
 
   // Install and launch ChromeApp with main html page taken from

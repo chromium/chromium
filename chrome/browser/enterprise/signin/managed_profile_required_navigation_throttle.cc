@@ -22,8 +22,8 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace {
 
@@ -44,7 +44,7 @@ class BlockingInfo : public base::SupportsUserData::Data {
       enterprise_action_web_contents_->OpenURL(
           content::OpenURLParams::CreateBrowserInitiated(
               enterprise_action_web_contents_->GetVisibleURL(),
-              WindowOpenDisposition::kCurrentTab,
+              ui::mojom::WindowOpenDisposition::kCurrentTab,
               ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
           /*navigation_handle_callback=*/std::move(on_reload_triggered_));
     }
