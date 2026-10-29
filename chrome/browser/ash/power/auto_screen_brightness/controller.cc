@@ -11,9 +11,11 @@
 #include "chrome/browser/ash/power/auto_screen_brightness/gaussian_trainer.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/model_config_loader_impl.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/modeller_impl.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
 
 namespace ash {
 namespace power {
@@ -24,9 +26,9 @@ Controller::Controller() {
   CHECK(session_manager, base::NotFatalUntil::M160);
 
   if (!session_manager->sessions().empty()) {
-    // If a user session has been created, we can use the primary user profile
-    // to initialize all components immediately without waiting for
-    // |OnUserSessionStarted| to be called.
+    // If a user session has been created, we can use the primary user's
+    // browser context to initialize all components immediately without waiting
+    // for |OnUserSessionStarted| to be called.
     InitializeComponents();
     return;
   }
@@ -46,8 +48,8 @@ Controller::~Controller() {
 
 void Controller::OnUserSessionStarted(bool /* is_primary_user */) {
   // The first sign-in user is the primary user, hence if |OnUserSessionStarted|
-  // is called, the primary user profile should have been created. We will
-  // ignore |is_primary_user|.
+  // is called, the primary user's browser context should have been created. We
+  // will ignore |is_primary_user|.
   if (is_initialized_)
     return;
 
@@ -58,8 +60,13 @@ void Controller::InitializeComponents() {
   CHECK(!is_initialized_, base::NotFatalUntil::M160);
   is_initialized_ = true;
 
-  Profile* const profile = ProfileManager::GetPrimaryUserProfile();
-  CHECK(profile, base::NotFatalUntil::M160);
+  const session_manager::Session* const primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session, base::NotFatalUntil::M163);
+  content::BrowserContext* const browser_context =
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id());
+  CHECK(browser_context, base::NotFatalUntil::M163);
 
   chromeos::PowerManagerClient* power_manager_client =
       chromeos::PowerManagerClient::Get();
@@ -78,13 +85,13 @@ void Controller::InitializeComponents() {
   CHECK(user_activity_detector, base::NotFatalUntil::M160);
 
   modeller_ = std::make_unique<ModellerImpl>(
-      profile->GetPath(), als_reader_.get(), brightness_monitor_.get(),
+      browser_context->GetPath(), als_reader_.get(), brightness_monitor_.get(),
       model_config_loader_.get(), user_activity_detector,
       std::make_unique<GaussianTrainer>());
 
   adapter_ = std::make_unique<Adapter>(
-      profile->GetPrefs(), als_reader_.get(), brightness_monitor_.get(),
-      modeller_.get(), model_config_loader_.get());
+      user_prefs::UserPrefs::Get(browser_context), als_reader_.get(),
+      brightness_monitor_.get(), modeller_.get(), model_config_loader_.get());
   adapter_->Init();
 }
 
