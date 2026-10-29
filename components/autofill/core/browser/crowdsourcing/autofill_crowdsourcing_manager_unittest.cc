@@ -2004,7 +2004,13 @@ TEST_P(AutofillUploadTest, MAYBE_PeriodicReset) {
       1, 2);
 }
 
-TEST_P(AutofillUploadTest, ResetOnClearUploadHistory) {
+// Flaky on fuchsia bots, see crbug.com/446943496.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_ResetOnClearUploadHistory DISABLED_ResetOnClearUploadHistory
+#else
+#define MAYBE_ResetOnClearUploadHistory ResetOnClearUploadHistory
+#endif
+TEST_P(AutofillUploadTest, MAYBE_ResetOnClearUploadHistory) {
   ASSERT_NE(DISABLED, GetParam());
 
   AutofillCrowdsourcingManager crowdsourcing_manager(
