@@ -438,6 +438,22 @@ TEST(AutofillStructuredAlternativeNameSameAsTest,
   EXPECT_FALSE(other_name.SameAs(name));
 }
 
+TEST(AutofillStructuredAlternativeNameSameAsTest,
+     GetValueForComparisonUsesProvidedValue) {
+  // Component stores "Yamamoto Aoi" in Hiragana.
+  AlternativeFullName name;
+  name.SetValueForType(ALTERNATIVE_FULL_NAME, u"やまもと あおい",
+                       VerificationStatus::kObserved);
+  name.CompleteFullTree();
+
+  // Passing a different name ("Sakura・Rei" in Katakana with a middle-dot
+  // separator) should normalize the separator to a space and transliterate
+  // that provided value to Hiragana ("Sakura Rei"), ignoring `name`'s own
+  // stored value.
+  EXPECT_EQ(name.GetValueForComparison(u"サクラ・レイ", AddressCountryCode("JP")),
+            u"さくら れい");
+}
+
 // Tests the detection of CJK name characteristics.
 TEST(AutofillStructuredName, HasCjkNameCharacteristics) {
   EXPECT_FALSE(HasCjkNameCharacteristics("Peterson"));

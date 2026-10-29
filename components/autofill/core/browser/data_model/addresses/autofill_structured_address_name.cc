@@ -266,7 +266,7 @@ std::u16string AlternativeNameAddressComponent::GetValueForComparison(
     const std::u16string& value,
     const AddressCountryCode& common_country_code) const {
   return TransliterateAlternativeName(
-      normalization::NormalizeForComparison(GetValue()));
+      normalization::NormalizeForComparison(value));
 }
 
 AlternativeGivenName::AlternativeGivenName()
