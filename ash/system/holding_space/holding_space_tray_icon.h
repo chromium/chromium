@@ -13,6 +13,7 @@
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shell_observer.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -51,7 +52,7 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   // 2. Update the icon preferred size.
   // 3. Shift existing items to their new position.
   // 4. Animate new items in.
-  void UpdatePreviews(const std::vector<const HoldingSpaceItem*> items);
+  void UpdatePreviews(base::span<const HoldingSpaceItem* const> items);
 
   // Clears the icon.
   void Clear();

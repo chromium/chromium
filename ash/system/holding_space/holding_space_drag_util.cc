@@ -17,6 +17,7 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/typography.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
+#include "base/containers/span.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -73,7 +74,7 @@ void AssertNoLayers(const views::View* view) {
 
 // Returns the holding space items associated with the specified `views`.
 std::vector<const HoldingSpaceItem*> GetHoldingSpaceItems(
-    const std::vector<const HoldingSpaceItemView*> views) {
+    base::span<const HoldingSpaceItemView* const> views) {
   std::vector<const HoldingSpaceItem*> items;
   for (const HoldingSpaceItemView* view : views)
     items.push_back(view->item());

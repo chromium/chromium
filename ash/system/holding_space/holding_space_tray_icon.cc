@@ -252,7 +252,7 @@ void HoldingSpaceTrayIcon::UpdateDropTargetState(bool is_drop_target,
 }
 
 void HoldingSpaceTrayIcon::UpdatePreviews(
-    const std::vector<const HoldingSpaceItem*> items) {
+    base::span<const HoldingSpaceItem* const> items) {
   // Cancel any in progress updates.
   previews_update_weak_factory_.InvalidateWeakPtrs();
 
