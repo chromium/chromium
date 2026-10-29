@@ -1369,6 +1369,10 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="SigninDeclinedButtonClicked"/>
   <int value="5" label="AddAccountClicked"/>
   <int value="6" label="AccountPickerAddAccountClicked"/>
+  <int value="7" label="AccountPickerShown"/>
+  <int value="8" label="NonDefaultAccountSelected"/>
+  <int value="9" label="DefaultAccountSelected"/>
+  <int value="10" label="AccountPickerDismissed"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/base/signin_metrics.h:SigninFunnelEvent) -->

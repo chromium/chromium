@@ -30,14 +30,22 @@ public class AccountPickerDialogCoordinator {
     private final AccountPickerCoordinator mCoordinator;
     private final ModalDialogManager mDialogManager;
     private final PropertyModel mModel;
+    private final Runnable mOnDismissedWithoutSelection;
 
-    /** Constructs the coordinator and shows the account picker dialog. */
+    /**
+     * Constructs the coordinator and shows the account picker dialog.
+     *
+     * @param onDismissedWithoutSelection Run when the user dismisses the dialog (back press or
+     *     touch outside) without selecting an account.
+     */
     @MainThread
     public AccountPickerDialogCoordinator(
             Context context,
             Listener listener,
+            Runnable onDismissedWithoutSelection,
             ModalDialogManager modalDialogManager,
             IdentityManager identityManager) {
+        mOnDismissedWithoutSelection = onDismissedWithoutSelection;
         mDialogManager = modalDialogManager;
         mAccountPickerView = inflateAccountPickerView(context);
 
@@ -83,6 +91,9 @@ public class AccountPickerDialogCoordinator {
             @Override
             public void onDismiss(PropertyModel model, int dismissalCause) {
                 mCoordinator.destroy();
+                if (dismissalCause == DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE) {
+                    mOnDismissedWithoutSelection.run();
+                }
             }
         };
     }

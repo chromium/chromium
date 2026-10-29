@@ -14,6 +14,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
+import androidx.test.espresso.Espresso;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -94,6 +95,7 @@ public class AccountPickerDialogTest {
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private AccountPickerCoordinator.Listener mListenerMock;
+    @Mock private Runnable mOnDismissedWithoutSelectionMock;
 
     private AccountPickerDialogCoordinator mCoordinator;
     private final boolean mIsIdentityManagerSourceOfAccounts;
@@ -117,6 +119,7 @@ public class AccountPickerDialogTest {
                             new AccountPickerDialogCoordinator(
                                     activity,
                                     mListenerMock,
+                                    mOnDismissedWithoutSelectionMock,
                                     new ModalDialogManager(
                                             new AppModalPresenter(activity), ModalDialogType.APP),
                                     mAccountManagerTestRule.getIdentityManager());
@@ -165,6 +168,15 @@ public class AccountPickerDialogTest {
         onView(withText(TestAccounts.ACCOUNT2.getFullName())).inRoot(isDialog()).perform(click());
         verify(mListenerMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
                 .onAccountSelected(TestAccounts.ACCOUNT2);
+    }
+
+    @Test
+    @MediumTest
+    public void testDismissDialog() {
+        verifyOptionsDisplayed();
+        Espresso.pressBack();
+        verify(mOnDismissedWithoutSelectionMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .run();
     }
 
     @Test

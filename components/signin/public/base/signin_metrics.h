@@ -682,7 +682,11 @@ enum class SigninFunnelEvent {
   kAddAccountClicked = 5,
   // "Add account to device" was clicked in the account picker.
   kAccountPickerAddAccountClicked = 6,
-  kMaxValue = kAccountPickerAddAccountClicked,
+  kAccountPickerShown = 7,
+  kNonDefaultAccountSelected = 8,
+  kDefaultAccountSelected = 9,
+  kAccountPickerDismissed = 10,
+  kMaxValue = kAccountPickerDismissed,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SigninFunnelEvent)
 
