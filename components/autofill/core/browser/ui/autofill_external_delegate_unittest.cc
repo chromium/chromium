@@ -258,6 +258,11 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
 class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient() {
+    std::unique_ptr<EntitySuppressionSyncBridge> bridge =
+        CreateTestEntitySuppressionSyncBridge();
+    CHECK(base::test::RunUntil([&]() { return bridge->IsLoaded(); }));
+    suppression_manager_ =
+        std::make_unique<EntitySuppressionManager>(std::move(bridge));
     set_payments_autofill_client(
         std::make_unique<MockPaymentsAutofillClient>(this));
     ON_CALL(*this, GetDeviceAuthAvailabilityChecker).WillByDefault([] {
@@ -312,6 +317,9 @@ class MockAutofillClient : public TestAutofillClient {
               (const HatsSurveyStringData&),
               (override));
   MOCK_METHOD(AutofillComposeDelegate*, GetComposeDelegate, (), (override));
+  EntitySuppressionManager* GetEntitySuppressionManager() override {
+    return suppression_manager_.get();
+  }
   MOCK_METHOD(IdentityCredentialDelegate*,
               GetIdentityCredentialDelegate,
               (),
@@ -362,10 +370,13 @@ class MockAutofillClient : public TestAutofillClient {
   void set_last_queried_field(FieldGlobalId field_id) {
     last_queried_field_id_ = field_id;
   }
+#endif
 
  private:
+#if BUILDFLAG(IS_IOS)
   FieldGlobalId last_queried_field_id_;
 #endif
+  std::unique_ptr<EntitySuppressionManager> suppression_manager_;
 };
 
 class TestCreditCardAccessManager : public CreditCardAccessManager {
@@ -497,13 +508,6 @@ class AutofillExternalDelegateTest : public testing::Test,
             personal_context::PersonalContextEligibilityState::kEligible));
     autofill_client().set_personal_context_eligibility_service(
         mock_personal_context_service_.get());
-    std::unique_ptr<EntitySuppressionSyncBridge> bridge =
-        CreateTestEntitySuppressionSyncBridge();
-    ASSERT_TRUE(base::test::RunUntil([&]() { return bridge->IsLoaded(); }));
-    suppression_manager_ =
-        std::make_unique<EntitySuppressionManager>(std::move(bridge));
-    autofill_client().set_entity_suppression_manager(
-        suppression_manager_.get());
     autofill_client().GetPrefs()->registry()->RegisterIntegerPref(
         optimization_guide::prefs::kGeminiSettings,
         std::to_underlying(
@@ -723,7 +727,6 @@ class AutofillExternalDelegateTest : public testing::Test,
       personal_context::MockPersonalContextEligibilityService>>
       mock_personal_context_service_;
 
-  std::unique_ptr<EntitySuppressionManager> suppression_manager_;
   // Form containing the triggering field that initialized the external delegate
   // `OnQuery`.
   FormData queried_form_;
