@@ -303,6 +303,8 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
+    // TODO(crbug.com/579453374): Fails on Desktop form factor.
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM)
     public void testSigninFunnelHistogram_addAccountClicked_noAccount() {
         mSigninTestRule.removeAccount(TestAccounts.AADC_ADULT_ACCOUNT.getId());
         HistogramWatcher signinFunnelWatcher =
