@@ -99,27 +99,33 @@ void ArcShelfSpinnerItemController::OnAppStatesChanged(
     return;
   }
 
-  // Close() destroys this object, so start launching the app first.
+  // Close() destroys `this`, and the launch may synchronously replace this
+  // shelf item delegate (e.g. via the ARC ghost-window path), which would also
+  // destroy `this`. Take what the launch needs, close, then launch.
+  Profile* const profile = observed_profile_;
+  const int event_flags = event_flags_;
+  const arc::UserInteractionType user_interaction_type = user_interaction_type_;
+  arc::mojom::WindowInfoPtr window_info = std::move(window_info_);
 
   // Embed deferred time only for app launches. Don't modify shortcuts.
   // Shortcuts do not have activity so they are not compatible.
+  apps::IntentPtr intent;
   if (!app_info.shortcut) {
-    if (!intent_) {
-      intent_ = std::make_unique<apps::Intent>(apps_util::kIntentActionMain);
-      intent_->categories.push_back(arc::kCategoryLauncher);
-      intent_->activity_name = app_info.activity;
+    intent = std::move(intent_);
+    if (!intent) {
+      intent = std::make_unique<apps::Intent>(apps_util::kIntentActionMain);
+      intent->categories.push_back(arc::kCategoryLauncher);
+      intent->activity_name = app_info.activity;
     }
-    intent_->extras[arc::kRequestDeferredStartTimeParamKey] =
+    intent->extras[arc::kRequestDeferredStartTimeParamKey] =
         base::NumberToString(
             (request_time_ - base::TimeTicks()).InMilliseconds());
-    arc::LaunchAppWithIntent(observed_profile_, arc_app_id, std::move(intent_),
-                             event_flags_, user_interaction_type_,
-                             std::move(window_info_));
-  } else {
-    arc::LaunchApp(observed_profile_, arc_app_id, event_flags_,
-                   user_interaction_type_, std::move(window_info_));
   }
+
   Close();
+  // Null `intent` for shortcuts matches arc::LaunchApp().
+  arc::LaunchAppWithIntent(profile, arc_app_id, std::move(intent), event_flags,
+                           user_interaction_type, std::move(window_info));
 }
 
 void ArcShelfSpinnerItemController::OnAppRemoved(

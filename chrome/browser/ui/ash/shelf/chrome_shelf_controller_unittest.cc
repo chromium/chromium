@@ -154,6 +154,8 @@
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/compatibility_mode.mojom.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
@@ -2538,6 +2540,66 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcDeferredLaunchForActiveApp) {
   arc::LaunchApp(profile(), app_id, ui::EF_LEFT_MOUSE_BUTTON,
                  arc::UserInteractionType::NOT_USER_INITIATED);
   EXPECT_TRUE(shelf_controller_->GetShelfSpinnerController()->HasApp(app_id));
+}
+
+namespace {
+
+// Reports a task for `app` synchronously on launch, so the window's shelf item
+// delegate is installed before the launch call returns (the ARC ghost-window
+// path does this in production but needs exo, which unit tests lack).
+class TaskCreatingFakeAppInstance : public arc::FakeAppInstance {
+ public:
+  TaskCreatingFakeAppInstance(arc::mojom::AppHost* app_host,
+                              arc::mojom::AppInfoPtr app)
+      : arc::FakeAppInstance(app_host), app_(std::move(app)) {}
+
+  void LaunchIntentWithWindowInfo(
+      const std::string& intent_uri,
+      arc::mojom::WindowInfoPtr window_info) override {
+    arc::FakeAppInstance::LaunchIntentWithWindowInfo(intent_uri,
+                                                     std::move(window_info));
+    SendTaskCreated(/*taskId=*/1, *app_, /*intent=*/std::string());
+  }
+
+ private:
+  arc::mojom::AppInfoPtr app_;
+};
+
+}  // namespace
+
+// Verifies that the deferred launch from an ARC spinner is safe when the launch
+// synchronously installs the app window's ShelfItemDelegate.
+TEST_F(ChromeShelfControllerWithArcTest,
+       ArcDeferredLaunchDelegateReplacedDuringLaunch) {
+  InitShelfController();
+
+  std::vector<arc::mojom::AppInfoPtr> apps;
+  apps.emplace_back(arc_app_test_.fake_apps()[0]->Clone());
+  const std::string app_id = ArcAppTest::GetAppId(*apps[0]);
+  const ash::ShelfID shelf_id(app_id);
+
+  // Register the app, then stop ARC so that launching it shows a spinner.
+  arc_app_test_.app_instance()->SendRefreshAppList(apps);
+  arc_app_test_.StopArcInstance();
+  arc::LaunchApp(profile(), app_id, ui::EF_LEFT_MOUSE_BUTTON,
+                 arc::UserInteractionType::NOT_USER_INITIATED);
+  ASSERT_TRUE(shelf_controller_->GetShelfSpinnerController()->HasApp(app_id));
+
+  // Reconnect with an instance that creates the task synchronously during the
+  // deferred launch, then make the app ready to trigger that launch.
+  auto* const app_connection =
+      arc_app_test_.arc_service_manager()->arc_bridge_service()->app();
+  auto app_instance = std::make_unique<TaskCreatingFakeAppInstance>(
+      arc_app_test_.arc_app_list_prefs(), apps[0]->Clone());
+  app_connection->SetInstance(app_instance.get());
+  app_instance->SendRefreshAppList(apps);
+
+  EXPECT_EQ(1u, app_instance->launch_intents().size());
+  EXPECT_FALSE(shelf_controller_->GetShelfSpinnerController()->HasApp(app_id));
+  // The task's window controller, not the spinner or a shortcut, owns the item.
+  EXPECT_NE(nullptr, model_->GetAppWindowShelfItemController(shelf_id));
+
+  app_connection->CloseInstance(app_instance.get());
 }
 
 // TODO(crbug.com/915840): this test is flakey and/or often crashes.
