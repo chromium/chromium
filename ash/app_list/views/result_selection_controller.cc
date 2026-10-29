@@ -307,7 +307,7 @@ SearchResultBaseView* ResultSelectionController::GetResultAtLocation(
 }
 
 std::unique_ptr<ResultLocationDetails>
-ResultSelectionController::FindResultWithId(const std::string& id) {
+ResultSelectionController::FindResultWithId(std::string_view id) {
   for (size_t container_index = 0;
        container_index < result_selection_model_->size(); ++container_index) {
     SearchResultContainerView* const container =

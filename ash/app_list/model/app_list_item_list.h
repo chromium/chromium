@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/app_list/model/app_list_item_list_observer.h"
@@ -125,7 +126,7 @@ class APP_LIST_MODEL_EXPORT AppListItemList {
   // Returns the index at which to insert an item in |app_list_items_| based on
   // |position| (which must be valid) and |id| (if the positions are equal).
   size_t GetItemSortOrderIndex(const syncer::StringOrdinal& position,
-                               const std::string& id);
+                               std::string_view id);
 
   // Fixes the position of the item at |index| when the position matches the
   // previous item's position. |index| must be > 0.

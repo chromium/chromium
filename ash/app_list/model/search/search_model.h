@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/app_list/model/app_list_model_export.h"
@@ -56,7 +57,7 @@ class APP_LIST_MODEL_EXPORT SearchModel {
       std::vector<std::unique_ptr<SearchResult>> new_results,
       const std::vector<ash::AppListSearchResultCategory>& categories);
 
-  SearchResult* FindSearchResult(const std::string& id);
+  SearchResult* FindSearchResult(std::string_view id);
 
   // Deletes all search results. This is used when moving from zero-state to a
   // search query.

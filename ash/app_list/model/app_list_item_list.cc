@@ -241,7 +241,7 @@ void AppListItemList::EnsureValidItemPosition(AppListItem* item) {
 
 size_t AppListItemList::GetItemSortOrderIndex(
     const syncer::StringOrdinal& position,
-    const std::string& id) {
+    std::string_view id) {
   DCHECK(position.IsValid());
   for (size_t index = 0; index < app_list_items_.size(); ++index) {
     if (position.LessThan(item_at(index)->position()) ||

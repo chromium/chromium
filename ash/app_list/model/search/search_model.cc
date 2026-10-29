@@ -79,7 +79,7 @@ void SearchModel::PublishResults(
   // Any remaining results in |results_map| will be automatically deleted.
 }
 
-SearchResult* SearchModel::FindSearchResult(const std::string& id) {
+SearchResult* SearchModel::FindSearchResult(std::string_view id) {
   for (const auto& result : *results_) {
     if (result->id() == id)
       return result.get();

@@ -5,6 +5,7 @@
 #include "ash/public/cpp/test/app_list_test_api.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -408,13 +409,13 @@ bool AppListTestApi::HasApp(const std::string& app_id) {
 }
 
 std::u16string_view AppListTestApi::GetAppListItemViewName(
-    const std::string& item_id) {
+    std::string_view item_id) {
   AppListItemView* item_view = GetTopLevelItemViewFromId(item_id);
   return item_view ? item_view->title()->GetText() : std::u16string_view();
 }
 
 AppListItemView* AppListTestApi::GetTopLevelItemViewFromId(
-    const std::string& item_id) {
+    std::string_view item_id) {
   views::ViewModelT<AppListItemView>* view_model =
       GetTopLevelAppsGridView()->view_model();
   for (size_t i = 0; i < view_model->view_size(); ++i) {
