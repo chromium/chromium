@@ -79,7 +79,8 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
 
   // Calculates a FileSystemURL for a (direct) child of this directory with the
   // given basename.  Returns an error when `basename` includes invalid input
-  // like "/".
+  // like "/", or when the child's URL can't be cracked, e.g. because this
+  // directory is on an external mount point that has since been revoked.
   [[nodiscard]] blink::mojom::FileSystemAccessErrorPtr GetChildURL(
       const std::string& basename,
       storage::FileSystemURL* result);

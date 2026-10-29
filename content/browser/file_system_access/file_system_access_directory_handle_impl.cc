@@ -810,6 +810,17 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
   ++listener_holder->total_batch_count;
   listener_holder->has_received_final_batch = !has_more_entries;
 
+  // If this directory is on an external mount point that has been revoked
+  // since this handle was created, GetChildURL() would fail for every entry.
+  // Check for that once per batch instead, and skip the whole batch.
+  if (!file_system_context()
+           ->CreateCrackedFileSystemURL(url().storage_key(), url().mount_type(),
+                                        url().virtual_path())
+           .is_valid()) {
+    CurrentBatchEntriesReady(std::move(listener_holder), {});
+    return;
+  }
+
   if (base::FeatureList::IsEnabled(
           features::kFileSystemAccessDirectoryIterationBlocklistCheck) &&
       manager()->permission_context()) {
@@ -840,8 +851,9 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
       blink::mojom::FileSystemAccessErrorPtr get_child_url_result =
           GetChildURL(basename, &child_url);
 
-      // Skip any entries with names that aren't allowed to be accessed by
-      // this API, such as files with disallowed characters in their names.
+      // Skip any entries that can't be accessed by this API, such as files
+      // with disallowed characters in their names, or children whose URL
+      // can't be cracked because this directory's mount point was revoked.
       if (get_child_url_result->status != FileSystemAccessStatus::kOk) {
         barrier_callback.Run(nullptr);
         continue;
@@ -880,8 +892,9 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
     blink::mojom::FileSystemAccessErrorPtr get_child_url_result =
         GetChildURL(basename, &child_url);
 
-    // Skip any entries with names that aren't allowed to be accessed by
-    // this API, such as files with disallowed characters in their names.
+    // Skip any entries that can't be accessed by this API, such as files
+    // with disallowed characters in their names, or children whose URL
+    // can't be cracked because this directory's mount point was revoked.
     if (get_child_url_result->status != FileSystemAccessStatus::kOk) {
       continue;
     }
@@ -984,6 +997,14 @@ FileSystemAccessDirectoryHandleImpl::GetChildURL(
                 base::FilePath::FromUTF8Unsafe(basename));
 #endif
   *result = CreateChildURL(child_path);
+  // Cracking `child_path` fails if this directory is on an external mount point
+  // that has been revoked since this handle was created, e.g. because the
+  // volume was unmounted on ChromeOS. Handles must not be created for such
+  // invalid URLs.
+  if (!result->is_valid()) {
+    return file_system_access_error::FromFileError(
+        base::File::FILE_ERROR_NOT_FOUND);
+  }
   return file_system_access_error::Ok();
 }
 

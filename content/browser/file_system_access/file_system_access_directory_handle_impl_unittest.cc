@@ -651,6 +651,138 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest,
   EXPECT_EQ(entries[0]->name, "child.txt");
 }
 
+// Covers a directory handle on an external mount point that is revoked while
+// the handle is still alive. On ChromeOS, most user files (MyFiles, Google
+// Drive, removable media, archives, ...) are on external mount points, which
+// are revoked when e.g. a volume is unmounted. The handle's own URL was cracked
+// while the mount was registered, so reading the directory still works, but
+// URLs for its children can no longer be cracked.
+class FileSystemAccessDirectoryHandleImplRevokedMountTest
+    : public FileSystemAccessDirectoryHandleImplTestBase {
+ public:
+  void SetUp() override {
+    FileSystemAccessDirectoryHandleImplTestBase::SetUp();
+
+    storage::ExternalMountPoints* mount_points =
+        storage::ExternalMountPoints::GetSystemInstance();
+    mount_points->RevokeFileSystem(kMountName);
+    ASSERT_TRUE(mount_points->RegisterFileSystem(
+        kMountName, storage::kFileSystemTypeTest,
+        storage::FileSystemMountOption(), base::FilePath()));
+
+    // Create <mount>/dir and <mount>/file.txt while the mount is registered.
+    const base::FilePath virtual_root =
+        mount_points->CreateVirtualRootPath(kMountName);
+    storage::FileSystemURL root_url = manager_->CreateFileSystemURLFromPath(
+        PathInfo(PathType::kExternal, virtual_root));
+    ASSERT_TRUE(root_url.is_valid());
+    ASSERT_EQ(base::File::FILE_OK,
+              storage::AsyncFileTestHelper::CreateDirectory(
+                  file_system_context_.get(),
+                  manager_->CreateFileSystemURLFromPath(PathInfo(
+                      PathType::kExternal, virtual_root.AppendASCII("dir")))));
+    ASSERT_EQ(
+        base::File::FILE_OK,
+        storage::AsyncFileTestHelper::CreateFile(
+            file_system_context_.get(),
+            manager_->CreateFileSystemURLFromPath(PathInfo(
+                PathType::kExternal, virtual_root.AppendASCII("file.txt")))));
+
+    root_handle_ = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
+        manager_.get(), kBindingContext, root_url,
+        FileSystemAccessManagerImpl::SharedHandleState(allow_grant_,
+                                                       allow_grant_));
+
+    ASSERT_TRUE(mount_points->RevokeFileSystem(kMountName));
+  }
+
+  void TearDown() override {
+    root_handle_.reset();
+    storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
+        kMountName);
+    FileSystemAccessDirectoryHandleImplTestBase::TearDown();
+  }
+
+ protected:
+  static constexpr char kMountName[] = "revoked_test_mount";
+  std::unique_ptr<FileSystemAccessDirectoryHandleImpl> root_handle_;
+};
+
+// Directory iteration used to return handles with invalid URLs for these
+// children. Passing one to `isSameEntry()` reached `NOTREACHED()` in
+// `SerializeURLImpl()`, and file children crashed even earlier, in the
+// sensitive entry check. Such children are now skipped.
+TEST_F(FileSystemAccessDirectoryHandleImplRevokedMountTest,
+       GetEntries_SkipsChildren) {
+  std::vector<blink::mojom::FileSystemAccessEntryPtr> entries;
+  blink::mojom::FileSystemAccessErrorPtr result;
+  base::RunLoop loop;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryEntriesListener>
+      listener;
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<TestFileSystemAccessDirectoryEntriesListener>(
+          &entries, &result, loop.QuitClosure()),
+      listener.InitWithNewPipeAndPassReceiver());
+  root_handle_->GetEntries(std::move(listener));
+  loop.Run();
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_TRUE(entries.empty());
+}
+
+// Looking up a child used to crash in the sensitive entry check, which builds a
+// `PathInfo` from the child's empty virtual path. Child operations, including
+// moving an entry into the directory, now fail with `NotFoundError`.
+TEST_F(FileSystemAccessDirectoryHandleImplRevokedMountTest,
+       ChildOperations_ReturnNotFound) {
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
+      file_future;
+  root_handle_->GetFile("file.txt", /*create=*/false,
+                        file_future.GetCallback());
+  EXPECT_EQ(file_future.Get<0>()->status,
+            blink::mojom::FileSystemAccessStatus::kFileError);
+  EXPECT_EQ(file_future.Get<0>()->file_error, base::File::FILE_ERROR_NOT_FOUND);
+  EXPECT_FALSE(file_future.Get<1>().is_valid());
+
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>>
+      directory_future;
+  root_handle_->GetDirectory("dir", /*create=*/false,
+                             directory_future.GetCallback());
+  EXPECT_EQ(directory_future.Get<0>()->status,
+            blink::mojom::FileSystemAccessStatus::kFileError);
+  EXPECT_EQ(directory_future.Get<0>()->file_error,
+            base::File::FILE_ERROR_NOT_FOUND);
+  EXPECT_FALSE(directory_future.Get<1>().is_valid());
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> remove_future;
+  root_handle_->RemoveEntry("file.txt", /*recurse=*/false,
+                            remove_future.GetCallback());
+  EXPECT_EQ(remove_future.Get()->status,
+            blink::mojom::FileSystemAccessStatus::kFileError);
+  EXPECT_EQ(remove_future.Get()->file_error, base::File::FILE_ERROR_NOT_FOUND);
+
+  // Move a directory from outside the mount point into this directory.
+  const base::FilePath source_dir = dir_.GetPath().AppendASCII("source");
+  ASSERT_TRUE(base::CreateDirectory(source_dir));
+  auto source_handle =
+      GetHandleWithPermissions(source_dir, /*read=*/true, /*write=*/true);
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> dest_token;
+  manager_->CreateTransferToken(*root_handle_,
+                                dest_token.InitWithNewPipeAndPassReceiver());
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> move_future;
+  source_handle->Move(std::move(dest_token), "moved",
+                      move_future.GetCallback());
+  EXPECT_EQ(move_future.Get()->status,
+            blink::mojom::FileSystemAccessStatus::kFileError);
+  EXPECT_EQ(move_future.Get()->file_error, base::File::FILE_ERROR_NOT_FOUND);
+  EXPECT_TRUE(base::DirectoryExists(source_dir));
+}
+
 TEST_F(FileSystemAccessDirectoryHandleImplTest,
        GetEntries_SandboxedSkipsSensitiveEntryAccessCheck) {
   storage::FileSystemURL root_url =
