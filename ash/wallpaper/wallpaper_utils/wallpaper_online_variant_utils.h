@@ -5,6 +5,8 @@
 #ifndef ASH_WALLPAPER_WALLPAPER_UTILS_WALLPAPER_ONLINE_VARIANT_UTILS_H_
 #define ASH_WALLPAPER_WALLPAPER_UTILS_WALLPAPER_ONLINE_VARIANT_UTILS_H_
 
+#include <string_view>
+
 #include "ash/ash_export.h"
 #include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
@@ -26,7 +28,7 @@ ASH_EXPORT const OnlineWallpaperVariant* FirstValidVariant(
 
 // Returns whether the given |collection_id| matches the Time of Day wallpaper
 // collection.
-ASH_EXPORT bool IsTimeOfDayWallpaper(const std::string& collection_id);
+ASH_EXPORT bool IsTimeOfDayWallpaper(std::string_view collection_id);
 
 }  // namespace ash
 

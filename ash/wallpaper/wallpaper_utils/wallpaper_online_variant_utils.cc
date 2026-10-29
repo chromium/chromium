@@ -4,6 +4,8 @@
 
 #include "ash/wallpaper/wallpaper_utils/wallpaper_online_variant_utils.h"
 
+#include <string_view>
+
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "base/containers/linear_find.h"
@@ -73,7 +75,7 @@ const OnlineWallpaperVariant* FirstValidVariant(
   });
 }
 
-bool IsTimeOfDayWallpaper(const std::string& collection_id) {
+bool IsTimeOfDayWallpaper(std::string_view collection_id) {
   return collection_id == wallpaper_constants::kTimeOfDayWallpaperCollectionId;
 }
 
