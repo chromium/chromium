@@ -1060,6 +1060,15 @@ config("compiler") {
   if (current_cpu == "arm64") {
     defines += [ "__ARM_NEON__=1" ]
   }
+
+  # This reduces the core_runtime_starboard binary size by ~4.2MB uncompressed
+  # (~1.25MB compressed) on ARM32 embedded platforms.
+  if (enable_cast_receiver) {
+    cflags += [
+      "-mllvm",
+      "-inline-threshold=32",
+    ]
+  }
 }
 
 config("linker") {
