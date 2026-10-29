@@ -23,9 +23,13 @@ namespace {
 // Similar to, but stricter than, Glic's IsTabValidForSharing() (see
 // chrome/browser/glic/host/context/glic_sharing_utils.cc), which also allows
 // file: URLs and a few other WebUI pages.
-// TODO(b/555804152): On Android the New Tab Page is native
-// (chrome-native://newtab/) and so is not supported here. Decide whether it
-// should be.
+//
+// The WebUI New Tab Page is allowed on every platform that serves one, which
+// includes desktop Android. The native New Tab Page used on mobile Android has
+// no DOM to extract and is not supported.
+//
+// TODO(crbug.com/555804152): Decide what page context, if any, the mobile
+// Android native New Tab Page should produce.
 bool IsSchemeAndHostSupported(const GURL& url) {
   if (url.SchemeIs(content::kChromeUIScheme)) {
     const std::string_view host = url.host();
