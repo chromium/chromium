@@ -2995,10 +2995,7 @@ if (enable_java_templates) {
 
       if (invoker.use_turbine) {
         script = "//build/android/gyp/turbine.py"
-        inputs = [
-          "$android_jdk_home/bin/java",
-          android_sdk_jar,
-        ]
+        inputs = java_paths_for_inputs + [ android_sdk_jar ]
       } else if (invoker.enable_errorprone) {
         script = "//build/android/gyp/errorprone.py"
         inputs = javac_paths_for_inputs

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/toolchain/rbe.gni")
+
 if (host_os == "mac") {
   android_jdk_home = "//third_party/jdk/current/Contents/Home"
 } else {
@@ -43,15 +45,25 @@ _linux_only_jdk_libs = [
   "lib/libjsvml",
 ]
 
+# The host JDK, plus the Linux JDK that remote Java actions use when the host
+# isn't Linux.
 _jdks = [
   {
     home = android_jdk_home
     is_linux_jdk = host_os != "mac"
   },
 ]
+if (use_remoteexec && host_os != "linux") {
+  _jdks += [
+    {
+      home = "//third_party/jdk/linux-amd64"
+      is_linux_jdk = true
+    },
+  ]
+}
 
 # Actions that use java should add this as inputs so that they are rebuilt
-# when the JDK changes.
+# when the JDK changes, and so that remote execution uploads the JDK.
 java_paths_for_inputs = []
 foreach(_jdk, _jdks) {
   _libs = []
@@ -71,4 +83,8 @@ foreach(_jdk, _jdks) {
 javac_paths_for_inputs = java_paths_for_inputs
 if (host_os == "linux" && host_cpu == "x64") {
   javac_paths_for_inputs += [ "$android_jdk_home/bin/javac-graalvm" ]
+}
+if (use_remoteexec && host_os != "linux") {
+  javac_paths_for_inputs +=
+      [ "//third_party/jdk/linux-amd64/bin/javac-graalvm" ]
 }
