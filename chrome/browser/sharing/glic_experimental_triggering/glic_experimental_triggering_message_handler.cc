@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -178,6 +179,9 @@ void GlicExperimentalTriggeringMessageHandler::CancelAllPendingMessages() {
 #endif
   for (auto& [context_id, message_list] : pending_messages_) {
     for (auto& pending_message : message_list) {
+      base::UmaHistogramMediumTimes(
+          "Glic.ExperimentalTriggering.Android.BackgroundSetupLatency.Shutdown",
+          base::TimeTicks::Now() - pending_message.queued_time);
       if (pending_message.done_callback) {
         std::move(pending_message.done_callback)
             .Run(CreateResponseMessage(
@@ -305,6 +309,10 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
       auto it = pending_messages_.find(context_id);
       if (it != pending_messages_.end()) {
         for (auto& pending_message : it->second) {
+          base::UmaHistogramMediumTimes(
+              "Glic.ExperimentalTriggering.Android.BackgroundSetupLatency."
+              "Cancelled",
+              base::TimeTicks::Now() - pending_message.queued_time);
           if (pending_message.done_callback) {
             std::move(pending_message.done_callback)
                 .Run(CreateResponseMessage(
@@ -455,6 +463,9 @@ void GlicExperimentalTriggeringMessageHandler::OnBackgroundTabPrepared(
   }
 
   for (auto& pending_message : messages) {
+    base::UmaHistogramMediumTimes(
+        "Glic.ExperimentalTriggering.Android.BackgroundSetupLatency.Success",
+        base::TimeTicks::Now() - pending_message.queued_time);
     ProcessValidatedMessage(std::move(pending_message.message), context_id,
                             std::move(pending_message.done_callback),
                             std::move(pending_message.result_logger), tab);
@@ -483,6 +494,9 @@ void GlicExperimentalTriggeringMessageHandler::OnBackgroundSetupFailed(
   }
 
   for (auto& pending_message : messages) {
+    base::UmaHistogramMediumTimes(
+        "Glic.ExperimentalTriggering.Android.BackgroundSetupLatency.Failed",
+        base::TimeTicks::Now() - pending_message.queued_time);
     const auto& request =
         pending_message.message.glic_experimental_triggering();
     const components_sharing_message::GlicExperimentalTriggering::TaskMetadata*

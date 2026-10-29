@@ -69,6 +69,7 @@ class GlicExperimentalTriggeringMessageHandler
     components_sharing_message::SharingMessage message;
     SharingMessageHandler::DoneCallback done_callback;
     glic::ScopedIncomingMessageResultLogger result_logger;
+    base::TimeTicks queued_time = base::TimeTicks::Now();
   };
 
   // TODO(crbug.com/533526458): Cleanup this wrapper delegate after refactoring

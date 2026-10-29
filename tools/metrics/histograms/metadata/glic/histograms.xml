@@ -817,6 +817,30 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   </summary>
 </histogram>
 
+<histogram
+    name="Glic.ExperimentalTriggering.Android.BackgroundSetupLatency.{Outcome}"
+    units="ms" expires_after="2027-10-26">
+<!-- Allowed unsplittable: Android background tab setup is not provider specific -->
+
+  <owner>meiliang@google.com</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the latency between an experimental triggering request being queued
+    in Chrome Android and the background tab setup {Outcome}. Recorded once per
+    incoming request when background tab setup finishes (succeeds, fails, is
+    cancelled by a stop actuation request, or is terminated by profile
+    shutdown).
+  </summary>
+  <token key="Outcome">
+    <variant name="Cancelled"
+        summary="being cancelled (e.g. StopActuationRequest)"/>
+    <variant name="Failed" summary="failing (e.g. FGS or Tab start failure)"/>
+    <variant name="Shutdown"
+        summary="browser/profile shutting down before setup finishes"/>
+    <variant name="Success" summary="succeeding"/>
+  </token>
+</histogram>
+
 <histogram name="Glic.ExperimentalTriggering.OptIn.Accepted.Version"
     enum="GlicRequiredExperimentalOptIn" expires_after="2027-05-18">
   <owner>sauski@google.com</owner>
