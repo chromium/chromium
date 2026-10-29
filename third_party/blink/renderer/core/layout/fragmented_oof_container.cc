@@ -12,6 +12,7 @@ namespace blink {
 void FragmentedOofContainer::Trace(Visitor* visitor) const {
   visitor->Trace(children_);
   visitor->Trace(oof_nodes_);
+  visitor->Trace(inline_containing_block_map_);
 }
 
 #ifndef NDEBUG

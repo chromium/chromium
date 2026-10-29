@@ -859,10 +859,23 @@ void OutOfFlowLayoutPart::HandleFragmentation() {
 const OutOfFlowLayoutPart::ContainingBlockInfo
 OutOfFlowLayoutPart::GetContainingBlockInfo(
     const LogicalOofPositionedNode& candidate) {
+  auto with_new_post_layout_offset_if_resuming = [&](ContainingBlockInfo info) {
+    if (const BlockBreakToken* break_token = candidate.GetBreakToken()) {
+      // The post-layout offset is first and foremost about offsets caused by
+      // relative positioning (which should not affect layout / fragmentation),
+      // but when resuming after a break, like here, any static inline-offset is
+      // also included, as well as the block-offset if the element is a repeated
+      // fixedpos. These values cannot be recomputed when resuming after a
+      // break, which is why they are part of the break token.
+      info.post_layout_offset = break_token->OofPostLayoutOffset();
+    }
+    return info;
+  };
+
   if (const LayoutInline* container = candidate.InlineContainer()) {
     const auto it = containing_blocks_map_.find(container);
     CHECK(it != containing_blocks_map_.end());
-    return it->value;
+    return with_new_post_layout_offset_if_resuming(it->value);
   }
 
   if (candidate.IsForFragmentation()) {
@@ -921,21 +934,32 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
     return *viewport_containing_block_;
   }
 
-  ContainingBlockInfo info(default_containing_block_);
-  if (const BlockBreakToken* break_token = candidate.GetBreakToken()) {
-    // The post-layout offset is first and foremost about offsets caused by
-    // relative positioning (which should not affect layout / fragmentation),
-    // but when resuming after a break, like here, any static inline-offset is
-    // also included, as well as the block-offset if the element is a repeated
-    // fixedpos. These values cannot be recomputed when resuming after a break,
-    // which is why they are part of the break token.
-    info.post_layout_offset = break_token->OofPostLayoutOffset();
-  }
-  return info;
+  return with_new_post_layout_offset_if_resuming(default_containing_block_);
 }
 
 void OutOfFlowLayoutPart::ComputeInlineContainingBlocks(
     const HeapVector<LogicalOofPositionedNode>& candidates) {
+  if (const FragmentedOofContainer* container =
+          container_builder_.GetFragmentedOofContainer()) {
+    // The containing block sizes are pre-computed and stored in
+    // FragmentedOofContainer. If a non-atomic inline containing block is
+    // block-fragmented, it's not possible to calculate the correct containing
+    // block size at this point, in the middle of fragmented layout.
+    const InlineContainingBlockMap& containing_block_map =
+        container->GetInlineContainingBlockMap();
+    if (containing_block_map.empty()) {
+      return;
+    }
+    LogicalSize logical_size(container_builder_.Size().inline_size,
+                             container->BlockSize());
+    PhysicalSize physical_size =
+        ToPhysicalSize(logical_size, GetConstraintSpace().GetWritingMode());
+    AddInlineContainingBlockInfo(containing_block_map,
+                                 default_containing_block_.writing_direction,
+                                 physical_size);
+    return;
+  }
+
   InlineContainingBlockMap inline_container_fragments;
 
   for (auto& candidate : candidates) {
@@ -1048,6 +1072,13 @@ void OutOfFlowLayoutPart::AddInlineContainingBlockInfo(
     LogicalOffset containing_block_relative_offset,
     LogicalOffset containing_block_offset,
     bool adjust_for_fragmentation) {
+  DCHECK(containing_block_relative_offset == LogicalOffset() ||
+         !RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
+  DCHECK(containing_block_offset == LogicalOffset() ||
+         !RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
+  DCHECK(!adjust_for_fragmentation ||
+         !RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
+
   // Transform the start/end fragments into a ContainingBlockInfo.
   for (const auto& block_info : inline_container_fragments) {
     DCHECK(block_info.value.has_value());

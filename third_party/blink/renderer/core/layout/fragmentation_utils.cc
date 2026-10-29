@@ -80,6 +80,21 @@ bool ShouldCloneBlockStartBorderPadding(const BoxFragmentBuilder& builder) {
   return !previous_break_token->IsAtBlockEnd();
 }
 
+void PostProcessFragmentedOofContainer(FragmentedOofContainer* container,
+                                       const LayoutBox* containing_block) {
+  InlineContainingBlockMap& inline_containing_block_map =
+      container->GetInlineContainingBlockMap();
+  if (!inline_containing_block_map.empty()) {
+    DCHECK(containing_block);
+    ComputeInlineContainerGeometry(*containing_block,
+                                   &inline_containing_block_map);
+  }
+
+  for (auto [child_containing_block, child] : container->Children()) {
+    PostProcessFragmentedOofContainer(child, child_containing_block);
+  }
+}
+
 bool BuildFragmentedOofContainerTreeForNode(
     const LogicalOofPositionedNode& oof_node,
     const FragmentedOofPath* source,
@@ -102,6 +117,13 @@ bool BuildFragmentedOofContainerTreeForNode(
   }
 
   child_container.AddOofPositionedNode(oof_node);
+  const OofInlineContainer<LogicalOffset>& inline_container_info =
+      oof_node.InlineContainerInfo();
+  if (const LayoutInline* inline_container =
+          inline_container_info.Container()) {
+    child_container.EnsureInlineContainingBlock(
+        *inline_container, inline_container_info.RelativeOffset());
+  }
 
   const FragmentedOofInfo& info = source->GetFragmentedOofInfo();
   return info.WasDiscoveredTooLate() ||
@@ -1644,6 +1666,9 @@ bool BuildFragmentedOofContainerTree(const LayoutResult& layout_result,
       NOTREACHED();
     }
   }
+
+  PostProcessFragmentedOofContainer(fragmented_oof_container_root,
+                                    /*containing_block=*/nullptr);
 
   // Set it in the current builder. It will then be picked up by the re-layout
   // algorithm.

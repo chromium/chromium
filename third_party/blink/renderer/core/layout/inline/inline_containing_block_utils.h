@@ -45,6 +45,11 @@ using InlineContainingBlockMap =
 void ComputeInlineContainerGeometry(const BoxFragmentBuilder&,
                                     InlineContainingBlockMap*);
 
+// Same as above, but works on fragments (in the LayoutBox) instead. Also
+// supports fragmentation, by "stitching" the fragments together.
+void ComputeInlineContainerGeometry(const LayoutBox& containing_block,
+                                    InlineContainingBlockMap*);
+
 // Computes the geometry required for any inline containing blocks inside a
 // fragmentation context. |box| is the containing block the inline containers
 // are descendants of. |accumulated_containing_block_size| is the size of the

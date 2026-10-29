@@ -50,8 +50,6 @@ void GatherInlineContainerFragmentsFromItems(
     ContainingLineBoxMap* containing_linebox_map,
     const WritingModeConverter* fragment_converter = nullptr,
     const WritingModeConverter* containing_block_converter = nullptr) {
-  DCHECK(!fragment_converter ||
-         !RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   DCHECK_EQ(!!fragment_converter, !!containing_block_converter);
   const PhysicalLineBoxFragment* linebox = nullptr;
   for (const auto& item : items) {
@@ -144,9 +142,6 @@ void ComputeInlineContainerGeometry(
   DCHECK_GE(container_builder.InlineSize(), LayoutUnit());
   DCHECK_GE(container_builder.FragmentBlockSize(), LayoutUnit());
 
-  // TODO(crbug.com/40267498): Move this into
-  // GatherInlineContainerFragmentsFromItems() when non-FragmentedOofInCb
-  // support is removed.
   ContainingLineBoxMap containing_linebox_map;
 
   // To access the items correctly we need to convert them to the physical
@@ -159,6 +154,36 @@ void ComputeInlineContainerGeometry(
   GatherInlineContainerFragmentsFromItems(
       container_builder.ItemsBuilder()->Items(), PhysicalOffset(),
       inline_containing_block_map, &containing_linebox_map);
+}
+
+void ComputeInlineContainerGeometry(
+    const LayoutBox& containing_block,
+    InlineContainingBlockMap* inline_containing_block_map) {
+  DCHECK(RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
+  DCHECK(!inline_containing_block_map->empty());
+
+  WritingDirectionMode writing_direction =
+      containing_block.Style().GetWritingDirection();
+  PhysicalSize stitched_size = containing_block.StitchedSize();
+  WritingModeConverter converter(writing_direction, stitched_size);
+  ContainingLineBoxMap containing_linebox_map;
+
+  LogicalOffset stitched_offset;
+  for (const PhysicalBoxFragment& fragment :
+       containing_block.PhysicalFragments()) {
+    if (fragment.HasItems()) {
+      WritingModeConverter fragment_converter(writing_direction,
+                                              fragment.Size());
+      GatherInlineContainerFragmentsFromItems(
+          fragment.Items()->Items(),
+          converter.ToPhysical(stitched_offset, stitched_size),
+          inline_containing_block_map, &containing_linebox_map,
+          &fragment_converter, &converter);
+    }
+    if (const BlockBreakToken* break_token = fragment.GetBreakToken()) {
+      stitched_offset.block_offset = break_token->ConsumedBlockSize();
+    }
+  }
 }
 
 void ComputeInlineContainerGeometryForFragmentainer(

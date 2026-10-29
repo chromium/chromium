@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FRAGMENTED_OOF_CONTAINER_H_
 
 #include "base/containers/span.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_containing_block_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/oof_positioned_node.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -33,6 +34,11 @@ namespace blink {
 // FragmentedOofContainer manages discovery of any OOFs that participate in
 // fragmentation, bypassing the natural discovery mechanism that normally takes
 // place during child layout and propagation.
+//
+// FragmentedOofContainer also keeps track of any non-atomic inline containing
+// blocks that may apply, since those also may cross fragmentainer boundaries
+// and therefore not be determined correctly in the initial layout
+// pass.
 class FragmentedOofContainer : public GarbageCollected<FragmentedOofContainer> {
  public:
   explicit FragmentedOofContainer(LayoutUnit block_size)
@@ -47,6 +53,10 @@ class FragmentedOofContainer : public GarbageCollected<FragmentedOofContainer> {
     return base::span(oof_nodes_);
   }
   bool HasOofPositionedNodes() const { return !oof_nodes_.empty(); }
+
+  const InlineContainingBlockMap& GetInlineContainingBlockMap() const {
+    return inline_containing_block_map_;
+  }
 
   const FragmentedOofContainer* GetChild(const LayoutBox& box) const {
     auto iterator = children_.find(&box);
@@ -83,6 +93,23 @@ class FragmentedOofContainer : public GarbageCollected<FragmentedOofContainer> {
     oof_nodes_.push_back(oof_node);
   }
 
+  // During FragmentedOofContainer tree building, if the containing block of an
+  // OOF is a non-atomic inline, it will be added to the list. Actual
+  // calculation of the containing block dimensions will not take place until
+  // the entire FragmentedOofContainer tree has been built, though, since this
+  // is cheaper in cases where one block container has several non-atomic inline
+  // containing blocks.
+  void EnsureInlineContainingBlock(const LayoutInline& layout_inline,
+                                   LogicalOffset relative_offset) {
+    InlineContainingBlockGeometry geometry;
+    geometry.relative_offset = relative_offset;
+    inline_containing_block_map_.insert(&layout_inline, geometry);
+  }
+
+  InlineContainingBlockMap& GetInlineContainingBlockMap() {
+    return inline_containing_block_map_;
+  }
+
 #ifndef NDEBUG
   String DumpTree() const;
   void ShowTree() const;
@@ -101,6 +128,8 @@ class FragmentedOofContainer : public GarbageCollected<FragmentedOofContainer> {
   // All OOFs for with this container (or non-atomic inlines inside) is the
   // containing block.
   HeapVector<LogicalOofPositionedNode> oof_nodes_;
+
+  InlineContainingBlockMap inline_containing_block_map_;
 
   // The block-size of the containing block established by this container in the
   // previous layout pass.
