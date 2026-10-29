@@ -32,6 +32,7 @@ class OrchestrateRunnerTest(unittest.TestCase):
                 out_dir='', packages=[], target_cmd=['target']
             )
 
+    @mock.patch('common.catch_sigterm', new=lambda: None)
     @mock.patch('subprocess.Popen')
     @mock.patch('common.get_host_arch', return_value='x64')
     def test_run_tests_with_orchestrate_x64(
@@ -73,6 +74,7 @@ class OrchestrateRunnerTest(unittest.TestCase):
         self.assertEqual(env['TEST_UNDECLARED_OUTPUTS_DIR'], logs_dir)
         self.assertEqual(mock_popen.call_args[1]['cwd'], 'out/Release')
 
+    @mock.patch('common.catch_sigterm', new=lambda: None)
     @mock.patch('subprocess.Popen')
     @mock.patch('common.get_host_arch', return_value='arm64')
     def test_run_tests_with_orchestrate_arm64(
@@ -94,6 +96,7 @@ class OrchestrateRunnerTest(unittest.TestCase):
         cmd = mock_popen.call_args[0][0]
         self.assertTrue(cmd[3].endswith('orchestrate_arm64.json'))
 
+    @mock.patch('common.catch_sigterm', new=lambda: None)
     @mock.patch('subprocess.Popen')
     @mock.patch('common.get_host_arch', return_value='x64')
     def test_run_tests_with_orchestrate_keyboard_interrupt(
@@ -109,10 +112,11 @@ class OrchestrateRunnerTest(unittest.TestCase):
         self.assertEqual(ret, 130)
         mock_proc.terminate.assert_called_once()
 
+    @mock.patch('common.catch_sigterm')
     @mock.patch('subprocess.Popen')
     @mock.patch('common.get_host_arch', return_value='x64')
     def test_run_tests_with_orchestrate_system_exit(
-        self, _, mock_popen: mock.MagicMock
+        self, _, mock_popen: mock.MagicMock, mock_catch_sigterm: mock.MagicMock
     ) -> None:
         mock_proc = mock_popen.return_value.__enter__.return_value
         mock_proc.wait.side_effect = [SystemExit(0), 0]
@@ -122,6 +126,7 @@ class OrchestrateRunnerTest(unittest.TestCase):
             target_cmd=['target'],
         )
         self.assertEqual(ret, 0)
+        mock_catch_sigterm.assert_called_once()
         mock_proc.terminate.assert_called_once()
         self.assertEqual(mock_proc.wait.call_count, 2)
 

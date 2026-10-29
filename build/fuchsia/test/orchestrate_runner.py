@@ -133,6 +133,7 @@ def run_tests_with_orchestrate(
     env = os.environ.copy()
     if logs_dir:
         env['TEST_UNDECLARED_OUTPUTS_DIR'] = logs_dir
+    common.catch_sigterm()
     print(f"Running command: {subprocess.list2cmdline(cmd)}")
     with subprocess.Popen(cmd, env=env, cwd=out_dir) as proc:
         try:
