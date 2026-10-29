@@ -625,6 +625,7 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
     configuration.secondaryTextProperties.color =
         [UIColor colorNamed:kTextSecondaryColor];
     configuration.secondaryTextProperties.numberOfLines = 0;
+    cell.accessibilityHint = item.subtitle;
   }
   configuration.image = item.image;
   cell.accessibilityLabel = item.title;
