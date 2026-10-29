@@ -69,6 +69,19 @@ class ContextualTasksWebContentsUserData
           ContextUploadStatusObserver,
       public ContextualTasksService::Observer {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(ContextualTasksThreadContextLibraryUpdateOutcome)
+  enum class ThreadContextLibraryUpdateOutcome {
+    kSuccessWithTaskId = 0,
+    kSuccessWithoutTaskId = 1,
+    kFeatureDisabled = 2,
+    kNoSessionHandle = 3,
+    kEmptyConvertedContext = 4,
+    kMaxValue = kEmptyConvertedContext,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_tasks/enums.xml:ContextualTasksThreadContextLibraryUpdateOutcome)
+
   struct ExtensionFrameInfo {
     ExtensionFrameInfo();
     ExtensionFrameInfo(const ExtensionFrameInfo&);

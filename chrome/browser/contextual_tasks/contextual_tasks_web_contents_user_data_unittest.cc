@@ -11,27 +11,40 @@
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/tab_list/mock_tab_list_interface.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/base/test_signin_client.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/lens_server_proto/lens_overlay_contextual_inputs.pb.h"
 #include "third_party/lens_server_proto/search_communication.pb.h"
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
+#endif
 
 namespace contextual_tasks {
 
@@ -1021,5 +1034,275 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
       dispatched_messages[1].on_context_state_changed().context_state(),
       lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_NONE);
 }
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       HandleThreadContextLibraryUpdateFromAim_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kContextualTasksContextLibrary);
+  base::HistogramTester histogram_tester;
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+
+  lens::SearchToClientMessage::UpdateThreadContextLibrary update;
+  auto* ctx = update.add_contexts();
+  ctx->set_context_id(1);
+  ctx->mutable_webpage()->set_url("https://example.com");
+
+  user_data->HandleThreadContextLibraryUpdateFromAim(update);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.ThreadContextLibrary.UpdateOutcome",
+      ContextualTasksWebContentsUserData::ThreadContextLibraryUpdateOutcome::
+          kFeatureDisabled,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.ThreadContextLibrary.CommittedContextCount", 0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.ThreadContextLibrary.CommittedTabContextCount", 0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.ThreadContextLibrary.RestoredTabCount", 0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.ThreadContextLibrary.TimeFromHandshakeToFirstUpdate", 0);
+}
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       HandleThreadContextLibraryUpdateFromAim_NoSessionHandle) {
+  base::test::ScopedFeatureList feature_list{kContextualTasksContextLibrary};
+  base::HistogramTester histogram_tester;
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+  // Setting a task_id without registering a session in
+  // ContextualSearchWebContentsHelper causes GetOrCreateContextualSessionHandle
+  // to return nullptr.
+  user_data->SetTaskId(base::Uuid::GenerateRandomV4());
+
+  lens::SearchToClientMessage::UpdateThreadContextLibrary update;
+  auto* ctx = update.add_contexts();
+  ctx->set_context_id(1);
+  ctx->mutable_webpage()->set_url("https://example.com");
+
+  user_data->HandleThreadContextLibraryUpdateFromAim(update);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.ThreadContextLibrary.UpdateOutcome",
+      ContextualTasksWebContentsUserData::ThreadContextLibraryUpdateOutcome::
+          kNoSessionHandle,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.ThreadContextLibrary.CommittedContextCount", 0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.ThreadContextLibrary.RestoredTabCount", 0);
+}
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       HandleThreadContextLibraryUpdateFromAim_EmptyConvertedContext) {
+  base::test::ScopedFeatureList feature_list{kContextualTasksContextLibrary};
+  base::HistogramTester histogram_tester;
+
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+
+  lens::SearchToClientMessage::UpdateThreadContextLibrary empty_update;
+  user_data->HandleThreadContextLibraryUpdateFromAim(empty_update);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.ThreadContextLibrary.UpdateOutcome",
+      ContextualTasksWebContentsUserData::ThreadContextLibraryUpdateOutcome::
+          kEmptyConvertedContext,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.ThreadContextLibrary.CommittedContextCount", 0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.ThreadContextLibrary.RestoredTabCount", 0);
+}
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       HandleThreadContextLibraryUpdateFromAim_SuccessWithoutTaskIdAndLatency) {
+  base::test::ScopedFeatureList feature_list{kContextualTasksContextLibrary};
+  base::HistogramTester histogram_tester;
+
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+  user_data->OnHandshakeComplete();
+
+  lens::SearchToClientMessage message;
+  auto* update = message.mutable_update_thread_context_library();
+  auto* tab_ctx = update->add_contexts();
+  tab_ctx->set_context_id(101);
+  tab_ctx->set_has_chrome_tab_data(true);
+  tab_ctx->mutable_webpage()->set_url("https://example.com/tab");
+  tab_ctx->mutable_webpage()->set_title("Example Tab");
+
+  auto* pdf_ctx = update->add_contexts();
+  pdf_ctx->set_context_id(102);
+  pdf_ctx->set_has_chrome_tab_data(false);
+  pdf_ctx->mutable_pdf()->set_url("https://example.com/doc.pdf");
+  pdf_ctx->mutable_pdf()->set_title("Doc PDF");
+
+  std::vector<uint8_t> bytes(message.ByteSizeLong());
+  message.SerializeToArray(bytes.data(), bytes.size());
+
+  // First update after handshake records latency and counts.
+  EXPECT_TRUE(user_data->OnSearchMessageReceived(bytes));
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.ThreadContextLibrary.UpdateOutcome",
+      ContextualTasksWebContentsUserData::ThreadContextLibraryUpdateOutcome::
+          kSuccessWithoutTaskId,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.ThreadContextLibrary.CommittedContextCount", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.ThreadContextLibrary.CommittedTabContextCount", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.ThreadContextLibrary.RestoredTabCount", 0, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.ThreadContextLibrary.TimeFromHandshakeToFirstUpdate", 1);
+
+  // A second update on the same page state does not re-record the first-update
+  // latency histogram, but still records outcome and counts.
+  EXPECT_TRUE(user_data->OnSearchMessageReceived(bytes));
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.ThreadContextLibrary.TimeFromHandshakeToFirstUpdate", 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.ThreadContextLibrary.UpdateOutcome",
+      ContextualTasksWebContentsUserData::ThreadContextLibraryUpdateOutcome::
+          kSuccessWithoutTaskId,
+      2);
+
+  // Receiving OnPageChanged while connected resets the first-update timer so
+  // the next thread update records latency again.
+  lens::SearchToClientMessage page_changed_msg;
+  page_changed_msg.mutable_on_page_changed()->set_is_zero_state(false);
+  std::vector<uint8_t> page_changed_bytes(page_changed_msg.ByteSizeLong());
+  page_changed_msg.SerializeToArray(page_changed_bytes.data(),
+                                    page_changed_bytes.size());
+  EXPECT_TRUE(user_data->OnSearchMessageReceived(page_changed_bytes));
+
+  EXPECT_TRUE(user_data->OnSearchMessageReceived(bytes));
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.ThreadContextLibrary.TimeFromHandshakeToFirstUpdate", 2);
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(
+    ContextualTasksWebContentsUserDataTest,
+    HandleThreadContextLibraryUpdateFromAim_SuccessWithTaskIdAndRestoredTabs) {
+  base::test::ScopedFeatureList feature_list{kContextualTasksContextLibrary};
+  base::HistogramTester histogram_tester;
+
+  ContextualTasksServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), base::BindRepeating([](content::BrowserContext*) {
+        return std::unique_ptr<KeyedService>(
+            std::make_unique<testing::NiceMock<MockContextualTasksService>>());
+      }));
+  auto* mock_tasks_service = static_cast<MockContextualTasksService*>(
+      ContextualTasksServiceFactory::GetForProfile(profile_.get()));
+  ASSERT_NE(mock_tasks_service, nullptr);
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(task_id, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  // Set up a mock BrowserWindowInterface with an open tab matching one of the
+  // incoming tab contexts.
+  ui::UnownedUserDataHost unowned_user_data_host;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(unowned_user_data_host));
+  testing::NiceMock<MockTabListInterface> mock_tab_list;
+  ui::ScopedUnownedUserData<TabListInterface> tab_list_registration(
+      unowned_user_data_host, mock_tab_list);
+
+  content::WebContents* open_tab_contents =
+      web_contents_factory_->CreateWebContents(profile_.get());
+  sessions::SessionTabHelper::CreateForWebContents(open_tab_contents,
+                                                   base::NullCallback());
+  content::WebContentsTester::For(open_tab_contents)
+      ->NavigateAndCommit(GURL("https://example.com/open-tab"));
+
+  tabs::MockTabInterface mock_open_tab;
+  ON_CALL(mock_open_tab, GetContents())
+      .WillByDefault(testing::Return(open_tab_contents));
+  std::vector<tabs::TabInterface*> all_tabs = {&mock_open_tab};
+  ON_CALL(mock_tab_list, GetAllTabs()).WillByDefault(testing::Return(all_tabs));
+
+  webui::SetBrowserWindowInterface(web_contents_, &mock_browser_window);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+  user_data->SetTaskId(task_id);
+
+  EXPECT_CALL(*mock_tasks_service,
+              SetUrlResourcesFromServer(task_id, testing::_))
+      .Times(1);
+
+  lens::SearchToClientMessage::UpdateThreadContextLibrary update;
+  // Tab 1: matches `open_tab_contents`.
+  auto* open_tab_ctx = update.add_contexts();
+  open_tab_ctx->set_context_id(201);
+  open_tab_ctx->set_has_chrome_tab_data(true);
+  open_tab_ctx->mutable_webpage()->set_url("https://example.com/open-tab");
+  open_tab_ctx->mutable_webpage()->set_title("Open Tab");
+
+  // Tab 2: closed tab (not in `all_tabs`).
+  auto* closed_tab_ctx = update.add_contexts();
+  closed_tab_ctx->set_context_id(202);
+  closed_tab_ctx->set_has_chrome_tab_data(true);
+  closed_tab_ctx->mutable_webpage()->set_url("https://example.com/closed-tab");
+  closed_tab_ctx->mutable_webpage()->set_title("Closed Tab");
+
+  user_data->HandleThreadContextLibraryUpdateFromAim(update);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.ThreadContextLibrary.UpdateOutcome",
+      ContextualTasksWebContentsUserData::ThreadContextLibraryUpdateOutcome::
+          kSuccessWithTaskId,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.ThreadContextLibrary.CommittedContextCount", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.ThreadContextLibrary.CommittedTabContextCount", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.ThreadContextLibrary.RestoredTabCount", 1, 1);
+  EXPECT_EQ(mock_handle->GetTabContextState().restored.size(), 1u);
+
+  // Destroy WebContents (and ContextualTasksWebContentsUserData, which observes
+  // `mock_tab_list` and `mock_tasks_service`) before stack-allocated mocks are
+  // torn down.
+  webui::SetBrowserWindowInterface(web_contents_, nullptr);
+  web_contents_ = nullptr;
+  web_contents_factory_.reset();
+}
+#endif
 
 }  // namespace contextual_tasks

@@ -87,6 +87,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/resources/contextual_tasks/extension/tab_picker_app.ts:ContextualTasksTabPickerUnboundedPresentationResult) -->
 
+<!-- LINT.IfChange(ContextualTasksThreadContextLibraryUpdateOutcome) -->
+
+<enum name="ContextualTasksThreadContextLibraryUpdateOutcome">
+  <int value="0" label="Success (with task ID)"/>
+  <int value="1" label="Success (without task ID)"/>
+  <int value="2" label="Feature disabled"/>
+  <int value="3" label="No session handle"/>
+  <int value="4" label="Empty converted context"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h:ContextualTasksThreadContextLibraryUpdateOutcome) -->
+
 </enums>
 
 </histogram-configuration>
