@@ -58,6 +58,10 @@ def generate_for_corpus(corpus_dir, generators, output_dir):
 
     for generator in generators:
       language_flags = []
+      # Some flags require re-running the generator with extra flags. This list
+      # contains lists of flags that are passed onto each run.
+      # It is initialized with an empty flag instance for the default run.
+      runs_with_flags = [[]]
 
       lang_tmp_output = f'{tmp_bindings_dir}/{generator}'
       lang_output = f'{output_dir}/{generator}'
@@ -67,31 +71,37 @@ def generate_for_corpus(corpus_dir, generators, output_dir):
       elif generator == 'fuzzilli':
         # Assume that the primary interface is always named "Primary"
         language_flags += ['--fuzzilli_primary_interface_name=Primary']
+      elif generator == 'c++':
+        # Generates the shared files.
+        runs_with_flags += [['--generate_non_variant_code']]
 
       # Paths to module files relative to the bindings output directory.
-      mojom_modules = (
+      mojom_modules = [
         os.path.join('../../modules', removesuffix(module_filename, '-module'))
         for module_filename in os.listdir(tmp_modules_dir)
-      )
-      subprocess.run(
-        [
-          'python3',
-          _GENERATOR_SCRIPT,
-          '-o',
-          lang_tmp_output,
-          'generate',
-          '--bytecode_path',
-          tmp_bytecode_dir,
-          '--generators',
-          generator,
-          # typemap is hardcoded for now.
-          '--typemap',
-          f'{corpus_dir}/typemap.json',
-          *language_flags,
-          *mojom_modules,
-        ],
-        check=True,
-      )
+      ]
+
+      for run_flags in runs_with_flags:
+        subprocess.run(
+          [
+            'python3',
+            _GENERATOR_SCRIPT,
+            '-o',
+            lang_tmp_output,
+            'generate',
+            '--bytecode_path',
+            tmp_bytecode_dir,
+            '--generators',
+            generator,
+            # typemap is hardcoded for now.
+            '--typemap',
+            f'{corpus_dir}/typemap.json',
+            *language_flags,
+            *mojom_modules,
+            *run_flags,
+          ],
+          check=True,
+        )
       # Append '.golden' file extension to avoid presubmit checks.
       for root, dirs, files in os.walk(lang_tmp_output):
         for file in files:
