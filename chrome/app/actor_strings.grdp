@@ -138,6 +138,12 @@
   <message name="IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_BODY_FALLBACK" desc="Fallback notification body text when the actor is working on an experimental triggering task without a task title.">
     Working on your Gemini App task in Chrome. Check Chrome for more updates
   </message>
+  <message name="IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_TITLE_V2" desc="Title of the system notification shown when Gemini task starts.">
+    Gemini task running
+  </message>
+  <message name="IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_BODY_STARTED_V2" meaning="Gemini task has started" desc="Body text of the system notification shown when Gemini task starts that doesn't have a name yet.">
+    Started
+  </message>
   <message name="IDS_ACTOR_NOTIFICATION_BODY_WORKING_WITH_STEP_INFO" desc="Notification body text when the actor is working on a task with step progress." formatter_data="android_java">
     <ph name="TASK_TITLE">%1$s<ex>My Task</ex></ph>: <ph name="STEP_PROGRESS">%2$s<ex>Searching flights</ex></ph>
   </message>
