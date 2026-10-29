@@ -58,6 +58,13 @@ class WrappedSkImageBacking : public ClearTrackingSharedImageBacking {
   bool UploadFromMemory(const std::vector<SkPixmap>& pixmaps) override;
   bool ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) override;
 
+  // Determines if access for a given stream and parameters is supported.
+  static bool CheckSupportForAccessStream(SharedImageAccessStream stream,
+                                          const AccessParams& params);
+
+  bool SupportsAccess(SharedImageAccessStream stream,
+                      const AccessParams& params) const override;
+
  protected:
   std::unique_ptr<SkiaGaneshImageRepresentation> ProduceSkiaGanesh(
       SharedImageManager* manager,
