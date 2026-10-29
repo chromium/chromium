@@ -12,6 +12,7 @@
 #include "ash/style/blurred_background_shield.h"
 #include "ash/style/radio_button_group.h"
 #include "ash/style/style_util.h"
+#include "ash/style/system_decoration.h"
 #include "ash/style/typography.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/functional/bind.h"
@@ -36,7 +37,6 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -173,11 +173,17 @@ class Combobox::ComboboxMenuView : public views::View {
 
  public:
   explicit ComboboxMenuView(base::WeakPtr<Combobox> combobox)
-      : combobox_(combobox),
-        background_shield_(this,
-                           kMenuBackgroundColorId,
-                           StyleUtil::kBackgroundBlurSigma,
-                           kMenuRoundedCorners) {
+      : combobox_(combobox) {
+    SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+    background_shield_ = std::make_unique<BlurredBackgroundShield>(
+        this, kMenuBackgroundColorId, StyleUtil::kBackgroundBlurSigma,
+        kMenuRoundedCorners);
+    // The drop shadow is provided by the menu widget (`ShadowType::kDrop`).
+    decoration_ = SystemDecoration::CreateForView(
+        this, SystemDecoration::ShadowType::kNone,
+        SystemDecoration::HighlightBorderMode::kHighlightBorder);
+    decoration_->SetRoundedCorners(kMenuRoundedCorners);
+
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
     scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
@@ -194,11 +200,6 @@ class Combobox::ComboboxMenuView : public views::View {
     menu_item_group_ =
         scroll_view_->SetContents(std::make_unique<ComboboxMenuOptionGroup>());
     UpdateMenuContent();
-
-    // Set border.
-    SetBorder(std::make_unique<views::HighlightBorder>(
-        kMenuRoundedCorners,
-        views::HighlightBorder::Type::kHighlightBorderOnShadow));
   }
   ComboboxMenuView(const ComboboxMenuView&) = delete;
   ComboboxMenuView& operator=(const ComboboxMenuView&) = delete;
@@ -253,7 +254,8 @@ class Combobox::ComboboxMenuView : public views::View {
 
  private:
   const base::WeakPtr<Combobox> combobox_;
-  const BlurredBackgroundShield background_shield_;
+  std::unique_ptr<BlurredBackgroundShield> background_shield_;
+  std::unique_ptr<SystemDecoration> decoration_;
 
   // Owned by this.
   raw_ptr<ComboboxMenuOptionGroup> menu_item_group_;
