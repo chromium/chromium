@@ -233,8 +233,10 @@ TEST_F(GlicEnablingTest, IneligibleProfileDoesNotLogIsConsentedMetrics) {
 
   EXPECT_FALSE(enablement.IsEnabled());
 
-  enablement.RecordStartupMetrics();
-  enablement.RecordSteadyStateMetrics();
+  GlicEnabling::RecordProfileEnablementMetricsForTesting(
+      nullptr, GlicEnabling::EnablementMetricsPhase::kStartup, enablement);
+  GlicEnabling::RecordProfileEnablementMetricsForTesting(
+      nullptr, GlicEnabling::EnablementMetricsPhase::kSteadyState, enablement);
 
   histogram_tester_->ExpectTotalCount(
       "Glic.ProfileEnablement.IsConsented.Startup", 0);
@@ -1058,8 +1060,11 @@ TEST_F(GlicEnablingAnchorEntryPointTestBase,
   // kGlic is disabled.
   EXPECT_FALSE(enablement.ShouldShowGlicButton());
 
-  enablement.RecordStartupMetrics();
-  enablement.RecordSteadyStateMetrics();
+  GlicEnabling::RecordProfileEnablementMetricsForTesting(
+      profile(), GlicEnabling::EnablementMetricsPhase::kStartup, enablement);
+  GlicEnabling::RecordProfileEnablementMetricsForTesting(
+      profile(), GlicEnabling::EnablementMetricsPhase::kSteadyState,
+      enablement);
 
   // Since ShouldShowGlicButton() is false, no anchored reasons should be
   // logged.
@@ -1085,7 +1090,8 @@ TEST_F(GlicEnablingAnchorEntryPointTestBase, FeatureFlagDisablesAnchoring) {
 
   GlicEnabling::ProfileEnablement enablement =
       GlicEnabling::EnablementForProfile(profile());
-  enablement.RecordStartupMetrics();
+  GlicEnabling::RecordProfileEnablementMetricsForTesting(
+      profile(), GlicEnabling::EnablementMetricsPhase::kStartup, enablement);
 
   EXPECT_THAT(histogram_tester.GetAllSamplesForPrefix(
                   "Glic.ProfileEnablement.AnchoredDespiteEligibilityReason"),
@@ -1123,8 +1129,11 @@ TEST_F(GlicEnablingAnchorEntryPointTestBase,
   EXPECT_TRUE(enablement.ShouldShowGlicButton());
   EXPECT_EQ(GlicEnabling::GetProfileReadyState(profile()),
             mojom::ProfileReadyState::kIneligibleAccount);
-  enablement.RecordStartupMetrics();
-  enablement.RecordSteadyStateMetrics();
+  GlicEnabling::RecordProfileEnablementMetricsForTesting(
+      profile(), GlicEnabling::EnablementMetricsPhase::kStartup, enablement);
+  GlicEnabling::RecordProfileEnablementMetricsForTesting(
+      profile(), GlicEnabling::EnablementMetricsPhase::kSteadyState,
+      enablement);
 
   // It should log the account ineligible reason to the new consolidated metric.
   using Reason =
@@ -3237,8 +3246,11 @@ TEST_F(GlicEnablingAnchorEntryPointCountryTest,
   EXPECT_TRUE(enablement.ShouldShowGlicButton());
   EXPECT_EQ(GlicEnabling::GetProfileReadyState(profile()),
             mojom::ProfileReadyState::kLocationMismatch);
-  enablement.RecordStartupMetrics();
-  enablement.RecordSteadyStateMetrics();
+  GlicEnabling::RecordProfileEnablementMetricsForTesting(
+      profile(), GlicEnabling::EnablementMetricsPhase::kStartup, enablement);
+  GlicEnabling::RecordProfileEnablementMetricsForTesting(
+      profile(), GlicEnabling::EnablementMetricsPhase::kSteadyState,
+      enablement);
 
   // It should log the country disabled reason to the consolidated metric.
   using Reason =
@@ -3289,8 +3301,11 @@ TEST_F(GlicEnablingAnchorEntryPointCountryTest,
   EXPECT_EQ(GlicEnabling::GetProfileReadyState(profile()),
             mojom::ProfileReadyState::kIneligibleAccount);
 
-  enablement.RecordStartupMetrics();
-  enablement.RecordSteadyStateMetrics();
+  GlicEnabling::RecordProfileEnablementMetricsForTesting(
+      profile(), GlicEnabling::EnablementMetricsPhase::kStartup, enablement);
+  GlicEnabling::RecordProfileEnablementMetricsForTesting(
+      profile(), GlicEnabling::EnablementMetricsPhase::kSteadyState,
+      enablement);
 
   // Both ineligibility reasons should be logged to the consolidated metric.
   using Reason =
@@ -4404,6 +4419,78 @@ TEST(GlicAndroidFormFactorTest, UnsupportedFormFactorsNotAllowed) {
       ui::DEVICE_FORM_FACTOR_XR, /*is_foldable=*/false));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+TEST_F(GlicEnablingProfileEligibilityTest, StartupMetricsProviderSplit) {
+  base::HistogramTester histogram_tester;
+  GlicEnabling::ProfileEnablement enablement;
+  enablement.is_regular_profile = true;
+  enablement.feature_enabled = false;
+  enablement.feature_flag_enabled = false;  // Trigger FeatureDisabledReason
+
+  GlicEnabling::RecordProfileEnablementMetricsForTesting(
+      profile(), GlicEnabling::EnablementMetricsPhase::kStartup, enablement);
+  GlicEnabling::RecordProfileEnablementMetricsForTesting(
+      profile(), GlicEnabling::EnablementMetricsPhase::kSteadyState,
+      enablement);
+  GlicEnabling::IsContextualMenuItemEnabled(profile(), u"");
+
+  histogram_tester.ExpectTotalCount("Glic.ProfileEnablement.IsEnabled.Startup",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Consumer.ProfileEnablement.IsEnabled.Startup", 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.ProfileEnablement.IsEnabled.Startup", 0);
+
+  histogram_tester.ExpectTotalCount(
+      "Glic.ProfileEnablement.IsEnabled.SteadyState", 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Consumer.ProfileEnablement.IsEnabled.SteadyState", 1);
+
+  histogram_tester.ExpectTotalCount(
+      "Glic.GlobalEnabling.FeatureDisabledReason.Startup", 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Consumer.GlobalEnabling.FeatureDisabledReason.Startup", 1);
+
+  histogram_tester.ExpectTotalCount("Glic.WebContentContextMenu.Enabled", 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Consumer.WebContentContextMenu.Enabled", 1);
+}
+
+TEST_F(GlicEnablingGeicFreTest, StartupMetricsProviderSplit) {
+  base::HistogramTester histogram_tester;
+  GlicEnabling::ProfileEnablement enablement;
+  enablement.is_regular_profile = true;
+  enablement.feature_enabled = false;
+  enablement.feature_flag_enabled = false;
+
+  GlicEnabling::RecordProfileEnablementMetricsForTesting(
+      profile(), GlicEnabling::EnablementMetricsPhase::kStartup, enablement);
+  GlicEnabling::RecordProfileEnablementMetricsForTesting(
+      profile(), GlicEnabling::EnablementMetricsPhase::kSteadyState,
+      enablement);
+  GlicEnabling::IsContextualMenuItemEnabled(profile(), u"");
+
+  histogram_tester.ExpectTotalCount("Glic.ProfileEnablement.IsEnabled.Startup",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.ProfileEnablement.IsEnabled.Startup", 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Consumer.ProfileEnablement.IsEnabled.Startup", 0);
+
+  histogram_tester.ExpectTotalCount(
+      "Glic.ProfileEnablement.IsEnabled.SteadyState", 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.ProfileEnablement.IsEnabled.SteadyState", 1);
+
+  histogram_tester.ExpectTotalCount(
+      "Glic.GlobalEnabling.FeatureDisabledReason.Startup", 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.GlobalEnabling.FeatureDisabledReason.Startup", 1);
+
+  histogram_tester.ExpectTotalCount("Glic.WebContentContextMenu.Enabled", 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WebContentContextMenu.Enabled", 1);
+}
 
 }  // namespace
 }  // namespace glic

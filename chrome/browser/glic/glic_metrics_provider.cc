@@ -119,7 +119,7 @@ void GlicMetricsProvider::ProvideCurrentSessionData(
       most_recent_glic_profile = profile;
     }
 
-    GlicEnabling::EnablementForProfile(profile).RecordSteadyStateMetrics();
+    GlicEnabling::RecordSteadyStateMetrics(profile);
 
     if (GlicEnabling::HasConsentedForProfile(profile)) {
       base::UmaHistogramSparse(

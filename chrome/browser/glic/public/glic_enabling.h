@@ -253,6 +253,7 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
                            public subscription_eligibility::
                                SubscriptionEligibilityService::Observer {
  public:
+  enum class EnablementMetricsPhase { kStartup, kSteadyState };
   // Returns whether the global Glic feature is enabled for Chrome. This status
   // will not change at runtime.
   static bool IsEnabledByGlobalCriteria();
@@ -387,7 +388,6 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // and the account is non-enterprise (or for Glic dev).
   static bool IsShareImageEnabledForProfile(Profile* profile);
 
-
   // Whether the live mode and floaty window are enabled by flags.
   static bool IsLiveAndFloatyEnabledByFlags();
 
@@ -478,10 +478,6 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
       kMaxValue = kDisallowedByRemoteOther,
     };
 
-    // Record the state of this struct to UMA.
-    void RecordStartupMetrics() const;
-    void RecordSteadyStateMetrics() const;
-
     bool IsProfileEligible() const;
 
     // Returns true if Glic is fully enabled and allowed to run on this profile.
@@ -517,13 +513,7 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
 
     bool EligibleForShareImage() const;
 
-
     bool DisallowedByAdmin() const;
-
-   private:
-    // `suffix` should be either "Startup" or "SteadyState".
-    void RecordMetrics(const std::string& suffix) const;
-    void RecordFeatureDisabledReason(const std::string& suffix) const;
   };
   static ProfileEnablement EnablementForProfile(Profile* profile);
 
@@ -627,6 +617,13 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // Checks if startup metrics have already been recorded, and if not, records
   // them.
   void MaybeRecordStartupMetrics();
+
+  static void RecordSteadyStateMetrics(Profile* profile);
+
+  static void RecordProfileEnablementMetricsForTesting(
+      Profile* profile,
+      EnablementMetricsPhase phase,
+      const ProfileEnablement& enablement);
 
   // Records startup metrics related to profile ineligibility. Should only be
   // called once per profile.
@@ -750,6 +747,11 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   void UpdateConsentStatus();
 
   void MaybeNotifyProfileReadyStateChanged();
+
+  static void RecordProfileEnablementMetrics(
+      Profile* profile,
+      EnablementMetricsPhase phase,
+      const ProfileEnablement& enablement);
 
 #if BUILDFLAG(IS_CHROMEOS)
   static bool IsChromeOSProfileEligible(Profile* profile);

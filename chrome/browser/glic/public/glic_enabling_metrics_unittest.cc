@@ -52,7 +52,8 @@ TEST(GlicProfileEnablementTest, RecordMetrics) {
   base::HistogramTester histograms;
   GlicEnabling::ProfileEnablement enablement;
 
-  enablement.RecordStartupMetrics();
+  GlicEnabling::RecordProfileEnablementMetricsForTesting(
+      nullptr, GlicEnabling::EnablementMetricsPhase::kStartup, enablement);
 
   histograms.ExpectUniqueSample("Glic.ProfileEnablement.IsEnabled.Startup",
                                 true, 1);
@@ -75,7 +76,8 @@ TEST(GlicProfileEnablementTest, RecordMetrics) {
   enablement.primary_account_is_fully_signed_in = false;
   enablement.primary_account_needs_signed_in = true;
 
-  enablement.RecordSteadyStateMetrics();
+  GlicEnabling::RecordProfileEnablementMetricsForTesting(
+      nullptr, GlicEnabling::EnablementMetricsPhase::kSteadyState, enablement);
 
   histograms.ExpectUniqueSample("Glic.ProfileEnablement.IsEnabled.SteadyState",
                                 false, 1);
@@ -103,7 +105,7 @@ TEST(GlicProfileEnablementTest, RecordMetrics) {
       1);
 }
 
-TEST(GlicProfileEnablementTest, RecordFeatureDisabledReason) {
+TEST(GlicProfileEnablementTest, RecordFeatureDisabledReasonsWith) {
   base::HistogramTester histograms;
   GlicEnabling::ProfileEnablement enablement;
 
@@ -113,7 +115,8 @@ TEST(GlicProfileEnablementTest, RecordFeatureDisabledReason) {
   enablement.allowed_by_locale_filter = false;
   enablement.system_requirement_met = false;
 
-  enablement.RecordStartupMetrics();
+  GlicEnabling::RecordProfileEnablementMetricsForTesting(
+      nullptr, GlicEnabling::EnablementMetricsPhase::kStartup, enablement);
 
   histograms.ExpectBucketCount(
       "Glic.GlobalEnabling.FeatureDisabledReason.Startup",
@@ -136,7 +139,8 @@ TEST(GlicProfileEnablementTest, RecordFeatureDisabledReason) {
   histograms.ExpectTotalCount(
       "Glic.GlobalEnabling.FeatureDisabledReason.Startup", 4);
 
-  enablement.RecordSteadyStateMetrics();
+  GlicEnabling::RecordProfileEnablementMetricsForTesting(
+      nullptr, GlicEnabling::EnablementMetricsPhase::kSteadyState, enablement);
 
   histograms.ExpectBucketCount(
       "Glic.GlobalEnabling.FeatureDisabledReason.SteadyState",
