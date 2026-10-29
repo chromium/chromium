@@ -567,18 +567,6 @@ TEST_F(
 }
 
 TEST_F(NetworkSessionConfiguratorTest,
-       DisableQuicAllowPortMigrationFromFieldTrialParams) {
-  std::map<std::string, std::string> field_trial_params;
-  field_trial_params["allow_port_migration"] = "false";
-  base::AssociateFieldTrialParams("QUIC", "Enabled", field_trial_params);
-  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
-
-  ParseFieldTrials();
-
-  EXPECT_FALSE(quic_params_.allow_port_migration);
-}
-
-TEST_F(NetworkSessionConfiguratorTest,
        ConfigureMultiPortProbingIntervalFromFieldTrialParams) {
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["multi_port_probing_interval"] = "10";

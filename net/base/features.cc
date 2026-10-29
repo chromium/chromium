@@ -878,6 +878,8 @@ BASE_FEATURE(kQuicLongerIdleConnectionTimeout,
 BASE_FEATURE(kQuicAlwaysCancelPreExistingProbingOnMigration,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kQuicEnablePortMigration, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kQuicWaitForNewNetworkTimeout, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kQuicWaitForNewNetworkTimeoutParam,

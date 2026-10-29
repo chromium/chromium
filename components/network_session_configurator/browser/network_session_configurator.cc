@@ -326,12 +326,6 @@ bool ShouldQuicMigrateSessionsEarlyV2(
       "true");
 }
 
-bool ShouldQuicAllowPortMigration(
-    const VariationParameters& quic_trial_params) {
-  return !base::EqualsCaseInsensitiveASCII(
-      GetVariationParam(quic_trial_params, "allow_port_migration"), "false");
-}
-
 int GetMultiPortProbingInterval(const VariationParameters& quic_trial_params) {
   int value;
   if (base::StringToInt(
@@ -654,8 +648,6 @@ void ConfigureQuicParams(const base::CommandLine& command_line,
         ShouldQuicUseNewAlpsCodepoint(quic_trial_params);
     quic_params->migrate_sessions_early_v2 =
         ShouldQuicMigrateSessionsEarlyV2(quic_trial_params);
-    quic_params->allow_port_migration =
-        ShouldQuicAllowPortMigration(quic_trial_params);
     quic_params->retry_on_alternate_network_before_handshake =
         ShouldQuicRetryOnAlternateNetworkBeforeHandshake(quic_trial_params);
     int initial_rtt_for_handshake_milliseconds =

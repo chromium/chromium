@@ -1102,6 +1102,11 @@ QuicChromiumClientSession::QuicChromiumClientSession(
       migrate_idle_session_(migrate_idle_session),
       allow_port_migration_(
           allow_port_migration &&
+          // Check `kQuicEnablePortMigration` here rather than using it as the
+          // default value of `QuicParams::allow_port_migration` so that
+          // embedders or callers that explicitly set `allow_port_migration`
+          // cannot enable port migration when the feature is disabled.
+          base::FeatureList::IsEnabled(features::kQuicEnablePortMigration) &&
           // If the session targets a network, we could migrate to a different
           // port onto the same network. Having said that, this is non-trivial
           // to implement. For the time being don't migrate.

@@ -886,6 +886,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kQuicLongerIdleConnectionTimeout);
 NET_EXPORT BASE_DECLARE_FEATURE(
     kQuicAlwaysCancelPreExistingProbingOnMigration);
 
+// If enabled, allows QUIC sessions to migrate to a different port when the
+// current path is degrading.
+NET_EXPORT BASE_DECLARE_FEATURE(kQuicEnablePortMigration);
+
 // Controls the timeout for waiting for a new network to connect before giving
 // up on connection migration.
 NET_EXPORT BASE_DECLARE_FEATURE(kQuicWaitForNewNetworkTimeout);

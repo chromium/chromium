@@ -2717,7 +2717,13 @@ void QuicSessionPool::InitializeMigrationOptions() {
   bool retry_on_alternate_network_before_handshake =
       params_.retry_on_alternate_network_before_handshake;
   bool migrate_idle_sessions = params_.migrate_idle_sessions;
-  bool allow_port_migration = params_.allow_port_migration;
+  // Check `kQuicEnablePortMigration` here rather than using it as the default
+  // value of `QuicParams::allow_port_migration` so that embedders that
+  // explicitly populate `QuicParams` cannot enable port migration when the
+  // feature is disabled.
+  bool allow_port_migration =
+      params_.allow_port_migration &&
+      base::FeatureList::IsEnabled(features::kQuicEnablePortMigration);
   params_.migrate_sessions_on_network_change_v2 = false;
   params_.migrate_sessions_early_v2 = false;
   params_.allow_port_migration = false;
