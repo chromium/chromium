@@ -49,12 +49,12 @@ class WebDataServiceFactory final : public TypedProfileKeyedServiceFactoryIOS<
       ServiceAccessType access_type);
 
   // Returns the default factory, useful in tests where it's null by default.
-  static TestingFactory GetDefaultFactory();
+  static TestingFactoryByRef GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 };
 
 }  // namespace ios

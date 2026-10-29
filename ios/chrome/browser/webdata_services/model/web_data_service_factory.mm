@@ -25,8 +25,8 @@ namespace ios {
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildWebDataService(ProfileIOS* profile) {
-  const base::FilePath& state_path = profile->GetStatePath();
+std::unique_ptr<KeyedService> BuildWebDataService(ProfileIOS& profile) {
+  const base::FilePath& state_path = profile.GetStatePath();
   // On iOS (and Android), the account storage is persisted on disk.
   return std::make_unique<WebDataServiceWrapper>(
       state_path,
@@ -76,7 +76,7 @@ scoped_refptr<TokenWebData> WebDataServiceFactory::GetTokenWebDataForProfile(
 }
 
 // static
-WebDataServiceFactory::TestingFactory
+WebDataServiceFactory::TestingFactoryByRef
 WebDataServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildWebDataService);
 }
@@ -89,7 +89,7 @@ WebDataServiceFactory::WebDataServiceFactory(PassKey key)
           TestingCreation::kNoServiceForTests) {}
 
 std::unique_ptr<KeyedService> WebDataServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildWebDataService(profile);
 }
 
