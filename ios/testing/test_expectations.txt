@@ -102,9 +102,6 @@ crbug.com/552121965 [ iOS26.5 iPad ] ChildWindowOpenByDOMTestCase/testWindowClos
 # Gardening suppression 2026-08-27
 crbug.com/553554439 [ iOS26.5 iPad Simulator ] ReadingListTestCase/testMarkMixedEntriesRead [ Pass Failure ]
 
-# Gardening suppression 2026-08-28
-crbug.com/554049961 GeminiMultiTabTestCase/testActiveTabNotBlockedOnTabGridWhenSharedTabExists [ Failure ]
-
 # Gardening suppression 2026-09-04
 crbug.com/557277868 ContentSuggestionsTestCase/testMostVisitedPinnedSiteDragAndDrop [ Pass Failure ]
 crbug.com/557277111 [ Simulator ] TranslateInfobarTestCase/testTranslateManualTrigger [ Pass Failure ]
