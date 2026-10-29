@@ -13,12 +13,13 @@ If this script is given the argument --auto-update, it will also:
 import argparse
 import collections
 import contextlib
+import io
 import itertools
 import json
 import logging
 import textwrap
 from functools import cached_property
-from typing import List, Mapping, Optional, Set
+from typing import List, Mapping, Optional, Set, Tuple
 
 from blinkpy.common.checkout.git import CommitRange
 from blinkpy.common.net.git_cl import (
@@ -196,9 +197,6 @@ class TestImporter:
             self.project_git
         )
         wpt_range = CommitRange(last_wpt_revision, new_wpt_revision)
-        commit_message = self.commit_message(
-            chromium_revision, wpt_range, locally_applied_commits=commits
-        )
 
         self._clear_out_dest_path()
 
@@ -238,15 +236,20 @@ class TestImporter:
         _log.info('Updating webview.filter based on file changes.')
         self.update_testlist_with_idlharness_changes(testlist_path)
 
+        directory_owners = self.get_directory_owners()
+        commit_message = self.commit_message(
+            chromium_revision,
+            wpt_range,
+            locally_applied_commits=commits,
+            directory_owners=directory_owners,
+        )
         self._commit_changes(commit_message)
         _log.info('Changes imported and committed.')
 
         if not options.auto_upload and not options.auto_update:
             return 0
 
-        directory_owners = self.get_directory_owners()
-        description = self.cl_description(directory_owners)
-        import_issue_num = self._upload_cl(description)
+        import_issue_num = self._upload_cl(commit_message)
         self._cleanup.callback(self._ensure_cl_closed, import_issue_num)
 
         if not self.update_expectations_for_cl():
@@ -652,25 +655,62 @@ class TestImporter:
         chromium_commit_sha: str,
         wpt_range: CommitRange,
         locally_applied_commits: Optional[List[ChromiumCommit]] = None,
+        directory_owners: Optional[Mapping[Tuple[str, ...], List[str]]] = None,
     ) -> str:
         wpt_short_range = CommitRange(wpt_range.start[:9], wpt_range.end[:9])
-        message = textwrap.dedent(f"""\
-            {ImportNotifier.IMPORT_SUBJECT_PREFIX}{wpt_range.end}
+        buf = io.StringIO()
+        buf.write(
+            textwrap.dedent(f"""\
+                {ImportNotifier.IMPORT_SUBJECT_PREFIX}{wpt_range.end}
 
-            {WPT_GH_RANGE_URL_TEMPLATE.format(*wpt_short_range)}
+                {WPT_GH_RANGE_URL_TEMPLATE.format(*wpt_short_range)}
 
-            Using wpt-import in Chromium {chromium_commit_sha}.
-            """)
+                Using wpt-import in Chromium {chromium_commit_sha}.
+                """)
+        )
         if locally_applied_commits:
-            message += 'With Chromium commits locally applied on WPT:\n'
-            message += (
-                '\n'.join(
-                    f'  {textwrap.shorten(str(commit), 70)}'
-                    for commit in locally_applied_commits
-                )
-                + '\n'
-            )
-        return message
+            buf.write('With Chromium commits locally applied on WPT:\n')
+            for commit in locally_applied_commits:
+                buf.write(' ' * 2)
+                buf.write(textwrap.shorten(str(commit), 70))
+                buf.write('\n')
+
+        gardener_instructions = textwrap.dedent("""\
+            Note to gardeners: This CL imports external tests and adds
+            expectations for those tests; if this CL is large and causes a few
+            new failures, please fix the failures by adding new lines to
+            TestExpectations rather than reverting. See:
+            """)
+        buf.write('\n')
+        for line in textwrap.wrap(gardener_instructions, width=72):
+            buf.write(line)
+            buf.write('\n')
+        buf.write(
+            'https://chromium.googlesource.com/chromium/src/+/'
+            'main/docs/testing/web_platform_tests.md\n\n'
+        )
+
+        if directory_owners:
+            buf.write(self._format_directory_owners(directory_owners))
+            buf.write('\n\n')
+
+        # Honored by LUCI bisection.
+        buf.write('NOAUTOREVERT=true\n')
+        buf.write('No-Export: true\n')
+        buf.write('Validate-Test-Flakiness: skip\n')
+
+        # If this starts blocking the importer unnecessarily, revert
+        # https://chromium-review.googlesource.com/c/chromium/src/+/2451504
+        # Try `*-blink-rel` to make sure no breakage in webdriver tests or for
+        # any OS versions not covered in CQ.
+        for builder in self.host.builders.all_try_builder_names():
+            if (
+                self.host.builders.main_for_builder(builder)
+                == 'tryserver.blink'
+            ):
+                buf.write(f'Cq-Include-Trybots: luci.chromium.try:{builder}\n')
+
+        return buf.getvalue()
 
     def delete_orphaned_baselines(self):
         """Delete baselines that don't correspond to any external WPTs.
@@ -760,56 +800,6 @@ class TestImporter:
         changed_files = self.project_git.changed_files()
         extractor = DirectoryOwnersExtractor(self.host)
         return extractor.list_owners(changed_files)
-
-    def cl_description(self, directory_owners):
-        """Returns a CL description string.
-
-        Args:
-            directory_owners: A dict of tuples of owner names to lists of directories.
-        """
-        # TODO(robertma): Add a method in Git for getting the commit body.
-        description = self.project_git.run(['log', '-1', '--format=%B'])
-        gardener_instructions = textwrap.dedent("""\
-            Note to gardeners: This CL imports external tests and adds
-            expectations for those tests; if this CL is large and causes a few
-            new failures, please fix the failures by adding new lines to
-            TestExpectations rather than reverting. See:
-            """)
-        description += (
-            '\n'.join(
-                [
-                    *textwrap.wrap(gardener_instructions, width=72),
-                    'https://chromium.googlesource.com/chromium/src/+/'
-                    'main/docs/testing/web_platform_tests.md',
-                ]
-            )
-            + '\n\n'
-        )
-
-        if directory_owners:
-            description += (
-                self._format_directory_owners(directory_owners) + '\n\n'
-            )
-
-        # Prevent FindIt from auto-reverting import CLs.
-        description += 'NOAUTOREVERT=true\n'
-        description += 'No-Export: true\n'
-        description += 'Validate-Test-Flakiness: skip\n'
-
-        # If this starts blocking the importer unnecessarily, revert
-        # https://chromium-review.googlesource.com/c/chromium/src/+/2451504
-        # Try `*-blink-rel` to make sure no breakage in webdriver tests or for
-        # any OS versions not covered in CQ.
-        for builder in self.host.builders.all_try_builder_names():
-            if (
-                self.host.builders.main_for_builder(builder)
-                == 'tryserver.blink'
-            ):
-                description += (
-                    f'Cq-Include-Trybots: luci.chromium.try:{builder}\n'
-                )
-
-        return description
 
     @staticmethod
     def _format_directory_owners(directory_owners):

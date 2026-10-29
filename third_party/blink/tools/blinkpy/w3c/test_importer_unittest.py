@@ -21,7 +21,6 @@ from blinkpy.common.net.network_transaction import NetworkTimeout
 from blinkpy.common.net.results_fetcher import Build
 from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.common.system.executive_mock import MockCall
-from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.w3c.buganizer import BuganizerIssue
 from blinkpy.w3c.chromium_commit_mock import MockChromiumCommit
@@ -659,6 +658,18 @@ class TestImporterTest(LoggingTestCase):
                 https://github.com/web-platform-tests/wpt/compare/012345678...a12345678
 
                 Using wpt-import in Chromium aaaa.
+
+                Note to gardeners: This CL imports external tests and adds expectations
+                for those tests; if this CL is large and causes a few new failures,
+                please fix the failures by adding new lines to TestExpectations rather
+                than reverting. See:
+                https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_platform_tests.md
+
+                NOAUTOREVERT=true
+                No-Export: true
+                Validate-Test-Flakiness: skip
+                Cq-Include-Trybots: luci.chromium.try:cq-builder-a
+                Cq-Include-Trybots: luci.chromium.try:cq-builder-b
                 """),
         )
 
@@ -687,19 +698,6 @@ class TestImporterTest(LoggingTestCase):
                 With Chromium commits locally applied on WPT:
                   14fd77e88e "Pending export 1"
                   3e977a7ce6 "Pending export 2 with very long subject [...]
-                """),
-            ),
-        )
-
-    def test_cl_description_with_empty_environ(self):
-        host = self.mock_host()
-        host.executive = MockExecutive(output='Last commit message\n\n')
-        importer = self._get_test_importer(host)
-        description = importer.cl_description(directory_owners={})
-        self.assertEqual(
-            description,
-            textwrap.dedent("""\
-                Last commit message
 
                 Note to gardeners: This CL imports external tests and adds expectations
                 for those tests; if this CL is large and causes a few new failures,
@@ -713,24 +711,22 @@ class TestImporterTest(LoggingTestCase):
                 Cq-Include-Trybots: luci.chromium.try:cq-builder-a
                 Cq-Include-Trybots: luci.chromium.try:cq-builder-b
                 """),
-        )
-        self.assertEqual(
-            host.executive.calls,
-            [MANIFEST_INSTALL_CMD] + [['git', 'log', '-1', '--format=%B']],
+            ),
         )
 
-    def test_cl_description_with_directory_owners(self):
+    def test_commit_message_with_directory_owners(self):
         host = self.mock_host()
-        host.executive = MockExecutive(output='Last commit message\n\n')
         importer = self._get_test_importer(host)
-        description = importer.cl_description(
+        message = importer.commit_message(
+            'aaaa',
+            CommitRange('0123456789', 'a123456789'),
             directory_owners={
                 ('someone@chromium.org',): [
                     'external/wpt/foo',
                     'external/wpt/bar',
                 ],
                 ('x@chromium.org', 'y@chromium.org'): ['external/wpt/baz'],
-            }
+            },
         )
         self.assertIn(
             'Directory owners for changes in this CL:\n'
@@ -739,8 +735,9 @@ class TestImporterTest(LoggingTestCase):
             '  external/wpt/bar\n'
             'x@chromium.org, y@chromium.org:\n'
             '  external/wpt/baz\n\n',
-            description,
+            message,
         )
+        self.assertIn('No-Export: true\n', message)
 
     def test_sheriff_email_no_response_uses_backup(self):
         host = self.mock_host()
