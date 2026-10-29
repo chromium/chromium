@@ -3568,10 +3568,6 @@
         "name": "speedometer3-future/Speedometer3"
     },
     {
-        "duration": "98.0",
-        "name": "speedometer3/Speedometer3"
-    },
-    {
         "duration": "99.0",
         "name": "startup.mobile/cct:coldish:bbc"
     },

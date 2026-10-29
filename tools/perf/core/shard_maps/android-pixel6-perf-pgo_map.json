@@ -6,10 +6,6 @@
             },
             "speedometer2": {
                 "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false,
-                "pageset_repeat": 16
             }
         },
         "executables": {
@@ -28,10 +24,6 @@
             },
             "speedometer2": {
                 "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false,
-                "pageset_repeat": 16
             }
         }
     },
@@ -46,10 +38,6 @@
             },
             "speedometer2": {
                 "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false,
-                "pageset_repeat": 16
             }
         }
     },
@@ -65,10 +53,6 @@
             },
             "speedometer2": {
                 "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false,
-                "pageset_repeat": 16
             }
         }
     },
@@ -84,10 +68,6 @@
             },
             "speedometer2": {
                 "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false,
-                "pageset_repeat": 16
             }
         }
     },
@@ -97,10 +77,6 @@
                 "begin": 239,
                 "end": 321,
                 "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false,
-                "pageset_repeat": 16
             }
         }
     },
@@ -112,19 +88,11 @@
             },
             "speedometer2": {
                 "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false,
-                "pageset_repeat": 16
             }
         }
     },
     "7": {
         "benchmarks": {
-            "speedometer3": {
-                "abridged": false,
-                "pageset_repeat": 16
-            },
             "system_health.common_mobile": {
                 "abridged": false
             }

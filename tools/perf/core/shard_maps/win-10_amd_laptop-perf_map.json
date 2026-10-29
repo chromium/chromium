@@ -27,9 +27,6 @@
         "benchmarks": {
             "speedometer2": {
                 "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false
             }
         },
         "crossbench": {

@@ -25,10 +25,6 @@
             "jetstream2": {
                 "abridged": false,
                 "pageset_repeat": 11
-            },
-            "speedometer3": {
-                "abridged": false,
-                "pageset_repeat": 22
             }
         }
     },
@@ -37,10 +33,6 @@
             "jetstream2": {
                 "abridged": false,
                 "pageset_repeat": 11
-            },
-            "speedometer3": {
-                "abridged": false,
-                "pageset_repeat": 22
             }
         },
         "crossbench": {
@@ -86,10 +78,6 @@
             "jetstream2": {
                 "abridged": false,
                 "pageset_repeat": 11
-            },
-            "speedometer3": {
-                "abridged": false,
-                "pageset_repeat": 22
             }
         }
     },
@@ -114,10 +102,6 @@
             "jetstream2": {
                 "abridged": false,
                 "pageset_repeat": 11
-            },
-            "speedometer3": {
-                "abridged": false,
-                "pageset_repeat": 22
             }
         }
     },
@@ -147,10 +131,6 @@
             "jetstream2": {
                 "abridged": false,
                 "pageset_repeat": 11
-            },
-            "speedometer3": {
-                "abridged": false,
-                "pageset_repeat": 22
             }
         }
     },
@@ -174,10 +154,6 @@
             "jetstream2": {
                 "abridged": false,
                 "pageset_repeat": 11
-            },
-            "speedometer3": {
-                "abridged": false,
-                "pageset_repeat": 22
             }
         }
     },
@@ -185,10 +161,6 @@
         "benchmarks": {
             "rendering.desktop.notracing": {
                 "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false,
-                "pageset_repeat": 22
             }
         },
         "crossbench": {

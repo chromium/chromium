@@ -3560,10 +3560,6 @@
         "name": "speedometer3-no-field-trials/Speedometer3"
     },
     {
-        "duration": "22.0",
-        "name": "speedometer3/Speedometer3"
-    },
-    {
         "duration": "36.0",
         "name": "system_health.common_desktop/browse:media:googleplaystore:2021"
     },

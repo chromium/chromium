@@ -555,6 +555,32 @@ def _speedometer3_crossbench(
   )
 
 
+@_register('speedometer3-future.crossbench')
+def _speedometer3_future_crossbench(
+  estimated_runtime: int = 60, flags: tuple[str, ...] = ()
+):
+  """Latest Speedometer 3.X version with V8 --future enabled."""
+  return CrossbenchConfig(
+    'speedometer3-future.crossbench',
+    'speedometer_3',
+    estimated_runtime=estimated_runtime,
+    flags=('--enable-features=V8VmFuture', *flags),
+  )
+
+
+@_register('speedometer3-no-field-trials.crossbench')
+def _speedometer3_no_field_trials_crossbench(
+  estimated_runtime: int = 60, flags: tuple[str, ...] = ()
+):
+  """Latest Speedometer 3.X version without field-trial config."""
+  return CrossbenchConfig(
+    'speedometer3-no-field-trials.crossbench',
+    'speedometer_3',
+    estimated_runtime=estimated_runtime,
+    flags=('--disable-field-trial-config', *flags),
+  )
+
+
 @_register("speedometer3-turbolev.crossbench")
 def _speedometer3_turbolev_crossbench(
   estimated_runtime: int = 60, flags: tuple[str, ...] = ()

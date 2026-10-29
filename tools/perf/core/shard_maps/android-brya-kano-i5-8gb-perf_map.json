@@ -34,11 +34,7 @@
         "benchmarks": {}
     },
     "7": {
-        "benchmarks": {
-            "speedometer2": {
-                "abridged": false
-            }
-        },
+        "benchmarks": {},
         "crossbench": {
             "speedometer3.crossbench": {
                 "crossbench_name": "speedometer_3",

@@ -1,9 +1,6 @@
 {
     "0": {
         "benchmarks": {
-            "speedometer3": {
-                "abridged": false
-            },
             "startup.mobile": {
                 "abridged": false
             },

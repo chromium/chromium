@@ -10,9 +10,6 @@
             "blink_perf.css": {
                 "end": 36,
                 "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false
             }
         }
     },
@@ -33,9 +30,6 @@
             },
             "blink_perf.layout": {
                 "end": 65,
-                "abridged": false
-            },
-            "speedometer3": {
                 "abridged": false
             }
         }
@@ -60,9 +54,6 @@
             },
             "blink_perf.webaudio": {
                 "end": 1,
-                "abridged": false
-            },
-            "speedometer3": {
                 "abridged": false
             }
         }
@@ -89,9 +80,6 @@
                 "abridged": false
             },
             "dummy_benchmark.stable_benchmark_1": {
-                "abridged": false
-            },
-            "speedometer3": {
                 "abridged": false
             }
         },
@@ -152,11 +140,7 @@
                 ]
             }
         },
-        "benchmarks": {
-            "speedometer3": {
-                "abridged": false
-            }
-        }
+        "benchmarks": {}
     },
     "5": {
         "benchmarks": {
@@ -164,9 +148,6 @@
                 "abridged": false
             },
             "rasterize_and_record_micro.top_25": {
-                "abridged": false
-            },
-            "speedometer3": {
                 "abridged": false
             }
         },
@@ -198,9 +179,6 @@
             "rendering.mobile": {
                 "end": 63,
                 "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false
             }
         }
     },
@@ -209,9 +187,6 @@
             "rendering.mobile": {
                 "begin": 63,
                 "end": 123,
-                "abridged": false
-            },
-            "speedometer3": {
                 "abridged": false
             }
         }
@@ -222,9 +197,6 @@
                 "begin": 123,
                 "end": 179,
                 "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false
             }
         }
     },
@@ -233,9 +205,6 @@
             "rendering.mobile": {
                 "begin": 179,
                 "end": 236,
-                "abridged": false
-            },
-            "speedometer3": {
                 "abridged": false
             }
         }
@@ -246,9 +215,6 @@
                 "begin": 236,
                 "end": 315,
                 "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false
             }
         }
     },
@@ -257,9 +223,6 @@
             "rendering.mobile": {
                 "begin": 315,
                 "end": 367,
-                "abridged": false
-            },
-            "speedometer3": {
                 "abridged": false
             }
         }
@@ -272,17 +235,11 @@
             },
             "rendering.mobile.notracing": {
                 "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false
             }
         }
     },
     "13": {
         "benchmarks": {
-            "speedometer3": {
-                "abridged": false
-            },
             "speedometer3-future": {
                 "abridged": false
             },
@@ -320,9 +277,6 @@
                 "end": 20,
                 "abridged": false,
                 "pageset_repeat": 3
-            },
-            "speedometer3": {
-                "abridged": false
             }
         }
     },
@@ -333,9 +287,6 @@
                 "end": 36,
                 "abridged": false,
                 "pageset_repeat": 3
-            },
-            "speedometer3": {
-                "abridged": false
             }
         }
     },
@@ -346,9 +297,6 @@
                 "end": 58,
                 "abridged": false,
                 "pageset_repeat": 3
-            },
-            "speedometer3": {
-                "abridged": false
             }
         }
     },
@@ -362,9 +310,6 @@
             "system_health.webview_startup": {
                 "abridged": false,
                 "pageset_repeat": 20
-            },
-            "speedometer3": {
-                "abridged": false
             }
         }
     },
@@ -377,9 +322,6 @@
                 "abridged": false
             },
             "webrtc": {
-                "abridged": false
-            },
-            "speedometer3": {
                 "abridged": false
             }
         }

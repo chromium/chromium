@@ -202,7 +202,7 @@ class Speedometer31(_Speedometer3):
 class Speedometer3(Speedometer31):
   """The latest version of the Speedometer 3.x benchmark."""
 
-  SCHEDULED = True
+  SCHEDULED = False
 
   @classmethod
   def GetStoryClass(cls):
@@ -223,6 +223,8 @@ class Speedometer3Future(Speedometer3):
 
   Shows the performance of upcoming V8 VM features.
   """
+
+  SCHEDULED = True
 
   @classmethod
   def Name(cls):

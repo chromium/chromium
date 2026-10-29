@@ -1,13 +1,6 @@
 {
     "0": {
-        "benchmarks": {
-            "speedometer2": {
-                "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false
-            }
-        },
+        "benchmarks": {},
         "crossbench": {
             "devtools_frontend.crossbench": {
                 "crossbench_name": "devtools_frontend",

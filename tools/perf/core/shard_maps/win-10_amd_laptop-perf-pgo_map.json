@@ -10,11 +10,7 @@
         "benchmarks": {}
     },
     "2": {
-        "benchmarks": {
-            "speedometer2": {
-                "abridged": false
-            }
-        }
+        "benchmarks": {}
     },
     "extra_infos": {
         "num_stories": 3,

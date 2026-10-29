@@ -6,9 +6,5 @@
     {
         "duration": "332.0",
         "name": "rendering.desktop.notracing/motionmark_ramp_composite"
-    },
-    {
-        "duration": "20.0",
-        "name": "speedometer3/Speedometer3"
     }
 ]

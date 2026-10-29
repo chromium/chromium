@@ -30,44 +30,22 @@ TARGET_DEVICES = {
       # cputimeToFirstContentfulPaint
       'load:search:google:2018': 10,
     },
-    'speedometer2': {
-      'Speedometer2': 10,
-    },
-    'speedometer3': {
-      'Speedometer3': 10,
-    },
+    'speedometer3.crossbench': 5,
   },
   'android-pixel4-perf': {
     'jetstream2': {
       'JetStream2': 5,
     },
-    'speedometer2': {
-      'Speedometer2': 20,
-    },
-    'speedometer3': {
-      'Speedometer3': 20,
-    },
+    'speedometer3.crossbench': 20,
   },
   'android-pixel4_webview-perf': {
     'jetstream2': {
       'JetStream2': 5,
     },
-    'speedometer2': {
-      'Speedometer2': 20,
-    },
-    'speedometer3': {
-      'Speedometer3': 20,
-    },
   },
   'android-pixel4_webview-perf-pgo': {
     'jetstream2': {
       'JetStream2': 5,
-    },
-    'speedometer2': {
-      'Speedometer2': 20,
-    },
-    'speedometer3': {
-      'Speedometer3': 20,
     },
   },
   'android-pixel6-perf-pgo': {
@@ -76,9 +54,6 @@ TARGET_DEVICES = {
     },
     'speedometer2': {
       'Speedometer2': 5,
-    },
-    'speedometer3': {
-      'Speedometer3': 8,
     },
   },
   'android-pixel9-perf': {
@@ -109,22 +84,10 @@ TARGET_DEVICES = {
     'jetstream2': {
       'JetStream2': 5,
     },
-    'speedometer2': {
-      'Speedometer2': 20,
-    },
-    'speedometer3': {
-      'Speedometer3': 20,
-    },
   },
   'android-pixel10_webview-perf-pgo': {
     'jetstream2': {
       'JetStream2': 5,
-    },
-    'speedometer2': {
-      'Speedometer2': 20,
-    },
-    'speedometer3': {
-      'Speedometer3': 20,
     },
   },
   'linux-perf': {
@@ -137,8 +100,6 @@ TARGET_DEVICES = {
     'jetstream3.crossbench': 4,
     'jetstream3-turbolev_future.crossbench': 4,
     'jetstream_main.crossbench': 4,
-    'speedometer2': 4,
-    'speedometer3': 4,
     'speedometer3.crossbench': 4,
     'motionmark1.3.crossbench': 4,
   },
@@ -155,12 +116,6 @@ TARGET_DEVICES = {
     'speedometer': {
       'http://browserbench.org/Speedometer/': 20,
     },
-    'speedometer2': {
-      'Speedometer2': 20,
-    },
-    'speedometer3': {
-      'Speedometer3': 20,
-    },
     'speedometer3-predictable': {
       'Speedometer3': 20,
     },
@@ -175,9 +130,6 @@ TARGET_DEVICES = {
     'jetstream3.crossbench': 5,
     'jetstream3-turbolev_future.crossbench': 5,
     'jetstream_main.crossbench': 5,
-    'speedometer2': {
-      'Speedometer2': 20,
-    },
     'speedometer3.crossbench': 20,
   },
   'win-10-perf': {
@@ -205,9 +157,6 @@ TARGET_DEVICES = {
     'jetstream3.crossbench': 5,
     'jetstream3-turbolev_future.crossbench': 5,
     'jetstream_main.crossbench': 5,
-    'speedometer2': {
-      'Speedometer2': 20,
-    },
     'speedometer3.crossbench': 20,
     'speedometer3.a11y.crossbench': 20,
     'speedometer_main.all.crossbench': 20,
@@ -226,9 +175,6 @@ TARGET_DEVICES = {
     'jetstream3.crossbench': 5,
     'jetstream3-turbolev_future.crossbench': 5,
     'jetstream_main.crossbench': 5,
-    'speedometer2': {
-      'Speedometer2': 20,
-    },
     'speedometer3.crossbench': 20,
   },
   'mac-intel-perf': {
@@ -239,9 +185,6 @@ TARGET_DEVICES = {
     'jetstream3.crossbench': 5,
     'jetstream3-turbolev_future.crossbench': 5,
     'jetstream_main.crossbench': 5,
-    'speedometer2': {
-      'Speedometer2': 20,
-    },
     'speedometer3.crossbench': 20,
     'speedometer_main.all.crossbench': 20,
   },
@@ -254,13 +197,8 @@ TARGET_DEVICES = {
     'jetstream3.crossbench': 5,
     'jetstream3-turbolev_future.crossbench': 5,
     'jetstream_main.crossbench': 5,
-    'speedometer2': {
-      'Speedometer2': 20,
-    },
-    'speedometer3': {
-      'Speedometer3': 28,
-    },
     'speedometer3-no-field-trials': 28,
+    'speedometer3-no-field-trials.crossbench': 20,
     'speedometer3.crossbench': 20,
     'speedometer_main.all.crossbench': 10,
     'rendering.desktop.notracing': 20,
@@ -274,25 +212,13 @@ TARGET_DEVICES = {
     'jetstream3.crossbench': 4,
     'jetstream3-turbolev_future.crossbench': 4,
     'jetstream_main.crossbench': 4,
-    'speedometer2': {
-      'Speedometer2': 5,
-    },
-    'speedometer3': {
-      'Speedometer3': 7,
-    },
     'speedometer3.crossbench': 4,
   },
   'mac-m1_mini_2020-no-brp-perf': {
-    'speedometer2': {
-      'Speedometer2': 20,
-    },
-    'speedometer3': {
-      'Speedometer3': 20,
-    },
+    'speedometer3.crossbench': 20,
     'rendering.desktop.notracing': 20,
   },
   'mac-m1-pro-perf': {
-    'speedometer3': 4,
     'speedometer3.crossbench': 4,
   },
   'mac-m3-pro-perf': {
@@ -304,7 +230,6 @@ TARGET_DEVICES = {
     'jetstream3.crossbench': 6,
     'jetstream3-turbolev_future.crossbench': 6,
     'jetstream_main.crossbench': 6,
-    'speedometer2': 20,
     'speedometer3.crossbench': 20,
     'speedometer_main.all.crossbench': 10,
     'rendering.desktop.notracing': 20,

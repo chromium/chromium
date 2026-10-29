@@ -3500,10 +3500,6 @@
         "name": "speedometer3-future/Speedometer3"
     },
     {
-        "duration": "90.0",
-        "name": "speedometer3/Speedometer3"
-    },
-    {
         "duration": "3.0",
         "name": "system_health.common_mobile/background:media:imgur:2019"
     },

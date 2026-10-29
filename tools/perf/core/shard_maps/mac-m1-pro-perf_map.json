@@ -1,9 +1,6 @@
 {
     "0": {
         "benchmarks": {
-            "speedometer3": {
-                "abridged": false
-            },
             "jetstream2": {
                 "abridged": false
             }
@@ -33,11 +30,7 @@
         }
     },
     "1": {
-        "benchmarks": {
-            "speedometer3": {
-                "abridged": false
-            }
-        },
+        "benchmarks": {},
         "crossbench": {
             "speedometer3.crossbench": {
                 "crossbench_name": "speedometer_3",
@@ -62,11 +55,7 @@
         }
     },
     "2": {
-        "benchmarks": {
-            "speedometer3": {
-                "abridged": false
-            }
-        },
+        "benchmarks": {},
         "crossbench": {
             "speedometer3.crossbench": {
                 "crossbench_name": "speedometer_3",
@@ -85,9 +74,6 @@
     },
     "3": {
         "benchmarks": {
-            "speedometer3": {
-                "abridged": false
-            },
             "rendering.desktop.notracing": {
                 "abridged": false
             },
