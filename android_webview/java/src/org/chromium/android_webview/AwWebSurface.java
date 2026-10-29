@@ -32,8 +32,12 @@ public class AwWebSurface {
      * Blink and Compose (positive means the finger moves right/down).
      */
     public interface EventListener {
-        /** Called when the surface needs to be redrawn. */
-        void onInvalidate();
+        /**
+         * Called when the surface needs to be redrawn. {@code insideVSync} is true during a VSync
+         * BeginFrame (equivalent to {@link View#invalidate()}) and false outside VSync (equivalent
+         * to {@link View#postInvalidateOnAnimation()}).
+         */
+        void onInvalidate(boolean insideVSync);
 
         /**
          * Notified of overscroll, except on axes where the page stops it from chaining with CSS
@@ -106,7 +110,7 @@ public class AwWebSurface {
                 mAwContents.getViewMethods().onSizeChanged(mWidth, mHeight, 0, 0);
             }
         }
-        mEventListener.onInvalidate();
+        mEventListener.onInvalidate(/* insideVSync= */ false);
     }
 
     /** Binds the native peer to the current WebContents, which AwContents swaps for popups. */

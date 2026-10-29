@@ -84,8 +84,9 @@ class SupportLibWebSurfaceAdapter implements WebSurfaceBoundaryInterface {
         }
 
         @Override
-        public void onInvalidate() {
-            mEventListener.accept(WebSurfaceEvent.INVALIDATE, null);
+        public void onInvalidate(boolean insideVSync) {
+            mEventListener.accept(
+                    WebSurfaceEvent.INVALIDATE, WebSurfaceEventPacker.packInvalidate(insideVSync));
         }
 
         @Override

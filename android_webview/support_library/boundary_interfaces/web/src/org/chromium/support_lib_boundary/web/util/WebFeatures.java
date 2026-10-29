@@ -29,7 +29,7 @@ public final class WebFeatures {
     public static final String WEB_CONTENT = "WEB_CONTENT";
 
     // WebFeature.WEB_SURFACE
-    public static final String WEB_SURFACE = "WEB_SURFACE";
+    public static final String WEB_SURFACE = "WEB_SURFACE_V2";
 
     /**
      * Check if this is a debuggable build of Android. Note: we copy ApkInfo's method because we

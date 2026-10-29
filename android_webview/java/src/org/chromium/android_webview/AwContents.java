@@ -464,7 +464,7 @@ public class AwContents implements SmartClipProvider {
     private boolean mIsContentVisible;
     private boolean mIsUpdateVisibilityTaskPending;
     private final Runnable mUpdateVisibilityRunnable;
-    @Nullable private Runnable mInvalidateListener;
+    @Nullable private InvalidateListener mInvalidateListener;
     @Nullable private AwWebSurface mWebSurface;
 
     private final SparseArray<WindowAndroid.IntentCallback> mOutstandingIntents =
@@ -4428,12 +4428,22 @@ public class AwContents implements SmartClipProvider {
         return mIsAttachedToWindow;
     }
 
+    /** Listener notified when an external surface needs to redraw. */
+    public interface InvalidateListener {
+        /**
+         * Called when the surface needs to be redrawn. {@code insideVSync} is true during a VSync
+         * BeginFrame (equivalent to {@link View#invalidate()}) and false outside VSync (equivalent
+         * to {@link View#postInvalidateOnAnimation()}).
+         */
+        void onInvalidate(boolean insideVSync);
+    }
+
     /**
      * Sets a listener to be notified when an external surface (e.g. {@link AwWebSurface}) needs to
      * redraw. This covers both native invalidations and View framework callbacks (like scroll or
      * window attachment) that normally invalidate {@code mContainerView} directly.
      */
-    public void setInvalidateListener(@Nullable Runnable listener) {
+    public void setInvalidateListener(@Nullable InvalidateListener listener) {
         mInvalidateListener = listener;
     }
 
@@ -4452,7 +4462,7 @@ public class AwContents implements SmartClipProvider {
     @CalledByNative
     private void postInvalidate(boolean insideVSync) {
         if (mInvalidateListener != null) {
-            mInvalidateListener.run();
+            mInvalidateListener.onInvalidate(insideVSync);
             return;
         }
         if (insideVSync) {

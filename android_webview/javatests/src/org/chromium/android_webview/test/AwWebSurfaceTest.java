@@ -160,8 +160,8 @@ public class AwWebSurfaceTest extends AwParameterizedTest {
         TestEventListener listener =
                 new TestEventListener() {
                     @Override
-                    public void onInvalidate() {
-                        super.onInvalidate();
+                    public void onInvalidate(boolean insideVSync) {
+                        super.onInvalidate(insideVSync);
                         mContainerView.invalidate();
                     }
                 };
@@ -201,8 +201,8 @@ public class AwWebSurfaceTest extends AwParameterizedTest {
                 new AwWebSurface(
                         new TestEventListener() {
                             @Override
-                            public void onInvalidate() {
-                                super.onInvalidate();
+                            public void onInvalidate(boolean insideVSync) {
+                                super.onInvalidate(insideVSync);
                                 mContainerView.invalidate();
                             }
 
@@ -246,8 +246,8 @@ public class AwWebSurfaceTest extends AwParameterizedTest {
                 new AwWebSurface(
                         new TestEventListener() {
                             @Override
-                            public void onInvalidate() {
-                                super.onInvalidate();
+                            public void onInvalidate(boolean insideVSync) {
+                                super.onInvalidate(insideVSync);
                                 mContainerView.invalidate();
                             }
 
@@ -298,8 +298,8 @@ public class AwWebSurfaceTest extends AwParameterizedTest {
                 new AwWebSurface(
                         new TestEventListener() {
                             @Override
-                            public void onInvalidate() {
-                                super.onInvalidate();
+                            public void onInvalidate(boolean insideVSync) {
+                                super.onInvalidate(insideVSync);
                                 mContainerView.invalidate();
                             }
 
@@ -497,7 +497,7 @@ public class AwWebSurfaceTest extends AwParameterizedTest {
                     new AwWebSurface(
                             new TestEventListener() {
                                 @Override
-                                public void onInvalidate() {
+                                public void onInvalidate(boolean insideVSync) {
                                     popupInfo.popupContainerView.invalidate();
                                 }
 
@@ -523,7 +523,7 @@ public class AwWebSurfaceTest extends AwParameterizedTest {
         final CallbackHelper mInvalidateHelper = new CallbackHelper();
 
         @Override
-        public void onInvalidate() {
+        public void onInvalidate(boolean insideVSync) {
             mInvalidateHelper.notifyCalled();
         }
 
