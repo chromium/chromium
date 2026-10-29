@@ -7,6 +7,7 @@ import("//content/common/features.gni")
 import("//content/public/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//media/media_options.gni")
+import("//third_party/blink/public/public_features.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/webrtc/webrtc.gni")
 
@@ -621,6 +622,7 @@ source_set("browser_sources") {
     # We expose storage headers for quota and blob storage context in the public
     # API.
     "//storage/browser",
+    "//third_party/blink/public:buildflags",
     "//third_party/webrtc_overrides:webrtc_component",
     "//ui/base/dragdrop/mojom:mojom_headers",
     "//ui/base/ime:text_input_types",
@@ -743,10 +745,13 @@ source_set("browser_sources") {
     sources += [
       "chromeos/delegate_to_browser_gpu_service_accelerator_factory.h",
       "lock_screen_storage.h",
-      "smart_card_delegate.h",
       "tts_controller_delegate_chromeos.cc",
       "tts_controller_delegate_chromeos.h",
     ]
+  }
+
+  if (enable_smart_card) {
+    sources += [ "smart_card_delegate.h" ]
   }
 
   if (!is_android) {

@@ -195,6 +195,7 @@
 #include "third_party/blink/public/mojom/websockets/websocket_connector.mojom-forward.h"
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom-forward.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host_factory.mojom-forward.h"
+#include "third_party/blink/public/public_buildflags.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_handler_base.h"
@@ -222,7 +223,7 @@
 #include "services/device/public/mojom/nfc.mojom.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
 #include "third_party/blink/public/mojom/smart_card/smart_card.mojom-forward.h"
 #endif
 
@@ -1994,7 +1995,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void BindSerialService(
       mojo::PendingReceiver<blink::mojom::SerialService> receiver);
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
   void GetSmartCardService(
       mojo::PendingReceiver<blink::mojom::SmartCardService> receiver);
 #endif

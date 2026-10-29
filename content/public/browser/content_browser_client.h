@@ -95,6 +95,7 @@
 #include "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom-forward.h"
 #include "third_party/blink/public/mojom/payments/secure_payment_confirmation_service.mojom-forward.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
+#include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -303,8 +304,11 @@ class AuthenticatorRequestClientDelegate;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
-class SmartCardDelegate;
 class TtsControllerDelegate;
+#endif
+
+#if BUILDFLAG(ENABLE_SMART_CARD)
+class SmartCardDelegate;
 #endif
 
 // Embedder API (or SPI) for participating in browser logic, to be implemented
@@ -2350,7 +2354,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // API.
   virtual FontAccessDelegate* GetFontAccessDelegate();
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
   // Allows the embedder to provide an implementation of the Web Smart Card API.
   virtual SmartCardDelegate* GetSmartCardDelegate();
 #endif

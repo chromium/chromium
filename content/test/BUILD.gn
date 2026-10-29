@@ -839,7 +839,7 @@ static_library("test_support") {
     ]
   }
 
-  if (is_chromeos) {
+  if (enable_smart_card) {
     sources += [
       "../browser/smart_card/mock_smart_card_context_factory.cc",
       "../browser/smart_card/mock_smart_card_context_factory.h",
@@ -2347,10 +2347,7 @@ test("content_browsertests") {
   }
 
   if (is_chromeos) {
-    sources += [
-      "../browser/direct_sockets/firewall_hole_browsertest.cc",
-      "../browser/smart_card/smart_card_browsertest.cc",
-    ]
+    sources += [ "../browser/direct_sockets/firewall_hole_browsertest.cc" ]
 
     deps += [
       "//chromeos/components/firewall_hole",
@@ -2363,6 +2360,10 @@ test("content_browsertests") {
         "//content/browser/direct_sockets/firewall_hole_delegate.h",
       ]
     }
+  }
+
+  if (enable_smart_card) {
+    sources += [ "../browser/smart_card/smart_card_browsertest.cc" ]
   }
 
   # HID support is not available without udev.

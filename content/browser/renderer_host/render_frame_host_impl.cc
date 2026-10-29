@@ -358,7 +358,7 @@
 #include "content/browser/host_zoom_map_impl.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
 #include "content/browser/smart_card/smart_card_service.h"
 #endif
 
@@ -15570,7 +15570,7 @@ void RenderFrameHostImpl::GetHidService(
   HidService::Create(this, std::move(receiver));
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
 void RenderFrameHostImpl::GetSmartCardService(
     mojo::PendingReceiver<blink::mojom::SmartCardService> receiver) {
   SmartCardService::Create(this, std::move(receiver));

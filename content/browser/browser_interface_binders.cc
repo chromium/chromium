@@ -262,6 +262,9 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "content/browser/lock_screen/lock_screen_service_impl.h"
 #include "third_party/blink/public/mojom/lock_screen/lock_screen.mojom.h"
+#endif
+
+#if BUILDFLAG(ENABLE_SMART_CARD)
 #include "third_party/blink/public/mojom/smart_card/smart_card.mojom.h"
 #endif
 
@@ -1401,7 +1404,7 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::ModelContextHost>(
       &BindRenderFrameHostImpl<&RenderFrameHostImpl::BindModelContextHost>);
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
   map->Add<blink::mojom::SmartCardService>(
       &BindRenderFrameHostImpl<&RenderFrameHostImpl::GetSmartCardService>);
 #endif
