@@ -53,6 +53,8 @@ class GlicWebContentsWarmingPoolTest : public testing::Test {
   using WarmingPoolStatus = GlicWebContentsWarmingPool::WarmingPoolStatus;
   using ReloadAfterExpiryStatus =
       GlicWebContentsWarmingPool::ReloadAfterExpiryStatus;
+  using MemoryPressureRecoveryStatus =
+      GlicWebContentsWarmingPool::MemoryPressureRecoveryStatus;
   using WarmedContainerFate = GlicWebContentsWarmingPool::WarmedContainerFate;
 
   content::BrowserTaskEnvironment task_environment_;
@@ -1032,5 +1034,250 @@ TEST_F(GlicWebContentsWarmingPoolTest, OnUpdateMemoryLimitStopsDelayTimer) {
 
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
   EXPECT_FALSE(warming_pool.GetDelayTimerForTesting().IsRunning());
+}
+
+TEST_F(GlicWebContentsWarmingPoolTest,
+       MemoryPressureRecoveryDefaultLimitOfTwo) {
+  base::HistogramTester histogram_tester;
+  TestGlicWebContentsWarmingPool warming_pool(&profile_, enabling_.get(),
+                                              &web_contents_factory_);
+  ASSERT_TRUE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
+  EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+
+  // 1st critical memory pressure eviction.
+  warming_pool.OnUpdateMemoryLimit(base::kCriticalMemoryPressureThreshold);
+  warming_pool.OnReleaseMemory();
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+
+  // Relieved: 1st recovery should succeed after delay.
+  warming_pool.OnUpdateMemoryLimit(base::kNoMemoryPressureThreshold);
+  EXPECT_TRUE(warming_pool.GetDelayTimerForTesting().IsRunning());
+  task_environment_.FastForwardBy(
+      base::Milliseconds(features::kGlicWarmingDelayMs.Get()));
+  EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+  histogram_tester.ExpectBucketCount("Glic.WarmingPool.MemoryPressureRecovery",
+                                     MemoryPressureRecoveryStatus::kRecovered,
+                                     1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Consumer.WarmingPool.MemoryPressureRecovery",
+      MemoryPressureRecoveryStatus::kRecovered, 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.MemoryPressureRecovery", 0);
+
+  // 2nd critical memory pressure eviction.
+  warming_pool.OnUpdateMemoryLimit(base::kCriticalMemoryPressureThreshold);
+  warming_pool.OnReleaseMemory();
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+
+  // Relieved: 2nd recovery should succeed after delay.
+  warming_pool.OnUpdateMemoryLimit(base::kNoMemoryPressureThreshold);
+  EXPECT_TRUE(warming_pool.GetDelayTimerForTesting().IsRunning());
+  task_environment_.FastForwardBy(
+      base::Milliseconds(features::kGlicWarmingDelayMs.Get()));
+  EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+  histogram_tester.ExpectBucketCount("Glic.WarmingPool.MemoryPressureRecovery",
+                                     MemoryPressureRecoveryStatus::kRecovered,
+                                     2);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Consumer.WarmingPool.MemoryPressureRecovery",
+      MemoryPressureRecoveryStatus::kRecovered, 2);
+
+  // 3rd critical memory pressure eviction.
+  warming_pool.OnUpdateMemoryLimit(base::kCriticalMemoryPressureThreshold);
+  warming_pool.OnReleaseMemory();
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+
+  // Relieved: 3rd recovery is blocked because max_recoveries (2) is reached.
+  warming_pool.OnUpdateMemoryLimit(base::kNoMemoryPressureThreshold);
+  EXPECT_FALSE(warming_pool.GetDelayTimerForTesting().IsRunning());
+  task_environment_.FastForwardBy(
+      base::Milliseconds(features::kGlicWarmingDelayMs.Get()));
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+  histogram_tester.ExpectBucketCount(
+      "Glic.WarmingPool.MemoryPressureRecovery",
+      MemoryPressureRecoveryStatus::kNotRecoveredLimitReached, 1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Consumer.WarmingPool.MemoryPressureRecovery",
+      MemoryPressureRecoveryStatus::kNotRecoveredLimitReached, 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.MemoryPressureRecovery", 0);
+
+  // User explicitly opens Glic. This records
+  // kMemoryPressureRecoveryLimitReached in HitStatus, triggers on-demand
+  // creation, and schedules a refill backfill.
+  EXPECT_TRUE(warming_pool.TakeContainer());
+  histogram_tester.ExpectUniqueSample(
+      "Glic.WarmingPool.HitStatus",
+      WarmingPoolStatus::kMemoryPressureRecoveryLimitReached, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.WarmingPool.HitStatus",
+      WarmingPoolStatus::kMemoryPressureRecoveryLimitReached, 1);
+  histogram_tester.ExpectTotalCount("Glic.Enterprise.WarmingPool.HitStatus", 0);
+  EXPECT_TRUE(warming_pool.GetDelayTimerForTesting().IsRunning());
+  task_environment_.FastForwardBy(
+      base::Milliseconds(features::kGlicWarmingDelayMs.Get()));
+  EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+
+  // A subsequent memory pressure eviction must still not recover because the
+  // recovery count is bounded per pool lifetime and not reset by TakeContainer.
+  warming_pool.OnUpdateMemoryLimit(base::kCriticalMemoryPressureThreshold);
+  warming_pool.OnReleaseMemory();
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+
+  warming_pool.OnUpdateMemoryLimit(base::kNoMemoryPressureThreshold);
+  EXPECT_FALSE(warming_pool.GetDelayTimerForTesting().IsRunning());
+  task_environment_.FastForwardBy(
+      base::Milliseconds(features::kGlicWarmingDelayMs.Get()));
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+  histogram_tester.ExpectBucketCount(
+      "Glic.WarmingPool.MemoryPressureRecovery",
+      MemoryPressureRecoveryStatus::kNotRecoveredLimitReached, 2);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Consumer.WarmingPool.MemoryPressureRecovery",
+      MemoryPressureRecoveryStatus::kNotRecoveredLimitReached, 2);
+}
+
+TEST_F(GlicWebContentsWarmingPoolTest,
+       MemoryPressureRecoveryCancelledTimerDoesNotConsumeLimit) {
+  base::HistogramTester histogram_tester;
+  TestGlicWebContentsWarmingPool warming_pool(&profile_, enabling_.get(),
+                                              &web_contents_factory_);
+  ASSERT_TRUE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
+  EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+
+  // Critical memory pressure evicts the container.
+  warming_pool.OnUpdateMemoryLimit(base::kCriticalMemoryPressureThreshold);
+  warming_pool.OnReleaseMemory();
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+
+  // Pressure relieved: recovery delay timer starts.
+  warming_pool.OnUpdateMemoryLimit(base::kNoMemoryPressureThreshold);
+  EXPECT_TRUE(warming_pool.GetDelayTimerForTesting().IsRunning());
+
+  // Critical memory pressure returns before the delay timer expires,
+  // cancelling the scheduled recovery before a container is created.
+  warming_pool.OnUpdateMemoryLimit(base::kCriticalMemoryPressureThreshold);
+  EXPECT_FALSE(warming_pool.GetDelayTimerForTesting().IsRunning());
+  histogram_tester.ExpectTotalCount("Glic.WarmingPool.MemoryPressureRecovery",
+                                    0);
+
+  // Pressure relieved again: 1st actual recovery should still proceed.
+  warming_pool.OnUpdateMemoryLimit(base::kNoMemoryPressureThreshold);
+  EXPECT_TRUE(warming_pool.GetDelayTimerForTesting().IsRunning());
+  task_environment_.FastForwardBy(
+      base::Milliseconds(features::kGlicWarmingDelayMs.Get()));
+  EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+  histogram_tester.ExpectBucketCount("Glic.WarmingPool.MemoryPressureRecovery",
+                                     MemoryPressureRecoveryStatus::kRecovered,
+                                     1);
+
+  // 2nd eviction and recovery.
+  warming_pool.OnUpdateMemoryLimit(base::kCriticalMemoryPressureThreshold);
+  warming_pool.OnReleaseMemory();
+  warming_pool.OnUpdateMemoryLimit(base::kNoMemoryPressureThreshold);
+  EXPECT_TRUE(warming_pool.GetDelayTimerForTesting().IsRunning());
+  task_environment_.FastForwardBy(
+      base::Milliseconds(features::kGlicWarmingDelayMs.Get()));
+  EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+  histogram_tester.ExpectBucketCount("Glic.WarmingPool.MemoryPressureRecovery",
+                                     MemoryPressureRecoveryStatus::kRecovered,
+                                     2);
+
+  // 3rd eviction: limit (2) is reached, recovery must not be scheduled.
+  warming_pool.OnUpdateMemoryLimit(base::kCriticalMemoryPressureThreshold);
+  warming_pool.OnReleaseMemory();
+  warming_pool.OnUpdateMemoryLimit(base::kNoMemoryPressureThreshold);
+  EXPECT_FALSE(warming_pool.GetDelayTimerForTesting().IsRunning());
+  histogram_tester.ExpectBucketCount(
+      "Glic.WarmingPool.MemoryPressureRecovery",
+      MemoryPressureRecoveryStatus::kNotRecoveredLimitReached, 1);
+}
+
+TEST_F(GlicWebContentsWarmingPoolTest, MemoryPressureRecoveryCustomParamLimit) {
+  {
+    // Test max_recoveries = 1.
+    base::HistogramTester histogram_tester;
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        kGlicLimitMemoryPressureRecovery, {{"max_recoveries", "1"}});
+
+    TestGlicWebContentsWarmingPool warming_pool(&profile_, enabling_.get(),
+                                                &web_contents_factory_);
+    ASSERT_TRUE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
+
+    // 1st eviction and recovery.
+    warming_pool.OnUpdateMemoryLimit(base::kCriticalMemoryPressureThreshold);
+    warming_pool.OnReleaseMemory();
+    warming_pool.OnUpdateMemoryLimit(base::kNoMemoryPressureThreshold);
+    EXPECT_TRUE(warming_pool.GetDelayTimerForTesting().IsRunning());
+    task_environment_.FastForwardBy(
+        base::Milliseconds(features::kGlicWarmingDelayMs.Get()));
+    EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+    histogram_tester.ExpectUniqueSample(
+        "Glic.WarmingPool.MemoryPressureRecovery",
+        MemoryPressureRecoveryStatus::kRecovered, 1);
+
+    // 2nd eviction: limit of 1 is reached, so no refill is scheduled.
+    warming_pool.OnUpdateMemoryLimit(base::kCriticalMemoryPressureThreshold);
+    warming_pool.OnReleaseMemory();
+    warming_pool.OnUpdateMemoryLimit(base::kNoMemoryPressureThreshold);
+    EXPECT_FALSE(warming_pool.GetDelayTimerForTesting().IsRunning());
+    histogram_tester.ExpectBucketCount(
+        "Glic.WarmingPool.MemoryPressureRecovery",
+        MemoryPressureRecoveryStatus::kNotRecoveredLimitReached, 1);
+  }
+
+  {
+    // Test max_recoveries = 0.
+    base::HistogramTester histogram_tester;
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        kGlicLimitMemoryPressureRecovery, {{"max_recoveries", "0"}});
+
+    TestGlicWebContentsWarmingPool warming_pool(&profile_, enabling_.get(),
+                                                &web_contents_factory_);
+    ASSERT_TRUE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
+
+    // 1st eviction: limit is 0, so no refill is scheduled.
+    warming_pool.OnUpdateMemoryLimit(base::kCriticalMemoryPressureThreshold);
+    warming_pool.OnReleaseMemory();
+    warming_pool.OnUpdateMemoryLimit(base::kNoMemoryPressureThreshold);
+    EXPECT_FALSE(warming_pool.GetDelayTimerForTesting().IsRunning());
+    histogram_tester.ExpectUniqueSample(
+        "Glic.WarmingPool.MemoryPressureRecovery",
+        MemoryPressureRecoveryStatus::kNotRecoveredLimitReached, 1);
+
+    EXPECT_TRUE(warming_pool.TakeContainer());
+    histogram_tester.ExpectUniqueSample(
+        "Glic.WarmingPool.HitStatus",
+        WarmingPoolStatus::kMemoryPressureRecoveryLimitReached, 1);
+  }
+}
+
+TEST_F(GlicWebContentsWarmingPoolTest,
+       MemoryPressureRecoveryDisabledKillswitchAllowsUnbounded) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kGlicLimitMemoryPressureRecovery);
+
+  TestGlicWebContentsWarmingPool warming_pool(&profile_, enabling_.get(),
+                                              &web_contents_factory_);
+  ASSERT_TRUE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
+
+  // Perform 3 consecutive memory pressure eviction and recovery cycles.
+  for (int i = 0; i < 3; ++i) {
+    warming_pool.OnUpdateMemoryLimit(base::kCriticalMemoryPressureThreshold);
+    warming_pool.OnReleaseMemory();
+    EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+
+    warming_pool.OnUpdateMemoryLimit(base::kNoMemoryPressureThreshold);
+    EXPECT_TRUE(warming_pool.GetDelayTimerForTesting().IsRunning());
+    task_environment_.FastForwardBy(
+        base::Milliseconds(features::kGlicWarmingDelayMs.Get()));
+    EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+  }
+  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.MemoryPressureRecovery",
+                                      MemoryPressureRecoveryStatus::kRecovered,
+                                      3);
 }
 }  // namespace glic

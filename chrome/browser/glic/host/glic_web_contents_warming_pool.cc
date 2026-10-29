@@ -31,6 +31,12 @@ BASE_FEATURE(kGlicReloadWebContentsAfterExpiry,
 const base::FeatureParam<int> kGlicMaxReloadCount{
     &kGlicReloadWebContentsAfterExpiry, "max_reload_count", 4};
 
+BASE_FEATURE(kGlicLimitMemoryPressureRecovery,
+             FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);
+
+const base::FeatureParam<int> kGlicMaxMemoryPressureRecoveries{
+    &kGlicLimitMemoryPressureRecovery, "max_recoveries", 2};
+
 namespace {
 
 GlicWebContentsWarmingPool::ContainerCreationReason ToContainerCreationReason(
@@ -66,6 +72,16 @@ class GlicWebContentsWarmingPool::Metrics {
     // construction, when GetGlicProviderSpec() still returns the Consumer
     // fallback (b/574535435).
     metric_reporter_.RecordEnumeration("WarmingPool.ReloadAfterExpiry", status);
+  }
+
+  void OnMemoryPressureRecovery(
+      GlicWebContentsWarmingPool::MemoryPressureRecoveryStatus status) {
+    metric_reporter_.RecordEnumeration("WarmingPool.MemoryPressureRecovery",
+                                       status);
+    if (status == GlicWebContentsWarmingPool::MemoryPressureRecoveryStatus::
+                      kNotRecoveredLimitReached) {
+      miss_status_ = WarmingPoolStatus::kMemoryPressureRecoveryLimitReached;
+    }
   }
 
   void OnWarmedContentCreated(
@@ -309,6 +325,11 @@ void GlicWebContentsWarmingPool::EnsurePreload(ContainerCreationReason reason) {
   DiscardFailedContainer();
 
   if (!warmed_container_) {
+    if (reason == ContainerCreationReason::kMemoryPressureRecovery) {
+      memory_pressure_recovery_count_++;
+      metrics_->OnMemoryPressureRecovery(
+          MemoryPressureRecoveryStatus::kRecovered);
+    }
     should_warm_when_memory_allows_ = true;
     warmed_container_ = CreateContainer();
     warmed_container_->SetErrorCallback(
@@ -320,6 +341,14 @@ void GlicWebContentsWarmingPool::EnsurePreload(ContainerCreationReason reason) {
                        base::Unretained(this)));
     metrics_->OnWarmedContentCreated(reason);
   }
+}
+
+bool GlicWebContentsWarmingPool::CanRecoverFromMemoryPressure() const {
+  if (!base::FeatureList::IsEnabled(kGlicLimitMemoryPressureRecovery)) {
+    return true;
+  }
+  return memory_pressure_recovery_count_ <
+         kGlicMaxMemoryPressureRecoveries.Get();
 }
 
 void GlicWebContentsWarmingPool::OnUpdateMemoryLimit(
@@ -342,7 +371,13 @@ void GlicWebContentsWarmingPool::OnUpdateMemoryLimit(
   // pool should maintain a container and doesn't already have one or a timer.
   if (should_warm_when_memory_allows_ && !warmed_container_ &&
       !backfill_scheduler_.IsScheduled()) {
-    EnsurePreloadDelayed(ContainerCreationReason::kMemoryPressureRecovery);
+    if (CanRecoverFromMemoryPressure()) {
+      EnsurePreloadDelayed(ContainerCreationReason::kMemoryPressureRecovery);
+    } else {
+      should_warm_when_memory_allows_ = false;
+      metrics_->OnMemoryPressureRecovery(
+          MemoryPressureRecoveryStatus::kNotRecoveredLimitReached);
+    }
   }
 }
 

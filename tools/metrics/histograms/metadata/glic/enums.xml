@@ -775,6 +775,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/glic_invoke_task.h:GlicTaskType) -->
 
+<!-- LINT.IfChange(GlicMemoryPressureRecoveryStatus) -->
+
+<enum name="GlicMemoryPressureRecoveryStatus">
+  <int value="0" label="Recovered"/>
+  <int value="1" label="Not recovered: Limit reached"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic_web_contents_warming_pool.h:GlicMemoryPressureRecoveryStatus) -->
+
 <!-- LINT.IfChange(GlicMultiInstanceSessionEndReason) -->
 
 <enum name="GlicMultiInstanceSessionEndReason">
@@ -1361,6 +1370,10 @@ chromium-metrics-reviews@google.com.
   <int value="6"
       label="Load Error: Container was pre-warmed but failed to load or timed
              out before use."/>
+  <int value="7"
+      label="Memory Pressure Recovery Limit Reached: Container was not
+             pre-warmed because the pool reached the memory pressure recovery
+             limit."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic_web_contents_warming_pool.h:GlicWarmingPoolStatus) -->

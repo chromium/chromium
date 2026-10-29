@@ -3915,8 +3915,23 @@ ApiRequestType variants; see go/geic-metrics-split. -->
     pre-warmed WebContents. Reports whether the container was pre-warmed (hit),
     not pre-warmed (cold), pre-warmed but expired before use, pre-warmed but
     crashed before use, not pre-warmed because the pool was disabled by memory
-    pressure, or not pre-warmed because a backfill was still pending. Scope:
-    {GlicProvider}.
+    pressure, not pre-warmed because a backfill was still pending, pre-warmed
+    but failed to load or timed out before use, or not pre-warmed because the
+    memory pressure recovery limit was reached. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.WarmingPool.MemoryPressureRecovery"
+    enum="GlicMemoryPressureRecoveryStatus" expires_after="2027-03-01">
+  <owner>bryantchandler@chromium.org</owner>
+  <owner>dewittj@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Logged when the Glic WebContents warming pool attempts to recover after
+    critical memory pressure subsides. Reports whether a new container was
+    recovered or whether recovery was blocked because the recovery limit was
+    reached. Scope: {GlicProvider}.
   </summary>
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
