@@ -270,7 +270,15 @@ enum class GlicInvokeError {
   // the client became usable (see Host::client_load_state()). Invocations
   // that already have a usable client are not affected by a close.
   kPanelClosed = 26,
-  kMaxValue = kPanelClosed,
+  // The invocation needed the client, the client stopped on the sign-in panel
+  // (ClientLoadErrorReason::kSignIn), and the user had not signed in when the
+  // invocation timed out. Not a failure of the client, and not a kTimeout
+  // either: nothing the product did ran late. (An invocation that only shows
+  // the panel succeeds at that point instead; see SignInBehavior.) Counted as
+  // ABANDONED, which is what CUI 1 recorded for the sign-in panel before it
+  // was resolved from the invocation.
+  kSignInRequired = 27,
+  kMaxValue = kSignInRequired,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvokeResult,//chrome/browser/glic/public/glic_invoke_options.cc:GlicInvokeErrorToString)
 
