@@ -231,7 +231,7 @@ class ClientBase {
   std::unique_ptr<ScopedVkDeviceMemory> vk_texture_image_memory_;
   std::unique_ptr<ScopedVkImageView> vk_texture_image_view_;
   std::unique_ptr<ScopedVkSampler> vk_texture_sampler_;
-  std::vector<VkDescriptorSet> vk_descriptor_sets_;
+  std::vector<base::RawPtrIfPtrT<VkDescriptorSet>> vk_descriptor_sets_;
   // A command pool for the transfer queue (blitter)
   std::unique_ptr<ScopedVkCommandPool> vk_command_pool_transfer_;
   VkQueue vk_queue_;

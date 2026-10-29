@@ -130,10 +130,11 @@ class ScopedVulkanRenderFrame {
             .extent = {256, 256},
         };
         vkCmdSetScissor(command_buffer_, 0, 1, &scissor);
+        VkDescriptorSet descriptor_set = client_->vk_descriptor_sets_[frame];
         vkCmdBindDescriptorSets(
             command_buffer_, VK_PIPELINE_BIND_POINT_GRAPHICS,
-            client_->vk_pipeline_layout_->get(), 0, 1,
-            &(client_->vk_descriptor_sets_[frame]), 0, nullptr);
+            client_->vk_pipeline_layout_->get(), 0, 1, &descriptor_set, 0,
+            nullptr);
         vkCmdDraw(command_buffer_, 6, 1, 0, 0);
       }
     } else {

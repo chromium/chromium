@@ -27,6 +27,7 @@
 #include "base/bits.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/memory/platform_shared_memory_region.h"
@@ -877,7 +878,7 @@ std::unique_ptr<ScopedVkSampler> CreateTextureSampler(VkDevice device) {
   return textureSampler;
 }
 
-std::vector<VkDescriptorSet> CreateDescriptorSets(
+std::vector<base::RawPtrIfPtrT<VkDescriptorSet>> CreateDescriptorSets(
     VkDevice device,
     VkImageView textureImageView,
     VkSampler textureSampler,
@@ -914,7 +915,7 @@ std::vector<VkDescriptorSet> CreateDescriptorSets(
     descriptorWrites.pImageInfo = &imageInfo;
     vkUpdateDescriptorSets(device, 1, &descriptorWrites, 0, nullptr);
   }
-  return descriptor_sets;
+  return base::ToVector<base::RawPtrIfPtrT<VkDescriptorSet>>(descriptor_sets);
 }
 
 #endif  // defined(USE_VULKAN)
