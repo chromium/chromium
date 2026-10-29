@@ -31,6 +31,9 @@
    * the toolbar button default. */
   --toolbar-chip-height: inherit;
 
+  --toolbar-chip-ink-drop-hover-color: var(--color-omnibox-action-icon-hover);
+  --toolbar-chip-ink-drop-ripple-color: var(--color-omnibox-icon-pressed);
+
   /* Standard C++ PageActions use 20px icons natively. */
   --toolbar-chip-icon-size: var(--location-bar-trailing-icon-size);
 
@@ -88,6 +91,7 @@
 
   --toolbar-chip-bg-color: var(--color-omnibox-icon-background-tonal);
   --toolbar-chip-fg-color: var(--color-omnibox-icon-foreground-tonal);
+  --toolbar-chip-ink-drop-hover-color: var(--color-omnibox-icon-hover);
 }
 
 :host-context([dir=rtl]) #animatedIcon {

@@ -120,6 +120,12 @@ suite('PageActionIconTest', function() {
 
   teardown(function() {
     document.documentElement.dir = 'ltr';
+    document.documentElement.style.removeProperty(
+        '--color-omnibox-action-icon-hover');
+    document.documentElement.style.removeProperty(
+        '--color-omnibox-icon-pressed');
+    document.documentElement.style.removeProperty(
+        '--color-omnibox-icon-hover');
   });
 
   test('Render', function() {
@@ -232,6 +238,78 @@ suite('PageActionIconTest', function() {
     await microtasksFinished();
 
     assertEquals('rgb(255, 0, 0)', style.get('color')?.toString());
+  });
+
+  test('Ink drop hover and ripple colors', async function() {
+    const kActionHoverColor = 'rgb(11, 22, 33)';
+    const kIconPressedColor = 'rgb(44, 55, 66)';
+    const kIconHoverColor = 'rgb(77, 88, 99)';
+
+    document.documentElement.style.setProperty(
+        '--color-omnibox-action-icon-hover', kActionHoverColor);
+    document.documentElement.style.setProperty(
+        '--color-omnibox-icon-pressed', kIconPressedColor);
+    document.documentElement.style.setProperty(
+        '--color-omnibox-icon-hover', kIconHoverColor);
+
+    const actualButton = icon.$.button.$.button;
+
+    // Default icon-only chip uses kColorOmniboxActionIconHover and
+    // kColorOmniboxIconPressed.
+    assertEquals(
+        kActionHoverColor,
+        window.getComputedStyle(actualButton, '::before').backgroundColor);
+    assertEquals(
+        kIconPressedColor,
+        window.getComputedStyle(actualButton, '::after').backgroundColor);
+
+    // When label is shown, hover switches to kColorOmniboxIconHover while
+    // ripple remains kColorOmniboxIconPressed.
+    icon.state = {
+      ...createBaseState(),
+      text: 'Inexplicably expanded bookmark chip',
+      shouldShowChip: true,
+    };
+    await microtasksFinished();
+
+    assertEquals(
+        kIconHoverColor,
+        window.getComputedStyle(actualButton, '::before').backgroundColor);
+    assertEquals(
+        kIconPressedColor,
+        window.getComputedStyle(actualButton, '::after').backgroundColor);
+
+    // Verify inside a page-action-icons container (capsule vs. non-capsule):
+    // native doesn't tie inkdrop colors to the capsule, so they always use
+    // omnibox colors.
+    const container = document.createElement('page-action-icons');
+    document.body.appendChild(container);
+
+    // Non-capsule
+    container.pageActionStates = [createBaseState()];
+    await microtasksFinished();
+    const nonCapsuleIcon =
+        container.shadowRoot.querySelector('page-action-icon');
+    assertTrue(!!nonCapsuleIcon);
+    const nonCapsuleButton = nonCapsuleIcon.$.button.$.button;
+    assertEquals(
+        kActionHoverColor,
+        window.getComputedStyle(nonCapsuleButton, '::before').backgroundColor);
+    assertEquals(
+        kIconPressedColor,
+        window.getComputedStyle(nonCapsuleButton, '::after').backgroundColor);
+
+    // Capsule
+    container.toggleAttribute('is-capsule', true);
+    await microtasksFinished();
+    assertEquals(
+        kActionHoverColor,
+        window.getComputedStyle(nonCapsuleButton, '::before').backgroundColor);
+    assertEquals(
+        kIconPressedColor,
+        window.getComputedStyle(nonCapsuleButton, '::after').backgroundColor);
+
+    container.remove();
   });
 
   test('Render without accessible name', async function() {
