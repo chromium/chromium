@@ -77,13 +77,14 @@ constexpr auto kDueLabelsTypography = TypographyToken::kCrosAnnotation1;
 
 std::u16string GetFormattedDueDate(const base::Time& due) {
   const auto midnight_today = base::Time::Now().LocalMidnight();
-  const auto midnight_tomorrow = midnight_today + base::Days(1);
+  const auto midnight_tomorrow = midnight_today.NextLocalMidnight();
 
   if (midnight_today <= due && due < midnight_tomorrow) {
     return l10n_util::GetStringUTF16(IDS_GLANCEABLES_DUE_TODAY);
   }
 
-  const auto midnight_in_7_days_from_today = midnight_today + base::Days(7);
+  const auto midnight_in_7_days_from_today =
+      midnight_today.LocalMidnightWithOffset(7);
   const auto& formatter =
       base::i18n::IcuBridge::GetInstance().date_time_formatter();
   if (midnight_tomorrow <= due && due < midnight_in_7_days_from_today) {

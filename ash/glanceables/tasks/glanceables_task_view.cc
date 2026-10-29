@@ -95,7 +95,7 @@ std::u16string GetFormattedDueDate(const base::Time& due) {
   // **local** midnight instead.
   const auto adjusted_due = due - calendar_utils::GetTimeDifference(due);
   const auto midnight_today = base::Time::Now().LocalMidnight();
-  const auto midnight_tomorrow = midnight_today + base::Days(1);
+  const auto midnight_tomorrow = midnight_today.NextLocalMidnight();
 
   if (midnight_today <= adjusted_due && adjusted_due < midnight_tomorrow) {
     return l10n_util::GetStringUTF16(IDS_GLANCEABLES_DUE_TODAY);
