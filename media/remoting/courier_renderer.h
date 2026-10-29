@@ -247,6 +247,10 @@ class CourierRenderer final : public Renderer {
   // the data flow rates for metrics.
   base::RepeatingTimer data_flow_poll_timer_;
 
+  // A timer that bounds the time spent establishing the remoting pipeline
+  // before falling back to local rendering.
+  base::OneShotTimer init_timer_;
+
   // Indicates whether is waiting for data from the Demuxers while receiver
   // reported buffer underflow.
   bool receiver_is_blocked_on_local_demuxers_ = true;

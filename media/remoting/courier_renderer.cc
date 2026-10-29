@@ -58,6 +58,19 @@ constexpr base::TimeDelta kStabilizationPeriod = base::Seconds(2);
 // data flow rates for metrics.
 constexpr base::TimeDelta kDataFlowPollPeriod = base::Seconds(10);
 
+// Time allowed for the receiver to acquire the demuxer/renderer and complete
+// RPC_R_INITIALIZE after CourierRenderer::Initialize() is called. Once the Cast
+// Streaming session is active, normal RPC initialization completes in a couple
+// of local-network round trips (<500ms). 5 seconds matches the 5-second timeout
+// used for OFFER/ANSWER negotiation in OpenscreenSessionHost (kOfferTimeout)
+// and RPC buffer requests in DemuxerStreamAdapter (kRequestBufferTimeout): it
+// is generous enough to avoid false timeouts on slow receiver cold starts while
+// keeping the black-screen delay reasonable if an unpatched receiver drops
+// remoting RPCs. If the receiver never replies with RPC_R_INITIALIZE_CALLBACK,
+// fail with PIPELINE_ERROR_INITIALIZATION_FAILED so the sender falls back to
+// mirroring instead of leaving the media element stuck with a black screen.
+constexpr base::TimeDelta kInitTimeout = base::Seconds(5);
+
 // base::Bind* doesn't understand openscreen::WeakPtr, so we must manually
 // check the RpcMessenger pointer before calling into it.
 void RegisterForRpcTask(
@@ -338,6 +351,10 @@ void CourierRenderer::OnDataPipeCreated(
   }
 
   state_ = STATE_ACQUIRING;
+  init_timer_.Start(
+      FROM_HERE, kInitTimeout,
+      base::BindOnce(&CourierRenderer::OnFatalError, base::Unretained(this),
+                     RECEIVER_INITIALIZE_FAILED));
 
   // Issues RPC_ACQUIRE_DEMUXER RPC message.
   auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
@@ -483,6 +500,7 @@ void CourierRenderer::InitializeCallback(
 
   metrics_recorder_.OnRendererInitialized();
 
+  init_timer_.Stop();
   state_ = STATE_PLAYING;
 
   SetVolume(volume_);
@@ -666,6 +684,7 @@ void CourierRenderer::OnFatalError(StopTrigger stop_trigger) {
                                   controller_, stop_trigger));
   }
 
+  init_timer_.Stop();
   data_flow_poll_timer_.Stop();
 
   // This renderer will be shut down shortly. To prevent breaking the pipeline,

@@ -138,6 +138,27 @@ const char* AsErrorMessage(OperationalStatus status) {
       return "Fatal error in codec runtime.";
   }
 }
+
+constexpr bool IsAnswerError(SessionError error) {
+  switch (error) {
+    case SessionError::ANSWER_TIME_OUT:
+    case SessionError::ANSWER_NOT_OK:
+    case SessionError::ANSWER_MISMATCHED_CAST_MODE:
+    case SessionError::ANSWER_MISMATCHED_SSRC_LENGTH:
+    case SessionError::ANSWER_SELECT_MULTIPLE_AUDIO:
+    case SessionError::ANSWER_SELECT_MULTIPLE_VIDEO:
+    case SessionError::ANSWER_SELECT_INVALID_INDEX:
+    case SessionError::ANSWER_NO_AUDIO_OR_VIDEO:
+      return true;
+    case SessionError::AUDIO_CAPTURE_ERROR:
+    case SessionError::VIDEO_CAPTURE_ERROR:
+    case SessionError::RTP_STREAM_ERROR:
+    case SessionError::ENCODING_ERROR:
+    case SessionError::CAST_TRANSPORT_ERROR:
+    case SessionError::OPENSCREEN_SESSION_ERROR:
+      return false;
+  }
+}
 }  // namespace
 
 OpenscreenSessionHost::RemotingStreamData::RemotingStreamData(
@@ -538,8 +559,14 @@ void OpenscreenSessionHost::OnError(
 
     // If remoting is not supported, the session will continue but
     // OnCapabilitiesDetermined() will never be called and the media remoter
-    // will not be set up.
+    // will not be set up. If this error occurs while attempting to start
+    // remoting, report the error so that the session can fallback to
+    // mirroring.
     case openscreen::Error::Code::kRemotingNotSupported:
+      if (state_ == State::kRemoting) {
+        ReportAndLogError(SessionError::ANSWER_NOT_OK, error.ToString());
+        return;
+      }
       logger_.LogInfo(base::StrCat(
           {"Remoting is disabled for this session. error=", error.ToString()}));
       return;
@@ -767,7 +794,7 @@ void OpenscreenSessionHost::ReportAndLogError(SessionError error,
                                 error);
   logger_.LogError(error, message);
 
-  if (state_ == State::kRemoting) {
+  if (state_ == State::kRemoting && IsAnswerError(error)) {
     // Try to fallback to mirroring.
     media_remoter_->OnRemotingFailed();
     return;

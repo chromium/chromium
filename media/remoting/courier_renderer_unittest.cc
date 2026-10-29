@@ -469,7 +469,8 @@ class CourierRendererTest : public testing::Test {
     RunPendingTasks();
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<RendererController> controller_;
   std::unique_ptr<RendererClientImpl> render_client_;
   std::unique_ptr<FakeMediaResource> media_resource_;
@@ -552,6 +553,35 @@ TEST_F(CourierRendererTest, InitializeFailed) {
   renderer_->SetPlaybackRate(2.5);
   RunPendingTasks();
   ASSERT_EQ(0, ReceivedRpcMessageCount());
+}
+
+TEST_F(CourierRendererTest, InitializeTimeout) {
+  render_client_ = std::make_unique<RendererClientImpl>();
+  media_resource_ = std::make_unique<FakeMediaResource>();
+  EXPECT_CALL(*render_client_, OnPipelineStatus(HasStatusCode(PIPELINE_OK)))
+      .Times(1);
+  ASSERT_TRUE(renderer_);
+
+  // Drop RPCs without replying, simulating a receiver whose remoting handler
+  // is an unimplemented stub.
+  current_rpc_cb_ = base::DoNothing();
+  RunPendingTasks();
+
+  renderer_->Initialize(media_resource_.get(), render_client_.get(),
+                        base::BindOnce(&RendererClientImpl::OnPipelineStatus,
+                                       base::Unretained(render_client_.get())));
+  RunPendingTasks();
+
+  // The renderer should not have encountered an error before the timeout.
+  ASSERT_FALSE(DidEncounterFatalError());
+
+  // Fast forward past the 5-second init timeout.
+  task_environment_.FastForwardBy(base::Seconds(5));
+
+  // The timeout should trigger a fatal error and complete the init callback
+  // with PIPELINE_OK to allow clean fallback to local rendering.
+  ASSERT_TRUE(DidEncounterFatalError());
+  ASSERT_EQ(render_client_->status(), PIPELINE_OK);
 }
 
 TEST_F(CourierRendererTest, Flush) {

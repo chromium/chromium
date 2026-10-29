@@ -536,8 +536,23 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
   }
 
   void SendRemotingNotSupported() {
-    // Remoting not being supported should NOT surface an error.
-    EXPECT_CALL(*this, OnError(_)).Times(0);
+    if (cast_mode_ == "mirroring") {
+      // Remoting not being supported during mirroring should NOT surface an
+      // error.
+      EXPECT_CALL(*this, OnError(_)).Times(0);
+    } else {
+      EXPECT_CALL(*this, DidStop()).Times(0);
+      EXPECT_CALL(*this, OnError(_)).Times(0);
+      EXPECT_CALL(*this, LogErrorMessage(_));
+      // Expect to send OFFER message to fallback on mirroring.
+      EXPECT_CALL(*this, OnOutboundMessage(SenderMessage::Type::kOffer));
+      EXPECT_CALL(*this, OnRemotingStateChanged(false));
+      // The start of remoting is expected to fail.
+      EXPECT_CALL(
+          remoting_source_,
+          OnStartFailed(RemotingStartFailReason::INVALID_ANSWER_MESSAGE));
+      EXPECT_CALL(remoting_source_, OnSinkGone()).Times(AtLeast(1));
+    }
 
     session_host_->OnError(
         session_host_->session_.get(),
@@ -545,6 +560,10 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
                           "this receiver does not support remoting"));
 
     task_environment_.RunUntilIdle();
+    if (cast_mode_ != "mirroring") {
+      cast_mode_ = "mirroring";
+      Mock::VerifyAndClear(&remoting_source_);
+    }
     Mock::VerifyAndClear(this);
   }
 
@@ -983,6 +1002,31 @@ TEST_F(OpenscreenSessionHostTest, StartRemotingFailed) {
   GenerateAndReplyWithAnswer();
   CaptureOneVideoFrame();
   StopSession();
+}
+
+TEST_F(OpenscreenSessionHostTest,
+       StartRemotingRejectedWithRemotingNotSupported) {
+  CreateSession(SessionType::AUDIO_AND_VIDEO);
+  StartSession();
+  SendRemotingCapabilities();
+  StartRemoting();
+  SendRemotingNotSupported();
+  GenerateAndReplyWithAnswer();
+  CaptureOneVideoFrame();
+  StopSession();
+}
+
+TEST_F(OpenscreenSessionHostTest, StopsSessionOnNonAnswerErrorDuringRemoting) {
+  CreateSession(SessionType::AUDIO_AND_VIDEO);
+  StartSession();
+  SendRemotingCapabilities();
+  StartRemoting();
+
+  EXPECT_CALL(*this, DidStop());
+  EXPECT_CALL(*this, OnError(SessionError::ENCODING_ERROR));
+  EXPECT_CALL(*this, LogErrorMessage(_));
+  PushFatalAudioCaptureError();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(OpenscreenSessionHostTest, SwitchSourceTabFromMirroring) {
