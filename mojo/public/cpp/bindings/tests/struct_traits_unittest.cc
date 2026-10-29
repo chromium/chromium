@@ -6,9 +6,12 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
+#include "mojo/public/cpp/bindings/connector.h"
 #include "mojo/public/cpp/bindings/deserialization_error.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -17,6 +20,7 @@
 #include "mojo/public/cpp/bindings/tests/struct_with_traits_impl.h"
 #include "mojo/public/cpp/bindings/tests/struct_with_traits_impl_traits.h"
 #include "mojo/public/cpp/bindings/tests/variant_test_util.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "mojo/public/interfaces/bindings/tests/struct_with_traits.test-mojom.h"
 #include "mojo/public/interfaces/bindings/tests/test_native_types.test-mojom-blink.h"
@@ -739,6 +743,108 @@ TEST_F(StructTraitsTest, UnionReadReturnsExpected) {
                 HasSubstr("struct_traits_unittest.cc"));
     EXPECT_THAT(dispatch_context.error_trace()[0].ToString(), HasSubstr("-42"));
   }
+}
+
+namespace {
+
+class MessageCapturingReceiver : public MessageReceiver {
+ public:
+  explicit MessageCapturingReceiver(base::OnceClosure quit_closure)
+      : quit_closure_(std::move(quit_closure)) {}
+
+  // MessageReceiver:
+  bool Accept(Message* message) override {
+    message_ = std::move(*message);
+    std::move(quit_closure_).Run();
+    return true;
+  }
+
+  Message TakeMessage() { return std::move(message_); }
+
+ private:
+  base::OnceClosure quit_closure_;
+  Message message_;
+};
+
+}  // namespace
+
+TEST_F(StructTraitsTest, WrapAsMessageOverConnector) {
+  MessagePipe pipe;
+  Connector sender(std::move(pipe.handle0), Connector::SINGLE_THREADED_SEND,
+                   base::SingleThreadTaskRunner::GetCurrentDefault());
+  Connector receiver(std::move(pipe.handle1), Connector::SINGLE_THREADED_SEND,
+                     base::SingleThreadTaskRunner::GetCurrentDefault());
+
+  // 1. In-process transfer of a WrapAsMessage() message without serialization.
+  // StructWithUnreachableTraits has NOTREACHED() in its StructTraits, proving
+  // that serialization is never invoked.
+  {
+    base::RunLoop loop;
+    MessageCapturingReceiver capturing_receiver(loop.QuitClosure());
+    receiver.set_incoming_receiver(&capturing_receiver);
+
+    StructWithUnreachableTraitsImpl input;
+    input.magic_number = 42;
+    Message message = StructWithUnreachableTraits::WrapAsMessage(input);
+    EXPECT_FALSE(message.is_serialized());
+    EXPECT_TRUE(sender.Accept(&message));
+    loop.Run();
+
+    Message received = capturing_receiver.TakeMessage();
+    EXPECT_FALSE(received.is_serialized());
+    StructWithUnreachableTraitsImpl output;
+    EXPECT_TRUE(StructWithUnreachableTraits::DeserializeFromMessage(
+        std::move(received), &output));
+    EXPECT_EQ(42, output.magic_number);
+  }
+
+  // 2. Forced serialization via SerializeIfNecessary() before sending over
+  // Connector.
+  {
+    base::RunLoop loop;
+    MessageCapturingReceiver capturing_receiver(loop.QuitClosure());
+    receiver.set_incoming_receiver(&capturing_receiver);
+
+    TrivialStructWithTraitsImpl input{123};
+    Message message = TrivialStructWithTraits::WrapAsMessage(input);
+    EXPECT_FALSE(message.is_serialized());
+    message.SerializeIfNecessary();
+    EXPECT_TRUE(message.is_serialized());
+    EXPECT_TRUE(sender.Accept(&message));
+    loop.Run();
+
+    Message received = capturing_receiver.TakeMessage();
+    EXPECT_TRUE(received.is_serialized());
+    TrivialStructWithTraitsImpl output{0};
+    EXPECT_TRUE(TrivialStructWithTraits::DeserializeFromMessage(
+        std::move(received), &output));
+    EXPECT_EQ(123, output.value);
+  }
+
+  // 3. Forced serialization via SerializeIfNecessary() after receiving over
+  // Connector.
+  {
+    base::RunLoop loop;
+    MessageCapturingReceiver capturing_receiver(loop.QuitClosure());
+    receiver.set_incoming_receiver(&capturing_receiver);
+
+    TrivialStructWithTraitsImpl input{456};
+    Message message = TrivialStructWithTraits::WrapAsMessage(input);
+    EXPECT_FALSE(message.is_serialized());
+    EXPECT_TRUE(sender.Accept(&message));
+    loop.Run();
+
+    Message received = capturing_receiver.TakeMessage();
+    EXPECT_FALSE(received.is_serialized());
+    received.SerializeIfNecessary();
+    EXPECT_TRUE(received.is_serialized());
+    TrivialStructWithTraitsImpl output{0};
+    EXPECT_TRUE(TrivialStructWithTraits::DeserializeFromMessage(
+        std::move(received), &output));
+    EXPECT_EQ(456, output.value);
+  }
+
+  receiver.set_incoming_receiver(nullptr);
 }
 
 }  // namespace test

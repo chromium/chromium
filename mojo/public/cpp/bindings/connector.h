@@ -57,35 +57,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
     MULTI_THREADED_SEND
   };
 
-  // Determines how this Connector should behave with respect to serialization
-  // of outgoing messages.
-  enum class OutgoingSerializationMode {
-    // Lazy serialization. The Connector prefers to transmit serialized messages
-    // only when it knows its peer endpoint is remote. This ensures outgoing
-    // requests are unserialized by default (when possible, i.e. when generated
-    // bindings support it) and serialized only if and when necessary.
-    kLazy,
-
-    // Eager serialization. The Connector always prefers serialized messages,
-    // ensuring that interface calls will be serialized immediately before
-    // sending on the Connector.
-    kEager,
-  };
-
-  // Determines how this Connector should behave with respect to serialization
-  // of incoming messages.
-  enum class IncomingSerializationMode {
-    // Accepts and dispatches either serialized or unserialized messages. This
-    // is the only mode that should be used in production.
-    kDispatchAsIs,
-
-    // Accepts either serialized or unserialized messages, but always forces
-    // serialization (if applicable) before dispatch. Should be used only in
-    // test environments to coerce the lazy serialization of a message after
-    // transmission.
-    kSerializeBeforeDispatchForTesting,
-  };
-
   // The Connector takes ownership of `message_pipe`. A Connector is essentially
   // inert upon construction, though it may be used to send messages
   // immediately. In order to receive incoming messages or error events,
@@ -107,10 +78,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
   ~Connector() override;
 
   const char* interface_name() const { return interface_name_; }
-
-  // Sets outgoing serialization mode.
-  void SetOutgoingSerializationMode(OutgoingSerializationMode mode);
-  void SetIncomingSerializationMode(IncomingSerializationMode mode);
 
   // Sets the receiver to handle messages read from the message pipe.  The
   // Connector will read messages from the pipe regardless of whether or not an
@@ -227,13 +194,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
 
   base::SequencedTaskRunner* task_runner() const { return task_runner_.get(); }
 
-  // Allows testing environments to override the default serialization behavior
-  // of newly constructed Connector instances. Must be called before any
-  // Connector instances are constructed.
-  static void OverrideDefaultSerializationBehaviorForTesting(
-      OutgoingSerializationMode outgoing_mode,
-      IncomingSerializationMode incoming_mode);
-
   // Feeds a message to the Connector as if the Connector read it from a pipe.
   // Used for testing and fuzzing.
   bool SimulateReadMessage(ScopedMessageHandle message);
@@ -336,9 +296,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
 
   // See |set_force_immediate_dispatch()|.
   bool force_immediate_dispatch_ = false;
-
-  OutgoingSerializationMode outgoing_serialization_mode_;
-  IncomingSerializationMode incoming_serialization_mode_;
 
   // If sending messages is allowed from multiple sequences, |lock_| is used to
   // protect modifications to |message_pipe_| and |drop_writes_|.
