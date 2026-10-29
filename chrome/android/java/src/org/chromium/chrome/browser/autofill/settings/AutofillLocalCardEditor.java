@@ -398,6 +398,11 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
     public void onScanCancelled() {}
 
     @Override
+    public @Nullable Context getWindowContext() {
+        return getActivity();
+    }
+
+    @Override
     public void onScanCompleted(
             String cardHolderName, String cardNumber, int expirationMonth, int expirationYear) {
         // Create a new card if it doesn't already exist.

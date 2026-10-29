@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import android.content.Context;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.IntentRequestTracker;
@@ -43,13 +45,22 @@ public class CreditCardScanner {
         /**
          * Notifies the delegate that scanning was successful.
          *
-         * @param cardHolderName  The card holder name.
-         * @param cardNumber      Credit card number.
+         * @param cardHolderName The card holder name.
+         * @param cardNumber Credit card number.
          * @param expirationMonth Expiration month in the range [1, 12].
-         * @param expirationYear  Expiration year, e.g. 2000.
+         * @param expirationYear Expiration year, e.g. 2000.
          */
         void onScanCompleted(
                 String cardHolderName, String cardNumber, int expirationMonth, int expirationYear);
+
+        /**
+         * Returns the context of the window scanning was requested from, e.g. an Activity (see
+         * {@link org.chromium.ui.base.WindowAndroid#getContext()}). Used for display-specific
+         * checks such as Android Auto projection.
+         *
+         * @return The window context, or null if the window is gone or no window is attached.
+         */
+        @Nullable Context getWindowContext();
     }
 
     /**
