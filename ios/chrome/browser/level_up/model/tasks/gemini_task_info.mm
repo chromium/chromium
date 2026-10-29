@@ -116,7 +116,8 @@ class GeminiTaskInfo : public TaskInfo {
     return LevelUpTaskCategory::kProductivity;
   }
   std::vector<std::string> GetTriggerUserActions() const override {
-    return {"MobileGeminiPromptSent"};
+    return {"MobileGeminiFloatyExpandedToDismissed",
+            "MobileGeminiFloatyExpandedToCollapsed"};
   }
   std::string GetCompletionSnackbarMessage() const override {
     return l10n_util::GetStringUTF8(IDS_IOS_LEVEL_UP_TASK_COMPLETED_GEMINI);
