@@ -240,6 +240,7 @@ void ExtensionAlarmsTestGetAlarmCallback(ExtensionAlarmsTest* test,
   EXPECT_EQ("", alarm->js_alarm->name);
   EXPECT_DOUBLE_EQ(10000, alarm->js_alarm->scheduled_time);
   EXPECT_FALSE(alarm->js_alarm->period_in_minutes);
+  EXPECT_TRUE(alarm->js_alarm->persist_across_sessions);
 
   // Now wait for the alarm to fire. Our test delegate will quit the
   // MessageLoop when that happens.
@@ -277,6 +278,7 @@ TEST_F(ExtensionAlarmsTest, CreateNameInObject) {
   EXPECT_EQ("Alarm Name", alarm->js_alarm->name);
   EXPECT_DOUBLE_EQ(10000, alarm->js_alarm->scheduled_time);
   EXPECT_FALSE(alarm->js_alarm->period_in_minutes);
+  EXPECT_TRUE(alarm->js_alarm->persist_across_sessions);
 
   // Now wait for the alarm to fire. Our test delegate will quit the
   // `MessageLoop` when that happens.
@@ -307,6 +309,7 @@ void ExtensionAlarmsTestCreateRepeatingGetAlarmCallback(
   EXPECT_EQ("", alarm->js_alarm->name);
   EXPECT_DOUBLE_EQ(10060, alarm->js_alarm->scheduled_time);
   EXPECT_THAT(alarm->js_alarm->period_in_minutes, testing::Eq(0.001));
+  EXPECT_TRUE(alarm->js_alarm->persist_across_sessions);
 
   test->test_clock_.Advance(base::Seconds(1));
   // Now wait for the alarm to fire. Our test delegate will quit the
@@ -349,6 +352,7 @@ void ExtensionAlarmsTestCreateAbsoluteGetAlarm1Callback(
   EXPECT_EQ("", alarm->js_alarm->name);
   EXPECT_DOUBLE_EQ(10001, alarm->js_alarm->scheduled_time);
   EXPECT_FALSE(alarm->js_alarm->period_in_minutes.has_value());
+  EXPECT_TRUE(alarm->js_alarm->persist_across_sessions);
 
   test->test_clock_.SetNow(base::Time::FromSecondsSinceUnixEpoch(10.1));
   // Now wait for the alarm to fire. Our test delegate will quit the
@@ -400,6 +404,7 @@ void ExtensionAlarmsTestCreateRepeatingWithQuickFirstCallGetAlarm1Callback(
   EXPECT_EQ("", alarm->js_alarm->name);
   EXPECT_DOUBLE_EQ(10001, alarm->js_alarm->scheduled_time);
   EXPECT_THAT(alarm->js_alarm->period_in_minutes, testing::Eq(0.001));
+  EXPECT_TRUE(alarm->js_alarm->persist_across_sessions);
 
   test->test_clock_.SetNow(base::Time::FromSecondsSinceUnixEpoch(10.1));
   // Now wait for the alarm to fire. Our test delegate will quit the
@@ -1079,10 +1084,11 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollWritesToStorageOncePerExtension) {
   scoped_refptr<const Extension> extension1(extension_ref());
   scoped_refptr<const Extension> extension2 = ExtensionBuilder("Test2").Build();
   scoped_refptr<const Extension> extension3 = ExtensionBuilder("Test3").Build();
+  scoped_refptr<const Extension> extension4 = ExtensionBuilder("Test4").Build();
 
   // Extension 1 has a repeating alarm, so its alarm list outlives the poll.
   set_extension(extension1);
-  CreateAlarm("[\"a\", {\"when\": 10000}]");
+  CreateAlarm("[\"a\", {\"when\": 10000, \"persistAcrossSessions\": false}]");
   CreateAlarm("[\"b\", {\"when\": 10000, \"periodInMinutes\": 1}]");
   CreateAlarm("[\"c\", {\"when\": 10000}]");
 
@@ -1094,6 +1100,12 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollWritesToStorageOncePerExtension) {
   // Extension 3 has only an alarm that has not elapsed by the poll.
   set_extension(extension3);
   CreateAlarm("[\"f\", {\"when\": 25000}]");
+
+  // Extension 4 has no persistent expired alarm, so its alarm list is not
+  // written to storage.
+  set_extension(extension4);
+  CreateAlarm("[\"g\", {\"when\": 10000, \"persistAcrossSessions\": false}]");
+  CreateAlarm("[\"h\", {\"when\": 25000, \"persistAcrossSessions\": true}]");
 
   // Install the StateStore after the alarms are created, so that only the
   // writes made by the poll are counted.
@@ -1109,10 +1121,11 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollWritesToStorageOncePerExtension) {
   test_clock_.Advance(base::Seconds(10));
   alarm_manager_->PollAlarms();
 
-  EXPECT_EQ(5u, alarm_delegate_->alarms_seen.size());
+  EXPECT_EQ(6u, alarm_delegate_->alarms_seen.size());
   EXPECT_EQ(1, write_counter.write_counts[extension1->id()]);
   EXPECT_EQ(1, write_counter.write_counts[extension2->id()]);
   EXPECT_EQ(0, write_counter.write_counts[extension3->id()]);
+  EXPECT_EQ(0, write_counter.write_counts[extension4->id()]);
 }
 
 TEST_F(ExtensionAlarmsSchedulingTest, ClearAll) {

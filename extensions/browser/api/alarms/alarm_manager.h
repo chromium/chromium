@@ -211,7 +211,8 @@ class AlarmManager : public BrowserContextKeyedAPI,
   void RemoveAlarmIterator(const AlarmIterator& iter);
 
   // Callback for when an alarm fires. Does not write to storage; the caller
-  // is responsible for calling WriteToStorage() afterwards.
+  // is responsible for calling WriteToStorage() afterwards if a persistent
+  // alarm fired.
   void OnAlarm(AlarmIterator iter);
 
   // Internal helper to add an alarm and start the timer with the given delay.

@@ -490,7 +490,7 @@ void AlarmManager::PollAlarms() {
 
     // Copy the ID, since firing the last alarm may erase `cur_extension`.
     const ExtensionId extension_id = cur_extension->first;
-    bool alarm_fired = false;
+    bool persistent_alarm_fired = false;
 
     // Iterate (a) backwards so that removing elements doesn't affect
     // upcoming iterations, and (b) with indices so that if the last
@@ -503,14 +503,14 @@ void AlarmManager::PollAlarms() {
 
       if (cur_alarm_time <= now) {
         last_poll_times_[extension_id] = now;
+        persistent_alarm_fired = persistent_alarm_fired ||
+                                 cur_alarm->js_alarm->persist_across_sessions;
         OnAlarm(make_pair(cur_extension, cur_alarm));
-        alarm_fired = true;
       }
     }
 
-    // Persist the extension's alarms once, after all of its elapsed alarms
-    // have fired, rather than once per alarm.
-    if (alarm_fired) {
+    // Write persistent alarms to storage if at least one was modified.
+    if (persistent_alarm_fired) {
       WriteToStorage(extension_id);
     }
   }
