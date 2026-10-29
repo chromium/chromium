@@ -17,10 +17,6 @@
 #include "net/proxy_resolution/proxy_resolve_dns_operation.h"
 #include "services/proxy_resolver/proxy_host_resolver.h"
 
-namespace net {
-class NetworkAnonymizationKey;
-}  // namespace net
-
 namespace proxy_resolver {
 
 // Mock of ProxyHostResolver that resolves by default to 127.0.0.1, except for
@@ -35,16 +31,13 @@ class MockProxyHostResolver : public ProxyHostResolver {
 
   std::unique_ptr<Request> CreateRequest(
       const std::string& hostname,
-      net::ProxyResolveDnsOperation operation,
-      const net::NetworkAnonymizationKey& network_anonymization_key) override;
+      net::ProxyResolveDnsOperation operation) override;
 
   void SetError(const std::string& hostname,
-                net::ProxyResolveDnsOperation operation,
-                const net::NetworkAnonymizationKey& network_anonymization_key);
+                net::ProxyResolveDnsOperation operation);
 
   void SetResult(const std::string& hostname,
                  net::ProxyResolveDnsOperation operation,
-                 const net::NetworkAnonymizationKey& network_anonymization_key,
                  std::vector<net::IPAddress> result);
 
   void FailAll();
@@ -52,9 +45,7 @@ class MockProxyHostResolver : public ProxyHostResolver {
   unsigned num_resolve() const { return num_resolve_; }
 
  private:
-  using ResultKey = std::tuple<std::string,
-                               net::ProxyResolveDnsOperation,
-                               net::NetworkAnonymizationKey>;
+  using ResultKey = std::tuple<std::string, net::ProxyResolveDnsOperation>;
 
   class RequestImpl;
 
@@ -75,8 +66,7 @@ class HangingProxyHostResolver : public ProxyHostResolver {
 
   std::unique_ptr<Request> CreateRequest(
       const std::string& hostname,
-      net::ProxyResolveDnsOperation operation,
-      const net::NetworkAnonymizationKey& network_anonymization_key) override;
+      net::ProxyResolveDnsOperation operation) override;
 
   int num_cancelled_requests() const { return num_cancelled_requests_; }
 

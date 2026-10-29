@@ -100,8 +100,7 @@ class HostResolver : public proxy_resolver::ProxyHostResolver {
  public:
   std::unique_ptr<proxy_resolver::ProxyHostResolver::Request> CreateRequest(
       const std::string& hostname,
-      net::ProxyResolveDnsOperation operation,
-      const net::NetworkAnonymizationKey&) override {
+      net::ProxyResolveDnsOperation operation) override {
     return std::make_unique<RequestImpl>(hostname, operation, net_handle_,
                                          link_addresses_);
   }

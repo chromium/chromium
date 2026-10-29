@@ -12,7 +12,6 @@ data/proxy_resolver_v8_tracing_unittest/global_sideffects1.js
 data/proxy_resolver_v8_tracing_unittest/global_sideffects2.js
 data/proxy_resolver_v8_tracing_unittest/global_sideffects3.js
 data/proxy_resolver_v8_tracing_unittest/global_sideffects4.js
-data/proxy_resolver_v8_tracing_unittest/my_ip_address.js
 data/proxy_resolver_v8_tracing_unittest/simple.js
 data/proxy_resolver_v8_tracing_unittest/simple_dns.js
 data/proxy_resolver_v8_tracing_unittest/terminate.js

@@ -13,10 +13,6 @@
 #include "net/base/ip_address.h"
 #include "net/proxy_resolution/proxy_resolve_dns_operation.h"
 
-namespace net {
-class NetworkAnonymizationKey;
-}  // namespace net
-
 namespace proxy_resolver {
 
 // Interface for a limited (compared to the standard HostResolver) host resolver
@@ -34,8 +30,7 @@ class ProxyHostResolver {
 
   virtual std::unique_ptr<Request> CreateRequest(
       const std::string& hostname,
-      net::ProxyResolveDnsOperation operation,
-      const net::NetworkAnonymizationKey& network_aonymization_key) = 0;
+      net::ProxyResolveDnsOperation operation) = 0;
 };
 
 }  // namespace proxy_resolver

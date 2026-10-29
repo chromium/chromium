@@ -760,9 +760,7 @@ void Job::DoDnsOperation() {
       pending_dns_op_ == net::ProxyResolveDnsOperation::MY_IP_ADDRESS_EX;
   pending_dns_ = host_resolver()->CreateRequest(
       is_my_ip_request ? net::GetHostName() : pending_dns_host_,
-      pending_dns_op_,
-      is_my_ip_request ? net::NetworkAnonymizationKey()
-                       : network_anonymization_key_);
+      pending_dns_op_);
   int result =
       pending_dns_->Start(base::BindOnce(&Job::OnDnsOperationComplete, this));
 

@@ -9,16 +9,10 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "net/proxy_resolution/proxy_resolve_dns_operation.h"
 #include "services/proxy_resolver/proxy_host_resolver.h"
-#include "services/proxy_resolver/proxy_host_resolver_cache.h"
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
-
-namespace net {
-class NetworkAnonymizationKey;
-}  // namespace net
 
 namespace proxy_resolver {
 
@@ -46,22 +40,15 @@ class HostResolverMojo : public ProxyHostResolver {
 
   ~HostResolverMojo() override;
 
-  // ProxyHostResolver overrides. The passed in `network_anonymization_key` must
-  // match the one associated with the Impl.
+  // ProxyHostResolver overrides.
   std::unique_ptr<Request> CreateRequest(
       const std::string& hostname,
-      net::ProxyResolveDnsOperation operation,
-      const net::NetworkAnonymizationKey& network_anonymization_key) override;
+      net::ProxyResolveDnsOperation operation) override;
 
  private:
-  class Job;
   class RequestImpl;
 
   const raw_ptr<Impl> impl_;
-
-  ProxyHostResolverCache host_cache_;
-  base::WeakPtrFactory<ProxyHostResolverCache> host_cache_weak_factory_{
-      &host_cache_};
 
   base::ThreadChecker thread_checker_;
 };
