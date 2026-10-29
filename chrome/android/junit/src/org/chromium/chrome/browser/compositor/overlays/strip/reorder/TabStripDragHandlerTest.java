@@ -71,7 +71,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.compositor.overlays.strip.TestTabModel;
 import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
@@ -142,7 +141,6 @@ public class TabStripDragHandlerTest {
     @Mock private DragAndDropDelegate mDragDropDelegate;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private TabContentManager mTabContentManager;
-    @Mock private LayerTitleCache mLayerTitleCache;
     @Mock private Profile mProfile;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TestTabModel mTabModel;
@@ -244,7 +242,6 @@ public class TabStripDragHandlerTest {
                         () -> mSourceStripLayoutHelper,
                         () -> mTabStripVisible,
                         ObservableSuppliers.createNonNull(mTabContentManager),
-                        ObservableSuppliers.createNonNull(mLayerTitleCache),
                         mSourceMultiInstanceManager,
                         mDragDropDelegate,
                         mBrowserControlsStateProvider,
@@ -258,7 +255,6 @@ public class TabStripDragHandlerTest {
                         () -> mDestStripLayoutHelper,
                         () -> mTabStripVisible,
                         ObservableSuppliers.createNonNull(mTabContentManager),
-                        ObservableSuppliers.createNonNull(mLayerTitleCache),
                         mDestMultiInstanceManager,
                         mDragDropDelegate,
                         mBrowserControlsStateProvider,

@@ -1478,7 +1478,6 @@ public class VerticalTabListCoordinator {
                 mBrowserControlsStateProvider,
                 mMultiThumbnailCardProvider,
                 tabContentManager,
-                /* layerTitleCacheSupplier= */ null,
                 mTabModelSelector,
                 () -> {
                     if (mTabSwitcherDragHandler.hasActiveDragShadow()) {

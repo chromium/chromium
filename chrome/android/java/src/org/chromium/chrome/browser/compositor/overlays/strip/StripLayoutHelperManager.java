@@ -678,7 +678,6 @@ public class StripLayoutHelperManager
                                     getStripVisibilityStateSupplier().get()
                                             == StripVisibilityState.VISIBLE,
                             tabContentManagerSupplier,
-                            mLayerTitleCacheSupplier,
                             multiInstanceManager,
                             dragDropDelegate,
                             browserControlsStateProvider,

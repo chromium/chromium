@@ -29,7 +29,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.dragdrop.ChromeDragDropUtils;
 import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
@@ -68,7 +67,6 @@ public class TabStripDragHandler extends TabDragHandlerBase {
     private final Supplier<StripLayoutHelper> mStripLayoutHelperSupplier;
     private final Supplier<Boolean> mStripLayoutVisibilitySupplier;
     private final MonotonicObservableSupplier<TabContentManager> mTabContentManagerSupplier;
-    private final MonotonicObservableSupplier<LayerTitleCache> mLayerTitleCacheSupplier;
     private final BrowserControlsStateProvider mBrowserControlStateProvider;
     private final float mPxToDp;
     private final Supplier<Integer> mTabStripHeightSupplier;
@@ -107,7 +105,6 @@ public class TabStripDragHandler extends TabDragHandlerBase {
      * @param stripLayoutHelperSupplier Supplier for StripLayoutHelper to perform strip actions.
      * @param stripLayoutVisibilitySupplier Supplier for if the given tab strip is visible.
      * @param tabContentManagerSupplier Supplier of the manager providing tab thumbnail snapshots.
-     * @param layerTitleCacheSupplier Supplier for the LayerTitleCache.
      * @param multiInstanceManager MultiInstanceManager to perform move action when drop completes.
      * @param dragAndDropDelegate DragAndDropDelegate to initiate tab drag and drop.
      * @param browserControlStateProvider BrowserControlsStateProvider to compute drag-shadow
@@ -120,7 +117,6 @@ public class TabStripDragHandler extends TabDragHandlerBase {
             Supplier<StripLayoutHelper> stripLayoutHelperSupplier,
             Supplier<Boolean> stripLayoutVisibilitySupplier,
             MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            MonotonicObservableSupplier<LayerTitleCache> layerTitleCacheSupplier,
             MultiInstanceManager multiInstanceManager,
             DragAndDropDelegate dragAndDropDelegate,
             BrowserControlsStateProvider browserControlStateProvider,
@@ -132,7 +128,6 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         mStripLayoutHelperSupplier = stripLayoutHelperSupplier;
         mStripLayoutVisibilitySupplier = stripLayoutVisibilitySupplier;
         mTabContentManagerSupplier = tabContentManagerSupplier;
-        mLayerTitleCacheSupplier = layerTitleCacheSupplier;
         mBrowserControlStateProvider = browserControlStateProvider;
         mLinkDragDelegate = new TabStripLinkDragDelegate(stripLayoutHelperSupplier);
     }
@@ -270,7 +265,6 @@ public class TabStripDragHandler extends TabDragHandlerBase {
                 mBrowserControlStateProvider,
                 mMultiThumbnailCardProvider,
                 tabContentManager,
-                mLayerTitleCacheSupplier,
                 getTabModelSelector(),
                 () -> {
                     DragShadowBuilder shadowBuilder = DragDropGlobalState.getDragShadowBuilder();

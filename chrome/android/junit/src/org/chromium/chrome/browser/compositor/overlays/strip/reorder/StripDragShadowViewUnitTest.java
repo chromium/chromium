@@ -5,13 +5,14 @@
 package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,15 +42,15 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Promise;
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -60,7 +61,6 @@ import org.chromium.chrome.browser.tab_ui.ThumbnailProvider.MultiThumbnailMetada
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
-import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
@@ -80,7 +80,6 @@ public class StripDragShadowViewUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Captor private ArgumentCaptor<FaviconImageCallback> mGetFaviconCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mGetThumbnailCallbackCaptor;
 
     @Mock private BrowserControlsStateProvider mMockBrowserControlsStateProvider;
@@ -89,7 +88,6 @@ public class StripDragShadowViewUnitTest {
     @Mock private StripDragShadowView.ShadowUpdateHost mMockShadowUpdateHost;
 
     @Mock private TabContentManager mMockTabContentManager;
-    @Mock private LayerTitleCache mMockLayerTitleCache;
     @Mock private TabModel mMockTabModel;
     @Mock private Tab mMockTab;
     @Mock private TabFavicon mMockTabFavicon;
@@ -130,7 +128,6 @@ public class StripDragShadowViewUnitTest {
                 mMockBrowserControlsStateProvider,
                 mMockMultiThumbnailCardProvider,
                 mMockTabContentManager,
-                ObservableSuppliers.createNonNull(mMockLayerTitleCache),
                 mMockTabModelSelector,
                 mMockShadowUpdateHost);
 
@@ -264,58 +261,47 @@ public class StripDragShadowViewUnitTest {
                 "Should be using original favicon.",
                 mMockOriginalFaviconBitmap,
                 ((BitmapDrawable) mFaviconView.getDrawable()).getBitmap());
-        verify(mMockLayerTitleCache, never()).getDefaultFavicon(any());
-        verify(mMockLayerTitleCache, never()).fetchFaviconWithCallback(any(), any());
+        verify(mMockTabFavicon, never()).getFaviconOrFallback();
     }
 
     @Test
     public void testUpdate_HistoryFavicon() {
-        Bitmap defaultFavicon = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-        when(mMockLayerTitleCache.getDefaultFavicon(mMockTab)).thenReturn(defaultFavicon);
+        TabFavicon.setInstanceForTesting(mMockTabFavicon);
+        Promise<Bitmap> faviconPromise = new Promise<>();
+        when(mMockTabFavicon.getFaviconOrFallback()).thenReturn(faviconPromise);
 
-        // Assume TabFavicon.getBitmap(mMockTab) returns null.
+        // Assume there is no cached favicon.
         mStripDragShadowView.prepareForTabDrag(mMockTab, 0);
-
-        // Verify default is used before fetch.
-        assertEquals(
-                "Should be using default favicon.",
-                defaultFavicon,
+        assertNotEquals(
+                "Should not yet be using favicon from history.",
+                mMockHistoryFaviconBitmap,
                 ((BitmapDrawable) mFaviconView.getDrawable()).getBitmap());
 
-        // Verify fetch is kicked off.
-        verify(mMockLayerTitleCache)
-                .fetchFaviconWithCallback(eq(mMockTab), mGetFaviconCallbackCaptor.capture());
-
-        // Fulfill fetch.
-        mGetFaviconCallbackCaptor
-                .getValue()
-                .onFaviconAvailable(mMockHistoryFaviconBitmap, /* iconUrl= */ null);
-
+        // Fulfill the fetch.
+        faviconPromise.fulfill(mMockHistoryFaviconBitmap);
+        ShadowLooper.idleMainLooper();
         assertEquals(
                 "Should be using favicon from history.",
                 mMockHistoryFaviconBitmap,
                 ((BitmapDrawable) mFaviconView.getDrawable()).getBitmap());
+        verify(mMockShadowUpdateHost, atLeastOnce()).requestUpdate();
     }
 
     @Test
-    public void testUpdate_TabTitle() {
-        String expectedTitle = "tab";
-        when(mMockLayerTitleCache.getUpdatedTitle(any(), anyString())).thenReturn(expectedTitle);
+    public void testUpdate_HistoryFavicon_StaleResultIgnored() {
+        TabFavicon.setInstanceForTesting(mMockTabFavicon);
+        Promise<Bitmap> faviconPromise = new Promise<>();
+        when(mMockTabFavicon.getFaviconOrFallback()).thenReturn(faviconPromise);
 
         mStripDragShadowView.prepareForTabDrag(mMockTab, 0);
+        mStripDragShadowView.clear();
 
-        assertEquals("Unexpected tab title.", expectedTitle, mTitleView.getText());
-    }
-
-    @Test
-    public void testUpdate_GroupTitle() {
-        String expectedTitle = "group";
-        when(mMockLayerTitleCache.getUpdatedGroupTitle(any(), anyString(), anyBoolean()))
-                .thenReturn(expectedTitle);
-
-        mStripDragShadowView.prepareForGroupDrag(mMockTab, 0);
-
-        assertEquals("Unexpected group title.", expectedTitle, mTitleView.getText());
+        // Fulfill the fetch after the drag has ended.
+        faviconPromise.fulfill(mMockHistoryFaviconBitmap);
+        ShadowLooper.idleMainLooper();
+        assertNull(
+                "Favicon should remain cleared.",
+                ((BitmapDrawable) mFaviconView.getDrawable()).getBitmap());
     }
 
     @Test
@@ -387,12 +373,11 @@ public class StripDragShadowViewUnitTest {
     }
 
     @Test
-    public void testPrepareForTabDrag_NullLayerTitleCache() {
+    public void testPrepareForTabDrag_CustomTitle() {
         mStripDragShadowView.initialize(
                 mMockBrowserControlsStateProvider,
                 mMockMultiThumbnailCardProvider,
                 mMockTabContentManager,
-                /* layerTitleCacheSupplier= */ null,
                 mMockTabModelSelector,
                 mMockShadowUpdateHost);
 
@@ -403,12 +388,11 @@ public class StripDragShadowViewUnitTest {
     }
 
     @Test
-    public void testPrepareForTabDrag_NullLayerTitleCache_EmptyTabTitle() {
+    public void testPrepareForTabDrag_EmptyTabTitle() {
         mStripDragShadowView.initialize(
                 mMockBrowserControlsStateProvider,
                 mMockMultiThumbnailCardProvider,
                 mMockTabContentManager,
-                /* layerTitleCacheSupplier= */ null,
                 mMockTabModelSelector,
                 mMockShadowUpdateHost);
 
@@ -421,12 +405,11 @@ public class StripDragShadowViewUnitTest {
     }
 
     @Test
-    public void testPrepareForGroupDrag_NullLayerTitleCache() {
+    public void testPrepareForGroupDrag_CustomTitle() {
         mStripDragShadowView.initialize(
                 mMockBrowserControlsStateProvider,
                 mMockMultiThumbnailCardProvider,
                 mMockTabContentManager,
-                /* layerTitleCacheSupplier= */ null,
                 mMockTabModelSelector,
                 mMockShadowUpdateHost);
 
@@ -450,7 +433,6 @@ public class StripDragShadowViewUnitTest {
                 mMockBrowserControlsStateProvider,
                 mMockMultiThumbnailCardProvider,
                 mMockTabContentManager,
-                /* layerTitleCacheSupplier= */ null,
                 mMockTabModelSelector,
                 mMockShadowUpdateHost);
 
@@ -465,12 +447,11 @@ public class StripDragShadowViewUnitTest {
     }
 
     @Test
-    public void testPrepareForTabDrag_NullLayerTitleCache_DefaultFavicon() {
+    public void testPrepareForTabDrag_DefaultFavicon() {
         mStripDragShadowView.initialize(
                 mMockBrowserControlsStateProvider,
                 mMockMultiThumbnailCardProvider,
                 mMockTabContentManager,
-                /* layerTitleCacheSupplier= */ null,
                 mMockTabModelSelector,
                 mMockShadowUpdateHost);
 
