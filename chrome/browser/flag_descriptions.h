@@ -3324,11 +3324,6 @@ inline constexpr char kLensOverlaySidePanelOpenInNewTabName[] =
 inline constexpr char kLensOverlaySidePanelOpenInNewTabDescription[] =
     "Enables open in new tab in the Lens overlay side panel.";
 
-inline constexpr char kLensOverlayPermissionBubbleAltName[] =
-    "Lens overlay permission bubble alt appearance";
-inline constexpr char kLensOverlayPermissionBubbleAltDescription[] =
-    "Enables Lens overlay permission bubble alt appearance.";
-
 inline constexpr char kLensOverlayTextSelectionContextMenuEntrypointName[] =
     "Lens overlay text selection context menu entrypoint";
 inline constexpr char

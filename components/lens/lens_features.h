@@ -110,10 +110,6 @@ BASE_DECLARE_FEATURE(kLensOverlayEduActionChip);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayKeyboardSelection);
 
-// Use alternate appearance for permission bubble.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensOverlayPermissionBubbleAlt);
-
 // Enables the search not found on page toast when a user clicks a citation for
 // the current page they are viewing but the text was not found.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -1039,10 +1035,6 @@ base::TimeDelta GetLensOverlayEduActionChipShowDebounceInterval();
 // Whether to enable keyboard selection in the Lens overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayKeyboardSelectionEnabled();
-
-// Whether to use alternate appearance for permission bubble.
-COMPONENT_EXPORT(LENS_FEATURES)
-bool IsLensOverlayPermissionBubbleAltEnabled();
 
 // Whether to enable the not found on page toast.
 COMPONENT_EXPORT(LENS_FEATURES)

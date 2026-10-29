@@ -87,8 +87,6 @@ BASE_FEATURE(kLensOverlayEduActionChip, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayKeyboardSelection, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensOverlayPermissionBubbleAlt, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensSearchNotFoundOnPageToast,
              "kLensSearchNotFoundOnPageToast",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1242,10 +1240,6 @@ base::TimeDelta GetLensOverlayEduActionChipShowDebounceInterval() {
 
 bool IsLensOverlayKeyboardSelectionEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayKeyboardSelection);
-}
-
-bool IsLensOverlayPermissionBubbleAltEnabled() {
-  return base::FeatureList::IsEnabled(kLensOverlayPermissionBubbleAlt);
 }
 
 bool IsLensSearchNotFoundOnPageToastEnabled() {

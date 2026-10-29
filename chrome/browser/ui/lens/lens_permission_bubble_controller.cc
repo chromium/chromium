@@ -186,9 +186,7 @@ LensPermissionBubbleController::CreateLensPermissionDialogModel(
               IDR_GOOGLE_G_GRADIENT_20)))
       .SetBannerImage(ui::ImageModel::FromImageSkia(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-              lens::features::IsLensOverlayPermissionBubbleAltEnabled()
-                  ? IDR_LENS_PERMISSION_MODAL_IMAGE_ALT
-                  : IDR_LENS_PERMISSION_MODAL_IMAGE)))
+              IDR_LENS_PERMISSION_MODAL_IMAGE_ALT)))
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
       .AddParagraph(description_text)
       .AddOkButton(

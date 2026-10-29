@@ -6787,11 +6787,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "lens-overlay-permission-bubble-alt",
-    "owners": ["nguyenbryan@google.com", "lens-chrome@google.com"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "lens-reinvocation-affordance",
     "owners": ["juanmojica@google.com", "lens-chrome@google.com"],
     "expiry_milestone": 152

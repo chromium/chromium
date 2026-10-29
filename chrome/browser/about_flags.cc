@@ -11854,11 +11854,6 @@ const FeatureEntry kFeatureEntries[] = {
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"lens-overlay-permission-bubble-alt",
-     flag_descriptions::kLensOverlayPermissionBubbleAltName,
-     flag_descriptions::kLensOverlayPermissionBubbleAltDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(lens::features::kLensOverlayPermissionBubbleAlt)},
-
     {"enable-ntp-browser-promos",
      flag_descriptions::kEnableNtpBrowserPromosName,
      flag_descriptions::kEnableNtpBrowserPromosDescription, kOsDesktop,
