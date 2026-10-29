@@ -71,6 +71,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           data: "The version number of the currently-running Chrome/ChromeOS, "
             "the update channel name, and an identifier of the platform."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "versionhistory.googleapis.com"
           user_data {
             type: NONE
           }
