@@ -11,7 +11,8 @@ export function getHtml(this: LeftHandSideElement) {
   return html`<!--_html_template_start_-->
   ${this.enableThreadsRailHybrid_
       ? html`<cr-threads-rail id="folded"
-                 ?hidden="${this.isExpandedReady_ && this.isExpanded_}">
+                 ?hidden="${this.isExpandedReady_ && this.isExpanded_}"
+                 @click="${this.onFoldedClick_}">
              </cr-threads-rail>`
       : ''}
   <ntp-iframe id="expanded"

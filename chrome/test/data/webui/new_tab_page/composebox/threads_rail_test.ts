@@ -5,7 +5,7 @@
 import type {ThreadsRailElement} from 'chrome://new-tab-page/lazy_load.js';
 import {ComposeboxWindowProxy} from 'chrome://new-tab-page/lazy_load.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -104,6 +104,10 @@ suite('NewTabPageThreadsRailTest', () => {
   });
 
   test('navigates to Google base URL on logo button click', () => {
+    let hostClicked = false;
+    threadsRailElement.addEventListener('click', () => {
+      hostClicked = true;
+    });
     const logoButton =
         threadsRailElement.shadowRoot.querySelector<HTMLElement>('#logoButton');
     assertTrue(!!logoButton);
@@ -113,9 +117,14 @@ suite('NewTabPageThreadsRailTest', () => {
     const args = windowProxy.getArgs('navigate');
     assertEquals(1, args.length);
     assertEquals(loadTimeData.getString('googleBaseUrl'), args[0]);
+    assertFalse(hostClicked);
   });
 
   test('navigates and records metric on show history button click', () => {
+    let hostClicked = false;
+    threadsRailElement.addEventListener('click', () => {
+      hostClicked = true;
+    });
     const historyButton =
         threadsRailElement.shadowRoot.querySelector<HTMLElement>(
             '#showHistoryButton');
@@ -131,5 +140,6 @@ suite('NewTabPageThreadsRailTest', () => {
         metrics.count(
             'NewTabPage.ThreadsRail.Action',
             0 /* ThreadsAction.SHOW_HISTORY_CLICKED */));
+    assertFalse(hostClicked);
   });
 });

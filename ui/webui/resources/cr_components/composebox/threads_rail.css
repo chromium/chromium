@@ -19,6 +19,7 @@
 #rail {
   align-items: center;
   box-sizing: border-box;
+  cursor: e-resize;
   display: inline-flex;
   flex-direction: column;
   gap: 12px;
