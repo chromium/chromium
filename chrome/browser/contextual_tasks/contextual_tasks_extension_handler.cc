@@ -13,6 +13,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -66,6 +67,21 @@ void DeleteTabToken(
   if (!session_handle->DeleteFile(token)) {
     session_handle->RemoveUploadedContextToken(token);
   }
+}
+
+bool IsTabSharable(content::RenderFrameHost& rfh,
+                   int32_t tab_id,
+                   bool allow_empty_url) {
+  Profile* profile = Profile::FromBrowserContext(rfh.GetBrowserContext());
+  tabs::TabInterface* tab = tabs::TabHandle(tab_id).Get();
+  content::WebContents* wc = tab ? tab->GetContents() : nullptr;
+  if (!profile || !contextual_tasks::CanShareTabContext(profile) || !wc ||
+      Profile::FromBrowserContext(wc->GetBrowserContext()) != profile) {
+    return false;
+  }
+  const GURL& url = wc->GetLastCommittedURL();
+  return (allow_empty_url && url.is_empty()) ||
+         contextual_tasks::IsUrlValidForContextSharing(url);
 }
 #endif
 
@@ -506,7 +522,27 @@ void ContextualTasksExtensionHandler::GetTabPreview(
 void ContextualTasksExtensionHandler::WaitForTabFaviconLoad(
     int32_t tab_id,
     WaitForTabFaviconLoadCallback callback) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!IsTabSharable(render_frame_host(), tab_id, /*allow_empty_url=*/true)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  tab_favicon_helper_.WaitForTabFaviconLoad(
+      tab_id, base::BindOnce(
+                  [](base::WeakPtr<ContextualTasksExtensionHandler> self,
+                     int32_t tab_id, WaitForTabFaviconLoadCallback callback,
+                     const std::optional<GURL>& favicon_data_url) {
+                    std::move(callback).Run(
+                        (self && favicon_data_url.has_value() &&
+                         IsTabSharable(self->render_frame_host(), tab_id,
+                                       /*allow_empty_url=*/false))
+                            ? favicon_data_url
+                            : std::nullopt);
+                  },
+                  weak_ptr_factory_.GetWeakPtr(), tab_id, std::move(callback)));
+#else
   std::move(callback).Run(std::nullopt);
+#endif
 }
 void ContextualTasksExtensionHandler::GetInputState(
     GetInputStateCallback callback) {

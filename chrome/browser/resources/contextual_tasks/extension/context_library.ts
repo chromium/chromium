@@ -6,6 +6,7 @@ import 'chrome://resources/cr_components/composebox/composebox_favicon_group.js'
 
 import {ExtensionBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {ComposeboxFaviconGroupElement} from 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
+import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import {TrackedElementManager} from 'chrome://resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {CSSResultGroup, PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -13,6 +14,15 @@ import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/s
 
 import {getCss} from './context_library.css.js';
 import {getHtml} from './context_library.html.js';
+
+// Sets the `ComposeboxProxyImpl` singleton inside this Rollup bundle (`optimize
+// = true` in `BUILD.gn` bundles `composebox_proxy.js` into
+// `context_library.js`, giving it its own module-scoped `instance` separate
+// from unbundled test imports of
+// `chrome://resources/cr_components/composebox/composebox_proxy.js`).
+export function setComposeboxProxyForTesting(proxy: ComposeboxProxyImpl) {
+  ComposeboxProxyImpl.setInstance(proxy);
+}
 
 export interface ContextLibraryElement {
   $: {
@@ -109,11 +119,17 @@ export class ContextLibraryElement extends CrLitElement {
   // <composebox-favicon-group> fires this to request a live favicon for a tab
   // that is still loading. Handled here so the event does not escape the
   // component; invoking `onTabLoaded` swaps in the higher fidelity favicon.
-  protected onWaitForTabLoad_(
-      _e: CustomEvent<{tabId: number, onTabLoaded: (url?: string) => void}>) {
-    // TODO(crbug.com/): Forward to the browser and call `onTabLoaded` with the
-    // resolved favicon data URL. Until then the group falls back to
-    // getFaviconForPageURL().
+  protected async onWaitForTabLoad_(
+      e: CustomEvent<{tabId: number, onTabLoaded: (url?: string) => void}>) {
+    e.stopPropagation();
+    try {
+      const {faviconDataUrl} =
+          await ComposeboxProxyImpl.getInstance()
+              .searchboxHandler.waitForTabFaviconLoad(e.detail.tabId);
+      e.detail.onTabLoaded(faviconDataUrl || undefined);
+    } catch {
+      e.detail.onTabLoaded(undefined);
+    }
   }
 
   protected isDarkModeEnabled_(): boolean {

@@ -154,8 +154,13 @@ suite('ComposeboxFaviconGroupTest', () => {
     await element.updateComplete;
 
     const internalElement = element as any;
-    internalElement.loadedFavicons_ =
-        new Map([[1, 'url("data:image/png;base64,wikipedia")']]);
+    internalElement.loadedFavicons_ = new Map([[
+      1,
+      {
+        url: 'https://google.com',
+        cssUrl: 'url("data:image/png;base64,wikipedia")',
+      },
+    ]]);
 
     const faviconUrl = internalElement.getFaviconUrl_(element.tabs[0]);
 

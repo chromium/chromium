@@ -5,10 +5,16 @@
 import 'chrome://contextual-tasks/contextual_tasks_extension/context_library.js';
 
 import {ExtensionBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
+import {setComposeboxProxyForTesting} from 'chrome://contextual-tasks/contextual_tasks_extension/context_library.js';
 import type {ContextLibraryElement} from 'chrome://contextual-tasks/contextual_tasks_extension/context_library.js';
+import {PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
+import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
+import {getFaviconForPageURL, getUrlForCss} from 'chrome://resources/js/icon.js';
 import {TrackedElementManager} from 'chrome://resources/js/tracked_element/tracked_element_manager.js';
+import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestExtensionBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
@@ -28,6 +34,8 @@ function createTab(tabId: number, url: string): TabInfo {
 suite('ContextLibraryTest', () => {
   let app: ContextLibraryElement;
   let browserProxy: TestExtensionBrowserProxy;
+  let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
+      SearchboxPageHandlerRemote;
 
   // Resolves the next time the element asks the embedder to re-measure it.
   let nextRequestResize: Promise<void>;
@@ -44,6 +52,13 @@ suite('ContextLibraryTest', () => {
 
     browserProxy = new TestExtensionBrowserProxy();
     ExtensionBrowserProxyImpl.setInstance(browserProxy);
+
+    mockSearchboxPageHandler = TestMock.fromClass(SearchboxPageHandlerRemote);
+    mockSearchboxPageHandler.setResultFor(
+        'waitForTabFaviconLoad', Promise.resolve({faviconDataUrl: null}));
+    setComposeboxProxyForTesting(new ComposeboxProxyImpl(
+        TestMock.fromClass(ComposeboxPageHandlerRemote),
+        mockSearchboxPageHandler, new SearchboxPageCallbackRouter()));
 
     iframeRequestResize();
     window.requestResize = () => {
@@ -290,5 +305,69 @@ suite('ContextLibraryTest', () => {
         document.body.appendChild(app);
         await microtasksFinished();
         assertTrue(!!manager.getElementFor(app.$.faviconGroup));
+      });
+
+  test(
+      'Forwards wait-for-tab-load and refreshes favicon on same-tab navigation',
+      async () => {
+        const liveFaviconDataUrl = 'data:image/png;base64,' +
+            'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJ' +
+            'AAAAC0lEQVQI12NgAAIAAAUAAeImBZsAAAAASUVORK5CYII=';
+        mockSearchboxPageHandler.setResultFor(
+            'waitForTabFaviconLoad',
+            Promise.resolve({faviconDataUrl: liveFaviconDataUrl}));
+
+        let bubbledEvents = 0;
+        const bodyListener = () => {
+          bubbledEvents++;
+        };
+        document.body.addEventListener('wait-for-tab-load', bodyListener);
+
+        try {
+          const dogTab = createTab(7, 'https://en.wikipedia.org/wiki/Dog');
+          dogTab.isLoading = true;
+          app.tabs = [dogTab];
+          await microtasksFinished();
+
+          const requestedTabId = await mockSearchboxPageHandler.whenCalled(
+              'waitForTabFaviconLoad');
+          assertEquals(7, requestedTabId);
+          assertEquals(0, bubbledEvents);
+          await microtasksFinished();
+
+          const item = app.$.faviconGroup.shadowRoot.querySelector<HTMLElement>(
+              '.favicon-item');
+          assertTrue(!!item);
+          assertEquals(
+              getUrlForCss(liveFaviconDataUrl),
+              item.style.getPropertyValue('--favicon-image').trim());
+
+          // Navigating the same tab (tabId 7) to a new URL whose favicon
+          // request returns null or rejects must immediately drop the previous
+          // page's favicon and fall back to getFaviconForPageURL().
+          mockSearchboxPageHandler.resetResolver('waitForTabFaviconLoad');
+          mockSearchboxPageHandler.setResultFor(
+              'waitForTabFaviconLoad',
+              Promise.reject(new Error('No live favicon')));
+          const nextUrl = 'https://example.com/next';
+          app.tabs = [createTab(7, nextUrl)];
+          await microtasksFinished();
+
+          assertEquals(
+              7,
+              await mockSearchboxPageHandler.whenCalled(
+                  'waitForTabFaviconLoad'));
+          await microtasksFinished();
+
+          const updatedItem =
+              app.$.faviconGroup.shadowRoot.querySelector<HTMLElement>(
+                  '.favicon-item');
+          assertTrue(!!updatedItem);
+          assertEquals(
+              getFaviconForPageURL(nextUrl, false),
+              updatedItem.style.getPropertyValue('--favicon-image').trim());
+        } finally {
+          document.body.removeEventListener('wait-for-tab-load', bodyListener);
+        }
       });
 });

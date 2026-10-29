@@ -33,6 +33,10 @@
 #include "ui/webui/resources/js/tracked_element/tracked_element.mojom-forward.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_tab_favicon_helper.h"
+#endif
+
 // Handles Mojo connection requests from the Contextual Tasks extension
 // document, implementing composebox and searchbox page handler interfaces.
 
@@ -320,6 +324,9 @@ class ContextualTasksExtensionHandler
   omnibox::ModelMode active_model_ = omnibox::MODEL_MODE_UNSPECIFIED;
 
   std::unique_ptr<ui::TrackedElementHandler> tracked_element_handler_;
+#if !BUILDFLAG(IS_ANDROID)
+  ContextualSearchboxTabFaviconHelper tab_favicon_helper_;
+#endif
 
   base::WeakPtrFactory<ContextualTasksExtensionHandler> weak_ptr_factory_{this};
 };
