@@ -14,7 +14,6 @@ import android.os.IBinder;
 import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.core.app.ServiceCompat;
 
 import org.chromium.base.Log;
 import org.chromium.base.SplitCompatService;
@@ -52,22 +51,19 @@ public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
      *
      * @param newNotificationId The ID for the new notification.
      * @param newNotification The notification to display.
-     * @param oldNotificationId The ID of the previous notification, or -1 if none.
-     * @param killOldNotification Whether to remove the old notification.
+     * @param oldNotificationId Unused.
+     * @param killOldNotification Unused.
      */
     public void startOrUpdateForegroundService(
             int newNotificationId,
             Notification newNotification,
             int oldNotificationId,
             boolean killOldNotification) {
+        // TODO(crbug.com/578059672): Remove the unused oldNotificationId and killOldNotification
+        // parameters once the M158 merges are done.
 
-        if (oldNotificationId != -1 && oldNotificationId != newNotificationId) {
-            stopForegroundInternal(
-                    killOldNotification
-                            ? ServiceCompat.STOP_FOREGROUND_REMOVE
-                            : ServiceCompat.STOP_FOREGROUND_DETACH);
-        }
-
+        // Calling stopForeground() before a notification ID swap would reset the background start
+        // allowance, making startForeground() throw while Chrome is backgrounded.
         if (!mIsForeground) {
             ActorForegroundServiceUmaHelper.recordLifecycleHistogram(ForegroundLifecycle.STARTED);
             mIsForeground = true;

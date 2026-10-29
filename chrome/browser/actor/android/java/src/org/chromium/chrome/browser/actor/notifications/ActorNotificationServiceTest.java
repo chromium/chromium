@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.actor.notifications;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -43,6 +44,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
@@ -60,8 +62,10 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy.NotificationEntry;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -106,6 +110,15 @@ public class ActorNotificationServiceTest {
         mNotificationService.clearAll();
         ActorForegroundServiceManager.resetInstanceForTesting();
         ActorTaskJni.setInstanceForTesting(null);
+    }
+
+    private @Nullable Notification findNotification(@Nullable String tag, int taskId) {
+        for (NotificationEntry entry : mMockNotificationManager.getNotifications()) {
+            if (entry.id == taskId && Objects.equals(entry.tag, tag)) {
+                return entry.notification;
+            }
+        }
+        return null;
     }
 
     @Test
@@ -1108,6 +1121,199 @@ public class ActorNotificationServiceTest {
     }
 
     @Test
+    public void testRepostNotification_UnpinnedTask_PostsUnderTag() {
+        int taskId = 1;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Active Task");
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.ACTING, /* isSilent= */ false, /* isWarning= */ false);
+        mMockNotificationManager.cancel(taskId);
+
+        mNotificationService.onNotificationUnpinned(taskId);
+        mNotificationService.repostNotification(taskId, /* isWarning= */ false);
+
+        assertNull(findNotification(/* tag= */ null, taskId));
+        assertNotNull(findNotification(ActorNotificationService.UNPINNED_NOTIFICATION_TAG, taskId));
+    }
+
+    @Test
+    public void testRepostNotification_UnpinnedTask_SurvivesCancelOfPinnedKey() {
+        int taskId = 1;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Active Task");
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.ACTING, /* isSilent= */ false, /* isWarning= */ false);
+
+        mNotificationService.onNotificationUnpinned(taskId);
+        mNotificationService.repostNotification(taskId, /* isWarning= */ false);
+        // Android cancels the previously pinned (null tag, task ID) key after the pin moves.
+        mMockNotificationManager.cancel(/* tag= */ null, taskId);
+
+        assertEquals(1, mMockNotificationManager.getNotifications().size());
+        assertNotNull(findNotification(ActorNotificationService.UNPINNED_NOTIFICATION_TAG, taskId));
+    }
+
+    @Test
+    public void testRepostNotification_LoudCachedNotification_RepostsSilently() {
+        int taskId = 1;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Test Task");
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+        mNotificationService.updateNotificationForTask(
+                taskId,
+                ActorTaskState.WAITING_ON_USER,
+                /* isSilent= */ false,
+                /* isWarning= */ false);
+
+        mNotificationService.onNotificationUnpinned(taskId);
+        mNotificationService.repostNotification(taskId, /* isWarning= */ false);
+
+        Notification reposted =
+                findNotification(ActorNotificationService.UNPINNED_NOTIFICATION_TAG, taskId);
+        assertNotNull(reposted);
+        assertEquals(Notification.GROUP_ALERT_SUMMARY, reposted.getGroupAlertBehavior());
+    }
+
+    @Test
+    public void testRepostNotification_Warning_ShowsWarningContent() {
+        int taskId = 1;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Test Task");
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.ACTING, /* isSilent= */ false, /* isWarning= */ false);
+
+        mNotificationService.onNotificationUnpinned(taskId);
+        mNotificationService.repostNotification(taskId, /* isWarning= */ true);
+
+        Notification reposted =
+                findNotification(ActorNotificationService.UNPINNED_NOTIFICATION_TAG, taskId);
+        assertNotNull(reposted);
+        assertEquals(
+                mContext.getString(R.string.actor_notification_title_will_stop_task),
+                reposted.extras.getString(Notification.EXTRA_TITLE));
+    }
+
+    @Test
+    public void testRepostNotification_NotWarning_CachedWarning_ShowsNormalContent() {
+        int taskId = 1;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Test Task");
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.ACTING, /* isSilent= */ false, /* isWarning= */ true);
+
+        mNotificationService.onNotificationUnpinned(taskId);
+        mNotificationService.repostNotification(taskId, /* isWarning= */ false);
+
+        Notification reposted =
+                findNotification(ActorNotificationService.UNPINNED_NOTIFICATION_TAG, taskId);
+        assertNotNull(reposted);
+        assertNotEquals(
+                mContext.getString(R.string.actor_notification_title_will_stop_task),
+                reposted.extras.getString(Notification.EXTRA_TITLE));
+    }
+
+    @Test
+    public void testDemoteNow_UnpinnedTask_DemotesUnderTag() {
+        int taskId = 1;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Test Task");
+        when(mTask.getState()).thenReturn(ActorTaskState.FINISHED);
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.FINISHED, /* isSilent= */ false, /* isWarning= */ false);
+
+        mNotificationService.onNotificationUnpinned(taskId);
+        mNotificationService.demoteNow(taskId);
+
+        assertNull(findNotification(/* tag= */ null, taskId));
+        Notification demoted =
+                findNotification(ActorNotificationService.UNPINNED_NOTIFICATION_TAG, taskId);
+        assertNotNull(demoted);
+        assertFalse(
+                demoted.extras.getBoolean(ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+        assertEquals(0, demoted.flags & Notification.FLAG_ONGOING_EVENT);
+    }
+
+    @Test
+    public void testUpdateNotificationForTask_UnpinnedTask_KeepsTagUntilPinned() {
+        int taskId = 1;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Active Task");
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.ACTING, /* isSilent= */ false, /* isWarning= */ false);
+        mNotificationService.onNotificationUnpinned(taskId);
+        mNotificationService.repostNotification(taskId, /* isWarning= */ false);
+
+        mNotificationService.updateNotificationForTask(
+                taskId,
+                ActorTaskState.WAITING_ON_USER,
+                /* isSilent= */ true,
+                /* isWarning= */ false);
+
+        assertNull(findNotification(/* tag= */ null, taskId));
+        assertNotNull(findNotification(ActorNotificationService.UNPINNED_NOTIFICATION_TAG, taskId));
+
+        mNotificationService.onNotificationPinned(taskId);
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.ACTING, /* isSilent= */ true, /* isWarning= */ false);
+
+        assertNull(findNotification(ActorNotificationService.UNPINNED_NOTIFICATION_TAG, taskId));
+        assertNotNull(findNotification(/* tag= */ null, taskId));
+    }
+
+    @Test
+    public void testUpdateNotificationForTask_TaskGone_CancelsBothKeys() {
+        int taskId = 1;
+        mMockNotificationManager.notify(/* tag= */ null, taskId, new Notification());
+        mMockNotificationManager.notify(
+                ActorNotificationService.UNPINNED_NOTIFICATION_TAG, taskId, new Notification());
+
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.ACTING, /* isSilent= */ false, /* isWarning= */ false);
+
+        assertTrue(mMockNotificationManager.getNotifications().isEmpty());
+    }
+
+    @Test
+    public void testMaybeDismissNotificationFromIntent_CancelsBothKeys() {
+        int taskId = 1;
+        mMockNotificationManager.notify(/* tag= */ null, taskId, new Notification());
+        mMockNotificationManager.notify(
+                ActorNotificationService.UNPINNED_NOTIFICATION_TAG, taskId, new Notification());
+        Intent intent = new Intent();
+        intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, taskId);
+        intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, ActorTaskState.FINISHED);
+
+        ActorNotificationService.maybeDismissNotificationFromIntent(intent, null);
+
+        assertTrue(mMockNotificationManager.getNotifications().isEmpty());
+    }
+
+    @Test
+    public void testClearAll_ForgetsTagWithoutCancelling() {
+        int taskId = 1;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Active Task");
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.ACTING, /* isSilent= */ false, /* isWarning= */ false);
+        mNotificationService.onNotificationUnpinned(taskId);
+        mNotificationService.repostNotification(taskId, /* isWarning= */ false);
+
+        mNotificationService.clearAll();
+
+        assertNotNull(findNotification(ActorNotificationService.UNPINNED_NOTIFICATION_TAG, taskId));
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.ACTING, /* isSilent= */ true, /* isWarning= */ false);
+        assertNotNull(findNotification(/* tag= */ null, taskId));
+    }
+
+    @Test
     public void testMaybeDismissNotificationFromIntent_CallsServiceBeforeCancel() {
         int taskId = 105;
         ActorForegroundServiceManager mockManager = mock(ActorForegroundServiceManager.class);
@@ -1125,6 +1331,8 @@ public class ActorNotificationServiceTest {
         InOrder inOrder = inOrder(mockManager, spyNotificationManager);
         inOrder.verify(mockManager).onNotificationDismissed(taskId);
         inOrder.verify(spyNotificationManager).cancel(taskId);
+        inOrder.verify(spyNotificationManager)
+                .cancel(ActorNotificationService.UNPINNED_NOTIFICATION_TAG, taskId);
     }
 
     /**

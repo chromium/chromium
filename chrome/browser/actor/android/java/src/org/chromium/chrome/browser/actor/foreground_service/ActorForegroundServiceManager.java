@@ -218,6 +218,11 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         } else {
             mActiveTaskIds.remove(taskId);
             getServiceController().onTaskCompleted(taskId);
+            if (mPinnedNotificationId == taskId
+                    && hasActiveOrPendingTasks()
+                    && mNotificationService != null) {
+                mNotificationService.onNotificationUnpinned(taskId);
+            }
         }
 
         refreshTaskUI(taskId, newState);
@@ -385,10 +390,20 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         mPinnedNotificationId = notificationId;
         mPinnedNotification = notification;
 
-        if (unpinnedNotificationId != INVALID_NOTIFICATION_ID && mNotificationService != null) {
-            // The old notification was removed along with the foreground state. It can no longer
-            // be live, so it is demoted now rather than when its demotion timer expires.
-            mNotificationService.demoteNow(unpinnedNotificationId);
+        if (mNotificationService == null) return;
+        mNotificationService.onNotificationPinned(notificationId);
+        if (unpinnedNotificationId != INVALID_NOTIFICATION_ID
+                && unpinnedNotificationId
+                        != ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID) {
+            // The swap removes the old notification. It can no longer be live, so it is demoted now
+            // rather than when its demotion timer expires, or reposted under the unpinned tag.
+            mNotificationService.onNotificationUnpinned(unpinnedNotificationId);
+            if (mNotificationService.getPendingDemotionTaskIds().contains(unpinnedNotificationId)) {
+                mNotificationService.demoteNow(unpinnedNotificationId);
+            } else {
+                mNotificationService.repostNotification(
+                        unpinnedNotificationId, isWarningMode(unpinnedNotificationId));
+            }
         }
     }
 
@@ -412,7 +427,9 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         if (pinnedNotificationId != INVALID_NOTIFICATION_ID
                 && pinnedNotificationId != ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID
                 && mNotificationService != null) {
-            mNotificationService.repostNotification(pinnedNotificationId);
+            mNotificationService.onNotificationUnpinned(pinnedNotificationId);
+            mNotificationService.repostNotification(
+                    pinnedNotificationId, isWarningMode(pinnedNotificationId));
         }
 
         if (mStopCallbackForTesting != null) {

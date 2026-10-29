@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.actor;
 
-import static android.app.Service.STOP_FOREGROUND_DETACH;
-import static android.app.Service.STOP_FOREGROUND_REMOVE;
-
 import static org.junit.Assert.assertEquals;
 
 import android.app.Notification;
@@ -118,24 +115,18 @@ public class ActorForegroundServiceTest {
         // Test the case where there is another pinned notification and the service needs to start.
         mForegroundService.startOrUpdateForegroundService(
                 NOTIFICATION_ID_2, mNotification, NOTIFICATION_ID_1, false);
-        expectedMethodCalls =
-                Arrays.asList(
-                        MockActorForegroundService.MethodID.STOP_FOREGROUND,
-                        MockActorForegroundService.MethodID.START_FOREGROUND);
+        expectedMethodCalls = Arrays.asList(MockActorForegroundService.MethodID.START_FOREGROUND);
         assertEquals(expectedMethodCalls, mForegroundService.mMethodCalls);
-        assertEquals(STOP_FOREGROUND_DETACH, mForegroundService.mStopForegroundFlags);
+        assertEquals(-1, mForegroundService.mStopForegroundFlags);
 
         mForegroundService.clearStoredState();
 
         // Test the case where there is another pinned notification but we are killing it.
         mForegroundService.startOrUpdateForegroundService(
                 NOTIFICATION_ID_2, mNotification, NOTIFICATION_ID_1, true);
-        expectedMethodCalls =
-                Arrays.asList(
-                        MockActorForegroundService.MethodID.STOP_FOREGROUND,
-                        MockActorForegroundService.MethodID.START_FOREGROUND);
+        expectedMethodCalls = Arrays.asList(MockActorForegroundService.MethodID.START_FOREGROUND);
         assertEquals(expectedMethodCalls, mForegroundService.mMethodCalls);
-        assertEquals(STOP_FOREGROUND_REMOVE, mForegroundService.mStopForegroundFlags);
+        assertEquals(-1, mForegroundService.mStopForegroundFlags);
 
         mForegroundService.clearStoredState();
 

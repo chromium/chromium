@@ -173,7 +173,7 @@ public class ActorForegroundServiceManagerTest {
         assertFalse("Service should be unbound after delay.", mManager.isServiceBoundForTesting());
         verify(mServiceController).onTaskCompleted(1);
         verify(mServiceController).stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_REMOVE);
-        verify(mNotificationService).repostNotification(1);
+        verify(mNotificationService).repostNotification(1, /* isWarning= */ false);
         verify(mServiceController).unbindService();
     }
 
@@ -324,6 +324,8 @@ public class ActorForegroundServiceManagerTest {
         when(mNotificationService.getForegroundNotification(eq(task2), anyBoolean(), anyBoolean()))
                 .thenReturn(notification2);
 
+        when(mNotificationService.getPendingDemotionTaskIds())
+                .thenReturn(Collections.singleton(completedTaskId));
         mManager.onTaskStateChanged(activeTaskId, ActorTaskState.ACTING);
         ShadowLooper.idleMainLooper();
 
@@ -331,6 +333,30 @@ public class ActorForegroundServiceManagerTest {
                 .startOrUpdateForegroundService(
                         eq(activeTaskId), eq(notification2), eq(completedTaskId), eq(true));
         verify(mNotificationService).demoteNow(completedTaskId);
+        verify(mNotificationService, never()).repostNotification(eq(completedTaskId), anyBoolean());
+    }
+
+    @Test
+    public void testPinTransfer_WarningTask_RepostsUnpinnedTaskWithWarning() {
+        ActorTaskTimeoutManager timeoutManager = mock(ActorTaskTimeoutManager.class);
+        mManager.setTimeoutManagerForTesting(timeoutManager);
+        int warningTaskId = 1;
+        int activeTaskId = 2;
+
+        mManager.onTaskStateChanged(warningTaskId, ActorTaskState.ACTING);
+        ShadowLooper.idleMainLooper();
+        verify(mNotificationService).getForegroundNotification(eq(mTask), anyBoolean(), eq(false));
+
+        ActorTask task2 = mock(ActorTask.class);
+        when(task2.getId()).thenReturn(activeTaskId);
+        when(mKeyedService.getTask(activeTaskId)).thenReturn(task2);
+        when(mKeyedService.getCurrentActiveTask()).thenReturn(task2);
+        when(timeoutManager.isWarningMode(warningTaskId)).thenReturn(true);
+
+        mManager.onTaskStateChanged(activeTaskId, ActorTaskState.ACTING);
+        ShadowLooper.idleMainLooper();
+
+        verify(mNotificationService).repostNotification(warningTaskId, /* isWarning= */ true);
     }
 
     @Test
@@ -576,7 +602,7 @@ public class ActorForegroundServiceManagerTest {
         verify(mNotificationService).clearTaskData(otherTaskId);
         assertFalse(mManager.isServiceBoundForTesting());
         verify(mServiceController).stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_REMOVE);
-        verify(mNotificationService).repostNotification(pinnedTaskId);
+        verify(mNotificationService).repostNotification(pinnedTaskId, /* isWarning= */ false);
         verify(mServiceController).unbindService();
     }
 
@@ -633,8 +659,23 @@ public class ActorForegroundServiceManagerTest {
                 "Service should be unbound after maybeStopServiceNow.",
                 mManager.isServiceBoundForTesting());
         verify(mServiceController).stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_REMOVE);
-        verify(mNotificationService).repostNotification(taskId);
+        verify(mNotificationService).repostNotification(taskId, /* isWarning= */ false);
         verify(mServiceController).unbindService();
+    }
+
+    @Test
+    public void testStopAndUnbindService_WarningTask_RepostsWithWarning() {
+        ActorTaskTimeoutManager timeoutManager = mock(ActorTaskTimeoutManager.class);
+        mManager.setTimeoutManagerForTesting(timeoutManager);
+        int taskId = 1;
+
+        mManager.onTaskStateChanged(taskId, ActorTaskState.ACTING);
+        ShadowLooper.idleMainLooper();
+        when(timeoutManager.isWarningMode(taskId)).thenReturn(true);
+
+        mManager.stopAndUnbindService();
+
+        verify(mNotificationService).repostNotification(taskId, /* isWarning= */ true);
     }
 
     @Test
@@ -739,6 +780,8 @@ public class ActorForegroundServiceManagerTest {
                         eq(mNotification),
                         eq(ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID),
                         eq(true));
+        verify(mNotificationService, never())
+                .onNotificationUnpinned(ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID);
     }
 
     @Test
@@ -842,6 +885,8 @@ public class ActorForegroundServiceManagerTest {
         // Active task completes while pending tasks remain.
         when(mTask.isCompleted()).thenReturn(true);
         when(mKeyedService.getActiveTasksCount()).thenReturn(0);
+        when(mNotificationService.getPendingDemotionTaskIds())
+                .thenReturn(Collections.singleton(taskId));
         mManager.onTaskStateChanged(taskId, ActorTaskState.FINISHED);
         ShadowLooper.idleMainLooper();
 

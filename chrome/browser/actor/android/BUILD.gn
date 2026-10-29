@@ -180,6 +180,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/actor/background_tabs/BackgroundTabRestorationHelperTest.java",
     "java/src/org/chromium/chrome/browser/actor/background_tabs/ColdBackgroundTabTest.java",
     "java/src/org/chromium/chrome/browser/actor/background_tabs/OffscreenRenderingManagerTest.java",
+    "java/src/org/chromium/chrome/browser/actor/foreground_service/ActorForegroundServiceManagerIntegrationTest.java",
     "java/src/org/chromium/chrome/browser/actor/foreground_service/ActorForegroundServiceManagerTest.java",
     "java/src/org/chromium/chrome/browser/actor/notifications/ActorExternalTriggerSnackbarControllerTest.java",
     "java/src/org/chromium/chrome/browser/actor/notifications/ActorNotificationFactoryTest.java",
