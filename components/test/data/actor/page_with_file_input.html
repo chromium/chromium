@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+<head>
+  <title>Page with a file input</title>
+</head>
+<body>
+  <input type="file" id="fileinput" multiple>
+  <script>
+    // Resolves with a summary of the files the page received, so tests can
+    // wait for the file chooser to be answered.
+    window.files_selected = new Promise((resolve) => {
+      const input = document.getElementById('fileinput');
+      input.addEventListener('change', async () => {
+        const summaries = [];
+        for (const file of input.files) {
+          // Reading the contents exercises the file's backing store, not just
+          // its metadata.
+          const contents = await file.text();
+          summaries.push(`${file.name}|${file.size}|${contents}`);
+        }
+        resolve(summaries.join(','));
+      });
+    });
+    window.cancel_fired = false;
+    document.getElementById('fileinput').addEventListener('cancel', () => {
+      window.cancel_fired = true;
+    });
+  </script>
+</body>
+</html>

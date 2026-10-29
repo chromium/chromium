@@ -436,6 +436,7 @@ after discussions on the right group.
       <annotation id="cryptauth_cmtg_device_keys"/>
       <annotation id="private_ai_cert_fetch"/>
       <annotation id="private_ai_tls_client"/>
+      <annotation id="actor_file_upload_tool"/>
     </sender>
   </group>
   <group name="Admin Features">

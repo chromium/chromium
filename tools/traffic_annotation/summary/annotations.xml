@@ -554,4 +554,5 @@ Refer to README.md for content description and update process.
  <item id="cryptauth_cmtg_device_keys" added_in_milestone="157" content_hash_code="05dfe7f9" os_list="linux,windows,android,chromeos" file_path="components/webauthn/core/browser/cryptauth_cmtg_device_key_provider.cc" />
  <item id="private_ai_cert_fetch" added_in_milestone="157" content_hash_code="06d0631f" os_list="linux,windows,chromeos,android" file_path="components/private_ai/tls_certificate_downloader.cc" />
  <item id="private_ai_tls_client" added_in_milestone="158" content_hash_code="06ded3c7" os_list="linux,windows,chromeos,android" file_path="components/private_ai/tls_websocket_client.cc" />
+ <item id="actor_file_upload_tool" added_in_milestone="159" content_hash_code="07969238" os_list="linux,windows,android,chromeos" file_path="chrome/browser/actor/tools/file_upload_tool.cc" />
 </annotations>

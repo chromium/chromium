@@ -572,6 +572,13 @@ enum ActionResultCode {
   // No files were provided for the file upload action.
   kFileUploadEmptyFileList = 1801,
 
+  // One or more of the files could not be downloaded from the given URL.
+  kFileUploadDownloadFailed = 1802,
+
+  // The file could not be exposed to the renderer (e.g. the memory limit of the
+  // in-memory file system has reached).
+  kFileUploadFileSystemRegistrationFailed = 1803,
+
   ///////////////////////////////////////////////////////////////////////
   // Codes 1900-1999: Errors for perform search.
 

@@ -171,6 +171,8 @@ chromium-metrics-reviews@google.com.
   <int value="1700" label="FindAndHighlightTextNotFound"/>
   <int value="1800" label="FileUploadUnauthorizedFile"/>
   <int value="1801" label="FileUploadEmptyFileList"/>
+  <int value="1802" label="FileUploadDownloadFailed"/>
+  <int value="1803" label="FileUploadFileSystemRegistrationFailed"/>
   <int value="1900" label="SearchServiceUnavailable"/>
   <int value="1901" label="DefaultSearchProviderNotSet"/>
   <int value="1902" label="SiteBasedSearchNotAvailable"/>

@@ -697,6 +697,7 @@ source_set("browser_tests") {
       "tools/bookmark_management_tool_browsertest.cc",
       "tools/click_tool_browsertest.cc",
       "tools/drag_and_release_tool_browsertest.cc",
+      "tools/file_upload_tool_browsertest.cc",
       "tools/find_and_highlight_tool_browsertest.cc",
       "tools/gemini_panel_tool_browsertest.cc",
       "tools/history_tool_browsertest.cc",
