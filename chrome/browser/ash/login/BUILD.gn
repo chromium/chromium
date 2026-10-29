@@ -645,6 +645,8 @@ source_set("unit_tests") {
     "//components/account_id",
     "//components/application_locale_storage",
     "//components/language/core/browser",
+    "//components/metrics",
+    "//components/metrics:test_support",
     "//components/ownership",
     "//components/prefs",
     "//components/prefs:test_support",

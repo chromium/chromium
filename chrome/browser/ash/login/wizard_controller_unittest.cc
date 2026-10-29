@@ -16,6 +16,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_chromeos_version_info.h"
@@ -81,6 +82,10 @@
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/metrics/metrics_service.h"
+#include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/test/test_enabled_state_provider.h"
+#include "components/metrics/test/test_metrics_service_client.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
@@ -257,6 +262,18 @@ class WizardControllerTestBase : public ::testing::Test {
     StatsReportingController::Initialize(
         TestingBrowserProcess::GetGlobal()->local_state());
 
+    // Needed for WizardController and ShowLoginWizard().
+    base::SetRecordActionTaskRunner(
+        task_environment_->GetMainThreadTaskRunner());
+    metrics_state_manager_ = metrics::MetricsStateManager::Create(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        &enabled_state_provider_, std::wstring(), base::FilePath());
+    metrics_service_ = std::make_unique<metrics::MetricsService>(
+        metrics_state_manager_.get(), &metrics_service_client_,
+        TestingBrowserProcess::GetGlobal()->local_state());
+    TestingBrowserProcess::GetGlobal()->SetMetricsService(
+        metrics_service_.get());
+
     // PreMainMessageLoopRun:
     session_termination_manager_ =
         std::make_unique<ash::SessionTerminationManager>();
@@ -375,6 +392,10 @@ class WizardControllerTestBase : public ::testing::Test {
     session_manager_.reset();
     fake_user_manager_.Reset();
 
+    TestingBrowserProcess::GetGlobal()->SetMetricsService(nullptr);
+    metrics_service_.reset();
+    metrics_state_manager_.reset();
+
     task_environment_.reset();
 
     // PostDestroyThreads:
@@ -438,6 +459,11 @@ class WizardControllerTestBase : public ::testing::Test {
       services_customization_document_;
 
   std::unique_ptr<ScopedTestingCrosSettings> cros_settings_;
+  metrics::TestEnabledStateProvider enabled_state_provider_{/*consent=*/false,
+                                                            /*enabled=*/false};
+  metrics::TestMetricsServiceClient metrics_service_client_;
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
+  std::unique_ptr<metrics::MetricsService> metrics_service_;
   std::unique_ptr<ash::SessionTerminationManager> session_termination_manager_;
   std::unique_ptr<AuthEventsRecorder> auth_events_recorder_;
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
