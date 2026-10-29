@@ -24,6 +24,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
@@ -3171,6 +3172,7 @@ void ReadAnythingAppController::UpdateDependencyParserModel(
 }
 
 void ReadAnythingAppController::RequestPhraseBoundaries(
+    int request_id,
     const std::vector<std::u16string>& sentences) {
   if (!features::IsReadAnythingReadAloudPhraseHighlightingEnabled() ||
       sentences.empty()) {
@@ -3184,10 +3186,11 @@ void ReadAnythingAppController::RequestPhraseBoundaries(
       .WithArgs(sentences)
       .Then(
           base::BindOnce(&ReadAnythingAppController::OnPhraseBoundariesComputed,
-                         weak_ptr_factory_.GetWeakPtr()));
+                         weak_ptr_factory_.GetWeakPtr(), request_id));
 }
 
 void ReadAnythingAppController::OnPhraseBoundariesComputed(
+    int request_id,
     std::vector<std::vector<int>> boundaries) {
   base::ListValue boundaries_list;
   boundaries_list.reserve(boundaries.size());
@@ -3204,8 +3207,8 @@ void ReadAnythingAppController::OnPhraseBoundariesComputed(
   if (!json) {
     return;
   }
-  ExecuteJavaScript("chrome.readingMode.onPhraseBoundariesReady(" + *json +
-                    ");");
+  ExecuteJavaScript("chrome.readingMode.onPhraseBoundariesReady(" +
+                    base::NumberToString(request_id) + ", " + *json + ");");
 }
 
 base::SequenceBound<DependencyParserModel>&

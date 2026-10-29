@@ -850,13 +850,20 @@ TEST_F(
 TEST_F(ReadAnythingAppControllerTest,
        OnPhraseBoundariesComputed_ForwardsBoundariesToJavaScript) {
   ExecuteJavaScriptForTests(
+      "var receivedRequestId = -1;"
       "var receivedBoundaries = null;"
-      "chrome.readingMode.onPhraseBoundariesReady = (boundaries) => {"
+      "chrome.readingMode.onPhraseBoundariesReady ="
+      "    (requestId, boundaries) => {"
+      "  receivedRequestId = requestId;"
       "  receivedBoundaries = boundaries;"
       "};");
 
-  controller().OnPhraseBoundariesComputed({{0, 12}, {}});
+  controller().OnPhraseBoundariesComputed(/*request_id=*/7, {{0, 12}, {}});
 
+  int received_request_id = -1;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(u"receivedRequestId",
+                                                 &received_request_id));
+  EXPECT_EQ(7, received_request_id);
   int boundaries_match = 0;
   EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
       u"JSON.stringify(receivedBoundaries) === '[[0,12],[]]' ? 1 : 0",

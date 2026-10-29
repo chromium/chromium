@@ -403,13 +403,16 @@ class ReadAnythingAppController
 
   // Asynchronously calculates phrase boundaries for each of `sentences` using
   // the dependency parser model. The result is sent to WebUI via
-  // chrome.readingMode.onPhraseBoundariesReady().
-  void RequestPhraseBoundaries(const std::vector<std::u16string>& sentences);
+  // chrome.readingMode.onPhraseBoundariesReady(), along with `request_id` so
+  // that WebUI can match the result to its request.
+  void RequestPhraseBoundaries(int request_id,
+                               const std::vector<std::u16string>& sentences);
 
   // Sends the phrase boundaries calculated by RequestPhraseBoundaries() to
   // WebUI. `boundaries` has one entry per requested sentence, each containing
   // the start offsets of the phrases in that sentence.
-  void OnPhraseBoundariesComputed(std::vector<std::vector<int>> boundaries);
+  void OnPhraseBoundariesComputed(int request_id,
+                                  std::vector<std::vector<int>> boundaries);
 
   base::SequenceBound<DependencyParserModel>&
   GetDependencyParserModelForTesting();

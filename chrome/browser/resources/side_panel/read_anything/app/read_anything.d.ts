@@ -429,8 +429,10 @@ declare namespace chrome {
     function togglePresentation(): void;
 
     // Asynchronously calculates the phrase boundaries for each of the given
-    // sentences. The result is returned via onPhraseBoundariesReady().
-    function requestPhraseBoundaries(sentences: string[]): void;
+    // sentences. The result is returned via onPhraseBoundariesReady() with the
+    // same `requestId`.
+    function requestPhraseBoundaries(requestId: number, sentences: string[]):
+        void;
 
     ////////////////////////////////////////////////////////////////
     // Implemented in read_anything/app.ts and called by native c++.
@@ -505,11 +507,13 @@ declare namespace chrome {
     // blocks to the AXTree.
     function onRenderedTextMappingReady(): void;
 
-    // Called with the result of requestPhraseBoundaries(). `boundaries` has
-    // one entry per requested sentence, each containing the start offsets of
-    // the phrases in that sentence. An entry is empty if the phrase boundaries
-    // for that sentence couldn't be calculated.
-    function onPhraseBoundariesReady(boundaries: number[][]): void;
+    // Called with the result of requestPhraseBoundaries(). `requestId` is the
+    // ID passed to requestPhraseBoundaries(). `boundaries` has one entry per
+    // requested sentence, each containing the start offsets of the phrases in
+    // that sentence. An entry is empty if the phrase boundaries for that
+    // sentence couldn't be calculated.
+    function onPhraseBoundariesReady(requestId: number, boundaries: number[][]):
+        void;
 
     // Increments the processed_granularity_index_ in ReadAnythingAppModel,
     // effectively updating ReadAloud's state of the current granularity to
