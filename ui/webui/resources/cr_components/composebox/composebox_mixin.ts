@@ -798,6 +798,7 @@ export const ComposeboxEmbedderMixin =
         // rather than inside composebox: Omnibox Everywhere.
         // Receives events from the inner voice search component.
         onVoicePermissionChanged(e: CustomEvent<VoicePermissionPromptState>) {
+          e.preventDefault();
           const voiceSearchElement =
               this.shadowRoot?.querySelector<ComposeboxVoiceSearchElement>(
                   '#voiceSearch');

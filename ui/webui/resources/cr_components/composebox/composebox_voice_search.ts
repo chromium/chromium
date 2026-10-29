@@ -562,11 +562,21 @@ export class ComposeboxVoiceSearchElement extends
     // conditions are met so `omnibox_composebox.ts` (omnibox popup) can resize
     // to be at least as big as the permission prompt if needed. This voice
     // component does not control any resizing or hiding:
-    this.fire('voice-permission-changed', {
-      'isOpened': isOpened,
-      'height': promptSize.height,
-      'width': promptSize.width,
-    } as VoicePermissionPromptState);
+    const event = new CustomEvent<VoicePermissionPromptState>(
+        'voice-permission-changed', {
+          bubbles: true,
+          cancelable: true,
+          composed: true,
+          detail: {
+            'isOpened': isOpened,
+            'height': promptSize.height,
+            'width': promptSize.width,
+          },
+        });
+    this.dispatchEvent(event);
+    assert(
+        event.defaultPrevented,
+        'Host surface must handle voice-permission-changed to resize for PEPC');
     if (isOpened) {
       this.clearTimer_();
     } else {

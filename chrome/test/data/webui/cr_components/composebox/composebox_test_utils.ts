@@ -209,7 +209,8 @@ export type MockComposeboxVoiceSearch = Omit<
     ComposeboxVoiceSearchElement,
     'state_'|'voiceRecognition_'|'onFinalResult_'|'onCloseClick_'|'onEnd_'|
     'onTryAgainClick_'|'onLinkClick_'|'errorMessage_'|'voiceModeEndCleanup_'|
-    'detailedError'|'onStopClick_'|'recordMetric_'|'onIdleTimeout_'>&{
+    'detailedError'|'onStopClick_'|'recordMetric_'|'onIdleTimeout_'|
+    'onVoicePermissionPromptChanged'>&{
   state_: number,
   metricSource_: string,
   voiceRecognition_: MockSpeechRecognition,
@@ -223,6 +224,8 @@ export type MockComposeboxVoiceSearch = Omit<
   onTryAgainClick_: (e: Event) => void,
   onLinkClick_: (e: Event) => void,
   onStopClick_: () => void,
+  onVoicePermissionPromptChanged:
+      (isOpened: boolean, promptSize: {width: number, height: number}) => void,
   recordMetric_:
       (type: VoiceSearchMetricType, metricEnumValue: number, max: number) =>
           void,

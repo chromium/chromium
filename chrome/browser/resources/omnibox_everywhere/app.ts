@@ -710,6 +710,7 @@ export class OmniboxEverywhereAppElement extends
 
   protected onVoicePermissionChanged_(
       e: CustomEvent<VoicePermissionPromptState>) {
+    e.preventDefault();
     if (e.detail.isOpened) {
       this.voiceSearchListening_ = false;
     } else {

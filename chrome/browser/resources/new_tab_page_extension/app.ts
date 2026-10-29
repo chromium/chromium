@@ -393,6 +393,7 @@ export class NtpExtensionAppElement extends NtpExtensionAppElementBase {
 
   protected onVoicePermissionChanged_(
       e: CustomEvent<VoicePermissionPromptState>) {
+    e.preventDefault();
     const isOpened = e.detail.isOpened;
     this.voiceSearchListening_ =
         !isOpened && this.showVoiceSearch_ && !this.hasVoiceSearchError_;
