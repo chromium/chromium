@@ -319,7 +319,7 @@ class Host : public GlicSharingManagerProvider {
 
   // Whether the primary client is alive and has returned from PanelWillOpen().
   // This transitions to false after PanelWasClosed() is called.
-  bool IsPrimaryClientOpen();
+  bool IsPrimaryClientOpen() const;
 
   mojom::WebClientState web_client_state() const;
 

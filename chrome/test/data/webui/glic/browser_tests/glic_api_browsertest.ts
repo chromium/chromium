@@ -3531,13 +3531,29 @@ class DesktopOnlyApiTests extends ApiTests {
 
 class ContextCapturingClient extends WebClient {
   capturedContext: AdditionalContext[] = [];
+  calls: string[] = [];
+  blockNextPanelWillOpen = false;
+  panelWillOpenStarted: PromiseWithResolvers<void>|null = null;
+  panelWillOpenGate: PromiseWithResolvers<void>|null = null;
 
   override async initialize(glicBrowserHost: GlicBrowserHost): Promise<void> {
     await super.initialize(glicBrowserHost);
     glicBrowserHost.getAdditionalContext!
         ().subscribe((context: AdditionalContext) => {
+          this.calls.push('additionalContext');
           this.capturedContext.push(context);
         });
+  }
+
+  override async notifyPanelWillOpen(
+      panelOpeningData: PanelOpeningData&PanelState): Promise<OpenPanelInfo> {
+    this.calls.push('notifyPanelWillOpen');
+    if (this.blockNextPanelWillOpen) {
+      this.blockNextPanelWillOpen = false;
+      this.panelWillOpenStarted?.resolve();
+      await this.panelWillOpenGate!.promise;
+    }
+    return super.notifyPanelWillOpen!(panelOpeningData);
   }
 }
 
@@ -3549,6 +3565,8 @@ class AdditionalContextQueuedTest extends ApiTestFixtureBase {
   async testAdditionalContextQueued() {
     const client = this.client as ContextCapturingClient;
     await runUntil(() => client.capturedContext.length > 0);
+    assertEquals(
+        'notifyPanelWillOpen,additionalContext', client.calls.join(','));
     const context = client.capturedContext[0];
     assertDefined(context);
     assertEquals(context.name, 'queued part');
@@ -3558,6 +3576,36 @@ class AdditionalContextQueuedTest extends ApiTestFixtureBase {
     assertEquals(part1.data!.type, 'text/plain');
     const data1 = new Uint8Array(await part1.data!.arrayBuffer());
     assertEquals(new TextDecoder().decode(data1), 'queued');
+  }
+
+  async testAdditionalContextClearedOnAbortedOpen() {
+    const client = this.client as ContextCapturingClient;
+    await client.waitForFirstOpen();
+
+    // Step 1: Arm the client to pause the next notifyPanelWillOpen() call.
+    client.blockNextPanelWillOpen = true;
+    client.panelWillOpenStarted = Promise.withResolvers<void>();
+    client.panelWillOpenGate = Promise.withResolvers<void>();
+    await this.advanceToNextStep();
+
+    // Step 2: Confirm the second notifyPanelWillOpen() is in flight.
+    await client.panelWillOpenStarted.promise;
+    await this.advanceToNextStep();
+
+    // Step 3: Unblock the aborted notifyPanelWillOpen() after the panel has
+    // already closed.
+    client.panelWillOpenGate.resolve();
+    await this.advanceToNextStep();
+
+    // Step 4: Verify that stale contexts from the aborted open were not
+    // delivered, and only the fresh context from the subsequent open arrived.
+    await runUntil(() => client.capturedContext.length > 0);
+    assertEquals(1, client.capturedContext.length);
+    assertEquals('fresh context', client.capturedContext[0]!.name);
+    assertEquals(
+        'notifyPanelWillOpen,notifyPanelWillOpen,notifyPanelWillOpen,' +
+            'additionalContext',
+        client.calls.join(','));
   }
 }
 

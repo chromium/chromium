@@ -4762,6 +4762,96 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testAdditionalContextQueued) {
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testAdditionalContextClearedOnAbortedOpen) {
+  class ClientReadyToShowWaiter : public Host::Observer {
+   public:
+    explicit ClientReadyToShowWaiter(Host* host) : host_(host) {
+      host_->AddObserver(this);
+    }
+    ~ClientReadyToShowWaiter() override { host_->RemoveObserver(this); }
+
+    void Wait() {
+      if (!ready_) {
+        run_loop_.Run();
+      }
+    }
+
+    void ClientReadyToShow(const mojom::OpenPanelInfo&) override {
+      ready_ = true;
+      run_loop_.Quit();
+    }
+
+   private:
+    raw_ptr<Host> host_;
+    bool ready_ = false;
+    base::RunLoop run_loop_;
+  };
+
+  ASSERT_TRUE(content::NavigateToURL(
+      GetTabListInterface()->GetActiveTab()->GetContents(),
+      embedded_test_server()->GetURL("/glic/browser_tests/test.html")));
+
+  // Open once so the web client is initialized and kept alive across close.
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient());
+  ASSERT_OK(WaitForPanelWillOpenComplete(instance));
+  PreventDeletionOnClose();
+
+  // Step 1: Arm the client to pause the next notifyPanelWillOpen() call.
+  ExecuteJsTest();
+
+  // Close the panel, then start a second open whose PanelWillOpen stays in
+  // flight.
+  tabs::TabInterface* active_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_OK(CloseGlicForTabAndWait(active_tab));
+  ToggleGlicForActiveTab(/*prevent_close=*/true);
+  ASSERT_OK(WaitForGlicOpen(instance));
+
+  // Step 2: Wait until notifyPanelWillOpen() is in flight on the client.
+  ContinueJsTest();
+  ASSERT_FALSE(instance->host().IsPrimaryClientOpen());
+
+  auto make_context = [](const std::string& name) {
+    auto context = glic::mojom::AdditionalContext::New();
+    context->name = name;
+    context->tab_id = 1;
+    context->frameUrl = GURL("http://example.com");
+    std::vector<uint8_t> data(name.begin(), name.end());
+    context->parts.push_back(glic::mojom::AdditionalContextPart::NewData(
+        glic::mojom::ContextData::New("text/plain", mojo_base::BigBuffer(data),
+                                      std::nullopt)));
+    return context;
+  };
+  instance->SendAdditionalContext(make_context("stale before close"));
+
+  // Close the panel while PanelWillOpen is still in flight (`PanelWasClosed()`
+  // clears `pending_additional_contexts_`), then queue another context while
+  // `!panel_open_` (`PanelWillOpenComplete()` clears it when `!panel_open_`).
+  ASSERT_OK(CloseGlicForTabAndWait(active_tab));
+  instance->SendAdditionalContext(make_context("stale after close"));
+
+  // Step 3: Unblock the aborted PanelWillOpen() and wait for
+  // PanelWillOpenComplete() to run on the host while the panel is closed.
+  ClientReadyToShowWaiter ready_waiter(&instance->host());
+  ContinueJsTest();
+  ready_waiter.Wait();
+  ASSERT_FALSE(instance->host().IsPrimaryClientOpen());
+
+  // Re-open the panel and verify that only fresh context from the new session
+  // is delivered.
+  ToggleGlicForActiveTab(/*prevent_close=*/true);
+  instance->SendAdditionalContext(make_context("fresh context"));
+  ASSERT_OK(WaitForGlicOpen(instance));
+  ASSERT_OK(WaitForPanelWillOpenComplete(instance));
+
+  // Step 4: Verify capturedContext in JS.
+  ContinueJsTest();
+
+  ASSERT_TRUE(instance->host().IsPrimaryClientOpen());
+  instance->host().GetWebClientManagerForTesting()->UnsetWebClient();
+  ASSERT_FALSE(instance->host().IsPrimaryClientOpen());
+}
+
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testCancelActions) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();

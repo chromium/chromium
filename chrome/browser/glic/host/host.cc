@@ -256,6 +256,7 @@ void Host::PanelWillOpen(mojom::InvocationSource invocation_source,
   VLOG(1) << "Glic [Host] PanelWillOpen";
   CHECK(delegate_);
   panel_open_ = true;
+  client_state_.open_complete = false;
   invocation_source_ = invocation_source;
   if (auto* client = GetPrimaryWebClient()) {
     client->PanelWillOpen(
@@ -277,6 +278,7 @@ void Host::PanelWasClosed() {
   VLOG(1) << "Glic [Host] PanelWasClosed";
   panel_open_ = false;
   client_state_.open_complete = false;
+  pending_additional_contexts_.clear();
   if (auto* client = GetPrimaryWebClient()) {
     client->PanelWasClosed(base::DoNothing());
   }
@@ -415,6 +417,7 @@ GlicWebClientAccess* Host::GetPrimaryWebClient() const {
 }
 
 void Host::UnsetWebClient() {
+  client_state_.open_complete = false;
   if (auto* manager = web_client_manager()) {
     manager->UnsetWebClient();
   }
@@ -433,11 +436,6 @@ void Host::WebClientInitialized() {
   }
   auto* client = GetPrimaryWebClient();
   CHECK(client);
-
-  for (auto& [source, context] : pending_additional_contexts_) {
-    client->NotifyAdditionalContext(std::move(context));
-  }
-  pending_additional_contexts_.clear();
 
   if (is_manually_resizing_) {
     client->ManualResizeChanged(true);
@@ -504,8 +502,9 @@ void Host::ManualResizeChanged(bool resizing) {
   }
 }
 
-bool Host::IsPrimaryClientOpen() {
-  return client_state_.open_complete;
+bool Host::IsPrimaryClientOpen() const {
+  return panel_open_ && client_state_.open_complete &&
+         GetPrimaryWebClient() != nullptr;
 }
 
 InstanceId Host::GetInstanceId() const {
@@ -643,7 +642,11 @@ void Host::PanelWillOpenComplete(GlicWebClientAccess* client,
   if (GetPrimaryWebClient() == client) {
     if (panel_open_) {
       client_state_.open_complete = true;
+      for (auto& [source, context] : pending_additional_contexts_) {
+        client->NotifyAdditionalContext(std::move(context));
+      }
     }
+    pending_additional_contexts_.clear();
     SetDragResizeEnabled(open_info->can_user_resize);
     // Notify observers that the client is ready even if `panel_open_` is false
     // (e.g. if the user backgrounded or closed the panel during load) so that
@@ -816,11 +819,11 @@ void Host::OnTaskTabsVisibilityChanged(bool has_visible_tab) {
 }
 
 void Host::NotifyAdditionalContext(mojom::AdditionalContextPtr context) {
-  if (auto* client = GetPrimaryWebClient()) {
-    client->NotifyAdditionalContext(std::move(context));
-  } else {
-    pending_additional_contexts_[context->source] = std::move(context);
+  if (IsPrimaryClientOpen()) {
+    GetPrimaryWebClient()->NotifyAdditionalContext(std::move(context));
+    return;
   }
+  pending_additional_contexts_[context->source] = std::move(context);
 }
 
 content::RenderProcessHost* Host::GetWebClientRenderProcessHost() const {
