@@ -375,6 +375,8 @@ void ReturnTexture(
   video_frame->UpdateReleaseSyncToken(&client);
 }
 
+BASE_FEATURE(kVRUUseSharedImageAlpha, base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace
 
 VideoFrameExternalResource::VideoFrameExternalResource() = default;
@@ -838,14 +840,15 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwareFrame(
   CopyingSyncTokenClient client;
   auto original_release_token = video_frame->UpdateReleaseSyncToken(&client);
 
-  SkAlphaType alpha_type =
-      (external_resource.type == VideoFrameResourceType::RGBA_PREMULTIPLIED)
-          ? kPremul_SkAlphaType
-          : kUnpremul_SkAlphaType;
+  viz::TransferableResource::MetadataOverride overrides;
+  if (!base::FeatureList::IsEnabled(kVRUUseSharedImageAlpha)) {
+    SkAlphaType alpha_type =
+        (external_resource.type == VideoFrameResourceType::RGBA_PREMULTIPLIED)
+            ? kPremul_SkAlphaType
+            : kUnpremul_SkAlphaType;
+    overrides.alpha_type = alpha_type;
+  }
 
-  viz::TransferableResource::MetadataOverride overrides = {
-      .alpha_type = alpha_type,
-  };
   auto transfer_resource = viz::TransferableResource::Make(
       shared_image, viz::TransferableResource::ResourceSource::kVideo,
       video_frame->acquire_sync_token(), overrides);

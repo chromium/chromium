@@ -41,7 +41,7 @@ struct SharedImageInfo : public SharedImageMetadata {
                             array_layers_in},
         debug_label(debug_label) {
     if (format_in.is_multi_plane() && !format_in.PrefersExternalSampler()) {
-      CHECK(alpha_type != kPremul_SkAlphaType, base::NotFatalUntil::M156)
+      CHECK_NE(alpha_type, kPremul_SkAlphaType)
           << "Premul alphatype for multiplanar format - label=" << debug_label;
     }
   }
