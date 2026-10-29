@@ -587,10 +587,21 @@ TEST_F(D3D12VideoEncodeH265DelegateTest,
 
   for (const auto& supported_profile : supported_profiles) {
     if (supported_profile.profile == HEVCPROFILE_REXT) {
-      // This mock cannot produce the packed formats, so shared image encoding
-      // is not advertised for the range extension rows.
-      EXPECT_FALSE(supported_profile.supports_gpu_shared_images);
-      ASSERT_EQ(supported_profile.gpu_supported_pixel_formats.size(), 1u);
+      // This mock cannot produce the packed formats, so only a shared image
+      // format that already is the encoder input format, which needs no video
+      // processor pass, can be advertised: Y410 for the 4:4:4 row. The 4:2:2
+      // row has no such format.
+      ASSERT_FALSE(supported_profile.gpu_supported_pixel_formats.empty());
+      if (supported_profile.gpu_supported_pixel_formats[0] ==
+          PIXEL_FORMAT_P410LE) {
+        EXPECT_TRUE(supported_profile.supports_gpu_shared_images);
+        ASSERT_EQ(supported_profile.gpu_supported_pixel_formats.size(), 2u);
+        EXPECT_EQ(supported_profile.gpu_supported_pixel_formats[1],
+                  PIXEL_FORMAT_Y410);
+      } else {
+        EXPECT_FALSE(supported_profile.supports_gpu_shared_images);
+        EXPECT_EQ(supported_profile.gpu_supported_pixel_formats.size(), 1u);
+      }
       continue;
     }
     EXPECT_TRUE(supported_profile.supports_gpu_shared_images);

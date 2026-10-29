@@ -118,6 +118,7 @@ VideoFrameResourceType ExternalResourceTypeForHardware(
     case PIXEL_FORMAT_P210LE:
     case PIXEL_FORMAT_P410LE:
     case PIXEL_FORMAT_RGBAF16:
+    case PIXEL_FORMAT_Y410:
       return VideoFrameResourceType::RGB;
 
     case PIXEL_FORMAT_UYVY:
@@ -304,6 +305,7 @@ viz::SharedImageFormat VideoPixelFormatToMultiPlanarSharedImageFormat(
     case PIXEL_FORMAT_XB30:
     case PIXEL_FORMAT_BGRA:
     case PIXEL_FORMAT_RGBAF16:
+    case PIXEL_FORMAT_Y410:
     case PIXEL_FORMAT_UNKNOWN:
       NOTREACHED();
   }

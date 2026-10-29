@@ -54,7 +54,8 @@ enum class SharedImageFormatUMA {
   kYUV422P16 = 35,
   kYUV444P16 = 36,
   kOther = 37,
-  kMaxValue = kOther
+  kY410 = 38,
+  kMaxValue = kY410
 };
 
 // Returns the SharedImageFormatUMA type used for emitting in UMA for the given

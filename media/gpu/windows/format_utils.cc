@@ -110,6 +110,8 @@ DXGI_FORMAT VideoPixelFormatToDxgiFormat(VideoPixelFormat format) {
       return DXGI_FORMAT_B8G8R8A8_UNORM;
     case PIXEL_FORMAT_P010LE:
       return DXGI_FORMAT_P010;
+    case PIXEL_FORMAT_Y410:
+      return DXGI_FORMAT_Y410;
     default:
       return DXGI_FORMAT_UNKNOWN;
   }
@@ -127,6 +129,9 @@ DXGI_FORMAT SharedImageFormatToDXGIFormat(viz::SharedImageFormat format) {
   }
   if (format == viz::SinglePlaneFormat::kRGBA_1010102) {
     return DXGI_FORMAT_R10G10B10A2_UNORM;
+  }
+  if (format == viz::SinglePlaneFormat::kY410) {
+    return DXGI_FORMAT_Y410;
   }
   return DXGI_FORMAT_UNKNOWN;
 }

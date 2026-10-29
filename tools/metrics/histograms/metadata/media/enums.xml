@@ -2893,6 +2893,7 @@ chromium-metrics-reviews@google.com.
   <int value="41" label="NV24"/>
   <int value="42" label="P210LE"/>
   <int value="43" label="P410LE"/>
+  <int value="44" label="Y410"/>
 </enum>
 
 <enum name="VideoResolutionDesignation">

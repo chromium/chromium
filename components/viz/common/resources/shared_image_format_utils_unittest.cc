@@ -26,6 +26,12 @@ class SharedImageFormatUtilsTest : public testing::Test {
   }
 };
 
+TEST_F(SharedImageFormatUtilsTest, ToClosestSkColorTypeSinglePlaneY410) {
+  SharedImageFormat format = SinglePlaneFormat::kY410;
+  std::vector<SkColorType> expected_types = {kRGBA_1010102_SkColorType};
+  TestToClosestSkColorType(expected_types, format);
+}
+
 TEST_F(SharedImageFormatUtilsTest, ToClosestSkColorTypeMultiPlaneNV12) {
   // 8-bit 4:2:0 Y_UV biplanar format (YUV_420_BIPLANAR)
   SharedImageFormat format = MultiPlaneFormat::kNV12;

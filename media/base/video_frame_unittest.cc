@@ -935,6 +935,7 @@ TEST(VideoFrame, AllocationSize_OddSize) {
       case PIXEL_FORMAT_XBGR:
       case PIXEL_FORMAT_XR30:
       case PIXEL_FORMAT_XB30:
+      case PIXEL_FORMAT_Y410:
         EXPECT_EQ(60u, VideoFrame::AllocationSize(format, size))
             << VideoPixelFormatToString(format);
         break;
@@ -1299,6 +1300,34 @@ TEST(VideoFrame, GetVisibleSkYUVAPixmaps) {
     EXPECT_EQ(pm.height(), kVisibleRect.height());
     EXPECT_EQ(pm.addr(), frame->visible_data(VideoFrame::Plane::kARGB));
     EXPECT_EQ(pm.colorType(), kRGBA_8888_SkColorType);
+  }
+
+  for (const gfx::Rect& visible_rect : {kVisibleRect, gfx::Rect(kCodedSize)}) {
+    SCOPED_TRACE(visible_rect.ToString());
+    auto frame =
+        VideoFrame::CreateFrame(PIXEL_FORMAT_Y410, kCodedSize, visible_rect,
+                                visible_rect.size(), base::TimeDelta());
+    ASSERT_TRUE(frame);
+
+    SkYUVAInfo yuva_info = frame->GetVisibleSkYUVAInfo();
+    EXPECT_TRUE(yuva_info.isValid());
+    EXPECT_EQ(yuva_info.dimensions().width(), visible_rect.width());
+    EXPECT_EQ(yuva_info.dimensions().height(), visible_rect.height());
+    EXPECT_EQ(yuva_info.planeConfig(), SkYUVAInfo::PlaneConfig::kUYVA);
+    EXPECT_EQ(yuva_info.subsampling(), SkYUVAInfo::Subsampling::k444);
+
+    auto pixmaps = frame->GetVisiblePlanesSkPixmaps();
+    ASSERT_EQ(pixmaps.size(), 1u);
+    auto pm = pixmaps[VideoFrame::Plane::kARGB];
+
+    EXPECT_EQ(pm.width(), visible_rect.width());
+    EXPECT_EQ(pm.height(), visible_rect.height());
+    EXPECT_EQ(pm.addr(), frame->visible_data(VideoFrame::Plane::kARGB));
+    EXPECT_EQ(pm.rowBytes(),
+              static_cast<size_t>(frame->stride(VideoFrame::Plane::kARGB)));
+    EXPECT_EQ(pm.colorType(), kRGBA_1010102_SkColorType);
+    EXPECT_LE(pm.computeByteSize(),
+              frame->GetVisiblePlaneData(VideoFrame::Plane::kARGB).size());
   }
 
   {

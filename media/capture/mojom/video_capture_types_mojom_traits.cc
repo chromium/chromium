@@ -188,6 +188,10 @@ EnumTraits<media::mojom::VideoCapturePixelFormat,
       return media::mojom::VideoCapturePixelFormat::P210LE;
     case media::VideoPixelFormat::PIXEL_FORMAT_P410LE:
       return media::mojom::VideoCapturePixelFormat::P410LE;
+    // Packed 10-bit YUV formats are decode-only and are intentionally not part
+    // of the capture mojom enum.
+    case media::VideoPixelFormat::PIXEL_FORMAT_Y410:
+      NOTREACHED();
   }
   NOTREACHED();
 }

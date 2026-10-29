@@ -98,6 +98,7 @@ std::optional<Fourcc> Fourcc::FromVideoPixelFormat(
       case PIXEL_FORMAT_YUV420AP10:
       case PIXEL_FORMAT_YUV422AP10:
       case PIXEL_FORMAT_YUV444AP10:
+      case PIXEL_FORMAT_Y410:
       case PIXEL_FORMAT_UNKNOWN:
         break;
     }
@@ -146,6 +147,7 @@ std::optional<Fourcc> Fourcc::FromVideoPixelFormat(
       case PIXEL_FORMAT_YUV420AP10:
       case PIXEL_FORMAT_YUV422AP10:
       case PIXEL_FORMAT_YUV444AP10:
+      case PIXEL_FORMAT_Y410:
       case PIXEL_FORMAT_UNKNOWN:
         break;
     }

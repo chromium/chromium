@@ -162,6 +162,7 @@ constexpr auto kGpuSharedImageFormatCandidates =
         {PIXEL_FORMAT_XBGR, DXGI_FORMAT_R8G8B8A8_UNORM},
         {PIXEL_FORMAT_XB30, DXGI_FORMAT_R10G10B10A2_UNORM},
         {PIXEL_FORMAT_RGBAF16, DXGI_FORMAT_R16G16B16A16_FLOAT},
+        {PIXEL_FORMAT_Y410, DXGI_FORMAT_Y410},
     });
 
 // Whether the video processor can convert |input_format| to |output_format|.

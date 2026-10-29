@@ -810,6 +810,8 @@ SkColorType SkColorTypeForPlaneNoCheck(VideoPixelFormat format, size_t plane) {
       return kBGRA_8888_SkColorType;
     case PIXEL_FORMAT_RGBAF16:
       return kRGBA_F16_SkColorType;
+    case PIXEL_FORMAT_Y410:
+      return kRGBA_1010102_SkColorType;
     default:
       return kUnknown_SkColorType;
   }
@@ -881,6 +883,8 @@ SkYUVAInfo::PlaneConfig SkYUVAPlaneConfigForFormat(VideoPixelFormat format) {
       return SkYUVAInfo::PlaneConfig::kY_UV;
     case PIXEL_FORMAT_NV12A:
       return SkYUVAInfo::PlaneConfig::kY_UV_A;
+    case PIXEL_FORMAT_Y410:
+      return SkYUVAInfo::PlaneConfig::kUYVA;
   }
 }
 

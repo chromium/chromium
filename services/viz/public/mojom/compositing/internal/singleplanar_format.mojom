@@ -22,4 +22,5 @@ enum SingleplanarFormat {
   RGBA_1010102,
   BGRA_1010102,
   R_F16,
+  Y410,
 };

@@ -582,6 +582,7 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
     case PIXEL_FORMAT_XR30:
     case PIXEL_FORMAT_XB30:
     case PIXEL_FORMAT_RGBAF16:
+    case PIXEL_FORMAT_Y410:
     case PIXEL_FORMAT_UNKNOWN:
       NOTREACHED() << "Only YUV formats and Y16 are supported, got: "
                    << media::VideoPixelFormatToString(format);
@@ -1498,6 +1499,8 @@ bool PaintCanvasVideoRenderer::
     case PIXEL_FORMAT_YUV420AP10:
     case PIXEL_FORMAT_YUV422AP10:
     case PIXEL_FORMAT_YUV444AP10:
+    // TODO(crbug.com/537818862): Add packed YUV GPU conversion support.
+    case PIXEL_FORMAT_Y410:
     case PIXEL_FORMAT_UNKNOWN:
       return false;
   }

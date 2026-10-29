@@ -176,6 +176,7 @@ gfx::Size VideoFrame::SampleSize(VideoPixelFormat format, size_t plane) {
         case PIXEL_FORMAT_XB30:
         case PIXEL_FORMAT_BGRA:
         case PIXEL_FORMAT_RGBAF16:
+        case PIXEL_FORMAT_Y410:
           break;
       }
   }
@@ -287,6 +288,7 @@ static std::optional<VideoFrameLayout> GetDefaultLayout(
     case PIXEL_FORMAT_XRGB:
     case PIXEL_FORMAT_ABGR:
     case PIXEL_FORMAT_XBGR:
+    case PIXEL_FORMAT_Y410:
       planes = std::vector<ColorPlaneLayout>{ColorPlaneLayout(
           coded_size.width() * 4, 0, coded_size.GetArea() * 4)};
       break;
@@ -412,7 +414,7 @@ scoped_refptr<VideoFrame> VideoFrame::CreateFrameForNativeTexturesInternal(
       format != PIXEL_FORMAT_XB30 && format != PIXEL_FORMAT_P010LE &&
       format != PIXEL_FORMAT_P210LE && format != PIXEL_FORMAT_P410LE &&
       format != PIXEL_FORMAT_RGBAF16 && format != PIXEL_FORMAT_YV12 &&
-      format != PIXEL_FORMAT_BGRA) {
+      format != PIXEL_FORMAT_BGRA && format != PIXEL_FORMAT_Y410) {
     DLOG(ERROR) << "Unsupported pixel format: "
                 << VideoPixelFormatToString(format);
     return nullptr;
@@ -1107,6 +1109,7 @@ int VideoFrame::BytesPerElement(VideoPixelFormat format, size_t plane) {
     case PIXEL_FORMAT_XBGR:
     case PIXEL_FORMAT_XR30:
     case PIXEL_FORMAT_XB30:
+    case PIXEL_FORMAT_Y410:
       return 4;
     case PIXEL_FORMAT_RGB24:
       return 3;

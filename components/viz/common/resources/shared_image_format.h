@@ -302,12 +302,15 @@ class SinglePlaneFormat {
       SharedImageFormat(mojom::SingleplanarFormat::BGRA_1010102);
   static constexpr SharedImageFormat kR_F16 =
       SharedImageFormat(mojom::SingleplanarFormat::R_F16);
+  static constexpr SharedImageFormat kY410 =
+      SharedImageFormat(mojom::SingleplanarFormat::Y410);
 
   // All known singleplanar formats.
-  static constexpr SharedImageFormat kAll[15] = {
-      kRGBA_8888, kRGBA_4444, kBGRA_8888,    kBGR_565,      kETC1,
-      kR_8,       kRG_88,     kRGBA_F16,     kR_16,         kRG_1616,
-      kRGBX_8888, kBGRX_8888, kRGBA_1010102, kBGRA_1010102, kR_F16};
+  static constexpr SharedImageFormat kAll[16] = {
+      kRGBA_8888,    kRGBA_4444,    kBGRA_8888, kBGR_565,
+      kETC1,         kR_8,          kRG_88,     kRGBA_F16,
+      kR_16,         kRG_1616,      kRGBX_8888, kBGRX_8888,
+      kRGBA_1010102, kBGRA_1010102, kR_F16,     kY410};
 };
 
 // Constants for common multi-planar formats.

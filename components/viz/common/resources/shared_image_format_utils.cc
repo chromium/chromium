@@ -65,10 +65,12 @@ SharedImageFormatUMA GetSharedImageFormatUMA(SharedImageFormat format) {
       return SharedImageFormatUMA::kRGBA_1010102;
     } else if (format == SinglePlaneFormat::kBGRA_1010102) {
       return SharedImageFormatUMA::kBGRA_1010102;
-    } else {
-      DCHECK_EQ(format, SinglePlaneFormat::kR_F16);
+    } else if (format == SinglePlaneFormat::kR_F16) {
       return SharedImageFormatUMA::kR_F16;
+    } else if (format == SinglePlaneFormat::kY410) {
+      return SharedImageFormatUMA::kY410;
     }
+    NOTREACHED();
   }
 
   using PlaneConfig = SharedImageFormat::PlaneConfig;
@@ -150,7 +152,9 @@ SkColorType ToClosestSkColorType(SharedImageFormat format) {
              // This intentionally returns kRGBA_1010102_SkColorType for
              // BGRA_1010102 even though kBGRA_1010102_SkColorType exists. It
              // should only be used on macOS (outside of tests).
-             format == SinglePlaneFormat::kBGRA_1010102) {
+             format == SinglePlaneFormat::kBGRA_1010102 ||
+             // Y410 is sampled through the aliased R10G10B10A2 format.
+             format == SinglePlaneFormat::kY410) {
     return kRGBA_1010102_SkColorType;
 
   } else if (format == SinglePlaneFormat::kR_8) {

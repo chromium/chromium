@@ -79,7 +79,9 @@ GLenum GLDataFormat(viz::SharedImageFormat format, int plane_index) {
         format == viz::SinglePlaneFormat::kRGBA_4444 ||
         format == viz::SinglePlaneFormat::kRGBA_F16 ||
         format == viz::SinglePlaneFormat::kRGBA_1010102 ||
-        format == viz::SinglePlaneFormat::kBGRA_1010102) {
+        format == viz::SinglePlaneFormat::kBGRA_1010102 ||
+        // Y410 is sampled through the aliased R10G10B10A2 format.
+        format == viz::SinglePlaneFormat::kY410) {
       return GL_RGBA;
     } else if (format == viz::SinglePlaneFormat::kBGRA_8888) {
       return GL_BGRA_EXT;
@@ -130,7 +132,8 @@ GLenum GLDataType(viz::SharedImageFormat format) {
                format == viz::SinglePlaneFormat::kRG_1616) {
       return GL_UNSIGNED_SHORT;
     } else if (format == viz::SinglePlaneFormat::kRGBA_1010102 ||
-               format == viz::SinglePlaneFormat::kBGRA_1010102) {
+               format == viz::SinglePlaneFormat::kBGRA_1010102 ||
+               format == viz::SinglePlaneFormat::kY410) {
       return GL_UNSIGNED_INT_2_10_10_10_REV_EXT;
     }
 
@@ -165,7 +168,9 @@ GLenum GLInternalFormat(viz::SharedImageFormat format, int plane_index) {
     } else if (format == viz::SinglePlaneFormat::kETC1) {
       return GL_ETC1_RGB8_OES;
     } else if (format == viz::SinglePlaneFormat::kRGBA_1010102 ||
-               format == viz::SinglePlaneFormat::kBGRA_1010102) {
+               format == viz::SinglePlaneFormat::kBGRA_1010102 ||
+               // Y410 is sampled through the aliased R10G10B10A2 format.
+               format == viz::SinglePlaneFormat::kY410) {
       return GL_RGB10_A2_EXT;
     }
     return GLDataFormat(format, /*plane_index=*/0);
@@ -221,7 +226,9 @@ GLenum TextureStorageFormat(viz::SharedImageFormat format,
     } else if (format == viz::SinglePlaneFormat::kETC1) {
       return GL_ETC1_RGB8_OES;
     } else if (format == viz::SinglePlaneFormat::kRGBA_1010102 ||
-               format == viz::SinglePlaneFormat::kBGRA_1010102) {
+               format == viz::SinglePlaneFormat::kBGRA_1010102 ||
+               // Y410 is sampled through the aliased R10G10B10A2 format.
+               format == viz::SinglePlaneFormat::kY410) {
       return GL_RGB10_A2_EXT;
     }
 
