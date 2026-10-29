@@ -76,11 +76,11 @@
 #include "third_party/lens_server_proto/search_communication.pb.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/webui/resource_path.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/webui_util.h"
 #include "url/gurl.h"
@@ -120,7 +120,7 @@ constexpr std::string_view kProfileAvatarPathPrefix =
 
 void OpenUrlWithDisposition(Profile* profile,
                             const GURL& url,
-                            WindowOpenDisposition disposition,
+                            ui::mojom::WindowOpenDisposition disposition,
                             BrowserWindowInterface* browser) {
   NavigateParams params(profile, url, ui::PAGE_TRANSITION_LINK);
   params.disposition = disposition;
@@ -640,7 +640,8 @@ void ContextualTasksUIBase::OpenMyActivityUi() {
     return;
   }
   OpenUrlWithDisposition(GetProfile(), GURL(kMyActivityUrl),
-                         WindowOpenDisposition::kNewForegroundTab, browser);
+                         ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                         browser);
 }
 
 void ContextualTasksUIBase::OpenOverflowMenuHelpUi() {
@@ -651,7 +652,7 @@ void ContextualTasksUIBase::OpenOverflowMenuHelpUi() {
   OpenUrlWithDisposition(
       GetProfile(),
       GURL(contextual_tasks::GetContextualTasksOverflowMenuHelpUrl()),
-      WindowOpenDisposition::kNewForegroundTab, browser);
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab, browser);
 }
 
 void ContextualTasksUIBase::OpenManageAccountUi() {

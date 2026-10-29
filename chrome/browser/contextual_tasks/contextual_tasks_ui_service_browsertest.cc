@@ -44,8 +44,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace contextual_tasks {
 
@@ -706,7 +706,7 @@ IN_PROC_BROWSER_TEST_F(
   GURL aim_url("https://www.google.com/search?q=aim_test");
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          aim_url, WindowOpenDisposition::kCurrentTab,
+          aim_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_LINK);
 
   bool handled = ui_service->HandleNavigation(
@@ -750,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(
   GURL lens_url("https://www.google.com/search?q=lens_test&lns_mode=un");
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          lens_url, WindowOpenDisposition::kCurrentTab,
+          lens_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_LINK);
 
   bool handled = ui_service->HandleNavigation(
@@ -784,7 +784,8 @@ IN_PROC_BROWSER_TEST_F(
   GURL url("https://www.google.com/search?q=tab_test");
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK);
+          url, ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_LINK);
 
   bool handled = ui_service->HandleNavigation(
       params, tab_contents, /*is_from_embedded_page=*/false,
@@ -817,7 +818,8 @@ IN_PROC_BROWSER_TEST_F(
            GetExpectedCs());
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK);
+          url, ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_LINK);
 
   bool handled = ui_service->HandleNavigation(
       params, panel_contents, /*is_from_embedded_page=*/true,
@@ -855,7 +857,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceRearchitectureEnabledTest,
 
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          third_party_url, WindowOpenDisposition::kCurrentTab,
+          third_party_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_LINK);
 
   bool handled = ui_service->HandleNavigation(
@@ -923,7 +925,7 @@ IN_PROC_BROWSER_TEST_F(
 
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          third_party_url, WindowOpenDisposition::kCurrentTab,
+          third_party_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_LINK);
 
   bool handled = ui_service->HandleNavigation(
@@ -969,7 +971,8 @@ IN_PROC_BROWSER_TEST_F(
            GetExpectedCs());
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK);
+          url, ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_LINK);
 
   bool handled = ui_service->HandleNavigation(
       params, panel_contents, /*is_from_embedded_page=*/true,

@@ -91,9 +91,9 @@
 #include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_switches.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
 namespace {
@@ -407,7 +407,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
   GURL url("https://www.google.com/search?q=test");
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK);
+          url, ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_LINK);
   controller_->TransferNavigationToEmbeddedPage(params);
   run_loop.Run();
 }

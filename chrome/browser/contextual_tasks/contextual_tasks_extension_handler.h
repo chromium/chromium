@@ -28,7 +28,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 #include "ui/webui/resources/js/tracked_element/tracked_element.mojom-forward.h"
 #include "url/gurl.h"
@@ -193,9 +193,10 @@ class ContextualTasksExtensionHandler
       searchbox::mojom::SmartComposeStatsPtr smart_compose_stats) override;
   void SetPopupSelection(
       searchbox::mojom::OmniboxPopupSelectionPtr selection) override;
-  void OpenPopupSelection(uint32_t result_sequence_id,
-                          searchbox::mojom::OmniboxPopupSelectionPtr selection,
-                          WindowOpenDisposition disposition) override;
+  void OpenPopupSelection(
+      uint32_t result_sequence_id,
+      searchbox::mojom::OmniboxPopupSelectionPtr selection,
+      ui::mojom::WindowOpenDisposition disposition) override;
   void OnNavigationLikely(
       uint8_t line,
       const GURL& url,

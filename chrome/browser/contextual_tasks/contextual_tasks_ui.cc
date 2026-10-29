@@ -97,7 +97,6 @@
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/webui/buildflags.h"
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"

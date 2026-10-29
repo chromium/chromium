@@ -101,8 +101,8 @@
 #include "net/base/url_util.h"
 #include "pdf/buildflags.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -521,7 +521,7 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
              "OnNavigationToAiPageIntercepted opening in new tab";
       NavigateParams params(profile_, ui_url,
                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-      params.disposition = WindowOpenDisposition::kNewForegroundTab;
+      params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
 
       Navigate(&params);
       contextual_task_web_contents = params.navigated_or_inserted_contents;
@@ -1867,8 +1867,9 @@ bool ContextualTasksUiService::HandleCitationClick(
     return true;
   }
 
-  if (url_params.disposition == WindowOpenDisposition::kCurrentTab) {
-    url_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  if (url_params.disposition == ui::mojom::WindowOpenDisposition::kCurrentTab) {
+    url_params.disposition =
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   }
 
   OMNIBOX_LOG("nav_trace")
@@ -1936,7 +1937,7 @@ bool ContextualTasksUiService::HandleLensNavigation(
   // mode query, and not shopping mode), and the navigation was not explicitly
   // requested in a new window/tab:
   if (IsValidSearchResultsPage(url) &&
-      url_params.disposition == WindowOpenDisposition::kCurrentTab &&
+      url_params.disposition == ui::mojom::WindowOpenDisposition::kCurrentTab &&
       shared_highlighting::ExtractTextFragments(url.GetRef()).empty()) {
     // If the search results URL requires side panel parameters (e.g. gsc=2,
     // theme, locale) to be added, apply them.
@@ -2001,8 +2002,9 @@ bool ContextualTasksUiService::HandleSidePanelExternalNavigation(
     }
   }
 
-  if (url_params.disposition == WindowOpenDisposition::kCurrentTab) {
-    url_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  if (url_params.disposition == ui::mojom::WindowOpenDisposition::kCurrentTab) {
+    url_params.disposition =
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   }
 
   // Ensure initiator_origin is populated for renderer-initiated navigations to
@@ -2170,8 +2172,10 @@ void ContextualTasksUiService::OpenUrl(
   }
 
   if (contextual_tasks::IsContextualTasksClobberActiveTabEnabled() &&
-      (url_params.disposition == WindowOpenDisposition::kNewForegroundTab ||
-       url_params.disposition == WindowOpenDisposition::kCurrentTab)) {
+      (url_params.disposition ==
+           ui::mojom::WindowOpenDisposition::kNewForegroundTab ||
+       url_params.disposition ==
+           ui::mojom::WindowOpenDisposition::kCurrentTab)) {
     TabListInterface* tab_list =
         browser ? TabListInterface::From(browser) : nullptr;
     tabs::TabInterface* active_tab =
@@ -2543,9 +2547,11 @@ bool ContextualTasksUiService::HandleNavigationImpl(
   // the disposition.
   bool is_to_new_tab =
       from_can_create_window || source_contents->GetOpener() != nullptr ||
-      url_params.disposition == WindowOpenDisposition::kNewForegroundTab ||
-      url_params.disposition == WindowOpenDisposition::kNewBackgroundTab ||
-      url_params.disposition == WindowOpenDisposition::kNewWindow ||
+      url_params.disposition ==
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab ||
+      url_params.disposition ==
+          ui::mojom::WindowOpenDisposition::kNewBackgroundTab ||
+      url_params.disposition == ui::mojom::WindowOpenDisposition::kNewWindow ||
       (pending_tracker != nullptr);
   OMNIBOX_LOG("nav_trace")
       << "ContextualTasks navigation trace: HandleNavigationImpl "
@@ -2606,7 +2612,8 @@ bool ContextualTasksUiService::HandleNavigationImpl(
       // sure to remove the param that makes the page render for it.
       content::OpenURLParams new_url_params = url_params;
       new_url_params.url = lens::RemoveSidePanelURLParameters(url_params.url);
-      new_url_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+      new_url_params.disposition =
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab;
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&ContextualTasksUiService::OpenUrl,
                                     weak_ptr_factory_.GetWeakPtr(),
@@ -2841,7 +2848,8 @@ bool ContextualTasksUiService::HandleNavigationImpl(
           // In-tab links from within the side panel shouldn't navigate the side
           // panel. Some lans cases can, but that is handled earlier in this
           // method. For this case open a new tab instead.
-          url_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+          url_params.disposition =
+              ui::mojom::WindowOpenDisposition::kNewForegroundTab;
           base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE, base::BindOnce(&ContextualTasksUiService::OpenUrl,
                                         weak_ptr_factory_.GetWeakPtr(),
@@ -3546,7 +3554,7 @@ void ContextualTasksUiService::MoveTaskUiToNewTab(
     NavigateParams params(browser,
                           lens::RemoveSidePanelURLParameters(inner_frame_url),
                           ui::PAGE_TRANSITION_LINK);
-    params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     Navigate(&params);
 
   } else {
@@ -3560,7 +3568,7 @@ void ContextualTasksUiService::MoveTaskUiToNewTab(
     // std::moving it below since it's used later in this function.
     auto* web_contents_ptr = web_contents.get();
     NavigateParams params(browser, std::move(web_contents));
-    params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     params.transition = ui::PAGE_TRANSITION_LINK;
     Navigate(&params);
 
@@ -3716,7 +3724,7 @@ void ContextualTasksUiService::StartTaskUiInSidePanelImpl(
     } else {
       content::OpenURLParams url_params =
           content::OpenURLParams::CreateBrowserInitiated(
-              url, WindowOpenDisposition::kCurrentTab,
+              url, ui::mojom::WindowOpenDisposition::kCurrentTab,
               ui::PAGE_TRANSITION_LINK);
       web_ui_interface->TransferNavigationToEmbeddedPage(url_params);
     }
@@ -4168,7 +4176,7 @@ void ContextualTasksUiService::OnTabClickedFromSourcesMenu(
   // The tab wasn't found. Open a new tab with the given URL to the end of the
   // tab strip.
   NavigateParams params(browser->GetProfile(), url, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
 }
 
@@ -4184,7 +4192,7 @@ void ContextualTasksUiService::OnFileClickedFromSourcesMenu(
   }
 
   NavigateParams params(browser->GetProfile(), url, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
 }
 
@@ -4200,7 +4208,7 @@ void ContextualTasksUiService::OnImageClickedFromSourcesMenu(
   }
 
   NavigateParams params(browser->GetProfile(), url, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
 }
 

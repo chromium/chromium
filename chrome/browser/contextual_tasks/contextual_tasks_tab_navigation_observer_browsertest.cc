@@ -39,7 +39,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 namespace contextual_tasks {
@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksTabNavigationObserverBrowserTest,
   // the background.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://www.google.com/other"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   ASSERT_NE(TabListInterface::From(browser())->GetActiveTab()->GetContents(),
             web_contents_);

@@ -83,8 +83,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -1390,7 +1390,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   AutocompleteMatch match;
   handler_->GetOmniboxClientForTesting()->OnAutocompleteAccept(
       GURL("https://www.google.com/search?q=test query"), nullptr,
-      WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED,
+      ui::mojom::WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED,
       omnibox::AutocompleteMatchType::kSearchSuggest, base::TimeTicks::Now(),
       false, false, u"test query", match, match);
 
@@ -1429,7 +1429,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   AutocompleteMatch match;
   handler_->GetOmniboxClientForTesting()->OnAutocompleteAccept(
       GURL("https://www.google.com/search?q=extracted%20query"), nullptr,
-      WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED,
+      ui::mojom::WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED,
       omnibox::AutocompleteMatchType::kSearchSuggest, base::TimeTicks::Now(),
       false, false, u"extracted query", match, match);
 }
@@ -1448,7 +1448,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   AutocompleteMatch match;
   handler_->GetOmniboxClientForTesting()->OnAutocompleteAccept(
       GURL("https://www.google.com/search?other=param"), nullptr,
-      WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED,
+      ui::mojom::WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED,
       omnibox::AutocompleteMatchType::kSearchSuggest, base::TimeTicks::Now(),
       false, false, u"other param", match, match);
 }

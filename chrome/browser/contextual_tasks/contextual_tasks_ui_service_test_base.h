@@ -41,8 +41,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -208,10 +208,11 @@ inline content::OpenURLParams CreateOpenUrlParams(
   content::Referrer referrer;
   if (!is_renderer_initiated) {
     return content::OpenURLParams::CreateBrowserInitiated(
-        url, WindowOpenDisposition::kCurrentTab, page_transition, referrer);
+        url, ui::mojom::WindowOpenDisposition::kCurrentTab, page_transition,
+        referrer);
   }
   return content::OpenURLParams(url, referrer,
-                                WindowOpenDisposition::kCurrentTab,
+                                ui::mojom::WindowOpenDisposition::kCurrentTab,
                                 page_transition, is_renderer_initiated);
 }
 

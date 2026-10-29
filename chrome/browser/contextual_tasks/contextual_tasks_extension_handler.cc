@@ -43,7 +43,7 @@
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/lens_server_proto/search_communication.pb.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -476,7 +476,7 @@ void ContextualTasksExtensionHandler::SetPopupSelection(
 void ContextualTasksExtensionHandler::OpenPopupSelection(
     uint32_t result_sequence_id,
     searchbox::mojom::OmniboxPopupSelectionPtr selection,
-    WindowOpenDisposition disposition) {}
+    ui::mojom::WindowOpenDisposition disposition) {}
 void ContextualTasksExtensionHandler::OnNavigationLikely(
     uint8_t line,
     const GURL& url,

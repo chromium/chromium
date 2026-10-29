@@ -45,7 +45,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 namespace contextual_tasks {
@@ -144,7 +144,8 @@ class SearchJourneyTabFeatureBrowserTest : public InProcessBrowserTest {
             query);
     EXPECT_TRUE(search_url.is_valid());
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), search_url, WindowOpenDisposition::kNewForegroundTab,
+        browser(), search_url,
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     return tab_list()->GetActiveTab();
   }
@@ -231,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://example.com/other"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_TRUE(tracker()->GetActiveJourneysForTesting().empty());
 }
@@ -268,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
   ui_test_utils::NavigateToURLWithDisposition(
       browser(),
       GURL("https://example.com/search?q=quantum+entanglement+physics"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   EXPECT_TRUE(tracker()->GetActiveJourneysForTesting().empty());
