@@ -329,14 +329,16 @@ gfx::Transform DevToolsEmulator::EnableDeviceEmulation(
   const ViewportEmulationMode previous_mode = GetViewportEmulationMode();
   emulation_params_ = params;
   device_metrics_enabled_ = true;
-  const bool needs_lifecycle_update = ApplyViewportEmulationMode(previous_mode);
+  bool needs_lifecycle_update = ApplyViewportEmulationMode(previous_mode);
+
+  needs_lifecycle_update |= SetForceViewportMeta(params.force_viewport_meta);
+  needs_lifecycle_update |= SetForceTextSizeAdjust(params.force_text_size_adjust);
+  needs_lifecycle_update |= SetForceAndroidOverlayScrollbar(
+      params.force_android_overlay_scrollbar);
+
   if (needs_lifecycle_update) {
     UpdateLifecycleAfterEmulationProfileChange();
   }
-
-  SetForceViewportMeta(params.force_viewport_meta);
-  SetForceTextSizeAdjust(params.force_text_size_adjust);
-  SetForceAndroidOverlayScrollbar(params.force_android_overlay_scrollbar);
 
   web_view_->SetCompositorDeviceScaleFactorOverride(params.device_scale_factor);
 
@@ -368,13 +370,14 @@ void DevToolsEmulator::DisableDeviceEmulation() {
     DisableMobileEmulation();
   }
   device_metrics_enabled_ = false;
-  const bool needs_lifecycle_update = ApplyViewportEmulationMode(previous_mode);
+  bool needs_lifecycle_update = ApplyViewportEmulationMode(previous_mode);
+  needs_lifecycle_update |= SetForceAndroidOverlayScrollbar(false);
+  needs_lifecycle_update |= SetForceViewportMeta(false);
+  needs_lifecycle_update |= SetForceTextSizeAdjust(false);
+
   if (needs_lifecycle_update) {
     UpdateLifecycleAfterEmulationProfileChange();
   }
-  SetForceAndroidOverlayScrollbar(false);
-  SetForceViewportMeta(false);
-  SetForceTextSizeAdjust(false);
   web_view_->SetCompositorDeviceScaleFactorOverride(0.f);
 
   if (web_view_->MainFrameImpl()) {
@@ -645,10 +648,10 @@ void DevToolsEmulator::SetScrollbarsHidden(bool hidden) {
       scrollbars_hidden_ || embedder_hide_scrollbars_);
 }
 
-void DevToolsEmulator::SetForceAndroidOverlayScrollbar(
+bool DevToolsEmulator::SetForceAndroidOverlayScrollbar(
     bool force_android_overlay_scrollbar) {
   if (force_android_overlay_scrollbar_ == force_android_overlay_scrollbar) {
-    return;
+    return false;
   }
   force_android_overlay_scrollbar_ = force_android_overlay_scrollbar;
   web_view_->GetPage()->GetSettings().SetForceAndroidOverlayScrollbar(
@@ -660,15 +663,12 @@ void DevToolsEmulator::SetForceAndroidOverlayScrollbar(
 
   web_view_->GetPage()->UsesOverlayScrollbarsChanged();
 
-  if (web_view_->MainFrameImpl()) {
-    web_view_->MainFrameImpl()->GetFrameView()->UpdateLifecycleToLayoutClean(
-        DocumentUpdateReason::kInspector);
-  }
+  return true;
 }
 
-void DevToolsEmulator::SetForceViewportMeta(bool force_viewport_meta) {
+bool DevToolsEmulator::SetForceViewportMeta(bool force_viewport_meta) {
   if (force_viewport_meta_ == force_viewport_meta) {
-    return;
+    return false;
   }
   force_viewport_meta_ = force_viewport_meta;
   // ViewportMetaEnabled enables parsing of <meta name="viewport">, while
@@ -680,29 +680,23 @@ void DevToolsEmulator::SetForceViewportMeta(bool force_viewport_meta) {
       force_viewport_meta_ || emulate_mobile_enabled() ||
       embedder_viewport_enabled_);
 
-  if (web_view_->MainFrameImpl()) {
-    web_view_->MainFrameImpl()->GetFrameView()->UpdateLifecycleToLayoutClean(
-        DocumentUpdateReason::kInspector);
-  }
+  return true;
 }
 
-void DevToolsEmulator::SetForceTextSizeAdjust(bool force_text_size_adjust) {
+bool DevToolsEmulator::SetForceTextSizeAdjust(bool force_text_size_adjust) {
   force_text_size_adjust_ = force_text_size_adjust;
   const bool enabled =
       force_text_size_adjust_ || embedder_text_size_adjust_enabled_;
   if (web_view_->GetPage()->GetSettings().GetTextSizeAdjustEnabled() ==
       enabled) {
-    return;
+    return false;
   }
   // TODO(https://crbug.com/564804235): `SetTextSizeAdjustEnabled` does not
   // clear `MatchedPropertiesCache`, so already-rendered elements only update
   // after navigation or cache invalidation.
   web_view_->GetPage()->GetSettings().SetTextSizeAdjustEnabled(enabled);
 
-  if (web_view_->MainFrameImpl()) {
-    web_view_->MainFrameImpl()->GetFrameView()->UpdateLifecycleToLayoutClean(
-        DocumentUpdateReason::kInspector);
-  }
+  return true;
 }
 
 void DevToolsEmulator::SetDocumentCookieDisabled(bool disabled) {
