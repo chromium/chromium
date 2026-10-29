@@ -23,7 +23,7 @@ std::optional<std::string> GetCountry() {
 }
 
 // Default factory.
-std::unique_ptr<KeyedService> BuildOhttpKeyService(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildOhttpKeyService(ProfileIOS& profile) {
   SafeBrowsingService* safe_browsing_service =
       GetApplicationContext()->GetSafeBrowsingService();
   if (!safe_browsing_service) {
@@ -34,7 +34,7 @@ std::unique_ptr<KeyedService> BuildOhttpKeyService(ProfileIOS* profile) {
           safe_browsing_service->GetURLLoaderFactory());
   return std::make_unique<safe_browsing::OhttpKeyService>(
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
-      profile->GetPrefs(), GetApplicationContext()->GetLocalState(),
+      profile.GetPrefs(), GetApplicationContext()->GetLocalState(),
       base::BindRepeating(&GetCountry),
       /*are_background_lookups_allowed=*/false);
 }
@@ -42,7 +42,7 @@ std::unique_ptr<KeyedService> BuildOhttpKeyService(ProfileIOS* profile) {
 }  // namespace
 
 // static
-OhttpKeyServiceFactory::TestingFactory
+OhttpKeyServiceFactory::TestingFactoryByRef
 OhttpKeyServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildOhttpKeyService);
 }
@@ -55,6 +55,6 @@ OhttpKeyServiceFactory::OhttpKeyServiceFactory(PassKey key)
                                          TestingCreation::kNoServiceForTests) {}
 
 std::unique_ptr<KeyedService> OhttpKeyServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildOhttpKeyService(profile);
 }
