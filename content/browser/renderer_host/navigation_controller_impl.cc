@@ -4821,7 +4821,6 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           /*commit_sent=*/base::TimeTicks(), /*srcdoc_value=*/std::string(),
           /*should_load_data_url=*/false,
           /*ancestor_or_self_has_cspee=*/node->AncestorOrSelfHasCSPEE(),
-          /*reduced_accept_language=*/std::string(),
           /*navigation_delivery_type=*/
           network::mojom::NavigationDeliveryType::kDefault,
           /*view_transition_state=*/std::nullopt,

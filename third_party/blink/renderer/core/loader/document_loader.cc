@@ -455,7 +455,6 @@ struct SameSizeAsDocumentLoader
   Vector<DocumentLoader::Preconnect> preconnects;
   std::optional<Vector<KURL>> ad_auction_components;
   std::unique_ptr<ExtraData> extra_data;
-  AtomicString reduced_accept_language;
   network::mojom::NavigationDeliveryType navigation_delivery_type;
   std::optional<ViewTransitionState> view_transition_state;
   std::optional<FencedFrame::RedactedFencedFrameProperties>
@@ -627,7 +626,6 @@ DocumentLoader::DocumentLoader(
       navigation_api_forward_entries_(params_->navigation_api_forward_entries),
       navigation_api_previous_entry_(params_->navigation_api_previous_entry),
       extra_data_(std::move(extra_data)),
-      reduced_accept_language_(params_->reduced_accept_language),
       navigation_delivery_type_(params_->navigation_delivery_type),
       view_transition_state_(std::move(params_->view_transition_state)),
       storage_access_api_status_(params_->load_with_storage_access),
@@ -822,7 +820,6 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
       params->ad_auction_components->emplace_back(KURL(url));
     }
   }
-  params->reduced_accept_language = reduced_accept_language_;
   params->navigation_delivery_type = navigation_delivery_type_;
   params->load_with_storage_access = storage_access_api_status_;
   params->can_use_device_bound_session_js_api =
@@ -2330,8 +2327,6 @@ void DocumentLoader::DidInstallNewDocument(Document* document) {
   // synchronously.
   document->GetFrame()->GetClientHintsPreferences().UpdateFrom(
       client_hints_preferences_);
-
-  document->GetFrame()->SetReducedAcceptLanguage(reduced_accept_language_);
 
   const AtomicString& dns_prefetch_control =
       response_.HttpHeaderField(http_names::kXDNSPrefetchControl);

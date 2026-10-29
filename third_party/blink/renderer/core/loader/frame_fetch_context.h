@@ -134,8 +134,6 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   void AddClientHintsIfNecessary(const std::optional<float> resource_width,
                                  ResourceRequest&);
 
-  void AddReducedAcceptLanguageIfNecessary(ResourceRequest&);
-
   FetchContext* Detach() override;
 
   void Trace(Visitor*) const override;
@@ -226,7 +224,6 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
 
   const ClientHintsPreferences& GetClientHintsPreferences() const;
   float GetDevicePixelRatio() const;
-  String GetReducedAcceptLanguage() const;
 
   enum class ClientHintsMode { kLegacy, kStandard };
   void SetFirstPartyCookie(ResourceRequest&);

@@ -175,10 +175,6 @@ String GenerateAcceptLanguageHeader(const String& lang) {
       net::HttpUtil::GenerateAcceptLanguageHeader(lang.Utf8()));
 }
 
-String ExpandLanguageList(const String& lang) {
-  return String::FromUtf8(net::HttpUtil::ExpandLanguageList(lang.Utf8()));
-}
-
 Vector<char> ParseMultipartBoundary(const AtomicString& content_type_header) {
   std::string utf8_string = content_type_header.Utf8();
   std::string mime_type;

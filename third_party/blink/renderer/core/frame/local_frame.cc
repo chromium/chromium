@@ -3149,11 +3149,6 @@ class FrameColorOverlay final : public FrameOverlay::Delegate {
 
 }  // namespace
 
-void LocalFrame::SetReducedAcceptLanguage(
-    const AtomicString& reduced_accept_language) {
-  reduced_accept_language_ = reduced_accept_language;
-}
-
 template <>
 struct DowncastTraits<FrameColorOverlay> {
   static bool AllowFrom(const FrameOverlay::Delegate& frame_overlay) {

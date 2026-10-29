@@ -117,15 +117,6 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
         base::StrCat({kFirstPartyOriginUrl, "/same_origin_iframe.html"}));
   }
 
-  GURL SameOriginImgUrl() const {
-    return GURL(base::StrCat({kFirstPartyOriginUrl, "/same_origin_img.html"}));
-  }
-
-  GURL SimpleImgUrl() const {
-    return GURL(
-        base::StrCat({kFirstPartyOriginUrl, "/subresource_simple.jpg"}));
-  }
-
   GURL SimpleRequestUrl() const {
     return GURL(base::StrCat({kFirstPartyOriginUrl, "/subframe_simple.html"}));
   }
@@ -205,10 +196,8 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
         base::MakeFixedFlatSet<std::string_view>({
             "/subframe_iframe_basic.html",
             "/subframe_iframe_3p.html",
-            "/subframe_redirect.html",
             "/subframe_simple.html",
             "/subframe_simple_3p.html",
-            "/subresource_simple.jpg",
             "/subresource_redirect_style.css",
         });
     const std::string path = params->url_request.url.GetPath();
@@ -505,27 +494,6 @@ IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
-                       SubresourceRequestNoRestart) {
-  base::HistogramTester histograms;
-  SetTestOptions({.content_language_in_parent = "es",
-                  .avail_language_in_parent = "es, en-US",
-                  .vary_in_parent = "accept-language"},
-                 {SameOriginImgUrl(), SimpleImgUrl()});
-  SetPrefsAcceptLanguage({"es", "en-US"});
-
-  // Initial request.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginImgUrl(), "es");
-  EXPECT_EQ(LastRequestUrl().GetPath(), "/subresource_simple.jpg");
-
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // Total two different url requests:
-  // * same_origin_img.html: one fetch for initially adding header.
-  // * subresource_simple.jpg: no prefs read, it directly reads from the
-  // navigation commit language.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 1);
-}
-
-IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        SiteLanguageDontMatchAnyPreferredLanguage) {
   base::HistogramTester histograms;
 
@@ -584,33 +552,6 @@ IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
   // Even Script disabled, it still expects reduced accept-language.
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(), "zh");
   EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple.html");
-}
-
-IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
-                       ImgSubresourceReduceAcceptLanguage) {
-  base::HistogramTester histograms;
-
-  SetTestOptions({.content_language_in_parent = "es",
-                  .avail_language_in_parent = "es, en-US",
-                  .vary_in_parent = "accept-language",
-                  .content_language_in_child = "es",
-                  .avail_language_in_child = "es, en-US",
-                  .vary_in_child = "accept-language"},
-                 {SameOriginImgUrl(), SimpleImgUrl()});
-
-  SetPrefsAcceptLanguage({"zh", "en-US"});
-
-  // Subresource img request expects the same language as the main frame
-  // request.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginImgUrl(), "zh");
-
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // Total two different URL requests, only same_origin_img_url request has one
-  // fetch Prefs request when initially adding header. For image request, it
-  // will directly read from the navigation commit reduced accept language.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 1);
-
-  EXPECT_EQ(LastRequestUrl().GetPath(), "/subresource_simple.jpg");
 }
 
 IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
@@ -726,19 +667,9 @@ class ThirdPartyReduceAcceptLanguageBrowserTest
         base::StrCat({kFirstPartyOriginUrl, "/cross_origin_iframe.html"}));
   }
 
-  GURL TopLevelWithIframeRedirectUrl() const {
-    return GURL(base::StrCat(
-        {kFirstPartyOriginUrl, "/top_level_with_iframe_redirect.html"}));
-  }
-
   GURL CrossOriginIframeWithSubresourceUrl() const {
     return GURL(base::StrCat(
         {kFirstPartyOriginUrl, "/cross_origin_iframe_with_subrequests.html"}));
-  }
-
-  GURL SubframeThirdPartyRequestUrl() const {
-    return GURL(
-        base::StrCat({kThirdPartyOriginUrl, "/subframe_redirect_3p.html"}));
   }
 
   GURL SimpleThirdPartyRequestUrl() const {
@@ -841,42 +772,6 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyReduceAcceptLanguageBrowserTest,
               testing::IsSupersetOf({IframeThirdPartyRequestUrl(),
                                      OtherSiteCssRequestUrl(),
                                      OtherSiteBasicRequestUrl()}));
-}
-
-IN_PROC_BROWSER_TEST_P(ThirdPartyReduceAcceptLanguageBrowserTest,
-                       ThirdPartyIframeWithSubresourceRedirectRequests) {
-  base::HistogramTester histograms;
-
-  SetTestOptions({.content_language_in_parent = "es",
-                  .avail_language_in_parent = "es, en-US",
-                  .vary_in_parent = "accept-language",
-                  .content_language_in_child = "zh",
-                  .avail_language_in_child = "zh",
-                  .vary_in_child = "accept-language"},
-                 {TopLevelWithIframeRedirectUrl(),
-                  SubframeThirdPartyRequestUrl(), OtherSiteCssRequestUrl()});
-
-  SetPrefsAcceptLanguage({"zh", "en-US"});
-
-  // It still expects an accept-language header has the reduced value even when
-  // the final url is a css style document.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(TopLevelWithIframeRedirectUrl(),
-                                               "zh");
-
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // Fetch reduce accept-language when visiting the following three URLs, for
-  // css request, it won't pass to navigation layer:
-  // * top_level_with_iframe_redirect_url(1): one fetch for initially adding
-  // header.
-  // * subframe_3p_request_url(1): one fetch for initially adding header.
-  // * other_site_css_request_url(0): directly read from commit parameter.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 2);
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
-
-  // All subresources should have been loaded,
-  EXPECT_THAT(intercepted_load_urls_,
-              testing::IsSupersetOf(
-                  {SubframeThirdPartyRequestUrl(), OtherSiteCssRequestUrl()}));
 }
 
 // Browser tests verify reduce the total number of Accept-Language.

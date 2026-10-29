@@ -1794,51 +1794,6 @@ TEST_P(FrameFetchContextSubresourceFilterTest,
   }
 }
 
-class FrameFetchContextDisableReduceAcceptLanguageTest
-    : public FrameFetchContextTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
- public:
-  FrameFetchContextDisableReduceAcceptLanguageTest()
-      : preload_link_rel_data_urls_(std::get<1>(GetParam())) {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{network::features::kReduceAcceptLanguage});
-  }
-
- protected:
-  void SetupForAcceptLanguageTest(bool is_detached, ResourceRequest& request) {
-    ResourceLoaderOptions options(/*world=*/nullptr);
-
-    document->GetFrame()->SetReducedAcceptLanguage(AtomicString("en-GB"));
-
-    if (is_detached) {
-      dummy_page_holder = nullptr;
-    }
-
-    GetFetchContext()->UpgradeResourceRequestForLoader(
-        ResourceType::kRaw, std::nullopt /* resource_width */, request,
-        options);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  ScopedPreloadLinkRelDataUrlsForTest preload_link_rel_data_urls_;
-};
-
-INSTANTIATE_TEST_SUITE_P(FrameFetchContextDisableReduceAcceptLanguageTest,
-                         FrameFetchContextDisableReduceAcceptLanguageTest,
-                         testing::Combine(testing::Bool(),
-                                          testing::Bool()));
-
-TEST_P(FrameFetchContextDisableReduceAcceptLanguageTest,
-       VerifyReduceAcceptLanguage) {
-  const KURL url("https://www.example.com/");
-  ResourceRequest request(url);
-  SetupForAcceptLanguageTest(/*is_detached=*/std::get<0>(GetParam()), request);
-  // Expect no Accept-Language header set when feature is disabled.
-  EXPECT_EQ(nullptr, request.HttpHeaderField(http_names::kAcceptLanguage));
-}
-
 class FrameFetchContextNetworkGuardrailsTest
     : public FrameFetchContextTestBase {
  public:

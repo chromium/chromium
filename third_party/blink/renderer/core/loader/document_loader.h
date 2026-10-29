@@ -902,9 +902,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   std::unique_ptr<ExtraData> extra_data_;
 
-  // Reduced accept language for top-level frame.
-  const AtomicString reduced_accept_language_;
-
   const network::mojom::NavigationDeliveryType navigation_delivery_type_;
 
   // Provides state from the previous Document that will be replaced by this

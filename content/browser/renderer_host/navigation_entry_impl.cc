@@ -1081,7 +1081,6 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           // This timestamp will be populated when the commit IPC is sent.
           base::TimeTicks() /* commit_sent */, std::string() /* srcdoc_value */,
           false /* should_load_data_url */, ancestor_or_self_has_cspee,
-          std::string() /* reduced_accept_language */,
           /*navigation_delivery_type=*/
           network::mojom::NavigationDeliveryType::kDefault,
           /*view_transition_state=*/std::nullopt,

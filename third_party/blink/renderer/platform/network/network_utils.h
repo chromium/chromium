@@ -51,8 +51,6 @@ PLATFORM_EXPORT bool IsRedirectResponseCode(int);
 
 PLATFORM_EXPORT bool IsCertificateTransparencyRequiredError(int);
 
-PLATFORM_EXPORT String ExpandLanguageList(const String&);
-
 PLATFORM_EXPORT String GenerateAcceptLanguageHeader(const String&);
 
 PLATFORM_EXPORT Vector<char> ParseMultipartBoundary(

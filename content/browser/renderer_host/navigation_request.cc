@@ -1441,7 +1441,6 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*should_load_data_url=*/false,
           /*ancestor_or_self_has_cspee=*/
           frame_tree_node->AncestorOrSelfHasCSPEE(),
-          /*reduced_accept_language=*/std::string(),
           /*navigation_delivery_type=*/
           network::mojom::NavigationDeliveryType::kDefault,
           /*view_transition_state=*/std::nullopt,
@@ -1616,7 +1615,6 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           /*should_load_data_url=*/false,
           /*ancestor_or_self_has_cspee=*/
           frame_tree_node->AncestorOrSelfHasCSPEE(),
-          /*reduced_accept_language=*/std::string(),
           /*navigation_delivery_type=*/
           network::mojom::NavigationDeliveryType::kDefault,
           /*view_transition_state=*/std::nullopt,
@@ -2161,13 +2159,10 @@ NavigationRequest::NavigationRequest(
       // Chromium network stack won't overwrite the value if Accept-Language
       // header was already added in the request header.
       net::HttpRequestHeaders accept_language_headers;
-      std::optional<std::string> reduced_accept_language =
-          reduce_accept_lang_utils.value()
-              .AddNavigationRequestAcceptLanguageHeaders(
-                  url::Origin::Create(common_params_->url), frame_tree_node_,
-                  &accept_language_headers);
-      commit_params_->reduced_accept_language =
-          reduced_accept_language.value_or("");
+      reduce_accept_lang_utils.value()
+          .AddNavigationRequestAcceptLanguageHeaders(
+              url::Origin::Create(common_params_->url), frame_tree_node_,
+              &accept_language_headers);
       headers.MergeFrom(accept_language_headers);
     }
 
@@ -6843,13 +6838,9 @@ void NavigationRequest::OnRedirectChecksComplete(
           ReduceAcceptLanguageUtils::Create(browser_context);
       reduce_accept_lang_utils && !devtools_accept_language_override_) {
     net::HttpRequestHeaders accept_language_headers;
-    std::optional<std::string> reduced_accept_language =
-        reduce_accept_lang_utils.value()
-            .AddNavigationRequestAcceptLanguageHeaders(
-                url::Origin::Create(common_params_->url), frame_tree_node_,
-                &accept_language_headers);
-    commit_params_->reduced_accept_language =
-        reduced_accept_language.value_or("");
+    reduce_accept_lang_utils.value().AddNavigationRequestAcceptLanguageHeaders(
+        url::Origin::Create(common_params_->url), frame_tree_node_,
+        &accept_language_headers);
     headers_update_params.modified_headers.MergeFrom(accept_language_headers);
   }
 

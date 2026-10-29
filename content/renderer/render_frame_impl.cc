@@ -1104,8 +1104,6 @@ void FillMiscNavigationParams(
             cross_origin_isolation_key));
   }
 
-  navigation_params->reduced_accept_language =
-      WebString::FromAscii(commit_params.reduced_accept_language);
   navigation_params->enabled_client_hints.reserve(
       commit_params.enabled_client_hints.size());
   for (auto enabled_hint : commit_params.enabled_client_hints) {

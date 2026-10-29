@@ -129,7 +129,6 @@ BASE_FEATURE(kFastMemoryCacheWithDevTools, base::FEATURE_ENABLED_BY_DEFAULT);
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
-#include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -249,8 +248,7 @@ struct FrameFetchContext::FrozenState final : GarbageCollected<FrozenState> {
               const String& user_agent,
               base::optional_ref<const UserAgentMetadata> user_agent_metadata,
               bool is_isolated_svg_chrome_client,
-              bool is_prerendering,
-              const String& reduced_accept_language)
+              bool is_prerendering)
       : url(url),
         content_security_policy(content_security_policy),
         site_for_cookies(std::move(site_for_cookies)),
@@ -260,8 +258,7 @@ struct FrameFetchContext::FrozenState final : GarbageCollected<FrozenState> {
         user_agent(user_agent),
         user_agent_metadata(user_agent_metadata.CopyAsOptional()),
         is_isolated_svg_chrome_client(is_isolated_svg_chrome_client),
-        is_prerendering(is_prerendering),
-        reduced_accept_language(reduced_accept_language) {}
+        is_prerendering(is_prerendering) {}
 
   const KURL url;
   const scoped_refptr<const SecurityOrigin> parent_security_origin;
@@ -274,7 +271,6 @@ struct FrameFetchContext::FrozenState final : GarbageCollected<FrozenState> {
   const std::optional<UserAgentMetadata> user_agent_metadata;
   const bool is_isolated_svg_chrome_client;
   const bool is_prerendering;
-  const String reduced_accept_language;
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(content_security_policy);
@@ -921,29 +917,6 @@ void FrameFetchContext::AddClientHintsIfNecessary(
   }
 }
 
-void FrameFetchContext::AddReducedAcceptLanguageIfNecessary(
-    ResourceRequest& request) {
-  // If the feature is enabled, then reduce accept language are allowed only on
-  // http and https.
-  if (!(base::FeatureList::IsEnabled(
-            network::features::kReduceAcceptLanguage) ||
-        base::FeatureList::IsEnabled(
-            network::features::kReduceAcceptLanguageHTTP))) {
-    return;
-  }
-
-  if (!request.Url().ProtocolIsInHttpFamily()) {
-    return;
-  }
-
-  const String& reduced_accept_language = GetReducedAcceptLanguage();
-  if (!reduced_accept_language.empty() &&
-      request.HttpHeaderField(http_names::kAcceptLanguage).empty()) {
-    request.SetHttpHeaderField(http_names::kAcceptLanguage,
-                               AtomicString(reduced_accept_language));
-  }
-}
-
 void FrameFetchContext::WillSendRequest(ResourceRequest& resource_request) {
   // Set upstream url based on the request's redirect info.
   KURL upstream_url;
@@ -999,7 +972,6 @@ void FrameFetchContext::UpgradeResourceRequestForLoader(
     ResourceRequest& request,
     const ResourceLoaderOptions& options) {
   AddClientHintsIfNecessary(resource_width, request);
-  AddReducedAcceptLanguageIfNecessary(request);
 }
 
 bool FrameFetchContext::StartSpeculativeImageDecode(Resource* resource) {
@@ -1343,24 +1315,6 @@ const ClientHintsPreferences& FrameFetchContext::GetClientHintsPreferences()
   return frame->GetClientHintsPreferences();
 }
 
-String FrameFetchContext::GetReducedAcceptLanguage() const {
-  if (GetResourceFetcherProperties().IsDetached()) {
-    return frozen_state_->reduced_accept_language;
-  }
-  LocalFrame* frame = document_->GetFrame();
-  DCHECK(frame);
-  // If accept language override from inspector emulation, set Accept-Language
-  // header as the overridden value.
-  String override_accept_language;
-  probe::ApplyAcceptLanguageOverride(Probe(), &override_accept_language);
-  if (override_accept_language.empty()) {
-    String expanded_language = network_utils::ExpandLanguageList(
-        frame->GetReducedAcceptLanguage().GetString());
-    return network_utils::GenerateAcceptLanguageHeader(expanded_language);
-  }
-  return network_utils::GenerateAcceptLanguageHeader(override_accept_language);
-}
-
 float FrameFetchContext::GetDevicePixelRatio() const {
   if (GetResourceFetcherProperties().IsDetached()) {
     return frozen_state_->device_pixel_ratio;
@@ -1382,7 +1336,7 @@ FetchContext* FrameFetchContext::Detach() {
       Url(), GetContentSecurityPolicy(), GetSiteForCookies(),
       GetTopFrameOrigin(), client_hints_prefs, GetDevicePixelRatio(),
       GetUserAgent(), GetUserAgentMetadata(), IsIsolatedSVGChromeClient(),
-      IsPrerendering(), GetReducedAcceptLanguage());
+      IsPrerendering());
   document_loader_ = nullptr;
   document_ = nullptr;
   return this;

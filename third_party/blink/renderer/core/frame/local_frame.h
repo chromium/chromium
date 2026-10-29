@@ -714,12 +714,6 @@ class CORE_EXPORT LocalFrame final
   void SetNavigationConfidence(double randomized_trigger_rate,
                                mojom::blink::ConfidenceLevel confidence);
 
-  const AtomicString& GetReducedAcceptLanguage() const {
-    return reduced_accept_language_;
-  }
-
-  void SetReducedAcceptLanguage(const AtomicString& reduced_accept_language);
-
   // Overlays a color on top of this LocalFrameView.
   void SetFrameColorOverlay(SkColor color);
 
@@ -1256,9 +1250,6 @@ class CORE_EXPORT LocalFrame final
   // given document. Reset when a new document is committed.
   bool notified_initial_network_almost_idle_ = false;
   bool notified_initial_network_idle_ = false;
-
-  // Reduced accept language for top-level frame.
-  AtomicString reduced_accept_language_;
 
   Member<v8_compile_hints::V8LocalCompileHintsProducer>
       v8_local_compile_hints_producer_;
