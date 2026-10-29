@@ -2835,5 +2835,58 @@ TEST_F(DownloadItemTest, ResumeOfSWFetchedDownloadRestartsAndKeepsSW) {
   EXPECT_FALSE(captured_skip_sw);
 }
 
+// Regression test for crbug.com/574059465: Resuming an interrupted download
+// must preserve fetch_request_mode, credentials_mode, request_initiator, and
+// isolation_info so that cross-origin downloads do not bypass CORS on retry.
+TEST_F(DownloadItemTest,
+       ResumePreservesRequestModeCredentialsInitiatorAndIsolationInfo) {
+  const url::Origin initiator =
+      url::Origin::Create(GURL("https://initiator.example.com"));
+  const net::IsolationInfo isolation_info =
+      net::IsolationInfo::CreateForInternalRequest(initiator);
+
+  create_info()->fetch_request_mode = ::network::mojom::RequestMode::kCors;
+  create_info()->credentials_mode = ::network::mojom::CredentialsMode::kOmit;
+  create_info()->request_initiator = initiator;
+  create_info()->isolation_info = isolation_info;
+
+  DownloadItemImpl* item = CreateDownloadItem();
+  MockDownloadFile* download_file =
+      DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
+  ASSERT_EQ(DownloadItem::IN_PROGRESS, item->GetState());
+
+  ::network::mojom::RequestMode captured_request_mode =
+      ::network::mojom::RequestMode::kNavigate;
+  ::network::mojom::CredentialsMode captured_credentials_mode =
+      ::network::mojom::CredentialsMode::kInclude;
+  std::optional<url::Origin> captured_initiator;
+  std::optional<net::IsolationInfo> captured_isolation_info;
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_delegate(), MockResumeInterruptedDownload(_))
+      .WillOnce([&](DownloadUrlParameters* params) {
+        captured_request_mode = params->fetch_request_mode();
+        captured_credentials_mode = params->credentials_mode();
+        captured_initiator = params->initiator();
+        captured_isolation_info = params->isolation_info();
+        run_loop.Quit();
+      });
+
+  EXPECT_CALL(*download_file, Detach()).Times(AnyNumber());
+  EXPECT_CALL(*download_file, FullPath())
+      .WillRepeatedly(ReturnRefOfCopy(base::FilePath()));
+  item->DestinationObserverAsWeakPtr()->DestinationError(
+      DOWNLOAD_INTERRUPT_REASON_FILE_TRANSIENT_ERROR, 100, std::nullopt);
+  run_loop.Run();
+
+  EXPECT_EQ(::network::mojom::RequestMode::kCors, captured_request_mode);
+  EXPECT_EQ(::network::mojom::CredentialsMode::kOmit,
+            captured_credentials_mode);
+  ASSERT_TRUE(captured_initiator.has_value());
+  EXPECT_EQ(initiator, *captured_initiator);
+  ASSERT_TRUE(captured_isolation_info.has_value());
+  EXPECT_TRUE(isolation_info.IsEqualForTesting(*captured_isolation_info));
+}
+
 }  // namespace
 }  // namespace download

@@ -71,7 +71,9 @@ class InMemoryDownloadDriver : public DownloadDriver,
   void Pause(const std::string& guid) override;
   void ResumeWithFactory(
       const std::string& guid,
-      scoped_refptr<network::SharedURLLoaderFactory> factory) override;
+      scoped_refptr<network::SharedURLLoaderFactory> factory,
+      const std::optional<url::Origin>& request_initiator,
+      const std::optional<net::IsolationInfo>& isolation_info) override;
   std::optional<DriverEntry> Find(const std::string& guid) override;
   std::set<std::string> GetActiveDownloads() override;
   size_t EstimateMemoryUsage() const override;

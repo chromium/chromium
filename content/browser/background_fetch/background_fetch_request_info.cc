@@ -106,10 +106,11 @@ void BackgroundFetchRequestInfo::SetResult(
   // The BackgroundFetchResponse was extracted when the download started.
   // This is sent over again when the download was complete in case the
   // browser was restarted.
-  if (response_headers_.empty())
+  if (response_headers_.empty() && result_->response) {
     PopulateWithResponse(std::move(result_->response));
-  else
+  } else {
     result_->response.reset();
+  }
 
   // Get the response size.
   if (result_->blob_handle)

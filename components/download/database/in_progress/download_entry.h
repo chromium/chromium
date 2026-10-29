@@ -10,6 +10,7 @@
 #include "components/download/public/common/download_source.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 
 namespace download {
 
@@ -51,6 +52,14 @@ struct DownloadEntry {
 
   // True if a Service Worker fetch handler produced the original response.
   bool fetched_via_service_worker = false;
+
+  // The credentials mode of the request.
+  ::network::mojom::CredentialsMode credentials_mode =
+      ::network::mojom::CredentialsMode::kInclude;
+
+  // The fetch request mode of the request.
+  ::network::mojom::RequestMode fetch_request_mode =
+      ::network::mojom::RequestMode::kNavigate;
 
   // Request header key/value pairs that will be added to the download HTTP
   // request.

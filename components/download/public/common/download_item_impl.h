@@ -302,6 +302,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   const GURL& GetTabUrl() const override;
   const GURL& GetTabReferrerUrl() const override;
   const std::optional<url::Origin>& GetRequestInitiator() const override;
+  void SetRequestInitiator(
+      const std::optional<url::Origin>& request_initiator) override;
   std::string GetSuggestedFilename() const override;
   const scoped_refptr<const net::HttpResponseHeaders>& GetResponseHeaders()
       const override;
@@ -361,6 +363,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   ::network::mojom::CredentialsMode GetCredentialsMode() const override;
   ::network::mojom::RequestMode GetFetchRequestMode() const override;
   const std::optional<net::IsolationInfo>& GetIsolationInfo() const override;
+  void SetIsolationInfo(
+      const std::optional<net::IsolationInfo>& isolation_info) override;
   void OnContentCheckCompleted(DownloadDangerType danger_type,
                                DownloadInterruptReason reason) override;
   void OnAsyncScanningCompleted(DownloadDangerType danger_type) override;

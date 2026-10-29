@@ -321,6 +321,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
 
   // Origin of the original originator of this download, before redirects, etc.
   virtual const std::optional<url::Origin>& GetRequestInitiator() const = 0;
+  virtual void SetRequestInitiator(
+      const std::optional<url::Origin>& request_initiator);
 
   // For downloads initiated via <a download>, this is the suggested download
   // filename from the download attribute.
@@ -373,6 +375,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
 
   // The isolation mode of the request.
   virtual const std::optional<net::IsolationInfo>& GetIsolationInfo() const = 0;
+  virtual void SetIsolationInfo(
+      const std::optional<net::IsolationInfo>& isolation_info);
 
   //    Destination State accessors --------------------------------------------
 

@@ -22,6 +22,7 @@
 #include "components/background_fetch/job_details.h"
 #include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/common/download_features.h"
+#include "components/offline_items_collection/core/fail_state.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "content/public/browser/background_fetch_description.h"
@@ -314,6 +315,8 @@ void BackgroundFetchDelegateImpl::UpdateOfflineItem(const std::string& job_id) {
   switch (job_details->job_state) {
     case JobState::kCancelled:
       offline_item->state = OfflineItemState::CANCELLED;
+      offline_item->fail_state =
+          offline_items_collection::FailState::USER_CANCELED;
       break;
     case JobState::kDownloadsComplete:
       // This includes cases when the download failed, or completed but the
