@@ -9,6 +9,167 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './session_state_tab.css.js';
 import {getHtml} from './session_state_tab.html.js';
 
+export interface TabIdMappingDebug {
+  tabHandleId: number;
+  sessionTabId: number;
+}
+
+export interface ExtensionFrameDebug {
+  index: number;
+  isPageBound: boolean;
+  isHandshakeComplete: boolean;
+}
+
+export interface TabContextEntryDebug {
+  tabId: number;
+  title: string;
+  url: string;
+  contextToken: string;
+  requestId: string;
+  uploaded: boolean;
+  submitted: boolean;
+  pendingDelayedUpload: boolean;
+  restoredFromAim: boolean;
+}
+
+export interface InputStateDebugState {
+  hasValidConfig: boolean;
+  isSmartTabSharingActive: boolean;
+  hasLensCrop: boolean;
+  activeTool: string;
+  activeModel: string;
+  allowedTools: string[];
+  disabledTools: string[];
+  allowedModels: string[];
+  disabledModels: string[];
+  allowedInputTypes: string[];
+  disabledInputTypes: string[];
+  effectiveInputTypes: string[];
+}
+
+export interface UserDataDebugState {
+  hasContextualTasksUserData: boolean;
+  hasContextualSearchHelper: boolean;
+  userDataTaskId: string;
+  pendingTaskId: string;
+  effectiveTaskId: string;
+  helperTaskId: string;
+  serviceTaskIdForTab: string;
+  helperSelectedTabIds: number[];
+  activeUnderlineTabIds: number[];
+  tabIdMappings: TabIdMappingDebug[];
+  connectedDocumentId: string;
+  isServiceWorkerPortConnected: boolean;
+  isHandshakeComplete: boolean;
+  pendingSearchMessagesCount: number;
+  contextLibraryIsActive: boolean;
+  isLensCropMounted: boolean;
+  lastSentContextState: string;
+  hasBoundExtensionFrame: boolean;
+  extensionFrames: ExtensionFrameDebug[];
+  submitPending: boolean;
+  pendingContextUploadTokens: string[];
+  failedContextUploadTokens: string[];
+  selectedTabs: TabContextEntryDebug[];
+  inputState: InputStateDebugState|null;
+}
+
+export interface WebContentsDebugState {
+  isSidePanel: boolean;
+  title: string;
+  url: string;
+  sessionTabId: number;
+  tabHandleId: number;
+  isActiveTabInWindow: boolean;
+  userDataState: UserDataDebugState|null;
+}
+
+const MOCK_WEB_CONTENTS_DEBUG_STATES: WebContentsDebugState[] = [
+  {
+    isSidePanel: true,
+    title: 'Google Search - AI Mode (Side Panel)',
+    url: 'https://www.google.com/search?udm=50&q=compare+btrfs+vs+ext4',
+    sessionTabId: 14,
+    tabHandleId: -1,
+    isActiveTabInWindow: false,
+    userDataState: {
+      hasContextualTasksUserData: true,
+      hasContextualSearchHelper: true,
+      userDataTaskId: '7f9c2b10-4d3a-4e8b-9a1c-0b2d4e6f8a90',
+      pendingTaskId: '',
+      effectiveTaskId: '7f9c2b10-4d3a-4e8b-9a1c-0b2d4e6f8a90',
+      helperTaskId: '7f9c2b10-4d3a-4e8b-9a1c-0b2d4e6f8a90',
+      serviceTaskIdForTab: '7f9c2b10-4d3a-4e8b-9a1c-0b2d4e6f8a90',
+      helperSelectedTabIds: [101, 102],
+      activeUnderlineTabIds: [101, 102],
+      tabIdMappings: [
+        {tabHandleId: 21, sessionTabId: 101},
+        {tabHandleId: 22, sessionTabId: 102},
+      ],
+      connectedDocumentId: '0195A8F0C2E47B109D33E84A11B09C42',
+      isServiceWorkerPortConnected: true,
+      isHandshakeComplete: true,
+      pendingSearchMessagesCount: 0,
+      contextLibraryIsActive: true,
+      isLensCropMounted: false,
+      lastSentContextState: 'kReady',
+      hasBoundExtensionFrame: true,
+      extensionFrames: [
+        {index: 0, isPageBound: true, isHandshakeComplete: true},
+      ],
+      submitPending: false,
+      pendingContextUploadTokens: [],
+      failedContextUploadTokens: [],
+      selectedTabs: [
+        {
+          tabId: 101,
+          title: 'Btrfs Wiki - Kernel Newbies',
+          url: 'https://btrfs.readthedocs.io/en/latest/',
+          contextToken: '8A4F19C200E14B7290D123456789ABCD',
+          requestId: 'vsrid_1001_seq_1',
+          uploaded: true,
+          submitted: true,
+          pendingDelayedUpload: false,
+          restoredFromAim: false,
+        },
+        {
+          tabId: 102,
+          title: 'ext4 Data Structures and Algorithms',
+          url: 'https://docs.kernel.org/filesystems/ext4/',
+          contextToken: '3B7E82D199F04A1188C098765432DCBA',
+          requestId: 'vsrid_1002_seq_1',
+          uploaded: true,
+          submitted: false,
+          pendingDelayedUpload: false,
+          restoredFromAim: false,
+        },
+      ],
+      inputState: {
+        hasValidConfig: true,
+        isSmartTabSharingActive: false,
+        hasLensCrop: false,
+        activeTool: 'TOOL_MODE_UNSPECIFIED',
+        activeModel: 'MODEL_MODE_GEMINI_PRO',
+        allowedTools: ['TOOL_MODE_DEEP_SEARCH', 'TOOL_MODE_CANVAS'],
+        disabledTools: [],
+        allowedModels: ['MODEL_MODE_GEMINI_PRO'],
+        disabledModels: [],
+        allowedInputTypes: [
+          'INPUT_TYPE_LENS_IMAGE',
+          'INPUT_TYPE_LENS_FILE',
+          'INPUT_TYPE_BROWSER_TAB',
+        ],
+        disabledInputTypes: [],
+        effectiveInputTypes: [
+          'INPUT_TYPE_LENS_IMAGE',
+          'INPUT_TYPE_LENS_FILE',
+          'INPUT_TYPE_BROWSER_TAB',
+        ],
+      },
+    },
+  },
+];
+
 export class ContextualTasksSessionStateTabElement extends CrLitElement {
   static get is() {
     return 'contextual-tasks-session-state-tab';
@@ -22,8 +183,17 @@ export class ContextualTasksSessionStateTabElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
+  static override get properties() {
+    return {
+      webContentsDebugStates_: {type: Array},
+    };
+  }
+
+  protected accessor webContentsDebugStates_: WebContentsDebugState[] =
+      MOCK_WEB_CONTENTS_DEBUG_STATES;
+
   protected onRefreshSessionStateClick_() {
-    // Placeholder for refreshing session and user data debug state.
+    this.webContentsDebugStates_ = [...MOCK_WEB_CONTENTS_DEBUG_STATES];
   }
 }
 
