@@ -47,10 +47,7 @@ MemoryBanksPaletteBubbleView::MemoryBanksPaletteBubbleView(
 MemoryBanksPaletteBubbleView::~MemoryBanksPaletteBubbleView() = default;
 
 std::u16string MemoryBanksPaletteBubbleView::GetWindowTitle() const {
-  // TODO(crbug.com/577076699): Replace with
-  // IDS_CONTENT_CONTEXT_BROWSE_MEMORY_BANKS when the context menu entry is
-  // added.
-  return l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS);
+  return l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_BROWSE_MEMORY_BANKS);
 }
 
 void MemoryBanksPaletteBubbleView::CloseContents(content::WebContents* source) {

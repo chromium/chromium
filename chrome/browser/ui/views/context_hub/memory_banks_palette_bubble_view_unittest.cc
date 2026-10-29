@@ -53,7 +53,7 @@ TEST_F(MemoryBanksPaletteBubbleViewTest, CreateAndShowBubble) {
   std::unique_ptr<views::Widget> bubble_widget =
       views::BubbleDialogDelegate::CreateBubble(delegate_ptr);
   ASSERT_TRUE(bubble_widget);
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS),
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_BROWSE_MEMORY_BANKS),
             delegate_ptr->GetWindowTitle());
   ASSERT_NE(nullptr, delegate_ptr->web_view_for_testing());
   EXPECT_EQ(
