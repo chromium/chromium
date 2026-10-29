@@ -366,15 +366,6 @@ config("common_sanitizer_flags") {
       "-gcolumn-info",
     ]
 
-    if (current_cpu == "x64" && !is_win && !is_apple && !is_ubsan_security) {
-      # Sanitizer instrumentation inflates data sections enough that large
-      # binaries can exceed the 2GiB limit of the default small code model and
-      # fail to link with `relocation R_X86_64_PC32 out of range`.
-      # `-fsanitize=function` (enabled by `is_ubsan_security`) only supports
-      # `-mcmodel=small`.
-      cflags += [ "-mcmodel=medium" ]
-    }
-
     # Frame pointers are controlled in
     # //build/config/compiler:default_stack_frames
   }
