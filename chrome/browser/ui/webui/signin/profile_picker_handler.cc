@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
+#include "base/containers/flat_set.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -742,6 +743,7 @@ void ProfilePickerHandler::HandleUpdateProfileOrder(
   int to_index = args[1].GetInt();
   CHECK(from_index >= 0 && to_index >= 0);
 
+  UpdateProfilesOrderInternal(from_index, to_index);
   g_browser_process->profile_manager()
       ->GetProfileAttributesStorage()
       .UpdateProfilesOrderPref(from_index, to_index);
@@ -861,6 +863,52 @@ void ProfilePickerHandler::SetProfilesOrder(
   for (const ProfileAttributesEntry* entry : entries) {
     profiles_order_[entry->GetPath()] = index++;
   }
+  CHECK(IsProfilesOrderValid());
+}
+
+void ProfilePickerHandler::UpdateProfilesOrderInternal(size_t from_index,
+                                                       size_t to_index) {
+  if (from_index == to_index) {
+    return;
+  }
+
+  CHECK_LT(from_index, profiles_order_.size());
+  CHECK_LT(to_index, profiles_order_.size());
+
+  // `from_index` and `to_index` are the initial and final indices of the
+  // profile being moved. Other profiles in between the range `[from_index,
+  // to_index]` will be shifted by 1 spot based on the direction of the move:
+  // - If `from_index < to_index`, indices in `(from_index, to_index]` are
+  //   shifted left (`--index`).
+  // - If `from_index > to_index`, indices in `[to_index, from_index)` are
+  //   shifted right (`++index`).
+  for (auto& [path, index] : profiles_order_) {
+    if (index == from_index) {
+      index = to_index;
+    } else if (from_index < to_index &&
+               (from_index < index && index <= to_index)) {
+      --index;
+    } else if (from_index > to_index &&
+               (to_index <= index && index < from_index)) {
+      ++index;
+    }
+  }
+
+  CHECK(IsProfilesOrderValid());
+}
+
+bool ProfilePickerHandler::IsProfilesOrderValid() const {
+  base::flat_set<size_t> indices_set;
+  for (const auto& [path, index] : profiles_order_) {
+    if (index >= profiles_order_.size()) {
+      return false;
+    }
+    auto [_, inserted] = indices_set.insert(index);
+    if (!inserted) {
+      return false;
+    }
+  }
+  return indices_set.size() == profiles_order_.size();
 }
 
 std::vector<ProfileAttributesEntry*>
@@ -933,6 +981,7 @@ void ProfilePickerHandler::AddProfileToListAndPushUpdates(
   // `insert()` to not corrput the map in case this happens.
   // https://crbug.com/40759222
   CHECK(it_and_whether_inserted.second, base::NotFatalUntil::M162);
+  CHECK(IsProfilesOrderValid());
 
   MaybeUpdateGuestMode();
   PushProfilesList();
@@ -957,6 +1006,7 @@ void ProfilePickerHandler::RemoveProfileFromListAndPushUpdates(
       --it.second;
     }
   }
+  CHECK(IsProfilesOrderValid());
   MaybeUpdateGuestMode();
   FireWebUIListener("profile-removed", base::FilePathToValue(profile_path));
 }

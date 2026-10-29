@@ -167,6 +167,13 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // Sets 'profiles_order_' that is used to freeze the order of the profiles on
   // the picker when it was first shown.
   void SetProfilesOrder(const std::vector<ProfileAttributesEntry*>& entries);
+  // Updates `profiles_order_` when the user manually reorders profiles on the
+  // picker. Moves the profile index at `from_index` to `to_index` and shifts
+  // all profile indices in between by 1 spot.
+  void UpdateProfilesOrderInternal(size_t from_index, size_t to_index);
+  // Returns whether `profiles_order_` contains unique and valid indices in
+  // `[0, profiles_order_.size())`.
+  bool IsProfilesOrderValid() const;
 
   // Checks the state of `entry` to determine how to handle the locked state.
   // Either shows an error dialog with the appropriate information, or attempts

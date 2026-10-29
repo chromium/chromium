@@ -153,6 +153,9 @@ class ProfilePickerHandlerTest : public testing::Test {
   TestingProfileManager* profile_manager() { return &profile_manager_; }
   content::TestWebUI* web_ui() { return &web_ui_; }
   ProfilePickerHandler* handler() { return handler_.get(); }
+  std::vector<ProfileAttributesEntry*> GetProfilesAttributesForDisplay() {
+    return handler()->GetProfilesAttributesForDisplay();
+  }
 
  private:
   const bool is_glic_version_;
@@ -416,25 +419,20 @@ TEST_F(SupervisedProfilePickerHandlerTest,
 }
 
 TEST_F(ProfilePickerHandlerTest, UpdateProfileOrder) {
-  auto entries_to_names =
-      [](const std::vector<ProfileAttributesEntry*> entries) {
-        std::vector<std::string> names;
-        for (auto* entry : entries) {
-          names.emplace_back(base::UTF16ToUTF8(entry->GetLocalProfileName()));
-        }
-        return names;
-      };
+  ProfileAttributesEntry* profile_a = CreateTestingProfile("A");
+  ProfileAttributesEntry* profile_b = CreateTestingProfile("B");
+  ProfileAttributesEntry* profile_c = CreateTestingProfile("C");
+  ProfileAttributesEntry* profile_d = CreateTestingProfile("D");
 
-  std::vector<std::string> profile_names = {"A", "B", "C", "D"};
-  for (auto name : profile_names) {
-    CreateTestingProfile(name);
-  }
+  InitializeMainViewAndVerifyProfileList(
+      {profile_a, profile_b, profile_c, profile_d});
+  web_ui()->ClearTrackedCalls();
 
   ProfileAttributesStorage* storage =
       profile_manager()->profile_attributes_storage();
-  std::vector<ProfileAttributesEntry*> display_entries =
-      storage->GetAllProfilesAttributesSortedForDisplay();
-  ASSERT_EQ(entries_to_names(display_entries), profile_names);
+  ASSERT_EQ(storage->GetAllProfilesAttributesSortedForDisplay(),
+            std::vector<ProfileAttributesEntry*>(
+                {profile_a, profile_b, profile_c, profile_d}));
 
   // Perform first changes.
   {
@@ -443,10 +441,11 @@ TEST_F(ProfilePickerHandlerTest, UpdateProfileOrder) {
     args.Append(2);  // `to_index`
     web_ui()->HandleReceivedMessage("updateProfileOrder", args);
 
-    std::vector<std::string> expected_profile_order_names{"B", "C", "A", "D"};
-    EXPECT_EQ(
-        entries_to_names(storage->GetAllProfilesAttributesSortedForDisplay()),
-        expected_profile_order_names);
+    std::vector<ProfileAttributesEntry*> expected_profile_order{
+        profile_b, profile_c, profile_a, profile_d};
+    EXPECT_EQ(storage->GetAllProfilesAttributesSortedForDisplay(),
+              expected_profile_order);
+    EXPECT_EQ(GetProfilesAttributesForDisplay(), expected_profile_order);
   }
 
   // Perform second changes.
@@ -456,11 +455,50 @@ TEST_F(ProfilePickerHandlerTest, UpdateProfileOrder) {
     args.Append(3);  // `to_index`
     web_ui()->HandleReceivedMessage("updateProfileOrder", args);
 
-    std::vector<std::string> expected_profile_order_names{"B", "A", "D", "C"};
-    EXPECT_EQ(
-        entries_to_names(storage->GetAllProfilesAttributesSortedForDisplay()),
-        expected_profile_order_names);
+    std::vector<ProfileAttributesEntry*> expected_profile_order{
+        profile_b, profile_a, profile_d, profile_c};
+    EXPECT_EQ(storage->GetAllProfilesAttributesSortedForDisplay(),
+              expected_profile_order);
+    EXPECT_EQ(GetProfilesAttributesForDisplay(), expected_profile_order);
   }
+}
+
+TEST_F(ProfilePickerHandlerTest, UpdateProfileOrderAndRename) {
+  ProfileAttributesEntry* profile_a = CreateTestingProfile("A");
+  ProfileAttributesEntry* profile_b = CreateTestingProfile("B");
+  ProfileAttributesEntry* profile_c = CreateTestingProfile("C");
+  ProfileAttributesEntry* profile_d = CreateTestingProfile("D");
+
+  InitializeMainViewAndVerifyProfileList(
+      {profile_a, profile_b, profile_c, profile_d});
+  web_ui()->ClearTrackedCalls();
+
+  // Move `profile_a` from index 0 to index 2.
+  {
+    base::ListValue args;
+    args.Append(0);  // `from_index`
+    args.Append(2);  // `to_index`
+    web_ui()->HandleReceivedMessage("updateProfileOrder", args);
+  }
+
+  // Rename `profile_a` and verify that the updated profile order is preserved
+  // when the new profile list is pushed.
+  profile_a->SetLocalProfileName(u"X", false);
+  VerifyProfileListWasPushed({profile_b, profile_c, profile_a, profile_d});
+  web_ui()->ClearTrackedCalls();
+
+  // Move `profile_a` (now at index 2) to index 1.
+  {
+    base::ListValue args;
+    args.Append(2);  // `from_index`
+    args.Append(1);  // `to_index`
+    web_ui()->HandleReceivedMessage("updateProfileOrder", args);
+  }
+
+  // Rename `profile_a` again and verify the new order is preserved.
+  profile_a->SetLocalProfileName(u"Y", false);
+  VerifyProfileListWasPushed({profile_b, profile_a, profile_c, profile_d});
+  web_ui()->ClearTrackedCalls();
 }
 
 class ProfilePickerHandlerGlicVersionTest : public ProfilePickerHandlerTest {
