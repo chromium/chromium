@@ -27,10 +27,10 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -43,7 +43,10 @@
 #include "chromeos/constants/devicetype.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/error_utils.h"
@@ -282,6 +285,7 @@ std::optional<std::string_view> GetBoolPrefNameForApiProperty(
 std::unique_ptr<base::Value> GetValue(
     const PrefService& local_state,
     const metrics::MetricsService& metrics_service,
+    content::BrowserContext& browser_context,
     const std::string& property_name) {
   if (property_name == kPropertyHWID) {
     ash::system::StatisticsProvider* provider =
@@ -372,7 +376,8 @@ std::unique_ptr<base::Value> GetValue(
   }
 
   if (property_name == kPropertyPlayStoreStatus) {
-    if (arc::IsArcAllowedForProfile(ProfileManager::GetPrimaryUserProfile())) {
+    if (arc::IsArcAllowedForProfile(
+            Profile::FromBrowserContext(&browser_context))) {
       return std::make_unique<base::Value>(kPlayStoreStatusEnabled);
     }
     if (arc::IsArcAvailable()) {
@@ -424,8 +429,8 @@ std::unique_ptr<base::Value> GetValue(
   if (property_name == kPropertyTimezone) {
     if (ash::switches::IsPerUserTimezoneEnabled()) {
       const PrefService::Preference* timezone =
-          ProfileManager::GetPrimaryUserProfile()->GetPrefs()->FindPreference(
-              ash::prefs::kUserTimezone);
+          CHECK_DEREF(user_prefs::UserPrefs::Get(&browser_context))
+              .FindPreference(ash::prefs::kUserTimezone);
       return std::make_unique<base::Value>(timezone->GetValue()->Clone());
     }
     // TODO(crbug.com/40508978): Convert CrosSettings::Get to take a unique_ptr.
@@ -441,8 +446,8 @@ std::unique_ptr<base::Value> GetValue(
   if (std::optional<std::string_view> pref_name =
           GetBoolPrefNameForApiProperty(property_name)) {
     return std::make_unique<base::Value>(
-        ProfileManager::GetPrimaryUserProfile()->GetPrefs()->GetBoolean(
-            *pref_name));
+        CHECK_DEREF(user_prefs::UserPrefs::Get(&browser_context))
+            .GetBoolean(*pref_name));
   }
 
   DLOG(ERROR) << "Unknown property request: " << property_name;
@@ -452,11 +457,12 @@ std::unique_ptr<base::Value> GetValue(
 base::Value GetSystemProperties(
     const PrefService& local_state,
     const metrics::MetricsService& metrics_service,
+    content::BrowserContext& browser_context,
     const std::vector<std::string>& property_names) {
   base::DictValue result;
   for (const std::string& property_name : property_names) {
     std::unique_ptr<base::Value> value =
-        GetValue(local_state, metrics_service, property_name);
+        GetValue(local_state, metrics_service, browser_context, property_name);
     if (value) {
       result.Set(property_name,
                  base::Value::FromUniquePtrValue(std::move(value)));
@@ -465,28 +471,29 @@ base::Value GetSystemProperties(
   return base::Value(std::move(result));
 }
 
-void SetTimezone(const PrefService& local_state, const std::string& value) {
+void SetTimezone(const PrefService& local_state,
+                 content::BrowserContext& browser_context,
+                 const std::string& value) {
   if (ash::switches::IsPerUserTimezoneEnabled()) {
-    ProfileManager::GetPrimaryUserProfile()->GetPrefs()->SetString(
-        ash::prefs::kUserTimezone, value);
+    CHECK_DEREF(user_prefs::UserPrefs::Get(&browser_context))
+        .SetString(ash::prefs::kUserTimezone, value);
   } else {
     const user_manager::User* user =
-        ash::ProfileHelper::Get()->GetUserByProfile(
-            ProfileManager::GetPrimaryUserProfile());
+        ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+            &browser_context);
     if (user) {
       ash::system::SetSystemTimezone(local_state, user, value);
     }
   }
 }
 
-bool SetBool(const std::string& property_name, bool value) {
+bool SetBool(PrefService& prefs, const std::string& property_name, bool value) {
   std::optional<std::string_view> pref_name =
       GetBoolPrefNameForApiProperty(property_name);
   if (!pref_name) {
     return false;
   }
-  ProfileManager::GetPrimaryUserProfile()->GetPrefs()->SetBoolean(*pref_name,
-                                                                  value);
+  prefs.SetBoolean(*pref_name, value);
   return true;
 }
 
@@ -509,10 +516,10 @@ ExtensionFunction::ResponseAction ChromeosInfoPrivateGetFunction::Run() {
     property_names.push_back(std::move(property_name));
   }
 
-  base::Value result =
-      GetSystemProperties(CHECK_DEREF(g_browser_process->local_state()),
-                          CHECK_DEREF(g_browser_process->metrics_service()),
-                          std::move(property_names));
+  base::Value result = GetSystemProperties(
+      CHECK_DEREF(g_browser_process->local_state()),
+      CHECK_DEREF(g_browser_process->metrics_service()),
+      CHECK_DEREF(browser_context()), std::move(property_names));
   return RespondNow(WithArguments(std::move(result)));
 }
 
@@ -529,7 +536,8 @@ ExtensionFunction::ResponseAction ChromeosInfoPrivateSetFunction::Run() {
     EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
     EXTENSION_FUNCTION_VALIDATE(args()[1].is_string());
     const std::string& param_value = args()[1].GetString();
-    SetTimezone(CHECK_DEREF(g_browser_process->local_state()), param_value);
+    SetTimezone(CHECK_DEREF(g_browser_process->local_state()),
+                CHECK_DEREF(browser_context()), param_value);
     return RespondNow(NoArguments());
   }
 
@@ -537,7 +545,8 @@ ExtensionFunction::ResponseAction ChromeosInfoPrivateSetFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args()[1].is_bool());
   bool param_value = args()[1].GetBool();
 
-  if (!SetBool(param_name_, param_value)) {
+  if (!SetBool(CHECK_DEREF(user_prefs::UserPrefs::Get(browser_context())),
+               param_name_, param_value)) {
     return RespondNow(Error(std::string(kPropertyNotFound), param_name_));
   }
   return RespondNow(NoArguments());

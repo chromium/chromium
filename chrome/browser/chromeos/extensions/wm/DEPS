@@ -23,9 +23,6 @@ specific_include_rules = {
   "wm_desks_private_events_unittest\\.cc": [
     "+chrome/browser/extensions/extension_service_test_with_install.h",
   ],
-  "wm_desks_private_api\\.cc": [
-    "+chrome/browser/profiles/profile_manager.h",
-  ],
   "wm_desks_private_apitest\\.cc": [
     "+chrome/browser/extensions/extension_apitest.h",
   ],

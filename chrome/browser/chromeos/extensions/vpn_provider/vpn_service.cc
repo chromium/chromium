@@ -7,7 +7,9 @@
 #include <optional>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_deref.h"
+#include "base/check_op.h"
 #include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -15,7 +17,6 @@
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_driver_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_observer.h"
@@ -26,6 +27,8 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/experiences/extensions/common/api/vpn_provider.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "crypto/sha2.h"
 #include "extensions/browser/event_router.h"
@@ -252,14 +255,19 @@ void VpnService::CreateConfiguration(const std::string& extension_id,
     return;
   }
 
-  // Since the API is only designed to be used with the primary profile, it's
-  // safe to get the hash of the primary profile here.
+  // VpnServiceFactory only creates VpnService for the primary user.
+  const auto* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  CHECK_EQ(&browser_context_.get(),
+           ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+               primary_session->account_id()));
   const ash::NetworkProfile* profile =
       ash::NetworkHandler::Get()
           ->network_profile_handler()
           ->GetProfileForUserhash(
               ash::BrowserContextHelper::GetUserIdHashFromBrowserContext(
-                  ProfileManager::GetPrimaryUserProfile()));
+                  &browser_context_.get()));
   if (!profile) {
     std::move(failure).Run(
         /*error_name=*/"",

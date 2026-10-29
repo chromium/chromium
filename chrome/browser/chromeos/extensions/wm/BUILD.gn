@@ -24,9 +24,10 @@ source_set("wm") {
     "//ash",
     "//base",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/profiles:profile_manager",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/experiences/extensions/common/api",
     "//components/keyed_service/content",
+    "//components/session_manager/core",
     "//content/public/browser",
     "//extensions/browser",
   ]

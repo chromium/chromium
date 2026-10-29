@@ -7,20 +7,34 @@
 #include <memory>
 #include <optional>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/extensions/wm/wm_desks_private_feature_ash.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/extensions/common/api/wm_desks_private.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "content/public/browser/browser_context.h"
 
 namespace extensions {
 
 namespace {
+
 constexpr char kInvalidIdError[] = "InvalidIdError";
 constexpr char kStorageError[] = "StorageError";
+
+bool IsActiveUserBrowserContext(content::BrowserContext* browser_context) {
+  const auto* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  CHECK(active_session);
+  return ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+             active_session->account_id()) == browser_context;
+}
+
 }  // namespace
 
 WmDesksPrivateGetSavedDesksFunction::WmDesksPrivateGetSavedDesksFunction() =
@@ -94,10 +108,9 @@ WmDesksPrivateLaunchDeskFunction::WmDesksPrivateLaunchDeskFunction() = default;
 WmDesksPrivateLaunchDeskFunction::~WmDesksPrivateLaunchDeskFunction() = default;
 
 ExtensionFunction::ResponseAction WmDesksPrivateLaunchDeskFunction::Run() {
-  Profile* profile = Profile::FromBrowserContext(browser_context());
   // Ensure the calling profile is the active user's profile to prevent
   // cross-profile desk manipulation.
-  if (profile != ProfileManager::GetActiveUserProfile()) {
+  if (!IsActiveUserBrowserContext(browser_context())) {
     return RespondNow(
         Error("The Desk API is only available to the active user profile."));
   }
@@ -127,10 +140,9 @@ WmDesksPrivateRemoveDeskFunction::WmDesksPrivateRemoveDeskFunction() = default;
 WmDesksPrivateRemoveDeskFunction::~WmDesksPrivateRemoveDeskFunction() = default;
 
 ExtensionFunction::ResponseAction WmDesksPrivateRemoveDeskFunction::Run() {
-  Profile* profile = Profile::FromBrowserContext(browser_context());
   // Ensure the calling profile is the active user's profile to prevent
   // cross-profile desk manipulation.
-  if (profile != ProfileManager::GetActiveUserProfile()) {
+  if (!IsActiveUserBrowserContext(browser_context())) {
     return RespondNow(
         Error("The Desk API is only available to the active user profile."));
   }
@@ -301,10 +313,9 @@ WmDesksPrivateGetActiveDeskFunction::~WmDesksPrivateGetActiveDeskFunction() =
     default;
 
 ExtensionFunction::ResponseAction WmDesksPrivateGetActiveDeskFunction::Run() {
-  Profile* profile = Profile::FromBrowserContext(browser_context());
   // Ensure the calling profile is the active user's profile to prevent
   // cross-profile desk manipulation.
-  if (profile != ProfileManager::GetActiveUserProfile()) {
+  if (!IsActiveUserBrowserContext(browser_context())) {
     return RespondNow(
         Error("The Desk API is only available to the active user profile."));
   }
@@ -329,10 +340,9 @@ WmDesksPrivateSwitchDeskFunction::WmDesksPrivateSwitchDeskFunction() = default;
 WmDesksPrivateSwitchDeskFunction::~WmDesksPrivateSwitchDeskFunction() = default;
 
 ExtensionFunction::ResponseAction WmDesksPrivateSwitchDeskFunction::Run() {
-  Profile* profile = Profile::FromBrowserContext(browser_context());
   // Ensure the calling profile is the active user's profile to prevent
   // cross-profile desk manipulation.
-  if (profile != ProfileManager::GetActiveUserProfile()) {
+  if (!IsActiveUserBrowserContext(browser_context())) {
     return RespondNow(
         Error("The Desk API is only available to the active user profile."));
   }
@@ -363,10 +373,9 @@ WmDesksPrivateGetDeskByIDFunction::~WmDesksPrivateGetDeskByIDFunction() =
     default;
 
 ExtensionFunction::ResponseAction WmDesksPrivateGetDeskByIDFunction::Run() {
-  Profile* profile = Profile::FromBrowserContext(browser_context());
   // Ensure the calling profile is the active user's profile to prevent
   // cross-profile desk manipulation.
-  if (profile != ProfileManager::GetActiveUserProfile()) {
+  if (!IsActiveUserBrowserContext(browser_context())) {
     return RespondNow(
         Error("The Desk API is only available to the active user profile."));
   }
