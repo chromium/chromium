@@ -36,6 +36,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/types/expected.h"
 #include "build/blink_buildflags.h"
@@ -916,8 +917,36 @@ TEST(ProcessMetricsTest, ParseProcStatCPU) {
 // Disable on Android because base_unittests runs inside a Dalvik VM that
 // starts and stop threads (crbug.com/175563).
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// http://crbug.com/396455
-TEST(ProcessMetricsTest, DISABLED_GetNumberOfThreads) {
+namespace {
+
+// Waits for GetNumberOfThreads(process) to reach `expected_threads`.
+// As noted in sandbox/linux/services/thread_helpers.cc, the kernel is at
+// liberty to wake the thread ID futex before updating /proc, so /proc/<pid>/stat
+// may lag slightly behind Thread::Start() or Thread::Stop().
+[[nodiscard]] testing::AssertionResult WaitForNumberOfThreads(
+    ProcessHandle process,
+    int64_t expected_threads) {
+  const TimeTicks deadline = TimeTicks::Now() + TestTimeouts::action_timeout();
+  int64_t actual_threads = -1;
+  while (TimeTicks::Now() < deadline) {
+    actual_threads = GetNumberOfThreads(process);
+    if (actual_threads == expected_threads) {
+      return testing::AssertionSuccess();
+    }
+    PlatformThread::Sleep(Milliseconds(5));
+  }
+  actual_threads = GetNumberOfThreads(process);
+  if (actual_threads == expected_threads) {
+    return testing::AssertionSuccess();
+  }
+  return testing::AssertionFailure()
+      << "Expected " << expected_threads << " threads, but got "
+      << actual_threads;
+}
+
+}  // namespace
+
+TEST(ProcessMetricsTest, GetNumberOfThreads) {
   const ProcessHandle current = GetCurrentProcessHandle();
   const int64_t initial_threads = GetNumberOfThreads(current);
   ASSERT_GT(initial_threads, 0);
@@ -927,11 +956,11 @@ TEST(ProcessMetricsTest, DISABLED_GetNumberOfThreads) {
     for (int i = 0; i < kNumAdditionalThreads; ++i) {
       my_threads[i] = std::make_unique<Thread>("GetNumberOfThreadsTest");
       my_threads[i]->Start();
-      ASSERT_EQ(GetNumberOfThreads(current), initial_threads + 1 + i);
+      ASSERT_TRUE(WaitForNumberOfThreads(current, initial_threads + 1 + i));
     }
   }
   // The Thread destructor will stop them.
-  ASSERT_EQ(initial_threads, GetNumberOfThreads(current));
+  ASSERT_TRUE(WaitForNumberOfThreads(current, initial_threads));
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
