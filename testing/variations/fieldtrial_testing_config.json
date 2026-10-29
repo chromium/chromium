@@ -15427,6 +15427,25 @@
             ]
         }
     ],
+    "RemoveOldDownloadsFromHistory": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RemoveOldDownloadsFromHistory"
+                    ]
+                }
+            ]
+        }
+    ],
     "RendererProcessLimitOnAndroid": [
         {
             "platforms": [
