@@ -5476,6 +5476,10 @@ void BrowserActions::InitializeSubmenuActions() {
           features::IsRoundedIconsEnabled() ? kHelpCustomIcon
                                             : kHelpMenuOldIcon,
           /*is_pinnable=*/false)
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kHelpCustomIcon
+                                                : kHelpMenuOldIcon,
+              ui::kColorIcon))
           .Build());
 
   root_action_item_->AddChild(

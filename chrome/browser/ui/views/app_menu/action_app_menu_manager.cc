@@ -1193,7 +1193,6 @@ void ActionAppMenuManager::AddFooterActions(actions::ActionItem* root) {
       .AddSection(DisplayType::kFooter, [browser_window_interface =
                                              browser_window_interface_.get()](
                                             AppMenuBuilder& section) {
-        section.AddAction(kActionOptions);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         section.AddSubmenu(
@@ -1234,6 +1233,7 @@ void ActionAppMenuManager::AddFooterActions(actions::ActionItem* root) {
         if (browser_defaults::kShowExitMenuItem) {
           section.AddAction(kActionExit);
         }
+        section.AddAction(kActionOptions);
 
 #if !BUILDFLAG(IS_CHROMEOS)
         Profile* profile = browser_window_interface->GetProfile();

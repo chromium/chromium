@@ -46,6 +46,7 @@
 
 namespace {
 constexpr int kRowLineHeight = 16;
+constexpr int kSubmenuCaretAlignmentOffset = 4;
 }  // namespace
 
 AppMenuFooterButton::AppMenuFooterButton(views::MenuItemView* parent_menu_item,
@@ -188,7 +189,7 @@ void AppMenuFooterButton::AddedToWidget() {
 }
 
 void AppMenuFooterButton::SetImageModel(const ui::ImageModel& image_model) {
-  if (GetSubmenuItem() || image_model.IsEmpty()) {
+  if (image_model.IsEmpty()) {
     icon_view_->SetVisible(false);
   } else if (image_model.IsVectorIcon()) {
     const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -236,8 +237,15 @@ void AppMenuFooterButton::SetUseRowStyle(bool use_row_style) {
     SetBackground(views::CreateRoundedRectBackground(ui::kColorMenuBackground,
                                                      corner_radius));
 
-    layout_->set_inside_border_insets(
-        provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_FOOTER_BUTTON));
+    gfx::Insets button_insets =
+        provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_FOOTER_BUTTON);
+    if (submenu_arrow_view_) {
+      // Pad the trailing edge so the caret shifts left without moving the
+      // highlight.
+      button_insets.set_right(button_insets.right() +
+                              kSubmenuCaretAlignmentOffset);
+    }
+    layout_->set_inside_border_insets(button_insets);
   }
   UpdateColors();
 }

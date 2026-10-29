@@ -229,16 +229,14 @@ class ActionAppMenuTest : public ActionAppMenuTestBase {
     if (!footer_view) {
       return nullptr;
     }
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-    views::View* container = footer_view->right_container_for_testing();
-#else
     views::View* container = footer_view->left_container_for_testing();
-#endif
     if (!container || container->children().empty()) {
       return nullptr;
     }
-    // Settings is the first button of its container.
-    return views::AsViewClass<AppMenuFooterButton>(container->children()[0]);
+    // Settings is the last button of the left container (after Exit, where
+    // Exit is shown there).
+    return views::AsViewClass<AppMenuFooterButton>(
+        container->children().back());
   }
 
   // Returns the text that `button`'s label shows.
@@ -1284,17 +1282,12 @@ TEST_F(ActionAppMenuTest, FooterButtonClickExecutesActionAfterMenuClosed) {
       views::AsViewClass<AppMenuFooterView>(footer_item->children()[0]);
   ASSERT_TRUE(footer_view);
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-  // On Mac and ChromeOS, right container child 0 is kActionOptions (Settings).
-  views::View* settings_container = footer_view->right_container_for_testing();
-#else
-  // Left container child 0 is kActionOptions (Settings).
+  // Settings is the last button of the left container on all platforms.
   views::View* settings_container = footer_view->left_container_for_testing();
-#endif
   ASSERT_TRUE(settings_container);
   ASSERT_FALSE(settings_container->children().empty());
   auto* settings_button = views::AsViewClass<AppMenuFooterButton>(
-      settings_container->children()[0]);
+      settings_container->children().back());
   ASSERT_TRUE(settings_button);
 
   // Verify strict ordering:
@@ -1475,26 +1468,25 @@ TEST_F(ActionAppMenuTest, PopulatesFooterElements) {
   views::View* right_container = footer_view->right_container_for_testing();
   ASSERT_TRUE(right_container);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-  ASSERT_EQ(left_container->children().size(), 1u);  // Help
+  ASSERT_EQ(left_container->children().size(), 1u);  // Settings
   EXPECT_TRUE(
       views::IsViewClass<AppMenuFooterButton>(left_container->children()[0]));
-  ASSERT_EQ(right_container->children().size(), 1u);  // Settings
+  // Help, plus Exit if shown.
+  ASSERT_EQ(right_container->children().size(),
+            browser_defaults::kShowExitMenuItem ? 2u : 1u);
+  for (views::View* child : right_container->children()) {
+    EXPECT_TRUE(views::IsViewClass<AppMenuFooterButton>(child));
+  }
+#else
+  // Exit (if shown), Settings.
+  ASSERT_EQ(left_container->children().size(),
+            browser_defaults::kShowExitMenuItem ? 2u : 1u);
+  for (views::View* child : left_container->children()) {
+    EXPECT_TRUE(views::IsViewClass<AppMenuFooterButton>(child));
+  }
+  ASSERT_EQ(right_container->children().size(), 1u);  // Help
   EXPECT_TRUE(
       views::IsViewClass<AppMenuFooterButton>(right_container->children()[0]));
-#else
-  ASSERT_EQ(left_container->children().size(), 2u);  // Settings, Help
-  EXPECT_TRUE(
-      views::IsViewClass<AppMenuFooterButton>(left_container->children()[0]));
-  EXPECT_TRUE(
-      views::IsViewClass<AppMenuFooterButton>(left_container->children()[1]));
-
-  if (browser_defaults::kShowExitMenuItem) {
-    ASSERT_EQ(right_container->children().size(), 1u);  // Exit
-    EXPECT_TRUE(views::IsViewClass<AppMenuFooterButton>(
-        right_container->children()[0]));
-  } else {
-    EXPECT_EQ(right_container->children().size(), 0u);
-  }
 #endif
 
   // Without managed UI, separator and bottom container should not be added.

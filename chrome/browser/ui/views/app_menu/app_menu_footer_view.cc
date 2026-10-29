@@ -40,14 +40,13 @@ FooterContainer GetFooterContainerForAction(actions::ActionId action_id) {
   switch (action_id) {
     case kActionShowManagementPage:
       return FooterContainer::kBottom;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-    case kActionOptions:
-#else
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
     case kActionExit:
 #endif
-      return FooterContainer::kRight;
-    default:
+    case kActionOptions:
       return FooterContainer::kLeft;
+    default:
+      return FooterContainer::kRight;
   }
 }
 
