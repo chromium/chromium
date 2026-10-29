@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef CRYPTO_EC_GROUP_H_
-#define CRYPTO_EC_GROUP_H_
+#ifndef PRIVATE_JOIN_AND_COMPUTE_CRYPTO_EC_GROUP_H_
+#define PRIVATE_JOIN_AND_COMPUTE_CRYPTO_EC_GROUP_H_
 
 #include <cstddef>
 #include <memory>
@@ -160,4 +160,4 @@ class PRIVATE_COMPUTE_EXPORT ECGroup {
 
 }  // namespace private_join_and_compute
 
-#endif  // CRYPTO_EC_GROUP_H_
+#endif  // PRIVATE_JOIN_AND_COMPUTE_CRYPTO_EC_GROUP_H_

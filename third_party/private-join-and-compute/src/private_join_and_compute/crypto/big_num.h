@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef CRYPTO_BIG_NUM_H_
-#define CRYPTO_BIG_NUM_H_
+#ifndef PRIVATE_JOIN_AND_COMPUTE_CRYPTO_BIG_NUM_H_
+#define PRIVATE_JOIN_AND_COMPUTE_CRYPTO_BIG_NUM_H_
 
 #include <stdint.h>
 
@@ -259,4 +259,4 @@ inline std::ostream& operator<<(std::ostream& strm, const BigNum& a) {
 
 }  // namespace private_join_and_compute
 
-#endif  // CRYPTO_BIG_NUM_H_
+#endif  // PRIVATE_JOIN_AND_COMPUTE_CRYPTO_BIG_NUM_H_

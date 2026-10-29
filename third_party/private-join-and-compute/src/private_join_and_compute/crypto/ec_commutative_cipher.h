@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef EC_COMMUTATIVE_CIPHER_H_
-#define EC_COMMUTATIVE_CIPHER_H_
+#ifndef PRIVATE_JOIN_AND_COMPUTE_EC_COMMUTATIVE_CIPHER_H_
+#define PRIVATE_JOIN_AND_COMPUTE_EC_COMMUTATIVE_CIPHER_H_
 
 #include <memory>
 #include <string>
@@ -246,4 +246,4 @@ class PRIVATE_COMPUTE_EXPORT ECCommutativeCipher {
 
 }  // namespace private_join_and_compute
 
-#endif  // EC_COMMUTATIVE_CIPHER_H_
+#endif  // PRIVATE_JOIN_AND_COMPUTE_EC_COMMUTATIVE_CIPHER_H_

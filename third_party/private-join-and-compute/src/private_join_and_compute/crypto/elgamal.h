@@ -33,8 +33,8 @@
 //
 // [1] https://en.wikipedia.org/wiki/ElGamal_encryption
 
-#ifndef CRYPTO_ELGAMAL_H_
-#define CRYPTO_ELGAMAL_H_
+#ifndef PRIVATE_JOIN_AND_COMPUTE_CRYPTO_ELGAMAL_H_
+#define PRIVATE_JOIN_AND_COMPUTE_CRYPTO_ELGAMAL_H_
 
 #include <memory>
 #include <utility>
@@ -164,4 +164,4 @@ class PRIVATE_COMPUTE_EXPORT ElGamalDecrypter {
 
 }  // namespace private_join_and_compute
 
-#endif  // CRYPTO_ELGAMAL_H_
+#endif  // PRIVATE_JOIN_AND_COMPUTE_CRYPTO_ELGAMAL_H_

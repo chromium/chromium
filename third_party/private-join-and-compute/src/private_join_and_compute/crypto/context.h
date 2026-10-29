@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef CRYPTO_CONTEXT_H_
-#define CRYPTO_CONTEXT_H_
+#ifndef PRIVATE_JOIN_AND_COMPUTE_CRYPTO_CONTEXT_H_
+#define PRIVATE_JOIN_AND_COMPUTE_CRYPTO_CONTEXT_H_
 
 #include <stdint.h>
 
@@ -188,4 +188,4 @@ class PRIVATE_COMPUTE_EXPORT Context {
 
 }  // namespace private_join_and_compute
 
-#endif  // CRYPTO_CONTEXT_H_
+#endif  // PRIVATE_JOIN_AND_COMPUTE_CRYPTO_CONTEXT_H_
