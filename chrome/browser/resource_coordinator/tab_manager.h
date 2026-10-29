@@ -73,8 +73,6 @@ class TabManager : public LifecycleUnitObserver,
   friend class TabManagerTest;
 
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, IsInternalPage);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerIgnoreWorkersTest,
-                           UrgentFastShutdownWithWorker);
 
   // Returns true if the |url| represents an internal Chrome web UI page that
   // can be easily reloaded and hence makes a good choice to discard.
