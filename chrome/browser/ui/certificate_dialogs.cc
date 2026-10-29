@@ -267,7 +267,9 @@ void ShowCertExportDialogSaveAll(
     gfx::NativeWindow parent,
     std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs,
     const std::string& suggested_file_name) {
-  CHECK(!certs.empty(), base::NotFatalUntil::M162);
+  // TODO(crbug.com/578857837): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK(!certs.empty());
   // Exporter is self-deleting.
   new Exporter(web_contents, parent, std::move(certs), suggested_file_name,
                /*full_export=*/true);
