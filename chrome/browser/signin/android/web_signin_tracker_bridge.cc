@@ -61,12 +61,9 @@ static int64_t JNI_WebSigninTrackerBridge_CreateWithCoreAccountId(
       on_signin_completed = base::BindOnce(
           &ForwardOnSigninCompletedToJava,
           base::android::ScopedJavaGlobalRef<jobject>(j_listener));
-  auto* bridge =
+  return reinterpret_cast<intptr_t>(
       new WebSigninTrackerBridge(identity_manager, account_reconcilor,
-                                 account_id, std::move(on_signin_completed));
-  // TODO(crbug.com/570450501): Start the bridge from Java instead.
-  bridge->Start();
-  return reinterpret_cast<intptr_t>(bridge);
+                                 account_id, std::move(on_signin_completed)));
 }
 
 static int64_t JNI_WebSigninTrackerBridge_CreateWithEmail(
@@ -84,12 +81,16 @@ static int64_t JNI_WebSigninTrackerBridge_CreateWithEmail(
       on_signin_completed = base::BindOnce(
           &ForwardOnSigninCompletedToJava,
           base::android::ScopedJavaGlobalRef<jobject>(j_listener));
-  auto* bridge =
-      new WebSigninTrackerBridge(identity_manager, account_reconcilor,
-                                 account_email, std::move(on_signin_completed));
-  // TODO(crbug.com/570450501): Start the bridge from Java instead.
-  bridge->Start();
-  return reinterpret_cast<intptr_t>(bridge);
+  return reinterpret_cast<intptr_t>(new WebSigninTrackerBridge(
+      identity_manager, account_reconcilor, account_email,
+      std::move(on_signin_completed)));
+}
+
+static void JNI_WebSigninTrackerBridge_Start(
+    JNIEnv* env,
+    int64_t web_signin_tracker_bridge) {
+  // May destroy the bridge if the result is already known.
+  reinterpret_cast<WebSigninTrackerBridge*>(web_signin_tracker_bridge)->Start();
 }
 
 static void JNI_WebSigninTrackerBridge_Destroy(
