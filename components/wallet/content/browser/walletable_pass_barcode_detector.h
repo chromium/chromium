@@ -20,8 +20,22 @@ namespace wallet {
 // contents.
 class WalletablePassBarcodeDetector {
  public:
+  // Why a detection returned the barcodes it did, so that callers can tell a
+  // page without barcodes apart from one that could not be scanned.
+  enum class BarcodeDetectionStatus {
+    // The images were decoded. The barcodes may still be empty.
+    kSuccess,
+    // No image on the page passed the extraction filters, so nothing was
+    // decoded.
+    kImagesNotFound,
+    // Image extraction or barcode decoding could not run, or its connection
+    // was lost.
+    kDetectorUnavailable,
+  };
+
   using WalletBarcodeDetectionDetectCallback =
-      base::OnceCallback<void(std::vector<WalletBarcode>)>;
+      base::OnceCallback<void(BarcodeDetectionStatus,
+                              std::vector<WalletBarcode>)>;
 
   virtual ~WalletablePassBarcodeDetector() = default;
 

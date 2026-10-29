@@ -222,6 +222,18 @@ reviewer.
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:PixFlowExitedReason) -->
 
+<!-- LINT.IfChange(FacilitatedPayments.QrCode.DetectionResult) -->
+
+<enum name="FacilitatedPayments.QrCode.DetectionResult">
+  <int value="0" label="Images not found"/>
+  <int value="1" label="Detector unavailable"/>
+  <int value="2" label="QR code not found"/>
+  <int value="3" label="Single QR code found"/>
+  <int value="4" label="Multiple QR codes found"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:QrCodeDetectionResult) -->
+
 <!-- LINT.IfChange(FacilitatedPayments.QrCode.HeuristicSignals) -->
 
 <enum name="FacilitatedPayments.QrCode.HeuristicSignals">

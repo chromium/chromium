@@ -283,6 +283,26 @@ enum class PixIframeUrlType {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.Pix.IframeUrlType)
 
+// The outcome of one payment QR code decoding pass.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(QrCodeDetectionResult)
+enum class QrCodeDetectionResult {
+  // No image on the page passed the extraction filters.
+  kImagesNotFound = 0,
+  // Image extraction or barcode decoding could not run, or was interrupted.
+  kDetectorUnavailable = 1,
+  // Images were decoded, but no QR code was found.
+  kQrCodeNotFound = 2,
+  // Exactly one QR code was decoded.
+  kSingleQrCodeFound = 3,
+  // More than one QR code was decoded.
+  kMultipleQrCodesFound = 4,
+  kMaxValue = kMultipleQrCodesFound,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.QrCode.DetectionResult)
+
 // The renderer's heuristic signals that started a QR code decoding pass. Each
 // value is a bit in the logged sample, so that every combination of signals
 // has its own bucket.
@@ -320,6 +340,9 @@ void LogPixIframeUrlType(PixIframeUrlType url_type);
 // Log if the iframe is same-origin with the main frame when a Pix code is
 // copied in an iframe.
 void LogPixIframeIsSameOriginAsMainFrame(bool is_same_origin);
+
+// Logs the outcome of one payment QR code decoding pass.
+void LogQrCodeDetectionResult(QrCodeDetectionResult result);
 
 // Logs the heuristic `signals` that started a QR code decoding pass, split by
 // whether the pass decoded a QR code.

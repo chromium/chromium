@@ -144,6 +144,10 @@ void LogPixIframeUrlType(PixIframeUrlType url_type) {
                                 url_type);
 }
 
+void LogQrCodeDetectionResult(QrCodeDetectionResult result) {
+  base::UmaHistogramEnumeration("FacilitatedPayments.QrCode.Result", result);
+}
+
 void LogQrCodeHeuristicSignals(QrCodeHeuristicSignals signals,
                                bool qr_code_found) {
   // One bucket for every combination of signals, i.e. every bitmask up to the

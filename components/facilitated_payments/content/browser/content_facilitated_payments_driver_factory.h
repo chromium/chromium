@@ -124,15 +124,17 @@ class ContentFacilitatedPaymentsDriverFactory
   // merchant on the Optimization Guide allowlist.
   bool IsEligibleForQrCodeDetection(const GURL& url) const;
 
-  // Handles the `barcodes` decoded from the images of `document`, by the
-  // decoding pass that the `heuristic_signals` started as the page's
-  // `check_index`-th check. Logs the pass, ends the current evaluation, and
-  // stops detection for the rest of the page if a QR code was found or the page
-  // has used all its checks.
-  void OnBarcodesDetected(content::WeakDocumentPtr document,
-                          QrCodeHeuristicSignals heuristic_signals,
-                          int check_index,
-                          std::vector<wallet::WalletBarcode> barcodes);
+  // Handles the `barcodes` decoded from the images of `document`, with the
+  // detection `status`, by the decoding pass that the `heuristic_signals`
+  // started as the page's `check_index`-th check. Logs the pass, ends the
+  // current evaluation, and stops detection for the rest of the page if a QR
+  // code was found or the page has used all its checks.
+  void OnBarcodesDetected(
+      content::WeakDocumentPtr document,
+      QrCodeHeuristicSignals heuristic_signals,
+      int check_index,
+      wallet::WalletablePassBarcodeDetector::BarcodeDetectionStatus status,
+      std::vector<wallet::WalletBarcode> barcodes);
 
   // Owns the drivers, one for each render frame host. Elements are erased in
   // RenderFrameDeleted(), or destroyed with `this` when the owning

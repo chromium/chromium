@@ -83,9 +83,15 @@ class FakeBarcodeDetector : public wallet::WalletablePassBarcodeDetector {
     callback_ = std::move(callback);
   }
 
-  // Finishes the pending detection with `barcodes`.
+  // Finishes the pending detection, which decoded `barcodes`.
   void Finish(std::vector<wallet::WalletBarcode> barcodes) {
-    std::move(callback_).Run(std::move(barcodes));
+    FinishWithStatus(BarcodeDetectionStatus::kSuccess, std::move(barcodes));
+  }
+
+  // Finishes the pending detection with `status` and `barcodes`.
+  void FinishWithStatus(BarcodeDetectionStatus status,
+                        std::vector<wallet::WalletBarcode> barcodes) {
+    std::move(callback_).Run(status, std::move(barcodes));
   }
 
   int detect_count() const { return detect_count_; }
@@ -548,6 +554,7 @@ TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
   EXPECT_EQ(barcode_detector_->detect_count(), kMaxQrCodeChecksPerPage + 1);
 }
 
+constexpr char kQrCodeResultHistogram[] = "FacilitatedPayments.QrCode.Result";
 constexpr char kQrFoundSignalsHistogram[] =
     "FacilitatedPayments.QrCode.HeuristicSignals.QrFound";
 constexpr char kQrNotFoundSignalsHistogram[] =
@@ -563,8 +570,8 @@ int QualifyingSignalsSample() {
           .ToEnumBitmask());
 }
 
-// Tests that a pass that decodes a QR code logs the signals that started it
-// and its check index.
+// Tests that a pass that decodes a QR code logs its result, the signals that
+// started it, and its check index.
 TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
        OnBarcodesDetected_QrCode_LogsMetrics) {
   base::HistogramTester histogram_tester;
@@ -574,14 +581,16 @@ TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
   barcode_detector_->Finish({{.raw_value = "payload",
                               .format = wallet::WalletBarcodeFormat::QR_CODE}});
 
+  histogram_tester.ExpectUniqueSample(
+      kQrCodeResultHistogram, QrCodeDetectionResult::kSingleQrCodeFound, 1);
   histogram_tester.ExpectUniqueSample(kQrFoundSignalsHistogram,
                                       QualifyingSignalsSample(), 1);
   histogram_tester.ExpectTotalCount(kQrNotFoundSignalsHistogram, 0);
   histogram_tester.ExpectUniqueSample(kSuccessfulAttemptIndexHistogram, 1, 1);
 }
 
-// Tests that a pass without a QR code logs the signals that started it, but no
-// check index.
+// Tests that a pass that decodes no QR code logs its result and the signals
+// that started it, but no check index.
 TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
        OnBarcodesDetected_NoQrCode_LogsMetrics) {
   base::HistogramTester histogram_tester;
@@ -590,8 +599,61 @@ TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
 
   FinishWithoutQrCode(*barcode_detector_);
 
+  histogram_tester.ExpectUniqueSample(
+      kQrCodeResultHistogram, QrCodeDetectionResult::kQrCodeNotFound, 1);
   histogram_tester.ExpectUniqueSample(kQrNotFoundSignalsHistogram,
                                       QualifyingSignalsSample(), 1);
+  histogram_tester.ExpectTotalCount(kQrFoundSignalsHistogram, 0);
+  histogram_tester.ExpectTotalCount(kSuccessfulAttemptIndexHistogram, 0);
+}
+
+// Tests that a pass that decodes several QR codes logs them as multiple.
+TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
+       OnBarcodesDetected_MultipleQrCodes_LogsMultipleQrCodesFound) {
+  base::HistogramTester histogram_tester;
+  NavigateAndCommit(GURL("https://merchant.example/checkout"));
+  factory_->OnHeuristicSignalsReported(main_rfh(), *MakeQualifyingSignals());
+
+  barcode_detector_->Finish(
+      {{.raw_value = "first", .format = wallet::WalletBarcodeFormat::QR_CODE},
+       {.raw_value = "second",
+        .format = wallet::WalletBarcodeFormat::QR_CODE}});
+
+  histogram_tester.ExpectUniqueSample(
+      kQrCodeResultHistogram, QrCodeDetectionResult::kMultipleQrCodesFound, 1);
+}
+
+// Tests that a pass on a page without qualifying images logs that result, and
+// counts as a pass that found no QR code.
+TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
+       OnBarcodesDetected_ImagesNotFound_LogsImagesNotFound) {
+  base::HistogramTester histogram_tester;
+  NavigateAndCommit(GURL("https://merchant.example/checkout"));
+  factory_->OnHeuristicSignalsReported(main_rfh(), *MakeQualifyingSignals());
+
+  barcode_detector_->FinishWithStatus(
+      FakeBarcodeDetector::BarcodeDetectionStatus::kImagesNotFound, {});
+
+  histogram_tester.ExpectUniqueSample(
+      kQrCodeResultHistogram, QrCodeDetectionResult::kImagesNotFound, 1);
+  histogram_tester.ExpectUniqueSample(kQrNotFoundSignalsHistogram,
+                                      QualifyingSignalsSample(), 1);
+}
+
+// Tests that a pass whose detector was unavailable logs that result, but not
+// the signals, since it says nothing about whether they predict a QR code.
+TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
+       OnBarcodesDetected_DetectorUnavailable_LogsResultOnly) {
+  base::HistogramTester histogram_tester;
+  NavigateAndCommit(GURL("https://merchant.example/checkout"));
+  factory_->OnHeuristicSignalsReported(main_rfh(), *MakeQualifyingSignals());
+
+  barcode_detector_->FinishWithStatus(
+      FakeBarcodeDetector::BarcodeDetectionStatus::kDetectorUnavailable, {});
+
+  histogram_tester.ExpectUniqueSample(
+      kQrCodeResultHistogram, QrCodeDetectionResult::kDetectorUnavailable, 1);
+  histogram_tester.ExpectTotalCount(kQrNotFoundSignalsHistogram, 0);
   histogram_tester.ExpectTotalCount(kQrFoundSignalsHistogram, 0);
   histogram_tester.ExpectTotalCount(kSuccessfulAttemptIndexHistogram, 0);
 }

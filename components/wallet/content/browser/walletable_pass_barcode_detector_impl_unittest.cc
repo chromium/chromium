@@ -24,6 +24,8 @@ namespace wallet {
 namespace {
 
 using testing::ElementsAre;
+using BarcodeDetectionStatus =
+    WalletablePassBarcodeDetector::BarcodeDetectionStatus;
 
 shape_detection::mojom::BarcodeDetectionResultPtr CreateBarcodeDetectionResult(
     const std::string& raw_value,
@@ -144,7 +146,9 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, NoImagesFound) {
   base::RunLoop run_loop;
   detector_.Detect(
       web_contents(), TestOptions(), /*barcode_formats=*/{},
-      base::BindLambdaForTesting([&](std::vector<WalletBarcode> results) {
+      base::BindLambdaForTesting([&](BarcodeDetectionStatus status,
+                                     std::vector<WalletBarcode> results) {
+        EXPECT_EQ(status, BarcodeDetectionStatus::kImagesNotFound);
         EXPECT_TRUE(results.empty());
         run_loop.Quit();
       }));
@@ -170,8 +174,11 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, ForwardsExtractionOptions) {
       mojom::ImageExtractionOptions::New(kMinImageSize, kMaxAspectRatio,
                                          /*include_canvas=*/true),
       /*barcode_formats=*/{},
-      base::BindLambdaForTesting(
-          [&](std::vector<WalletBarcode> results) { run_loop.Quit(); }));
+      base::BindLambdaForTesting([&](BarcodeDetectionStatus status,
+                                     std::vector<WalletBarcode> results) {
+        EXPECT_EQ(status, BarcodeDetectionStatus::kImagesNotFound);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
@@ -196,8 +203,11 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, ForwardsBarcodeFormats) {
   detector_.Detect(
       web_contents(), TestOptions(),
       {shape_detection::mojom::BarcodeFormat::QR_CODE},
-      base::BindLambdaForTesting(
-          [&](std::vector<WalletBarcode> results) { run_loop.Quit(); }));
+      base::BindLambdaForTesting([&](BarcodeDetectionStatus status,
+                                     std::vector<WalletBarcode> results) {
+        EXPECT_EQ(status, BarcodeDetectionStatus::kSuccess);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 
   EXPECT_THAT(detector_.last_barcode_formats(),
@@ -226,8 +236,11 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, DropsUnknownBarcodeFormat) {
       web_contents(), TestOptions(),
       {shape_detection::mojom::BarcodeFormat::UNKNOWN,
        shape_detection::mojom::BarcodeFormat::QR_CODE},
-      base::BindLambdaForTesting(
-          [&](std::vector<WalletBarcode> results) { run_loop.Quit(); }));
+      base::BindLambdaForTesting([&](BarcodeDetectionStatus status,
+                                     std::vector<WalletBarcode> results) {
+        EXPECT_EQ(status, BarcodeDetectionStatus::kSuccess);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 
   EXPECT_THAT(detector_.last_barcode_formats(),
@@ -254,7 +267,9 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, NoBarcodesFound) {
   base::RunLoop run_loop;
   detector_.Detect(
       web_contents(), TestOptions(), /*barcode_formats=*/{},
-      base::BindLambdaForTesting([&](std::vector<WalletBarcode> results) {
+      base::BindLambdaForTesting([&](BarcodeDetectionStatus status,
+                                     std::vector<WalletBarcode> results) {
+        EXPECT_EQ(status, BarcodeDetectionStatus::kSuccess);
         EXPECT_TRUE(results.empty());
         run_loop.Quit();
       }));
@@ -289,7 +304,9 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, QRCodeFound) {
   detector_.Detect(
       web_contents(), TestOptions(), /*barcode_formats=*/{},
       base::BindLambdaForTesting(
-          [&](std::vector<WalletBarcode> results) {
+          [&](BarcodeDetectionStatus status,
+              std::vector<WalletBarcode> results) {
+            EXPECT_EQ(status, BarcodeDetectionStatus::kSuccess);
             EXPECT_THAT(results, ElementsAre(WalletBarcode{
                                      .raw_value = "test_value",
                                      .format = WalletBarcodeFormat::QR_CODE}));
@@ -309,7 +326,9 @@ TEST_F(WalletablePassBarcodeDetectorImplTest,
   base::RunLoop run_loop;
   detector_.Detect(
       web_contents(), TestOptions(), /*barcode_formats=*/{},
-      base::BindLambdaForTesting([&](std::vector<WalletBarcode> results) {
+      base::BindLambdaForTesting([&](BarcodeDetectionStatus status,
+                                     std::vector<WalletBarcode> results) {
+        EXPECT_EQ(status, BarcodeDetectionStatus::kDetectorUnavailable);
         EXPECT_TRUE(results.empty());
         run_loop.Quit();
       }));
@@ -338,7 +357,9 @@ TEST_F(WalletablePassBarcodeDetectorImplTest,
   base::RunLoop run_loop;
   detector_.Detect(
       web_contents(), TestOptions(), /*barcode_formats=*/{},
-      base::BindLambdaForTesting([&](std::vector<WalletBarcode> results) {
+      base::BindLambdaForTesting([&](BarcodeDetectionStatus status,
+                                     std::vector<WalletBarcode> results) {
+        EXPECT_EQ(status, BarcodeDetectionStatus::kDetectorUnavailable);
         EXPECT_TRUE(results.empty());
         run_loop.Quit();
       }));
@@ -381,7 +402,9 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, MultipleBarcodesFound) {
   detector_.Detect(
       web_contents(), TestOptions(), /*barcode_formats=*/{},
       base::BindLambdaForTesting(
-          [&](std::vector<WalletBarcode> results) {
+          [&](BarcodeDetectionStatus status,
+              std::vector<WalletBarcode> results) {
+            EXPECT_EQ(status, BarcodeDetectionStatus::kSuccess);
             EXPECT_THAT(
                 results,
                 ElementsAre(

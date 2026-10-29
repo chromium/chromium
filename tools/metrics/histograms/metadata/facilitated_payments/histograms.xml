@@ -690,9 +690,30 @@ reviewer.
     payment link, a square image, and a URL or text keyword) start a pass.
     [Trigger] The browser finishes decoding the images of a page that the
     renderer reported as a likely payment QR code page. [Frequency] Logged once
-    per decoding pass, at most 3 times per page.
+    per decoding pass whose detector was available, at most 3 times per page.
   </summary>
   <token key="DetectionOutcome" variants="QrCodeDetectionOutcome"/>
+</histogram>
+
+<histogram name="FacilitatedPayments.QrCode.Result"
+    enum="FacilitatedPayments.QrCode.DetectionResult"
+    expires_after="2027-04-30">
+  <owner>qihuizhao@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the outcome of one payment QR code decoding pass: whether the page
+    had qualifying images, whether the detector could run, and how many QR codes
+    it decoded. Used to measure how well the heuristics and image extraction
+    work. [Trigger] The browser finishes decoding the images of a page that the
+    renderer reported as a likely payment QR code page. [Frequency] Logged once
+    per decoding pass, at most 3 times per page. A pass that finds no QR code,
+    for any of the reasons above, leaves detection on for the page, because
+    payment QR codes are often rendered later, e.g. after the user selects a
+    payment method. A later layout, scroll or navigation change that still
+    matches the heuristics then starts another pass. Detection stops for the
+    page once a pass finds a QR code or after the 3rd pass.
+  </summary>
 </histogram>
 
 <histogram name="FacilitatedPayments.QrCode.SuccessfulAttemptIndex"

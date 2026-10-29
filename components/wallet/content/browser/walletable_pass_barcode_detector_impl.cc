@@ -102,7 +102,7 @@ void WalletablePassBarcodeDetectorImpl::ExtractImageWithRemote(
     std::vector<shape_detection::mojom::BarcodeFormat> barcode_formats,
     WalletBarcodeDetectionDetectCallback callback) {
   if (!remote) {
-    std::move(callback).Run({});
+    std::move(callback).Run(BarcodeDetectionStatus::kDetectorUnavailable, {});
     return;
   }
 
@@ -130,7 +130,7 @@ void WalletablePassBarcodeDetectorImpl::ExtractImageWithRemote(
 void WalletablePassBarcodeDetectorImpl::OnRemoteDisconnected(
     WalletBarcodeDetectionDetectCallback callback) {
   image_extractor_remote_.reset();
-  std::move(callback).Run({});
+  std::move(callback).Run(BarcodeDetectionStatus::kDetectorUnavailable, {});
 }
 
 void WalletablePassBarcodeDetectorImpl::OnImagesExtracted(
@@ -141,7 +141,7 @@ void WalletablePassBarcodeDetectorImpl::OnImagesExtracted(
 
   // Don't start a new detection if there are no images.
   if (images.empty()) {
-    std::move(callback).Run({});
+    std::move(callback).Run(BarcodeDetectionStatus::kImagesNotFound, {});
     return;
   }
 
@@ -195,13 +195,13 @@ void WalletablePassBarcodeDetectorImpl::OnAllBarcodesDetected(
     }
   }
   barcode_detector_.reset();
-  std::move(callback).Run(std::move(results));
+  std::move(callback).Run(BarcodeDetectionStatus::kSuccess, std::move(results));
 }
 
 void WalletablePassBarcodeDetectorImpl::OnBarcodeDetectorDisconnected(
     WalletBarcodeDetectionDetectCallback callback) {
   barcode_detector_.reset();
-  std::move(callback).Run({});
+  std::move(callback).Run(BarcodeDetectionStatus::kDetectorUnavailable, {});
 }
 
 void WalletablePassBarcodeDetectorImpl::Detect(

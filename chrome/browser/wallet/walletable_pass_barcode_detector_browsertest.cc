@@ -59,14 +59,16 @@ IN_PROC_BROWSER_TEST_F(WalletablePassBarcodeDetectorBrowserTest,
       std::string(kBlackImage) + "'></body>");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  base::test::TestFuture<std::vector<wallet::WalletBarcode>> future;
+  base::test::TestFuture<WalletablePassBarcodeDetector::BarcodeDetectionStatus,
+                         std::vector<WalletBarcode>>
+      future;
   auto detector = std::make_unique<WalletablePassBarcodeDetectorImpl>();
   detector->Detect(GetWebContents(), WalletOptions(),
                    /*barcode_formats=*/{}, future.GetCallback());
 
   // TODO(crbug.com/438364540): Current implementation always return empty list.
   // Need to add another real test for barcode detection.
-  EXPECT_THAT(future.Get(), testing::IsEmpty());
+  EXPECT_THAT(future.Get<1>(), testing::IsEmpty());
 }
 
 // Tests that the barcode detection gracefully handles the case where the image
@@ -76,7 +78,9 @@ IN_PROC_BROWSER_TEST_F(WalletablePassBarcodeDetectorBrowserTest,
   const GURL url("data:text/html,<body><p>hello</p></body>");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  base::test::TestFuture<std::vector<WalletBarcode>> future;
+  base::test::TestFuture<WalletablePassBarcodeDetector::BarcodeDetectionStatus,
+                         std::vector<WalletBarcode>>
+      future;
   auto detector = std::make_unique<WalletablePassBarcodeDetectorImpl>();
   detector->Detect(GetWebContents(), WalletOptions(),
                    /*barcode_formats=*/{}, future.GetCallback());
@@ -85,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(WalletablePassBarcodeDetectorBrowserTest,
   GetWebContents()->Close();
 
   // The disconnect handler should run the callback and delete the `detector`.
-  EXPECT_THAT(future.Get(), testing::IsEmpty());
+  EXPECT_THAT(future.Get<1>(), testing::IsEmpty());
 }
 
 }  // namespace wallet

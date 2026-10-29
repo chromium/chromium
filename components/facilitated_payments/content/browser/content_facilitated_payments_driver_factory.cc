@@ -65,6 +65,26 @@ QrCodeHeuristicSignals GetQrCodeHeuristicSignals(
   return result;
 }
 
+QrCodeDetectionResult GetQrCodeDetectionResult(
+    wallet::WalletablePassBarcodeDetector::BarcodeDetectionStatus status,
+    size_t qr_code_count) {
+  using BarcodeDetectionStatus =
+      wallet::WalletablePassBarcodeDetector::BarcodeDetectionStatus;
+  switch (status) {
+    case BarcodeDetectionStatus::kImagesNotFound:
+      return QrCodeDetectionResult::kImagesNotFound;
+    case BarcodeDetectionStatus::kDetectorUnavailable:
+      return QrCodeDetectionResult::kDetectorUnavailable;
+    case BarcodeDetectionStatus::kSuccess:
+      break;
+  }
+  if (qr_code_count == 0) {
+    return QrCodeDetectionResult::kQrCodeNotFound;
+  }
+  return qr_code_count == 1 ? QrCodeDetectionResult::kSingleQrCodeFound
+                            : QrCodeDetectionResult::kMultipleQrCodesFound;
+}
+
 }  // namespace
 
 ContentFacilitatedPaymentsDriverFactory::
@@ -133,20 +153,28 @@ void ContentFacilitatedPaymentsDriverFactory::OnBarcodesDetected(
     content::WeakDocumentPtr document,
     QrCodeHeuristicSignals heuristic_signals,
     int check_index,
+    wallet::WalletablePassBarcodeDetector::BarcodeDetectionStatus status,
     std::vector<wallet::WalletBarcode> barcodes) {
   is_evaluating_qr_code_ = false;
 
   // Only QR codes are requested, but are checked again in case a platform
   // detector ignores the request.
-  const bool has_qr_code =
-      std::ranges::any_of(barcodes, [](const wallet::WalletBarcode& barcode) {
+  const size_t qr_code_count =
+      std::ranges::count_if(barcodes, [](const wallet::WalletBarcode& barcode) {
         return barcode.format == wallet::WalletBarcodeFormat::QR_CODE;
       });
+  const bool has_qr_code = qr_code_count > 0;
 
   // Logged before the page checks below, since they describe the finished
   // decoding pass even if the page has since changed. The signals and the
   // check index are bound when the pass starts for the same reason.
-  LogQrCodeHeuristicSignals(heuristic_signals, has_qr_code);
+  LogQrCodeDetectionResult(GetQrCodeDetectionResult(status, qr_code_count));
+  // A pass whose detector was unavailable says nothing about whether the
+  // signals predict a QR code, so it would skew the precision of the rule.
+  if (status != wallet::WalletablePassBarcodeDetector::BarcodeDetectionStatus::
+                    kDetectorUnavailable) {
+    LogQrCodeHeuristicSignals(heuristic_signals, has_qr_code);
+  }
   if (has_qr_code) {
     LogQrCodeSuccessfulAttemptIndex(check_index);
   }

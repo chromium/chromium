@@ -4,6 +4,10 @@
 
 #include "components/wallet/content/browser/content_walletable_pass_ingestion_controller.h"
 
+#include <utility>
+#include <vector>
+
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/wallet/content/browser/walletable_pass_barcode_detector_impl.h"
@@ -52,7 +56,15 @@ void ContentWalletablePassIngestionController::DetectBarcodes(
       mojom::ImageExtractionOptions::New(kMinImageSize, kMaxAspectRatio,
                                          /*include_canvas=*/false),
       // Passes may use any barcode format.
-      /*barcode_formats=*/{}, std::move(callback));
+      /*barcode_formats=*/{},
+      // Pass ingestion only needs the barcodes, not why there are none.
+      base::BindOnce(
+          [](BarcodeDetectionCallback callback,
+             WalletablePassBarcodeDetector::BarcodeDetectionStatus,
+             std::vector<WalletBarcode> barcodes) {
+            std::move(callback).Run(std::move(barcodes));
+          },
+          std::move(callback)));
 }
 
 std::string ContentWalletablePassIngestionController::GetPageTitle() const {
