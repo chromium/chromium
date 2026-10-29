@@ -15,6 +15,8 @@ export class TestPerformanceMetricsProxy extends TestBrowserProxy implements
       'recordDiscardRingTreatmentEnabledChanged',
       'recordExceptionListAction',
       'recordPerformanceInterventionToggleButtonChanged',
+      'recordHoverCardImagesEnabledChanged',
+      'recordHoverCardMemoryUsageEnabledChanged',
     ]);
   }
 
@@ -43,5 +45,13 @@ export class TestPerformanceMetricsProxy extends TestBrowserProxy implements
   recordPerformanceInterventionToggleButtonChanged(enabled: boolean) {
     this.methodCalled(
         'recordPerformanceInterventionToggleButtonChanged', enabled);
+  }
+
+  recordHoverCardImagesEnabledChanged(enabled: boolean) {
+    this.methodCalled('recordHoverCardImagesEnabledChanged', enabled);
+  }
+
+  recordHoverCardMemoryUsageEnabledChanged(enabled: boolean) {
+    this.methodCalled('recordHoverCardMemoryUsageEnabledChanged', enabled);
   }
 }

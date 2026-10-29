@@ -62,6 +62,8 @@ export interface PerformanceMetricsProxy {
   recordDiscardRingTreatmentEnabledChanged(enabled: boolean): void;
   recordExceptionListAction(action: MemorySaverModeExceptionListAction): void;
   recordPerformanceInterventionToggleButtonChanged(enabled: boolean): void;
+  recordHoverCardImagesEnabledChanged(enabled: boolean): void;
+  recordHoverCardMemoryUsageEnabledChanged(enabled: boolean): void;
 }
 
 export class PerformanceMetricsProxyImpl implements PerformanceMetricsProxy {
@@ -98,6 +100,16 @@ export class PerformanceMetricsProxyImpl implements PerformanceMetricsProxy {
   recordPerformanceInterventionToggleButtonChanged(enabled: boolean): void {
     chrome.metricsPrivate.recordBoolean(
         'PerformanceControls.Intervention.SettingsChangeNotification', enabled);
+  }
+
+  recordHoverCardImagesEnabledChanged(enabled: boolean): void {
+    chrome.metricsPrivate.recordBoolean(
+        'Settings.HoverCards.ImagePreview.Enabled', enabled);
+  }
+
+  recordHoverCardMemoryUsageEnabledChanged(enabled: boolean): void {
+    chrome.metricsPrivate.recordBoolean(
+        'Settings.HoverCards.MemoryUsage.Enabled', enabled);
   }
 
   static getInstance(): PerformanceMetricsProxy {

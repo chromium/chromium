@@ -7,11 +7,13 @@ import './battery_page.js';
 import './memory_page.js';
 import './performance_page.js';
 import './speed_page.js';
+import './tab_hover_preview_page.js';
 
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {loadTimeData} from '../i18n_setup.js';
 import {PerformanceBrowserProxyImpl} from '../performance_page/performance_browser_proxy.js';
 import {routes} from '../route.js';
 import {RouteObserverMixinLit} from '../router.js';
@@ -50,15 +52,26 @@ export class SettingsPerformancePageIndexElement extends
   static override get properties() {
     return {
       showBatterySettings_: {type: Boolean},
+      settingsRefresh2026Enabled_: {type: Boolean},
     };
   }
 
   protected accessor showBatterySettings_: boolean = false;
+  protected accessor settingsRefresh2026Enabled_: boolean =
+      loadTimeData.getString('settingsRefresh2026') !== '';
 
   private showDefaultViews_() {
+    const defaultViews: string[] = [
+      'performance',
+      'memory',
+      'battery',
+      'speed',
+    ];
+    if (this.settingsRefresh2026Enabled_) {
+      defaultViews.push('tab-hover-preview');
+    }
     this.$.viewManager.switchViews(
-        ['performance', 'memory', 'battery', 'speed'], 'no-animation',
-        'no-animation');
+        defaultViews, 'no-animation', 'no-animation');
   }
 
   override connectedCallback() {

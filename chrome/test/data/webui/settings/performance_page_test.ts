@@ -5,8 +5,8 @@
 import 'chrome://settings/settings.js';
 
 import type {CrIconButtonElement} from 'chrome://settings/lazy_load.js';
-import type {ExceptionEditDialogElement, ExceptionEntryElement, ExceptionListElement, ExceptionTabbedAddDialogElement, SettingsPerformancePageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {convertDateToWindowsEpoch, DISCARD_RING_PREF, MemorySaverModeExceptionListAction, PERFORMANCE_INTERVENTION_NOTIFICATION_PREF, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, PrefsBrowserProxy, PrefService, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
+import type {ExceptionEditDialogElement, ExceptionEntryElement, ExceptionListElement, ExceptionTabbedAddDialogElement, SettingsPerformancePageElement, SettingsTabHoverPreviewPageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {convertDateToWindowsEpoch, DISCARD_RING_PREF, HOVER_CARD_IMAGES_PREF, HOVER_CARD_MEMORY_USAGE_PREF, loadTimeData, MemorySaverModeExceptionListAction, PERFORMANCE_INTERVENTION_NOTIFICATION_PREF, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, PrefsBrowserProxy, PrefService, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -32,6 +32,16 @@ const INITIAL_PREFS: chrome.settingsPrivate.PrefObject[] = [
   },
   {
     key: PERFORMANCE_INTERVENTION_NOTIFICATION_PREF,
+    type: chrome.settingsPrivate.PrefType.BOOLEAN,
+    value: false,
+  },
+  {
+    key: HOVER_CARD_IMAGES_PREF,
+    type: chrome.settingsPrivate.PrefType.BOOLEAN,
+    value: false,
+  },
+  {
+    key: HOVER_CARD_MEMORY_USAGE_PREF,
     type: chrome.settingsPrivate.PrefType.BOOLEAN,
     value: false,
   },
@@ -129,6 +139,58 @@ suite('PerformanceIntervention', function() {
     assertFalse(
         prefService.getPref<boolean>(PERFORMANCE_INTERVENTION_NOTIFICATION_PREF)
             .value);
+  });
+});
+
+suite('TabHoverPreviewPage', function() {
+  let tabHoverPreviewPage: SettingsTabHoverPreviewPageElement;
+  let performanceMetricsProxy: TestPerformanceMetricsProxy;
+  let prefsBrowserProxy: TestPrefsBrowserProxy;
+  let prefService: PrefService;
+
+  setup(async function() {
+    loadTimeData.overrideValues({showHoverCardImagesOption: true});
+    performanceMetricsProxy = new TestPerformanceMetricsProxy();
+    PerformanceMetricsProxyImpl.setInstance(performanceMetricsProxy);
+
+    prefsBrowserProxy = new TestPrefsBrowserProxy(INITIAL_PREFS);
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    tabHoverPreviewPage =
+        document.createElement('settings-tab-hover-preview-page');
+    document.body.appendChild(tabHoverPreviewPage);
+    await microtasksFinished();
+  });
+
+  test('HoverCardImagesToggleChangeState', async function() {
+    await prefService.setPrefValue(HOVER_CARD_IMAGES_PREF, false);
+    const toggle = tabHoverPreviewPage.shadowRoot
+                       .querySelector<SettingsToggleButtonElement>(
+                           '#hoverCardImagesToggle');
+    assertTrue(!!toggle);
+
+    toggle.click();
+    const enabled = await performanceMetricsProxy.whenCalled(
+        'recordHoverCardImagesEnabledChanged');
+    assertTrue(enabled);
+    assertTrue(prefService.getPref<boolean>(HOVER_CARD_IMAGES_PREF).value);
+  });
+
+  test('HoverCardMemoryUsageToggleChangeState', async function() {
+    await prefService.setPrefValue(HOVER_CARD_MEMORY_USAGE_PREF, false);
+    const toggle = tabHoverPreviewPage.$.hoverCardMemoryUsageToggle;
+    assertTrue(!!toggle);
+
+    toggle.click();
+    const enabled = await performanceMetricsProxy.whenCalled(
+        'recordHoverCardMemoryUsageEnabledChanged');
+    assertTrue(enabled);
+    assertTrue(
+        prefService.getPref<boolean>(HOVER_CARD_MEMORY_USAGE_PREF).value);
   });
 });
 

@@ -25,11 +25,13 @@ export function getHtml(this: PerformancePageElement) {
             $i18n{discardRingTreatmentEnabledDescriptionWithLearnLink}"
       @sub-label-link-clicked="${this.onDiscardRingTreatmentSubLabelLinkClicked_}">
   </settings-toggle-button>
-  <cr-link-row
-      label="$i18n{tabHoverPreviewCardLinkTitle}"
-      sub-label="$i18n{tabHoverPreviewCardLinkSubtitle}"
-      @click="${this.onTabHoverPreviewCardLinkClick_}" external>
-  </cr-link-row>
+  ${!this.settingsRefresh2026Enabled_ ? html`
+    <cr-link-row
+        label="$i18n{tabHoverPreviewCardLinkTitle}"
+        sub-label="$i18n{tabHoverPreviewCardLinkSubtitle}"
+        @click="${this.onTabHoverPreviewCardLinkClick_}" external>
+    </cr-link-row>
+  ` : ''}
   <tab-discard-exception-list id="exceptionList">
   </tab-discard-exception-list>
 </settings-section>

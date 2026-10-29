@@ -317,6 +317,8 @@ build_webui("build") {
     "performance_page/tab_discard/exception_tabbed_add_dialog.html.ts",
     "performance_page/tab_discard/exception_tabbed_add_dialog.ts",
     "performance_page/tab_discard/exception_validation_mixin.ts",
+    "performance_page/tab_hover_preview_page.html.ts",
+    "performance_page/tab_hover_preview_page.ts",
     "people_page/account_page.html.ts",
     "people_page/account_page.ts",
     "people_page/google_services_page.html.ts",

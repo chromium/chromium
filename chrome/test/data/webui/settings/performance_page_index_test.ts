@@ -7,7 +7,7 @@ import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {SettingsPerformancePageIndexElement} from 'chrome://settings/settings.js';
-import {BatterySaverModeState, MemorySaverModeAggressiveness, MemorySaverModeState, PerformanceBrowserProxyImpl, PrefsBrowserProxy, PrefService, Router, routes, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
+import {BatterySaverModeState, HOVER_CARD_IMAGES_PREF, HOVER_CARD_MEMORY_USAGE_PREF, loadTimeData, MemorySaverModeAggressiveness, MemorySaverModeState, PerformanceBrowserProxyImpl, PrefsBrowserProxy, PrefService, Router, routes, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -20,6 +20,7 @@ suite('PerformancePageIndex', function() {
   let prefsBrowserProxy: TestPrefsBrowserProxy;
 
   setup(async function() {
+    loadTimeData.overrideValues({settingsRefresh2026: ''});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     browserProxy = new TestPerformanceBrowserProxy();
     PerformanceBrowserProxyImpl.setInstance(browserProxy);
@@ -70,6 +71,16 @@ suite('PerformancePageIndex', function() {
         type: chrome.settingsPrivate.PrefType.LIST,
         value: [],
       },
+      {
+        key: HOVER_CARD_IMAGES_PREF,
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
+      {
+        key: HOVER_CARD_MEMORY_USAGE_PREF,
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
     ]);
     PrefsBrowserProxy.setInstance(prefsBrowserProxy);
     PrefService.resetInstanceForTesting();
@@ -93,6 +104,21 @@ suite('PerformancePageIndex', function() {
     Router.getInstance().navigateTo(routes.PERFORMANCE);
     await microtasksFinished();
     assertActiveViews(['performance', 'memory', 'battery', 'speed']);
+  });
+
+  test('Routing_SettingsRefresh2026', async function() {
+    loadTimeData.overrideValues({settingsRefresh2026: 'settings-refresh-2026'});
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    index = document.createElement('settings-performance-page-index');
+    document.body.appendChild(index);
+    await microtasksFinished();
+
+    for (const id
+             of ['performance', 'tab-hover-preview', 'memory', 'battery',
+                 'speed']) {
+      assertTrue(
+          !!index.$.viewManager.querySelector(`#${id}.active[slot=view]`));
+    }
   });
 
   test('BatteryVisibility_HasBattery', async function() {

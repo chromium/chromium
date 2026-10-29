@@ -60,6 +60,15 @@ export class SettingsPerformancePageElement extends
     return getHtml.bind(this)();
   }
 
+  static override get properties() {
+    return {
+      settingsRefresh2026Enabled_: {type: Boolean},
+    };
+  }
+
+  protected accessor settingsRefresh2026Enabled_: boolean =
+      loadTimeData.getString('settingsRefresh2026') !== '';
+
   private metricsProxy_: PerformanceMetricsProxy =
       PerformanceMetricsProxyImpl.getInstance();
 

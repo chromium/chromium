@@ -12,6 +12,11 @@ export function getHtml(this: PerformancePageIndexElement) {
   <settings-performance-page slot="view" id="performance">
   </settings-performance-page>
 
+  ${this.settingsRefresh2026Enabled_ ? html`
+    <settings-tab-hover-preview-page slot="view" id="tab-hover-preview">
+    </settings-tab-hover-preview-page>
+  ` : ''}
+
   <settings-memory-page slot="view" id="memory"></settings-memory-page>
 
   <settings-battery-page slot="view" id="battery"
