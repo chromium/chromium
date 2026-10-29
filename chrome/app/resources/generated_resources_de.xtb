@@ -2382,7 +2382,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2801954693771979815">Bildschirmgröße</translation>
 <translation id="2802557211515765772">Es gibt keine verwalteten Drucker.</translation>
 <translation id="2802911274872454492">Einstellung für Touch-Gesten: <ph name="SELECTED_GESTURE" /></translation>
-<translation id="2803242359099950130">Wenn du mit dieser Website interagieren möchtest, pausiere die aktuelle Aufgabe oder warte, bis Gemini fertig ist</translation>
+<translation id="2803242359099950130">Zur Interaktion mit dieser Website pausiere die aktuelle Aufgabe oder warte, bis Gemini fertig ist</translation>
 <translation id="2803313416453193357">Ordner öffnen</translation>
 <translation id="2803719750464280163">Bitte bestätige, dass <ph name="PASSKEY" /> der auf dem Bluetooth-Gerät „<ph name="DEVICE" />“ angezeigte Passkey ist.</translation>
 <translation id="2804043232879091219">Der alternative Browser konnte nicht geöffnet werden</translation>
@@ -9606,7 +9606,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="831207808878314375">Definition</translation>
 <translation id="8312841338723044391">LIVE</translation>
 <translation id="8313308349366087671">Anwendungsoptionen</translation>
-<translation id="8313599942510782709">Deine Aufgabe wird noch ausgeführt</translation>
+<translation id="8313599942510782709">Deine Aufgabe wird aktuell ausgeführt</translation>
 <translation id="8314219340741508325">Das heruntergeladene Update enthält nicht den erwarteten Inhalt.</translation>
 <translation id="8314381333424235892">Erweiterung fehlt oder wurde deinstalliert</translation>
 <translation id="831440797644402910">Dieser Ordner kann nicht geöffnet werden</translation>

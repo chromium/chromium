@@ -10819,7 +10819,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="9222839391870847423">Duration: <ph name="DURATION" /></translation>
 <translation id="9223158240932249417">Not allowed to show text actions</translation>
 <translation id="923306663772315007">Send to your &amp;device</translation>
-<translation id="923467487918828349">Show All</translation>
+<translation id="923467487918828349">Show all</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{To manage it, open Extensions}other{To manage them, open Extensions}}</translation>
 <translation id="924818813611903184">Manage languages in Chrome OS settings</translation>
 <translation id="925575170771547168">This will delete <ph name="TOTAL_USAGE" /> of data stored by sites</translation>

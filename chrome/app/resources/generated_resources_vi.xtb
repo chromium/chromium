@@ -982,7 +982,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> có thể không tự cập nhật được</translation>
 <translation id="1735983780784385591">Được nhập từ Linux</translation>
 <translation id="173628468822554835">Đã hiểu. Theo mặc định, các trang web mới mà bạn truy cập sẽ không gửi thông báo cho bạn.</translation>
-<translation id="1737228213718001685">Đang xử lý việc cần làm của bạn</translation>
+<translation id="1737228213718001685">Đang thực hiện nhiệm vụ cho bạn</translation>
 <translation id="1737968601308870607">Lỗi tệp</translation>
 <translation id="1740414789702358061"><ph name="SITE_ACCESS" />. Chọn để thay đổi các quyền của trang web</translation>
 <translation id="1741190788710022490">Sạc thích ứng</translation>
@@ -3261,7 +3261,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3450056559545492516">Hiện thông báo của hệ thống về các mẹo và tính năng của Chrome</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – Bạn đang chia sẻ thẻ này với Gemini</translation>
 <translation id="345078987193237421">Nếu bạn bật thì các ứng dụng, trang web có quyền truy cập camera và các dịch vụ hệ thống sẽ có thể sử dụng camera</translation>
-<translation id="345163758690017738">Đang xử lý việc cần làm của bạn…</translation>
+<translation id="345163758690017738">Đang thực hiện nhiệm vụ cho bạn…</translation>
 <translation id="3452999110156026232">Phiên truy cập của cha mẹ</translation>
 <translation id="3453082738208775226">Dọn dẹp bộ nhớ ngoại tuyến?</translation>
 <translation id="3453597230179205517">Quyền truy cập thông tin vị trí đang bị chặn</translation>
@@ -6332,7 +6332,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5809840528400421362">Mã PIN phải bao gồm 6 chữ số</translation>
 <translation id="5812674658566766066">Mở rộng tất cả</translation>
 <translation id="5814776875237242830">Để chia sẻ, tham gia và cộng tác trong nhóm thẻ, vui lòng đồng bộ hoá nhóm thẻ của bạn trong phần Cài đặt</translation>
-<translation id="5815332505145266563">Đang xử lý việc cần làm của bạn...</translation>
+<translation id="5815332505145266563">Đang thực hiện nhiệm vụ cho bạn…</translation>
 <translation id="5816434091619127343">Các thay đổi đã yêu cầu đối với máy in sẽ làm cho máy in đó không sử dụng được.</translation>
 <translation id="581659025233126501">Bật tính năng đồng bộ hóa</translation>
 <translation id="5817918615728894473">Ghép nối</translation>
