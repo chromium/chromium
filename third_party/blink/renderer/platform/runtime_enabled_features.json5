@@ -8083,12 +8083,12 @@
       //
       // The base::Feature is enabled by default, and serves as a kill switch
       // for the browser-side implementation. The Blink side follows the
-      // "test" status unless the base::Feature is overridden, in which case
-      // both sides follow the override. This keeps the renderer and browser
-      // consistent, so that the browser can reject split requests from a
-      // renderer when the base::Feature is disabled.
+      // RuntimeEnabledFeature status unless the base::Feature is overridden,
+      // in which case both sides follow the override. This keeps the renderer
+      // and browser consistent, so that the browser can reject split requests
+      // from a renderer when the base::Feature is disabled.
       name: "WindowOpenSplitTab",
-      status: "test",
+      status: "experimental",
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
     },
