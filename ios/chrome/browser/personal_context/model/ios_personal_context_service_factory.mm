@@ -21,15 +21,15 @@ using personal_context::PersonalContextServiceImpl;
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildPersonalContextService(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildPersonalContextService(ProfileIOS& profile) {
   if (!base::FeatureList::IsEnabled(
           personal_context::features::kPersonalContext)) {
     return nullptr;
   }
 
   return std::make_unique<PersonalContextServiceImpl>(
-      profile->GetSharedURLLoaderFactory(),
-      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
+      profile.GetSharedURLLoaderFactory(),
+      IdentityManagerFactory::GetForProfile(profile), profile.GetPrefs(),
       DeviceInfoSyncServiceFactory::GetForProfile(profile),
       IOSPersonalContextEligibilityServiceFactory::GetForProfile(profile));
 }
@@ -37,7 +37,7 @@ std::unique_ptr<KeyedService> BuildPersonalContextService(ProfileIOS* profile) {
 }  // namespace
 
 // static
-IOSPersonalContextServiceFactory::TestingFactory
+IOSPersonalContextServiceFactory::TestingFactoryByRef
 IOSPersonalContextServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildPersonalContextService);
 }
@@ -56,6 +56,6 @@ IOSPersonalContextServiceFactory::IOSPersonalContextServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 IOSPersonalContextServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildPersonalContextService(profile);
 }
