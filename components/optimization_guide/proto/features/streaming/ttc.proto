@@ -52,9 +52,15 @@ message TtcServerFrame {
     ToolCall tool_call = 3;
     GoAway go_away = 4;
     ServerErrorNotification server_error = 5;
-    InterruptionNotice interrupted = 6;
-    TurnComplete turn_complete = 7;
+
+    // TODO(crbug.com/578715754): interrupted and turn_complete are deprecated in favor
+    // of ModelTurnStateUpdate below. Remove once client is updated.
+    InterruptionNotice interrupted = 6 [deprecated = true];
+    TurnComplete turn_complete = 7 [deprecated = true];
+
     JournalEvent journal_event = 9;
+    ModelTurnStateUpdate model_turn_state_update = 10;
+    UserTurnStateUpdate user_turn_state_update = 11;
   }
 
   // Server timestamp in milliseconds since the Unix epoch (Jan 1, 1970 UTC).
@@ -139,10 +145,14 @@ message ServerContent {
   string output_transcription = 3;
 }
 
+// TODO(crbug.com/578715754): Deprecated in favor of ModelTurnStateUpdate
+// below. Remove once client is updated.
 // Signals that model generation was interrupted (e.g. user barge-in)
 // and that client audio playback should immediately cease.
 message InterruptionNotice {}
 
+// TODO(crbug.com/578715754): Deprecated in favor of ModelTurnStateUpdate
+// below. Remove once client is updated.
 // Signals that the model has completed its turn.
 message TurnComplete {
   // Resource usage metrics for the completed turn.
@@ -155,6 +165,57 @@ message TurnComplete {
   }
 
   TurnMetrics turn_metrics = 1;
+}
+
+// Signals a change in the state of the model's current turn.
+message ModelTurnStateUpdate {
+  enum State {
+    STATE_UNSPECIFIED = 0;
+
+    // The model has started generating a response. Marks the start of a model
+    // turn.
+    TURN_STARTED = 1;
+
+    // The model has finished generating a response. Note that the client may
+    // still be playing back output audio. This will not be sent when
+    // INTERRUPTED is sent.
+    GENERATION_COMPLETED = 2;
+
+    // Model generation was interrupted (e.g. user barge-in).
+    INTERRUPTED = 3;
+
+    // The model has completed its turn. When completed naturally, this is sent
+    // after audio has finished playing on the client (when
+    // playback_status_reporting is enabled, otherwise sent after generation
+    // ends). When interrupted, this is sent immediately after the interrupt is
+    // detected.
+    TURN_COMPLETED = 4;
+  }
+
+  // The new state of the model's turn.
+  State state = 1;
+
+  // Identifier of the model generation this update applies to.
+  int64 generation_id = 2;
+}
+
+// Signals a change in the state of the user's current turn. Note that a user
+// turn can start while a model turn is still in progress. In this case the
+// model interrupt and turn_completed states follow the user turn_start
+// message.
+message UserTurnStateUpdate {
+  enum State {
+    STATE_UNSPECIFIED = 0;
+
+    // The user has started their turn (e.g. started speaking).
+    TURN_STARTED = 1;
+
+    // The user has completed their turn.
+    TURN_COMPLETED = 2;
+  }
+
+  // The new state of the user's turn.
+  State state = 1;
 }
 
 // Mid-stream tab switch / page navigation context update.
