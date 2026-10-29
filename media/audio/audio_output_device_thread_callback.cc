@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/audio_device_stats_reporter.h"
+#include "media/audio/audio_trace_utils.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/media_buildflags.h"
@@ -39,6 +40,9 @@ AudioOutputDeviceThreadCallback::AudioOutputDeviceThreadCallback(
 #if !BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
   CHECK(!audio_parameters_.IsBitstreamFormat());
 #endif
+
+  trace_flow_base_id_ =
+      GetAudioTraceFlowBaseId(shared_memory_region_.GetGUID());
 }
 
 AudioOutputDeviceThreadCallback::~AudioOutputDeviceThreadCallback() {
@@ -81,8 +85,11 @@ void AudioOutputDeviceThreadCallback::Process(uint32_t control_signal) {
   base::TimeTicks delay_timestamp =
       base::TimeTicks() + base::Microseconds(buffer->params.delay_timestamp_us);
 
-  TRACE_EVENT("audio", "AudioOutputDevice::FireRenderCallback", "callback_num",
-              callback_num_, "delay_timestamp (ms)",
+  // Truncate to match `SyncReader`'s 32-bit buffer index, which wraps.
+  TRACE_EVENT("audio", "AudioOutputDevice::FireRenderCallback",
+              AudioBufferFlow(trace_flow_base_id_,
+                              static_cast<uint32_t>(callback_num_)),
+              "callback_num", callback_num_, "delay_timestamp (ms)",
               (delay_timestamp - base::TimeTicks()).InMillisecondsF(),
               "playout_delay (ms)", delay.InMillisecondsF());
   glitch_info.MaybeAddTraceEvent();

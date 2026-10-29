@@ -121,6 +121,10 @@ class InputSyncWriter final : public InputController::SyncWriter {
   base::UnsafeSharedMemoryRegion shared_memory_region_;
   base::WritableSharedMemoryMapping shared_memory_mapping_;
 
+  // Base of the trace flow IDs shared with the renderer. See
+  // `media::GetAudioTraceFlowBaseId()`.
+  uint64_t trace_flow_base_id_ = 0;
+
   // The size in bytes of a single audio segment in the shared memory.
   const uint32_t shared_memory_segment_size_;
 

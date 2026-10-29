@@ -21,6 +21,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "media/audio/audio_device_thread.h"
+#include "media/audio/audio_trace_utils.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_switches.h"
 #include "services/audio/output_glitch_counter.h"
@@ -69,6 +70,9 @@ SyncReader::SyncReader(
   shared_memory_mapping_ = shared_memory_region_.Map();
   if (shared_memory_region_.IsValid() && shared_memory_mapping_.IsValid() &&
       base::CancelableSyncSocket::CreatePair(&socket_, foreign_socket)) {
+    trace_flow_base_id_ =
+        media::GetAudioTraceFlowBaseId(shared_memory_region_.GetGUID());
+
     auto buffer_span = shared_memory_mapping_.GetMemoryAsSpan<uint8_t>();
     auto audio_data =
         buffer_span.subspan<sizeof(media::AudioOutputBufferParameters)>();
@@ -120,7 +124,9 @@ base::UnsafeSharedMemoryRegion SyncReader::TakeSharedMemoryRegion() {
 void SyncReader::RequestMoreData(base::TimeDelta delay,
                                  base::TimeTicks delay_timestamp,
                                  const media::AudioGlitchInfo& glitch_info) {
-  TRACE_EVENT("audio", "SyncReader::RequestMoreData", "this",
+  TRACE_EVENT("audio", "SyncReader::RequestMoreData",
+              media::AudioBufferFlow(trace_flow_base_id_, buffer_index_ + 1),
+              "buffer_index", buffer_index_ + 1, "this",
               static_cast<void*>(this), "delay_timestamp (ms)",
               (delay_timestamp - base::TimeTicks()).InMillisecondsF(),
               "playout_delay (ms)", delay.InMillisecondsF());
@@ -223,7 +229,8 @@ void SyncReader::Close() {
 }
 
 bool SyncReader::WaitUntilDataIsReady() {
-  TRACE_EVENT0("audio", "SyncReader::WaitUntilDataIsReady");
+  TRACE_EVENT("audio", "SyncReader::WaitUntilDataIsReady", "buffer_index",
+              buffer_index_);
   base::TimeDelta timeout = maximum_wait_time_;
   const base::TimeTicks start_time = base::TimeTicks::Now();
   const base::TimeTicks finish_time = start_time + timeout;
@@ -261,7 +268,9 @@ bool SyncReader::WaitUntilDataIsReady() {
   // Receive timed out or another error occurred.  Receive can timeout if the
   // renderer is unable to deliver audio data within the allotted time.
   if (!bytes_received || renderer_buffer_index != buffer_index_) {
-    TRACE_EVENT_INSTANT("audio", "SyncReader::Read timed out");
+    TRACE_EVENT_INSTANT("audio", "SyncReader::Read timed out", "expected_index",
+                        buffer_index_, "renderer_index", renderer_buffer_index,
+                        "bytes_received", bytes_received);
 
     base::TimeDelta time_since_start = base::TimeTicks::Now() - start_time;
     base::UmaHistogramCustomTimes("Media.AudioOutputControllerDataNotReady",
@@ -270,6 +279,12 @@ bool SyncReader::WaitUntilDataIsReady() {
     return false;
   }
 
+  // End the flow when the data arrives, not when we start waiting. The
+  // renderer might only start rendering after we start waiting, e.g. when
+  // `OutputController` requests data right before reading it.
+  TRACE_EVENT_INSTANT(
+      "audio", "SyncReader::DataReady",
+      media::AudioBufferTerminatingFlow(trace_flow_base_id_, buffer_index_));
   return true;
 }
 

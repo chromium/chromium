@@ -61,6 +61,10 @@ class MEDIA_EXPORT AudioOutputDeviceThreadCallback
   std::unique_ptr<media::AudioBus> output_bus_;
   uint64_t callback_num_ = 0;
 
+  // Base of the trace flow IDs shared with the audio service. See
+  // `GetAudioTraceFlowBaseId()`.
+  uint64_t trace_flow_base_id_ = 0;
+
   // Used to record a UMA stat for the audio output stream duration form the
   // moment it successfully started to the moment it stopped - as seen by the
   // renderer process (which equals to |this| lifetime duration).

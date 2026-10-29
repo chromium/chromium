@@ -25,6 +25,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "media/audio/audio_manager_base.h"
+#include "media/audio/audio_trace_utils.h"
 #include "media/base/audio_bus.h"
 #include "media/base/media_switches.h"
 
@@ -99,6 +100,10 @@ class AudioInputDevice::AudioThreadCallback
   uint32_t last_buffer_id_;
   std::vector<std::unique_ptr<const media::AudioBus>> audio_buses_;
   raw_ptr<CaptureCallback> capture_callback_;
+
+  // Base of the trace flow IDs shared with the audio service. See
+  // `GetAudioTraceFlowBaseId()`.
+  uint64_t trace_flow_base_id_ = 0;
 
   // Used for informing AudioInputDevice that we have gotten data, i.e. the
   // stream is alive. |got_data_callback_| is run every
@@ -400,6 +405,9 @@ AudioInputDevice::AudioThreadCallback::AudioThreadCallback(
   // CHECK that the shared memory is large enough. The memory allocated must
   // be at least as large as expected.
   CHECK_LE(memory_length_, shared_memory_region_.GetSize());
+
+  trace_flow_base_id_ =
+      GetAudioTraceFlowBaseId(shared_memory_region_.GetGUID());
 }
 
 AudioInputDevice::AudioThreadCallback::~AudioThreadCallback() {
@@ -439,13 +447,17 @@ void AudioInputDevice::AudioThreadCallback::MapSharedMemory() {
 }
 
 void AudioInputDevice::AudioThreadCallback::Process(uint32_t pending_data) {
-  TRACE_EVENT_BEGIN("audio", "AudioInputDevice::AudioThreadCallback::Process");
   // The shared memory represents parameters, size of the data buffer and the
   // actual data buffer containing audio data. Map the memory into this
   // structure and parse out parameters and the data area.
   base::span<uint8_t> span = shared_memory_mapping_.GetMemoryAsSpan<uint8_t>();
   span = span.subspan(current_segment_id_ * segment_length_, segment_length_);
   AudioInputBuffer* buffer = reinterpret_cast<AudioInputBuffer*>(span.data());
+
+  TRACE_EVENT_BEGIN(
+      "audio", "AudioInputDevice::AudioThreadCallback::Process",
+      AudioBufferTerminatingFlow(trace_flow_base_id_, buffer->params.id),
+      "buffer_id", buffer->params.id);
 
   // Usually this will be equal but in the case of low sample rate (e.g. 8kHz,
   // the buffer may be bigger (on mac at least)).
