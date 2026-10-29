@@ -163,14 +163,10 @@ class ClosePromoButton : public views::ImageButton {
                                                 : views::kIcCloseOldIcon,
             cros_tokens::kCrosSysOnSurface, kIconSize));
 
+    StyleUtil::SetUpInkDropForButton(this);
     constexpr float kCloseButtonFocusRingHaloThickness = 1.25f;
     views::FocusRing::Get(this)->SetHaloThickness(
         kCloseButtonFocusRingHaloThickness);
-  }
-
-  void OnThemeChanged() override {
-    views::ImageButton::OnThemeChanged();
-    StyleUtil::SetUpInkDropForButton(this);
     views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysOnSurface);
   }
 };
