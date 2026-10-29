@@ -90,32 +90,6 @@ void CanvasResource::DropRefOnOwningThread(
   raw_resource->OnRefReturned(std::move(resource));
 }
 
-viz::TransferableResource CanvasResource::PrepareTransferableResource() {
-  TRACE_EVENT0("blink", "CanvasResource::PrepareTransferableResource");
-
-  auto resource = viz::TransferableResource::Make(
-      GetSharedImage(), GetTransferableResourceSource(), sync_token());
-
-  resource.hdr_metadata = GetHdrMetadata();
-
-  // When the compositor returns an accelerated resource, it provides a sync
-  // token to allow subsequent accelerated raster operations to properly
-  // sequence their usage of the resource within the GPU service. However, if
-  // the compositor is accelerated but raster is *not*, sync tokens are not
-  // sufficient for ordering: We must instead ensure that the compositor's
-  // GPU-side reads have actually *completed* before the compositor returns the
-  // resource for reuse, as after that point subsequent raster operations will
-  // start writing to the resource via the CPU without any subsequent
-  // synchronization with the GPU service.
-  if (!UsesAcceleratedRaster() && CreatesAcceleratedTransferableResources()) {
-    DCHECK(SharedGpuContext::IsGpuCompositingEnabled());
-    resource.synchronization_type =
-        viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
-  }
-
-  return resource;
-}
-
 // CanvasResourceSharedImage
 //==============================================================================
 
