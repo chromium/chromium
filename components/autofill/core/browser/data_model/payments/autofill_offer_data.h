@@ -48,12 +48,12 @@ class AutofillOfferData {
                     std::string offer_short_title,
                     base::Time issue_time);
 
-  // TODO(crbug.com/40932427): Refactor this class to ensure the correct access
-  // specifiers and move constructors and move assignment constructors.
   AutofillOfferData();
   ~AutofillOfferData();
   AutofillOfferData(const AutofillOfferData&);
+  AutofillOfferData(AutofillOfferData&&);
   AutofillOfferData& operator=(const AutofillOfferData&);
+  AutofillOfferData& operator=(AutofillOfferData&&);
   bool operator==(const AutofillOfferData& other_offer_data) const;
 
   // Compares two AutofillOfferData based on their member fields. Returns 0 if

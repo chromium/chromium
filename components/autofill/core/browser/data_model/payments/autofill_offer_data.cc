@@ -38,8 +38,12 @@ AutofillOfferData::~AutofillOfferData() = default;
 
 AutofillOfferData::AutofillOfferData(const AutofillOfferData&) = default;
 
+AutofillOfferData::AutofillOfferData(AutofillOfferData&&) = default;
+
 AutofillOfferData& AutofillOfferData::operator=(const AutofillOfferData&) =
     default;
+
+AutofillOfferData& AutofillOfferData::operator=(AutofillOfferData&&) = default;
 
 bool AutofillOfferData::operator==(
     const AutofillOfferData& other_offer_data) const {
