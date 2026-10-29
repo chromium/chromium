@@ -2436,11 +2436,79 @@ suite('OmniboxPopupSearchboxTest', function() {
      }));
      await microtasksFinished();
 
+     assertEquals(1, handler.getCallCount('revert'));
+     assertEquals(6, handler.getArgs('revert')[0]);
      assertEquals(1, handler.getCallCount('closeUI'));
      assertEquals(1, handler.getCallCount('logEscapeAction'));
      assertEquals(
          OmniboxEscapeAction.kBlur, handler.getArgs('logEscapeAction')[0]);
    }
+ });
+
+ test('EscapeStagedUnwinding_ElidedUrlSelectionRevertedOnClose', async () => {
+   // Clicking the omnibox selects the elided URL (`showFullUrl: false`,
+   // `userInputInProgress: false`) and opens the zero-prefix suggestions
+   // dropdown. Pressing Escape twice (1st closes dropdown, 2nd blurs and closes
+   // popup) must revert/clear the selection.
+   const permanentDisplayText = 'example.com';
+   const fullUrl = 'https://example.com/';
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     sequenceNumber: 12,
+     text: permanentDisplayText,
+     selection: {start: 0, end: permanentDisplayText.length},
+     userInputInProgress: false,
+     fullUrl: fullUrl,
+     isFocused: true,
+     permanentDisplayText: permanentDisplayText,
+     showFullUrl: false,
+   }));
+   await microtasksFinished();
+
+   searchbox.activeQueryId = 0;
+   searchbox.lastQueriedInput = '';
+   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+     queryId: 0,
+     input: '',
+     matches: [createSearchMatchForTesting()],
+   }));
+   await microtasksFinished();
+
+   assertTrue(searchbox.dropdownIsVisible);
+   assertEquals(0, searchbox.getInputElement().inputElement.selectionStart);
+   assertEquals(
+       permanentDisplayText.length,
+       searchbox.getInputElement().inputElement.selectionEnd);
+
+   // 1st Escape (Stage 2: `kClosePopup`) closes dropdown; selection remains.
+   await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+     key: 'Escape',
+     cancelable: true,
+   }));
+   await microtasksFinished();
+
+   assertFalse(searchbox.dropdownIsVisible);
+   assertEquals(0, handler.getCallCount('revert'));
+   assertEquals(0, handler.getCallCount('closeUI'));
+   assertEquals(1, handler.getCallCount('logEscapeAction'));
+   assertEquals(
+       OmniboxEscapeAction.kClosePopup, handler.getArgs('logEscapeAction')[0]);
+
+   handler.reset();
+   testProxy.handler.reset();
+
+   // 2nd Escape (Stage 4: `kBlur`) reverts selection and closes UI.
+   await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+     key: 'Escape',
+     cancelable: true,
+   }));
+   await microtasksFinished();
+
+   assertEquals(1, handler.getCallCount('revert'));
+   assertEquals(12, handler.getArgs('revert')[0]);
+   assertEquals(1, handler.getCallCount('closeUI'));
+   assertEquals(1, handler.getCallCount('logEscapeAction'));
+   assertEquals(
+       OmniboxEscapeAction.kBlur, handler.getArgs('logEscapeAction')[0]);
  });
 
  test('EscapeStagedUnwinding_UnelidedUrlClosesDirectly', async () => {
@@ -2470,6 +2538,7 @@ suite('OmniboxPopupSearchboxTest', function() {
    await microtasksFinished();
 
    assertEquals(1, handler.getCallCount('revert'));
+   assertEquals(9, handler.getArgs('revert')[0]);
    assertEquals(1, handler.getCallCount('closeUI'));
    assertEquals(1, handler.getCallCount('logEscapeAction'));
    assertEquals(
@@ -2651,13 +2720,15 @@ suite('OmniboxPopupSearchboxTest', function() {
    handler.reset();
    testProxy.handler.reset();
 
-   // 3rd Escape (Stage 4: kBlur) - closes UI.
+   // 3rd Escape (Stage 4: kBlur) - reverts selection and closes UI.
    await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
      key: 'Escape',
      cancelable: true,
    }));
    await microtasksFinished();
 
+   assertEquals(1, handler.getCallCount('revert'));
+   assertEquals(10, handler.getArgs('revert')[0]);
    assertEquals(1, handler.getCallCount('closeUI'));
    assertEquals(1, handler.getCallCount('logEscapeAction'));
    assertEquals(
@@ -2748,13 +2819,15 @@ suite('OmniboxPopupSearchboxTest', function() {
    handler.reset();
    testProxy.handler.reset();
 
-   // 3rd Escape (Stage 4: kBlur) - closes UI.
+   // 3rd Escape (Stage 4: kBlur) - reverts selection and closes UI.
    await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
      key: 'Escape',
      cancelable: true,
    }));
    await microtasksFinished();
 
+   assertEquals(1, handler.getCallCount('revert'));
+   assertEquals(11, handler.getArgs('revert')[0]);
    assertEquals(1, handler.getCallCount('closeUI'));
    assertEquals(1, handler.getCallCount('logEscapeAction'));
    assertEquals(
