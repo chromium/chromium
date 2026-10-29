@@ -299,16 +299,11 @@ base::DictValue NewTabPageUI::GetLoadTimeData(
       /*is_contextual_tasks=*/true);
   dict.Set("threadsUrl", threads_url.spec());
 
-  const auto* theme_service = ThemeServiceFactory::GetForProfile(profile);
-  const bool is_dark_mode =
-      theme_service && theme_service->BrowserUsesDarkColors();
   GURL expanded_lhs_url = google_base_url.Resolve(kLhsRelativeUrl);
   if (ntp_features::kNtpThreadsRailHybridParam.Get()) {
     expanded_lhs_url = net::AppendQueryParameter(expanded_lhs_url, "atvm",
                                                  kAIMThreadsVisibilityMode);
   }
-  expanded_lhs_url =
-      lens::AppendDarkModeParamToURL(expanded_lhs_url, is_dark_mode);
   expanded_lhs_url = net::AppendQueryParameter(expanded_lhs_url, "csui",
                                                kAIMConversationalSearchUI);
   expanded_lhs_url = net::AppendQueryParameter(

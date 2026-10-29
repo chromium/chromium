@@ -25,8 +25,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/lhs_rail_config.pb.h"
-#include "ui/native_theme/mock_os_settings_provider.h"
-#include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
 
 namespace {
@@ -224,40 +222,32 @@ TEST_F(NewTabPageUITest, ShortcutsAutoRemovalDisabledPref_Set_True) {
   EXPECT_TRUE(prefs->GetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled));
 }
 
-TEST_F(NewTabPageUITest,
-       GetLoadTimeData_ExpandedLhsUrlIncludesColorSchemeAndLocale) {
+TEST_F(NewTabPageUITest, GetLoadTimeData_ExpandedLhsUrlParameters) {
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider(
       variations::VariationsIdsProvider::Mode::kUseSignedInState);
   TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
       &profile(),
       base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
   ScopedBrowserLocale scoped_locale("he");
-  ui::MockOsSettingsProvider os_settings_provider;
 
-  for (const auto& [color_scheme, expected_cs] :
-       {std::pair{ui::NativeTheme::PreferredColorScheme::kLight, "0"},
-        std::pair{ui::NativeTheme::PreferredColorScheme::kDark, "1"}}) {
-    os_settings_provider.SetPreferredColorScheme(color_scheme);
-    base::DictValue load_time_data = NewTabPageUI::GetLoadTimeData(
-        &profile(), /*session_allows_drag_and_drop=*/false);
+  base::DictValue load_time_data = NewTabPageUI::GetLoadTimeData(
+      &profile(), /*session_allows_drag_and_drop=*/false);
 
-    const std::string* url_str = load_time_data.FindString("expandedLhsUrl");
-    ASSERT_NE(nullptr, url_str);
-    GURL url(*url_str);
-    ASSERT_TRUE(url.is_valid());
+  const std::string* url_str = load_time_data.FindString("expandedLhsUrl");
+  ASSERT_NE(nullptr, url_str);
+  GURL url(*url_str);
+  ASSERT_TRUE(url.is_valid());
 
-    std::string cs_value;
-    EXPECT_TRUE(net::GetValueForKeyInQuery(url, "cs", &cs_value));
-    EXPECT_EQ(expected_cs, cs_value);
+  std::string cs_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(url, "cs", &cs_value));
 
-    std::string csui_value;
-    EXPECT_TRUE(net::GetValueForKeyInQuery(url, "csui", &csui_value));
-    EXPECT_EQ("3", csui_value);
+  std::string csui_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "csui", &csui_value));
+  EXPECT_EQ("3", csui_value);
 
-    std::string hl_value;
-    EXPECT_TRUE(net::GetValueForKeyInQuery(url, "hl", &hl_value));
-    EXPECT_EQ("he", hl_value);
-  }
+  std::string hl_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "hl", &hl_value));
+  EXPECT_EQ("he", hl_value);
 }
 
 TEST_F(NewTabPageUITest, GetLoadTimeData_LhsRailConfig) {
