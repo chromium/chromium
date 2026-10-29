@@ -4,11 +4,13 @@
 
 #include "remoting/host/linux/x11_util.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "remoting/base/logging.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/randr.h"
@@ -122,7 +124,7 @@ bool IsUsingVideoDummyDriver(x11::Connection* connection) {
                    << std::to_underlying(output);
       continue;
     }
-    auto* output_name = reinterpret_cast<char*>(output_info->name.data());
+    std::string_view output_name = base::as_string_view(output_info->name);
     if (!base::StartsWith(output_name, "DUMMY")) {
       HOST_LOG << "Non-dummy output found: " << output_name;
       has_only_dummy_outputs = false;
