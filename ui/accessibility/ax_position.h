@@ -25,7 +25,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/break_iterator.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -957,7 +956,7 @@ class AXPosition {
       case AXPositionKind::TREE_POSITION:
         NOTREACHED();
       case AXPositionKind::TEXT_POSITION: {
-        const std::vector<int32_t>& format_starts =
+        base::span<const int32_t> format_starts =
             text_position->GetFormatStartOffsets();
         if (format_starts.size() <= 1) {
           return GetFormatStartBoundaryType() != AXBoundaryType::kNone;
@@ -1021,7 +1020,7 @@ class AXPosition {
       case AXPositionKind::TREE_POSITION:
         NOTREACHED();
       case AXPositionKind::TEXT_POSITION: {
-        const std::vector<int32_t>& format_ends =
+        base::span<const int32_t> format_ends =
             text_position->GetFormatEndOffsets();
         if (format_ends.size() <= 1) {
           return GetFormatEndBoundaryType() != AXBoundaryType::kNone;
@@ -4867,8 +4866,6 @@ class AXPosition {
       return std::u16string();
     }
 
-    static const base::NoDestructor<std::u16string> embedded_character_str(
-        AXNode::kEmbeddedObjectCharacterUTF16);
     switch (embedded_object_behavior) {
       case AXEmbeddedObjectBehavior::kSuppressCharacter:
         return GetAnchor()->GetTextContentUTF16();
@@ -4881,7 +4878,7 @@ class AXPosition {
         // character to assistive software that tries to retrieve the node's
         // text content.
         if (IsInUnignoredEmptyObject()) {
-          return *embedded_character_str;
+          return AXNode::kEmbeddedObjectCharacterUTF16;
         }
         return GetAnchor()->GetHypertext();
       case AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent:
@@ -4912,7 +4909,7 @@ class AXPosition {
           if (EmptyObjectShouldProvideNameFromAttribute()) {
             return GetAnchor()->GetNameUTF16();
           }
-          return *embedded_character_str;
+          return AXNode::kEmbeddedObjectCharacterUTF16;
         }
         // However, for UIA, we don't want to expose the Hypertext like the
         // kExposeCharacterForHypertext case does, since that computation for
@@ -5367,11 +5364,8 @@ class AXPosition {
          (g_ax_embedded_object_behavior ==
               AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent &&
           !EmptyObjectShouldProvideNameFromAttribute()))) {
-      // Using braces ensures that the vector will contain the given value, and
-      // not create a vector of size 0.
-      static const base::NoDestructor<std::vector<int32_t>>
-          embedded_word_starts{{0}};
-      return *embedded_word_starts;
+      static constexpr int32_t kEmbeddedWordStarts[] = {0};
+      return kEmbeddedWordStarts;
     }
 
     return GetAnchor()->GetIntListAttribute(
@@ -5401,21 +5395,17 @@ class AXPosition {
          (g_ax_embedded_object_behavior ==
               AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent &&
           !EmptyObjectShouldProvideNameFromAttribute()))) {
-      // Using braces ensures that the vector will contain the given value, and
-      // not create a vector of size 1.
-      static const base::NoDestructor<std::vector<int32_t>> embedded_word_ends{
-          {1}};
-      return *embedded_word_ends;
+      static constexpr int32_t kEmbeddedWordEnds[] = {1};
+      return kEmbeddedWordEnds;
     }
 
     return GetAnchor()->GetIntListAttribute(
         ax::mojom::IntListAttribute::kWordEnds);
   }
 
-  const std::vector<int32_t>& GetFormatStartOffsets() const {
+  base::span<const int32_t> GetFormatStartOffsets() const LIFETIME_BOUND {
     if (IsNullPosition()) {
-      static const base::NoDestructor<std::vector<int32_t>> empty_format_starts;
-      return *empty_format_starts;
+      return {};
     }
     DCHECK(GetAnchor());
 
@@ -5423,16 +5413,15 @@ class AXPosition {
     // exceptions are inline text boxes with CSS highlights or spelling/grammar
     // markers. Therefore, unless the node is an inline text box with such
     // markers, we can assume the node's format starts only at index 0.
-    static const base::NoDestructor<std::vector<int32_t>> default_format_starts{
-        {0}};
+    static constexpr int32_t kDefaultFormatStarts[] = {0};
 
     if (GetAnchor()->GetRole() != ax::mojom::Role::kInlineTextBox) {
-      return *default_format_starts;
+      return kDefaultFormatStarts;
     }
 
     AXNode* parent = GetAnchor()->GetUnignoredParent();
     if (!parent) {
-      return *default_format_starts;
+      return kDefaultFormatStarts;
     }
 
     base::span<const int32_t> marker_types =
@@ -5440,7 +5429,7 @@ class AXPosition {
 
     // If there are no markers, there are no format boundaries to add.
     if (marker_types.empty()) {
-      return *default_format_starts;
+      return kDefaultFormatStarts;
     }
 
     base::span<const int32_t> highlight_types = parent->GetIntListAttribute(
@@ -5468,7 +5457,7 @@ class AXPosition {
     int text_length = GetAnchor()->GetTextContentLengthUTF16();
     int box_end = box_start + text_length;
 
-    // Store in member variable to return by reference.
+    // Store in member variable to back the returned span.
     cached_format_start_offsets_.clear();
     cached_format_start_offsets_.push_back(0);
 
@@ -5509,10 +5498,9 @@ class AXPosition {
     return cached_format_start_offsets_;
   }
 
-  const std::vector<int32_t>& GetFormatEndOffsets() const {
+  base::span<const int32_t> GetFormatEndOffsets() const LIFETIME_BOUND {
     if (IsNullPosition()) {
-      static const base::NoDestructor<std::vector<int32_t>> empty_format_ends;
-      return *empty_format_ends;
+      return {};
     }
     DCHECK(GetAnchor());
 
@@ -5563,7 +5551,7 @@ class AXPosition {
     int box_start = ComputeTextStartOfChildInParent(GetAnchor(), parent);
     int box_end = box_start + text_length;
 
-    // Store in member variable to return by reference.
+    // Store in member variable to back the returned span.
     cached_format_end_offsets_.clear();
     for (size_t i = 0; i < marker_types.size(); ++i) {
       ax::mojom::MarkerType marker_type =
