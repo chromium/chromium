@@ -136,6 +136,11 @@ class ContextualTasksPanelController {
   // or a Search Results Page / Lens SRP loaded in the side panel).
   virtual bool IsShowingResults() const = 0;
 
+  // Returns true if the active tab's side panel has results loaded or is
+  // currently trying to load results, whether the side panel is currently open
+  // or was closed and can be reopened to resume those results.
+  virtual bool HasResults() const = 0;
+
   // Returns the entry source of the currently active panel.
   virtual EntrySource GetActiveEntrySource() const = 0;
 

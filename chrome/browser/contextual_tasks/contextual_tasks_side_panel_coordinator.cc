@@ -1100,64 +1100,11 @@ bool ContextualTasksSidePanelCoordinator::IsPanelOpenForContextualTask() const {
 }
 
 bool ContextualTasksSidePanelCoordinator::IsShowingResults() const {
+  return IsPanelOpenForContextualTask() && HasResults();
+}
+
+bool ContextualTasksSidePanelCoordinator::HasResults() const {
   return IsShowingLensResults() || IsShowingAimResults();
-}
-
-bool ContextualTasksSidePanelCoordinator::IsShowingLensResults() const {
-  if (!IsPanelOpenForContextualTask()) {
-    return false;
-  }
-
-  content::WebContents* web_contents = GetActiveWebContents();
-  if (!web_contents) {
-    return false;
-  }
-
-  ContextualTasksUiService* ui_service = GetUiService();
-  if (!ui_service) {
-    return false;
-  }
-
-  for (const auto& [task_id, cache_item] : task_id_to_web_contents_cache_) {
-    if (cache_item && cache_item->web_contents.get() == web_contents) {
-      if (ui_service->IsTaskWaitingForUrl(task_id)) {
-        return true;
-      }
-      break;
-    }
-  }
-
-  const GURL& url = web_contents->GetLastCommittedURL();
-  if (url.is_empty() || url.IsAboutBlank()) {
-    return false;
-  }
-
-  return !ui_service->IsAiUrl(url) &&
-         ui_service->IsValidSearchResultsPage(url);
-}
-
-bool ContextualTasksSidePanelCoordinator::IsShowingAimResults() const {
-  if (!IsPanelOpenForContextualTask()) {
-    return false;
-  }
-
-  content::WebContents* web_contents = GetActiveWebContents();
-  if (!web_contents) {
-    return false;
-  }
-
-  ContextualTasksUiService* ui_service = GetUiService();
-  if (!ui_service) {
-    return false;
-  }
-
-  const GURL& url = web_contents->GetLastCommittedURL();
-  if (url.is_empty() || url.IsAboutBlank()) {
-    return false;
-  }
-
-  return ui_service->IsAiUrl(url) &&
-         !ContextualTasksUI::IsZeroState(url, ui_service);
 }
 
 ContextualTasksPanelController::EntrySource
@@ -1566,6 +1513,28 @@ ContextualTasksSidePanelCoordinator::GetCurrentTask() {
         }
       }
       return ContextualTask(task_id, /*is_ephemeral=*/true);
+    }
+  }
+
+  return contextual_tasks_service_->GetContextualTaskForTab(
+      sessions::SessionTabHelper::IdForTab(
+          active_tab_interface->GetContents()));
+}
+
+std::optional<ContextualTask>
+ContextualTasksSidePanelCoordinator::GetCurrentTask() const {
+  tabs::TabInterface* active_tab_interface =
+      TabListInterface::From(browser_window_)->GetActiveTab();
+  if (!active_tab_interface) {
+    return std::nullopt;
+  }
+
+  if (active_tab_interface->GetContents()) {
+    const auto* user_data = ContextualTasksWebContentsUserData::FromWebContents(
+        active_tab_interface->GetContents());
+    if (user_data && user_data->pending_task_id().has_value()) {
+      return ContextualTask(*user_data->pending_task_id(),
+                            /*is_ephemeral=*/true);
     }
   }
 
@@ -2267,6 +2236,95 @@ bool ContextualTasksSidePanelCoordinator::ShouldBeOpen() {
     return it->second->is_open;
   }
   return false;
+}
+
+GURL ContextualTasksSidePanelCoordinator::GetActiveResultsUrl() const {
+  std::optional<ContextualTask> task = GetCurrentTask();
+  if (!task) {
+    return GURL();
+  }
+
+  auto cache_it = task_id_to_web_contents_cache_.find(task->GetTaskId());
+  if (cache_it == task_id_to_web_contents_cache_.end() || !cache_it->second ||
+      !cache_it->second->web_contents) {
+    return GURL();
+  }
+
+  content::WebContents* web_contents = cache_it->second->web_contents.get();
+  GURL url;
+  if (ContextualTasksUIInterface* web_ui_interface =
+          GetWebUiInterface(web_contents)) {
+    // Pre-rearchitecture, the Google results page is embedded inside the
+    // chrome://contextual-tasks WebUI.
+    url = web_ui_interface->GetInnerFrameUrl();
+  } else {
+    // Post-rearchitecture, the Google results page is loaded directly in the
+    // panel `WebContents`.
+    url = web_contents->GetVisibleURL();
+  }
+
+  return url.SchemeIsHTTPOrHTTPS() ? url : GURL();
+}
+
+bool ContextualTasksSidePanelCoordinator::IsShowingLensResults() const {
+  std::optional<ContextualTask> task = GetCurrentTask();
+  if (!task) {
+    return false;
+  }
+
+  auto cache_it = task_id_to_web_contents_cache_.find(task->GetTaskId());
+  if (cache_it == task_id_to_web_contents_cache_.end() || !cache_it->second ||
+      !cache_it->second->web_contents) {
+    return false;
+  }
+
+  ContextualTasksUiService* ui_service = GetUiService();
+  if (!ui_service) {
+    return false;
+  }
+
+  const GURL url = GetActiveResultsUrl();
+  if (url.is_empty()) {
+    // If the URL is empty, but Lens opened the side panel coordinator, assume
+    // that the URL is being generated async and will soon have results.
+    return cache_it->second->entry_source ==
+           ContextualTasksPanelController::EntrySource::kLensOverlay;
+  }
+
+  return !ui_service->IsAiUrl(url) &&
+         ui_service->IsValidSearchResultsPage(url);
+}
+
+bool ContextualTasksSidePanelCoordinator::IsShowingAimResults() const {
+  std::optional<ContextualTask> task = GetCurrentTask();
+  if (!task) {
+    return false;
+  }
+
+  auto cache_it = task_id_to_web_contents_cache_.find(task->GetTaskId());
+  if (cache_it == task_id_to_web_contents_cache_.end() || !cache_it->second ||
+      !cache_it->second->web_contents) {
+    return false;
+  }
+
+  ContextualTasksUiService* ui_service = GetUiService();
+  if (!ui_service) {
+    return false;
+  }
+
+  const GURL url = GetActiveResultsUrl();
+  if (!url.is_empty()) {
+    return ui_service->IsAiUrl(url) &&
+           !ContextualTasksUI::IsZeroState(url, ui_service);
+  }
+
+  // Pre-rearchitecture, the side panel `WebContents` loads
+  // chrome://contextual-tasks before the embedded inner frame commits the
+  // thread's HTTP/HTTPS URL (and in tests, a `Thread` may be attached to the
+  // task without navigating the embedded frame). In that state,
+  // `GetActiveResultsUrl()` is empty even though the task already has an
+  // active thread.
+  return task->GetThread().has_value();
 }
 
 void ContextualTasksSidePanelCoordinator::CloseLensSessionsForTask(
