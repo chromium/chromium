@@ -469,9 +469,15 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
                                          ? 0
                                          : kCloseButtonTopMargin;
 
-      CGFloat topSafeArea = self.view.safeAreaInsets.top;
-      CGFloat topPadding =
-          MAX(topSafeArea + kInputPlateTopPadding, kMinInputPlateTopPadding);
+      NSLayoutConstraint* inputPlateTopConstraint =
+          [_inputViewController.view.topAnchor
+              constraintEqualToAnchor:safeAreaGuide.topAnchor
+                             constant:kInputPlateTopPadding];
+      // Lower priority by 1 so the required minimum top padding constraint
+      // against `self.view.topAnchor` can take precedence when the top safe
+      // area inset is zero or smaller than `kMinInputPlateTopPadding`.
+      inputPlateTopConstraint.priority = UILayoutPriorityRequired - 1;
+
       [_constraintsForCurrentPosition addObjectsFromArray:@[
         _constraintToCloseButton,
         _constraintToLeadingEdge,
@@ -483,9 +489,13 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
             constraintEqualToAnchor:safeAreaGuide.leadingAnchor],
         [_omniboxPopupContainer.trailingAnchor
             constraintEqualToAnchor:safeAreaGuide.trailingAnchor],
+        inputPlateTopConstraint,
         [_inputViewController.view.topAnchor
-            constraintEqualToAnchor:safeAreaGuide.topAnchor
-                           constant:topPadding],
+            constraintGreaterThanOrEqualToAnchor:safeAreaGuide.topAnchor
+                                        constant:kInputPlateTopPadding],
+        [_inputViewController.view.topAnchor
+            constraintGreaterThanOrEqualToAnchor:self.view.topAnchor
+                                        constant:kMinInputPlateTopPadding],
         [_inputViewController.view.bottomAnchor
             constraintLessThanOrEqualToAnchor:self.view.keyboardLayoutGuide
                                                   .topAnchor
