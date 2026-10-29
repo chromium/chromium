@@ -12110,28 +12110,6 @@
             ]
         }
     ],
-    "NtpGoogleLogo26": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "form_factors": [
-                "desktop"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NtpGoogleLogo26"
-                    ]
-                }
-            ]
-        }
-    ],
     "NtpLazyLoadComposebox": [
         {
             "platforms": [

@@ -141,7 +141,7 @@ BASE_FEATURE(kNtpDriveModuleLink, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kNtpDriveModuleSegmentation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, branded NTPs use the 2026 version of the Google logo.
-BASE_FEATURE(kNtpGoogleLogo26, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpGoogleLogo26, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, logo will be shown.
 // This is a kill switch. Keep indefinitely.
