@@ -34,6 +34,7 @@
 #include <utility>
 
 #include "base/memory/values_equivalent.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_tracing_flag.h"
@@ -79,9 +80,10 @@ bool IsFocused(Element& element) {
 
 #define TRACE_STYLE_INVALIDATOR_INVALIDATION_SELECTORPART_IF_ENABLED( \
     element, reason, invalidationSet, singleSelectorPart)             \
-  if (InvalidationTracingFlag::IsEnabled()) [[unlikely]]              \
+  if (InvalidationTracingFlag::IsEnabled()) [[unlikely]] {            \
     TRACE_STYLE_INVALIDATOR_INVALIDATION_SELECTORPART(                \
-        element, reason, invalidationSet, singleSelectorPart);
+        element, reason, invalidationSet, singleSelectorPart);        \
+  }
 
 // static
 void InvalidationSetDeleter::Destruct(const InvalidationSet* obj) {
@@ -456,19 +458,21 @@ scoped_refptr<NthSiblingInvalidationSet> CreateTreeCountingInvalidationSet() {
 }  // namespace
 
 InvalidationSet* InvalidationSet::SelfInvalidationSet() {
-  DEFINE_STATIC_REF(InvalidationSet, singleton_, CreateSelfInvalidationSet());
-  return singleton_;
+  static const base::NoDestructor<scoped_refptr<InvalidationSet>> singleton(
+      CreateSelfInvalidationSet());
+  return singleton->get();
 }
 
 InvalidationSet* InvalidationSet::PartInvalidationSet() {
-  DEFINE_STATIC_REF(InvalidationSet, singleton_, CreatePartInvalidationSet());
-  return singleton_;
+  static const base::NoDestructor<scoped_refptr<InvalidationSet>> singleton(
+      CreatePartInvalidationSet());
+  return singleton->get();
 }
 
 InvalidationSet* InvalidationSet::TreeCountingInvalidationSet() {
-  DEFINE_STATIC_REF(InvalidationSet, singleton_,
-                    CreateTreeCountingInvalidationSet());
-  return singleton_;
+  static const base::NoDestructor<scoped_refptr<InvalidationSet>> singleton(
+      CreateTreeCountingInvalidationSet());
+  return singleton->get();
 }
 
 void InvalidationSet::WriteIntoTrace(perfetto::TracedValue context) const {

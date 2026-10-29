@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -82,28 +83,26 @@ std::unique_ptr<gfx::TimingFunction> LinearTimingFunction::CloneToCC() const {
 
 CubicBezierTimingFunction* CubicBezierTimingFunction::Preset(
     EaseType ease_type) {
-  DEFINE_STATIC_REF(
-      CubicBezierTimingFunction, ease,
-      (base::AdoptRef(new CubicBezierTimingFunction(EaseType::EASE))));
-  DEFINE_STATIC_REF(
-      CubicBezierTimingFunction, ease_in,
-      (base::AdoptRef(new CubicBezierTimingFunction(EaseType::EASE_IN))));
-  DEFINE_STATIC_REF(
-      CubicBezierTimingFunction, ease_out,
-      (base::AdoptRef(new CubicBezierTimingFunction(EaseType::EASE_OUT))));
-  DEFINE_STATIC_REF(
-      CubicBezierTimingFunction, ease_in_out,
-      (base::AdoptRef(new CubicBezierTimingFunction(EaseType::EASE_IN_OUT))));
+  static const base::NoDestructor<scoped_refptr<CubicBezierTimingFunction>>
+      ease(base::AdoptRef(new CubicBezierTimingFunction(EaseType::EASE)));
+  static const base::NoDestructor<scoped_refptr<CubicBezierTimingFunction>>
+      ease_in(base::AdoptRef(new CubicBezierTimingFunction(EaseType::EASE_IN)));
+  static const base::NoDestructor<scoped_refptr<CubicBezierTimingFunction>>
+      ease_out(
+          base::AdoptRef(new CubicBezierTimingFunction(EaseType::EASE_OUT)));
+  static const base::NoDestructor<scoped_refptr<CubicBezierTimingFunction>>
+      ease_in_out(
+          base::AdoptRef(new CubicBezierTimingFunction(EaseType::EASE_IN_OUT)));
 
   switch (ease_type) {
     case EaseType::EASE:
-      return ease;
+      return ease->get();
     case EaseType::EASE_IN:
-      return ease_in;
+      return ease_in->get();
     case EaseType::EASE_OUT:
-      return ease_out;
+      return ease_out->get();
     case EaseType::EASE_IN_OUT:
-      return ease_in_out;
+      return ease_in_out->get();
     default:
       NOTREACHED();
   }
@@ -224,9 +223,10 @@ scoped_refptr<TimingFunction> CreateCompositorTimingFunctionFromCC(
       auto* cubic_timing_function =
           static_cast<const gfx::CubicBezierTimingFunction*>(timing_function);
       if (cubic_timing_function->ease_type() !=
-          gfx::CubicBezierTimingFunction::EaseType::CUSTOM)
+          gfx::CubicBezierTimingFunction::EaseType::CUSTOM) {
         return CubicBezierTimingFunction::Preset(
             cubic_timing_function->ease_type());
+      }
 
       const auto& bezier = cubic_timing_function->bezier();
       return CubicBezierTimingFunction::Create(bezier.GetX1(), bezier.GetY1(),
@@ -270,9 +270,10 @@ bool operator==(const CubicBezierTimingFunction& lhs,
 
   const auto& ctf = To<CubicBezierTimingFunction>(rhs);
   if ((lhs.GetEaseType() == CubicBezierTimingFunction::EaseType::CUSTOM) &&
-      (ctf.GetEaseType() == CubicBezierTimingFunction::EaseType::CUSTOM))
+      (ctf.GetEaseType() == CubicBezierTimingFunction::EaseType::CUSTOM)) {
     return (lhs.X1() == ctf.X1()) && (lhs.Y1() == ctf.Y1()) &&
            (lhs.X2() == ctf.X2()) && (lhs.Y2() == ctf.Y2());
+  }
 
   return lhs.GetEaseType() == ctf.GetEaseType();
 }

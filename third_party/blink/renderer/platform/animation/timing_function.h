@@ -30,10 +30,10 @@
 
 #include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
@@ -75,9 +75,9 @@ class PLATFORM_EXPORT TimingFunction
 class PLATFORM_EXPORT LinearTimingFunction final : public TimingFunction {
  public:
   static LinearTimingFunction* Shared() {
-    DEFINE_STATIC_REF(LinearTimingFunction, linear,
-                      (base::AdoptRef(new LinearTimingFunction())));
-    return linear;
+    static const base::NoDestructor<scoped_refptr<LinearTimingFunction>> linear(
+        base::AdoptRef(new LinearTimingFunction()));
+    return linear->get();
   }
 
   static scoped_refptr<LinearTimingFunction> Create(
@@ -198,14 +198,15 @@ class PLATFORM_EXPORT StepsTimingFunction final : public TimingFunction {
   }
 
   static StepsTimingFunction* Preset(StepPosition position) {
-    DEFINE_STATIC_REF(StepsTimingFunction, start,
-                      Create(1, StepPosition::START));
-    DEFINE_STATIC_REF(StepsTimingFunction, end, Create(1, StepPosition::END));
+    static const base::NoDestructor<scoped_refptr<StepsTimingFunction>> start(
+        Create(1, StepPosition::START));
+    static const base::NoDestructor<scoped_refptr<StepsTimingFunction>> end(
+        Create(1, StepPosition::END));
     switch (position) {
       case StepPosition::START:
-        return start;
+        return start->get();
       case StepPosition::END:
-        return end;
+        return end->get();
       default:
         NOTREACHED();
     }

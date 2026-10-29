@@ -38,6 +38,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -1227,15 +1228,16 @@ void HTMLCanvasElement::NotifyListenersCanvasChanged() {
 std::pair<blink::Image*, float> HTMLCanvasElement::BrokenCanvas(
     float device_scale_factor) {
   if (device_scale_factor >= 2) {
-    DEFINE_STATIC_REF(blink::Image, broken_canvas_hi_res,
-                      (blink::Image::LoadPlatformResource(IDR_BROKENCANVAS,
-                                                          ui::k200Percent)));
-    return std::make_pair(broken_canvas_hi_res, 2);
+    static const base::NoDestructor<scoped_refptr<blink::Image>>
+        broken_canvas_hi_res(blink::Image::LoadPlatformResource(
+            IDR_BROKENCANVAS, ui::k200Percent));
+    return std::make_pair(broken_canvas_hi_res->get(), 2);
   }
 
-  DEFINE_STATIC_REF(blink::Image, broken_canvas_lo_res,
-                    (blink::Image::LoadPlatformResource(IDR_BROKENCANVAS)));
-  return std::make_pair(broken_canvas_lo_res, 1);
+  static const base::NoDestructor<scoped_refptr<blink::Image>>
+      broken_canvas_lo_res(
+          blink::Image::LoadPlatformResource(IDR_BROKENCANVAS));
+  return std::make_pair(broken_canvas_lo_res->get(), 1);
 }
 
 bool HTMLCanvasElement::LowLatencyEnabled() const {

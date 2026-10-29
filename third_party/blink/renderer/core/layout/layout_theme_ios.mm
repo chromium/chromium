@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/layout_theme_ios.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-shared.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "ui/base/ui_base_features.h"
 
 namespace blink {
@@ -15,8 +15,9 @@ scoped_refptr<LayoutTheme> LayoutThemeIOS::Create() {
 }
 
 LayoutTheme& LayoutTheme::NativeTheme() {
-  DEFINE_STATIC_REF(LayoutTheme, layout_theme, (LayoutThemeIOS::Create()));
-  return *layout_theme;
+  static const base::NoDestructor<scoped_refptr<LayoutTheme>> layout_theme(
+      LayoutThemeIOS::Create());
+  return **layout_theme;
 }
 
 LayoutThemeIOS::~LayoutThemeIOS() {}

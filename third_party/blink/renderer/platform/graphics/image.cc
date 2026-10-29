@@ -30,6 +30,7 @@
 
 #include <tuple>
 
+#include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "cc/tiles/software_image_decode_cache.h"
@@ -75,8 +76,9 @@ Image::~Image() = default;
 
 Image* Image::NullImage() {
   DCHECK(IsMainThread());
-  DEFINE_STATIC_REF(Image, null_image, (BitmapImage::Create()));
-  return null_image;
+  static const base::NoDestructor<scoped_refptr<Image>> null_image(
+      BitmapImage::Create());
+  return null_image->get();
 }
 
 // static

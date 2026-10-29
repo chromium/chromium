@@ -21,6 +21,7 @@
 
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/resources/grit/blink_resources.h"
@@ -178,9 +179,9 @@ bool SystemAccentColorAllowed() {
 
 LayoutTheme& LayoutTheme::GetTheme() {
   if (RuntimeEnabledFeatures::MobileLayoutThemeEnabled()) {
-    DEFINE_STATIC_REF(LayoutTheme, layout_theme_mobile,
-                      (LayoutThemeMobile::Create()));
-    return *layout_theme_mobile;
+    static const base::NoDestructor<scoped_refptr<LayoutTheme>>
+        layout_theme_mobile(LayoutThemeMobile::Create());
+    return **layout_theme_mobile;
   }
   return NativeTheme();
 }

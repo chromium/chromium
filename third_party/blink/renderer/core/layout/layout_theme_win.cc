@@ -6,6 +6,7 @@
 
 #include <windows.h>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "ui/color/color_provider.h"
@@ -17,8 +18,9 @@ scoped_refptr<LayoutTheme> LayoutThemeWin::Create() {
 }
 
 LayoutTheme& LayoutTheme::NativeTheme() {
-  DEFINE_STATIC_REF(LayoutTheme, layout_theme, (LayoutThemeWin::Create()));
-  return *layout_theme;
+  static const base::NoDestructor<scoped_refptr<LayoutTheme>> layout_theme(
+      LayoutThemeWin::Create());
+  return **layout_theme;
 }
 
 Color LayoutThemeWin::SystemHighlightFromColorProvider(

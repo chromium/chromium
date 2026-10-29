@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/core/layout/layout_image_resource.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/public/resources/grit/blink_image_resources.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
@@ -173,15 +174,14 @@ Image* LayoutImageResource::BrokenImage(double device_pixel_ratio) {
   // TODO(rendering-core): Replace static resources with dynamically
   // generated ones, to support a wider range of device scale factors.
   if (device_pixel_ratio >= 2) {
-    DEFINE_STATIC_REF(
-        Image, broken_image_hi_res,
-        (Image::LoadPlatformResource(IDR_BROKENIMAGE, ui::k200Percent)));
-    return broken_image_hi_res;
+    static const base::NoDestructor<scoped_refptr<Image>> broken_image_hi_res(
+        Image::LoadPlatformResource(IDR_BROKENIMAGE, ui::k200Percent));
+    return broken_image_hi_res->get();
   }
 
-  DEFINE_STATIC_REF(Image, broken_image_lo_res,
-                    (Image::LoadPlatformResource(IDR_BROKENIMAGE)));
-  return broken_image_lo_res;
+  static const base::NoDestructor<scoped_refptr<Image>> broken_image_lo_res(
+      Image::LoadPlatformResource(IDR_BROKENIMAGE));
+  return broken_image_lo_res->get();
 }
 
 double LayoutImageResource::DevicePixelRatio() const {

@@ -26,6 +26,7 @@
 
 #include <variant>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/public/mojom/css/preferred_contrast.mojom-shared.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
@@ -865,21 +866,21 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
   gfx::Rect painting_rect(cancel_button_rect_left, cancel_button_rect_top,
                           cancel_button_size, cancel_button_size);
 
-  DEFINE_STATIC_REF(Image, cancel_image,
-                    (Image::LoadPlatformResource(IDR_SEARCH_CANCEL)));
-  DEFINE_STATIC_REF(Image, cancel_pressed_image,
-                    (Image::LoadPlatformResource(IDR_SEARCH_CANCEL_PRESSED)));
-  DEFINE_STATIC_REF(Image, cancel_image_dark_mode,
-                    (Image::LoadPlatformResource(IDR_SEARCH_CANCEL_DARK_MODE)));
-  DEFINE_STATIC_REF(
-      Image, cancel_pressed_image_dark_mode,
-      (Image::LoadPlatformResource(IDR_SEARCH_CANCEL_PRESSED_DARK_MODE)));
-  DEFINE_STATIC_REF(
-      Image, cancel_image_hc_light_mode,
-      (Image::LoadPlatformResource(IDR_SEARCH_CANCEL_HC_LIGHT_MODE)));
-  DEFINE_STATIC_REF(
-      Image, cancel_pressed_image_hc_light_mode,
-      (Image::LoadPlatformResource(IDR_SEARCH_CANCEL_PRESSED_HC_LIGHT_MODE)));
+  static const base::NoDestructor<scoped_refptr<Image>> cancel_image(
+      Image::LoadPlatformResource(IDR_SEARCH_CANCEL));
+  static const base::NoDestructor<scoped_refptr<Image>> cancel_pressed_image(
+      Image::LoadPlatformResource(IDR_SEARCH_CANCEL_PRESSED));
+  static const base::NoDestructor<scoped_refptr<Image>> cancel_image_dark_mode(
+      Image::LoadPlatformResource(IDR_SEARCH_CANCEL_DARK_MODE));
+  static const base::NoDestructor<scoped_refptr<Image>>
+      cancel_pressed_image_dark_mode(
+          Image::LoadPlatformResource(IDR_SEARCH_CANCEL_PRESSED_DARK_MODE));
+  static const base::NoDestructor<scoped_refptr<Image>>
+      cancel_image_hc_light_mode(
+          Image::LoadPlatformResource(IDR_SEARCH_CANCEL_HC_LIGHT_MODE));
+  static const base::NoDestructor<scoped_refptr<Image>>
+      cancel_pressed_image_hc_light_mode(
+          Image::LoadPlatformResource(IDR_SEARCH_CANCEL_PRESSED_HC_LIGHT_MODE));
   Image* color_scheme_adjusted_cancel_image;
   Image* color_scheme_adjusted_cancel_pressed_image;
   if (cancel_button_object.GetDocument().GetPreferredContrast() ==
@@ -893,23 +894,24 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
             GetCSSPropertyColor());
     bool text_is_dark = color_utils::GetRelativeLuminance4f(
                             search_field_text_color.toSkColor4f()) < 0.5;
-    color_scheme_adjusted_cancel_image =
-        text_is_dark ? cancel_image_hc_light_mode : cancel_image_dark_mode;
+    color_scheme_adjusted_cancel_image = text_is_dark
+                                             ? cancel_image_hc_light_mode->get()
+                                             : cancel_image_dark_mode->get();
     color_scheme_adjusted_cancel_pressed_image =
         color_scheme_adjusted_cancel_image =
-            text_is_dark ? cancel_pressed_image_hc_light_mode
-                         : cancel_pressed_image_dark_mode;
+            text_is_dark ? cancel_pressed_image_hc_light_mode->get()
+                         : cancel_pressed_image_dark_mode->get();
   } else {
     mojom::blink::ColorScheme color_scheme =
         cancel_button_object.Style().UsedColorScheme();
     color_scheme_adjusted_cancel_image =
         color_scheme == mojom::blink::ColorScheme::kLight
-            ? cancel_image
-            : cancel_image_dark_mode;
+            ? cancel_image->get()
+            : cancel_image_dark_mode->get();
     color_scheme_adjusted_cancel_pressed_image =
         color_scheme == mojom::blink::ColorScheme::kLight
-            ? cancel_pressed_image
-            : cancel_pressed_image_dark_mode;
+            ? cancel_pressed_image->get()
+            : cancel_pressed_image_dark_mode->get();
   }
   Image& target_image = To<Element>(cancel_button_object.GetNode())->IsActive()
                             ? *color_scheme_adjusted_cancel_pressed_image

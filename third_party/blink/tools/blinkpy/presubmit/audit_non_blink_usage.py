@@ -136,6 +136,7 @@ _CONFIG = [
             'base::Milliseconds',
             'base::Minutes',
             'base::Nanoseconds',
+            'base::NoDestructor',
             'base::NotFatalUntil',
             'base::NotNullTag',
             'base::optional_ref',

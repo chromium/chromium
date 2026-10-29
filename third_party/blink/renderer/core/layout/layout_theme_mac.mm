@@ -22,6 +22,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "base/no_destructor.h"
 #import "third_party/blink/public/common/sandbox_support/sandbox_support_mac.h"
 #import "third_party/blink/public/platform/mac/web_sandbox_support.h"
 #import "third_party/blink/public/platform/platform.h"
@@ -154,8 +155,9 @@ Color LayoutThemeMac::FocusRingColor(
 }
 
 LayoutTheme& LayoutTheme::NativeTheme() {
-  DEFINE_STATIC_REF(LayoutTheme, layout_theme, (LayoutThemeMac::Create()));
-  return *layout_theme;
+  static const base::NoDestructor<scoped_refptr<LayoutTheme>> layout_theme(
+      LayoutThemeMac::Create());
+  return **layout_theme;
 }
 
 }  // namespace blink

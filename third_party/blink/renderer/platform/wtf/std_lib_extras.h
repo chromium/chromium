@@ -152,18 +152,6 @@ class StaticSingleton final {
 #endif
 };
 
-// Use this to declare and define a static local pointer to a ref-counted object
-// so that it is leaked so that the object's destructors are not called at
-// exit.  This macro should be used with ref-counted objects rather than
-// DEFINE_STATIC_LOCAL macro, as this macro does not lead to an extra memory
-// allocation.
-#define DEFINE_STATIC_REF(type, name, arguments)  \
-  static type* name = [](scoped_refptr<type> o) { \
-    if (o)                                        \
-      o->AddRef();                                \
-    return o.get();                               \
-  }(arguments);
-
 /*
  * The reinterpret_cast<Type1*>([pointer to Type2]) expressions - where
  * sizeof(Type1) > sizeof(Type2) - cause the following warning on ARM with GCC:

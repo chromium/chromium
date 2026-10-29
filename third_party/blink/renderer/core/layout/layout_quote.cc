@@ -23,6 +23,7 @@
 
 #include <algorithm>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/css/style_containment_scope.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
@@ -30,7 +31,6 @@
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -89,9 +89,9 @@ void LayoutQuote::StyleDidChange(
 }
 
 static scoped_refptr<const QuotesData> BasicQuotesData() {
-  DEFINE_STATIC_REF(QuotesData, static_basic_quotes,
-                    (QuotesData::Create(0x201c, 0x201d, 0x2018, 0x2019)));
-  return static_basic_quotes;
+  static const base::NoDestructor<scoped_refptr<QuotesData>>
+      static_basic_quotes(QuotesData::Create(0x201c, 0x201d, 0x2018, 0x2019));
+  return *static_basic_quotes;
 }
 
 void LayoutQuote::UpdateText() {
