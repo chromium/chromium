@@ -19,6 +19,6 @@
     </dist:delivery>  # DIFF-ANCHOR: 7a1c5a0b
     <dist:fusing dist:include="true"/>
   </dist:module>  # DIFF-ANCHOR: e046d2bc
-  <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="36"/>
+  <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="37"/>
   <application/>
 </manifest>

@@ -18,7 +18,7 @@
       <data android:scheme="https"/>
     </intent>  # DIFF-ANCHOR: dd112d1c
   </queries>  # DIFF-ANCHOR: ac70d2a8
-  <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="36"/>
+  <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="37"/>
   <uses-split android:name="chrome"/>
   <application>
     <service  # DIFF-ANCHOR: 5d82e3ff

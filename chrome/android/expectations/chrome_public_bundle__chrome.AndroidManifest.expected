@@ -22,7 +22,7 @@
   <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
   <uses-permission android:name="com.google.android.apps.aicore.service.BIND_SERVICE"/>
   <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
-  <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="36"/>
+  <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="37"/>
   <application>
     <activity  # DIFF-ANCHOR: f7a9141e
         android:name="androidx.core.pip.contentpip.ContentPipInternalActivity"

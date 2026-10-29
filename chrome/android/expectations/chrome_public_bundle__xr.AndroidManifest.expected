@@ -19,7 +19,7 @@
     </dist:delivery>  # DIFF-ANCHOR: 350ac64d
     <dist:fusing dist:include="false"/>
   </dist:module>  # DIFF-ANCHOR: 3f74a994
-  <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="36"/>
+  <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="37"/>
   <uses-split android:name="chrome"/>
   <application>
     <activity  # DIFF-ANCHOR: 1f566b69
