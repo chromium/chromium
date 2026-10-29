@@ -272,6 +272,14 @@ class ContextualTasksWebContentsUserData
   bool OnBrowserTabClosedOrNavigated(SessionID tab_session_id,
                                      std::optional<GURL> current_url,
                                      std::optional<std::string> current_title);
+  // Removes a closed or navigated tab from the task: detaches each of
+  // `tab_urls` that `session_handle` no longer references from the task, and
+  // drops the committed URL resources owned by `tab_session_id` (or, for
+  // resources without a tab ID, matching one of `tab_urls`).
+  void RemoveTabFromTaskState(
+      const contextual_search::ContextualSearchSessionHandle& session_handle,
+      SessionID tab_session_id,
+      const std::vector<GURL>& tab_urls);
   void ClearFiles(bool should_block_auto_suggested_tabs = false);
   void ClearInputPlateState();
 

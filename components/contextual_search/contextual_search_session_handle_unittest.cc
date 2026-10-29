@@ -4246,6 +4246,123 @@ TEST_F(
   EXPECT_TRUE(tab_info.is_superceded);
 }
 
+TEST_F(ContextualSearchSessionHandleTest,
+       IsTabDisplaced_PendingDelayedReattachAtNewUrl) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(
+      lens::features::kLensDeleteContextOnPageNavigation);
+  EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(_, _, _))
+      .Times(testing::AnyNumber());
+
+  const SessionID session_id = SessionID::FromSerializedValue(14);
+  const GURL old_url("https://example.com/14");
+  const GURL new_url("https://other.com/14");
+  const base::UnguessableToken tab_token = handle_->CreateContextToken();
+  auto input_data = MakeTabInputData(14);
+  input_data->page_url = old_url;
+  handle_->StartTabContextUploadFlow(tab_token, std::move(input_data),
+                                     std::nullopt);
+  FileInfo tab_info;
+  tab_info.file_token = tab_token;
+  tab_info.tab_session_id = session_id;
+  tab_info.tab_url = old_url;
+  lens::LensOverlayRequestId req_id;
+  req_id.set_uuid(14001);
+  tab_info.request_id = req_id;
+  EXPECT_CALL(*mock_controller_ptr_, GetFileInfo(tab_token))
+      .WillRepeatedly(testing::Return(&tab_info));
+  handle_->MarkQuerySubmitted({}, std::nullopt);
+  handle_->ClearSubmittedContextTokens();
+
+  // Navigating displaces the submitted URL, and the tab is re-attached at its
+  // new URL as a pending delayed tab, which has no `FileInfo` until it uploads.
+  handle_->OnTabClosedOrNavigated(session_id, new_url, "New");
+  const base::UnguessableToken pending_token =
+      handle_->AddPendingDelayedTab(14, new_url, "New");
+  EXPECT_CALL(*mock_controller_ptr_, GetFileInfo(pending_token))
+      .WillRepeatedly(testing::Return(nullptr));
+
+  EXPECT_TRUE(handle_->IsTabDisplaced(session_id, old_url, ""));
+  EXPECT_FALSE(handle_->IsTabDisplaced(session_id, new_url, "New"));
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       IsTabDisplaced_OnlyMatchesTheDisplacedUrl) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(
+      lens::features::kLensDeleteContextOnPageNavigation);
+  EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(_, _, _))
+      .Times(testing::AnyNumber());
+
+  const SessionID session_id = SessionID::FromSerializedValue(16);
+  const GURL displaced_url("https://example.com/16");
+  const base::UnguessableToken tab_token = handle_->CreateContextToken();
+  auto input_data = MakeTabInputData(16);
+  input_data->page_url = displaced_url;
+  handle_->StartTabContextUploadFlow(tab_token, std::move(input_data),
+                                     std::nullopt);
+  FileInfo tab_info;
+  tab_info.file_token = tab_token;
+  tab_info.tab_session_id = session_id;
+  tab_info.tab_url = displaced_url;
+  lens::LensOverlayRequestId req_id;
+  req_id.set_uuid(16001);
+  tab_info.request_id = req_id;
+  EXPECT_CALL(*mock_controller_ptr_, GetFileInfo(tab_token))
+      .WillRepeatedly(testing::Return(&tab_info));
+  handle_->MarkQuerySubmitted({}, std::nullopt);
+  handle_->ClearSubmittedContextTokens();
+  handle_->OnTabClosedOrNavigated(session_id, GURL("https://other.com/16"),
+                                  "Other");
+
+  EXPECT_TRUE(handle_->IsTabDisplaced(session_id, displaced_url, ""));
+  // A URL this tab submitted in an earlier turn was not displaced.
+  EXPECT_FALSE(handle_->IsTabDisplaced(
+      session_id, GURL("https://example.com/earlier-turn"), ""));
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       IsContextDisplaced_ReattachedAtSameUrl) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(
+      lens::features::kLensDeleteContextOnPageNavigation);
+  EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(_, _, _))
+      .Times(testing::AnyNumber());
+
+  const SessionID session_id = SessionID::FromSerializedValue(18);
+  const GURL submitted_url("https://example.com/18");
+  const base::UnguessableToken tab_token = handle_->CreateContextToken();
+  auto input_data = MakeTabInputData(18);
+  input_data->page_url = submitted_url;
+  handle_->StartTabContextUploadFlow(tab_token, std::move(input_data),
+                                     std::nullopt);
+  FileInfo tab_info;
+  tab_info.file_token = tab_token;
+  tab_info.tab_session_id = session_id;
+  tab_info.tab_url = submitted_url;
+  lens::LensOverlayRequestId req_id;
+  req_id.set_uuid(18001);
+  req_id.set_context_id(77);
+  tab_info.request_id = req_id;
+  EXPECT_CALL(*mock_controller_ptr_, GetFileInfo(tab_token))
+      .WillRepeatedly(testing::Return(&tab_info));
+  handle_->MarkQuerySubmitted({}, std::nullopt);
+  handle_->ClearSubmittedContextTokens();
+
+  // Navigating away displaces the submitted context.
+  handle_->OnTabClosedOrNavigated(session_id, GURL("https://other.com/18"),
+                                  "Other");
+  EXPECT_TRUE(handle_->IsContextDisplaced(77));
+
+  // Navigating back and re-attaching the same page means the tab owns the
+  // context again.
+  const base::UnguessableToken pending_token =
+      handle_->AddPendingDelayedTab(18, submitted_url, "");
+  EXPECT_CALL(*mock_controller_ptr_, GetFileInfo(pending_token))
+      .WillRepeatedly(testing::Return(nullptr));
+  EXPECT_FALSE(handle_->IsContextDisplaced(77));
+}
+
 TEST_F(
     ContextualSearchSessionHandleTest,
     OnTabClosedOrNavigated_NavigatedAndReattachedWithoutValidator_KeepsNewToken) {
