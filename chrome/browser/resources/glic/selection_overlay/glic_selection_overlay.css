@@ -292,21 +292,28 @@
   max-width: 100%;
   padding: 0;
   padding-inline-end: 6px;
-  padding-inline-start: 16px;
+  padding-inline-start: 10px;
   transition: box-shadow 200ms ease;
-  width: 360px;
+  width: 320px;
 }
 
 .searchbox-pill:focus-within {
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(27, 110, 243, 0.3);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
 }
 
 .sparkle-icon {
   align-items: center;
   display: flex;
   flex-shrink: 0;
+  height: 16.667px;
   justify-content: center;
   margin-right: 12px;
+  width: 16.667px;
+}
+
+.sparkle-icon img {
+  height: 100%;
+  width: 100%;
 }
 
 #promptInput {
@@ -326,14 +333,14 @@
 }
 
 #submitPromptButton {
-  --cr-icon-button-fill-color: #0B57D0;
+  --cr-icon-button-fill-color: #000;
   --cr-icon-button-hover-background-color: #A8C7FA;
-  --cr-icon-button-icon-size: 20px;
+  --cr-icon-button-icon-size: 18px;
   --cr-icon-button-margin-end: 0;
   --cr-icon-button-margin-start: 8px;
   --cr-icon-button-size: 36px;
   --cr-icon-image: url('/arrow_upward.svg');
-  background-color: #C2E7FF;
+  background-color: #9dd2ff;
 }
 
 #submitPromptButton[hidden] {

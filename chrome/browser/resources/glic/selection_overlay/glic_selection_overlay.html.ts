@@ -70,7 +70,7 @@ export function getHtml(this: GlicSelectionOverlayElement) {
                 @click="${this.onSearchboxPillClick}"
                 @pointerdown="${this.onPromptPointerdown}">
               <div class="sparkle-icon">
-                <img src="/spark.svg" width="20" height="20">
+                <img src="/spark.svg">
               </div>
               <input id="promptInput"
                   type="text"
