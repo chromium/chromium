@@ -34,7 +34,8 @@ class MacNotificationServiceNS : public mojom::MacNotificationService {
   ~MacNotificationServiceNS() override;
 
   // mojom::MacNotificationService:
-  void DisplayNotification(mojom::NotificationPtr notification) override;
+  void DisplayNotification(mojom::NotificationPtr notification,
+                           DisplayNotificationCallback callback) override;
   void GetDisplayedNotifications(
       mojom::ProfileIdentifierPtr profile,
       const std::optional<GURL>& origin,

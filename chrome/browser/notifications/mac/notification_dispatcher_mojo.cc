@@ -16,10 +16,12 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/notifications/mac/mac_notification_provider_factory.h"
 #include "chrome/browser/notifications/mac/notification_utils.h"
+#include "chrome/services/mac_notifications/public/cpp/mac_notification_metrics.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -72,10 +74,16 @@ NotificationDispatcherMojo::~NotificationDispatcherMojo() = default;
 void NotificationDispatcherMojo::DisplayNotification(
     NotificationHandler::Type notification_type,
     Profile* profile,
-    const message_center::Notification& notification) {
+    const message_center::Notification& notification,
+    DisplayNotificationCallback callback) {
   no_notifications_checker_.Cancel();
   GetOrCreateService()->DisplayNotification(
-      CreateMacNotification(notification_type, profile, notification));
+      CreateMacNotification(notification_type, profile, notification),
+      WrapCallbackWithAsyncDefaultInvokeIfNotRun(
+          base::BindOnce(&NotificationDispatcherMojo::OnDisplayedNotification,
+                         weak_factory_.GetWeakPtr(), std::move(callback)),
+          mac_notifications::mojom::DisplayNotificationResult::
+              kConnectionFailed));
 }
 
 void NotificationDispatcherMojo::CloseNotificationWithId(
@@ -330,6 +338,25 @@ NotificationDispatcherMojo::GetOrCreateService() {
         base::Unretained(this), ShutdownType::kUnexpected));
   }
   return service_.get();
+}
+
+void NotificationDispatcherMojo::OnDisplayedNotification(
+    DisplayNotificationCallback callback,
+    mac_notifications::mojom::DisplayNotificationResult result) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Notifications.macOS.DisplayNotificationResult.",
+                    mac_notifications::MacNotificationStyleSuffix(
+                        provider_factory_->notification_style())}),
+      result);
+  if (result !=
+      mac_notifications::mojom::DisplayNotificationResult::kConnectionFailed) {
+    OnServiceResponded();
+    if (result !=
+        mac_notifications::mojom::DisplayNotificationResult::kSuccess) {
+      CheckIfServiceCanBeTerminated();
+    }
+  }
+  std::move(callback).Run(result);
 }
 
 void NotificationDispatcherMojo::DispatchGetNotificationsReply(

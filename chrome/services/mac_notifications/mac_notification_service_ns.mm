@@ -175,7 +175,8 @@ MacNotificationServiceNS::~MacNotificationServiceNS() {
 }
 
 void MacNotificationServiceNS::DisplayNotification(
-    mojom::NotificationPtr notification) {
+    mojom::NotificationPtr notification,
+    DisplayNotificationCallback callback) {
   NSUserNotification* toast = [[NSUserNotification alloc] init];
 
   toast.title = base::SysUTF16ToNSString(notification->title);
@@ -194,6 +195,7 @@ void MacNotificationServiceNS::DisplayNotification(
   toast.identifier = notification_id;
 
   [notification_center_ deliverNotification:toast];
+  std::move(callback).Run(mojom::DisplayNotificationResult::kSuccess);
 }
 
 void MacNotificationServiceNS::GetDisplayedNotifications(

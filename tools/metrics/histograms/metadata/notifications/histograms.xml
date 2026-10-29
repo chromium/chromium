@@ -879,6 +879,23 @@ chromium-metrics-reviews@google.com.
   <token key="Style" variants="MacOSNotificationStyle"/>
 </histogram>
 
+<histogram name="Notifications.macOS.DisplayNotificationResult.{Style}"
+    enum="MacNotificationDisplayResult" expires_after="2027-03-01">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the browser-observed result of attempting to display a notification
+    via the {Style} macOS notification service over Mojo, including permission
+    states, OS delivery errors, and Mojo connection or process launch failures.
+    Recorded when the DisplayNotification Mojo call completes or its pipe
+    disconnects. Note that NSUserNotificationCenter-backed services always
+    report Success when connected (or ConnectionFailed on Mojo disconnect),
+    whereas UNUserNotificationCenter-backed services (such as AppShim) also
+    report OS permission and delivery errors.
+  </summary>
+  <token key="Style" variants="MacOSNotificationStyle"/>
+</histogram>
+
 <histogram name="Notifications.macOS.ServiceProcessKilled" units="ms"
     expires_after="2027-02-13">
   <owner>knollr@chromium.org</owner>

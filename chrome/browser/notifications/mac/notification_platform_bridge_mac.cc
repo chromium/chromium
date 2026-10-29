@@ -137,7 +137,8 @@ void NotificationPlatformBridgeMac::Display(
     bool is_alert = IsAlertNotificationMac(notification);
     dispatcher = is_alert ? alert_dispatcher_.get() : banner_dispatcher_.get();
   }
-  dispatcher->DisplayNotification(notification_type, profile, notification);
+  dispatcher->DisplayNotification(notification_type, profile, notification,
+                                  base::DoNothing());
   CloseImpl(profile, notification.id(), dispatcher);
 }
 

@@ -20,10 +20,10 @@ class StubNotificationDispatcherMac : public NotificationDispatcherMac {
   ~StubNotificationDispatcherMac() override;
 
   // NotificationDispatcherMac:
-  void DisplayNotification(
-      NotificationHandler::Type notification_type,
-      Profile* profile,
-      const message_center::Notification& notification) override;
+  void DisplayNotification(NotificationHandler::Type notification_type,
+                           Profile* profile,
+                           const message_center::Notification& notification,
+                           DisplayNotificationCallback callback) override;
   void CloseNotificationWithId(
       const MacNotificationIdentifier& identifier) override;
   void CloseNotificationsWithProfileId(const std::string& profile_id,

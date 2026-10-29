@@ -193,7 +193,8 @@ class MacNotificationServiceNSTest : public testing::Test {
       quit_closure.Run();
     }] deliverNotification:[OCMArg any]];
 
-    service_remote_->DisplayNotification(CreateMojoNotification());
+    service_remote_->DisplayNotification(CreateMojoNotification(),
+                                         base::DoNothing());
     run_loop.Run();
     [mock_notification_center_ verify];
   }
@@ -233,7 +234,8 @@ TEST_F(MacNotificationServiceNSTest, DisplayNotification) {
       }]];
 
   // Create and display a new notification.
-  service_remote_->DisplayNotification(CreateMojoNotification());
+  service_remote_->DisplayNotification(CreateMojoNotification(),
+                                       base::DoNothing());
 
   run_loop.Run();
   [mock_notification_center_ verify];

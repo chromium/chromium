@@ -7,6 +7,7 @@
 
 #import <UserNotifications/UserNotifications.h>
 
+#include <cstddef>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -61,7 +62,8 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
       base::RepeatingClosure callback);
 
   // mojom::MacNotificationService:
-  void DisplayNotification(mojom::NotificationPtr notification) override;
+  void DisplayNotification(mojom::NotificationPtr notification,
+                           DisplayNotificationCallback callback) override;
   void GetDisplayedNotifications(
       mojom::ProfileIdentifierPtr profile,
       const std::optional<GURL>& origin,
@@ -102,9 +104,13 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
     bool is_being_replaced = false;
   };
 
-  void DoDisplayNotification(mojom::NotificationPtr notification);
+  void DoDisplayNotification(mojom::NotificationPtr notification,
+                             DisplayNotificationCallback callback);
   void DeliverNotificationContent(PendingDelivery delivery);
   void OnNotificationDelivered(PendingDelivery delivery, NSError* error);
+  void OnNotificationDeliveryFailedWithStatus(
+      DisplayNotificationCallback callback,
+      UNAuthorizationStatus status);
   // Queries `UNUserNotificationCenter` for notifications currently delivered in
   // the OS notification center, without merging in-flight deliveries. Used by
   // `SynchronizeNotifications()` to detect when delivered notifications have
@@ -157,7 +163,6 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
   // Called when we got an updated UNAuthorizationStatus.
   void OnGotAuthorizationStatus(UNAuthorizationStatus status);
 
-  mojo::Receiver<mojom::MacNotificationService> binding_;
   mojo::Remote<mojom::MacNotificationActionHandler> action_handler_;
   AlertUNNotificationCenterDelegate* __strong delegate_;
   UNUserNotificationCenter* __strong notification_center_;
@@ -189,6 +194,15 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
   std::vector<RequestPermissionCallback> pending_permission_requests_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // Number of `DisplayNotification()` calls whose response callback has not yet
+  // run (including failed deliveries that have already been removed from
+  // `delivered_notifications_` and are querying `UNUserNotificationCenter`
+  // settings to determine the `DisplayNotificationResult`). Prevents
+  // `OkayToTerminateService()` from allowing termination before the result is
+  // sent back over Mojo.
+  size_t in_flight_display_notifications_
+      GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+
   // True while an OS notification permission prompt is being requested via
   // `DoRequestPermission()`.
   bool is_permission_prompt_pending_ GUARDED_BY_CONTEXT(sequence_checker_) =
@@ -204,6 +218,12 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
       GUARDED_BY_CONTEXT(sequence_checker_);
   bool is_synchronizing_permission_status_
       GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
+  // Declared after members that may hold Mojo response callbacks (such as
+  // `synchronize_notifications_done_callbacks_` and `notification_center_`) so
+  // `binding_` is destroyed first, disconnecting the pipe before any uninvoked
+  // response callbacks are destroyed.
+  mojo::Receiver<mojom::MacNotificationService> binding_;
 
   // Ensures that the methods in this class are called on the same sequence.
   SEQUENCE_CHECKER(sequence_checker_);

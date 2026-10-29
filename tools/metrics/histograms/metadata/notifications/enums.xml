@@ -90,6 +90,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/finds/core/finds_metrics.h:FindsOptInTriggerReason) -->
 
+<!-- LINT.IfChange(MacNotificationDisplayResult) -->
+
+<enum name="MacNotificationDisplayResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Permission not determined"/>
+  <int value="2" label="Permission prompt pending"/>
+  <int value="3" label="Permission denied"/>
+  <int value="4" label="OS delivery failed"/>
+  <int value="5" label="Service connection failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/services/mac_notifications/public/mojom/mac_notifications.mojom:MacNotificationDisplayResult) -->
+
 <enum name="NotificationActionType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Notification added"/>

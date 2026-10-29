@@ -16,6 +16,8 @@
 
 #include "base/apple/bundle_locations.h"
 #include "base/apple/foundation_util.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_file.h"
@@ -142,6 +144,7 @@ struct MacNotificationServiceUN::PendingDelivery {
   UNMutableNotificationContent* __strong content;
   base::ScopedTempFile icon_file;
   bool is_retry_without_attachment = false;
+  DisplayNotificationCallback callback;
 };
 
 // static
@@ -152,12 +155,12 @@ MacNotificationServiceUN::MacNotificationServiceUN(
     base::RepeatingCallback<void(mojom::PermissionStatus)>
         permission_status_changed_callback,
     UNUserNotificationCenter* notification_center)
-    : binding_(this),
-      action_handler_(std::move(handler)),
+    : action_handler_(std::move(handler)),
       notification_center_(notification_center),
       category_manager_(notification_center),
       permission_status_changed_callback_(
-          std::move(permission_status_changed_callback)) {
+          std::move(permission_status_changed_callback)),
+      binding_(this) {
   delegate_ = [[AlertUNNotificationCenterDelegate alloc]
       initWithActionHandler:base::BindRepeating(
                                 &MacNotificationServiceUN::OnNotificationAction,
@@ -225,8 +228,20 @@ void MacNotificationServiceUN::Bind(
 }
 
 void MacNotificationServiceUN::DisplayNotification(
-    mojom::NotificationPtr notification) {
+    mojom::NotificationPtr notification,
+    DisplayNotificationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ++in_flight_display_notifications_;
+  callback = std::move(callback).Then(base::BindOnce(
+      [](base::WeakPtr<MacNotificationServiceUN> service) {
+        if (service) {
+          DCHECK_CALLED_ON_VALID_SEQUENCE(service->sequence_checker_);
+          CHECK_GT(service->in_flight_display_notifications_, 0u);
+          --service->in_flight_display_notifications_;
+        }
+      },
+      weak_factory_.GetWeakPtr()));
+
   std::string notification_id = DeriveMacNotificationId(notification->meta->id);
 
   // If this notification is not set to renotify, and we think it is currently
@@ -238,23 +253,21 @@ void MacNotificationServiceUN::DisplayNotification(
   if (!notification->renotify && existing != delivered_notifications_.end()) {
     // Cleared when `DoDisplayNotification` overwrites this entry.
     existing->second.is_being_replaced = true;
-    SynchronizeNotifications(
-        base::BindOnce(&MacNotificationServiceUN::DoDisplayNotification,
-                       base::Unretained(this), std::move(notification)));
+    SynchronizeNotifications(base::BindOnce(
+        &MacNotificationServiceUN::DoDisplayNotification,
+        base::Unretained(this), std::move(notification), std::move(callback)));
     return;
   }
 
-  // To avoid the cached permission status from going too stale, any time we
-  // display a notification is as good a time as any to poll the current
-  // permission status.
-  SynchronizePermissionStatus(/*log_result=*/false);
-
-  DoDisplayNotification(std::move(notification));
+  DoDisplayNotification(std::move(notification), std::move(callback));
 }
 
 void MacNotificationServiceUN::DoDisplayNotification(
-    mojom::NotificationPtr notification) {
+    mojom::NotificationPtr notification,
+    DisplayNotificationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::string notification_id = DeriveMacNotificationId(notification->meta->id);
+
   UNMutableNotificationContent* content =
       [[UNMutableNotificationContent alloc] init];
 
@@ -263,7 +276,6 @@ void MacNotificationServiceUN::DoDisplayNotification(
   content.body = base::SysUTF16ToNSString(notification->body);
   content.userInfo = GetMacNotificationUserInfo(notification);
 
-  std::string notification_id = DeriveMacNotificationId(notification->meta->id);
   NSString* notification_id_ns = base::SysUTF8ToNSString(notification_id);
 
   // Keep track of delivered notifications to detect when they get closed.
@@ -338,7 +350,8 @@ void MacNotificationServiceUN::DoDisplayNotification(
   DeliverNotificationContent({.notification_id = std::move(notification_id),
                               .replace_content = replace_content,
                               .content = content,
-                              .icon_file = std::move(icon_file)});
+                              .icon_file = std::move(icon_file),
+                              .callback = std::move(callback)});
 }
 
 void MacNotificationServiceUN::DeliverNotificationContent(
@@ -382,39 +395,80 @@ void MacNotificationServiceUN::OnNotificationDelivered(PendingDelivery delivery,
 
   // If the notification was closed or overwritten by a newer
   // `DisplayNotification` call with the same ID while this delivery request was
-  // in flight, ignore this completion so a stale failure doesn't retry, clear
-  // `pending_content`, or erase the newer notification's tracking entry and
-  // category.
+  // in flight, do not retry attachments, clear `pending_content`, or erase the
+  // newer notification's tracking entry and category, but still report the
+  // actual delivery result.
   auto it = delivered_notifications_.find(delivery.notification_id);
-  if (it == delivered_notifications_.end() ||
-      it->second.pending_content != delivery.content) {
+  if (it != delivered_notifications_.end() &&
+      it->second.pending_content == delivery.content) {
+    // If `UNUserNotificationCenter` rejected the icon attachment, retry once
+    // without attachments so the notification text is still delivered.
+    if (!delivery.is_retry_without_attachment && IsAttachmentError(error) &&
+        delivery.content.attachments.count > 0) {
+      delivery.content = [delivery.content mutableCopy];
+      [delivery.content setAttachments:@[]];
+      delivery.is_retry_without_attachment = true;
+      it->second.pending_content = delivery.content;
+      DeliverNotificationContent(std::move(delivery));
+      return;
+    }
+
+    it->second.pending_content = nil;
+
+    if (error && !delivery.replace_content) {
+      // A failed `addNotificationRequest:` (including a `renotify = true`
+      // replacement, where `SynchronizeNotifications()` was skipped and the
+      // browser has already overwritten the NotificationDatabase row) means the
+      // new notification was not delivered, and when `addNotificationRequest:`
+      // fails due to revoked OS permissions macOS has also cleared any older
+      // delivered notifications. Stop tracking it so
+      // `SynchronizeNotifications()` does not report a phantom user close. A
+      // failed in-place `replace_content` leaves the existing notification on
+      // screen.
+      OnNotificationsClosed({delivery.notification_id});
+    }
+  }
+
+  if (!error) {
+    OnGotAuthorizationStatus(UNAuthorizationStatusAuthorized);
+    std::move(delivery.callback)
+        .Run(mojom::DisplayNotificationResult::kSuccess);
     return;
   }
 
-  // If `UNUserNotificationCenter` rejected the icon attachment, retry once
-  // without attachments so the notification text is still delivered.
-  if (!delivery.is_retry_without_attachment && IsAttachmentError(error) &&
-      delivery.content.attachments.count > 0) {
-    delivery.content = [delivery.content mutableCopy];
-    [delivery.content setAttachments:@[]];
-    delivery.is_retry_without_attachment = true;
-    it->second.pending_content = delivery.content;
-    DeliverNotificationContent(std::move(delivery));
-    return;
-  }
+  __block auto on_got_settings =
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &MacNotificationServiceUN::OnNotificationDeliveryFailedWithStatus,
+          weak_factory_.GetWeakPtr(), std::move(delivery.callback)));
+  [notification_center_ getNotificationSettingsWithCompletionHandler:^(
+                            UNNotificationSettings* _Nonnull settings) {
+    std::move(on_got_settings).Run(settings.authorizationStatus);
+  }];
+}
 
-  it->second.pending_content = nil;
-
-  // A failed `addNotificationRequest:` (including a `renotify = true`
-  // replacement, where `SynchronizeNotifications()` was skipped and the browser
-  // has already overwritten the NotificationDatabase row) means the new
-  // notification was not delivered, and when `addNotificationRequest:` fails
-  // due to revoked OS permissions macOS has also cleared any older delivered
-  // notifications. Stop tracking it so `SynchronizeNotifications()` does not
-  // report a phantom user close. A failed in-place `replace_content` leaves the
-  // existing notification on screen.
-  if (error && !delivery.replace_content) {
-    OnNotificationsClosed({delivery.notification_id});
+void MacNotificationServiceUN::OnNotificationDeliveryFailedWithStatus(
+    DisplayNotificationCallback callback,
+    UNAuthorizationStatus status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  OnGotAuthorizationStatus(status);
+  CHECK(last_permission_status_.has_value());
+  switch (*last_permission_status_) {
+    case mojom::PermissionStatus::kNotDetermined:
+      std::move(callback).Run(
+          mojom::DisplayNotificationResult::kPermissionNotDetermined);
+      return;
+    case mojom::PermissionStatus::kPromptPending:
+      std::move(callback).Run(
+          mojom::DisplayNotificationResult::kPermissionPromptPending);
+      return;
+    case mojom::PermissionStatus::kDenied:
+      std::move(callback).Run(
+          mojom::DisplayNotificationResult::kPermissionDenied);
+      return;
+    case mojom::PermissionStatus::kGranted:
+      std::move(callback).Run(
+          mojom::DisplayNotificationResult::kDeliveryFailed);
+      return;
   }
 }
 
@@ -586,10 +640,20 @@ void MacNotificationServiceUN::OkayToTerminateService(
 
   GetDisplayedNotifications(
       /*profile=*/nullptr, /*origin=*/std::nullopt,
-      base::BindOnce([](std::vector<mojom::NotificationIdentifierPtr>
-                            notifications) {
-        return notifications.empty();
-      }).Then(std::move(callback)));
+      base::BindOnce(
+          [](base::WeakPtr<MacNotificationServiceUN> service,
+             std::vector<mojom::NotificationIdentifierPtr> notifications) {
+            if (service) {
+              DCHECK_CALLED_ON_VALID_SEQUENCE(service->sequence_checker_);
+              if (!service->pending_permission_requests_.empty() ||
+                  service->in_flight_display_notifications_ > 0) {
+                return false;
+              }
+            }
+            return notifications.empty();
+          },
+          weak_factory_.GetWeakPtr())
+          .Then(std::move(callback)));
 }
 
 bool MacNotificationServiceUN::DidRecentlyHandleClickAction() const {

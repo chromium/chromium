@@ -46,9 +46,19 @@ const char kProfileId[] = "profile-id";
 class MockNotificationService
     : public mac_notifications::mojom::MacNotificationService {
  public:
+  MockNotificationService() {
+    ON_CALL(*this, DisplayNotification)
+        .WillByDefault([](mac_notifications::mojom::NotificationPtr,
+                          DisplayNotificationCallback callback) {
+          std::move(callback).Run(
+              mac_notifications::mojom::DisplayNotificationResult::kSuccess);
+        });
+  }
+
   MOCK_METHOD(void,
               DisplayNotification,
-              (mac_notifications::mojom::NotificationPtr),
+              (mac_notifications::mojom::NotificationPtr,
+               DisplayNotificationCallback),
               (override));
   MOCK_METHOD(void,
               GetDisplayedNotifications,
@@ -248,10 +258,16 @@ class NotificationDispatcherMojoTest : public testing::Test {
   void DisplayNotificationSync() {
     base::RunLoop run_loop;
     EXPECT_CALL(service(), DisplayNotification)
-        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+        .WillOnce([&](mac_notifications::mojom::NotificationPtr,
+                      MockNotificationService::DisplayNotificationCallback
+                          callback) {
+          std::move(callback).Run(
+              mac_notifications::mojom::DisplayNotificationResult::kSuccess);
+          run_loop.Quit();
+        });
     notification_dispatcher_->DisplayNotification(
         NotificationHandler::Type::WEB_PERSISTENT, profile_,
-        CreateNotification());
+        CreateNotification(), base::DoNothing());
     run_loop.Run();
   }
 
@@ -310,10 +326,16 @@ TEST_F(NotificationDispatcherMojoTest,
       {kNotificationId, kProfileId, /*incognito=*/true});
 
   EXPECT_CALL(service(), DisplayNotification)
-      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+      .WillOnce(
+          [&](mac_notifications::mojom::NotificationPtr,
+              MockNotificationService::DisplayNotificationCallback callback) {
+            std::move(callback).Run(
+                mac_notifications::mojom::DisplayNotificationResult::kSuccess);
+            run_loop.Quit();
+          });
   notification_dispatcher_->DisplayNotification(
-      NotificationHandler::Type::WEB_PERSISTENT, profile_,
-      CreateNotification());
+      NotificationHandler::Type::WEB_PERSISTENT, profile_, CreateNotification(),
+      base::DoNothing());
 
   run_loop.Run();
   ExpectKeepConnected();
@@ -348,8 +370,8 @@ TEST_F(NotificationDispatcherMojoTest, CloseAndDisconnectTiming) {
   // Show a new notification.
   EXPECT_CALL(service(), DisplayNotification);
   notification_dispatcher_->DisplayNotification(
-      NotificationHandler::Type::WEB_PERSISTENT, profile_,
-      CreateNotification());
+      NotificationHandler::Type::WEB_PERSISTENT, profile_, CreateNotification(),
+      base::DoNothing());
 
   // Wait for 30 seconds and close the notification.
   auto delay = base::Seconds(30);
@@ -369,19 +391,33 @@ TEST_F(NotificationDispatcherMojoTest, CloseAndDisconnectTiming) {
   histograms.ExpectUniqueTimeSample("Notifications.macOS.ServiceProcessRuntime",
                                     delay, /*expected_count=*/1);
   histograms.ExpectUniqueTimeSample(
-      "Notifications.macOS.ServiceProcess.TimeToFirstResponse", delay,
+      "Notifications.macOS.ServiceProcess.TimeToFirstResponse",
+      base::Seconds(0),
       /*expected_count=*/1);
   histograms.ExpectTotalCount("Notifications.macOS.ServiceProcessKilled",
                               /*count=*/0);
+  histograms.ExpectUniqueSample(
+      "Notifications.macOS.DisplayNotificationResult.Alert",
+      mac_notifications::mojom::DisplayNotificationResult::kSuccess,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(NotificationDispatcherMojoTest, KillServiceTiming) {
   base::HistogramTester histograms;
-  // Show a new notification.
-  EXPECT_CALL(service(), DisplayNotification);
+  // Show a new notification, simulating a hung service that never replies
+  // before the service process dies.
+  mac_notifications::mojom::MacNotificationService::DisplayNotificationCallback
+      held_callback;
+  EXPECT_CALL(service(), DisplayNotification)
+      .WillOnce(
+          [&held_callback](mac_notifications::mojom::NotificationPtr,
+                           mac_notifications::mojom::MacNotificationService::
+                               DisplayNotificationCallback callback) {
+            held_callback = std::move(callback);
+          });
   notification_dispatcher_->DisplayNotification(
-      NotificationHandler::Type::WEB_PERSISTENT, profile_,
-      CreateNotification());
+      NotificationHandler::Type::WEB_PERSISTENT, profile_, CreateNotification(),
+      base::DoNothing());
 
   // Wait for 30 seconds and terminate the service.
   auto delay = base::Seconds(30);
@@ -400,6 +436,10 @@ TEST_F(NotificationDispatcherMojoTest, KillServiceTiming) {
   histograms.ExpectTotalCount(
       "Notifications.macOS.ServiceProcess.TimeToFirstResponse",
       /*count=*/0);
+  histograms.ExpectUniqueSample(
+      "Notifications.macOS.DisplayNotificationResult.Alert",
+      mac_notifications::mojom::DisplayNotificationResult::kConnectionFailed,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(NotificationDispatcherMojoTest, DidActivateNotification) {
@@ -408,8 +448,8 @@ TEST_F(NotificationDispatcherMojoTest, DidActivateNotification) {
   EmulateOkayToTerminate(/*can_terminate=*/true);
   EXPECT_CALL(service(), DisplayNotification);
   notification_dispatcher_->DisplayNotification(
-      NotificationHandler::Type::WEB_PERSISTENT, profile_,
-      CreateNotification());
+      NotificationHandler::Type::WEB_PERSISTENT, profile_, CreateNotification(),
+      base::DoNothing());
 
   // Wait until the action handler has been bound.
   task_environment_.RunUntilIdle();
@@ -669,13 +709,14 @@ class NotificationDispatcherMojoAppShimTest
   }
 
   void DisplayAppShimNotificationSync() {
-    base::test::TestFuture<void> display_future;
-    EXPECT_CALL(app_shim_service(), DisplayNotification)
-        .WillOnce(base::test::RunOnceClosure(display_future.GetCallback()));
+    base::test::TestFuture<mac_notifications::mojom::DisplayNotificationResult>
+        display_future;
+    EXPECT_CALL(app_shim_service(), DisplayNotification);
     app_shim_dispatcher_->DisplayNotification(
         NotificationHandler::Type::WEB_PERSISTENT, profile_,
-        CreateNotification());
-    EXPECT_TRUE(display_future.Wait());
+        CreateNotification(), display_future.GetCallback());
+    EXPECT_EQ(display_future.Get(),
+              mac_notifications::mojom::DisplayNotificationResult::kSuccess);
     EXPECT_TRUE(app_shim_factory_->is_service_connected());
   }
 
@@ -833,5 +874,96 @@ TEST_F(NotificationDispatcherMojoAppShimTest,
   auto [notification_ids, supports_synchronization] = get_future.Take();
   EXPECT_TRUE(notification_ids.empty());
   EXPECT_TRUE(supports_synchronization);
+  EXPECT_FALSE(app_shim_factory_->is_service_connected());
+}
+
+TEST_F(NotificationDispatcherMojoAppShimTest,
+       DisplayNotificationPermissionNotDeterminedDisconnects) {
+  base::HistogramTester histograms;
+  EXPECT_CALL(app_shim_service(), DisplayNotification)
+      .WillOnce(
+          [](mac_notifications::mojom::NotificationPtr,
+             MockNotificationService::DisplayNotificationCallback callback) {
+            std::move(callback).Run(
+                mac_notifications::mojom::DisplayNotificationResult::
+                    kPermissionNotDetermined);
+          });
+  EmulateAppShimOkayToTerminate(/*can_terminate=*/true);
+
+  base::test::TestFuture<mac_notifications::mojom::DisplayNotificationResult>
+      result_future;
+  app_shim_dispatcher_->DisplayNotification(
+      NotificationHandler::Type::WEB_PERSISTENT, profile_, CreateNotification(),
+      result_future.GetCallback());
+  EXPECT_EQ(result_future.Get(),
+            mac_notifications::mojom::DisplayNotificationResult::
+                kPermissionNotDetermined);
+  histograms.ExpectUniqueSample(
+      "Notifications.macOS.DisplayNotificationResult.AppShim",
+      mac_notifications::mojom::DisplayNotificationResult::
+          kPermissionNotDetermined,
+      /*expected_bucket_count=*/1);
+
+  task_environment_.FastForwardBy(base::Seconds(30));
+  EXPECT_FALSE(app_shim_factory_->is_service_connected());
+}
+
+TEST_F(NotificationDispatcherMojoAppShimTest,
+       DisplayNotificationDeliveryFailedDisconnectsWhenIdle) {
+  base::HistogramTester histograms;
+  EXPECT_CALL(app_shim_service(), DisplayNotification)
+      .WillOnce(
+          [](mac_notifications::mojom::NotificationPtr,
+             MockNotificationService::DisplayNotificationCallback callback) {
+            std::move(callback).Run(
+                mac_notifications::mojom::DisplayNotificationResult::
+                    kDeliveryFailed);
+          });
+  EmulateAppShimOkayToTerminate(/*can_terminate=*/true);
+
+  base::test::TestFuture<mac_notifications::mojom::DisplayNotificationResult>
+      result_future;
+  app_shim_dispatcher_->DisplayNotification(
+      NotificationHandler::Type::WEB_PERSISTENT, profile_, CreateNotification(),
+      result_future.GetCallback());
+  EXPECT_EQ(
+      result_future.Get(),
+      mac_notifications::mojom::DisplayNotificationResult::kDeliveryFailed);
+  histograms.ExpectUniqueSample(
+      "Notifications.macOS.DisplayNotificationResult.AppShim",
+      mac_notifications::mojom::DisplayNotificationResult::kDeliveryFailed,
+      /*expected_bucket_count=*/1);
+  histograms.ExpectTotalCount(
+      "Notifications.macOS.AppShimProcess.TimeToFirstResponse",
+      /*count=*/1);
+
+  task_environment_.FastForwardBy(base::Seconds(30));
+  EXPECT_FALSE(app_shim_factory_->is_service_connected());
+}
+
+TEST_F(NotificationDispatcherMojoAppShimTest,
+       DisplayNotificationDisconnectsBeforeReply) {
+  base::HistogramTester histograms;
+  MockNotificationService::DisplayNotificationCallback saved_callback;
+  EXPECT_CALL(app_shim_service(), DisplayNotification)
+      .WillOnce(
+          [&](mac_notifications::mojom::NotificationPtr,
+              MockNotificationService::DisplayNotificationCallback callback) {
+            saved_callback = std::move(callback);
+            app_shim_factory_->Disconnect();
+          });
+
+  base::test::TestFuture<mac_notifications::mojom::DisplayNotificationResult>
+      result_future;
+  app_shim_dispatcher_->DisplayNotification(
+      NotificationHandler::Type::WEB_PERSISTENT, profile_, CreateNotification(),
+      result_future.GetCallback());
+  EXPECT_EQ(
+      result_future.Get(),
+      mac_notifications::mojom::DisplayNotificationResult::kConnectionFailed);
+  histograms.ExpectUniqueSample(
+      "Notifications.macOS.DisplayNotificationResult.AppShim",
+      mac_notifications::mojom::DisplayNotificationResult::kConnectionFailed,
+      /*expected_bucket_count=*/1);
   EXPECT_FALSE(app_shim_factory_->is_service_connected());
 }

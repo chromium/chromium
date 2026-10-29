@@ -7,6 +7,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -23,12 +24,15 @@ StubNotificationDispatcherMac::~StubNotificationDispatcherMac() = default;
 void StubNotificationDispatcherMac::DisplayNotification(
     NotificationHandler::Type notification_type,
     Profile* profile,
-    const message_center::Notification& notification) {
+    const message_center::Notification& notification,
+    DisplayNotificationCallback callback) {
   CloseNotificationWithId({notification.id(),
                            NotificationPlatformBridge::GetProfileId(profile),
                            profile->IsOffTheRecord()});
   notifications_.push_back(
       CreateMacNotification(notification_type, profile, notification));
+  std::move(callback).Run(
+      mac_notifications::mojom::DisplayNotificationResult::kSuccess);
 }
 
 void StubNotificationDispatcherMac::CloseNotificationWithId(

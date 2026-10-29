@@ -130,11 +130,37 @@ enum PermissionStatus {
   kGranted = 4,
 };
 
+// Result of attempting to display a notification via MacNotificationService.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(MacNotificationDisplayResult)
+enum DisplayNotificationResult {
+  // The notification was passed to the system notification center.
+  kSuccess = 0,
+  // The notification was not displayed because system notification permission
+  // has not been requested yet.
+  kPermissionNotDetermined = 1,
+  // The notification was not displayed because a system notification permission
+  // prompt is currently pending.
+  kPermissionPromptPending = 2,
+  // The notification was not displayed because system notification permission
+  // was denied.
+  kPermissionDenied = 3,
+  // The notification could not be displayed because the system notification
+  // center returned an error despite permission being granted.
+  kDeliveryFailed = 4,
+  // The notification could not be displayed due to a service connection or
+  // launch failure.
+  kConnectionFailed = 5,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/notifications/enums.xml:MacNotificationDisplayResult)
+
 // Interface to control notifications shown by the helper app. Implemented by
 // the helper app and called from the browser process.
 interface MacNotificationService {
   // Display the |notification| via the system notification center.
-  DisplayNotification(Notification notification);
+  DisplayNotification(Notification notification)
+      => (DisplayNotificationResult result);
 
   // Gets a list of notification ids that are currently shown in the system
   // notification center. If a `profile` is passed, the list is filtered to only
