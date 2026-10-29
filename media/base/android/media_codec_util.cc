@@ -283,6 +283,12 @@ std::optional<gfx::Size> MediaCodecUtil::LookupCodedSizeAlignment(
       {"omx.sprd.(h264|vpx)", gfx::Size(16, 16)},
       {"omx.sprd.(hevc|vp9)", gfx::Size(64, 64)},
       {"c2.unisoc.av1", gfx::Size(64, 64)},
+
+      // cros-codecs
+      {"c2.cros-codecs.vaapi.avc", gfx::Size(16, 16)},
+      {"c2.cros-codecs.vaapi.hevc", gfx::Size(8, 8)},
+      {"c2.cros-codecs.vaapi.(vp8|vp9|av1)", gfx::Size(1, 1)},
+      {"c2.cros-codecs.v4l2.(avc|hevc|vp9|av1)", gfx::Size(1, 1)},
   };
 
   const auto lower_name = base::ToLowerASCII(name);
