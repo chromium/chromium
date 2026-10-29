@@ -1279,7 +1279,7 @@ TEST_P(PrintContextFrameTest, DISABLED_SubframePrintPageLayout) {
   // The child document element inside iframe.
   auto* child = ChildDocument().documentElement();
   // The iframe element in the document.
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
 
   GetDocument().GetFrame()->StartPrinting(WebPrintParams(page_size),
                                           maximum_shrink_ratio);
@@ -1387,7 +1387,7 @@ TEST_P(PrintContextFrameTest, SafePrintableInset) {
       <div id="target" style="position:absolute; width:100%; height:100%;"></div>
 )HTML");
   gfx::SizeF page_size(400, 300);
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
 
   WebPrintParams params(page_size);
   // top, right, bottom, left insets: 20px, 50px, 0, 10px (see page_size).

@@ -202,7 +202,7 @@ TEST_P(BoxFragmentPainterTest, ClippedText) {
   )HTML");
   // Initially all the texts are painted.
   auto num_all_display_items = ContentDisplayItems().size();
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
 
   target->SetInlineStyleProperty(CSSPropertyID::kHeight, "0px");
   UpdateAllLifecyclePhasesForTest();
@@ -228,13 +228,11 @@ TEST_P(BoxFragmentPainterTest, NodeAtPointWithSvgInline) {
 </svg>)HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  auto* root =
-      GetDocument().getElementById(AtomicString("svg"))->GetLayoutBox();
+  auto* root = GetElementById("svg")->GetLayoutBox();
   HitTestResult result;
   root->NodeAtPoint(result, HitTestLocation(gfx::PointF(256, 192)),
                     PhysicalOffset(0, 0), HitTestPhase::kForeground);
-  EXPECT_EQ(GetDocument().getElementById(AtomicString("pass")),
-            result.InnerElement());
+  EXPECT_EQ(GetElementById("pass"), result.InnerElement());
 }
 
 TEST_P(BoxFragmentPainterTest, TextareaBoxDecorationBackground) {
@@ -254,7 +252,7 @@ TEST_P(BoxFragmentPainterTest, TrackElementDiv) {
     </div>
   )HTML");
   // Initially all the texts are painted.
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
 
   auto element_id = base::Token(1, 2);
   auto element = TrackedElementSubRect(TrackedElementId(element_id));
@@ -287,7 +285,7 @@ TEST_P(BoxFragmentPainterTest, TrackElementSpanInlineBox) {
     </div>
   )HTML");
   // Initially all the texts are painted.
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
 
   auto element_id = base::Token(1, 2);
   auto element = TrackedElementSubRect(TrackedElementId(element_id));
@@ -327,7 +325,7 @@ TEST_P(BoxFragmentPainterTest, TrackElementSpanShouldForceInlineBox) {
     </div>
   )HTML");
   // Initially all the texts are painted.
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
 
   auto element_id = base::Token(1, 2);
   auto element = TrackedElementSubRect(TrackedElementId(element_id));
@@ -357,7 +355,7 @@ TEST_P(BoxFragmentPainterTest, TrackElementWithSubRect) {
     </div>
   )HTML");
   // Initially all the texts are painted.
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
 
   auto element_id = base::Token(1, 2);
   auto element = TrackedElementSubRect(
@@ -392,7 +390,7 @@ TEST_P(BoxFragmentPainterTest, TrackElementWithSubRectNoIntersection) {
       <div id="target" style="width:20px; height:20px; background: blue;"></div>
     </div>
   )HTML");
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
 
   auto element_id = base::Token(1, 2);
   // Create a sub-rect that is larger than the element and starts at a negative
@@ -580,7 +578,7 @@ TEST_P(BoxFragmentPainterTest, NodeAtPointWithFilterOnInline) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   gfx::PointF hit_point(105, 105);
   HitTestLocation location(hit_point);
   HitTestRequest::HitTestRequestType hit_type =
@@ -684,8 +682,8 @@ TEST_P(BoxFragmentPainterTest, PaintPopupBadgeForOverlayPopupAd) {
   )HTML");
   SimulateFirstContentfulPaint(GetDocument());
 
-  Element* normal_ad = GetDocument().getElementById(AtomicString("normal_ad"));
-  Element* popup_ad = GetDocument().getElementById(AtomicString("popup_ad"));
+  Element* normal_ad = GetElementById("normal_ad");
+  Element* popup_ad = GetElementById("popup_ad");
   ASSERT_TRUE(normal_ad);
   ASSERT_TRUE(popup_ad);
   normal_ad->SetIsAdRelated(NoProvenance{});
@@ -723,7 +721,7 @@ TEST_P(BoxFragmentPainterTest, PopupBadgeAddedAfterAdHighlightIsPainted) {
   )HTML");
   SimulateFirstContentfulPaint(GetDocument());
 
-  Element* ad = GetDocument().getElementById(AtomicString("ad"));
+  Element* ad = GetElementById("ad");
   ASSERT_TRUE(ad);
   ad->SetIsAdRelated(NoProvenance{});
 
@@ -770,7 +768,7 @@ TEST_P(BoxFragmentPainterTest, NoPopupBadgeWhenOverlayPopupAdIsTooSmall) {
   )HTML");
   SimulateFirstContentfulPaint(GetDocument());
 
-  Element* popup_ad = GetDocument().getElementById(AtomicString("popup_ad"));
+  Element* popup_ad = GetElementById("popup_ad");
   ASSERT_TRUE(popup_ad);
   popup_ad->SetIsAdRelated(NoProvenance{});
   popup_ad->SetIsOverlayPopupAd();
@@ -800,7 +798,7 @@ TEST_P(BoxFragmentPainterTest, NoPopupBadgeWhenFeatureDisabled) {
   )HTML");
   SimulateFirstContentfulPaint(GetDocument());
 
-  Element* popup_ad = GetDocument().getElementById(AtomicString("popup_ad"));
+  Element* popup_ad = GetElementById("popup_ad");
   ASSERT_TRUE(popup_ad);
   popup_ad->SetIsAdRelated(NoProvenance{});
   popup_ad->SetIsOverlayPopupAd();

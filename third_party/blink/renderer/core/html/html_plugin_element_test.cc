@@ -110,8 +110,7 @@ TEST_P(HTMLPlugInElementTest, RemovePlugin) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       Format(kDivWithPlugin, container_type, container_type));
 
-  auto* plugin = To<HTMLPlugInElement>(
-      GetDocument().getElementById(AtomicString("test_plugin")));
+  auto* plugin = To<HTMLPlugInElement>(GetElementById("test_plugin"));
   ASSERT_TRUE(plugin);
   EXPECT_EQ(container_type, plugin->tagName().ToAsciiLower());
 

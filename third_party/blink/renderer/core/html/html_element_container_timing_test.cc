@@ -25,7 +25,7 @@ TEST_F(HTMLElementContainerTimingAttributesTest,
   // The canonical spelling must not warn.
   EXPECT_EQ(storage.size(), initial_size);
 
-  Element* element_a = GetDocument().getElementById(AtomicString("a"));
+  Element* element_a = GetElementById("a");
   element_a->setAttribute(html_names::kContainertimingIgnoreAttr, g_empty_atom);
 
   ASSERT_EQ(storage.size(), initial_size + 1);

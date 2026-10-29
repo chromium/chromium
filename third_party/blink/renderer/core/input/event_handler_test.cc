@@ -330,7 +330,7 @@ TEST_F(EventHandlerTest, multiClickSelectionFromTap) {
       "<body contenteditable='true'><span class='line' id='line'>One Two "
       "Three</span></body>");
 
-  Node* line = GetDocument().getElementById(AtomicString("line"))->firstChild();
+  Node* line = GetElementById("line")->firstChild();
 
   TapEventBuilder single_tap_event(gfx::PointF(0, 0), 1);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
@@ -371,7 +371,7 @@ TEST_F(EventHandlerTest, multiClickSelectionFromTapDisabledIfNotEditable) {
       "height: 30px; } </style>"
       "<span class='line' id='line'>One Two Three</span>");
 
-  Node* line = GetDocument().getElementById(AtomicString("line"))->firstChild();
+  Node* line = GetElementById("line")->firstChild();
 
   TapEventBuilder single_tap_event(gfx::PointF(0, 0), 1);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
@@ -627,8 +627,7 @@ TEST_F(EventHandlerTest, ReadOnlyInputDoesNotInheritUserSelect) {
       "<div style='user-select: none'>"
       "<input id='sample' readonly value='blabla'>"
       "</div>");
-  auto* const input = To<HTMLInputElement>(
-      GetDocument().getElementById(AtomicString("sample")));
+  auto* const input = To<HTMLInputElement>(GetElementById("sample"));
   Node* const text = input->InnerEditorElement()->firstChild();
 
   HitTestLocation location(
@@ -720,8 +719,7 @@ TEST_F(EventHandlerTest, CursorForLayoutlessArea) {
   HitTestResult result =
       GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
           location);
-  ASSERT_EQ(GetDocument().getElementById(AtomicString("area")),
-            result.InnerPossiblyPseudoNode());
+  ASSERT_EQ(GetElementById("area"), result.InnerPossiblyPseudoNode());
   EXPECT_EQ(ui::mojom::blink::CursorType::kHelp,
             GetDocument()
                 .GetFrame()
@@ -756,8 +754,7 @@ TEST_F(EventHandlerTest, CursorForLayoutlessAreaWithImageCursor) {
   HitTestResult result =
       GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
           location);
-  ASSERT_EQ(GetDocument().getElementById(AtomicString("area")),
-            result.InnerPossiblyPseudoNode());
+  ASSERT_EQ(GetElementById("area"), result.InnerPossiblyPseudoNode());
   EXPECT_EQ(ui::mojom::blink::CursorType::kHelp,
             GetDocument()
                 .GetFrame()
@@ -778,7 +775,7 @@ TEST_F(EventHandlerTest, CursorForAreaInDisplayNoneMap) {
 
   // Style ensured inside a display:none subtree still holds unloaded
   // resources, so the <area> falls back to the auto cursor.
-  Element* area = GetDocument().getElementById(AtomicString("area"));
+  Element* area = GetElementById("area");
   ASSERT_TRUE(area->EnsureComputedStyle());
 
   HitTestLocation location((gfx::Point(50, 50)));
@@ -901,8 +898,7 @@ TEST_F(EventHandlerTest, ResizeListboxDoesNotAutoscroll) {
     </select>
   )HTML");
 
-  auto* select =
-      To<HTMLSelectElement>(GetDocument().getElementById(AtomicString("s")));
+  auto* select = To<HTMLSelectElement>(GetElementById("s"));
   ASSERT_TRUE(select);
   EXPECT_EQ(0, select->scrollTop());
 
@@ -1160,7 +1156,7 @@ TEST_F(EventHandlerTest, SelectionOnDoublePress) {
         </div>
       )HTML");
 
-  Element* element = GetDocument().getElementById(AtomicString("target"));
+  Element* element = GetElementById("target");
   gfx::PointF tap_point = gfx::PointF(element->BoundsInWidget().CenterPoint());
   TapDownEventBuilder single_tap_down_event(tap_point);
   single_tap_down_event.data.tap_down.tap_down_count = 1;
@@ -1206,7 +1202,7 @@ TEST_F(EventHandlerTest, SelectionOnDoublePressPreventDefaultMousePress) {
   GetDocument().body()->AppendChild(script);
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
-  Element* element = GetDocument().getElementById(AtomicString("target"));
+  Element* element = GetElementById("target");
   gfx::PointF tap_point = gfx::PointF(element->BoundsInWidget().CenterPoint());
   TapDownEventBuilder single_tap_down_event(tap_point);
   single_tap_down_event.data.tap_down.tap_down_count = 1;
@@ -1305,7 +1301,7 @@ TEST_F(EventHandlerTest, DblclickFiredWhenPointerdownCanceled) {
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(tap_2);
 
   // dblclick should have fired even though pointerdown was cancelled.
-  WebElement result_elem = GetDocument().getElementById(AtomicString("result"));
+  WebElement result_elem = GetElementById("result");
   EXPECT_EQ("dblclick-fired", result_elem.TextContent().Utf8());
 }
 
@@ -1794,7 +1790,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromTabUpdatesTooltip) {
   e.dom_key = ui::DomKey::TAB;
   GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
 
-  Element* element = GetDocument().getElementById(AtomicString("b1"));
+  Element* element = GetElementById("b1");
   EXPECT_EQ("my tooltip 1", LastToolTipText());
   EXPECT_EQ(element->BoundsInWidget(), LastToolTipBounds());
 
@@ -1802,7 +1798,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromTabUpdatesTooltip) {
   // still trigger a tooltip update. The browser-side TooltipController will
   // handle this case.
   GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
-  element = GetDocument().getElementById(AtomicString("b2"));
+  element = GetElementById("b2");
   EXPECT_TRUE(LastToolTipText().IsNull());
   EXPECT_EQ(element->BoundsInWidget(), LastToolTipBounds());
 }
@@ -1831,7 +1827,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromAccessKeyUpdatesTooltip) {
   e.unmodified_text[0] = 'a';
   GetDocument().GetFrame()->GetEventHandler().HandleAccessKey(e);
 
-  Element* element = GetDocument().getElementById(AtomicString("b"));
+  Element* element = GetElementById("b");
   EXPECT_EQ("my tooltip", LastToolTipText());
   EXPECT_EQ(element->BoundsInWidget(), LastToolTipBounds());
 }
@@ -1855,7 +1851,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromMouseDoesntUpdateTooltip) {
   EXPECT_EQ(String(), LastToolTipText());
   EXPECT_EQ(gfx::Rect(), LastToolTipBounds());
 
-  Element* element = GetDocument().getElementById(AtomicString("b"));
+  Element* element = GetElementById("b");
   gfx::PointF mouse_press_point =
       gfx::PointF(element->BoundsInWidget().CenterPoint());
   WebMouseEvent mouse_press_event(
@@ -1888,7 +1884,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromScriptDoesntUpdateTooltip) {
   EXPECT_EQ(String(), LastToolTipText());
   EXPECT_EQ(gfx::Rect(), LastToolTipBounds());
 
-  Element* element = GetDocument().getElementById(AtomicString("b"));
+  Element* element = GetElementById("b");
   element->Focus();
 
   EXPECT_TRUE(LastToolTipText().IsNull());
@@ -1938,7 +1934,7 @@ TEST_F(EventHandlerTooltipTest,
   e.native_key_code = e.windows_key_code = blink::VKEY_LEFT;
   GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
 
-  Element* element = GetDocument().getElementById(AtomicString("b1"));
+  Element* element = GetElementById("b1");
   EXPECT_EQ("my tooltip 1", LastToolTipText());
   EXPECT_EQ(element->BoundsInWidget(), LastToolTipBounds());
 
@@ -1953,12 +1949,12 @@ TEST_F(EventHandlerTooltipTest,
   e2.native_key_code = e2.windows_key_code = blink::VKEY_RIGHT;
   GetDocument().GetFrame()->GetEventHandler().KeyEvent(e2);
 
-  element = GetDocument().getElementById(AtomicString("b2"));
+  element = GetElementById("b2");
   EXPECT_TRUE(LastToolTipText().IsNull());
 
   // But when the Element::Focus() is called outside of a keypress context,
   // no tooltip is shown.
-  element = GetDocument().getElementById(AtomicString("b1"));
+  element = GetElementById("b1");
   element->Focus(FocusOptions::Create());
   EXPECT_TRUE(LastToolTipText().IsNull());
 }
@@ -1990,18 +1986,17 @@ TEST_F(EventHandlerTooltipTest,
   e.dom_key = ui::DomKey::TAB;
   GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
 
-  Element* element = GetDocument().getElementById(AtomicString("b1"));
+  Element* element = GetElementById("b1");
   EXPECT_EQ("my tooltip 1", LastToolTipText());
   EXPECT_EQ(element->BoundsInWidget(), LastToolTipBounds());
 
   // Validate that blurring an element that is not focused will not just hide
   // the tooltip. It wouldn't make sense.
-  element = GetDocument().getElementById(AtomicString("b2"));
+  element = GetElementById("b2");
   element->blur();
 
   EXPECT_EQ("my tooltip 1", LastToolTipText());
-  EXPECT_EQ(GetDocument().getElementById(AtomicString("b1"))->BoundsInWidget(),
-            LastToolTipBounds());
+  EXPECT_EQ(GetElementById("b1")->BoundsInWidget(), LastToolTipBounds());
 
   // Then, programmatically move the focus to another button that has no title
   // text. This should hide the tooltip.
@@ -2014,7 +2009,7 @@ TEST_F(EventHandlerTooltipTest,
   // tooltip again.
   GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
 
-  element = GetDocument().getElementById(AtomicString("b1"));
+  element = GetElementById("b1");
   EXPECT_EQ("my tooltip 1", LastToolTipText());
   EXPECT_EQ(element->BoundsInWidget(), LastToolTipBounds());
 
@@ -2048,7 +2043,7 @@ TEST_F(EventHandlerTooltipTest,
   EXPECT_EQ("tooltip", LastToolTipText());
 
   // Then, programmatically move the focus to another element.
-  Element* element = GetDocument().getElementById(AtomicString("b2"));
+  Element* element = GetElementById("b2");
   element->Focus();
 
   EXPECT_EQ("tooltip", LastToolTipText());
@@ -2095,8 +2090,7 @@ TEST_F(EventHandlerLatencyTest, NeedsUnbufferedInput) {
       "<canvas style='width: 100px; height: 100px' id='first' "
       "onpointermove='return;'>");
 
-  auto& canvas = To<HTMLCanvasElement>(
-      *GetDocument().getElementById(AtomicString("first")));
+  auto& canvas = To<HTMLCanvasElement>(*GetElementById("first"));
 
   ASSERT_FALSE(chrome_client_->ReceivedRequestForUnbufferedInput());
 
@@ -4350,8 +4344,7 @@ TEST_F(EventHandlerTest, HandleGestureTapWithMissingPointerUp) {
     <button id=target>target</button>
   )HTML");
 
-  auto* popover =
-      To<HTMLElement>(GetDocument().getElementById(AtomicString("popover")));
+  auto* popover = To<HTMLElement>(GetElementById("popover"));
   popover->showPopover(ASSERT_NO_EXCEPTION);
   EXPECT_TRUE(popover->popoverOpen());
 
@@ -4383,8 +4376,7 @@ TEST_F(EventHandlerTest, HandleGestureTapWithMissingPointerDown) {
     <button id='target' style='position: absolute; top: 200px; left: 0; width: 100px; height: 100px;'>target</button>
   )HTML");
 
-  auto* popover =
-      To<HTMLElement>(GetDocument().getElementById(AtomicString("popover")));
+  auto* popover = To<HTMLElement>(GetElementById("popover"));
   popover->showPopover(ASSERT_NO_EXCEPTION);
   EXPECT_TRUE(popover->popoverOpen());
 
@@ -4415,8 +4407,7 @@ TEST_F(EventHandlerTest, HandleGestureTapWithBothPointerEvents) {
     </div>
   )HTML");
 
-  auto* popover =
-      To<HTMLElement>(GetDocument().getElementById(AtomicString("popover")));
+  auto* popover = To<HTMLElement>(GetElementById("popover"));
   popover->showPopover(ASSERT_NO_EXCEPTION);
   EXPECT_TRUE(popover->popoverOpen());
 
@@ -4458,8 +4449,7 @@ TEST_F(EventHandlerTest,
     <button id='outside' style='position: absolute; top: 300px; left: 0; width: 100px; height: 100px;'>outside</button>
   )HTML");
 
-  auto* popover =
-      To<HTMLElement>(GetDocument().getElementById(AtomicString("popover")));
+  auto* popover = To<HTMLElement>(GetElementById("popover"));
   popover->showPopover(ASSERT_NO_EXCEPTION);
   EXPECT_TRUE(popover->popoverOpen());
 
@@ -4499,8 +4489,7 @@ TEST_F(EventHandlerTest,
     <button id='outside' style='position: absolute; top: 300px; left: 0; width: 100px; height: 100px;'>outside</button>
   )HTML");
 
-  auto* popover =
-      To<HTMLElement>(GetDocument().getElementById(AtomicString("popover")));
+  auto* popover = To<HTMLElement>(GetElementById("popover"));
   popover->showPopover(ASSERT_NO_EXCEPTION);
   EXPECT_TRUE(popover->popoverOpen());
 
@@ -4539,8 +4528,7 @@ TEST_F(
     </div>
   )HTML");
 
-  auto* popover =
-      To<HTMLElement>(GetDocument().getElementById(AtomicString("popover")));
+  auto* popover = To<HTMLElement>(GetElementById("popover"));
   popover->showPopover(ASSERT_NO_EXCEPTION);
   EXPECT_TRUE(popover->popoverOpen());
 

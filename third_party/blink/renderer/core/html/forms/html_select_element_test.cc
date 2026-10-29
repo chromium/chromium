@@ -900,9 +900,9 @@ TEST_F(HTMLSelectElementTest, ChangeRenderingCrash3) {
     <div id="green">Green</div>
   )HTML");
 
-  auto* host = GetDocument().getElementById(AtomicString("host"));
-  auto* select = GetDocument().getElementById(AtomicString("select"));
-  auto* green = GetDocument().getElementById(AtomicString("green"));
+  auto* host = GetElementById("host");
+  auto* select = GetElementById("select");
+  auto* green = GetElementById("green");
 
   // Make sure the select is outside the flat tree.
   host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
@@ -1609,8 +1609,7 @@ TEST_F(HTMLSelectElementTest,
       <option>one</option>
     </select>
   )HTML");
-  auto* select = To<HTMLSelectElement>(
-      GetDocument().getElementById(AtomicString("select")));
+  auto* select = To<HTMLSelectElement>(GetElementById("select"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   ASSERT_TRUE(HasDescendantsObserver(*select));
 

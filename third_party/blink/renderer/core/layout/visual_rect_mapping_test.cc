@@ -448,8 +448,7 @@ TEST_P(VisualRectMappingTest, SkipAncestorAndViewportClipsInSubframe) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  auto* iframe_element = To<HTMLIFrameElement>(
-      GetDocument().getElementById(AtomicString("child")));
+  auto* iframe_element = To<HTMLIFrameElement>(GetElementById("child"));
   ASSERT_TRUE(iframe_element);
   auto* child_frame = DynamicTo<LocalFrame>(iframe_element->ContentFrame());
   ASSERT_TRUE(child_frame);
@@ -2150,8 +2149,8 @@ TEST_P(VisualRectMappingTest, ElementCanvasTransformVisualRectMapping) {
     </canvas>
   )HTML");
 
-  auto* target_element = GetDocument().getElementById(AtomicString("target"));
-  auto* canvas_element = GetDocument().getElementById(AtomicString("canvas"));
+  auto* target_element = GetElementById("target");
+  auto* canvas_element = GetElementById("canvas");
   auto* target = target_element->GetLayoutObject();
   auto* canvas = canvas_element->GetLayoutObject();
 
@@ -2181,9 +2180,9 @@ TEST_P(VisualRectMappingTest, NestedElementCanvasTransformVisualRectMapping) {
     </canvas>
   )HTML");
 
-  auto* a_element = GetDocument().getElementById(AtomicString("a"));
-  auto* b_element = GetDocument().getElementById(AtomicString("b"));
-  auto* canvas_element = GetDocument().getElementById(AtomicString("canvas"));
+  auto* a_element = GetElementById("a");
+  auto* b_element = GetElementById("b");
+  auto* canvas_element = GetElementById("canvas");
   auto* b = b_element->GetLayoutObject();
   auto* canvas = canvas_element->GetLayoutObject();
 
@@ -2215,9 +2214,9 @@ TEST_P(VisualRectMappingTest,
     </canvas>
   )HTML");
 
-  auto* a_element = GetDocument().getElementById(AtomicString("a"));
-  auto* b_element = GetDocument().getElementById(AtomicString("b"));
-  auto* canvas_element = GetDocument().getElementById(AtomicString("canvas"));
+  auto* a_element = GetElementById("a");
+  auto* b_element = GetElementById("b");
+  auto* canvas_element = GetElementById("canvas");
   auto* b = b_element->GetLayoutObject();
   auto* canvas = canvas_element->GetLayoutObject();
 
@@ -2250,9 +2249,9 @@ TEST_P(
     </canvas>
   )HTML");
 
-  auto* a_element = GetDocument().getElementById(AtomicString("a"));
-  auto* b_element = GetDocument().getElementById(AtomicString("b"));
-  auto* canvas_element = GetDocument().getElementById(AtomicString("canvas"));
+  auto* a_element = GetElementById("a");
+  auto* b_element = GetElementById("b");
+  auto* canvas_element = GetElementById("canvas");
   auto* b = b_element->GetLayoutObject();
   auto* canvas = canvas_element->GetLayoutObject();
 
@@ -2283,9 +2282,9 @@ TEST_P(VisualRectMappingTest,
     </canvas>
   )HTML");
 
-  auto* a_element = GetDocument().getElementById(AtomicString("a"));
-  auto* b_element = GetDocument().getElementById(AtomicString("b"));
-  auto* canvas_element = GetDocument().getElementById(AtomicString("canvas"));
+  auto* a_element = GetElementById("a");
+  auto* b_element = GetElementById("b");
+  auto* canvas_element = GetElementById("canvas");
   auto* b = b_element->GetLayoutObject();
   auto* canvas = canvas_element->GetLayoutObject();
 
@@ -2320,9 +2319,9 @@ TEST_P(VisualRectMappingTest,
     </canvas>
   )HTML");
 
-  auto* a_element = GetDocument().getElementById(AtomicString("a"));
-  auto* b_element = GetDocument().getElementById(AtomicString("b"));
-  auto* canvas_element = GetDocument().getElementById(AtomicString("canvas"));
+  auto* a_element = GetElementById("a");
+  auto* b_element = GetElementById("b");
+  auto* canvas_element = GetElementById("canvas");
   auto* b = b_element->GetLayoutObject();
   auto* canvas = canvas_element->GetLayoutObject();
 

@@ -140,16 +140,13 @@ TEST_F(HTMLOptionElementTest, MutationObserver) {
       </option>
     </select>
   )HTML");
-  auto* select = To<HTMLSelectElement>(
-      GetDocument().getElementById(AtomicString("select")));
-  auto* option_one = To<HTMLOptionElement>(
-      GetDocument().getElementById(AtomicString("option_one")));
-  auto* option_two = To<HTMLOptionElement>(
-      GetDocument().getElementById(AtomicString("option_two")));
-  auto* option_one_span = To<HTMLSpanElement>(
-      GetDocument().getElementById(AtomicString("option_one_span")));
-  auto* option_two_span = To<HTMLSpanElement>(
-      GetDocument().getElementById(AtomicString("option_two_span")));
+  auto* select = To<HTMLSelectElement>(GetElementById("select"));
+  auto* option_one = To<HTMLOptionElement>(GetElementById("option_one"));
+  auto* option_two = To<HTMLOptionElement>(GetElementById("option_two"));
+  auto* option_one_span =
+      To<HTMLSpanElement>(GetElementById("option_one_span"));
+  auto* option_two_span =
+      To<HTMLSpanElement>(GetElementById("option_two_span"));
   auto* option_one_label_container =
       To<HTMLSpanElement>(option_one->GetShadowRoot()->firstChild());
   auto* option_two_label_container =

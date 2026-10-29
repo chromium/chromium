@@ -159,8 +159,8 @@ TEST_F(RubyBlockPositionCalculatorTest, PlaceLinesNestedRubyWithTextEmphasis) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  LayoutBlockFlow* target = To<LayoutBlockFlow>(
-      GetDocument().getElementById(AtomicString("target"))->GetLayoutObject());
+  LayoutBlockFlow* target =
+      To<LayoutBlockFlow>(GetElementById("target")->GetLayoutObject());
   ASSERT_NE(target, nullptr);
 
   auto find_fragment_item = [](const LayoutBlockFlow& block,

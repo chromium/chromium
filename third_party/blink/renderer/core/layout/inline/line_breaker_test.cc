@@ -1340,7 +1340,7 @@ TEST_F(LineBreakerTest, BidiControlEnterFlag) {
     </style>
     <div id="container">xxx-<bdi>xx</bdi></div>
   )HTML");
-  Element* container = GetDocument().getElementById(AtomicString("container"));
+  Element* container = GetElementById("container");
   EXPECT_EQ(10, container->OffsetHeight());
 }
 

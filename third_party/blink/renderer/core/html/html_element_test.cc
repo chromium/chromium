@@ -32,7 +32,7 @@ class HTMLElementTest : public RenderingTest {
 TEST_F(HTMLElementTest, AdjustDirectionalityInFlatTree) {
   SetBodyContent("<bdi><summary><i id=target></i></summary></bdi>");
   UpdateAllLifecyclePhasesForTest();
-  GetDocument().getElementById(AtomicString("target"))->remove();
+  GetElementById("target")->remove();
   // Pass if not crashed.
 }
 
@@ -252,8 +252,7 @@ TEST_F(HTMLElementTest,
     box.focus();
   )JS");
   GetDocument().body()->appendChild(script);
-  EXPECT_EQ(GetDocument().FocusedElement(),
-            GetDocument().getElementById(AtomicString("box")));
+  EXPECT_EQ(GetDocument().FocusedElement(), GetElementById("box"));
   EXPECT_FALSE(
       GetDocument().GetPage()->Animator().has_inline_style_mutation_for_test());
 }
@@ -263,8 +262,7 @@ TEST_F(HTMLElementTest, PopoverTopLayerRemovalTiming) {
     <div id="target" popover></div>
   )HTML");
 
-  HTMLElement* target =
-      To<HTMLElement>(GetDocument().getElementById(AtomicString("target")));
+  HTMLElement* target = To<HTMLElement>(GetElementById("target"));
 
   EXPECT_FALSE(target->popoverOpen());
   EXPECT_FALSE(target->IsInTopLayer());
@@ -297,8 +295,7 @@ TEST_F(HTMLElementTest, DialogTopLayerRemovalTiming) {
     <dialog id="target"></dialog>
   )HTML");
 
-  auto* target = To<HTMLDialogElement>(
-      GetDocument().getElementById(AtomicString("target")));
+  auto* target = To<HTMLDialogElement>(GetElementById("target"));
 
   EXPECT_FALSE(target->IsInTopLayer());
   target->showModal(ASSERT_NO_EXCEPTION);
@@ -325,9 +322,8 @@ TEST_F(HTMLElementTest, InertAttributeUseCounted) {
     <div id=target></div>
   )HTML");
   EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kInertAttribute));
-  GetDocument()
-      .getElementById(AtomicString("target"))
-      ->setAttribute(html_names::kInertAttr, AtomicString("true"));
+  GetElementById("target")->setAttribute(html_names::kInertAttr,
+                                         AtomicString("true"));
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kInertAttribute));
   GetDocument().ClearUseCounterForTesting(WebFeature::kInertAttribute);
 
@@ -407,7 +403,7 @@ TEST_F(HTMLElementTest, InterestForLongPressCrash) {
     <div id="pop" popover>Popover</div>
   )HTML");
 
-  Element* btn = GetDocument().getElementById(AtomicString("btn"));
+  Element* btn = GetElementById("btn");
 
   WebGestureEvent gesture_event(
       WebInputEvent::Type::kGestureLongPress, WebInputEvent::kNoModifiers,
@@ -425,8 +421,7 @@ TEST_F(HTMLElementTest, MapElementDynamicIdAndNameChanges) {
     <map id="map_id" name="map_name"></map>
   )HTML");
 
-  auto* map =
-      To<HTMLMapElement>(GetDocument().getElementById(AtomicString("map_id")));
+  auto* map = To<HTMLMapElement>(GetElementById("map_id"));
   ASSERT_TRUE(map);
 
   TreeScope& scope = GetDocument();
@@ -473,9 +468,8 @@ TEST_F(HTMLElementTest, PopoverHideImmediatelyCrash) {
     </div>
   )HTML");
 
-  HTMLElement* popover =
-      To<HTMLElement>(GetDocument().getElementById(AtomicString("pop")));
-  Element* container = GetDocument().getElementById(AtomicString("container"));
+  HTMLElement* popover = To<HTMLElement>(GetElementById("pop"));
+  Element* container = GetElementById("container");
 
   popover->ShowPopoverInternal(/*invoker=*/nullptr, &ASSERT_NO_EXCEPTION);
 

@@ -25,7 +25,7 @@ TEST_F(HTMLAreaElementTest, AreaIsDisplayNone) {
     <map name="m"><area id="area" shape="rect" coords="0,0,500,500"></map>
   )HTML");
 
-  auto* area = GetDocument().getElementById(AtomicString("area"));
+  auto* area = GetElementById("area");
   ASSERT_TRUE(area);
   EXPECT_EQ(nullptr, area->GetLayoutObject());
   const ComputedStyle* style = area->GetComputedStyle();
@@ -46,7 +46,7 @@ TEST_F(HTMLAreaElementTest, FocusStyleUpdatesWithoutLayoutObject) {
     </map>
   )HTML");
 
-  auto* area = GetDocument().getElementById(AtomicString("area"));
+  auto* area = GetElementById("area");
   ASSERT_TRUE(area);
   ASSERT_TRUE(area->GetComputedStyle());
   EXPECT_FALSE(area->GetComputedStyle()->HasOutline());
@@ -80,7 +80,7 @@ TEST_F(HTMLAreaElementTest, PageFocusChangeWithDisplayNoneAncestor) {
     </div>
   )HTML");
 
-  auto* area = GetDocument().getElementById(AtomicString("area"));
+  auto* area = GetElementById("area");
   ASSERT_TRUE(area);
 
   GetFocusController().SetActive(true);
@@ -91,9 +91,8 @@ TEST_F(HTMLAreaElementTest, PageFocusChangeWithDisplayNoneAncestor) {
   UpdateAllLifecyclePhasesForTest();
   ASSERT_EQ(area, GetDocument().FocusedElement());
 
-  GetDocument()
-      .getElementById(AtomicString("wrapper"))
-      ->setAttribute(html_names::kStyleAttr, AtomicString("display:none"));
+  GetElementById("wrapper")->setAttribute(html_names::kStyleAttr,
+                                          AtomicString("display:none"));
   UpdateAllLifecyclePhasesForTest();
 
   // Should not crash.
@@ -116,8 +115,8 @@ TEST_F(HTMLAreaElementTest, OffsetsAreZeroWhenMapIsNotNextToImage) {
     <map name="m"><area id="area" shape="rect" coords="0,0,500,500"></map>
   )HTML");
 
-  auto* area = GetDocument().getElementById(AtomicString("area"));
-  auto* img = GetDocument().getElementById(AtomicString("img"));
+  auto* area = GetElementById("area");
+  auto* img = GetElementById("img");
   ASSERT_TRUE(area);
   ASSERT_TRUE(img);
 

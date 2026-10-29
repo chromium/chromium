@@ -480,7 +480,7 @@ TEST_F(InspectorCSSAgentTest, SameFunctionNamesAcrossShadows) {
       function_rules = CollectReferencedFunctionRules("#host");
   EXPECT_EQ(3u, function_rules.size());
 
-  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* host = GetElementById("host");
   ASSERT_TRUE(host);
   const TreeScope* document_scope = &GetDocument();
   const TreeScope* inner_scope = host->GetShadowRoot();

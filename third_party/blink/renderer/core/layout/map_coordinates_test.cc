@@ -1983,7 +1983,7 @@ TEST_P(MapCoordinatesTest, ElementCanvasTransform) {
     </canvas>
   )HTML");
 
-  auto* target_element = GetDocument().getElementById(AtomicString("target"));
+  auto* target_element = GetElementById("target");
   auto* target = target_element->GetLayoutObject();
   auto* canvas = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("canvas"));
 
@@ -2006,8 +2006,8 @@ TEST_P(MapCoordinatesTest, NestedElementCanvasTransform) {
     </canvas>
   )HTML");
 
-  auto* a_element = GetDocument().getElementById(AtomicString("a"));
-  auto* b_element = GetDocument().getElementById(AtomicString("b"));
+  auto* a_element = GetElementById("a");
+  auto* b_element = GetElementById("b");
   auto* b = b_element->GetLayoutObject();
   auto* canvas = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("canvas"));
 
@@ -2031,8 +2031,8 @@ TEST_P(MapCoordinatesTest, NestedElementCanvasTransformWithOffset) {
     </canvas>
   )HTML");
 
-  auto* a_element = GetDocument().getElementById(AtomicString("a"));
-  auto* b_element = GetDocument().getElementById(AtomicString("b"));
+  auto* a_element = GetElementById("a");
+  auto* b_element = GetElementById("b");
   auto* b = b_element->GetLayoutObject();
   auto* canvas = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("canvas"));
 
@@ -2057,8 +2057,8 @@ TEST_P(MapCoordinatesTest,
     </canvas>
   )HTML");
 
-  auto* a_element = GetDocument().getElementById(AtomicString("a"));
-  auto* b_element = GetDocument().getElementById(AtomicString("b"));
+  auto* a_element = GetElementById("a");
+  auto* b_element = GetElementById("b");
   auto* b = b_element->GetLayoutObject();
   auto* canvas = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("canvas"));
 
@@ -2079,8 +2079,8 @@ TEST_P(MapCoordinatesTest, NestedElementCanvasTransformNonDrawableChild) {
     </canvas>
   )HTML");
 
-  auto* a_element = GetDocument().getElementById(AtomicString("a"));
-  auto* b_element = GetDocument().getElementById(AtomicString("b"));
+  auto* a_element = GetElementById("a");
+  auto* b_element = GetElementById("b");
   auto* b = b_element->GetLayoutObject();
   auto* canvas = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("canvas"));
 
@@ -2105,8 +2105,8 @@ TEST_P(MapCoordinatesTest, NestedElementCanvasTransformInline) {
     </canvas>
   )HTML");
 
-  auto* a_element = GetDocument().getElementById(AtomicString("a"));
-  auto* b_element = GetDocument().getElementById(AtomicString("b"));
+  auto* a_element = GetElementById("a");
+  auto* b_element = GetElementById("b");
   auto* b = b_element->GetLayoutObject();
   auto* canvas = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("canvas"));
 

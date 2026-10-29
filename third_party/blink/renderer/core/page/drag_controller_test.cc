@@ -139,8 +139,7 @@ class DragControllerTest : public RenderingTest {
     bitmap_image->SetData(image_data, true);
     EXPECT_GT(bitmap_image->Size().Area64(), int64_t{1500} * 1500);
 
-    auto* image_element = To<HTMLImageElement>(
-        GetDocument().getElementById(AtomicString("image")));
+    auto* image_element = To<HTMLImageElement>(GetElementById("image"));
     EXPECT_TRUE(image_element);
     image_element->SetImageForTest(
         ImageResourceContent::CreateLoaded(bitmap_image.get()));
@@ -667,7 +666,7 @@ TEST_F(DragControllerTest, DragImageOffsetWithPageScaleFactor) {
 
   auto& drag_state = GetFrame().GetPage()->GetDragController().GetDragState();
   drag_state.drag_type_ = kDragSourceActionSelection;
-  drag_state.drag_src_ = GetDocument().getElementById(AtomicString("drag"));
+  drag_state.drag_src_ = GetElementById("drag");
   drag_state.drag_data_transfer_ = DataTransfer::Create(
       DataTransfer::kDragAndDrop, DataTransferAccessPolicy::kWritable,
       DataObject::Create());
@@ -736,7 +735,7 @@ TEST_F(DragControllerTest, DragLinkWithPageScaleFactor) {
 
   auto& drag_state = GetFrame().GetPage()->GetDragController().GetDragState();
   drag_state.drag_type_ = kDragSourceActionLink;
-  drag_state.drag_src_ = GetDocument().getElementById(AtomicString("drag"));
+  drag_state.drag_src_ = GetElementById("drag");
   drag_state.drag_data_transfer_ = DataTransfer::Create(
       DataTransfer::kDragAndDrop, DataTransferAccessPolicy::kWritable,
       DataObject::Create());
@@ -772,10 +771,10 @@ TEST_F(DragControllerTest, DragAndDropUrlFromTextareaToTextarea) {
     <textarea id='drag'>httts://www.example.com/index.html</textarea>
     <textarea id='drop'></textarea>
   )HTML");
-  HTMLTextAreaElement* drag_text_area = DynamicTo<HTMLTextAreaElement>(
-      *(GetDocument().getElementById(AtomicString("drag"))));
-  HTMLTextAreaElement* drop_text_area = DynamicTo<HTMLTextAreaElement>(
-      *(GetDocument().getElementById(AtomicString("drop"))));
+  HTMLTextAreaElement* drag_text_area =
+      DynamicTo<HTMLTextAreaElement>(*(GetElementById("drag")));
+  HTMLTextAreaElement* drop_text_area =
+      DynamicTo<HTMLTextAreaElement>(*(GetElementById("drop")));
   WebDragData web_drag_data;
   WebDragData::StringItem item1;
   item1.type = "text/uri-list";
@@ -812,9 +811,9 @@ TEST_F(DragControllerTest, DragAndDropUrlFromTextareaToRichlyEditableDiv) {
     <textarea id='drag'>httts://www.example.com/index.html</textarea>
     <div id='drop' contenteditable='true'></div>
   )HTML");
-  HTMLTextAreaElement* drag_text_area = DynamicTo<HTMLTextAreaElement>(
-      *(GetDocument().getElementById(AtomicString("drag"))));
-  Element* drop_div_rich = GetDocument().getElementById(AtomicString("drop"));
+  HTMLTextAreaElement* drag_text_area =
+      DynamicTo<HTMLTextAreaElement>(*(GetElementById("drag")));
+  Element* drop_div_rich = GetElementById("drop");
   WebDragData web_drag_data;
   WebDragData::StringItem item1;
   item1.type = "text/uri-list";
@@ -853,9 +852,9 @@ TEST_F(DragControllerTest,
     <textarea id='drag'>httts://www.example.com/index.html</textarea>
     <div id='drop' contenteditable='plaintext-only'></div>
   )HTML");
-  HTMLTextAreaElement* drag_text_area = DynamicTo<HTMLTextAreaElement>(
-      *(GetDocument().getElementById(AtomicString("drag"))));
-  Element* drop_div_plain = GetDocument().getElementById(AtomicString("drop"));
+  HTMLTextAreaElement* drag_text_area =
+      DynamicTo<HTMLTextAreaElement>(*(GetElementById("drag")));
+  Element* drop_div_plain = GetElementById("drop");
   WebDragData web_drag_data;
   WebDragData::StringItem item1;
   item1.type = "text/uri-list";
@@ -892,10 +891,9 @@ TEST_F(DragControllerTest,
     <textarea id='drag'>httts://www.example.com/index.html</textarea>
     <p id='drop' contenteditable='true'></p>
   )HTML");
-  HTMLTextAreaElement* drag_text_area = DynamicTo<HTMLTextAreaElement>(
-      *(GetDocument().getElementById(AtomicString("drag"))));
-  Element* drop_paragraph_rich =
-      GetDocument().getElementById(AtomicString("drop"));
+  HTMLTextAreaElement* drag_text_area =
+      DynamicTo<HTMLTextAreaElement>(*(GetElementById("drag")));
+  Element* drop_paragraph_rich = GetElementById("drop");
   WebDragData web_drag_data;
   WebDragData::StringItem item1;
   item1.type = "text/uri-list";
@@ -932,10 +930,9 @@ TEST_F(DragControllerTest,
     <textarea id='drag'>httts://www.example.com/index.html</textarea>
     <p id='drop' contenteditable='plaintext-only'></p>
   )HTML");
-  HTMLTextAreaElement* drag_text_area = DynamicTo<HTMLTextAreaElement>(
-      *(GetDocument().getElementById(AtomicString("drag"))));
-  Element* drop_paragraph_plain =
-      GetDocument().getElementById(AtomicString("drop"));
+  HTMLTextAreaElement* drag_text_area =
+      DynamicTo<HTMLTextAreaElement>(*(GetElementById("drag")));
+  Element* drop_paragraph_plain = GetElementById("drop");
   WebDragData web_drag_data;
   WebDragData::StringItem item1;
   item1.type = "text/uri-list";
