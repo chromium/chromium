@@ -5415,27 +5415,29 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.NotifierFramework.PinnedSystemNotification.ShownWithoutIcon"
-    enum="NotificationCatalogName" expires_after="2025-02-15">
-  <owner>kradtke@google.com</owner>
+    enum="NotificationCatalogName" expires_after="2027-10-25">
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Records a `catalog_name` whenever a pinned notification is shown without
     having provided a `vector_small_image` through its `Notification` object.
     All pinned notifications must have an icon, so the metric will be used to
-    track misbehaving notifications.
+    track misbehaving notifications. Warning: this histogram was expired from
+    2025-02-15 to 2026-10-25; data may be missing.
   </summary>
 </histogram>
 
 <histogram
     name="Ash.NotifierFramework.PinnedSystemNotification.ShownWithoutTitle"
-    enum="NotificationCatalogName" expires_after="2025-02-15">
-  <owner>kradtke@google.com</owner>
+    enum="NotificationCatalogName" expires_after="2027-10-25">
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Records a `catalog_name` whenever a pinned notification is shown without
     having provided a `title` through its `Notification` object. All pinned
     notifications must have a title, so the metric will be used to track
-    misbehaving notifications.
+    misbehaving notifications. Warning: this histogram was expired from
+    2025-02-15 to 2026-10-25; data may be missing.
   </summary>
 </histogram>
 
@@ -5557,14 +5559,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.NotifierFramework.{UnpinnedOrPinned}SystemNotification.Popup.UserJourneyTime"
-    units="ms" expires_after="2025-01-15">
-  <owner>kradtke@google.com</owner>
+    units="ms" expires_after="2027-10-25">
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Records the time a system notification spends as a pop-up before being
     dismissed either by the user or system. Starts measuring time whenever the
     pop-up is shown to the user, and records metric when the pop-up is dismissed
-    either manually or by time out.
+    either manually or by time out. Warning: this histogram was expired from
+    2025-01-15 to 2026-10-25; data may be missing.
   </summary>
   <token key="UnpinnedOrPinned">
     <variant name=""/>
