@@ -97,7 +97,7 @@ class MlKitAiCoreSessionBackendImpl implements AiCoreSessionBackend {
         try {
             request = buildGenerateContentRequest(prompt, generateOptions);
         } catch (IllegalArgumentException e) {
-            // Building the request failed due to invalid arguments (e.g., maxOutputTokens > 4096).
+            // Building the request failed due to invalid arguments (e.g., maxOutputTokens < 0).
             responder.onComplete(GenerateResult.INVALID_REQUEST_ARGUMENT_ERROR);
             return;
         } catch (Exception e) {
