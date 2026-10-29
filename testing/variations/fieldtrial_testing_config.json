@@ -15690,6 +15690,21 @@
             ]
         }
     ],
+    "SafeBrowsingRustDmgParser": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SafeBrowsingRustDmgParser"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafeBrowsingWaitForDnsForRealTimeLookup": [
         {
             "platforms": [
