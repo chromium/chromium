@@ -20,9 +20,7 @@ namespace autofill {
 
 // Element-wise comparison operator.
 bool operator==(const AddressToken& lhs, const AddressToken& rhs) {
-  return lhs.value == rhs.value &&
-         lhs.normalized_value == rhs.normalized_value &&
-         lhs.position == rhs.position;
+  return lhs.normalized_value == rhs.normalized_value;
 }
 
 // Regular expression with named capture groups for parsing US-style names.
@@ -219,14 +217,11 @@ TEST(AutofillStructuredAddressUtils, NoCaptureTypeWithPattern) {
 
 TEST(AutofillStructuredAddressUtils, TokenizeValue) {
   std::vector<AddressToken> expected_tokens = {
-      {u"AnD", u"and", 1},
-      {u"anotherOne", u"anotherone", 2},
-      {u"valUe", u"value", 0}};
+      {u"and"}, {u"anotherone"}, {u"value"}};
 
   EXPECT_EQ(TokenizeValue(u"  valUe AnD    anotherOne"), expected_tokens);
 
-  std::vector<AddressToken> expected_cjk_tokens = {
-      {u"영", u"영", 1}, {u"이", u"이", 0}, {u"호", u"호", 2}};
+  std::vector<AddressToken> expected_cjk_tokens = {{u"영"}, {u"이"}, {u"호"}};
 
   EXPECT_EQ(TokenizeValue(u"이영 호"), expected_cjk_tokens);
   EXPECT_EQ(TokenizeValue(u"이・영호"), expected_cjk_tokens);

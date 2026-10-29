@@ -399,7 +399,6 @@ bool AreSortedTokensEqual(const std::vector<AddressToken>& first,
 
 std::vector<AddressToken> TokenizeValue(std::u16string_view value) {
   std::vector<AddressToken> tokens;
-  int index = 0;
 
   // CJK names are a special case and are tokenized by character without the
   // separators.
@@ -410,19 +409,15 @@ std::vector<AddressToken> TokenizeValue(std::u16string_view value) {
     std::optional<std::vector<std::u16string>> parts =
         SplitByRegex(value, **regex, value.size());
     if (!parts.has_value()) {
-      return {AddressToken{
-          .value = std::u16string(value),
-          .normalized_value = normalization::NormalizeForComparison(value),
-          .position = 0}};
+      return {AddressToken{.normalized_value =
+                               normalization::NormalizeForComparison(value)}};
     }
     tokens.reserve(value.size());
     for (const std::u16string& part : parts.value()) {
       for (size_t j = 0; j < part.size(); ++j) {
         tokens.emplace_back(AddressToken{
-            .value = part.substr(j, 1),
             .normalized_value =
-                normalization::NormalizeForComparison(part.substr(j, 1)),
-            .position = index++});
+                normalization::NormalizeForComparison(part.substr(j, 1))});
       }
     }
   } else {
@@ -431,9 +426,7 @@ std::vector<AddressToken> TokenizeValue(std::u16string_view value) {
          base::SplitString(value, u", \n", base::TRIM_WHITESPACE,
                            base::SPLIT_WANT_NONEMPTY)) {
       tokens.emplace_back(AddressToken{
-          .value = token,
-          .normalized_value = normalization::NormalizeForComparison(token),
-          .position = index++});
+          .normalized_value = normalization::NormalizeForComparison(token)});
     }
   }
   // Sort the tokens lexicographically by their normalized value.

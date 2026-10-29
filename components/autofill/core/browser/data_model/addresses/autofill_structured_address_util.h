@@ -25,12 +25,8 @@
 namespace autofill {
 
 struct AddressToken {
-  // The original value.
-  std::u16string value;
   // The normalized value.
   std::u16string normalized_value;
-  // The token position in the original string.
-  int position;
 };
 
 enum class RegEx;
