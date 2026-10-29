@@ -95,7 +95,9 @@ class ListPicker extends Picker {
     this.trackingTouchId_ = null;
 
     this.applyInitialLayout_();
-    this.selectElement_.focus();
+    // The popup has no size yet, so scrolling on focus would center the select
+    // horizontally and hide option starts if the popup ends up narrower.
+    this.selectElement_.focus({preventScroll: true});
     this.selectElement_.value = this.config_.selectedIndex;
   }
 
