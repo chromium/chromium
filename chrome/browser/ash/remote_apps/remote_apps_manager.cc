@@ -24,11 +24,11 @@
 #include "chrome/browser/ash/app_list/app_list_util.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_model_updater.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/apps/platform_apps/api/enterprise_remote_apps.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/menu.h"
 #include "components/user_manager/user.h"
@@ -79,7 +79,8 @@ class ImageDownloaderImpl : public RemoteAppsManager::ImageDownloader {
   void Download(const GURL& url, DownloadCallback callback) override {
     ash::ImageDownloader* image_downloader = ash::ImageDownloader::Get();
     CHECK(image_downloader, base::NotFatalUntil::M160);
-    auto* const user = ProfileHelper::Get()->GetUserByProfile(profile_);
+    auto* const user = BrowserContextHelper::Get()->GetUserByBrowserContext(
+        const_cast<Profile*>(profile_.get()));
     CHECK(user, base::NotFatalUntil::M160);
     const AccountId& account_id = user->GetAccountId();
     image_downloader->Download(url, kTrafficAnnotation, account_id,

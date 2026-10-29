@@ -31,6 +31,7 @@ static_library("remote_apps") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common/apps/platform_apps/api",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/components/remote_apps/mojom",
     "//components/account_id",
     "//components/keyed_service/core",
