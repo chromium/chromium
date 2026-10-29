@@ -189,6 +189,10 @@ BaseRenderingContext2D::~BaseRenderingContext2D() {
   if (HasBacking()) {
     CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
   }
+  if (shared_image_provider_ && shared_image_provider_->RasterInterface()) {
+    // Last chance for outstanding GPU timers to record metrics.
+    CheckGpuTimers(shared_image_provider_->RasterInterface());
+  }
   if (context_provider_wrapper_) {
     context_provider_wrapper_->RemoveObserver(this);
   }
@@ -218,6 +222,11 @@ void BaseRenderingContext2D::ResetBacking() {
   if (HasBacking()) {
     CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
   }
+  if (shared_image_provider_ && shared_image_provider_->RasterInterface()) {
+    // Last chance for outstanding GPU timers to record metrics.
+    CheckGpuTimers(shared_image_provider_->RasterInterface());
+  }
+  ClearGpuTimers();
   shared_image_provider_.reset();
   surface_.reset();
   canvas_image_provider_.reset();
@@ -1346,8 +1355,7 @@ std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
   DidFlushRecording(recording, clear_frame_, reason);
   clear_frame_ = false;
   if (shared_image_provider_ && shared_image_provider_->IsAccelerated()) {
-    ScopedRasterTimer timer(shared_image_provider_->RasterInterface(),
-                            shared_image_provider_.get());
+    ScopedRasterTimer timer(shared_image_provider_->RasterInterface(), this);
     RasterRecordToSharedImage(recording);
   } else if (surface_) {
     ScopedRasterTimer timer(nullptr, nullptr);

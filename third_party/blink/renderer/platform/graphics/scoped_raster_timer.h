@@ -65,6 +65,7 @@ class PLATFORM_EXPORT ScopedRasterTimer {
   class PLATFORM_EXPORT Host {
    public:
     void CheckGpuTimers(gpu::raster::RasterInterface* raster_interface);
+    void ClearGpuTimers() { gpu_timers_.clear(); }
     void AddGpuTimer(std::unique_ptr<AsyncGpuRasterTimer>);
 
    private:

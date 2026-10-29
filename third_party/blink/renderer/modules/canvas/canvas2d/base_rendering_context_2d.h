@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/graphics/flush_for_image_listener.h"
 #include "third_party/blink/renderer/platform/graphics/flush_reason.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
+#include "third_party/blink/renderer/platform/graphics/scoped_raster_timer.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -87,7 +88,8 @@ class MODULES_EXPORT BaseRenderingContext2D
       public MemoryManagedPaintRecorder::Client,
       public FlushForImageObserver,
       public CanvasMemoryDumpClient,
-      public WebGraphicsContext3DProviderWrapper::DestructionObserver {
+      public WebGraphicsContext3DProviderWrapper::DestructionObserver,
+      public ScopedRasterTimer::Host {
  public:
   // MemoryManagedPaintRecorder::Client implementation.
   void InitializeForRecording(cc::PaintCanvas* canvas) const override;
@@ -95,6 +97,8 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   // FlushForImageObserver implementation.
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
+
+  using CanvasRenderingContext::Host;
 
   using Canvas2DRecorderContext::Recorder;
   const MemoryManagedPaintRecorder* Recorder() const final;

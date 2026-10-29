@@ -564,11 +564,6 @@ Canvas2DResourceProvider::~Canvas2DResourceProvider() {
     shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
   }
 
-  // Last chance for outstanding GPU timers to record metrics.
-  if (RasterInterface()) {
-    CheckGpuTimers(RasterInterface());
-  }
-
   UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
                              max_inflight_resources_, 20);
 }
