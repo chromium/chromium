@@ -152,7 +152,10 @@ AxisEdge AxisEdgeFromItemPosition(GridTrackSizingDirection track_direction,
         *auto_behavior = is_replaced ? AutoSizeBehavior::kFitContent
                                      : AutoSizeBehavior::kStretchImplicit;
       }
-      return AxisEdge::kStart;
+      // Reverse the default static-position alignment for OOF items only;
+      // in-flow items retain their normal alignment within the track.
+      return is_out_of_flow && is_alignment_axis_reversed ? AxisEdge::kEnd
+                                                          : AxisEdge::kStart;
     case ItemPosition::kFlexStart:
     case ItemPosition::kFlexEnd:
     case ItemPosition::kLegacy:
