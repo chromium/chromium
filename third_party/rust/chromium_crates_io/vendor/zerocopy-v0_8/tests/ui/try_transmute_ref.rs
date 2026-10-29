@@ -27,6 +27,7 @@ fn ref_dst_mutable() {
     //~[msrv, stable, nightly]^^ ERROR: the trait bound `NotZerocopy: TryFromBytes` is not satisfied
     //~[msrv, stable, nightly]^^^ ERROR: the trait bound `NotZerocopy: TryFromBytes` is not satisfied
     //~[msrv, stable, nightly]^^^^ ERROR: the trait bound `NotZerocopy: Immutable` is not satisfied
+    //~[nightly]^^^^^ ERROR: the trait bound `NotZerocopy: TryFromBytes` is not satisfied
 
     // `try_transmute_ref` requires that the source type implements `Immutable`
     // and `IntoBytes`

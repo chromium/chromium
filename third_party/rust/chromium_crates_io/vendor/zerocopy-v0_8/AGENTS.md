@@ -41,6 +41,13 @@ These instructions apply to work in the `zerocopy/` subtree.
   In Markdown, indent wrapped bullet continuation lines by two spaces and put a
   blank line after each section heading.
 
+- **Derived traits in tests:** For traits whose documentation requires
+  derive-only implementation, test fixture types **MUST** use Zerocopy's
+  derives. Do not bypass a derive rejection with a manual implementation;
+  instead, test the lower-level internal primitive or extend the derive.
+  Generated derive-output snapshots and crate-owned built-in implementations
+  are exempt.
+
 ## Task-Specific Skills
 
 Use the applicable skills in addition to these standing rules. Skills compose;

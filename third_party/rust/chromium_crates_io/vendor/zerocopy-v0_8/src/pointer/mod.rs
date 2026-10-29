@@ -47,10 +47,7 @@ where
 pub mod cast {
     use core::{marker::PhantomData, mem};
 
-    use crate::{
-        layout::{SizeInfo, TrailingSliceLayout},
-        HasField, KnownLayout, PtrInner,
-    };
+    use crate::{layout::SizeInfo, HasField, KnownLayout, PtrInner};
 
     /// A pointer cast or projection.
     ///
@@ -182,11 +179,9 @@ pub mod cast {
 
     // SAFETY: By the `static_assert!`, `Src` and `Dst` are either:
     // - Both sized and equal in size
-    // - Both slice DSTs with the same trailing slice offset and element size
-    //   and with align_of::<Src>() == align_of::<Dst>(). These ensure that any
-    //   given pointer metadata encodes the same size for both `Src` and `Dst`
-    //   (note that the alignment is required as it affects the amount of
-    //   trailing padding). Thus, `project` preserves the set of referent bytes.
+    // - Both slice DSTs with the same trailing-slice offset, the same object
+    //   size for every metadata value, and with align_of::<Src>() ==
+    //   align_of::<Dst>(). Thus, `project` preserves the set of referent bytes.
     unsafe impl<Src, Dst> Project<Src, Dst> for CastUnsized
     where
         Src: ?Sized + KnownLayout,
@@ -201,10 +196,11 @@ pub mod cast {
                 let dst = <Dst as KnownLayout>::LAYOUT;
                 match (src.size_info, dst.size_info) {
                     (SizeInfo::Sized { size: src_size }, SizeInfo::Sized { size: dst_size }) => src_size == dst_size,
-                    (
-                        SizeInfo::SliceDst(TrailingSliceLayout { offset: src_offset, elem_size: src_elem_size }),
-                        SizeInfo::SliceDst(TrailingSliceLayout { offset: dst_offset, elem_size: dst_elem_size })
-                    ) => src.align.get() == dst.align.get() && src_offset == dst_offset && src_elem_size == dst_elem_size,
+                    (SizeInfo::SliceDst(src_trailing), SizeInfo::SliceDst(dst_trailing)) => {
+                        src.align.get() == dst.align.get()
+                            && src_trailing.offset == dst_trailing.offset
+                            && src_trailing.has_same_size_sequence(dst_trailing)
+                    },
                     _ => false,
                 }
             });
@@ -225,10 +221,8 @@ pub mod cast {
     // SAFETY: By the `static_assert!` in `Project::project`, `Src` and `Dst`
     // are either:
     // - Both sized and equal in size
-    // - Both slice DSTs with the same alignment, trailing slice offset, and
-    //   element size. These ensure that any given pointer metadata encodes the
-    //   same size for both `Src` and `Dst` (note that the alignment is required
-    //   as it affects the amount of trailing padding).
+    // - Both slice DSTs with the same alignment and trailing-slice offset, and
+    //   with equal sizes for every metadata value.
     unsafe impl<Src, Dst> CastExact<Src, Dst> for CastUnsized
     where
         Src: ?Sized + KnownLayout,

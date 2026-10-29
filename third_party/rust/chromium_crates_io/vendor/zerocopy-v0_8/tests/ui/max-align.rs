@@ -96,7 +96,8 @@ struct Align13421772;
 struct Align26843545;
 
 #[repr(C, align(1073741824))]
-//~[msrv, stable, nightly]^ ERROR: invalid `repr(align)` attribute: larger than 2^29
+//~[msrv]^ ERROR: invalid `repr(align)` attribute: larger than 2^29
+//~[stable, nightly]^^ ERROR: invalid alignment value: larger than 2^29
 struct Align1073741824;
 
 fn main() {}

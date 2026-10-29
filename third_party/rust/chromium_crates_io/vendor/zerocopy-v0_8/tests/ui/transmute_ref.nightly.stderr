@@ -79,72 +79,64 @@ error[E0308]: mismatched types
    = note: this error originates in the macro `transmute_ref` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `DstA: FromBytes` is not satisfied
-  --> $DIR/transmute_ref.rs:40:35
-   |
-40 | const DST_NOT_FROM_BYTES: &DstA = transmute_ref!(&AU16(0));
-   |                                   ^^^^^^^^^^^^^^^^^^^^^^^^
-   |                                   |
-   |                                   unsatisfied trait bound
-   |                                   required by a bound introduced by this call
-   |
+   --> $DIR/transmute_ref.rs:40:35
+    |
+ 40 | const DST_NOT_FROM_BYTES: &DstA = transmute_ref!(&AU16(0));
+    |                                   ^^^^^^^^^^^^^^^^^^^^^^^^
+    |                                   |
+    |                                   unsatisfied trait bound
+    |                                   required by a bound introduced by this call
+    |
 help: the trait `FromBytes` is not implemented for `DstA`
-  --> $DIR/transmute_ref.rs:37:1
-   |
-37 | struct DstA(AU16);
-   | ^^^^^^^^^^^
-   = note: Consider adding `#[derive(FromBytes)]` to `DstA`
-   = help: the following other types implement trait `FromBytes`:
-             ()
-             (A, B)
-             (A, B, C)
-             (A, B, C, D)
-             (A, B, C, D, E)
-             (A, B, C, D, E, F)
-             (A, B, C, D, E, F, G)
-             (A, B, C, D, E, F, G, H)
-           and $OTHER_TYPES others
+   --> $DIR/transmute_ref.rs:37:1
+    |
+ 37 | struct DstA(AU16);
+    | ^^^^^^^^^^^
+    = note: Consider adding `#[derive(FromBytes)]` to `DstA`
+    = help: the following other types implement trait `FromBytes`:
+              $IMPLEMENTATION_SAMPLES
+            and $OTHER_TYPES others
 note: required by a bound in `DST_NOT_FROM_BYTES::AssertDstIsFromBytes`
-  --> $DIR/transmute_ref.rs:40:35
-   |
-40 | const DST_NOT_FROM_BYTES: &DstA = transmute_ref!(&AU16(0));
-   |                                   ^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `AssertDstIsFromBytes`
-   = note: the full name for the type has been written to '/long-type-HASH.txt'
-   = note: consider using `--verbose` to print the full type name to the console
-   = note: this error originates in the macro `transmute_ref` (in Nightly builds, run with -Z macro-backtrace for more info)
+   --> $DIR/transmute_ref.rs:40:35
+    |
+ 40 | const DST_NOT_FROM_BYTES: &DstA = transmute_ref!(&AU16(0));
+    |                                   ^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `AssertDstIsFromBytes`
+    |
+   ::: src/macros.rs:360
+    |
+360 | ...   struct AssertDstIsFromBytes<'a, U: ?::core::marker::Sized + $crate::FromBytes>(&'a U);
+    = note: this error originates in the macro `transmute_ref` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `DstB: Immutable` is not satisfied
-  --> $DIR/transmute_ref.rs:48:34
-   |
-48 | const DST_NOT_IMMUTABLE: &DstB = transmute_ref!(&AU16(0));
-   |                                  ^^^^^^^^^^^^^^^^^^^^^^^^
-   |                                  |
-   |                                  unsatisfied trait bound
-   |                                  required by a bound introduced by this call
-   |
+   --> $DIR/transmute_ref.rs:48:34
+    |
+ 48 | const DST_NOT_IMMUTABLE: &DstB = transmute_ref!(&AU16(0));
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+    |                                  |
+    |                                  unsatisfied trait bound
+    |                                  required by a bound introduced by this call
+    |
 help: the trait `Immutable` is not implemented for `DstB`
-  --> $DIR/transmute_ref.rs:45:1
-   |
-45 | struct DstB(AU16);
-   | ^^^^^^^^^^^
-   = note: Consider adding `#[derive(Immutable)]` to `DstB`
-   = help: the following other types implement trait `Immutable`:
-             &T
-             &mut T
-             ()
-             (A, B)
-             (A, B, C)
-             (A, B, C, D)
-             (A, B, C, D, E)
-             (A, B, C, D, E, F)
-           and $OTHER_TYPES others
+   --> $DIR/transmute_ref.rs:45:1
+    |
+ 45 | struct DstB(AU16);
+    | ^^^^^^^^^^^
+    = note: Consider adding `#[derive(Immutable)]` to `DstB`
+    = help: the following other types implement trait `Immutable`:
+              $IMPLEMENTATION_SAMPLES
+            and $OTHER_TYPES others
 note: required by a bound in `DST_NOT_IMMUTABLE::AssertDstIsImmutable`
-  --> $DIR/transmute_ref.rs:48:34
-   |
-48 | const DST_NOT_IMMUTABLE: &DstB = transmute_ref!(&AU16(0));
-   |                                  ^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `AssertDstIsImmutable`
-   = note: the full name for the type has been written to '/long-type-HASH.txt'
-   = note: consider using `--verbose` to print the full type name to the console
-   = note: this error originates in the macro `transmute_ref` (in Nightly builds, run with -Z macro-backtrace for more info)
+   --> $DIR/transmute_ref.rs:48:34
+    |
+ 48 | const DST_NOT_IMMUTABLE: &DstB = transmute_ref!(&AU16(0));
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `AssertDstIsImmutable`
+    |
+   ::: src/macros.rs:361
+    |
+361 | ...   struct AssertDstIsImmutable<'a, T: ?::core::marker::Sized + $crate::Immutable>(&'a T);
+    = note: the full name for the type has been written to '/long-type-HASH.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+    = note: this error originates in the macro `transmute_ref` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0308]: mismatched types
   --> $DIR/transmute_ref.rs:53:54
@@ -219,130 +211,118 @@ help: consider borrowing here
    |                                                 +
 
 error[E0277]: the trait bound `SrcA: IntoBytes` is not satisfied
-  --> $DIR/transmute_ref.rs:70:33
-   |
-70 | const SRC_NOT_AS_BYTES: &AU16 = transmute_ref!(&SrcA(AU16(0)));
-   |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   |                                 |
-   |                                 unsatisfied trait bound
-   |                                 required by a bound introduced by this call
-   |
+   --> $DIR/transmute_ref.rs:70:33
+    |
+ 70 | const SRC_NOT_AS_BYTES: &AU16 = transmute_ref!(&SrcA(AU16(0)));
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |                                 |
+    |                                 unsatisfied trait bound
+    |                                 required by a bound introduced by this call
+    |
 help: the trait `IntoBytes` is not implemented for `SrcA`
-  --> $DIR/transmute_ref.rs:67:1
-   |
-67 | struct SrcA(AU16);
-   | ^^^^^^^^^^^
-   = note: Consider adding `#[derive(IntoBytes)]` to `SrcA`
-   = help: the following other types implement trait `IntoBytes`:
-             ()
-             AU16
-             AtomicBool
-             AtomicI16
-             AtomicI32
-             AtomicI64
-             AtomicI8
-             AtomicIsize
-           and $OTHER_TYPES others
+   --> $DIR/transmute_ref.rs:67:1
+    |
+ 67 | struct SrcA(AU16);
+    | ^^^^^^^^^^^
+    = note: Consider adding `#[derive(IntoBytes)]` to `SrcA`
+    = help: the following other types implement trait `IntoBytes`:
+              $IMPLEMENTATION_SAMPLES
+            and $OTHER_TYPES others
 note: required by a bound in `SRC_NOT_AS_BYTES::AssertSrcIsIntoBytes`
-  --> $DIR/transmute_ref.rs:70:33
-   |
-70 | const SRC_NOT_AS_BYTES: &AU16 = transmute_ref!(&SrcA(AU16(0)));
-   |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `AssertSrcIsIntoBytes`
-   = note: this error originates in the macro `transmute_ref` (in Nightly builds, run with -Z macro-backtrace for more info)
+   --> $DIR/transmute_ref.rs:70:33
+    |
+ 70 | const SRC_NOT_AS_BYTES: &AU16 = transmute_ref!(&SrcA(AU16(0)));
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `AssertSrcIsIntoBytes`
+    |
+   ::: src/macros.rs:358
+    |
+358 | ...   struct AssertSrcIsIntoBytes<'a, T: ?::core::marker::Sized + $crate::IntoBytes>(&'a T);
+    = note: this error originates in the macro `transmute_ref` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `SrcA: IntoBytes` is not satisfied
-  --> $DIR/transmute_ref.rs:70:33
-   |
-70 | const SRC_NOT_AS_BYTES: &AU16 = transmute_ref!(&SrcA(AU16(0)));
-   |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ unsatisfied trait bound
-   |
+   --> $DIR/transmute_ref.rs:70:33
+    |
+ 70 | const SRC_NOT_AS_BYTES: &AU16 = transmute_ref!(&SrcA(AU16(0)));
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ unsatisfied trait bound
+    |
 help: the trait `IntoBytes` is not implemented for `SrcA`
-  --> $DIR/transmute_ref.rs:67:1
-   |
-67 | struct SrcA(AU16);
-   | ^^^^^^^^^^^
-   = note: Consider adding `#[derive(IntoBytes)]` to `SrcA`
-   = help: the following other types implement trait `IntoBytes`:
-             ()
-             AU16
-             AtomicBool
-             AtomicI16
-             AtomicI32
-             AtomicI64
-             AtomicI8
-             AtomicIsize
-           and $OTHER_TYPES others
+   --> $DIR/transmute_ref.rs:67:1
+    |
+ 67 | struct SrcA(AU16);
+    | ^^^^^^^^^^^
+    = note: Consider adding `#[derive(IntoBytes)]` to `SrcA`
+    = help: the following other types implement trait `IntoBytes`:
+              $IMPLEMENTATION_SAMPLES
+            and $OTHER_TYPES others
 note: required by a bound in `SRC_NOT_AS_BYTES::AssertSrcIsIntoBytes`
-  --> $DIR/transmute_ref.rs:70:33
-   |
-70 | const SRC_NOT_AS_BYTES: &AU16 = transmute_ref!(&SrcA(AU16(0)));
-   |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `AssertSrcIsIntoBytes`
-   = note: this error originates in the macro `transmute_ref` (in Nightly builds, run with -Z macro-backtrace for more info)
+   --> $DIR/transmute_ref.rs:70:33
+    |
+ 70 | const SRC_NOT_AS_BYTES: &AU16 = transmute_ref!(&SrcA(AU16(0)));
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `AssertSrcIsIntoBytes`
+    |
+   ::: src/macros.rs:358
+    |
+358 | ...   struct AssertSrcIsIntoBytes<'a, T: ?::core::marker::Sized + $crate::IntoBytes>(&'a T);
+    = note: this error originates in the macro `transmute_ref` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `SrcB: Immutable` is not satisfied
-  --> $DIR/transmute_ref.rs:79:34
-   |
-79 | const SRC_NOT_IMMUTABLE: &AU16 = transmute_ref!(&SrcB(AU16(0)));
-   |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   |                                  |
-   |                                  unsatisfied trait bound
-   |                                  required by a bound introduced by this call
-   |
+   --> $DIR/transmute_ref.rs:79:34
+    |
+ 79 | const SRC_NOT_IMMUTABLE: &AU16 = transmute_ref!(&SrcB(AU16(0)));
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |                                  |
+    |                                  unsatisfied trait bound
+    |                                  required by a bound introduced by this call
+    |
 help: the trait `Immutable` is not implemented for `SrcB`
-  --> $DIR/transmute_ref.rs:76:1
-   |
-76 | struct SrcB(AU16);
-   | ^^^^^^^^^^^
-   = note: Consider adding `#[derive(Immutable)]` to `SrcB`
-   = help: the following other types implement trait `Immutable`:
-             &T
-             &mut T
-             ()
-             (A, B)
-             (A, B, C)
-             (A, B, C, D)
-             (A, B, C, D, E)
-             (A, B, C, D, E, F)
-           and $OTHER_TYPES others
+   --> $DIR/transmute_ref.rs:76:1
+    |
+ 76 | struct SrcB(AU16);
+    | ^^^^^^^^^^^
+    = note: Consider adding `#[derive(Immutable)]` to `SrcB`
+    = help: the following other types implement trait `Immutable`:
+              $IMPLEMENTATION_SAMPLES
+            and $OTHER_TYPES others
 note: required by a bound in `SRC_NOT_IMMUTABLE::AssertSrcIsImmutable`
-  --> $DIR/transmute_ref.rs:79:34
-   |
-79 | const SRC_NOT_IMMUTABLE: &AU16 = transmute_ref!(&SrcB(AU16(0)));
-   |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `AssertSrcIsImmutable`
-   = note: the full name for the type has been written to '/long-type-HASH.txt'
-   = note: consider using `--verbose` to print the full type name to the console
-   = note: this error originates in the macro `transmute_ref` (in Nightly builds, run with -Z macro-backtrace for more info)
+   --> $DIR/transmute_ref.rs:79:34
+    |
+ 79 | const SRC_NOT_IMMUTABLE: &AU16 = transmute_ref!(&SrcB(AU16(0)));
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `AssertSrcIsImmutable`
+    |
+   ::: src/macros.rs:359
+    |
+359 | ...   struct AssertSrcIsImmutable<'a, T: ?::core::marker::Sized + $crate::Immutable>(&'a T);
+    = note: the full name for the type has been written to '/long-type-HASH.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+    = note: this error originates in the macro `transmute_ref` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `SrcB: Immutable` is not satisfied
-  --> $DIR/transmute_ref.rs:79:34
-   |
-79 | const SRC_NOT_IMMUTABLE: &AU16 = transmute_ref!(&SrcB(AU16(0)));
-   |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ unsatisfied trait bound
-   |
+   --> $DIR/transmute_ref.rs:79:34
+    |
+ 79 | const SRC_NOT_IMMUTABLE: &AU16 = transmute_ref!(&SrcB(AU16(0)));
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ unsatisfied trait bound
+    |
 help: the trait `Immutable` is not implemented for `SrcB`
-  --> $DIR/transmute_ref.rs:76:1
-   |
-76 | struct SrcB(AU16);
-   | ^^^^^^^^^^^
-   = note: Consider adding `#[derive(Immutable)]` to `SrcB`
-   = help: the following other types implement trait `Immutable`:
-             &T
-             &mut T
-             ()
-             (A, B)
-             (A, B, C)
-             (A, B, C, D)
-             (A, B, C, D, E)
-             (A, B, C, D, E, F)
-           and $OTHER_TYPES others
+   --> $DIR/transmute_ref.rs:76:1
+    |
+ 76 | struct SrcB(AU16);
+    | ^^^^^^^^^^^
+    = note: Consider adding `#[derive(Immutable)]` to `SrcB`
+    = help: the following other types implement trait `Immutable`:
+              $IMPLEMENTATION_SAMPLES
+            and $OTHER_TYPES others
 note: required by a bound in `SRC_NOT_IMMUTABLE::AssertSrcIsImmutable`
-  --> $DIR/transmute_ref.rs:79:34
-   |
-79 | const SRC_NOT_IMMUTABLE: &AU16 = transmute_ref!(&SrcB(AU16(0)));
-   |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `AssertSrcIsImmutable`
-   = note: the full name for the type has been written to '/long-type-HASH.txt'
-   = note: consider using `--verbose` to print the full type name to the console
-   = note: this error originates in the macro `transmute_ref` (in Nightly builds, run with -Z macro-backtrace for more info)
+   --> $DIR/transmute_ref.rs:79:34
+    |
+ 79 | const SRC_NOT_IMMUTABLE: &AU16 = transmute_ref!(&SrcB(AU16(0)));
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `AssertSrcIsImmutable`
+    |
+   ::: src/macros.rs:359
+    |
+359 | ...   struct AssertSrcIsImmutable<'a, T: ?::core::marker::Sized + $crate::Immutable>(&'a T);
+    = note: the full name for the type has been written to '/long-type-HASH.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+    = note: this error originates in the macro `transmute_ref` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0599]: the method `transmute_ref` exists for struct `zerocopy::util::macro_util::Wrap<&[u8], &[u8; 1]>`, but its trait bounds were not satisfied
    --> $DIR/transmute_ref.rs:84:31

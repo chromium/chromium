@@ -88,6 +88,7 @@ fn main() {
         // once they're no longer needed.
         println!("cargo:rustc-check-cfg=cfg(doc_cfg)");
         println!("cargo:rustc-check-cfg=cfg(kani)");
+        println!("cargo:rustc-check-cfg=cfg(kani_slow)");
         println!(
             "cargo:rustc-check-cfg=cfg(__ZEROCOPY_INTERNAL_USE_ONLY_NIGHTLY_FEATURES_IN_TESTS)"
         );

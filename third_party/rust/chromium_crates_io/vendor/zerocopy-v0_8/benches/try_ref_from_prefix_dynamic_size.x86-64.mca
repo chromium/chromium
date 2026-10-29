@@ -23,8 +23,8 @@ Instruction Info:
  1      1     0.33                        or	al, dil
  1      1     0.33                        test	al, 1
  1      1     1.00                        je	.LBB5_2
+ 1      1     0.33                        not	edi
  1      1     0.33                        and	edi, 1
- 1      1     0.33                        xor	rdi, 1
  1      0     0.25                        xor	eax, eax
  1      1     0.33                        mov	rdx, rdi
  1      1     1.00                  U     ret
@@ -62,8 +62,8 @@ Resource pressure by instruction:
  -      -     0.19   0.48    -     0.33    -      -     or	al, dil
  -      -     0.50   0.16    -     0.34    -      -     test	al, 1
  -      -      -      -      -     1.00    -      -     je	.LBB5_2
- -      -     0.50   0.50    -      -      -      -     and	edi, 1
- -      -     0.49   0.34    -     0.17    -      -     xor	rdi, 1
+ -      -     0.50   0.50    -      -      -      -     not	edi
+ -      -     0.49   0.34    -     0.17    -      -     and	edi, 1
  -      -      -      -      -      -      -      -     xor	eax, eax
  -      -     0.16   0.84    -      -      -      -     mov	rdx, rdi
  -      -      -      -      -     1.00    -      -     ret

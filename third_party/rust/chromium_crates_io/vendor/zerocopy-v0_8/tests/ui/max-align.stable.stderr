@@ -1,4 +1,4 @@
-error[E0589]: invalid `repr(align)` attribute: larger than 2^29
+error[E0589]: invalid alignment value: larger than 2^29
   --> $DIR/max-align.rs:98:17
    |
 98 | #[repr(C, align(1073741824))]

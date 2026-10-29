@@ -21,9 +21,9 @@ error[E0277]: the trait bound `NotZerocopy: TryFromBytes` is not satisfied
     |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `TryFromBytes` is not implemented for `NotZerocopy`
     |
 note: required by a bound in `ValidityError`
-   --> $WORKSPACE/src/error.rs:590:45
+   --> $WORKSPACE/src/error.rs:588:45
     |
-590 | pub struct ValidityError<Src, Dst: ?Sized + TryFromBytes> {
+588 | pub struct ValidityError<Src, Dst: ?Sized + TryFromBytes> {
     |                                             ^^^^^^^^^^^^ required by this bound in `ValidityError`
 
 error[E0277]: the trait bound `NotZerocopy: TryFromBytes` is not satisfied
@@ -33,40 +33,40 @@ error[E0277]: the trait bound `NotZerocopy: TryFromBytes` is not satisfied
     |                                                               ^^^^^^^^^^^^^^^^^^^^^^^ the trait `TryFromBytes` is not implemented for `NotZerocopy`
     |
 note: required by a bound in `ValidityError`
-   --> $WORKSPACE/src/error.rs:590:45
+   --> $WORKSPACE/src/error.rs:588:45
     |
-590 | pub struct ValidityError<Src, Dst: ?Sized + TryFromBytes> {
+588 | pub struct ValidityError<Src, Dst: ?Sized + TryFromBytes> {
     |                                             ^^^^^^^^^^^^ required by this bound in `ValidityError`
     = note: this error originates in the macro `try_transmute_mut` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `SrcA: FromBytes` is not satisfied
-  --> $DIR/try_transmute_mut.rs:33:41
+  --> $DIR/try_transmute_mut.rs:34:41
    |
-33 |     let src_not_from_bytes: &mut DstA = try_transmute_mut!(&mut SrcA).unwrap();
+34 |     let src_not_from_bytes: &mut DstA = try_transmute_mut!(&mut SrcA).unwrap();
    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `FromBytes` is not implemented for `SrcA`
    |
    = note: this error originates in the macro `try_transmute_mut` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `DstA: IntoBytes` is not satisfied
-  --> $DIR/try_transmute_mut.rs:33:41
+  --> $DIR/try_transmute_mut.rs:34:41
    |
-33 |     let src_not_from_bytes: &mut DstA = try_transmute_mut!(&mut SrcA).unwrap();
+34 |     let src_not_from_bytes: &mut DstA = try_transmute_mut!(&mut SrcA).unwrap();
    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `IntoBytes` is not implemented for `DstA`
    |
    = note: this error originates in the macro `try_transmute_mut` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `SrcB: IntoBytes` is not satisfied
-  --> $DIR/try_transmute_mut.rs:46:41
+  --> $DIR/try_transmute_mut.rs:47:41
    |
-46 |     let src_not_from_bytes: &mut DstB = try_transmute_mut!(&mut SrcB).unwrap();
+47 |     let src_not_from_bytes: &mut DstB = try_transmute_mut!(&mut SrcB).unwrap();
    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `IntoBytes` is not implemented for `SrcB`
    |
    = note: this error originates in the macro `try_transmute_mut` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `DstB: IntoBytes` is not satisfied
-  --> $DIR/try_transmute_mut.rs:46:41
+  --> $DIR/try_transmute_mut.rs:47:41
    |
-46 |     let src_not_from_bytes: &mut DstB = try_transmute_mut!(&mut SrcB).unwrap();
+47 |     let src_not_from_bytes: &mut DstB = try_transmute_mut!(&mut SrcB).unwrap();
    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `IntoBytes` is not implemented for `DstB`
    |
    = note: this error originates in the macro `try_transmute_mut` (in Nightly builds, run with -Z macro-backtrace for more info)

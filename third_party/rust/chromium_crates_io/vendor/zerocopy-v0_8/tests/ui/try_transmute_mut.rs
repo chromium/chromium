@@ -20,6 +20,7 @@ fn main() {
     //~[msrv, stable, nightly]^^ ERROR: the trait bound `NotZerocopy: TryFromBytes` is not satisfied
     //~[msrv, stable, nightly]^^^ ERROR: the trait bound `NotZerocopy: TryFromBytes` is not satisfied
     //~[msrv, stable, nightly]^^^^ ERROR: the trait bound `NotZerocopy: IntoBytes` is not satisfied
+    //~[nightly]^^^^^ ERROR: the trait bound `NotZerocopy: TryFromBytes` is not satisfied
 
     #[derive(zerocopy::IntoBytes)]
     #[repr(C)]

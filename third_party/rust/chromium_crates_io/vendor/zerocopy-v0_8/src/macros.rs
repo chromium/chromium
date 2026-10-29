@@ -1411,6 +1411,38 @@ mod tests {
         let x: &SliceDst<U16, u8> = transmute_ref!(slice_dst_big);
         assert_eq!(x, slice_dst_small);
 
+        // A packed outer DST can preserve the trailing field's stronger
+        // rounding alignment. These two types consequently have different
+        // normalized layout formulas even though both have size `2 + 4 * n`
+        // for every trailing slice length. Ensure the semantic size-sequence
+        // comparison accepts this representation-preserving transmutation.
+        #[derive(FromBytes, Immutable, IntoBytes, KnownLayout)]
+        #[repr(C, align(2))]
+        struct TransmuteAlign2([u8; 4]);
+
+        #[derive(FromBytes, Immutable, IntoBytes, KnownLayout)]
+        #[repr(C, packed(2))]
+        struct TransmutePacked4 {
+            head: u16,
+            tail: [u32],
+        }
+
+        #[derive(FromBytes, Immutable, IntoBytes, KnownLayout)]
+        #[repr(C, packed(2))]
+        struct TransmutePacked2 {
+            head: u16,
+            tail: [TransmuteAlign2],
+        }
+
+        #[repr(C, align(2))]
+        struct TransmuteBytes([u8; 10]);
+
+        let bytes = TransmuteBytes([0; 10]);
+        let src = TransmutePacked4::ref_from_bytes(&bytes.0).unwrap();
+        let dst: &TransmutePacked2 = transmute_ref!(src);
+        assert_eq!(mem::size_of_val(src), 10);
+        assert_eq!(mem::size_of_val(dst), 10);
+
         // Test that it's legal to transmute a reference while shrinking the
         // lifetime (note that `X` has the lifetime `'static`).
         let x: &[u8; 8] = transmute_ref!(X);
@@ -1700,9 +1732,9 @@ mod tests {
     #[test]
     fn test_include_value() {
         const AS_U32: u32 = include_value!("../testdata/include_value/data");
-        assert_eq!(AS_U32, u32::from_ne_bytes([b'a', b'b', b'c', b'd']));
+        assert_eq!(AS_U32, u32::from_ne_bytes(*b"abcd"));
         const AS_I32: i32 = include_value!("../testdata/include_value/data");
-        assert_eq!(AS_I32, i32::from_ne_bytes([b'a', b'b', b'c', b'd']));
+        assert_eq!(AS_I32, i32::from_ne_bytes(*b"abcd"));
     }
 
     #[test]

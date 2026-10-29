@@ -64,15 +64,51 @@ fn run_codegen_test(bench_name: &str, target_cpu: &str, bless: bool) {
             .expect("failed to execute process")
     };
 
+    // Cargo 1.100's new build directory layout puts the executable and assembly
+    // file beside each other, but cargo-show-asm 0.2.62 only searches a nested
+    // `build` directory. After the first invocation produces the files, add
+    // hard links in the directory cargo-show-asm searches and retry.
+    let prepare_cargo_show_asm_workaround = || {
+        fn visit(dir: &std::path::Path, bench_name: &str) {
+            for entry in std::fs::read_dir(dir).into_iter().flatten().flatten() {
+                let path = entry.path();
+                if path.is_dir() {
+                    visit(&path, bench_name);
+                } else if path.extension().is_some_and(|ext| ext == "s")
+                    && path
+                        .file_stem()
+                        .and_then(|stem| stem.to_str())
+                        .is_some_and(|stem| stem.starts_with(&format!("{bench_name}-")))
+                {
+                    let executable = path.with_extension("");
+                    let link_dir = path.parent().unwrap().join("build");
+                    std::fs::create_dir_all(&link_dir).unwrap();
+                    for source in [&executable, &path] {
+                        let destination = link_dir.join(source.file_name().unwrap());
+                        if !destination.exists() {
+                            std::fs::hard_link(source, destination).unwrap();
+                        }
+                    }
+                }
+            }
+        }
+
+        visit(std::path::Path::new(target_dir), bench_name);
+    };
+
     let re = Regex::new(r"(\.Lanon\.)[0-z]+(\.\d+)").unwrap();
 
     let test_directive = |directive: Directive| {
-        let output = cargo_asm(&directive);
+        let mut output = cargo_asm(&directive);
+        if !output.status.success() {
+            prepare_cargo_show_asm_workaround();
+            output = cargo_asm(&directive);
+        }
         let actual_result = String::from_utf8_lossy(&output.stdout);
         let actual_result = re.replace_all(&actual_result, "${1}HASH${2}");
 
         if !(output.status.success()) {
-            panic!("{}\n{}", &actual_result, String::from_utf8_lossy(&output.stderr));
+            panic!("{}\n{}", actual_result, String::from_utf8_lossy(&output.stderr));
         }
 
         let expected_file_path = {
@@ -87,10 +123,15 @@ fn run_codegen_test(bench_name: &str, target_cpu: &str, bless: bool) {
         if bless {
             std::fs::write(expected_file_path, actual_result.as_bytes()).unwrap();
         } else {
-            let expected_result = std::fs::read(expected_file_path).unwrap_or_default();
+            let expected_result = std::fs::read(&expected_file_path).unwrap_or_default();
             if actual_result.as_bytes() != expected_result {
                 let expected = String::from_utf8_lossy(&expected_result[..]);
-                panic!("Bless codegen tests with BLESS=1\nGot unexpected output:\n{}", expected);
+                panic!(
+                    "Bless codegen tests with BLESS=1\nSnapshot: {}\nExpected:\n{}\nActual:\n{}",
+                    expected_file_path.display(),
+                    expected,
+                    actual_result
+                );
             }
         }
     };
@@ -117,7 +158,11 @@ fn codegen() {
         })
         .collect();
 
-    let failed = handles.into_iter().any(|handle| handle.join().unwrap().is_err());
+    // Join every worker so an early failure cannot hide later diagnostics.
+    let mut failed = false;
+    for handle in handles {
+        failed |= handle.join().unwrap().is_err();
+    }
 
     if failed {
         panic!("One or more codegen tests failed. See thread panics above for details.");

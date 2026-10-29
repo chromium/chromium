@@ -18,9 +18,9 @@ error[E0277]: the trait bound `NotZerocopy: TryFromBytes` is not satisfied
     |                                 ^^^^^^^^^^^^^^^^^^^^^^ the trait `TryFromBytes` is not implemented for `NotZerocopy`
     |
 note: required by a bound in `ValidityError`
-   --> $WORKSPACE/src/error.rs:590:45
+   --> $WORKSPACE/src/error.rs:588:45
     |
-590 | pub struct ValidityError<Src, Dst: ?Sized + TryFromBytes> {
+588 | pub struct ValidityError<Src, Dst: ?Sized + TryFromBytes> {
     |                                             ^^^^^^^^^^^^ required by this bound in `ValidityError`
 
 error[E0277]: the trait bound `NotZerocopy: TryFromBytes` is not satisfied
@@ -30,16 +30,16 @@ error[E0277]: the trait bound `NotZerocopy: TryFromBytes` is not satisfied
     |                                                          ^^^^^^^^^^^^^^^^^^^^^^^ the trait `TryFromBytes` is not implemented for `NotZerocopy`
     |
 note: required by a bound in `ValidityError`
-   --> $WORKSPACE/src/error.rs:590:45
+   --> $WORKSPACE/src/error.rs:588:45
     |
-590 | pub struct ValidityError<Src, Dst: ?Sized + TryFromBytes> {
+588 | pub struct ValidityError<Src, Dst: ?Sized + TryFromBytes> {
     |                                             ^^^^^^^^^^^^ required by this bound in `ValidityError`
     = note: this error originates in the macro `try_transmute` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `NotZerocopy<AU16>: IntoBytes` is not satisfied
-   --> $DIR/try_transmute.rs:21:47
+   --> $DIR/try_transmute.rs:22:47
     |
-21  |     let src_not_into_bytes: Result<AU16, _> = try_transmute!(NotZerocopy(AU16(0)));
+22  |     let src_not_into_bytes: Result<AU16, _> = try_transmute!(NotZerocopy(AU16(0)));
     |                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `IntoBytes` is not implemented for `NotZerocopy<AU16>`
     |
 note: required by a bound in `try_transmute`

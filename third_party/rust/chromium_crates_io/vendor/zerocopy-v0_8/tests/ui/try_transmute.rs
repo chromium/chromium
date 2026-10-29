@@ -16,6 +16,7 @@ fn main() {
     //~[msrv, stable, nightly]^ ERROR: the trait bound `NotZerocopy: TryFromBytes` is not satisfied
     //~[msrv, stable, nightly]^^ ERROR: the trait bound `NotZerocopy: TryFromBytes` is not satisfied
     //~[msrv, stable, nightly]^^^ ERROR: the trait bound `NotZerocopy: TryFromBytes` is not satisfied
+    //~[nightly]^^^^ ERROR: the trait bound `NotZerocopy: TryFromBytes` is not satisfied
 
     // `try_transmute` requires that the source type implements `IntoBytes`
     let src_not_into_bytes: Result<AU16, _> = try_transmute!(NotZerocopy(AU16(0)));

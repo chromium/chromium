@@ -4,8 +4,8 @@ bench_try_ref_from_prefix_dynamic_size:
 	or al, dil
 	test al, 1
 	je .LBB5_2
+	not edi
 	and edi, 1
-	xor rdi, 1
 	xor eax, eax
 	mov rdx, rdi
 	ret

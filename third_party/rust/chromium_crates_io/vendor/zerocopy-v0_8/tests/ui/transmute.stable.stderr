@@ -11,14 +11,7 @@ help: the trait `FromBytes` is not implemented for `NotZerocopy`
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    = note: Consider adding `#[derive(FromBytes)]` to `NotZerocopy`
    = help: the following other types implement trait `FromBytes`:
-             ()
-             (A, B)
-             (A, B, C)
-             (A, B, C, D)
-             (A, B, C, D, E)
-             (A, B, C, D, E, F)
-             (A, B, C, D, E, F, G)
-             (A, B, C, D, E, F, G, H)
+             $IMPLEMENTATION_SAMPLES
            and $OTHER_TYPES others
 note: required by a bound in `DST_NOT_FROM_BYTES::transmute`
   --> $DIR/transmute.rs:17:41
@@ -28,8 +21,6 @@ note: required by a bound in `DST_NOT_FROM_BYTES::transmute`
    |                                         |
    |                                         required by a bound in this function
    |                                         required by this bound in `transmute`
-   = note: the full name for the type has been written to '/long-type-HASH.txt'
-   = note: consider using `--verbose` to print the full type name to the console
    = note: this error originates in the macro `transmute` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `NotZerocopy<AU16>: IntoBytes` is not satisfied
@@ -48,14 +39,7 @@ help: the trait `IntoBytes` is not implemented for `NotZerocopy<AU16>`
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    = note: Consider adding `#[derive(IntoBytes)]` to `NotZerocopy<AU16>`
    = help: the following other types implement trait `IntoBytes`:
-             ()
-             AU16
-             AtomicBool
-             AtomicI16
-             AtomicI32
-             AtomicI64
-             AtomicI8
-             AtomicIsize
+             $IMPLEMENTATION_SAMPLES
            and $OTHER_TYPES others
 note: required by a bound in `SRC_NOT_AS_BYTES::transmute`
   --> $DIR/transmute.rs:21:32

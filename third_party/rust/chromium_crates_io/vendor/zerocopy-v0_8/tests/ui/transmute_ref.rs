@@ -82,5 +82,5 @@ const SRC_NOT_IMMUTABLE: &AU16 = transmute_ref!(&SrcB(AU16(0)));
 
 // `transmute_ref!` does not support transmuting from an unsized source type.
 const SRC_UNSIZED: &[u8; 1] = transmute_ref!(&[0u8][..]);
-//~[msrv, stable]^ ERROR: the method `transmute_ref` exists for struct `Wrap<&[u8], &[u8; 1]>`, but its trait bounds were not satisfied
-//~[nightly]^^ ERROR: the method `transmute_ref` exists for struct `zerocopy::util::macro_util::Wrap<&[u8], &[u8; 1]>`, but its trait bounds were not satisfied
+//~[msrv]^ ERROR: the method `transmute_ref` exists for struct `Wrap<&[u8], &[u8; 1]>`, but its trait bounds were not satisfied
+//~[stable, nightly]^^ ERROR: the method `transmute_ref` exists for struct `zerocopy::util::macro_util::Wrap<&[u8], &[u8; 1]>`, but its trait bounds were not satisfied

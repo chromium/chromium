@@ -19,19 +19,16 @@ use zerocopy::{transmute, transmute_mut, try_transmute};
 // size of the destination type is not smaller than the size of the source type.
 const TRANSMUTE_DECREASE_SIZE: u8 = transmute!(AU16(0));
 //~[msrv, stable, nightly]^ ERROR: cannot transmute between types of different sizes, or dependently-sized types
-//~[stable, nightly]^^ ERROR: transmuting from 2-byte type to 1-byte type: `AU16` -> `u8`
 
 // `transmute!` does not support transmuting from a smaller type to a larger
 // one.
 const TRANSMUTE_INCREASE_SIZE: AU16 = transmute!(0u8);
 //~[msrv, stable, nightly]^ ERROR: cannot transmute between types of different sizes, or dependently-sized types
-//~[stable, nightly]^^ ERROR: transmuting from 1-byte type to 2-byte type: `u8` -> `AU16`
 
 // `transmute!` does not support transmuting from a smaller type to a larger
 // one.
 const TRANSMUTE_INCREASE_SIZE_ALLOW_SHRINK: AU16 = transmute!(#![allow(shrink)] 0u8);
 //~[msrv, stable, nightly]^ ERROR: cannot transmute between types of different sizes, or dependently-sized types
-//~[stable, nightly]^^ ERROR: transmuting from 1-byte type to 2-byte type: `u8` -> `Transmute<u8, AU16>`
 
 const ARRAY_OF_U8S: [u8; 2] = [0u8; 2];
 
@@ -41,15 +38,12 @@ const TRANSMUTE_MUT_CONST_CONTEXT: &mut [u8; 2] = transmute_mut!(&mut ARRAY_OF_U
 //~[msrv]^^ ERROR: calls in constants are limited to constant functions, tuple structs and tuple variants
 //~[msrv]^^^ ERROR: calls in constants are limited to constant functions, tuple structs and tuple variants
 //~[msrv]^^^^ ERROR: temporary value dropped while borrowed
-//~[stable]^^^^^ ERROR: cannot call non-const method `Wrap::<&mut [u8; 2], &mut [u8; 2]>::transmute_mut_inference_helper` in constants
-//~[stable]^^^^^^ ERROR: cannot call non-const method `Wrap::<&mut [u8; 2], &mut [u8; 2]>::transmute_mut` in constants
-//~[nightly]^^^^^^^ ERROR: cannot call non-const method `zerocopy::util::macro_util::Wrap::<&mut [u8; 2], &mut [u8; 2]>::transmute_mut_inference_helper` in constants
-//~[nightly]^^^^^^^^ ERROR: cannot call non-const method `zerocopy::util::macro_util::Wrap::<&mut [u8; 2], &mut [u8; 2]>::transmute_mut` in constants
+//~[stable, nightly]^^^^^ ERROR: cannot call non-const method `zerocopy::util::macro_util::Wrap::<&mut [u8; 2], &mut [u8; 2]>::transmute_mut_inference_helper` in constants
+//~[stable, nightly]^^^^^^ ERROR: cannot call non-const method `zerocopy::util::macro_util::Wrap::<&mut [u8; 2], &mut [u8; 2]>::transmute_mut` in constants
 
 // Should fail because the file is 4 bytes long, not 8.
 const INCLUDE_VALUE_WRONG_SIZE: u64 = zerocopy::include_value!("../../testdata/include_value/data");
 //~[msrv, stable, nightly]^ ERROR: cannot transmute between types of different sizes, or dependently-sized types
-//~[stable, nightly]^^ ERROR: transmuting from 4-byte type to 8-byte type: `[u8; 4]` -> `u64`
 
 fn main() {
     // Although this is not a soundness requirement, we currently require that

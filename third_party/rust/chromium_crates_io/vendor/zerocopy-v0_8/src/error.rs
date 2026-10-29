@@ -199,10 +199,8 @@ impl<Src, Dst: ?Sized + Unaligned, S, V> From<ConvertError<AlignmentError<Src, D
     #[inline]
     fn from(err: ConvertError<AlignmentError<Src, Dst>, S, V>) -> ConvertError<Infallible, S, V> {
         match err {
-            ConvertError::Alignment(e) => {
-                #[allow(unreachable_code)]
-                return ConvertError::Alignment(Infallible::from(e));
-            }
+            #[allow(unreachable_code)]
+            ConvertError::Alignment(e) => match Infallible::from(e) {},
             ConvertError::Size(e) => ConvertError::Size(e),
             ConvertError::Validity(e) => ConvertError::Validity(e),
         }
