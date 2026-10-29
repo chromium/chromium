@@ -414,6 +414,7 @@ using numerics_internal::CheckOr;
 using numerics_internal::CheckRsh;
 using numerics_internal::CheckSub;
 using numerics_internal::CheckXor;
+using numerics_internal::IsCheckedNumeric;
 using numerics_internal::IsValidForType;
 using numerics_internal::ValueOrDefaultForType;
 using numerics_internal::ValueOrDieForType;

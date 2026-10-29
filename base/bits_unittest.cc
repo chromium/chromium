@@ -9,7 +9,9 @@
 #include <stddef.h>
 
 #include <limits>
+#include <tuple>
 
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base::bits {
@@ -60,6 +62,48 @@ TEST(BitsTest, AlignUp) {
   EXPECT_EQ(kSizeTMax / 2 + 1, AlignUp(size_t{1}, kSizeTMax / 2 + 1));
 }
 
+TEST(BitsTest, AlignUpCheckedNumeric) {
+  static constexpr size_t kSizeTMax = std::numeric_limits<size_t>::max();
+  EXPECT_EQ(0u, AlignUp(CheckedNumeric(0u), 4u).ValueOrDie());
+  EXPECT_EQ(4u, AlignUp(CheckedNumeric(1u), 4u).ValueOrDie());
+  EXPECT_EQ(4096u, AlignUp(CheckedNumeric(1u), 4096u).ValueOrDie());
+  EXPECT_EQ(4096u, AlignUp(CheckedNumeric(4096u), 4096u).ValueOrDie());
+  EXPECT_EQ(4096u, AlignUp(CheckedNumeric(4095u), 4096u).ValueOrDie());
+  EXPECT_EQ(8192u, AlignUp(CheckedNumeric(4097u), 4096u).ValueOrDie());
+  EXPECT_EQ(kSizeTMax - 31,
+            AlignUp(CheckedNumeric(kSizeTMax - 62), size_t{32}).ValueOrDie());
+  EXPECT_EQ(kSizeTMax / 2 + 1,
+            AlignUp(CheckedNumeric(size_t{1}), kSizeTMax / 2 + 1).ValueOrDie());
+
+  EXPECT_FALSE(AlignUp(CheckedNumeric(kSizeTMax), size_t{4}).IsValid());
+  EXPECT_FALSE(AlignUp(CheckedNumeric(kSizeTMax - 30), size_t{32}).IsValid());
+  EXPECT_FALSE(
+      AlignUp(CheckedNumeric(kSizeTMax / 2 + 2), kSizeTMax / 2 + 1).IsValid());
+
+  EXPECT_EQ(uint8_t{252},
+            AlignUp(CheckedNumeric(uint8_t{252}), uint8_t{4}).ValueOrDie());
+  EXPECT_FALSE(AlignUp(CheckedNumeric(uint8_t{253}), uint8_t{4}).IsValid());
+
+  EXPECT_EQ(uint16_t{65532},
+            AlignUp(CheckedNumeric(uint16_t{65532}), uint16_t{4}).ValueOrDie());
+  EXPECT_FALSE(AlignUp(CheckedNumeric(uint16_t{65533}), uint16_t{4}).IsValid());
+
+  CheckedNumeric<size_t> invalid = CheckedNumeric(kSizeTMax) + 1;
+  EXPECT_FALSE(AlignUp(invalid, size_t{4}).IsValid());
+
+  EXPECT_EQ(
+      4u, AlignUp(CheckedNumeric(uint32_t{1}), sizeof(uint32_t)).ValueOrDie());
+  EXPECT_EQ(4u, AlignUp<uint32_t>(CheckedNumeric(uint32_t{1}).ValueOrDie(),
+                                  sizeof(uint32_t)));
+
+  static_assert(AlignUp(CheckedNumeric(1u), 4u).ValueOrDie() == 4u);
+  static_assert(!AlignUp(CheckedNumeric(kSizeTMax), size_t{4}).IsValid());
+}
+
+TEST(BitsDeathTest, AlignUpAlignmentTooLarge) {
+  EXPECT_DCHECK_DEATH(std::ignore = AlignUp(CheckedNumeric(uint8_t{1}), 256));
+}
+
 TEST(BitsTest, AlignUpPointer) {
   static constexpr uintptr_t kUintPtrTMax =
       std::numeric_limits<uintptr_t>::max();
@@ -92,6 +136,44 @@ TEST(BitsTest, AlignDown) {
   EXPECT_EQ(kSizeTMax - 63, AlignDown(kSizeTMax - 62, size_t{32}));
   EXPECT_EQ(kSizeTMax - 31, AlignDown(kSizeTMax, size_t{32}));
   EXPECT_EQ(0ul, AlignDown(size_t{1}, kSizeTMax / 2 + 1));
+}
+
+TEST(BitsTest, AlignDownCheckedNumeric) {
+  static constexpr size_t kSizeTMax = std::numeric_limits<size_t>::max();
+  EXPECT_EQ(0u, AlignDown(CheckedNumeric(0u), 4u).ValueOrDie());
+  EXPECT_EQ(0u, AlignDown(CheckedNumeric(1u), 4u).ValueOrDie());
+  EXPECT_EQ(0u, AlignDown(CheckedNumeric(1u), 4096u).ValueOrDie());
+  EXPECT_EQ(4096u, AlignDown(CheckedNumeric(4096u), 4096u).ValueOrDie());
+  EXPECT_EQ(0u, AlignDown(CheckedNumeric(4095u), 4096u).ValueOrDie());
+  EXPECT_EQ(4096u, AlignDown(CheckedNumeric(4097u), 4096u).ValueOrDie());
+  EXPECT_EQ(kSizeTMax - 63,
+            AlignDown(CheckedNumeric(kSizeTMax - 62), size_t{32}).ValueOrDie());
+  EXPECT_EQ(kSizeTMax - 31,
+            AlignDown(CheckedNumeric(kSizeTMax), size_t{32}).ValueOrDie());
+  EXPECT_EQ(
+      0ul,
+      AlignDown(CheckedNumeric(size_t{1}), kSizeTMax / 2 + 1).ValueOrDie());
+
+  EXPECT_EQ(uint8_t{252},
+            AlignDown(CheckedNumeric(uint8_t{255}), uint8_t{4}).ValueOrDie());
+  EXPECT_EQ(
+      uint16_t{65532},
+      AlignDown(CheckedNumeric(uint16_t{65535}), uint16_t{4}).ValueOrDie());
+
+  CheckedNumeric<size_t> invalid = CheckedNumeric(kSizeTMax) + 1;
+  EXPECT_FALSE(AlignDown(invalid, size_t{4}).IsValid());
+
+  EXPECT_EQ(
+      4u,
+      AlignDown(CheckedNumeric(uint32_t{5}), sizeof(uint32_t)).ValueOrDie());
+  EXPECT_EQ(4u, AlignDown<uint32_t>(CheckedNumeric(uint32_t{5}).ValueOrDie(),
+                                    sizeof(uint32_t)));
+
+  static_assert(AlignDown(CheckedNumeric(5u), 4u).ValueOrDie() == 4u);
+}
+
+TEST(BitsDeathTest, AlignDownAlignmentTooLarge) {
+  EXPECT_DCHECK_DEATH(std::ignore = AlignDown(CheckedNumeric(uint8_t{1}), 256));
 }
 
 TEST(BitsTest, AlignDownPointer) {

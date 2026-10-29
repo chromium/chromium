@@ -15,6 +15,7 @@
 #include <type_traits>
 
 #include "base/check.h"
+#include "base/numerics/checked_math.h"
 
 namespace base::bits {
 
@@ -47,6 +48,17 @@ template <typename T>
   return size & ~(alignment - 1);
 }
 
+// We prevent deduction of the type for |alignment| to catch errors where its
+// type is incompatible with that of |size|.
+template <typename T>
+  requires(IsCheckedNumeric<T> && UnsignedInteger<typename T::type>)
+[[nodiscard]] inline constexpr T AlignDown(T size,
+                                           std::type_identity_t<T> alignment) {
+  DCHECK(alignment.IsValidAnd(
+      [](typename T::type a) { return std::has_single_bit(a); }));
+  return size & ~(alignment - typename T::type{1});
+}
+
 // Move |ptr| back to the previous multiple of alignment, which must be a power
 // of two. Defined for types where sizeof(T) is one byte.
 template <typename T>
@@ -62,6 +74,16 @@ template <typename T>
 [[nodiscard]] inline constexpr T AlignUp(T size, T alignment) {
   DCHECK(std::has_single_bit(alignment));
   return (size + alignment - 1) & ~(alignment - 1);
+}
+
+template <typename T>
+  requires(IsCheckedNumeric<T> && UnsignedInteger<typename T::type>)
+[[nodiscard]] inline constexpr T AlignUp(T size,
+                                         std::type_identity_t<T> alignment) {
+  DCHECK(alignment.IsValidAnd(
+      [](typename T::type a) { return std::has_single_bit(a); }));
+  return (size + (alignment - typename T::type{1})) &
+         ~(alignment - typename T::type{1});
 }
 
 // Round up |size| to a multiple of alignment, which must be a power of two.
