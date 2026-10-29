@@ -17,7 +17,9 @@ constexpr char kOpenscreenTraceLoggingCategory[] = "openscreen";
 // by Chrome's TRACE_EVENT macros. Note that the openscreen::Clock::time_point
 // values are ignored in favor of using Chrome's internal time points. This
 // helps ensure that values are in line with other Chrome trace logging
-// categories.
+// categories. Flow events are the exception: they use the time that Open
+// Screen recorded, which may be earlier than now. Chrome's openscreen::Clock
+// is based on base::TimeTicks, so these times line up too.
 class EventTraceLoggingPlatform : public openscreen::TraceLoggingPlatform {
  public:
   EventTraceLoggingPlatform();
@@ -37,6 +39,8 @@ class EventTraceLoggingPlatform : public openscreen::TraceLoggingPlatform {
                 openscreen::Clock::time_point end_time) override;
   void LogAsyncStart(openscreen::TraceEvent event) override;
   void LogAsyncEnd(openscreen::TraceEvent event) override;
+  void LogFlow(openscreen::TraceEvent event,
+               openscreen::FlowType type) override;
 };
 
 }  // namespace openscreen_platform

@@ -146,6 +146,7 @@ source_set("unittests") {
   public = []
 
   sources = [
+    "event_trace_logging_platform_unittest.cc",
     "tls_client_connection_unittest.cc",
     "tls_connection_factory_unittest.cc",
   ]
@@ -159,6 +160,7 @@ source_set("unittests") {
     "//services/network/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/openscreen/src/platform:api",
   ]
 
   if (!is_win && !is_ios) {
@@ -166,7 +168,6 @@ source_set("unittests") {
     deps += [
       ":message_port_tls_connection",
       "//components/cast/message_port",
-      "//third_party/openscreen/src/platform:api",
     ]
   }
 }
