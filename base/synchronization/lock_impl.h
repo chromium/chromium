@@ -5,6 +5,7 @@
 #ifndef BASE_SYNCHRONIZATION_LOCK_IMPL_H_
 #define BASE_SYNCHRONIZATION_LOCK_IMPL_H_
 
+#include <cstdint>
 #include <utility>
 
 #include "base/base_export.h"
@@ -50,7 +51,8 @@ class BASE_EXPORT LockImpl {
 
 #if BUILDFLAG(IS_POSIX)
   // Sets the maximum number of yields before blocking in the kernel.
-  static void SetTrySpinCount(int spin_count);
+  static void SetTrySpinCount(int64_t spin_count);
+  static int64_t GetTrySpinCountForTesting();
 #endif
 
  private:

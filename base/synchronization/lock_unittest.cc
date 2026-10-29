@@ -669,21 +669,13 @@ class LockTrySpinTest : public testing::Test {
   MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample_;
 };
 
-// TODO(crbug.com/505503579): Flaky on Mac and iOS.
-#if BUILDFLAG(IS_APPLE)
-#define MAYBE_TrySpinAvoidsSyscall DISABLED_TrySpinAvoidsSyscall
-#else
-#define MAYBE_TrySpinAvoidsSyscall TrySpinAvoidsSyscall
-#endif  // BUILDFLAG(IS_APPLE)
-
-TEST_F(LockTrySpinTest, MAYBE_TrySpinAvoidsSyscall) {
+TEST_F(LockTrySpinTest, TrySpinAvoidsSyscall) {
 #if !defined(ARCH_CPU_X86_FAMILY) && !defined(ARCH_CPU_ARM_FAMILY)
   GTEST_SKIP() << "Skipping test on platforms that don't support spinning in "
                   "base::Lock.";
 #endif
 
-  // Set the try-spin count to an absurdly large value to ensure that the
-  // thread never waits for the lock in the kernel.
+  // Verify that Lock::InitializeFeatures() applies the feature parameter.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       base::features::kBaseLockTrySpin,
@@ -697,6 +689,13 @@ TEST_F(LockTrySpinTest, MAYBE_TrySpinAvoidsSyscall) {
 #endif
       });
   base::Lock::InitializeFeatures();
+  EXPECT_EQ(internal::LockImpl::GetTrySpinCountForTesting(),
+            std::numeric_limits<int>::max());
+
+  // Set the try-spin count to an absurdly large 64-bit value (exceeding the
+  // 32-bit int limit of FeatureParam) to ensure that the thread never waits for
+  // the lock in the kernel.
+  internal::LockImpl::SetTrySpinCount(std::numeric_limits<int64_t>::max());
 
   ClearLockMetricsSamples();
   {
