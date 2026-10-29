@@ -6,10 +6,13 @@
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_PROCESS_EXTRACTOR_H_
 
 #include <cstddef>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/process/process_handle.h"
 
 namespace enterprise_connectors {
@@ -54,6 +57,19 @@ struct ProcessTree {
   std::vector<ProcessNode> process_nodes;
 };
 
+// Extracts the process ancestry starting from `start_pid` up to
+// `kMaxProcessAncestryDepth` (16) nodes. This function may block on OS
+// process queries and must be called on a sequence that allows blocking.
+// Callers must verify enterprise management eligibility on the UI sequence
+// before scheduling extraction.
+ProcessTree ExtractProcessTreeFromPid(base::ProcessId start_pid);
+
+// -----------------------------------------------------------------------------
+// Internal / unit-testing types and helpers:
+// TODO(crbug.com/575478024): Move the helpers below from the base CLs into
+// `namespace internal` and suffix test-only entry points with `ForTesting`.
+// -----------------------------------------------------------------------------
+
 // Sanitizes a raw process or script path for telemetry reporting:
 // - Replaces the current user's home directory prefix (from `base::DIR_HOME`)
 //   with `<home_parent>/<USER>` (e.g. `/Users/<USER>`). Fails closed (returns
@@ -81,6 +97,56 @@ bool IsAllowlistedInterpreter(std::string_view executable_path);
 //   target can be identified or if `SanitizeProcessPath()` fails closed.
 std::string ExtractInterpreterScript(std::string_view executable_path,
                                      const std::vector<std::string>& argv);
+
+namespace internal {
+
+// Maximum buffer allocation ceiling (32 KB) when reading macOS sysctl
+// `KERN_PROCARGS2`.
+inline constexpr size_t kMaxKernProcArgs2BufferSize = 32 * 1024;
+
+// Maximum number of `argv` tokens inspected per process.
+inline constexpr int kMaxProcessArgCount = 128;
+
+// Unsanitized process metadata returned by an OS lookup or test provider.
+struct RawProcessInfo {
+  RawProcessInfo();
+  RawProcessInfo(base::ProcessId parent_process_id,
+                 std::string executable_path,
+                 std::vector<std::string> argv);
+  RawProcessInfo(const RawProcessInfo&);
+  RawProcessInfo& operator=(const RawProcessInfo&);
+  RawProcessInfo(RawProcessInfo&&) noexcept;
+  RawProcessInfo& operator=(RawProcessInfo&&) noexcept;
+  ~RawProcessInfo();
+
+  base::ProcessId parent_process_id = base::kNullProcessId;
+  std::string executable_path;
+  std::vector<std::string> argv;
+};
+
+// Parsed output of a macOS sysctl `KERN_PROCARGS2` buffer.
+struct ParsedKernProcArgs2 {
+  std::string executable_path;
+  std::vector<std::string> argv;
+};
+
+using ProcessInfoProvider =
+    base::RepeatingCallback<std::optional<RawProcessInfo>(base::ProcessId)>;
+
+// Defensively parses a macOS sysctl `KERN_PROCARGS2` buffer (`[int argc]`
+// followed by null-terminated `exec_path`, null padding, and null-terminated
+// `argv` strings). Rejects buffers exceeding `kMaxKernProcArgs2BufferSize`
+// (32 KB) or lacking proper null termination.
+std::optional<ParsedKernProcArgs2> ParseKernProcArgs2Buffer(
+    base::span<const char> buffer);
+
+// Test hook that runs the ancestry walk and path scrubber against an injected
+// `provider`.
+ProcessTree ExtractProcessTreeWithProviderForTesting(
+    base::ProcessId start_pid,
+    ProcessInfoProvider provider);
+
+}  // namespace internal
 
 }  // namespace enterprise_connectors
 

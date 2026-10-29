@@ -4,6 +4,7 @@
 
 #include "components/enterprise/connectors/core/process_extractor.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <string>
 #include <string_view>
@@ -12,13 +13,38 @@
 
 #include "base/base_paths.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/path_service.h"
+#include "base/process/process_handle.h"
 #include "base/strings/string_util.h"
+#include "base/threading/scoped_blocking_call.h"
+#include "build/build_config.h"
+
+// TODO(crbug.com/575478024): Remove redundant `IS_MAC` / `IS_POSIX` platform
+// guards while `process_extractor.cc` is gated on `enterprise_cdp_attribution`
+// (`is_mac` in `features.gni`), or split into platform-specific files when
+// expanding beyond macOS.
+#if BUILDFLAG(IS_MAC)
+#include <libproc.h>
+#include <sys/proc_info.h>
+#include <sys/sysctl.h>
+#endif
 
 namespace enterprise_connectors {
 
 namespace {
+
+bool IsValidUserProcessId(base::ProcessId pid) {
+#if BUILDFLAG(IS_POSIX)
+  // On POSIX, PID 0 is the kernel scheduler and PID 1 is init/launchd.
+  return pid > 1;
+#else
+  return pid != base::kNullProcessId;
+#endif
+}
 
 // TODO(crbug.com/575478024): Scrub multiple occurrences of the home directory
 // in a follow-up CL.
@@ -125,6 +151,97 @@ bool LooksLikeScriptTarget(std::string_view arg) {
   return kScriptExtensions.contains(final_ext);
 }
 
+std::optional<internal::RawProcessInfo> QueryOsProcessInfo(
+    base::ProcessId pid) {
+  if (!IsValidUserProcessId(pid)) {
+    return std::nullopt;
+  }
+
+  internal::RawProcessInfo info;
+#if BUILDFLAG(IS_POSIX)
+  // On POSIX, `base::ProcessHandle` is `base::ProcessId` (`pid_t`).
+  info.parent_process_id = base::GetParentProcessId(pid);
+  base::FilePath exec_path = base::GetProcessExecutablePath(pid);
+  if (!exec_path.empty()) {
+    info.executable_path = exec_path.AsUTF8Unsafe();
+  }
+#endif
+
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/575478024): Add Windows and Linux argv/process extraction
+  // support when enabling ENTERPRISE_CDP_ATTRIBUTION on other platforms.
+  if (info.parent_process_id <= 0) {
+    proc_bsdinfo bsd_info = {};
+    if (proc_pidinfo(pid, PROC_PIDTBSDINFO, 0, &bsd_info, sizeof(bsd_info)) ==
+        sizeof(bsd_info)) {
+      info.parent_process_id = static_cast<base::ProcessId>(bsd_info.pbi_ppid);
+    }
+  }
+  if (info.executable_path.empty()) {
+    char pathbuf[PROC_PIDPATHINFO_MAXSIZE] = {};
+    if (proc_pidpath(pid, pathbuf, sizeof(pathbuf)) > 0) {
+      info.executable_path = pathbuf;
+    }
+  }
+
+  int mib[3] = {CTL_KERN, KERN_PROCARGS2, static_cast<int>(pid)};
+  size_t buf_size = internal::kMaxKernProcArgs2BufferSize;
+  std::vector<char> buffer(buf_size, 0);
+  if (sysctl(mib, 3, buffer.data(), &buf_size, nullptr, 0) == 0 &&
+      buf_size > 0 && buf_size <= buffer.size()) {
+    if (std::optional<internal::ParsedKernProcArgs2> parsed =
+            internal::ParseKernProcArgs2Buffer(
+                base::span(buffer).first(buf_size))) {
+      if (info.executable_path.empty() && !parsed->executable_path.empty()) {
+        info.executable_path = std::move(parsed->executable_path);
+      }
+      info.argv = std::move(parsed->argv);
+    }
+  }
+#endif
+
+  if (!IsValidUserProcessId(info.parent_process_id) &&
+      info.executable_path.empty() && info.argv.empty()) {
+    return std::nullopt;
+  }
+  return info;
+}
+
+ProcessTree ExtractProcessTreeWithProvider(
+    base::ProcessId start_pid,
+    internal::ProcessInfoProvider provider) {
+  ProcessTree tree;
+  if (!IsValidUserProcessId(start_pid) || !provider) {
+    return tree;
+  }
+
+  base::flat_set<base::ProcessId> visited_pids;
+  base::ProcessId current_pid = start_pid;
+  while (IsValidUserProcessId(current_pid) &&
+         tree.process_nodes.size() < kMaxProcessAncestryDepth &&
+         visited_pids.insert(current_pid).second) {
+    std::optional<internal::RawProcessInfo> raw = provider.Run(current_pid);
+    if (!raw.has_value()) {
+      break;
+    }
+
+    std::string script_path =
+        ExtractInterpreterScript(raw->executable_path, raw->argv);
+    ProcessNode node(current_pid, raw->parent_process_id,
+                     std::move(raw->executable_path), std::move(script_path));
+    SanitizeProcessNodePaths(node);
+    tree.process_nodes.push_back(std::move(node));
+
+    const base::ProcessId ppid = raw->parent_process_id;
+    if (!IsValidUserProcessId(ppid) || ppid == current_pid ||
+        visited_pids.contains(ppid)) {
+      break;
+    }
+    current_pid = ppid;
+  }
+  return tree;
+}
+
 }  // namespace
 
 ProcessNode::ProcessNode() = default;
@@ -192,6 +309,84 @@ std::string ExtractInterpreterScript(std::string_view executable_path,
     }
   }
   return std::string();
+}
+
+namespace internal {
+
+RawProcessInfo::RawProcessInfo() = default;
+RawProcessInfo::RawProcessInfo(base::ProcessId parent_process_id,
+                               std::string executable_path,
+                               std::vector<std::string> argv)
+    : parent_process_id(parent_process_id),
+      executable_path(std::move(executable_path)),
+      argv(std::move(argv)) {}
+RawProcessInfo::RawProcessInfo(const RawProcessInfo&) = default;
+RawProcessInfo& RawProcessInfo::operator=(const RawProcessInfo&) = default;
+RawProcessInfo::RawProcessInfo(RawProcessInfo&&) noexcept = default;
+RawProcessInfo& RawProcessInfo::operator=(RawProcessInfo&&) noexcept = default;
+RawProcessInfo::~RawProcessInfo() = default;
+
+std::optional<ParsedKernProcArgs2> ParseKernProcArgs2Buffer(
+    base::span<const char> buffer) {
+  if (buffer.size() < sizeof(int) ||
+      buffer.size() > kMaxKernProcArgs2BufferSize) {
+    return std::nullopt;
+  }
+
+  int argc = 0;
+  base::byte_span_from_ref(argc).copy_from(
+      base::as_bytes(buffer.first<sizeof(int)>()));
+  if (argc <= 0) {
+    return std::nullopt;
+  }
+  argc = std::min(argc, kMaxProcessArgCount);
+
+  const base::span<const char> payload = buffer.subspan(sizeof(int));
+  std::string_view view(payload.data(), payload.size());
+
+  const size_t exec_end = view.find('\0');
+  if (exec_end == std::string_view::npos || exec_end == 0) {
+    return std::nullopt;
+  }
+
+  ParsedKernProcArgs2 result;
+  result.executable_path = std::string(view.substr(0, exec_end));
+  view.remove_prefix(exec_end);
+
+  const size_t args_start = view.find_first_not_of('\0');
+  if (args_start == std::string_view::npos) {
+    return result;
+  }
+  view.remove_prefix(args_start);
+
+  for (int i = 0; i < argc && !view.empty(); ++i) {
+    const size_t arg_end = view.find('\0');
+    if (arg_end == std::string_view::npos) {
+      break;
+    }
+    result.argv.push_back(std::string(view.substr(0, arg_end)));
+    view.remove_prefix(arg_end + 1);
+  }
+
+  return result;
+}
+
+ProcessTree ExtractProcessTreeWithProviderForTesting(
+    base::ProcessId start_pid,
+    ProcessInfoProvider provider) {
+  return ExtractProcessTreeWithProvider(start_pid, std::move(provider));
+}
+
+}  // namespace internal
+
+ProcessTree ExtractProcessTreeFromPid(base::ProcessId start_pid) {
+  if (!IsValidUserProcessId(start_pid)) {
+    return ProcessTree();
+  }
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  return ExtractProcessTreeWithProvider(
+      start_pid, base::BindRepeating(&QueryOsProcessInfo));
 }
 
 }  // namespace enterprise_connectors

@@ -4,17 +4,57 @@
 
 #include "components/enterprise/connectors/core/process_extractor.h"
 
+#include <map>
+#include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 #include "base/base_paths.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/process/process_handle.h"
 #include "base/test/scoped_path_override.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace enterprise_connectors {
 
 namespace {
+
+std::vector<char> BuildKernProcArgs2Buffer(
+    int argc,
+    std::string_view exec_path,
+    bool terminate_exec_path,
+    size_t nul_padding_count,
+    const std::vector<std::pair<std::string, bool>>& args) {
+  std::vector<char> buf(sizeof(int), 0);
+  base::as_writable_bytes(base::span(buf).first<sizeof(int)>())
+      .copy_from(base::byte_span_from_ref(argc));
+
+  buf.insert(buf.end(), exec_path.begin(), exec_path.end());
+  if (terminate_exec_path) {
+    buf.push_back('\0');
+  }
+  buf.insert(buf.end(), nul_padding_count, '\0');
+
+  for (const auto& [arg, terminate] : args) {
+    buf.insert(buf.end(), arg.begin(), arg.end());
+    if (terminate) {
+      buf.push_back('\0');
+    }
+  }
+  return buf;
+}
+
+std::optional<internal::RawProcessInfo> LookupProcessInMap(
+    const std::map<base::ProcessId, internal::RawProcessInfo>& table,
+    base::ProcessId pid) {
+  auto it = table.find(pid);
+  return (it == table.end()) ? std::nullopt : std::make_optional(it->second);
+}
 
 class ProcessExtractorTest : public testing::Test {
  protected:
@@ -267,6 +307,163 @@ TEST_F(ProcessExtractorTest,
         "zsh", "ruby", "ruby3.2", "perl", "perl5.34", "deno", "bun"}) {
     EXPECT_TRUE(IsAllowlistedInterpreter(bin)) << bin;
   }
+}
+
+TEST_F(ProcessExtractorTest,
+       ParsesValidAndRejectsMalformedKernProcArgs2Buffers) {
+  std::vector<char> valid_buf = BuildKernProcArgs2Buffer(
+      /*argc=*/3, "/usr/local/bin/node", /*terminate_exec_path=*/true,
+      /*nul_padding_count=*/4,
+      {{"node", true},
+       {"/Users/alice/agent.js", true},
+       {"--token=secret", true}});
+  std::optional<internal::ParsedKernProcArgs2> parsed =
+      internal::ParseKernProcArgs2Buffer(valid_buf);
+  ASSERT_TRUE(parsed.has_value());
+  EXPECT_EQ(parsed->executable_path, "/usr/local/bin/node");
+  ASSERT_EQ(parsed->argv.size(), 3u);
+  EXPECT_EQ(parsed->argv[1], "/Users/alice/agent.js");
+
+  // Reject tiny, oversized (>32 KB), non-positive `argc`, or unterminated
+  // `executable_path` buffers.
+  const char tiny[] = {'a', 'b'};
+  EXPECT_FALSE(
+      internal::ParseKernProcArgs2Buffer(base::span(tiny)).has_value());
+  EXPECT_FALSE(
+      internal::ParseKernProcArgs2Buffer(
+          std::vector<char>(internal::kMaxKernProcArgs2BufferSize + 1, '\0'))
+          .has_value());
+  EXPECT_FALSE(internal::ParseKernProcArgs2Buffer(
+                   BuildKernProcArgs2Buffer(0, "/usr/bin/python3", true, 1, {}))
+                   .has_value());
+  EXPECT_FALSE(internal::ParseKernProcArgs2Buffer(
+                   BuildKernProcArgs2Buffer(1, "/usr/bin/node", false, 0, {}))
+                   .has_value());
+
+  // Unterminated trailing `argv` token is dropped while keeping valid tokens;
+  // full tokens are preserved here so `ExtractInterpreterScript()` and
+  // `SanitizeProcessNodePaths()` inspect the leading prefix before
+  // front-truncation.
+  std::optional<internal::ParsedKernProcArgs2> partial =
+      internal::ParseKernProcArgs2Buffer(
+          BuildKernProcArgs2Buffer(3, "/usr/local/bin/node", true, 1,
+                                   {{"node", true},
+                                    {std::string(2000, 'x'), true},
+                                    {"--unterminated", false}}));
+  ASSERT_TRUE(partial.has_value());
+  ASSERT_EQ(partial->argv.size(), 2u);
+  EXPECT_EQ(partial->argv[1].size(), 2000u);
+}
+
+TEST_F(ProcessExtractorTest, InvalidStartPidReturnsEmptyProcessTree) {
+  bool provider_called = false;
+  auto provider = base::BindRepeating(
+      [](bool* called,
+         base::ProcessId pid) -> std::optional<internal::RawProcessInfo> {
+        *called = true;
+        return internal::RawProcessInfo(base::kNullProcessId,
+                                        "/usr/local/bin/node",
+                                        {"node", "/Users/alice/agent.js"});
+      },
+      &provider_called);
+
+  EXPECT_TRUE(internal::ExtractProcessTreeWithProviderForTesting(
+                  base::kNullProcessId, provider)
+                  .empty());
+  EXPECT_FALSE(provider_called);
+  EXPECT_TRUE(ExtractProcessTreeFromPid(base::kNullProcessId).empty());
+}
+
+TEST_F(ProcessExtractorTest,
+       EnforcesMaxAncestryDepthCycleDetectionAndPartialTreeRetention) {
+  // 1. Depth cap at `kMaxProcessAncestryDepth` (16).
+  auto deep_provider = base::BindRepeating(
+      [](base::ProcessId pid) -> std::optional<internal::RawProcessInfo> {
+        return internal::RawProcessInfo(pid + 1, "/usr/local/bin/node",
+                                        {"node", "/Users/alice/worker.js"});
+      });
+  ProcessTree deep_tree =
+      internal::ExtractProcessTreeWithProviderForTesting(100, deep_provider);
+  EXPECT_EQ(deep_tree.process_nodes.size(), kMaxProcessAncestryDepth);
+  EXPECT_EQ(deep_tree.process_nodes.front().script_path,
+            "/Users/<USER>/worker.js");
+
+  // 2. Cycle detection (`100 -> 200 -> 100`) and self-cycle (`500 -> 500`).
+  std::map<base::ProcessId, internal::RawProcessInfo> cycle_map = {
+      {100,
+       internal::RawProcessInfo(200, "/usr/local/bin/node", {"node", "a.js"})},
+      {200, internal::RawProcessInfo(100, "/bin/zsh", {"zsh", "b.sh"})},
+      {500, internal::RawProcessInfo(500, "/usr/bin/python3", {"python3"})},
+  };
+  auto cycle_provider = base::BindRepeating(&LookupProcessInMap, cycle_map);
+  EXPECT_EQ(
+      internal::ExtractProcessTreeWithProviderForTesting(100, cycle_provider)
+          .process_nodes.size(),
+      2u);
+  EXPECT_EQ(
+      internal::ExtractProcessTreeWithProviderForTesting(500, cycle_provider)
+          .process_nodes.size(),
+      1u);
+
+  // 3. Partial tree retention when parent PID 400 exits mid-walk.
+  std::map<base::ProcessId, internal::RawProcessInfo> partial_map = {
+      {300, internal::RawProcessInfo(400, "/Users/alice/bin/node",
+                                     {"node", "/Users/alice/agent.js"})},
+  };
+  ProcessTree partial_tree = internal::ExtractProcessTreeWithProviderForTesting(
+      300, base::BindRepeating(&LookupProcessInMap, partial_map));
+  ASSERT_EQ(partial_tree.process_nodes.size(), 1u);
+  EXPECT_EQ(partial_tree.process_nodes[0].executable_path,
+            "/Users/<USER>/bin/node");
+  EXPECT_EQ(partial_tree.process_nodes[0].script_path,
+            "/Users/<USER>/agent.js");
+
+  // 4. Overlong `KERN_PROCARGS2` paths scrub the OS home directory and check
+  // leading flags before front-truncating at `kMaxProcessPathLength` (1024).
+  base::ScopedPathOverride long_home(
+      base::DIR_HOME, base::FilePath(FILE_PATH_LITERAL("/Users/longusername")),
+      /*is_absolute=*/true, /*create=*/false);
+  const std::string long_user_script =
+      "/Users/longusername/" + std::string(1001, 'a') + "/agent.js";
+  const std::string long_eval_flag = "--eval=" + std::string(1030, 'a') + ".js";
+  std::map<base::ProcessId, internal::RawProcessInfo> long_map = {
+      {600,
+       internal::RawProcessInfo(base::kNullProcessId, "/usr/local/bin/node",
+                                {"node", long_user_script})},
+      {601,
+       internal::RawProcessInfo(base::kNullProcessId, "/usr/local/bin/node",
+                                {"node", long_eval_flag, "real.js"})},
+  };
+  ProcessTree long_user_tree =
+      internal::ExtractProcessTreeWithProviderForTesting(
+          600, base::BindRepeating(&LookupProcessInMap, long_map));
+  ASSERT_EQ(long_user_tree.process_nodes.size(), 1u);
+  EXPECT_EQ(long_user_tree.process_nodes[0].script_path,
+            "/Users/<USER>/" + std::string(1001, 'a') + "/agent.js");
+  EXPECT_EQ(long_user_tree.process_nodes[0].script_path.find("longusername"),
+            std::string::npos);
+
+  ProcessTree long_eval_tree =
+      internal::ExtractProcessTreeWithProviderForTesting(
+          601, base::BindRepeating(&LookupProcessInMap, long_map));
+  ASSERT_EQ(long_eval_tree.process_nodes.size(), 1u);
+  EXPECT_TRUE(long_eval_tree.process_nodes[0].script_path.empty());
+}
+
+TEST_F(ProcessExtractorTest, LiveCurrentProcessAncestryExtraction) {
+  const base::ProcessId self_pid = base::GetCurrentProcId();
+#if BUILDFLAG(IS_POSIX)
+  ASSERT_GT(self_pid, static_cast<base::ProcessId>(1));
+
+  ProcessTree tree = ExtractProcessTreeFromPid(self_pid);
+  ASSERT_FALSE(tree.empty());
+  EXPECT_LE(tree.process_nodes.size(), kMaxProcessAncestryDepth);
+  EXPECT_EQ(tree.process_nodes[0].process_id, self_pid);
+  EXPECT_FALSE(tree.process_nodes[0].executable_path.empty());
+  EXPECT_TRUE(tree.process_nodes[0].script_path.empty());
+#else
+  EXPECT_TRUE(ExtractProcessTreeFromPid(self_pid).empty());
+#endif
 }
 
 }  // namespace
