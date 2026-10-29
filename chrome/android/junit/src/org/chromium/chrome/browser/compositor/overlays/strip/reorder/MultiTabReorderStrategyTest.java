@@ -59,6 +59,8 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
     // collapsed group reorder threshold = width(50) * constant(0.53) = 26.5
     private static final float DRAG_PAST_COLLAPSED_GROUP_FAIL = 20.f;
     private static final float DRAG_PAST_COLLAPSED_GROUP_SUCCESS = 30.f;
+    // expanded group reorder threshold = (bottomIndicatorWidth(100) + offset(27)) * 0.53 = 67.31
+    private static final float DRAG_PAST_EXPANDED_GROUP_SUCCESS = 70.f;
     // drag-in threshold = (width(50) - overlap(28) / 2) * constant(0.53) = 5.83
     private static final float DRAG_INTO_GROUP_FAIL = 5.f;
     private static final float DRAG_INTO_GROUP_SUCCESS = 6.f;
@@ -247,6 +249,85 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
     }
 
     @Test
+    public void testStartReorder_retainGroup_groupedPrimaryTab() {
+        // Select all tabs in GROUP_ID1 and an ungrouped tab.
+        selectTabs(mGroupedTab1, mGroupedTab2, mUngroupedTab2);
+
+        // Start reorder on a tab in the fully-selected group.
+        startReorder(mGroupedTab1);
+
+        verify(mModel).setIndex(eq(1), anyInt());
+
+        // Verify the fully-selected group is not ungrouped.
+        verify(mTabUnGrouper)
+                .ungroupTabs(eq(Collections.emptyList()), anyBoolean(), anyBoolean(), any());
+        verify(mModel, never()).moveGroupToIndex(eq(GROUP_ID1), anyInt());
+
+        // Verify mUngroupedTab2 (at model index 4) is gathered adjacent to GROUP_ID1 (to index 3).
+        verify(mModel).moveTab(mUngroupedTab2.getTabId(), 3);
+
+        // Verify tabs and the retained group title are foregrounded.
+        assertTrue("Group title should be foregrounded.", mExpandedGroupTitle.isForegrounded());
+        for (StripLayoutTab tab : mSelectedTabs) {
+            assertTrue("Selected tab should be foregrounded.", tab.isForegrounded());
+        }
+    }
+
+    @Test
+    public void testStartReorder_retainGroup_ungroupedPrimaryTab() {
+        // Select mUngroupedTab1 (index 0), all tabs in GROUP_ID1 (indices 1..2), and
+        // mUngroupedTab3 (index 5).
+        selectTabs(mUngroupedTab1, mGroupedTab1, mGroupedTab2, mUngroupedTab3);
+
+        // Start reorder on mUngroupedTab3 (at model index 5).
+        startReorder(mUngroupedTab3);
+
+        verify(mModel).setIndex(eq(5), anyInt());
+
+        // Verify the fully-selected group is not ungrouped, and items before the primary tab are
+        // gathered outward: GROUP_ID1 moves to index 4 (occupying 3..4) and mUngroupedTab1 moves
+        // to index 2.
+        verify(mTabUnGrouper)
+                .ungroupTabs(eq(Collections.emptyList()), anyBoolean(), anyBoolean(), any());
+        verify(mModel).moveGroupToIndex(GROUP_ID1, 4);
+        verify(mModel).moveTab(mUngroupedTab1.getTabId(), 2);
+
+        // Verify tabs and the retained group title are foregrounded.
+        assertTrue("Group title should be foregrounded.", mExpandedGroupTitle.isForegrounded());
+        for (StripLayoutTab tab : mSelectedTabs) {
+            assertTrue("Selected tab should be foregrounded.", tab.isForegrounded());
+        }
+    }
+
+    @Test
+    public void testStartReorder_retainFullySelectedGroupAndUngroupPartiallySelectedPrimaryGroup() {
+        // Select 1 of 2 tabs in GROUP_ID1, and all tabs in GROUP_ID2 (mCollapsedGroupTab).
+        selectTabs(mGroupedTab1, mCollapsedGroupTab);
+
+        // Start reorder on the partially-selected group's tab.
+        startReorder(mGroupedTab1);
+
+        // Verify only mGroupedTab1 is ungrouped while GROUP_ID2 is retained, and merge is not
+        // called.
+        verify(mModel, never()).mergeListOfTabsToExistingGroup(anyList(), any(), any(), anyInt());
+        verify(mTabUnGrouper)
+                .ungroupTabs(mTabListCaptor.capture(), anyBoolean(), anyBoolean(), any());
+        assertEquals("Should ungroup 1 tab.", 1, mTabListCaptor.getValue().size());
+        assertEquals(
+                "Incorrect tab ungrouped.",
+                mGroupedTab1.getTabId(),
+                mTabListCaptor.getValue().get(0).getId());
+        verify(mModel).moveGroupToIndex(GROUP_ID2, 2);
+
+        assertFalse(
+                "Partially-selected group title should not be foregrounded.",
+                mExpandedGroupTitle.isForegrounded());
+        assertTrue(
+                "Fully-selected group title should be foregrounded.",
+                mCollapsedGroupTitle.isForegrounded());
+    }
+
+    @Test
     @SuppressWarnings("DirectInvocationOnMock")
     public void testStartReorder_nonPinnedPrimaryTab_pinnedTabMoveToLastPinnedPosition() {
         // Pin first two tabs.
@@ -321,6 +402,40 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
         testUpdateReorder_success(
                 mUngroupedTab2, rebuildDeltaX, dragDeltaX, mCollapsedGroupTitle, 5);
         verifyBlockMovedPastGroup();
+    }
+
+    @Test
+    public void testUpdateReorder_success_retainedGroupPastUngroupedTab() {
+        // Select all tabs in GROUP_ID1 (Tab2, Tab3) and Tab4(CollapsedGroup), drag left past Tab1.
+        selectTabs(mGroupedTab1, mGroupedTab2, mCollapsedGroupTab);
+        float rebuildDeltaX = -TAB_WIDTH;
+        float dragDeltaX = -DRAG_PAST_TAB_SUCCESS;
+        startReorder(mGroupedTab1);
+        testUpdateReorder_success(mGroupedTab1, rebuildDeltaX, dragDeltaX, mUngroupedTab1, 3);
+        float expectedOffset = dragDeltaX - rebuildDeltaX;
+        assertEquals(
+                "Retained group title should have updated offset.",
+                expectedOffset,
+                mExpandedGroupTitle.getOffsetX(),
+                DELTA);
+        assertEquals(
+                "Retained collapsed group title should have updated offset.",
+                expectedOffset,
+                mCollapsedGroupTitle.getOffsetX(),
+                DELTA);
+    }
+
+    @Test
+    public void testUpdateReorder_success_retainedGroupSwapsPastExpandedGroup() {
+        // Select all tabs in GROUP_ID2 (mCollapsedGroupTab) and mUngroupedTab2, drag left past
+        // expanded GROUP_ID1.
+        selectTabs(mCollapsedGroupTab, mUngroupedTab2);
+        float rebuildDeltaX = -2 * TAB_WIDTH;
+        float dragDeltaX = -DRAG_PAST_EXPANDED_GROUP_SUCCESS;
+        startReorder(mCollapsedGroupTab);
+        testUpdateReorder_success(
+                mCollapsedGroupTab, rebuildDeltaX, dragDeltaX, mExpandedGroupTitle, 4);
+        verify(mModel, never()).mergeListOfTabsToExistingGroup(anyList(), any(), any(), anyInt());
     }
 
     @Test
@@ -506,16 +621,19 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
     // stopReorderMode tests
     @Test
     public void testStopReorder() {
-        // Start reorder
-        selectTabs(mUngroupedTab1, mUngroupedTab2);
+        // Start reorder with a retained group and an ungrouped tab
+        selectTabs(mUngroupedTab1, mGroupedTab1, mGroupedTab2);
         startReorder(mUngroupedTab1);
         assertTrue(mUngroupedTab1.isForegrounded());
+        assertTrue(mExpandedGroupTitle.isForegrounded());
         assertNotNull(mStrategy.getInteractingView());
 
         // Stop reorder
         mStrategy.stopReorderMode(mStripViews, mGroupTitles);
 
         // Verify state is reset. The cleanup runs in an onAnimationEnd runnable.
+        assertFalse(mUngroupedTab1.isForegrounded());
+        assertFalse(mExpandedGroupTitle.isForegrounded());
         assertNull("Interacting view should be null after stop", mStrategy.getInteractingView());
         // Verify animation is started to settle tabs.
         verify(mAnimationHost, times(2)).startAnimations(anyList(), any());
