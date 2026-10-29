@@ -222,6 +222,19 @@ public class ModelTrackingOrchestratorUnitTest {
     }
 
     @Test
+    public void testRestoreFinished_Authoritative_WithoutDataLoaded_StartsTracking() {
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ true);
+
+        // When restore finishes without prior onDataLoaded() (e.g. loadState() was skipped),
+        // the regular model should still transition from START to TRACKING.
+        mOrchestrator.onRestoreFinished();
+
+        assertTrue(mOrchestrator.isSynchronizerPresent(/* incognito= */ false));
+        verify(mRegularSynchronizer).fullSave(any());
+        verify(mRegularSynchronizer).consumeCollectionObserverFactory(any());
+    }
+
+    @Test
     public void testShadowStoreCatchUpLifecycle_simpleNoIncognito() {
         createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ false);
 

@@ -279,10 +279,8 @@ public class ModelTrackingOrchestrator {
      */
     public void onRestoreFinished() {
         mIsRestoreFinished = true;
-        if (!mIsAuthoritative) {
-            onRestoredForModel(/* incognito= */ false);
-            onRestoredForModel(/* incognito= */ true);
-        }
+        onRestoredForModel(/* incognito= */ false);
+        onRestoredForModel(/* incognito= */ true);
     }
 
     /** Performs the cleanup required for the synchronizers when the TabStateStore is destroyed. */
