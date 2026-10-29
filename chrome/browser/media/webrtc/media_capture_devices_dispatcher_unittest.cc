@@ -5,7 +5,10 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 
 #include <memory>
+#include <utility>
+#include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -85,10 +88,30 @@ class MediaCaptureDevicesDispatcherTest
     dispatcher_ = MediaCaptureDevicesDispatcher::GetInstance();
   }
 
+  // Returns a mutable reference to the `MediaAccessHandler` list registered
+  // on the `dispatcher_` singleton.
   std::vector<std::unique_ptr<MediaAccessHandler>>& media_access_handlers() {
     return dispatcher_->media_access_handlers_;
   }
 
+  // Returns a mutable reference to the test
+  // `DesktopCaptureAccessHandler` pointer on the `dispatcher_` singleton.
+  raw_ptr<DesktopCaptureAccessHandler>&
+  desktop_capture_access_handler_for_test() {
+    return dispatcher_->desktop_capture_access_handler_for_test_;
+  }
+
+  // Restores `dispatcher_->media_access_handlers_` and
+  // `dispatcher_->desktop_capture_access_handler_for_test_` on the singleton.
+  void RestoreMediaAccessHandlers(
+      std::vector<std::unique_ptr<MediaAccessHandler>> handlers,
+      DesktopCaptureAccessHandler* desktop_handler) {
+    dispatcher_->media_access_handlers_ = std::move(handlers);
+    dispatcher_->desktop_capture_access_handler_for_test_ = desktop_handler;
+  }
+
+  // Dispatches `MediaCaptureDevicesDispatcher::UpdateVideoScreenCaptureStatus`
+  // for the specified `type` to `dispatcher_` with dummy process/frame IDs.
   void UpdateVideoScreenCaptureStatus(
       const blink::mojom::MediaStreamType type) {
     dispatcher_->UpdateVideoScreenCaptureStatus(0, 0, 0, type, false);
@@ -116,9 +139,23 @@ class MediaCaptureDevicesDispatcherTest
   raw_ptr<MediaCaptureDevicesDispatcher> dispatcher_;
 };
 
-TEST_F(MediaCaptureDevicesDispatcherTest,
-       DISABLED_LoopsAllMediaAccessHandlers) {
-  media_access_handlers().clear();
+// Tests that `MediaCaptureDevicesDispatcher::UpdateVideoScreenCaptureStatus`
+// iterates through registered `MediaAccessHandler` instances and dispatches the
+// status update to the handler that supports the specified
+// `blink::mojom::MediaStreamType`.
+TEST_F(MediaCaptureDevicesDispatcherTest, LoopsAllMediaAccessHandlers) {
+  // Preserve existing handlers and test pointer on the singleton, restoring
+  // them at scope exit to avoid dangling pointers or corrupting singleton
+  // state for subsequent tests.
+  std::vector<std::unique_ptr<MediaAccessHandler>> original_handlers =
+      std::move(media_access_handlers());
+  DesktopCaptureAccessHandler* original_desktop_handler =
+      desktop_capture_access_handler_for_test().get();
+  desktop_capture_access_handler_for_test() = nullptr;
+  base::ScopedClosureRunner restore_handlers(base::BindOnce(
+      &MediaCaptureDevicesDispatcherTest::RestoreMediaAccessHandlers,
+      base::Unretained(this), std::move(original_handlers),
+      original_desktop_handler));
 
   // Add two handlers.
   auto stream_type1 = blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE;
