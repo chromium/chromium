@@ -8,6 +8,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/allocator/partition_alloc_features.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/dcheck_is_on.h"
@@ -103,6 +104,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "partition_alloc/buildflags.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -473,6 +475,14 @@ void InProcessBrowserTest::Initialize() {
   // CameraPresenceNotifier or MediaDevicesManager). Excluded on macOS where
   // the service requires a CFRunLoop (https://crbug.com/40572495).
   enabled_features.push_back(features::kRunVideoCaptureServiceInBrowserProcess);
+#endif
+#if !EXPENSIVE_TEST_LOGIC_IS_ON() && PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  // Override kPartitionAllocSchedulerLoopQuarantine to its default-enabled
+  // state so fieldtrial_testing_config.json skips the 2 GB all-processes
+  // PartitionAllocMiracleObject study and tests run with the compiled-in
+  // production defaults.
+  enabled_features.push_back(
+      base::features::kPartitionAllocSchedulerLoopQuarantine);
 #endif
   // In-product help can conflict with tests' expected window activation and
   // focus. Individual tests can re-enable IPH.
