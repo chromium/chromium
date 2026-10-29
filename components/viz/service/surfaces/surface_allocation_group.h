@@ -71,11 +71,11 @@ class VIZ_SERVICE_EXPORT SurfaceAllocationGroup {
   // allocation group.
   bool HasBlockedEmbedder() const;
 
-  // Returns whether an embedder's active frame references this group and the
-  // latest active surface doesn't cover the last reference, i.e. isn't the
-  // same as or newer than it. Also true if no surface has activated yet. Until
-  // the submitter catches up, embedders draw an older fallback or their
-  // background color.
+  // Returns whether an embedder's active frame references a surface in this
+  // group that the latest active surface doesn't cover, i.e. isn't the same as
+  // or newer than it. Also true if no surface has activated yet. Until the
+  // submitter catches up, embedders draw an older fallback or their background
+  // color.
   bool HasActiveEmbedderAwaitingNewerSurface() const;
 
   // Called by |surface| when its newly activated frame references a surface in
@@ -157,6 +157,10 @@ class VIZ_SERVICE_EXPORT SurfaceAllocationGroup {
   // Updates the last reference. |surface_id| or a surface prior to it might
   // activate if it was blocked due to child throttling.
   void UpdateLastReferenceAndMaybeActivate(const SurfaceId& surface_id);
+
+  // Returns the SurfaceId in this group that `range` refers to, or an invalid
+  // SurfaceId if `range` doesn't refer to this group.
+  SurfaceId GetReferenceFromRange(const SurfaceRange& range) const;
 
   // The ID of the FrameSink that is submitting to the surfaces in this
   // allocation group.

@@ -28,6 +28,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_info.h"
+#include "components/viz/common/surfaces/surface_range.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "components/viz/service/frame_sinks/frame_sink_observer.h"
 #include "components/viz/service/surfaces/frame_index_constants.h"
@@ -263,6 +264,13 @@ class VIZ_SERVICE_EXPORT Surface final : public FrameSinkObserver {
   const base::flat_set<SurfaceId>& active_referenced_surfaces() const {
     return active_referenced_surfaces_;
   }
+
+  // Returns whether `range` refers to the allocation group of its start: the
+  // range spans two embed tokens and doesn't yet resolve to a surface in its
+  // end's group. `latest_in_flight` must be
+  // SurfaceManager::GetLatestInFlightSurface(range).
+  static bool ReferencesStartAllocationGroup(const SurfaceRange& range,
+                                             const Surface* latest_in_flight);
 
   // Returns the set of dependencies blocking this surface's pending frame
   // that themselves have not yet activated.
