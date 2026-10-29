@@ -10,14 +10,17 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <set>
 #include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/test/mock_callback.h"
 #include "base/test/mock_log.h"
 #include "base/threading/simple_thread.h"
@@ -1372,6 +1375,30 @@ class InitializeBufferDelegate : public base::DelegateSimpleThread::Delegate {
   const std::vector<viz::SharedImageFormat> formats_;
 };
 
+// Allocates buffer IDs once `start` is signaled and records them.
+class AllocateBufferIDDelegate : public base::DelegateSimpleThread::Delegate {
+ public:
+  AllocateBufferIDDelegate(WaylandBufferManagerGpu* buffer_manager,
+                           base::WaitableEvent* start)
+      : buffer_manager_(buffer_manager), start_(start) {}
+  ~AllocateBufferIDDelegate() override = default;
+
+  // base::DelegateSimpleThread::Delegate:
+  void Run() override {
+    start_->Wait();
+    for (int i = 0; i < 1000; ++i) {
+      ids_.push_back(buffer_manager_->AllocateBufferID());
+    }
+  }
+
+  const std::vector<uint32_t>& ids() const { return ids_; }
+
+ private:
+  const raw_ptr<WaylandBufferManagerGpu> buffer_manager_;
+  const raw_ptr<base::WaitableEvent> start_;
+  std::vector<uint32_t> ids_;
+};
+
 }  // namespace
 
 // Pixmaps may be initialized concurrently on the GPU main and IO threads, so
@@ -1425,6 +1452,26 @@ TEST_P(WaylandSurfaceFactoryTest, ConcurrentBufferAllocationFailures) {
   thread_b.Join();
 
   mock_log.StopCapturingLogs();
+}
+
+// Buffer IDs may be allocated concurrently on the GPU main and IO threads, and
+// must remain unique.
+TEST_P(WaylandSurfaceFactoryTest, ConcurrentBufferIDAllocation) {
+  base::WaitableEvent start;
+  AllocateBufferIDDelegate delegate_a(buffer_manager_gpu_.get(), &start);
+  AllocateBufferIDDelegate delegate_b(buffer_manager_gpu_.get(), &start);
+  base::DelegateSimpleThread thread_a(&delegate_a, "AllocateBufferIDA");
+  base::DelegateSimpleThread thread_b(&delegate_b, "AllocateBufferIDB");
+  thread_a.Start();
+  thread_b.Start();
+  start.Signal();
+  thread_a.Join();
+  thread_b.Join();
+
+  std::set<uint32_t> ids(delegate_a.ids().begin(), delegate_a.ids().end());
+  ids.insert(delegate_b.ids().begin(), delegate_b.ids().end());
+  EXPECT_EQ(ids.size(), delegate_a.ids().size() + delegate_b.ids().size());
+  EXPECT_FALSE(ids.contains(0u));
 }
 
 class WaylandSurfaceFactoryCompositorV3 : public WaylandSurfaceFactoryTest {};

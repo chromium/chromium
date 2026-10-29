@@ -371,7 +371,13 @@ bool WaylandBufferManagerGpu::AllowsImplicitModifierForFormat(
 }
 
 uint32_t WaylandBufferManagerGpu::AllocateBufferID() {
-  return ++next_buffer_id_ ? next_buffer_id_ : ++next_buffer_id_;
+  // This may be called concurrently on the GPU main and IO threads. Skip 0,
+  // which is not a valid buffer ID.
+  uint32_t id;
+  do {
+    id = next_buffer_id_.fetch_add(1, std::memory_order_relaxed) + 1;
+  } while (id == 0);
+  return id;
 }
 
 bool WaylandBufferManagerGpu::SupportsFormat(

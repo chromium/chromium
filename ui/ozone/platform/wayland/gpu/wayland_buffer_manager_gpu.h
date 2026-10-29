@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_GPU_WAYLAND_BUFFER_MANAGER_GPU_H_
 #define UI_OZONE_PLATFORM_WAYLAND_GPU_WAYLAND_BUFFER_MANAGER_GPU_H_
 
+#include <atomic>
 #include <cstdint>
 #include <map>
 #include <memory>
@@ -333,7 +334,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   base::Lock lock_;
 
   // Keeps track of the next unique buffer ID.
-  uint32_t next_buffer_id_ = 0;
+  std::atomic<uint32_t> next_buffer_id_ = 0;
 
   // The tasks that are blocked on a remote_host pipe becoming bound.
   std::vector<base::OnceClosure> pending_tasks_;
