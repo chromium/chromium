@@ -414,8 +414,7 @@ void ChromeSigninClient::PreSignOut(
       signout_source_metric == signin_metrics::ProfileSignout::kPrefChanged ||
       user_declines_sync_after_consenting_to_management;
   if (signin_util::IsForceSigninEnabled() && !profile_->IsSystemProfile() &&
-      !profile_->IsGuestSession() && !profile_->IsChild() &&
-      !keep_window_opened) {
+      !profile_->IsGuestSession() && !keep_window_opened) {
     chrome::CloseAllBrowsersWithProfile(
         profile_,
         signout_source_metric == signin_metrics::ProfileSignout::kAbortSignin ||

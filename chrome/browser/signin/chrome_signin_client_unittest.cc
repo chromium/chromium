@@ -79,6 +79,25 @@ class ChromeSigninClientSignoutTest : public testing::Test {
   std::unique_ptr<MockChromeSigninClient> client_;
 };
 
+TEST_F(ChromeSigninClientSignoutTest, ChildProfilePreSignoutWithForceSignin) {
+  TestingProfile::Builder builder;
+  builder.SetIsSupervisedProfile();
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+  EXPECT_TRUE(profile->IsChild());
+
+  CreateClient(profile.get());
+
+  signin_metrics::ProfileSignout source_metric =
+      signin_metrics::ProfileSignout::kUserClickedSignoutSettings;
+
+  EXPECT_CALL(*client_, ShowUserManager(profile->GetPath()));
+  EXPECT_CALL(*client_, LockForceSigninProfile(profile->GetPath()));
+  EXPECT_CALL(*client_, SignOutCallback(source_metric,
+                                        SigninClient::SignoutDecision::ALLOW));
+
+  PreSignOut(source_metric);
+}
+
 TEST_F(ChromeSigninClientSignoutTest, SignOut) {
   signin_metrics::ProfileSignout source_metric =
       signin_metrics::ProfileSignout::kUserClickedSignoutSettings;
