@@ -4,7 +4,10 @@
 
 #include "components/enterprise/device_trust/core/attestation/google_keys.h"
 
-#include "base/compiler_specific.h"
+#include <string>
+
+#include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 
 namespace enterprise_connectors {
 
@@ -53,14 +56,6 @@ constexpr char kTestVAEncryptionPublicKey[] =
     "4c91939103e317d0eca5f36c48102e967f176a19a42220f3cf14634b6773be07";
 constexpr char kTestVAEncryptionPublicKeyID[] = "\x00\xef\x22\x0f\xb0";
 
-// Ignores the extra null-terminated element and converts only the effective
-// part to std::string.
-template <size_t size>
-std::string ZeroTerminatedCharArrayToString(
-    const char (&array)[size]) noexcept {
-  return std::string(std::begin(array), UNSAFE_TODO(std::end(array) - 1));
-}
-
 }  // namespace
 
 GoogleKeys::GoogleKeys() {
@@ -70,11 +65,11 @@ GoogleKeys::GoogleKeys() {
 
   va_encryption_keys_[DEFAULT_VA].set_modulus_in_hex(
       kDefaultVAEncryptionPublicKey);
-  va_encryption_keys_[DEFAULT_VA].set_key_id(
-      ZeroTerminatedCharArrayToString(kDefaultVAEncryptionPublicKeyID));
+  va_encryption_keys_[DEFAULT_VA].set_key_id(std::string(base::as_string_view(
+      base::span_from_cstring(kDefaultVAEncryptionPublicKeyID))));
   va_encryption_keys_[TEST_VA].set_modulus_in_hex(kTestVAEncryptionPublicKey);
-  va_encryption_keys_[TEST_VA].set_key_id(
-      ZeroTerminatedCharArrayToString(kTestVAEncryptionPublicKeyID));
+  va_encryption_keys_[TEST_VA].set_key_id(std::string(base::as_string_view(
+      base::span_from_cstring(kTestVAEncryptionPublicKeyID))));
 }
 
 GoogleKeys::GoogleKeys(const DefaultGoogleRsaPublicKeySet& default_key_set)

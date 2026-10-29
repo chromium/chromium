@@ -82,7 +82,7 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = []
+  sources = [ "google_keys_unittest.cc" ]
 
   deps = [
     ":attestation",
