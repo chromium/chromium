@@ -150,7 +150,7 @@ void RemoteActorCredentialSharingImpl::RequestAgentAuthentication(
   dialog_controller_.reset();
   pending_request_ = PendingRequest{
       .gaia_id = gaia_id,
-      .domain = domain,
+      .origin = url::Origin::Create(GURL(base::StrCat({"https://", domain}))),
       .task_id = task_id,
       .callback = std::move(callback),
   };
@@ -193,48 +193,47 @@ void RemoteActorCredentialSharingImpl::OnAllLoginsRetrieved(
     return;
   }
 
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(&render_frame_host());
-  if (!web_contents) {
-    LogRemoteActorCredentialSharingResult(
-        RemoteActorCredentialSharingResult::kOtherError);
-    std::move(pending_request_->callback).Run(false);
-    pending_request_.reset();
-    return;
-  }
-
-  std::string credential_domain =
-      base::StrCat({"https://", pending_request_->domain});
-
   std::vector<std::unique_ptr<PasswordForm>> credentials_ptr;
   for (PasswordForm& form : *credentials) {
     credentials_ptr.push_back(std::make_unique<PasswordForm>(std::move(form)));
   }
 
-  auto dialog_callback =
-      base::BindOnce(&RemoteActorCredentialSharingImpl::OnDialogResult,
-                     weak_ptr_factory_.GetWeakPtr());
+  ShowCredentialSelection(
+      std::move(credentials_ptr), pending_request_->origin,
+      base::BindOnce(&RemoteActorCredentialSharingImpl::OnCredentialSelected,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
 
-  dialog_controller_ =
-      dialog_factory_.Run(web_contents, std::move(credentials_ptr),
-                          credential_domain, std::move(dialog_callback));
+void RemoteActorCredentialSharingImpl::ShowCredentialSelection(
+    std::vector<std::unique_ptr<PasswordForm>> credentials,
+    const url::Origin& origin,
+    base::OnceCallback<void(CredentialOrError)> callback) {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
+  if (!web_contents) {
+    std::move(callback).Run(
+        base::unexpected(RemoteActorCredentialSharingResult::kOtherError));
+    return;
+  }
+
+  dialog_controller_ = dialog_factory_.Run(
+      web_contents, std::move(credentials), origin.Serialize(),
+      base::BindOnce(&RemoteActorCredentialSharingImpl::OnDialogResult,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   dialog_controller_->Show();
 }
 
 void RemoteActorCredentialSharingImpl::ProceedWithCredential(
     PasswordForm selected_form,
-    bool auth_success) {
-  device_authenticator_.reset();
-
+    AuthResult auth_result) {
   if (!pending_request_) {
     return;
   }
 
   absl::Cleanup cleanup_request = [this] { pending_request_.reset(); };
 
-  if (!auth_success) {
-    LogRemoteActorCredentialSharingResult(
-        RemoteActorCredentialSharingResult::kAuthenticatorFailed);
+  if (!auth_result.has_value()) {
+    LogRemoteActorCredentialSharingResult(auth_result.error());
     RespondWithError(std::move(pending_request_->callback));
     return;
   }
@@ -256,10 +255,7 @@ void RemoteActorCredentialSharingImpl::ProceedWithCredential(
 
   RemoteActorCredentialSharingService::ShareParameters params;
   params.obfuscated_gaia_id = pending_request_->gaia_id;
-  params.web_origin =
-      url::Origin::Create(
-          GURL(base::StrCat({"https://", pending_request_->domain})))
-          .Serialize();
+  params.web_origin = pending_request_->origin.Serialize();
   params.password_data = std::move(specifics_data);
   params.time_to_live = kShareTimeToLive;
   params.task_id = pending_request_->task_id;
@@ -336,37 +332,52 @@ bool RemoteActorCredentialSharingImpl::IsAllowedByPolicy(Profile* profile) {
 }
 
 void RemoteActorCredentialSharingImpl::OnDialogResult(
+    base::OnceCallback<void(CredentialOrError)> callback,
     std::optional<PasswordForm> selected_form) {
   dialog_controller_.reset();
+  if (!selected_form) {
+    std::move(callback).Run(base::unexpected(
+        RemoteActorCredentialSharingResult::kUserCancelledDialog));
+    return;
+  }
+  std::move(callback).Run(std::move(*selected_form));
+}
 
+void RemoteActorCredentialSharingImpl::OnCredentialSelected(
+    CredentialOrError selected_form) {
   if (!pending_request_) {
     return;
   }
 
-  if (!selected_form) {
-    LogRemoteActorCredentialSharingResult(
-        RemoteActorCredentialSharingResult::kUserCancelledDialog);
+  if (!selected_form.has_value()) {
+    LogRemoteActorCredentialSharingResult(selected_form.error());
     RespondWithError(std::move(pending_request_->callback));
     pending_request_.reset();
     return;
   }
 
+  AuthenticateIfNeeded(
+      pending_request_->origin,
+      base::BindOnce(&RemoteActorCredentialSharingImpl::ProceedWithCredential,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(*selected_form)));
+}
+
+void RemoteActorCredentialSharingImpl::AuthenticateIfNeeded(
+    const url::Origin& origin,
+    base::OnceCallback<void(AuthResult)> callback) {
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host());
   if (!web_contents) {
-    LogRemoteActorCredentialSharingResult(
-        RemoteActorCredentialSharingResult::kOtherError);
-    RespondWithError(std::move(pending_request_->callback));
-    pending_request_.reset();
+    std::move(callback).Run(
+        base::unexpected(RemoteActorCredentialSharingResult::kOtherError));
     return;
   }
 
   auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
   if (!client) {
-    LogRemoteActorCredentialSharingResult(
-        RemoteActorCredentialSharingResult::kOtherError);
-    RespondWithError(std::move(pending_request_->callback));
-    pending_request_.reset();
+    std::move(callback).Run(
+        base::unexpected(RemoteActorCredentialSharingResult::kOtherError));
     return;
   }
 
@@ -394,22 +405,29 @@ void RemoteActorCredentialSharingImpl::OnDialogResult(
     CHECK(device_authenticator_);
     std::u16string message;
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-    url::Origin domain_origin = url::Origin::Create(
-        GURL(base::StrCat({"https://", pending_request_->domain})));
-    const std::u16string origin_str =
-        base::UTF8ToUTF16(GetShownOrigin(domain_origin));
+    const std::u16string origin_str = base::UTF8ToUTF16(GetShownOrigin(origin));
     message = l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_FILLING_REAUTH,
                                          origin_str);
 #endif
     device_authenticator_->AuthenticateWithMessage(
-        message,
-        base::BindOnce(&RemoteActorCredentialSharingImpl::ProceedWithCredential,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(*selected_form)));
+        message, base::BindOnce(
+                     &RemoteActorCredentialSharingImpl::OnAuthenticationResult,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     return;
   }
 
-  ProceedWithCredential(std::move(*selected_form), /*auth_success=*/true);
+  device_authenticator_.reset();
+  std::move(callback).Run(base::ok());
+}
+
+void RemoteActorCredentialSharingImpl::OnAuthenticationResult(
+    base::OnceCallback<void(AuthResult)> callback,
+    bool success) {
+  device_authenticator_.reset();
+  std::move(callback).Run(
+      success ? AuthResult(base::ok())
+              : base::unexpected(
+                    RemoteActorCredentialSharingResult::kAuthenticatorFailed));
 }
 
 void RemoteActorCredentialSharingImpl::OnShareCompleted(
