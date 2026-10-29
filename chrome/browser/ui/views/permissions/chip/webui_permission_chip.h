@@ -75,7 +75,12 @@ class WebUIPermissionChip : public PermissionChipInterface {
   void OnExpandAnimationEnded();
   void OnCollapseAnimationEnded();
   void OnMousePressed();
-  void OnClicked(bool is_pointer_interaction);
+  // Runs the pressed callback only if `state_token` (the token the WebUI
+  // rendered the chip with, echoed back in the click IPC) matches
+  // `state_token()`, and returns whether it did. A mismatch means the click is
+  // stale, e.g. it was queued before a tab or task switch, so it is dropped.
+  // This is the only click entry point, so WebUI clicks can't skip the check.
+  bool OnClickedIfCurrent(bool is_pointer_interaction, uint32_t state_token);
   void OnMouseEntered();
   void OnMouseExited();
 
@@ -103,11 +108,14 @@ class WebUIPermissionChip : public PermissionChipInterface {
   const ui::ElementIdentifier element_id_;
 
   // An epoch counter that increments whenever the chip's visibility or
-  // animation state changes (which occurs on tab switches, navigations, and
-  // prompt resets via ChipController). When the WebUI renders the chip, it
-  // echoes this token in OnLhsChipClicked. If the token in the incoming click
-  // IPC does not match `state_token_`, the click is dropped as stale to prevent
-  // actions from executing against an obsolete tab or request model.
+  // animation state changes (e.g. on navigations and prompt resets via
+  // `ChipController`), and on tab or side panel task switches
+  // (`InvalidateStateToken()`, via
+  // `WebUIPermissionDashboard::ResetTabState()`). The WebUI echoes the token it
+  // rendered the chip with in its click IPC
+  // (`OnLhsChipClicked()` in the main toolbar, `OnChipClicked()` in Contextual
+  // Tasks), and `OnClickedIfCurrent()` drops clicks whose token doesn't match,
+  // so actions don't run against an obsolete tab, task or request model.
   // Note: Initialized to 1 so that 0 is reserved as an invalid/sentinel token.
   uint32_t state_token_ = 1;
   bool is_visible_ = false;

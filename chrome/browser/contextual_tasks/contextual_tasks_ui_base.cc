@@ -791,9 +791,9 @@ ContextualTasksUIBase* ContextualTasksUIBase::FromWebContents(
 
 void ContextualTasksUIBase::NotifyPermissionDashboardStateChanged(
     ContextualTasksPermissionController* controller) {
-  // Only the active task's chips are on screen. Background tasks keep their
-  // own dashboard state and will be picked up by `GetState()` if and when they
-  // become active.
+  // All tasks in a window share one controller and dashboard, which shows
+  // the active task. Each task's permission data stays on its WebContents and
+  // is re-read on a task switch. Drop updates from any other controller.
   if (!controller || controller != GetActiveController()) {
     return;
   }
@@ -856,15 +856,12 @@ void ContextualTasksUIBase::GetInitialState(GetInitialStateCallback callback) {
   std::move(callback).Run(std::move(initial_state));
 }
 
-// TODO(crbug.com/558848727): Fix race condition where active task changes while
-// IPC is in flight. The WebUI should pass the target task ID (or generation
-// token), and the click should be dropped if the targeted task is no longer
-// active.
 void ContextualTasksUIBase::OnChipClicked(
     toolbar_ui_api::mojom::LhsChipIdentifier identifier,
-    bool is_mouse_interaction) {
+    bool is_mouse_interaction,
+    uint32_t state_token) {
   if (auto* controller = GetActiveController()) {
-    controller->OnChipClicked(identifier, is_mouse_interaction);
+    controller->OnChipClicked(identifier, is_mouse_interaction, state_token);
   }
 }
 

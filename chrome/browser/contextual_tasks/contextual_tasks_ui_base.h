@@ -161,7 +161,8 @@ class ContextualTasksUIBase
   void OnChipMousePressed(
       toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
   void OnChipClicked(toolbar_ui_api::mojom::LhsChipIdentifier identifier,
-                     bool is_mouse_interaction) override;
+                     bool is_mouse_interaction,
+                     uint32_t state_token) override;
   void OnChipPointerEntered(
       toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
   void OnChipPointerExited(

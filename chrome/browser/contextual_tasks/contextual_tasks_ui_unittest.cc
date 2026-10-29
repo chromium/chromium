@@ -232,11 +232,24 @@ class FakeContextualTasksPermissionController
     return state;
   }
   void OnChipClicked(toolbar_ui_api::mojom::LhsChipIdentifier identifier,
-                     bool is_mouse_interaction) override {}
+                     bool is_mouse_interaction,
+                     uint32_t state_token) override {
+    ++chip_clicked_count;
+    last_clicked_identifier = identifier;
+    last_clicked_is_mouse_interaction = is_mouse_interaction;
+    last_clicked_state_token = state_token;
+  }
   void OnChipExpandAnimationEnded(
       toolbar_ui_api::mojom::LhsChipIdentifier identifier) override {}
   void OnChipCollapseAnimationEnded(
       toolbar_ui_api::mojom::LhsChipIdentifier identifier) override {}
+
+  // Arguments of the last `OnChipClicked()` call.
+  int chip_clicked_count = 0;
+  toolbar_ui_api::mojom::LhsChipIdentifier last_clicked_identifier =
+      toolbar_ui_api::mojom::LhsChipIdentifier::kLocationIcon;
+  bool last_clicked_is_mouse_interaction = false;
+  uint32_t last_clicked_state_token = 0;
 };
 
 class MockToolbarPage : public contextual_tasks_toolbar::mojom::Page {
@@ -2031,8 +2044,15 @@ TEST_F(ContextualTasksUiTest, ContextualTasksToolbarUIServiceBindTest) {
 
   remote->OnChipClicked(
       toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator,
-      /*is_mouse_interaction=*/true);
+      /*is_mouse_interaction=*/true, /*state_token=*/42);
   remote.FlushForTesting();
+
+  // The click, including its state token, is forwarded to the controller.
+  EXPECT_EQ(fake_controller.chip_clicked_count, 1);
+  EXPECT_EQ(fake_controller.last_clicked_identifier,
+            toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator);
+  EXPECT_TRUE(fake_controller.last_clicked_is_mouse_interaction);
+  EXPECT_EQ(fake_controller.last_clicked_state_token, 42u);
 }
 
 TEST_F(ContextualTasksUiTest, SetThreadTitle_DispatchesToToolbarPage) {

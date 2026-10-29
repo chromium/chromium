@@ -210,9 +210,10 @@ export class TopToolbarElement extends TopToolbarElementBase {
     }, () => {});
 
     this.permissionChipDelegate_ = {
-      onChipClicked: (id: LhsChipIdentifier, isPointer: boolean) => {
-        toolbarUiService.onChipClicked(id, isPointer);
-      },
+      onChipClicked:
+          (id: LhsChipIdentifier, isPointer: boolean, stateToken: number) => {
+            toolbarUiService.onChipClicked(id, isPointer, stateToken);
+          },
       onChipPointerEntered: (id: LhsChipIdentifier) => {
         toolbarUiService.onChipPointerEntered(id);
       },

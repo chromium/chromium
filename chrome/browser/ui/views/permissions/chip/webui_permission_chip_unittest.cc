@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -201,6 +202,31 @@ TEST_F(WebUIPermissionChipTest, GetIsRequestForTesting) {
 
   chip.SetTheme(PermissionChipTheme::kOnSystemBlockedActivityIndicator);
   EXPECT_FALSE(chip.GetIsRequestForTesting());
+}
+
+TEST_F(WebUIPermissionChipTest, OnClickedIfCurrentDropsStaleTokens) {
+  WebUIPermissionChip chip(location_bar_.get(),
+                           PermissionChipView::kPermissionRequestChipElementId);
+  int pressed_count = 0;
+  bool pressed_with_pointer = false;
+  chip.SetPressedCallback(base::BindLambdaForTesting(
+      [&pressed_count, &pressed_with_pointer](bool is_pointer_interaction) {
+        ++pressed_count;
+        pressed_with_pointer = is_pointer_interaction;
+      }));
+
+  const uint32_t stale_token = chip.state_token();
+  chip.InvalidateStateToken();
+  ASSERT_NE(chip.state_token(), stale_token);
+
+  EXPECT_FALSE(
+      chip.OnClickedIfCurrent(/*is_pointer_interaction=*/true, stale_token));
+  EXPECT_EQ(pressed_count, 0);
+
+  EXPECT_TRUE(chip.OnClickedIfCurrent(/*is_pointer_interaction=*/true,
+                                      chip.state_token()));
+  EXPECT_EQ(pressed_count, 1);
+  EXPECT_TRUE(pressed_with_pointer);
 }
 
 TEST_F(WebUIPermissionChipTest, GetAnchorPrefersChipElementOverLocationBar) {

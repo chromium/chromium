@@ -176,8 +176,13 @@ interface ContextualTasksToolbarUIService {
   // Notifies the browser that a chip was clicked
   // or activated (mouse down then up). `is_mouse_interaction` distinguishes
   // between mouse clicks and keyboard/touch events.
+  // `state_token` is the chip's `PermissionChipState.state_token` that the
+  // WebUI rendered with. It is used as a best-effort staleness check to drop
+  // clicks queued before a task switch or navigation; it is not a security
+  // boundary against a compromised renderer.
   OnChipClicked(toolbar_ui_api.mojom.LhsChipIdentifier identifier,
-                bool is_mouse_interaction);
+                bool is_mouse_interaction,
+                uint32 state_token);
 
   // Notifies the browser that the pointer (mouse/stylus)
   // entered the bounds of a chip (e.g., to trigger hover
