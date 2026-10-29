@@ -12,8 +12,7 @@
 
 @interface SystemAlertHandlerImpl : BaseEGTestHelperImpl
 
-// Handles currently visible system alerts, closing them to unblock the UI.
-// Does not wait for in-flight alerts to appear.
+// Handles system alerts if any are present, closing them to unblock the UI.
 - (void)handleSystemAlertIfVisible;
 
 @end
