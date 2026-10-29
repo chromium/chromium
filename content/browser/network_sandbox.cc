@@ -525,35 +525,33 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
     return SandboxGrantResult::kFailedToCreateDataDirectory;
   }
 
-  {
-    SCOPED_UMA_HISTOGRAM_TIMER("NetworkService.TimeToGrantDataAccess");
-    // This must be done on each load of the network context for two
-    // platform-specific reasons:
-    //
-    // 1. On Windows Chrome, the LPAC SID for each channel is different so it is
-    // possible that this data might be read by a different channel and we need
-    // to explicitly support that.
-    // 2. Other platforms such as macOS and Linux need to grant access each time
-    // as they do not rely on filesystem permissions, but runtime sandbox broker
-    // permissions.
-    if (!MaybeGrantAccessToDataPath(sandbox_params,
-                                    &params->file_paths->data_directory)) {
-      PLOG(ERROR)
-          << "Failed to grant sandbox access to network context data directory "
-          << params->file_paths->data_directory.path();
-      // If migration has already happened there isn't much that can be done
-      // about this, the data has already moved, but the sandbox might not have
-      // access.
-      if (migration_already_happened)
-        return SandboxGrantResult::kMigrationAlreadySucceededWithNoAccess;
-      // If migration hasn't happened yet, then fail here, and do not attempt to
-      // migrate or proceed further. Better to just leave the data where it is.
-      // In this case `unsandboxed_data_path` will continue to be used and the
-      // migration attempt will be retried the next time the same network
-      // context is created with `trigger_migration` set.
-      return SandboxGrantResult::kFailedToGrantSandboxAccessToData;
+  // This must be done on each load of the network context for two
+  // platform-specific reasons:
+  //
+  // 1. On Windows Chrome, the LPAC SID for each channel is different so it is
+  // possible that this data might be read by a different channel and we need
+  // to explicitly support that.
+  // 2. Other platforms such as macOS and Linux need to grant access each time
+  // as they do not rely on filesystem permissions, but runtime sandbox broker
+  // permissions.
+  if (!MaybeGrantAccessToDataPath(sandbox_params,
+                                  &params->file_paths->data_directory)) {
+    PLOG(ERROR)
+        << "Failed to grant sandbox access to network context data directory "
+        << params->file_paths->data_directory.path();
+    // If migration has already happened there isn't much that can be done
+    // about this, the data has already moved, but the sandbox might not have
+    // access.
+    if (migration_already_happened) {
+      return SandboxGrantResult::kMigrationAlreadySucceededWithNoAccess;
     }
-  }  // SCOPED_UMA_HISTOGRAM_TIMER
+    // If migration hasn't happened yet, then fail here, and do not attempt to
+    // migrate or proceed further. Better to just leave the data where it is.
+    // In this case `unsandboxed_data_path` will continue to be used and the
+    // migration attempt will be retried the next time the same network
+    // context is created with `trigger_migration` set.
+    return SandboxGrantResult::kFailedToGrantSandboxAccessToData;
+  }
 
   // This covers cases 3. and 4. where a migration has already happened.
   if (migration_already_happened) {
