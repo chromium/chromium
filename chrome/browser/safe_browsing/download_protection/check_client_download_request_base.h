@@ -136,11 +136,13 @@ class CheckClientDownloadRequestBase {
   // hooks with slightly different logic when they are called.
 
   // Called with the client download response as returned by the server, if one
-  // was returned and the returned verdict is unsafe (i.e. not safe or unknown).
+  // was returned and either the returned verdict is unsafe (i.e. not safe or
+  // unknown) or the download is from a registered app store.
   virtual void SetDownloadProtectionData(
       const std::string& token,
       const ClientDownloadResponse::Verdict& verdict,
-      const ClientDownloadResponse::TailoredVerdict& tailored_verdict) = 0;
+      const ClientDownloadResponse::TailoredVerdict& tailored_verdict,
+      bool is_registered_app_store) = 0;
 
   // TODO(crbug.com/397407934): Download feedback is not supported on Android
   // yet, but it will be.

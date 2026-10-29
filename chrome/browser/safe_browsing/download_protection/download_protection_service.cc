@@ -420,11 +420,13 @@ void DownloadProtectionService::SetDownloadProtectionData(
     download::DownloadItem* item,
     const std::string& token,
     const ClientDownloadResponse::Verdict& verdict,
-    const ClientDownloadResponse::TailoredVerdict& tailored_verdict) {
+    const ClientDownloadResponse::TailoredVerdict& tailored_verdict,
+    bool is_registered_app_store) {
   if (item) {
-    item->SetUserData(kDownloadProtectionDataKey,
-                      std::make_unique<DownloadProtectionData>(
-                          token, verdict, tailored_verdict));
+    item->SetUserData(
+        kDownloadProtectionDataKey,
+        std::make_unique<DownloadProtectionData>(
+            token, verdict, tailored_verdict, is_registered_app_store));
   }
 }
 
@@ -469,6 +471,21 @@ DownloadProtectionService::GetDownloadProtectionTailoredVerdict(
         ->tailored_verdict();
   else
     return ClientDownloadResponse::TailoredVerdict();
+}
+
+// static
+bool DownloadProtectionService::WasFromRegisteredAppStore(
+    const download::DownloadItem* item) {
+  if (!item) {
+    return false;
+  }
+  const base::SupportsUserData::Data* protection_data =
+      item->GetUserData(kDownloadProtectionDataKey);
+  if (protection_data) {
+    return static_cast<const DownloadProtectionData*>(protection_data)
+        ->is_registered_app_store();
+  }
+  return false;
 }
 
 void DownloadProtectionService::MaybeSendDangerousDownloadOpenedReport(

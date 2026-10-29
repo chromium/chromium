@@ -559,6 +559,7 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
   DownloadCheckResultReason reason = REASON_SERVER_PING_FAILED;
   DownloadCheckResult result = DownloadCheckResult::UNKNOWN;
   std::string token;
+  bool is_registered_app_store = false;
   if (success && net::HTTP_OK == response_code) {
     ClientDownloadResponse response;
     if (!response.ParseFromString(*response_body)) {
@@ -580,6 +581,7 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
         case ClientDownloadResponse::SAFE:
           reason = REASON_DOWNLOAD_SAFE;
           result = DownloadCheckResult::SAFE;
+          is_registered_app_store = response.is_registered_app_store();
           break;
         case ClientDownloadResponse::DANGEROUS:
           reason = REASON_DOWNLOAD_DANGEROUS;
@@ -627,17 +629,17 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
 
     GetAdditionalPromptResult(response, &result, &reason, &token);
 
-    if (!token.empty()) {
+    if (!token.empty() || is_registered_app_store) {
       SetDownloadProtectionData(
           token, response.verdict(),
 #if !BUILDFLAG(IS_ANDROID)
           WebUIContentInfoSingleton::GetInstance()
               ->tailored_verdict_override()
-              .override_value.value_or(response.tailored_verdict())
+              .override_value.value_or(response.tailored_verdict()),
 #else
-          response.tailored_verdict()
+          response.tailored_verdict(),
 #endif
-      );
+          is_registered_app_store);
     }
 
 #if !BUILDFLAG(IS_ANDROID)
