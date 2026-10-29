@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.omnibox;
 import android.content.Context;
 import android.text.Editable;
 import android.text.Selection;
-import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.CharacterStyle;
@@ -45,33 +45,33 @@ class SpanCursorController {
     public void setSpan(AutocompleteState state) {
         int sel = state.getSelection().from;
 
-        Editable editable = mDelegate.getEditableText();
-        try (var capture = new UndoStackCapture(editable)) {
-            String autocompleteText = state.getAutocompleteText();
-            if (autocompleteText != null) {
-                SpannableString spanString = new SpannableString(autocompleteText);
-                // The flag here helps make sure that span does not get spill to other part of the
-                // text.
-                spanString.setSpan(
-                        mAutocompleteBgColorSpan,
-                        0,
-                        autocompleteText.length(),
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                editable.append(spanString);
-            }
+        // Build the whole suffix (autocomplete text + optional additional text) up front and
+        // append it in a single Editable mutation. Every mutation of the Editable forces the
+        // TextView's DynamicLayout to regenerate the StaticLayout for the full (single-line)
+        // text, so two appends cost two full relayouts. See b/576773721.
+        SpannableStringBuilder suffix = new SpannableStringBuilder();
+        String autocompleteText = state.getAutocompleteText();
+        if (autocompleteText != null) {
+            // The flag here helps make sure that span does not get spill to other part of the
+            // text.
+            suffix.append(
+                    autocompleteText, mAutocompleteBgColorSpan, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
 
-            String additionalTextStr = state.getAdditionalText();
-            if (additionalTextStr != null
-                    && OmniboxFeatures.shouldShowRichInlineAutocompleteUrl(
-                            state.getUserText().length())) {
-                String additionalText = " - " + additionalTextStr;
-                SpannableString additionalTextSpanString = new SpannableString(additionalText);
-                additionalTextSpanString.setSpan(
-                        mAdditionalTextFgColorSpan,
-                        0,
-                        additionalText.length(),
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                editable.append(additionalTextSpanString);
+        String additionalTextStr = state.getAdditionalText();
+        if (additionalTextStr != null
+                && OmniboxFeatures.shouldShowRichInlineAutocompleteUrl(
+                        state.getUserText().length())) {
+            suffix.append(
+                    " - " + additionalTextStr,
+                    mAdditionalTextFgColorSpan,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+        Editable editable = mDelegate.getEditableText();
+        if (suffix.length() > 0) {
+            try (var capture = new UndoStackCapture(editable)) {
+                editable.append(suffix);
             }
         }
 
@@ -84,6 +84,21 @@ class SpanCursorController {
 
     private void setCursorVisible(boolean visible) {
         if (mDelegate.isFocused()) mDelegate.setCursorVisible(visible);
+    }
+
+    /**
+     * Re-applies the cursor visibility that {@link #setSpan} establishes while autocomplete text is
+     * shown, without touching the {@link Editable}.
+     */
+    public void hideCursorForSpan() {
+        setCursorVisible(false);
+    }
+
+    /**
+     * @return Whether the autocomplete span is currently attached to the {@link Editable}.
+     */
+    public boolean hasAutocompleteSpan() {
+        return getAutocompleteSpanIndex(mDelegate.getEditableText()) != -1;
     }
 
     private int getAutocompleteSpanIndex(Editable editable) {

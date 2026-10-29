@@ -21,6 +21,7 @@ import org.chromium.components.omnibox.TextSelection;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.KeyNavigationUtil;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
@@ -532,12 +533,40 @@ public class SpannableAutocompleteEditTextModel
                 additionalText,
                 new TextSelection(userText.length(), userText.length()),
                 siteSearchLabel);
-        // TODO(changwan): avoid any unnecessary removal and addition of autocomplete text when it
-        // is not changed or when it is appended to the existing autocomplete text.
-        if (mInputConnection != null) {
-            mInputConnection.onBeginImeCommand();
-            mInputConnection.onEndImeCommand();
+        if (mInputConnection == null) return;
+
+        if (isAutocompleteStateAlreadyApplied(mPreviouslySetState)) {
+            // The Editable already shows exactly this user text + autocomplete text (e.g. the
+            // autocomplete was carried over on the keystroke by
+            // AutocompleteState#reuseAutocompleteTextIfPrefixExtension, or the suggestions list
+            // was updated without changing the default match). Running the IME command cycle
+            // below would delete and re-append the identical suffix, forcing two full relayouts
+            // of the UrlBar text for no visible change. See b/576773721.
+            if (DEBUG) Log.i(TAG, "setAutocompleteText: already applied, skipping.");
+            mSpanCursorController.hideCursorForSpan();
+            return;
         }
+        // TODO(changwan): avoid any unnecessary removal and addition of autocomplete text when it
+        // is appended to the existing autocomplete text.
+        mInputConnection.onBeginImeCommand();
+        mInputConnection.onEndImeCommand();
+    }
+
+    /**
+     * Returns whether {@code state} (user text, autocomplete text, additional text and a collapsed
+     * selection at the end of the user text) is already what the Editable shows, such that
+     * re-applying it would not change the Editable.
+     */
+    private boolean isAutocompleteStateAlreadyApplied(AutocompleteState state) {
+        if (mBatchEditNestCount != 0 || mDeletePostfixOnNextBeginImeCommand != 0) return false;
+        // Without autocomplete text the IME command cycle does not mutate the Editable, so there
+        // is nothing to save; keep the existing behavior.
+        if (state.getAutocompleteText() == null) return false;
+        return mCurrentState.getUserText().equals(state.getUserText())
+                && state.getAutocompleteText().equals(mCurrentState.getAutocompleteText())
+                && Objects.equals(mCurrentState.getAdditionalText(), state.getAdditionalText())
+                && mCurrentState.getSelection().equals(state.getSelection())
+                && mSpanCursorController.hasAutocompleteSpan();
     }
 
     @Override

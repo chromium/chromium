@@ -17,6 +17,7 @@ import android.content.Context;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.view.ContextThemeWrapper;
@@ -1603,5 +1604,72 @@ public class AutocompleteEditTextUnitTest {
         assertLastBatchEdit(mInputConnection.endBatchEdit());
         assertTexts("f", "", "");
         assertTrue(mAutocomplete.shouldAutocomplete());
+    }
+
+    /** Counts Editable text mutations. */
+    private static class MutationCounter implements TextWatcher {
+        int mCount;
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            mCount++;
+        }
+    }
+
+    @Test
+    public void testSetAutocompleteText_alreadyApplied_doesNotMutateEditable() {
+        assertTrue(mInputConnection.commitText("hel", /* newCursorPosition= */ 1));
+        mAutocomplete.setAutocompleteText("hel", "lo world", null, null);
+        var counter = new MutationCounter();
+        mAutocomplete.addTextChangedListener(counter);
+
+        mAutocomplete.setAutocompleteText("hel", "lo world", null, null);
+
+        assertEquals(0, counter.mCount);
+        assertFalse(mAutocomplete.isCursorVisible());
+        assertTexts("hel", "lo world", "");
+    }
+
+    @Test
+    public void testSetAutocompleteText_additionalTextChanged_updatesEditable() {
+        assertTrue(mInputConnection.commitText("hel", /* newCursorPosition= */ 1));
+        mAutocomplete.setAutocompleteText("hel", "lo world", "www.foo.com", null);
+
+        mAutocomplete.setAutocompleteText("hel", "lo world", "www.bar.com", null);
+
+        assertTexts("hel", "lo world", "www.bar.com");
+        assertEquals("hello world - www.bar.com", mAutocomplete.getText().toString());
+    }
+
+    @Test
+    public void testSetAutocompleteText_withAdditionalText_appendsOnce() {
+        assertTrue(mInputConnection.commitText("hel", /* newCursorPosition= */ 1));
+        var counter = new MutationCounter();
+        mAutocomplete.addTextChangedListener(counter);
+
+        mAutocomplete.setAutocompleteText("hel", "lo world", "www.foo.com", null);
+
+        assertEquals(1, counter.mCount);
+        assertTexts("hel", "lo world", "www.foo.com");
+        assertEquals("hello world - www.foo.com", mAutocomplete.getText().toString());
+    }
+
+    @Test
+    public void testFinishComposingText_noComposingRegion_doesNotMutateEditable() {
+        assertTrue(mInputConnection.commitText("hel", /* newCursorPosition= */ 1));
+        mAutocomplete.setAutocompleteText("hel", "lo world", null, null);
+        var counter = new MutationCounter();
+        mAutocomplete.addTextChangedListener(counter);
+
+        assertTrue(mInputConnection.finishComposingText());
+
+        assertEquals(0, counter.mCount);
+        assertTexts("hel", "lo world", "");
     }
 }
