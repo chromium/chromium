@@ -4464,14 +4464,6 @@ void TabStripModel::SelectRelativeTab(TabRelativeDirection direction,
   }
 
   const int start_index = active_index();
-  std::optional<tab_groups::TabGroupId> start_group =
-      GetTabGroupForTab(start_index);
-
-  // Ensure the active tab is not in a collapsed group so the while loop can
-  // fallback on activating the active tab.
-  // TODO(crbug.com/577979740): CHECK-exclusion: Convert to a CHECK once we are
-  // confident it won't be triggered.
-  DCHECK(!start_group.has_value() || !IsGroupCollapsed(start_group.value()));
 
   std::optional<tab_groups::TabGroupId> focused_group = GetFocusedGroup();
   const int delta = direction == TabRelativeDirection::kNext ? 1 : -1;
