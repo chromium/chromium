@@ -2414,15 +2414,7 @@ TEST_F(NativeWidgetMacTest, ShowAnimationControl) {
 }
 
 // Tests behavior of window-modal dialogs, displayed as sheets.
-#if defined(ARCH_CPU_ARM64) || BUILDFLAG(IS_MAC)
-// Bulk-disabled as part of arm64 bot stabilization: https://crbug.com/1154345
-// Disabled on Mac 10.15 and 10.11 failing ([parent_close_button isEnabled])
-// crbug.com/1473423
-#define MAYBE_WindowModalSheet DISABLED_WindowModalSheet
-#else
-#define MAYBE_WindowModalSheet WindowModalSheet
-#endif
-TEST_F(NativeWidgetMacTest, MAYBE_WindowModalSheet) {
+TEST_F(NativeWidgetMacTest, WindowModalSheet) {
   NSWindow* native_parent = MakeClosableTitledNativeParent();
 
   Widget* sheet_widget = views::DialogDelegate::CreateDialogWidget(
@@ -2452,6 +2444,8 @@ TEST_F(NativeWidgetMacTest, MAYBE_WindowModalSheet) {
   EXPECT_TRUE(parent_close_button);
   EXPECT_TRUE([parent_close_button isEnabled]);
 
+  base::RunLoop run_loop;
+  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
   bool did_observe = false;
   bool* did_observe_ptr = &did_observe;
   id observer = [[NSNotificationCenter defaultCenter]
@@ -2464,6 +2458,7 @@ TEST_F(NativeWidgetMacTest, MAYBE_WindowModalSheet) {
                 EXPECT_TRUE(sheet_widget->IsVisible());
                 EXPECT_TRUE(sheet_widget->GetLayer()->IsVisible());
                 *did_observe_ptr = true;
+                quit_closure.Run();
               }];
 
   Widget::Widgets children =
@@ -2471,6 +2466,7 @@ TEST_F(NativeWidgetMacTest, MAYBE_WindowModalSheet) {
   ASSERT_EQ(2u, children.size());
 
   sheet_widget->Show();  // Should run the above block, then animate the sheet.
+  run_loop.Run();
   EXPECT_TRUE(did_observe);
   [[NSNotificationCenter defaultCenter] removeObserver:observer];
 
