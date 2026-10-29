@@ -2322,6 +2322,15 @@ void BrowserView::FullscreenStateChanged() {
                                     widget_for_anchoring);
   GetFrameView()->OnFullscreenStateChanged();
 
+  // On Mac, a failed enter never goes through ProcessFullscreen(false), so
+  // PrepareFullscreen(false) never ran. We must tear down the host explicitly.
+  if (!IsFullscreen()) {
+    if (auto* const fullscreen_control_host =
+            FullscreenControlHost::From(browser_.get())) {
+      fullscreen_control_host->OnExitFullscreen();
+    }
+  }
+
 #endif  // BUILDFLAG(IS_MAC)
 
   ExclusiveAccessManager::From(browser_)

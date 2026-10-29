@@ -72,6 +72,8 @@ class FullscreenControlHost : public ui::EventObserver {
   // monitoring.
   void OnExitFullscreen();
 
+  bool HasEventMonitorForTesting() const { return event_monitor_ != nullptr; }
+
  private:
   friend class FullscreenControlViewTest;
 

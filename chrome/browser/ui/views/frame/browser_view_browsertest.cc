@@ -73,6 +73,7 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
+#include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_host.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -2074,6 +2075,22 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest,
 }
 
 #if BUILDFLAG(IS_MAC)
+
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, FullscreenControlHostLeakOnMac) {
+  // Set up the state a failed enter leaves behind without starting fullscreen.
+  browser_view()->PrepareFullscreen(true);
+
+  auto* host = FullscreenControlHost::From(browser());
+  ASSERT_TRUE(host);
+  EXPECT_TRUE(host->HasEventMonitorForTesting());
+  EXPECT_FALSE(browser_view()->IsFullscreen());
+
+  // Simulate AppKit failing to enter fullscreen, which calls
+  // BrowserView::FullscreenStateChanged() with the window still windowed.
+  browser_view()->FullscreenStateChanged();
+
+  EXPECT_FALSE(host->HasEventMonitorForTesting());
+}
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, SplitViewFullscreenLayout) {
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
