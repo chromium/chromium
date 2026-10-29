@@ -255,7 +255,8 @@ export const ComposeboxEmbedderMixin =
             loadTimeData.getBoolean('tabFaviconChipsToCoinsEnabled');
         accessor energyEffectEnabled: boolean = false;
         accessor energyEffectAnimationEnabled: boolean = false;
-        accessor willFulfillInAim: boolean = true;
+        accessor willFulfillInAim: boolean =
+            !getLoadTimeBoolean('dynamicAimFulfillmentEnabled', false);
 
         browserTabContextAdded: boolean = false;
         pendingAutomaticActiveTabUrl: string = '';
@@ -612,6 +613,7 @@ export const ComposeboxEmbedderMixin =
           }
 
           if (changedPrivateProperties.has('inputState') && this.inputState) {
+            this.willFulfillInAim = this.inputState.willFulfillInAim;
             this.hasAllowedInputs =
                 (this.inputState.allowedModels.length > 0 ||
                  this.inputState.allowedTools.length > 0 ||

@@ -230,5 +230,8 @@ struct InputState {
   int32 max_total_inputs;
   // Whether a Canvas query has been submitted in this thread.
   bool is_canvas_query_submitted;
+  // Whether the current input state will fulfill in AI Mode (true) or SRP
+  // (false).
+  bool will_fulfill_in_aim;
 };
 // LINT.ThenChange(//components/omnibox/common/input_state.h:InputState)

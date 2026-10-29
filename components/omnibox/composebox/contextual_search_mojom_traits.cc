@@ -789,11 +789,18 @@ bool StructTraits<UsedInputStateDataView, omnibox::InputState>::
 }
 
 // static
+bool StructTraits<UsedInputStateDataView, omnibox::InputState>::
+    will_fulfill_in_aim(const omnibox::InputState& input) {
+  return input.will_fulfill_in_aim;
+}
+
+// static
 bool StructTraits<UsedInputStateDataView, omnibox::InputState>::Read(
     UsedInputStateDataView data,
     omnibox::InputState* output) {
   output->max_total_inputs = data.max_total_inputs();
   output->is_canvas_query_submitted = data.is_canvas_query_submitted();
+  output->will_fulfill_in_aim = data.will_fulfill_in_aim();
   return data.ReadAllowedModels(&output->allowed_models) &&
          data.ReadAllowedTools(&output->allowed_tools) &&
          data.ReadAllowedInputTypes(&output->allowed_input_types) &&

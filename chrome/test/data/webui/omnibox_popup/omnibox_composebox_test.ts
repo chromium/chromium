@@ -1267,6 +1267,7 @@ suite('OmniboxComposeboxTest', () => {
           maxInputsByType: {},
           maxTotalInputs: 0,
           isCanvasQuerySubmitted: false,
+          willFulfillInAim: true,
         };
         testProxy.page.onInputStateChanged(inputState);
         await testProxy.page.$.flushForTesting();
@@ -1378,6 +1379,7 @@ suite('OmniboxComposeboxTest', () => {
       maxInputsByType: {},
       maxTotalInputs: 0,
       isCanvasQuerySubmitted: false,
+      willFulfillInAim: true,
     };
     testProxy.page.onInputStateChanged(inputState);
     await testProxy.page.$.flushForTesting();
