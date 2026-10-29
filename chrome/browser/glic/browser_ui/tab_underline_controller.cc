@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/browser_ui/tab_underline_controller.h"
 
+#include "base/auto_reset.h"
 #include "base/debug/crash_logging.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
@@ -63,26 +64,41 @@ void TabUnderlineController::Initialize(UiDelegate* ui_delegate) {
   MaybeObserveContextualTasks();
   MaybeObserveDictation();
 
-  if (glic_service_) {
-    // Fetch the latest context access indicator status from service. We can't
-    // assume the WebApp always updates the status on the service (thus the new
-    // subscribers not getting the latest value).
-    OnIndicatorStatusChanged(
-        glic_service_->is_context_access_indicator_enabled());
-  }
+  // Initial state is synced in `OnUiReady()`, once the view is in a widget.
 }
 
 void TabUnderlineController::OnUiReady() {
-  if (!glic_service_ || !ShouldUseSignalsForGlicUnderlines()) {
-    return;
+  {
+    // Several state syncs below can each request the underline to show. Defer
+    // those requests (they are still tracked in `active_sources_`) so that the
+    // underline is shown at most once below, rather than being shown, torn
+    // down and re-shown within the same task.
+    base::AutoReset<bool> defer_show(&is_syncing_ui_state_, true);
+
+    if (glic_service_ && ShouldUseSignalsForGlicUnderlines()) {
+      // Fetch the latest context access indicator status from service. We
+      // can't assume the WebApp always updates the status on the service (thus
+      // the new subscribers not getting the latest value).
+      OnIndicatorStatusChanged(
+          glic_service_->is_context_access_indicator_enabled());
+
+      // During cases such as tabstrip attachment, the underline controller
+      // consumes changes in pinned state before the underline view is
+      // reconstructed. Check consistency with pinned state post-construction
+      // to ensure the UI state of the underline is correct.
+      OnPinnedTabsChanged(
+          glic_service_->active_instance_sharing_manager().GetPinnedTabs());
+    }
   }
 
-  // During cases such as tabstrip attachment, the underline controller consumes
-  // changes in pinned state before the underline view is reconstructed. Check
-  // consistency with pinned state post-construction to ensure the UI state of
-  // the underline is correct.
-  OnPinnedTabsChanged(
-      glic_service_->active_instance_sharing_manager().GetPinnedTabs());
+  // Show the underline if any source requested it, either during the sync
+  // above, or earlier while the view was not attached to a widget (e.g.
+  // before its first `AddedToWidget()`, or after `RemovedFromWidget()` when it
+  // is moved to another widget).
+  if (active_sources_ != UnderlineSource::kNone && ui_delegate_->CanShow() &&
+      !ui_delegate_->IsShowing()) {
+    ui_delegate_->Show();
+  }
 }
 
 void TabUnderlineController::OnFocusedTabChanged(
@@ -359,6 +375,12 @@ void TabUnderlineController::UpdateUnderlineView(UpdateUnderlineReason reason) {
 
 void TabUnderlineController::ShowAndAnimateUnderline(UnderlineSource source) {
   AddSource(source);
+  if (is_syncing_ui_state_ || !ui_delegate_->CanShow()) {
+    // Either the UI isn't attached to a widget yet, or `OnUiReady()` is
+    // batching show requests. The request is recorded in `active_sources_`
+    // and will be applied in `OnUiReady()`.
+    return;
+  }
   ui_delegate_->StopShowing();
   ui_delegate_->Show();
 }

@@ -39,6 +39,10 @@ class TabUnderlineController
     virtual void ResetAnimationCycle() = 0;
     virtual void StartRampingDown() = 0;
     virtual bool IsShowing() const = 0;
+    // Whether the UI is attached to a widget with a compositor, and can
+    // therefore be shown. Requests to show while this is false are deferred
+    // until `OnUiReady()`.
+    virtual bool CanShow() const = 0;
   };
 
   explicit TabUnderlineController(tabs::TabHandle tab_handle);
@@ -198,6 +202,10 @@ class TabUnderlineController
   // The current set of active sources for the underline. The underline is
   // hidden only when this bitmask is UnderlineSource::kNone.
   int active_sources_ = UnderlineSource::kNone;
+
+  // True while `OnUiReady()` is syncing initial state. Show requests made
+  // during this time are deferred and applied once at the end of the sync.
+  bool is_syncing_ui_state_ = false;
 };
 
 }  // namespace glic

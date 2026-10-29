@@ -73,6 +73,7 @@ class TabUnderlineView : public AnimatedEffectView,
   void ResetAnimationCycle() override;
   void StartRampingDown() override;
   bool IsShowing() const override;
+  bool CanShow() const override;
 
   enum class Orientation {
     kHorizontal,
@@ -106,6 +107,7 @@ class TabUnderlineView : public AnimatedEffectView,
   // `views::View`:
   void OnThemeChanged() override;
   void AddedToWidget() override;
+  void RemovedFromWidget() override;
 
   int ComputeDimension();
 

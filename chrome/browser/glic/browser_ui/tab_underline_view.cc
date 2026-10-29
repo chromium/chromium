@@ -21,6 +21,7 @@
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 namespace glic {
 namespace {
@@ -110,6 +111,11 @@ bool TabUnderlineView::IsShowing() const {
   return AnimatedEffectView::IsShowing();
 }
 
+bool TabUnderlineView::CanShow() const {
+  const views::Widget* widget = GetWidget();
+  return widget && widget->GetCompositor();
+}
+
 bool TabUnderlineView::IsCycleDone(base::TimeTicks timestamp) {
   return progress_ == 1.f;
 }
@@ -167,6 +173,14 @@ void TabUnderlineView::OnThemeChanged() {
 void TabUnderlineView::AddedToWidget() {
   View::AddedToWidget();
   controller_->OnUiReady();
+}
+
+void TabUnderlineView::RemovedFromWidget() {
+  // Stop drawing on the old widget's compositor. This only resets the view;
+  // the controller still tracks which sources want the underline shown, and
+  // re-shows it from `OnUiReady()` if the view is added to a widget again.
+  AnimatedEffectView::StopShowing();
+  View::RemovedFromWidget();
 }
 
 std::vector<SkColor> TabUnderlineView::GetEffectColors() {

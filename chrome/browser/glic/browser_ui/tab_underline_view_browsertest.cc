@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/browser_ui/tab_underline_view.h"
 
 #include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/glic/browser_ui/tab_underline_controller.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/host/host.h"
@@ -30,6 +31,7 @@
 #include "ui/gfx/switches.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace glic {
 
@@ -49,6 +51,7 @@ class TesterImpl : public TabUnderlineView::Tester {
   base::TimeTicks GetTestCreationTime() override { return creation_time_; }
   void AnimationStarted() override {
     animation_started_ = true;
+    ++animation_started_count_;
     wait_for_animation_started_.Quit();
   }
   void AnimationReset() override {
@@ -63,6 +66,7 @@ class TesterImpl : public TabUnderlineView::Tester {
   void set_underline(TabUnderlineView* underline) { underline_ = underline; }
 
   void ResetWaitForAnimationStart() { animation_started_ = false; }
+  int animation_started_count() const { return animation_started_count_; }
   void WaitForAnimationStart() {
     if (animation_started_) {
       return;
@@ -107,6 +111,7 @@ class TesterImpl : public TabUnderlineView::Tester {
   base::TimeTicks next_time_tick_ = creation_time_;
 
   bool animation_started_ = false;
+  int animation_started_count_ = 0;
   base::RunLoop wait_for_animation_started_;
 
   bool animation_reset_ = false;
@@ -691,6 +696,114 @@ IN_PROC_BROWSER_TEST_F(TabUnderlineViewPrefersReducedMotionBrowserTest,
   tester->WaitForRampDownStarted();
   tester->FinishRampDown();
   EXPECT_FALSE(underline->IsShowing());
+}
+
+// Regression test for crbug.com/577211885: when a tab's underline view is
+// (re)constructed while context sharing is already active, it must not attempt
+// to show before it is attached to a widget, but should still end up showing.
+IN_PROC_BROWSER_TEST_F(TabUnderlineViewBrowserTest,
+                       AttachPinnedTabToWindowWhileSharing) {
+  BrowserWindowInterface* browser1 = GetBrowser();
+  BrowserWindowInterface* browser2 = CreateAdditionalBrowserWindow();
+  auto* tab_list2 = TabListInterface::From(browser2);
+  NavigateTab(*tab_list2->GetTab(0), Title2());
+  ASSERT_OK(ActivateWindow(browser1));
+
+  tabs::TabHandle handle1 = GetTabListInterface()->GetTab(0)->GetHandle();
+  tabs::TabHandle handle2 = tab_list2->GetTab(0)->GetHandle();
+
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(instance));
+  instance->GetSharingManagerInternal().PinTabs({handle1, handle2});
+  // Turn on context sharing before the tab is moved, so the new underline view
+  // observes an already-enabled indicator during construction. The service
+  // only reports the indicator as enabled in live mode, so set it directly.
+  instance->host().SetContextAccessIndicator(true);
+  service()->SetContextAccessIndicator(true);
+  ASSERT_TRUE(service()->is_context_access_indicator_enabled());
+
+  auto* underline2 = GetUnderlineOfActiveTab(browser2);
+  static_cast<TesterImpl*>(underline2->tester())->WaitForAnimationStart();
+  ASSERT_TRUE(underline2->IsShowing());
+
+  // Moving the tab reconstructs its underline view. Before the fix, the view
+  // attempted to show during construction (before having a parent), which hit
+  // `DumpWithoutCrashing()` in `AnimatedEffectView::Show()`. Every
+  // `DumpWithoutCrashing()` call (including throttled ones) records this
+  // histogram.
+  base::HistogramTester histogram_tester;
+  tab_list2->MoveTabToWindow(handle2, browser1->GetSessionID(), 1);
+  ASSERT_EQ(GetTabListInterface()->GetTabCount(), 2);
+
+  auto* underline_attached = GetUnderlineOfTab(browser1, 1);
+  auto* tester_attached =
+      static_cast<TesterImpl*>(underline_attached->tester());
+  tester_attached->WaitForAnimationStart();
+  EXPECT_TRUE(underline_attached->IsShowing());
+  histogram_tester.ExpectTotalCount("Stability.DumpWithoutCrashingStatus", 0);
+  // The initial state sync in `OnUiReady()` runs both the indicator and the
+  // pinned-tab syncs, each of which requests the underline to show. Those
+  // requests are batched, so the underline should be shown exactly once. A
+  // count of 2 would mean a redundant show, teardown and re-show.
+  EXPECT_EQ(tester_attached->animation_started_count(), 1);
+}
+
+// A show request that arrives while the underline view is not attached to a
+// widget must be deferred (not call `Show()`, which would hit
+// `DumpWithoutCrashing()`), and the underline should show once it is attached
+// again.
+IN_PROC_BROWSER_TEST_F(TabUnderlineViewBrowserTest,
+                       ShowRequestWhileDetachedIsDeferred) {
+  auto* underline = GetUnderlineOfActiveTab();
+  TesterImpl* tester = static_cast<TesterImpl*>(underline->tester());
+  ASSERT_FALSE(underline->IsShowing());
+
+  // Detach the underline from the widget.
+  views::View* parent = underline->parent();
+  std::unique_ptr<TabUnderlineView> detached =
+      parent->RemoveChildViewT(underline);
+  ASSERT_FALSE(underline->CanShow());
+
+  // Opening Glic pins the active tab by default, which requests the underline
+  // to show while it is detached.
+  base::HistogramTester histogram_tester;
+  ASSERT_OK(OpenGlicForActiveTab());
+  ASSERT_TRUE(service()->active_instance_sharing_manager().IsTabPinned(
+      GetTabListInterface()->GetActiveTab()->GetHandle()));
+  EXPECT_FALSE(underline->IsShowing());
+  EXPECT_EQ(tester->animation_started_count(), 0);
+  histogram_tester.ExpectTotalCount("Stability.DumpWithoutCrashingStatus", 0);
+
+  // Re-attaching shows the underline exactly once.
+  parent->AddChildView(std::move(detached));
+  EXPECT_TRUE(underline->IsShowing());
+  EXPECT_EQ(tester->animation_started_count(), 1);
+  histogram_tester.ExpectTotalCount("Stability.DumpWithoutCrashingStatus", 0);
+}
+
+// When a showing underline is removed from its widget, it stops drawing on
+// that widget's compositor, and restarts on the new compositor when it is
+// attached to a widget again.
+IN_PROC_BROWSER_TEST_F(TabUnderlineViewBrowserTest,
+                       ReattachWhileShowingRestartsUnderline) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  auto* underline = GetUnderlineOfActiveTab();
+  TesterImpl* tester = static_cast<TesterImpl*>(underline->tester());
+  // The active tab is pinned by default, so its underline shows.
+  tester->WaitForAnimationStart();
+  ASSERT_TRUE(underline->IsShowing());
+
+  views::View* parent = underline->parent();
+  std::unique_ptr<TabUnderlineView> detached =
+      parent->RemoveChildViewT(underline);
+  EXPECT_FALSE(underline->IsShowing());
+
+  const int starts_before = tester->animation_started_count();
+  parent->AddChildView(std::move(detached));
+  EXPECT_TRUE(underline->IsShowing());
+  EXPECT_EQ(tester->animation_started_count(), starts_before + 1);
+  EXPECT_EQ(underline->layer()->GetCompositor(),
+            underline->GetWidget()->GetCompositor());
 }
 
 }  // namespace glic

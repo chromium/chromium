@@ -38,6 +38,8 @@ class TabUnderlineManager::UiDelegateImpl
 
   bool IsShowing() const override { return is_showing_; }
 
+  bool CanShow() const override { return true; }
+
  private:
   raw_ptr<TabUnderlineManager> manager_;
   int tab_id_;
