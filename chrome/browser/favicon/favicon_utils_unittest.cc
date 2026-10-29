@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "content/public/browser/navigation_entry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -16,6 +17,14 @@
 #include "ui/color/color_recipe.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/resources/grit/ui_resources.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"  // nogncheck
+#include "components/favicon/content/content_favicon_driver.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_web_contents_factory.h"
+#endif
 
 namespace favicon {
 
@@ -192,5 +201,20 @@ TEST_F(DefaultFaviconModelTest, ResolvesColorIdAtRasterization) {
   EXPECT_TRUE(GetDefaultFaviconForColorScheme(/*is_dark=*/true)
                   .BackedBySameObjectAs(model.Rasterize(color_provider)));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// TopChromeWebUIProfile has no favicon service, so creating a favicon driver
+// for its WebContents creates one with a null service instead of crashing.
+TEST(FaviconUtilsTest, CreateContentFaviconDriverInTopChromeWebUIProfile) {
+  content::BrowserTaskEnvironment task_environment;
+  webui::ScopedTopChromeWebUIProfileForTesting scoped_profile;
+  content::TestWebContentsFactory web_contents_factory;
+  content::WebContents* web_contents =
+      web_contents_factory.CreateWebContents(webui::GetTopChromeWebUIProfile());
+
+  CreateContentFaviconDriverForWebContents(web_contents);
+  EXPECT_TRUE(ContentFaviconDriver::FromWebContents(web_contents));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace favicon
