@@ -58,8 +58,6 @@ def _RunCompiler(
                 )
             logging.info('Done extracting srcjars')
 
-        # Don't include the output directory in the initial set of args since it
-        # being in a temp dir makes it unstable (breaks md5 stamping).
         cmd = list(kotlinc_cmd)
         cmd += ['-d', classes_dir]
 

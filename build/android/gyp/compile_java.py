@@ -23,7 +23,6 @@ import zipfile
 
 import javac_output_processor
 from util import build_utils
-from util import md5_check
 from util import jar_info_utils
 from util import server_utils
 import action_helpers  # build_utils adds //build to sys.path.
@@ -98,8 +97,7 @@ def _ComputeNumShards(java_files):
 
     Must depend only on the inputs (and not on e.g. the number of CPUs), since
     the shard boundaries affect the output (javac adds bridge methods when a
-    superclass comes from a header jar rather than from source). Partial javac
-    already compiles against the header jar, so has the same effect.
+    superclass comes from a header jar rather than from source).
     """
     if len(java_files) < _MIN_FILES_TO_SHARD:
         return 1
@@ -407,8 +405,7 @@ class _MetadataParser:
         logging.info('Completed info file: %s', output_path)
 
 
-def _OnStaleMd5(
-    changes,
+def _Compile(
     options,
     javac_cmd,
     javac_args,
@@ -416,7 +413,7 @@ def _OnStaleMd5(
     kt_files,
     use_errorprone=False,
 ):
-    logging.info('Starting _OnStaleMd5')
+    logging.info('Starting _Compile')
 
     if options.enable_kythe_annotations:
         # Kythe requires those env variables to be set and compile_java.py does the
@@ -441,15 +438,11 @@ def _OnStaleMd5(
             _JAVAC_EXTRACTOR,
         ]
         try:
-            # _RunCompiler()'s partial javac implementation does not support
-            # generating outputs in $KYTHE_OUTPUT_DIRECTORY.
             _RunCompiler(
-                changes,
                 options,
                 javac_extractor_cmd + javac_args,
                 java_files,
                 options.jar_path + '.javac_extractor',
-                enable_partial_javac=False,
             )
         except build_utils.CalledProcessError as e:
             # Having no index for particular target is better than failing entire
@@ -480,7 +473,6 @@ def _OnStaleMd5(
     # rules run both in parallel, with Error Prone only used for checks.
     try:
         _RunCompiler(
-            changes,
             options,
             javac_cmd + javac_args,
             java_files,
@@ -489,7 +481,6 @@ def _OnStaleMd5(
             kt_files=kt_files,
             jar_info_path=jar_info_path,
             intermediates_out_dir=intermediates_out_dir,
-            enable_partial_javac=True,
             allow_sharding=allow_sharding,
         )
     except build_utils.CalledProcessError as e:
@@ -499,11 +490,10 @@ def _OnStaleMd5(
         sys.stderr.write(e.output)
         sys.exit(1)
 
-    logging.info('Completed all steps in _OnStaleMd5')
+    logging.info('Completed all steps in _Compile')
 
 
 def _RunCompiler(
-    changes,
     options,
     javac_cmd,
     java_files,
@@ -512,13 +502,11 @@ def _RunCompiler(
     kt_files=None,
     jar_info_path=None,
     intermediates_out_dir=None,
-    enable_partial_javac=False,
     allow_sharding=False,
 ):
     """Runs java compiler.
 
     Args:
-      changes: md5_check.Changes object.
       options: Object with command line flags.
       javac_cmd: Command to execute.
       java_files: List of java files passed from command line.
@@ -528,18 +516,12 @@ def _RunCompiler(
           If None, .info file will not be generated.
       intermediates_out_dir: Directory for saving intermediate outputs.
           If None a temporary directory is used.
-      enable_partial_javac: Enables compiling only Java files which have changed
-          in the special case that no method signatures have changed. This is
-          useful for large GN targets.
-          Not supported if compiling generates outputs other than |jar_path| and
-          |jar_info_path|.
       allow_sharding: Allows splitting large compiles across multiple javac
           processes. Requires the target's header jar to be on the classpath.
     """
     logging.info('Starting _RunCompiler')
 
     java_files = java_files.copy()
-    java_srcjars = options.java_srcjars
     parse_java_files = jar_info_path is not None
 
     # Use jar_path's directory to ensure paths are relative (needed for rbe).
@@ -556,55 +538,12 @@ def _RunCompiler(
         if java_files:
             os.makedirs(classes_dir)
 
-            if enable_partial_javac and changes:
-                all_changed_paths_are_java = all(
-                    p.endswith(".java") for p in changes.IterChangedPaths()
-                )
-                if (
-                    all_changed_paths_are_java
-                    and not changes.HasStringChanges()
-                    and os.path.exists(jar_path)
-                    and (jar_info_path is None or os.path.exists(jar_info_path))
-                    and (
-                        not options.filtered_jar
-                        or os.path.exists(options.filtered_jar)
-                    )
-                ):
-                    # Log message is used by tests to determine whether partial javac
-                    # optimization was used.
-                    logging.info(
-                        'Using partial javac optimization for %s compile',
-                        jar_path,
-                    )
-
-                    # Header jar corresponding to |java_files| did not change.
-                    # As a build speed optimization (crbug.com/1170778), re-compile only
-                    # java files which have changed. Re-use old jar .info file.
-                    java_files = list(changes.IterChangedPaths())
-
-                    # Disable srcjar extraction, since we know the srcjar didn't show as
-                    # changed (only .java files).
-                    java_srcjars = None
-
-                    # @ServiceImpl has class retention, so will alter header jars when
-                    # modified (and hence not reach this block).
-                    # Likewise, nothing in .info files can change if header jar did not
-                    # change.
-                    parse_java_files = False
-
-                    # Extracts .class as well as META-INF/services.
-                    build_utils.ExtractAll(jar_path, classes_dir)
-                    if options.filtered_jar:
-                        build_utils.ExtractAll(
-                            options.filtered_jar, classes_dir
-                        )
-
         if intermediates_out_dir is None:
             intermediates_out_dir = temp_dir
 
         input_srcjars_dir = os.path.join(intermediates_out_dir, 'input_srcjars')
 
-        if java_srcjars:
+        if options.java_srcjars:
             logging.info('Extracting srcjars to %s', input_srcjars_dir)
             build_utils.MakeDirectory(input_srcjars_dir)
             for srcjar in options.java_srcjars:
@@ -622,8 +561,6 @@ def _RunCompiler(
             logging.info('Done extracting srcjars')
 
         if java_files:
-            # Don't include the output directory in the initial set of args since it
-            # being in a temp dir makes it unstable (breaks md5 stamping).
             cmd = list(javac_cmd)
             cmd += ['-d', classes_dir]
 
@@ -931,8 +868,7 @@ def main(
 
     javac_args.extend(options.javac_arg)
 
-    do_it = lambda changes: _OnStaleMd5(  # noqa: E731
-        changes,
+    do_it = lambda: _Compile(  # noqa: E731
         options,
         javac_cmd,
         javac_args,
@@ -946,7 +882,7 @@ def main(
             raise Exception(
                 '--print-javac-command-line does not work with --java-srcjars'
             )
-        do_it(None)
+        do_it()
         return 0
 
     classpath_jars = options.classpath + options.processorpath
@@ -959,59 +895,11 @@ def main(
         sys.stderr.write('\n'.join(missing_jars) + '\n')
         sys.exit(1)
 
-    output_paths = [options.jar_path]
-    if not use_errorprone:
-        jar_info_path = options.jar_path + '.info'
-        output_paths.append(jar_info_path)
-    if options.filtered_jar:
-        output_paths.append(options.filtered_jar)
-
-    # Incremental build optimization doesn't work for ErrorProne. Skip md5 check.
-    if write_depfile_only:
-        action_helpers.write_depfile(
-            options.depfile, output_paths[0], classpath_jars
-        )
-    elif use_errorprone:
-        do_it(None)
-        action_helpers.write_depfile(
-            options.depfile, output_paths[0], classpath_jars
-        )
-    else:
-        # Files that are already inputs in GN should go in input_paths.
-        input_paths = (
-            [javac_cmd[0]]
-            + classpath_jars
-            + options.java_srcjars
-            + java_files
-            + kt_files
-        )
-        if options.header_jar:
-            input_paths.append(options.header_jar)
-        input_paths += [x[0] for x in options.additional_jar_files]
-
-        input_strings = (
-            javac_cmd
-            + javac_args
-            + options.classpath
-            + java_files
-            + kt_files
-            + [
-                options.warnings_as_errors,
-                options.jar_exclude_globs,
-                options.jar_include_globs,
-            ]
-        )
-
-        # Use md5_check for |pass_changes| feature.
-        md5_check.CallAndWriteDepfileIfStale(
-            do_it,
-            options,
-            depfile_deps=classpath_jars,
-            input_paths=input_paths,
-            input_strings=input_strings,
-            output_paths=output_paths,
-            pass_changes=True,
-        )
+    if not write_depfile_only:
+        do_it()
+    action_helpers.write_depfile(
+        options.depfile, options.jar_path, classpath_jars
+    )
     return 0
 
 

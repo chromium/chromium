@@ -416,11 +416,6 @@ def __android_compile_java_handler(ctx, cmd):
     #   --enable-errorprone
     #   @gen/chrome/android/chrome_test_java.sources
 
-    out = cmd.outputs[0]
-    outputs = [
-        out + ".md5.stamp",
-    ]
-
     inputs = []
     for i, arg in enumerate(cmd.args):
         for k in ["--classpath=", "--processorpath="]:
@@ -435,7 +430,6 @@ def __android_compile_java_handler(ctx, cmd):
 
     ctx.actions.fix(
         inputs = cmd.inputs + inputs,
-        outputs = cmd.outputs + outputs,
     )
 
 def __android_dex_handler(ctx, cmd):
