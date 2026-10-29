@@ -144,7 +144,9 @@ UrlIdentity UrlIdentity::CreateFromUrl(Profile* profile,
                                        const FormatOptions& options) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (url.SchemeIs(extensions::kExtensionScheme)) {
-    CHECK(allowed_types.Has(Type::kChromeExtension), base::NotFatalUntil::M162);
+    // TODO(crbug.com/577619404): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(allowed_types.Has(Type::kChromeExtension));
     return CreateChromeExtensionIdentityFromUrl(profile, url, options);
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
