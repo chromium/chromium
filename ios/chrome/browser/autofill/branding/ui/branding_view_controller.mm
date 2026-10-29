@@ -93,9 +93,7 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
 
 #pragma mark - Keyboard Event Handlers
 
-// Called right before the keyboard is visible. This method adds the autofill
-// branding to the view if it should be visible, and otherwise remove it from
-// the view hierarchy.
+// Update branding visibility before the keyboard animates in.
 - (void)keyboardWillShow {
   // Early return if the keyboard was not hidden prior to the animation. Note
   // that this method may still be called if the user consecutively taps on two
@@ -104,24 +102,10 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
     return;
   }
 
-  // Add or remove the branding icon to keyboard accessories accordingly.
-  [self setUpInitialHiddenBrandingWidth];
-  BOOL shouldShow = self.visible && self.keyboardAccessoryVisible;
-  if (shouldShow && _brandingIcon.superview == nil) {
-    [self.view addSubview:_brandingIcon];
-    _widthConstraintWhenHidingBranding.active = NO;
-    AddSameConstraintsToSides(_brandingIcon, self.view,
-                              LayoutSides::kTrailing | LayoutSides::kVertical);
-    _leadingConstraint = [_brandingIcon.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor
-                       constant:kLeadingInset];
-    _leadingConstraint.active = YES;
-  } else if (!shouldShow) {
-    [self hideBranding];
-  }
+  [self updateBrandingVisibility];
 }
 
-// Update keybaord visibility, check if the branding icon is visible and should
+// Update keyboard visibility, check if the branding icon is visible and should
 // perform an animation, and do so if it should.
 - (void)keyboardDidShow {
   // Early return if the keyboard was not hidden prior to the animation. Note
@@ -131,6 +115,13 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
     return;
   }
   _keyboardVisible = YES;
+
+  // Update branding visibility here because UIKit only posts
+  // `UIKeyboardDidShowNotification` (and skips
+  // `UIKeyboardWillShowNotification`) when a hardware keyboard is attached
+  // and the software keyboard is minimized. This is a no-op if
+  // `keyboardWillShow` already applied the same state.
+  [self updateBrandingVisibility];
 
   // Early return if branding is invisible.
   if (self.view.window == nil || _brandingIcon.superview == nil) {
@@ -161,6 +152,28 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
 }
 
 #pragma mark - Private
+
+// Updates branding visibility: adds the branding icon to the view if it should
+// be visible, and otherwise removes it from the view hierarchy.
+- (void)updateBrandingVisibility {
+  BOOL shouldShow = self.visible && self.keyboardAccessoryVisible;
+  if (!shouldShow) {
+    [self hideBranding];
+    return;
+  }
+  if (_brandingIcon.superview) {
+    return;
+  }
+
+  [self.view addSubview:_brandingIcon];
+  _widthConstraintWhenHidingBranding.active = NO;
+  AddSameConstraintsToSides(_brandingIcon, self.view,
+                            LayoutSides::kTrailing | LayoutSides::kVertical);
+  _leadingConstraint = [_brandingIcon.leadingAnchor
+      constraintEqualToAnchor:self.view.leadingAnchor
+                     constant:kLeadingInset];
+  _leadingConstraint.active = YES;
+}
 
 // Hides the branding icon from the view. This does NOT mean that the branding
 // would not show again when the keyboard pops up next time.
@@ -215,6 +228,16 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
         [self.view.widthAnchor constraintEqualToConstant:0];
     _widthConstraintWhenHidingBranding.active = YES;
   }
+}
+
+#pragma mark - Testing
+
+- (UIButton*)brandingIcon {
+  return _brandingIcon;
+}
+
+- (NSLayoutConstraint*)widthConstraintWhenHidingBranding {
+  return _widthConstraintWhenHidingBranding;
 }
 
 @end

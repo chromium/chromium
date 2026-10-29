@@ -17,3 +17,13 @@ source_set("ui") {
   ]
   frameworks = [ "UIKit.framework" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "branding_view_controller_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//testing/gtest",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

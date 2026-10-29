@@ -274,6 +274,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/autofill/authentication/public:unit_tests",
     "//ios/chrome/browser/autofill/autofill_ai/ui:unit_tests",
     "//ios/chrome/browser/autofill/bnpl/ui:unit_tests",
+    "//ios/chrome/browser/autofill/branding/ui:unit_tests",
     "//ios/chrome/browser/autofill/form_input_accessory/coordinator:unit_tests",
     "//ios/chrome/browser/autofill/form_input_accessory/ui:unit_tests",
     "//ios/chrome/browser/autofill/manual_fill/coordinator:unit_tests",

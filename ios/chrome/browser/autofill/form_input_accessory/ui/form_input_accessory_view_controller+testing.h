@@ -19,6 +19,9 @@
 // Exposed for unit testing.
 @property(nonatomic, readonly) FormSuggestionView* formSuggestionView;
 
+// Exposes the form suggestion container view for unit testing.
+@property(nonatomic, readonly) UIStackView* formSuggestionContainerView;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_FORM_INPUT_ACCESSORY_UI_FORM_INPUT_ACCESSORY_VIEW_CONTROLLER_TESTING_H_

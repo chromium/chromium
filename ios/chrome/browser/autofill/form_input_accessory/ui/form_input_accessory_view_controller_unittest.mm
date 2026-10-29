@@ -625,3 +625,30 @@ TEST_F(FormInputAccessoryViewControllerTest,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI));
   EXPECT_NSEQ(expected_label, label.accessibilityLabel);
 }
+
+// Tests that `formSuggestionContainerView`'s layer mask frame matches its
+// bounds after layout changes.
+TEST_F(FormInputAccessoryViewControllerTest,
+       SuggestionContainerMaskFrameMatchesBoundsAfterLayout) {
+  NSArray<FormSuggestion*>* suggestions = @[ SimpleFormSuggestion(
+      u"value", autofill::SuggestionType::kAutocompleteEntry) ];
+  [view_controller_ showAccessorySuggestions:suggestions];
+
+  UIStackView* container_view = view_controller_.formSuggestionContainerView;
+  ASSERT_NE(container_view, nil);
+  ASSERT_NE(container_view.layer.mask, nil);
+
+  container_view.frame = CGRectMake(0, 0, 200, 44);
+  container_view.layer.mask.frame = CGRectZero;
+  [container_view setNeedsLayout];
+  [container_view layoutIfNeeded];
+  EXPECT_TRUE(CGRectEqualToRect(container_view.layer.mask.frame,
+                                container_view.bounds));
+
+  container_view.frame = CGRectMake(0, 0, 350, 44);
+  container_view.layer.mask.frame = CGRectZero;
+  [container_view setNeedsLayout];
+  [container_view layoutIfNeeded];
+  EXPECT_TRUE(CGRectEqualToRect(container_view.layer.mask.frame,
+                                container_view.bounds));
+}

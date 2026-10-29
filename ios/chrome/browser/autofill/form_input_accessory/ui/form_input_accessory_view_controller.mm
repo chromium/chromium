@@ -156,6 +156,27 @@ NSArray<FormSuggestion*>* TruncateSuggestionsIfNeeded(
 
 }  // namespace
 
+// Keeps the form suggestion view's layer mask (the fade-out gradient) sized to
+// its bounds on every layout pass. Layout changes caused by sibling views
+// (e.g. the branding view collapsing or expanding next to it) would otherwise
+// leave the mask with a stale frame, hiding the suggestions.
+@interface FormSuggestionContainerView : UIStackView
+@end
+
+@implementation FormSuggestionContainerView
+
+- (void)layoutSubviews {
+  [super layoutSubviews];
+  // Disables implicit Core Animation transactions so the layer mask frame
+  // updates synchronously with the layout pass without visual lag or animation.
+  [CATransaction begin];
+  [CATransaction setDisableActions:YES];
+  self.layer.mask.frame = self.bounds;
+  [CATransaction commit];
+}
+
+@end
+
 @interface FormInputAccessoryViewController () <FormSuggestionViewDelegate>
 
 // The leading view that contains the branding and form suggestions.
@@ -638,7 +659,8 @@ UIImage* GetManualFillSymbol(id<UITraitEnvironment> trait_environment) {
     self.formSuggestionView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.formSuggestionView setIsCompact:[self isCompact]];
 
-    self.formSuggestionContainerView = [[UIStackView alloc] init];
+    self.formSuggestionContainerView =
+        [[FormSuggestionContainerView alloc] init];
     self.formSuggestionContainerView.axis = UILayoutConstraintAxisHorizontal;
 
     // Put a mask on the formSuggestionView's container view so that the mask
