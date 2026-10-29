@@ -12329,6 +12329,21 @@
             ]
         }
     ],
+    "OffloadUpdateRunningServicesWin": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OffloadUpdateRunningServicesWin"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmahaMinSdkVersionAndroid": [
         {
             "platforms": [
