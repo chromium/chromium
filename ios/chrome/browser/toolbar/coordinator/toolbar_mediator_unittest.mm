@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
@@ -66,6 +67,7 @@
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -1026,6 +1028,82 @@ TEST_P(ToolbarMediatorTest, TestAssistantButtonVisibleInIncognito) {
 
   OCMExpect([consumer_ setAssistantButtonVisible:YES enabled:YES]);
   [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that keyboard notifications force fullscreen mode for the bottom
+// toolbar when `kFullscreenRefactoring` is enabled.
+TEST_P(ToolbarMediatorTest, TestKeyboardForcesFullscreenWhenRefactored) {
+  if (GetParam() || !IsBottomOmniboxAvailable()) {
+    // Only the bottom toolbar pins above the keyboard, and bottom omnibox is
+    // not available on iPad.
+    return;
+  }
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kFullscreenRefactoring);
+
+  BrowserLayoutState* layout_state = browser_->GetBrowserLayoutState();
+  [layout_state setToolbarPosition:ToolbarPosition::kBottom
+                           passKey:layout_state::LayoutStateTestPassKeyFactory::
+                                       CreateToolbarKey()];
+  mediator_.browserLayoutState = layout_state;
+
+  id mock_fullscreen_commands = OCMProtocolMock(@protocol(FullscreenCommands));
+  mediator_.fullscreenCommands = mock_fullscreen_commands;
+
+  id mock_web_view_proxy = OCMProtocolMock(@protocol(CRWWebViewProxy));
+  OCMStub([mock_web_view_proxy isKeyboardVisible]).andReturn(YES);
+
+  std::unique_ptr<web::FakeWebState> web_state = CreateWebState();
+  web_state->SetWebViewProxy(mock_web_view_proxy);
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  OCMExpect([mock_fullscreen_commands
+      forceFullscreen:YES
+              feature:ForceFullscreenFeature::kKeyboard]);
+  OCMExpect([consumer_ setLocationIndicatorVisible:YES
+                                   forNotification:[OCMArg any]]);
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIKeyboardWillShowNotification
+                    object:nil];
+  EXPECT_OCMOCK_VERIFY(mock_fullscreen_commands);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  OCMExpect([mock_fullscreen_commands
+      forceFullscreen:NO
+              feature:ForceFullscreenFeature::kKeyboard]);
+  OCMExpect([consumer_ setLocationIndicatorVisible:NO
+                                   forNotification:[OCMArg any]]);
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIKeyboardWillHideNotification
+                    object:nil];
+  EXPECT_OCMOCK_VERIFY(mock_fullscreen_commands);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  // Re-show the keyboard, then move the toolbar position to `kTop` while the
+  // keyboard is still visible; forced fullscreen should be exited immediately.
+  OCMExpect([mock_fullscreen_commands
+      forceFullscreen:YES
+              feature:ForceFullscreenFeature::kKeyboard]);
+  OCMExpect([consumer_ setLocationIndicatorVisible:YES
+                                   forNotification:[OCMArg any]]);
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIKeyboardWillShowNotification
+                    object:nil];
+  EXPECT_OCMOCK_VERIFY(mock_fullscreen_commands);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  OCMExpect([mock_fullscreen_commands
+      forceFullscreen:NO
+              feature:ForceFullscreenFeature::kKeyboard]);
+  OCMExpect([consumer_ setLocationIndicatorVisible:NO forNotification:nil]);
+  OCMExpect([consumer_ setHasOmnibox:NO]);
+  [layout_state setToolbarPosition:ToolbarPosition::kTop
+                           passKey:layout_state::LayoutStateTestPassKeyFactory::
+                                       CreateToolbarKey()];
+  EXPECT_OCMOCK_VERIFY(mock_fullscreen_commands);
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 

@@ -516,3 +516,27 @@ TEST_F(FullscreenMediatorTest, IgnoresAndRestoresProgrammaticScrolls) {
   EXPECT_EQ(agent_->top_progress(), progress_after_deceleration);
   EXPECT_EQ(scroll_view.contentOffset.y, kDecelerationOffsetY);
 }
+
+// Tests that forced fullscreen prevents scroll snapping from exiting
+// fullscreen.
+TEST_F(FullscreenMediatorTest, ForcedFullscreenIgnoresScrollSnap) {
+  auto [scroll_view, scroll_view_proxy] = SetUpActiveWebStateWithScrollView();
+  id<CRWWebViewScrollViewProxyObserver> scroll_observer =
+      static_cast<id<CRWWebViewScrollViewProxyObserver>>(mediator_);
+
+  [mediator_ forceFullscreen:YES feature:ForceFullscreenFeature::kKeyboard];
+  EXPECT_EQ(agent_->State(), FullscreenState::kUICollapsed);
+
+  // Dragging to the top of the page (`contentOffset == 0`) and ending the drag
+  // must not snap out of fullscreen while `kKeyboard` is active.
+  scroll_view.contentOffset = CGPointMake(0, 100);
+  [scroll_observer webViewScrollViewWillBeginDragging:scroll_view_proxy];
+  scroll_view.contentOffset = CGPointMake(0, 0);
+  [scroll_observer webViewScrollViewDidScroll:scroll_view_proxy];
+  [scroll_observer webViewScrollViewDidEndDragging:scroll_view_proxy
+                                    willDecelerate:NO];
+  EXPECT_EQ(agent_->State(), FullscreenState::kUICollapsed);
+
+  [mediator_ forceFullscreen:NO feature:ForceFullscreenFeature::kKeyboard];
+  EXPECT_EQ(agent_->State(), FullscreenState::kUIExpanded);
+}

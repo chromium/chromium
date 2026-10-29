@@ -611,11 +611,14 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
 
 // Snaps the fullscreen progress to 0.0 or 1.0.
 - (void)snap {
+  if (!_browserAgent->IsEnabled() || _browserAgent->IsForceFullscreen()) {
+    return;
+  }
+
   // Show the toolbars if the user started dragging at the bottom of the page
   // and finished dragging while still at the bottom with the toolbars fully
   // collapsed.
   if (_startedDragAtBottom && [self isScrolledToBottom] &&
-      _browserAgent->IsEnabled() && !_browserAgent->IsForceFullscreen() &&
       _browserAgent->State() != FullscreenState::kUIExpanded &&
       [self canCollapseToolbar]) {
     _browserAgent->ExitFullscreen(

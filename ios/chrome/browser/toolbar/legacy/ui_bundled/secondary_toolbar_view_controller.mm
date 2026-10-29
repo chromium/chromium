@@ -76,16 +76,12 @@
 
   _locationIndicatorActive = locationIndicatorActive;
 
-  FullscreenModeTransitionTrigger trigger =
-      FullscreenModeTransitionTrigger::kForcedByCode;
-
   if (IsFullscreenRefactoringEnabled()) {
-    if (locationIndicatorActive) {
-      [self.fullscreenCommands enterFullscreenWithTrigger:trigger animated:YES];
-    } else {
-      [self.fullscreenCommands exitFullscreenWithTrigger:trigger animated:YES];
-    }
+    [self.fullscreenCommands forceFullscreen:locationIndicatorActive
+                                     feature:ForceFullscreenFeature::kKeyboard];
   } else if (_fullscreenController) {
+    FullscreenModeTransitionTrigger trigger =
+        FullscreenModeTransitionTrigger::kForcedByCode;
     if (locationIndicatorActive) {
       _fullscreenController->EnterForceFullscreenMode(
           /* insets_update_enabled */ false, trigger);

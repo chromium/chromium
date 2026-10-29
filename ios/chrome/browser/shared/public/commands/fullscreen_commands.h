@@ -17,8 +17,9 @@ enum class ForceFullscreenFeature {
   kFindInPage,
   kLensOverlay,
   kAssistant,
+  kKeyboard,
   // Upper boundary for base::EnumSet. Must be updated when adding new features.
-  kMaxValue = kAssistant,
+  kMaxValue = kKeyboard,
 };
 
 // Protocol for commands that control the fullscreen state.

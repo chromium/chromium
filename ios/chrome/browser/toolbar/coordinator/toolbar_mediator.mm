@@ -539,7 +539,11 @@
   if (!_browserLayoutState) {
     return;
   }
-  [self.consumer setHasOmnibox:[self hasOmnibox]];
+  BOOL hasOmnibox = [self hasOmnibox];
+  if (!hasOmnibox && _locationBarIndicatorActive) {
+    [self constraintToKeyboard:NO withNotification:nil];
+  }
+  [self.consumer setHasOmnibox:hasOmnibox];
 }
 
 // Synchronizes the consumer state with the active WebState and WebStateList.
@@ -559,14 +563,15 @@
 // `constraintToKeyboard`, the toolbar is collapsed above the keyboard.
 - (void)constraintToKeyboard:(BOOL)shouldConstraintToKeyboard
             withNotification:(NSNotification*)notification {
-  if (_topPosition ||
-      _browserLayoutState.toolbarPosition != ToolbarPosition::kBottom) {
+  if (_topPosition) {
     return;
   }
 
   // Determine if the toolbar should currently be pinned above the keyboard.
   BOOL targetIndicatorActive =
-      shouldConstraintToKeyboard && [self keyboardIsActiveForWebContent];
+      shouldConstraintToKeyboard &&
+      _browserLayoutState.toolbarPosition == ToolbarPosition::kBottom &&
+      [self keyboardIsActiveForWebContent];
 
   // Early return if the indicator is inactive and should remain inactive.
   // If active, we continue so the UI consumer can process frame updates.
@@ -581,18 +586,13 @@
   // changing. This prevents continuous frame updates from looping the
   // animation.
   if (stateChanged) {
-    FullscreenModeTransitionTrigger trigger =
-        FullscreenModeTransitionTrigger::kForcedByCode;
-
     if (IsFullscreenRefactoringEnabled()) {
-      if (targetIndicatorActive) {
-        [self.fullscreenCommands enterFullscreenWithTrigger:trigger
-                                                   animated:YES];
-      } else {
-        [self.fullscreenCommands exitFullscreenWithTrigger:trigger
-                                                  animated:YES];
-      }
+      [self.fullscreenCommands
+          forceFullscreen:targetIndicatorActive
+                  feature:ForceFullscreenFeature::kKeyboard];
     } else if (_fullscreenController) {
+      FullscreenModeTransitionTrigger trigger =
+          FullscreenModeTransitionTrigger::kForcedByCode;
       if (targetIndicatorActive) {
         _fullscreenController->EnterForceFullscreenMode(
             /* insets_update_enabled= */ false, trigger);
