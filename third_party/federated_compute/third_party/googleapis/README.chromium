@@ -1,7 +1,7 @@
 Name: googleapis
 URL: https://github.com/googleapis/googleapis
 Version: N/A
-Revision: f5cb7afc40b63d52f43bc306cb9b64a87b681aea
+Revision: 9fccd59571a6e436c9d36d3803b4006b02554561
 Update Mechanism: Manual
 License: Apache-2.0
 License File: src/LICENSE

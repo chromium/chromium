@@ -1,9 +1,9 @@
 upstream {
-  commit: "f5cb7afc40b63d52f43bc306cb9b64a87b681aea"
+  commit: "9fccd59571a6e436c9d36d3803b4006b02554561"
   artifacts {
     git {
       repository: "https://chromium.googlesource.com/external/github.com/googleapis/googleapis"
-      commit: "f5cb7afc40b63d52f43bc306cb9b64a87b681aea"
+      commit: "9fccd59571a6e436c9d36d3803b4006b02554561"
     }
   }
 }
@@ -12,4 +12,10 @@ stages {
     patch { copybara {} }
   }
   publish { git {} }
+}
+latest {
+  git {
+    repository: "https://chromium.googlesource.com/external/github.com/googleapis/googleapis"
+    branch: "HEAD"
+  }
 }
