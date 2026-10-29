@@ -1960,6 +1960,10 @@ fyi_mac_builder(
         category = "mac",
         short_name = "bld",
     ),
+    experiments = {
+        "luci.buildbucket.run_in_turboci": 100,
+        "luci.buildbucket.run_in_turboci.grpc_client": 100,
+    },
 )
 
 fyi_mac_builder(
