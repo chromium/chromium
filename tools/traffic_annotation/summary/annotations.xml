@@ -509,7 +509,7 @@ Refer to README.md for content description and update process.
  <item id="chrome_sync_preview_fetcher" added_in_milestone="150" content_hash_code="00f0ed15" os_list="linux,windows,chromeos,android" file_path="components/signin/core/browser/account_preview_data_fetcher.cc" />
  <item id="drive_thumbnail_source" added_in_milestone="150" content_hash_code="069212a2" os_list="linux,windows,android,chromeos" file_path="chrome/browser/ui/webui/sanitized_image/sanitized_image_source.cc" />
  <item id="partial_translate_one_platform" added_in_milestone="150" content_hash_code="0356ccc0" os_list="linux,windows,android,chromeos" file_path="components/translate/content/browser/contextual_translate_delegate.cc" />
- <item id="contextual_search_fpop_service" added_in_milestone="150" content_hash_code="07a1f58b" os_list="linux,windows,android,chromeos" file_path="components/contextual_search/footprints/internal/fpop_service_impl.cc" />
+ <item id="contextual_search_fpop_service" added_in_milestone="150" content_hash_code="055549dc" os_list="linux,windows,android,chromeos" file_path="components/contextual_search/footprints/internal/fpop_service_impl.cc" />
  <item id="web_install_manifest_fetcher" added_in_milestone="151" content_hash_code="0593db17" os_list="linux,windows,chromeos" file_path="chrome/browser/web_applications/web_install_manifest_fetcher.cc" />
  <item id="private_insights_fcp_http" added_in_milestone="151" content_hash_code="05f37c08" os_list="windows,android,chromeos,linux" file_path="components/private_insights/fcp_http_client.cc" />
  <item id="doodle_impression_android" added_in_milestone="152" content_hash_code="00cd483d" os_list="android" file_path="chrome/browser/ui/android/logo/logo_bridge.cc" />
