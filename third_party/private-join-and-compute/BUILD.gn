@@ -7,7 +7,10 @@ config("library_impl_config") {
 }
 
 config("private_join_and_compute_config") {
-  include_dirs = [ "//third_party/boringssl/src/include" ]
+  include_dirs = [
+    "src",
+    "//third_party/boringssl/src/include",
+  ]
   defines = []
   if (is_win) {
     defines += [ "PRIVATE_COMPUTE_WIN" ]
@@ -26,24 +29,24 @@ config("private_join_and_compute_config") {
 component("ec_commutative_cipher") {
   public = [
     "//third_party/private-join-and-compute/base/private_join_and_compute_export.h",
-    "src/crypto/big_num.h",
-    "src/crypto/context.h",
-    "src/crypto/ec_commutative_cipher.h",
-    "src/crypto/ec_group.h",
-    "src/crypto/ec_point.h",
-    "src/crypto/elgamal.h",
+    "src/private_join_and_compute/crypto/big_num.h",
+    "src/private_join_and_compute/crypto/context.h",
+    "src/private_join_and_compute/crypto/ec_commutative_cipher.h",
+    "src/private_join_and_compute/crypto/ec_group.h",
+    "src/private_join_and_compute/crypto/ec_point.h",
+    "src/private_join_and_compute/crypto/elgamal.h",
   ]
   sources = [
     "chromium_patch.h",
-    "src/crypto/big_num.cc",
-    "src/crypto/context.cc",
-    "src/crypto/ec_commutative_cipher.cc",
-    "src/crypto/ec_group.cc",
-    "src/crypto/ec_point.cc",
-    "src/crypto/elgamal.cc",
-    "src/crypto/openssl.inc",
-    "src/util/status.inc",
-    "src/util/status_macros.h",
+    "src/private_join_and_compute/crypto/big_num.cc",
+    "src/private_join_and_compute/crypto/context.cc",
+    "src/private_join_and_compute/crypto/ec_commutative_cipher.cc",
+    "src/private_join_and_compute/crypto/ec_group.cc",
+    "src/private_join_and_compute/crypto/ec_point.cc",
+    "src/private_join_and_compute/crypto/elgamal.cc",
+    "src/private_join_and_compute/crypto/openssl.inc",
+    "src/private_join_and_compute/util/status.inc",
+    "src/private_join_and_compute/util/status_macros.h",
     "util/canonical_errors.cc",
     "util/canonical_errors.h",
     "util/status.h",

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "third_party/private-join-and-compute/src/crypto/big_num.h"
+#include "private_join_and_compute/crypto/big_num.h"
 
 #include <cmath>
 #include <cstdint>
@@ -23,9 +23,9 @@
 #include "third_party/abseil-cpp/absl/strings/str_cat.h"
 #include "third_party/abseil-cpp/absl/strings/string_view.h"
 #include "third_party/private-join-and-compute/chromium_patch.h"
-#include "third_party/private-join-and-compute/src/crypto/context.h"
-#include "third_party/private-join-and-compute/src/crypto/openssl.inc"
-#include "third_party/private-join-and-compute/src/util/status.inc"
+#include "private_join_and_compute/crypto/context.h"
+#include "private_join_and_compute/crypto/openssl.inc"
+#include "private_join_and_compute/util/status.inc"
 
 namespace private_join_and_compute {
 

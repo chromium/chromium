@@ -40,9 +40,9 @@
 #include <utility>
 #include <vector>
 
-#include "third_party/private-join-and-compute/src/crypto/ec_group.h"
-#include "third_party/private-join-and-compute/src/crypto/ec_point.h"
-#include "third_party/private-join-and-compute/src/util/status.inc"
+#include "private_join_and_compute/crypto/ec_group.h"
+#include "private_join_and_compute/crypto/ec_point.h"
+#include "private_join_and_compute/util/status.inc"
 
 namespace private_join_and_compute {
 

@@ -17,8 +17,8 @@
 
 #include <string>
 
-#include "third_party/private-join-and-compute/src/crypto/context.h"
-#include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
+#include "third_party/private-join-and-compute/src/private_join_and_compute/crypto/context.h"
+#include "third_party/private-join-and-compute/src/private_join_and_compute/crypto/ec_commutative_cipher.h"
 #include "third_party/private_membership/src/private_membership.pb.h"
 #include "third_party/private_membership/base/private_membership_export.h"
 #include "absl/strings/string_view.h"

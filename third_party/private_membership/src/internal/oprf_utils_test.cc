@@ -14,7 +14,7 @@
 
 #include "third_party/private_membership/src/internal/oprf_utils.h"
 
-#include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
+#include "third_party/private-join-and-compute/src/private_join_and_compute/crypto/ec_commutative_cipher.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include "third_party/shell-encryption/src/testing/status_matchers.h"

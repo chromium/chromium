@@ -407,7 +407,7 @@ index 8132e66a2b048..48590d7070890 100644
  namespace private_membership {
  namespace {
 diff --git a/third_party/private_membership/src/internal/crypto_utils.h b/third_party/private_membership/src/internal/crypto_utils.h
-index 1d65ae3929649..772d38ba0571d 100644
+index 1d65ae3929649..449462674ca21 100644
 --- a/third_party/private_membership/src/internal/crypto_utils.h
 +++ b/third_party/private_membership/src/internal/crypto_utils.h
 @@ -12,17 +12,17 @@
@@ -425,8 +425,8 @@ index 1d65ae3929649..772d38ba0571d 100644
 -#include "private_join_and_compute/crypto/ec_commutative_cipher.h"
 -#include "private_membership/rlwe/client/proto/private_membership.pb.h"
 -#include "private_membership/rlwe/client/cpp/open_source/chromium/private_membership_export.h"
-+#include "third_party/private-join-and-compute/src/crypto/context.h"
-+#include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
++#include "third_party/private-join-and-compute/src/private_join_and_compute/crypto/context.h"
++#include "third_party/private-join-and-compute/src/private_join_and_compute/crypto/ec_commutative_cipher.h"
 +#include "third_party/private_membership/src/private_membership.pb.h"
 +#include "third_party/private_membership/base/private_membership_export.h"
  #include "absl/strings/string_view.h"
@@ -494,7 +494,7 @@ index 3f840f7295951..e48fa7dafca5a 100644
  namespace private_membership {
  namespace rlwe {
 diff --git a/third_party/private_membership/src/internal/encrypted_bucket_id.h b/third_party/private_membership/src/internal/encrypted_bucket_id.h
-index 5502b99c0d4dc..6543210e3d347 100644
+index 5502b99c0d4dc..11b52c2a2de08 100644
 --- a/third_party/private_membership/src/internal/encrypted_bucket_id.h
 +++ b/third_party/private_membership/src/internal/encrypted_bucket_id.h
 @@ -12,17 +12,17 @@
@@ -511,7 +511,7 @@ index 5502b99c0d4dc..6543210e3d347 100644
 -#include "private_join_and_compute/crypto/ec_commutative_cipher.h"
 -#include "private_membership/rlwe/client/cpp/open_source/chromium/private_membership_export.h"
 -#include "private_membership/rlwe/client/proto/private_membership_rlwe.pb.h"
-+#include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
++#include "third_party/private-join-and-compute/src/private_join_and_compute/crypto/ec_commutative_cipher.h"
 +#include "third_party/private_membership/base/private_membership_export.h"
 +#include "third_party/private_membership/src/private_membership_rlwe.pb.h"
  #include "absl/hash/hash.h"
@@ -585,7 +585,7 @@ index 1e584d6618565..66a65674fb7ed 100644
  namespace private_membership {
  namespace rlwe {
 diff --git a/third_party/private_membership/src/internal/hashed_bucket_id.h b/third_party/private_membership/src/internal/hashed_bucket_id.h
-index 75b70f98eac83..db1805c7a0676 100644
+index 75b70f98eac83..c859964e087a9 100644
 --- a/third_party/private_membership/src/internal/hashed_bucket_id.h
 +++ b/third_party/private_membership/src/internal/hashed_bucket_id.h
 @@ -12,16 +12,16 @@
@@ -601,7 +601,7 @@ index 75b70f98eac83..db1805c7a0676 100644
  
 -#include "private_join_and_compute/crypto/ec_commutative_cipher.h"
 -#include "private_membership/rlwe/client/proto/private_membership_rlwe.pb.h"
-+#include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
++#include "third_party/private-join-and-compute/src/private_join_and_compute/crypto/ec_commutative_cipher.h"
 +#include "third_party/private_membership/src/private_membership_rlwe.pb.h"
  #include "absl/hash/hash.h"
  #include "absl/strings/string_view.h"
@@ -716,7 +716,7 @@ index a377c878ded45..008510c34e7ea 100644
  namespace private_membership {
  
 diff --git a/third_party/private_membership/src/internal/oprf_utils.h b/third_party/private_membership/src/internal/oprf_utils.h
-index 98c3c3c36b2b3..9998acade6b25 100644
+index 98c3c3c36b2b3..ed5d7fc12dc6e 100644
 --- a/third_party/private_membership/src/internal/oprf_utils.h
 +++ b/third_party/private_membership/src/internal/oprf_utils.h
 @@ -12,13 +12,13 @@
@@ -732,7 +732,7 @@ index 98c3c3c36b2b3..9998acade6b25 100644
 -#include "private_membership/rlwe/client/proto/private_membership.pb.h"
 -#include "private_membership/rlwe/client/cpp/open_source/chromium/private_membership_export.h"
 -#include "shell_encryption/statusor.h"
-+#include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
++#include "third_party/private-join-and-compute/src/private_join_and_compute/crypto/ec_commutative_cipher.h"
 +#include "third_party/private_membership/src/private_membership.pb.h"
 +#include "third_party/private_membership/base/private_membership_export.h"
 +#include "third_party/shell-encryption/src/statusor.h"
@@ -746,7 +746,7 @@ index 98c3c3c36b2b3..9998acade6b25 100644
 -#endif  // PRIVATE_MEMBERSHIP_RLWE_CLIENT_CPP_INTERNAL_OPRF_UTILS_H_
 +#endif  // THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_OPRF_UTILS_H_
 diff --git a/third_party/private_membership/src/internal/oprf_utils_test.cc b/third_party/private_membership/src/internal/oprf_utils_test.cc
-index a1c0cd7d6aeb5..695444d8e96d1 100644
+index a1c0cd7d6aeb5..c974173354ab7 100644
 --- a/third_party/private_membership/src/internal/oprf_utils_test.cc
 +++ b/third_party/private_membership/src/internal/oprf_utils_test.cc
 @@ -12,13 +12,13 @@
@@ -757,7 +757,7 @@ index a1c0cd7d6aeb5..695444d8e96d1 100644
 +#include "third_party/private_membership/src/internal/oprf_utils.h"
  
 -#include "private_join_and_compute/crypto/ec_commutative_cipher.h"
-+#include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
++#include "third_party/private-join-and-compute/src/private_join_and_compute/crypto/ec_commutative_cipher.h"
  #include <gmock/gmock.h>
  #include <gtest/gtest.h>
 -#include "shell_encryption/testing/status_matchers.h"
@@ -796,7 +796,7 @@ index 2c59cab0f83c6..551e637972dc3 100644
  namespace private_membership {
  namespace rlwe {
 diff --git a/third_party/private_membership/src/internal/rlwe_id_utils.h b/third_party/private_membership/src/internal/rlwe_id_utils.h
-index 6e519e72b4ead..6edf07555d1f8 100644
+index 6e519e72b4ead..e73df31bff711 100644
 --- a/third_party/private_membership/src/internal/rlwe_id_utils.h
 +++ b/third_party/private_membership/src/internal/rlwe_id_utils.h
 @@ -12,16 +12,16 @@
@@ -815,7 +815,7 @@ index 6e519e72b4ead..6edf07555d1f8 100644
 -#include "private_membership/rlwe/client/cpp/open_source/chromium/private_membership_export.h"
 -#include "private_membership/rlwe/client/proto/private_membership_rlwe.pb.h"
 -#include "shell_encryption/statusor.h"
-+#include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
++#include "third_party/private-join-and-compute/src/private_join_and_compute/crypto/ec_commutative_cipher.h"
 +#include "third_party/private_membership/src/private_membership.pb.h"
 +#include "third_party/private_membership/base/private_membership_export.h"
 +#include "third_party/private_membership/src/private_membership_rlwe.pb.h"
@@ -1107,7 +1107,7 @@ index ca04abc7fb070..39bc87ad8d02a 100644
 -#include "private_membership/rlwe/client/cpp/internal/rlwe_id_utils.h"
 -#include "private_membership/rlwe/client/cpp/internal/rlwe_params.h"
 -#include "private_membership/rlwe/client/cpp/internal/utils.h"
-+#include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
++#include "third_party/private-join-and-compute/src/private_join_and_compute/crypto/ec_commutative_cipher.h"
 +#include "third_party/private_membership/src/internal/crypto_utils.h"
 +#include "third_party/private_membership/src/private_membership.pb.h"
 +#include "third_party/private_membership/src/private_membership_rlwe.pb.h"
@@ -1155,7 +1155,7 @@ index a47ae95a4b273..d04b8086911c7 100644
 -#include "private_membership/rlwe/client/cpp/open_source/chromium/private_membership_export.h"
 -#include "private_membership/rlwe/client/proto/private_membership_rlwe.pb.h"
 -#include "private_membership/rlwe/client/cpp/internal/constants.h"
-+#include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
++#include "third_party/private-join-and-compute/src/private_join_and_compute/crypto/ec_commutative_cipher.h"
 +#include "third_party/private_membership/src/private_membership.pb.h"
 +#include "third_party/private_membership/base/private_membership_export.h"
 +#include "third_party/private_membership/src/private_membership_rlwe.pb.h"

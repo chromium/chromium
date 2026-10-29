@@ -15,7 +15,7 @@
 #ifndef THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_OPRF_UTILS_H_
 #define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_OPRF_UTILS_H_
 
-#include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
+#include "third_party/private-join-and-compute/src/private_join_and_compute/crypto/ec_commutative_cipher.h"
 #include "third_party/private_membership/src/private_membership.pb.h"
 #include "third_party/private_membership/base/private_membership_export.h"
 #include "third_party/shell-encryption/src/statusor.h"

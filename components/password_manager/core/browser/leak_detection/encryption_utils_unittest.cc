@@ -10,10 +10,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/private-join-and-compute/src/crypto/context.h"
-#include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
-#include "third_party/private-join-and-compute/src/crypto/ec_group.h"
-#include "third_party/private-join-and-compute/src/crypto/ec_point.h"
+#include "third_party/private-join-and-compute/src/private_join_and_compute/crypto/context.h"
+#include "third_party/private-join-and-compute/src/private_join_and_compute/crypto/ec_commutative_cipher.h"
+#include "third_party/private-join-and-compute/src/private_join_and_compute/crypto/ec_group.h"
+#include "third_party/private-join-and-compute/src/private_join_and_compute/crypto/ec_point.h"
 
 namespace password_manager {
 namespace {

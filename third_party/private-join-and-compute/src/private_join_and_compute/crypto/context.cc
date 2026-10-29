@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "third_party/private-join-and-compute/src/crypto/context.h"
+#include "private_join_and_compute/crypto/context.h"
 
 #include <cmath>
 #include <memory>

@@ -16,4 +16,4 @@
 #include "third_party/private-join-and-compute/util/canonical_errors.h"
 #include "third_party/private-join-and-compute/util/status.h"
 #include "third_party/private-join-and-compute/util/statusor.h"
-#include "third_party/private-join-and-compute/src/util/status_macros.h"
+#include "private_join_and_compute/util/status_macros.h"

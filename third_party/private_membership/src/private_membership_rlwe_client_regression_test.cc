@@ -7,7 +7,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include "absl/status/status.h"
-#include "third_party/private-join-and-compute/src/crypto/context.h"
+#include "third_party/private-join-and-compute/src/private_join_and_compute/crypto/context.h"
 #include "third_party/private_membership/src/internal/rlwe_id_utils.h"
 #include "third_party/shell-encryption/src/testing/status_testing.h"
 

@@ -7,7 +7,7 @@
 #include "base/compiler_specific.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
-#include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
+#include "third_party/private-join-and-compute/src/private_join_and_compute/crypto/ec_commutative_cipher.h"
 
 namespace password_manager {
 

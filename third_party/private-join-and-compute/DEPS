@@ -1,3 +1,7 @@
+include_rules = [
+  "+private_join_and_compute",
+]
+
 specific_include_rules = {
   "chromium_patch.h": [
     "+base",

@@ -24,8 +24,8 @@
 #include "third_party/abseil-cpp/absl/strings/string_view.h"
 #include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
 #include "third_party/private-join-and-compute/chromium_patch.h"
-#include "third_party/private-join-and-compute/src/crypto/big_num.h"
-#include "third_party/private-join-and-compute/src/crypto/openssl.inc"
+#include "private_join_and_compute/crypto/big_num.h"
+#include "private_join_and_compute/crypto/openssl.inc"
 
 #define CRYPTO_CHECK(expr) CHECK(expr) << OpenSSLErrorString();
 

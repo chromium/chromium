@@ -61,7 +61,7 @@ $ # Fix C++ includes.
 $ find src \( -name '*.h' -o -name '*.cc' \) -type f -print0 | xargs -0 sed -i 's/#include "private_membership\/rlwe\/client\/cpp/#include "third_party\/private_membership\/src/g'
 $ find src \( -name '*.h' -o -name '*.cc' \) -type f -print0 | xargs -0 sed -i 's/#include "private_membership\/rlwe\/client\/proto/#include "third_party\/private_membership\/src/g'
 $ find src \( -name '*.h' -o -name '*.cc' \) -type f -print0 | xargs -0 sed -i 's/#include "shell_encryption\//#include "third_party\/shell-encryption\/src\//g'
-$ find src \( -name '*.h' -o -name '*.cc' \) -type f -print0 | xargs -0 sed -i 's/#include "private_join_and_compute\//#include "third_party\/private-join-and-compute\/src\//g'
+$ find src \( -name '*.h' -o -name '*.cc' \) -type f -print0 | xargs -0 sed -i 's/#include "private_join_and_compute\//#include "third_party\/private-join-and-compute\/src\/private_join_and_compute\//g'
 $ find src \( -name '*.h' -o -name '*.cc' \) -type f -print0 | xargs -0 sed -i 's/#include "third_party\/private_membership\/src\/open_source\/chromium\/private_membership_export.h"/#include "third_party\/private_membership\/base\/private_membership_export.h"/g'
 $
 $ # Fix C++ header guards.
