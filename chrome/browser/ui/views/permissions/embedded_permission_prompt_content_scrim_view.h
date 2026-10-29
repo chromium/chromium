@@ -108,6 +108,8 @@ class EmbeddedPermissionPromptContentScrimView
                            ScrimRoundedCornersNonLoomnibox);
   FRIEND_TEST_ALL_PREFIXES(EmbeddedPermissionPromptInteractiveTest,
                            ScrimBoundsNonLoomnibox);
+  FRIEND_TEST_ALL_PREFIXES(EmbeddedPermissionPromptInteractiveTest,
+                           ScrimBoundsOmniboxPopupWithWebUIShadow);
 };
 
 // The concrete implementation of `permissions::PromptContentScrim` that creates

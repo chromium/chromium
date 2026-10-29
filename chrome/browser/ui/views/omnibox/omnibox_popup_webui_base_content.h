@@ -111,7 +111,7 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
 
   // True when the WebUI, rather than the Views frame, is responsible for
   // painting the popup's background, rounded corners and drop shadow.
-  bool ShouldDrawShadowInWebUI() const;
+  virtual bool ShouldDrawShadowInWebUI() const;
 
   bool is_full_webui_omnibox() const;
 

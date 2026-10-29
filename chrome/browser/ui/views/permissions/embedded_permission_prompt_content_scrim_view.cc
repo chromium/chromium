@@ -44,6 +44,22 @@ gfx::Rect EmbeddedPermissionPromptContentScrimView::GetScrimBounds(
   // by shrinking scrim by same amount.
   if (IsOmniboxEverywhere(web_contents)) {
     bounds.Inset(gfx::Insets(kOmniboxEverywherePadding));
+    return bounds;
+  }
+
+  if (views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(
+          web_contents.GetContentNativeView())) {
+    if (auto* rounded_frame = views::AsViewClass<RoundedOmniboxResultsFrame>(
+            widget->GetClientContentsView())) {
+      auto* omnibox_content = rounded_frame->GetOmniboxPopupWebUIBaseContent();
+      // When the WebUI omnibox popup paints its own drop shadow, the WebView
+      // spans the entire widget including the transparent shadow margin
+      // reserved as `body` padding (16px top/left/right, 28px bottom). Inset
+      // the scrim by the shadow insets so it only covers the popup surface.
+      if (omnibox_content && omnibox_content->ShouldDrawShadowInWebUI()) {
+        bounds.Inset(RoundedOmniboxResultsFrame::GetShadowInsets());
+      }
+    }
   }
   return bounds;
 }

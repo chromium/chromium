@@ -61,6 +61,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/views_switches.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget_deletion_observer.h"
@@ -1714,17 +1715,28 @@ namespace {
 class DummyOmniboxPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   METADATA_HEADER(DummyOmniboxPopupWebUIContent, OmniboxPopupWebUIBaseContent)
  public:
-  explicit DummyOmniboxPopupWebUIContent(LocationBar* location_bar)
+  explicit DummyOmniboxPopupWebUIContent(LocationBar* location_bar,
+                                         bool draw_shadow_in_webui = false)
       : OmniboxPopupWebUIBaseContent(nullptr,
                                      location_bar,
                                      nullptr,
-                                     /*top_rounded_corners=*/true) {}
+                                     /*top_rounded_corners=*/true),
+        draw_shadow_in_webui_(draw_shadow_in_webui) {}
 
   void Clear() override {}
   std::string_view GetMetricPrefix() const override { return "Dummy"; }
+  bool ShouldDrawShadowInWebUI() const override {
+    return draw_shadow_in_webui_;
+  }
+  void set_draw_shadow_in_webui(bool draw_shadow_in_webui) {
+    draw_shadow_in_webui_ = draw_shadow_in_webui;
+  }
 
  protected:
   void OnContextMenuClosed() override {}
+
+ private:
+  bool draw_shadow_in_webui_ = false;
 };
 
 BEGIN_METADATA(DummyOmniboxPopupWebUIContent)
@@ -1820,6 +1832,76 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
   EXPECT_FALSE(scrim_view->layer()->fills_bounds_opaquely());
   EXPECT_EQ(scrim_view->layer()->rounded_corner_radii(),
             omnibox_content->GetRoundedCornerRadii());
+
+  omnibox_content->SetWebContents(nullptr);
+  views::WidgetDeletionObserver deletion_observer(widget.get());
+  widget.reset();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !deletion_observer.IsWidgetAlive(); }));
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       ScrimBoundsOmniboxPopupWithWebUIShadow) {
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.context = browser()->GetWindow()->GetNativeWindow();
+  auto widget = std::make_unique<views::Widget>();
+  widget->Init(std::move(params));
+  widget->SetBounds(gfx::Rect(100, 100, 800, 600));
+
+  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto* location_bar = browser_view->toolbar()->location_bar();
+
+  auto container = std::make_unique<views::View>();
+  container->SetUseDefaultFillLayout(true);
+  auto* omnibox_content =
+      container->AddChildView(std::make_unique<DummyOmniboxPopupWebUIContent>(
+          location_bar, /*draw_shadow_in_webui=*/true));
+
+  auto rounded_frame = std::make_unique<RoundedOmniboxResultsFrame>(
+      container.release(), location_bar, /*forward_mouse_events=*/false);
+
+  widget->SetContentsView(std::move(rounded_frame));
+  widget->Show();
+
+  std::unique_ptr<content::WebContents> test_web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->GetProfile()));
+  ASSERT_TRUE(
+      content::NavigateToURL(test_web_contents.get(), GURL("about:blank")));
+
+  omnibox_content->SetWebContents(test_web_contents.get());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return views::Widget::GetTopLevelWidgetForNativeView(
+               test_web_contents->GetContentNativeView()) == widget.get();
+  }));
+  // Attaching the WebContents only schedules an asynchronous layout, so its
+  // native view may still be unsized here. Run the layout so that the
+  // container bounds reflect the WebView's bounds before they are read.
+  views::test::RunScheduledLayout(widget.get());
+
+  gfx::Rect container_bounds = test_web_contents->GetContainerBounds();
+  ASSERT_FALSE(container_bounds.IsEmpty());
+  gfx::Rect scrim_bounds =
+      EmbeddedPermissionPromptContentScrimView::GetScrimBounds(
+          *test_web_contents);
+
+  const gfx::Insets shadow_insets =
+      RoundedOmniboxResultsFrame::GetShadowInsets();
+  EXPECT_EQ(scrim_bounds.x(), container_bounds.x() + shadow_insets.left());
+  EXPECT_EQ(scrim_bounds.y(), container_bounds.y() + shadow_insets.top());
+  EXPECT_EQ(scrim_bounds.width(),
+            container_bounds.width() - shadow_insets.width());
+  EXPECT_EQ(scrim_bounds.height(),
+            container_bounds.height() - shadow_insets.height());
+
+  // When WebUI shadow is disabled, the frame border already insets the
+  // WebContents container, so GetScrimBounds should not inset again.
+  omnibox_content->set_draw_shadow_in_webui(false);
+  EXPECT_EQ(EmbeddedPermissionPromptContentScrimView::GetScrimBounds(
+                *test_web_contents),
+            container_bounds);
 
   omnibox_content->SetWebContents(nullptr);
   views::WidgetDeletionObserver deletion_observer(widget.get());
