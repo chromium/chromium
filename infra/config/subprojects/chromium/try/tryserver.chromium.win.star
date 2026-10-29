@@ -610,7 +610,7 @@ shared_gpu.try_.win_optional_builder(
     # default is 6 for GPU optional builders.
     execution_timeout = 5 * time.hour,
     experiments = {
-        "luci.buildbucket.run_in_turboci": 50,
+        "luci.buildbucket.run_in_turboci": 100,
         "luci.buildbucket.run_in_turboci.grpc_client": 100,
     },
     main_list_view = "try",
@@ -644,7 +644,7 @@ shared_gpu.try_.win_optional_builder(
     # default is 6 for GPU optional builders.
     execution_timeout = 5 * time.hour,
     experiments = {
-        "luci.buildbucket.run_in_turboci": 25,
+        "luci.buildbucket.run_in_turboci": 100,
         "luci.buildbucket.run_in_turboci.grpc_client": 100,
     },
     main_list_view = "try",
