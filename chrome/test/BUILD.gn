@@ -3700,18 +3700,6 @@ if (!is_android) {
       "//ui/views/interaction/mouse:test_support",
     ]
 
-    deps = [
-      "//chrome/browser/autofill",
-      "//chrome/browser/autofill:test_support",
-      "//chrome/browser/ui/views/autofill/payments:card_unmask_prompt_views",
-      "//chrome/browser/ui/views/frame:browser_view_header",
-      "//chrome/browser/ui/views/toolbar",
-      "//chrome/test/data/webui:resources",
-      "//components/captive_portal/core:buildflags",
-      "//extensions/buildflags",
-      "//printing/buildflags",
-    ]
-
     if (is_mac) {
       public_deps += [ "//chrome/test/base:test_utils_mac" ]
     }
