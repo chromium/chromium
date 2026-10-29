@@ -66,6 +66,7 @@ fuzzable_proto_library("optimization_guide_proto") {
     "features/updater_chat.proto",
     "features/walletable_pass_extraction.proto",
     "features/wallpaper_search.proto",
+    "features/wire/tool_declaration.proto",
     "features/writing_assistance_api.proto",
     "features/zero_state_suggestions.proto",
     "fieldwise_parser_config.proto",

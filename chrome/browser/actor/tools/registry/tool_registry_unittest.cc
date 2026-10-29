@@ -48,6 +48,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/optimization_guide/proto/features/wire/tool_declaration.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1120,6 +1121,20 @@ TEST(ToolRegistryCompletenessTest, AllRegisteredToolsRoundTripById) {
     SCOPED_TRACE(tool.name);
     EXPECT_EQ(registry.GetToolsByIds({tool.id}),
               std::vector<const ToolDefinition*>{&tool});
+  }
+}
+
+TEST(ToolRegistryCompletenessTest, AllRegisteredToolsConvertToProto) {
+  ToolRegistry registry;
+  for (const ToolDefinition& tool : registry.GetAllTools()) {
+    SCOPED_TRACE(tool.name);
+    optimization_guide::proto::ToolDeclaration proto = tool.ToProto();
+    EXPECT_EQ(proto.name(), tool.name);
+    EXPECT_EQ(proto.description(), tool.description);
+    const base::DictValue* properties =
+        tool.parameters_json_schema.FindDict("properties");
+    ASSERT_TRUE(properties);
+    EXPECT_EQ(proto.has_parameters_json_schema(), !properties->empty());
   }
 }
 

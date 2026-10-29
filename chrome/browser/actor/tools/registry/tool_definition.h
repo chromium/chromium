@@ -9,6 +9,10 @@
 
 #include "base/values.h"
 
+namespace optimization_guide::proto {
+class ToolDeclaration;
+}  // namespace optimization_guide::proto
+
 namespace actor {
 
 // Identifier for each shared browser tool in ActorKeyedService.
@@ -119,6 +123,11 @@ struct ToolDefinition {
   // Needed to make a copy of `ToolDefinition`, because `base::DictValue` is
   // move-only.
   ToolDefinition Clone() const;
+
+  // Converts this definition to a `ToolDeclaration` wire proto. Serializes
+  // `parameters_json_schema` as compact JSON when it declares at least one
+  // parameter under `"properties"`; omits it for parameterless tools.
+  optimization_guide::proto::ToolDeclaration ToProto() const;
 
   // Chrome-internal identifier for this tool.
   ToolId id;
