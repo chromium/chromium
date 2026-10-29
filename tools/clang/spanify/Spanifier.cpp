@@ -2972,6 +2972,20 @@ bool IsRewrittenToStringView(const clang::DeclaratorDecl* array_decl,
   return element_type.isConstant(ast_context) || IsConstexpr(array_decl);
 }
 
+// Returns true if any dimension of `type` is 0, as in the GNU zero-length
+// arrays `int data[0]` and `int m[2][0]`. A dependent size is not known here.
+bool HasZeroLengthDimension(clang::QualType type,
+                            const clang::ASTContext& ast_context) {
+  while (const clang::ConstantArrayType* constant_array =
+             ast_context.getAsConstantArrayType(type)) {
+    if (constant_array->getSize().isZero()) {
+      return true;
+    }
+    type = constant_array->getElementType();
+  }
+  return false;
+}
+
 bool IsInlineVarDecl(const clang::DeclaratorDecl* decl) {
   if (const auto* var_decl = clang::dyn_cast_or_null<clang::VarDecl>(decl)) {
     return var_decl->isInlineSpecified();
@@ -3070,6 +3084,16 @@ std::string getNodeFromArrayDecl(const clang::TypeLoc* type_loc,
       clang::SourceRange(array_decl->getBeginLoc(), array_decl->getBeginLoc()),
       *result.SourceManager);
   EmitSink(proxy_node);
+
+  // A zero-length (GNU) or unsized (`int data[]`) array has no size, and
+  // `std::array<T, 0>` isn't empty. Exclude everything that would get its size
+  // from it.
+  // Tests are in: tests/chrome/zero-length-array-original.cc
+  if (HasZeroLengthDimension(array_decl->getType(), ast_context) ||
+      ast_context.getAsIncompleteArrayType(array_decl->getType())) {
+    EmitExclusion(proxy_node);
+  }
+
   if (!result.Nodes.getNodeAs<clang::Expr>("unsafe_buffer_access")) {
     // Early return to avoid uselessly determining the array replacement.
     return proxy_node;
