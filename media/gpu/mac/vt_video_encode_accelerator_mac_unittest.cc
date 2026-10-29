@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -149,7 +150,17 @@ class TestVEAClient : public BaseTestVEAClient {
     if (bitstream_ready_cb_) {
       std::move(bitstream_ready_cb_).Run();
     }
+    // VideoToolbox reports kOutOfPlatformEncoders when no hardware encoder is
+    // available right now, e.g. on busy CQ bots. Tests skip in that case.
+    if (status.code() == EncoderStatus::Codes::kOutOfPlatformEncoders) {
+      platform_encoder_unavailable_ = true;
+      return;
+    }
     FAIL() << "Unexpected encoder error: " << status.message();
+  }
+
+  bool platform_encoder_unavailable() const {
+    return platform_encoder_unavailable_;
   }
 
   void DetachEncoder() { encoder_ = nullptr; }
@@ -173,6 +184,7 @@ class TestVEAClient : public BaseTestVEAClient {
   int32_t next_buffer_id_ = 0;
   size_t bitstream_buffer_count_ = 0;
   size_t keyframe_count_ = 0;
+  bool platform_encoder_unavailable_ = false;
   std::optional<BitstreamBufferMetadata> last_metadata_;
   std::map<int32_t, base::WritableSharedMemoryMapping> mappings_;
 };
@@ -234,6 +246,7 @@ class TestIOSurfaceBacking : public gpu::SharedImageBacking {
                        viz::SharedImageFormat format,
                        const gfx::Size& size,
                        gfx::ScopedIOSurface io_surface,
+                       base::OnceClosure representation_produced_cb,
                        base::OnceClosure representation_destroyed_cb)
       : gpu::SharedImageBacking(
             mailbox,
@@ -247,6 +260,7 @@ class TestIOSurfaceBacking : public gpu::SharedImageBacking {
             format.EstimatedSizeInBytes(size),
             /*is_thread_safe=*/true),
         io_surface_(std::move(io_surface)),
+        representation_produced_cb_(std::move(representation_produced_cb)),
         representation_destroyed_cb_(std::move(representation_destroyed_cb)) {}
 
   gpu::SharedImageBackingType GetType() const override {
@@ -260,6 +274,9 @@ class TestIOSurfaceBacking : public gpu::SharedImageBacking {
   std::unique_ptr<gpu::OverlayImageRepresentation> ProduceOverlay(
       gpu::SharedImageManager* manager,
       gpu::MemoryTypeTracker* tracker) override {
+    if (representation_produced_cb_) {
+      std::move(representation_produced_cb_).Run();
+    }
     return std::make_unique<TestOverlayImageRepresentation>(
         manager, this, tracker, io_surface_,
         std::move(representation_destroyed_cb_));
@@ -267,6 +284,7 @@ class TestIOSurfaceBacking : public gpu::SharedImageBacking {
 
  private:
   gfx::ScopedIOSurface io_surface_;
+  base::OnceClosure representation_produced_cb_;
   base::OnceClosure representation_destroyed_cb_;
 };
 
@@ -529,17 +547,26 @@ std::vector<VideoCodecProfile> GetTestEncodeCodecProfiles(
 // Flush() calls VTCompressionSessionCompleteFrames() which forces the pending
 // frame out, and its callback only runs once every output has been returned to
 // the client, so quitting on either signal is safe.
-void EncodeKeyFrameAndWaitForOutput(VideoEncodeAccelerator* encoder,
-                                    scoped_refptr<VideoFrame> frame,
-                                    base::RunLoop& encode_loop) {
+//
+// Returns false if VideoToolbox reported that no hardware encoder is available
+// right now (kOutOfPlatformEncoders); the caller should then skip the test.
+[[nodiscard]] bool EncodeKeyFrameAndWaitForOutput(
+    VideoEncodeAccelerator* encoder,
+    scoped_refptr<VideoFrame> frame,
+    base::RunLoop& encode_loop,
+    const TestVEAClient& client) {
   encoder->Encode(std::move(frame), /*force_keyframe=*/true);
   encoder->Flush(base::BindOnce(
-      [](base::OnceClosure quit_closure, bool success) {
-        EXPECT_TRUE(success);
+      [](const TestVEAClient* client, base::OnceClosure quit_closure,
+         bool success) {
+        if (!client->platform_encoder_unavailable()) {
+          EXPECT_TRUE(success);
+        }
         std::move(quit_closure).Run();
       },
-      encode_loop.QuitClosure()));
+      base::Unretained(&client), encode_loop.QuitClosure()));
   encode_loop.Run();
+  return !client.platform_encoder_unavailable();
 }
 
 }  // namespace
@@ -609,8 +636,10 @@ TEST(VTVideoEncodeAcceleratorTest, EncodeCameraCaptureNv12Frame) {
     EXPECT_EQ(frame->storage_type(), VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE);
     EXPECT_TRUE(frame->HasMappableSharedImage());
 
-    EncodeKeyFrameAndWaitForOutput(encoder.get(), std::move(frame),
-                                   encode_loop);
+    if (!EncodeKeyFrameAndWaitForOutput(encoder.get(), std::move(frame),
+                                        encode_loop, client)) {
+      GTEST_SKIP() << "VideoToolbox encoder is not available now";
+    }
 
     // Verify that the camera frame was encoded into a valid keyframe bitstream.
     EXPECT_EQ(client.bitstream_buffer_count(), 1u);
@@ -702,11 +731,15 @@ TEST(VTVideoEncodeAcceleratorTest, EncodeOpaqueSharedImageRgbFrames) {
                        gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
       auto shared_image = gpu::ClientSharedImage::CreateForTesting(metadata);
 
+      bool representation_produced = false;
       base::RunLoop destroy_loop;
       gpu::MemoryTypeTracker tracker(nullptr);
       auto backing = std::make_unique<TestIOSurfaceBacking>(
           shared_image->mailbox(), viz::SinglePlaneFormat::kBGRA_8888,
-          frame_size, std::move(io_surface), destroy_loop.QuitClosure());
+          frame_size, std::move(io_surface),
+          base::BindLambdaForTesting(
+              [&representation_produced] { representation_produced = true; }),
+          destroy_loop.QuitClosure());
       auto factory_ref =
           shared_image_manager.Register(std::move(backing), &tracker);
 
@@ -719,27 +752,44 @@ TEST(VTVideoEncodeAcceleratorTest, EncodeOpaqueSharedImageRgbFrames) {
       EXPECT_TRUE(frame->HasSharedImage());
       EXPECT_FALSE(frame->HasMappableSharedImage());
 
-      EncodeKeyFrameAndWaitForOutput(encoder.get(), std::move(frame),
-                                     encode_loop);
+      const bool encoder_available = EncodeKeyFrameAndWaitForOutput(
+          encoder.get(), std::move(frame), encode_loop, client);
 
-      // Verify that the opaque RGB frame was encoded into a valid keyframe
-      // bitstream, and that sRGB input is converted and tagged as BT.709.
-      EXPECT_EQ(client.bitstream_buffer_count(), 1u);
-      EXPECT_EQ(client.keyframe_count(), 1u);
-      ASSERT_TRUE(client.last_metadata().has_value());
-      EXPECT_EQ(client.last_metadata()->encoded_color_space,
-                gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
-                                gfx::ColorSpace::TransferID::BT709_APPLE,
-                                gfx::ColorSpace::MatrixID::BT709,
-                                gfx::ColorSpace::RangeID::FULL));
-      EXPECT_FALSE(client.last_status().has_value());
+      if (encoder_available) {
+        // Verify that the opaque RGB frame was encoded into a valid keyframe
+        // bitstream, and that sRGB input is converted and tagged as BT.709.
+        EXPECT_EQ(client.bitstream_buffer_count(), 1u);
+        EXPECT_EQ(client.keyframe_count(), 1u);
+        EXPECT_TRUE(client.last_metadata().has_value());
+        if (client.last_metadata().has_value()) {
+          EXPECT_EQ(client.last_metadata()->encoded_color_space,
+                    gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
+                                    gfx::ColorSpace::TransferID::BT709_APPLE,
+                                    gfx::ColorSpace::MatrixID::BT709,
+                                    gfx::ColorSpace::RangeID::FULL));
+        }
+        EXPECT_FALSE(client.last_status().has_value());
+      }
 
+      // Always release the encoder and wait for it to release the SharedImage
+      // representation before `shared_image_manager` goes out of scope, also
+      // when encoding failed: SharedImageManager DCHECKs that no
+      // representation outlives it.
       client.DetachEncoder();
       encoder.reset();
-      // Verify that destroying the encoder releases the SharedImage
-      // representation, allowing the backing to be cleanly destroyed.
-      destroy_loop.Run();
+      if (encoder_available) {
+        EXPECT_TRUE(representation_produced);
+      }
+      if (representation_produced) {
+        // Verify that destroying the encoder releases the SharedImage
+        // representation, allowing the backing to be cleanly destroyed.
+        destroy_loop.Run();
+      }
       factory_ref.reset();
+
+      if (!encoder_available) {
+        GTEST_SKIP() << "VideoToolbox encoder is not available now";
+      }
     }
   }
 }

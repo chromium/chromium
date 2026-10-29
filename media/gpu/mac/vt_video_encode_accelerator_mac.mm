@@ -1462,9 +1462,21 @@ void VTVideoEncodeAccelerator::MaybeFinishFlush() {
     OSStatus status = VTCompressionSessionCompleteFrames(
         compression_session_.get(), kCMTimeInvalid);
     if (status != noErr) {
-      OSSTATUS_DLOG(ERROR, status)
-          << " VTCompressionSessionCompleteFrames failed: ";
-      std::move(pending_flush_cb_).Run(/*success=*/false);
+      // Report the failure reason before failing the flush, matching
+      // CompressionCallbackTask(). NotifyErrorStatus() may synchronously
+      // destroy this object, so take ownership of the callback first.
+      auto flush_cb = std::move(pending_flush_cb_);
+      if (status == kVTVideoEncoderNotAvailableNowErr ||
+          status == kVTCouldNotCreateInstanceErr) {
+        NotifyErrorStatus({EncoderStatus::Codes::kOutOfPlatformEncoders,
+                           "No more encoders available. " +
+                               logging::DescriptionFromOSStatus(status)});
+      } else {
+        NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedFlush,
+                           "VTCompressionSessionCompleteFrames failed: " +
+                               logging::DescriptionFromOSStatus(status)});
+      }
+      std::move(flush_cb).Run(/*success=*/false);
       return;
     }
     flush_complete_frames_issued_ = true;
