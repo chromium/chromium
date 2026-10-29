@@ -85,6 +85,7 @@ class FindsTabHelper;
 
 namespace glic {
 class ContextualCueingHelper;
+class GlicGeminiWebWarmingObserver;
 class GlicInstanceHelper;
 class GlicMarketingPageTabHelper;
 class GlicSidePanelCoordinator;
@@ -284,6 +285,8 @@ class TabFeatures {
   std::unique_ptr<tabs::PageContextEligibilityHelper>
       page_context_eligibility_helper_;
   std::unique_ptr<glic::GlicInstanceHelper> glic_instance_helper_;
+  std::unique_ptr<glic::GlicGeminiWebWarmingObserver>
+      glic_gemini_web_warming_observer_;
   std::unique_ptr<glic::GlicMarketingPageTabHelper>
       glic_marketing_page_tab_helper_;
   std::unique_ptr<glic::GlicSidePanelCoordinator> glic_side_panel_coordinator_;

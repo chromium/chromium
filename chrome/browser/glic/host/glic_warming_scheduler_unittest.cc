@@ -248,5 +248,31 @@ TEST_F(GlicWarmingSchedulerTest,
   EXPECT_FALSE(future.IsReady());
 }
 
+TEST_F(GlicWarmingSchedulerTest, ScheduleWhileAlreadyScheduledCoalesces) {
+  base::HistogramTester histogram_tester;
+  GlicWarmingScheduler::Options options{
+      .use_performance_manager = false,
+      .delay = base::Seconds(20),
+  };
+  GlicWarmingScheduler scheduler(options);
+
+  base::test::TestFuture<void> future1;
+  base::test::TestFuture<void> future2;
+  scheduler.Schedule(future1.GetCallback());
+  task_environment_.FastForwardBy(base::Seconds(10));
+  scheduler.Schedule(future2.GetCallback());
+
+  EXPECT_TRUE(scheduler.IsScheduled());
+  EXPECT_FALSE(future1.IsReady());
+  EXPECT_FALSE(future2.IsReady());
+  histogram_tester.ExpectUniqueSample("Glic.WarmingScheduler.SchedulingMethod",
+                                      SchedulingMethod::kFixedDelay, 1);
+
+  task_environment_.FastForwardBy(base::Seconds(10));
+  EXPECT_TRUE(future1.Wait());
+  EXPECT_FALSE(future2.IsReady());
+  EXPECT_FALSE(scheduler.IsScheduled());
+}
+
 }  // namespace
 }  // namespace glic

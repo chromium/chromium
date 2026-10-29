@@ -53,7 +53,8 @@ class GlicWebContentsWarmingPool : public ProfileObserver {
     kIph = 5,                     // Preloaded when Gemini IPH is shown.
     kMemoryPressureRecovery = 6,  // Preloaded when memory pressure subsides.
     kSelectionOverlay = 7,        // Preloaded when selection overlay is shown.
-    kMaxValue = kSelectionOverlay,
+    kGeminiWeb = 8,               // Preloaded when Gemini Web is opened.
+    kMaxValue = kGeminiWeb,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicContainerCreationReason)
 

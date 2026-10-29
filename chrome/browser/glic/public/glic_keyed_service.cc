@@ -11,8 +11,8 @@
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -55,6 +55,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_fre_store.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/public/service/glic_activity_manager.h"
 #include "chrome/browser/glic/public/service/legacy_glic_activity_manager.h"
@@ -127,14 +128,17 @@ std::string_view GlicWarmingTriggerToString(GlicWarmingTrigger trigger) {
       return "Iph";
     case GlicWarmingTrigger::kSelectionOverlay:
       return "SelectionOverlay";
+    case GlicWarmingTrigger::kGeminiWeb:
+      return "GeminiWeb";
   }
 }
 
-void RecordPrewarmingChecksResult(GlicWarmingTrigger trigger,
+void RecordPrewarmingChecksResult(Profile* profile,
+                                  GlicWarmingTrigger trigger,
                                   GlicPrewarmingChecksResult result) {
-  base::UmaHistogramEnumeration(
-      base::StrCat({"Glic.Prewarming.ChecksResult.",
-                    GlicWarmingTriggerToString(trigger)}),
+  GlicMetricReporter(profile).RecordEnumeration(
+      base::StrCat(
+          {"Prewarming.ChecksResult.", GlicWarmingTriggerToString(trigger)}),
       result);
 }
 
@@ -214,6 +218,9 @@ GlicKeyedService::GlicKeyedService(
           .use_performance_manager = base::FeatureList::IsEnabled(
               features::kGlicColdWarmingUsePerformanceManager),
           .delay = base::Milliseconds(features::kGlicWarmingDelayMs.Get()),
+      }),
+      gemini_web_warming_scheduler_(GlicWarmingScheduler::Options{
+          .use_performance_manager = true,
       }),
       tab_data_observer_(std::make_unique<GlicTabDataObserver>(profile)),
       tab_favicon_observer_(std::make_unique<GlicTabFaviconObserver>(profile)) {
@@ -314,6 +321,7 @@ bool GlicKeyedService::IsNoWebviewEnabled() const {
 
 void GlicKeyedService::Shutdown() {
   cold_warming_scheduler_.Cancel();
+  gemini_web_warming_scheduler_.Cancel();
   if (experimental_triggering_transport_handler_factory_) {
     browser_actuator::transport::TransportService* transport_service =
         browser_actuator::transport::TransportServiceFactory::GetForProfile(
@@ -544,6 +552,11 @@ void GlicKeyedService::TryPreload(GlicWarmingTrigger trigger) {
         &GlicKeyedService::TryPreloadAfterDelay, GetWeakPtr(), trigger));
     return;
   }
+  if (trigger == GlicWarmingTrigger::kGeminiWeb) {
+    gemini_web_warming_scheduler_.Schedule(base::BindOnce(
+        &GlicKeyedService::TryPreloadAfterDelay, GetWeakPtr(), trigger));
+    return;
+  }
 
   ShouldPreloadForProfile(
       profile_, trigger,
@@ -572,7 +585,7 @@ void GlicKeyedService::FinishPreload(GlicWarmingTrigger trigger,
     }
   }
 
-  RecordPrewarmingChecksResult(trigger, result);
+  RecordPrewarmingChecksResult(profile_, trigger, result);
   if (preload_callback_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(preload_callback_)));

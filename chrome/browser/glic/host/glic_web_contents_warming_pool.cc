@@ -52,6 +52,8 @@ GlicWebContentsWarmingPool::ContainerCreationReason ToContainerCreationReason(
     case GlicWarmingTrigger::kSelectionOverlay:
       return GlicWebContentsWarmingPool::ContainerCreationReason::
           kSelectionOverlay;
+    case GlicWarmingTrigger::kGeminiWeb:
+      return GlicWebContentsWarmingPool::ContainerCreationReason::kGeminiWeb;
   }
 }
 }  // namespace

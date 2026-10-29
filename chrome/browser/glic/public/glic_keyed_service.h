@@ -337,6 +337,7 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   std::unique_ptr<AuthController> auth_controller_;
 
   GlicWarmingScheduler cold_warming_scheduler_;
+  GlicWarmingScheduler gemini_web_warming_scheduler_;
 
   base::OnceCallback<void()> preload_callback_;
 

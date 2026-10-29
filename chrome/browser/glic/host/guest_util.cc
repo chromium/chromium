@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/host/guest_util.h"
 
 #include <algorithm>
+#include <array>
 #include <optional>
 #include <utility>
 
@@ -557,6 +558,19 @@ bool IsFrameAllowedGlicApi(content::RenderFrameHost& frame_host) {
   }
   return IsOriginAllowedGlicApi(frame_host.GetLastCommittedOrigin(),
                                 frame_host.GetBrowserContext());
+}
+
+bool IsGeminiOrigin(const url::Origin& origin) {
+  static const base::NoDestructor<std::array<url::Origin, 5>> kGeminiOrigins({
+      url::Origin::Create(GURL("https://gemini.google.com")),
+      url::Origin::Create(GURL("https://gemini.corp.google.com")),
+      url::Origin::Create(GURL("https://gemini-autopush.corp.google.com")),
+      url::Origin::Create(GURL("https://gemini-preprod.corp.google.com")),
+      url::Origin::Create(GURL("https://gemini-staging.corp.google.com")),
+  });
+  return std::ranges::any_of(*kGeminiOrigins, [&](const url::Origin& gemini) {
+    return origin.IsSameOriginWith(gemini);
+  });
 }
 
 void BindGlicWebClientHandler(

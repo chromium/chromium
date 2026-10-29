@@ -68,9 +68,7 @@ GlicWarmingScheduler::GlicWarmingScheduler(Options options)
 GlicWarmingScheduler::~GlicWarmingScheduler() = default;
 
 void GlicWarmingScheduler::Schedule(base::OnceClosure task) {
-  Cancel();
-
-  if (options_.delay >= kDelayTooLong) {
+  if (IsScheduled() || options_.delay >= kDelayTooLong) {
     return;
   }
 

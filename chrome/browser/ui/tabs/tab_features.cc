@@ -237,6 +237,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #endif
 #include "chrome/browser/glic/browser_ui/glic_tab_indicator_helper.h"
+#include "chrome/browser/glic/glic_gemini_web_warming_observer.h"
 #include "chrome/browser/glic/glic_marketing_page_tab_helper.h"
 #include "chrome/browser/glic/glic_promotion_source_navigation_observer.h"
 #include "chrome/browser/glic/glic_selection_observer.h"
@@ -709,6 +710,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
               tab, &tab, profile->GetPrefs());
       glic_promotion_source_navigation_observer_ =
           std::make_unique<glic::GlicPromotionSourceNavigationObserver>(&tab);
+      if (base::FeatureList::IsEnabled(features::kGlicWarmOnGeminiWeb)) {
+        glic_gemini_web_warming_observer_ =
+            std::make_unique<glic::GlicGeminiWebWarmingObserver>(&tab);
+      }
 
       if (glic::GlicEnabling::IsEnabledForProfile(profile)) {
         glic_selection_observer_ =

@@ -252,6 +252,8 @@ BASE_DECLARE_FEATURE(kGlicWarmOnNudge);
 
 BASE_DECLARE_FEATURE(kGlicWarmOnIph);
 
+BASE_DECLARE_FEATURE(kGlicWarmOnGeminiWeb);
+
 BASE_DECLARE_FEATURE(kGlicBackfillWarmingUsePerformanceManager);
 
 BASE_DECLARE_FEATURE(kGlicColdWarmingUsePerformanceManager);

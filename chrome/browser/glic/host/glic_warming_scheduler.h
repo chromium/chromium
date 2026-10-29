@@ -53,8 +53,8 @@ class GlicWarmingScheduler
 
   // Schedules `task` to be run when the configured conditions are met.
   // If `options.delay` is >= kDelayTooLong (7 days), warming is considered
-  // disabled and no task will be scheduled. Any previously scheduled task is
-  // canceled.
+  // disabled and no task will be scheduled. If a warming task is already
+  // scheduled, the call is coalesced and `task` is ignored.
   void Schedule(base::OnceClosure task);
 
   // Cancels any currently pending warming task and stops observers/timers.

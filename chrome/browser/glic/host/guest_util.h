@@ -69,6 +69,9 @@ bool IsGuestOriginAllowed(const url::Origin& origin,
 bool IsAdminBlockedUrl(const GURL& url);
 bool IsFrameAllowedGlicApi(content::RenderFrameHost& frame_host);
 
+// Returns true if `origin` is a Gemini Web origin (including corp and staging).
+bool IsGeminiOrigin(const url::Origin& origin);
+
 // Returns the maximum time to wait for the guest web client to load before
 // timing out.
 base::TimeDelta GetMaxLoadingTime();

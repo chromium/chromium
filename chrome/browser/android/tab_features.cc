@@ -47,6 +47,7 @@
 #include "chrome/browser/finds/core/finds_tab_helper.h"
 #include "chrome/browser/finds/finds_service_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/glic/glic_gemini_web_warming_observer.h"
 #include "chrome/browser/glic/glic_marketing_page_tab_helper.h"
 #include "chrome/browser/glic/host/glic_drag_and_drop_util.h"
 #include "chrome/browser/glic/public/features.h"
@@ -435,6 +436,11 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   if (base::FeatureList::IsEnabled(features::kGlicMarketingAutoOpen)) {
     glic_marketing_page_tab_helper_ =
         std::make_unique<glic::GlicMarketingPageTabHelper>(web_contents);
+  }
+  if (glic::GlicEnabling::IsProfileEligible(profile) &&
+      base::FeatureList::IsEnabled(features::kGlicWarmOnGeminiWeb)) {
+    glic_gemini_web_warming_observer_ =
+        std::make_unique<glic::GlicGeminiWebWarmingObserver>(tab);
   }
 
 #if BUILDFLAG(ENABLE_WEBUI_NTP)

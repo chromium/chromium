@@ -350,6 +350,8 @@ BASE_FEATURE(kGlicWarmOnNudge, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicWarmOnIph, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicWarmOnGeminiWeb, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicBackfillWarmingUsePerformanceManager,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

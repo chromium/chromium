@@ -229,6 +229,7 @@ class NavigationExtensionEnabler;
 namespace glic {
 class ContextualCueingHelper;
 class GlicCueTabState;
+class GlicGeminiWebWarmingObserver;
 class GlicInstanceHelper;
 class GlicMarketingPageTabHelper;
 class GlicPromotionSourceNavigationObserver;
@@ -688,6 +689,8 @@ class TabFeatures {
       glic_marketing_page_tab_helper_;
   std::unique_ptr<glic::GlicPromotionSourceNavigationObserver>
       glic_promotion_source_navigation_observer_;
+  std::unique_ptr<glic::GlicGeminiWebWarmingObserver>
+      glic_gemini_web_warming_observer_;
 
   // Observes page loads to decide when to offer glic contextual cueing.
   std::unique_ptr<glic::ContextualCueingHelper> contextual_cueing_helper_;

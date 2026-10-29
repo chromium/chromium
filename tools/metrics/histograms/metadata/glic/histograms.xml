@@ -1737,22 +1737,6 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   </token>
 </histogram>
 
-<histogram name="Glic.Prewarming.ChecksResult.{Trigger}"
-    enum="GlicPrewarmingChecksResult" expires_after="2027-01-31">
-  <owner>bryantchandler@chromium.org</owner>
-  <owner>chrome-glic@google.com</owner>
-  <summary>
-    Records the reason why Glic preloading was or was not attempted for trigger
-    {Trigger}. Recorded each time we try to preload.
-  </summary>
-  <token key="Trigger">
-    <variant name="Iph" summary="iph"/>
-    <variant name="Nudge" summary="contextual nudge"/>
-    <variant name="SelectionOverlay" summary="selection overlay"/>
-    <variant name="Startup" summary="startup"/>
-  </token>
-</histogram>
-
 <histogram name="Glic.PrewarmingFre.{PrewarmDisposition}PreloadFreForSource"
     enum="GlicPrewarmingFreSource" expires_after="2026-07-26">
   <owner>dewittj@chromium.org</owner>
@@ -3400,6 +3384,24 @@ ApiRequestType variants; see go/geic-metrics-split. -->
     Record the current state when the panel is closed for multi instance
     supported clients. Scope: {GlicProvider}.
   </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Prewarming.ChecksResult.{Trigger}"
+    enum="GlicPrewarmingChecksResult" expires_after="2027-04-30">
+  <owner>bryantchandler@chromium.org</owner>
+  <owner>chrome-glic@google.com</owner>
+  <summary>
+    Records the reason why Glic preloading was or was not attempted for trigger
+    {Trigger}. Recorded each time we try to preload. Scope: {GlicProvider}.
+  </summary>
+  <token key="Trigger">
+    <variant name="GeminiWeb" summary="gemini web"/>
+    <variant name="Iph" summary="iph"/>
+    <variant name="Nudge" summary="contextual nudge"/>
+    <variant name="SelectionOverlay" summary="selection overlay"/>
+    <variant name="Startup" summary="startup"/>
+  </token>
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
 

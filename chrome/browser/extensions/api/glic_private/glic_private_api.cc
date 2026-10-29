@@ -19,6 +19,7 @@
 #include "chrome/browser/extensions/glic_util.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -79,15 +80,6 @@ constexpr char kGlicApiInvokeSyntheticFieldTrialName[] =
     "GlicApiInvokeSyntheticFieldTrial";
 constexpr char kUniversalCartGroupName[] = "UniversalCart";
 constexpr char kGlicServiceNotAvailable[] = "Glic service not available";
-// Gemini Web origins, including corp and staging ones, that may embed
-// subframes that call glicPrivate.
-constexpr auto kGeminiOrigins = std::to_array<std::string_view>({
-    "https://gemini.google.com",
-    "https://gemini.corp.google.com",
-    "https://gemini-autopush.corp.google.com",
-    "https://gemini-preprod.corp.google.com",
-    "https://gemini-staging.corp.google.com",
-});
 
 using PromptCallback =
     base::OnceCallback<void(extensions::api::glic_private::ErrorCode,
@@ -378,12 +370,6 @@ content::RenderFrameHost* GetRfhForDocumentId(
       document_id);
 }
 
-bool IsGeminiOrigin(const url::Origin& origin) {
-  return std::ranges::any_of(kGeminiOrigins, [&](std::string_view gemini) {
-    return origin.IsSameOriginWith(GURL(gemini));
-  });
-}
-
 std::optional<extensions::api::glic_private::ErrorCode> ValidateRenderFrameHost(
     Profile* profile,
     content::RenderFrameHost* rfh) {
@@ -397,7 +383,7 @@ std::optional<extensions::api::glic_private::ErrorCode> ValidateRenderFrameHost(
   // could embed a Google subframe to make Glic act on that page.
   for (content::RenderFrameHost* ancestor = rfh->GetParent(); ancestor;
        ancestor = ancestor->GetParent()) {
-    if (!IsGeminiOrigin(ancestor->GetLastCommittedOrigin())) {
+    if (!glic::IsGeminiOrigin(ancestor->GetLastCommittedOrigin())) {
       return api::glic_private::ErrorCode::kLocalInvalidDocumentId;
     }
   }

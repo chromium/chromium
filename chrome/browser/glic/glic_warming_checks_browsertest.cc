@@ -8,21 +8,26 @@
 #include <string_view>
 
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_amount_of_physical_memory_override.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/glic/host/glic_guest_observer.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
+#include "chrome/browser/glic/test_support/fake_web_contents_manager.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/base/network_change_notifier.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace glic {
@@ -303,7 +308,131 @@ INSTANTIATE_TEST_SUITE_P(
             .trigger = GlicWarmingTrigger::kSelectionOverlay,
             .expected_histogram_suffix = "SelectionOverlay",
             .expected_creation_reason = GlicWebContentsWarmingPool::
-                ContainerCreationReason::kSelectionOverlay}));
+                ContainerCreationReason::kSelectionOverlay},
+        WarmingTriggerParam{
+            .trigger = GlicWarmingTrigger::kGeminiWeb,
+            .expected_histogram_suffix = "GeminiWeb",
+            .expected_creation_reason = GlicWebContentsWarmingPool::
+                ContainerCreationReason::kGeminiWeb}));
+
+class GlicWarmOnGeminiWebBrowserTest : public GlicWarmingChecksTestBase {
+ public:
+  explicit GlicWarmOnGeminiWebBrowserTest(
+      bool enable_warm_on_gemini_web = true) {
+    if (enable_warm_on_gemini_web) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kGlicWarmOnGeminiWeb,
+                                features::
+                                    kGlicAnchorEntryPointForOnboardedUsers},
+          /*disabled_features=*/{features::kGlicWarming});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::
+                                    kGlicAnchorEntryPointForOnboardedUsers},
+          /*disabled_features=*/{features::kGlicWarmOnGeminiWeb,
+                                 features::kGlicWarming});
+    }
+    embedded_https_test_server().SetCertHostnames(
+        {"gemini.google.com", "example.com", "127.0.0.1"});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    GlicWarmingChecksTestBase::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        network::switches::kHostResolverRules,
+        base::StringPrintf("MAP * 127.0.0.1:%d",
+                           embedded_https_test_server().port()));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class GlicWarmOnGeminiWebDisabledBrowserTest
+    : public GlicWarmOnGeminiWebBrowserTest {
+ public:
+  GlicWarmOnGeminiWebDisabledBrowserTest()
+      : GlicWarmOnGeminiWebBrowserTest(/*enable_warm_on_gemini_web=*/false) {}
+};
+
+IN_PROC_BROWSER_TEST_F(GlicWarmOnGeminiWebBrowserTest,
+                       WarmsOnGeminiWebNavigation) {
+  base::HistogramTester histogram_tester;
+  ResetPrewarming();
+  EXPECT_FALSE(IsWarmed());
+
+  tabs::TabInterface* active_tab = GetTabListInterface()->GetActiveTab();
+  NavigateTab(
+      *active_tab,
+      GURL("https://gemini.google.com/glic/browser_tests/minimal_client.html"));
+  EXPECT_TRUE(
+      RunUntil([this]() { return IsWarmed(); }, "Wait for container to warm"));
+
+  histogram_tester.ExpectBucketCount("Glic.Prewarming.ChecksResult.GeminiWeb",
+                                     GlicPrewarmingChecksResult::kSuccess, 1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.WarmingPool.ContainerCreationReason",
+      GlicWebContentsWarmingPool::ContainerCreationReason::kGeminiWeb, 1);
+
+  // Subsequent navigations in the same tab should not trigger warming again
+  // after a successful preload.
+  NavigateTab(
+      *active_tab,
+      GURL("https://gemini.google.com/glic/browser_tests/minimal_client.html"));
+  histogram_tester.ExpectTotalCount("Glic.Prewarming.ChecksResult.GeminiWeb",
+                                    1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWarmOnGeminiWebBrowserTest,
+                       DoesNotWarmOnNonGeminiWebNavigation) {
+  base::HistogramTester histogram_tester;
+  ResetPrewarming();
+  EXPECT_FALSE(IsWarmed());
+
+  NavigateTab(
+      *GetTabListInterface()->GetActiveTab(),
+      GURL("https://example.com/glic/browser_tests/minimal_client.html"));
+
+  EXPECT_FALSE(IsWarmed());
+  histogram_tester.ExpectTotalCount("Glic.Prewarming.ChecksResult.GeminiWeb",
+                                    0);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWarmOnGeminiWebBrowserTest,
+                       DoesNotWarmForGlicGuestWebContents) {
+  base::HistogramTester histogram_tester;
+  ResetPrewarming();
+  EXPECT_FALSE(IsWarmed());
+
+  tabs::TabInterface* active_tab = GetTabListInterface()->GetActiveTab();
+  FakeWebContentsManager contents_manager;
+  GlicGuestObserver::CreateForWebContents(*active_tab->GetContents(),
+                                          contents_manager);
+  ASSERT_TRUE(IsGlicGuest(active_tab->GetContents()));
+
+  NavigateTab(
+      *active_tab,
+      GURL("https://gemini.google.com/glic/browser_tests/minimal_client.html"));
+
+  EXPECT_FALSE(IsWarmed());
+  histogram_tester.ExpectTotalCount("Glic.Prewarming.ChecksResult.GeminiWeb",
+                                    0);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWarmOnGeminiWebDisabledBrowserTest,
+                       DoesNotWarmWhenFeatureDisabled) {
+  base::HistogramTester histogram_tester;
+  ResetPrewarming();
+  EXPECT_FALSE(IsWarmed());
+
+  NavigateTab(
+      *GetTabListInterface()->GetActiveTab(),
+      GURL("https://gemini.google.com/glic/browser_tests/minimal_client.html"));
+
+  EXPECT_FALSE(IsWarmed());
+  histogram_tester.ExpectTotalCount("Glic.Prewarming.ChecksResult.GeminiWeb",
+                                    0);
+}
 
 }  // namespace
 }  // namespace glic
