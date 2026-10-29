@@ -134,6 +134,11 @@ export function getHtml(this: ContextualTasksInternalsAppElement) {
       ` : ''}
     </div>
   </div>
+  <div slot="tab">Session &amp; User Data</div>
+  <div slot="panel">
+    <contextual-tasks-session-state-tab>
+    </contextual-tasks-session-state-tab>
+  </div>
 </cr-tab-box>
 `;
   // clang-format on
