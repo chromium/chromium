@@ -80,6 +80,13 @@ TEST(TextEncodingDetectorTest, UrlHintHelpsEucJp) {
   EXPECT_TRUE(result);
   EXPECT_EQ(TextEncoding("EUC-JP"), encoding)
       << "With URL hint including '.jp', it's detected as EUC-JP";
+
+  KURL url_with_userinfo("http://a.jp:x@example.com/");
+  result = DetectTextEncoding(base::as_byte_span(eucjp_bytes), nullptr,
+                              url_with_userinfo, nullptr, &encoding);
+  EXPECT_TRUE(result);
+  EXPECT_EQ(TextEncoding("GBK"), encoding)
+      << "Userinfo in URL should not spoof the TLD hint";
 }
 
 TEST(TextEncodingDetectorTest, LanguageHintHelpsEucJp) {
