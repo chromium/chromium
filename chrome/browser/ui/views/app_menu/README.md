@@ -34,12 +34,12 @@ BrowserAppMenuButton
     * **`kBlock`**: Horizontal block-button container and its child actions (`AppMenuBlockView`), used for prominent top-level actions (e.g., New Tab, New Window).
     * **`kNotification`**: Standalone alert row at the top of the menu with individual rounded corners, used for high-priority prompts (e.g., browser updates, Safety Hub notifications, global errors).
     * **`kCustom`**: Row that lays out child actions as inline interactive controls within the same row rather than spawning a popup submenu (e.g., `AppMenuZoomView`), while keeping child actions in the hierarchy for search and state binding.
+    * **`kFooter`**: Bottom container (`AppMenuFooterView`) that renders child actions as horizontal pill buttons (Settings, Help, Exit) alongside optional status rows (e.g., enterprise management banner). The container itself is never a search result, but its child actions (including the Help submenu's children) are indexed.
   * **Non-Searchable Display Types (`>= DisplayType::kMaxSearchable`)**:
     * **`kSearch`**: Top-level search input row (`AppMenuSearchBarView`) that filters searchable menu items in real time.
     * **`kHeader`**: Non-interactive section title heading (`AddHeader()`).
     * **`kLabel`**: Read-only text inside a `kCustom` row that stays bound to its `ActionItem` for state updates but is not actionable, so it is excluded from search results (e.g., the zoom percentage in `AppMenuZoomView`).
     * **`kDivider`**: Visual line or spacing separator (`AddDivider()`).
-    * **`kFooter`**: Bottom container (`AppMenuFooterView`) that renders child actions as horizontal pill buttons alongside optional status rows (e.g., enterprise management banner).
 
 ### 2. View & Coordinator Layer (`ActionAppMenu`)
 * **`ActionAppMenu` (`action_app_menu.h`)**: Owns the `views::MenuRunner` and serves as the `views::MenuDelegate` and `AppMenuDragAndDropDelegate::Host`.
@@ -133,7 +133,7 @@ To support dragging and dropping items within a dynamic submenu while keeping th
   1. Set `.display_type = DisplayType::kCustom` on the parent action item and add its child actions as children in the `ActionItem` hierarchy.
   2. Handle the parent's `ActionId` in `ActionAppMenu::PopulateCustomRow()` (`action_app_menu.cc`).
   3. Bind child controls to their `ActionItem`s via `views::ActionViewController` and record metrics via `ActionAppMenuMetrics`.
-* **Searchability rule**: Note in `AppMenuActionItem::DisplayType` that enum values `< DisplayType::kMaxSearchable` (`kBlock`, `kCustom`, `kNotification`, `kRow`, `kSection`) are traversed during search indexing, while values `>= DisplayType::kMaxSearchable` (`kDivider`, `kFooter`, `kHeader`, `kLabel`, `kSearch`) are skipped. Give read-only child controls of a `kCustom` row (such as a status label) `DisplayType::kLabel` so they are not indexed as actionable search results.
+* **Searchability rule**: Note in `AppMenuActionItem::DisplayType` that enum values `< DisplayType::kMaxSearchable` (`kBlock`, `kCustom`, `kFooter`, `kNotification`, `kRow`, `kSection`) are traversed during search indexing, while values `>= DisplayType::kMaxSearchable` (`kDivider`, `kHeader`, `kLabel`, `kSearch`) are skipped. Give read-only child controls of a `kCustom` row (such as a status label) `DisplayType::kLabel` so they are not indexed as actionable search results.
 
 ---
 

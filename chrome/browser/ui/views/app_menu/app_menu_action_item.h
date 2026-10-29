@@ -26,16 +26,17 @@ class AppMenuDragAndDropDelegate;
 class AppMenuActionItem {
  public:
   enum class DisplayType {
-    // Searchable Types
+    // Searchable Types. Containers (kBlock, kCustom, kFooter, kSection) are
+    // traversed so their child actions are indexed.
     kBlock,
     kCustom,
+    kFooter,
     kNotification,
     kRow,
     kSection,
 
     // Non-searchable Types
     kDivider,
-    kFooter,
     kHeader,
     kLabel,
     kSearch,
