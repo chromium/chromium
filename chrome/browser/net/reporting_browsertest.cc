@@ -178,6 +178,21 @@ class BaseReportingBrowserTest : public CertVerifierBrowserTest,
     return all_reports;
   }
 
+  const base::DictValue* FindReportByUrl(const base::ListValue& reports,
+                                         const GURL& expected_url) const {
+    for (const auto& report : reports) {
+      const base::DictValue* dict = report.GetIfDict();
+      if (!dict) {
+        continue;
+      }
+      const std::string* url = dict->FindString("url");
+      if (url && *url == expected_url.spec()) {
+        return dict;
+      }
+    }
+    return nullptr;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_server_;
@@ -1979,17 +1994,14 @@ IN_PROC_BROWSER_TEST_P(
   base::ListValue reports = WaitForReportUploads(/*expected_report_count=*/2);
   ASSERT_EQ(reports.size(), 2u);
 
-  const base::DictValue& main_report = reports[0].GetDict();
+  const base::DictValue* main_report = FindReportByUrl(reports, main_url);
+  ASSERT_NE(main_report, nullptr);
 
-  const std::string* main_type = main_report.FindString("type");
+  const std::string* main_type = main_report->FindString("type");
   ASSERT_NE(main_type, nullptr);
   EXPECT_EQ(*main_type, "crash");
 
-  const std::string* main_report_url = main_report.FindString("url");
-  ASSERT_NE(main_report_url, nullptr);
-  EXPECT_EQ(*main_report_url, main_url.spec());
-
-  const base::DictValue* main_body = main_report.FindDict("body");
+  const base::DictValue* main_body = main_report->FindDict("body");
   ASSERT_NE(main_body, nullptr);
 
   const std::string* main_reason = main_body->FindString("reason");
@@ -2005,17 +2017,14 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_NE(main_frame_value, nullptr);
   EXPECT_EQ(*main_frame_value, "main");
 
-  const base::DictValue& iframe_report = reports[1].GetDict();
+  const base::DictValue* iframe_report = FindReportByUrl(reports, iframe_url);
+  ASSERT_NE(iframe_report, nullptr);
 
-  const std::string* iframe_type = iframe_report.FindString("type");
+  const std::string* iframe_type = iframe_report->FindString("type");
   ASSERT_NE(iframe_type, nullptr);
   EXPECT_EQ(*iframe_type, "crash");
 
-  const std::string* iframe_report_url = iframe_report.FindString("url");
-  ASSERT_NE(iframe_report_url, nullptr);
-  EXPECT_EQ(*iframe_report_url, iframe_url.spec());
-
-  const base::DictValue* iframe_body = iframe_report.FindDict("body");
+  const base::DictValue* iframe_body = iframe_report->FindDict("body");
   ASSERT_NE(iframe_body, nullptr);
 
   const std::string* iframe_reason = iframe_body->FindString("reason");
@@ -2079,27 +2088,23 @@ IN_PROC_BROWSER_TEST_P(
   base::ListValue reports = WaitForReportUploads(/*expected_report_count=*/2);
   ASSERT_EQ(reports.size(), 2u);
 
-  const base::DictValue& main_report = reports[0].GetDict();
-  const std::string* main_type = main_report.FindString("type");
+  const base::DictValue* main_report = FindReportByUrl(reports, main_url);
+  ASSERT_NE(main_report, nullptr);
+  const std::string* main_type = main_report->FindString("type");
   ASSERT_NE(main_type, nullptr);
   EXPECT_EQ(*main_type, "crash");
-  const std::string* main_report_url = main_report.FindString("url");
-  ASSERT_NE(main_report_url, nullptr);
-  EXPECT_EQ(*main_report_url, main_url.spec());
-  const base::DictValue* main_body = main_report.FindDict("body");
+  const base::DictValue* main_body = main_report->FindDict("body");
   ASSERT_NE(main_body, nullptr);
   const std::string* main_reason = main_body->FindString("reason");
   ASSERT_NE(main_reason, nullptr);
   EXPECT_EQ(*main_reason, "oom");
 
-  const base::DictValue& inner_report = reports[1].GetDict();
-  const std::string* inner_type = inner_report.FindString("type");
+  const base::DictValue* inner_report = FindReportByUrl(reports, inner_url);
+  ASSERT_NE(inner_report, nullptr);
+  const std::string* inner_type = inner_report->FindString("type");
   ASSERT_NE(inner_type, nullptr);
   EXPECT_EQ(*inner_type, "crash");
-  const std::string* inner_report_url = inner_report.FindString("url");
-  ASSERT_NE(inner_report_url, nullptr);
-  EXPECT_EQ(*inner_report_url, inner_url.spec());
-  const base::DictValue* inner_body = inner_report.FindDict("body");
+  const base::DictValue* inner_body = inner_report->FindDict("body");
   ASSERT_NE(inner_body, nullptr);
   const std::string* inner_reason = inner_body->FindString("reason");
   ASSERT_NE(inner_reason, nullptr);
@@ -2281,17 +2286,14 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_EQ(reports.size(), 2u);
 
   // Verify the main frame report.
-  const base::DictValue& main_report = reports[0].GetDict();
+  const base::DictValue* main_report = FindReportByUrl(reports, main_url);
+  ASSERT_NE(main_report, nullptr);
 
-  const std::string* main_type = main_report.FindString("type");
+  const std::string* main_type = main_report->FindString("type");
   ASSERT_NE(main_type, nullptr);
   EXPECT_EQ(*main_type, "crash");
 
-  const std::string* main_report_url = main_report.FindString("url");
-  ASSERT_NE(main_report_url, nullptr);
-  EXPECT_EQ(*main_report_url, main_url.spec());
-
-  const base::DictValue* main_body = main_report.FindDict("body");
+  const base::DictValue* main_body = main_report->FindDict("body");
   ASSERT_NE(main_body, nullptr);
 
   const std::string* main_reason = main_body->FindString("reason");
@@ -2306,17 +2308,14 @@ IN_PROC_BROWSER_TEST_P(
   }
 
   // Verify the same-process iframe report includes the JS call stack.
-  const base::DictValue& iframe_report = reports[1].GetDict();
+  const base::DictValue* iframe_report = FindReportByUrl(reports, iframe_url);
+  ASSERT_NE(iframe_report, nullptr);
 
-  const std::string* iframe_type = iframe_report.FindString("type");
+  const std::string* iframe_type = iframe_report->FindString("type");
   ASSERT_NE(iframe_type, nullptr);
   EXPECT_EQ(*iframe_type, "crash");
 
-  const std::string* iframe_report_url = iframe_report.FindString("url");
-  ASSERT_NE(iframe_report_url, nullptr);
-  EXPECT_EQ(*iframe_report_url, iframe_url.spec());
-
-  const base::DictValue* iframe_body = iframe_report.FindDict("body");
+  const base::DictValue* iframe_body = iframe_report->FindDict("body");
   ASSERT_NE(iframe_body, nullptr);
 
   const std::string* iframe_reason = iframe_body->FindString("reason");
@@ -2362,17 +2361,14 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_EQ(reports.size(), 2u);
 
   // Verify the main frame report.
-  const base::DictValue& main_report = reports[0].GetDict();
+  const base::DictValue* main_report = FindReportByUrl(reports, main_url);
+  ASSERT_NE(main_report, nullptr);
 
-  const std::string* main_type = main_report.FindString("type");
+  const std::string* main_type = main_report->FindString("type");
   ASSERT_NE(main_type, nullptr);
   EXPECT_EQ(*main_type, "crash");
 
-  const std::string* main_report_url = main_report.FindString("url");
-  ASSERT_NE(main_report_url, nullptr);
-  EXPECT_EQ(*main_report_url, main_url.spec());
-
-  const base::DictValue* main_body = main_report.FindDict("body");
+  const base::DictValue* main_body = main_report->FindDict("body");
   ASSERT_NE(main_body, nullptr);
 
   const std::string* main_reason = main_body->FindString("reason");
@@ -2388,17 +2384,14 @@ IN_PROC_BROWSER_TEST_P(
 
   // Verify the same-process iframe report omits the JS call stack since the
   // iframe did not opt in.
-  const base::DictValue& iframe_report = reports[1].GetDict();
+  const base::DictValue* iframe_report = FindReportByUrl(reports, iframe_url);
+  ASSERT_NE(iframe_report, nullptr);
 
-  const std::string* iframe_type = iframe_report.FindString("type");
+  const std::string* iframe_type = iframe_report->FindString("type");
   ASSERT_NE(iframe_type, nullptr);
   EXPECT_EQ(*iframe_type, "crash");
 
-  const std::string* iframe_report_url = iframe_report.FindString("url");
-  ASSERT_NE(iframe_report_url, nullptr);
-  EXPECT_EQ(*iframe_report_url, iframe_url.spec());
-
-  const base::DictValue* iframe_body = iframe_report.FindDict("body");
+  const base::DictValue* iframe_body = iframe_report->FindDict("body");
   ASSERT_NE(iframe_body, nullptr);
 
   const std::string* iframe_reason = iframe_body->FindString("reason");
