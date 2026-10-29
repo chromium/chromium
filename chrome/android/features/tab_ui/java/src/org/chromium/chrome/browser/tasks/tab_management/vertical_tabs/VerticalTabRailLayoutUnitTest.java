@@ -490,7 +490,7 @@ public class VerticalTabRailLayoutUnitTest {
     }
 
     @Test
-    public void testDispatchGenericMotionEvent_consumesMouseButtonEvent() {
+    public void testDispatchGenericMotionEvent_consumesMouseEvents() {
         mRailLayout.setCollapseState(RailCollapseState.COLLAPSED);
         measureAndLayout(mRailLayout, 200, 500);
 
@@ -503,6 +503,20 @@ public class VerticalTabRailLayoutUnitTest {
                 MotionEvent.obtain(0, 0, MotionEvent.ACTION_BUTTON_RELEASE, 50f, 50f, 0);
         releaseEvent.setSource(InputDevice.SOURCE_MOUSE);
         assertTrue(mRailLayout.dispatchGenericMotionEvent(releaseEvent));
+
+        MotionEvent scrollEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_SCROLL, 50f, 50f, 0);
+        scrollEvent.setSource(InputDevice.SOURCE_MOUSE);
+        assertTrue(mRailLayout.dispatchGenericMotionEvent(scrollEvent));
+
+        MotionEvent stylusScrollEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_SCROLL, 50f, 50f, 0);
+        stylusScrollEvent.setSource(InputDevice.SOURCE_STYLUS);
+        assertTrue(mRailLayout.dispatchGenericMotionEvent(stylusScrollEvent));
+
+        MotionEvent joystickScrollEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_SCROLL, 50f, 50f, 0);
+        joystickScrollEvent.setSource(InputDevice.SOURCE_JOYSTICK);
+        assertFalse(mRailLayout.dispatchGenericMotionEvent(joystickScrollEvent));
 
         MotionEvent otherEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE, 50f, 50f, 0);
         otherEvent.setSource(InputDevice.SOURCE_MOUSE);

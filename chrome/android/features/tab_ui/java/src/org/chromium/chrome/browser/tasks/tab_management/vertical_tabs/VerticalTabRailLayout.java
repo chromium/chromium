@@ -420,17 +420,21 @@ public class VerticalTabRailLayout extends ConstraintLayout {
     public boolean dispatchGenericMotionEvent(MotionEvent event) {
         if (mRailEventListener != null) mRailEventListener.onGenericMotionEventDispatched(event);
         if (super.dispatchGenericMotionEvent(event)) return true;
+        int action = event.getActionMasked();
         // Prevent mouse button presses/releases from falling back to the window's
         // focused view (ContentView), which would send out-of-bounds mouse events to Blink and
         // blur the active webpage document.
-        if (event != null && event.isFromSource(InputDevice.SOURCE_MOUSE)) {
-            int action = event.getActionMasked();
-            if (action == MotionEvent.ACTION_BUTTON_PRESS
-                    || action == MotionEvent.ACTION_BUTTON_RELEASE) {
-                return true;
-            }
+        if (event.isFromSource(InputDevice.SOURCE_MOUSE)
+                && (action == MotionEvent.ACTION_BUTTON_PRESS
+                        || action == MotionEvent.ACTION_BUTTON_RELEASE)) {
+            return true;
         }
-        return false;
+        // The rail sits above the web contents. Unconsumed scroll events fall through as
+        // out-of-bounds mouse events, which can unintentionally scroll the page.
+        // RecyclerView#onGenericMotionEvent scrolls but always returns false, so consume these
+        // events here regardless of whether a child scrolled.
+        return event.isFromSource(InputDevice.SOURCE_CLASS_POINTER)
+                && action == MotionEvent.ACTION_SCROLL;
     }
 
     /** Sets the {@link KeyEventListener} to intercept key events dispatched to the rail. */
