@@ -218,7 +218,9 @@ void ReadingListManagerImpl::DeleteAll() {
 }
 
 const BookmarkNode* ReadingListManagerImpl::GetRoot() const {
-  CHECK(reading_list_model_->loaded(), base::NotFatalUntil::M162);
+  // TODO(crbug.com/577253050): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(reading_list_model_->loaded());
   return root_.get();
 }
 
