@@ -78,6 +78,7 @@
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
@@ -543,6 +544,52 @@ TEST_F(WindowCycleControllerTest, AllAreMinimized) {
   EXPECT_TRUE(window0_state->IsActive());
   EXPECT_FALSE(window0_state->IsMinimized());
   EXPECT_TRUE(window1_state->IsMinimized());
+}
+
+// Tests that when a transient child of the first window in the cycle list, such
+// as a bubble or a popup, holds activation, cycling starts with the second
+// window, since the user is already in the first one.
+TEST_F(WindowCycleControllerTest, TransientChildActive) {
+  std::unique_ptr<Window> window0(CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<Window> window1(CreateTestWindowInShell({.window_id = 1}));
+  std::unique_ptr<Window> popup(CreateTestWindowInShell(
+      {.window_type = aura::client::WINDOW_TYPE_POPUP, .window_id = 2}));
+  ::wm::AddTransientChild(window1.get(), popup.get());
+  wm::ActivateWindow(window1.get());
+  wm::ActivateWindow(popup.get());
+  ASSERT_TRUE(wm::IsActiveWindow(popup.get()));
+
+  WindowCycleController* controller = Shell::Get()->window_cycle_controller();
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
+  generator->PressKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  generator->ReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  EXPECT_TRUE(controller->IsCycling());
+  generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
+  EXPECT_FALSE(controller->IsCycling());
+  EXPECT_TRUE(wm::IsActiveWindow(window0.get()));
+}
+
+// Tests that when the active window is a popup that isn't a transient child of
+// any window in the cycle list, cycling still starts with the first window.
+TEST_F(WindowCycleControllerTest, NonTransientPopupActive) {
+  std::unique_ptr<Window> window0(CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<Window> window1(CreateTestWindowInShell({.window_id = 1}));
+  std::unique_ptr<Window> popup(CreateTestWindowInShell(
+      {.window_type = aura::client::WINDOW_TYPE_POPUP, .window_id = 2}));
+  wm::ActivateWindow(window1.get());
+  wm::ActivateWindow(popup.get());
+  ASSERT_TRUE(wm::IsActiveWindow(popup.get()));
+
+  WindowCycleController* controller = Shell::Get()->window_cycle_controller();
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
+  generator->PressKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  generator->ReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  EXPECT_TRUE(controller->IsCycling());
+  generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
+  EXPECT_FALSE(controller->IsCycling());
+  EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
 }
 
 TEST_F(WindowCycleControllerTest, AlwaysOnTopWindow) {
