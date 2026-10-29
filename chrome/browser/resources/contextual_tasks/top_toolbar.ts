@@ -112,6 +112,8 @@ export class TopToolbarElement extends TopToolbarElementBase {
       permissionChipDelegate_: {type: Object},
       // </if>
       profileAvatarUrl: {type: String},
+      accountFullName: {type: String},
+      accountEmail: {type: String},
     };
   }
 
@@ -131,6 +133,8 @@ export class TopToolbarElement extends TopToolbarElementBase {
       loadTimeData.valueExists('profileAvatarUrl') ?
       loadTimeData.getString('profileAvatarUrl') :
       '';
+  accessor accountFullName: string = '';
+  accessor accountEmail: string = '';
   protected accessor isSidePanelRearchitectureEnabled_: boolean =
       loadTimeData.getBoolean('contextualTasksSidePanelRearchitectureEnabled');
   accessor isUserSignedIn: boolean = true;
@@ -182,6 +186,11 @@ export class TopToolbarElement extends TopToolbarElementBase {
       this.toolbarBrowserProxy_.callbackRouter.setProfileAvatarUrl.addListener(
           (avatarUrl: string) => {
             this.profileAvatarUrl = avatarUrl;
+          }),
+      this.toolbarBrowserProxy_.callbackRouter.setAccountInfo.addListener(
+          (fullName: string, email: string) => {
+            this.accountFullName = fullName;
+            this.accountEmail = email;
           }),
     ];
     window.addEventListener('blur', this.boundOnWindowBlur_);

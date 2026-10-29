@@ -15,3 +15,17 @@ cr-action-menu {
 cr-action-menu::part(dialog) {
   max-height: none;
 }
+
+#accountInfo {
+  background-color: var(--color-sys-surface-container-high,
+      var(--cr-hover-background-color));
+  border-radius: 12px;
+  color: var(--cr-primary-text-color);
+  font-size: 13px;
+  line-height: 20px;
+  margin: 0 8px;
+  overflow: hidden;
+  padding: 8px 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

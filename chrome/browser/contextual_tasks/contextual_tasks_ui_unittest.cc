@@ -296,6 +296,10 @@ class MockToolbarPage : public contextual_tasks_toolbar::mojom::Page {
   MOCK_METHOD(void, SetThreadTitle, (const std::string&), (override));
   MOCK_METHOD(void, OnSidePanelStateChanged, (), (override));
   MOCK_METHOD(void, SetProfileAvatarUrl, (const GURL& avatar_url), (override));
+  MOCK_METHOD(void,
+              SetAccountInfo,
+              (const std::string& full_name, const std::string& email),
+              (override));
 
   mojo::PendingRemote<contextual_tasks_toolbar::mojom::Page>
   BindAndGetRemote() {
@@ -3424,6 +3428,7 @@ TEST_F(ContextualTasksUiTest, OnSidePanelPinStateChanged_FeatureDisabled) {
 
   testing::StrictMock<MockToolbarPage> mock_page;
   EXPECT_CALL(mock_page, SetProfileAvatarUrl(_)).Times(testing::AnyNumber());
+  EXPECT_CALL(mock_page, SetAccountInfo(_, _)).Times(testing::AnyNumber());
   mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler> handler_remote;
   ui->CreatePageHandler(mock_page.BindAndGetRemote(),
                         handler_remote.BindNewPipeAndPassReceiver());
@@ -3439,6 +3444,8 @@ TEST_F(ContextualTasksUiTest, OnSidePanelPinStateChanged_FeatureDisabled) {
   auto legacy_ui = std::make_unique<ContextualTasksUI>(&legacy_web_ui);
   testing::StrictMock<MockToolbarPage> legacy_mock_page;
   EXPECT_CALL(legacy_mock_page, SetProfileAvatarUrl(_))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(legacy_mock_page, SetAccountInfo(_, _))
       .Times(testing::AnyNumber());
   mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler>
       legacy_handler_remote;
@@ -4849,6 +4856,98 @@ TEST_F(ContextualTasksUiTest, ProfileIndicator_WebSignedInWithExtendedInfo) {
             GURL(base::StrCat({"chrome://contextual-tasks/profile-avatar.png"
                                "?gaia_id=",
                                account_info.GetGaiaId().ToString()})));
+}
+
+TEST_F(ContextualTasksUiTest, AccountInfo_WebSignedInWithFullName) {
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("user@example.com");
+  account_info =
+      AccountInfo::Builder(account_info).SetFullName("Jane Doe").Build();
+  signin::UpdateAccountInfoForAccount(identity_test_env()->identity_manager(),
+                                      account_info);
+  identity_test_env()->SetCookieAccounts(
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandlerFactory>
+      factory_remote;
+  controller.BindInterface(factory_remote.BindNewPipeAndPassReceiver());
+
+  testing::NiceMock<MockContextualTasksToolbarPage> mock_page;
+  base::test::TestFuture<std::string, std::string> future;
+  EXPECT_CALL(mock_page, SetAccountInfo(_, _))
+      .WillOnce(
+          [&future](const std::string& full_name, const std::string& email) {
+            future.SetValue(full_name, email);
+          });
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler> page_handler;
+  factory_remote->CreatePageHandler(mock_page.BindAndGetRemote(),
+                                    page_handler.BindNewPipeAndPassReceiver());
+
+  auto [full_name, email] = future.Take();
+  EXPECT_EQ(full_name, "Jane Doe");
+  EXPECT_EQ(email, "user@example.com");
+}
+
+TEST_F(ContextualTasksUiTest, AccountInfo_EmptyWhenSignedOut) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandlerFactory>
+      factory_remote;
+  controller.BindInterface(factory_remote.BindNewPipeAndPassReceiver());
+
+  testing::NiceMock<MockContextualTasksToolbarPage> mock_page;
+  base::test::TestFuture<std::string, std::string> future;
+  EXPECT_CALL(mock_page, SetAccountInfo(_, _))
+      .WillOnce(
+          [&future](const std::string& full_name, const std::string& email) {
+            future.SetValue(full_name, email);
+          });
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler> page_handler;
+  factory_remote->CreatePageHandler(mock_page.BindAndGetRemote(),
+                                    page_handler.BindNewPipeAndPassReceiver());
+
+  auto [full_name, email] = future.Take();
+  EXPECT_EQ(full_name, "");
+  EXPECT_EQ(email, "");
+}
+
+TEST_F(ContextualTasksUiTest, AccountInfo_EmptyWhenSignedInToChrome) {
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "user@example.com", signin::ConsentLevel::kSignin);
+  identity_test_env()->SetCookieAccounts(
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandlerFactory>
+      factory_remote;
+  controller.BindInterface(factory_remote.BindNewPipeAndPassReceiver());
+
+  testing::NiceMock<MockContextualTasksToolbarPage> mock_page;
+  base::test::TestFuture<std::string, std::string> future;
+  EXPECT_CALL(mock_page, SetAccountInfo(_, _))
+      .WillOnce(
+          [&future](const std::string& full_name, const std::string& email) {
+            future.SetValue(full_name, email);
+          });
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler> page_handler;
+  factory_remote->CreatePageHandler(mock_page.BindAndGetRemote(),
+                                    page_handler.BindNewPipeAndPassReceiver());
+
+  auto [full_name, email] = future.Take();
+  EXPECT_EQ(full_name, "");
+  EXPECT_EQ(email, "");
 }
 
 TEST_F(ContextualTasksUiTest, ProfileIndicator_HiddenWhenSignedInToChrome) {
