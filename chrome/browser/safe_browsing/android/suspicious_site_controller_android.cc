@@ -465,15 +465,15 @@ void SuspiciousSiteControllerAndroid::MaybeTriggerHatsSurvey(
   if (survey_state_.has_triggered_survey) {
     return;
   }
-  if (!base::FeatureList::IsEnabled(
-          safe_browsing::kSuspiciousSiteWarningSurvey)) {
-    return;
-  }
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   HatsService* hats_service =
       HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
   if (!hats_service) {
+    return;
+  }
+  if (!base::FeatureList::IsEnabled(
+          safe_browsing::kSuspiciousSiteWarningSurvey)) {
     return;
   }
 
