@@ -225,6 +225,11 @@ void OrganizerTrayView::AddedToWidget() {
   shadow_frame_->SetShadowVisible(true);
 }
 
+void OrganizerTrayView::RemovedFromWidget() {
+  // This makes sure the event observer is cleaned up during browser teardown.
+  event_observer_.reset();
+}
+
 void OrganizerTrayView::VisibilityChanged(views::View* from, bool visible) {
   if (visible) {
     event_observer_ = std::make_unique<EventObserver>(*this);

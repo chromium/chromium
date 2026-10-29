@@ -62,6 +62,7 @@ class OrganizerTrayView : public views::FlexLayoutView,
   // views::View:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void AddedToWidget() override;
+  void RemovedFromWidget() override;
   void VisibilityChanged(views::View* from, bool visible) override;
   views::FocusTraversable* GetPaneFocusTraversable() override;
   void Layout(PassKey) override;
