@@ -62,6 +62,13 @@ class VIEWS_EXPORT MenuRunnerImpl : public MenuRunnerImplInterface,
   void Cancel() override;
   base::TimeTicks GetClosingEventTime() const override;
 
+  // Transfers ownership of `delegate` to `this`, so that it is destroyed
+  // together with `this`. Used by MenuRunnerImplAdapter to keep the
+  // MenuModelAdapter that built `menu_` alive for as long as `menu_`, since
+  // Release() may defer the destruction of `this` (and thus of `menu_`) while
+  // the delegate is still in use further up the call stack.
+  void TakeOwnershipOfDelegate(std::unique_ptr<MenuDelegate> delegate);
+
   // MenuControllerDelegate:
   void OnMenuClosed(NotifyType type,
                     MenuItemView* menu,
@@ -76,6 +83,10 @@ class VIEWS_EXPORT MenuRunnerImpl : public MenuRunnerImplInterface,
 
   // Returns true if mnemonics should be shown in the menu.
   bool ShouldShowMnemonics(int32_t run_types);
+
+  // Delegate owned by `this`, see TakeOwnershipOfDelegate(). Declared before
+  // `menu_` so that it outlives `menu_`.
+  std::unique_ptr<MenuDelegate> owned_delegate_;
 
   // Created and set as the delegate of the MenuItemView if Release() is
   // invoked.  This is done to make sure the delegate isn't notified after

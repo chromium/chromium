@@ -359,6 +359,7 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   friend class MenuControllerTest;
   friend class MenuHostRootView;
   friend class MenuItemView;
+  friend class MenuModelAdapter;
   friend class SubmenuView;
   friend class test::MenuControllerUITest;
 

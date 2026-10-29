@@ -234,6 +234,12 @@ base::TimeTicks MenuRunnerImpl::GetClosingEventTime() const {
   return closing_event_time_;
 }
 
+void MenuRunnerImpl::TakeOwnershipOfDelegate(
+    std::unique_ptr<MenuDelegate> delegate) {
+  CHECK(!owned_delegate_);
+  owned_delegate_ = std::move(delegate);
+}
+
 void MenuRunnerImpl::OnMenuClosed(NotifyType type,
                                   MenuItemView* menu,
                                   int mouse_event_flags) {

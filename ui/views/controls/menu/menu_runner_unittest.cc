@@ -11,6 +11,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -25,6 +26,9 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/native_ui_types.h"
+#include "ui/menus/simple_menu_model.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
+#include "ui/views/accessibility/ax_update_observer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -40,6 +44,7 @@
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_tracker.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/widget.h"
@@ -1584,6 +1589,141 @@ TEST_F(MenuRunnerTest,
   EXPECT_EQ(nullptr, delegate.menu_runner());
   EXPECT_EQ(nullptr, item_tracker.view());
   EXPECT_EQ(nullptr, MenuController::GetActiveInstance());
+}
+
+namespace {
+
+// Records the last MenuItemView that fired a kTextChanged accessibility event.
+// MenuItemViews fire this event synchronously when inserted into a showing
+// menu, which is where assistive technology may react (crbug.com/577364358).
+class MenuItemTextChangedRecorder : public AXUpdateObserver {
+ public:
+  MenuItemTextChangedRecorder() {
+    observation_.Observe(AXUpdateNotifier::Get());
+  }
+
+  View* last_item() { return last_item_.view(); }
+
+  // AXUpdateObserver:
+  void OnViewEvent(View* view, ax::mojom::Event event_type) override {
+    if (event_type == ax::mojom::Event::kTextChanged &&
+        IsViewClass<MenuItemView>(view)) {
+      last_item_.SetView(view);
+    }
+  }
+
+ private:
+  ViewTracker last_item_;
+  base::ScopedObservation<AXUpdateNotifier, AXUpdateObserver> observation_{
+      this};
+};
+
+// A SimpleMenuModel that runs a callback the first time MayHaveMnemonicsAt()
+// is called after the callback is set. MenuModelAdapter calls it right after
+// inserting each item into the menu, so this models code reacting
+// synchronously to an item insertion while MenuModelAdapter::BuildMenu() is on
+// the stack. (AXUpdateNotifier disallows re-entrant notifications, so the
+// reaction cannot be triggered from MenuItemTextChangedRecorder directly.)
+class OnItemAddedMenuModel : public ui::SimpleMenuModel {
+ public:
+  OnItemAddedMenuModel() : ui::SimpleMenuModel(/*delegate=*/nullptr) {
+    AddItem(TestCommandIds::kItem1, u"One");
+    AddItem(TestCommandIds::kItem2, u"Two");
+  }
+
+  void set_on_item_added(base::OnceClosure callback) {
+    on_item_added_ = std::move(callback);
+  }
+
+  bool fired() const { return fired_; }
+
+  // ui::SimpleMenuModel:
+  bool MayHaveMnemonicsAt(size_t index) const override {
+    if (on_item_added_) {
+      fired_ = true;
+      std::move(on_item_added_).Run();
+    }
+    return ui::SimpleMenuModel::MayHaveMnemonicsAt(index);
+  }
+
+ private:
+  mutable base::OnceClosure on_item_added_;
+  mutable bool fired_ = false;
+};
+
+}  // namespace
+
+// Regression test for crbug.com/577364358. Releasing the MenuRunner while
+// MenuModelAdapter::BuildMenu() rebuilds the showing menu must not destroy the
+// menu (or the MenuModelAdapter) until the rebuild has finished.
+TEST_F(MenuRunnerTest, ReleaseDuringRebuildOfShowingMenuDefersDestruction) {
+  OnItemAddedMenuModel model;
+  auto runner = std::make_unique<MenuRunner>(&model, /*run_types=*/0);
+  runner->RunMenuAt(owner(), /*button_controller=*/nullptr, gfx::Rect(),
+                    MenuAnchorPosition::kTopLeft,
+                    ui::mojom::MenuSourceType::kNone);
+  ASSERT_TRUE(runner->IsRunning());
+
+  MenuItemTextChangedRecorder recorder;
+  ViewTracker item_tracker;
+  model.set_on_item_added(base::BindLambdaForTesting([&] {
+    // The item that was just inserted into the showing menu.
+    item_tracker.SetView(recorder.last_item());
+    ASSERT_NE(nullptr, item_tracker.view());
+    runner.reset();
+    // MenuModelAdapter::BuildMenu() is still on the call stack, so the item
+    // must remain alive.
+    EXPECT_NE(nullptr, item_tracker.view());
+    // The released menu no longer observes the model.
+    EXPECT_EQ(nullptr, model.menu_model_delegate());
+  }));
+
+  ASSERT_TRUE(model.menu_model_delegate());
+  model.menu_model_delegate()->OnMenuStructureChanged();
+
+  EXPECT_TRUE(model.fired());
+  EXPECT_EQ(nullptr, runner);
+  // The deferred destruction happens once the rebuild has unwound.
+  EXPECT_EQ(nullptr, item_tracker.view());
+  EXPECT_EQ(nullptr, MenuController::GetActiveInstance());
+  EXPECT_EQ(nullptr, model.menu_model_delegate());
+}
+
+// Like the above, but the menu is canceled (e.g. because its owner window was
+// deactivated) rather than released, and the MenuRunner is then released from
+// the menu closed callback, like EditableCombobox does.
+TEST_F(MenuRunnerTest, CancelDuringRebuildOfShowingMenuDefersDestruction) {
+  OnItemAddedMenuModel model;
+  std::unique_ptr<MenuRunner> runner;
+  runner = std::make_unique<MenuRunner>(
+      &model, /*run_types=*/0,
+      base::BindLambdaForTesting([&runner] { runner.reset(); }));
+  runner->RunMenuAt(owner(), /*button_controller=*/nullptr, gfx::Rect(),
+                    MenuAnchorPosition::kTopLeft,
+                    ui::mojom::MenuSourceType::kNone);
+  ASSERT_TRUE(runner->IsRunning());
+
+  MenuItemTextChangedRecorder recorder;
+  ViewTracker item_tracker;
+  model.set_on_item_added(base::BindLambdaForTesting([&] {
+    // The item that was just inserted into the showing menu.
+    item_tracker.SetView(recorder.last_item());
+    ASSERT_NE(nullptr, item_tracker.view());
+    MenuController::GetActiveInstance()->Cancel(MenuController::ExitType::kAll);
+    // The menu closed callback released the MenuRunner, but
+    // MenuModelAdapter::BuildMenu() is still on the call stack, so the item
+    // must remain alive.
+    EXPECT_EQ(nullptr, runner);
+    EXPECT_NE(nullptr, item_tracker.view());
+  }));
+
+  ASSERT_TRUE(model.menu_model_delegate());
+  model.menu_model_delegate()->OnMenuStructureChanged();
+
+  EXPECT_TRUE(model.fired());
+  EXPECT_EQ(nullptr, item_tracker.view());
+  EXPECT_EQ(nullptr, MenuController::GetActiveInstance());
+  EXPECT_EQ(nullptr, model.menu_model_delegate());
 }
 
 }  // namespace views::test
