@@ -585,7 +585,9 @@ bool V8Initializer::WasmCodeGenerationCheckCallback(
   if (!execution_context) {
     return false;
   }
-  ContentSecurityPolicy* policy = execution_context->GetContentSecurityPolicy();
+  ContentSecurityPolicy* policy =
+      execution_context->GetContentSecurityPolicyForWorld(
+          &DOMWrapperWorld::World(execution_context->GetIsolate(), context));
   if (!policy || !policy->AllowWasmCodeGeneration(
                      ReportingDisposition::kReport,
                      ContentSecurityPolicy::kWillThrowException,

@@ -945,6 +945,70 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType,
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
+// Tests that WebAssembly code generation in a content script is checked
+// against the isolated world's CSP (which, for MV3 extensions, includes
+// 'wasm-unsafe-eval') rather than the page's CSP. Regression test for a bug
+// where V8Initializer::WasmCodeGenerationCheckCallback consulted the main
+// world CSP regardless of the world the code was being generated in.
+IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, BypassPageCSPForWasm) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  static constexpr char kWasmManifest[] = R"(
+      {
+        "name": "Wasm in content script on a page with a restrictive CSP",
+        "version": "0.1",
+        "manifest_version": 3,
+        "host_permissions": ["http://*/*"],
+        "content_scripts": [{
+          "matches": ["http://*/*/test_file_with_csp.html"],
+          "js": ["content_script.js"]
+        }]
+      })";
+  // Instantiate the smallest possible wasm module: the magic header
+  // (0, "A", "S", "M") followed by the version (0x1).
+  static constexpr char kContentScript[] = R"(
+      (async () => {
+        const bytes = new Uint8Array([0, 0x61, 0x73, 0x6d, 0x1, 0, 0, 0]);
+        try {
+          await WebAssembly.instantiate(bytes);
+          chrome.test.sendMessage('wasm allowed');
+        } catch (e) {
+          chrome.test.sendMessage('wasm blocked: ' + e.message);
+        }
+      })();)";
+
+  TestExtensionDir dir;
+  dir.WriteManifest(kWasmManifest);
+  dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScript);
+  ASSERT_TRUE(LoadExtension(dir.UnpackedPath()));
+
+  // test_file_with_csp.html declares `default-src 'none'`, which disallows
+  // wasm code generation in the main world.
+  ExtensionTestMessageListener listener;
+  GURL url =
+      embedded_test_server()->GetURL("/extensions/test_file_with_csp.html");
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
+
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+  EXPECT_EQ("wasm allowed", listener.message());
+
+  // Sanity check: the page's CSP does block wasm in the main world, so the
+  // content script above only succeeded because the isolated world's CSP was
+  // applied.
+  static constexpr char kMainWorldScript[] = R"(
+      (async () => {
+        const bytes = new Uint8Array([0, 0x61, 0x73, 0x6d, 0x1, 0, 0, 0]);
+        try {
+          await WebAssembly.instantiate(bytes);
+          return 'wasm allowed';
+        } catch (e) {
+          return 'wasm blocked';
+        }
+      })();)";
+  EXPECT_EQ("wasm blocked", content::EvalJs(web_contents, kMainWorldScript));
+}
+
 // Test that when injecting a blocking content script, other scripts don't run
 // until the blocking script finishes.
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptBlockingScript) {
