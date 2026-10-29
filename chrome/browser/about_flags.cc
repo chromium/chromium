@@ -6694,10 +6694,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kArcUnthrottleOnActiveAudioV2Name,
      flag_descriptions::kArcUnthrottleOnActiveAudioV2Description, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kUnthrottleOnActiveAudioV2)},
-    {"arc-vmm-swap-keyboard-shortcut",
-     flag_descriptions::kArcVmmSwapKBShortcutName,
-     flag_descriptions::kArcVmmSwapKBShortcutDesc, kOsCrOS,
-     FEATURE_VALUE_TYPE(arc::kVmmSwapKeyboardShortcut)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)

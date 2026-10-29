@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_ARC_VMM_VMM_METRICS_PROVIDER_H_
 #define CHROME_BROWSER_ASH_ARC_VMM_VMM_METRICS_PROVIDER_H_
 
-#include "chrome/browser/ash/arc/vmm/arc_vmm_manager.h"
+#include "base/scoped_observation.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "components/metrics/metrics_provider.h"
 
 namespace arc {

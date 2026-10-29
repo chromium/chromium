@@ -7492,13 +7492,6 @@ inline constexpr char kArcResizeCompatName[] =
 inline constexpr char kArcResizeCompatDescription[] =
     "Enable resize compatibility features for ARC++ apps";
 
-inline constexpr char kArcVmmSwapKBShortcutName[] =
-    "Keyboard shortcut trigger for ARCVM"
-    " vmm swap feature";
-inline constexpr char kArcVmmSwapKBShortcutDesc[] =
-    "Alt + Ctrl + Shift + O/P to enable / disable ARCVM vmm swap. Only for "
-    "experimental usage.";
-
 inline constexpr char kArcAAudioMMAPLowLatencyName[] =
     "Enable ARCVM AAudio MMAP low latency";
 inline constexpr char kArcAAudioMMAPLowLatencyDescription[] =

@@ -289,37 +289,6 @@ BASE_FEATURE_PARAM(int,
                    "ram_percentage",
                    100);
 
-// Controls experimental key to enable ghost window when launch app under ARCVM
-// swap out state.
-BASE_FEATURE(kVmmSwapoutGhostWindow,
-             "ArcVmmSwapoutGhostWindow",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Controls experimental key to enable Vmm swap for ARCVM by keyboard shortcut.
-BASE_FEATURE(kVmmSwapKeyboardShortcut,
-             "ArcvmSwapoutKeyboardShortcut",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Controls experimental key to enable and swap out ARCVM by policy.
-BASE_FEATURE(kVmmSwapPolicy,
-             "ArcVmmSwapPolicy",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Controls the interval for swap trimming maintenance.
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kVmmSwapTrimInterval,
-                   &kVmmSwapPolicy,
-                   "swap_trim_interval",
-                   base::Hours(1));
-
-// Controls the minimum time interval between attempts to shrink ARCVM memory
-// when swap is enabled or swap trimming is performed.
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kVmmSwapMinShrinkInterval,
-                   &kVmmSwapPolicy,
-                   "min_shrink_interval",
-                   base::Minutes(10));
-
 // Controls the feature to update the minimum Android process state to be
 // considered to be killed under perceptible memory pressure. This is to prevent
 // top Android apps from being killed that result in bad user experience.

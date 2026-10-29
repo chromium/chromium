@@ -41,7 +41,6 @@ allow_circular_includes_from_untriaged = [
   "//chrome/browser/ash/arc/policy:policy",
   "//chrome/browser/ash/arc/session:service_launcher",
   "//chrome/browser/ash/arc/session:session",
-  "//chrome/browser/ash/arc/vmm:vmm",
   "//chrome/browser/ash/arc/window_predictor:window_predictor",
   "//chrome/browser/ash/arc:arc",
   "//chrome/browser/ash/attestation:attestation",

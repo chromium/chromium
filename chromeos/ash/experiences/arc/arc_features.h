@@ -61,11 +61,6 @@ BASE_DECLARE_FEATURE(kVmMemorySize);
 BASE_DECLARE_FEATURE_PARAM(int, kVmMemorySizeShiftMiB);
 BASE_DECLARE_FEATURE_PARAM(int, kVmMemorySizeMaxMiB);
 BASE_DECLARE_FEATURE_PARAM(int, kVmMemorySizePercentage);
-BASE_DECLARE_FEATURE(kVmmSwapoutGhostWindow);
-BASE_DECLARE_FEATURE(kVmmSwapKeyboardShortcut);
-BASE_DECLARE_FEATURE(kVmmSwapPolicy);
-BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kVmmSwapTrimInterval);
-BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kVmmSwapMinShrinkInterval);
 BASE_DECLARE_FEATURE(kLmkPerceptibleMinStateUpdate);
 }  // namespace arc
 

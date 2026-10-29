@@ -202,7 +202,6 @@ group("browser_tests") {
     "//chrome/browser/ash/arc/intent_helper:browser_tests",
     "//chrome/browser/ash/arc/session:browser_tests",
     "//chrome/browser/ash/arc/user_session:browser_tests",
-    "//chrome/browser/ash/arc/vmm:browser_tests",
   ]
 }
 

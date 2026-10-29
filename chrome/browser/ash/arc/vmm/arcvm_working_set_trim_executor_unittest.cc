@@ -154,20 +154,6 @@ TEST_F(ArcVmWorkingSetTrimExecutorTest, TrimAllDoesTrimVmMemory) {
   task_environment_.FastForwardBy(DELAYED_TIME_DELTA);
 }
 
-TEST_F(ArcVmWorkingSetTrimExecutorTest, TrimAllGuestOnlyDoesNotTrimVmMemory) {
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ArcVmWorkingSetTrimExecutor::Trim, testing_profile(),
-                     base::BindOnce([](bool result, const std::string& msg) {
-                       // Unlike TrimAllDoesTrimVmMemory, the trim should
-                       // be a success.
-                       EXPECT_TRUE(result);
-                     }),
-                     ArcVmReclaimType::kReclaimAllGuestOnly, 0));
-  task_environment_.RunUntilIdle();
-  task_environment_.FastForwardBy(DELAYED_TIME_DELTA);
-}
-
 TEST_F(ArcVmWorkingSetTrimExecutorTest, TestSkipDropCachesFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(arc::kSkipDropCaches);

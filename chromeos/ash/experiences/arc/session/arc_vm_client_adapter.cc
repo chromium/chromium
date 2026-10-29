@@ -482,10 +482,6 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
 
   request.set_vm_memory_psi_period(kVmMemoryPsiPeriod.InSeconds());
 
-  request.set_enable_vmm_swap(
-      base::FeatureList::IsEnabled(kVmmSwapPolicy) ||
-      base::FeatureList::IsEnabled(kVmmSwapKeyboardShortcut));
-
 #if defined(ARCH_CPU_X86_64)
   if (base::FeatureList::IsEnabled(kEnableArcS2Idle)) {
     request.set_enable_s2idle(true);

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
 
+#include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
@@ -98,6 +99,10 @@ void ArcVmWorkingSetTrimExecutor::OnDropArcVmCaches(
     return;
   }
 
+  // kReclaimNone is disallowed in Trim() and kReclaimGuestPageCaches returned
+  // above, so only kReclaimAll remains.
+  CHECK_EQ(reclaim_type, ArcVmReclaimType::kReclaimAll);
+
   // Do the actual VM trimming regardless of the |result|. When ARCVM swap
   // is enabled and not locked, try to reclaim from the guest first to avoid
   // swap shuffle, where a page owned by the guest is swapped out from the host
@@ -123,9 +128,7 @@ void ArcVmWorkingSetTrimExecutor::OnDropArcVmCaches(
         arc::kGuestReclaimOnlyAnonymous.Get() ? arc::mojom::ReclaimType::ANON
                                               : arc::mojom::ReclaimType::ALL);
 
-    const bool should_reclaim_from_host =
-        reclaim_type == ArcVmReclaimType::kReclaimAll &&
-        arc::kVirtualSwapEnabled.Get();
+    const bool should_reclaim_from_host = arc::kVirtualSwapEnabled.Get();
 
     bridge->Reclaim(
         std::move(reclaim_request),
@@ -133,7 +136,7 @@ void ArcVmWorkingSetTrimExecutor::OnDropArcVmCaches(
                        std::make_unique<base::ElapsedTimer>(),
                        std::move(callback), should_reclaim_from_host,
                        page_limit));
-  } else if (reclaim_type == ArcVmReclaimType::kReclaimAll) {
+  } else {
     arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
     if (!arc_session_manager) {
       LogErrorAndInvokeCallback("ArcSessionManager unavailable",
@@ -141,8 +144,6 @@ void ArcVmWorkingSetTrimExecutor::OnDropArcVmCaches(
       return;
     }
     arc_session_manager->TrimVmMemory(std::move(callback), page_limit);
-  } else {
-    std::move(callback).Run(true, "");
   }
 }
 

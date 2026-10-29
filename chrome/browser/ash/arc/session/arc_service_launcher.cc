@@ -66,7 +66,6 @@
 #include "chrome/browser/ash/arc/tracing/arc_tracing_bridge.h"
 #include "chrome/browser/ash/arc/tts/arc_tts_service.h"
 #include "chrome/browser/ash/arc/vmm/arc_system_state_bridge.h"
-#include "chrome/browser/ash/arc/vmm/arc_vmm_manager.h"
 #include "chrome/browser/ash/arc/wallpaper/arc_wallpaper_service.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -397,8 +396,6 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(
 
   if (arc::IsArcVmEnabled()) {
     // ARCVM-only services.
-    ArcVmmManager::GetForBrowserContext(profile)->set_user_id_hash(
-        user_id_hash);
     ArcSafetyBridge::GetForBrowserContext(profile);
     ArcSystemStateBridge::GetForBrowserContext(profile);
 
@@ -579,7 +576,6 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   ArcUsbHostBridge::EnsureFactoryBuilt();
   ArcUsbHostPermissionManagerFactory::GetInstance();
   ArcUserSessionService::EnsureFactoryBuilt();
-  ArcVmmManager::EnsureFactoryBuilt();
   ArcVolumeMounterBridge::EnsureFactoryBuilt();
   ArcWakeLockBridge::EnsureFactoryBuilt();
   ArcWallpaperService::EnsureFactoryBuilt();

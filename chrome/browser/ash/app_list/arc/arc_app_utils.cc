@@ -34,7 +34,6 @@
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
 #include "chrome/browser/ash/arc/notification/arc_management_transition_notification.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chrome/browser/ash/arc/vmm/arc_vmm_manager.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -46,7 +45,6 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_launch_notifier.h"
-#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
@@ -231,12 +229,6 @@ std::string ConstructArcAppShortcutUrl(const std::string& app_id,
   return "appshortcutsearch://" + app_id + "/" + shortcut_id;
 }
 
-bool IsArcVmAndSwappedOut(content::BrowserContext* context) {
-  return IsArcVmEnabled() &&
-         base::FeatureList::IsEnabled(arc::kVmmSwapoutGhostWindow) &&
-         ArcVmmManager::GetForBrowserContext(context)->IsSwapped();
-}
-
 }  // namespace
 
 bool ShouldShowInLauncher(const std::string& app_id) {
@@ -416,19 +408,6 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
     }
     prefs->SetLastLaunchTime(app_id);
     return true;
-  } else if (IsArcVmAndSwappedOut(context) &&
-             !WindowPredictor::GetInstance()->IsAppPendingLaunch(profile,
-                                                                 app_id)) {
-    // Assume this condition branch will never be triggered in ARCVM launch (ARC
-    // booting) stage. It should be trigger after ARCVM idle for a while.
-    if (WindowPredictor::GetInstance()->LaunchArcAppWithGhostWindow(
-            profile, app_id, *app_info, launch_intent_to_send, event_flags,
-            GhostWindowType::kAppLaunch, WindowPredictorUseCase::kArcVmmSwapped,
-            window_info)) {
-      return true;
-    }
-    VLOG(2) << "Failed to launch ghost window for swapped state, fallback to "
-               "launch directly.";
   } else if (app_id == kPlayStoreAppId) {
     // Record launch request time in order to track Play Store default launch
     // performance.
