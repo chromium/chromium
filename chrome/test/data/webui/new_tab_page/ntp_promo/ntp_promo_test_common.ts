@@ -4,10 +4,7 @@
 
 import 'chrome://new-tab-page/lazy_load.js';
 
-import {NtpPromoProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
-import type {NtpPromoProxy} from 'chrome://new-tab-page/lazy_load.js';
-import {NtpPromoClientCallbackRouter} from 'chrome://new-tab-page/new_tab_page.js';
-import type {NtpPromoClientRemote, NtpPromoHandlerInterface} from 'chrome://new-tab-page/new_tab_page.js';
+import type {NtpPromoHandlerInterface} from 'chrome://new-tab-page/new_tab_page.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestNtpPromoHandler extends TestBrowserProxy implements
@@ -35,35 +32,5 @@ export class TestNtpPromoHandler extends TestBrowserProxy implements
 
   onPromoDismissed(promoId: string) {
     this.methodCalled('onPromoDismissed', promoId);
-  }
-}
-
-export class TestNtpPromoProxy implements NtpPromoProxy {
-  private testHandler_ = new TestNtpPromoHandler();
-  private callbackRouter_: NtpPromoClientCallbackRouter =
-      new NtpPromoClientCallbackRouter();
-  private callbackRouterRemote_: NtpPromoClientRemote;
-
-  constructor() {
-    this.callbackRouterRemote_ =
-        this.callbackRouter_.$.bindNewPipeAndPassRemote();
-  }
-
-  static install(): TestNtpPromoProxy {
-    const testProxy = new TestNtpPromoProxy();
-    NtpPromoProxyImpl.setInstance(testProxy);
-    return testProxy;
-  }
-
-  getHandler(): TestNtpPromoHandler {
-    return this.testHandler_;
-  }
-
-  getCallbackRouter(): NtpPromoClientCallbackRouter {
-    return this.callbackRouter_;
-  }
-
-  getCallbackRouterRemote(): NtpPromoClientRemote {
-    return this.callbackRouterRemote_;
   }
 }

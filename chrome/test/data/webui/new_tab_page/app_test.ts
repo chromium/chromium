@@ -7,9 +7,9 @@ import type {ActionChipClickDetail, ComposeboxFuseboxActionRequest, Module} from
 import {ActionChipsRetrievalState, ComposeboxProxyImpl, ModuleRegistry, NtpComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
 import {ActionChipsHandlerRemote, ActionChipsPageCallbackRouter, IconType, InputSource, QueryActionOverride, SearchboxOverride} from 'chrome://new-tab-page/new_tab_page.js';
 import type {ActionChipsPageRemote, CustomizeButtonsDocumentRemote, FuseboxAction, TabInfo} from 'chrome://new-tab-page/new_tab_page.js';
-import {$$, BackgroundManager, browserCommandProxyFactory, CONTEXTUAL_ENTRYPOINT_ELEMENT_ID, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, CustomizeButtonsProxy, CustomizeChromeSection, CustomizeDialogPage, GlifAnimationState, NewTabPageProxy, NtpCustomizeChromeEntryPoint, NtpElement, SearchboxBrowserProxy, SidePanelOpenTrigger, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, BackgroundManager, browserCommandProxyFactory, CONTEXTUAL_ENTRYPOINT_ELEMENT_ID, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, CustomizeButtonsHandlerRemote, customizeButtonsProxyFactory, CustomizeChromeSection, CustomizeDialogPage, GlifAnimationState, newTabPageProxyFactory, NtpCustomizeChromeEntryPoint, NtpElement, SearchboxBrowserProxy, SidePanelOpenTrigger, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {AppElement, CustomizeButtonsElement, NtpSearchboxElement, PageRemote} from 'chrome://new-tab-page/new_tab_page.js';
-import {NtpBackgroundImageSource, PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.js';
+import {NtpBackgroundImageSource, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.js';
 import {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ContextUploadStatus, ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
@@ -70,13 +70,18 @@ suite('NewTabPageAppTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     windowProxy = installMock(WindowProxy);
-    handler = installMock(
-        PageHandlerRemote,
-        mock => NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
-    customizeButtonsHandler = installMock(
-        CustomizeButtonsHandlerRemote,
-        mock => CustomizeButtonsProxy.setInstance(
-            mock, new CustomizeButtonsDocumentCallbackRouter()));
+    handler = installMock(PageHandlerRemote, mock => {
+      const {instance, remote} = newTabPageProxyFactory.createForTest(mock);
+      newTabPageProxyFactory.setInstance(instance);
+      callbackRouterRemote = remote;
+    });
+    customizeButtonsHandler =
+        installMock(CustomizeButtonsHandlerRemote, mock => {
+          const {instance, remote} =
+              customizeButtonsProxyFactory.createForTest(mock);
+          customizeButtonsProxyFactory.setInstance(instance);
+          customizeButtonsCallbackRouterRemote = remote;
+        });
     handler.setPromiseResolveFor('getMostVisitedSettings', {
       customLinksEnabled: false,
       shortcutsVisible: false,
@@ -102,11 +107,6 @@ suite('NewTabPageAppTest', () => {
     windowProxy.setPromiseResolveFor('waitForLazyRender');
     windowProxy.setResultFor('createIframeSrc', '');
     windowProxy.setResultFor('url', url);
-    callbackRouterRemote = NewTabPageProxy.getInstance()
-                               .callbackRouter.$.bindNewPipeAndPassRemote();
-    customizeButtonsCallbackRouterRemote =
-        CustomizeButtonsProxy.getInstance()
-            .callbackRouter.$.bindNewPipeAndPassRemote();
     backgroundManager = installMock(BackgroundManager);
     backgroundManager.setPromiseResolveFor(
         'getBackgroundImageLoadTime', backgroundImageLoadTime);
@@ -6037,7 +6037,8 @@ suite('NewTabPageAppReducedMotionTest', () => {
     });
     handler = installMock(
         PageHandlerRemote,
-        mock => NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
+        mock => newTabPageProxyFactory.setInstance(
+            newTabPageProxyFactory.createForTest(mock).instance));
     handler.setResultFor('getMostVisitedSettings', Promise.resolve({
       customLinksEnabled: false,
       shortcutsVisible: false,
@@ -6217,7 +6218,8 @@ suite('NewTabPageAppContextMenuAnimationTest', () => {
     });
     handler = installMock(
         PageHandlerRemote,
-        mock => NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
+        mock => newTabPageProxyFactory.setInstance(
+            newTabPageProxyFactory.createForTest(mock).instance));
     handler.setResultFor('getMostVisitedSettings', Promise.resolve({
       customLinksEnabled: false,
       shortcutsVisible: false,

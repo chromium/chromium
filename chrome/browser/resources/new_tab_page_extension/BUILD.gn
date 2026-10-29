@@ -31,7 +31,7 @@ _ntp_entry_points = [
   "lens_upload_dialog.js",
   "logo.js",
   "metrics_utils.js",
-  "new_tab_page_proxy.js",
+  "new_tab_page.mojom-webui.js",
   "ntp_composebox.js",
   "ntp_searchbox.js",
   "window_proxy.js",

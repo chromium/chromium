@@ -18,7 +18,6 @@ import './modules/module_descriptors.js';
 import './modules/modules.js';
 import './ntp_composebox.js';
 import './ntp_promo/individual_promos.js';
-import './ntp_promo/ntp_promo_proxy.js';
 import './voice_search_overlay.js';
 import 'chrome://resources/cr_components/most_visited/most_visited.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -76,6 +75,4 @@ export {COLOR_NEW_TAB_PAGE_MODULE_TAB_GROUPS_DOT_PREFIX, COLOR_NEW_TAB_PAGE_MODU
 export {TabGroupsProxyImpl} from './modules/tab_groups/tab_groups_proxy.js';
 export {NtpComposeboxElement} from './ntp_composebox.js';
 export {IndividualPromosElement} from './ntp_promo/individual_promos.js';
-export {NtpPromoProxyImpl} from './ntp_promo/ntp_promo_proxy.js';
-export type {NtpPromoProxy} from './ntp_promo/ntp_promo_proxy.js';
 export {VoiceSearchOverlayElement} from './voice_search_overlay.js';

@@ -7,10 +7,10 @@ import 'chrome://resources/cr_components/most_visited/most_visited.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 
-import {BrowserProxy} from './browser_proxy.js';
+import {browserProxyFactory} from './new_tab_page_third_party.mojom-webui.js';
 
 
-const {callbackRouter, handler} = BrowserProxy.getInstance();
+const {callbackRouter, handler} = browserProxyFactory.getInstance();
 
 callbackRouter.setTheme.addListener(theme => {
   const html = document.documentElement;

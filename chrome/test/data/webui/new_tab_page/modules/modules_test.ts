@@ -5,7 +5,7 @@
 import type {Module, ModulesElement, ModuleWrapperElement, NamedWidth} from 'chrome://new-tab-page/lazy_load.js';
 import {ModuleDescriptor, ModuleRegistry, SUPPORTED_MODULE_WIDTHS} from 'chrome://new-tab-page/lazy_load.js';
 import type {PageRemote} from 'chrome://new-tab-page/new_tab_page.js';
-import {NewTabPageProxy, PageCallbackRouter, PageHandlerRemote, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {newTabPageProxyFactory, PageHandlerRemote, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -34,15 +34,14 @@ suite('NewTabPageModulesModulesV2Test', () => {
       modulesMaxColumnCount: MAX_COLUMN_COUNT,
       multipleLoadedModulesMaxModuleInstanceCount: NO_MAX_INSTANCE_COUNT,
     });
-    handler = installMock(
-        PageHandlerRemote,
-        (mock: PageHandlerRemote) =>
-            NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
+    handler = installMock(PageHandlerRemote, (mock: PageHandlerRemote) => {
+      const {instance, remote} = newTabPageProxyFactory.createForTest(mock);
+      newTabPageProxyFactory.setInstance(instance);
+      callbackRouterRemote = remote;
+    });
 
     metrics = fakeMetricsPrivate();
     moduleRegistry = installMock(ModuleRegistry);
-    callbackRouterRemote = NewTabPageProxy.getInstance()
-                               .callbackRouter.$.bindNewPipeAndPassRemote();
     handler.setResultFor('getModulesEligibleForRemoval', {moduleIds: []});
   });
 

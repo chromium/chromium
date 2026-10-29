@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {ModuleIdName} from '../new_tab_page.mojom-webui.js';
-import {NewTabPageProxy} from '../new_tab_page_proxy.js';
+import {browserProxyFactory} from '../new_tab_page.mojom-webui.js';
 
 import type {Module, ModuleDescriptor} from './module_descriptor.js';
 import {descriptors} from './module_descriptors.js';
@@ -40,7 +40,8 @@ export class ModuleRegistry {
    */
   async initializeModules(timeout: number): Promise<Module[]> {
     const modulesIdNames: ModuleIdName[] =
-        (await NewTabPageProxy.getInstance().handler.getModulesIdNames()).data;
+        (await browserProxyFactory.getInstance().handler.getModulesIdNames())
+            .data;
     return this.initializeModulesHavingIds(
         modulesIdNames.map(m => m.id), timeout);
   }
@@ -60,13 +61,13 @@ export class ModuleRegistry {
     // Capture updateDisabledModules -> setDisabledModules round trip in a
     // promise for convenience.
     const disabledIds = await new Promise<string[]>((resolve, _) => {
-      const callbackRouter = NewTabPageProxy.getInstance().callbackRouter;
+      const callbackRouter = browserProxyFactory.getInstance().callbackRouter;
       const listenerId = callbackRouter.setDisabledModules.addListener(
           (all: boolean, ids: string[]) => {
             callbackRouter.removeListener(listenerId);
             resolve(all ? this.descriptors_.map(({id}) => id) : ids);
           });
-      NewTabPageProxy.getInstance().handler.updateDisabledModules();
+      browserProxyFactory.getInstance().handler.updateDisabledModules();
     });
     const descriptorsMap: Map<string, ModuleDescriptor> =
         new Map(this.descriptors_.map(d => [d.id, d]));
@@ -79,7 +80,7 @@ export class ModuleRegistry {
     // order (e.g. because they were just enabled or launched) land at the
     // bottom of the list.
     const orderedIds =
-        (await NewTabPageProxy.getInstance().handler.getModulesOrder())
+        (await browserProxyFactory.getInstance().handler.getModulesOrder())
             .moduleIds;
     if (orderedIds.length > 0) {
       descriptors.sort((a, b) => {

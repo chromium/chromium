@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
-import {NewTabPageProxy, PageCallbackRouter, PageHandlerRemote, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {newTabPageProxyFactory, PageHandlerRemote, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {ModuleIdName, PageRemote} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
@@ -25,12 +25,11 @@ suite('NewTabPageModulesModuleRegistryTest', () => {
     loadTimeData.overrideValues({navigationStartTime: 0.0});
     metrics = fakeMetricsPrivate();
     windowProxy = installMock(WindowProxy);
-    handler = installMock(
-        PageHandlerRemote,
-        (mock: PageHandlerRemote) =>
-            NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
-    callbackRouterRemote = NewTabPageProxy.getInstance()
-                               .callbackRouter.$.bindNewPipeAndPassRemote();
+    handler = installMock(PageHandlerRemote, (mock: PageHandlerRemote) => {
+      const {instance, remote} = newTabPageProxyFactory.createForTest(mock);
+      newTabPageProxyFactory.setInstance(instance);
+      callbackRouterRemote = remote;
+    });
   });
 
   test('multi instance', async () => {

@@ -14,8 +14,8 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {recordBoolean, recordOccurrence, recordSmallCount, recordSparseValueWithPersistentHash} from '../metrics_utils.js';
-import type {ModuleIdName, PageCallbackRouter, PageHandlerRemote} from '../new_tab_page.mojom-webui.js';
-import {NewTabPageProxy} from '../new_tab_page_proxy.js';
+import type {ModuleIdName, PageCallbackRouter, PageHandlerInterface} from '../new_tab_page.mojom-webui.js';
+import {browserProxyFactory} from '../new_tab_page.mojom-webui.js';
 import {WindowProxy} from '../window_proxy.js';
 
 import type {Module} from './module_descriptor.js';
@@ -267,12 +267,12 @@ export class ModulesElement extends CrLitElement {
     }
   }
 
-  get pageHandler_(): PageHandlerRemote {
-    return NewTabPageProxy.getInstance().handler;
+  get pageHandler_(): PageHandlerInterface {
+    return browserProxyFactory.getInstance().handler;
   }
 
   get callbackRouter_(): PageCallbackRouter {
-    return NewTabPageProxy.getInstance().callbackRouter;
+    return browserProxyFactory.getInstance().callbackRouter;
   }
 
   protected moduleDisabled_(instance: ModuleInstance): boolean {

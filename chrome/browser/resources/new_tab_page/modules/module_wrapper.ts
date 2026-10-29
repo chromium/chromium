@@ -7,7 +7,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {CrLitElement, render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {recordLoadDuration, recordOccurrence, recordPerdecage, recordSparseValueWithPersistentHash} from '../metrics_utils.js';
-import {NewTabPageProxy} from '../new_tab_page_proxy.js';
+import {browserProxyFactory} from '../new_tab_page.mojom-webui.js';
 import {WindowProxy} from '../window_proxy.js';
 
 import type {ModuleDescriptor} from './module_descriptor.js';
@@ -103,7 +103,7 @@ export class ModuleWrapperElement extends CrLitElement {
     this.module.element.addEventListener('usage', (e: Event) => {
       e.stopPropagation();
       assert(this.module);
-      NewTabPageProxy.getInstance().handler.onModuleUsed(
+      browserProxyFactory.getInstance().handler.onModuleUsed(
           this.module.descriptor.id);
 
       recordOccurrence('NewTabPage.Modules.Usage');
@@ -115,7 +115,7 @@ export class ModuleWrapperElement extends CrLitElement {
     this.module.element.addEventListener('menu-button-click', (e: Event) => {
       e.stopPropagation();
       assert(this.module);
-      NewTabPageProxy.getInstance().handler.onModuleUsed(
+      browserProxyFactory.getInstance().handler.onModuleUsed(
           this.module.descriptor.id);
     }, {once: true});
 

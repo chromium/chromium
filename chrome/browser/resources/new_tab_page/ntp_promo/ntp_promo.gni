@@ -3,9 +3,8 @@
 # found in the LICENSE file.
 
 ntp_promo_ts_files = [
-  "ntp_promo/ntp_promo_proxy.ts",
-  "ntp_promo/individual_promos.ts",
   "ntp_promo/individual_promos.html.ts",
+  "ntp_promo/individual_promos.ts",
 ]
 
 ntp_promo_css_files = [ "ntp_promo/individual_promos.css" ]

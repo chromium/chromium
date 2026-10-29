@@ -38,18 +38,16 @@ import {ActionChipsRetrievalState} from './action_chips/action_chips.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BackgroundManager} from './background_manager.js';
-import type {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote} from './customize_buttons.mojom-webui.js';
-import {SidePanelOpenTrigger} from './customize_buttons.mojom-webui.js';
-import {CustomizeButtonsProxy} from './customize_buttons_proxy.js';
+import type {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerInterface} from './customize_buttons.mojom-webui.js';
+import {browserProxyFactory as customizeButtonsProxyFactory, SidePanelOpenTrigger} from './customize_buttons.mojom-webui.js';
 import {CustomizeChromeSection} from './customize_chrome.mojom-webui.js';
 import {CustomizeDialogPage} from './customize_dialog_types.js';
 import type {IframeElement} from './iframe.js';
 import type {LogoElement} from './logo.js';
 import {recordBoolean, recordDuration, recordEnumeration, recordLinearValue, recordLoadDuration, recordSparseValueWithPersistentHash} from './metrics_utils.js';
 import {ParentTrustedDocumentProxy} from './modules/microsoft_auth_frame_connector.js';
-import type {PageCallbackRouter, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
-import {NtpBackgroundImageSource} from './new_tab_page.mojom-webui.js';
-import {NewTabPageProxy} from './new_tab_page_proxy.js';
+import type {PageCallbackRouter, PageHandlerInterface, Theme} from './new_tab_page.mojom-webui.js';
+import {browserProxyFactory as newTabPageProxyFactory, NtpBackgroundImageSource} from './new_tab_page.mojom-webui.js';
 import type {NtpComposeboxElement} from './ntp_composebox.js';
 import {ShowNtpPromosResult} from './ntp_promo.mojom-webui.js';
 import type {NtpSearchboxElement} from './ntp_searchbox.js';
@@ -506,10 +504,10 @@ export class AppElement extends AppElementBase {
   private accessor modulesLoadedStatus_: ModuleLoadStatus =
       ModuleLoadStatus.MODULE_LOAD_IN_PROGRESS;
   private callbackRouter_: PageCallbackRouter;
-  private pageHandler_: PageHandlerRemote;
+  private pageHandler_: PageHandlerInterface;
   private customizeButtonsCallbackRouter_:
       CustomizeButtonsDocumentCallbackRouter;
-  private customizeButtonsHandler_: CustomizeButtonsHandlerRemote;
+  private customizeButtonsHandler_: CustomizeButtonsHandlerInterface;
   private backgroundManager_: BackgroundManager;
   private connectMicrosoftAuthToParentDocumentListenerId_: number|null = null;
   private setThemeListenerId_: number|null = null;
@@ -528,13 +526,14 @@ export class AppElement extends AppElementBase {
   constructor() {
     performance.mark('app-creation-start');
     super();
-    this.callbackRouter_ = NewTabPageProxy.getInstance().callbackRouter;
+    this.callbackRouter_ = newTabPageProxyFactory.getInstance().callbackRouter;
     this.searchboxCallbackRouter_ =
         SearchboxBrowserProxy.getInstance().callbackRouter;
-    this.pageHandler_ = NewTabPageProxy.getInstance().handler;
+    this.pageHandler_ = newTabPageProxyFactory.getInstance().handler;
     this.customizeButtonsCallbackRouter_ =
-        CustomizeButtonsProxy.getInstance().callbackRouter;
-    this.customizeButtonsHandler_ = CustomizeButtonsProxy.getInstance().handler;
+        customizeButtonsProxyFactory.getInstance().callbackRouter;
+    this.customizeButtonsHandler_ =
+        customizeButtonsProxyFactory.getInstance().handler;
     this.backgroundManager_ = BackgroundManager.getInstance();
     this.shouldPrintPerformance_ =
         new URLSearchParams(location.search).has('print_perf');

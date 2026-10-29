@@ -5,7 +5,7 @@
 import 'chrome://new-tab-page/lazy_load.js';
 
 import type {VoiceSearchOverlayElement} from 'chrome://new-tab-page/lazy_load.js';
-import {$$, NewTabPageProxy, PageCallbackRouter, PageHandlerRemote, VoiceAction as Action, VoiceError as Error, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, newTabPageProxyFactory, PageHandlerRemote, VoiceAction as Action, VoiceError as Error, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -84,8 +84,8 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
     windowProxy.setResultFor('setTimeout', 0);
     installMock(
         PageHandlerRemote,
-        (mock: PageHandlerRemote) =>
-            NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
+        (mock: PageHandlerRemote) => newTabPageProxyFactory.setInstance(
+            newTabPageProxyFactory.createForTest(mock).instance));
 
     metrics = fakeMetricsPrivate();
 
