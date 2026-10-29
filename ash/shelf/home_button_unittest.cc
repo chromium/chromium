@@ -200,7 +200,7 @@ class HomeButtonNoSessionTest : public HomeButtonTest {
   // HomeButtonTest:
   void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
     HomeButtonTest::SetUpInitParams(init_params);
-    init_params.start_session = false;
+    init_params.users.clear();
   }
 };
 

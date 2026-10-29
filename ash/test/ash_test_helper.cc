@@ -98,7 +98,9 @@ std::unique_ptr<views::TestViewsDelegate> MakeTestViewsDelegate() {
 }
 }  // namespace
 
-AshTestHelper::InitParams::InitParams() = default;
+AshTestHelper::InitParams::InitParams() {
+  users.push_back(LoginInfo{});
+}
 AshTestHelper::InitParams::InitParams(InitParams&&) = default;
 AshTestHelper::InitParams::~InitParams() = default;
 
@@ -622,11 +624,15 @@ void AshTestHelper::SetUp(InitParams init_params) {
   session_controller_client_->InitializeAndSetClient();
 
   // Sign-in after UI is shown.
-  if (init_params.start_session) {
+  if (!init_params.users.empty()) {
     // TODO(crbug.com/383441831): Remove Reset();
     session_controller_client_->Reset();
 
-    SimulateUserLogin({});
+    const bool require_account_id = init_params.users.size() > 1;
+    for (const auto& user : init_params.users) {
+      CHECK(!require_account_id || user.account_id.has_value());
+      SimulateUserLogin(user);
+    }
   }
 }
 

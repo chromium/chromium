@@ -292,7 +292,7 @@ class NoSessionTrayBackgroundViewTest : public TrayBackgroundViewTest {
   // TrayBackgroundViewTest:
   void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
     TrayBackgroundViewTest::SetUpInitParams(init_params);
-    init_params.start_session = false;
+    init_params.users.clear();
   }
 };
 

@@ -603,7 +603,7 @@ class PaletteTrayTestWithOOBE : public PaletteTrayTest {
   // PaletteTrayTest:
   void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
     PaletteTrayTest::SetUpInitParams(init_params);
-    init_params.start_session = false;
+    init_params.users.clear();
   }
 };
 

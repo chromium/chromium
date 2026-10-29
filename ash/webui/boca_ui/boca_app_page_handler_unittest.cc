@@ -595,7 +595,7 @@ class BocaAppPageHandlerTest : public AshTestBase {
   mojo::Remote<mojom::PageHandler>& remote() { return remote_; }
   void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
     AshTestBase::SetUpInitParams(init_params);
-    init_params.start_session = false;
+    init_params.users.clear();
   }
   void SetUp() override {
     ash::boca_util::RegisterPrefs(local_state()->registry());

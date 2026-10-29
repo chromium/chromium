@@ -1618,7 +1618,7 @@ class AccessibilityDetailedViewSodaTest
 
   void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
     AccessibilityDetailedViewTest::SetUpInitParams(init_params);
-    init_params.start_session = false;
+    init_params.users.clear();
   }
 
   void SetUp() override {
@@ -1775,7 +1775,7 @@ class AccessibilityDetailedViewLoginScreenTest
   // AccessibilityDetailedViewTest:
   void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
     AccessibilityDetailedViewTest::SetUpInitParams(init_params);
-    init_params.start_session = false;
+    init_params.users.clear();
   }
 };
 

@@ -3740,7 +3740,7 @@ class NoSessionDisplayManagerTest : public DisplayManagerTest {
   // DisplayManagerTest:
   void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
     DisplayManagerTest::SetUpInitParams(init_params);
-    init_params.start_session = false;
+    init_params.users.clear();
   }
 };
 

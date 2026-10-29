@@ -327,7 +327,7 @@ class DisplayPrefsTestGuest : public DisplayPrefsTest {
   // DisplayPrefsTest:
   void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
     DisplayPrefsTest::SetUpInitParams(init_params);
-    init_params.start_session = false;
+    init_params.users.clear();
   }
 };
 

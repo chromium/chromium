@@ -447,7 +447,7 @@ class NoSessionResolutionNotificationControllerTest
   // ResolutionNotificationControllerTest:
   void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
     ResolutionNotificationControllerTest::SetUpInitParams(init_params);
-    init_params.start_session = false;
+    init_params.users.clear();
   }
 };
 

@@ -348,7 +348,7 @@ class MultiUserWindowManagerBrowserAdaptorTest : public ChromeAshTestBase {
 void MultiUserWindowManagerBrowserAdaptorTest::SetUpInitParams(
     ash::AshTestHelper::InitParams& init_params) {
   ChromeAshTestBase::SetUpInitParams(init_params);
-  init_params.start_session = false;
+  init_params.users.clear();
   init_params.delegate = std::make_unique<TestShellDelegateChromeOS>();
 }
 

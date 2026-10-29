@@ -85,7 +85,7 @@ void BrowserWithTestWindowTest::SetUp() {
   {
     ash::AshTestHelper::InitParams ash_init;
     ash_init.local_state = g_browser_process->local_state();
-    ash_init.start_session = false;
+    ash_init.users.clear();
 
     // Do not auto create user pref service. PrefService will be created by
     // TestingProfile.

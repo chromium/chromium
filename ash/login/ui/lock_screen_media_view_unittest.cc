@@ -33,7 +33,8 @@ class LockScreenMediaViewTest : public LoginTestBase {
 
   void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
     LoginTestBase::SetUpInitParams(init_params);
-    init_params.start_session = true;
+    ASSERT_TRUE(init_params.users.empty());
+    init_params.users.push_back(LoginInfo{});
   }
 
   void SetUp() override {

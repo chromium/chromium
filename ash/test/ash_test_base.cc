@@ -732,7 +732,7 @@ NoSessionAshTestBase::~NoSessionAshTestBase() = default;
 void NoSessionAshTestBase::SetUpInitParams(
     AshTestHelper::InitParams& init_params) {
   AshTestBase::SetUpInitParams(init_params);
-  init_params.start_session = false;
+  init_params.users.clear();
 }
 
 }  // namespace ash

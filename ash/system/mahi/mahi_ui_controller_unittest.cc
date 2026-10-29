@@ -689,7 +689,7 @@ class MahiUiControllerWithNoSessionTest
   // MahiUiControllerWithSessionTest:
   void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
     MahiUiControllerWithSessionTest::SetUpInitParams(init_params);
-    init_params.start_session = false;
+    init_params.users.clear();
   }
 };
 

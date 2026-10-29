@@ -556,7 +556,8 @@ class PinRequestWidgetTest : public PinRequestViewTest {
   // PinRequestViewTest:
   void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
     PinRequestViewTest::SetUpInitParams(init_params);
-    init_params.start_session = true;
+    ASSERT_TRUE(init_params.users.empty());
+    init_params.users.push_back(LoginInfo{});
   }
 };
 

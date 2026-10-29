@@ -62,7 +62,7 @@ class AccelerometerProviderMojoTest : public ::testing::Test {
  protected:
   void SetUp() override {
     ash::AshTestHelper::InitParams init_params;
-    init_params.start_session = false;
+    init_params.users.clear();
     ash_test_helper_.SetUp(std::move(init_params));
 
     sensor_hal_server_ =

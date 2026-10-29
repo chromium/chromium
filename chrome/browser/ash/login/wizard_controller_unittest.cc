@@ -314,7 +314,7 @@ class WizardControllerTestBase : public ::testing::Test {
     browser_controller_ = std::make_unique<ash::BrowserControllerImpl>();
 
     AshTestHelper::InitParams params;
-    params.start_session = false;
+    params.users.clear();
     params.local_state = TestingBrowserProcess::GetGlobal()->local_state();
     test_context_factories_ = std::make_unique<ui::TestContextFactories>(
         /*enable_pixel_output=*/false);

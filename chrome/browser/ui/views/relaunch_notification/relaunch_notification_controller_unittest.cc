@@ -954,7 +954,7 @@ class RelaunchNotificationControllerPlatformImplTest : public ::testing::Test {
 
     // Set up Ash global instances.
     ash::AshTestHelper::InitParams init_params;
-    init_params.start_session = false;
+    init_params.users.clear();
     ash_test_helper_ = std::make_unique<ash::AshTestHelper>();
     ash_test_helper_->SetUp(std::move(init_params));
 

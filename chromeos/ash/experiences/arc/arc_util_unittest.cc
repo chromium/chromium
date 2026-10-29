@@ -83,7 +83,7 @@ class ArcUtilTest : public ash::AshTestBase {
 
   void SetUpInitParams(ash::AshTestHelper::InitParams& init_params) override {
     ash::AshTestBase::SetUpInitParams(init_params);
-    init_params.start_session = false;
+    init_params.users.clear();
   }
 
   void SetUp() override {

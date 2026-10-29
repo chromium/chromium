@@ -1924,7 +1924,7 @@ class AmbientControllerForManagedScreensaverLoginScreenTest
     AmbientControllerForManagedScreensaverTest::SetUpInitParams(init_params);
     // For login screen tests we don't want to start a session rather we want to
     // start on the login screen.
-    init_params.start_session = false;
+    init_params.users.clear();
   }
 
   void SetUp() override {
