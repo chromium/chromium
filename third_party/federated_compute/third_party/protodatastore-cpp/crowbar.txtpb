@@ -1,0 +1,15 @@
+upstream {
+  commit: "0cd8b124bc65bcac105bce4a706923218ae5d625"
+  artifacts {
+    git {
+      repository: "https://chromium.googlesource.com/external/github.com/google/protodatastore-cpp"
+      commit: "0cd8b124bc65bcac105bce4a706923218ae5d625"
+    }
+  }
+}
+stages {
+  input {
+    patch { copybara {} }
+  }
+  publish { git {} }
+}

@@ -11,9 +11,13 @@ Security Critical: yes
 Description:
 A simple file-backed proto with an in-memory cache.
 
+Update instructions:
+Update commit hashes in crowbar.txtpb, then run from this directory:
+crowbar build --no-dry-run ./
+
 Local Modifications:
 
-- patches/000-win-b-mode.patch
+- patches/0001-win-b-mode.patch
 
   Uses the binary mode when opening files ("rb"/"wb"), as Windows by default
   opens files in text mode.  Without this patch, reading opstats.db was failing

@@ -1,0 +1,8 @@
+load("//crowbar", "crowbar_workflow")
+
+crowbar_workflow(
+    origin_files = glob(["**"]),
+    transformations = [
+        patch.apply(patches = ["patches/0001-win-b-mode.patch"]),
+    ],
+)

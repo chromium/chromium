@@ -1,5 +1,0 @@
-In order to update the dependency:
-
-1. Update revision in README.chromium
-
-2. Execute ./update.sh

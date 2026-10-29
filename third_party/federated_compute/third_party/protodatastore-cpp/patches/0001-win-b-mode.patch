@@ -1,7 +1,7 @@
-diff --git a/protostore/file-storage.cc b/protostore/file-storage.cc
+diff --git a/src/protostore/file-storage.cc b/src/protostore/file-storage.cc
 index 865d30b0b4871..7ffe8244ec6d7 100644
---- a/protostore/file-storage.cc
-+++ b/protostore/file-storage.cc
+--- a/src/protostore/file-storage.cc
++++ b/src/protostore/file-storage.cc
 @@ -242,7 +242,7 @@ absl::StatusOr<uint64_t> FileStorage::GetFileSize(
  
  absl::StatusOr<std::unique_ptr<InputStream>> FileStorage::OpenForRead(
