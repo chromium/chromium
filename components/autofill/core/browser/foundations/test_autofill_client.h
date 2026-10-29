@@ -762,10 +762,6 @@ class TestAutofillClientTemplate : public T {
         .SetVariationCountryCode(variation_config_country_code);
   }
 
-  void set_should_save_autofill_profiles(bool value) {
-    should_save_autofill_profiles_ = value;
-  }
-
   void set_format_for_large_keyboard_accessory(
       bool format_for_large_keyboard_accessory) {
     format_for_large_keyboard_accessory_ = format_for_large_keyboard_accessory;
@@ -971,8 +967,6 @@ class TestAutofillClientTemplate : public T {
 
   security_state::SecurityLevel security_level_ =
       security_state::SecurityLevel::NONE;
-
-  bool should_save_autofill_profiles_ = true;
 
   bool format_for_large_keyboard_accessory_ = false;
 
