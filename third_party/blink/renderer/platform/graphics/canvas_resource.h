@@ -231,48 +231,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   base::WeakPtr<Client> client_;
 };
 
-// Resource type for a given opaque external resource described on construction
-// via a TransferableResource. This CanvasResource should only be used with
-// context that support GL.
-class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
- public:
-  ExternalCanvasResource(
-      scoped_refptr<gpu::ClientSharedImage> client_si,
-      const gpu::SyncToken& sync_token,
-      viz::TransferableResource::ResourceSource resource_source,
-      const gfx::HDRMetadata& hdr_metadata,
-      viz::ReleaseCallback out_callback,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>);
 
-  bool CreatesAcceleratedTransferableResources() const override { return true; }
-  void NotifyResourceLost() override { resource_is_lost_ = true; }
-  void WaitSyncToken(const gpu::SyncToken&) override;
-
-  scoped_refptr<StaticBitmapImage> Bitmap() override;
-  const gfx::HDRMetadata& GetHdrMetadata() const override {
-    return hdr_metadata_;
-  }
-
- private:
-  viz::TransferableResource::ResourceSource GetTransferableResourceSource()
-      const final {
-    return resource_source_;
-  }
-  bool UsesAcceleratedRaster() const final { return true; }
-
-  ~ExternalCanvasResource() override;
-
-  const base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-      context_provider_wrapper_;
-  viz::TransferableResource::ResourceSource resource_source_;
-  const gfx::HDRMetadata hdr_metadata_;
-  viz::ReleaseCallback release_callback_;
-  bool resource_is_lost_ = false;
-  const SkAlphaType alpha_type_;
-
-  // SyncToken to wait on at destruction.
-  gpu::SyncToken destruction_sync_token_;
-};
 
 }  // namespace blink
 
