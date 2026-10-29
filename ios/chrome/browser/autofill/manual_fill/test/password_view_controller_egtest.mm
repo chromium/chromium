@@ -1283,26 +1283,18 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that tapping the "Autofill form" button in the all password list fills
 // the password form with the right data.
-// TODO (crbug.com/515635648): Re-enable once fixed
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testAutofillFormButtonInAllPasswordListFillsForm \
-  FLAKY_testAutofillFormButtonInAllPasswordListFillsForm
-#else
-#define MAYBE_testAutofillFormButtonInAllPasswordListFillsForm \
-  DISABLED_testAutofillFormButtonInAllPasswordListFillsForm
-#endif
-- (void)MAYBE_testAutofillFormButtonInAllPasswordListFillsForm {
-  // TODO(crbug.com/426435086): Test consistently fails on ipad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
-  }
-
+- (void)testAutofillFormButtonInAllPasswordListFillsForm {
   // Disable the credential bottom sheet.
   [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
 
-  [self loadLoginPage];
+  [self startHTTPSServer];
+  self.URL = _HTTPSServer->GetURL(kFormHTMLFile);
+
+  [self loadHTTPSLoginPage];
 
   [self openOtherPasswords];
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:AutofillFormButton()];
 
   // Tap the "Autofill form" button.
   [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
