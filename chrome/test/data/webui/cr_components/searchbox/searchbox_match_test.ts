@@ -336,7 +336,7 @@ suite('CrComponentsRealboxMatchTest', () => {
         '<span class="color-on-surface">a</span>' +
             '<span class="color-on-surface-subtle">b</span>' +
             '<span class="color-on-surface-subtle match">c</span>' +
-            '<span class="color-primary url match">d</span>' +
+            '<span class="color-primary match">d</span>' +
             '<span>e</span><span>f</span>',
         primaryTextEl.innerHTML);
   });
@@ -545,5 +545,59 @@ suite('CrComponentsRealboxMatchTest', () => {
     await microtasksFinished();
 
     assertEquals('', matchEl.$.secondaryText.textContent);
+  });
+
+  test('SecondaryTextIsUrlSetsUrlLayout', async () => {
+    matchEl.style.setProperty(
+        '--cr-searchbox-url-primary-text-max-width', '65%');
+    matchEl.match = createAutocompleteMatch({secondaryTextIsUrl: true});
+    await microtasksFinished();
+    assertTrue(matchEl.hasAttribute('secondary-text-is-url_'));
+    assertEquals('65%', getComputedStyle(matchEl.$.primaryText).maxWidth);
+
+    // ACTION_HIGH text without the bit doesn't get the URL layout.
+    matchEl.match = createAutocompleteMatch({
+      suggestTemplate: createSuggestTemplateInfo({
+        secondaryText: createFormattedString(
+            'description',
+            [createFormattedStringFragment(
+                {startIndex: 0, color: ColorType.kSuggestActionHigh})]),
+      }),
+    });
+    await microtasksFinished();
+    assertFalse(matchEl.hasAttribute('secondary-text-is-url_'));
+    assertEquals('none', getComputedStyle(matchEl.$.primaryText).maxWidth);
+  });
+
+  test('SecondaryTextTakesColorOfLastSpanForEllipsis', async () => {
+    matchEl.style.setProperty(
+        '--color-searchbox-results-foreground-dimmed', 'rgb(0, 128, 0)');
+    matchEl.style.setProperty(
+        '--color-searchbox-results-url', 'rgb(0, 0, 255)');
+    const createMatch = (firstColor: ColorType, lastColor: ColorType) =>
+        createAutocompleteMatch({
+          suggestTemplate: createSuggestTemplateInfo({
+            secondaryText: createFormattedString(
+                'first last',
+                [
+                  createFormattedStringFragment(
+                      {startIndex: 0, color: firstColor}),
+                  createFormattedStringFragment(
+                      {startIndex: 6, color: lastColor}),
+                ]),
+          }),
+        });
+
+    matchEl.match =
+        createMatch(ColorType.kSuggestHintText, ColorType.kSuggestActionHigh);
+    await microtasksFinished();
+    assertEquals(
+        'rgb(0, 0, 255)', getComputedStyle(matchEl.$.secondaryText).color);
+
+    matchEl.match =
+        createMatch(ColorType.kSuggestActionHigh, ColorType.kSuggestHintText);
+    await microtasksFinished();
+    assertEquals(
+        'rgb(0, 128, 0)', getComputedStyle(matchEl.$.secondaryText).color);
   });
 });

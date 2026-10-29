@@ -264,6 +264,20 @@ bool MatchHasSideTypeAndRenderType(
          suggestion_groups_map.at(group_id).render_type() == render_type;
 }
 
+// Returns whether the secondary text of `match` has the URL classification.
+// The secondary text is the description, or the contents if they're swapped.
+bool SecondaryTextIsUrl(const AutocompleteMatch& match) {
+  const bool swap = match.swap_contents_and_description;
+  if ((swap ? match.contents : match.description).empty()) {
+    return false;
+  }
+  return std::ranges::any_of(
+      swap ? match.contents_class : match.description_class,
+      [](const ACMatchClassification& classification) {
+        return (classification.style & ACMatchClassification::URL) != 0;
+      });
+}
+
 std::string GetBase64UrlVariations(Profile* profile) {
   variations::VariationsClient* provider = profile->GetVariationsClient();
 
@@ -1087,6 +1101,7 @@ SearchboxHandler::CreateAutocompleteMatch(
   mojom_match->supports_deletion = match.SupportsDeletion();
   mojom_match->suggest_template =
       suggest_template_info::CreateSuggestTemplateInfo(match);
+  mojom_match->secondary_text_is_url = SecondaryTextIsUrl(match);
   if (!match.from_keyword) {
     for (const auto& action : match.actions) {
 // TODO(b/544764632): Implement Pedals for Android.

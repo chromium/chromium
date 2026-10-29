@@ -40,6 +40,7 @@ export function createAutocompleteMatch(
     tailSuggestCommonPrefix: null,
     keywordModel: null,
     suggestTemplate: createSuggestTemplateInfo(),
+    secondaryTextIsUrl: false,
     urlEmphasis: null,
   };
 
