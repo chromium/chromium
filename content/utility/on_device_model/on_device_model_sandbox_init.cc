@@ -77,8 +77,15 @@ void UpdateSandboxOptionsForGpu(
 //   anv_CreateDevice()).
 // - The render nodes' sysfs directories, read by libdrm to identify devices.
 // - amdgpu.ids, read by libdrm_amdgpu to name AMD GPUs.
+// - The /dev/dri directory, listed with opendir() by libdrm's
+//   drmGetDeviceFromDevId(), which Mesa RADV radv_CreateDevice() calls since
+//   Mesa 26.2 to reopen the render node. Before that, drmGetDeviceFromDevId()
+//   calls readlink() on /sys/dev/char/<major>:<minor>/device/subsystem, which
+//   needs COMMAND_READLINK (see PreSandboxHook()).
 void AddVulkanDriverPermissions(
     std::vector<sandbox::syscall_broker::BrokerFilePermission>& permissions) {
+  permissions.push_back(
+      sandbox::syscall_broker::BrokerFilePermission::ReadOnly("/dev/dri"));
   base::FileEnumerator enumerator(base::FilePath("/dev/dri/"),
                                   /*recursive=*/false,
                                   base::FileEnumerator::FILES, "renderD*");
@@ -236,8 +243,16 @@ bool PreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
           "/sys/devices/system/cpu/online"));
   AddVulkanDriverPermissions(file_permissions);
 
+  // libdrm's drmGetDeviceFromDevId(), called by Mesa RADV's vkCreateDevice()
+  // since Mesa 26.2, resolves the render node's sysfs subsystem link with
+  // readlink(). The broker only allows readlink() on paths in
+  // `file_permissions` that are readable, such as the render nodes' sysfs
+  // directories added by AddVulkanDriverPermissions().
+  sandbox::syscall_broker::BrokerCommandSet command_set =
+      content::CommandSetForGPU(options);
+  command_set.set(sandbox::syscall_broker::COMMAND_READLINK);
   sandbox::policy::SandboxLinux::GetInstance()->StartBrokerProcess(
-      content::CommandSetForGPU(options), file_permissions, options);
+      command_set, file_permissions, options);
 
   // Now that the broker process has been forked from a single-threaded process,
   // warm drivers and load internal libraries. Any threads spawned here will be
