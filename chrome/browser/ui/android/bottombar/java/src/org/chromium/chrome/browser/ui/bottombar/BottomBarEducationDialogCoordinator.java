@@ -10,6 +10,8 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.view.View;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -28,6 +30,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.function.Supplier;
 
 @NullMarked
@@ -39,8 +43,20 @@ public class BottomBarEducationDialogCoordinator
     private @Nullable PropertyModel mDialogModel;
     private @Nullable Tracker mTracker;
     private @Nullable View mDialogView;
-    private boolean mTrackerDismissed;
-    private boolean mResultRecorded;
+    private @State int mState = State.IDLE;
+
+    @IntDef({State.IDLE, State.SHOWING, State.OUTCOME_RECORDED})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface State {
+        /** The dialog hasn't been shown yet. */
+        int IDLE = 0;
+
+        /** The dialog is showing or queued to show. */
+        int SHOWING = 1;
+
+        /** Terminal state: the outcome was recorded, so the dialog won't show again. */
+        int OUTCOME_RECORDED = 2;
+    }
 
     /**
      * Constructor for the BottomBarEducationDialogCoordinator.
@@ -63,18 +79,12 @@ public class BottomBarEducationDialogCoordinator
     public void destroy() {
         mContext.unregisterComponentCallbacks(this);
         if (mDialogModel != null) {
-            if (!mResultRecorded) {
-                mResultRecorded = true;
-                BottomBarMetrics.recordEducationOnboardingEvent(
-                        EducationOnboardingType.OPT_IN_DIALOG,
-                        EducationOnboardingEvent.DISMISSED_OTHER);
-            }
+            maybeRecordOutcome(EducationOnboardingEvent.DISMISSED_OTHER);
             mModalDialogManager.dismissDialog(
                     mDialogModel, DialogDismissalCause.ACTIVITY_DESTROYED);
             mDialogModel = null;
             mDialogView = null;
         }
-        dismissFeatureEngagementTracker();
     }
 
     /**
@@ -84,12 +94,9 @@ public class BottomBarEducationDialogCoordinator
      * @return Whether the dialog was actually shown.
      */
     public boolean maybeShow(Profile profile) {
-        if (mDialogModel != null) return true;
+        if (mState != State.IDLE) return mState == State.SHOWING;
 
-        if (!BottomBarConfigUtils.isEducationEnabled()
-                || !BottomBarConfigUtils.isBottomBarEligible(mContext)
-                || BottomBarConfigUtils.isBottomBarUserEnabled()
-                || BottomBarConfigUtils.hasUserSetBottomBarEnabled()) {
+        if (!BottomBarConfigUtils.isEligibleForEducationDialog(mContext)) {
             return false;
         }
 
@@ -105,7 +112,6 @@ public class BottomBarEducationDialogCoordinator
         }
 
         mTracker = tracker;
-        mTrackerDismissed = false;
 
         showDialog();
         // Setting the flag at request time is acceptable even if the dialog queues because it only
@@ -115,7 +121,7 @@ public class BottomBarEducationDialogCoordinator
     }
 
     private void showDialog() {
-        mResultRecorded = false;
+        mState = State.SHOWING;
         mDialogView =
                 BottomBarEducationUtils.inflateDialogContent(
                         mContext, /* onSettingsClicked= */ this::onLearnMoreClicked);
@@ -146,15 +152,7 @@ public class BottomBarEducationDialogCoordinator
     }
 
     private void onPositiveClicked() {
-        if (mResultRecorded) return;
-        mResultRecorded = true;
-        BottomBarMetrics.recordEducationOnboardingEvent(
-                EducationOnboardingType.OPT_IN_DIALOG, EducationOnboardingEvent.ACCEPTED);
-        if (mTracker != null) {
-            mTracker.notifyEvent(EventConstants.ANDROID_BOTTOM_BAR_EDUCATION_USED);
-            mTracker.notifyEvent(EventConstants.ANDROID_BOTTOM_BAR_EDUCATION_OPT_IN_ACCEPTED);
-        }
-        dismissFeatureEngagementTracker();
+        if (!maybeRecordOutcome(EducationOnboardingEvent.ACCEPTED)) return;
 
         if (mDialogModel != null) {
             mModalDialogManager.dismissDialog(
@@ -164,11 +162,8 @@ public class BottomBarEducationDialogCoordinator
     }
 
     private void onNegativeClicked() {
-        if (mResultRecorded) return;
-        mResultRecorded = true;
-        BottomBarMetrics.recordEducationOnboardingEvent(
-                EducationOnboardingType.OPT_IN_DIALOG, EducationOnboardingEvent.DECLINED);
-        dismissFeatureEngagementTracker();
+        if (!maybeRecordOutcome(EducationOnboardingEvent.DECLINED)) return;
+
         if (mDialogModel != null) {
             mModalDialogManager.dismissDialog(
                     mDialogModel, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
@@ -176,10 +171,8 @@ public class BottomBarEducationDialogCoordinator
     }
 
     private void onLearnMoreClicked() {
-        if (mResultRecorded) return;
-        mResultRecorded = true;
-        BottomBarMetrics.recordEducationOnboardingEvent(
-                EducationOnboardingType.OPT_IN_DIALOG, EducationOnboardingEvent.SETTINGS_CLICKED);
+        if (!maybeRecordOutcome(EducationOnboardingEvent.SETTINGS_CLICKED)) return;
+
         SettingsNavigation settingsNavigation =
                 SettingsNavigationFactory.createSettingsNavigation();
         settingsNavigation.startSettings(mContext, SettingsNavigation.SettingsFragment.APPEARANCE);
@@ -188,11 +181,26 @@ public class BottomBarEducationDialogCoordinator
         }
     }
 
-    private void dismissFeatureEngagementTracker() {
-        if (!mTrackerDismissed && mTracker != null) {
-            mTrackerDismissed = true;
-            mTracker.dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+    /**
+     * Records {@code event}, notifies the tracker and moves to {@link State#OUTCOME_RECORDED} if
+     * the dialog is {@link State#SHOWING}. Returns whether this call recorded the outcome.
+     */
+    private boolean maybeRecordOutcome(@EducationOnboardingEvent int event) {
+        if (mState != State.SHOWING) return false;
+        mState = State.OUTCOME_RECORDED;
+
+        BottomBarMetrics.recordEducationOnboardingEvent(
+                EducationOnboardingType.OPT_IN_DIALOG, event);
+
+        Tracker tracker = mTracker;
+        if (tracker != null) {
+            if (event == EducationOnboardingEvent.ACCEPTED) {
+                tracker.notifyEvent(EventConstants.ANDROID_BOTTOM_BAR_EDUCATION_USED);
+                tracker.notifyEvent(EventConstants.ANDROID_BOTTOM_BAR_EDUCATION_OPT_IN_ACCEPTED);
+            }
+            tracker.dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
         }
+        return true;
     }
 
     private void updateIllustrationVisibility(Configuration config) {
@@ -220,21 +228,16 @@ public class BottomBarEducationDialogCoordinator
 
     @Override
     public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
-        if (!mResultRecorded) {
-            mResultRecorded = true;
-            // CANCEL_ON_TOUCH_OUTSIDE is false, so NAVIGATE_BACK_OR_TOUCH_OUTSIDE can only
-            // come from back.
-            @EducationOnboardingEvent
-            int event =
-                    dismissalCause == DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE
-                            ? EducationOnboardingEvent.BACK_PRESSED
-                            : EducationOnboardingEvent.DISMISSED_OTHER;
-            BottomBarMetrics.recordEducationOnboardingEvent(
-                    EducationOnboardingType.OPT_IN_DIALOG, event);
-        }
+        // CANCEL_ON_TOUCH_OUTSIDE is false, so NAVIGATE_BACK_OR_TOUCH_OUTSIDE can only
+        // come from back.
+        @EducationOnboardingEvent
+        int event =
+                dismissalCause == DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE
+                        ? EducationOnboardingEvent.BACK_PRESSED
+                        : EducationOnboardingEvent.DISMISSED_OTHER;
+        maybeRecordOutcome(event);
         mDialogModel = null;
         mDialogView = null;
-        dismissFeatureEngagementTracker();
         mTracker = null;
     }
 }

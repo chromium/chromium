@@ -213,6 +213,18 @@ public class BottomBarConfigUtils {
     }
 
     /**
+     * Returns whether the user is eligible for the education opt-in dialog: education is enabled,
+     * the device is eligible for the bottom bar, the bar is off by default, and the user hasn't
+     * explicitly turned it on or off.
+     */
+    public static boolean isEligibleForEducationDialog(Context context) {
+        return isEducationEnabled()
+                && isBottomBarEligible(context)
+                && !isBottomBarUserEnabled()
+                && !hasUserSetBottomBarEnabled();
+    }
+
+    /**
      * Returns whether the bottom bar user education flow should show the address bar position IPH.
      */
     public static boolean isEducationAddressBarIphEnabled() {

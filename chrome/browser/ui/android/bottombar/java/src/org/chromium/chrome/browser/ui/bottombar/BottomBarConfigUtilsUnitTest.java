@@ -580,4 +580,48 @@ public class BottomBarConfigUtilsUnitTest {
     public void testShouldRemoveTopPaddingForBottomOmnibox_FalseParam() {
         assertFalse(BottomBarConfigUtils.shouldRemoveTopPaddingForBottomOmnibox());
     }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_BOTTOM_BAR
+                    + ":default_user_enabled/false/education_enabled/true")
+    public void testIsEligibleForEducationDialog_TrueWhenConditionsMet() {
+        assertFalse(BottomBarConfigUtils.hasUserSetBottomBarEnabled());
+        assertFalse(BottomBarConfigUtils.isBottomBarUserEnabled());
+        assertTrue(BottomBarConfigUtils.isEligibleForEducationDialog(mContext));
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_BOTTOM_BAR
+                    + ":default_user_enabled/false/education_enabled/false")
+    public void testIsEligibleForEducationDialog_EducationDisabled() {
+        assertFalse(BottomBarConfigUtils.isEligibleForEducationDialog(mContext));
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_BOTTOM_BAR
+                    + ":default_user_enabled/false/education_enabled/true")
+    public void testIsEligibleForEducationDialog_BottomBarIneligible() {
+        assertFalse(BottomBarConfigUtils.isEligibleForEducationDialog(mContext));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":education_enabled/true")
+    public void testIsEligibleForEducationDialog_UserHasSetPref() {
+        BottomBarConfigUtils.setBottomBarUserEnabled(false);
+        assertFalse(BottomBarConfigUtils.isEligibleForEducationDialog(mContext));
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_BOTTOM_BAR
+                    + ":default_user_enabled/true/education_enabled/true")
+    public void testIsEligibleForEducationDialog_DefaultUserEnabledTrue() {
+        assertFalse(BottomBarConfigUtils.hasUserSetBottomBarEnabled());
+        assertTrue(BottomBarConfigUtils.isBottomBarUserEnabled());
+        assertFalse(BottomBarConfigUtils.isEligibleForEducationDialog(mContext));
+    }
 }

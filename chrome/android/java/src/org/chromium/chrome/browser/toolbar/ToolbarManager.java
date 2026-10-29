@@ -2570,8 +2570,7 @@ public class ToolbarManager
         BottomBarMetrics.maybeRecordEnabledState(mActivity);
         if (BottomBarConfigUtils.isBottomBarEnabled(mActivity)) {
             enableBottomBar();
-        } else if (BottomBarConfigUtils.isBottomBarEligible(mActivity)
-                && BottomBarConfigUtils.isEducationEnabled()) {
+        } else if (BottomBarConfigUtils.isEligibleForEducationDialog(mActivity)) {
             mBottomBarEducationDialogCoordinator =
                     new BottomBarEducationDialogCoordinator(
                             mActivity, mModalDialogManagerSupplier.get(), mActivityTabProvider);

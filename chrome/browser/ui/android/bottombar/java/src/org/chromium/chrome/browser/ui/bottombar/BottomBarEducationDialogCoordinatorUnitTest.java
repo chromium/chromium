@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
@@ -303,6 +304,41 @@ public class BottomBarEducationDialogCoordinatorUnitTest {
     }
 
     @Test
+    public void testDestroyWhileShowing_ReentrantOnDismiss() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BottomBar.Education.Onboarding.OptInDialog.Event",
+                                EducationOnboardingEvent.SHOWN)
+                        .expectIntRecord(
+                                "Android.BottomBar.Education.Onboarding.OptInDialog.Event",
+                                EducationOnboardingEvent.DISMISSED_OTHER)
+                        .build();
+        assertTrue(mCoordinator.maybeShow(mProfile));
+        verify(mModalDialogManager)
+                .showDialog(
+                        mModelCaptor.capture(),
+                        eq(ModalDialogManager.ModalDialogType.APP),
+                        eq(true));
+
+        PropertyModel model = mModelCaptor.getValue();
+        // Like the real ModalDialogManager, call back into onDismiss() synchronously.
+        doAnswer(
+                        invocation -> {
+                            mCoordinator.onDismiss(model, invocation.getArgument(1));
+                            return null;
+                        })
+                .when(mModalDialogManager)
+                .dismissDialog(any(PropertyModel.class), anyInt());
+
+        mCoordinator.destroy();
+
+        verify(mModalDialogManager).dismissDialog(model, DialogDismissalCause.ACTIVITY_DESTROYED);
+        verify(mTracker).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
     public void testOnConfigurationChanged_LandscapeHidesIllustration() {
         assertTrue(mCoordinator.maybeShow(mProfile));
         verify(mModalDialogManager)
@@ -327,5 +363,48 @@ public class BottomBarEducationDialogCoordinatorUnitTest {
         mCoordinator.onConfigurationChanged(config);
 
         assertEquals(View.VISIBLE, illustration.getVisibility());
+    }
+
+    @Test
+    public void testRepeatedClicksDoNothing() {
+        assertTrue(mCoordinator.maybeShow(mProfile));
+        verify(mModalDialogManager)
+                .showDialog(
+                        mModelCaptor.capture(),
+                        eq(ModalDialogManager.ModalDialogType.APP),
+                        eq(true));
+
+        PropertyModel model = mModelCaptor.getValue();
+        mCoordinator.onClick(model, ModalDialogProperties.ButtonType.POSITIVE);
+        verify(mModalDialogManager)
+                .dismissDialog(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+        verify(mTracker).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+        clearInvocations(mModalDialogManager, mTracker);
+
+        mCoordinator.onClick(model, ModalDialogProperties.ButtonType.POSITIVE);
+        mCoordinator.onClick(model, ModalDialogProperties.ButtonType.NEGATIVE);
+        verify(mModalDialogManager, never()).dismissDialog(any(), anyInt());
+        verify(mTracker, never()).dismissed(any());
+    }
+
+    @Test
+    public void testNotShownAgainAfterOutcomeRecorded() {
+        assertTrue(mCoordinator.maybeShow(mProfile));
+        verify(mModalDialogManager)
+                .showDialog(
+                        mModelCaptor.capture(),
+                        eq(ModalDialogManager.ModalDialogType.APP),
+                        eq(true));
+
+        PropertyModel model = mModelCaptor.getValue();
+        // Simulate click and dismiss.
+        mCoordinator.onClick(model, ModalDialogProperties.ButtonType.NEGATIVE);
+        mCoordinator.onDismiss(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+        clearInvocations(mModalDialogManager);
+
+        // Declining leaves the user eligible, so only OUTCOME_RECORDED blocks showing again.
+        assertTrue(BottomBarConfigUtils.isEligibleForEducationDialog(mActivity));
+        assertFalse(mCoordinator.maybeShow(mProfile));
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyBoolean());
     }
 }
