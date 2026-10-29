@@ -6,28 +6,6 @@
 
 namespace optimization_guide {
 
-OnDeviceBaseModel ConvertModelNameToEnum(const std::string& model_name) {
-  if (model_name == "v3Nano") {
-    return OnDeviceBaseModel::kV3Nano;
-  } else if (model_name == "v2Nano") {
-    return OnDeviceBaseModel::kV2Nano;
-  } else if (model_name == "XS") {
-    return OnDeviceBaseModel::kXs;
-  } else if (model_name == "XXS") {
-    return OnDeviceBaseModel::kXxs;
-  } else {
-    return OnDeviceBaseModel::kUnknown;
-  }
-}
-
-std::string ConvertModelNameToUmaModelName(const std::string& model_name) {
-  if (model_name == "v3Nano") {
-    return "V3Nano";
-  } else {
-    return "Unknown";
-  }
-}
-
 OnDeviceBaseModel ConvertComponentKeyToEnum(const std::string& key) {
   if (key == "nano_v3_gpu_component") {
     return OnDeviceBaseModel::kV3NanoGpu;

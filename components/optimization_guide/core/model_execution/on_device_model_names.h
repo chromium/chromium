@@ -33,13 +33,6 @@ enum class OnDeviceBaseModel {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:OnDeviceBaseModelEnum)
 
-// Converts a model name string (from BaseModelSpec) to the OnDeviceBaseModel
-// enum.
-OnDeviceBaseModel ConvertModelNameToEnum(const std::string& model_name);
-
-// Converts a model name (from BaseModelSpec) to the UMA BaseModel variant name.
-std::string ConvertModelNameToUmaModelName(const std::string& model_name);
-
 // Converts a component key string (from manifest) to the OnDeviceBaseModel
 // enum.
 OnDeviceBaseModel ConvertComponentKeyToEnum(const std::string& key);
