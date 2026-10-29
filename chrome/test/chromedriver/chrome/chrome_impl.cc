@@ -545,7 +545,10 @@ Status ChromeImpl::SetWindowBounds(
     }
 
     if (window.state != normal) {
-      return MakeFailedStatus(normal, window.state);
+      status = RetrySetWindowBounds(params, normal, window);
+      if (status.IsError()) {
+        return status;
+      }
     }
   }
 
@@ -673,25 +676,31 @@ Status ChromeImpl::SetWindowBounds(
                                                    params);
   }
 
-  int retries = 0;
-  // Wait and retry for 1 second
-  for (; retries < 10; ++retries) {
-    // SetWindowBounds again for retry
-    params.Set("bounds", window_bounds.ToDict());
-    status = devtools_websocket_client_->SendCommand("Browser.setWindowBounds",
-                                                     params);
+  return RetrySetWindowBounds(params, *desired_state, window);
+}
+
+Status ChromeImpl::RetrySetWindowBounds(const base::DictValue& params,
+                                        const std::string& desired_state,
+                                        internal::Window& window) {
+  // Wait and retry for 1 second.
+  for (int retries = 0; retries < 10; ++retries) {
+    // Errors from Browser.setWindowBounds are ignored here: the command is
+    // only re-sent as a best effort, and the outcome is determined by the
+    // window state reported by Browser.getWindowBounds below.
+    devtools_websocket_client_->SendCommand("Browser.setWindowBounds", params);
 
     base::PlatformThread::Sleep(base::Milliseconds(100));
 
-    status = GetWindowBounds(window.id, window);
-    if (status.IsError())
+    Status status = GetWindowBounds(window.id, window);
+    if (status.IsError()) {
       return status;
-    if (window.state == *desired_state) {
+    }
+    if (window.state == desired_state) {
       return Status(kOk);
     }
   }
 
-  return MakeFailedStatus(*desired_state, window.state);
+  return MakeFailedStatus(desired_state, window.state);
 }
 
 Status ChromeImpl::ParseWindow(const base::DictValue& params,

@@ -12,7 +12,9 @@
 
 #include "base/types/optional_util.h"
 #include "base/values.h"
+#include "chrome/test/chromedriver/chrome/chrome_impl.h"
 #include "chrome/test/chromedriver/chrome/mobile_emulation_override_manager.h"
+#include "chrome/test/chromedriver/chrome/page_load_strategy.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/stub_chrome.h"
 #include "chrome/test/chromedriver/chrome/stub_devtools_client.h"
@@ -1684,4 +1686,108 @@ TEST(WindowCommandsTest, ExecutePerformActions_ActionsInSequenceNotAList) {
   ASSERT_NE(status.message().find("'actions' in the sequence must be a list"),
             std::string::npos)
       << status.message();
+}
+
+namespace {
+
+class WindowBoundsDevToolsClient : public StubDevToolsClient {
+ public:
+  explicit WindowBoundsDevToolsClient(int get_bounds_before_normal)
+      : get_bounds_before_normal_(get_bounds_before_normal) {}
+  ~WindowBoundsDevToolsClient() override = default;
+
+  Status SendCommand(const std::string& method,
+                     const base::DictValue& params) override {
+    if (method == "Browser.setWindowBounds") {
+      const std::string* state =
+          params.FindStringByDottedPath("bounds.windowState");
+      if (state && *state == "normal") {
+        ++set_normal_count_;
+      }
+      if (std::optional<int> width =
+              params.FindIntByDottedPath("bounds.width")) {
+        width_ = *width;
+      }
+      if (std::optional<int> height =
+              params.FindIntByDottedPath("bounds.height")) {
+        height_ = *height;
+      }
+    }
+    return Status(kOk);
+  }
+
+  Status SendCommandAndGetResult(const std::string& method,
+                                 const base::DictValue& params,
+                                 base::DictValue* result) override {
+    if (method == "Browser.getWindowBounds") {
+      ++get_bounds_count_;
+      if (get_bounds_count_ >= get_bounds_before_normal_) {
+        window_state_ = "normal";
+      }
+      base::DictValue bounds;
+      bounds.Set("windowState", window_state_);
+      bounds.Set("left", 0);
+      bounds.Set("top", 0);
+      bounds.Set("width", width_);
+      bounds.Set("height", height_);
+      result->Set("bounds", std::move(bounds));
+    }
+    return Status(kOk);
+  }
+
+  int set_normal_count() const { return set_normal_count_; }
+
+ private:
+  int get_bounds_before_normal_;
+  int get_bounds_count_ = 0;
+  int set_normal_count_ = 0;
+  std::string window_state_ = "maximized";
+  int width_ = 1200;
+  int height_ = 900;
+};
+
+class WindowBoundsTestChrome : public ChromeImpl {
+ public:
+  explicit WindowBoundsTestChrome(std::unique_ptr<DevToolsClient> client)
+      : ChromeImpl(BrowserInfo(),
+                   {},
+                   std::move(client),
+                   {},
+                   std::nullopt,
+                   PageLoadStrategy::kNormal,
+                   false,
+                   false) {}
+  ~WindowBoundsTestChrome() override = default;
+
+  std::string GetOperatingSystemName() override { return "LINUX"; }
+  Status QuitImpl() override { return Status(kOk); }
+
+  Status GetWindow(const std::string& tab_target_id,
+                   internal::Window& window) override {
+    window.id = 1;
+    window.state = "maximized";
+    window.left = 0;
+    window.top = 0;
+    window.width = 1200;
+    window.height = 900;
+    return Status(kOk);
+  }
+};
+
+}  // namespace
+
+TEST(WindowCommandsTest, SetWindowRectRetriesTransitionToNormal) {
+  // The initial check plus up to 5 exponential-backoff polls (6 calls total)
+  // see "maximized"; the 7th call (first retry in the 1s retry loop) sees
+  // "normal".
+  auto client = std::make_unique<WindowBoundsDevToolsClient>(7);
+  WindowBoundsDevToolsClient* client_ptr = client.get();
+  WindowBoundsTestChrome chrome(std::move(client));
+
+  base::DictValue params;
+  params.Set("width", 800);
+  params.Set("height", 600);
+  Status status = chrome.SetWindowRect("1", params);
+  ASSERT_TRUE(status.IsOk()) << status.message();
+  EXPECT_GE(client_ptr->set_normal_count(), 2);
 }

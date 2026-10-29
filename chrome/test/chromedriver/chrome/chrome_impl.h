@@ -124,6 +124,11 @@ class ChromeImpl : public Chrome {
   Status SetWindowBounds(internal::Window window,
                          const std::string& target_id,
                          const internal::WindowBounds& bounds);
+  // Re-sends Browser.setWindowBounds with `params` up to 10 times, 100ms
+  // apart, until the window reaches `desired_state`.
+  Status RetrySetWindowBounds(const base::DictValue& params,
+                              const std::string& desired_state,
+                              internal::Window& window);
 
   bool quit_ = false;
   std::optional<MobileDevice> mobile_device_;
