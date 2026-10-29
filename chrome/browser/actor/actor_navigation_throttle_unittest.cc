@@ -18,6 +18,7 @@
 #include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/tools/history_tool.h"
 #include "chrome/browser/actor/ui/test_support/mock_actor_ui_tab_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -441,7 +442,8 @@ TEST_F(ActorNavigationThrottleTest,
 }
 #else
 // On Android phones, browser-initiated user UI navigations (including
-// speculative prerenders) proceed without cancelling or prompting.
+// speculative prerenders and history navigations) proceed without cancelling or
+// prompting.
 TEST_F(ActorNavigationThrottleTest,
        BrowserInitiated_PhoneProceedsWithoutPrompt) {
   base::android::device_info::set_is_desktop_for_testing(false);
@@ -475,6 +477,18 @@ TEST_F(ActorNavigationThrottleTest,
     EXPECT_EQ(content::NavigationThrottle::PROCEED,
               throttle.WillStartRequest().action());
   }
+
+  testing::NiceMock<content::MockNavigationHandle> history_handle(
+      GURL("https://destination.com"), main_rfh());
+  history_handle.set_is_renderer_initiated(false);
+  history_handle.set_page_transition(::ui::PageTransitionFromInt(
+      ::ui::PAGE_TRANSITION_LINK | ::ui::PAGE_TRANSITION_FORWARD_BACK));
+  content::MockNavigationThrottleRegistry history_registry(&history_handle);
+  ActorNavigationThrottle history_throttle =
+      ActorNavigationThrottle::CreateForTesting(history_registry, *task);
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            history_throttle.WillStartRequest().action());
+
   EXPECT_FALSE(test_delegate.confirm_navigation_called());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -508,11 +522,11 @@ TEST_F(ActorNavigationThrottleTest,
   EXPECT_FALSE(test_delegate.confirm_navigation_called());
 }
 
-// A session history navigation replays the core transition of the entry it
-// restores, so going back to a page the user originally typed arrives as
-// TYPED | FORWARD_BACK. Excluding FORWARD_BACK ensures neither the Actor's own
-// history tool nor the user's Back/Forward buttons trigger a confirmation.
-TEST_F(ActorNavigationThrottleTest, BrowserInitiated_NoDeferForBackForward) {
+// History entries retain their original core transition, so going back to a
+// page opened from a link arrives as LINK | FORWARD_BACK. Without the
+// HistoryTool tag it follows the user UI confirmation checks, on desktop
+// Android too. Stay cancels the navigation and keeps the task.
+TEST_F(ActorNavigationThrottleTest, BrowserInitiated_UntaggedBackForwardStay) {
   ActorKeyedService* service = ActorKeyedService::Get(profile());
   TaskId task_id =
       service->CreateTask(TestTaskSourceInfo(), NoEnterprisePolicyChecker());
@@ -529,7 +543,89 @@ TEST_F(ActorNavigationThrottleTest, BrowserInitiated_NoDeferForBackForward) {
       GURL("https://destination.com"), main_rfh());
   handle.set_is_renderer_initiated(false);
   handle.set_page_transition(::ui::PageTransitionFromInt(
-      ::ui::PAGE_TRANSITION_TYPED | ::ui::PAGE_TRANSITION_FORWARD_BACK));
+      ::ui::PAGE_TRANSITION_LINK | ::ui::PAGE_TRANSITION_FORWARD_BACK));
+
+  content::MockNavigationThrottleRegistry registry(&handle);
+  ActorNavigationThrottle throttle =
+      ActorNavigationThrottle::CreateForTesting(registry, *task);
+
+  EXPECT_EQ(content::NavigationThrottle::DEFER,
+            throttle.WillStartRequest().action());
+  EXPECT_TRUE(test_delegate.confirm_navigation_called());
+
+  bool cancel_called = false;
+  throttle.set_cancel_deferred_navigation_callback_for_testing(
+      base::BindLambdaForTesting(
+          [&](content::NavigationThrottle::ThrottleCheckResult result) {
+            cancel_called = true;
+            EXPECT_EQ(content::NavigationThrottle::CANCEL_AND_IGNORE,
+                      result.action());
+          }));
+
+  test_delegate.RespondToNavigation(false);
+  EXPECT_TRUE(cancel_called);
+  EXPECT_EQ(task, service->GetTask(task_id));
+}
+
+// Leave on an untagged Back/Forward stops the task and resumes the navigation.
+TEST_F(ActorNavigationThrottleTest, BrowserInitiated_UntaggedBackForwardLeave) {
+  ActorKeyedService* service = ActorKeyedService::Get(profile());
+  TaskId task_id =
+      service->CreateTask(TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+  ActorTask* task = service->GetTask(task_id);
+  ASSERT_TRUE(task);
+
+  NavigateAndCommit(GURL("https://source.com"));
+
+  TestActorNavigationDelegate test_delegate;
+  test_delegate.set_should_defer(true);
+  task->SetNavigationDelegate(test_delegate.GetWeakPtr());
+
+  testing::NiceMock<content::MockNavigationHandle> handle(
+      GURL("https://destination.com"), main_rfh());
+  handle.set_is_renderer_initiated(false);
+  handle.set_page_transition(::ui::PageTransitionFromInt(
+      ::ui::PAGE_TRANSITION_LINK | ::ui::PAGE_TRANSITION_FORWARD_BACK));
+
+  content::MockNavigationThrottleRegistry registry(&handle);
+  ActorNavigationThrottle throttle =
+      ActorNavigationThrottle::CreateForTesting(registry, *task);
+
+  EXPECT_EQ(content::NavigationThrottle::DEFER,
+            throttle.WillStartRequest().action());
+  EXPECT_TRUE(test_delegate.confirm_navigation_called());
+
+  bool resume_called = false;
+  throttle.set_resume_callback_for_testing(
+      base::BindLambdaForTesting([&]() { resume_called = true; }));
+
+  test_delegate.RespondToNavigation(true);
+  EXPECT_TRUE(resume_called);
+  EXPECT_EQ(nullptr, service->GetTask(task_id));
+}
+
+// HistoryTool tags the history navigations it starts, so the actor's own
+// Back/Forward proceeds without a confirmation.
+TEST_F(ActorNavigationThrottleTest,
+       BrowserInitiated_NoDeferForHistoryToolBackForward) {
+  ActorKeyedService* service = ActorKeyedService::Get(profile());
+  TaskId task_id =
+      service->CreateTask(TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+  ActorTask* task = service->GetTask(task_id);
+  ASSERT_TRUE(task);
+
+  NavigateAndCommit(GURL("https://source.com"));
+
+  TestActorNavigationDelegate test_delegate;
+  test_delegate.set_should_defer(true);
+  task->SetNavigationDelegate(test_delegate.GetWeakPtr());
+
+  testing::NiceMock<content::MockNavigationHandle> handle(
+      GURL("https://destination.com"), main_rfh());
+  handle.set_is_renderer_initiated(false);
+  handle.set_page_transition(::ui::PageTransitionFromInt(
+      ::ui::PAGE_TRANSITION_LINK | ::ui::PAGE_TRANSITION_FORWARD_BACK));
+  HistoryToolNavigation::CreateForNavigationHandle(handle);
 
   content::MockNavigationThrottleRegistry registry(&handle);
   ActorNavigationThrottle throttle =
@@ -601,6 +697,39 @@ TEST_F(ActorNavigationThrottleTest,
             throttle.WillStartRequest().action());
   EXPECT_FALSE(test_delegate.confirm_navigation_called());
   EXPECT_TRUE(test_delegate.cancel_navigation_confirmation_called());
+}
+
+// Two history entries can share a URL, for example after visiting A, B and then
+// A again. A history navigation between them goes to another entry instead of
+// reloading the page, so the same-URL exemption does not apply.
+TEST_F(ActorNavigationThrottleTest,
+       BrowserInitiated_DeferForBackForwardToSameUrl) {
+  const GURL kPageUrl("https://site.com/page");
+  ActorKeyedService* service = ActorKeyedService::Get(profile());
+  TaskId task_id =
+      service->CreateTask(TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+  ActorTask* task = service->GetTask(task_id);
+  ASSERT_TRUE(task);
+
+  NavigateAndCommit(kPageUrl);
+
+  TestActorNavigationDelegate test_delegate;
+  test_delegate.set_should_defer(true);
+  task->SetNavigationDelegate(test_delegate.GetWeakPtr());
+
+  testing::NiceMock<content::MockNavigationHandle> handle(kPageUrl, main_rfh());
+  handle.set_is_renderer_initiated(false);
+  handle.set_page_transition(::ui::PageTransitionFromInt(
+      ::ui::PAGE_TRANSITION_LINK | ::ui::PAGE_TRANSITION_FORWARD_BACK));
+
+  content::MockNavigationThrottleRegistry registry(&handle);
+  ActorNavigationThrottle throttle =
+      ActorNavigationThrottle::CreateForTesting(registry, *task);
+
+  EXPECT_EQ(content::NavigationThrottle::DEFER,
+            throttle.WillStartRequest().action());
+  EXPECT_TRUE(test_delegate.confirm_navigation_called());
+  EXPECT_FALSE(test_delegate.cancel_navigation_confirmation_called());
 }
 
 // Only the current URL is exempt. Another page on the same site still leaves
@@ -698,9 +827,9 @@ TEST_F(ActorNavigationThrottleTest,
 }
 
 // Going back to an entry that was committed from the address bar keeps the
-// FROM_ADDRESS_BAR qualifier. The FORWARD_BACK exclusion must still apply.
+// FROM_ADDRESS_BAR qualifier. The HistoryTool tag still skips the confirmation.
 TEST_F(ActorNavigationThrottleTest,
-       BrowserInitiated_NoDeferForBackForwardFromAddressBar) {
+       BrowserInitiated_NoDeferForHistoryToolBackForwardFromAddressBar) {
   ActorKeyedService* service = ActorKeyedService::Get(profile());
   TaskId task_id =
       service->CreateTask(TestTaskSourceInfo(), NoEnterprisePolicyChecker());
@@ -719,6 +848,7 @@ TEST_F(ActorNavigationThrottleTest,
   handle.set_page_transition(::ui::PageTransitionFromInt(
       ::ui::PAGE_TRANSITION_LINK | ::ui::PAGE_TRANSITION_FROM_ADDRESS_BAR |
       ::ui::PAGE_TRANSITION_FORWARD_BACK));
+  HistoryToolNavigation::CreateForNavigationHandle(handle);
 
   content::MockNavigationThrottleRegistry registry(&handle);
   ActorNavigationThrottle throttle =

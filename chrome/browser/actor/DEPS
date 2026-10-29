@@ -21,6 +21,12 @@ specific_include_rules = {
   'tool_agnostic_browsertest\\.cc': [
     "+chrome/browser/actor/ui/actor_task_unload_handler.h",
   ],
+  'history_tool_browsertest\\.cc': [
+    # Required to opt back in to and observe the leave site confirmation
+    # dialog.
+    "+chrome/browser/actor/ui/actor_task_unload_handler.h",
+    "+chrome/browser/actor/ui/actor_ui_tab_controller_interface.h",
+  ],
   'actor_tab_data\\.cc': [
     # Possible work-around to dependency: introduce an ActorUiTabData class,
     # but this comes with extra coordination overhead.

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/tools/history_tool.h"
 
+#include "base/auto_reset.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -35,6 +36,12 @@ constexpr base::TimeDelta kPendingNavigationPollingInterval =
 
 using ::content::NavigationController;
 using ::content::NavigationHandle;
+
+NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(HistoryToolNavigation);
+
+HistoryToolNavigation::HistoryToolNavigation(NavigationHandle&) {}
+
+HistoryToolNavigation::~HistoryToolNavigation() = default;
 
 HistoryTool::HistoryTool(TaskId task_id,
                          ToolDelegate& tool_delegate,
@@ -121,8 +128,10 @@ void HistoryTool::Invoke(ToolCallback callback) {
   // resolution here.
 
   if (direction_ == Direction::kBack) {
+    base::AutoReset<bool> starting(&starting_navigations_, true);
     pending_navigations_ = web_contents()->GetController().GoBack();
   } else if (direction_ == Direction::kForward) {
+    base::AutoReset<bool> starting(&starting_navigations_, true);
     pending_navigations_ = web_contents()->GetController().GoForward();
   } else {
     content::ReloadType reload_type =
@@ -207,15 +216,14 @@ void HistoryTool::DidStartNavigation(NavigationHandle* navigation_handle) {
       });
   CHECK_LE(matching_navigations, 1ul);
 
-  // Navigations can sometimes be started synchronously from GoBack/GoForward
-  // which means this point will be reached before pending_navigations_ is
-  // written (since it's written when GoBack/GoForward return) so add them
-  // unconditionally in that case. Invoke calls PurgePendingNavigations which
-  // will clear these entries from `pending_navigations_`. This only catches
-  // synchronously started navigations since Invoke will return failure
-  // immediately if no navigations were created.
-  if (pending_navigations_.empty() || matching_navigations > 0) {
+  // GoBack() and GoForward() can start navigations before they return the
+  // handles that fill `pending_navigations_`. Claim those while
+  // `starting_navigations_` is set, and later starts only by navigation ID.
+  // An unrelated history navigation, such as a user Back while this tool
+  // waits, is neither tracked nor tagged.
+  if (starting_navigations_ || matching_navigations > 0) {
     in_flight_navigation_ids_.insert(navigation_handle->GetNavigationId());
+    HistoryToolNavigation::CreateForNavigationHandle(*navigation_handle);
   }
 }
 

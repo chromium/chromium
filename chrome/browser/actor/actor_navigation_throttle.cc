@@ -10,6 +10,7 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/site_policy.h"
+#include "chrome/browser/actor/tools/history_tool.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
@@ -251,14 +252,15 @@ ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
       is_user_ui_navigation = true;
     }
 
-    // Exclude session history navigations. A back/forward navigation replays
-    // the core transition of the entry it restores, so returning to a page the
-    // user originally typed arrives here as PAGE_TRANSITION_TYPED with the
-    // FORWARD_BACK qualifier. Without this exclusion both the Actor's own
-    // history tool (which calls GoBack() and GoForward()) and the user's
-    // Back/Forward buttons would be confirmed.
-    if (transition & ::ui::PAGE_TRANSITION_FORWARD_BACK) {
-      is_user_ui_navigation = false;
+    // History entries retain their original core transition, so use the
+    // FORWARD_BACK qualifier here. Skip the leave confirmation for navigations
+    // tagged by HistoryTool. Other browser-initiated history navigations
+    // follow the user UI confirmation checks below.
+    const bool is_history_navigation =
+        (transition & ::ui::PAGE_TRANSITION_FORWARD_BACK) != 0;
+    if (is_history_navigation) {
+      is_user_ui_navigation =
+          !HistoryToolNavigation::GetForNavigationHandle(*navigation_handle());
     }
 
     if (!is_user_ui_navigation) {
@@ -290,10 +292,12 @@ ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
       return content::NavigationThrottle::CANCEL_AND_IGNORE;
     }
 
-    // A navigation to the current URL (ignoring the fragment) reloads the page
-    // instead of leaving it, so proceed without confirmation, as for Reload.
+    // Preserve the same-URL exemption for non-history navigations.
+    // Cross-document history traversals can target the same URL and should
+    // still be confirmed. Same-document navigations are handled separately
+    // in WillCommitWithoutUrlLoader().
     content::WebContents* web_contents = navigation_handle()->GetWebContents();
-    if (web_contents &&
+    if (web_contents && !is_history_navigation &&
         navigation_url.EqualsIgnoringRef(web_contents->GetLastCommittedURL())) {
       journal.Log(navigation_url, task_id_, "NavThrottle",
                   JournalDetailsBuilder()

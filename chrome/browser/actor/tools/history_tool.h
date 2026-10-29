@@ -17,6 +17,7 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
@@ -27,6 +28,21 @@ class NavigationHandle;
 namespace actor {
 
 class ActorSurface;
+
+// Marks a navigation that HistoryTool started, so the leave confirmation can
+// tell it from a user Back/Forward with the same transition.
+class HistoryToolNavigation
+    : public content::NavigationHandleUserData<HistoryToolNavigation> {
+ public:
+  ~HistoryToolNavigation() override;
+
+ private:
+  friend NavigationHandleUserData;
+
+  explicit HistoryToolNavigation(content::NavigationHandle& navigation_handle);
+
+  NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
+};
 
 // Performs a history navigation in a WebContents.
 class HistoryTool : public Tool, content::WebContentsObserver {
@@ -84,6 +100,11 @@ class HistoryTool : public Tool, content::WebContentsObserver {
   content::NavigationController::WeakNavigationHandleVector
       pending_navigations_;
   absl::flat_hash_set<uint64_t> in_flight_navigation_ids_;
+
+  // True only during the GoBack() or GoForward() call in Invoke(). A
+  // navigation that starts in that call arrives before `pending_navigations_`
+  // holds its handle.
+  bool starting_navigations_ = false;
 
   // Holds the callback to the Invoke method. Null before invoke is called.
   ToolCallback invoke_callback_;

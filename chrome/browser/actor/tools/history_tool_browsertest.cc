@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/actor/tools/history_tool.h"
+
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/platform_thread.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
@@ -17,6 +21,7 @@
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -27,6 +32,14 @@
 #include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/actor/ui/actor_task_unload_handler.h"
+#include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/dialog_delegate.h"
+#endif
 
 using base::test::TestFuture;
 using content::ChildFrameAt;
@@ -103,6 +116,37 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest, HistoryTool_Forward) {
   EXPECT_EQ(web_contents()->GetURL(), url_second);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// The leave confirmation must not block the tool's own Forward. BFCache is off,
+// so ActorNavigationThrottle sees the navigation.
+IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
+                       HistoryTool_ForwardNoBFCacheSkipsLeaveConfirmation) {
+  content::DisableBackForwardCacheForTesting(
+      web_contents(), content::BackForwardCache::DisableForTestingReason::
+                          TEST_REQUIRES_NO_CACHING);
+
+  const GURL url_first =
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?start");
+  const GURL url_second =
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?target");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
+  GoBack();
+  ASSERT_EQ(web_contents()->GetURL(), url_first);
+
+  // The fixture suppresses the confirmation for the navigations above.
+  ActorTaskTabCloseConfirmDialog::SetSuppressForTesting(false);
+
+  ActResultFuture result_success;
+  std::unique_ptr<ToolRequest> action =
+      MakeHistoryForwardRequest(*active_tab());
+  actor_task().Act(ToRequestList(action), result_success.GetCallback());
+  ExpectOkResult(result_success);
+
+  EXPECT_EQ(web_contents()->GetURL(), url_second);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Basic test will, under normal circumstances use BFCache. Ensure coverage
 // without BFCache as well.
 IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest, HistoryTool_BackNoBFCache) {
@@ -124,6 +168,34 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest, HistoryTool_BackNoBFCache) {
 
   EXPECT_EQ(web_contents()->GetURL(), url_first);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// The leave confirmation must not block the tool's own Back. BFCache is off,
+// so ActorNavigationThrottle sees the navigation.
+IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
+                       HistoryTool_BackNoBFCacheSkipsLeaveConfirmation) {
+  content::DisableBackForwardCacheForTesting(
+      web_contents(), content::BackForwardCache::DisableForTestingReason::
+                          TEST_REQUIRES_NO_CACHING);
+
+  const GURL url_first =
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?start");
+  const GURL url_second =
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?target");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
+
+  // The fixture suppresses the confirmation for the navigations above.
+  ActorTaskTabCloseConfirmDialog::SetSuppressForTesting(false);
+
+  ActResultFuture result_success;
+  std::unique_ptr<ToolRequest> action = MakeHistoryBackRequest(*active_tab());
+  actor_task().Act(ToRequestList(action), result_success.GetCallback());
+  ExpectOkResult(result_success);
+
+  EXPECT_EQ(web_contents()->GetURL(), url_first);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Test that tool fails validation if there's no further session history in the
 // direction of travel.
@@ -312,6 +384,84 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
   EXPECT_EQ(web_contents()->GetURL(), main_frame_url);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// A user Back that starts while the tool waits for its own iframe Back is not
+// the tool's navigation. It stays untagged, so the leave confirmation shows,
+// and Stay does not fail the tool.
+IN_PROC_BROWSER_TEST_F(
+    ActorHistoryToolBrowserTest,
+    HistoryTool_UserBackDuringIframeBackShowsLeaveConfirmation) {
+  // A BFCache restore would skip ActorNavigationThrottle.
+  content::DisableBackForwardCacheForTesting(
+      web_contents(), content::BackForwardCache::DisableForTestingReason::
+                          TEST_REQUIRES_NO_CACHING);
+
+  const GURL url_first =
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?start");
+  const GURL main_frame_url = embedded_https_test_server().GetURL(
+      kDomainA, "/actor/simple_iframe.html");
+  const GURL child_frame_url_1 =
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html");
+  const GURL child_frame_url_2 =
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?next");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), main_frame_url));
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+  RenderFrameHost* child_frame =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_frame);
+  ASSERT_EQ(child_frame->GetLastCommittedURL(), child_frame_url_1);
+  ASSERT_TRUE(
+      content::NavigateToURLFromRenderer(child_frame, child_frame_url_2));
+
+  // The fixture suppresses the confirmation for the navigations above.
+  ActorTaskTabCloseConfirmDialog::SetSuppressForTesting(false);
+
+  // Hold the tool's iframe Back so the tool keeps running.
+  TestNavigationManager tool_back(web_contents(), child_frame_url_1);
+  ActResultFuture result;
+  std::unique_ptr<ToolRequest> action = MakeHistoryBackRequest(*active_tab());
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ASSERT_TRUE(tool_back.WaitForRequestStart());
+
+  // Back from the pending iframe entry navigates the main frame to
+  // `url_first`. The toolbar Back button makes the same call.
+  content::DidStartNavigationObserver user_back(web_contents());
+  web_contents()->GetController().GoBack();
+  user_back.Wait();
+
+  // The tool still waits for its iframe Back.
+  ASSERT_TRUE(tool_back.GetNavigationHandle());
+  ASSERT_FALSE(result.IsReady());
+
+  content::NavigationHandle* user_handle = user_back.navigation_handle();
+  ASSERT_TRUE(user_handle);
+  EXPECT_TRUE(user_handle->IsInPrimaryMainFrame());
+  EXPECT_EQ(user_handle->GetURL(), url_first);
+  EXPECT_FALSE(HistoryToolNavigation::GetForNavigationHandle(*user_handle));
+
+  ui::ActorUiTabControllerInterface* controller =
+      ui::ActorUiTabControllerInterface::From(active_tab());
+  ASSERT_TRUE(controller);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return controller->GetActiveNavigationConfirmDialogWidgetForTesting() !=
+           nullptr;
+  }));
+  controller->GetActiveNavigationConfirmDialogWidgetForTesting()
+      ->widget_delegate()
+      ->AsDialogDelegate()
+      ->CancelDialog();
+
+  // Stay cancels only the user Back. The tool still finishes its own Back.
+  ASSERT_TRUE(tool_back.WaitForNavigationFinished());
+  ExpectOkResult(result);
+  EXPECT_EQ(web_contents()->GetURL(), main_frame_url);
+  EXPECT_EQ(ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)
+                ->GetLastCommittedURL(),
+            child_frame_url_1);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Ensure the history tool works correctly when a before unload handler is
 // present (but doesn't cause a prompt to show).
 IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
@@ -337,6 +487,54 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
   ExpectOkResult(result_success);
   EXPECT_EQ(web_contents()->GetURL(), url_first);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// With a beforeunload handler, the tool's Back starts only after the handler
+// runs, so after GoBack() returns. HistoryTool claims it by navigation ID and
+// must tag it before ActorNavigationThrottle runs. BFCache is off, so the
+// throttle sees the navigation.
+IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
+                       HistoryTool_HasBeforeUnloadSkipsLeaveConfirmation) {
+  content::DisableBackForwardCacheForTesting(
+      web_contents(), content::BackForwardCache::DisableForTestingReason::
+                          TEST_REQUIRES_NO_CACHING);
+
+  const GURL url_first =
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?start");
+  const GURL url_second =
+      embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?target");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
+
+  ASSERT_TRUE(
+      ExecJs(web_contents(), "addEventListener('beforeunload', () => {});"));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return web_contents()->NeedToFireBeforeUnload(); }));
+
+  // The fixture suppresses the confirmation for the navigations above.
+  ActorTaskTabCloseConfirmDialog::SetSuppressForTesting(false);
+
+  auto before_unload_mode =
+      content::NavigationHandle::BeforeUnloadExecutionMode::kNotBlocked;
+  content::DidFinishNavigationObserver navigation_observer(
+      web_contents(),
+      base::BindLambdaForTesting([&](content::NavigationHandle* handle) {
+        if (handle->IsInPrimaryMainFrame() && handle->HasCommitted()) {
+          before_unload_mode = handle->GetBeforeUnloadExecutionMode();
+        }
+      }));
+
+  ActResultFuture result_success;
+  std::unique_ptr<ToolRequest> action = MakeHistoryBackRequest(*active_tab());
+  actor_task().Act(ToRequestList(action), result_success.GetCallback());
+  ExpectOkResult(result_success);
+
+  EXPECT_EQ(web_contents()->GetURL(), url_first);
+  // kSync: the navigation waited for the renderer to run beforeunload.
+  EXPECT_EQ(before_unload_mode,
+            content::NavigationHandle::BeforeUnloadExecutionMode::kSync);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Test that back navigation from a POST request works as expected.
 IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest, HistoryTool_BackFromPOST) {
