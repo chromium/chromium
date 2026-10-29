@@ -8,6 +8,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -513,13 +514,27 @@ struct WithNavigationResponseTaskRunnerFeature {
   base::test::ScopedFeatureList feature_list_;
 };
 
+struct WithMoveResponseFeature {
+  explicit WithMoveResponseFeature(bool enabled) {
+    feature_list_.InitWithFeatureState(
+        extensions_features::kWebRequestProxyMoveResponse, enabled);
+  }
+  base::test::ScopedFeatureList feature_list_;
+};
+
 class WebRequestEventRouterNavigationTaskRunnerTest
     : private WithNavigationResponseTaskRunnerFeature,
+      private WithMoveResponseFeature,
       public WebRequestEventRouterContextDispatchTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   WebRequestEventRouterNavigationTaskRunnerTest()
-      : WithNavigationResponseTaskRunnerFeature(GetParam()) {}
+      : WithNavigationResponseTaskRunnerFeature(std::get<0>(GetParam())),
+        WithMoveResponseFeature(std::get<1>(GetParam())) {}
+
+  bool navigation_task_runner_enabled() const {
+    return std::get<0>(GetParam());
+  }
 };
 
 // Runs pending tasks on `runner` without overriding
@@ -1240,7 +1255,10 @@ TEST_F(WebRequestEventRouterContextDispatchSplitIncognitoTest,
 // Verifies that under `kWebRequestProxyNavigationResponseTaskRunner`, cloned
 // `URLLoaderFactory` and `TrustedHeaderClient` receivers bind to
 // `navigation_response_task_runner_` rather than falling back to
-// `SequencedTaskRunner::GetCurrentDefault()`.
+// `SequencedTaskRunner::GetCurrentDefault()`, and that under
+// `kWebRequestProxyMoveResponse`, `ContinueToResponseStarted()` moves
+// `current_response_` while preserving `Set-Cookie` headers merged from
+// `OnHeadersReceived()` and the `cache_storage_side_data_writer` Mojo pipe.
 TEST_P(WebRequestEventRouterNavigationTaskRunnerTest,
        ProxyingURLLoaderFactoryNavigationTaskRunner) {
   declarative_net_request::RulesMonitorService::GetFactoryInstance()
@@ -1298,7 +1316,8 @@ TEST_P(WebRequestEventRouterNavigationTaskRunnerTest,
       loader.BindNewPipeAndPassReceiver(), kRequestId,
       network::mojom::kURLLoadOptionNone, request, client.CreateRemote(),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
-  EXPECT_EQ(GetParam(), nav_task_runner->HasPendingTask());
+  EXPECT_EQ(navigation_task_runner_enabled(),
+            nav_task_runner->HasPendingTask());
   RunPendingTasksKeepingDefaultRunner(*nav_task_runner);
   terminal_factory.WaitForRequest(request.url);
 
@@ -1314,7 +1333,8 @@ TEST_P(WebRequestEventRouterNavigationTaskRunnerTest,
       net::HttpUtil::AssembleRawHeaders(
           "HTTP/1.1 200 OK\r\nSet-Cookie: foo=bar\r\n\r\n"),
       net::IPEndPoint(), std::nullopt, headers_future.GetCallback());
-  EXPECT_EQ(GetParam(), nav_task_runner->HasPendingTask());
+  EXPECT_EQ(navigation_task_runner_enabled(),
+            nav_task_runner->HasPendingTask());
   RunPendingTasksKeepingDefaultRunner(*nav_task_runner);
   EXPECT_EQ(net::OK, headers_future.Get<0>());
 
@@ -1348,6 +1368,6 @@ TEST_P(WebRequestEventRouterNavigationTaskRunnerTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WebRequestEventRouterNavigationTaskRunnerTest,
-                         testing::Bool());
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 }  // namespace extensions

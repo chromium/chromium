@@ -481,6 +481,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnReceiveResponse(
 
   // A response can only arrive once any forwarded redirect has been followed.
   CHECK(!deferred_redirect_url_);
+  CHECK(!has_forwarded_response_);
   current_body_ = std::move(body);
   current_cached_metadata_ = std::move(cached_metadata);
   if (current_request_uses_header_client_) {
@@ -1328,10 +1329,19 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   // debug crbug.com/463388771.
   CHECK(!has_forwarded_response_);
   has_forwarded_response_ = true;
-  auto response = current_response_.Clone();
-  response->cache_storage_side_data_writer =
-      std::move(current_response_->cache_storage_side_data_writer);
-  target_client_->OnReceiveResponse(std::move(response),
+  // Because `OnReceiveResponse()` is terminal for response headers (`info_` was
+  // already populated above), transfer ownership of `current_response_` instead
+  // of deep-cloning the entire `URLResponseHead` Mojo hierarchy.
+  network::mojom::URLResponseHeadPtr response_to_forward;
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kWebRequestProxyMoveResponse)) {
+    response_to_forward = std::move(current_response_);
+  } else {
+    response_to_forward = current_response_.Clone();
+    response_to_forward->cache_storage_side_data_writer =
+        std::move(current_response_->cache_storage_side_data_writer);
+  }
+  target_client_->OnReceiveResponse(std::move(response_to_forward),
                                     std::move(current_body_),
                                     std::move(current_cached_metadata_));
 }

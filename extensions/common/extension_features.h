@@ -268,6 +268,11 @@ BASE_DECLARE_FEATURE(kExperimentalOmniboxLabs);
 // out of the allowlist.
 BASE_DECLARE_FEATURE(kSafeBrowsingCrxAllowlistAutoDisable);
 
+// When enabled, `WebRequestProxyingURLLoaderFactory` moves `current_response_`
+// instead of deep-cloning it when forwarding the final `OnReceiveResponse()` to
+// `target_client_`.
+BASE_DECLARE_FEATURE(kWebRequestProxyMoveResponse);
+
 // When enabled, `WebRequestProxyingURLLoaderFactory` binds
 // `TrustedHeaderClient` and cloned `URLLoaderFactory` receivers to
 // `navigation_response_task_runner_`.

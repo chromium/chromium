@@ -195,6 +195,8 @@ BASE_FEATURE(kLaunchWindowsNativeHostsDirectly,
 BASE_FEATURE(kSafeBrowsingCrxAllowlistAutoDisable,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kWebRequestProxyMoveResponse, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kWebRequestProxyNavigationResponseTaskRunner,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
