@@ -11,7 +11,7 @@
 #include "chrome/utility/safe_browsing/archive_analyzer.h"
 #include "chrome/utility/safe_browsing/mac/dmg_iterator.h"
 #include "chrome/utility/safe_browsing/mac/read_stream.h"
-#include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/content/common/file_type_policies/file_type_policies.h"
 
 namespace safe_browsing {
 

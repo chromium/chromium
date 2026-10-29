@@ -12,7 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
-#include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
+#include "components/safe_browsing/content/common/file_type_policies/proto/download_file_types.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 namespace base {

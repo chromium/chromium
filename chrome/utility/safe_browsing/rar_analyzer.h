@@ -24,7 +24,7 @@
 #include "base/files/file.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/utility/safe_browsing/archive_analyzer.h"
-#include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
+#include "components/safe_browsing/content/common/file_type_policies/proto/download_file_types.pb.h"
 #include "third_party/unrar/google/unrar_wrapper.h"
 
 namespace safe_browsing {

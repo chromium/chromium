@@ -46,7 +46,7 @@ source_set("impl") {
 
   if (safe_browsing_mode != 0) {
     sources += [ "file_system_access_dangerous_file_dialog.cc" ]
-    deps += [ "//components/safe_browsing/content/common:file_type_policies" ]
+    deps += [ "//components/safe_browsing/content/common/file_type_policies" ]
   }
 }
 

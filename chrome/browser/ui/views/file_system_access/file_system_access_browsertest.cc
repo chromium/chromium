@@ -47,7 +47,7 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_util.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/content/common/file_type_policies_test_util.h"
+#include "components/safe_browsing/content/common/file_type_policies/file_type_policies_test_util.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/navigation_controller.h"

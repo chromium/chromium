@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/common/file_type_policies_prefs.h"
+#include "components/safe_browsing/content/common/file_type_policies/file_type_policies_prefs.h"
 
 #include "components/prefs/pref_registry_simple.h"
 

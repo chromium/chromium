@@ -47,7 +47,7 @@
 #include "components/download/public/common/download_item_rename_handler.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
-#include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
+#include "components/safe_browsing/content/common/file_type_policies/proto/download_file_types.pb.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -92,7 +92,7 @@
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/content/common/file_type_policies/file_type_policies.h"
 #endif
 
 using DangerUiPattern = DownloadUIModel::DangerUiPattern;

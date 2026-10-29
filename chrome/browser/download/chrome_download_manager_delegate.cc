@@ -173,7 +173,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/safe_browsing/content/browser/download/download_stats.h"
-#include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/content/common/file_type_policies/file_type_policies.h"
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)

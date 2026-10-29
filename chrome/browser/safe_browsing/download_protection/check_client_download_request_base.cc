@@ -23,7 +23,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_request_maker.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
-#include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/content/common/file_type_policies/file_type_policies.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"

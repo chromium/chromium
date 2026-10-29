@@ -19,7 +19,7 @@
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_path_reservation_tracker.h"
 #include "components/download/public/common/download_target_info.h"
-#include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
+#include "components/safe_browsing/content/common/file_type_policies/proto/download_file_types.pb.h"
 #include "components/safe_browsing/core/common/features.h"
 
 #if BUILDFLAG(IS_ANDROID)

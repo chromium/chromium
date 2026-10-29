@@ -577,7 +577,7 @@
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "components/safe_browsing/content/common/file_type_policies_prefs.h"
+#include "components/safe_browsing/content/common/file_type_policies/file_type_policies_prefs.h"
 #endif
 
 #if BUILDFLAG(CHROME_FOR_TESTING)

@@ -6,7 +6,7 @@ include_rules = [
   "+components/filename_generation/filename_generation.h",
   "+components/leveldb_proto",
   "+components/safe_browsing/buildflags.h",
-  "+components/safe_browsing/content/common",
+  "+components/safe_browsing/content/common/file_type_policies",
   "+components/services/quarantine/quarantine.h",
   "+components/services/quarantine/public",
   "+components/ukm/test_ukm_recorder.h",

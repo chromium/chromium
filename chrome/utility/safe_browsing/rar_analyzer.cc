@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/common/safe_browsing/download_type_util.h"
-#include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/content/common/file_type_policies/file_type_policies.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "third_party/unrar/google/unrar_wrapper.h"
 

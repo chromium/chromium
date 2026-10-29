@@ -11,7 +11,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/content/common/file_type_policies_test_util.h"
+#include "components/safe_browsing/content/common/file_type_policies/file_type_policies_test_util.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/download_item_utils.h"

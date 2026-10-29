@@ -66,7 +66,7 @@ source_set("download") {
     "//components/policy/core/common",
     "//components/prefs",
     "//components/safe_browsing:buildflags",
-    "//components/safe_browsing/content/common/proto:download_file_types_proto",
+    "//components/safe_browsing/content/common/file_type_policies/proto:download_file_types_proto",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//content/public/browser",
@@ -389,7 +389,7 @@ source_set("impl") {
   if (safe_browsing_mode != 0) {
     deps += [
       "//components/safe_browsing/content/browser/download:download_stats",
-      "//components/safe_browsing/content/common:file_type_policies",
+      "//components/safe_browsing/content/common/file_type_policies",
     ]
   }
 
@@ -523,8 +523,8 @@ source_set("unit_tests") {
 
   if (safe_browsing_mode != 0) {
     deps += [
-      "//components/safe_browsing/content/common:file_type_policies",
-      "//components/safe_browsing/content/common:file_type_policies_test_support",
+      "//components/safe_browsing/content/common/file_type_policies",
+      "//components/safe_browsing/content/common/file_type_policies:file_type_policies_test_support",
     ]
   }
 
@@ -594,8 +594,8 @@ if (!is_android) {
       "//components/lookalikes/core:safety_tips",
       "//components/page_load_metrics/browser:test_support",
       "//components/safe_browsing/content/browser:safe_browsing_service",
-      "//components/safe_browsing/content/common:file_type_policies",
-      "//components/safe_browsing/content/common:file_type_policies_test_support",
+      "//components/safe_browsing/content/common/file_type_policies",
+      "//components/safe_browsing/content/common/file_type_policies:file_type_policies_test_support",
       "//components/services/quarantine:test_support",
       "//content/public/browser",
       "//content/test:test_support",

@@ -80,7 +80,7 @@ source_set("impl") {
   }
 
   if (safe_browsing_mode != 0) {
-    deps += [ "//components/safe_browsing/content/common:file_type_policies" ]
+    deps += [ "//components/safe_browsing/content/common/file_type_policies" ]
   }
 
   if (enable_platform_apps) {
@@ -180,7 +180,7 @@ source_set("unit_tests") {
   }
 
   if (safe_browsing_mode != 0) {
-    deps += [ "//components/safe_browsing/content/common:file_type_policies_test_support" ]
+    deps += [ "//components/safe_browsing/content/common/file_type_policies:file_type_policies_test_support" ]
   }
 
   if (!is_android) {

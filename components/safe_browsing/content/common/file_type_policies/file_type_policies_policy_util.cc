@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/common/file_type_policies_policy_util.h"
+#include "components/safe_browsing/content/common/file_type_policies/file_type_policies_policy_util.h"
 
 #include "base/strings/string_util.h"
 #include "components/policy/core/browser/url_list/url_blocklist_manager.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/common/file_type_policies_prefs.h"
+#include "components/safe_browsing/content/common/file_type_policies/file_type_policies_prefs.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
 #include "url/gurl.h"

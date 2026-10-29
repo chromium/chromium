@@ -89,7 +89,7 @@
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "components/safe_browsing/content/common/file_type_policies_test_util.h"
+#include "components/safe_browsing/content/common/file_type_policies/file_type_policies_test_util.h"
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)

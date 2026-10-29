@@ -2655,7 +2655,7 @@ source_set("browser_tests") {
   data_deps = []
 
   if (safe_browsing_mode != 0) {
-    deps += [ "//components/safe_browsing/content/common:file_type_policies_test_support" ]
+    deps += [ "//components/safe_browsing/content/common/file_type_policies:file_type_policies_test_support" ]
   }
 
   if (is_win || is_mac) {

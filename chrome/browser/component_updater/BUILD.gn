@@ -199,7 +199,7 @@ source_set("impl") {
         [ "//components/safe_browsing/android:real_time_url_checks_allowlist" ]
   }
   if (safe_browsing_mode != 0) {
-    deps += [ "//components/safe_browsing/content/common:file_type_policies" ]
+    deps += [ "//components/safe_browsing/content/common/file_type_policies" ]
   }
 
   if (enable_extensions_core) {

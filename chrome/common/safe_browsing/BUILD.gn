@@ -19,14 +19,14 @@ if (safe_browsing_mode != 0) {
       ":download_type_util",
       "//base",
       "//base:i18n",
-      "//components/safe_browsing/content/common:file_type_policies",
+      "//components/safe_browsing/content/common/file_type_policies",
       "//crypto",
     ]
     if (is_mac) {
       deps += [ ":disk_image_type_sniffer_mac" ]
     }
     public_deps = [
-      "//components/safe_browsing/content/common/proto:download_file_types_proto",
+      "//components/safe_browsing/content/common/file_type_policies/proto:download_file_types_proto",
       "//components/safe_browsing/core/common/proto:csd_proto",
     ]
   }
@@ -38,7 +38,7 @@ if (safe_browsing_mode != 0) {
     ]
     deps = [
       "//base",
-      "//components/safe_browsing/content/common:file_type_policies",
+      "//components/safe_browsing/content/common/file_type_policies",
       "//components/safe_browsing/core/common",
     ]
     public_deps = [ "//components/safe_browsing/core/common/proto:csd_proto" ]
@@ -103,7 +103,7 @@ source_set("safe_browsing") {
       ":archive_analyzer_results",
       ":binary_feature_extractor",
       ":download_type_util",
-      "//components/safe_browsing/content/common:file_type_policies",
+      "//components/safe_browsing/content/common/file_type_policies",
     ]
   }
 
@@ -118,7 +118,7 @@ source_set("safe_browsing") {
     deps += [
       "//base",
       "//base:i18n",
-      "//components/safe_browsing/content/common:file_type_policies",
+      "//components/safe_browsing/content/common/file_type_policies",
       "//components/safe_browsing/core/common",
       "//third_party/lzma_sdk/google:seven_zip_reader",
     ]

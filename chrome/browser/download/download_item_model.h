@@ -14,7 +14,7 @@
 #include "chrome/browser/download/download_ui_model.h"
 #include "components/download/public/common/download_item.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
+#include "components/safe_browsing/content/common/file_type_policies/proto/download_file_types.pb.h"
 
 namespace content {
 class WebContents;

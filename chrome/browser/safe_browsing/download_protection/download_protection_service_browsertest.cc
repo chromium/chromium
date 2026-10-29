@@ -40,8 +40,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
-#include "components/safe_browsing/content/common/file_type_policies_test_util.h"
-#include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
+#include "components/safe_browsing/content/common/file_type_policies/file_type_policies_test_util.h"
+#include "components/safe_browsing/content/common/file_type_policies/proto/download_file_types.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #endif
 

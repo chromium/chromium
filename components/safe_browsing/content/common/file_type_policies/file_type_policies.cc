@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/content/common/file_type_policies/file_type_policies.h"
 
 #include "base/check_op.h"
 #include "base/files/file_path.h"
@@ -11,7 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "components/grit/components_resources.h"
-#include "components/safe_browsing/content/common/file_type_policies_policy_util.h"
+#include "components/safe_browsing/content/common/file_type_policies/file_type_policies_policy_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
 

@@ -13,7 +13,7 @@
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "chrome/utility/safe_browsing/archive_analyzer.h"
-#include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
+#include "components/safe_browsing/content/common/file_type_policies/proto/download_file_types.pb.h"
 #include "third_party/lzma_sdk/google/seven_zip_reader.h"
 
 namespace safe_browsing {

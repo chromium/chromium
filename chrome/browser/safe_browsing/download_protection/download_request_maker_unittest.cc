@@ -16,7 +16,7 @@
 #include "chrome/common/safe_browsing/mock_binary_feature_extractor.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/mock_download_item.h"
-#include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
+#include "components/safe_browsing/content/common/file_type_policies/proto/download_file_types.pb.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"

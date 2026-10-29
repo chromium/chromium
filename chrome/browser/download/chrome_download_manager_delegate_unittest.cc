@@ -60,7 +60,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/content/common/file_type_policies_test_util.h"
+#include "components/safe_browsing/content/common/file_type_policies/file_type_policies_test_util.h"
 #include "components/safe_search_api/safe_search_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/download_item_utils.h"

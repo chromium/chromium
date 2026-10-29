@@ -19,7 +19,7 @@
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/utility/safe_browsing/archive_analysis_delegate.h"
 #include "chrome/utility/safe_browsing/zip_writer_delegate.h"
-#include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/content/common/file_type_policies/file_type_policies.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "third_party/zlib/google/zip_reader.h"

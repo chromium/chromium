@@ -10,7 +10,7 @@
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/utility/safe_browsing/seven_zip_analyzer.h"
 #include "chrome/utility/safe_browsing/zip_analyzer.h"
-#include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
+#include "components/safe_browsing/content/common/file_type_policies/proto/download_file_types.pb.h"
 #include "components/safe_browsing/core/common/features.h"
 
 #if BUILDFLAG(IS_MAC)

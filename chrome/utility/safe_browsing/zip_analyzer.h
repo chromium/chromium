@@ -11,7 +11,7 @@
 #include "base/files/file.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/utility/safe_browsing/archive_analyzer.h"
-#include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/content/common/file_type_policies/file_type_policies.h"
 #include "third_party/zlib/google/zip_reader.h"
 
 namespace safe_browsing {

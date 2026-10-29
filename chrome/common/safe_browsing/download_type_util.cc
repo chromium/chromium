@@ -6,7 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
-#include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/content/common/file_type_policies/file_type_policies.h"
 
 namespace safe_browsing {
 namespace download_type_util {

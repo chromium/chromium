@@ -1,5 +1,5 @@
 include_rules = [
   "+components/safe_browsing/buildflags.h",
-  "+components/safe_browsing/content/common",
+  "+components/safe_browsing/content/common/file_type_policies",
   "+content/public/browser",
 ]

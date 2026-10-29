@@ -9,7 +9,7 @@
 
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_stats.h"
-#include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/content/common/file_type_policies/file_type_policies.h"
 
 namespace base {
 class FilePath;

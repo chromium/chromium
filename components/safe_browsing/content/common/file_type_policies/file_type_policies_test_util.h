@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_COMMON_FILE_TYPE_POLICIES_TEST_UTIL_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_COMMON_FILE_TYPE_POLICIES_TEST_UTIL_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_COMMON_FILE_TYPE_POLICIES_FILE_TYPE_POLICIES_TEST_UTIL_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_COMMON_FILE_TYPE_POLICIES_FILE_TYPE_POLICIES_TEST_UTIL_H_
 
 #include "base/values.h"
-#include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/content/common/file_type_policies/file_type_policies.h"
 
 namespace safe_browsing {
 
@@ -47,4 +47,4 @@ base::DictValue CreateNotDangerousOverridePolicyEntryForTesting(
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_COMMON_FILE_TYPE_POLICIES_TEST_UTIL_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_COMMON_FILE_TYPE_POLICIES_FILE_TYPE_POLICIES_TEST_UTIL_H_

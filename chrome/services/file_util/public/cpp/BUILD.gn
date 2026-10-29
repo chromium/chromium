@@ -65,7 +65,7 @@ if (safe_browsing_mode == 1) {
       "//chrome/services/file_util",
       "//chrome/services/file_util:test_support",
       "//components/enterprise/obfuscation/core:enterprise_obfuscation",
-      "//components/safe_browsing/content/common:file_type_policies",
+      "//components/safe_browsing/content/common/file_type_policies",
       "//components/safe_browsing/core/common",
       "//content/test:test_support",
       "//skia",

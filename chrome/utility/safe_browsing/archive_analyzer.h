@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/utility/safe_browsing/archive_analysis_delegate.h"
-#include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
+#include "components/safe_browsing/content/common/file_type_policies/proto/download_file_types.pb.h"
 
 namespace safe_browsing {
 

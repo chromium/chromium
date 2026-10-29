@@ -1,5 +1,5 @@
 include_rules = [
-  "+components/safe_browsing/content/common",
+  "+components/safe_browsing/content/common/file_type_policies",
   "+components/safe_browsing/core/common/features.h",
   "+components/safe_browsing/core/common/proto/csd.pb.h",
   "+third_party/rust/cxx/v1/cxx.h",

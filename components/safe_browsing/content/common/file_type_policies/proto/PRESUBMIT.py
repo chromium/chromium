@@ -6,7 +6,10 @@
 def CheckChangeOnUpload(input_api, output_api):
     results = []
 
-    proto_path = 'components/safe_browsing/content/common/proto/download_file_types.proto'
+    proto_path = (
+        'components/safe_browsing/content/common/'
+        'file_type_policies/proto/download_file_types.proto'
+    )
 
     if proto_path in input_api.change.LocalPaths():
         results.append(

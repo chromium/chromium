@@ -120,7 +120,7 @@
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
-#include "components/safe_browsing/content/common/file_type_policies_test_util.h"
+#include "components/safe_browsing/content/common/file_type_policies/file_type_policies_test_util.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 

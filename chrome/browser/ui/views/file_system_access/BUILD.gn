@@ -105,7 +105,7 @@ if (!is_android) {
         "//chrome/browser/safe_browsing",
         "//chrome/browser/ui/test:dialog",
         "//chrome/browser/ui/views:file_system_access_test_support",
-        "//components/safe_browsing/content/common:file_type_policies_test_support",
+        "//components/safe_browsing/content/common/file_type_policies:file_type_policies_test_support",
       ]
     }
   }
