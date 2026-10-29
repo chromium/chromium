@@ -168,18 +168,7 @@ class SingleClientWebAuthnCredentialsSyncTest
     : public SingleClientWebAuthnCredentialsSyncTestBase,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientWebAuthnCredentialsSyncTest() {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitWithFeatures(
-          {webauthn::features::kDeleteOldHiddenPasskeys,
-           syncer::kReplaceSyncPromosWithSignInPromos},
-          {});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {webauthn::features::kDeleteOldHiddenPasskeys}, {});
-    }
-  }
-
+  SingleClientWebAuthnCredentialsSyncTest() = default;
   ~SingleClientWebAuthnCredentialsSyncTest() override = default;
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
@@ -187,7 +176,8 @@ class SingleClientWebAuthnCredentialsSyncTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      webauthn::features::kDeleteOldHiddenPasskeys};
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1076,24 +1066,15 @@ class SingleClientWebAuthnCredentialsSyncParamTest
     : public SingleClientWebAuthnCredentialsSyncTestBase,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientWebAuthnCredentialsSyncParamTest() {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitWithFeatures(
-          {webauthn::features::kDeleteOldHiddenPasskeys,
-           syncer::kReplaceSyncPromosWithSignInPromos},
-          {});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {webauthn::features::kDeleteOldHiddenPasskeys}, {});
-    }
-  }
+  SingleClientWebAuthnCredentialsSyncParamTest() = default;
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
     return GetParam();
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      webauthn::features::kDeleteOldHiddenPasskeys};
 };
 
 // Tests that passkeys sync on transport mode only if the user has consented to

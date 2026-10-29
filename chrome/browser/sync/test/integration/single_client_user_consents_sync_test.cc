@@ -5,7 +5,6 @@
 #include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
@@ -15,7 +14,6 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "components/sync/protocol/user_consent_specifics.pb.h"
 #include "content/public/test/browser_test.h"
 
@@ -87,12 +85,7 @@ class SingleClientUserConsentsSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientUserConsentsSyncTest() : SyncTest(SINGLE_CLIENT) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-  }
+  SingleClientUserConsentsSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientUserConsentsSyncTest() override = default;
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
@@ -109,9 +102,6 @@ class SingleClientUserConsentsSyncTest
   GaiaId GetGaiaId() const {
     return GetClient(0)->GetGaiaIdForAccount(SyncTestAccount::kDefaultAccount);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(SingleClientUserConsentsSyncTest, ShouldSubmit) {

@@ -152,14 +152,7 @@ class SingleClientValuablesSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientValuablesSyncTest() : SyncTest(SINGLE_CLIENT) {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        syncer::kSyncWalletVehicleRegistrations};
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-    feature_list_.InitWithFeatures(enabled_features, {});
-  }
+  SingleClientValuablesSyncTest() : SyncTest(SINGLE_CLIENT) {}
   SingleClientValuablesSyncTest(const SingleClientValuablesSyncTest&) = delete;
   SingleClientValuablesSyncTest& operator=(
       const SingleClientValuablesSyncTest&) = delete;
@@ -237,7 +230,8 @@ class SingleClientValuablesSyncTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      syncer::kSyncWalletVehicleRegistrations};
 };
 
 // Valuables should get loaded on initial sync.

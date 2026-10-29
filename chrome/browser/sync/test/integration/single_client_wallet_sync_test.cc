@@ -32,7 +32,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/data_type_state.pb.h"
@@ -144,12 +143,7 @@ class SingleClientWalletSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientWalletSyncTest() : SyncTest(SINGLE_CLIENT) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-  }
+  SingleClientWalletSyncTest() : SyncTest(SINGLE_CLIENT) {}
   SingleClientWalletSyncTest(const SingleClientWalletSyncTest&) = delete;
   SingleClientWalletSyncTest& operator=(const SingleClientWalletSyncTest&) =
       delete;
@@ -206,7 +200,6 @@ class SingleClientWalletSyncTest
         .Wait();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
 };
 

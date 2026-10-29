@@ -177,8 +177,7 @@ class SingleClientThemesSyncTest
   SingleClientThemesSyncTest() : SyncTest(SINGLE_CLIENT) {
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
       scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
-                                syncer::kSeparateLocalAndAccountThemes,
+          /*enabled_features=*/{syncer::kSeparateLocalAndAccountThemes,
                                 syncer::kSeparateLocalAndAccountSearchEngines,
                                 // `kEnablePreferencesAccountStorage` is used to
                                 // enable themes in transport
@@ -824,7 +823,6 @@ class SingleClientThemesMigrateSyncingUserToSignedInSyncTest
  public:
   SingleClientThemesMigrateSyncingUserToSignedInSyncTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
-        syncer::kReplaceSyncPromosWithSignInPromos,
         syncer::kSeparateLocalAndAccountThemes};
     std::vector<base::test::FeatureRef> disabled_features;
     if (content::IsPreTest()) {

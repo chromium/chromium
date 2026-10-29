@@ -17,7 +17,6 @@
 #include "chromeos/ash/components/sync_wifi/network_identifier.h"
 #include "chromeos/ash/components/sync_wifi/test_data_generator.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
-#include "components/sync/base/features.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/protocol/wifi_configuration_specifics.pb.h"
@@ -131,12 +130,7 @@ class SingleClientWifiConfigurationSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientWifiConfigurationSyncTest() : SyncTest(SINGLE_CLIENT) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      features_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-  }
+  SingleClientWifiConfigurationSyncTest() : SyncTest(SINGLE_CLIENT) {}
   SingleClientWifiConfigurationSyncTest(
       const SingleClientWifiConfigurationSyncTest&) = delete;
   SingleClientWifiConfigurationSyncTest& operator=(
@@ -167,7 +161,6 @@ class SingleClientWifiConfigurationSyncTest
   }
 
  private:
-  base::test::ScopedFeatureList features_;
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
 };
