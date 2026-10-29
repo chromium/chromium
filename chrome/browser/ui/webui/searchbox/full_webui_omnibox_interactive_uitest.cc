@@ -980,15 +980,13 @@ class FullWebUIOmniboxInteractiveTest
         "WaitForActiveTabFavicon");
   }
 
-  // Opens `page_url` in `tab_id` and waits until its favicon is downloaded into
-  // the favicon database. Navigating from `about:blank` rather than passing
-  // `page_url` to `AddInstrumentedTab` avoids `OnTabChanged` on tab insertion
-  // sending `page_url` to the preloaded popup before the page's favicon has
-  // been fetched (which would cache a failed `chrome://favicon2` load on
-  // `cr-searchbox-icon`).
+  // Opens `page_url` in `tab_id` and waits for its favicon to load. Navigates
+  // from `chrome://version/` rather than `about:blank` (which focuses the
+  // omnibox) or `page_url` directly (which caches a failed `chrome://favicon2`
+  // load before the favicon is fetched).
   auto OpenTabWithFavicon(ui::ElementIdentifier tab_id, const GURL& page_url) {
     return Steps(WaitForBrowserActive(),
-                 AddInstrumentedTab(tab_id, GURL(url::kAboutBlankURL)),
+                 AddInstrumentedTab(tab_id, GURL("chrome://version/")),
                  WaitForWebContentsReady(tab_id),
                  NavigateWebContents(tab_id, page_url),
                  WaitForActiveTabFavicon());
@@ -1434,7 +1432,7 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, ActiveUnfocusedDraft) {
       InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
       WaitForVisibleOmniboxUnfocused(),
       // Switch to Tab 2.
-      AddInstrumentedTab(kTab2, GURL("about:blank")),
+      AddInstrumentedTab(kTab2, GURL("chrome://version/")),
       WaitForWebContentsReady(kTab2),
       // Switch back to Tab 1.
       SwitchTab(kTabStripElementId, 1),
@@ -1731,7 +1729,7 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 
       // Open non-NTP, expect focus to not linger.
       UninstrumentWebContents(kPopupWebView), WaitForPopupTransitionLockout(),
-      AddInstrumentedTab(kTab3, GURL("about:blank")),
+      AddInstrumentedTab(kTab3, GURL("chrome://version/")),
       WaitForWebContentsReady(kTab3),
       InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
       // Ensure omnibox is not focused.
@@ -1803,6 +1801,43 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       UninstrumentWebContents(kPopupWebView), WaitForPopupTransitionLockout(),
       AddInstrumentedTab(kTab3, extension->ResolveExtensionURL("page.html")),
       WaitForWebContentsReady(kTab3),
+      InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      // Ensure omnibox is not focused.
+      WaitForOmniboxFocus(false));
+}
+
+// Verifies that a tab the browser opens to about:blank focuses the omnibox, and
+// that an about:blank popup a page opens doesn't, matching the Views tests
+// BrowserFocusTest.TabInitialFocus and AboutBlankNavigationLocationTest.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       AboutBlankNewTabFocusesOmnibox) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab3);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab4);
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_server.Start());
+
+  RunTestSequence(
+      // Tab 1 is the initial NTP.
+      FocusOmniboxOnInitialNtp(kTab1),
+
+      // A tab the browser opens to about:blank focuses the omnibox.
+      UninstrumentWebContents(kPopupWebView), WaitForPopupTransitionLockout(),
+      AddInstrumentedTab(kTab2, GURL(url::kAboutBlankURL)),
+      WaitForWebContentsReady(kTab2),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      InAnyContext(
+          InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
+      // Ensure omnibox is focused.
+      WaitForOmniboxFocus(true),
+
+      // A page's about:blank popup opens in a new tab without omnibox focus.
+      UninstrumentWebContents(kPopupWebView), WaitForPopupTransitionLockout(),
+      AddInstrumentedTab(kTab3, https_server.GetURL("/title1.html")),
+      WaitForWebContentsReady(kTab3), WaitForOmniboxFocus(false),
+      InstrumentNextTab(kTab4),
+      ExecuteJs(kTab3, "() => { window.open('about:blank'); }"),
+      WaitForWebContentsReady(kTab4),
       InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
       // Ensure omnibox is not focused.
       WaitForOmniboxFocus(false));

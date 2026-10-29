@@ -63,15 +63,6 @@ searchbox::mojom::InputKeywordModelPtr CreateInputKeywordModel(
   return keyword_model;
 }
 
-// Returns true if `contents` should focus the omnibox when it becomes active
-// with no saved omnibox state, e.g. on any New Tab Page, including one that an
-// extension overrides. A browser-initiated initial about:blank navigation is
-// excluded, although `FocusLocationBarByDefault()` is true for it too.
-bool ShouldFocusLocationBarForTab(content::WebContents* contents) {
-  return contents->FocusLocationBarByDefault() &&
-         !contents->GetVisibleURL().IsAboutBlank();
-}
-
 }  // namespace
 
 OmniboxPopupViewFullWebUI::OmniboxPopupViewFullWebUI(
@@ -350,7 +341,7 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
     controller()->edit_model()->Revert();
     controller()->edit_model()->OnChanged();
     should_focus_popup =
-        can_show_popup && ShouldFocusLocationBarForTab(contents);
+        can_show_popup && contents->FocusLocationBarByDefault();
     // Only transition to `kFull` if the popup is initialized and ready.
     // Otherwise, maintain `kNone` until `OnPopupHandlerReady()` is called.
     target_popup_state = IsPopupHandlerReady() && should_focus_popup
