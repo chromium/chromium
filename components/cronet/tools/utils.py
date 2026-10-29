@@ -12,6 +12,7 @@ import shlex
 import subprocess
 import os
 import re
+import sys
 import pathlib
 import difflib
 from typing import Set, List
@@ -20,7 +21,10 @@ REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir)
 )
 
-JAVA_HOME = os.path.join(REPOSITORY_ROOT, 'third_party', 'jdk', 'current')
+sys.path.append(os.path.join(REPOSITORY_ROOT, 'build', 'android'))
+import java_home  # noqa: E402
+
+JAVA_HOME = java_home.JAVA_HOME
 JAR_PATH = os.path.abspath(os.path.join(JAVA_HOME, 'bin', 'jar'))
 JAVAC_PATH = os.path.abspath(os.path.join(JAVA_HOME, 'bin', 'javac'))
 JAVAP_PATH = os.path.abspath(os.path.join(JAVA_HOME, 'bin', 'javap'))

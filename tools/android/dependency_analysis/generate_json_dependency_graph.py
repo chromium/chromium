@@ -22,7 +22,9 @@ import target_dependency
 
 _SRC_PATH = pathlib.Path(__file__).resolve().parents[3]
 sys.path.append(str(_SRC_PATH / 'build'))
+sys.path.append(str(_SRC_PATH / 'build/android'))
 import gn_helpers
+import java_home
 
 sys.path.append(str(_SRC_PATH / 'build/android'))
 from pylib import constants
@@ -316,7 +318,8 @@ def main():
     if args.jdeps_path:
         jdeps_path = pathlib.Path(args.jdeps_path)
     else:
-        jdeps_path = src_path / 'third_party/jdk/current/bin/jdeps'
+        java_home_rel = pathlib.Path(java_home.JAVA_HOME).relative_to(_SRC_PATH)
+        jdeps_path = src_path / java_home_rel / 'bin/jdeps'
 
     cr_position_str = git_metadata_utils.get_head_commit_cr_position(src_path)
     cr_position = int(cr_position_str) if cr_position_str else 0

@@ -69,7 +69,10 @@ _ANDROID_PGO_CACHE_SUFFIX = 'cache/pgo_profiles'
 # third_party/catapult/devil/devil/android/sdk/bundletool.py. Use Chromium's
 # hermetic JDK, brought into the isolate by //third_party/jdk:java_data (a
 # data_dep of //tools/pgo's script tests).
-_JDK_BIN_DIR = f'{_ROOT_DIR}/third_party/jdk/current/bin'
+sys.path.append(f'{_ROOT_DIR}/build/android')
+import java_home
+
+_JDK_BIN_DIR = f'{java_home.JAVA_HOME}/bin'
 
 # Enabled by testing/variations/fieldtrial_testing_config.json, so every
 # benchmark run has to turn them off explicitly. Stops the hang watcher from

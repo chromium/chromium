@@ -14,9 +14,10 @@ _DIR_SOURCE_ROOT = os.path.normpath(
   os.path.join(os.path.dirname(__file__), '..', '..', '..')
 )
 
-_JAVA_PATH = os.path.join(
-  _DIR_SOURCE_ROOT, 'third_party', 'jdk', 'current', 'bin', 'java'
-)
+sys.path.append(os.path.join(_DIR_SOURCE_ROOT, 'build', 'android'))
+import java_home  # noqa: E402
+
+_JAVA_PATH = os.path.join(java_home.JAVA_HOME, 'bin', 'java')
 
 logging.basicConfig(
   format='[%(asctime)s %(levelname)s] %(message)s', level=logging.DEBUG

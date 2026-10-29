@@ -20,6 +20,6 @@ function get_path() {
 }
 
 LINT_PATH=$(get_path ../cipd/lint.jar)
-JAVA_PATH=$(get_path ../../../jdk/current/bin/java)
+JAVA_PATH=$(../../../../build/android/java_home.py)/bin/java
 
 $JAVA_PATH -cp $LINT_PATH com.android.tools.lint.Main --project ./project.xml

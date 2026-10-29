@@ -77,7 +77,7 @@ git format-patch origin/main..HEAD -o $CHROMIUM_SRC/third_party/r8/3pp/patches
 tools/gradle.py r8
   * Shrink (improves r8/d8 launch time):
 java -jar build/libs/r8.jar --debug --classfile --output r8.jar \
-    --lib $CHROMIUM_SRC/third_party/jdk/current --pg-conf src/main/keep.txt \
+    --lib $($CHROMIUM_SRC/build/android/java_home.py) --pg-conf src/main/keep.txt \
     --no-minification --no-desugaring build/libs/r8.jar
 mv $CHROMIUM_SRC/third_party/r8/cipd/lib/r8.jar{,.bak}
 cp r8.jar $CHROMIUM_SRC/third_party/r8/cipd/lib/r8.jar

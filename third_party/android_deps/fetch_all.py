@@ -71,7 +71,10 @@ _GN_PATH = os.path.join(_CHROMIUM_SRC, 'third_party', 'depot_tools', 'gn.py')
 _GRADLEW = os.path.join(_CHROMIUM_SRC, 'third_party', 'android_build_tools',
                         'gradle_wrapper', 'gradlew')
 
-_JAVA_HOME = os.path.join(_CHROMIUM_SRC, 'third_party', 'jdk', 'current')
+sys.path.append(os.path.join(_CHROMIUM_SRC, 'build', 'android'))
+import java_home  # noqa: E402
+
+_JAVA_HOME = java_home.JAVA_HOME
 
 # Git-controlled files needed by, but not updated by this tool.
 # Relative to _PRIMARY_ANDROID_DEPS_DIR.

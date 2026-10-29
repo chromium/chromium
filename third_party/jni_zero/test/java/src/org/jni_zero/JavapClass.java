@@ -5,7 +5,7 @@
 package org.jni_zero;
 
 // To regenerate .class file:
-//   ../../third_party/jdk/current/bin/javac test/java/src/org/jni_zero/JavapClass.java
+//   $(../../build/android/java_home.py)/bin/javac test/java/src/org/jni_zero/JavapClass.java
 public class JavapClass<T> {
     public static final int CONST_INT = 3;
     public static final String CONST_STR = "VaLuE";

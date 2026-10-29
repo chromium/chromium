@@ -7,7 +7,7 @@ set -e
 
 MOCK_DEX_DIR=$(realpath $(dirname "$0"))
 SRC_DIR=$(realpath $MOCK_DEX_DIR/../../../../..)
-JAVAC=$SRC_DIR/third_party/jdk/current/bin/javac
+JAVAC=$($SRC_DIR/build/android/java_home.py)/bin/javac
 D8=$SRC_DIR/third_party/android_sdk/public/build-tools/33.0.0/d8
 
 pushd $MOCK_DEX_DIR/before > /dev/null

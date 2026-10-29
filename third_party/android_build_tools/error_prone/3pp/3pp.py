@@ -98,8 +98,11 @@ def _build_plugin_jar(classpath, output_jar):
     """Compiles //tools/android/errorprone_plugin into |output_jar|."""
     sources = _plugin_sources()
     classes_dir = os.path.abspath('errorprone_plugin_classes')
+    sys.path.append(common.path_within_checkout('build/android'))
+    import java_home
+
     cmd = [
-        common.path_within_checkout('third_party/jdk/current/bin/javac'),
+        os.path.join(java_home.JAVA_HOME, 'bin', 'javac'),
         # Not --release, since that disallows --add-exports.
         '-source',
         '25',

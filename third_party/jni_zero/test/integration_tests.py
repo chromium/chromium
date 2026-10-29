@@ -34,8 +34,12 @@ _SCRIPT_DIR = os.path.normpath(os.path.dirname(__file__))
 _GOLDENS_DIR = os.path.join(_SCRIPT_DIR, 'golden')
 _EXTRA_INCLUDES = 'extra_include.h'
 _JAVA_SRC_DIR = os.path.join(_SCRIPT_DIR, 'java', 'src', 'org', 'jni_zero')
-_JAVA_BIN_DIR = os.path.join(_SCRIPT_DIR, os.pardir, os.pardir, 'jdk',
-                             'current', 'bin')
+sys.path.append(
+    os.path.join(_SCRIPT_DIR, os.pardir, os.pardir, os.pardir, 'build',
+                 'android'))
+import java_home  # noqa: E402
+
+_JAVA_BIN_DIR = os.path.join(java_home.JAVA_HOME, 'bin')
 _JAVAP_PATH = os.path.normpath(os.path.join(_JAVA_BIN_DIR, 'javap'))
 
 # Set this environment variable in order to regenerate the golden text

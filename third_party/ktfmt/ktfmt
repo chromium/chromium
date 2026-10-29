@@ -5,11 +5,11 @@
 
 THIS_DIR=$(dirname "$0")
 
+BUNDLED_JAVA="$("$THIS_DIR/../../build/android/java_home.py")/bin/java"
 if [[ -n "$JAVA_HOME" ]]; then
   JAVA="$JAVA_HOME/bin/java"
-elif [[ $(uname) = Linux ]]; then
-  # Chromium bundles Java prebuilts only for Linux.
-  JAVA="$THIS_DIR/../jdk/current/bin/java"
+elif [[ -x "$BUNDLED_JAVA" ]]; then
+  JAVA="$BUNDLED_JAVA"
 else
   JAVA=java
 fi

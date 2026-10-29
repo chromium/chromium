@@ -18,6 +18,7 @@ sys.path.insert(1, str(_SRC_ROOT / 'build/android/gyp'))
 
 from util import build_utils
 import action_helpers
+import java_home  # build_utils adds //third_party/jdk to sys.path.
 
 _ANNOTATOR_JAR = (
     '../NullAwayAnnotator/annotator-core/build/libs/'
@@ -123,7 +124,7 @@ def prep_errorprone_run(enable_annotator, parser):
         ]
 
     javac_cmd = [
-        '../../third_party/jdk/current/bin/javac',
+        os.path.join(java_home.JAVA_HOME, 'bin', 'javac'),
         '-g',
         '-parameters',
         '--release',

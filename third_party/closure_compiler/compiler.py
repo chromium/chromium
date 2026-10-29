@@ -10,10 +10,14 @@ from __future__ import print_function
 
 import os
 import subprocess
+import sys
 
 
 _CURRENT_DIR = os.path.join(os.path.dirname(__file__))
-_JAVA_PATH = os.path.join(_CURRENT_DIR, "..", "jdk", "current", "bin", "java")
+sys.path.append(os.path.join(_CURRENT_DIR, "..", "..", "build", "android"))
+import java_home  # noqa: E402
+
+_JAVA_PATH = os.path.join(java_home.JAVA_HOME, "bin", "java")
 assert os.path.isfile(_JAVA_PATH), "java only allowed in android builds"
 
 class Compiler(object):

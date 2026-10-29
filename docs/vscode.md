@@ -291,7 +291,7 @@ select the default build output directory (e.g. `out/Default`).
     which typically results in hilarity.
 
     ```
-    "java.jdt.ls.java.home": "<< ABSOLUTE PATH TO YOUR WORKING COPY OF CHROMIUM >>/src/third_party/jdk/current"
+    "java.jdt.ls.java.home": "<< OUTPUT OF src/build/android/java_home.py >>"
     ```
 
     This one is optional but reduces the likelihood of problems by making sure

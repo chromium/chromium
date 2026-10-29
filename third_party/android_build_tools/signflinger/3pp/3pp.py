@@ -63,8 +63,11 @@ def _gen_keystore(keytool, path, storetype):
 
 def _post_process(src_jar_path, dst_jar_path):
     """Compiles ZipBuilder.java into the jar and builds a GraalVM binary."""
-    javac = common.path_within_checkout('third_party/jdk/current/bin/javac')
-    keytool = common.path_within_checkout('third_party/jdk/current/bin/keytool')
+    sys.path.append(common.path_within_checkout('build/android'))
+    import java_home
+
+    javac = os.path.join(java_home.JAVA_HOME, 'bin', 'javac')
+    keytool = os.path.join(java_home.JAVA_HOME, 'bin', 'keytool')
     java_dir = common.path_within_checkout(_JAVA_CHECKOUT_SUBPATH)
     classes_dir = pathlib.Path('zipbuilder_classes').resolve()
     common.run_cmd([

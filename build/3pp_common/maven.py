@@ -8,6 +8,7 @@ import pathlib
 import re
 import shutil
 import subprocess
+import sys
 import urllib.request
 
 import common
@@ -105,7 +106,10 @@ def build_jar_with_dependencies(maven_url, package, version, work_dir='.'):
 
     # Set up JAVA_HOME for the mvn command to find the JDK.
     env = os.environ.copy()
-    env['JAVA_HOME'] = common.path_within_checkout('third_party/jdk/current')
+    sys.path.append(common.path_within_checkout('build/android'))
+    import java_home
+
+    env['JAVA_HOME'] = java_home.JAVA_HOME
     # Prevent mvn from sourcing /etc/mavenrc on Goobuntu workstations, which
     # forces Corp Airlock proxy settings and breaks local-test.
     env['MAVEN_SKIP_RC'] = '1'
@@ -189,7 +193,11 @@ def main(
     common.main(
         do_latest=do_latest,
         do_install=do_install,
-        runtime_deps=['//third_party/jdk/current'] + list(runtime_deps),
+        runtime_deps=[
+            '//third_party/jdk/current',
+            '//build/android/java_home.py',
+        ]
+        + list(runtime_deps),
         # common.main() requires version_deps whenever runtime_deps is set
         # (the JDK is always a runtime dep here, but is not part of the version).
         version_deps=list(version_deps or []),

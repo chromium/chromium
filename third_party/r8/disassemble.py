@@ -15,6 +15,9 @@ _LIBSUPERSIZE_DIR = os.path.abspath(
 sys.path.append(_LIBSUPERSIZE_DIR)
 import dex_disassembly
 
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'build', 'android'))
+import java_home  # noqa: E402
+
 
 def _flush_block(block):
     if not block:
@@ -30,7 +33,7 @@ def main():
     args, unknown_args = parser.parse_known_args()
 
     r8_dir = os.path.dirname(__file__)
-    java_path = os.path.abspath(os.path.join(r8_dir, '..', 'jdk', 'current', 'bin', 'java'))
+    java_path = os.path.join(java_home.JAVA_HOME, 'bin', 'java')
     r8_jar_path = os.path.join(r8_dir, 'cipd', 'lib', 'r8.jar')
 
     cmd = [java_path, '-cp', r8_jar_path, 'com.android.tools.r8.Disassemble']

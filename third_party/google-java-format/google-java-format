@@ -10,11 +10,11 @@ if [[ $(uname) = Linux && $(uname -m) = x86_64 ]]; then
   exec "$THIS_DIR/cipd/google-java-format" "${ARGS[@]}"
 fi
 
+BUNDLED_JAVA="$("$THIS_DIR/../../build/android/java_home.py")/bin/java"
 if [[ -n "$JAVA_HOME" ]]; then
   JAVA="$JAVA_HOME/bin/java"
-elif [[ $(uname) = Linux ]]; then
-  # Chromium bundles Java prebuilts only for Linux.
-  JAVA="$THIS_DIR/../jdk/current/bin/java"
+elif [[ -x "$BUNDLED_JAVA" ]]; then
+  JAVA="$BUNDLED_JAVA"
 else
   JAVA=java
 fi

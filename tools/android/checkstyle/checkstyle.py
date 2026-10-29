@@ -25,9 +25,10 @@ _CHECKSTYLE_CIPD_DIR = os.path.join(
 _CHECKSTYLE_ROOT = os.path.join(_CHECKSTYLE_CIPD_DIR, 'checkstyle-all.jar')
 # Native build of checkstyle. Only available for Linux x64.
 _CHECKSTYLE_BINARY = os.path.join(_CHECKSTYLE_CIPD_DIR, 'checkstyle')
-_JAVA_PATH = os.path.join(
-    CHROMIUM_SRC, 'third_party', 'jdk', 'current', 'bin', 'java'
-)
+sys.path.append(os.path.join(CHROMIUM_SRC, 'build', 'android'))
+import java_home
+
+_JAVA_PATH = os.path.join(java_home.JAVA_HOME, 'bin', 'java')
 _STYLE_FILE = os.path.join(_SELF_DIR, 'chromium-style-5.0.xml')
 _REMOVE_UNUSED_IMPORTS_PATH = os.path.join(
     _SELF_DIR, 'remove_unused_imports.py'

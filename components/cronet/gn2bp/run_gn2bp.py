@@ -65,7 +65,10 @@ _GERRIT_CLIENT_PATH = os.path.join(
 _GN2BP_SCRIPT_PATH = os.path.join(
     REPOSITORY_ROOT, 'components/cronet/gn2bp/gen_android_bp.py'
 )
-_JAVA_HOME = os.path.join(REPOSITORY_ROOT, 'third_party', 'jdk', 'current')
+sys.path.append(os.path.join(REPOSITORY_ROOT, 'build', 'android'))
+import java_home  # noqa: E402
+
+_JAVA_HOME = java_home.JAVA_HOME
 _JAVA_PATH = os.path.join(_JAVA_HOME, 'bin', 'java')
 _GN2BP_OUT_DIR = os.path.join(gn2bp_common.OUT_DIR, 'gn2bp')
 _BREAKAGES_FILE_URL = "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/components/cronet/android/breakages.json?format=TEXT"

@@ -7,6 +7,7 @@
 import abc
 import logging
 import os
+import sys
 
 _STATUS_DETECTED = 1
 _STATUS_VERIFIED = 2
@@ -19,6 +20,9 @@ _TOOLS_SRC_ROOT = os.environ.get(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir)
   ),
 )
+
+sys.path.append(os.path.join(_TOOLS_SRC_ROOT, 'build', 'android'))
+import java_home  # pylint: disable=wrong-import-position
 
 
 class _PathFinder:
@@ -211,7 +215,7 @@ def GetAapt2Path():
 
 
 def GetJavaHome():
-  return FromToolsSrcRoot('third_party', 'jdk', 'current')
+  return java_home.JAVA_HOME
 
 
 def GetJavaExec():

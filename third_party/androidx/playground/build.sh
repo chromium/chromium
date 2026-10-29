@@ -20,8 +20,8 @@ function get_path() {
 }
 
 ANDROID_JAR=$(get_path ../../android_sdk/public/platforms/*/android.jar)
-JAVA_HOME=../../jdk/current
-JAVA_BIN=../../jdk/current/bin
+JAVA_HOME=$(../../../build/android/java_home.py)
+JAVA_BIN=$JAVA_HOME/bin
 
 # E.g.:
 EXTRA_JARS=../../../out/Debug/lib.java/third_party/androidx/androidx_collection_collection_jvm.jar:../../../out/Debug/lib.java/third_party/android_deps/org_jetbrains_kotlin_kotlin_stdlib.jar
