@@ -75,7 +75,6 @@ source_set("csv_unit_tests") {
   sources = [
     "csv_field_parser_unittest.cc",
     "csv_password_sequence_unittest.cc",
-    "csv_password_unittest.cc",
     "password_csv_reader_fuzzer.cc",
   ]
   deps = [

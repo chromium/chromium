@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_IMPORT_CSV_PASSWORD_SEQUENCE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_IMPORT_CSV_PASSWORD_SEQUENCE_H_
 
+#include <stddef.h>
+
 #include <optional>
 #include <string_view>
 
@@ -39,11 +41,18 @@ class CSVPasswordSequence {
   std::optional<CSVPassword> NextPassword();
 
  private:
-  CSVPasswordSequence(CSVPassword::ColumnMap column_map,
+  struct ColumnMap {
+    size_t origin = 0;
+    size_t username = 0;
+    size_t password = 0;
+    std::optional<size_t> note;
+  };
+
+  CSVPasswordSequence(ColumnMap column_map,
                       std::string_view remaining_rows LIFETIME_BOUND);
 
   // Stores the meaning of particular columns in the row.
-  CSVPassword::ColumnMap column_map_;
+  ColumnMap column_map_;
   // Captures the remaining unconsumed rows of the parsed CSV string.
   std::string_view remaining_rows_;
 };

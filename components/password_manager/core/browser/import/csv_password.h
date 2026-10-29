@@ -5,36 +5,21 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_IMPORT_CSV_PASSWORD_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_IMPORT_CSV_PASSWORD_H_
 
-#include <stddef.h>
-
 #include <string>
-#include <string_view>
 
-#include "base/containers/flat_map.h"
 #include "base/types/expected.h"
 #include "url/gurl.h"
 
 namespace password_manager {
 
-// CSVPassword is a wrapper around one CSV line representing a credential.
+// CSVPassword represents a credential parsed from a CSV line.
 // For more details, see
 // https://docs.google.com/document/d/1wsZBl93S_WGaXZqrqq5SP08LVZ0zDKf6e9nlptyl9AY/edit?usp=sharing.
-// CSVPassword contains a triple (url, password, username).
+// CSVPassword contains a triple (url, password, username) and an optional note.
 // In case of a valid URL, a GURL is provided, otherwise the original raw URL.
 // Partial parsing i.e. missing fields will also yield a valid CSVPassword.
 class CSVPassword {
  public:
-  enum class Label {
-    kOrigin,
-    kUsername,
-    kPassword,
-    kNote,
-
-    kMinValue = kOrigin,
-    kMaxValue = kNote,
-  };
-  using ColumnMap = base::flat_map<size_t, Label>;
-
   // Status describes parsing errors.
   enum class Status {
     kOK = 0,
@@ -43,7 +28,11 @@ class CSVPassword {
   };
 
   explicit CSVPassword();
-  explicit CSVPassword(const ColumnMap& map, std::string_view csv_row);
+  explicit CSVPassword(base::expected<GURL, std::string> url,
+                       std::string username,
+                       std::string password,
+                       std::string note,
+                       Status status);
   explicit CSVPassword(GURL url,
                        std::string username,
                        std::string password,
