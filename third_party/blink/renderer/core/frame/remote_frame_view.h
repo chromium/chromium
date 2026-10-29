@@ -97,7 +97,6 @@ class CORE_EXPORT RemoteFrameView final
 
  protected:
   void PropagateFrameRectsInternal() override;
-  bool NeedsViewportOffset() const override { return true; }
   // This is used to service IntersectionObservers in an OOPIF child document.
   void SetViewportIntersection(const mojom::blink::ViewportIntersectionState&
                                    intersection_state) override;

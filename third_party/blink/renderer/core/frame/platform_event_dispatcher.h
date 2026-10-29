@@ -46,8 +46,6 @@ class CORE_EXPORT PlatformEventDispatcher : public GarbageCollectedMixin {
   virtual void StopListening() = 0;
 
  private:
-  void PurgeControllers();
-
   HeapHashSet<WeakMember<PlatformEventController>> controllers_;
   bool is_dispatching_;
   bool is_listening_;

@@ -61,10 +61,6 @@ void NavigatorLanguage::SetLanguagesDirty() {
   languages_.clear();
 }
 
-void NavigatorLanguage::SetLanguagesForTesting(const String& languages) {
-  languages_ = ParseAndSanitize(languages);
-}
-
 void NavigatorLanguage::EnsureUpdatedLanguage() {
   String accept_languages_override;
   probe::ApplyAcceptLanguageOverride(execution_context_,

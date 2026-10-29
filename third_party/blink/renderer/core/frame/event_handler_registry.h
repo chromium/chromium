@@ -131,8 +131,6 @@ class CORE_EXPORT EventHandlerRegistry final
                                   EventHandlerClass,
                                   EventTarget*);
 
-  void UpdateAllEventHandlers(ChangeOperation, EventTarget&);
-
   void CheckConsistency(EventHandlerClass) const;
 
   Page* GetPage() const;

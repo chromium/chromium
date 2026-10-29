@@ -2636,10 +2636,6 @@ void WebLocalFrameImpl::DidChangeContentsSize(const gfx::Size& size) {
     GetTextFinder()->IncreaseMarkerVersion();
 }
 
-bool WebLocalFrameImpl::HasDevToolsOverlays() const {
-  return dev_tools_agent_ && dev_tools_agent_->HasOverlays();
-}
-
 void WebLocalFrameImpl::UpdateDevToolsOverlaysPrePaint() {
   if (dev_tools_agent_)
     dev_tools_agent_->UpdateOverlaysPrePaint();

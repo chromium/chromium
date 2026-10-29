@@ -345,7 +345,6 @@ class CORE_EXPORT ContentSecurityPolicy final
   void UsesHashAlgorithm(IntegrityAlgorithm algorithm);
 
   void SetOverrideAllowInlineStyle(bool);
-  void SetOverrideURLForSelf(const KURL&);
 
   bool IsActive() const;
   bool IsActiveForConnections() const;

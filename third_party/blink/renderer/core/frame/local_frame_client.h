@@ -369,9 +369,6 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   virtual scoped_refptr<WebBackgroundResourceFetchAssets>
   MaybeGetBackgroundResourceFetchAssets() = 0;
 
-  virtual void SetVirtualTimePauser(
-      WebScopedVirtualTimePauser virtual_time_pauser) {}
-
   virtual String evaluateInInspectorOverlayForTesting(const String& script) = 0;
 
   virtual bool HandleCurrentKeyboardEvent() { return false; }

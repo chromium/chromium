@@ -368,7 +368,6 @@ class CORE_EXPORT LocalFrameView final
 
   void DidAttachDocument();
 
-  void ClearRootScroller();
   void InitializeRootScroller();
 
   void AddPartToUpdate(LayoutEmbeddedContent&);

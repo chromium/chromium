@@ -20,9 +20,6 @@ class CORE_EXPORT NavigatorLanguage : public GarbageCollectedMixin {
   bool IsLanguagesDirty() const;
   void SetLanguagesDirty();
 
-  // Accepts a comma-separated list of languages.
-  void SetLanguagesForTesting(const String& languages);
-
   void Trace(Visitor*) const override;
 
  protected:

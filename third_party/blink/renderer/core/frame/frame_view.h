@@ -78,7 +78,6 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
   bool RectInParentIsStableForIOv2(const base::TimeTicks& timestamp) const;
 
  protected:
-  virtual bool NeedsViewportOffset() const { return false; }
   virtual void SetViewportIntersection(
       const mojom::blink::ViewportIntersectionState& intersection_state) = 0;
   virtual void VisibilityForThrottlingChanged() = 0;

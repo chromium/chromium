@@ -509,7 +509,6 @@ class CORE_EXPORT WebLocalFrameImpl final
 
   void DidChangeContentsSize(const gfx::Size&);
 
-  bool HasDevToolsOverlays() const;
   void UpdateDevToolsOverlaysPrePaint();
   void PaintDevToolsOverlays(GraphicsContext&);
 

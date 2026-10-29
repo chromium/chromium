@@ -77,9 +77,6 @@ class CORE_EXPORT WebDevToolsAgentImpl final
   void MainThreadDebuggerPaused();
   void MainThreadDebuggerResumed();
 
-  bool HasOverlays() const {
-    return !overlay_agents_.empty() || input_visualizer_;
-  }
   void UpdateOverlaysPrePaint();
   void PaintOverlays(GraphicsContext&);
 

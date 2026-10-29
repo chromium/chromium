@@ -195,8 +195,6 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
 
   virtual const SecurityContext* GetSecurityContext() const = 0;
 
-  Frame* FindUnsafeParentScrollPropagationBoundary();
-
   // Similar to `Detach()`, except that it does not completely detach `this`:
   // instead, on successful completion (i.e. returns true), `this` will be ready
   // to be swapped out (if necessary) and to commit the next navigation.

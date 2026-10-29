@@ -273,20 +273,6 @@ ChromeClient& Frame::GetChromeClient() const {
   return GetEmptyChromeClient();
 }
 
-Frame* Frame::FindUnsafeParentScrollPropagationBoundary() {
-  Frame* current_frame = this;
-  Frame* ancestor_frame = Tree().Parent();
-
-  while (ancestor_frame) {
-    if (!ancestor_frame->GetSecurityContext()->GetSecurityOrigin()->CanAccess(
-            GetSecurityContext()->GetSecurityOrigin()))
-      return current_frame;
-    current_frame = ancestor_frame;
-    ancestor_frame = ancestor_frame->Tree().Parent();
-  }
-  return nullptr;
-}
-
 LayoutEmbeddedContent* Frame::OwnerLayoutObject() const {
   if (!DeprecatedLocalOwner())
     return nullptr;

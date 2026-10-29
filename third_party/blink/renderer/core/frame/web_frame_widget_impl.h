@@ -819,8 +819,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   // compositor submits a frame.
   void PropagateHistorySequenceNumberToCompositor();
 
-  // Ask compositor to create the shared memory for dropped frames ukm region.
-  base::ReadOnlySharedMemoryRegion CreateSharedMemoryForDroppedFramesUkm();
 #if BUILDFLAG(IS_ANDROID)
   // Calculate and cache the most up to date line bounding boxes in the document
   // coordinate space.
@@ -1168,9 +1166,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   // change the fullscreen state (e.g. on/off or current display).
   bool DidChangeFullscreenState(
       const VisualProperties& visual_properties) const;
-
-  // Satisfy the render blocking condition for cross-document view transitions.
-  void NotifyViewTransitionRenderingHasBegun();
 
   // True when `this` should ignore input events.
   bool ShouldIgnoreInputEvents();
