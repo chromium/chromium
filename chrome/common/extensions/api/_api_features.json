@@ -603,10 +603,6 @@
       "chrome-untrusted://lens-overlay/*"
     ]
   }],
-  "loginScreenStorage": {
-    "dependencies": ["permission:loginScreenStorage"],
-    "contexts": ["privileged_extension"]
-  },
   "loginState": {
     "dependencies": ["permission:loginState"],
     "contexts": ["privileged_extension"]

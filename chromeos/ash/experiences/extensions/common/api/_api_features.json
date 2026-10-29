@@ -211,6 +211,10 @@
       "chrome-untrusted://class-tools-remote-display/*"
     ]
   }],
+  "loginScreenStorage": {
+    "dependencies": ["permission:loginScreenStorage"],
+    "contexts": ["privileged_extension"]
+  },
   "loginScreenUi": {
     "dependencies": ["permission:loginScreenUi"],
     "contexts": ["privileged_extension"]
