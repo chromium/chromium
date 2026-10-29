@@ -6,6 +6,6 @@
 // by `tools/crates/run_gnrt.py vendor`. Do not edit!
 //
 // This is an empty placeholder that has replaced the
-// `cc-1.6.0` crate.
+// `cc-1.8.0` crate.
 //
 // See `//tools/crates/gnrt/removed_crate.md` to learn more.
