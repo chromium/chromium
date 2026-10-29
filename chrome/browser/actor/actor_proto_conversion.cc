@@ -133,11 +133,13 @@ using apc::SelectAction;
 using apc::TranslatePageAction;
 using apc::TypeAction;
 using apc::WaitAction;
+using ::optimization_guide::AIPageContentExtractionStatus;
 using ::optimization_guide::DocumentIdentifierUserData;
 using ::page_content_annotations::FetchPageContextError;
 using ::page_content_annotations::FetchPageContextOptions;
 using ::page_content_annotations::FetchPageContextResult;
 using ::page_content_annotations::FetchPageContextResultCallbackArg;
+using ::page_content_annotations::ScreenshotCaptureStatus;
 using ::tabs::TabHandle;
 using ::tabs::TabInterface;
 
@@ -1502,7 +1504,8 @@ void FetchCallback(
               : fetch_result.annotated_page_content_result.error().status);
   tab_observation->set_annotated_page_content_result(
       has_apc ? apc::TabObservation::ANNOTATED_PAGE_CONTENT_OK
-              : apc::TabObservation::ANNOTATED_PAGE_CONTENT_ERROR);
+              : ToAnnotatedPageContentResult(
+                    fetch_result.annotated_page_content_result.error().status));
 
   bool has_screenshot = fetch_result.screenshot_result.has_value();
   bool screenshot_required =
@@ -1516,7 +1519,7 @@ void FetchCallback(
   tab_observation->set_screenshot_result(
       has_screenshot || !screenshot_required
           ? apc::TabObservation::SCREENSHOT_OK
-          : apc::TabObservation::SCREENSHOT_ERROR);
+          : ToScreenshotResult(fetch_result.screenshot_result.error().status));
 
   // Context for actor observations should always have an APC. It should also
   // have a screenshot unless it was skipped.
@@ -1578,6 +1581,48 @@ TabObservationResultOverrideCallback&
 GetTabObservationResultOverrideForTesting() {
   static base::NoDestructor<TabObservationResultOverrideCallback> callback;
   return *callback;
+}
+
+apc::TabObservation::AnnotatedPageContentResult ToAnnotatedPageContentResult(
+    AIPageContentExtractionStatus status) {
+  switch (status) {
+    case AIPageContentExtractionStatus::kSuccess:
+      return apc::TabObservation::ANNOTATED_PAGE_CONTENT_OK;
+    case AIPageContentExtractionStatus::kMainFrameTimeout:
+      return apc::TabObservation::ANNOTATED_PAGE_CONTENT_TIMEOUT;
+    case AIPageContentExtractionStatus::kUnknown:
+    case AIPageContentExtractionStatus::kMainFrameNotLive:
+    case AIPageContentExtractionStatus::
+        kMainFrameEmptyOrDisconnectedRendererResponse:
+    case AIPageContentExtractionStatus::kMainFrameRedacted:
+    case AIPageContentExtractionStatus::kMainFrameTornDown:
+    case AIPageContentExtractionStatus::kAttributeTypeMismatch:
+    case AIPageContentExtractionStatus::kMissingIframeData:
+    case AIPageContentExtractionStatus::kSubframeTornDown:
+    case AIPageContentExtractionStatus::kIframeNotChildOfCurrentFrame:
+    case AIPageContentExtractionStatus::kRemoteFrameHasChildNodes:
+    case AIPageContentExtractionStatus::kRemoteFrameHasInlineContent:
+    case AIPageContentExtractionStatus::kLocalFrameMissingContent:
+    case AIPageContentExtractionStatus::kUnexpectedIframeInPopup:
+      return apc::TabObservation::ANNOTATED_PAGE_CONTENT_ERROR;
+  }
+}
+
+apc::TabObservation::ScreenshotResult ToScreenshotResult(
+    ScreenshotCaptureStatus status) {
+  switch (status) {
+    case ScreenshotCaptureStatus::kSuccess:
+      return apc::TabObservation::SCREENSHOT_OK;
+    case ScreenshotCaptureStatus::kTimeout:
+      return apc::TabObservation::SCREENSHOT_TIMEOUT;
+    case ScreenshotCaptureStatus::kUnknown:
+    case ScreenshotCaptureStatus::kNoViewOrSurface:
+    case ScreenshotCaptureStatus::kCopyFromSurfaceError:
+    case ScreenshotCaptureStatus::kPaintPreviewError:
+    case ScreenshotCaptureStatus::kRedactionError:
+    case ScreenshotCaptureStatus::kEncodingError:
+      return apc::TabObservation::SCREENSHOT_ERROR;
+  }
 }
 
 std::optional<

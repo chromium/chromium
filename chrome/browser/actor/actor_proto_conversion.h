@@ -16,10 +16,12 @@
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/public/mojom/actor_types.mojom-forward.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/origin_gating/core/task_policy_config.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
+#include "components/page_content_annotations/content/page_context_fetcher_metrics.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
@@ -151,6 +153,17 @@ optimization_guide::proto::ActionsResult BuildErrorActionsResult(
 void FillInTabObservation(
     const page_content_annotations::FetchPageContextResult& page_context_result,
     optimization_guide::proto::TabObservation& tab_observation);
+
+// Converts an `AIPageContentExtractionStatus` to the corresponding
+// `TabObservation::AnnotatedPageContentResult` proto enum.
+optimization_guide::proto::TabObservation::AnnotatedPageContentResult
+ToAnnotatedPageContentResult(
+    optimization_guide::AIPageContentExtractionStatus status);
+
+// Converts a `ScreenshotCaptureStatus` to the corresponding
+// `TabObservation::ScreenshotResult` proto enum.
+optimization_guide::proto::TabObservation::ScreenshotResult ToScreenshotResult(
+    page_content_annotations::ScreenshotCaptureStatus status);
 
 // Copies script tool results in `action_results` to the input proto.
 template <typename T>

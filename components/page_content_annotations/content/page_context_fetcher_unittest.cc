@@ -1221,6 +1221,25 @@ TEST_F(PageContextFetcherScreenshotMetricsTest, CopyFromSurfaceError) {
   histograms.ExpectUniqueSample(kScreenshotCaptureStatusHistogram,
                                 ScreenshotCaptureStatus::kCopyFromSurfaceError,
                                 1);
+  histograms.ExpectUniqueSample("Glic.PageContextFetcher.GetScreenshotError",
+                                content::CopyFromSurfaceError::kUnknown, 1);
+}
+
+TEST_F(PageContextFetcherScreenshotMetricsTest, CopyFromSurfaceTimeout) {
+  base::HistogramTester histograms;
+  CallReceivedViewportBitmap(
+      base::unexpected(content::CopyFromSurfaceError::kTimeout));
+
+  ASSERT_TRUE(future_.IsReady());
+  FetchPageContextResultCallbackArg result = future_.Take();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value()->screenshot_result.has_value());
+  EXPECT_EQ(result.value()->screenshot_result.error().status,
+            ScreenshotCaptureStatus::kTimeout);
+  histograms.ExpectUniqueSample(kScreenshotCaptureStatusHistogram,
+                                ScreenshotCaptureStatus::kTimeout, 1);
+  histograms.ExpectUniqueSample("Glic.PageContextFetcher.GetScreenshotError",
+                                content::CopyFromSurfaceError::kTimeout, 1);
 }
 
 TEST_F(PageContextFetcherScreenshotMetricsTest, PaintPreviewError) {

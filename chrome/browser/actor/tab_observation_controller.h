@@ -87,6 +87,11 @@ class TabObservationController {
   // object. The ActorTask must exist when this is called.
   void Start();
 
+  void OnTabObservationFetchedForTesting(
+      ActorSurfaceHandle actor_surface_handle,
+      optimization_guide::proto::TabObservation* observation,
+      ActorKeyedService::TabObservationResult result);
+
  private:
   void StartImpl();
   // Internal phases of the observation flow.

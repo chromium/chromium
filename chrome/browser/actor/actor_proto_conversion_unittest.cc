@@ -23,10 +23,12 @@
 #include "chrome/browser/actor/tools/wait_tool_request.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/shared_types.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data_fuzzable.pb.h"
 #include "components/origin_gating/core/task_policy_config.h"
+#include "components/page_content_annotations/content/page_context_fetcher_metrics.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -960,6 +962,46 @@ TEST_F(
   EXPECT_THAT(BuildToolRequest(actions),
               base::test::ErrorIs(testing::Pair(
                   0u, mojom::ActionResultCode::kArgumentsInvalid)));
+}
+
+TEST_F(ActorProtoConversionTest, ToAnnotatedPageContentResult) {
+  using optimization_guide::AIPageContentExtractionStatus;
+  using optimization_guide::proto::TabObservation;
+
+  EXPECT_EQ(
+      ToAnnotatedPageContentResult(AIPageContentExtractionStatus::kSuccess),
+      TabObservation::ANNOTATED_PAGE_CONTENT_OK);
+  EXPECT_EQ(ToAnnotatedPageContentResult(
+                AIPageContentExtractionStatus::kMainFrameTimeout),
+            TabObservation::ANNOTATED_PAGE_CONTENT_TIMEOUT);
+  EXPECT_EQ(
+      ToAnnotatedPageContentResult(AIPageContentExtractionStatus::kUnknown),
+      TabObservation::ANNOTATED_PAGE_CONTENT_ERROR);
+  EXPECT_EQ(ToAnnotatedPageContentResult(
+                AIPageContentExtractionStatus::kMainFrameNotLive),
+            TabObservation::ANNOTATED_PAGE_CONTENT_ERROR);
+  EXPECT_EQ(ToAnnotatedPageContentResult(
+                AIPageContentExtractionStatus::
+                    kMainFrameEmptyOrDisconnectedRendererResponse),
+            TabObservation::ANNOTATED_PAGE_CONTENT_ERROR);
+}
+
+TEST_F(ActorProtoConversionTest, ToScreenshotResult) {
+  using optimization_guide::proto::TabObservation;
+  using page_content_annotations::ScreenshotCaptureStatus;
+
+  EXPECT_EQ(ToScreenshotResult(ScreenshotCaptureStatus::kSuccess),
+            TabObservation::SCREENSHOT_OK);
+  EXPECT_EQ(ToScreenshotResult(ScreenshotCaptureStatus::kTimeout),
+            TabObservation::SCREENSHOT_TIMEOUT);
+  EXPECT_EQ(ToScreenshotResult(ScreenshotCaptureStatus::kUnknown),
+            TabObservation::SCREENSHOT_ERROR);
+  EXPECT_EQ(ToScreenshotResult(ScreenshotCaptureStatus::kNoViewOrSurface),
+            TabObservation::SCREENSHOT_ERROR);
+  EXPECT_EQ(ToScreenshotResult(ScreenshotCaptureStatus::kCopyFromSurfaceError),
+            TabObservation::SCREENSHOT_ERROR);
+  EXPECT_EQ(ToScreenshotResult(ScreenshotCaptureStatus::kEncodingError),
+            TabObservation::SCREENSHOT_ERROR);
 }
 
 void CanConvertAnyProto(

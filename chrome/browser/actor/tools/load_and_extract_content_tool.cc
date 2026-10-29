@@ -21,6 +21,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -548,7 +549,7 @@ void LoadAndExtractContentTool::OnGotAIPageContent(
                       .AddError(result_or_error.error().message)
                       .Build());
     tab_observation.set_annotated_page_content_result(
-        TabObservation::ANNOTATED_PAGE_CONTENT_ERROR);
+        ToAnnotatedPageContentResult(result_or_error.error().status));
     result_code = PerTabResultCode::kLoadAndExtractContentExtractionFailed;
   }
   PostFinishedTask(base::BindOnce(&LoadAndExtractContentTool::OnTabReadyToClose,
@@ -611,10 +612,11 @@ void LoadAndExtractContentTool::OnAllUrlsCompleted() {
     if (per_tab_state.tab_observation.has_value()) {
       TabObservation& tab_observation = per_tab_state.tab_observation.value();
 
-      bool has_apc = tab_observation.has_annotated_page_content();
-      tab_observation.set_annotated_page_content_result(
-          has_apc ? TabObservation::ANNOTATED_PAGE_CONTENT_OK
-                  : TabObservation::ANNOTATED_PAGE_CONTENT_ERROR);
+      if (!tab_observation.has_annotated_page_content_result()) {
+        // Fallback when the tab failed before `OnGotAIPageContent()` ran.
+        tab_observation.set_annotated_page_content_result(
+            TabObservation::ANNOTATED_PAGE_CONTENT_ERROR);
+      }
 
       tab_observation.set_result(
           ToTabObservationResult(per_tab_state.result_code.value()));

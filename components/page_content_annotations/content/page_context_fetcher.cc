@@ -635,9 +635,12 @@ void PageContextFetcher::ReceivedViewportBitmap(
   if (!result.has_value()) {
     base::UmaHistogramEnumeration("Glic.PageContextFetcher.GetScreenshotError",
                                   result.error());
-    ReceivedEncodedScreenshot(base::unexpected(ScreenshotError{
-        ScreenshotCaptureStatus::kCopyFromSurfaceError,
-        std::string(ToString(result.error()))}));
+    ScreenshotCaptureStatus status =
+        result.error() == content::CopyFromSurfaceError::kTimeout
+            ? ScreenshotCaptureStatus::kTimeout
+            : ScreenshotCaptureStatus::kCopyFromSurfaceError;
+    ReceivedEncodedScreenshot(base::unexpected(
+        ScreenshotError{status, std::string(ToString(result.error()))}));
     return;
   }
 

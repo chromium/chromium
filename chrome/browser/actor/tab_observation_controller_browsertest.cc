@@ -4,9 +4,11 @@
 
 #include "chrome/browser/actor/tab_observation_controller.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_metrics.h"
@@ -21,14 +23,27 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/actor/core/actor_features.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/page_content_annotations/content/page_context_fetcher_metrics.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace actor {
+
+using ::optimization_guide::AIPageContentError;
+using ::optimization_guide::AIPageContentExtractionStatus;
+using ::optimization_guide::AIPageContentResult;
+using ::optimization_guide::proto::ActionsResult;
+using ::optimization_guide::proto::TabObservation;
+using ::page_content_annotations::FetchPageContextResult;
+using ::page_content_annotations::ScreenshotCaptureStatus;
+using ::page_content_annotations::ScreenshotError;
+using ::page_content_annotations::ScreenshotResult;
 
 class TabObservationControllerBrowserTest : public InProcessBrowserTest {
  public:
@@ -61,6 +76,40 @@ class TabObservationControllerBrowserTest : public InProcessBrowserTest {
     action_result->script_tool_response->tool->name = "test_tool";
     action_result->script_tool_response->tool->description = "desc";
     return action_result;
+  }
+
+  ScreenshotResult MakeScreenshotResult() {
+    ScreenshotResult screenshot(gfx::Size(10, 10));
+    screenshot.screenshot_data = {1, 2, 3};
+    screenshot.mime_type = "image/jpeg";
+    return screenshot;
+  }
+
+  void FetchObservationWithResult(
+      std::unique_ptr<FetchPageContextResult> fetch_result,
+      TabObservation& observation) {
+    TaskId task_id = CreateTask();
+    GURL url = embedded_test_server()->GetURL("/title1.html");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+    tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+    actor::AddTabToTask(*tab, *actor_service()->GetTask(task_id));
+
+    TabObservationController controller(
+        browser()->GetProfile(), task_id, base::TimeTicks::Now(),
+        /*skip_async_observation_information=*/false, {},
+        TabObservationStrategy(), base::DoNothing());
+
+    observation.set_id(tab->GetHandle().raw_value());
+    controller.OnTabObservationFetchedForTesting(
+        ActorSurfaceHandle::From(tab->GetHandle()), &observation,
+        base::ok(std::move(fetch_result)));
+  }
+
+  void RecordObservationHistogram(const TabObservation& observation) {
+    ActionsResult actions_result;
+    *actions_result.add_tabs() = observation;
+    RecordTabObservationResultHistogram(actions_result);
   }
 
  protected:
@@ -503,6 +552,114 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
                 .script_tool_results(0)
                 .tool_name(),
             "test_tool");
+}
+
+IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
+                       OnTabObservationFetchedMapsScreenshotTimeout) {
+  base::HistogramTester histogram_tester;
+  auto fetch_result = std::make_unique<FetchPageContextResult>();
+  fetch_result->annotated_page_content_result.emplace(AIPageContentResult());
+  fetch_result->screenshot_result = base::unexpected(
+      ScreenshotError{ScreenshotCaptureStatus::kTimeout, "timed out"});
+
+  TabObservation observation;
+  ASSERT_NO_FATAL_FAILURE(
+      FetchObservationWithResult(std::move(fetch_result), observation));
+
+  EXPECT_EQ(observation.result(), TabObservation::TAB_OBSERVATION_FETCH_ERROR);
+  EXPECT_EQ(observation.annotated_page_content_result(),
+            TabObservation::ANNOTATED_PAGE_CONTENT_OK);
+  EXPECT_TRUE(observation.has_annotated_page_content());
+  EXPECT_EQ(observation.screenshot_result(),
+            TabObservation::SCREENSHOT_TIMEOUT);
+  EXPECT_FALSE(observation.has_screenshot());
+
+  histogram_tester.ExpectUniqueSample(
+      kActorPageContextApcStatus, AIPageContentExtractionStatus::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample(kActorPageContextScreenshotStatus,
+                                      ScreenshotCaptureStatus::kTimeout, 1);
+
+  RecordObservationHistogram(observation);
+  histogram_tester.ExpectUniqueSample(
+      kActorPageContextTabObservationResult,
+      ActorTabObservationResult::kScreenshotTimeout, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
+                       OnTabObservationFetchedMapsScreenshotError) {
+  base::HistogramTester histogram_tester;
+  auto fetch_result = std::make_unique<FetchPageContextResult>();
+  fetch_result->annotated_page_content_result.emplace(AIPageContentResult());
+  fetch_result->screenshot_result = base::unexpected(ScreenshotError{
+      ScreenshotCaptureStatus::kCopyFromSurfaceError, "copy failed"});
+
+  TabObservation observation;
+  ASSERT_NO_FATAL_FAILURE(
+      FetchObservationWithResult(std::move(fetch_result), observation));
+
+  EXPECT_EQ(observation.result(), TabObservation::TAB_OBSERVATION_FETCH_ERROR);
+  EXPECT_EQ(observation.screenshot_result(), TabObservation::SCREENSHOT_ERROR);
+
+  RecordObservationHistogram(observation);
+  histogram_tester.ExpectUniqueSample(
+      kActorPageContextTabObservationResult,
+      ActorTabObservationResult::kScreenshotError, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
+                       OnTabObservationFetchedMapsApcTimeout) {
+  base::HistogramTester histogram_tester;
+  auto fetch_result = std::make_unique<FetchPageContextResult>();
+  fetch_result->annotated_page_content_result = base::unexpected(
+      AIPageContentError{AIPageContentExtractionStatus::kMainFrameTimeout,
+                         "Main frame timed out"});
+  fetch_result->screenshot_result.emplace(MakeScreenshotResult());
+
+  TabObservation observation;
+  ASSERT_NO_FATAL_FAILURE(
+      FetchObservationWithResult(std::move(fetch_result), observation));
+
+  EXPECT_EQ(observation.result(), TabObservation::TAB_OBSERVATION_FETCH_ERROR);
+  EXPECT_EQ(observation.annotated_page_content_result(),
+            TabObservation::ANNOTATED_PAGE_CONTENT_TIMEOUT);
+  EXPECT_FALSE(observation.has_annotated_page_content());
+  EXPECT_EQ(observation.screenshot_result(), TabObservation::SCREENSHOT_OK);
+  EXPECT_TRUE(observation.has_screenshot());
+
+  histogram_tester.ExpectUniqueSample(
+      kActorPageContextApcStatus,
+      AIPageContentExtractionStatus::kMainFrameTimeout, 1);
+  histogram_tester.ExpectUniqueSample(kActorPageContextScreenshotStatus,
+                                      ScreenshotCaptureStatus::kSuccess, 1);
+
+  RecordObservationHistogram(observation);
+  histogram_tester.ExpectUniqueSample(kActorPageContextTabObservationResult,
+                                      ActorTabObservationResult::kApcTimeout,
+                                      1);
+}
+
+IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
+                       OnTabObservationFetchedMapsApcError) {
+  base::HistogramTester histogram_tester;
+  auto fetch_result = std::make_unique<FetchPageContextResult>();
+  fetch_result->annotated_page_content_result = base::unexpected(
+      AIPageContentError{AIPageContentExtractionStatus::
+                             kMainFrameEmptyOrDisconnectedRendererResponse,
+                         "Renderer disconnected"});
+  fetch_result->screenshot_result.emplace(MakeScreenshotResult());
+
+  TabObservation observation;
+  ASSERT_NO_FATAL_FAILURE(
+      FetchObservationWithResult(std::move(fetch_result), observation));
+
+  EXPECT_EQ(observation.result(), TabObservation::TAB_OBSERVATION_FETCH_ERROR);
+  EXPECT_EQ(observation.annotated_page_content_result(),
+            TabObservation::ANNOTATED_PAGE_CONTENT_ERROR);
+  EXPECT_EQ(observation.screenshot_result(), TabObservation::SCREENSHOT_OK);
+
+  RecordObservationHistogram(observation);
+  histogram_tester.ExpectUniqueSample(kActorPageContextTabObservationResult,
+                                      ActorTabObservationResult::kApcError, 1);
 }
 
 }  // namespace actor

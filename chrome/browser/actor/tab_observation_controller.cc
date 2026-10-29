@@ -7,6 +7,7 @@
 #include "base/barrier_closure.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_metrics.h"
@@ -122,6 +123,18 @@ void TabObservationController::Start() {
   CHECK(GetActorTask());
   result_ = std::make_unique<ObservationResult>();
   StartImpl();
+}
+
+void TabObservationController::OnTabObservationFetchedForTesting(
+    ActorSurfaceHandle actor_surface_handle,
+    optimization_guide::proto::TabObservation* observation,
+    ActorKeyedService::TabObservationResult result) {
+  if (!result_) {
+    result_ = std::make_unique<ObservationResult>();
+  }
+  OnTabObservationFetched(actor_surface_handle, observation,
+                          base::TimeTicks::Now(), base::DoNothing(),
+                          std::move(result));
 }
 
 void TabObservationController::StartImpl() {
@@ -390,10 +403,11 @@ void TabObservationController::OnTabObservationFetched(
                   : fetch_result.annotated_page_content_result.error().status);
     }
     observation->set_annotated_page_content_result(
-        has_apc || !extract_apc ? optimization_guide::proto::TabObservation::
-                                      ANNOTATED_PAGE_CONTENT_OK
-                                : optimization_guide::proto::TabObservation::
-                                      ANNOTATED_PAGE_CONTENT_ERROR);
+        has_apc || !extract_apc
+            ? optimization_guide::proto::TabObservation::
+                  ANNOTATED_PAGE_CONTENT_OK
+            : ToAnnotatedPageContentResult(
+                  fetch_result.annotated_page_content_result.error().status));
 
     bool has_screenshot = fetch_result.screenshot_result.has_value();
     bool screenshot_required =
@@ -408,7 +422,8 @@ void TabObservationController::OnTabObservationFetched(
     observation->set_screenshot_result(
         has_screenshot || !screenshot_required
             ? optimization_guide::proto::TabObservation::SCREENSHOT_OK
-            : optimization_guide::proto::TabObservation::SCREENSHOT_ERROR);
+            : ToScreenshotResult(
+                  fetch_result.screenshot_result.error().status));
 
     if ((!has_apc && extract_apc) || (screenshot_required && !has_screenshot)) {
       observation->set_result(optimization_guide::proto::TabObservation::
