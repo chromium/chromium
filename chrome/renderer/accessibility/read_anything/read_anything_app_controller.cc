@@ -449,6 +449,9 @@ void ReadAnythingAppController::ProcessModelUpdates() {
     } else {
       PrepareForNewContentDistillation();
       if (features::IsReadAnythingDistillerRefactorEnabled()) {
+        SetDistillationState(
+            read_anything::mojom::ReadAnythingDistillationState::
+                kDistillationInProgress);
         DistillationRequest request;
         request.reason = ReadabilityDistillationReason::kRedistill;
         ExecuteDistillation(request);
@@ -3319,6 +3322,10 @@ void ReadAnythingAppController::UpdateContent(const std::string& title,
   // executed.
   if (features::IsReadAnythingImprovedUiEnabled() &&
       read_aloud_model_.speech_playing()) {
+    if (features::IsReadAnythingDistillerRefactorEnabled()) {
+      SetDistillationState(read_anything::mojom::ReadAnythingDistillationState::
+                               kDistillationWithContent);
+    }
     model_.set_requires_readability_distillation(true);
     VLOG(1) << "Distillation terminated because speech is playing";
     return;
@@ -3343,6 +3350,11 @@ void ReadAnythingAppController::UpdateContent(const std::string& title,
   // selections or log a successful Readability distillation in that case.
   if (!model_.is_readability_next_distillation_method()) {
     return;
+  }
+
+  if (features::IsReadAnythingDistillerRefactorEnabled()) {
+    SetDistillationState(read_anything::mojom::ReadAnythingDistillationState::
+                             kDistillationWithContent);
   }
 
   if (!IsUpdateProcessingPaused() && model_.ContainsActiveTree()) {

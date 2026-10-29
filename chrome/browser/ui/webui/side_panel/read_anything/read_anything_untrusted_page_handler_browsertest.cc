@@ -3412,7 +3412,9 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerRefactorTest,
   extensions::mime_handler::MimeHandlerStreamManager::Create(contents);
   handler_->OnActiveAXTreeIDChanged();
 
-  // Attempt to make a readability distillation
+  // Attempt to make a readability distillation. With the refactor, the renderer
+  // owns distillation state transitions.
+  EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(0);
   base::test::TestFuture<read_anything::mojom::ReadabilityDistillationResult,
                          const std::string&, const std::string&>
       future;
@@ -3429,6 +3431,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerRefactorTest,
   EXPECT_TRUE(title.empty());
   EXPECT_TRUE(content.empty());
   EXPECT_FALSE(handler_->dom_distiller_content().has_value());
+  page_.receiver_.FlushForTesting();
 
   contents->RemoveUserData(
       extensions::mime_handler::MimeHandlerStreamManager::UserDataKey());
@@ -3445,16 +3448,9 @@ IN_PROC_BROWSER_TEST_F(
       WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  {
-    testing::InSequence s;
-    EXPECT_CALL(page_, OnReadabilityDistillationStateChanged(
-                           read_anything::mojom::ReadAnythingDistillationState::
-                               kDistillationInProgress));
-    EXPECT_CALL(page_, OnReadabilityDistillationStateChanged(
-                           read_anything::mojom::ReadAnythingDistillationState::
-                               kDistillationWithContent));
-  }
-  // With the refactor, content is returned via the callback only.
+  // With the refactor, distillation state is owned by the renderer and content
+  // is returned via the callback only.
+  EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(0);
   EXPECT_CALL(page_, UpdateContent).Times(0);
 
   base::test::TestFuture<read_anything::mojom::ReadabilityDistillationResult,
@@ -3543,16 +3539,9 @@ IN_PROC_BROWSER_TEST_F(
       WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  {
-    testing::InSequence s;
-    EXPECT_CALL(page_, OnReadabilityDistillationStateChanged(
-                           read_anything::mojom::ReadAnythingDistillationState::
-                               kDistillationInProgress));
-    EXPECT_CALL(page_, OnReadabilityDistillationStateChanged(
-                           read_anything::mojom::ReadAnythingDistillationState::
-                               kDistillationEmpty));
-  }
-  // With the refactor, content is returned via the callback only.
+  // With the refactor, distillation state is owned by the renderer and content
+  // is returned via the callback only.
+  EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(0);
   EXPECT_CALL(page_, UpdateContent).Times(0);
 
   base::test::TestFuture<read_anything::mojom::ReadabilityDistillationResult,
@@ -3579,9 +3568,7 @@ IN_PROC_BROWSER_TEST_F(
       browser(), GURL("about:blank"), WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  EXPECT_CALL(page_, OnReadabilityDistillationStateChanged(
-                         read_anything::mojom::ReadAnythingDistillationState::
-                             kDistillationEmpty));
+  EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(0);
 
   base::test::TestFuture<read_anything::mojom::ReadabilityDistillationResult,
                          const std::string&, const std::string&>
@@ -3888,10 +3875,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerRefactorTest,
       WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  // Only kDistillationEmpty is sent; any other state change is unexpected.
-  EXPECT_CALL(page_, OnReadabilityDistillationStateChanged(
-                         read_anything::mojom::ReadAnythingDistillationState::
-                             kDistillationEmpty));
+  // With the refactor, the renderer owns distillation state transitions.
+  EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(0);
   EXPECT_CALL(page_, UpdateContent).Times(0);
 
   handler_ = CreateHandler();

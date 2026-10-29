@@ -1861,10 +1861,10 @@ bool ReadAnythingUntrustedPageHandler::RequestDomDistillerDistillation(
   // scripts from leaking.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableAutomation)) {
-    page_->OnReadabilityDistillationStateChanged(
-        read_anything::mojom::ReadAnythingDistillationState::
-            kDistillationEmpty);
     if (!features::IsReadAnythingDistillerRefactorEnabled()) {
+      page_->OnReadabilityDistillationStateChanged(
+          read_anything::mojom::ReadAnythingDistillationState::
+              kDistillationEmpty);
       page_->UpdateContent("", "");
     }
     return false;
@@ -1880,10 +1880,10 @@ bool ReadAnythingUntrustedPageHandler::RequestDomDistillerDistillation(
             << url.spec();
     // Call UpdateContent with empty values so status can be updated from show
     // loading to no content.
-    page_->OnReadabilityDistillationStateChanged(
-        read_anything::mojom::ReadAnythingDistillationState::
-            kDistillationEmpty);
     if (!features::IsReadAnythingDistillerRefactorEnabled()) {
+      page_->OnReadabilityDistillationStateChanged(
+          read_anything::mojom::ReadAnythingDistillationState::
+              kDistillationEmpty);
       page_->UpdateContent("", "");
     }
     return false;
@@ -1893,9 +1893,11 @@ bool ReadAnythingUntrustedPageHandler::RequestDomDistillerDistillation(
       dom_distiller::DomDistillerServiceFactory::GetForBrowserContext(
           content->GetBrowserContext());
   CHECK(dom_distiller_service, base::NotFatalUntil::M162);
-  page_->OnReadabilityDistillationStateChanged(
-      read_anything::mojom::ReadAnythingDistillationState::
-          kDistillationInProgress);
+  if (!features::IsReadAnythingDistillerRefactorEnabled()) {
+    page_->OnReadabilityDistillationStateChanged(
+        read_anything::mojom::ReadAnythingDistillationState::
+            kDistillationInProgress);
+  }
   distiller_delegate_->StartDistillation(dom_distiller_service, content);
   return true;
 }
@@ -1963,9 +1965,6 @@ void ReadAnythingUntrustedPageHandler::ProcessDistilledArticle(
     // If distillation successfully produced content, update the distillation
     // state and notify the renderer.
     if (dom_distiller_content()) {
-      page_->OnReadabilityDistillationStateChanged(
-          read_anything::mojom::ReadAnythingDistillationState::
-              kDistillationWithContent);
       // `readability_callback_` Set only for renderer-requested distillations.
       if (readability_callback_) {
         const std::string& content = dom_distiller_content().value();
@@ -1977,6 +1976,9 @@ void ReadAnythingUntrustedPageHandler::ProcessDistilledArticle(
                  dom_distiller_title().value_or(""), content);
       }
       if (!features::IsReadAnythingDistillerRefactorEnabled()) {
+        page_->OnReadabilityDistillationStateChanged(
+            read_anything::mojom::ReadAnythingDistillationState::
+                kDistillationWithContent);
         page_->UpdateContent(dom_distiller_title().value_or(""),
                              dom_distiller_content().value());
       }
@@ -1992,15 +1994,15 @@ void ReadAnythingUntrustedPageHandler::ProcessDistilledArticle(
       }
     }
   } else {
-    page_->OnReadabilityDistillationStateChanged(
-        read_anything::mojom::ReadAnythingDistillationState::
-            kDistillationEmpty);
     if (readability_callback_) {
       std::move(readability_callback_)
           .Run(read_anything::mojom::ReadabilityDistillationResult::kEmpty,
                /*title=*/"", /*content=*/"");
     }
     if (!features::IsReadAnythingDistillerRefactorEnabled()) {
+      page_->OnReadabilityDistillationStateChanged(
+          read_anything::mojom::ReadAnythingDistillationState::
+              kDistillationEmpty);
       page_->UpdateContent(/*title=*/"", /*content=*/"");
     }
   }

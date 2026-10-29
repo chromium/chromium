@@ -8046,6 +8046,12 @@ TEST_F(ReadAnythingAppControllerDistillerRefactorTest,
 TEST_F(ReadAnythingAppControllerDistillerRefactorTest,
        UpdateContent_WithContent_ReadabilityUsed) {
   UseReadability();
+  VerifyAndClearPageHandlerExpectations();
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationInProgress))
+      .Times(1);
   ReadabilityReply& reply = ExpectReadabilityRequest();
   controller().OnActiveAXTreeIDChanged(ui::AXTreeID::CreateNewAXTreeID(),
                                        ukm::kInvalidSourceId, false);
@@ -8054,9 +8060,19 @@ TEST_F(ReadAnythingAppControllerDistillerRefactorTest,
             read_anything::mojom::ReadAnythingDistillationState::
                 kDistillationInProgress);
 
+  VerifyAndClearPageHandlerExpectations();
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationWithContent))
+      .Times(1);
   Reply(reply, read_anything::mojom::ReadabilityDistillationResult::kSuccess,
         "Title", "<p>Content</p>");
+  page_handler_.FlushForTesting();
 
+  EXPECT_EQ(model().distillation_state(),
+            read_anything::mojom::ReadAnythingDistillationState::
+                kDistillationWithContent);
   EXPECT_EQ(model().current_content_distillation_method(),
             ReadAnythingAppModel::DistillationMethod::kReadability);
   EXPECT_EQ(model().next_distillation_method(),
@@ -8064,6 +8080,90 @@ TEST_F(ReadAnythingAppControllerDistillerRefactorTest,
   EXPECT_TRUE(model().readability_distillation_complete_for_current_tree());
   EXPECT_EQ(controller().GetDomDistillerTitle(), "Title");
   EXPECT_EQ(controller().GetDomDistillerContentHtml(), "<p>Content</p>");
+}
+
+TEST_F(ReadAnythingAppControllerDistillerRefactorTest,
+       UpdateContent_WithContent_ProcessesPendingSelection) {
+  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  std::unique_ptr<ui::AXTreeUpdate> snapshot = test::CreateInitialUpdate();
+  test::SetUpdateTreeID(snapshot.get(), tree_id);
+  snapshot->has_tree_data = true;
+  snapshot->tree_data.sel_anchor_object_id = 2;
+  snapshot->tree_data.sel_anchor_offset = 0;
+  snapshot->tree_data.sel_focus_object_id = 3;
+  snapshot->tree_data.sel_focus_offset = 1;
+  AccessibilityEventReceived({*snapshot});
+
+  UseReadability();
+  ReadabilityReply& reply = ExpectReadabilityRequest();
+  controller().OnActiveAXTreeIDChanged(tree_id, ukm::kInvalidSourceId, false);
+  page_handler_.FlushForTesting();
+  ASSERT_FALSE(model().has_selection());
+
+  // UpdateContent() must set kDistillationWithContent before checking
+  // IsUpdateProcessingPaused(), otherwise PostProcessSelection() is skipped.
+  Reply(reply, read_anything::mojom::ReadabilityDistillationResult::kSuccess,
+        "Title", "<p>Content</p>");
+
+  EXPECT_TRUE(model().has_selection());
+}
+
+TEST_F(ReadAnythingAppControllerDistillerRefactorTest,
+       UpdateContent_IneligibleFallbackToScreen2x_DoesNotEmitPrematureEmpty) {
+  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  std::unique_ptr<ui::AXTreeUpdate> update = test::CreateInitialUpdate();
+  test::SetUpdateTreeID(update.get(), tree_id);
+  update->nodes[0].role = ax::mojom::Role::kMain;
+  for (size_t i = 1; i < update->nodes.size(); ++i) {
+    update->nodes[i].role = ax::mojom::Role::kParagraph;
+  }
+  AccessibilityEventReceived({*update});
+
+  UseReadability();
+  ReadabilityReply& reply = ExpectReadabilityRequest();
+  controller().OnActiveAXTreeIDChanged(tree_id, ukm::kInvalidSourceId, false);
+  page_handler_.FlushForTesting();
+  VerifyAndClearPageHandlerExpectations();
+
+  // Falling back to Screen2x must not send kDistillationEmpty before Screen2x
+  // finishes; Screen2x finds content and transitions straight to WithContent.
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationEmpty))
+      .Times(0);
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationWithContent))
+      .Times(1);
+
+  Reply(reply,
+        read_anything::mojom::ReadabilityDistillationResult::kIneligible);
+  page_handler_.FlushForTesting();
+
+  EXPECT_EQ(model().distillation_state(),
+            read_anything::mojom::ReadAnythingDistillationState::
+                kDistillationWithContent);
+  EXPECT_THAT(model().content_node_ids(), ElementsAre(2, 3, 4));
+}
+
+TEST_F(ReadAnythingAppControllerDistillerRefactorTest,
+       ReplyCancelled_DoesNotChangeDistillationState) {
+  UseReadability();
+  ReadabilityReply& reply = ExpectReadabilityRequest();
+  controller().OnActiveAXTreeIDChanged(ui::AXTreeID::CreateNewAXTreeID(),
+                                       ukm::kInvalidSourceId, false);
+  page_handler_.FlushForTesting();
+  VerifyAndClearPageHandlerExpectations();
+  EXPECT_CALL(page_handler_, OnDistillationStateChanged(testing::_)).Times(0);
+
+  Reply(reply, read_anything::mojom::ReadabilityDistillationResult::kCancelled);
+  page_handler_.FlushForTesting();
+
+  EXPECT_EQ(model().distillation_state(),
+            read_anything::mojom::ReadAnythingDistillationState::
+                kDistillationInProgress);
 }
 
 TEST_F(ReadAnythingAppControllerDistillerRefactorTest,
@@ -8096,17 +8196,34 @@ TEST_F(ReadAnythingAppControllerDistillerRefactorTest,
   ASSERT_FALSE(model().ContainsActiveTree());
 
   // Without an active tree, falling back to Screen2x defers instantiating and
-  // running Screen2xDistiller until the tree arrives.
+  // running Screen2xDistiller until the tree arrives, keeping distillation in
+  // progress rather than prematurely reporting kDistillationEmpty.
+  VerifyAndClearPageHandlerExpectations();
+  EXPECT_CALL(page_handler_, OnDistillationStateChanged(testing::_)).Times(0);
   Reply(reply, read_anything::mojom::ReadabilityDistillationResult::kEmpty);
+  page_handler_.FlushForTesting();
 
+  EXPECT_EQ(model().distillation_state(),
+            read_anything::mojom::ReadAnythingDistillationState::
+                kDistillationInProgress);
   EXPECT_EQ(model().next_distillation_method(),
             ReadAnythingAppModel::DistillationMethod::kScreen2x);
   EXPECT_TRUE(model().requires_distillation());
   EXPECT_EQ(active_distiller()->GetDistillationMethod(),
             ReadAnythingAppModel::DistillationMethod::kReadability);
 
+  VerifyAndClearPageHandlerExpectations();
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationEmpty))
+      .Times(1);
   AddTree(tree_id);
+  page_handler_.FlushForTesting();
 
+  EXPECT_EQ(
+      model().distillation_state(),
+      read_anything::mojom::ReadAnythingDistillationState::kDistillationEmpty);
   EXPECT_EQ(active_distiller()->GetDistillationMethod(),
             ReadAnythingAppModel::DistillationMethod::kScreen2x);
   EXPECT_FALSE(model().requires_distillation());
@@ -8298,15 +8415,36 @@ TEST_F(
   // Simulate an SPA navigation that changes the root URL on the same tree.
   AddTree(tree_id_, "https://example.com/page2");
   model().set_requires_readability_distillation(true);
+  VerifyAndClearPageHandlerExpectations();
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationInProgress))
+      .Times(1);
   ReadabilityReply& reply = ExpectReadabilityRequest(
       read_anything::mojom::ReadabilityDistillationReason::kRedistill);
 
   ProcessModelUpdates();
   page_handler_.FlushForTesting();
 
+  EXPECT_EQ(model().distillation_state(),
+            read_anything::mojom::ReadAnythingDistillationState::
+                kDistillationInProgress);
   EXPECT_FALSE(model().requires_readability_distillation());
+
+  VerifyAndClearPageHandlerExpectations();
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationWithContent))
+      .Times(1);
   Reply(reply, read_anything::mojom::ReadabilityDistillationResult::kSuccess,
         "Title 2", "<p>Page 2 content</p>");
+  page_handler_.FlushForTesting();
+
+  EXPECT_EQ(model().distillation_state(),
+            read_anything::mojom::ReadAnythingDistillationState::
+                kDistillationWithContent);
   EXPECT_EQ(controller().GetDomDistillerContentHtml(), "<p>Page 2 content</p>");
 }
 
@@ -8321,28 +8459,35 @@ TEST_F(ReadAnythingAppControllerDistillerRefactorSelectTextTest,
   page_handler_.FlushForTesting();
 
   // Speech is playing when the reply arrives, so completing distillation is
-  // deferred until speech stops.
+  // deferred until speech stops, while distillation state transitions to
+  // kDistillationWithContent so stopping speech is not blocked.
   controller().OnIsSpeechActiveChanged(true);
   Reply(deferred_reply,
         read_anything::mojom::ReadabilityDistillationResult::kSuccess, "Title",
         "<p>Content</p>");
 
+  EXPECT_EQ(model().distillation_state(),
+            read_anything::mojom::ReadAnythingDistillationState::
+                kDistillationWithContent);
   EXPECT_TRUE(model().requires_readability_distillation());
   EXPECT_FALSE(model().readability_distillation_complete_for_current_tree());
 
   // Stopping speech triggers a re-distillation.
-  model().set_distillation_state(
-      read_anything::mojom::ReadAnythingDistillationState::
-          kDistillationWithContent);
   ReadabilityReply& redistill_reply = ExpectReadabilityRequest(
       read_anything::mojom::ReadabilityDistillationReason::kRedistill);
   controller().OnIsSpeechActiveChanged(false);
   page_handler_.FlushForTesting();
 
+  EXPECT_EQ(model().distillation_state(),
+            read_anything::mojom::ReadAnythingDistillationState::
+                kDistillationInProgress);
   EXPECT_FALSE(model().requires_readability_distillation());
   Reply(redistill_reply,
         read_anything::mojom::ReadabilityDistillationResult::kSuccess, "Title",
         "<p>Content</p>");
+  EXPECT_EQ(model().distillation_state(),
+            read_anything::mojom::ReadAnythingDistillationState::
+                kDistillationWithContent);
   EXPECT_TRUE(model().readability_distillation_complete_for_current_tree());
 }
 
