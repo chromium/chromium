@@ -7,8 +7,18 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager.h"
+#include "chrome/browser/actor/ui/states/tab_indicator_state.h"
+#include "chrome/browser/actor/ui/test_support/mock_actor_ui_tab_controller.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace glic {
 
@@ -249,6 +259,50 @@ TEST(GlicInvokeTaskTest, SequentialTaskGroupLastActiveTaskType) {
   EXPECT_CALL(done_cb, Run()).Times(1);
   task2_ptr->Complete();
   EXPECT_EQ(seq.GetLastActiveTaskType(), GlicTaskType::kWaitForClientReady);
+}
+
+TEST(
+    GlicInvokeTaskTest,
+    SetTabPendingActuationTaskClearsOnSequenceCompletedWhenTaskDidNotActOnTab) {
+  content::BrowserTaskEnvironment task_environment;
+  base::test::ScopedFeatureList scoped_feature_list{features::kGlicActor};
+  TestingProfile profile;
+
+  ui::UnownedUserDataHost user_data_host;
+  tabs::MockTabInterface mock_tab;
+  ON_CALL(mock_tab, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(user_data_host));
+  testing::NiceMock<actor::ui::MockActorUiTabController> mock_tab_controller(
+      mock_tab);
+
+  SetTabPendingActuationTask task(&profile, mock_tab.GetHandle());
+
+  EXPECT_CALL(mock_tab_controller,
+              OnUiTabStateChange(
+                  testing::Field(&actor::ui::UiTabState::tab_indicator,
+                                 actor::ui::TabIndicatorStatus::kDynamic),
+                  testing::_))
+      .Times(1);
+
+  base::MockCallback<base::OnceClosure> done_cb;
+  EXPECT_CALL(done_cb, Run()).Times(1);
+  task.Start(done_cb.Get());
+  testing::Mock::VerifyAndClearExpectations(&mock_tab_controller);
+
+  // Even when the sequence completes with `success = true`, if no ActorTask
+  // transitioned the tab out of pending actuation, `OnSequenceCompleted` must
+  // clear the pending actuation state so the spinner is not stuck forever.
+  EXPECT_CALL(
+      mock_tab_controller,
+      OnUiTabStateChange(testing::Field(&actor::ui::UiTabState::tab_indicator,
+                                        actor::ui::TabIndicatorStatus::kNone),
+                         testing::_))
+      .Times(1);
+  task.OnSequenceCompleted(/*success=*/true);
+  testing::Mock::VerifyAndClearExpectations(&mock_tab_controller);
+  EXPECT_FALSE(
+      actor::ui::ActorUiStateManager::Get(&profile)->ClearTabPendingActuation(
+          mock_tab.GetHandle()));
 }
 
 }  // namespace glic

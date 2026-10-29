@@ -200,9 +200,6 @@ void SetTabPendingActuationTask::Start(base::OnceClosure done_callback) {
 }
 
 void SetTabPendingActuationTask::OnSequenceCompleted(bool success) {
-  if (success) {
-    return;
-  }
   if (auto* ui_state_manager = actor::ui::ActorUiStateManager::Get(profile_)) {
     ui_state_manager->ClearTabPendingActuation(tab_handle_);
   }

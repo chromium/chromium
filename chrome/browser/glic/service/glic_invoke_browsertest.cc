@@ -11,6 +11,8 @@
 #include "base/test/values_test_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
+#include "chrome/browser/actor/ui/states/tab_indicator_state.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
@@ -2823,6 +2825,11 @@ class GlicInvokeActuationBrowserTest : public GlicInvokeBrowserTest {
 IN_PROC_BROWSER_TEST_F(GlicInvokeActuationBrowserTest,
                        InvokeWithActuationFeatureMode) {
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  auto* tab_controller = actor::ui::ActorUiTabControllerInterface::From(tab);
+  if (tab_controller) {
+    EXPECT_EQ(tab_controller->GetCurrentUiTabState().tab_indicator,
+              actor::ui::TabIndicatorStatus::kNone);
+  }
 
   base::test::TestFuture<void> success_future;
   GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
@@ -2832,6 +2839,10 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeActuationBrowserTest,
 
   // 1. Trigger invocation in actuation mode.
   coordinator().Invoke(std::move(options));
+  if (tab_controller) {
+    EXPECT_EQ(tab_controller->GetCurrentUiTabState().tab_indicator,
+              actor::ui::TabIndicatorStatus::kDynamic);
+  }
 
   auto* instance = GetInstanceForTab(tab);
   ASSERT_TRUE(instance);
@@ -2869,6 +2880,10 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeActuationBrowserTest,
 
   // Now the invocation should finally complete.
   EXPECT_TRUE(success_future.Wait());
+  if (tab_controller) {
+    EXPECT_EQ(tab_controller->GetCurrentUiTabState().tab_indicator,
+              actor::ui::TabIndicatorStatus::kNone);
+  }
 }
 
 // TODO(b/477918640): Tests habe been failing consistently on ChromeOS, Linux
