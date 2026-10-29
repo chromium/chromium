@@ -11,16 +11,46 @@
 #import "base/functional/callback.h"
 #import "base/rand_util.h"
 #import "base/time/time.h"
+#import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/default_browser/default_status/model/default_status_helper_constants.h"
 #import "ios/chrome/browser/default_browser/default_status/model/default_status_helper_metrics.h"
-#import "ios/chrome/browser/default_browser/default_status/model/default_status_helper_prefs.h"
 #import "ios/chrome/browser/default_browser/default_status/model/default_status_helper_types.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
 namespace default_status {
+
+// The cohorts are monthly, aligned with the Gregorian calendar. The logic in
+// this file should work for any cohort count between 1 and 12. Anything higher
+// than that means the cohorts are no longer aligned to calendar months, so
+// logic needs to be revisited.
+//
+// Changing this value requires updating the
+// `IOS.DefaultStatusAPI.IsDefaultBrowser.Cohort{Number}` histogram to make sure
+// there is a variant for each cohort.
+//
+// LINT.IfChange(kCohortCount)
+const int kCohortCount = 4;
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/histograms.xml:CohortNumber)
+
+const char kDefaultStatusAPICohort[] = "DefaultStatusAPICohort";
+
+const char kDefaultStatusAPILastSuccessfulCall[] =
+    "DefaultStatusAPILastSuccessfulCall";
+
+const char kDefaultStatusAPINextRetry[] = "DefaultStatusAPINextRetry";
+
+const char kDefaultStatusAPIResult[] = "DefaultStatusAPIResult";
+
+void RegisterDefaultStatusPrefs(PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(kDefaultStatusAPICohort, 0);
+  registry->RegisterTimePref(kDefaultStatusAPILastSuccessfulCall, base::Time());
+  registry->RegisterTimePref(kDefaultStatusAPINextRetry, base::Time());
+  registry->RegisterIntegerPref(
+      kDefaultStatusAPIResult,
+      static_cast<int>(DefaultStatusAPIResult::kUnknown));
+}
 
 namespace internal {
 

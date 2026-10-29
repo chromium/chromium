@@ -9,6 +9,7 @@
 
 #import "base/functional/callback.h"
 
+class PrefRegistrySimple;
 class PrefService;
 
 namespace base {
@@ -32,6 +33,30 @@ namespace default_status {
 
 enum class DefaultStatusAPIResult;
 enum class DefaultStatusRetention;
+
+// The number of cohorts to split the clients into.
+extern const int kCohortCount;
+
+// The cohort this client belongs to for the purpose of reporting the result of
+// the default status system API call.
+extern const char kDefaultStatusAPICohort[];
+
+// The timestamp of the last successful call to the default status API call. A
+// successful call is one that does not yield an error, regardless of the
+// default status result.
+extern const char kDefaultStatusAPILastSuccessfulCall[];
+
+// The timestamp after which the default status API should be called again for
+// this client.
+extern const char kDefaultStatusAPINextRetry[];
+
+// The result of the last successful default status API call. The value is of
+// type `DefaultStatusAPIResult` and defaults to
+// `DefaultStatusAPIResult::kUnknown`.
+extern const char kDefaultStatusAPIResult[];
+
+// Registers the prefs associated with the default status helper.
+void RegisterDefaultStatusPrefs(PrefRegistrySimple* registry);
 
 // Do not call these functions; they are exposed for unit testing only.
 namespace internal {

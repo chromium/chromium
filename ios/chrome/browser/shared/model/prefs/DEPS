@@ -15,7 +15,7 @@ include_rules = [
   "+ios/chrome/browser/content_suggestions/price_tracking_promo/model/price_tracking_promo_prefs.h",
   "+ios/chrome/browser/content_suggestions/shop_card/model/shop_card_prefs.h",
   "+ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service.h",
-  "+ios/chrome/browser/default_browser/default_status/model/default_status_helper_prefs.h",
+  "+ios/chrome/browser/default_browser/default_status/model/default_status_helper.h",
   "+ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h",
   "+ios/chrome/browser/drive/model/drive_policy.h",
   "+ios/chrome/browser/enterprise/data_protection/public/pref_names.h",

@@ -6,7 +6,7 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/stringprintf.h"
-#import "ios/chrome/browser/default_browser/default_status/model/default_status_helper_constants.h"
+#import "ios/chrome/browser/default_browser/default_status/model/default_status_helper.h"
 #import "ios/chrome/browser/default_browser/default_status/model/default_status_helper_types.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 

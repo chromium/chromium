@@ -11,12 +11,8 @@ source_set("model") {
   sources = [
     "default_status_helper.h",
     "default_status_helper.mm",
-    "default_status_helper_constants.h",
-    "default_status_helper_constants.mm",
     "default_status_helper_metrics.h",
     "default_status_helper_metrics.mm",
-    "default_status_helper_prefs.h",
-    "default_status_helper_prefs.mm",
     "default_status_helper_types.h",
   ]
   deps = []
