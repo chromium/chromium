@@ -102,7 +102,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   void Disassociate(ListedElement&);
   void Associate(HTMLImageElement&);
   void Disassociate(HTMLImageElement&);
-  void DidAssociateByParser(bool maybe_descendant);
+  void DidAssociateNonDescendantByParser();
 
   // For native form controls, pass the submit button as submitter. For custom
   // elements with `HTMLSubmitButtonBehavior`, pass the custom element as
@@ -377,7 +377,6 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   bool image_elements_are_dirty_ : 1;
   bool has_elements_associated_by_parser_ : 1;
   bool has_elements_associated_by_form_attribute_ : 1;
-  bool did_finish_parsing_children_ : 1;
   bool is_in_reset_function_ : 1;
   // Whether this form is connected and has a <form> ancestor, i.e. is counted
   // in Document::HasConnectedNestedForms(). Maintained in InsertedInto() and

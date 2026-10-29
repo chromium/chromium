@@ -168,7 +168,7 @@ void ListedElement::InsertedInto(ContainerNode& insertion_point) {
     if (form_or_highest_ancestor != *form_) [[unlikely]] {
       if (form_or_highest_ancestor ==
           NodeTraversal::HighestAncestorOrSelf(*form_)) {
-        form_->DidAssociateByParser(/*maybe_descendant=*/false);
+        form_->DidAssociateNonDescendantByParser();
       } else {
         ResetFormOwner();
       }
@@ -268,10 +268,12 @@ void ListedElement::FormRemovedFromTree(const Node& form_root) {
 }
 
 void ListedElement::AssociateByParser(HTMLFormElement* form) {
+  // InsertedInto() detects non-descendant parser associations, so this must
+  // happen before the element is inserted into any tree.
+  DCHECK(!ToHTMLElement().parentNode());
   if (form && form->isConnected()) {
     form_was_set_by_parser_ = true;
     SetForm(form);
-    form->DidAssociateByParser(/*maybe_descendant=*/true);
   }
 }
 

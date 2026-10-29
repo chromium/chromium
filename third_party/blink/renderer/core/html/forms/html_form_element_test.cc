@@ -843,4 +843,107 @@ TEST_F(HTMLFormElementSimTest, DescendantAssociatedByParserDoesNotUseCount) {
   EXPECT_FALSE(doc.IsUseCounted(WebFeature::kFormAssociationByParser));
 }
 
+// Setting `innerHTML` on an element inside an already-parsed connected `<form>`
+// initializes the fragment parser's form element pointer to `<form>`, but the
+// resulting elements are inserted as descendants of `<form>`, so
+// `WebFeature::kFormAssociationByParser` must not be counted.
+TEST_F(HTMLFormElementSimTest, InnerHtmlInConnectedFormDoesNotUseCount) {
+  LoadHTML(R"HTML(
+    <!DOCTYPE html>
+    <form id=f>
+      <div id=d></div>
+    </form>
+    <script>
+      document.getElementById('d').innerHTML =
+          '<input id=t1><img id=img1 name=img1>';
+    </script>
+  )HTML");
+
+  Document& doc = GetDocument();
+  auto* f = To<HTMLFormElement>(doc.getElementById(AtomicString("f")));
+  auto* d = To<HTMLDivElement>(doc.getElementById(AtomicString("d")));
+  auto* t1 = To<HTMLInputElement>(doc.getElementById(AtomicString("t1")));
+  auto* img1 = To<HTMLImageElement>(doc.getElementById(AtomicString("img1")));
+
+  EXPECT_EQ(t1->Form(), f);
+  EXPECT_EQ(img1->formOwner(), f);
+  EXPECT_THAT(f->ListedElements(), ElementsAre(t1));
+  EXPECT_THAT(f->ImageElements(), ElementsAre(img1));
+  EXPECT_FALSE(doc.IsUseCounted(WebFeature::kFormAssociationByParser));
+
+  d->SetInnerHTMLWithoutTrustedTypes("<input id=t2><img id=img2 name=img2>");
+  auto* t2 = To<HTMLInputElement>(doc.getElementById(AtomicString("t2")));
+  auto* img2 = To<HTMLImageElement>(doc.getElementById(AtomicString("img2")));
+  EXPECT_EQ(t2->Form(), f);
+  EXPECT_EQ(img2->formOwner(), f);
+  EXPECT_THAT(f->ListedElements(), ElementsAre(t2));
+  EXPECT_THAT(f->ImageElements(), ElementsAre(img2));
+  EXPECT_FALSE(doc.IsUseCounted(WebFeature::kFormAssociationByParser));
+}
+
+// When a `<form>` was implicitly closed by a misnested end tag (`</div>`), the
+// parser's form element pointer still points to `<form>`, but a subsequent
+// control with a `form` content attribute is not parser-associated with
+// `<form>` and must not count `WebFeature::kFormAssociationByParser`.
+TEST_F(HTMLFormElementSimTest,
+       FormAttributeOnElementAfterMisnestedFormDoesNotUseCount) {
+  LoadHTML(R"HTML(
+    <!DOCTYPE html>
+    <div>
+      <form id=f1>
+    </div>
+    <input id=t1 form=f2>
+    <input id=t2 form=nonexistent>
+    </form>
+    <form id=f2></form>
+  )HTML");
+
+  Document& doc = GetDocument();
+  auto* f1 = To<HTMLFormElement>(doc.getElementById(AtomicString("f1")));
+  auto* f2 = To<HTMLFormElement>(doc.getElementById(AtomicString("f2")));
+  auto* t1 = To<HTMLInputElement>(doc.getElementById(AtomicString("t1")));
+  auto* t2 = To<HTMLInputElement>(doc.getElementById(AtomicString("t2")));
+
+  EXPECT_EQ(t1->Form(), f2);
+  EXPECT_EQ(t2->Form(), nullptr);
+  EXPECT_THAT(f1->ListedElements(), IsEmpty());
+  EXPECT_THAT(f2->ListedElements(), ElementsAre(t1));
+  EXPECT_FALSE(doc.IsUseCounted(WebFeature::kFormAssociationByParser));
+}
+
+// Sanity check that genuine non-descendant parser associations (for both listed
+// elements and `<img>`) still count `WebFeature::kFormAssociationByParser`.
+TEST_F(HTMLFormElementSimTest, NonDescendantAssociatedByParserDoesUseCount) {
+  {
+    LoadHTML(R"HTML(
+      <!DOCTYPE html>
+      <table>
+        <form id=f>
+          <tr><td><input id=t></td></tr>
+        </form>
+      </table>
+    )HTML");
+    Document& doc = GetDocument();
+    auto* f = To<HTMLFormElement>(doc.getElementById(AtomicString("f")));
+    auto* t = To<HTMLInputElement>(doc.getElementById(AtomicString("t")));
+    EXPECT_EQ(t->Form(), f);
+    EXPECT_THAT(f->ListedElements(), ElementsAre(t));
+    EXPECT_TRUE(doc.IsUseCounted(WebFeature::kFormAssociationByParser));
+  }
+  {
+    LoadHTML(R"HTML(
+      <!DOCTYPE html>
+      <div><form id=f></div>
+      <img id=img name=img>
+      </form>
+    )HTML");
+    Document& doc = GetDocument();
+    auto* f = To<HTMLFormElement>(doc.getElementById(AtomicString("f")));
+    auto* img = To<HTMLImageElement>(doc.getElementById(AtomicString("img")));
+    EXPECT_EQ(img->formOwner(), f);
+    EXPECT_THAT(f->ImageElements(), ElementsAre(img));
+    EXPECT_TRUE(doc.IsUseCounted(WebFeature::kFormAssociationByParser));
+  }
+}
+
 }  // namespace blink

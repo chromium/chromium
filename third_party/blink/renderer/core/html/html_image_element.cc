@@ -651,7 +651,7 @@ Node::InsertionNotificationRequest HTMLImageElement::InsertedInto(
     if (form_or_highest_ancestor != *form_) [[unlikely]] {
       if (form_or_highest_ancestor ==
           NodeTraversal::HighestAncestorOrSelf(*form_)) {
-        form_->DidAssociateByParser(/*maybe_descendant=*/false);
+        form_->DidAssociateNonDescendantByParser();
       } else {
         ResetFormOwner();
       }
@@ -1341,11 +1341,14 @@ void HTMLImageElement::AdjustStyle(ComputedStyleBuilder& builder) {
 }
 
 void HTMLImageElement::AssociateWith(HTMLFormElement* form) {
+  // InsertedInto() detects non-descendant parser associations, so this must
+  // happen before the element is inserted into any tree.
+  DCHECK(!parentNode());
+  DCHECK(!form_);
   if (form && form->isConnected()) {
     form_ = form;
     form_was_set_by_parser_ = true;
     form_->Associate(*this);
-    form_->DidAssociateByParser(/*maybe_descendant=*/true);
   }
 }
 

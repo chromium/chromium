@@ -121,7 +121,6 @@ HTMLFormElement::HTMLFormElement(Document& document)
       image_elements_are_dirty_(false),
       has_elements_associated_by_parser_(false),
       has_elements_associated_by_form_attribute_(false),
-      did_finish_parsing_children_(false),
       is_in_reset_function_(false),
       is_connected_nested_form_(false),
       rel_list_(MakeGarbageCollected<RelList>(this)) {
@@ -1299,10 +1298,7 @@ void HTMLFormElement::Disassociate(HTMLImageElement& e) {
   RemoveFromPastNamesMap(e);
 }
 
-void HTMLFormElement::DidAssociateByParser(bool maybe_descendant) {
-  if (!did_finish_parsing_children_ && maybe_descendant) {
-    return;
-  }
+void HTMLFormElement::DidAssociateNonDescendantByParser() {
   has_elements_associated_by_parser_ = true;
   UseCounter::Count(GetDocument(), WebFeature::kFormAssociationByParser);
 }
@@ -1676,7 +1672,6 @@ bool HTMLFormElement::HasRel(RelAttribute relation) const {
 void HTMLFormElement::FinishParsingChildren() {
   HTMLElement::FinishParsingChildren();
   GetDocument().EnsureFormController().RestoreControlStateIn(*this);
-  did_finish_parsing_children_ = true;
 }
 
 void HTMLFormElement::ChildrenChanged(const ChildrenChange& change) {
