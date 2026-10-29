@@ -10066,6 +10066,67 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(popup_rfh->IsRenderFrameLive());
 }
 
+// Regression test for https://crbug.com/574439684.
+//
+// Scenario:
+// 1. A main frame with "block-all-mixed-content" embeds a cross-site iframe.
+// 2. The iframe opens an about:blank popup.
+// 3. The popup replaces its document by navigating to a javascript: URL.
+// 4. The new document performs a same-document navigation.
+//
+// The same-document commit must be accepted and the renderer process must not
+// be killed.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTest,
+    JavaScriptUrlReplacementInSubframePopupPreservesInsecureRequestPolicy) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/set-header?Content-Security-Policy: block-all-mixed-content"));
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+  ASSERT_TRUE(ExecJs(shell(), R"(
+    const iframe = document.createElement('iframe');
+    iframe.id = 'child0';
+    document.body.appendChild(iframe);
+  )"));
+
+  GURL subframe_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  ASSERT_TRUE(NavigateIframeToURL(web_contents(), "child0", subframe_url));
+  RenderFrameHostImpl* subframe_rfh =
+      static_cast<RenderFrameHostImpl*>(ChildFrameAt(root_frame_host(), 0));
+  ASSERT_TRUE(subframe_rfh);
+
+  ShellAddedObserver new_shell_observer;
+  ASSERT_TRUE(ExecJs(subframe_rfh, "window.open('about:blank');"));
+  Shell* popup = new_shell_observer.GetShell();
+  WebContentsImpl* popup_contents =
+      static_cast<WebContentsImpl*>(popup->web_contents());
+  ASSERT_TRUE(WaitForLoadStop(popup_contents));
+
+  RenderFrameHostImpl* popup_rfh = popup_contents->GetPrimaryMainFrame();
+  auto insecure_request_policy = [&] {
+    return popup_rfh->frame_tree_node()
+        ->current_replication_state()
+        .insecure_request_policy;
+  };
+  EXPECT_EQ(blink::mojom::InsecureRequestPolicy::kBlockAllMixedContent,
+            insecure_request_policy());
+
+  ASSERT_TRUE(ExecJs(popup_rfh, R"(
+    location.href = "javascript:'<script>" +
+        "history.pushState({}, \"\", \"about:blank#same-doc\");" +
+        "</script>replaced'";
+  )"));
+  const GURL same_doc_url("about:blank#same-doc");
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return popup_rfh->GetLastCommittedURL() == same_doc_url; }));
+  EXPECT_TRUE(popup_rfh->IsRenderFrameLive());
+
+  // TODO(crbug.com/574439684): The renderer lost the insecure request policy
+  // and the browser picked it up from the same-document commit. Once fixed,
+  // this should remain kBlockAllMixedContent.
+  EXPECT_EQ(blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,
+            insecure_request_policy());
+}
+
 // Tests that paint holding is not used when an opener-created popup that is
 // still on its initial empty document navigates cross-origin without user
 // activation. Similar to the test above, but checks the case where the opener
