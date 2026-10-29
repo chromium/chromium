@@ -1244,6 +1244,7 @@ if (build_with_chromium) {
       "partition_alloc_perftest.cc",
       "partition_lock_perftest.cc",
       "scheduler_loop_quarantine_perftest.cc",
+      "slot_provisioning_perftest.cc",
     ]
 
     deps = [

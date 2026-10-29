@@ -2596,6 +2596,58 @@ TEST_P(PartitionAllocTest, PartialPageFreelists) {
   allocator.root()->Free(ptr);
 }
 
+// Checks that with a min provisioning size, enough slots are provisioned at
+// once to cover it, and that the slot span can still be fully used.
+TEST_P(PartitionAllocTest, MinProvisioningSize) {
+  constexpr size_t kMinProvisioningSize = 64 * 1024;
+  PartitionRoot::SetMinProvisioningSize(kMinProvisioningSize);
+  struct ResetMinProvisioningSize {
+    ~ResetMinProvisioningSize() { PartitionRoot::SetMinProvisioningSize(0); }
+  } reset_min_provisioning_size;
+
+  for (size_t raw_size :
+       {size_t{16}, size_t{100}, size_t{1000}, SystemPageSize() / 2 + 1,
+        SystemPageSize() + 16, size_t{9000}}) {
+    const size_t size = raw_size > ExtraAllocSize(allocator)
+                            ? raw_size - ExtraAllocSize(allocator)
+                            : 1;
+    void* ptr = allocator.root()->Alloc(size, type_name);
+    ASSERT_TRUE(ptr);
+    auto* slot_span = SlotSpan::FromSlotStart(SlotStart::Unchecked(ptr).Untag(),
+                                              allocator.root());
+    const size_t slot_size = slot_span->bucket->slot_size;
+    const size_t span_size =
+        slot_span->bucket->num_system_pages_per_slot_span * SystemPageSize();
+    const size_t total_slots = span_size / slot_size;
+    // Whole slots covering `kMinProvisioningSize`, rounded up to a system page
+    // (any other slot that fits in the committed pages is provisioned too).
+    const size_t expected_provisioned_bytes = std::min(
+        span_size,
+        base::bits::AlignUp(
+            std::max<size_t>(kMinProvisioningSize / slot_size, 1) * slot_size,
+            SystemPageSize()));
+    const size_t expected_provisioned_slots =
+        std::min(total_slots, expected_provisioned_bytes / slot_size);
+    EXPECT_EQ(1u, slot_span->num_allocated_slots);
+    EXPECT_EQ(total_slots - expected_provisioned_slots,
+              slot_span->num_unprovisioned_slots)
+        << "slot_size=" << slot_size;
+
+    // Use the whole slot span (and then some), touching all the memory.
+    std::vector<void*> ptrs = {ptr};
+    for (size_t i = 0; i < total_slots + 1; ++i) {
+      void* p = allocator.root()->Alloc(size, type_name);
+      ASSERT_TRUE(p);
+      std::fill_n(static_cast<uint8_t*>(p), size, 0x42);
+      ptrs.push_back(p);
+    }
+    EXPECT_EQ(0u, slot_span->num_unprovisioned_slots);
+    for (void* p : ptrs) {
+      allocator.root()->Free(p);
+    }
+  }
+}
+
 // Test some of the fragmentation-resistant properties of the allocator.
 TEST_P(PartitionAllocTest, SlotSpanRefilling) {
   PartitionRoot::Bucket* bucket =

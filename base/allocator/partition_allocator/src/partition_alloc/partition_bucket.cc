@@ -896,13 +896,14 @@ PartitionBucket::ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
                                                AllocFlags flags,
                                                SlotSpanMetadata* slot_span) {
   PA_DCHECK(slot_span != SlotSpanMetadata::get_sentinel_slot_span());
-  size_t num_slots = slot_span->num_unprovisioned_slots;
-  PA_DCHECK(num_slots);
-  PA_DCHECK(num_slots <= get_slots_per_span());
+  const size_t num_unprovisioned_slots = slot_span->num_unprovisioned_slots;
+  PA_DCHECK(num_unprovisioned_slots);
+  PA_DCHECK(num_unprovisioned_slots <= get_slots_per_span());
   // We should only get here when _every_ slot is either used or unprovisioned.
   // (The third possible state is "on the freelist". If we have a non-empty
   // freelist, we should not get here.)
-  PA_DCHECK(num_slots + slot_span->num_allocated_slots == get_slots_per_span());
+  PA_DCHECK(num_unprovisioned_slots + slot_span->num_allocated_slots ==
+            get_slots_per_span());
   // Similarly, make explicitly sure that the freelist is empty.
   PA_DCHECK(!slot_span->get_freelist_head());
   PA_DCHECK(!slot_span->is_full());
@@ -916,7 +917,25 @@ PartitionBucket::ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
   uintptr_t next_slot = return_slot + slot_size;
   uintptr_t commit_start = base::bits::AlignUp(return_slot, SystemPageSize());
   PA_DCHECK(next_slot > commit_start);
-  uintptr_t commit_end = base::bits::AlignUp(next_slot, SystemPageSize());
+  // Find the end of the slots we want to provision: at least the returned
+  // slot, or as many whole slots as fit in
+  // `PartitionRoot::GetMinProvisioningSize()` (capped by
+  // `num_unprovisioned_slots`).
+  uintptr_t provision_end = next_slot;
+  if (const size_t min_provisioning_size =
+          PartitionRoot::GetMinProvisioningSize();
+      min_provisioning_size > SystemPageSize()) {
+    size_t slots_wanted = std::clamp<size_t>(
+        GetSlotNumber(std::min(min_provisioning_size, get_bytes_per_span())),
+        1u, num_unprovisioned_slots);
+    provision_end = return_slot + slots_wanted * slot_size;
+  }
+  // Align `provision_end` (a slot boundary) up to `SystemPageSize()`. Every
+  // slot that fits in `[return_slot, commit_end)` will be provisioned below.
+  // Aligning from a slot boundary rather than `return_slot +
+  // min_provisioning_size` ensures that the last committed page always
+  // contains part of a provisioned slot.
+  uintptr_t commit_end = base::bits::AlignUp(provision_end, SystemPageSize());
   // If the slot was partially committed, |return_slot| and |next_slot| fall
   // in different pages. If the slot was fully uncommitted, |return_slot| points
   // to the page start and |next_slot| doesn't, thus only the latter gets
@@ -947,6 +966,7 @@ PartitionBucket::ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
   // Round down, because a slot that doesn't fully fit in the new page(s) isn't
   // provisioned.
   size_t slots_to_provision = (commit_end - return_slot) / slot_size;
+  PA_DCHECK(slots_to_provision <= num_unprovisioned_slots);
   slot_span->num_unprovisioned_slots -= slots_to_provision;
   // Note: the bitfields are promoted to int for arithmetic operations, so the
   // static_casts are necessary to avoid -Werror=sign-compare.

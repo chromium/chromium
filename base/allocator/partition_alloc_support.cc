@@ -1396,6 +1396,12 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
     }
   }
 
+  if (base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocMinProvisioningSize)) {
+    partition_alloc::PartitionRoot::SetMinProvisioningSize(
+        features::kPartitionAllocMinProvisioningSizeInBytes.Get());
+  }
+
   // `ReconfigureAfterTaskRunnerInit()` is called on the Main thread, however
   // if there is no concern about UaF during the browser process start up
   // (because no web content is being loaded) it is safe to delay the feature to

@@ -99,6 +99,12 @@ BASE_FEATURE_PARAM(int,
                    "ring-size",
                    partition_alloc::internal::SlotSpanRingMaxSize::kMedium);
 
+BASE_FEATURE(kPartitionAllocMinProvisioningSize, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(size_t,
+                   kPartitionAllocMinProvisioningSizeInBytes,
+                   &kPartitionAllocMinProvisioningSize,
+                   16 * 1024);
+
 BASE_FEATURE(kPartitionAllocWithAdvancedChecks, FEATURE_ENABLED_BY_DEFAULT);
 constexpr FeatureParam<PartitionAllocWithAdvancedChecksEnabledProcesses>::Option
     kPartitionAllocWithAdvancedChecksEnabledProcessesOptions[] = {

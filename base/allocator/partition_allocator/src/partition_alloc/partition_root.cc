@@ -2063,6 +2063,11 @@ void PartitionRoot::SetSortActiveSlotSpansEnabled(bool new_value) {
   sort_active_slot_spans_ = new_value;
 }
 
+// static
+void PartitionRoot::SetMinProvisioningSize(size_t new_value) {
+  min_provisioning_size_.store(new_value, std::memory_order_relaxed);
+}
+
 void PartitionRoot::ReconfigureSchedulerLoopQuarantineForCurrentThread(
     const internal::SchedulerLoopQuarantineConfig& config) {
   internal::ThreadCache* thread_cache = this->EnsureThreadCache();

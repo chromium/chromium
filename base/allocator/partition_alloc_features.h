@@ -89,6 +89,15 @@ BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
     int,
     kPartitionAllocLargeEmptySlotSpanRingSize);
 
+// When enabled, slot spans are provisioned (and their memory committed) in
+// chunks of at least `kPartitionAllocMinProvisioningSizeInBytes`, instead
+// of one system page at a time. This reduces the number of VirtualAlloc()
+// calls on the allocation slow path.
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocMinProvisioningSize);
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    size_t,
+    kPartitionAllocMinProvisioningSizeInBytes);
+
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocWithAdvancedChecks);
 BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
     PartitionAllocWithAdvancedChecksEnabledProcesses,
