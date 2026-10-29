@@ -9,12 +9,13 @@
 #include <iterator>
 #include <map>
 #include <memory>
+#include <ranges>
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -2305,8 +2306,7 @@ void DestinationCompletedInvoker(
     observer->DestinationCompleted(total_bytes, std::nullopt);
 }
 
-// Given a set of observations (via the range |begin|..|end|), constructs a list
-// of EventLists such that:
+// Given a set of observations, constructs a list of EventLists such that:
 //
 // * There are exactly |event_count| ObservationSets in each EventList.
 //
@@ -2320,15 +2320,16 @@ void DestinationCompletedInvoker(
 // * The list of EventLists together describe all the possible ways in which the
 //   list of observations can be distributed into |event_count| events.
 std::vector<EventList> DistributeObservationsIntoEvents(
-    const std::vector<CurriedObservation>::iterator begin,
-    const std::vector<CurriedObservation>::iterator end,
+    base::span<const CurriedObservation> observations,
     int event_count) {
   std::vector<EventList> all_event_lists;
-  for (auto partition = begin;; ++partition) {
-    ObservationList UNSAFE_TODO(first_group_of_observations(begin, partition));
+  for (size_t partition = 0; partition <= observations.size(); ++partition) {
+    ObservationList first_group_of_observations(std::from_range,
+                                                observations.first(partition));
     if (event_count > 1) {
       std::vector<EventList> list_of_subsequent_events =
-          DistributeObservationsIntoEvents(partition, end, event_count - 1);
+          DistributeObservationsIntoEvents(observations.subspan(partition),
+                                           event_count - 1);
       for (const auto& subsequent_events : list_of_subsequent_events) {
         EventList event_list;
         event_list = subsequent_events;
@@ -2340,8 +2341,6 @@ std::vector<EventList> DistributeObservationsIntoEvents(
       event_list.push_front(first_group_of_observations);
       all_event_lists.push_back(event_list);
     }
-    if (partition == end)
-      break;
   }
   return all_event_lists;
 }
@@ -2362,8 +2361,7 @@ std::vector<EventList> GenerateSuccessfulEventLists() {
   all_observations.push_back(base::BindRepeating(&DestinationUpdateInvoker, 100, 100));
   all_observations.push_back(base::BindRepeating(&DestinationUpdateInvoker, 200, 100));
   all_observations.push_back(base::BindRepeating(&DestinationCompletedInvoker, 200));
-  return DistributeObservationsIntoEvents(all_observations.begin(),
-                                          all_observations.end(), kEventCount);
+  return DistributeObservationsIntoEvents(all_observations, kEventCount);
 }
 
 std::vector<EventList> GenerateFailingEventLists() {
@@ -2371,8 +2369,7 @@ std::vector<EventList> GenerateFailingEventLists() {
   all_observations.push_back(base::BindRepeating(&DestinationUpdateInvoker, 100, 100));
   all_observations.push_back(base::BindRepeating(
       &DestinationErrorInvoker, DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED, 100));
-  return DistributeObservationsIntoEvents(all_observations.begin(),
-                                          all_observations.end(), kEventCount);
+  return DistributeObservationsIntoEvents(all_observations, kEventCount);
 }
 
 class DownloadItemDestinationUpdateRaceTest
