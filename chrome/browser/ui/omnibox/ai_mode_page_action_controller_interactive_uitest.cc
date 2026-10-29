@@ -31,7 +31,6 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "content/public/test/browser_test.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -96,7 +95,7 @@ class AiModePageActionControllerInteractiveUiTest
     features_.InitWithFeaturesAndParameters(
         /*enabled_features*/ {{omnibox::internal::kWebUIOmniboxPopup, {}},
                               {omnibox::internal::kWebUIOmniboxAimPopup, {}}},
-        /*disabled_features*/ {kHideAimEntrypointForUrlSuggestions});
+        /*disabled_features*/ {});
   }
 
   InteractiveTestApi::MultiStep OpenTabWithPageUrlAndFocusOmnibox(
@@ -217,21 +216,8 @@ IN_PROC_BROWSER_TEST_F(AiModePageActionControllerInteractiveUiTest,
                   CheckChipVisible(/*visible=*/false));
 }
 
-class AiModePageActionControllerHideEntryPointForUrlInteractiveUiTest
-    : public AiModePageActionControllerInteractiveUiTest {
- protected:
-  void InitializeFeatures() override {
-    features_.InitWithFeaturesAndParameters(
-        /*enabled_features*/ {{kHideAimEntrypointForUrlSuggestions, {}},
-                              {omnibox::internal::kWebUIOmniboxPopup, {}},
-                              {omnibox::internal::kWebUIOmniboxAimPopup, {}}},
-        /*disabled_features*/ {});
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(
-    AiModePageActionControllerHideEntryPointForUrlInteractiveUiTest,
-    HidesOnUrlSuggestion) {
+IN_PROC_BROWSER_TEST_F(AiModePageActionControllerInteractiveUiTest,
+                       HidesOnUrlSuggestion) {
   RunTestSequence(OpenTabWithPageUrlAndFocusOmnibox(/*is_ntp=*/true),
                   CheckChipVisible(true),
                   // Type a URL.
@@ -242,9 +228,8 @@ IN_PROC_BROWSER_TEST_F(
                   CheckChipVisible(false));
 }
 
-IN_PROC_BROWSER_TEST_F(
-    AiModePageActionControllerHideEntryPointForUrlInteractiveUiTest,
-    HidesOnSelectedUrlSuggestion) {
+IN_PROC_BROWSER_TEST_F(AiModePageActionControllerInteractiveUiTest,
+                       HidesOnSelectedUrlSuggestion) {
   bookmarks::BookmarkModel* model =
       BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   bookmarks::test::WaitForBookmarkModelToLoad(model);

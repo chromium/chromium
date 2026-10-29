@@ -9747,11 +9747,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAiModeEntryPointAlwaysNavigatesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kAiModeEntryPointAlwaysNavigates)},
 
-    {"omnibox-ai-mode-space-does-not-activate",
-     flag_descriptions::kOmniboxAiModeSpaceDoesNotActivateName,
-     flag_descriptions::kOmniboxAiModeSpaceDoesNotActivateDescription,
-     kOsDesktop, FEATURE_VALUE_TYPE(omnibox::kAiModeSpaceDoesNotActivate)},
-
     {"omnibox-dynamic-aim-submit",
      flag_descriptions::kOmniboxDynamicAimSubmitName,
      flag_descriptions::kOmniboxDynamicAimSubmitDescription, kOsDesktop,
@@ -9773,11 +9768,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebUIOmniboxAimPopupDisableAnimationDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kWebUIOmniboxAimPopupDisableAnimation)},
-
-    {"webui-omnibox-hide-aim-url",
-     flag_descriptions::kWebUIOmniboxHideAimUrlName,
-     flag_descriptions::kWebUIOmniboxHideAimUrlDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kHideAimEntrypointForUrlSuggestions)},
 
     {"webui-omnibox-popup-selection-control",
      flag_descriptions::kWebUIOmniboxPopupSelectionControlName,

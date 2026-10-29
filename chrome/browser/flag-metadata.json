@@ -7533,11 +7533,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "omnibox-ai-mode-space-does-not-activate",
-    "owners": [ "pauladedeji@google.com", "chrome-desktop-search@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "omnibox-aim-image-downscaling",
     "owners": ["jkoblinsky@google.com", "chrome-mobile-search@google.com"],
     "expiry_milestone": 160
@@ -10465,11 +10460,6 @@
   {
     "name": "webui-omnibox-full-popup",
     "owners": [ "avivkiss@google.com", "khalidpeer@chromium.org", "mahmadi@chromium.org", "kylixrd@chromium.org", "chrome-desktop-search@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
-    "name": "webui-omnibox-hide-aim-url",
-    "owners": [ "mfacey@google.com", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 160
   },
   {

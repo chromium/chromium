@@ -64,12 +64,6 @@ inline constexpr char kOmniboxDynamicAimSubmitName[] = "Dynamic Aim Submit";
 inline constexpr char kOmniboxDynamicAimSubmitDescription[] =
     "Enables dynamic aim button submission variants.";
 
-inline constexpr char kOmniboxAiModeSpaceDoesNotActivateName[] =
-    "Omnibox AI Mode Space Does Not Activate";
-inline constexpr char kOmniboxAiModeSpaceDoesNotActivateDescription[] =
-    "If enabled, pressing space when the AI mode button has focus will "
-    "insert a space into the omnibox instead of activating the button.";
-
 inline constexpr char kOmniboxAimServerEligibilityName[] =
     "AIM Server Eligibility";
 inline constexpr char kOmniboxAimServerEligibilityDescription[] =
@@ -4013,11 +4007,6 @@ inline constexpr char kWebUIOmniboxAimPopupDisableAnimationName[] =
 inline constexpr char kWebUIOmniboxAimPopupDisableAnimationDescription[] =
     "If enabled, there will no longer be animation in the WebUI Omnibox AIM "
     "popup.";
-
-inline constexpr char kWebUIOmniboxHideAimUrlName[] =
-    "WebUI Omnibox Hide AIM URL";
-inline constexpr char kWebUIOmniboxHideAimUrlDescription[] =
-    "If enabled, hides the AIM button when the default suggestion is a URL.";
 
 inline constexpr char kWebUIOmniboxFullPopupName[] = "WebUI Omnibox Full Popup";
 inline constexpr char kWebUIOmniboxFullPopupDescription[] =

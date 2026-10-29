@@ -967,18 +967,8 @@ WebUIReadOnlyOmnibox::OnKey(
 
     case ui::DomKey::FromCharacter(' '):
       if (aim_page_action_icon_has_fake_focus_) {
-        if (base::FeatureList::IsEnabled(
-                omnibox::kAiModeSpaceDoesNotActivate)) {
-          ApplyFocusRingToAimButton(false);
-          // The JS side will apply space.
-        } else {
-          controller()->edit_model()->OpenSelection(
-              OmniboxPopupSelection(
-                  OmniboxPopupSelection::kNoMatch,
-                  OmniboxPopupSelection::LineState::kFocusedButtonAim),
-              base::TimeTicks::Now(), WindowOpenDisposition::kCurrentTab,
-              /*via_keyboard=*/true);
-        }
+        ApplyFocusRingToAimButton(false);
+        // The JS side will apply space.
         return base::ok(std::monostate());
       }
 

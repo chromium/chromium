@@ -123,10 +123,6 @@ const base::FeatureParam<int>
 const base::FeatureParam<int>
     kOmniboxEverywhereFreMaxShortcutReminderImpressionsParam{
         &kOmniboxEverywhereFre, "MaxShortcutReminderImpressions", 3};
-// If enabled, pressing space when the AI mode button has fake focus will
-// insert a space into the omnibox and restore focus to the omnibox instead of
-// interacting with the button.
-BASE_FEATURE(kAiModeSpaceDoesNotActivate, ENABLED);
 // If enabled, disables caret color animation for the WebUI Omnibox AIM popup.
 BASE_FEATURE(kWebUIOmniboxDisableCaretColorAnimation, ENABLED);
 // If enabled, there will no longer be animation when opening the WebUI Omnibox

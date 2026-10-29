@@ -42,7 +42,6 @@
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/vector_icons.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/ai_mode_button_service.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/tabs/public/tab_interface.h"
@@ -215,26 +214,21 @@ bool AiModePageActionController::ShouldShowPageAction(
     return false;
   }
 
-  // If the feature is enabled to hide the AIM entrypoint for URL suggestions,
-  // don't show the AIM entrypoint if the current selected match or typed input
+  // Don't show the AIM entrypoint if the current selected match or typed input
   // is a URL suggestion.
-  if (base::FeatureList::IsEnabled(
-          omnibox::kHideAimEntrypointForUrlSuggestions) ||
-      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxDynamicAiModeButton)) {
-    const AutocompleteResult& result =
-        omnibox_controller->autocomplete_controller()->result();
-    const OmniboxPopupSelection selection = edit_model->GetPopupSelection();
-    if (selection.line != OmniboxPopupSelection::kNoMatch &&
-        selection.line < result.size()) {
-      if (!AutocompleteMatch::IsSearchType(
-              result.match_at(selection.line).type)) {
-        return false;
-      }
-    } else if (edit_model->user_input_in_progress() &&
-               !AutocompleteMatch::IsSearchType(
-                   edit_model->CurrentMatch().type)) {
+  const AutocompleteResult& result =
+      omnibox_controller->autocomplete_controller()->result();
+  const OmniboxPopupSelection selection = edit_model->GetPopupSelection();
+  if (selection.line != OmniboxPopupSelection::kNoMatch &&
+      selection.line < result.size()) {
+    if (!AutocompleteMatch::IsSearchType(
+            result.match_at(selection.line).type)) {
       return false;
     }
+  } else if (edit_model->user_input_in_progress() &&
+             !AutocompleteMatch::IsSearchType(
+                 edit_model->CurrentMatch().type)) {
+    return false;
   }
 
   // Otherwise, we should show the AIM view if the focus is within any view in
