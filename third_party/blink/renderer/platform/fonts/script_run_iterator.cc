@@ -97,8 +97,10 @@ void FixScriptsByEastAsianWidth(UChar32 ch,
   if (eaw == U_EA_WIDE || eaw == U_EA_FULLWIDTH || eaw == U_EA_HALFWIDTH) {
     // Replace the list with the list of Han ideographic scripts, as seen for
     // U+300C in https://www.unicode.org/Public/UNIDATA/ScriptExtensions.txt.
-    DEFINE_STATIC_LOCAL(ScriptRunIterator::UScriptCodeList, han_scripts,
-                        (GetHanScriptExtensions()));
+    // Text can be segmented on multiple threads (e.g. OffscreenCanvas in
+    // workers). The list is immutable once initialized.
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(const ScriptRunIterator::UScriptCodeList,
+                                    han_scripts, (GetHanScriptExtensions()));
     if (han_scripts.empty()) [[unlikely]] {
       // When |GetHanScriptExtensions| returns an empty list, replacing with it
       // will crash later, which makes the analysis complicated.
