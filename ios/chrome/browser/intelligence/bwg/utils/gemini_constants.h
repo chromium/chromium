@@ -302,6 +302,11 @@ extern const char kDataGovernanceManagedLinkURL[];
 extern const char kActivityLinkURL[];
 extern const char kChoicesLinkURL[];
 extern const char kConnectedServicesLinkURL[];
+extern const char kUploadsLinkURL[];
+extern const char kScreensLinkURL[];
+extern const char kPauseActivityLinkURL[];
+extern const char kImproveSettingLinkURL[];
+extern const char kTrainingSettingLinkURL[];
 
 // Consent row links for Gemini Live First Run.
 extern const char kLivePrivacyNoticeLinkURL[];
@@ -320,6 +325,11 @@ extern NSString* const kGeminiDataGovernanceManagedLinkAction;
 extern NSString* const kGeminiActivityLinkAction;
 extern NSString* const kGeminiChoicesLinkAction;
 extern NSString* const kGeminiConnectedServicesLinkAction;
+extern NSString* const kGeminiUploadsLinkAction;
+extern NSString* const kGeminiScreensLinkAction;
+extern NSString* const kGeminiPauseActivityLinkAction;
+extern NSString* const kGeminiImproveSettingLinkAction;
+extern NSString* const kGeminiTrainingSettingLinkAction;
 
 // Action identifiers for links in the Gemini Live First Run consent rows.
 extern NSString* const kGeminiLivePrivacyNoticeLinkAction;
