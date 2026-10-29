@@ -72,6 +72,11 @@ reviewer.
   <variant name="Succeeded" summary="a successful InitiatePurchaseAction call"/>
 </variants>
 
+<variants name="QrCodeDetectionOutcome">
+  <variant name="QrFound" summary="decoded at least one QR code"/>
+  <variant name="QrNotFound" summary="decoded no QR code"/>
+</variants>
+
 <histogram
     name="FacilitatedPayments.A2A.InvokePaymentApp.{Result}.LatencyAfterDetectingPaymentLink"
     units="ms" expires_after="2027-04-30">
@@ -669,6 +674,38 @@ reviewer.
     response was received.
   </summary>
   <token key="Result" variants="PurchaseActionResult"/>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.QrCode.HeuristicSignals.{DetectionOutcome}"
+    enum="FacilitatedPayments.QrCode.HeuristicSignals"
+    expires_after="2027-04-30">
+  <owner>qihuizhao@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the combination of renderer heuristic signals that started a payment
+    QR code decoding pass that {DetectionOutcome}. Each signal is a bit of the
+    sample. Only combinations that pass the detection rule (no facilitated
+    payment link, a square image, and a URL or text keyword) start a pass.
+    [Trigger] The browser finishes decoding the images of a page that the
+    renderer reported as a likely payment QR code page. [Frequency] Logged once
+    per decoding pass, at most 3 times per page.
+  </summary>
+  <token key="DetectionOutcome" variants="QrCodeDetectionOutcome"/>
+</histogram>
+
+<histogram name="FacilitatedPayments.QrCode.SuccessfulAttemptIndex"
+    units="attempts" expires_after="2027-04-30">
+  <owner>qihuizhao@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the 1-based index of the decoding pass that first decoded a QR code
+    on a page, out of at most 3 passes per page. [Trigger] A payment QR code
+    decoding pass decodes at least one QR code. [Frequency] Logged at most once
+    per page, since detection stops for the page once a QR code is found.
+  </summary>
 </histogram>
 
 <histogram

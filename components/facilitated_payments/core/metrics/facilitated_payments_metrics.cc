@@ -4,8 +4,11 @@
 
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
@@ -14,6 +17,16 @@
 
 namespace payments::facilitated {
 namespace {
+
+// Variant suffixes of `FacilitatedPayments.QrCode.HeuristicSignals`.
+constexpr std::string_view kQrFoundSuffix = "QrFound";
+constexpr std::string_view kQrNotFoundSuffix = "QrNotFound";
+
+// The largest `FacilitatedPayments.QrCode.SuccessfulAttemptIndex`, which is the
+// number of QR code checks per page.
+// LINT.IfChange(MaxQrCodeAttemptIndex)
+constexpr int kMaxQrCodeAttemptIndex = 3;
+// LINT.ThenChange(/components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.cc:MaxQrCodeChecksPerPage)
 
 static constexpr std::string_view kPixAccountLinkingHistogramPrefix =
     "FacilitatedPayments.Pix.AccountLinking.";
@@ -129,6 +142,24 @@ void LogPixCodeCopiedInIframe() {
 void LogPixIframeUrlType(PixIframeUrlType url_type) {
   base::UmaHistogramEnumeration("FacilitatedPayments.Pix.Iframe.UrlType",
                                 url_type);
+}
+
+void LogQrCodeHeuristicSignals(QrCodeHeuristicSignals signals,
+                               bool qr_code_found) {
+  // One bucket for every combination of signals, i.e. every bitmask up to the
+  // one with all signals set.
+  static constexpr int kExclusiveMax =
+      1 << (static_cast<int>(QrCodeHeuristicSignal::kMaxValue) + 1);
+  base::UmaHistogramExactLinear(
+      base::StrCat({"FacilitatedPayments.QrCode.HeuristicSignals.",
+                    qr_code_found ? kQrFoundSuffix : kQrNotFoundSuffix}),
+      base::checked_cast<int>(signals.ToEnumBitmask()), kExclusiveMax);
+}
+
+void LogQrCodeSuccessfulAttemptIndex(int attempt_index) {
+  base::UmaHistogramExactLinear(
+      "FacilitatedPayments.QrCode.SuccessfulAttemptIndex", attempt_index,
+      kMaxQrCodeAttemptIndex + 1);
 }
 
 void LogPixIframeIsSameOriginAsMainFrame(bool is_same_origin) {

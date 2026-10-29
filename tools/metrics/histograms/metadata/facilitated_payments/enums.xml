@@ -222,6 +222,31 @@ reviewer.
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:PixFlowExitedReason) -->
 
+<!-- LINT.IfChange(FacilitatedPayments.QrCode.HeuristicSignals) -->
+
+<enum name="FacilitatedPayments.QrCode.HeuristicSignals">
+  <int value="0" label="No signals"/>
+  <int value="1" label="facilitated payment link"/>
+  <int value="2" label="square image"/>
+  <int value="3" label="facilitated payment link, square image"/>
+  <int value="4" label="URL keyword"/>
+  <int value="5" label="facilitated payment link, URL keyword"/>
+  <int value="6" label="square image, URL keyword"/>
+  <int value="7" label="facilitated payment link, square image, URL keyword"/>
+  <int value="8" label="text keyword"/>
+  <int value="9" label="facilitated payment link, text keyword"/>
+  <int value="10" label="square image, text keyword"/>
+  <int value="11" label="facilitated payment link, square image, text keyword"/>
+  <int value="12" label="URL keyword, text keyword"/>
+  <int value="13" label="facilitated payment link, URL keyword, text keyword"/>
+  <int value="14" label="square image, URL keyword, text keyword"/>
+  <int value="15"
+      label="facilitated payment link, square image, URL keyword, text
+             keyword"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:QrCodeHeuristicSignal) -->
+
 <!-- LINT.IfChange(FacilitatedPayments.UiScreen) -->
 
 <enum name="FacilitatedPayments.UiScreen">

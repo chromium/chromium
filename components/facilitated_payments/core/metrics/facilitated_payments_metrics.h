@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/containers/enum_set.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 #include "components/facilitated_payments/core/validation/payment_link_validator.h"
@@ -282,6 +283,27 @@ enum class PixIframeUrlType {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.Pix.IframeUrlType)
 
+// The renderer's heuristic signals that started a QR code decoding pass. Each
+// value is a bit in the logged sample, so that every combination of signals
+// has its own bucket.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(QrCodeHeuristicSignal)
+enum class QrCodeHeuristicSignal {
+  kFacilitatedPaymentLink = 0,
+  kSquareCandidate = 1,
+  kUrlKeywordMatch = 2,
+  kTextKeywordMatch = 3,
+  kMaxValue = kTextKeywordMatch,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.QrCode.HeuristicSignals)
+
+using QrCodeHeuristicSignals =
+    base::EnumSet<QrCodeHeuristicSignal,
+                  QrCodeHeuristicSignal::kFacilitatedPaymentLink,
+                  QrCodeHeuristicSignal::kMaxValue>;
+
 // Converts `PaymentLinkValidator::Scheme` to a string for logging.
 std::string SchemeToString(PaymentLinkValidator::Scheme scheme);
 
@@ -298,6 +320,15 @@ void LogPixIframeUrlType(PixIframeUrlType url_type);
 // Log if the iframe is same-origin with the main frame when a Pix code is
 // copied in an iframe.
 void LogPixIframeIsSameOriginAsMainFrame(bool is_same_origin);
+
+// Logs the heuristic `signals` that started a QR code decoding pass, split by
+// whether the pass decoded a QR code.
+void LogQrCodeHeuristicSignals(QrCodeHeuristicSignals signals,
+                               bool qr_code_found);
+
+// Logs the 1-based index of the decoding pass that first decoded a QR code on
+// a page.
+void LogQrCodeSuccessfulAttemptIndex(int attempt_index);
 
 // Log when a given payment link in a certain page for an eWallet push payment
 // flow is detected.

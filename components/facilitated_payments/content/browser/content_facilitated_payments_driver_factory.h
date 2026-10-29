@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver.h"
+#include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/facilitated_payments/core/mojom/facilitated_payments_agent.mojom.h"
 #include "components/wallet/content/browser/walletable_pass_barcode_detector.h"
 #include "components/wallet/core/browser/data_models/wallet_barcode.h"
@@ -123,10 +124,14 @@ class ContentFacilitatedPaymentsDriverFactory
   // merchant on the Optimization Guide allowlist.
   bool IsEligibleForQrCodeDetection(const GURL& url) const;
 
-  // Handles the `barcodes` decoded from the images of `document`. Ends the
-  // current evaluation, and stops detection for the rest of the page if a QR
-  // code was found or the page has used all its checks.
+  // Handles the `barcodes` decoded from the images of `document`, by the
+  // decoding pass that the `heuristic_signals` started as the page's
+  // `check_index`-th check. Logs the pass, ends the current evaluation, and
+  // stops detection for the rest of the page if a QR code was found or the page
+  // has used all its checks.
   void OnBarcodesDetected(content::WeakDocumentPtr document,
+                          QrCodeHeuristicSignals heuristic_signals,
+                          int check_index,
                           std::vector<wallet::WalletBarcode> barcodes);
 
   // Owns the drivers, one for each render frame host. Elements are erased in
