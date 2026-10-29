@@ -32,6 +32,9 @@ NSString* const kSectionIdentifier =
 NSString* const kCellReuseIdentifier =
     @"MostVisitedTilesCollectionViewCellIdentifier";
 
+/// Maximum number of items that should be added to the collection view..
+NSUInteger const kMaximumItems = 8;
+
 /// Item identifier for the plus button.
 const int kPlusButtonIdentifier = -1;
 
@@ -192,7 +195,7 @@ const int kPlusButtonIdentifier = -1;
     [indices addObject:@(i)];
   }
   /// Add the "+" button.
-  if (!_items.lastObject.isPinned || count < MaximumMostVisitedTilesCount()) {
+  if (!_items.lastObject.isPinned || count < kMaximumItems) {
     [indices addObject:@(kPlusButtonIdentifier)];
   }
   [snapshot appendItemsWithIdentifiers:indices
@@ -216,12 +219,8 @@ const int kPlusButtonIdentifier = -1;
     plusButtonItem.mostVisitedTilesHandler = _mostVisitedTilesHandler;
     cell.contentConfiguration = plusButtonItem;
   } else {
-    CHECK_LT(identifier.unsignedIntValue, _items.count);
-    MostVisitedItem* item = _items[identifier.unsignedIntValue];
-    if (![item isAIMTile]) {
-      [self loadFaviconIfNeeded:identifier];
-    }
-    cell.contentConfiguration = item;
+    [self loadFaviconIfNeeded:identifier];
+    cell.contentConfiguration = _items[identifier.unsignedIntValue];
   }
   /// Mark the first item in the tiles for layout guide
   /// `kNTPFirstMostVisitedTileGuide`.
@@ -239,12 +238,7 @@ const int kPlusButtonIdentifier = -1;
 
 /// Loads the favicon for item with `identifier`.
 - (void)loadFaviconIfNeeded:(NSNumber*)identifier {
-  NSUInteger index = identifier.unsignedIntegerValue;
-  CHECK_LT(index, _items.count);
-  MostVisitedItem* item = _items[index];
-  if ([item isAIMTile]) {
-    return;
-  }
+  MostVisitedItem* item = _items[identifier.unsignedIntValue];
   if (!item.attributes) {
     __weak MostVisitedTilesCollectionView* weakSelf = self;
     void (^completion)(FaviconAttributes*) = ^(FaviconAttributes* attributes) {

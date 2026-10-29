@@ -341,8 +341,7 @@ class MagicStackRankingModelTest : public PlatformTest {
          URLLoadingBrowserAgent:url_loader_
           accountManagerService:nullptr
               engagementTracker:tracker
-              layoutGuideCenter:nil
-          aimEligibilityService:nullptr];
+              layoutGuideCenter:nil];
 
     _safetyCheckMediator = [[SafetyCheckMagicStackMediator alloc]
         initWithSafetyCheckManager:IOSChromeSafetyCheckManagerFactory::

@@ -29,7 +29,6 @@ namespace ntp_tiles {
 class MostVisitedSites;
 }  // namespace ntp_tiles
 
-class AimEligibilityService;
 @class BrowserActionFactory;
 class ChromeAccountManagerService;
 @protocol ContentSuggestionsCommands;
@@ -91,7 +90,6 @@ class UrlLoadingBrowserAgent;
       accountManagerService:(ChromeAccountManagerService*)accountManagerService
           engagementTracker:(feature_engagement::Tracker*)engagementTracker
           layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
-      aimEligibilityService:(AimEligibilityService*)aimEligibilityService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
