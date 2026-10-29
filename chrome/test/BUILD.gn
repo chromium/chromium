@@ -2977,10 +2977,7 @@ test("unit_tests") {
         "//chrome/browser/ui/android/extensions/windowing/test:native_unit_test_support_java",
       ]
 
-      data += [
-        "data/extensions/",
-        "data/image_writer_private/",
-      ]
+      data += [ "data/extensions/" ]
     }
 
     if (enable_webui_history) {

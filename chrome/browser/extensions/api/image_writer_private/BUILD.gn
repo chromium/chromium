@@ -237,6 +237,8 @@ source_set("browser_tests") {
 
   sources = [ "image_writer_private_apitest.cc" ]
 
+  data = [ "//chrome/test/data/image_writer_private/" ]
+
   deps = [
     ":features",
     ":image_writer_private",
