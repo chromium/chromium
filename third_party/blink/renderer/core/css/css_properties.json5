@@ -3763,7 +3763,6 @@
       default_value: "auto",
       typedom_types: ["Keyword"],
       invalidate: ["layout", "scroll-anchor"],
-      runtime_flag: "ResponsiveIframes",
     },
     {
       name: "grid-auto-columns",

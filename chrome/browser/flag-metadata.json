@@ -8772,11 +8772,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "responsive-iframes",
-    "owners": [ "kojii@chromium.org" ],
-    "expiry_milestone": 154
-  },
-  {
     "name": "restrict-interactions-in-swipe-region-on-fullscreen",
     "owners": ["clhager@google.com"],
     "expiry_milestone": 165

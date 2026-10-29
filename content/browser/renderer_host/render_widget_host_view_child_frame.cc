@@ -36,7 +36,6 @@
 #include "content/common/input/synthetic_gesture_target.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
@@ -188,8 +187,6 @@ void RenderWidgetHostViewChildFrame::SetFrameConnector(
   }
 
   if (frame_connector_ && pending_sizing_info_) {
-    CHECK(base::FeatureList::IsEnabled(blink::features::kResponsiveIframes),
-          base::NotFatalUntil::M152);
     frame_connector_->SendIntrinsicSizingInfoToParent(
         std::move(pending_sizing_info_));
   }
@@ -199,8 +196,7 @@ void RenderWidgetHostViewChildFrame::UpdateIntrinsicSizingInfo(
     blink::mojom::IntrinsicSizingInfoPtr sizing_info) {
   if (frame_connector_) {
     frame_connector_->SendIntrinsicSizingInfoToParent(std::move(sizing_info));
-  } else if (base::FeatureList::IsEnabled(
-                 blink::features::kResponsiveIframes)) {
+  } else {
     pending_sizing_info_ = std::move(sizing_info);
   }
 }

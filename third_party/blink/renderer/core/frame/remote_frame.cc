@@ -777,14 +777,11 @@ void RemoteFrame::ScrollRectToVisible(
 void RemoteFrame::IntrinsicSizingInfoOfChildChanged(
     mojom::blink::IntrinsicSizingInfoPtr info) {
   FrameOwner* owner = Owner();
-  // Only communication from HTMLPluginElement-owned subframes is allowed
-  // at present. This includes <embed> and <object> tags.
-  if (!owner || (!owner->IsPlugin() &&
-                 !RuntimeEnabledFeatures::ResponsiveIframesEnabled())) {
+  if (!owner) {
     return;
   }
 
-  if (info->is_cleared && RuntimeEnabledFeatures::ResponsiveIframesEnabled()) {
+  if (info->is_cleared) {
     View()->ClearNaturalDimensions();
     owner->NaturalSizingInfoChanged();
     return;

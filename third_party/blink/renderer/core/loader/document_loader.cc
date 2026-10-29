@@ -3076,7 +3076,7 @@ void DocumentLoader::CommitNavigation() {
   InitializeWindow(owner_document);
 
   // If the navigation is cross-origin, clear the natural size.
-  if (RuntimeEnabledFeatures::ResponsiveIframesEnabled() && frame_->Owner()) {
+  if (frame_->Owner()) {
     if (const OldDocumentInfoForCommit* info =
             ScopedOldDocumentInfoForCommitCapturer::CurrentInfo();
         info && info->old_document_origin) {

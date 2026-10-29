@@ -5640,10 +5640,6 @@
       status: "stable",
     },
     {
-      name: "ResponsiveIframes",
-      status: "stable",
-    },
-    {
       // Kill switch for https://crbug.com/570579609.
       name: "ResponsiveIframesShrink",
       status: "stable",

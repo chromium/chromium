@@ -62,7 +62,6 @@ void LayoutIFrame::UpdateAfterLayout() {
   if (!style.IsResponsivelySized()) {
     return;
   }
-  DCHECK(RuntimeEnabledFeatures::ResponsiveIframesEnabled());
   if (!GetEmbeddedContentView() && GetFrameView()) {
     GetFrameView()->AddPartToUpdate(*this);
   }
@@ -72,7 +71,6 @@ PhysicalNaturalSizingInfo LayoutIFrame::GetNaturalDimensions() const {
   NOT_DESTROYED();
   const ComputedStyle& style = Style();
   if (style.IsResponsivelySized()) {
-    DCHECK(RuntimeEnabledFeatures::ResponsiveIframesEnabled());
     std::optional<NaturalSizingInfo> sizing_info;
     if (const FrameView* frame_view = ChildFrameView()) {
       // Use the natural size received from the child frame if it exists.

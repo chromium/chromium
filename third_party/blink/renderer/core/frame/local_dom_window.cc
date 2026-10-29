@@ -2945,7 +2945,6 @@ void LocalDOMWindow::UpdateEventListenerCountsToDocumentForReuseIfNeeded() {
 }
 
 void LocalDOMWindow::requestResize(ExceptionState& state) {
-  DCHECK(RuntimeEnabledFeatures::ResponsiveIframesEnabled());
   if (document_) {
     document_->RequestResizeResponsiveIframe(&state);
   }

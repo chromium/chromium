@@ -220,7 +220,7 @@
     [RuntimeEnabled=CrashReportingStorageAPI] readonly attribute CrashReportContext? crashReport;
 
     // Responsively-sized iframes
-    [RuntimeEnabled=ResponsiveIframes, RaisesException] void requestResize();
+    [RaisesException] void requestResize();
 };
 
 Window includes GlobalEventHandlers;

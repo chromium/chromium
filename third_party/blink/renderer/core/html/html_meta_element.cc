@@ -691,8 +691,7 @@ void HTMLMetaElement::ProcessContent() {
   if (name_value.empty())
     return;
 
-  if (RuntimeEnabledFeatures::ResponsiveIframesEnabled() &&
-      EqualIgnoringAsciiCase(name_value, keywords::kResponsiveEmbeddedSizing) &&
+  if (EqualIgnoringAsciiCase(name_value, keywords::kResponsiveEmbeddedSizing) &&
       !GetDocument().body() && IsAllowOrigins()) {
     GetDocument().SetResponsiveEmbeddedSizing();
   }
