@@ -1759,10 +1759,11 @@ ListMarkerKind ClassifyOrderedMarker(const TextRunContext& run_context) {
 // that starts with an ordered marker continues
 // `marker_kind`'s numbering in the same column, within
 // `kMaxOrderedListLookaheadLines` lines.
-bool IsOrderedListStartConfirmed(const PageLayoutData& layout,
-                                 size_t marker_run_index,
-                                 const ListMarkerKind& marker_kind,
-                                 float paragraph_spacing_threshold) {
+bool IsOrderedListStartConfirmed(
+    const PageLayoutData& layout,
+    size_t marker_run_index,
+    const ListMarkerKind& marker_kind,
+    const HeuristicPageProperties& page_properties) {
   CHECK(marker_kind.ordered_value.has_value());
   const float marker_x = layout.text_runs[marker_run_index].bounds.x();
 
@@ -1786,8 +1787,14 @@ bool IsOrderedListStartConfirmed(const PageLayoutData& layout,
     }
     // A paragraph gap right after the marker's line suggests a numbered
     // heading followed by body text (e.g. "1. Introduction").
-    if (lines_count == 0 && BreakParagraphByLineSpacing(
-                                prev_run, run, paragraph_spacing_threshold)) {
+    if (lines_count == 0 &&
+        BreakParagraphByLineSpacing(
+            prev_run, run, page_properties.paragraph_spacing_threshold)) {
+      return false;
+    }
+    // A heading-styled line ends the candidate list.
+    if (ClassifyHeading(run_context, page_properties) !=
+        HeadingClassifier::kNone) {
       return false;
     }
     if (++lines_count > kMaxOrderedListLookaheadLines) {
@@ -1799,10 +1806,11 @@ bool IsOrderedListStartConfirmed(const PageLayoutData& layout,
 
 // Classifies whether the run at `run_index` is a standalone list marker run or
 // combines a list marker with item text.
-ListMarkerKind ClassifyListMarker(const PageLayoutData& layout,
-                                  size_t run_index,
-                                  base::span<const ListLevel> list_levels,
-                                  float paragraph_spacing_threshold) {
+ListMarkerKind ClassifyListMarker(
+    const PageLayoutData& layout,
+    size_t run_index,
+    base::span<const ListLevel> list_levels,
+    const HeuristicPageProperties& page_properties) {
   CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
   const TextRunContext run_context = GetTextRunContext(layout, run_index);
   if (!IsLeftToRightRun(*run_context.run)) {
@@ -1851,11 +1859,15 @@ ListMarkerKind ClassifyListMarker(const PageLayoutData& layout,
       return {};
     }
   } else if (value < 1 ||
+             ClassifyHeading(run_context, page_properties) !=
+                 HeadingClassifier::kNone ||
              !IsOrderedListStartConfirmed(layout, run_index, ordered_kind,
-                                          paragraph_spacing_threshold)) {
+                                          page_properties)) {
     // A new list may start at any positive number (e.g. when it resumes on a
     // new page). "0." is excluded because table decimals such as "0.98" are
-    // often split into "0." and "98" runs.
+    // often split into "0." and "98" runs. Heading-styled numbering (e.g. a
+    // bold "1. Introduction") cannot start a list, but may continue one, since
+    // a bold list's last item is heading-styled when body text follows.
     return {};
   }
 
@@ -1976,11 +1988,11 @@ bool BreakAtListBoundary(const PageLayoutData& layout,
                          size_t next_run_index,
                          const ui::AXNodeData* block_node,
                          base::span<const ListLevel> list_levels,
-                         float paragraph_spacing_threshold) {
+                         const HeuristicPageProperties& page_properties) {
   CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
   CHECK(block_node);
-  const ListMarkerKind kind = ClassifyListMarker(
-      layout, next_run_index, list_levels, paragraph_spacing_threshold);
+  const ListMarkerKind kind =
+      ClassifyListMarker(layout, next_run_index, list_levels, page_properties);
   if (kind.form != ListMarkerForm::kNone) {
     return true;
   }
@@ -1992,6 +2004,12 @@ bool BreakAtListBoundary(const PageLayoutData& layout,
   const TextRunContext next_run_context =
       GetTextRunContext(layout, next_run_index);
   if (ClassifyOrderedMarker(next_run_context).form != ListMarkerForm::kNone) {
+    return true;
+  }
+  // A heading-styled line ends an ordered list.
+  if (list_levels.back().last_ordered_value.has_value() &&
+      ClassifyHeading(next_run_context, page_properties) !=
+          HeadingClassifier::kNone) {
     return true;
   }
   return next_run_context.run->bounds.x() <
@@ -2029,7 +2047,7 @@ bool BreakParagraph(uint32_t text_run_index,
     }
 
     if (BreakAtListBoundary(layout, text_run_index + 1, block_node, list_levels,
-                            page_properties.paragraph_spacing_threshold)) {
+                            page_properties)) {
       return true;
     }
   }
@@ -2637,8 +2655,7 @@ PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
     // item's `kListMarker` in `BuildPageTree()`.
     if (!header_footer_ax_role.has_value()) {
       result.list_marker_kind =
-          ClassifyListMarker(layout, text_run_index, levels,
-                             page_properties.paragraph_spacing_threshold);
+          ClassifyListMarker(layout, text_run_index, levels, page_properties);
     }
     if (result.list_marker_kind.form != ListMarkerForm::kNone) {
       result.node = CreateListItemNode(run_context, result.list_marker_kind,

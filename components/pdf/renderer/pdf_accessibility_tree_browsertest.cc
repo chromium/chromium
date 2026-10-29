@@ -6772,6 +6772,113 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListSpacedItems) {
                    {"1. ", "2. ", "3. "});
 }
 
+TEST_F(PdfAccessibilityTreeTest, HeuristicNumberedHeadingsWithBodyNotList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // A body-size, non-bold "1. Minimum...", a body paragraph, then
+  // "2. IsoFLOP..." -> not an ol (pdf_06 case).
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"1. Minimum something",
+       "Body paragraph text following the section heading.",
+       "2. IsoFLOP something"},
+      {
+          gfx::RectF(30.0f, 20.0f, 80.0f, 12.0f),
+          gfx::RectF(30.0f, 50.0f, 150.0f, 12.0f),
+          gfx::RectF(30.0f, 80.0f, 80.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  // None of the children should be an ol list.
+  for (size_t i = 0; i < page->GetChildCount(); ++i) {
+    EXPECT_NE(ax::mojom::Role::kList, page->GetChildAtIndex(i)->GetRole());
+  }
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicBoldOrderedListItems) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // Bold "1. Apple", "2. Banana", "3. Cherry" on consecutive lines -> an ol
+  // with 3 items (the pdf_29 case).
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"1. Apple", "2. Banana", "3. Cherry"},
+      {
+          gfx::RectF(30.0f, 20.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 33.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 46.0f, 60.0f, 12.0f),
+      },
+      {}, {CreateBoldStyle(), CreateBoldStyle(), CreateBoldStyle()});
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckOrderedList(page->GetChildAtIndex(0u), {"Apple", "Banana", "Cherry"},
+                   {"1. ", "2. ", "3. "});
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicBoldOrderedListFollowedByBodyText) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // The bold "2. Orange" is heading-styled because normal text follows, but it
+  // continues the list rather than becoming a heading.
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"1. Apple", "2. Orange", "Kale"},
+      {
+          gfx::RectF(30.0f, 20.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 33.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 63.0f, 60.0f, 12.0f),
+      },
+      {}, {CreateBoldStyle(), CreateBoldStyle(), CreateNormalStyle()});
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  CheckOrderedList(page->GetChildAtIndex(0u), {"Apple", "Orange"},
+                   {"1. ", "2. "});
+  CheckParagraph(page->GetChildAtIndex(1u), "Kale");
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicHeadingEndsOrderedList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // The bold "Summary" has tight line spacing with item 2 and is aligned with
+  // the markers. Rather than being absorbed into item 2 as wrapped text, it
+  // ends the list and becomes a heading.
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"1. Apple", "2. Banana", "Summary", "Body text."},
+      {
+          gfx::RectF(30.0f, 20.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 33.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 46.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 59.0f, 100.0f, 12.0f),
+      },
+      {},
+      {CreateNormalStyle(), CreateNormalStyle(), CreateBoldStyle(),
+       CreateNormalStyle()});
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(3u, page->GetChildCount());
+
+  CheckOrderedList(page->GetChildAtIndex(0u), {"Apple", "Banana"},
+                   {"1. ", "2. "});
+
+  const ui::AXNode* heading = page->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, heading);
+  EXPECT_EQ(ax::mojom::Role::kHeading, heading->GetRole());
+  ASSERT_EQ(1u, heading->GetChildCount());
+  EXPECT_EQ("Summary", heading->GetChildAtIndex(0u)->GetStringAttribute(
+                           ax::mojom::StringAttribute::kName));
+
+  CheckParagraph(page->GetChildAtIndex(2u), "Body text.");
+}
+
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListOutOfSequenceEndsItem) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -6796,6 +6903,63 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListOutOfSequenceEndsItem) {
 
   CheckOrderedList(page->GetChildAtIndex(0u), {"A", "B"}, {"1. ", "2. "});
   CheckParagraph(page->GetChildAtIndex(1u), "4.C");
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicNumberedHeadingNotList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // A bold "1. Introduction" followed by normal body text is a heading,
+  // not an ol.
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"1. Introduction", "Body text."},
+                                {gfx::RectF(30.0f, 40.0f, 80.0f, 12.0f),
+                                 gfx::RectF(30.0f, 60.0f, 100.0f, 12.0f)},
+                                {}, {CreateBoldStyle(), CreateNormalStyle()});
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  const ui::AXNode* heading = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, heading);
+  EXPECT_EQ(ax::mojom::Role::kHeading, heading->GetRole());
+  ASSERT_EQ(1u, heading->GetChildCount());
+  EXPECT_EQ("1. Introduction", heading->GetChildAtIndex(0u)->GetStringAttribute(
+                                   ax::mojom::StringAttribute::kName));
+
+  CheckParagraph(page->GetChildAtIndex(1u), "Body text.");
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicNumberedHeadingsWithBodyBetween) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // Bold "1. Introduction" and "2. Methods", each followed by tightly spaced
+  // body text, are not confirmed as an ol. The first is a heading.
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"1. Introduction", "Body text one.", "2. Methods", "Body text two."},
+      {
+          gfx::RectF(30.0f, 20.0f, 80.0f, 12.0f),
+          gfx::RectF(30.0f, 33.0f, 100.0f, 12.0f),
+          gfx::RectF(30.0f, 46.0f, 80.0f, 12.0f),
+          gfx::RectF(30.0f, 59.0f, 100.0f, 12.0f),
+      },
+      {},
+      {CreateBoldStyle(), CreateNormalStyle(), CreateBoldStyle(),
+       CreateNormalStyle()});
+  ASSERT_NE(nullptr, page);
+  const ui::AXNode* heading = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, heading);
+  EXPECT_EQ(ax::mojom::Role::kHeading, heading->GetRole());
+  ASSERT_EQ(1u, heading->GetChildCount());
+  EXPECT_EQ("1. Introduction", heading->GetChildAtIndex(0u)->GetStringAttribute(
+                                   ax::mojom::StringAttribute::kName));
+  for (size_t i = 0; i < page->GetChildCount(); ++i) {
+    EXPECT_NE(ax::mojom::Role::kList, page->GetChildAtIndex(i)->GetRole());
+  }
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicDecimalsAndYearsNotList) {
