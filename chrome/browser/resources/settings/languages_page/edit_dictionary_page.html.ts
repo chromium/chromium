@@ -30,7 +30,8 @@ export function getHtml(this: SettingsEditDictionaryPageElement) {
     </div>
     <div class="list-frame">
       ${this.hasWords_ ? html`
-        <div id="list" role="listbox" focusgroup="listbox block">
+        <settings-focus-list-container id="list"
+            focus-selector="cr-icon-button">
           ${this.words_.map((item, index) => html`
             <div class="list-item">
               <div id="word${index}" class="word text-elide">${item}</div>
@@ -42,7 +43,7 @@ export function getHtml(this: SettingsEditDictionaryPageElement) {
               </cr-icon-button>
             </div>
           `)}
-        </div>
+        </settings-focus-list-container>
       ` : ''}
       <div id="noWordsLabel" class="list-item" ?hidden="${this.hasWords_}">
         $i18n{noCustomDictionaryWordsFound}

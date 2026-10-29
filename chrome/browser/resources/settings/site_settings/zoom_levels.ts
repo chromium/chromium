@@ -9,13 +9,13 @@
  */
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '../focus_list_container.js';
 import '../settings_page/settings_subpage.js';
 import '../site_favicon.js';
 
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
 
@@ -65,30 +65,6 @@ export class ZoomLevelsElement extends ZoomLevelsElementBase {
         'onZoomLevelsChanged',
         (sites: ZoomLevelEntry[]) => this.onZoomLevelsChanged_(sites));
     this.browserProxy.fetchZoomLevels();
-  }
-
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-
-    // Restore focus to the last element if the previous last element was
-    // deleted while it was focused.
-    if (changedPrivateProperties.has('sites_')) {
-      const previousSites =
-          changedPrivateProperties.get('sites_') as ZoomLevelEntry[] |
-          undefined;
-      if (previousSites && this.sites_.length < previousSites.length) {
-        const focused =
-            this.shadowRoot.querySelector('.list-item:focus-within');
-        if (!focused) {
-          const toFocus = this.shadowRoot.querySelector<HTMLElement>(
-              '.list-item:last-of-type cr-icon-button');
-          toFocus?.focus();
-        }
-      }
-    }
   }
 
   /**

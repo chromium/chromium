@@ -136,13 +136,13 @@ export function getHtml(this: SettingsSearchEnginesPageElement) {
         ?hidden="${this.matchingExtensions_.length > 0}">
       $i18n{searchNoResults}
     </div>
-    <div id="extensions" class="extension-engines list-frame"
-        focusgroup="listbox block">
+    <settings-focus-list-container id="extensions"
+        class="extension-engines list-frame">
       ${this.matchingExtensions_.map(item => html`
         <settings-omnibox-extension-entry .engine="${item}">
         </settings-omnibox-extension-entry>
       `)}
-    </div>
+    </settings-focus-list-container>
   ` : ''}
 </settings-subpage>
 <!--_html_template_end_-->`;

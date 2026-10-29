@@ -82,6 +82,7 @@ export {DefaultBrowserBrowserProxyImpl} from './default_browser_page/default_bro
 export type {DefaultBrowserBrowserProxy, DefaultBrowserInfo} from './default_browser_page/default_browser_browser_proxy.js';
 export {SettingsDefaultBrowserPageElement} from './default_browser_page/default_browser_page.js';
 // </if>
+export {SettingsFocusListContainerElement} from './focus_list_container.js';
 export {SettingsGeicSubpageElement} from './geic_page/geic_subpage.js';
 export {GlicBrowserProxyImpl} from './glic_page/glic_browser_proxy.js';
 export type {GlicBrowserProxy, LoginPermission} from './glic_page/glic_browser_proxy.js';

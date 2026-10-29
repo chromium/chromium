@@ -32,6 +32,10 @@ export class SettingsOmniboxExtensionEntryElement extends CrLitElement {
     return 'settings-omnibox-extension-entry';
   }
 
+  static override get shadowRootOptions() {
+    return {...super.shadowRootOptions, delegatesFocus: true};
+  }
+
   static override get styles() {
     return getCss();
   }

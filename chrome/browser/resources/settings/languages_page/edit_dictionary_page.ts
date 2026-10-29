@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/icons.html.js';
+import '../focus_list_container.js';
 import '../settings_page/settings_subpage.js';
 
 import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
@@ -160,7 +161,7 @@ export class SettingsEditDictionaryPageElement extends
    * Handles updates to the word list. Additions are unshifted to the top
    * of the list so that users can see them easily.
    */
-  private async onCustomDictionaryChanged_(added: string[], removed: string[]) {
+  private onCustomDictionaryChanged_(added: string[], removed: string[]) {
     const wasEmpty = this.words_.length === 0;
 
     for (const word of removed) {
@@ -185,16 +186,6 @@ export class SettingsEditDictionaryPageElement extends
     }
 
     this.requestUpdate();
-
-    if (removed.length > 0) {
-      await this.updateComplete;
-      const focused = this.shadowRoot.querySelector('.list-item:focus-within');
-      if (!focused) {
-        const toFocus = this.shadowRoot.querySelector<HTMLElement>(
-            '.list-item:last-of-type cr-icon-button');
-        toFocus?.focus();
-      }
-    }
   }
 
   /**

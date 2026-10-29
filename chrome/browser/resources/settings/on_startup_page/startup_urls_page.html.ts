@@ -12,14 +12,14 @@ export function getHtml(this: SettingsStartupUrlsPageElement) {
 <div id="outer" class="flex list-frame">
   <div id="container" class="scroll-container cr-scrollable" scrollable>
     <div class="cr-scrollable-top"></div>
-    <div id="list" focusgroup="toolbar block">
+    <settings-focus-list-container id="list" focusgroup="toolbar block">
       ${this.startupPages_.map(item => html`
         <settings-startup-url-entry
             .model="${item}"
             ?editable="${this.shouldAllowUrlsEdit_()}">
         </settings-startup-url-entry>
       `)}
-    </div>
+    </settings-focus-list-container>
     <div class="cr-scrollable-bottom"></div>
   </div>
 </div>

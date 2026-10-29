@@ -62,6 +62,7 @@ build_webui_tests("build") {
     "file_system_site_entry_item_test.ts",
     "file_system_site_entry_test.ts",
     "file_system_site_list_test.ts",
+    "focus_list_container_test.ts",
     "security/fingerprint_progress_arc_test.ts",
     "geic_subpage_test.ts",
     "geolocation_page_test.ts",

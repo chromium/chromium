@@ -9,6 +9,7 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import '../controls/controlled_radio_button.js';
 import '../controls/settings_radio_group.js';
+import '../focus_list_container.js';
 import '../simple_confirmation_dialog.js';
 import './search_engine_edit_dialog.js';
 import './search_engines_list.js';
@@ -154,31 +155,6 @@ export class SettingsSearchEnginesPageElement extends
     this.addEventListener(
         'delete-search-engine',
         e => this.onDeleteSearchEngine_(e as SearchEngineDeleteEvent));
-  }
-
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-
-    // Restore focus to the last element if the previous last element was
-    // deleted while it was focused.
-    if (changedPrivateProperties.has('matchingExtensions_')) {
-      const previousExtensions = changedPrivateProperties.get(
-                                     'matchingExtensions_') as SearchEngine[] |
-          undefined;
-      if (previousExtensions &&
-          this.matchingExtensions_.length < previousExtensions.length) {
-        const focused = this.shadowRoot.querySelector(
-            'settings-omnibox-extension-entry:focus-within');
-        if (!focused) {
-          const toFocus = this.shadowRoot.querySelector<HTMLElement>(
-              'settings-omnibox-extension-entry:last-of-type');
-          toFocus?.focus();
-        }
-      }
-    }
   }
 
   protected onSearchChanged_(e: CustomEvent<string>) {

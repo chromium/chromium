@@ -14,8 +14,8 @@ export function getHtml(this: ZoomLevelsElement) {
     $i18n{siteSettingsZoomLevelsDescription}
   </div>
   <div class="list-frame vertical-list">
-    <div id="list" role="listbox" focusgroup="listbox block"
-        class="cr-separators">
+    <settings-focus-list-container id="list" class="cr-separators"
+        focus-selector="cr-icon-button">
       ${this.sites_.map((item, index) => html`
         <div class="list-item" ?first="${!index}">
           <site-favicon .url="${item.originForFavicon}"></site-favicon>
@@ -29,7 +29,7 @@ export function getHtml(this: ZoomLevelsElement) {
           </cr-icon-button>
         </div>
       `)}
-    </div>
+    </settings-focus-list-container>
     <div id="empty" ?hidden="${!this.shouldShowNoSites_()}">
       $i18n{siteSettingsNoZoomedSites}
     </div>

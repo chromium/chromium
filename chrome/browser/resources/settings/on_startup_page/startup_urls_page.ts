@@ -10,6 +10,7 @@
 import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/cr_elements/action_link_lit.css.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
+import '../focus_list_container.js';
 import './startup_url_dialog.js';
 import './startup_url_entry.js';
 
@@ -17,7 +18,6 @@ import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {EDIT_STARTUP_URL_EVENT} from './startup_url_entry.js';
 import {getCss} from './startup_urls_page.css.js';
@@ -93,30 +93,6 @@ export class SettingsStartupUrlsPageElement extends
       this.showStartupUrlDialog_ = true;
       e.stopPropagation();
     });
-  }
-
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-
-    // Restore focus to the last element if the previous last element was
-    // deleted while it was focused.
-    if (changedPrivateProperties.has('startupPages_')) {
-      const previousPages =
-          changedPrivateProperties.get('startupPages_') as StartupPageInfo[] |
-          undefined;
-      if (previousPages && this.startupPages_.length < previousPages.length) {
-        const focused = this.shadowRoot.querySelector(
-            'settings-startup-url-entry:focus-within');
-        if (!focused) {
-          const toFocus = this.shadowRoot.querySelector<HTMLElement>(
-              'settings-startup-url-entry:last-of-type');
-          toFocus?.focus();
-        }
-      }
-    }
   }
 
   protected onAddPageClick_(e: Event) {
