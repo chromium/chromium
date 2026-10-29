@@ -8465,6 +8465,8 @@ data/indexeddb/aborted_upgrade_reopen.js
 data/indexeddb/blobs_use_quota.html
 data/indexeddb/blocked_explicit_commit.html
 data/indexeddb/blocked_explicit_commit.js
+data/indexeddb/bucket_deletion_cancels_legacy_blob_read.html
+data/indexeddb/bucket_deletion_cancels_legacy_blob_read.js
 data/indexeddb/bucket_deletion_during_cleanup.html
 data/indexeddb/bucket_deletion_during_cleanup.js
 data/indexeddb/bucket_durability_override.html

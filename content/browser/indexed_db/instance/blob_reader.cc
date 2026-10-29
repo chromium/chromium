@@ -47,18 +47,15 @@ void BlobReader::ReadRange(
     client.Bind(std::move(pending_client));
     client->OnCalculatedSize(blob_length_, read_length);
   }
-  OpenFileAndReadIntoPipe(
-      file_path_, offset, read_length, std::move(handle),
-      base::BindOnce(
-          [](base::OnceCallback<void(net::Error)> on_read_complete,
-             mojo::Remote<blink::mojom::BlobReaderClient> client,
-             net::Error result, uint64_t transferred_bytes) {
-            std::move(on_read_complete).Run(result);
-            if (client) {
-              client->OnComplete(result, transferred_bytes);
-            }
-          },
-          on_read_complete_, std::move(client)));
+  ReadFile(offset, read_length, std::move(handle),
+           base::BindOnce(
+               [](mojo::Remote<blink::mojom::BlobReaderClient> client,
+                  net::Error result, uint64_t transferred_bytes) {
+                 if (client) {
+                   client->OnComplete(result, transferred_bytes);
+                 }
+               },
+               std::move(client)));
 }
 
 void BlobReader::ReadAll(
@@ -118,16 +115,36 @@ void BlobReader::Read(
     uint64_t length,
     mojo::ScopedDataPipeProducerHandle pipe,
     storage::mojom::BlobDataItemReader::ReadCallback callback) {
-  OpenFileAndReadIntoPipe(
-      file_path_, offset, ClampReadLength(offset, length), std::move(pipe),
-      base::BindOnce(
-          [](base::OnceCallback<void(net::Error)> on_read_complete,
-             storage::mojom::BlobDataItemReader::ReadCallback callback,
-             net::Error result, uint64_t /*transferred_bytes*/) {
-            std::move(on_read_complete).Run(result);
-            std::move(callback).Run(result);
-          },
-          on_read_complete_, std::move(callback)));
+  ReadFile(offset, ClampReadLength(offset, length), std::move(pipe),
+           base::BindOnce(
+               [](storage::mojom::BlobDataItemReader::ReadCallback callback,
+                  net::Error result, uint64_t /*transferred_bytes*/) {
+                 std::move(callback).Run(result);
+               },
+               std::move(callback)));
+}
+
+void BlobReader::ReadFile(
+    uint64_t offset,
+    uint64_t length,
+    mojo::ScopedDataPipeProducerHandle pipe,
+    base::OnceCallback<void(net::Error, uint64_t)> callback) {
+  const auto reader = active_reads_
+                          .insert(std::make_unique<FileStreamReaderToDataPipe>(
+                              file_path_, offset, length, std::move(pipe)))
+                          .first;
+  (*reader)->Start(base::BindOnce(
+      [](base::WeakPtr<BlobReader> blob_reader,
+         std::set<std::unique_ptr<FileStreamReaderToDataPipe>>::iterator reader,
+         base::OnceCallback<void(net::Error, uint64_t)> callback,
+         net::Error result, uint64_t transferred_bytes) {
+        if (blob_reader) {
+          blob_reader->active_reads_.erase(reader);
+          blob_reader->on_read_complete_.Run(result);
+        }
+        std::move(callback).Run(result, transferred_bytes);
+      },
+      weak_factory_.GetWeakPtr(), reader, std::move(callback)));
 }
 
 void BlobReader::ReadSideData(

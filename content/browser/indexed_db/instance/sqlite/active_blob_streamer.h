@@ -5,13 +5,16 @@
 #ifndef CONTENT_BROWSER_INDEXED_DB_INSTANCE_SQLITE_ACTIVE_BLOB_STREAMER_H_
 #define CONTENT_BROWSER_INDEXED_DB_INSTANCE_SQLITE_ACTIVE_BLOB_STREAMER_H_
 
+#include <memory>
 #include <optional>
+#include <set>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/instance/blob_endpoint.h"
+#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/base/net_errors.h"
@@ -33,7 +36,7 @@ namespace content::indexed_db::sqlite {
 // This class borrows heavily from `indexed_db::BlobReader`, which is used to
 // read blobs that are stored as standalone files, and is likely to be
 // eventually phased out.
-class ActiveBlobStreamer : public BlobEndpoint {
+class CONTENT_EXPORT ActiveBlobStreamer : public BlobEndpoint {
  public:
   ActiveBlobStreamer(
       const IndexedDBExternalObject& blob_info,
@@ -88,8 +91,15 @@ class ActiveBlobStreamer : public BlobEndpoint {
                         callback) override;
 
  private:
+  class SqliteBlobToDataPipe;
+
   void BindRegistryBlob(storage::mojom::BlobStorageContext& blob_registry);
   void OnMojoDisconnect();
+
+  void DoReadBlob(uint64_t offset,
+                  uint64_t length,
+                  mojo::ScopedDataPipeProducerHandle pipe,
+                  base::OnceCallback<void(net::Error, uint64_t)> callback);
 
   // Clamps `length` to fit within the blob given the starting position
   // `offset`.
@@ -162,6 +172,8 @@ class ActiveBlobStreamer : public BlobEndpoint {
   // Run from `BlobReadComplete()`, i.e., on completion of every attempt to read
   // the contents of the underlying blob.
   base::RepeatingCallback<void(net::Error)> on_read_complete_;
+
+  std::set<std::unique_ptr<SqliteBlobToDataPipe>> active_reads_;
 
   base::WeakPtrFactory<ActiveBlobStreamer> weak_factory_{this};
 };

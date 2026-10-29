@@ -5,15 +5,22 @@
 #ifndef CONTENT_BROWSER_INDEXED_DB_INSTANCE_BLOB_READER_H_
 #define CONTENT_BROWSER_INDEXED_DB_INSTANCE_BLOB_READER_H_
 
+#include <memory>
+#include <set>
+
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/instance/blob_endpoint.h"
+#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/base/net_errors.h"
 
 namespace content::indexed_db {
+
+class FileStreamReaderToDataPipe;
 
 // This class reads files from the IDB blob store, which are just plain files on
 // disk, and serves them through the mojom Blob interface. It does this in
@@ -24,7 +31,7 @@ namespace content::indexed_db {
 // * In cases where the blob registry needs to read bytes, such as for copying
 //   to a local file or to serve data for blob:// URLs, this class reads from
 //   disk and returns the bytes via `BlobDataItemReader`.
-class BlobReader : public BlobEndpoint {
+class CONTENT_EXPORT BlobReader : public BlobEndpoint {
  public:
   BlobReader(const IndexedDBExternalObject& blob_info,
              base::OnceClosure on_last_receiver_disconnected,
@@ -77,6 +84,11 @@ class BlobReader : public BlobEndpoint {
   void BindRegistryBlob(storage::mojom::BlobStorageContext& blob_registry);
   void OnMojoDisconnect();
 
+  void ReadFile(uint64_t offset,
+                uint64_t length,
+                mojo::ScopedDataPipeProducerHandle pipe,
+                base::OnceCallback<void(net::Error, uint64_t)> callback);
+
   // Clamps `length` to fit within the blob given the starting position
   // `offset`.
   uint64_t ClampReadLength(uint64_t offset, uint64_t length) const;
@@ -122,6 +134,10 @@ class BlobReader : public BlobEndpoint {
   // Run on the completion of every attempt to read the contents of the
   // underlying blob.
   base::RepeatingCallback<void(net::Error)> on_read_complete_;
+
+  std::set<std::unique_ptr<FileStreamReaderToDataPipe>> active_reads_;
+
+  base::WeakPtrFactory<BlobReader> weak_factory_{this};
 };
 
 }  // namespace content::indexed_db

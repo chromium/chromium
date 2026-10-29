@@ -4,74 +4,32 @@
 
 #include "content/browser/indexed_db/file_stream_reader_to_data_pipe.h"
 
-#include <optional>
-
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/run_loop.h"
-#include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/net_adapters.h"
 
 namespace content::indexed_db {
 
-namespace {
-using TransferCompletionCallback =
-    base::OnceCallback<void(net::Error /*result*/,
-                            uint64_t /*transferred_bytes*/)>;
-
-// TODO(estade): rename this class and this file.
-class FileStreamReaderToDataPipe {
- public:
-  FileStreamReaderToDataPipe(const base::FilePath& file_path,
-                             uint64_t offset,
-                             uint64_t read_length,
-                             mojo::ScopedDataPipeProducerHandle dest,
-                             TransferCompletionCallback completion_callback);
-
-  ~FileStreamReaderToDataPipe();
-
-  void Start();
-
- private:
-  void ReadMore();
-
-  void OnDataPipeWritable(MojoResult result);
-  void OnDataPipeClosed(MojoResult result);
-  void OnComplete(net::Error result);
-
-  base::File file_;
-  mojo::ScopedDataPipeProducerHandle dest_;
-
-  TransferCompletionCallback completion_callback_;
-
-  uint64_t transferred_bytes_ = 0;
-  uint64_t offset_;
-  uint64_t read_length_ = 0;
-
-  scoped_refptr<network::NetToMojoPendingBuffer> pending_write_;
-  // Optional so that its construction can be deferred.
-  std::optional<mojo::SimpleWatcher> writable_handle_watcher_;
-};
-
 FileStreamReaderToDataPipe::FileStreamReaderToDataPipe(
     const base::FilePath& file_path,
     uint64_t offset,
     uint64_t read_length,
-    mojo::ScopedDataPipeProducerHandle dest,
-    TransferCompletionCallback completion_callback)
-    : dest_(std::move(dest)),
-      completion_callback_(std::move(completion_callback)),
-      offset_(offset),
-      read_length_(read_length) {
+    mojo::ScopedDataPipeProducerHandle dest)
+    : dest_(std::move(dest)), offset_(offset), read_length_(read_length) {
   file_.Initialize(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
 }
 
-FileStreamReaderToDataPipe::~FileStreamReaderToDataPipe() = default;
+FileStreamReaderToDataPipe::~FileStreamReaderToDataPipe() {
+  if (completion_callback_) {
+    OnComplete(net::ERR_ABORTED);
+  }
+}
 
-void FileStreamReaderToDataPipe::Start() {
+void FileStreamReaderToDataPipe::Start(
+    TransferCompletionCallback completion_callback) {
+  completion_callback_ = std::move(completion_callback);
   if (read_length_ == 0) {
     OnComplete(net::OK);
     return;
@@ -86,7 +44,8 @@ void FileStreamReaderToDataPipe::Start() {
                                    mojo::SimpleWatcher::ArmingPolicy::MANUAL);
   writable_handle_watcher_->Watch(
       dest_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
-      base::BindRepeating(&FileStreamReaderToDataPipe::OnDataPipeWritable,
+      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+      base::BindRepeating(&FileStreamReaderToDataPipe::OnDataPipeSignaled,
                           base::Unretained(this)));
 
   ReadMore();
@@ -150,19 +109,22 @@ void FileStreamReaderToDataPipe::ReadMore() {
   }
 }
 
-void FileStreamReaderToDataPipe::OnDataPipeWritable(MojoResult result) {
+void FileStreamReaderToDataPipe::OnDataPipeSignaled(
+    MojoResult result,
+    const mojo::HandleSignalsState& state) {
   if (result == MOJO_RESULT_FAILED_PRECONDITION) {
     OnComplete(net::ERR_ABORTED);
     return;
   }
   CHECK_EQ(result, MOJO_RESULT_OK) << result;
+  CHECK(state.writable());
 
   ReadMore();
 }
 
 void FileStreamReaderToDataPipe::OnComplete(net::Error result) {
-  // Resets the watchers, pipes and the exchange handler, so that
-  // we will never be called back.
+  // Cancel notifications and close the pipe before invoking the callback, which
+  // may destroy this object.
   if (writable_handle_watcher_) {
     writable_handle_watcher_->Cancel();
   }
@@ -170,20 +132,7 @@ void FileStreamReaderToDataPipe::OnComplete(net::Error result) {
   dest_.reset();
 
   std::move(completion_callback_).Run(result, transferred_bytes_);
-  delete this;
-}
-
-}  // namespace
-
-void OpenFileAndReadIntoPipe(const base::FilePath& file_path,
-                             uint64_t offset,
-                             uint64_t read_length,
-                             mojo::ScopedDataPipeProducerHandle dest,
-                             TransferCompletionCallback completion_callback) {
-  (new FileStreamReaderToDataPipe(file_path, offset, read_length,
-                                  std::move(dest),
-                                  std::move(completion_callback)))
-      ->Start();
+  // `this` may be deleted.
 }
 
 }  // namespace content::indexed_db

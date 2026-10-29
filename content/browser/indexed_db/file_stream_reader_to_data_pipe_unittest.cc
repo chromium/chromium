@@ -79,10 +79,9 @@ class FileStreamReaderToDataPipeTest : public testing::Test {
   ~FileStreamReaderToDataPipeTest() override;
   void SetUp() override;
 
-  // Creates a file filled with `file_length` random bytes.  Uses the file to
-  // call `OpenFileAndReadIntoPipe()` with the given `read_length` and
-  // `read_offset`.  Verifies the contents read from the pipe match the file
-  // contents.
+  // Creates a file filled with `file_length` random bytes. Reads the file with
+  // the given `read_length` and `read_offset`.  Verifies the contents read from
+  // the pipe match the file contents.
   void TestOpenFileAndReadIntoPipe(uint64_t file_length,
                                    uint64_t read_length,
                                    uint64_t read_offset);
@@ -134,14 +133,14 @@ void FileStreamReaderToDataPipeTest::TestOpenFileAndReadIntoPipe(
 
   // Read the temporary file into the pipe.
   base::RunLoop run_loop;
-  content::indexed_db::OpenFileAndReadIntoPipe(
-      file_path, read_offset, read_length, std::move(file_reader_producer),
-      base::BindLambdaForTesting(
-          [&](net::Error status, uint64_t transferred_bytes) {
-            EXPECT_EQ(status, net::OK);
-            EXPECT_LE(transferred_bytes, read_length);
-            run_loop.Quit();
-          }));
+  FileStreamReaderToDataPipe reader(file_path, read_offset, read_length,
+                                    std::move(file_reader_producer));
+  reader.Start(base::BindLambdaForTesting(
+      [&](net::Error status, uint64_t transferred_bytes) {
+        EXPECT_EQ(status, net::OK);
+        EXPECT_LE(transferred_bytes, read_length);
+        run_loop.Quit();
+      }));
 
   std::string pipe_contents_string =
       ReadDataPipe(std::move(file_reader_consumer));
@@ -173,14 +172,14 @@ TEST_F(FileStreamReaderToDataPipeTest, FileDoesNotExistError) {
                                  file_reader_consumer));
 
   base::RunLoop run_loop;
-  content::indexed_db::OpenFileAndReadIntoPipe(
-      file_path, /*offset=*/0u, /*read_length=*/100u,
-      std::move(file_reader_producer),
-      base::BindLambdaForTesting(
-          [&](net::Error status, uint64_t /*transferred_bytes*/) {
-            EXPECT_EQ(status, net::ERR_FILE_NOT_FOUND);
-            run_loop.Quit();
-          }));
+  FileStreamReaderToDataPipe reader(file_path, /*offset=*/0u,
+                                    /*read_length=*/100u,
+                                    std::move(file_reader_producer));
+  reader.Start(base::BindLambdaForTesting(
+      [&](net::Error status, uint64_t /*transferred_bytes*/) {
+        EXPECT_EQ(status, net::ERR_FILE_NOT_FOUND);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
@@ -193,14 +192,14 @@ TEST_F(FileStreamReaderToDataPipeTest, FileReadError) {
                                  file_reader_consumer));
 
   base::RunLoop run_loop;
-  content::indexed_db::OpenFileAndReadIntoPipe(
-      temp_dir_.GetPath(), /*offset=*/0, /*read_length=*/100u,
-      std::move(file_reader_producer),
-      base::BindLambdaForTesting(
-          [&](net::Error status, uint64_t /*transferred_bytes*/) {
-            EXPECT_NE(status, net::OK);
-            run_loop.Quit();
-          }));
+  FileStreamReaderToDataPipe reader(temp_dir_.GetPath(), /*offset=*/0,
+                                    /*read_length=*/100u,
+                                    std::move(file_reader_producer));
+  reader.Start(base::BindLambdaForTesting(
+      [&](net::Error status, uint64_t /*transferred_bytes*/) {
+        EXPECT_NE(status, net::OK);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 

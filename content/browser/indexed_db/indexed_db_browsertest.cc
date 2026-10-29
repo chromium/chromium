@@ -2,13 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <inttypes.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include <functional>
+#include <string_view>
 #include <utility>
+#include <vector>
 
+#include "base/byte_size.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -84,6 +89,7 @@
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/quota_settings.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/switches.h"
@@ -1750,6 +1756,97 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, LargeValueIsWrapped) {
 // closed databases.
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, BucketDeletionDuringCleanup) {
   SimpleTest(GetTestUrl("indexeddb", "bucket_deletion_during_cleanup.html"));
+}
+
+// Regression test for https://crbug.com/576590782
+// Deleting a bucket while streaming from a Blob that was in an IndexedDB row
+// does not crash, and deletion completes (PathExists checks pass), and
+// throws a TypeError when script attempts to read from it again.
+IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithSqlite,
+                       BucketDeletionCancelsLegacyBlobRead) {
+  // Fit within one SQLite blob chunk, but exceed more than twice the streaming
+  // pipe's 2 MiB capacity so that reading the first chunk (which may drain up
+  // to 2 MiB from the pipe) still leaves the producer blocked on pipe capacity.
+  constexpr int kBlobSize = base::MiB(5).InBytes();
+  constexpr std::u16string_view kDatabaseName = u"legacy-blob-stream";
+  const GURL test_url =
+      GetTestUrl("indexeddb", "bucket_deletion_cancels_legacy_blob_read.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  ASSERT_TRUE(ExecJs(
+      shell(), JsReplace("createDatabase($1, $2)", kDatabaseName, kBlobSize)));
+  const blink::StorageKey storage_key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(test_url));
+  ASSERT_OK_AND_ASSIGN(
+      const storage::BucketInfo bucket,
+      GetOrCreateBucket(
+          storage::BucketInitParams::ForDefaultBucket(storage_key)));
+  const base::FilePath database_path =
+      DatabaseFilePath(bucket.ToBucketLocator(), kDatabaseName);
+  const base::FilePath sqlite_path = database_path.DirName();
+  const base::FilePath blob_directory =
+      sqlite::DatabaseConnection::GetLegacyBlobDirectory(database_path);
+
+  base::test::TestFuture<void> closed;
+  GetControl().ForceClose(bucket.id, closed.GetCallback());
+  ASSERT_TRUE(closed.Wait());
+
+  // Construct the on-disk state of a migrated store without relying on LevelDB
+  // or migration code: bytes live in a standalone file and the SQLite row has
+  // NULL bytes.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath blob_path;
+  {
+    sql::Database database(
+        sql::DatabaseOptions().set_wal_mode(true).set_enable_triggers(true),
+        sql::test::kTestTag);
+    ASSERT_TRUE(database.Open(database_path));
+    ASSERT_TRUE(base::CreateDirectory(blob_directory));
+    {
+      sql::Statement statement(
+          database.GetUniqueStatement("SELECT row_id, bytes FROM blobs"));
+      ASSERT_TRUE(statement.Step());
+      blob_path = blob_directory.AppendASCII(
+          absl::StrFormat("%" PRIx64, statement.ColumnInt64(0)));
+      base::span<const uint8_t> bytes = statement.ColumnBlob(1);
+      ASSERT_EQ(kBlobSize, bytes.size());
+      ASSERT_TRUE(base::WriteFile(blob_path, bytes));
+      ASSERT_FALSE(statement.Step());
+      ASSERT_TRUE(statement.Succeeded());
+    }
+    ASSERT_TRUE(database.Execute("UPDATE blobs SET bytes = NULL"));
+  }
+
+  base::HistogramTester histograms;
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  ASSERT_TRUE(ExecJs(shell(), JsReplace("openDatabase($1)", kDatabaseName)));
+  ASSERT_EQ(kBlobSize, base::GetFileSize(blob_path).value_or(-1));
+
+  // The blob exceeds twice the data pipe's capacity, so pausing the consumer
+  // after one chunk (at most 2 MiB), which can cause the browser to eagerly
+  // re-fill the pipe, still leaves the browser-side file read waiting for more
+  // pipe space.
+  const int first_chunk_size = EvalJs(shell(), "readFirstChunk()").ExtractInt();
+  ASSERT_GT(first_chunk_size, 0);
+  ASSERT_LT(first_chunk_size, kBlobSize);
+  histograms.ExpectUniqueSample("IndexedDB.SQLite.BlobServedFromLegacyFile",
+                                true, 1);
+  histograms.ExpectTotalCount("IndexedDB.BackingStore.ReadBlob.OnDisk", 0);
+
+  std::vector<base::FilePath> files;
+  base::FileEnumerator(sqlite_path, /*recursive=*/true,
+                       base::FileEnumerator::FILES)
+      .ForEach([&](const base::FilePath& path) { files.push_back(path); });
+
+  ASSERT_TRUE(DeleteBucketData(storage_key));
+  EXPECT_FALSE(base::PathExists(blob_path));
+  EXPECT_FALSE(base::PathExists(blob_directory));
+  EXPECT_FALSE(base::PathExists(sqlite_path));
+  for (const base::FilePath& path : files) {
+    EXPECT_FALSE(base::PathExists(path)) << path;
+  }
+
+  EXPECT_EQ("TypeError", EvalJs(shell(), "readUntilError()"));
+  EXPECT_LT(EvalJs(shell(), "getBytesRead()").ExtractInt(), kBlobSize);
 }
 
 // The blob key corruption test runs in a separate class to avoid corrupting

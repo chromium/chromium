@@ -22,35 +22,35 @@
 
 namespace content::indexed_db::sqlite {
 
-namespace {
-
 // Each time a blob is read via mojo, a DataPipe is opened to pass the bytes
 // through. This object is created once for each such read and feeds blob bytes
-// into the pipe. The object is self owned.
-class SqliteBlobToDataPipe {
+// into the pipe.
+class ActiveBlobStreamer::SqliteBlobToDataPipe {
  public:
+  using TransferCompletionCallback =
+      base::OnceCallback<void(net::Error /*result*/,
+                              uint64_t /*transferred_bytes*/)>;
+
   // `do_read_bytes` writes blob bytes into the provided buffer. See member of
   // the same name for explanation of inputs and outputs.
   SqliteBlobToDataPipe(base::RepeatingCallback<
                            bool(uint64_t, base::span<uint8_t>)> do_read_bytes,
                        uint64_t offset,
                        uint64_t read_length,
-                       mojo::ScopedDataPipeProducerHandle dest,
-                       base::OnceCallback<void(net::Error /*result*/,
-                                               uint64_t /*transferred_bytes*/)>
-                           completion_callback)
+                       mojo::ScopedDataPipeProducerHandle dest)
       : do_read_bytes_(std::move(do_read_bytes)),
         dest_(std::move(dest)),
-        completion_callback_(std::move(completion_callback)),
         offset_(offset),
         read_length_(read_length) {}
 
   ~SqliteBlobToDataPipe() {
-    CHECK(result_.has_value());
-    std::move(completion_callback_).Run(result_.value(), transferred_bytes_);
+    if (completion_callback_) {
+      OnComplete(net::ERR_ABORTED);
+    }
   }
 
-  void Start() {
+  void Start(TransferCompletionCallback completion_callback) {
+    completion_callback_ = std::move(completion_callback);
     if (read_length_ == 0) {
       OnComplete(net::OK);
       return;
@@ -60,19 +60,26 @@ class SqliteBlobToDataPipe {
                                      mojo::SimpleWatcher::ArmingPolicy::MANUAL);
     writable_handle_watcher_->Watch(
         dest_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
-        base::BindRepeating(&SqliteBlobToDataPipe::OnDataPipeWritable,
+        MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+        base::BindRepeating(&SqliteBlobToDataPipe::OnDataPipeSignaled,
                             base::Unretained(this)));
-    OnDataPipeWritable(MOJO_RESULT_OK);
+    ReadMore();
   }
 
  private:
-  void OnDataPipeWritable(MojoResult result) {
+  void OnDataPipeSignaled(MojoResult result,
+                          const mojo::HandleSignalsState& state) {
     if (result == MOJO_RESULT_FAILED_PRECONDITION) {
       OnComplete(net::ERR_ABORTED);
       return;
     }
-    DCHECK_EQ(result, MOJO_RESULT_OK) << result;
+    CHECK_EQ(result, MOJO_RESULT_OK) << result;
+    CHECK(state.writable());
 
+    ReadMore();
+  }
+
+  void ReadMore() {
     // This loop shouldn't block the thread for *too* long as the mojo pipe has
     // a capacity of 2MB (i.e. `BeginWrite()` will return
     // MOJO_RESULT_SHOULD_WAIT at some point when streaming a large enough
@@ -124,15 +131,13 @@ class SqliteBlobToDataPipe {
   }
 
   void OnComplete(net::Error result) {
-    // Resets the watchers, pipes and the exchange handler, so that
-    // we will never be called back.
+    // Cancel notifications and close the pipe before invoking the callback,
+    // which destroys this object.
     if (writable_handle_watcher_) {
       writable_handle_watcher_->Cancel();
     }
     dest_.reset();
-    result_ = result;
-
-    delete this;
+    std::move(completion_callback_).Run(result, transferred_bytes_);
   }
 
   // This callback is used to read bytes from the blob at a given offset into a
@@ -142,25 +147,20 @@ class SqliteBlobToDataPipe {
   // `this` is the producer, and `dest_` is its handle to the pipe.
   mojo::ScopedDataPipeProducerHandle dest_;
 
-  base::OnceCallback<void(net::Error /*result*/,
-                          uint64_t /*transferred_bytes*/)>
-      completion_callback_;
-
-  // Null until `OnComplete` is called.
-  std::optional<net::Error> result_;
+  // Called when the read completes, successfully or not, or when `this` is
+  // deleted before the read completes.
+  TransferCompletionCallback completion_callback_;
 
   // The number of bytes successfully transferred so far.
   uint64_t transferred_bytes_ = 0;
 
   // Each read has a certain offset and length specified by the consumer.
-  uint64_t offset_;
-  uint64_t read_length_ = 0;
+  const uint64_t offset_;
+  const uint64_t read_length_;
 
   // Optional so that its construction can be deferred.
   std::optional<mojo::SimpleWatcher> writable_handle_watcher_;
 };
-
-}  // namespace
 
 void ActiveBlobStreamer::Clone(
     mojo::PendingReceiver<blink::mojom::Blob> receiver) {
@@ -183,27 +183,15 @@ void ActiveBlobStreamer::ReadRange(
     client.Bind(std::move(pending_client));
     client->OnCalculatedSize(blob_length_, read_length);
   }
-  (new SqliteBlobToDataPipe(
-       base::BindRepeating(
-           [](base::WeakPtr<ActiveBlobStreamer> streamer, uint64_t offset,
-              base::span<uint8_t> into) -> bool {
-             return streamer && streamer->ReadBlobBytes(offset, into);
-           },
-           weak_factory_.GetWeakPtr()),
-       offset, read_length, std::move(handle),
-       base::BindOnce(
-           [](base::WeakPtr<ActiveBlobStreamer> streamer,
-              mojo::Remote<blink::mojom::BlobReaderClient> client,
-              net::Error result, uint64_t transferred_bytes) {
-             if (streamer) {
-               streamer->BlobReadComplete(result);
-             }
-             if (client) {
-               client->OnComplete(result, transferred_bytes);
-             }
-           },
-           weak_factory_.GetWeakPtr(), std::move(client))))
-      ->Start();
+  DoReadBlob(offset, read_length, std::move(handle),
+             base::BindOnce(
+                 [](mojo::Remote<blink::mojom::BlobReaderClient> client,
+                    net::Error result, uint64_t transferred_bytes) {
+                   if (client) {
+                     client->OnComplete(result, transferred_bytes);
+                   }
+                 },
+                 std::move(client)));
 }
 
 void ActiveBlobStreamer::ReadAll(
@@ -261,27 +249,39 @@ void ActiveBlobStreamer::Read(
     uint64_t length,
     mojo::ScopedDataPipeProducerHandle pipe,
     storage::mojom::BlobDataItemReader::ReadCallback callback) {
-  (new SqliteBlobToDataPipe(
-       /*do_read_bytes=*/
-       base::BindRepeating(
-           [](base::WeakPtr<ActiveBlobStreamer> streamer, uint64_t offset,
-              base::span<uint8_t> into) -> bool {
-             return streamer && streamer->ReadBlobBytes(offset, into);
-           },
-           weak_factory_.GetWeakPtr()),
-       offset, ClampReadLength(offset, length), std::move(pipe),
-       /*completion_callback=*/
-       base::BindOnce(
-           [](base::WeakPtr<ActiveBlobStreamer> streamer,
-              storage::mojom::BlobDataItemReader::ReadCallback callback,
-              net::Error result, uint64_t transferred_bytes) {
-             if (streamer) {
-               streamer->BlobReadComplete(result);
-             }
-             std::move(callback).Run(result);
-           },
-           weak_factory_.GetWeakPtr(), std::move(callback))))
-      ->Start();
+  DoReadBlob(offset, ClampReadLength(offset, length), std::move(pipe),
+             base::BindOnce(
+                 [](storage::mojom::BlobDataItemReader::ReadCallback callback,
+                    net::Error result, uint64_t /*transferred_bytes*/) {
+                   std::move(callback).Run(result);
+                 },
+                 std::move(callback)));
+}
+
+void ActiveBlobStreamer::DoReadBlob(
+    uint64_t offset,
+    uint64_t length,
+    mojo::ScopedDataPipeProducerHandle pipe,
+    base::OnceCallback<void(net::Error, uint64_t)> callback) {
+  const auto reader =
+      active_reads_
+          .insert(std::make_unique<SqliteBlobToDataPipe>(
+              base::BindRepeating(&ActiveBlobStreamer::ReadBlobBytes,
+                                  base::Unretained(this)),
+              offset, length, std::move(pipe)))
+          .first;
+  (*reader)->Start(base::BindOnce(
+      [](base::WeakPtr<ActiveBlobStreamer> streamer,
+         std::set<std::unique_ptr<SqliteBlobToDataPipe>>::iterator reader,
+         base::OnceCallback<void(net::Error, uint64_t)> callback,
+         net::Error result, uint64_t transferred_bytes) {
+        if (streamer) {
+          streamer->active_reads_.erase(reader);
+          streamer->BlobReadComplete(result);
+        }
+        std::move(callback).Run(result, transferred_bytes);
+      },
+      weak_factory_.GetWeakPtr(), reader, std::move(callback)));
 }
 
 void ActiveBlobStreamer::ReadSideData(
