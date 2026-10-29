@@ -8,6 +8,10 @@
 #include <string>
 #include <vector>
 
+namespace endpoint_fetcher {
+struct EndpointResponse;
+}  // namespace endpoint_fetcher
+
 namespace signin {
 struct AccessTokenInfo;
 }  // namespace signin
@@ -28,6 +32,19 @@ std::vector<std::string> CreateOAuthHeader(
 // Creates the variations headers for Lens requests.
 std::vector<std::string> CreateVariationsHeaders(
     variations::VariationsClient* variations_client);
+
+// Removes the "Authorization" header (and its value) from `headers`, which is
+// formatted as alternating key-value strings. Returns true if an
+// "Authorization" header was present and removed.
+bool StripAuthorizationHeader(std::vector<std::string>& headers);
+
+// Returns true and strips the "Authorization" header from `headers` if
+// identity delegation is enabled, `response` failed with HTTP 401
+// (HTTP_UNAUTHORIZED), and `headers` contained an "Authorization" header.
+// `response` may be null, in which case this returns false.
+bool ShouldRetryRequestWithoutAuthOn401(
+    const endpoint_fetcher::EndpointResponse* response,
+    std::vector<std::string>& headers);
 
 }  // namespace lens
 

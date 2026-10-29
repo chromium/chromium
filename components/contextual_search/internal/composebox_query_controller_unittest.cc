@@ -4,6 +4,7 @@
 
 #include "components/contextual_search/internal/composebox_query_controller.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -9746,6 +9747,116 @@ TEST_F(ComposeboxQueryControllerTest,
       /*expect_suggest_signals_ready=*/false,
       /*expect_upload_started=*/false);
   EXPECT_FALSE(controller().is_any_context_uploading());
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       ClusterInfoRetriesWithoutAuthorizationOn401) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      lens::features::kLensComposeboxIdentityDelegation);
+  base::HistogramTester histogram_tester;
+
+  controller().set_reject_requests_with_auth_header_with_401(true);
+  controller().set_get_auth_headers_callback_for_testing(
+      base::BindLambdaForTesting(
+          [](std::optional<size_t> auth_user_index,
+             base::OnceCallback<void(std::vector<std::string>)> callback) {
+            std::move(callback).Run({"Origin", "https://www.google.com",
+                                     "Authorization", "SAPISIDHASH 123_fake",
+                                     "X-Goog-AuthUser", "0"});
+          }));
+
+  controller().TriggerFetchClusterInfo();
+  WaitForClusterInfo(
+      /*expected_state=*/QueryControllerState::kClusterInfoReceived,
+      /*fetch_request_count=*/2);
+
+  ASSERT_EQ(controller().sent_request_headers_history().size(), 2u);
+  EXPECT_THAT(controller().sent_request_headers_history()[0],
+              testing::Contains("Authorization"));
+  EXPECT_THAT(controller().sent_request_headers_history()[1],
+              testing::Not(testing::Contains("Authorization")));
+  EXPECT_THAT(controller().sent_request_headers_history()[1],
+              testing::Contains("Origin"));
+  // Content-Type should not be duplicated on the retry request.
+  EXPECT_EQ(std::ranges::count(controller().sent_request_headers_history()[1],
+                               "Content-Type"),
+            1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.ClusterInfo.Status",
+      ComposeboxQueryController::ClusterInfoStatus::kSuccess, 1);
+  histogram_tester.ExpectTotalCount("Lens.Composebox.ClusterInfo.ResponseTime",
+                                    1);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       ClusterInfoDoesNotRetryMoreThanOnceOnPersistent401) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      lens::features::kLensComposeboxIdentityDelegation);
+  base::HistogramTester histogram_tester;
+
+  controller().set_all_cluster_info_requests_should_return_unauthorized(true);
+  controller().set_get_auth_headers_callback_for_testing(
+      base::BindLambdaForTesting(
+          [](std::optional<size_t> auth_user_index,
+             base::OnceCallback<void(std::vector<std::string>)> callback) {
+            std::move(callback).Run({"Origin", "https://www.google.com",
+                                     "Authorization", "SAPISIDHASH 123_fake",
+                                     "X-Goog-AuthUser", "0"});
+          }));
+
+  controller().TriggerFetchClusterInfo();
+  WaitForClusterInfo(
+      /*expected_state=*/QueryControllerState::kClusterInfoInvalid,
+      /*fetch_request_count=*/2);
+
+  ASSERT_EQ(controller().sent_request_headers_history().size(), 2u);
+  EXPECT_THAT(controller().sent_request_headers_history()[0],
+              testing::Contains("Authorization"));
+  EXPECT_THAT(controller().sent_request_headers_history()[1],
+              testing::Not(testing::Contains("Authorization")));
+
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.ClusterInfo.Status",
+      ComposeboxQueryController::ClusterInfoStatus::kHttpError, 1);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       FileUploadRetriesWithoutAuthorizationOn401) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      lens::features::kLensComposeboxIdentityDelegation);
+
+  controller().set_reject_requests_with_auth_header_with_401(true);
+  controller().set_get_auth_headers_callback_for_testing(
+      base::BindLambdaForTesting(
+          [](std::optional<size_t> auth_user_index,
+             base::OnceCallback<void(std::vector<std::string>)> callback) {
+            std::move(callback).Run({"Origin", "https://www.google.com",
+                                     "Authorization", "SAPISIDHASH 456_fake",
+                                     "X-Goog-AuthUser", "0"});
+          }));
+
+  controller().TriggerFetchClusterInfo();
+  WaitForClusterInfo(
+      /*expected_state=*/QueryControllerState::kClusterInfoReceived,
+      /*fetch_request_count=*/2);
+
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token, /*file_data=*/std::vector<uint8_t>());
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // 2 cluster info requests + 2 file upload requests (initial 401 + retry 200).
+  EXPECT_EQ(controller().num_file_upload_requests_sent(), 2);
+  ASSERT_EQ(controller().sent_request_headers_history().size(), 4u);
+  EXPECT_THAT(controller().sent_request_headers_history()[2],
+              testing::Contains("Authorization"));
+  EXPECT_THAT(controller().sent_request_headers_history()[3],
+              testing::Not(testing::Contains("Authorization")));
+  EXPECT_THAT(controller().sent_request_headers_history()[3],
+              testing::Contains("Origin"));
 }
 
 }  // namespace contextual_search

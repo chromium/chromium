@@ -4,7 +4,10 @@
 
 #include "components/lens/lens_request_construction.h"
 
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "components/lens/lens_features.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/variations/variations.mojom.h"
 #include "components/variations/variations_client.h"
@@ -50,6 +53,30 @@ std::vector<std::string> CreateVariationsHeaders(
       variations::mojom::GoogleWebVisibility::FIRST_PARTY));
 
   return headers;
+}
+
+bool StripAuthorizationHeader(std::vector<std::string>& headers) {
+  bool removed = false;
+  for (size_t i = 0; i + 1 < headers.size();) {
+    if (base::EqualsCaseInsensitiveASCII(
+            headers[i], net::HttpRequestHeaders::kAuthorization)) {
+      headers.erase(headers.begin() + i, headers.begin() + i + 2);
+      removed = true;
+    } else {
+      i += 2;
+    }
+  }
+  return removed;
+}
+
+bool ShouldRetryRequestWithoutAuthOn401(
+    const endpoint_fetcher::EndpointResponse* response,
+    std::vector<std::string>& headers) {
+  return features::UseIdentityDelegationForLensComposeboxRequests() &&
+         response &&
+         response->http_status_code ==
+             google_apis::ApiErrorCode::HTTP_UNAUTHORIZED &&
+         StripAuthorizationHeader(headers);
 }
 
 }  // namespace lens

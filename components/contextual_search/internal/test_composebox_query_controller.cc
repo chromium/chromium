@@ -5,6 +5,7 @@
 #include "components/contextual_search/internal/test_composebox_query_controller.h"
 
 #include "base/base64.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_features.h"
@@ -92,10 +93,24 @@ TestComposeboxQueryController::CreateEndpointFetcher(
       fetch_url.path() ==
       GURL(lens::features::GetLensOverlayUploadChunkEndpointURL()).path();
 
+  sent_request_headers_history_.push_back(request_headers);
+  bool has_auth_header = false;
+  for (size_t i = 0; i + 1 < request_headers.size(); i += 2) {
+    if (base::EqualsCaseInsensitiveASCII(request_headers[i], "Authorization")) {
+      has_auth_header = true;
+      break;
+    }
+  }
+  const bool reject_with_401 =
+      reject_requests_with_auth_header_with_401_ && has_auth_header;
+
   if (is_cluster_info_request) {
     // Cluster info request.
     num_cluster_info_fetch_requests_sent_++;
-    if (next_cluster_info_request_should_return_error_) {
+    if (reject_with_401 ||
+        all_cluster_info_requests_should_return_unauthorized_) {
+      fake_server_response_code = google_apis::ApiErrorCode::HTTP_UNAUTHORIZED;
+    } else if (next_cluster_info_request_should_return_error_) {
       fake_server_response_code =
           google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR;
     } else {
@@ -105,7 +120,9 @@ TestComposeboxQueryController::CreateEndpointFetcher(
   } else if (is_chunk_upload_request) {
     num_chunk_upload_requests_sent_++;
     last_sent_fetch_url_ = fetch_url;
-    if (next_file_upload_request_should_return_error_) {
+    if (reject_with_401) {
+      fake_server_response_code = google_apis::ApiErrorCode::HTTP_UNAUTHORIZED;
+    } else if (next_file_upload_request_should_return_error_) {
       fake_server_response_code =
           google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR;
     } else {
@@ -117,7 +134,9 @@ TestComposeboxQueryController::CreateEndpointFetcher(
   } else {
     num_file_upload_requests_sent_++;
     last_sent_fetch_url_ = fetch_url;
-    if (next_file_upload_request_should_return_error_) {
+    if (reject_with_401) {
+      fake_server_response_code = google_apis::ApiErrorCode::HTTP_UNAUTHORIZED;
+    } else if (next_file_upload_request_should_return_error_) {
       fake_server_response_code =
           google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR;
     } else {
@@ -129,8 +148,10 @@ TestComposeboxQueryController::CreateEndpointFetcher(
     sent_request.ParseFromString(request_string);
 
     if (sent_request.has_interaction_request()) {
-      fake_server_response_string =
-          fake_interaction_response_.SerializeAsString();
+      if (!reject_with_401) {
+        fake_server_response_string =
+            fake_interaction_response_.SerializeAsString();
+      }
       sent_interaction_requests_.push_back(sent_request);
     } else {
       sent_upload_requests_.push_back(sent_request);
@@ -155,9 +176,10 @@ TestComposeboxQueryController::CreateEndpointFetcher(
   EndpointResponse fake_endpoint_response;
   fake_endpoint_response.response = fake_server_response_string;
   fake_endpoint_response.http_status_code =
-      is_cluster_info_request ? fake_server_response_code
-                              : fake_server_response_http_status_code_.value_or(
-                                    fake_server_response_code);
+      (is_cluster_info_request || reject_with_401)
+          ? fake_server_response_code
+          : fake_server_response_http_status_code_.value_or(
+                fake_server_response_code);
   fake_endpoint_response.net_error_code =
       is_cluster_info_request ? 0 : fake_server_response_net_error_code_;
 
