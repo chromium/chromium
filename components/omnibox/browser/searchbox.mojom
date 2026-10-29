@@ -257,12 +257,14 @@ struct SearchContext {
 };
 
 // Stages of the Omnibox Everywhere First Run Experience (FRE).
+// LINT.IfChange(FreStage)
 enum FreStage {
   kNone = 0,
   kIntroModal = 1,
   kShortcutSetupChin = 2,
   kShortcutReminderChin = 3,
 };
+// LINT.ThenChange(//chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_fre_controller.h:FreStage)
 
 // Represents the active FRE stage and hotkey configuration state for WebUI.
 struct FreState {

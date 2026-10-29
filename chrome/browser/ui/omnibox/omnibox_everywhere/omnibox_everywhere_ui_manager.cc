@@ -29,6 +29,7 @@
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/omnibox/clipboard_utils.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_fre_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_region_select_overlay.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
@@ -608,9 +609,10 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
     params.context = context;
   }
 
+  auto* service = OmniboxEverywhereServiceFactory::GetForProfile(profile_);
   const bool is_fre_intro_modal =
-      base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhereFre) &&
-      prefs::GetCurrentFreStage(profile_) == prefs::FreStage::kIntroModal;
+      service && service->fre_controller() &&
+      service->fre_controller()->GetCurrentStage() == FreStage::kIntroModal;
   params.bounds = CalculateWidgetBounds(
       is_fre_intro_modal ? kFreModalRestingHeight : kDefaultRestingHeight);
 
@@ -733,14 +735,15 @@ void OmniboxEverywhereUIManager::OnMostVisitedPrefChanged() {
 // based on true visual visibility and both ephemeral and persistent window
 // models are handled consistently.
 void OmniboxEverywhereUIManager::MaybeRecordFreImpression() {
-  if (!profile_ || !profile_->GetPrefs() ||
-      !base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhereFre)) {
+  if (!profile_) {
     return;
   }
-
-  PrefService* local_state =
-      g_browser_process ? g_browser_process->local_state() : nullptr;
-  omnibox_everywhere::prefs::IncrementFreImpression(profile_, local_state);
+  if (auto* service =
+          OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
+    if (service->fre_controller()) {
+      service->fre_controller()->IncrementImpression();
+    }
+  }
 }
 
 void OmniboxEverywhereUIManager::MaybeShowLensPromo() {

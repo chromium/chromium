@@ -33,8 +33,9 @@ class NavigationHandle;
 
 namespace omnibox_everywhere {
 class OmniboxEverywhereController;
-class OmniboxEverywhereUIManager;
 class OmniboxEverywhereFeaturePromoController;
+class OmniboxEverywhereFreController;
+class OmniboxEverywhereUIManager;
 }
 
 class OmniboxEverywhereService : public KeyedService {
@@ -59,6 +60,10 @@ class OmniboxEverywhereService : public KeyedService {
 
   user_education::FeaturePromoController* feature_promo_controller();
   const user_education::FeaturePromoController* feature_promo_controller()
+      const;
+
+  omnibox_everywhere::OmniboxEverywhereFreController* fre_controller();
+  const omnibox_everywhere::OmniboxEverywhereFreController* fre_controller()
       const;
 
   virtual void HidePopup();
@@ -133,6 +138,8 @@ class OmniboxEverywhereService : public KeyedService {
   omnibox_everywhere::OmniboxEverywhereUIManager* ui_manager() const;
 
   raw_ptr<Profile> profile_;
+  std::unique_ptr<omnibox_everywhere::OmniboxEverywhereFreController>
+      fre_controller_;
   std::unique_ptr<omnibox_everywhere::OmniboxEverywhereFeaturePromoController>
       feature_promo_controller_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;

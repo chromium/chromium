@@ -7,7 +7,10 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_fre_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/command.h"
@@ -98,12 +101,15 @@ void OmniboxEverywhereSettingsHandler::HandleSetOmniboxEverywhereShortcut(
     }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    Profile* profile = Profile::FromWebUI(web_ui());
-    if (profile &&
-        omnibox_everywhere::prefs::GetCurrentFreStage(profile) ==
-            omnibox_everywhere::prefs::FreStage::kShortcutSetupChin) {
-      omnibox_everywhere::prefs::MarkFreStageCompleted(
-          profile, omnibox_everywhere::prefs::FreStage::kShortcutSetupChin);
+    if (auto* service = OmniboxEverywhereServiceFactory::GetForProfile(
+            Profile::FromWebUI(web_ui()))) {
+      if (auto* fre_controller = service->fre_controller();
+          fre_controller &&
+          fre_controller->GetCurrentStage() ==
+              omnibox_everywhere::FreStage::kShortcutSetupChin) {
+        fre_controller->MarkStageCompleted(
+            omnibox_everywhere::FreStage::kShortcutSetupChin);
+      }
     }
 #endif
   }

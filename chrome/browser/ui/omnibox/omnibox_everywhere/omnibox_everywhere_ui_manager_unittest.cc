@@ -29,6 +29,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_fre_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_region_select_overlay.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
@@ -463,8 +464,10 @@ TEST_F(OmniboxEverywhereUIManagerTest,
 
   // 1. Fresh profile with kOmniboxEverywhereFre enabled starts at
   // FreStage::kIntroModal and uses kFreModalRestingHeight.
-  ASSERT_EQ(omnibox_everywhere::prefs::GetCurrentFreStage(&profile_),
-            omnibox_everywhere::prefs::FreStage::kIntroModal);
+  auto* service = OmniboxEverywhereServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service && service->fre_controller());
+  ASSERT_EQ(service->fre_controller()->GetCurrentStage(),
+            FreStage::kIntroModal);
   {
     auto ui_manager = CreateUIManager();
     ui_manager->ShowForProfile(&profile_, GetContext());
@@ -486,8 +489,8 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   // initial bounds use kDefaultRestingHeight.
   profile_.GetPrefs()->SetBoolean(omnibox_everywhere::prefs::kFreIntroDismissed,
                                   true);
-  ASSERT_EQ(omnibox_everywhere::prefs::GetCurrentFreStage(&profile_),
-            omnibox_everywhere::prefs::FreStage::kShortcutSetupChin);
+  ASSERT_EQ(service->fre_controller()->GetCurrentStage(),
+            FreStage::kShortcutSetupChin);
   {
     auto ui_manager = CreateUIManager();
     ui_manager->ShowForProfile(&profile_, GetContext());

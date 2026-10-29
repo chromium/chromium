@@ -273,6 +273,7 @@ source_set("impl") {
     "//chrome/browser/ui/hats",
     "//chrome/browser/ui/interaction",
     "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/omnibox/omnibox_everywhere",
     "//chrome/browser/ui/omnibox/omnibox_everywhere:prefs",
     "//chrome/browser/ui/page_info",
     "//chrome/browser/ui/passwords",

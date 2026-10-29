@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_feature_promo_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_fre_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -76,7 +77,10 @@ void ActivateAndFocusBrowserWindow(BrowserWindowInterface* bwi) {
 }  // namespace
 
 OmniboxEverywhereService::OmniboxEverywhereService(Profile* profile)
-    : profile_(profile) {
+    : profile_(profile),
+      fre_controller_(
+          std::make_unique<omnibox_everywhere::OmniboxEverywhereFreController>(
+              profile_->GetPrefs())) {
   feature_engagement::Tracker* const tracker_service =
       feature_engagement::TrackerFactory::GetForBrowserContext(profile_);
   UserEducationService* const user_education_service =
@@ -101,6 +105,16 @@ OmniboxEverywhereService::feature_promo_controller() {
 const user_education::FeaturePromoController*
 OmniboxEverywhereService::feature_promo_controller() const {
   return feature_promo_controller_.get();
+}
+
+omnibox_everywhere::OmniboxEverywhereFreController*
+OmniboxEverywhereService::fre_controller() {
+  return fre_controller_.get();
+}
+
+const omnibox_everywhere::OmniboxEverywhereFreController*
+OmniboxEverywhereService::fre_controller() const {
+  return fre_controller_.get();
 }
 
 omnibox_everywhere::OmniboxEverywhereController*
@@ -134,6 +148,7 @@ void OmniboxEverywhereService::ReleaseProfileKeepAlive() {
 void OmniboxEverywhereService::Shutdown() {
   ReleaseProfileKeepAlive();
   feature_promo_controller_.reset();
+  fre_controller_.reset();
   if (controller()) {
     controller()->ShutdownForProfile(profile_);
   }
