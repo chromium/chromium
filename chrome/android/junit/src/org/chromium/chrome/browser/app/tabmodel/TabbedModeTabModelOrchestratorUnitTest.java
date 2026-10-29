@@ -38,7 +38,6 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -247,9 +246,9 @@ public class TabbedModeTabModelOrchestratorUnitTest {
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/579138797")
     public void testDestroy() {
         when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModel.getCurrentTabSupplier()).thenReturn(ObservableSuppliers.createNullable());
         when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabWindowManager.requestSelector(
