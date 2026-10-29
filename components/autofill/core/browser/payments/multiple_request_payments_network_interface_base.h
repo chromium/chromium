@@ -155,6 +155,14 @@ class MultipleRequestPaymentsNetworkInterfaceBase {
     return operations_;
   }
 
+  // Sets the `url_loader_factory` for testing.
+  void set_url_loader_factory_for_testing(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  // Sets a fake `access_token` for testing to avoid access token fetch
+  // requests.
+  void set_access_token_for_testing(std::string access_token);
+
  private:
   // Function invoked when a request (operation) is finished.
   void OnRequestFinished(RequestId& id);
@@ -163,6 +171,9 @@ class MultipleRequestPaymentsNetworkInterfaceBase {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   const raw_ref<signin::IdentityManager> identity_manager_;
+
+  // Fake access token set by tests to avoid fetch requests.
+  std::string access_token_for_testing_;
 
   // Denotes incognito mode.
   bool is_off_the_record_;

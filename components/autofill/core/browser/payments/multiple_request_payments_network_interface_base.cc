@@ -11,6 +11,7 @@
 #include <variant>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -138,6 +139,12 @@ const RequestId& MultipleRequestPaymentsNetworkInterfaceBase::RequestOperation::
   request_operation_id_ =
       RequestId(base::Uuid::GenerateRandomV4().AsLowercaseString());
   has_retried_authorization_ = false;
+  if (!payments_network_interface_->access_token_for_testing_.empty()) {
+    CHECK_IS_TEST();
+    SetAccessTokenAndStartRequest(
+        payments_network_interface_->access_token_for_testing_);
+    return request_operation_id_;
+  }
   token_fetcher_.GetAccessToken(
       /*invalidate_old=*/false,
       base::BindOnce(&MultipleRequestPaymentsNetworkInterfaceBase::
@@ -391,6 +398,17 @@ void MultipleRequestPaymentsNetworkInterfaceBase::CancelRequestWithId(
   if (auto it = operations_.find(id); it != operations_.end()) {
     it->second->InvalidateOperation();
   }
+}
+
+void MultipleRequestPaymentsNetworkInterfaceBase::
+    set_url_loader_factory_for_testing(
+        scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  url_loader_factory_ = std::move(url_loader_factory);
+}
+
+void MultipleRequestPaymentsNetworkInterfaceBase::set_access_token_for_testing(
+    std::string access_token) {
+  access_token_for_testing_ = std::move(access_token);
 }
 
 void MultipleRequestPaymentsNetworkInterfaceBase::OnRequestFinished(
