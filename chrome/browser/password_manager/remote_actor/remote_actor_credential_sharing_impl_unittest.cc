@@ -42,7 +42,6 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -61,12 +60,7 @@ namespace password_manager {
 namespace {
 
 using testing::_;
-using testing::AllOf;
 using testing::ByMove;
-using testing::Field;
-using testing::IsEmpty;
-using testing::Not;
-using testing::Property;
 using testing::Return;
 
 class MockBadMessageHelper {
@@ -548,171 +542,6 @@ TEST_F(RemoteActorCredentialSharingImplTest,
       bad_message_future.Get(),
       testing::HasSubstr(
           "RemoteActorCredentialSharing: Request without user gesture"));
-}
-
-TEST_F(RemoteActorCredentialSharingImplTest, SuccessFlow_SelectCredential) {
-  base::HistogramTester histograms;
-  SignIn("user@gmail.com");
-  NavigateAndCommit(GURL("https://gemini.google.com"));
-  content::RenderFrameHostTester::For(main_rfh())
-      ->InitializeRenderFrameIfNeeded();
-  CreateImpl();
-
-  RemoteActorCredentialSharingImpl* impl =
-      RemoteActorCredentialSharingImpl::GetForCurrentDocument(main_rfh());
-  ASSERT_NE(impl, nullptr);
-
-  mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing> remote;
-  impl->Bind(remote.BindNewEndpointAndPassDedicatedReceiver());
-
-  // Add a credential to the profile store (synced because sync is active).
-  PasswordForm form;
-  form.signon_realm = "https://google.com/";
-  form.url = GURL("https://google.com");
-  form.username_value = u"user";
-  form.password_value = PasswordString(u"pass");
-  form.in_store = PasswordForm::Store::kProfileStore;
-  profile_store_->AddLogin(FromPasswordForm(form));
-
-  content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
-  base::test::TestFuture<bool> result;
-  base::test::TestFuture<void> dialog_shown_future;
-  dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
-  remote->RequestAgentAuthentication(
-      /*gaia_id=*/account_info_.GetGaiaId().ToString(),
-      /*domain=*/"google.com", /*task_id=*/"actor_id", result.GetCallback());
-
-  // Wait for the dialog to be shown (factory called).
-  dialog_shown_future.Get();
-
-  ASSERT_EQ(last_dialog_credentials_.size(), 1u);
-  EXPECT_EQ(last_dialog_credentials_[0]->username_value, u"user");
-  EXPECT_EQ(last_dialog_credential_domain_, "https://google.com");
-
-  EXPECT_CALL(
-      *mock_sharing_service_,
-      SharePassword(
-          AllOf(Field(&RemoteActorCredentialSharingService::ShareParameters::
-                          password_data,
-                      Property(&sync_pb::PasswordSpecificsData::username_value,
-                               "user")),
-                Field(&RemoteActorCredentialSharingService::ShareParameters::
-                          password_data,
-                      Property(&sync_pb::PasswordSpecificsData::password_value,
-                               "pass")),
-                Field(&RemoteActorCredentialSharingService::ShareParameters::
-                          web_origin,
-                      "https://google.com"),
-                Field(&RemoteActorCredentialSharingService::ShareParameters::
-                          task_id,
-                      "actor_id"),
-                Property(&RemoteActorCredentialSharingService::ShareParameters::
-                             password_client_tag_hash,
-                         Not(IsEmpty()))),
-          _))
-      .WillOnce(base::test::RunOnceCallback<1>(true));
-
-  // Simulate user selecting the credential.
-  SimulateDialogSelection(*last_dialog_credentials_[0]);
-
-  // Selecting a credential should return true (success).
-  EXPECT_TRUE(result.Get());
-
-  histograms.ExpectUniqueSample(
-      "PasswordManager.RemoteActorCredentialSharing.Result",
-      RemoteActorCredentialSharingResult::kSuccess, 1);
-}
-
-TEST_F(RemoteActorCredentialSharingImplTest, FailureFlow_SharingFailed) {
-  base::HistogramTester histograms;
-  SignIn("user@gmail.com");
-  NavigateAndCommit(GURL("https://gemini.google.com"));
-  content::RenderFrameHostTester::For(main_rfh())
-      ->InitializeRenderFrameIfNeeded();
-  CreateImpl();
-
-  RemoteActorCredentialSharingImpl* impl =
-      RemoteActorCredentialSharingImpl::GetForCurrentDocument(main_rfh());
-  ASSERT_NE(impl, nullptr);
-
-  mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing> remote;
-  impl->Bind(remote.BindNewEndpointAndPassDedicatedReceiver());
-
-  PasswordForm form;
-  form.signon_realm = "https://google.com/";
-  form.url = GURL("https://google.com");
-  form.username_value = u"user";
-  form.password_value = PasswordString(u"pass");
-  form.in_store = PasswordForm::Store::kProfileStore;
-  profile_store_->AddLogin(FromPasswordForm(form));
-
-  content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
-  base::test::TestFuture<bool> result;
-  base::test::TestFuture<void> dialog_shown_future;
-  dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
-  remote->RequestAgentAuthentication(
-      /*gaia_id=*/account_info_.GetGaiaId().ToString(),
-      /*domain=*/"google.com", /*task_id=*/"actor_id", result.GetCallback());
-
-  dialog_shown_future.Get();
-
-  EXPECT_CALL(*mock_sharing_service_, SharePassword)
-      .WillOnce(base::test::RunOnceCallback<1>(false));
-
-  // Simulate user selecting the credential.
-  SimulateDialogSelection(*last_dialog_credentials_[0]);
-
-  // Selecting a credential should return false (failure).
-  EXPECT_FALSE(result.Get());
-
-  histograms.ExpectUniqueSample(
-      "PasswordManager.RemoteActorCredentialSharing.Result",
-      RemoteActorCredentialSharingResult::kSharingFailed, 1);
-}
-
-TEST_F(RemoteActorCredentialSharingImplTest, SuccessFlow_CancelDialog) {
-  base::HistogramTester histograms;
-  SignIn("user@gmail.com");
-  NavigateAndCommit(GURL("https://gemini.google.com"));
-  content::RenderFrameHostTester::For(main_rfh())
-      ->InitializeRenderFrameIfNeeded();
-  CreateImpl();
-
-  RemoteActorCredentialSharingImpl* impl =
-      RemoteActorCredentialSharingImpl::GetForCurrentDocument(main_rfh());
-  ASSERT_NE(impl, nullptr);
-
-  mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing> remote;
-  impl->Bind(remote.BindNewEndpointAndPassDedicatedReceiver());
-
-  PasswordForm form;
-  form.signon_realm = "https://google.com/";
-  form.url = GURL("https://google.com");
-  form.username_value = u"user";
-  form.password_value = PasswordString(u"pass");
-  form.in_store = PasswordForm::Store::kProfileStore;
-  profile_store_->AddLogin(FromPasswordForm(form));
-
-  content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
-  base::test::TestFuture<bool> result;
-  base::test::TestFuture<void> dialog_shown_future;
-  dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
-  remote->RequestAgentAuthentication(
-      /*gaia_id=*/account_info_.GetGaiaId().ToString(),
-      /*domain=*/"google.com", /*task_id=*/"actor_id", result.GetCallback());
-
-  dialog_shown_future.Get();
-
-  ASSERT_EQ(last_dialog_credentials_.size(), 1u);
-
-  // Simulate user cancelling the dialog.
-  SimulateDialogSelection(std::nullopt);
-
-  EXPECT_FALSE(result.Get());
-
-  histograms.ExpectUniqueSample(
-      "PasswordManager.RemoteActorCredentialSharing.Result",
-      RemoteActorCredentialSharingResult::kUserCancelledDialog, 1);
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)

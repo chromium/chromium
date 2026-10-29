@@ -6,11 +6,14 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_REMOTE_ACTOR_REMOTE_ACTOR_CREDENTIAL_SHARING_CONTROLLER_H_
 
 #include <cstddef>
+#include <memory>
+#include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -18,6 +21,7 @@
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_result.h"
+#include "url/origin.h"
 
 namespace signin {
 class IdentityManager;
@@ -30,43 +34,64 @@ class SyncService;
 namespace password_manager {
 
 class PasswordStoreInterface;
+class RemoteActorCredentialSharingService;
 
 // Platform-agnostic logic for sharing one of the user's saved credentials for
 // a domain with a remote actor (e.g. Gemini). Each instance handles a single
 // request.
 class RemoteActorCredentialSharingController : public PasswordStoreConsumer {
  public:
-  // The credentials synced to the user's account that match the requested
-  // domain, or the result explaining why they could not be fetched.
-  using CredentialsOrError = base::expected<std::vector<PasswordForm>,
-                                            RemoteActorCredentialSharingResult>;
   // Called with the outcome of `Start()`.
-  using CredentialsCallback = base::OnceCallback<void(CredentialsOrError)>;
+  using ResultCallback =
+      base::OnceCallback<void(RemoteActorCredentialSharingResult)>;
 
-  // `identity_manager` and `sync_service` may be null when unavailable for the
-  // profile. The store matching the user's sync state must be non-null. All
-  // must outlive this controller.
+  // Platform hooks for the user-facing steps.
+  class Delegate {
+   public:
+    // Selected credential on success, or the failure reason.
+    using CredentialOrError =
+        base::expected<PasswordForm, RemoteActorCredentialSharingResult>;
+    // `base::ok()` if re-authentication succeeded (or was not needed), or the
+    // failure reason.
+    using AuthResult = base::expected<void, RemoteActorCredentialSharingResult>;
+
+    virtual ~Delegate() = default;
+
+    // Shows the credential selection dialog for `credentials` on `origin`.
+    virtual void ShowCredentialSelection(
+        std::vector<std::unique_ptr<PasswordForm>> credentials,
+        const url::Origin& origin,
+        base::OnceCallback<void(CredentialOrError)> callback) = 0;
+
+    // Re-authenticates the user before sharing a credential for `origin`, if
+    // required.
+    virtual void AuthenticateIfNeeded(
+        const url::Origin& origin,
+        base::OnceCallback<void(AuthResult)> callback) = 0;
+  };
+
+  // `identity_manager`, `sync_service` and `sharing_service` may be null when
+  // unavailable for the profile. The store matching the user's sync state and
+  // `delegate` must be non-null. All must outlive this controller.
   RemoteActorCredentialSharingController(
       signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service,
       PasswordStoreInterface* profile_store,
-      PasswordStoreInterface* account_store);
+      PasswordStoreInterface* account_store,
+      RemoteActorCredentialSharingService* sharing_service,
+      Delegate* delegate);
   RemoteActorCredentialSharingController(
       const RemoteActorCredentialSharingController&) = delete;
   RemoteActorCredentialSharingController& operator=(
       const RemoteActorCredentialSharingController&) = delete;
   ~RemoteActorCredentialSharingController() override;
 
-  // Fetches the credentials for `domain` synced to the account of the user
-  // identified by `gaia_id`. If `gaia_id` is not the signed-in user, sync is
-  // in an error state or no store holds account credentials, `callback` is run
-  // synchronously with the corresponding error. Otherwise, it is run
-  // asynchronously with the matching credentials, which may be empty. Must be
-  // called at most once.
-  // The owner may destroy the controller from within `callback`.
+  // Starts sharing a credential for `domain` on behalf of the user identified
+  // by `gaia_id`, scoped to `task_id`. Must be called at most once.
   void Start(std::string_view gaia_id,
              std::string_view domain,
-             CredentialsCallback callback);
+             std::string_view task_id,
+             ResultCallback callback);
 
   // Returns whether `Start()` was called and the result was not reported yet.
   bool IsActive() const;
@@ -84,13 +109,40 @@ class RemoteActorCredentialSharingController : public PasswordStoreConsumer {
   // Initiates asynchronous queries to the relevant password stores.
   void QueryPasswordStores(std::string_view domain);
 
+  // Called when all password store queries have completed.
+  void OnAllLoginsRetrieved();
+
+  // Called with the selected credential, or the error if none was selected.
+  void OnCredentialSelected(Delegate::CredentialOrError selected_form);
+
+  // Called when re-authentication completed or was not required.
+  void ProceedWithCredential(PasswordForm selected_form,
+                             Delegate::AuthResult auth_result);
+
+  // Callback triggered when the sharing service completes the operation.
+  void OnShareCompleted(bool success);
+
+  // Asynchronously posts `result` to the result callback.
+  void RespondWithError(RemoteActorCredentialSharingResult result);
+
+  // Runs `callback_` with `result`.
+  void RunResultCallback(RemoteActorCredentialSharingResult result);
+
   const raw_ptr<signin::IdentityManager> identity_manager_;
   const raw_ptr<syncer::SyncService> sync_service_;
   const raw_ptr<PasswordStoreInterface> profile_store_;
   const raw_ptr<PasswordStoreInterface> account_store_;
+  const raw_ptr<RemoteActorCredentialSharingService> sharing_service_;
+  const raw_ref<Delegate> delegate_;
 
+  // The GAIA ID of the user requesting authentication.
+  std::string gaia_id_;
+  // The origin for which credentials are requested.
+  url::Origin origin_;
+  // The ID of the remote actor task requesting credentials.
+  std::string task_id_;
   // The callback to return the result to the caller.
-  CredentialsCallback callback_;
+  ResultCallback callback_;
   // The number of password store queries started.
   size_t expected_callbacks_ = 0;
   // The number of password store queries that have completed.
