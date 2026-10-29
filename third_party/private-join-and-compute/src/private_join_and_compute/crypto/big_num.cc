@@ -20,7 +20,7 @@
 #include <string>
 #include <utility>
 
-#include "third_party/private-join-and-compute/chromium_patch.h"
+#include "base/check_op.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "absl/strings/str_cat.h"

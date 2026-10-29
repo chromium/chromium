@@ -20,7 +20,7 @@
 #include <utility>
 #include <vector>
 
-#include "third_party/private-join-and-compute/chromium_patch.h"
+#include "base/check_op.h"
 #include "absl/memory/memory.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"

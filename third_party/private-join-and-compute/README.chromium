@@ -14,7 +14,7 @@ Description:
 The package contains a communicative cipher. It's used to communicate with the leak detection Google server. The package is used from ip_protection component to re-randomize elgamal ciphers.
 
 Local Modifications:
-Stripped all the dependencies except for BoringSSL. chromium_patch.h is the only new file. Other modifications are removing the includes, fixing the macroses to those used in Chrome and removing unused functions and classes. The diff files are in order of modifications:
+Stripped all the dependencies except for BoringSSL. Other modifications are removing the includes, fixing the macroses to those used in Chrome and removing unused functions and classes. The diff files are in order of modifications:
 
 files.diff - the files deleted from the original library. Generated using following command in `chromium/src` where private-join-and-compute.08df854 HEAD is at Revision given above, `diff -qr /tmp/private-join-and-compute.08df854/private_join_and_compute/ third_party/private-join-and-compute/src/ > third_party/private-join-and-compute/patches/files.diff`.
 dependencies.diff - removes all the dependencies on Abseil and other libraries replacing them with Chrome's analogues.

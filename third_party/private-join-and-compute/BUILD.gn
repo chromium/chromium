@@ -37,7 +37,6 @@ component("ec_commutative_cipher") {
     "src/private_join_and_compute/crypto/elgamal.h",
   ]
   sources = [
-    "chromium_patch.h",
     "src/private_join_and_compute/crypto/big_num.cc",
     "src/private_join_and_compute/crypto/context.cc",
     "src/private_join_and_compute/crypto/ec_commutative_cipher.cc",
