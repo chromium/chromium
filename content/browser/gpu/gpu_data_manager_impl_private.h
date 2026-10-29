@@ -282,6 +282,9 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   // What the gpu process is being run for.
   gpu::GpuMode gpu_mode_ = gpu::GpuMode::UNKNOWN;
 
+  // Whether any GPU mode has reached the process crash limit.
+  bool gpu_crash_limit_reached_ = false;
+
   // Order of gpu process fallback states, used as a stack.
   std::vector<gpu::GpuMode> fallback_modes_;
 

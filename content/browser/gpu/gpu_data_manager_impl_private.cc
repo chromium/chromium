@@ -585,25 +585,26 @@ bool GpuDataManagerImplPrivate::GpuAccessAllowed(std::string* reason) const {
       return true;
     default:
       if (reason) {
-        // If SwiftShader is allowed, then we are here because it was blocked.
-        if (SoftwareGLAllowed()) {
-          *reason = "GPU process crashed too many times with software GL.";
+        *reason = "GPU access is disabled ";
+        const bool software_gl_allowed = SoftwareGLAllowed();
+        // just running with --disable-gpu only will go to
+        // GpuMode::SOFTWARE_GL instead. Adding --disable-gpu and
+        // --disable-software-rasterizer makes GpuAccessAllowed false and it
+        // comes here.
+        if (!software_gl_allowed &&
+            base::CommandLine::ForCurrentProcess()->HasSwitch(
+                switches::kDisableGpu)) {
+          *reason +=
+              "through commandline switch --disable-gpu and "
+              "--disable-software-rasterizer.";
+        } else if (!software_gl_allowed && hardware_disabled_explicitly_) {
+          *reason += "in chrome://settings.";
+        } else if (gpu_crash_limit_reached_) {
+          *reason += "after the GPU process crash limit was reached.";
         } else {
-          *reason = "GPU access is disabled ";
-          // just running with --disable-gpu only will go to
-          // GpuMode::SOFTWARE_GL instead. Adding --disable-gpu and
-          // --disable-software-rasterizer makes GpuAccessAllowed false and it
-          // comes here.
-          if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-                  switches::kDisableGpu)) {
-            *reason +=
-                "through commandline switch --disable-gpu and "
-                "--disable-software-rasterizer.";
-          } else if (hardware_disabled_explicitly_) {
-            *reason += "in chrome://settings.";
-          } else {
-            *reason += "due to frequent crashes.";
-          }
+          *reason +=
+              "because no usable hardware or software GPU "
+              "implementation is available.";
         }
       }
       return false;
@@ -1648,6 +1649,7 @@ void GpuDataManagerImplPrivate::FallBackToNextGpuMode() {
 }
 
 void GpuDataManagerImplPrivate::FallBackToNextGpuModeDueToCrash() {
+  gpu_crash_limit_reached_ = true;
   FallBackToNextGpuMode();
 
   // If we fell back to sofware GL due to crashes and it is disabled with a
