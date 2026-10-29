@@ -39,11 +39,6 @@
 namespace gpu {
 namespace {
 
-// Kill switch for enforcing exclusive write access. Remove after M159 hits
-// stable.
-BASE_FEATURE(kWrappedGraphiteTextureBackingExclusiveAccess,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 using GraphiteTextureHolder = SkiaImageRepresentation::GraphiteTextureHolder;
 
 struct ReadPixelsContext {
@@ -167,7 +162,7 @@ WrappedGraphiteTextureBacking::WrappedGraphiteTextureBacking(
           thread_safe),
       context_state_(std::move(context_state)),
       enforce_exclusive_access_(base::FeatureList::IsEnabled(
-          kWrappedGraphiteTextureBackingExclusiveAccess)) {
+          features::kWrappedSkiaBackingExclusiveAccess)) {
   CHECK(context_state_);
   CHECK(context_state_->graphite_shared_context());
 

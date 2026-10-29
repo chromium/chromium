@@ -882,4 +882,12 @@ const base::FeatureParam<bool> kSendGPUChannelEarlyTopChromeOnly{
 // Enables Ganesh/Vulkan MSAA support on Imagination (PowerVR) GPUs.
 BASE_FEATURE(kVulkanImaginationMSAA, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch for enforcing exclusive write access.
+BASE_FEATURE(kWrappedSkiaBackingExclusiveAccess,
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 }  // namespace features

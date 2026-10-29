@@ -43,14 +43,6 @@ namespace gpu {
 
 namespace {
 
-// Kill switch for enforcing exclusive write access.
-BASE_FEATURE(kWrappedSkImageBackingExclusiveAccess,
-#if BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // Given a debug label string from the client, construct a string we can pass to
 // debugging tools.
 std::string GetLabel(const std::string& debug_label) {
@@ -195,8 +187,8 @@ WrappedSkImageBacking::WrappedSkImageBacking(
           si_info.format.EstimatedSizeInBytes(si_info.size),
           thread_safe),
       context_state_(std::move(context_state)),
-      enforce_exclusive_access_(
-          base::FeatureList::IsEnabled(kWrappedSkImageBackingExclusiveAccess)) {
+      enforce_exclusive_access_(base::FeatureList::IsEnabled(
+          features::kWrappedSkiaBackingExclusiveAccess)) {
   DCHECK(!!context_state_);
 
   // If the backing is meant to be thread safe, then grab the task runner to

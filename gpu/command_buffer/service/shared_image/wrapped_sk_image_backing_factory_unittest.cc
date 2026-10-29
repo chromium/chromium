@@ -321,6 +321,11 @@ TEST_P(WrappedSkImageBackingFactoryTest, RestoresPreviouslyCurrentGLContext) {
 // exclusive write access and prevent concurrent read/write access across
 // multiple representations, while allowing concurrent read access.
 TEST_P(WrappedSkImageBackingFactoryTest, AccessExclusivity) {
+  if (!base::FeatureList::IsEnabled(
+          features::kWrappedSkiaBackingExclusiveAccess)) {
+    GTEST_SKIP() << "Exclusive access is disabled";
+  }
+
   auto format = GetFormat();
   auto mailbox = Mailbox::Generate();
   gfx::Size size(100, 100);

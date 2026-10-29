@@ -286,6 +286,8 @@ GPU_CONFIG_EXPORT extern const base::FeatureParam<bool>
 
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kVulkanImaginationMSAA);
 
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kWrappedSkiaBackingExclusiveAccess);
+
 }  // namespace features
 
 #endif  // GPU_CONFIG_GPU_FINCH_FEATURES_H_
