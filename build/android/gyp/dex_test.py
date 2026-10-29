@@ -303,8 +303,11 @@ Warning: Missing class com.example.Foo
                 z.writestr('pkg/Bar.class', b'b' * 250)
                 z.writestr('META-INF/services/', b'')
                 z.writestr('META-INF/services/pkg.Svc', b'pkg.Bar\n')
+                z.writestr('META-INF/versions/9/pkg/Bar.class', b'c' * 50)
 
-            entries, service_jars = dex._ScanClassInputJars([jar1, jar2])
+            entries, service_jars, skipped_jars = dex._ScanClassInputJars(
+                [jar1, jar2]
+            )
             self.assertEqual(
                 entries,
                 {
@@ -313,6 +316,7 @@ Warning: Missing class com.example.Foo
                 },
             )
             self.assertEqual(service_jars, [jar2])
+            self.assertEqual(skipped_jars, {jar2})
 
     def testPartitionClassEntriesIntoShards_KeepsNestsTogether(self):
         jar_entries = {
@@ -344,13 +348,15 @@ Warning: Missing class com.example.Foo
         jar_entries = {
             'full.jar': [('a/A.class', 10), ('a/B.class', 20)],
             'part.jar': [('b/C.class', 10), ('b/D.class', 20)],
+            'skipped.jar': [('c/E.class', 10)],
         }
         shard = {
             'full.jar': ['a/A.class', 'a/B.class'],
             'part.jar': ['b/D.class'],
             'empty.jar': [],
+            'skipped.jar': ['c/E.class'],
         }
-        args = dex._BuildJarInputArgs(shard, jar_entries)
+        args = dex._BuildJarInputArgs(shard, jar_entries, {'skipped.jar'})
         self.assertEqual(
             args,
             [
@@ -360,6 +366,10 @@ Warning: Missing class com.example.Foo
                 'part.jar',
                 '--jar-class',
                 'b/D.class',
+                '--jar-input',
+                'skipped.jar',
+                '--jar-class',
+                'c/E.class',
             ],
         )
 
@@ -378,15 +388,17 @@ Warning: Missing class com.example.Foo
         )
 
         self.assertEqual(
-            zb.add_all_from_zip.call_args_list,
+            zb.add_from_zip.call_args_list,
             [
                 unittest.mock.call(
+                    'classes.dex',
                     's0.dex.jar',
-                    compress_level=dex.zipbuilder.KEEP_COMPRESSION,
+                    'classes.dex',
                 ),
                 unittest.mock.call(
+                    'classes2.dex',
                     's1.dex.jar',
-                    compress_level=dex.zipbuilder.KEEP_COMPRESSION,
+                    'classes.dex',
                 ),
             ],
         )

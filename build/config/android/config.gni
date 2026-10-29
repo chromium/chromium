@@ -352,9 +352,6 @@ if (is_android) {
     # Whether java assertions and Preconditions checks are enabled.
     enable_java_asserts = dcheck_always_on || !is_official_build
 
-    # Reduce build time by using d8 incremental build.
-    enable_incremental_d8 = true
-
     # Assemble dex files in tiers to bypass D8 final merge step.
     tiered_dex_assembly = is_java_debug
 

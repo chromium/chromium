@@ -1578,7 +1578,6 @@ if (enable_java_templates) {
 
   # Variables
   #   apply_mapping: The path to the ProGuard mapping file to apply.
-  #   disable_incremental: Disable incremental dexing.
   template("dex") {
     _min_sdk_version = default_min_sdk_version
     if (defined(invoker.min_sdk_version)) {
@@ -1738,14 +1737,6 @@ if (enable_java_templates) {
           args += [ "--warnings-as-errors" ]
         }
 
-        if (enable_incremental_d8 && !(defined(invoker.disable_incremental) &&
-                                       invoker.disable_incremental)) {
-          # Don't use incremental dexing for ProGuarded inputs as a precaution.
-          args += [
-            "--incremental-dir",
-            rebase_path("$target_out_dir/$target_name", root_build_dir),
-          ]
-        }
         if (_is_library) {
           args += [ "--intermediate" ]
         }
@@ -1793,22 +1784,15 @@ if (enable_java_templates) {
             _rebased_build_config =
                 rebase_path(invoker.build_config, root_build_dir)
             args += [
-              # Pass the full classpath to find new dependencies that are not in
-              # the .desugardeps file.
               # R8 cannot use interface classpath (crbug.com/417451320)
               "--classpath=@FileArg($_rebased_build_config:javac_full_classpath)",
             ]
           }
 
           if (_min_sdk_version < 24) {
-            _desugar_dependencies_path =
-                "$target_gen_dir/$target_name.desugardeps"
             inputs += [ android_sdk_jar ]
-            args += [
-              "--desugar-dependencies",
-              rebase_path(_desugar_dependencies_path, root_build_dir),
-              "--bootclasspath=@FileArg($_rebased_build_config:sdk_jars)",
-            ]
+            args +=
+                [ "--bootclasspath=@FileArg($_rebased_build_config:sdk_jars)" ]
           }
         }
 
@@ -4435,9 +4419,6 @@ if (enable_java_templates) {
           enable_desugar = _enable_desugar
           ignore_desugar_missing_deps = !_enable_bytecode_checks
 
-          # There's no value in per-class dexing prebuilts since they never
-          # change just one class at a time.
-          disable_incremental = _is_prebuilt
           output = _dex_path
           deps = _processed_jar_deps + _unprocessed_jar_deps
 

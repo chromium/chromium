@@ -46,7 +46,7 @@ _CUSTOM_D8_MAIN_CLASS = 'org.chromium.build.CustomD8'
 _MIN_SUPPORTED_SDK_VERSION = '23'
 # LINT.ThenChange(//build/config/android/config.gni:min_supported_sdk_version)
 # Uses default methods, static interface methods, and lambdas so that tracing
-# covers desugaring and desugar-dependency tracking.
+# covers desugaring.
 _SAMPLE_IFACE_JAVA = """\
 package org.chromium.sample;
 
@@ -249,7 +249,7 @@ def _sample_d8_args(out_dir, jdk_home, classpath_jar, program_jar,
     """Returns argv lists covering the ways that dex.py invokes CustomD8."""
     os.makedirs(out_dir)
     intermediate_jar = os.path.join(out_dir, 'intermediate.jar')
-    incremental_jar = os.path.join(out_dir, 'incremental.jar')
+    shard_jar = os.path.join(out_dir, 'shard.jar')
     merged_jar = os.path.join(out_dir, 'merged.jar')
     service_arg = f'META-INF/services/org.chromium.sample.Iface={service_file}'
     common_args = ['--min-api', '21', '--lib', jdk_home]
@@ -258,11 +258,8 @@ def _sample_d8_args(out_dir, jdk_home, classpath_jar, program_jar,
         common_args + [
             '--intermediate',
             '--ignore-globals',
-            '--file-per-class-file',
             '--classpath',
             classpath_jar,
-            '--desugar-dependencies',
-            os.path.join(out_dir, 'desugar_deps.txt'),
             '--jar-input',
             program_jar,
             '--add-file',
@@ -270,25 +267,18 @@ def _sample_d8_args(out_dir, jdk_home, classpath_jar, program_jar,
             '--output',
             intermediate_jar,
         ],
-        # Incremental per-library dexing with --jar-class and --base-jar.
+        # Sharded per-library dexing with --jar-class.
         common_args + [
             '--intermediate',
             '--ignore-globals',
-            '--file-per-class-file',
             '--classpath',
             classpath_jar,
             '--jar-input',
             program_jar,
             '--jar-class',
             program_entry,
-            '--base-jar',
-            intermediate_jar,
-            '--exclude-entry',
-            'org/chromium/sample/NonExistent.dex',
-            '--add-file',
-            service_arg,
             '--output',
-            incremental_jar,
+            shard_jar,
         ],
         # Dex merging into a stored .jar.
         common_args + [
@@ -297,7 +287,7 @@ def _sample_d8_args(out_dir, jdk_home, classpath_jar, program_jar,
             service_arg,
             '--output',
             merged_jar,
-            incremental_jar,
+            intermediate_jar,
         ],
     ]
 
@@ -320,7 +310,7 @@ def _build_native_custom_d8(r8_jar, output_path):
     # Inputs for the tracing agent, which records the reflection & resource
     # accesses that native-image needs to know about (e.g. R8's
     # reflectively-loaded ThreadingModule provider). Iface is passed via
-    # --classpath so that desugaring records a dependency edge on it.
+    # --classpath so that tracing covers interface desugaring.
     sample_src = pathlib.Path('sample_src').resolve()
     sample_src.mkdir()
     (sample_src / 'Iface.java').write_text(_SAMPLE_IFACE_JAVA,
@@ -361,9 +351,6 @@ def _build_native_custom_d8(r8_jar, output_path):
         pgo_common_args + [
             '--intermediate',
             '--ignore-globals',
-            '--file-per-class-file',
-            '--desugar-dependencies',
-            os.path.join(pgo_out, 'desugar_deps.txt'),
             '--jar-input',
             r8_jar,
             '--output',
@@ -398,9 +385,6 @@ def _build_native_custom_d8(r8_jar, output_path):
     for args in _sample_d8_args(smoke_out, graal_home, iface_jar, program_jar,
                                 program_entries[0], service_file):
         common.run_cmd([output_path, f'-Djava.home={graal_home}'] + args)
-    deps = pathlib.Path(smoke_out, 'desugar_deps.txt').read_text()
-    if 'Iface.class' not in deps:
-        raise RuntimeError(f'Unexpected desugar deps from custom_d8:\n{deps}')
     with zipfile.ZipFile(os.path.join(smoke_out, 'merged.jar')) as z:
         if 'classes.dex' not in z.namelist():
             raise RuntimeError(

@@ -118,8 +118,6 @@ This step happens only when targets have `supports_android = true`.
 
 * [d8] converts `.jar` files containing `.class` files into `.dex.jar` files
   containing `classes.dex` files.
-* Dexing is incremental - it will reuse dex'ed classes from a previous build if
-  the corresponding `.class` file is unchanged.
 * Desugaring some constructs (e.g. Java `record` classes) makes d8 emit
   "global synthetics": classes shared by the whole app rather than owned by one
   library. Per-library dexing discards them (`--ignore-globals` in

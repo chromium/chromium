@@ -67,13 +67,6 @@ def _can_use_binary():
     return False
 
 
-def get_input_paths():
-    """Returns the tool paths read by ZipBuilder.write()."""
-    if _can_use_binary():
-        return [_SIGNFLINGER_BINARY_PATH]
-    return [build_utils.JAVA_PATH_FOR_INPUTS, _SIGNFLINGER_JAR_PATH]
-
-
 class ZipBuilder:
     """Collects entries and then runs ZipBuilder to write them to a zip.
 
