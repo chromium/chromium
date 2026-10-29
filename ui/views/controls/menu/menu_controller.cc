@@ -284,6 +284,19 @@ MenuItemView* GetAnchorViewContainerMenuItem(MenuItemView* item) {
   return nullptr;
 }
 
+gfx::Rect GetChildMenuAnchorBounds(MenuItemView* item) {
+  gfx::Rect bounds;
+  if (const View* anchor_view = item->GetAnchorView()) {
+    bounds = anchor_view->GetBoundsInScreen();
+  } else {
+    bounds = item->GetBoundsInScreen();
+    bounds.Inset(item->GetHighlightInsets());
+  }
+  // TODO(pkasting): Not clear to me why we want to set the height to 1 dip.
+  bounds.set_height(1);
+  return bounds;
+}
+
 MenuPartType GetScrollButtonAt(SubmenuView* source,
                                const gfx::Point& location) {
   MenuScrollViewContainer* scroll_view = source->GetScrollViewContainer();
@@ -2994,17 +3007,10 @@ gfx::Rect MenuController::CalculateMenuBounds(
   DCHECK(submenu);
 
   // For the first menu, anchor_rect is initial bounds. Otherwise, it is the top
-  // of the menu item that spawned this menu.
-  // TODO(pkasting): Not clear to me why we want to set the height to 1 dip.
+  // of the highlight (or anchor view) of the menu item that spawned this menu.
   const bool is_child_menu = !!item->GetParentMenuItem();
-  gfx::Rect anchor_bounds =
-      is_child_menu
-          ? (item->GetAnchorView() ? item->GetAnchorView()->GetBoundsInScreen()
-                                   : item->GetBoundsInScreen())
-          : state_.initial_bounds;
-  if (is_child_menu) {
-    anchor_bounds.set_height(1);
-  }
+  const gfx::Rect anchor_bounds =
+      is_child_menu ? GetChildMenuAnchorBounds(item) : state_.initial_bounds;
   anchor->anchor_rect = anchor_bounds;
 
   SetAnchorParametersForItem(item, anchor_bounds.origin(), anchor);
@@ -3179,17 +3185,10 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
   DCHECK(anchor);
 
   // For the first menu, anchor_rect is initial bounds. Otherwise, it is the top
-  // of the menu item that spawned this menu.
-  // TODO(pkasting): Not clear to me why we want to set the height to 1 dip.
+  // of the highlight (or anchor view) of the menu item that spawned this menu.
   const bool is_child_menu = !!item->GetParentMenuItem();
-  gfx::Rect anchor_bounds =
-      is_child_menu
-          ? (item->GetAnchorView() ? item->GetAnchorView()->GetBoundsInScreen()
-                                   : item->GetBoundsInScreen())
-          : state_.initial_bounds;
-  if (is_child_menu) {
-    anchor_bounds.set_height(1);
-  }
+  const gfx::Rect anchor_bounds =
+      is_child_menu ? GetChildMenuAnchorBounds(item) : state_.initial_bounds;
   anchor->anchor_rect = anchor_bounds;
 
   SetAnchorParametersForItem(item, anchor_bounds.origin(), anchor);

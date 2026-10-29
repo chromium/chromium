@@ -379,11 +379,14 @@ class MenuControllerTest : public ViewsTestBase,
                             bool control_or_command,
                             bool caps_lock);
 
-  gfx::Rect CalculateMenuBounds(const MenuBoundsOptions& options);
+  gfx::Rect CalculateMenuBounds(const MenuBoundsOptions& options,
+                                MenuItemView* menu_item = nullptr,
+                                ui::OwnedWindowAnchor* anchor_out = nullptr);
 
   gfx::Rect CalculateBubbleMenuBoundsWithoutInsets(
       const MenuBoundsOptions& options,
-      MenuItemView* menu_item = nullptr);
+      MenuItemView* menu_item = nullptr,
+      ui::OwnedWindowAnchor* anchor_out = nullptr);
 
   MenuItemView::MenuPosition menu_item_actual_position() const {
     return menu_item_->actual_menu_position();
@@ -703,18 +706,28 @@ void MenuControllerTest::DispatchKeyWithFlags(ui::KeyboardCode key_code,
 }
 
 gfx::Rect MenuControllerTest::CalculateMenuBounds(
-    const MenuBoundsOptions& options) {
-  SetUpMenuControllerForCalculateBounds(options, menu_item_.get());
+    const MenuBoundsOptions& options,
+    MenuItemView* menu_item,
+    ui::OwnedWindowAnchor* anchor_out) {
+  if (!menu_item) {
+    menu_item = menu_item_.get();
+  }
+  SetUpMenuControllerForCalculateBounds(options, menu_item);
   MenuController::MenuOpenDirection resulting_direction;
   ui::OwnedWindowAnchor anchor;
-  return menu_controller_->CalculateMenuBounds(
-      menu_item_.get(), MenuController::MenuOpenDirection::kLeading,
+  const gfx::Rect bounds = menu_controller_->CalculateMenuBounds(
+      menu_item, MenuController::MenuOpenDirection::kLeading,
       &resulting_direction, &anchor);
+  if (anchor_out) {
+    *anchor_out = anchor;
+  }
+  return bounds;
 }
 
 gfx::Rect MenuControllerTest::CalculateBubbleMenuBoundsWithoutInsets(
     const MenuBoundsOptions& options,
-    MenuItemView* menu_item) {
+    MenuItemView* menu_item,
+    ui::OwnedWindowAnchor* anchor_out) {
   if (!menu_item) {
     menu_item = menu_item_.get();
   }
@@ -727,6 +740,9 @@ gfx::Rect MenuControllerTest::CalculateBubbleMenuBoundsWithoutInsets(
   bounds.Inset(menu_item->GetSubmenu()
                    ->GetScrollViewContainer()
                    ->outside_border_insets());
+  if (anchor_out) {
+    *anchor_out = anchor;
+  }
   return bounds;
 }
 
@@ -736,6 +752,7 @@ gfx::Rect MenuControllerTest::CalculateExpectedMenuAnchorRect(
     return menu_controller_->state_.initial_bounds;
   }
   gfx::Rect bounds = menu_item->GetBoundsInScreen();
+  bounds.Inset(menu_item->GetHighlightInsets());
   bounds.set_height(1);
   return bounds;
 }
@@ -2610,6 +2627,76 @@ TEST_P(MenuControllerTest, TestSubmenuFitsOnScreen) {
       }
     }
   }
+}
+
+// Test that submenus are anchored to the parent item's highlight (rather than
+// its full bounds) so the hover states of the parent item and the submenu abut.
+TEST_P(MenuControllerTest, SubmenuAnchoredToParentItemHighlight) {
+  CreateMenu();
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+  const std::vector<MenuItemView*> menu_items = submenu->GetMenuItems();
+  std::ranges::for_each(base::span(menu_items).subspan<1>(),
+                        [&](auto* item) { menu_item()->RemoveMenuItem(item); });
+  MenuItemView* const sub_item = submenu->GetMenuItemAt(0);
+  sub_item->AppendMenuItem(11, u"Subitem.One");
+
+  // Put the parent menu onscreen, far from the monitor edges so the submenu
+  // never flips sides, so that `sub_item` has valid screen bounds.
+  const gfx::Rect parent_bounds(900, 100, 200, 40);
+  ShowSubmenu(submenu, [&](auto& params) {
+    params.bounds = parent_bounds;
+    params.bounds.Inset(-submenu->GetScrollViewContainer()->GetInsets());
+  });
+
+  const MenuBoundsOptions options = {
+      .monitor_bounds = gfx::Rect(0, 0, 2000, 2000),
+      .menu_size = GetPreferredSizeForSubmenu(*sub_item->GetSubmenu())};
+
+  ui::OwnedWindowAnchor anchor;
+  const gfx::Rect bubble_bounds_without_background =
+      CalculateBubbleMenuBoundsWithoutInsets(options, sub_item);
+  const gfx::Rect bounds_without_background =
+      CalculateMenuBounds(options, sub_item);
+
+  constexpr int kHorizontalMargin = 12;
+  constexpr int kTopPadding = 4;
+  MenuItemView::MenuItemBackground background(
+      ui::kColorMenuBackground, /*top_radius=*/0, /*bottom_radius=*/0,
+      kHorizontalMargin);
+  background.top_padding = kTopPadding;
+  sub_item->SetMenuItemBackground(background);
+  EXPECT_EQ(
+      sub_item->GetHighlightInsets(),
+      gfx::Insets::TLBR(kTopPadding, kHorizontalMargin, 0, kHorizontalMargin));
+
+  // The submenu opens towards the trailing side: right in LTR, left in RTL. In
+  // either case, it moves towards the parent by the highlight's horizontal
+  // inset, and down by the highlight's top inset.
+  const int expected_dx =
+      base::i18n::IsRTL() ? kHorizontalMargin : -kHorizontalMargin;
+
+  const gfx::Rect bubble_bounds_with_background =
+      CalculateBubbleMenuBoundsWithoutInsets(options, sub_item, &anchor);
+  EXPECT_EQ(bubble_bounds_with_background.x(),
+            bubble_bounds_without_background.x() + expected_dx);
+  EXPECT_EQ(bubble_bounds_with_background.y(),
+            bubble_bounds_without_background.y() + kTopPadding);
+  EXPECT_EQ(anchor.anchor_rect, CalculateExpectedMenuAnchorRect(sub_item));
+  const gfx::Rect item_bounds = sub_item->GetBoundsInScreen();
+  EXPECT_EQ(anchor.anchor_rect,
+            gfx::Rect(item_bounds.x() + kHorizontalMargin,
+                      item_bounds.y() + kTopPadding,
+                      item_bounds.width() - 2 * kHorizontalMargin, 1));
+
+  const gfx::Rect bounds_with_background =
+      CalculateMenuBounds(options, sub_item, &anchor);
+  EXPECT_EQ(bounds_with_background.x(),
+            bounds_without_background.x() + expected_dx);
+  EXPECT_EQ(bounds_with_background.y(),
+            bounds_without_background.y() + kTopPadding);
+  EXPECT_EQ(anchor.anchor_rect, CalculateExpectedMenuAnchorRect(sub_item));
+
+  submenu->Close();
 }
 
 // Test that a menu that was originally drawn below the anchor does not get
