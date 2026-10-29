@@ -34,6 +34,8 @@ std::ostream& operator<<(std::ostream& os, ErrorCode error) {
       return os << "AudioUnknownError";
     case ErrorCode::kSetupTimeout:
       return os << "SetupTimeout";
+    case ErrorCode::kInactivityTimeout:
+      return os << "InactivityTimeout";
   }
   NOTREACHED();
 }
@@ -51,6 +53,7 @@ bool IsFatal(ErrorCode error) {
     case ErrorCode::kAudioMicrophoneInUse:
     case ErrorCode::kAudioUnknownError:
     case ErrorCode::kSetupTimeout:
+    case ErrorCode::kInactivityTimeout:
       return true;
   }
   NOTREACHED();

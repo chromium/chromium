@@ -13,6 +13,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "chrome/browser/ttc/app/public/audio_envelope.h"
 #include "chrome/browser/ttc/core/actor_task_holder.h"
@@ -33,6 +35,7 @@ class WebContents;
 
 namespace ttc {
 
+class SessionInactivityDetector;
 class SessionView;
 class TtcKeyedService;
 
@@ -99,6 +102,7 @@ class SessionControllerImpl : public SessionController,
 
  private:
   void OnPageContextFetched(const PageContextResult& result);
+  void OnInactivityTimeout();
 
   // Passes the transcripts of the current exchange on to the session UI.
   void NotifyTranscriptsUpdated();
@@ -128,6 +132,8 @@ class SessionControllerImpl : public SessionController,
 
   // The transcripts of the current exchange, for the session UI.
   TranscriptTracker transcript_tracker_;
+
+  std::unique_ptr<SessionInactivityDetector> inactivity_detector_;
 
   base::WeakPtrFactory<SessionControllerImpl> weak_ptr_factory_{this};
 };

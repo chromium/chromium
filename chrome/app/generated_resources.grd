@@ -16002,6 +16002,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_TTC_ENTRYPOINT_LABEL" desc="Text label of the TTC menu item." translateable="false" formatter_data="android_java">
         TTC
       </message>
+      <message name="IDS_TTC_INACTIVITY_TIMEOUT_TOAST" translateable="false" desc="Text shown in a toast notification when a TTC session terminates due to inactivity.">
+        Listening stopped due to inactivity
+      </message>
 
       <!-- Web and message center notifications -->
       <message name="IDS_NOTIFICATION_BUTTON_SETTINGS" desc="Short button label to go to the notification settings panel">

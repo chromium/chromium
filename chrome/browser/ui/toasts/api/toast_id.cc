@@ -135,6 +135,8 @@ std::string_view GetToastName(ToastId toast_id) {
       return "TabGroupFocusExited";
     case ToastId::kEnterpriseCopyFailClosed:
       return "EnterpriseCopyFailClosed";
+    case ToastId::kTtcInactivityTimeout:
+      return "TtcInactivityTimeout";
   }
 
   NOTREACHED();

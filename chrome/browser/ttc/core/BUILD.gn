@@ -108,6 +108,8 @@ source_set("impl") {
     "page_context_util.h",
     "session_controller_impl.cc",
     "session_controller_impl.h",
+    "session_inactivity_detector.cc",
+    "session_inactivity_detector.h",
     "session_journal_impl.cc",
     "session_journal_impl.h",
     "tool_controller.cc",

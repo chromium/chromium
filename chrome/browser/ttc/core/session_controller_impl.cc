@@ -20,6 +20,8 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/app/public/audio_controller.h"
+#include "chrome/browser/ttc/core/features.h"
+#include "chrome/browser/ttc/core/session_inactivity_detector.h"
 #include "chrome/browser/ttc/core/session_journal_impl.h"
 #include "chrome/browser/ttc/core/session_view.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
@@ -78,6 +80,10 @@ SessionControllerImpl::SessionControllerImpl(
       service.MakeConversation(base::PassKey<SessionControllerImpl>(), *this,
                                std::move(audio_controller));
   conversation_->Start();
+
+  inactivity_detector_ = std::make_unique<SessionInactivityDetector>(
+      *this, base::BindRepeating(&SessionControllerImpl::OnInactivityTimeout,
+                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
 SessionControllerImpl::~SessionControllerImpl() {
@@ -170,6 +176,9 @@ std::vector<ToolDefinition> SessionControllerImpl::GetToolDefinitions() {
 
 void SessionControllerImpl::UserAudioLevelUpdate(float audio_level) {
   session_view_->UpdateAudioLevel(audio_level);
+  for (SessionController::Observer& observer : observers_) {
+    observer.OnUserAudioLevelUpdate(audio_level);
+  }
 }
 
 BrowserWindowInterface* SessionControllerImpl::GetBrowserWindowInterface() {
@@ -335,6 +344,20 @@ void SessionControllerImpl::OnPageContextFetched(
       result->annotated_page_content->data;
   conversation_->SendContextUpdate(GURL(apc.main_frame_data().url()),
                                    apc.main_frame_data().title(), apc);
+}
+
+void SessionControllerImpl::OnInactivityTimeout() {
+  if (session_lifecycle_ == SessionLifecycle::kFinished) {
+    return;
+  }
+  GetJournal().Log(
+      "TtcSessionTimeout",
+      actor::JournalDetailsBuilder()
+          .Add("reason", "inactivity")
+          .Add("timeout_seconds", kSessionInactivityTimeout.Get().InSeconds())
+          .Build());
+
+  OnError(ErrorCode::kInactivityTimeout);
 }
 
 }  // namespace ttc

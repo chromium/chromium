@@ -809,6 +809,15 @@ void ToastService::RegisterToasts() {
             .AddCloseButton()
             .AddGlobalScoped()
             .Build());
+    toast_registry_->RegisterToast(
+        ToastId::kTtcInactivityTimeout,
+        ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                        ? vector_icons::kErrorIcon
+                                        : vector_icons::kErrorOldIcon,
+                                    IDS_TTC_INACTIVITY_TIMEOUT_TOAST)
+            .AddCloseButton()
+            .AddGlobalScoped()
+            .Build());
   }
 
   toast_registry_->RegisterToast(

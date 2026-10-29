@@ -35,6 +35,9 @@ ToastId GetToastIdForError(ErrorCode error) {
     case ErrorCode::kAudioNoMicrophoneDetected:
     case ErrorCode::kAudioMicrophoneInUse:
       return ToastId::kTtcNoMicrophoneError;
+
+    case ErrorCode::kInactivityTimeout:
+      return ToastId::kTtcInactivityTimeout;
   }
 
   NOTREACHED();

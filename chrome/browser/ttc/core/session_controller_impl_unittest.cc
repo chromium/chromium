@@ -217,6 +217,151 @@ TEST_F(TtcSessionControllerImplTest, DispatchesAudioEnvelopeToObservers) {
   controller.RemoveObserver(&observer);
 }
 
+TEST_F(TtcSessionControllerImplTest, SessionTimesOutAfterInactivity) {
+  service_->StartSession();
+  EXPECT_TRUE(service_->is_session_active());
+
+  MockSessionControllerObserver observer;
+  EXPECT_CALL(observer,
+              OnSessionLifecycleChanged(SessionLifecycle::kInitializing))
+      .Times(1);
+  service_->session_controller()->AddObserver(&observer);
+
+  task_environment_.FastForwardBy(base::Minutes(4));
+  EXPECT_TRUE(service_->is_session_active());
+
+  EXPECT_CALL(observer, OnError(ErrorCode::kInactivityTimeout)).Times(1);
+  EXPECT_CALL(observer, OnSessionLifecycleChanged(SessionLifecycle::kFinished))
+      .Times(1);
+
+  task_environment_.FastForwardBy(base::Minutes(1) + base::Seconds(1));
+  EXPECT_FALSE(service_->is_session_active());
+}
+
+TEST_F(TtcSessionControllerImplTest, UserSpeechAudioResetsInactivityTimer) {
+  service_->StartSession();
+  EXPECT_TRUE(service_->is_session_active());
+
+  MockSessionControllerObserver observer;
+  EXPECT_CALL(observer,
+              OnSessionLifecycleChanged(SessionLifecycle::kInitializing))
+      .Times(1);
+  service_->session_controller()->AddObserver(&observer);
+
+  task_environment_.FastForwardBy(base::Minutes(4));
+  EXPECT_TRUE(service_->is_session_active());
+
+  // User speaks (energy >= 0.05).
+  service_->session_controller()->UserAudioLevelUpdate(0.1f);
+
+  // Fast forward another 4 minutes (8 minutes total since session start).
+  task_environment_.FastForwardBy(base::Minutes(4));
+  EXPECT_TRUE(service_->is_session_active());
+
+  EXPECT_CALL(observer, OnError(ErrorCode::kInactivityTimeout)).Times(1);
+  EXPECT_CALL(observer, OnSessionLifecycleChanged(SessionLifecycle::kFinished))
+      .Times(1);
+
+  // Reaching 5 minutes after speech event triggers timeout.
+  task_environment_.FastForwardBy(base::Minutes(1) + base::Seconds(1));
+  EXPECT_FALSE(service_->is_session_active());
+}
+
+TEST_F(TtcSessionControllerImplTest, AmbientNoiseDoesNotResetInactivityTimer) {
+  service_->StartSession();
+  EXPECT_TRUE(service_->is_session_active());
+
+  MockSessionControllerObserver observer;
+  EXPECT_CALL(observer,
+              OnSessionLifecycleChanged(SessionLifecycle::kInitializing))
+      .Times(1);
+  service_->session_controller()->AddObserver(&observer);
+
+  // Deliver ambient noise (0.01 < 0.05) every minute.
+  for (int i = 0; i < 4; ++i) {
+    task_environment_.FastForwardBy(base::Minutes(1));
+    service_->session_controller()->UserAudioLevelUpdate(0.01f);
+    EXPECT_TRUE(service_->is_session_active());
+  }
+
+  EXPECT_CALL(observer, OnError(ErrorCode::kInactivityTimeout)).Times(1);
+  EXPECT_CALL(observer, OnSessionLifecycleChanged(SessionLifecycle::kFinished))
+      .Times(1);
+
+  // Reaching 5 minutes triggers timeout despite ambient noise.
+  task_environment_.FastForwardBy(base::Minutes(1) + base::Seconds(1));
+  EXPECT_FALSE(service_->is_session_active());
+}
+
+TEST_F(TtcSessionControllerImplTest, InputTranscriptionsResetInactivityTimer) {
+  service_->StartSession();
+  EXPECT_TRUE(service_->is_session_active());
+
+  MockSessionControllerObserver observer;
+  EXPECT_CALL(observer,
+              OnSessionLifecycleChanged(SessionLifecycle::kInitializing))
+      .Times(1);
+  service_->session_controller()->AddObserver(&observer);
+
+  task_environment_.FastForwardBy(base::Minutes(4));
+  EXPECT_TRUE(service_->is_session_active());
+
+  // Input transcription resets timer.
+  EXPECT_CALL(observer, OnInputTranscription("hello")).Times(1);
+  service_->session_controller()->OnInputTranscription("hello");
+
+  task_environment_.FastForwardBy(base::Minutes(4));
+  EXPECT_TRUE(service_->is_session_active());
+
+  EXPECT_CALL(observer, OnError(ErrorCode::kInactivityTimeout)).Times(1);
+  EXPECT_CALL(observer, OnSessionLifecycleChanged(SessionLifecycle::kFinished))
+      .Times(1);
+
+  task_environment_.FastForwardBy(base::Minutes(1) + base::Seconds(1));
+  EXPECT_FALSE(service_->is_session_active());
+}
+
+TEST_F(TtcSessionControllerImplTest, ModelTurnPausesInactivityTimer) {
+  service_->StartSession();
+  EXPECT_TRUE(service_->is_session_active());
+
+  MockSessionControllerObserver observer;
+  EXPECT_CALL(observer,
+              OnSessionLifecycleChanged(SessionLifecycle::kInitializing))
+      .Times(1);
+  service_->session_controller()->AddObserver(&observer);
+
+  task_environment_.FastForwardBy(base::Minutes(4));
+  EXPECT_TRUE(service_->is_session_active());
+
+  // Model begins response.
+  EXPECT_CALL(observer, OnModelTurnStarted()).Times(1);
+  service_->session_controller()->OnModelTurnStarted();
+
+  // Audio energy arrives while model is speaking; timer must not restart.
+  service_->session_controller()->UserAudioLevelUpdate(0.1f);
+
+  // 3 minutes pass during model generation/speech.
+  task_environment_.FastForwardBy(base::Minutes(3));
+  EXPECT_TRUE(service_->is_session_active());
+
+  // Model turn completes.
+  EXPECT_CALL(observer, OnModelTurnComplete()).Times(1);
+  service_->session_controller()->OnModelTurnComplete();
+
+  // 4 minutes pass in user inactivity.
+  task_environment_.FastForwardBy(base::Minutes(4));
+  EXPECT_TRUE(service_->is_session_active());
+
+  EXPECT_CALL(observer, OnError(ErrorCode::kInactivityTimeout)).Times(1);
+  EXPECT_CALL(observer, OnSessionLifecycleChanged(SessionLifecycle::kFinished))
+      .Times(1);
+
+  // 1 minute later (5 minutes after model turn completed), timeout fires.
+  task_environment_.FastForwardBy(base::Minutes(1) + base::Seconds(1));
+  EXPECT_FALSE(service_->is_session_active());
+}
+
 #if BUILDFLAG(ENABLE_TTC_WEBUI)
 TEST_F(TtcSessionControllerImplTest, TtcEvalHarnessStartSessionAndExecuteTurn) {
   TtcEvalHarness harness(*service_);

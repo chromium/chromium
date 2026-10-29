@@ -38,6 +38,7 @@ class SessionController {
     virtual void OnInputTranscription(const std::string& text) {}
     virtual void OnOutputTranscription(const std::string& text) {}
     virtual void OnModelAudioEnvelopeReady(const AudioEnvelope& envelope) {}
+    virtual void OnUserAudioLevelUpdate(float audio_level) {}
   };
 
   virtual ~SessionController() = default;

@@ -28,6 +28,7 @@ TEST(SessionViewImplTest, ErrorsMapToToasts) {
       {ErrorCode::kAudioMicrophoneInUse, ToastId::kTtcNoMicrophoneError},
       {ErrorCode::kAudioUnknownError, ToastId::kTtcGenericError},
       {ErrorCode::kSetupTimeout, ToastId::kTtcGenericError},
+      {ErrorCode::kInactivityTimeout, ToastId::kTtcInactivityTimeout},
   };
 
   for (const auto& test_case : kTestCases) {

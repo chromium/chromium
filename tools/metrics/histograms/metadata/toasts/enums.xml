@@ -124,6 +124,7 @@ chromium-metrics-reviews@google.com.
   <int value="62" label="TTC no microphone error"/>
   <int value="63" label="Tab group focus mode exited"/>
   <int value="64" label="Enterprise copy fail-closed toast"/>
+  <int value="65" label="TTC inactivity timeout"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->
