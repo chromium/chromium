@@ -103,7 +103,10 @@ class AppBrowserTestBase : public PlatformBrowserTest {
   // session reports while its WebSocket handshake is in progress.
   void BeginBackendConnection();
   void OpenBackendConnection();
-  void CloseBackendConnection();
+  void CloseBackendConnection(
+      optimization_guide::RemoteModelExecutionSession::DisconnectReason reason =
+          optimization_guide::RemoteModelExecutionSession::DisconnectReason::
+              kServerClosed);
 
   // Sends `frame` to the client as if it came from the server. Requires that a
   // session has been started.

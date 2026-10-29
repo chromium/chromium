@@ -208,7 +208,13 @@ void TtcMesClient::Connect(Observer* observer) {
 }
 
 void TtcMesClient::OnConnectionStateChanged(
-    optimization_guide::RemoteModelExecutionSession::ConnectionState state) {
+    optimization_guide::RemoteModelExecutionSession::ConnectionState state,
+    std::optional<
+        optimization_guide::RemoteModelExecutionSession::DisconnectReason>
+        disconnect_reason) {
+  DCHECK_EQ(state == optimization_guide::RemoteModelExecutionSession::
+                         ConnectionState::kDisconnected,
+            disconnect_reason.has_value());
   // kConnecting is sent before being connected. That's not a disconnection (or
   // a connection) so avoid reporting it.
   if (state == optimization_guide::RemoteModelExecutionSession::

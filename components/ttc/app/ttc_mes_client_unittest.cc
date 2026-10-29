@@ -394,13 +394,17 @@ TEST_F(TtcMesClientTest, DebugSinkGetsClientFrames) {
 TEST_F(TtcMesClientTest, DebugSinkGetsTransportState) {
   client().OnConnectionStateChanged(
       optimization_guide::RemoteModelExecutionSession::ConnectionState::
-          kConnecting);
+          kConnecting,
+      /*disconnect_reason=*/std::nullopt);
   client().OnConnectionStateChanged(
       optimization_guide::RemoteModelExecutionSession::ConnectionState::
-          kConnected);
+          kConnected,
+      /*disconnect_reason=*/std::nullopt);
   client().OnConnectionStateChanged(
       optimization_guide::RemoteModelExecutionSession::ConnectionState::
-          kDisconnected);
+          kDisconnected,
+      optimization_guide::RemoteModelExecutionSession::DisconnectReason::
+          kServerClosed);
   // Connecting isn't a change of state, so it's not reported.
   EXPECT_THAT(debug_sink_.transport_states, testing::ElementsAre(true, false));
 }
@@ -581,7 +585,8 @@ TEST_F(TtcMesClientTest, NullDebugSinkIsSafe) {
   std::move(callback).Run(ToolResponse::Success());
   client.OnConnectionStateChanged(
       optimization_guide::RemoteModelExecutionSession::ConnectionState::
-          kConnected);
+          kConnected,
+      /*disconnect_reason=*/std::nullopt);
 
   client.Close();
   client.SendAudioChunk(pcm);

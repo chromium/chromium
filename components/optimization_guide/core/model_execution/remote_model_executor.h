@@ -117,11 +117,26 @@ class RemoteModelExecutionSession {
     kConnected,
   };
 
+  // Reason why a session transitioned to `ConnectionState::kDisconnected`.
+  enum class DisconnectReason {
+    // Disconnected automatically after `idle_disconnect_timeout` elapsed
+    // without traffic.
+    kIdleTimeout,
+    // Closed cleanly by the remote server.
+    kServerClosed,
+    // Failed during connection setup or dropped due to a network, auth, or
+    // protocol error.
+    kError,
+  };
+
   // Observer interface to monitor WebSocket connection status.
   class Observer : public base::CheckedObserver {
    public:
-    // Called when the connection state changes.
-    virtual void OnConnectionStateChanged(ConnectionState state) = 0;
+    // Called when the connection state changes. `disconnect_reason` is
+    // populated if and only if `state` is `ConnectionState::kDisconnected`.
+    virtual void OnConnectionStateChanged(
+        ConnectionState state,
+        std::optional<DisconnectReason> disconnect_reason) = 0;
   };
 
   static std::unique_ptr<RemoteModelExecutionSession> Create(

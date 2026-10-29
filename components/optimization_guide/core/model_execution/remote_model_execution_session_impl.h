@@ -32,11 +32,11 @@ class IdentityManager;
 
 namespace optimization_guide {
 
-// The status of establishing a streaming WebSocket connection. Only used for
+// The status of establishing a streaming WebSocket connection. Also used for
 // UMA logging. Entries should not be renumbered and numeric values should never
 // be reused.
 // LINT.IfChange(StreamingConnectionStatus)
-enum class StreamingConnectionStatusUma {
+enum class StreamingConnectionStatusInternal {
   kConnected = 0,
   kAccessTokenFailure = 1,
   kHandshakeFailed = 2,
@@ -47,11 +47,11 @@ enum class StreamingConnectionStatusUma {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:OptimizationGuideStreamingConnectionStatus)
 
-// The reason an active streaming WebSocket connection disconnected. Only used
+// The reason an active streaming WebSocket connection disconnected. Also used
 // for UMA logging. Entries should not be renumbered and numeric values should
 // never be reused.
 // LINT.IfChange(StreamingDisconnectReason)
-enum class StreamingDisconnectReasonUma {
+enum class StreamingDisconnectReasonInternal {
   kSessionDestroyed = 0,
   kIdleTimeout = 1,
   kServerDropClean = 2,
@@ -114,11 +114,12 @@ class RemoteModelExecutionSessionImpl
   ConnectionState connection_state() const { return connection_state_; }
 
  private:
-  void NotifyObservers();
+  void NotifyObservers(
+      std::optional<DisconnectReason> disconnect_reason = std::nullopt);
   void HandleDisconnection(
       std::optional<OptimizationGuideModelExecutionError> error,
-      std::variant<StreamingConnectionStatusUma, StreamingDisconnectReasonUma>
-          disconnect_metric);
+      std::variant<StreamingConnectionStatusInternal,
+                   StreamingDisconnectReasonInternal> disconnect_reason);
   void ResetIdleTimer();
   void OnIdleTimeout();
   void StartConnection();

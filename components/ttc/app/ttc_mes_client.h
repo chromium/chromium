@@ -6,6 +6,7 @@
 #define COMPONENTS_TTC_APP_TTC_MES_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -59,8 +60,10 @@ class TtcMesClient
 
   // optimization_guide::RemoteModelExecutionSession::Observer:
   void OnConnectionStateChanged(
-      optimization_guide::RemoteModelExecutionSession::ConnectionState state)
-      override;
+      optimization_guide::RemoteModelExecutionSession::ConnectionState state,
+      std::optional<
+          optimization_guide::RemoteModelExecutionSession::DisconnectReason>
+          disconnect_reason) override;
 
   // The session this client was given by the RemoteModelExecutor.
   // Null until Connect() and after Close().

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_MOCK_REMOTE_MODEL_EXECUTOR_H_
 #define CHROME_BROWSER_OPTIMIZATION_GUIDE_MOCK_REMOTE_MODEL_EXECUTOR_H_
 
+#include <optional>
+
 #include "base/observer_list.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -28,7 +30,10 @@ class MockRemoteModelExecutionSession : public RemoteModelExecutionSession {
 
   // Notifies observers that the connection changed to `state`, as the real
   // session does when its WebSocket connects or disconnects.
-  void SetConnectionState(ConnectionState state);
+  // `disconnect_reason` must be populated iff. `state` is `kDisconnected`.
+  void SetConnectionState(
+      ConnectionState state,
+      std::optional<DisconnectReason> disconnect_reason = std::nullopt);
 
  private:
   base::ObserverList<Observer> observers_;

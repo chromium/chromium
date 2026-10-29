@@ -222,10 +222,12 @@ void AppBrowserTestBase::OpenBackendConnection() {
                               ConnectionState::kConnected);
 }
 
-void AppBrowserTestBase::CloseBackendConnection() {
+void AppBrowserTestBase::CloseBackendConnection(
+    optimization_guide::RemoteModelExecutionSession::DisconnectReason reason) {
   CHECK_DEREF(model_execution_session())
       .SetConnectionState(optimization_guide::RemoteModelExecutionSession::
-                              ConnectionState::kDisconnected);
+                              ConnectionState::kDisconnected,
+                          reason);
 }
 
 void AppBrowserTestBase::SimulateResponse(
