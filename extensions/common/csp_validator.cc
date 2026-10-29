@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include <algorithm>
-#include <initializer_list>
 #include <iterator>
 #include <set>
 #include <string_view>
@@ -17,7 +16,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/linear_find.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -27,7 +25,6 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/switches.h"
@@ -659,20 +656,26 @@ bool DoesCSPDisallowRemoteCode(const std::string& extension_id,
   DCHECK(error);
 
   struct DirectiveMapping {
-    explicit DirectiveMapping(DirectiveStatus status)
-        : status(std::move(status)) {}
-
     DirectiveStatus status;
-    raw_ptr<const CSPParser::Directive, DanglingUntriaged> directive = nullptr;
+    raw_ptr<const CSPParser::Directive> directive = nullptr;
     bool required = true;
   };
 
-  DirectiveMapping script_src_mapping(DirectiveStatus({kScriptSrc}));
-  DirectiveMapping worker_src_mapping(DirectiveStatus({kWorkerSrc}));
-  DirectiveMapping default_src_mapping(DirectiveStatus({kDefaultSrc}));
+  CSPParser csp_parser(std::string{content_security_policy});
 
-  DirectiveMapping object_src_mapping(DirectiveStatus({kObjectSrc}));
-  object_src_mapping.required = false;
+  DirectiveMapping script_src_mapping = {
+      .status = DirectiveStatus({kScriptSrc}),
+  };
+  DirectiveMapping worker_src_mapping = {
+      .status = DirectiveStatus({kWorkerSrc}),
+  };
+  DirectiveMapping default_src_mapping = {
+      .status = DirectiveStatus({kDefaultSrc}),
+  };
+  DirectiveMapping object_src_mapping = {
+      .status = DirectiveStatus({kObjectSrc}),
+      .required = false,
+  };
 
   DirectiveMapping* directive_mappings[] = {
       &script_src_mapping,
@@ -682,7 +685,6 @@ bool DoesCSPDisallowRemoteCode(const std::string& extension_id,
   };
 
   // Populate |directive_mappings|.
-  CSPParser csp_parser(std::string{content_security_policy});
   for (DirectiveMapping* mapping : directive_mappings) {
     // Find the first matching directive. As per
     // http://www.w3.org/TR/CSP/#parse-a-csp-policy, duplicate directive names
