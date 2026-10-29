@@ -34,7 +34,7 @@ ChaChaPrng::ChaChaPrng(absl::string_view in_key, int position_in_buffer,
 
 rlwe::StatusOr<std::unique_ptr<ChaChaPrng>> ChaChaPrng::Create(
     absl::string_view in_key) {
-  if (in_key.length() != SeedLength()) {
+  if (static_cast<int>(in_key.length()) != SeedLength()) {
     return absl::InvalidArgumentError(
         absl::StrCat("Cannot create Prng with key of the "
                      "wrong size. Real ",
@@ -52,13 +52,13 @@ rlwe::StatusOr<std::unique_ptr<ChaChaPrng>> ChaChaPrng::Create(
 }
 
 rlwe::StatusOr<Uint8> ChaChaPrng::Rand8() ABSL_LOCKS_EXCLUDED(mu_) {
-  absl::MutexLock lock(&mu_);
+  absl::MutexLock lock(mu_);
   return internal::ChaChaPrngRand8(key_, &position_in_buffer_, &salt_counter_,
                                    &buffer_);
 }
 
 rlwe::StatusOr<Uint64> ChaChaPrng::Rand64() ABSL_LOCKS_EXCLUDED(mu_) {
-  absl::MutexLock lock(&mu_);
+  absl::MutexLock lock(mu_);
   return internal::ChaChaPrngRand64(key_, &position_in_buffer_, &salt_counter_,
                                     &buffer_);
 }

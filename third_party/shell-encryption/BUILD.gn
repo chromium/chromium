@@ -75,15 +75,18 @@ if (is_chromeos || is_linux) {
       "src/bits_util.h",
       "src/constants.h",
       "src/context.h",
+      "src/dft_transformations.h",
+      "src/dft_transformations_hwy.h",
       "src/error_params.h",
       "src/int256.h",
       "src/integral_types.h",
       "src/montgomery.h",
       "src/ntt_parameters.h",
+      "src/opt/constant_polynomial.h",
+      "src/opt/lazy_polynomial.h",
       "src/polynomial.h",
       "src/prng/chacha_prng.h",
       "src/prng/chacha_prng_util.h",
-      "src/prng/integral_prng_types.h",
       "src/prng/prng.h",
       "src/prng/single_thread_chacha_prng.h",
       "src/sample_error.h",
@@ -94,6 +97,8 @@ if (is_chromeos || is_linux) {
       "src/transcription.h",
     ]
     sources = [
+      "src/dft_transformations.cc",
+      "src/dft_transformations_hwy.cc",
       "src/int256.cc",
       "src/montgomery.cc",
       "src/ntt_parameters.cc",
@@ -106,6 +111,7 @@ if (is_chromeos || is_linux) {
       "//base",
       "//third_party/abseil-cpp:absl",
       "//third_party/boringssl",
+      "//third_party/highway:libhwy",
       "//third_party/protobuf:protobuf_lite",
     ]
   }

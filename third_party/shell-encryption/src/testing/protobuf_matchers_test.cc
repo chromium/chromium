@@ -24,11 +24,11 @@ namespace {
 TEST(EqualsProtoTest, EqualsProtoWorks) {
   rlwe::SerializedCoefficientPolynomial coeffs;
   coeffs.set_num_coeffs(10);
-  EXPECT_EQ(coeffs.SerializeAsString(), coeffs.SerializeAsString());
+  EXPECT_THAT(coeffs, rlwe::testing::EqualsProto(coeffs));
 
   rlwe::SerializedCoefficientPolynomial coeffs_other;
   coeffs_other.set_num_coeffs(20);
-  EXPECT_NE(coeffs.SerializeAsString(), coeffs_other.SerializeAsString());
+  EXPECT_THAT(coeffs, ::testing::Not(rlwe::testing::EqualsProto(coeffs_other)));
 }
 
 }  // namespace

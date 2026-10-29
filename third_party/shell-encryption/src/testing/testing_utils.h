@@ -20,11 +20,13 @@
 #define RLWE_TESTING_TESTING_UTILS_H_
 
 #include <cstdint>
+#include <random>
 #include <vector>
 
 #include "constants.h"
 #include "montgomery.h"
 #include "polynomial.h"
+#include "prng/single_thread_chacha_prng.h"
 #include "status_macros.h"
 #include "symmetric_encryption.h"
 #include "testing/testing_prng.h"
@@ -42,9 +44,9 @@ const Uint32 kModulus = kModulus25;
 
 // Construct montgomery int parameters used for testing rlwe encryption and
 // decryption functionality.
-inline rlwe::StatusOr<std::unique_ptr<const MontgomeryIntParams<uint>>>
+inline rlwe::StatusOr<std::unique_ptr<const MontgomeryIntParams<Uint32>>>
 ConstructMontgomeryIntParams() {
-  return MontgomeryIntParams<uint>::Create(kModulus);
+  return MontgomeryIntParams<Uint32>::Create(kModulus);
 }
 
 // Sample a random plaintext.
@@ -54,9 +56,10 @@ std::vector<typename ModularInt::Int> SamplePlaintext(
   // Seed for the random number generator that is used to create test
   // plaintexts.
   unsigned int seed = 1;
+  std::mt19937 mt_rand(seed);
   std::vector<typename ModularInt::Int> plaintext(num_coeffs);
   for (unsigned int i = 0; i < num_coeffs; i++) {
-    Uint64 rand = rand_r(&seed);
+    Uint64 rand = mt_rand();
     typename ModularInt::Int int_rand =
         static_cast<typename ModularInt::Int>(rand);
     plaintext[i] = int_rand % t;
@@ -94,6 +97,25 @@ rlwe::StatusOr<Polynomial<ModularInt>> GenerateRandomPlaintextPolynomial(
   RLWE_ASSIGN_OR_RETURN(std::vector<ModularInt> rands,
                         ConvertToMontgomery<ModularInt>(plaintext, params));
   return Polynomial<ModularInt>::ConvertToNtt(rands, ntt_params, params);
+}
+
+inline rlwe::StatusOr<std::string> GenerateSeed(PrngType prng_type) {
+  if (prng_type == rlwe::PRNG_TYPE_CHACHA) {
+    return rlwe::SingleThreadChaChaPrng::GenerateSeed();
+  } else {
+    return absl::InvalidArgumentError("Invalid specified PRNG type in params.");
+  }
+}
+
+inline rlwe::StatusOr<std::unique_ptr<rlwe::SecurePrng>> CreatePrng(
+    absl::string_view seed, PrngType prng_type) {
+  if (prng_type == rlwe::PRNG_TYPE_CHACHA) {
+    RLWE_ASSIGN_OR_RETURN(auto chacha_prng,
+                          rlwe::SingleThreadChaChaPrng::Create(seed));
+    return std::unique_ptr<rlwe::SecurePrng>(std::move(chacha_prng));
+  } else {
+    return absl::InvalidArgumentError("Invalid specified PRNG type in params.");
+  }
 }
 
 }  // namespace testing

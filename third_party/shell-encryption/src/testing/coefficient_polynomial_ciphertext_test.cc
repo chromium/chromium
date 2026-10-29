@@ -15,6 +15,8 @@
 
 #include "testing/coefficient_polynomial_ciphertext.h"
 
+#include <memory>
+#include <random>
 #include <vector>
 
 #include <gmock/gmock.h>
@@ -36,6 +38,7 @@ using ::rlwe::testing::StatusIs;
 using ::testing::HasSubstr;
 
 unsigned int seed = 0;
+std::mt19937 mt_rand(seed);
 
 // Useful typedefs.
 using uint_m = rlwe::MontgomeryInt<rlwe::Uint32>;
@@ -61,22 +64,23 @@ class PolynomialCiphertextTest : public ::testing::Test {
     ASSERT_OK_AND_ASSIGN(auto ntt_params,
                          rlwe::InitializeNttParameters<uint_m>(
                              rlwe::testing::kLogCoeffs, params14_.get()));
-    ntt_params_ = absl::make_unique<const rlwe::NttParameters<uint_m>>(
+    ntt_params_ = std::make_unique<const rlwe::NttParameters<uint_m>>(
         std::move(ntt_params));
     ASSERT_OK_AND_ASSIGN(
         auto error_params,
         rlwe::ErrorParams<uint_m>::Create(kDefaultLogT, kDefaultVariance,
                                           params14_.get(), ntt_params_.get()));
     error_params_ =
-        absl::make_unique<const rlwe::ErrorParams<uint_m>>(error_params);
+        std::make_unique<const rlwe::ErrorParams<uint_m>>(error_params);
   }
 
   // Sample a random key.
   rlwe::StatusOr<Key> SampleKey(uint_m::Int variance = kDefaultVariance,
                                 uint_m::Int log_t = kDefaultLogT) {
     RLWE_ASSIGN_OR_RETURN(std::string prng_seed,
-                          rlwe::SingleThreadPrng::GenerateSeed());
-    RLWE_ASSIGN_OR_RETURN(auto prng, rlwe::SingleThreadPrng::Create(prng_seed));
+                          rlwe::SingleThreadChaChaPrng::GenerateSeed());
+    RLWE_ASSIGN_OR_RETURN(auto prng,
+                          rlwe::SingleThreadChaChaPrng::Create(prng_seed));
     return Key::Sample(kLogCoeffs, variance, log_t, params14_.get(),
                        ntt_params_.get(), prng.get());
   }
@@ -89,8 +93,9 @@ class PolynomialCiphertextTest : public ::testing::Test {
     auto plaintext_ntt =
         Polynomial::ConvertToNtt(mp, ntt_params_.get(), key.ModulusParams());
     RLWE_ASSIGN_OR_RETURN(std::string prng_seed,
-                          rlwe::SingleThreadPrng::GenerateSeed());
-    RLWE_ASSIGN_OR_RETURN(auto prng, rlwe::SingleThreadPrng::Create(prng_seed));
+                          rlwe::SingleThreadChaChaPrng::GenerateSeed());
+    RLWE_ASSIGN_OR_RETURN(auto prng,
+                          rlwe::SingleThreadChaChaPrng::Create(prng_seed));
     return rlwe::Encrypt<uint_m>(key, plaintext_ntt, error_params_.get(),
                                  prng.get());
   }
@@ -216,7 +221,7 @@ TEST_F(PolynomialCiphertextTest, CoefficientMonomialAbsorb) {
                                     plaintext, params14_.get()));
   CoefficientPolynomial plaintext_polynomial(mp, params14_.get());
   std::vector<uint_m::Int> monomial(kCoeffs);
-  int monomial_index = rand_r(&seed) % (2 * key.Len());
+  int monomial_index = mt_rand() % (2 * key.Len());
   monomial[monomial_index] = 1;
 
   // Create our expected value.

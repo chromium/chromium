@@ -26,6 +26,12 @@ typedef uint16_t Uint16;
 typedef uint32_t Uint32;
 typedef uint64_t Uint64;
 
+#ifdef ABSL_HAVE_INTRINSIC_INT128
+typedef unsigned __int128 Uint128;
+#else
+typedef absl::uint128 Uint128;
+#endif
+
 }  // namespace rlwe
 
 #endif  // RLWE_INTEGRAL_TYPES_H_

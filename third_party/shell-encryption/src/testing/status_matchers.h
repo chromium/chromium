@@ -17,7 +17,12 @@
 #ifndef RLWE_TESTING_STATUS_MATCHERS_H_
 #define RLWE_TESTING_STATUS_MATCHERS_H_
 
+#include <ostream>
+#include <string>
+#include <utility>
+
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 #include "absl/status/status.h"
 #include "statusor.h"
 
@@ -42,8 +47,9 @@ class StatusIsImpl : public ::testing::MatcherInterface<StatusType> {
                const ::testing::Matcher<const std::string&>& message)
       : code_(code), message_(message) {}
 
-  inline bool MatchAndExplain(StatusType status,
-                       ::testing::MatchResultListener* listener) const {
+  bool MatchAndExplain(
+      StatusType status,
+      ::testing::MatchResultListener* listener) const override {
     ::testing::StringMatchResultListener str_listener;
     absl::Status real_status = GetStatus(status);
     if (!code_.MatchAndExplain(real_status.code(), &str_listener)) {
@@ -58,14 +64,14 @@ class StatusIsImpl : public ::testing::MatcherInterface<StatusType> {
     return true;
   }
 
-  inline void DescribeTo(std::ostream* os) const {
+  void DescribeTo(std::ostream* os) const override {
     *os << "has a status code that ";
     code_.DescribeTo(os);
     *os << " and a message that ";
     message_.DescribeTo(os);
   }
 
-  inline void DescribeNegationto(std::ostream* os) const {
+  void DescribeNegationTo(std::ostream* os) const override {
     *os << "has a status code that ";
     code_.DescribeNegationTo(os);
     *os << " and a message that ";
@@ -105,6 +111,12 @@ inline internal::StatusIsPoly StatusIs(
   return internal::StatusIsPoly(
       std::forward<::testing::Matcher<absl::StatusCode>>(code),
       std::forward<::testing::Matcher<const std::string&>>(message));
+}
+
+inline internal::StatusIsPoly StatusIs(
+    ::testing::Matcher<absl::StatusCode>&& code) {
+  return internal::StatusIsPoly(
+      std::forward<::testing::Matcher<absl::StatusCode>>(code), ::testing::_);
 }
 
 }  // namespace testing

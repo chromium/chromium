@@ -24,12 +24,12 @@
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include "absl/status/status.h"
 #include "constants.h"
 #include "context.h"
 #include "montgomery.h"
 #include "ntt_parameters.h"
 #include "polynomial.h"
-#include "prng/integral_prng_types.h"
 #include "serialization.pb.h"
 #include "status_macros.h"
 #include "testing/parameters.h"
@@ -60,8 +60,9 @@ class SymmetricRlweEncryptionTest : public ::testing::Test {
   rlwe::StatusOr<rlwe::SymmetricRlweKey<ModularInt>> SampleKey(
       const rlwe::RlweContext<ModularInt>* context) {
     RLWE_ASSIGN_OR_RETURN(std::string prng_seed,
-                          rlwe::SingleThreadPrng::GenerateSeed());
-    RLWE_ASSIGN_OR_RETURN(auto prng, rlwe::SingleThreadPrng::Create(prng_seed));
+                          rlwe::SingleThreadChaChaPrng::GenerateSeed());
+    RLWE_ASSIGN_OR_RETURN(auto prng,
+                          rlwe::SingleThreadChaChaPrng::Create(prng_seed));
     return rlwe::SymmetricRlweKey<ModularInt>::Sample(
         context->GetLogN(), context->GetVariance(), context->GetLogT(),
         context->GetModulusParams(), context->GetNttParams(), prng.get());
@@ -78,8 +79,9 @@ class SymmetricRlweEncryptionTest : public ::testing::Test {
     auto plaintext_ntt = rlwe::Polynomial<ModularInt>::ConvertToNtt(
         mont, context->GetNttParams(), context->GetModulusParams());
     RLWE_ASSIGN_OR_RETURN(std::string prng_seed,
-                          rlwe::SingleThreadPrng::GenerateSeed());
-    RLWE_ASSIGN_OR_RETURN(auto prng, rlwe::SingleThreadPrng::Create(prng_seed));
+                          rlwe::SingleThreadChaChaPrng::GenerateSeed());
+    RLWE_ASSIGN_OR_RETURN(auto prng,
+                          rlwe::SingleThreadChaChaPrng::Create(prng_seed));
     return rlwe::Encrypt<ModularInt>(key, plaintext_ntt,
                                      context->GetErrorParams(), prng.get());
   }
@@ -90,6 +92,7 @@ TYPED_TEST_SUITE(SymmetricRlweEncryptionTest, rlwe::testing::ModularIntTypes);
 // different values of t.
 TYPED_TEST(SymmetricRlweEncryptionTest, RemoveErrorNegative) {
   unsigned int seed = 0;
+  std::mt19937 mt_rand(seed);
   for (const auto& params :
        rlwe::testing::ContextParameters<TypeParam>::Value()) {
     ASSERT_OK_AND_ASSIGN(auto context,
@@ -99,7 +102,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, RemoveErrorNegative) {
       for (int i = 0; i < kTestingRounds; i++) {
         // Sample a plaintext in the range (modulus/2, modulus)
         typename TypeParam::Int plaintext =
-            (rand_r(&seed) % (context->GetModulus() / 2)) +
+            (mt_rand() % (context->GetModulus() / 2)) +
             context->GetModulus() / 2 + 1;
         // Create a vector that exclusively contains the value "plaintext".
         ASSERT_OK_AND_ASSIGN(
@@ -125,7 +128,8 @@ TYPED_TEST(SymmetricRlweEncryptionTest, RemoveErrorNegative) {
         }
 
         for (unsigned int j = 0; j < context->GetN(); j++) {
-          EXPECT_EQ(expected, result[j]) << t << plaintext;
+          EXPECT_EQ(expected, absl::int128(result[j]))
+              << t << absl::int128(plaintext);
         }
       }
     }
@@ -140,12 +144,13 @@ TYPED_TEST(SymmetricRlweEncryptionTest, RemoveErrorPositive) {
     ASSERT_OK_AND_ASSIGN(auto context,
                          rlwe::RlweContext<TypeParam>::Create(params));
     unsigned int seed = 0;
+    std::mt19937 mt_rand(seed);
 
     for (int t = 2; t < 16; t++) {
       for (int i = 0; i < kTestingRounds; i++) {
         // Sample a plaintext in the range (0, modulus/2)
         typename TypeParam::Int plaintext =
-            rand_r(&seed) % (context->GetModulus() / 2);
+            mt_rand() % (context->GetModulus() / 2);
 
         // Create a vector that exclusively contains the value "plaintext".
         ASSERT_OK_AND_ASSIGN(
@@ -179,6 +184,29 @@ TYPED_TEST(SymmetricRlweEncryptionTest, CanDecrypt) {
       ASSERT_OK_AND_ASSIGN(auto decrypted,
                            rlwe::Decrypt<TypeParam>(key, ciphertext));
 
+      EXPECT_EQ(plaintext, decrypted);
+    }
+  }
+}
+
+// Ensure that ExtractErrorAndMessage + RemoveError is equal to plaintext.
+TYPED_TEST(SymmetricRlweEncryptionTest, CanExtractErrorAndMessage) {
+  for (const auto& params :
+       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+    ASSERT_OK_AND_ASSIGN(auto context,
+                         rlwe::RlweContext<TypeParam>::Create(params));
+    for (unsigned int i = 0; i < kTestingRounds; i++) {
+      ASSERT_OK_AND_ASSIGN(auto key, this->SampleKey(context.get()));
+      auto plaintext = rlwe::testing::SamplePlaintext<TypeParam>(
+          context->GetN(), context->GetT());
+      ASSERT_OK_AND_ASSIGN(auto ciphertext,
+                           this->Encrypt(key, plaintext, context.get()));
+      ASSERT_OK_AND_ASSIGN(
+          auto decrypted_with_error,
+          rlwe::internal::ExtractErrorAndMessage<TypeParam>(key, ciphertext));
+      auto decrypted = rlwe::RemoveError<TypeParam>(
+          decrypted_with_error, context->GetModulus(), context->GetT(),
+          context->GetModulusParams());
       EXPECT_EQ(plaintext, decrypted);
     }
   }
@@ -444,6 +472,298 @@ TYPED_TEST(SymmetricRlweEncryptionTest, AbsorbInPlace) {
   }
 }
 
+// Check that the fused homomorphic absorption then addition in place operation
+// works.
+TYPED_TEST(SymmetricRlweEncryptionTest, FusedAbsorbAddInPlace) {
+  for (const auto& params :
+       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+    ASSERT_OK_AND_ASSIGN(auto context,
+                         rlwe::RlweContext<TypeParam>::Create(params));
+    for (unsigned int i = 0; i < kTestingRounds; i++) {
+      ASSERT_OK_AND_ASSIGN(auto key, this->SampleKey(context.get()));
+
+      // Create the initial plaintexts.
+      std::vector<typename TypeParam::Int> plaintext1 =
+          rlwe::testing::SamplePlaintext<TypeParam>(context->GetN(),
+                                                    context->GetT());
+      ASSERT_OK_AND_ASSIGN(auto m_plaintext1,
+                           rlwe::testing::ConvertToMontgomery<TypeParam>(
+                               plaintext1, context->GetModulusParams()));
+      rlwe::Polynomial<TypeParam> plaintext1_ntt =
+          rlwe::Polynomial<TypeParam>::ConvertToNtt(
+              m_plaintext1, context->GetNttParams(),
+              context->GetModulusParams());
+      std::vector<typename TypeParam::Int> plaintext2 =
+          rlwe::testing::SamplePlaintext<TypeParam>(context->GetN(),
+                                                    context->GetT());
+      ASSERT_OK_AND_ASSIGN(auto m_plaintext2,
+                           rlwe::testing::ConvertToMontgomery<TypeParam>(
+                               plaintext2, context->GetModulusParams()));
+      rlwe::Polynomial<TypeParam> plaintext2_ntt =
+          rlwe::Polynomial<TypeParam>::ConvertToNtt(
+              m_plaintext2, context->GetNttParams(),
+              context->GetModulusParams());
+
+      std::vector<typename TypeParam::Int> to_absorb =
+          rlwe::testing::SamplePlaintext<TypeParam>(context->GetN(),
+                                                    context->GetT());
+      ASSERT_OK_AND_ASSIGN(auto m_to_absorb,
+                           rlwe::testing::ConvertToMontgomery<TypeParam>(
+                               to_absorb, context->GetModulusParams()));
+      rlwe::Polynomial<TypeParam> to_absorb_ntt =
+          rlwe::Polynomial<TypeParam>::ConvertToNtt(
+              m_to_absorb, context->GetNttParams(),
+              context->GetModulusParams());
+
+      // Create our expected value.
+      ASSERT_OK_AND_ASSIGN(
+          rlwe::Polynomial<TypeParam> absorbed,
+          plaintext2_ntt.Mul(to_absorb_ntt, context->GetModulusParams()));
+      ASSERT_OK_AND_ASSIGN(
+          rlwe::Polynomial<TypeParam> expected_ntt,
+          plaintext1_ntt.Add(absorbed, context->GetModulusParams()));
+      std::vector<typename TypeParam::Int> expected =
+          rlwe::RemoveError<TypeParam>(
+              expected_ntt.InverseNtt(context->GetNttParams(),
+                                      context->GetModulusParams()),
+              context->GetModulus(), context->GetT(),
+              context->GetModulusParams());
+
+      // Encrypt, absorb in place, and decrypt.
+      ASSERT_OK_AND_ASSIGN(auto ciphertext1,
+                           this->Encrypt(key, plaintext1, context.get()));
+      const double ciphertext1_error = ciphertext1.Error();
+      ASSERT_OK_AND_ASSIGN(auto ciphertext2,
+                           this->Encrypt(key, plaintext2, context.get()));
+      ASSERT_OK(ciphertext1.FusedAbsorbAddInPlace(ciphertext2, to_absorb_ntt));
+      ASSERT_OK_AND_ASSIGN(std::vector<typename TypeParam::Int> decrypted,
+                           rlwe::Decrypt<TypeParam>(key, ciphertext1));
+
+      EXPECT_EQ(expected, decrypted);
+
+      // Check the error.
+      EXPECT_EQ(
+          ciphertext1.Error(),
+          ciphertext1_error +
+              ciphertext2.Error() * context->GetErrorParams()->B_plaintext());
+    }
+  }
+}
+
+// Check that:
+// - fused absorb and add on an empty ciphertext yields the absorption of the
+//   other ciphertext.
+// - fused absorb and add with an empty ciphertext does not change the value.
+TYPED_TEST(SymmetricRlweEncryptionTest, FusedAbsorbAddEmptyCiphertexts) {
+  for (const auto& params :
+       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+    ASSERT_OK_AND_ASSIGN(auto context,
+                         rlwe::RlweContext<TypeParam>::Create(params));
+    for (unsigned int i = 0; i < kTestingRounds; i++) {
+      ASSERT_OK_AND_ASSIGN(auto key, this->SampleKey(context.get()));
+
+      // Create the initial plaintexts.
+      std::vector<typename TypeParam::Int> plaintext =
+          rlwe::testing::SamplePlaintext<TypeParam>(context->GetN(),
+                                                    context->GetT());
+      ASSERT_OK_AND_ASSIGN(auto m_plaintext,
+                           rlwe::testing::ConvertToMontgomery<TypeParam>(
+                               plaintext, context->GetModulusParams()));
+      rlwe::Polynomial<TypeParam> plaintext_ntt =
+          rlwe::Polynomial<TypeParam>::ConvertToNtt(
+              m_plaintext, context->GetNttParams(),
+              context->GetModulusParams());
+
+      std::vector<typename TypeParam::Int> to_absorb =
+          rlwe::testing::SamplePlaintext<TypeParam>(context->GetN(),
+                                                    context->GetT());
+      ASSERT_OK_AND_ASSIGN(auto m_to_absorb,
+                           rlwe::testing::ConvertToMontgomery<TypeParam>(
+                               to_absorb, context->GetModulusParams()));
+      rlwe::Polynomial<TypeParam> to_absorb_ntt =
+          rlwe::Polynomial<TypeParam>::ConvertToNtt(
+              m_to_absorb, context->GetNttParams(),
+              context->GetModulusParams());
+
+      // Create our expected value.
+      ASSERT_OK_AND_ASSIGN(
+          rlwe::Polynomial<TypeParam> absorbed,
+          plaintext_ntt.Mul(to_absorb_ntt, context->GetModulusParams()));
+      ASSERT_OK_AND_ASSIGN(
+          rlwe::Polynomial<TypeParam> expected_ntt,
+          plaintext_ntt.Add(absorbed, context->GetModulusParams()));
+      std::vector<typename TypeParam::Int> expected =
+          rlwe::RemoveError<TypeParam>(
+              expected_ntt.InverseNtt(context->GetNttParams(),
+                                      context->GetModulusParams()),
+              context->GetModulus(), context->GetT(),
+              context->GetModulusParams());
+
+      // Empty ciphertext
+      rlwe::SymmetricRlweCiphertext<TypeParam> empty_ciphertext(
+          context->GetModulusParams(), context->GetErrorParams());
+
+      // Encrypt.
+      ASSERT_OK_AND_ASSIGN(auto ciphertext,
+                           this->Encrypt(key, plaintext, context.get()));
+      rlwe::SymmetricRlweCiphertext<TypeParam> copy_ciphertext = ciphertext;
+
+      // Try to absorb `ciphertext` with an empty ciphertext; the value should
+      // not change.
+      ASSERT_OK(
+          ciphertext.FusedAbsorbAddInPlace(empty_ciphertext, to_absorb_ntt));
+      ASSERT_OK_AND_ASSIGN(std::vector<typename TypeParam::Int> decrypted,
+                           rlwe::Decrypt<TypeParam>(key, ciphertext));
+      EXPECT_EQ(decrypted, plaintext);
+
+      // Try to absorb and add the empty ciphertext, and verify that this is
+      // equal to the ciphertext being absorbed.
+      ASSERT_OK(
+          empty_ciphertext.FusedAbsorbAddInPlace(ciphertext, to_absorb_ntt));
+      ASSERT_OK(copy_ciphertext.AbsorbInPlace(to_absorb_ntt));
+      ASSERT_OK_AND_ASSIGN(std::vector<typename TypeParam::Int> decrypted_empty,
+                           rlwe::Decrypt<TypeParam>(key, empty_ciphertext));
+      ASSERT_OK_AND_ASSIGN(std::vector<typename TypeParam::Int> decrypted_copy,
+                           rlwe::Decrypt<TypeParam>(key, copy_ciphertext));
+      EXPECT_EQ(decrypted_empty, decrypted_copy);
+    }
+  }
+}
+
+// Check that you cannot absorb and add with different powers of s.
+TYPED_TEST(SymmetricRlweEncryptionTest, FusedAbsorbAddFailsWithDifferentS) {
+  for (const auto& params :
+       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+    ASSERT_OK_AND_ASSIGN(auto context,
+                         rlwe::RlweContext<TypeParam>::Create(params));
+    for (unsigned int i = 0; i < kTestingRounds; i++) {
+      ASSERT_OK_AND_ASSIGN(auto key, this->SampleKey(context.get()));
+
+      // Create the initial plaintexts.
+      std::vector<typename TypeParam::Int> plaintext =
+          rlwe::testing::SamplePlaintext<TypeParam>(context->GetN(),
+                                                    context->GetT());
+      ASSERT_OK_AND_ASSIGN(auto m_plaintext,
+                           rlwe::testing::ConvertToMontgomery<TypeParam>(
+                               plaintext, context->GetModulusParams()));
+      rlwe::Polynomial<TypeParam> plaintext_ntt =
+          rlwe::Polynomial<TypeParam>::ConvertToNtt(
+              m_plaintext, context->GetNttParams(),
+              context->GetModulusParams());
+
+      std::vector<typename TypeParam::Int> to_absorb =
+          rlwe::testing::SamplePlaintext<TypeParam>(context->GetN(),
+                                                    context->GetT());
+      ASSERT_OK_AND_ASSIGN(auto m_to_absorb,
+                           rlwe::testing::ConvertToMontgomery<TypeParam>(
+                               to_absorb, context->GetModulusParams()));
+      rlwe::Polynomial<TypeParam> to_absorb_ntt =
+          rlwe::Polynomial<TypeParam>::ConvertToNtt(
+              m_to_absorb, context->GetNttParams(),
+              context->GetModulusParams());
+
+      // Create a ciphertext with different power of s, e.g., a substitution.
+      ASSERT_OK_AND_ASSIGN(auto ciphertext,
+                           this->Encrypt(key, plaintext, context.get()));
+      ASSERT_OK_AND_ASSIGN(auto substituted,
+                           ciphertext.Substitute(3, context->GetNttParams()));
+
+      // Cannot absorb with different powers of s.
+      EXPECT_THAT(
+          ciphertext.FusedAbsorbAddInPlace(substituted, to_absorb_ntt),
+          StatusIs(
+              ::absl::StatusCode::kInvalidArgument,
+              HasSubstr(
+                  "Ciphertexts must be encrypted with the same key power.")));
+    }
+  }
+}
+
+// Check that the fused homomorphic absorption then addition in place operation
+// works.
+TYPED_TEST(SymmetricRlweEncryptionTest, FusedAbsorbAddInPlaceLazily) {
+  for (const auto& params :
+       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+    ASSERT_OK_AND_ASSIGN(auto context,
+                         rlwe::RlweContext<TypeParam>::Create(params));
+    for (unsigned int i = 0; i < kTestingRounds; i++) {
+      ASSERT_OK_AND_ASSIGN(auto key, this->SampleKey(context.get()));
+
+      // Create the initial plaintexts.
+      std::vector<typename TypeParam::Int> plaintext1 =
+          rlwe::testing::SamplePlaintext<TypeParam>(context->GetN(),
+                                                    context->GetT());
+      ASSERT_OK_AND_ASSIGN(auto m_plaintext1,
+                           rlwe::testing::ConvertToMontgomery<TypeParam>(
+                               plaintext1, context->GetModulusParams()));
+      rlwe::Polynomial<TypeParam> plaintext1_ntt =
+          rlwe::Polynomial<TypeParam>::ConvertToNtt(
+              m_plaintext1, context->GetNttParams(),
+              context->GetModulusParams());
+      std::vector<typename TypeParam::Int> plaintext2 =
+          rlwe::testing::SamplePlaintext<TypeParam>(context->GetN(),
+                                                    context->GetT());
+      ASSERT_OK_AND_ASSIGN(auto m_plaintext2,
+                           rlwe::testing::ConvertToMontgomery<TypeParam>(
+                               plaintext2, context->GetModulusParams()));
+      rlwe::Polynomial<TypeParam> plaintext2_ntt =
+          rlwe::Polynomial<TypeParam>::ConvertToNtt(
+              m_plaintext2, context->GetNttParams(),
+              context->GetModulusParams());
+
+      std::vector<typename TypeParam::Int> to_absorb =
+          rlwe::testing::SamplePlaintext<TypeParam>(context->GetN(),
+                                                    context->GetT());
+      ASSERT_OK_AND_ASSIGN(auto m_to_absorb,
+                           rlwe::testing::ConvertToMontgomery<TypeParam>(
+                               to_absorb, context->GetModulusParams()));
+      rlwe::Polynomial<TypeParam> to_absorb_ntt =
+          rlwe::Polynomial<TypeParam>::ConvertToNtt(
+              m_to_absorb, context->GetNttParams(),
+              context->GetModulusParams());
+
+      // Create our expected value.
+      ASSERT_OK_AND_ASSIGN(
+          rlwe::Polynomial<TypeParam> absorbed,
+          plaintext2_ntt.Mul(to_absorb_ntt, context->GetModulusParams()));
+      ASSERT_OK_AND_ASSIGN(
+          rlwe::Polynomial<TypeParam> expected_ntt,
+          plaintext1_ntt.Add(absorbed, context->GetModulusParams()));
+      std::vector<typename TypeParam::Int> expected =
+          rlwe::RemoveError<TypeParam>(
+              expected_ntt.InverseNtt(context->GetNttParams(),
+                                      context->GetModulusParams()),
+              context->GetModulus(), context->GetT(),
+              context->GetModulusParams());
+
+      // Encrypt, absorb in place, and decrypt.
+      ASSERT_OK_AND_ASSIGN(auto ciphertext1,
+                           this->Encrypt(key, plaintext1, context.get()));
+      ASSERT_OK_AND_ASSIGN(auto ciphertext2,
+                           this->Encrypt(key, plaintext2, context.get()));
+      ASSERT_OK(
+          ciphertext1.FusedAbsorbAddInPlaceLazily(ciphertext2, to_absorb_ntt));
+
+      // Only a lazy operation has been performed, and has not been merged with
+      // the ciphertext. So the equality should not hold.
+      ASSERT_OK_AND_ASSIGN(std::vector<typename TypeParam::Int> decrypted,
+                           rlwe::Decrypt<TypeParam>(key, ciphertext1));
+      EXPECT_NE(expected, decrypted);
+
+      // After merging, equality should hold.
+      ASSERT_OK(ciphertext1.MergeLazyOperations());
+      ASSERT_OK_AND_ASSIGN(decrypted,
+                           rlwe::Decrypt<TypeParam>(key, ciphertext1));
+      EXPECT_EQ(expected, decrypted);
+
+      // ciphertext1 has no lazy_ member anymore, so we cannot merge again.
+      EXPECT_THAT(ciphertext1.MergeLazyOperations(),
+                  StatusIs(absl::StatusCode::kFailedPrecondition,
+                           HasSubstr("not in lazy mode")));
+    }
+  }
+}
+
 // Check that homomorphic absorption of a scalar works.
 TYPED_TEST(SymmetricRlweEncryptionTest, AbsorbScalar) {
   for (const auto& params :
@@ -451,6 +771,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, AbsorbScalar) {
     ASSERT_OK_AND_ASSIGN(auto context,
                          rlwe::RlweContext<TypeParam>::Create(params));
     unsigned int seed = 0;
+    std::mt19937 mt_rand(seed);
 
     for (unsigned int i = 0; i < kTestingRounds; i++) {
       ASSERT_OK_AND_ASSIGN(auto key, this->SampleKey(context.get()));
@@ -467,7 +788,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, AbsorbScalar) {
               m_plaintext, context->GetNttParams(),
               context->GetModulusParams());
       ASSERT_OK_AND_ASSIGN(TypeParam to_absorb,
-                           TypeParam::ImportInt(rand_r(&seed) % context->GetT(),
+                           TypeParam::ImportInt(mt_rand() % context->GetT(),
                                                 context->GetModulusParams()));
 
       // Create our expected value.
@@ -504,6 +825,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, AbsorbScalarInPlace) {
     ASSERT_OK_AND_ASSIGN(auto context,
                          rlwe::RlweContext<TypeParam>::Create(params));
     unsigned int seed = 0;
+    std::mt19937 mt_rand(seed);
 
     for (unsigned int i = 0; i < kTestingRounds; i++) {
       ASSERT_OK_AND_ASSIGN(auto key, this->SampleKey(context.get()));
@@ -520,7 +842,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, AbsorbScalarInPlace) {
               m_plaintext, context->GetNttParams(),
               context->GetModulusParams());
       ASSERT_OK_AND_ASSIGN(TypeParam to_absorb,
-                           TypeParam::ImportInt(rand_r(&seed) % context->GetT(),
+                           TypeParam::ImportInt(mt_rand() % context->GetT(),
                                                 context->GetModulusParams()));
 
       // Create our expected value.
@@ -546,6 +868,44 @@ TYPED_TEST(SymmetricRlweEncryptionTest, AbsorbScalarInPlace) {
       EXPECT_EQ(ciphertext.Error(), context->GetErrorParams()->B_encryption() *
                                         static_cast<double>(to_absorb.ExportInt(
                                             context->GetModulusParams())));
+    }
+  }
+}
+
+TYPED_TEST(SymmetricRlweEncryptionTest, MeasureErrorFreshEncryption) {
+  if (sizeof(TypeParam) > 2) {
+    for (const auto& params :
+         rlwe::testing::ContextParameters<TypeParam>::Value()) {
+      ASSERT_OK_AND_ASSIGN(auto context,
+                           rlwe::RlweContext<TypeParam>::Create(params));
+      for (int i = 0; i < kTestingRounds; i++) {
+        ASSERT_OK_AND_ASSIGN(auto key, this->SampleKey(context.get()));
+
+        // Create the initial plaintext.
+        std::vector<typename TypeParam::Int> plaintext =
+            rlwe::testing::SamplePlaintext<TypeParam>(context->GetN(),
+                                                      context->GetT());
+        ASSERT_OK_AND_ASSIGN(auto mp,
+                             rlwe::testing::ConvertToMontgomery<TypeParam>(
+                                 plaintext, context->GetModulusParams()));
+        rlwe::Polynomial<TypeParam> plaintext_ntt =
+            rlwe::Polynomial<TypeParam>::ConvertToNtt(
+                mp, context->GetNttParams(), context->GetModulusParams());
+        // Encrypt, measure error on fresh encryption.
+        ASSERT_OK_AND_ASSIGN(auto ciphertext,
+                             this->Encrypt(key, plaintext, context.get()));
+        ASSERT_OK_AND_ASSIGN(
+            std::vector<TypeParam> error_and_message,
+            rlwe::internal::ExtractErrorAndMessage<TypeParam>(key, ciphertext));
+        auto error =
+            rlwe::MeasureError(error_and_message, context->GetModulus(),
+                               context->GetModulusParams());
+        EXPECT_TRUE(error <= (context->GetT()) * 2 * (context->GetVariance()))
+            // T * 2 * variance
+            << "error = " << absl::uint128(error)
+            << "\nis larger than N * T^2 * 4 * variance^2 = "
+            << absl::uint128((context->GetT()) * 2 * (context->GetVariance()));
+      }
     }
   }
 }
@@ -650,6 +1010,63 @@ TYPED_TEST(SymmetricRlweEncryptionTest, MultiplicativelyHomomorphic) {
         EXPECT_EQ(expected, decrypted);
         // Expect that the error grows multiplicatively.
         EXPECT_EQ(product.Error(), ciphertext1.Error() * ciphertext2.Error());
+      }
+    }
+  }
+}
+
+// Tests that for the multiplication of two ciphertexts, the error is upper
+// bounded by N * T^2 * 4 * variance^2.
+TYPED_TEST(SymmetricRlweEncryptionTest, MeasureErrorMultiplication) {
+  // Test setup for multiplication like MultiplicativelyHomomorphic.
+  if (sizeof(TypeParam) > 2) {
+    for (const auto& params :
+         rlwe::testing::ContextParameters<TypeParam>::Value()) {
+      ASSERT_OK_AND_ASSIGN(auto context,
+                           rlwe::RlweContext<TypeParam>::Create(params));
+      for (int i = 0; i < kTestingRounds; i++) {
+        ASSERT_OK_AND_ASSIGN(auto key, this->SampleKey(context.get()));
+
+        // Create the initial plaintexts.
+        std::vector<typename TypeParam::Int> plaintext1 =
+            rlwe::testing::SamplePlaintext<TypeParam>(context->GetN(),
+                                                      context->GetT());
+        ASSERT_OK_AND_ASSIGN(auto mp1,
+                             rlwe::testing::ConvertToMontgomery<TypeParam>(
+                                 plaintext1, context->GetModulusParams()));
+        rlwe::Polynomial<TypeParam> plaintext1_ntt =
+            rlwe::Polynomial<TypeParam>::ConvertToNtt(
+                mp1, context->GetNttParams(), context->GetModulusParams());
+        std::vector<typename TypeParam::Int> plaintext2 =
+            rlwe::testing::SamplePlaintext<TypeParam>(context->GetN(),
+                                                      context->GetT());
+        ASSERT_OK_AND_ASSIGN(auto mp2,
+                             rlwe::testing::ConvertToMontgomery<TypeParam>(
+                                 plaintext2, context->GetModulusParams()));
+        rlwe::Polynomial<TypeParam> plaintext2_ntt =
+            rlwe::Polynomial<TypeParam>::ConvertToNtt(
+                mp2, context->GetNttParams(), context->GetModulusParams());
+
+        // Encrypt, multiply, and decrypt.
+        ASSERT_OK_AND_ASSIGN(auto ciphertext1,
+                             this->Encrypt(key, plaintext1, context.get()));
+        ASSERT_OK_AND_ASSIGN(auto ciphertext2,
+                             this->Encrypt(key, plaintext2, context.get()));
+        ASSERT_OK_AND_ASSIGN(auto product, ciphertext1* ciphertext2);
+        ASSERT_OK_AND_ASSIGN(
+            std::vector<TypeParam> decrypted,
+            rlwe::internal::ExtractErrorAndMessage<TypeParam>(key, product));
+        auto error = rlwe::MeasureError(decrypted, context->GetModulus(),
+                                        context->GetModulusParams());
+        EXPECT_TRUE(error <=
+                    (context->GetN() * (context->GetT()) * (context->GetT()) *
+                     4 * (context->GetVariance() * context->GetVariance())))
+            // N * T^2 * 4 * variance^2
+            << "error = " << absl::uint128(error)
+            << "\nis larger than N * T^2 * 4 * variance^2 = "
+            << absl::uint128((context->GetN() * context->GetT() *
+                              context->GetT() * 4 * context->GetVariance() *
+                              context->GetVariance()));
       }
     }
   }
@@ -820,10 +1237,10 @@ TYPED_TEST(SymmetricRlweEncryptionTest, FailingKeyModulusReduction) {
     EXPECT_NE(q % context->GetT(), p % context->GetT());
 
     ASSERT_OK_AND_ASSIGN(auto context_q, rlwe::RlweContext<TypeParam>::Create(
-                                             {.modulus = q,
-                                              .log_n = params.log_n,
-                                              .log_t = params.log_t,
-                                              .variance = params.variance}));
+                                             {/*.modulus =*/q,
+                                              /*.log_n =*/params.log_n,
+                                              /*.log_t =*/params.log_t,
+                                              /*.variance =*/params.variance}));
 
     ASSERT_OK_AND_ASSIGN(auto key_p, this->SampleKey(context.get()));
     auto status = key_p.template SwitchModulus<TypeParam>(
@@ -847,10 +1264,10 @@ TYPED_TEST(SymmetricRlweEncryptionTest, FailingCiphertextModulusReduction) {
     EXPECT_NE(q % context->GetT(), p % context->GetT());
 
     ASSERT_OK_AND_ASSIGN(auto context_q, rlwe::RlweContext<TypeParam>::Create(
-                                             {.modulus = q,
-                                              .log_n = params.log_n,
-                                              .log_t = params.log_t,
-                                              .variance = params.variance}));
+                                             {/*.modulus =*/q,
+                                              /*.log_n =*/params.log_n,
+                                              /*.log_t =*/params.log_t,
+                                              /*.variance =*/params.variance}));
 
     ASSERT_OK_AND_ASSIGN(auto key_p, this->SampleKey(context.get()));
     // sample ciphertext modulo p.
@@ -871,9 +1288,8 @@ TYPED_TEST(SymmetricRlweEncryptionTest, FailingCiphertextModulusReduction) {
 
 // Test modulus switching.
 TYPED_TEST(SymmetricRlweEncryptionTest, ModulusReduction) {
-  for (const auto& params :
+  for (const auto& [params1, params2] :
        rlwe::testing::ContextParametersModulusSwitching<TypeParam>::Value()) {
-    auto params1 = std::get<0>(params), params2 = std::get<1>(params);
     ASSERT_OK_AND_ASSIGN(auto context1,
                          rlwe::RlweContext<TypeParam>::Create(params1));
     ASSERT_OK_AND_ASSIGN(auto context2,
@@ -914,9 +1330,8 @@ TYPED_TEST(SymmetricRlweEncryptionTest, ModulusReduction) {
 
 // Check that modulus switching reduces the error.
 TYPED_TEST(SymmetricRlweEncryptionTest, ModulusSwitchingReducesLargeError) {
-  for (const auto& params :
+  for (const auto& [params1, params2] :
        rlwe::testing::ContextParametersModulusSwitching<TypeParam>::Value()) {
-    auto params1 = std::get<0>(params), params2 = std::get<1>(params);
     ASSERT_OK_AND_ASSIGN(auto context1,
                          rlwe::RlweContext<TypeParam>::Create(params1));
     ASSERT_OK_AND_ASSIGN(auto context2,
@@ -1042,7 +1457,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, Substitutes) {
        rlwe::testing::ContextParameters<TypeParam>::Value()) {
     ASSERT_OK_AND_ASSIGN(auto context,
                          rlwe::RlweContext<TypeParam>::Create(params));
-    for (int k = 1; k < context->GetLogN(); k++) {
+    for (size_t k = 1; k < context->GetLogN(); k++) {
       int substitution_power = (1 << k) + 1;
       ASSERT_OK_AND_ASSIGN(auto key, this->SampleKey(context.get()));
       auto plaintext = rlwe::testing::SamplePlaintext<TypeParam>(
@@ -1237,8 +1652,9 @@ TYPED_TEST(SymmetricRlweEncryptionTest, IsKeyHomomorphic) {
     ASSERT_OK_AND_ASSIGN(auto context,
                          rlwe::RlweContext<TypeParam>::Create(params));
     ASSERT_OK_AND_ASSIGN(auto prng_seed,
-                         rlwe::SingleThreadPrng::GenerateSeed());
-    ASSERT_OK_AND_ASSIGN(auto prng, rlwe::SingleThreadPrng::Create(prng_seed));
+                         rlwe::SingleThreadChaChaPrng::GenerateSeed());
+    ASSERT_OK_AND_ASSIGN(auto prng,
+                         rlwe::SingleThreadChaChaPrng::Create(prng_seed));
     // Generate the keys.
     ASSERT_OK_AND_ASSIGN(auto key_1, this->SampleKey(context.get()));
     ASSERT_OK_AND_ASSIGN(auto key_2, this->SampleKey(context.get()));
@@ -1326,16 +1742,16 @@ TYPED_TEST(SymmetricRlweEncryptionTest, CannotAddOrSubIncompatibleKeys) {
                          rlwe::RlweContext<TypeParam>::Create(params));
     ASSERT_OK_AND_ASSIGN(auto context_different_variance,
                          rlwe::RlweContext<TypeParam>::Create(
-                             {.modulus = params.modulus,
-                              .log_n = params.log_n,
-                              .log_t = params.log_t,
-                              .variance = params.variance + 1}));
+                             {/*.modulus =*/params.modulus,
+                              /*.log_n =*/params.log_n,
+                              /*.log_t =*/params.log_t,
+                              /*.variance =*/params.variance + 1}));
     ASSERT_OK_AND_ASSIGN(
         auto context_different_log_t,
-        rlwe::RlweContext<TypeParam>::Create({.modulus = params.modulus,
-                                              .log_n = params.log_n,
-                                              .log_t = params.log_t + 1,
-                                              .variance = params.variance}));
+        rlwe::RlweContext<TypeParam>::Create({/*.modulus =*/params.modulus,
+                                              /*.log_n =*/params.log_n,
+                                              /*.log_t =*/params.log_t + 1,
+                                              /*.variance =*/params.variance}));
     ASSERT_OK_AND_ASSIGN(auto key_1, this->SampleKey(context.get()));
     ASSERT_OK_AND_ASSIGN(auto key_2,
                          this->SampleKey(context_different_variance.get()));

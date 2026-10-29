@@ -23,7 +23,6 @@
 #include "montgomery.h"
 #include "ntt_parameters.h"
 #include "polynomial.h"
-#include "prng/integral_prng_types.h"
 #include "status_macros.h"
 #include "testing/parameters.h"
 #include "testing/status_matchers.h"
@@ -34,7 +33,7 @@ namespace rlwe {
 namespace {
 
 // Set constants.
-const unsigned int kTestingRounds = 10;
+const int kTestingRounds = 10;
 
 template <typename ModularInt>
 class SymmetricEncryptionWithPrngTest : public ::testing::Test {
@@ -44,8 +43,8 @@ class SymmetricEncryptionWithPrngTest : public ::testing::Test {
   // Sample a random key.
   rlwe::StatusOr<Key> SampleKey(const rlwe::RlweContext<ModularInt>* context) {
     RLWE_ASSIGN_OR_RETURN(std::string prng_seed,
-                          rlwe::SingleThreadPrng::GenerateSeed());
-    RLWE_ASSIGN_OR_RETURN(auto prng, rlwe::SingleThreadPrng::Create(prng_seed));
+                          SingleThreadChaChaPrng::GenerateSeed());
+    RLWE_ASSIGN_OR_RETURN(auto prng, SingleThreadChaChaPrng::Create(prng_seed));
     return Key::Sample(context->GetLogN(), context->GetVariance(),
                        context->GetLogT(), context->GetModulusParams(),
                        context->GetNttParams(), prng.get());
@@ -55,7 +54,7 @@ class SymmetricEncryptionWithPrngTest : public ::testing::Test {
       const std::vector<std::vector<typename ModularInt::Int>>& coeffs,
       const rlwe::RlweContext<ModularInt>* context) {
     std::vector<Polynomial<ModularInt>> ntt_plaintexts;
-    for (int i = 0; i < coeffs.size(); ++i) {
+    for (size_t i = 0; i < coeffs.size(); ++i) {
       RLWE_ASSIGN_OR_RETURN(auto mont,
                             rlwe::testing::ConvertToMontgomery<ModularInt>(
                                 coeffs[i], context->GetModulusParams()));
@@ -70,12 +69,12 @@ class SymmetricEncryptionWithPrngTest : public ::testing::Test {
       const rlwe::RlweContext<ModularInt>* context) {
     ASSERT_OK_AND_ASSIGN(auto key, SampleKey(context));
     ASSERT_OK_AND_ASSIGN(std::string prng_seed,
-                         SingleThreadPrng::GenerateSeed());
-    ASSERT_OK_AND_ASSIGN(auto prng, SingleThreadPrng::Create(prng_seed));
+                         SingleThreadChaChaPrng::GenerateSeed());
+    ASSERT_OK_AND_ASSIGN(auto prng, SingleThreadChaChaPrng::Create(prng_seed));
     ASSERT_OK_AND_ASSIGN(std::string prng_encryption_seed,
-                         SingleThreadPrng::GenerateSeed());
+                         SingleThreadChaChaPrng::GenerateSeed());
     ASSERT_OK_AND_ASSIGN(auto prng_encryption,
-                         SingleThreadPrng::Create(prng_encryption_seed));
+                         SingleThreadChaChaPrng::Create(prng_encryption_seed));
     ASSERT_OK_AND_ASSIGN(std::vector<Polynomial<ModularInt>> ntt_plaintexts,
                          ConvertPlaintextsToNtt(plaintexts, context));
     ASSERT_OK_AND_ASSIGN(
@@ -84,7 +83,7 @@ class SymmetricEncryptionWithPrngTest : public ::testing::Test {
                                     prng_encryption.get()));
     EXPECT_EQ(plaintexts.size(), compressed_ciphertexts.size());
     ASSERT_OK_AND_ASSIGN(auto another_prng,
-                         SingleThreadPrng::Create(prng_seed));
+                         SingleThreadChaChaPrng::Create(prng_seed));
     ASSERT_OK_AND_ASSIGN(auto ciphertexts,
                          ExpandFromPrng<ModularInt>(compressed_ciphertexts,
                                                     context->GetModulusParams(),
@@ -92,7 +91,7 @@ class SymmetricEncryptionWithPrngTest : public ::testing::Test {
                                                     context->GetErrorParams(),
                                                     another_prng.get()));
     EXPECT_EQ(plaintexts.size(), ciphertexts.size());
-    for (int i = 0; i < ciphertexts.size(); ++i) {
+    for (size_t i = 0; i < ciphertexts.size(); ++i) {
       // Expect that the error of an expanded ciphertext is of a fresh
       // encryption.
       EXPECT_EQ(ciphertexts[i].Error(),
@@ -113,7 +112,7 @@ TYPED_TEST(SymmetricEncryptionWithPrngTest, EncryptDecryptSingleCompressed) {
        rlwe::testing::ContextParameters<TypeParam>::Value()) {
     ASSERT_OK_AND_ASSIGN(auto context,
                          rlwe::RlweContext<TypeParam>::Create(params));
-    for (unsigned int i = 0; i < kTestingRounds; ++i) {
+    for (int i = 0; i < kTestingRounds; ++i) {
       this->TestCompressedEncryptionDecryption(
           {rlwe::testing::SamplePlaintext<TypeParam>(context->GetN(),
                                                      context->GetT())},
@@ -129,7 +128,7 @@ TYPED_TEST(SymmetricEncryptionWithPrngTest, EncryptDecryptMultipleCompressed) {
        rlwe::testing::ContextParameters<TypeParam>::Value()) {
     ASSERT_OK_AND_ASSIGN(auto context,
                          rlwe::RlweContext<TypeParam>::Create(params));
-    for (unsigned int i = 0; i < kTestingRounds; ++i) {
+    for (int i = 0; i < kTestingRounds; ++i) {
       std::vector<std::vector<typename TypeParam::Int>> plaintexts;
       for (int j = 0; j < i + 2; ++j) {
         plaintexts.push_back(rlwe::testing::SamplePlaintext<TypeParam>(

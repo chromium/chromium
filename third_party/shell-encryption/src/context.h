@@ -19,6 +19,7 @@
 #include <memory>
 
 #include "absl/memory/memory.h"
+#include "absl/status/status.h"
 #include "error_params.h"
 #include "ntt_parameters.h"
 #include "status_macros.h"
@@ -81,6 +82,15 @@ class RlweContext {
   RlweContext(RlweContext&&) = default;
   RlweContext& operator=(RlweContext&&) = default;
   ~RlweContext() = default;
+
+  // Check if modulus switching to a target modulus is possible.
+  absl::Status CanModulusSwitchTo(const Int& modulus) const {
+    if (GetModulus() % GetT() != modulus % GetT()) {
+      return absl::InvalidArgumentError(
+          "Cannot modulus switch: it must hold that p % t != q % t");
+    }
+    return absl::OkStatus();
+  }
 
   // Getters.
   const ModulusParams* GetModulusParams() const {

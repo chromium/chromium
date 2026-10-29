@@ -45,33 +45,39 @@ namespace internal {
 template <typename T>
 struct BigInt;
 // Specialization for uint8, uint16, uint32, uint64, and uint128.
-template <> 
-struct EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) BigInt<Uint8> {
+template <>
+struct BigInt<Uint8> {
   typedef Uint16 value_type;
 };
-template <> 
-struct EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) BigInt<Uint16> {
+template <>
+struct BigInt<Uint16> {
   typedef Uint32 value_type;
 };
-template <> 
-struct EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) BigInt<Uint32> {
+template <>
+struct BigInt<Uint32> {
   typedef Uint64 value_type;
 };
-template <> 
-struct EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) BigInt<Uint64> {
+template <>
+struct BigInt<Uint64> {
   typedef absl::uint128 value_type;
 };
-template <> 
-struct EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) BigInt<absl::uint128> {
+template <>
+struct BigInt<absl::uint128> {
   typedef uint256 value_type;
 };
+#ifdef ABSL_HAVE_INTRINSIC_INT128
+template <>
+struct BigInt<unsigned __int128> {
+  typedef uint256 value_type;
+};
+#endif
 
 }  // namespace internal
 
 // The parameters necessary for a Montgomery integer. Note that the template
 // parameters ensure that T is an unsigned integral of at least 8 bits.
 template <typename T>
-struct EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) MontgomeryIntParams{
+struct MontgomeryIntParams {
   // Expose Int and its greater type. BigInt is required in order to multiply
   // two Int and ensure that no overflow occurs.
   //
@@ -79,6 +85,7 @@ struct EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) MontgomeryIntParams{
   using Int = T;
   using BigInt = typename internal::BigInt<Int>::value_type;
   static const size_t bitsize_int = sizeof(Int) * 8;
+  static const size_t bitsize_bigint = sizeof(BigInt) * 8;
 
   // Factory function to create MontgomeryIntParams.
   static rlwe::StatusOr<std::unique_ptr<const MontgomeryIntParams>> Create(
@@ -115,17 +122,18 @@ struct EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) MontgomeryIntParams{
                             // multiplication by inv_r.
 
   // The numerator used in the Barrett reduction.
-  const BigInt barrett_numerator;  // = 2^(sizeof(Int)*8) / modulus
+  const BigInt barrett_numerator;         // = 2^(sizeof(Int)*8) / modulus
+  const BigInt barrett_numerator_bigint;  // = 2^(sizeof(BigInt)*8-1) / modulus
 
-  inline const Int Zero() const { return 0; }
-  inline const Int One() const { return 1; }
-  inline const Int Two() const { return 2; }
+  const Int Zero() const { return 0; }
+  const Int One() const { return 1; }
+  const Int Two() const { return 2; }
 
   // Functions to perform Barrett reduction. For more details, see
   // https://en.wikipedia.org/wiki/Barrett_reduction.
   // This function should remains in the header file to avoid performance
   // regressions.
-  inline Int BarrettReduce(Int input) const {
+  Int BarrettReduce(Int input) const {
     Int out =
         static_cast<Int>((this->barrett_numerator * input) >> bitsize_int);
     out = input - (out * this->modulus);
@@ -134,11 +142,38 @@ struct EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) MontgomeryIntParams{
     return (out >= this->modulus) ? out - this->modulus : out;
   }
 
+  Int BarrettReduceBigInt(BigInt input) const {
+    using BigBigInt = typename internal::BigInt<BigInt>::value_type;
+    Int out = static_cast<Int>(
+        (static_cast<BigBigInt>(this->barrett_numerator_bigint) * input) >>
+        (sizeof(BigInt) * 8 - 1));
+    out = static_cast<Int>(input) - (out * this->modulus);
+    // The steps above produce an integer that is in the range [0, 2N).
+    // We now reduce to the range [0, N).
+    return (out >= this->modulus) ? out - this->modulus : out;
+  }
+
+  // Function to multiply the input by the inverse of r, transforming back from
+  // Montgomery representation.
+  Int ExportInt(Int input) const {
+    Int out =
+        static_cast<Int>((static_cast<BigInt>(this->inv_r_barrett) * input) >>
+                         this->bitsize_int);
+    out = input * this->inv_r - out * this->modulus;
+    // The steps above produce an integer that is in the range [0, 2N).
+    // We now reduce to the range [0, N).
+    return (out >= this->modulus) ? out - this->modulus : out;
+  }
+
   // Computes the serialized byte length of an integer.
-  inline unsigned int SerializedSize() const { return (log_modulus + 7) / 8; }
+  unsigned int SerializedSize() const { return (log_modulus + 7) / 8; }
 
   // Check whether (1 << log_n) fits into the underlying Int type.
   static bool DoesLogNFit(Uint64 log_n) { return (log_n < bitsize_int - 1); }
+
+  // Transform an Int into a double. Note that as soon as value is more than
+  // 2^53, this is a potentially lossy conversion.
+  static double GetDouble(Int value) { return static_cast<double>(value); }
 
  private:
   MontgomeryIntParams(Int mod)
@@ -153,7 +188,10 @@ struct EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) MontgomeryIntParams{
         inv_r(std::get<0>(MontgomeryIntParams::Inverses(modulus_bigint, r))),
         inv_r_barrett(static_cast<Int>(
             (static_cast<BigInt>(inv_r) << bitsize_int) / modulus)),
-        barrett_numerator(this->r / this->modulus_bigint) {}
+        barrett_numerator(this->r / this->modulus_bigint),
+        barrett_numerator_bigint(
+            (static_cast<BigInt>(1) << (sizeof(BigInt) * 8 - 1)) /
+            this->modulus_bigint) {}
 
   // Computes the Montgomery inverse coefficients for r and modulus using
   // the Extended Euclidean Algorithm.
@@ -161,8 +199,24 @@ struct EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) MontgomeryIntParams{
   // modulus must be odd.
   // Returns a tuple of (inv_r, inv_modulus) such that:
   //     r * inv_r - modulus * inv_modulus = 1
-  static SHELL_ENCRYPTION_EXPORT std::tuple<Int, Int> Inverses(BigInt modulus_bigint, BigInt r);
+  static std::tuple<Int, Int> Inverses(
+      BigInt modulus_bigint, BigInt r);
 };
+
+// Specialization for uint128, because BigBigInt = uint512 is not available.
+template <>
+inline absl::uint128 MontgomeryIntParams<absl::uint128>::BarrettReduceBigInt(
+    uint256 input) const {
+  return static_cast<absl::uint128>(input % modulus);
+}
+#ifdef ABSL_HAVE_INTRINSIC_INT128
+template <>
+inline unsigned __int128
+MontgomeryIntParams<unsigned __int128>::BarrettReduceBigInt(
+    uint256 input) const {
+  return static_cast<unsigned __int128>(input % modulus);
+}
+#endif
 
 // Stores an integer in Montgomery representation. The goal of this
 // class is to provide a static type that differentiates between integers
@@ -172,7 +226,7 @@ struct EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) MontgomeryIntParams{
 // The underlying integer type T must be unsigned and must not be bool.
 // This class is thread safe.
 template <typename T>
-class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) ABSL_MUST_USE_RESULT MontgomeryInt {
+class ABSL_MUST_USE_RESULT MontgomeryInt {
  public:
   // Expose Int and its greater type. BigInt is required in order to multiply
   // two Int and ensure that no overflow occurs. This should also be used by
@@ -186,17 +240,28 @@ class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) ABSL_MUST_USE_RESULT Mont
   // Static factory that converts a non-Montgomery representation integer, the
   // underlying integer type, into a Montgomery representation integer. Does not
   // take ownership of params. i.e., import "a".
-  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<MontgomeryInt> ImportInt(Int n, const Params* params);
+  static rlwe::StatusOr<MontgomeryInt> ImportInt(
+      Int n, const Params* params);
+
+  // Static factory that converts a vector of a non-Montgomery representation
+  // integers, the underlying integer types, into a vector of Montgomery
+  // representation integer. Does not take ownership of params.
+  static rlwe::StatusOr<std::vector<MontgomeryInt>> BatchImportInts(
+      const std::vector<Int>& ints, const Params* params);
+
+  // Construction given `n` in Montgomery representation. If the input in not in
+  // Montgomery representation, one should use the ImportInt() function instead.
+  explicit MontgomeryInt(Int n) : n_(n) {}
 
   // Static functions to create a MontgomeryInt of 0 and 1.
-  static SHELL_ENCRYPTION_EXPORT MontgomeryInt ImportZero(const Params* params);
-  static SHELL_ENCRYPTION_EXPORT MontgomeryInt ImportOne(const Params* params);
+  static MontgomeryInt ImportZero(const Params* params);
+  static MontgomeryInt ImportOne(const Params* params);
 
   // Import a random integer using entropy from specified prng. Does not take
   // ownership of params or prng.
   template <typename Prng = rlwe::SecurePrng>
-  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<MontgomeryInt> ImportRandom(Prng* prng,
-                                                    const Params* params) {
+  static rlwe::StatusOr<MontgomeryInt> ImportRandom(
+      Prng* prng, const Params* params) {
     // In order to generate unbiased randomness, we uniformly and randomly
     // sample integers in [0, 2^params->log_modulus) until the generated integer
     // is less than the modulus (i.e., we perform rejection sampling).
@@ -209,7 +274,8 @@ class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) ABSL_MUST_USE_RESULT Mont
     return MontgomeryInt(random_int);
   }
 
-  static BigInt DivAndTruncate(BigInt dividend, BigInt divisor);
+  static BigInt DivAndTruncate(BigInt dividend,
+                                                       BigInt divisor);
 
   // No default constructor.
   MontgomeryInt() = delete;
@@ -220,30 +286,25 @@ class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) ABSL_MUST_USE_RESULT Mont
 
   // Convert a Montgomery representation integer back to the underlying integer.
   // i.e., export "a".
-  inline Int ExportInt(const Params* params) const {
-    Int out =
-        static_cast<Int>((static_cast<BigInt>(params->inv_r_barrett) * n_) >>
-                         params->bitsize_int);
-    out = n_ * params->inv_r - out * params->modulus;
-    // The steps above produce an integer that is in the range [0, 2N).
-    // We now reduce to the range [0, N).
-    out -= (out >= params->modulus) ? params->modulus : 0;
-    return out;
-  }
+  Int ExportInt(const Params* params) const { return params->ExportInt(n_); }
+
+  // Get the Montgomery representation of the integer.
+  const Int GetMontgomeryRepresentation() const { return n_; }
 
   // Returns the least significant 64 bits of n.
   static Uint64 ExportUInt64(Int n) { return static_cast<Uint64>(n); }
 
   // Serialization.
   rlwe::StatusOr<std::string> Serialize(const Params* params) const;
-  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::string> SerializeVector(
+  static rlwe::StatusOr<std::string> SerializeVector(
       const std::vector<MontgomeryInt>& coeffs, const Params* params);
 
   // Deserialization.
-  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<MontgomeryInt> Deserialize(absl::string_view payload,
-                                                   const Params* params);
-  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::vector<MontgomeryInt>> DeserializeVector(
-      int num_coeffs, absl::string_view serialized, const Params* params);
+  static rlwe::StatusOr<MontgomeryInt> Deserialize(
+      absl::string_view payload, const Params* params);
+  static rlwe::StatusOr<std::vector<MontgomeryInt>>
+  DeserializeVector(int num_coeffs, absl::string_view serialized,
+                    const Params* params);
 
   // Modular multiplication.
   // Perform a multiply followed by a modular reduction. Produces an output
@@ -260,8 +321,14 @@ class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) ABSL_MUST_USE_RESULT Mont
     // This function computes the product of the two numbers (a and b), which
     // will equal a * R * b * R in Montgomery representation. It then performs
     // the reduction, creating a * b * R (mod N).
-    Int u = static_cast<Int>(n_ * that.n_) * params->inv_modulus;
-    BigInt t = static_cast<BigInt>(n_) * that.n_ + params->modulus_bigint * u;
+    BigInt product = static_cast<BigInt>(n_) * that.n_;  // a * R * b * R
+
+    // Compute u = (product mod R) * N^(-1) (mod R). Since R = 2^bitsize(Int),
+    // modulo reduction by R can be done by casting from BigInt to Int.
+    Int u = static_cast<Int>(product * params->inv_modulus);
+
+    // Compute t_msb = a * b * R (mod N).
+    BigInt t = product + params->modulus_bigint * u;
     Int t_msb = static_cast<Int>(t >> Params::bitsize_int);
 
     // The steps above produce an integer that is in the range [0, 2N).
@@ -278,7 +345,7 @@ class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) ABSL_MUST_USE_RESULT Mont
   // and perform modular reduction using Barrett reduction instead of
   // Montgomery multiplication.
 
-  // The funciton GetConstant() returns a tuple (constant, constant_barrett):
+  // The function GetConstant() returns a tuple (constant, constant_barrett):
   //       constant = ExportInt(params),
   // and
   //       constant_barrett = (constant << bitsize_int) / modulus
@@ -292,6 +359,8 @@ class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) ABSL_MUST_USE_RESULT Mont
 
   // This function should remains in the header file to avoid performance
   // regressions.
+  // The value this->n_ can be in [0, 4*modulus] since this operation is
+  // actually a multiplication over a BigInt followed by a Barrett reduction.
   MontgomeryInt& MulConstantInPlace(const Int& constant,
                                     const Int& constant_barrett,
                                     const Params* params) {
@@ -312,8 +381,9 @@ class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) ABSL_MUST_USE_RESULT Mont
 
   // This function should remains in the header file to avoid performance
   // regressions.
+  // The sum of this->n_ + that.n_ needs to be in [0, 4 * modulus].
   MontgomeryInt& AddInPlace(const MontgomeryInt& that, const Params* params) {
-    // We can use Barrett reduction because n_ <= modulus < Max(Int)/2.
+    // We can use Barrett reduction because n_ <= modulus < Max(Int)/4.
     n_ = params->BarrettReduce(n_ + that.n_);
     return *this;
   }
@@ -338,9 +408,104 @@ class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) ABSL_MUST_USE_RESULT Mont
 
   // This function should remains in the header file to avoid performance
   // regressions.
+  // The value this->n_ can be in [0, 3*modulus] and that.n_ needs to be in
+  // [0, modulus].
   MontgomeryInt& SubInPlace(const MontgomeryInt& that, const Params* params) {
-    // We can use Barrett reduction because n_ <= modulus < Max(Int)/2.
+    // We can use Barrett reduction because n_ <= modulus < Max(Int)/4.
     n_ = params->BarrettReduce(n_ + (params->modulus - that.n_));
+    return *this;
+  }
+
+  // We enable lazy additions and lazy multiplications, where the output is not
+  // assured to be in [0, modulus]. A lazy addition adds the underlying
+  // Montgomery integers, whereas a lazy addition adds the left hand side with
+  // modulus minus the right hand side.
+  // These operations can be used in place of addition and subtraction, as long
+  // as a Barrett reduction is performed on the value before the MontgomeryInt
+  // is used in the rest of the library.
+  //
+  // As an example, these operations are used when performing an NTT operation
+  // on all odd layers.
+  //
+  // These functions should remains in the header file to avoid performance
+  // regressions.
+
+  // The sum of this->n_ + that.n_ needs to be in [0, 4 * modulus].
+  MontgomeryInt& LazyAddInPlace(const MontgomeryInt& that,
+                                const Params* params) {
+    n_ += that.n_;
+    return *this;
+  }
+
+  // The value this->n_ can be in [0, 3*modulus] and that.n_ needs to be in
+  // [0, modulus].
+  MontgomeryInt& LazySubInPlace(const MontgomeryInt& that,
+                                const Params* params) {
+    n_ += (params->modulus - that.n_);
+    return *this;
+  }
+
+  MontgomeryInt& FusedMulAddInPlace(const MontgomeryInt& a,
+                                    const MontgomeryInt& b,
+                                    const Params* params) {
+    // Compute this += a * b by using r_mod_modulus which is 1 in Montgomery
+    // representation. Since a, b, and this are smaller than the modulus N, then
+    // t is smaller than 2N^2 < r * N, which is the condition for Montgomery
+    // reduction.
+    // en.wikipedia.org/wiki/Montgomery_modular_multiplication#The_REDC_algorithm
+    BigInt t = static_cast<BigInt>(params->r_mod_modulus) * n_ +
+               static_cast<BigInt>(a.n_) * b.n_;
+    // Perform a regular Montgomery reduction.
+    Int u = static_cast<Int>(t) * params->inv_modulus;
+    t += params->modulus_bigint * u;
+    Int t_msb = static_cast<Int>(t >> Params::bitsize_int);
+
+    // The steps above produce an integer that is in the range [0, 2N).
+    // We now reduce to the range [0, N).
+    n_ = (t_msb >= params->modulus) ? t_msb - params->modulus : t_msb;
+    return *this;
+  }
+
+  MontgomeryInt& FusedMulConstantAddInPlace(const MontgomeryInt& a,
+                                            const Int& constant,
+                                            const Int& constant_barrett,
+                                            const Params* params) {
+    // Compute this += a * constant, where this is multiplied by
+    // the Barrett numerator.
+    // Denote:
+    // - m = modulus
+    // - n = this
+    // - b = constant
+    // - k = bitsize_int
+    // - CB = constant_barrett = (b << k) / m = floor(b * 2^k/m),
+    // - BN = barrett_numerator = (1 << k) / m = floor(2^k/m),
+    //
+    // We recall that m <= k/4. The function below will compute
+    //           a * b + n - floor((CB * a + BN * n)/2^k) * m
+    // and we will prove that this is smaller than 2 * m, which enables to
+    // perform a unique conditional subtraction by m to reduce the final result
+    // in [0, m].
+    //
+    // We first express the floor as a difference,
+    //   a * b + n - floor((CB * a + BN * n)/2^k) * m
+    //   = ab + n - m * (CB * a + BN * n - (a * CB + n * BN mod 2^k))/2^k
+    // and we bound m * (a * CB + n * BN mod 2^k)/2^k by m, which yields:
+    //   <= ab + n - (CB*a + BN*n) * m/2^k + m.
+    //
+    // We know expand CB and BN with their definition,
+    //   = ab+n - m /2^k *(floor(b * 2^k/m) * a + floor(2^k/m) * n) + m
+    //   = ab+n - ma/2^k *(b2^k-(b2^k mod m))/m - mn/2^k*(2^k-(2^k mod m))/m + m
+    //   = ab+n - a /2^k *(b2^k-(b2^k mod m))   - n /2^k*(2^k-(2^k mod m)) + m
+    //   = ab+n - a*b + a*(b2^k mod m)/2^k - n + n(2^k mod m)/2^k + m
+    //   = a*(b2^k mod m)/2^k + n(2^k mod m)/2^k + m
+    //
+    // Finally, we note that a, n <= m, and we recall that m <= k/4. We get
+    //   <= 2m^2 / 2^k + m <= 2m^2/(4m) + m <= m/2+m < 2*m
+    Int out = static_cast<Int>((static_cast<BigInt>(constant_barrett) * a.n_ +
+                                params->barrett_numerator * n_) >>
+                               Params::bitsize_int);
+    n_ += a.n_ * constant - out * params->modulus;
+    n_ -= (n_ >= params->modulus) ? params->modulus : 0;
     return *this;
   }
 
@@ -355,84 +520,119 @@ class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) ABSL_MUST_USE_RESULT Mont
   // size.
 
   // Batch addition of two vectors.
-  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::vector<MontgomeryInt>> BatchAdd(
-      const std::vector<MontgomeryInt>& in1,
-      const std::vector<MontgomeryInt>& in2, const Params* params);
+  static rlwe::StatusOr<std::vector<MontgomeryInt>>
+  BatchAdd(const std::vector<MontgomeryInt>& in1,
+           const std::vector<MontgomeryInt>& in2, const Params* params);
   static absl::Status BatchAddInPlace(std::vector<MontgomeryInt>* in1,
                                       const std::vector<MontgomeryInt>& in2,
                                       const Params* params);
 
   // Batch addition of one vector with a scalar.
-  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::vector<MontgomeryInt>> BatchAdd(
-      const std::vector<MontgomeryInt>& in1, const MontgomeryInt& in2,
-      const Params* params);
+  static rlwe::StatusOr<std::vector<MontgomeryInt>>
+  BatchAdd(const std::vector<MontgomeryInt>& in1, const MontgomeryInt& in2,
+           const Params* params);
   static absl::Status BatchAddInPlace(std::vector<MontgomeryInt>* in1,
                                       const MontgomeryInt& in2,
                                       const Params* params);
 
   // Batch subtraction of two vectors.
-  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::vector<MontgomeryInt>> BatchSub(
-      const std::vector<MontgomeryInt>& in1,
-      const std::vector<MontgomeryInt>& in2, const Params* params);
-  static SHELL_ENCRYPTION_EXPORT absl::Status BatchSubInPlace(std::vector<MontgomeryInt>* in1,
-                                      const std::vector<MontgomeryInt>& in2,
-                                      const Params* params);
+  static rlwe::StatusOr<std::vector<MontgomeryInt>>
+  BatchSub(const std::vector<MontgomeryInt>& in1,
+           const std::vector<MontgomeryInt>& in2, const Params* params);
+  static absl::Status BatchSubInPlace(
+      std::vector<MontgomeryInt>* in1, const std::vector<MontgomeryInt>& in2,
+      const Params* params);
 
   // Batch subtraction of one vector with a scalar.
-  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::vector<MontgomeryInt>> BatchSub(
-      const std::vector<MontgomeryInt>& in1, const MontgomeryInt& in2,
+  static rlwe::StatusOr<std::vector<MontgomeryInt>>
+  BatchSub(const std::vector<MontgomeryInt>& in1, const MontgomeryInt& in2,
+           const Params* params);
+  static absl::Status BatchSubInPlace(
+      std::vector<MontgomeryInt>* in1, const MontgomeryInt& in2,
       const Params* params);
-  static SHELL_ENCRYPTION_EXPORT absl::Status BatchSubInPlace(std::vector<MontgomeryInt>* in1,
-                                      const MontgomeryInt& in2,
-                                      const Params* params);
 
   // Batch multiplication of two vectors.
-  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::vector<MontgomeryInt>> BatchMul(
-      const std::vector<MontgomeryInt>& in1,
-      const std::vector<MontgomeryInt>& in2, const Params* params);
-  static SHELL_ENCRYPTION_EXPORT absl::Status BatchMulInPlace(std::vector<MontgomeryInt>* in1,
-                                      const std::vector<MontgomeryInt>& in2,
-                                      const Params* params);
+  static rlwe::StatusOr<std::vector<MontgomeryInt>>
+  BatchMul(const std::vector<MontgomeryInt>& in1,
+           const std::vector<MontgomeryInt>& in2, const Params* params);
+  static absl::Status BatchMulInPlace(
+      std::vector<MontgomeryInt>* in1, const std::vector<MontgomeryInt>& in2,
+      const Params* params);
+
+  // Batch fused multiply add of two vectors.
+  static rlwe::StatusOr<std::vector<MontgomeryInt>>
+  BatchFusedMulAdd(const std::vector<MontgomeryInt>& in1,
+                   const std::vector<MontgomeryInt>& in2,
+                   const std::vector<MontgomeryInt>& in3, const Params* params);
+  static absl::Status BatchFusedMulAddInPlace(
+      std::vector<MontgomeryInt>* in1, const std::vector<MontgomeryInt>& in2,
+      const std::vector<MontgomeryInt>& in3, const Params* params);
+
+  // Batch fused multiply add of two vectors, one being constant.
+  static rlwe::StatusOr<std::vector<MontgomeryInt>>
+  BatchFusedMulConstantAdd(const std::vector<MontgomeryInt>& in1,
+                           const std::vector<MontgomeryInt>& in2,
+                           const std::vector<Int>& constant,
+                           const std::vector<Int>& constant_barrett,
+                           const Params* params);
+  static absl::Status BatchFusedMulConstantAddInPlace(
+      std::vector<MontgomeryInt>* in1, const std::vector<MontgomeryInt>& in2,
+      const std::vector<Int>& constant,
+      const std::vector<Int>& constant_barrett, const Params* params);
 
   // Batch multiplication of two vectors, where the second vector is a constant.
-  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::vector<MontgomeryInt>> BatchMulConstant(
-      const std::vector<MontgomeryInt>& in1,
-      const std::vector<Int>& in2_constant,
-      const std::vector<Int>& in2_constant_barrett, const Params* params);
-  static SHELL_ENCRYPTION_EXPORT absl::Status BatchMulConstantInPlace(
+  static rlwe::StatusOr<std::vector<MontgomeryInt>>
+  BatchMulConstant(const std::vector<MontgomeryInt>& in1,
+                   const std::vector<Int>& in2_constant,
+                   const std::vector<Int>& in2_constant_barrett,
+                   const Params* params);
+  static absl::Status BatchMulConstantInPlace(
       std::vector<MontgomeryInt>* in1, const std::vector<Int>& in2_constant,
       const std::vector<Int>& in2_constant_barrett, const Params* params);
 
   // Batch multiplication of a vector with a scalar.
-  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::vector<MontgomeryInt>> BatchMul(
-      const std::vector<MontgomeryInt>& in1, const MontgomeryInt& in2,
+  static rlwe::StatusOr<std::vector<MontgomeryInt>>
+  BatchMul(const std::vector<MontgomeryInt>& in1, const MontgomeryInt& in2,
+           const Params* params);
+  static absl::Status BatchMulInPlace(
+      std::vector<MontgomeryInt>* in1, const MontgomeryInt& in2,
       const Params* params);
-  static SHELL_ENCRYPTION_EXPORT absl::Status BatchMulInPlace(std::vector<MontgomeryInt>* in1,
-                                      const MontgomeryInt& in2,
-                                      const Params* params);
 
   // Batch multiplication of a vector with a constant scalar.
-  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::vector<MontgomeryInt>> BatchMulConstant(
-      const std::vector<MontgomeryInt>& in1, const Int& constant,
+  static rlwe::StatusOr<std::vector<MontgomeryInt>>
+  BatchMulConstant(const std::vector<MontgomeryInt>& in1, const Int& constant,
+                   const Int& constant_barrett, const Params* params);
+  static absl::Status BatchMulConstantInPlace(
+      std::vector<MontgomeryInt>* in1, const Int& constant,
       const Int& constant_barrett, const Params* params);
-  static SHELL_ENCRYPTION_EXPORT absl::Status BatchMulConstantInPlace(std::vector<MontgomeryInt>* in1,
-                                              const Int& constant,
-                                              const Int& constant_barrett,
-                                              const Params* params);
 
   // Equality.
   bool operator==(const MontgomeryInt& that) const { return (n_ == that.n_); }
   bool operator!=(const MontgomeryInt& that) const { return !(*this == that); }
 
   // Modular exponentiation.
-  SHELL_ENCRYPTION_EXPORT MontgomeryInt ModExp(Int exponent, const Params* params) const;
+  MontgomeryInt ModExp(Int exponent,
+                                               const Params* params) const;
 
-  // Inverse.
-  SHELL_ENCRYPTION_EXPORT  MontgomeryInt MultiplicativeInverse(const Params* params) const;
+  // Inverse using modular exponentiation.
+  //
+  // Note: The implementation assumes the modulus is a prime number.
+  MontgomeryInt
+  MultiplicativeInverse(const Params* params) const;
+
+  // Inverse using extended Euclidean algorithm.
+  // Returns this^(-1) (mod modulus) if the inverse exists, or returns an error
+  // if gcd(this, modulus) != 1.
+  //
+  // WARNING: This function is not constant time, so it should not be used on
+  //          ciphertext or key materials.
+  absl::StatusOr<MontgomeryInt> MultiplicativeInverseFast(
+      const Params* params) const;
 
  private:
   template <typename Prng = rlwe::SecurePrng>
-  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<Int> GenerateRandomInt(int log_modulus, Prng* prng) {
+  static rlwe::StatusOr<Int> GenerateRandomInt(
+      int log_modulus, Prng* prng) {
     // Generate a random Int. As the modulus is always smaller than max(Int),
     // there will be no issues with overflow.
     int max_bits_per_step = std::min((int)Params::bitsize_int, (int)64);
@@ -464,8 +664,6 @@ class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) ABSL_MUST_USE_RESULT Mont
     return rand;
   }
 
-  explicit MontgomeryInt(Int n) : n_(n) {}
-
   Int n_;
 };
 
@@ -480,6 +678,10 @@ extern template class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) Montgomer
 extern template class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) MontgomeryInt<Uint64>;
 extern template class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) MontgomeryInt<absl::uint128>;
 
+#ifdef ABSL_HAVE_INTRINSIC_INT128
+extern template struct EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) MontgomeryIntParams<unsigned __int128>;
+extern template class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) MontgomeryInt<unsigned __int128>;
+#endif
 }  // namespace rlwe
 
 #endif  // RLWE_MONTGOMERY_H_

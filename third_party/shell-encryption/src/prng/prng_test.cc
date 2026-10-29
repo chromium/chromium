@@ -23,7 +23,6 @@
 #include <gtest/gtest-typed-test.h>
 #include "absl/strings/str_cat.h"
 #include "prng/integral_prng_testing_types.h"
-#include "prng/integral_prng_types.h"
 #include "testing/status_matchers.h"
 #include "testing/status_testing.h"
 

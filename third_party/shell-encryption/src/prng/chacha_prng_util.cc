@@ -75,7 +75,7 @@ rlwe::StatusOr<Uint8> ChaChaPrngRand8(absl::string_view key,
                                       int* salt_counter,
                                       std::vector<Uint8>* buffer) {
   Uint8 rand;
-  if (*position_in_buffer >= buffer->size()) {
+  if (*position_in_buffer >= static_cast<int>(buffer->size())) {
     RLWE_RETURN_IF_ERROR(ChaChaPrngResalt(key, kChaChaOutputBytes, salt_counter,
                                           position_in_buffer, buffer));
   }

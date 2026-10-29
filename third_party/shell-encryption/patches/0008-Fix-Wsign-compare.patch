@@ -1,47 +1,26 @@
-Fix -Wsign-compare, and -Wignored-qualifiers on const return types.
+Drop const on returned values. Chromium code that includes these
+headers builds with -Wignored-qualifiers.
 
 Chromium commit c7faeda445225 (crbug.com/1095122, crbug.com/1212837).
 
-diff --git a/src/ntt_parameters.h b/src/ntt_parameters.h
-index eba9579ab87ca..dc56ab62dd666 100644
---- a/src/ntt_parameters.h
-+++ b/src/ntt_parameters.h
-@@ -34,7 +34,7 @@ template <typename ModularInt>
- void FillWithEveryPower(const ModularInt& base, unsigned int n,
-                         std::vector<ModularInt>* row,
-                         const typename ModularInt::Params* params) {
--  for (int i = 0; i < n; i++) {
-+  for (unsigned int i = 0; i < n; i++) {
-     (*row)[i].AddInPlace(base.ModExp(i, params), params);
+diff --git a/src/opt/constant_polynomial.h b/src/opt/constant_polynomial.h
+index f54e9856ddb06..e55061a846179 100644
+--- a/src/opt/constant_polynomial.h
++++ b/src/opt/constant_polynomial.h
+@@ -48,7 +48,7 @@ class ConstantPolynomial {
    }
- }
-@@ -183,7 +183,7 @@ rlwe::StatusOr<NttParameters<ModularInt>> InitializeNttParameters(
-   // Abort if log_n is non-positive.
-   if (log_n <= 0) {
-     return absl::InvalidArgumentError("log_n must be positive");
--  } else if (log_n > kMaxLogNumCoeffs) {
-+  } else if (static_cast<Uint64>(log_n) > kMaxLogNumCoeffs) {
-     return absl::InvalidArgumentError(absl::StrCat(
-         "log_n, ", log_n, ", must be less than ", kMaxLogNumCoeffs, "."));
-   }
-diff --git a/src/sample_error.h b/src/sample_error.h
-index 7d570c5cd2e7a..b1f19eb952551 100644
---- a/src/sample_error.h
-+++ b/src/sample_error.h
-@@ -57,7 +57,7 @@ static rlwe::StatusOr<std::vector<ModularInt>> SampleFromErrorDistribution(
-   Uint64 k;
-   typename ModularInt::Int coefficient;
  
--  for (int i = 0; i < num_coeffs; i++) {
-+  for (unsigned int i = 0; i < num_coeffs; i++) {
-     coefficient = modulus_params->modulus;
-     k = variance << 1;
+   // Get the length.
+-  const size_t Len() const { return coeffs_constant_.size(); }
++  size_t Len() const { return coeffs_constant_.size(); }
  
+  private:
+   // Private constructor.
 diff --git a/src/symmetric_encryption.h b/src/symmetric_encryption.h
-index 987e86f7a9823..06dabb89502d4 100644
+index b3631b2d2f753..31903252b1fb9 100644
 --- a/src/symmetric_encryption.h
 +++ b/src/symmetric_encryption.h
-@@ -630,9 +630,9 @@ class SymmetricRlweKey {
+@@ -764,9 +764,9 @@ class SymmetricRlweKey {
    const typename ModularInt::Params* ModulusParams() const {
      return modulus_params_;
    }
@@ -54,12 +33,3 @@ index 987e86f7a9823..06dabb89502d4 100644
    const ModularInt& PlaintextModulus() const { return t_mod_; }
    const typename ModularInt::Params* PlaintextModulusParams() const {
      return plaintext_modulus_params_;
-@@ -941,7 +941,7 @@ rlwe::StatusOr<std::vector<typename ModularInt::Int>> Decrypt(
-   Polynomial<ModularInt> key_powers = key.Key();
-   unsigned int ciphertext_len = ciphertext.Len();
- 
--  for (int i = 0; i < ciphertext_len; i++) {
-+  for (unsigned int i = 0; i < ciphertext_len; i++) {
-     // Extract component i.
-     RLWE_ASSIGN_OR_RETURN(Polynomial<ModularInt> ci, ciphertext.Component(i));
- 

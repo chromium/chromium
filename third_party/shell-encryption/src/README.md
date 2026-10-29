@@ -107,7 +107,7 @@ c<sub>1y</sub>)*, we would get the ciphertext *(c<sub>0x</sub> + c<sub>0y</sub>,
 c<sub>1x</sub> + c<sub>1y</sub>)* = *(a<sub>x</sub>s + m<sub>x</sub> +
 e<sub>x</sub>t + a<sub>y</sub>s + m<sub>y</sub> + e<sub>y</sub>t,
 -a<sub>x</sub> - a<sub>y</sub>)* = *((a<sub>x</sub> + a<sub>y</sub>)s +
-(m<sub>x</sub> - m<sub>y</sub>) + (e<sub>x</sub> + e<sub>y</sub>)t,
+(m<sub>x</sub> + m<sub>y</sub>) + (e<sub>x</sub> + e<sub>y</sub>)t,
 -(a<sub>x</sub> + a<sub>y</sub>))*.
 
 If we let *a<sub>z</sub>* = *a<sub>x</sub> + a<sub>y</sub>* and
@@ -183,7 +183,7 @@ trace the growth of the sum of the error and the message carefully.
 One way of managing error is to set a larger modulus. Setting a larger modulus
 must be done with care, however. Security of RLWE derives partly from the ratio
 of modulus to error. If the modulus increases in size, so must the standard
-deviation of the error distirbution.
+deviation of the error distribution.
 
 ### Modulus Switching
 
@@ -252,7 +252,7 @@ of *q* and *n* and compiled as part of the final binary.
 ### Symmetric Encryption.
 
 This library is implemented in `symmetric_encryption.h`. This library implements
-all of the cryptographic operations described earlier in ths document. It
+all of the cryptographic operations described earlier in this document. It
 operates on polynomials in NTT form.
 
 ## Dependencies

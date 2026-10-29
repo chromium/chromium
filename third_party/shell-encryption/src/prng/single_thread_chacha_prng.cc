@@ -34,7 +34,7 @@ SingleThreadChaChaPrng::SingleThreadChaChaPrng(absl::string_view in_key,
 
 rlwe::StatusOr<std::unique_ptr<SingleThreadChaChaPrng>>
 SingleThreadChaChaPrng::Create(absl::string_view in_key) {
-  if (in_key.length() != SeedLength()) {
+  if (static_cast<int>(in_key.length()) != SeedLength()) {
     return absl::InvalidArgumentError(
         absl::StrCat("Cannot create Prng with key of the "
                      "wrong size. Real ",

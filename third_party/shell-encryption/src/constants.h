@@ -34,6 +34,11 @@ constexpr Uint64 kNewhopeModulus = 12289;
 constexpr Uint64 kNewhopeLogDegreeBound = 10;
 constexpr Uint64 kNewhopeDegreeBound = 1 << kNewhopeLogDegreeBound;
 
+// RLWE parameters for a 62 bit modulus.
+constexpr Uint64 kModulus62 = 4611686018427322369;
+constexpr Uint64 kLogDegreeBound62 = 11;
+constexpr Uint64 kDegreeBound62 = 1L << kLogDegreeBound62;
+
 // Montgomery parameters for a 59-bit modulus.
 constexpr Uint64 kModulus59 = 332366567264636929;
 constexpr Uint64 kInvModulus59 = 7124357790306815999;
@@ -45,20 +50,6 @@ constexpr Uint64 kModulus44 = 17592169240577;
 constexpr Uint64 kLogDegreeBound44 = 10;
 constexpr Uint64 kDegreeBound44 = 1L << kLogDegreeBound44;
 
-// RLWE parameters for 128-element database in PIR.
-constexpr Uint64 kModulus1PIR128 = 17592173449217;  // 44-bit modulus
-constexpr Uint64 kModulus2PIR128 = 8380417;         // 23-bit modulus
-constexpr Uint64 kLogTPIR128 = 10;
-constexpr Uint64 kLogDegreeBoundPIR128 = 10;
-constexpr Uint64 kDegreeBoundPIR128 = 1L << kLogDegreeBoundPIR128;
-
-// RLWE parameters for 256-element database in PIR.
-constexpr Uint64 kModulus1PIR256 = 8796087789569;  // 43-bit modulus
-constexpr Uint64 kModulus2PIR256 = 2056193;        // 21-bit modulus
-constexpr Uint64 kLogTPIR256 = 9;
-constexpr Uint64 kLogDegreeBoundPIR256 = 10;
-constexpr Uint64 kDegreeBoundPIR256 = 1L << kLogDegreeBoundPIR256;
-
 // RLWE parameters for a 25-bit and a 29-bit moduli, both congruent to 4 modulo
 // 5 = (1 << 2) + 1. These moduli will be useful for testing of modulus
 // switching.
@@ -68,6 +59,11 @@ constexpr Uint64 kDegreeBound29 = 1L << kLogDegreeBound29;
 constexpr Uint64 kModulus25 = 33538049;
 constexpr Uint64 kLogDegreeBound25 = 10;
 constexpr Uint64 kDegreeBound25 = 1L << kLogDegreeBound25;
+
+// RLWE parameters for a 30 bit modulus.
+constexpr Uint64 kModulus30 = 1073707009;
+constexpr Uint64 kLogDegreeBound30 = 10;
+constexpr Uint64 kDegreeBound30 = 1L << kLogDegreeBound30;
 
 // RLWE parameters for an 80-bit modulus.
 // The modulus represented in decimal is 646119422561999443726337.

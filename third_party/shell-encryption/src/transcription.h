@@ -66,7 +66,7 @@ rlwe::StatusOr<std::vector<OutputInt>> TranscribeBits(
     }
   }
   // Compute the number of input chunks
-  const int input_chunks =
+  const size_t input_chunks =
       (input_bit_length + input_bits_per_int - 1) / input_bits_per_int;
   // Check that the input_vector is of size at least input_chunks.
   if (input_vector.size() < input_chunks) {
@@ -89,7 +89,7 @@ rlwe::StatusOr<std::vector<OutputInt>> TranscribeBits(
       std::min(remaining_bits_in_input, output_bits_per_int);
   int number_output_bits_needed = size_output_chunk;
   // Loop over all the input chunks.
-  for (int i = 0; i < input_chunks; i++) {
+  for (size_t i = 0; i < input_chunks; i++) {
     // Number of bits in "input"
     int number_bits_in_input =
         std::min(input_bits_per_int, remaining_bits_in_input);

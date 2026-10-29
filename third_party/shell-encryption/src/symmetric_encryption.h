@@ -16,13 +16,17 @@
 #ifndef RLWE_SYMMETRIC_ENCRYPTION_H_
 #define RLWE_SYMMETRIC_ENCRYPTION_H_
 
+#include <math.h>
+
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 
+#include "absl/status/status.h"
 #include "error_params.h"
+#include "opt/lazy_polynomial.h"
 #include "polynomial.h"
-#include "prng/integral_prng_types.h"
 #include "prng/prng.h"
 #include "sample_error.h"
 #include "serialization.pb.h"
@@ -74,7 +78,6 @@ class SymmetricRlweCiphertext {
         error_params_(error_params),
         power_of_s_(1),
         error_(0) {}
-  SymmetricRlweCiphertext(const SymmetricRlweCiphertext& that) = default;
 
   // Create a ciphertext by supplying the vector of components.
   explicit SymmetricRlweCiphertext(std::vector<Polynomial<ModularInt>> c,
@@ -123,7 +126,7 @@ class SymmetricRlweCiphertext {
       c_.resize(that.c_.size(), zero);
     }
 
-    for (int i = 0; i < that.c_.size(); i++) {
+    for (size_t i = 0; i < that.c_.size(); i++) {
       RLWE_RETURN_IF_ERROR(c_[i].AddInPlace(that.c_[i], modulus_params_));
     }
 
@@ -167,7 +170,7 @@ class SymmetricRlweCiphertext {
       c_.resize(that.c_.size(), zero);
     }
 
-    for (int i = 0; i < that.c_.size(); i++) {
+    for (size_t i = 0; i < that.c_.size(); i++) {
       RLWE_RETURN_IF_ERROR(c_[i].SubInPlace(that.c_[i], modulus_params_));
     }
 
@@ -240,6 +243,153 @@ class SymmetricRlweCiphertext {
     return absl::OkStatus();
   }
 
+  // Fused operation that absorbs a polynomial in a ciphertext, and then add the
+  // result in place.
+  //                    this += a * b,
+  // where a is SymmetricRlweCiphertext and b is a Polynomial.
+  absl::Status FusedAbsorbAddInPlace(const SymmetricRlweCiphertext& a,
+                                     const Polynomial<ModularInt>& b) {
+    if (power_of_s_ != a.power_of_s_) {
+      return absl::InvalidArgumentError(
+          "Ciphertexts must be encrypted with the same key power.");
+    }
+
+    // Compute c_[i] += a.c_[i] * b, if possible.
+    for (size_t i = 0; i < c_.size() && i < a.c_.size(); i++) {
+      RLWE_RETURN_IF_ERROR(
+          c_[i].FusedMulAddInPlace(a.c_[i], b, modulus_params_));
+    }
+
+    // If a.c_ was longer, absorb and store in c_.
+    if (a.c_.size() > c_.size()) {
+      c_.reserve(a.c_.size());
+      for (size_t i = c_.size(); i < a.c_.size(); i++) {
+        RLWE_ASSIGN_OR_RETURN(auto product, a.c_[i].Mul(b, a.modulus_params_));
+        c_.push_back(std::move(product));
+      }
+    }
+
+    // Update the error
+    error_ += a.error_ * error_params_->B_plaintext();
+    return absl::OkStatus();
+  }
+
+  // Fused operation that absorbs a polynomial in a ciphertext, and then add the
+  // result in place lazily.
+  //
+  // Using this function makes the ciphertext hold another member, a vector of
+  // lazy polynomials, which can be fused-mul add in place.
+  //
+  // The ciphertext is NOT modified until the `MergeLazyOperations()` function
+  // is called.
+  absl::Status FusedAbsorbAddInPlaceLazily(const SymmetricRlweCiphertext& a,
+                                           const Polynomial<ModularInt>& b) {
+    const size_t size_a = a.c_.size();
+    if (power_of_s_ != a.power_of_s_) {
+      return absl::InvalidArgumentError(
+          "Ciphertexts must be encrypted with the same key power.");
+    }
+    if (size_a == 0) {
+      return absl::OkStatus();
+    }
+
+    // Update the error
+    error_ += a.error_ * error_params_->B_plaintext();
+
+    // Get the coefficients of the polynomial b.
+    const auto& bc = b.Coeffs();
+
+    // If lazy_ is empty, this is the first time we call this function.
+    // We therefore create the vector of lazy polynomials using the input
+    // parameters a and b.
+    if (lazy_.size() == 0) {
+      lazy_.reserve(size_a);
+      for (const auto aj : a.c_) {
+        RLWE_ASSIGN_OR_RETURN(auto lazy_poly,
+                              (LazyPolynomial<ModularInt, BigInt>::Create(
+                                  aj.Coeffs(), bc, modulus_params_)));
+        lazy_.push_back(std::move(lazy_poly));
+      }
+      return absl::OkStatus();
+    }
+
+    // lazy_ is not empty, which means that we continue to perform lazy
+    // operations.
+
+    // If a has more polynomials, we extend the current number of lazy
+    // polynomials to match that of a.
+    if (size_a > lazy_.size()) {
+      RLWE_ASSIGN_OR_RETURN(auto lazy_poly_zero,
+                            (LazyPolynomial<ModularInt, BigInt>::CreateEmpty(
+                                a.c_[0].Len(), modulus_params_)));
+      lazy_.resize(size_a, lazy_poly_zero);
+    }
+
+    // Fused mul-add in place over the lazy polynomials.
+    for (size_t j = 0; j < lazy_.size(); j++) {
+      RLWE_RETURN_IF_ERROR(
+          lazy_[j].FusedMulAddInPlace(a.c_[j].Coeffs(), bc, modulus_params_));
+    }
+
+    return absl::OkStatus();
+  }
+
+  // This operation can only be called after the `FusedAbsorbAddInPlaceLazily()`
+  // function has been used on the ciphertext, and modifies the value of the
+  // ciphertext after the lazy operations have been performed.
+  absl::Status MergeLazyOperations() {
+    if (lazy_.empty()) {
+      // It is not really required to throw an error because the content of c_
+      // is not modified, but raising this branch means the underlying code is
+      // not using lazy operations, so there is really no reason to call this
+      // function. We throw an error to force the developer to check their code.
+      return absl::FailedPreconditionError(
+          "The ciphertext was not in lazy mode.");
+    }
+    c_.reserve(lazy_.size());
+    // If some coefficients of c_ already exist, add the content of lazy_ to
+    // them.
+    for (size_t i = 0; i < lazy_.size() && i < c_.size(); i++) {
+      RLWE_RETURN_IF_ERROR(
+          c_[i].AddInPlace(lazy_[i].Export(modulus_params_), modulus_params_));
+    }
+    // If lazy_ is larger than c_, add to c_ the new polynomials.
+    for (size_t i = c_.size(); i < lazy_.size(); i++) {
+      c_.push_back(lazy_[i].Export(modulus_params_));
+    }
+    lazy_.clear();
+    return absl::OkStatus();
+  }
+
+  absl::Status FusedAbsorbConstantAddInPlace(
+      const SymmetricRlweCiphertext& a,
+      const ConstantPolynomial<ModularInt>& b) {
+    if (power_of_s_ != a.power_of_s_) {
+      return absl::InvalidArgumentError(
+          "Ciphertexts must be encrypted with the same key power.");
+    }
+
+    // Compute c_[i] += a.c_[i] * b, if possible.
+    for (int i = 0; i < c_.size() && i < a.c_.size(); i++) {
+      RLWE_RETURN_IF_ERROR(
+          c_[i].FusedMulConstantAddInPlace(a.c_[i], b, modulus_params_));
+    }
+
+    // If a.c_ was longer, absorb and store in c_.
+    if (a.c_.size() > c_.size()) {
+      c_.reserve(a.c_.size());
+      for (int i = c_.size(); i < a.c_.size(); i++) {
+        RLWE_ASSIGN_OR_RETURN(auto product,
+                              a.c_[i].MulConstant(b, a.modulus_params_));
+        c_.push_back(std::move(product));
+      }
+    }
+
+    // Update the error
+    error_ += a.error_ * error_params_->B_plaintext();
+    return absl::OkStatus();
+  }
+
   // Homomorphic multiply. Given two ciphertexts {m1}_s, {m2}_s containing
   // messages m1 and m2 encrypted with the same secret key s, return the
   // ciphertext {m1 * m2}_s containing the product of the messages.
@@ -247,7 +397,7 @@ class SymmetricRlweCiphertext {
   // To perform this operation, treat the two ciphertext vectors as polynomials
   // and perform a polynomial multiplication:
   //
-  //   <c0, c1> * <c0', c1'> = <c0 * c0, c0 * c1 + c1 * c0, c1 * c1>
+  //   <c0, c1> * <c0', c1'> = <c0 * c0', c0 * c1' + c1 * c0', c1 * c1'>
   //
   // If the two ciphertext vectors are of length m and n, the resulting
   // ciphertext is of length m + n - 1.
@@ -256,7 +406,7 @@ class SymmetricRlweCiphertext {
   // the same as in the homomorphic absorb operation above (the other overload
   // of the * operator).
   rlwe::StatusOr<SymmetricRlweCiphertext> operator*(
-      const SymmetricRlweCiphertext& that) {
+      const SymmetricRlweCiphertext& that) const {
     if (power_of_s_ != that.power_of_s_) {
       return absl::InvalidArgumentError(
           "Ciphertexts must be encrypted with the same key power.");
@@ -272,10 +422,10 @@ class SymmetricRlweCiphertext {
     Polynomial<ModularInt> temp(c_[0].Len(), modulus_params_);
     std::vector<Polynomial<ModularInt>> result(c_.size() + that.c_.size() - 1,
                                                temp);
-    for (int i = 0; i < c_.size(); i++) {
-      for (int j = 0; j < that.c_.size(); j++) {
-        RLWE_ASSIGN_OR_RETURN(temp, c_[i].Mul(that.c_[j], modulus_params_));
-        RLWE_RETURN_IF_ERROR(result[i + j].AddInPlace(temp, modulus_params_));
+    for (size_t i = 0; i < c_.size(); i++) {
+      for (size_t j = 0; j < that.c_.size(); j++) {
+        RLWE_RETURN_IF_ERROR(result[i + j].FusedMulAddInPlace(c_[i], that.c_[j],
+                                                              modulus_params_));
       }
     }
 
@@ -288,10 +438,6 @@ class SymmetricRlweCiphertext {
   // Assumes that ModularInt::Int and ModularIntQ::Int are the same type.
   //
   // The current modulus (mod t) must be equal to modulus q (mod t).
-  // This will always be true. For NTT to work properly, any modulus must be
-  // of the form 2N + 1, where N is a power of 2. Likewise, the implementation
-  // requires that t is a power of 2. This means that, for any modulus q and
-  // modulus t allowed by the RLWE implementation, q % t == 1.
   template <typename ModularIntQ>
   rlwe::StatusOr<SymmetricRlweCiphertext<ModularIntQ>> SwitchModulus(
       const NttParameters<ModularInt>* ntt_params_p,
@@ -309,9 +455,9 @@ class SymmetricRlweCiphertext {
     SymmetricRlweCiphertext<ModularIntQ> output(modulus_params_q,
                                                 error_params_q);
     output.power_of_s_ = power_of_s_;
-    // Overestimate the ratio of the two moduli.
-    double modulus_ratio = static_cast<double>(modulus_params_q->log_modulus) /
-                           modulus_params_->log_modulus;
+    // Approximate the ratio q / p
+    double modulus_ratio =
+        modulus_params_q->GetDouble(q) / modulus_params_->GetDouble(p);
     output.error_ = modulus_ratio * error_ + error_params_q->B_scale();
 
     output.c_.reserve(c_.size());
@@ -326,44 +472,30 @@ class SymmetricRlweCiphertext {
       for (const ModularInt& coeff_p : coeffs_p) {
         Int int_p = coeff_p.ExportInt(modulus_params_);
 
-        // Scale the integer.
+        // Scale the integer by (q / p).
         Int int_q = static_cast<Int>(ModularInt::DivAndTruncate(
             static_cast<BigInt>(int_p) * static_cast<BigInt>(q),
             static_cast<BigInt>(p)));
 
-        // Ensure that int_p = int_q mod t by changing int_q as little as
-        // possible.
-        Int int_p_mod_t = int_p % t;
-        Int int_q_mod_t = int_q % t;
-        Int adjustment_up = modulus_params_->Zero();
-        Int adjustment_down = modulus_params_->Zero();
-
-        // Determine whether to adjust int_q up or down to make sure int_q =
-        // int_p (mod t).
-        adjustment_up = int_p_mod_t - int_q_mod_t;
-        adjustment_down = t + int_q_mod_t - int_p_mod_t;
-        if (int_p_mod_t < int_q_mod_t) {
-          adjustment_up = adjustment_up + t;
-          adjustment_down = adjustment_down - t;
+        // Ensure that int_q = int_p mod t by changing int_q as little as
+        // possible. In order to realize this, we want to create
+        // int_q_2 = int_q + delta such that int_q_2 = int_p mod t.
+        // We therefore have delta = (int_p - int_q) mod t.
+        Int delta = (int_p - int_q) % t;
+        int_q += delta;
+        if (delta >= (t >> 1)) {
+          // To make the change as small as possible, we center delta in [-t/2,
+          // t/2), which amounts in adding (delta - t). Since we work with
+          // unsigned integer, we actually need to add q + (delta - t), and the
+          // result will lie in [0, 2*q).
+          int_q += q - t;
         }
 
+        // By definition, int_q < 2q, hence we import the value into a
+        // Montgomery integer modulo q.
         RLWE_ASSIGN_OR_RETURN(auto m_int_q,
                               ModularIntQ::ImportInt(int_q, modulus_params_q));
-        if (adjustment_up > adjustment_down) {
-          RLWE_ASSIGN_OR_RETURN(
-              auto m_adjustment_up,
-              ModularIntQ::ImportInt(adjustment_up, modulus_params_q));
-          // Adjust up.
-          coeffs_q.push_back(
-              std::move(m_adjustment_up.AddInPlace(m_int_q, modulus_params_q)));
-        } else {
-          RLWE_ASSIGN_OR_RETURN(
-              auto m_adjustment_down,
-              ModularIntQ::ImportInt(q - adjustment_down, modulus_params_q));
-          // Adjust down.
-          coeffs_q.push_back(std::move(
-              m_adjustment_down.AddInPlace(m_int_q, modulus_params_q)));
-        }
+        coeffs_q.push_back(std::move(m_int_q));
       }
 
       // Convert back to NTT.
@@ -421,7 +553,7 @@ class SymmetricRlweCiphertext {
 
     if (serialized.c_size() <= 0) {
       return absl::InvalidArgumentError("Ciphertext cannot be empty.");
-    } else if (serialized.c_size() > kMaxNumCoeffs) {
+    } else if (serialized.c_size() > static_cast<int>(kMaxNumCoeffs)) {
       return absl::InvalidArgumentError(
           absl::StrCat("Number of coefficients, ", serialized.c_size(),
                        ", cannot be more than ", kMaxNumCoeffs, "."));
@@ -440,7 +572,7 @@ class SymmetricRlweCiphertext {
   unsigned int Len() const { return c_.size(); }
 
   rlwe::StatusOr<Polynomial<ModularInt>> Component(int index) const {
-    if (0 > index || index >= c_.size()) {
+    if (0 > index || index >= static_cast<int>(c_.size())) {
       return absl::InvalidArgumentError("Index out of range.");
     }
     return c_[index];
@@ -459,6 +591,8 @@ class SymmetricRlweCiphertext {
  private:
   // The ciphertext.
   std::vector<Polynomial<ModularInt>> c_;
+
+  std::vector<LazyPolynomial<ModularInt, BigInt>> lazy_;
 
   // ModularInt parameters.
   const typename ModularInt::Params* modulus_params_;
@@ -815,15 +949,53 @@ rlwe::StatusOr<Polynomial<ModularInt>> Encrypt(
                                               key.ModulusParams()));
 
   // Create and return c0.
-  auto e = Polynomial<ModularInt>::ConvertToNtt(
-      std::move(e_coeffs), key.NttParams(), key.ModulusParams());
-  RLWE_ASSIGN_OR_RETURN(Polynomial<ModularInt> temp,
-                        a.Mul(key.Key(), key.ModulusParams()));
+  auto c0 = Polynomial<ModularInt>::ConvertToNtt(
+      std::move(e_coeffs), key.NttParams(), key.ModulusParams());  // c0 = e
+  RLWE_RETURN_IF_ERROR(c0.MulInPlace(key.PlaintextModulus(),
+                                     key.ModulusParams()));  // c0 = e * t
   RLWE_RETURN_IF_ERROR(
-      e.MulInPlace(key.PlaintextModulus(), key.ModulusParams()));
-  RLWE_RETURN_IF_ERROR(temp.AddInPlace(e, key.ModulusParams()));
-  RLWE_RETURN_IF_ERROR(temp.AddInPlace(plaintext, key.ModulusParams()));
-  return temp;
+      c0.AddInPlace(plaintext, key.ModulusParams()));  // c0 = e * t + m
+  RLWE_RETURN_IF_ERROR(c0.FusedMulAddInPlace(
+      a, key.Key(), key.ModulusParams()));  // c0 = e * t + m + a * key
+  return c0;
+}
+
+// Extract the error and message. To do so, take the dot product of the
+// ciphertext vector <c0, c1, ..., cN> and the vector of the powers of
+// the key <s^0, s^1, ..., s^N>.
+template <typename ModularInt>
+rlwe::StatusOr<std::vector<ModularInt>> ExtractErrorAndMessage(
+    const SymmetricRlweKey<ModularInt>& key,
+    const SymmetricRlweCiphertext<ModularInt>& ciphertext) {
+  // Accumulator variables.
+  Polynomial<ModularInt> error_and_message_ntt(key.Len(), key.ModulusParams());
+  Polynomial<ModularInt> key_powers = key.Key();
+  int ciphertext_len = ciphertext.Len();
+
+  for (int i = 0; i < ciphertext_len; i++) {
+    // Extract component i.
+    RLWE_ASSIGN_OR_RETURN(Polynomial<ModularInt> ci, ciphertext.Component(i));
+
+    // Lazily increase the exponent of the key.
+    if (i > 1) {
+      RLWE_RETURN_IF_ERROR(
+          key_powers.MulInPlace(key.Key(), key.ModulusParams()));
+    }
+
+    // Beyond c0, multiply the exponentiated key in.
+    if (i > 0) {
+      RLWE_RETURN_IF_ERROR(
+          ci.MulInPlace(key_powers, ciphertext.ModulusParams()));
+    }
+
+    RLWE_RETURN_IF_ERROR(
+        error_and_message_ntt.AddInPlace(ci, key.ModulusParams()));
+  }
+
+  // Invert the NTT process.
+  std::vector<ModularInt> error_and_message =
+      error_and_message_ntt.InverseNtt(key.NttParams(), key.ModulusParams());
+  return error_and_message;
 }
 
 }  // namespace internal
@@ -905,19 +1077,29 @@ rlwe::StatusOr<SymmetricRlweCiphertext<ModularInt>> Encrypt(
 //            -1 (mod 7) - 7 (mod 2) = 6 - 1 = 5
 //
 // 5 (mod t) = 1, which is the original message.
+//
+// If t is 0, this will return `error_and_message` unmodified, as this implies
+// that no error was added.
 template <typename ModularInt>
 std::vector<typename ModularInt::Int> RemoveError(
     const std::vector<ModularInt>& error_and_message,
     const typename ModularInt::Int& q, const typename ModularInt::Int& t,
     const typename ModularInt::Params* modulus_params_q) {
   using Int = typename ModularInt::Int;
-  Int q_mod_t = q % t;
   Int zero = modulus_params_q->Zero();
+
   std::vector<Int> plaintext(error_and_message.size(), zero);
-
-  for (int i = 0; i < error_and_message.size(); i++) {
+  for (size_t i = 0; i < error_and_message.size(); ++i) {
     plaintext[i] = error_and_message[i].ExportInt(modulus_params_q);
+  }
 
+  if (t == zero) {
+    return plaintext;
+  }
+
+  Int q_mod_t = q % t;
+
+  for (size_t i = 0; i < error_and_message.size(); ++i) {
     if (plaintext[i] > (q >> 1)) {
       plaintext[i] = plaintext[i] - q_mod_t;
     }
@@ -928,48 +1110,45 @@ std::vector<typename ModularInt::Int> RemoveError(
   return plaintext;
 }
 
+// Measure error iterates over the `error_and_message` coefficients that
+// represent (m + e * t) (mod q), and calculates the coefficient with the
+// largest absolute value. Like RemoveError, it will center coefficients in
+// [-q/2, q/2] before taking the absolute value. The error when the coefficient
+// is larger than q/2 is |curr - q|.
+template <typename ModularInt>
+typename ModularInt::Int MeasureError(
+    const std::vector<ModularInt>& error_and_message,
+    const typename ModularInt::Int& q,
+    const typename ModularInt::Params* modulus_params_q) {
+  using Int = typename ModularInt::Int;
+  Int max = 0;
+  for (ModularInt const& i : error_and_message) {
+    Int curr = i.ExportInt(modulus_params_q);
+    if (curr > (q >> 1)) {
+      curr = q - curr;
+    }
+    if (curr > max) {
+      max = curr;
+    }
+  }
+  return max;
+}
+
 template <typename ModularInt>
 rlwe::StatusOr<std::vector<typename ModularInt::Int>> Decrypt(
     const SymmetricRlweKey<ModularInt>& key,
     const SymmetricRlweCiphertext<ModularInt>& ciphertext) {
-  // Extract the error and message. To do so, take the dot product of the
-  // ciphertext vector <c0, c1, ..., cN> and the vector of the powers of
-  // the key <s^0, s^1, ..., s^N>.
+  RLWE_ASSIGN_OR_RETURN(std::vector<ModularInt> error_and_message,
+                        internal::ExtractErrorAndMessage(key, ciphertext));
 
-  // Accumulator variables.
-  Polynomial<ModularInt> error_and_message_ntt(key.Len(), key.ModulusParams());
-  Polynomial<ModularInt> key_powers = key.Key();
-  unsigned int ciphertext_len = ciphertext.Len();
-
-  for (unsigned int i = 0; i < ciphertext_len; i++) {
-    // Extract component i.
-    RLWE_ASSIGN_OR_RETURN(Polynomial<ModularInt> ci, ciphertext.Component(i));
-
-    // Lazily increase the exponent of the key.
-    if (i > 1) {
-      RLWE_RETURN_IF_ERROR(
-          key_powers.MulInPlace(key.Key(), key.ModulusParams()));
-    }
-
-    // Beyond c0, multiply the exponentiated key in.
-    if (i > 0) {
-      RLWE_RETURN_IF_ERROR(
-          ci.MulInPlace(key_powers, ciphertext.ModulusParams()));
-    }
-
-    RLWE_RETURN_IF_ERROR(
-        error_and_message_ntt.AddInPlace(ci, key.ModulusParams()));
+  auto t = key.PlaintextModulus().ExportInt(key.PlaintextModulusParams());
+  if (t == key.PlaintextModulusParams()->Zero()) {
+    return absl::InvalidArgumentError("t is zero");
   }
-
-  // Invert the NTT process.
-  std::vector<ModularInt> error_and_message =
-      error_and_message_ntt.InverseNtt(key.NttParams(), key.ModulusParams());
 
   // Extract the message.
   return RemoveError<ModularInt>(
-      error_and_message, key.ModulusParams()->modulus,
-      key.PlaintextModulus().ExportInt(key.PlaintextModulusParams()),
-      key.ModulusParams());
+      error_and_message, key.ModulusParams()->modulus, t, key.ModulusParams());
 }
 
 }  // namespace rlwe

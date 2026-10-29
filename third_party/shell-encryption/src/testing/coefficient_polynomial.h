@@ -154,7 +154,7 @@ class CoefficientPolynomial {
 
     for (int i = 0; i < Len(); i++) {
       for (int j = 0; j < Len(); j++) {
-        if ((i + j) >= coeffs_.size()) {
+        if ((i + j) >= static_cast<int>(coeffs_.size())) {
           // Since multiplciation is mod (x^N + 1), if the coefficient computed
           // has degree k (= i + j) larger than N, it contributes to the (k -
           // N)'th coefficient with a negative factor.

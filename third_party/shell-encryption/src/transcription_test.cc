@@ -44,8 +44,9 @@ TYPED_TEST_SUITE(TranscribeTest, MyTypes);
 template <class TypeParam>
 TypeParam generate_random(int number_bits, unsigned int* seed) {
   if (number_bits == 0) return 0;
-  TypeParam random_value = static_cast<TypeParam>(rand_r(seed));
-  if (number_bits >= 8 * sizeof(TypeParam)) {
+  std::mt19937 mt_rand(*seed);
+  TypeParam random_value = static_cast<TypeParam>(mt_rand());
+  if (number_bits >= static_cast<int>(8 * sizeof(TypeParam))) {
     return random_value;
   } else {
     TypeParam mask = (static_cast<TypeParam>(1) << number_bits) - 1;
@@ -205,7 +206,7 @@ TYPED_TEST(TranscribeTest, TranscribeTypeToType) {
         }
 
         // Ensure that all other bits in bits_j are zeros.
-        for (int byte = 0; byte < bits_j.size(); byte++) {
+        for (size_t byte = 0; byte < bits_j.size(); byte++) {
           if (j == output_number_of_bits) continue;  // no remaining bits
           EXPECT_EQ(bits_j[byte] >> j, 0);
         }
@@ -283,7 +284,7 @@ TYPED_TEST(TranscribeTest, InputBitLengthNotMultipleBitsPerInt) {
             EXPECT_EQ(bit_i & 1, bit_j & 1);
           }
           // Ensure that all other bits in bits_j are zeros.
-          for (int byte = 0; byte < bits_j.size(); byte++) {
+          for (size_t byte = 0; byte < bits_j.size(); byte++) {
             if (j == output_number_of_bits) continue;  // no remaining bits
             EXPECT_EQ(bits_j[byte] >> j, 0);
           }
@@ -333,7 +334,7 @@ TYPED_TEST(TranscribeTest, TranscribeTypeToUint64) {
         }
 
         // Ensure that all other bits in bits_j are zeros.
-        for (int byte = 0; byte < bits_j.size(); byte++) {
+        for (size_t byte = 0; byte < bits_j.size(); byte++) {
           if (j == output_number_of_bits) continue;  // no remaining bits
           EXPECT_EQ(bits_j[byte] >> j, 0);
         }
@@ -378,7 +379,7 @@ TYPED_TEST(TranscribeTest, TranscribeTypeToUint128) {
         }
 
         // Ensure that all other bits in bits_j are zeros.
-        for (int byte = 0; byte < bits_j.size(); byte++) {
+        for (size_t byte = 0; byte < bits_j.size(); byte++) {
           if (j == output_number_of_bits) continue;  // no remaining bits
           EXPECT_EQ(bits_j[byte] >> j, 0);
         }
@@ -421,7 +422,7 @@ TYPED_TEST(TranscribeTest, TranscribeTypeToUint8) {
         }
 
         // Ensure that all other bits in bits_j are zeros.
-        for (int byte = 0; byte < bits_j.size(); byte++) {
+        for (size_t byte = 0; byte < bits_j.size(); byte++) {
           if (j == output_number_of_bits) continue;  // no remaining bits
           EXPECT_EQ(bits_j[byte] >> j, 0);
         }
@@ -461,7 +462,7 @@ TYPED_TEST(TranscribeTest, InputLengthSmallerThanNumberOfBitsPerInput) {
       }
 
       // Ensure that all other bits in bits_j are zeros.
-      for (int byte = 0; byte < bits_j.size(); byte++) {
+      for (size_t byte = 0; byte < bits_j.size(); byte++) {
         if (j == output_number_of_bits) continue;  // no remaining bits
         EXPECT_EQ(bits_j[byte] >> j, 0);
       }

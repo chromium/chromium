@@ -14,11 +14,32 @@
 
 #include "montgomery.h"
 
-#include "third_party/shell-encryption/base/shell_encryption_export.h"
-#include "third_party/shell-encryption/base/shell_encryption_export_template.h"
+#include <vector>
+
+#include "absl/status/statusor.h"
 #include "transcription.h"
 
 namespace rlwe {
+
+namespace {
+
+template <typename T>
+MontgomeryInt<T> ToMontgomeryInt(
+    typename MontgomeryInt<T>::Int n,
+    const typename MontgomeryInt<T>::Params* params) {
+  using Int = typename MontgomeryInt<T>::Int;
+  using BigInt = typename MontgomeryInt<T>::BigInt;
+  using Params = typename MontgomeryInt<T>::Params;
+  BigInt product = static_cast<BigInt>(params->r_mod_modulus_barrett) * n;
+  Int result = static_cast<Int>(product >> Params::bitsize_int);
+  result = n * params->r_mod_modulus - result * params->modulus;
+  // The steps above produce an integer that is in the range [0, 2N).
+  // We now reduce to the range [0, N).
+  result -= (result >= params->modulus) ? params->modulus : 0;
+  return MontgomeryInt<T>(result);
+}
+
+}  // namespace
 
 template <typename T>
 rlwe::StatusOr<std::unique_ptr<const MontgomeryIntParams<T>>>
@@ -73,13 +94,18 @@ std::tuple<T, T> MontgomeryIntParams<T>::Inverses(BigInt modulus_bigint,
 template <typename T>
 rlwe::StatusOr<MontgomeryInt<T>> MontgomeryInt<T>::ImportInt(
     Int n, const Params* params) {
-  BigInt product = static_cast<BigInt>(params->r_mod_modulus_barrett) * n;
-  Int result = static_cast<Int>(product >> Params::bitsize_int);
-  result = n * params->r_mod_modulus - result * params->modulus;
-  // The steps above produce an integer that is in the range [0, 2N).
-  // We now reduce to the range [0, N).
-  result -= (result >= params->modulus) ? params->modulus : 0;
-  return MontgomeryInt(result);
+  return ToMontgomeryInt<T>(n, params);
+}
+
+template <typename T>
+rlwe::StatusOr<std::vector<MontgomeryInt<T>>> MontgomeryInt<T>::BatchImportInts(
+    const std::vector<Int>& ints, const Params* params) {
+  std::vector<MontgomeryInt<T>> result;
+  result.reserve(ints.size());
+  for (int i = 0; i < ints.size(); ++i) {
+    result.push_back(ToMontgomeryInt<T>(ints[i], params));
+  }
+  return result;
 }
 
 template <typename T>
@@ -165,7 +191,7 @@ MontgomeryInt<T>::DeserializeVector(int num_coeffs,
     return absl::InvalidArgumentError(
         "Number of coefficients must be non-negative.");
   }
-  if (num_coeffs > kMaxNumCoeffs) {
+  if (num_coeffs > static_cast<int>(kMaxNumCoeffs)) {
     return absl::InvalidArgumentError(
         absl::StrCat("Number of coefficients, ", num_coeffs, ", cannot be ",
                      "larger than ", kMaxNumCoeffs, "."));
@@ -180,7 +206,7 @@ MontgomeryInt<T>::DeserializeVector(int num_coeffs,
       (TranscribeBits<Uint8, Int>(input, bit_size * num_coeffs, 8, bit_size)));
   // Check that the number of coefficients recovered is at least what is
   // expected.
-  if (coeffs_values.size() < num_coeffs) {
+  if (coeffs_values.size() < static_cast<size_t>(num_coeffs)) {
     return absl::InvalidArgumentError("Given serialization is invalid.");
   }
   // Create a vector of Montgomery Int from the values.
@@ -217,7 +243,7 @@ absl::Status MontgomeryInt<T>::BatchAddInPlace(
   if (in1->size() != in2.size()) {
     return absl::InvalidArgumentError("Input vectors are not of same size");
   }
-  int i = 0;
+  size_t i = 0;
   // The remaining elements, if any, are added in place sequentially.
   for (; i < in1->size(); i++) {
     (*in1)[i].AddInPlace(in2[i], params);
@@ -238,7 +264,7 @@ template <typename T>
 absl::Status MontgomeryInt<T>::BatchAddInPlace(std::vector<MontgomeryInt>* in1,
                                                const MontgomeryInt& in2,
                                                const Params* params) {
-  int i = 0;
+  size_t i = 0;
   std::for_each(in1->begin() + i, in1->end(),
                 [&in2 = in2, params](MontgomeryInt& coeff) {
                   coeff.AddInPlace(in2, params);
@@ -263,7 +289,7 @@ absl::Status MontgomeryInt<T>::BatchSubInPlace(
   if (in1->size() != in2.size()) {
     return absl::InvalidArgumentError("Input vectors are not of same size");
   }
-  int i = 0;
+  size_t i = 0;
   for (; i < in1->size(); i++) {
     (*in1)[i].SubInPlace(in2[i], params);
   }
@@ -283,7 +309,7 @@ template <typename T>
 absl::Status MontgomeryInt<T>::BatchSubInPlace(std::vector<MontgomeryInt>* in1,
                                                const MontgomeryInt& in2,
                                                const Params* params) {
-  int i = 0;
+  size_t i = 0;
   std::for_each(in1->begin() + i, in1->end(),
                 [&in2 = in2, params](MontgomeryInt& coeff) {
                   coeff.SubInPlace(in2, params);
@@ -312,7 +338,7 @@ absl::Status MontgomeryInt<T>::BatchMulConstantInPlace(
       constant.size() != constant_barrett.size()) {
     return absl::InvalidArgumentError("Input vectors are not of same size");
   }
-  int i = 0;
+  size_t i = 0;
   for (; i < in1->size(); i++) {
     (*in1)[i].MulConstantInPlace(constant[i], constant_barrett[i], params);
   }
@@ -335,7 +361,7 @@ template <typename T>
 absl::Status MontgomeryInt<T>::BatchMulConstantInPlace(
     std::vector<MontgomeryInt>* in1, const Int& constant,
     const Int& constant_barrett, const Params* params) {
-  int i = 0;
+  size_t i = 0;
   for (; i < in1->size(); i++) {
     (*in1)[i].MulConstantInPlace(constant, constant_barrett, params);
   }
@@ -359,7 +385,7 @@ absl::Status MontgomeryInt<T>::BatchMulInPlace(
   if (in1->size() != in2.size()) {
     return absl::InvalidArgumentError("Input vectors are not of same size");
   }
-  int i = 0;
+  size_t i = 0;
   for (; i < in1->size(); i++) {
     (*in1)[i].MulInPlace(in2[i], params);
   }
@@ -379,11 +405,67 @@ template <typename T>
 absl::Status MontgomeryInt<T>::BatchMulInPlace(std::vector<MontgomeryInt>* in1,
                                                const MontgomeryInt& in2,
                                                const Params* params) {
-  int i = 0;
+  size_t i = 0;
   std::for_each(in1->begin() + i, in1->end(),
                 [&in2 = in2, params](MontgomeryInt& coeff) {
                   coeff.MulInPlace(in2, params);
                 });
+  return absl::OkStatus();
+}
+
+template <typename T>
+rlwe::StatusOr<std::vector<MontgomeryInt<T>>>
+MontgomeryInt<T>::BatchFusedMulAdd(const std::vector<MontgomeryInt>& in1,
+                                   const std::vector<MontgomeryInt>& in2,
+                                   const std::vector<MontgomeryInt>& in3,
+                                   const Params* params) {
+  std::vector<MontgomeryInt> out = in1;
+  RLWE_RETURN_IF_ERROR(BatchFusedMulAddInPlace(&out, in2, in3, params));
+  return out;
+}
+
+template <typename T>
+absl::Status MontgomeryInt<T>::BatchFusedMulAddInPlace(
+    std::vector<MontgomeryInt>* in1, const std::vector<MontgomeryInt>& in2,
+    const std::vector<MontgomeryInt>& in3, const Params* params) {
+  // If the input vectors' sizes don't match, return an error.
+  if (in1->size() != in2.size() || in1->size() != in3.size()) {
+    return absl::InvalidArgumentError("Input vectors are not of same size");
+  }
+  size_t i = 0;
+  for (; i < in1->size(); i++) {
+    (*in1)[i].FusedMulAddInPlace(in2[i], in3[i], params);
+  }
+  return absl::OkStatus();
+}
+
+template <typename T>
+rlwe::StatusOr<std::vector<MontgomeryInt<T>>>
+MontgomeryInt<T>::BatchFusedMulConstantAdd(
+    const std::vector<MontgomeryInt>& in1,
+    const std::vector<MontgomeryInt>& in2, const std::vector<Int>& constant,
+    const std::vector<Int>& constant_barrett, const Params* params) {
+  std::vector<MontgomeryInt> out = in1;
+  RLWE_RETURN_IF_ERROR(BatchFusedMulConstantAddInPlace(
+      &out, in2, constant, constant_barrett, params));
+  return out;
+}
+
+template <typename T>
+absl::Status MontgomeryInt<T>::BatchFusedMulConstantAddInPlace(
+    std::vector<MontgomeryInt>* in1, const std::vector<MontgomeryInt>& in2,
+    const std::vector<Int>& constant, const std::vector<Int>& constant_barrett,
+    const Params* params) {
+  // If the input vectors' sizes don't match, return an error.
+  if (in1->size() != in2.size() || in1->size() != constant.size() ||
+      in1->size() != constant_barrett.size()) {
+    return absl::InvalidArgumentError("Input vectors are not of same size");
+  }
+  size_t i = 0;
+  for (; i < in1->size(); i++) {
+    (*in1)[i].FusedMulConstantAddInPlace(in2[i], constant[i],
+                                         constant_barrett[i], params);
+  }
   return absl::OkStatus();
 }
 
@@ -416,6 +498,43 @@ MontgomeryInt<T> MontgomeryInt<T>::MultiplicativeInverse(
   return (*this).ModExp(static_cast<Int>(params->modulus - 2), params);
 }
 
+// We use the Extended Euclidean Algorithm to find s and t such that
+//   x * s + m * t = gcd(x, m).
+// In particular, if gcd(x, m) == 1 then x^(-1) (mod m) = s.
+template <typename T>
+absl::StatusOr<MontgomeryInt<T>> MontgomeryInt<T>::MultiplicativeInverseFast(
+    const Params* params) const {
+  // We keep the last two elements in the sequences {r_i} and {s_i}, where
+  //   q_i = floor(r_{i-1} / r_i),
+  //   r_{i+1} = r_{i-1} - q_i * r_i,
+  //   s_{i+1} = s_{i-1} - q_i * s_i.
+  // Since we work with unsigned integers, we store abs(s_i) which is -s_i iff
+  // i is odd. We always have 0 <= x < m, so we start from the second iteration
+  // of the extended euclidean algorithm with r_0 = x, r_1 = m - x, s_0 = 1, and
+  // s_1 = -1 (i.e. storing abs(s_1) = 1).
+  Int x = ExportInt(params);
+  Int r[2] = {x, static_cast<Int>(params->modulus - x)};
+  Int s[2] = {1, 1};
+
+  // We use the "^1" trick and set j \in {0, 1} to be the least significant bit
+  // of the previous element's index. Thus j^1 points to the current element,
+  // and when updating, j points to the next element in the sequence.
+  int j = 0;
+  for (; r[j ^ 1] != 0; j ^= 1) {
+    Int q = r[j] / r[j ^ 1];
+    r[j] = r[j] % r[j ^ 1];
+    s[j] = s[j] + q * s[j ^ 1];  // no integer overflow should happen
+  }
+
+  // If gcd != 1, then there is no inverse of x (mod m).
+  if (r[j] != 1) {
+    return absl::InvalidArgumentError("Multiplicative inverse does not exist.");
+  }
+  // Note that s[j] = abs(s_i) which is -s_i iff i is odd (equivalently j == 0).
+  // So we recover x^(-1) (mod m) from either s[j] or m - s[j].
+  return ImportInt(j == 0 ? s[j] : params->modulus - s[j], params);
+}
+
 // Instantiations of MontgomeryInt and MontgomeryIntParams with specific
 // integral types.
 template struct EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) MontgomeryIntParams<Uint16>;
@@ -426,4 +545,9 @@ template class EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) MontgomeryInt<Uin
 template class EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) MontgomeryInt<Uint32>;
 template class EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) MontgomeryInt<Uint64>;
 template class EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) MontgomeryInt<absl::uint128>;
+
+#ifdef ABSL_HAVE_INTRINSIC_INT128
+template struct EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) MontgomeryIntParams<unsigned __int128>;
+template class EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) MontgomeryInt<unsigned __int128>;
+#endif
 }  // namespace rlwe

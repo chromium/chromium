@@ -24,7 +24,8 @@
 
 namespace rlwe {
 
-typedef ::testing::Types<ChaChaPrng, SingleThreadChaChaPrng> TestingPrngTypes;
+typedef ::testing::Types<ChaChaPrng, SingleThreadChaChaPrng>
+    TestingPrngTypes;
 
 }  // namespace rlwe
 

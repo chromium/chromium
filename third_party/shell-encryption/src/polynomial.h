@@ -19,9 +19,14 @@
 #include <cmath>
 #include <vector>
 
+#include "absl/status/status.h"
 #include "absl/strings/str_cat.h"
+#include "absl/strings/str_format.h"
 #include "constants.h"
+#include "dft_transformations.h"
+#include "dft_transformations_hwy.h"
 #include "ntt_parameters.h"
+#include "opt/constant_polynomial.h"
 #include "prng/prng.h"
 #include "serialization.pb.h"
 #include "status_macros.h"
@@ -54,42 +59,33 @@ class Polynomial {
 
   // This is an implementation of the FFT from [Sei18, Sec. 2].
   // [Sei18] https://eprint.iacr.org/2018/039
-  // All polynomial arithmetic performed is modulo (x^n+1) for n a power of two,
-  // with the coefficients operated on modulo a prime modulus.
-  //
-  // Let psi be a primitive 2n-th root of the unity, i.e., psi is a 2n-th root
-  // of unity such that psi^n = -1. Hence it holds that
-  //           x^n+1 = x^n-psi^n = (x^n/2-psi^n/2)*(x^n/2+psi^n/2)
-  //
-  //
-  // If f = f_0 + f_1*x + ... + f_{n-1}*x^(n-1) is the polynomial to transform,
-  // the i-th coefficient of the polynomial mod x^n/2-psi^n/2 can thus be
-  // computed as
-  //            f'_i = f_i + psi^(n/2)*f_(n/2+i),
-  // and the i-th coefficient of the polynomial mod x^n/2+psi^n/2 can thus be
-  // computed as
-  //            f''_i = f_i - psi^(n/2)*f_(n/2+i)
-  // This operation is called the Cooley-Tukey butterfly and is done
-  // iteratively during the NTT.
-  //
-  // The FFT can thus be performed in-place and after the k-th level, it
-  // produces the vector of polynomials with pairs of coefficients
-  //  f mod (x^(n/2^(k+1))-psi^brv[2^k+1]), f mod (x^(n/2^(k+1))+psi^brv[2^k+1])
-  // where brv maps a log(n)-bit number to its bitreversal.
+  // For any polynomial f(X) in R_q = Z[X]/(q, X^n+1) for n a power of two and q
+  // a prime modulus such that q == 1 (mod 2n), the NTT form of f(X) is the
+  // vector
+  //   NTT(f) = (f(psi), f(psi^3), .., f(psi^(n/2-1))),
+  // where psi is a primitive 2n-th root of unity modulo q. By Chinese Remainder
+  // Theorem, the map f -> NTT(f) is an isomorphism between R_q and Z_q^n, and
+  // it can be computed using FFT (in bit reversed order).
+  // For details see dft_transformations.h.
   static Polynomial ConvertToNtt(std::vector<ModularInt> poly_coeffs,
                                  const NttParameters<ModularInt>* ntt_params,
                                  const ModularIntParams* modular_params) {
-    // Check to ensure that the coefficient vector is of the correct length.
-    int len = poly_coeffs.size();
-    if (len <= 0 || (len & (len - 1)) != 0) {
+    if (!ForwardNumberTheoreticTransform(poly_coeffs, *ntt_params,
+                                         *modular_params)
+             .ok()) {
       // An error value.
       return Polynomial();
     }
+    return Polynomial(std::move(poly_coeffs));
+  }
 
-    Polynomial output(std::move(poly_coeffs));
-    output.IterativeCooleyTukey(ntt_params->psis_bitrev, modular_params);
-
-    return output;
+  static rlwe::StatusOr<Polynomial> ConvertToNttFast(
+      std::vector<ModularInt> poly_coeffs,
+      const NttParameters<ModularInt>* ntt_params,
+      const ModularIntParams* modular_params) {
+    RLWE_RETURN_IF_ERROR(internal::ForwardNumberTheoreticTransformHwy(
+        poly_coeffs, *ntt_params, *modular_params));
+    return Polynomial(std::move(poly_coeffs));
   }
 
   // Deprecated ConvertToNtt function taking NttParameters by constant reference
@@ -104,27 +100,25 @@ class Polynomial {
   // the NTT representation. For instance, using the same notation as above,
   //    f'_i + f''_i = 2f_i and  psi^(-n/2)*(f'_i-f''_i) = 2c_(n/2+i).
   //
-  // In particular, the butterfly operation differs from the Cooley-Tukey
-  // butterfly used during the forward transform in that addition and
-  // substraction come before multiplying with a power of the root of unity.
-  // This butterfly operation is called the Gentleman-Sande butterfly.
+  // For details see dft_transformations.h.
   //
-  // At the end of the computation, a normalization step by the inverse of
-  // n=2^log(n) (the factor 2 obtained at each level of the butterfly) is
-  // required.
+  // Returns a copy of the polynomial on errors.
   std::vector<ModularInt> InverseNtt(
       const NttParameters<ModularInt>* ntt_params,
       const ModularIntParams* modular_params) const {
-    Polynomial copy(*this);
-
-    copy.IterativeGentlemanSande(ntt_params->psis_inv_bitrev, modular_params);
-
-    // Normalize the result by multiplying by the inverse of n.
-    for (auto& coeff : copy.coeffs_) {
-      coeff.MulInPlace(ntt_params->n_inv_ptr.value(), modular_params);
+    if (ntt_params == nullptr || modular_params == nullptr ||
+        !ntt_params->n_inv_ptr.has_value()) {
+      return coeffs_;
     }
 
-    return copy.coeffs_;
+    std::vector<ModularInt> coeffs_copy = coeffs_;
+    if (!InverseNumberTheoreticTransform(coeffs_copy, *ntt_params,
+                                         *modular_params)
+             .ok()) {
+      return coeffs_;
+    }
+
+    return coeffs_copy;
   }
 
   // Deprecated InverseNtt function taking NttParameters by constant reference
@@ -163,12 +157,24 @@ class Polynomial {
   // Coordinate-wise multiplication in place.
   absl::Status MulInPlace(const Polynomial& that,
                           const ModularIntParams* modular_params) {
-    // If this operation is invalid, return an invalid error.
-    if (Len() != that.Len()) {
-      return absl::InvalidArgumentError(
-          "The polynomials do not have the same length.");
-    }
     return ModularInt::BatchMulInPlace(&coeffs_, that.coeffs_, modular_params);
+  }
+
+  // Fused Multiply Add in place: this += a * b.
+  absl::Status FusedMulAddInPlace(const Polynomial& a, const Polynomial& b,
+                                  const ModularIntParams* modular_params) {
+    return ModularInt::BatchFusedMulAddInPlace(&coeffs_, a.coeffs_, b.coeffs_,
+                                               modular_params);
+  }
+
+  // Fused Multiply Add in place, where the multiplication is with a constant
+  // polynomial.
+  absl::Status FusedMulConstantAddInPlace(
+      const Polynomial& a, const ConstantPolynomial<ModularInt>& b,
+      const ModularIntParams* modular_params) {
+    return ModularInt::BatchFusedMulConstantAddInPlace(
+        &coeffs_, a.coeffs_, b.coeffs_constant_, b.coeffs_constant_barrett_,
+        modular_params);
   }
 
   // Negation.
@@ -183,7 +189,6 @@ class Polynomial {
     for (auto& coeff : coeffs_) {
       coeff.NegateInPlace(modular_params);
     }
-
     return *this;
   }
 
@@ -206,24 +211,12 @@ class Polynomial {
   // Coordinate-wise addition in place.
   absl::Status AddInPlace(const Polynomial& that,
                           const ModularIntParams* modular_params) {
-    // If this operation is invalid, return an invalid error.
-    if (Len() != that.Len()) {
-      return absl::InvalidArgumentError(
-          "The polynomials do not have the same length.");
-    }
-
     return ModularInt::BatchAddInPlace(&coeffs_, that.coeffs_, modular_params);
   }
 
   // Coordinate-wise substraction in place.
   absl::Status SubInPlace(const Polynomial& that,
                           const ModularIntParams* modular_params) {
-    // If this operation is invalid, return an invalid error.
-    if (Len() != that.Len()) {
-      return absl::InvalidArgumentError(
-          "The polynomials do not have the same length.");
-    }
-
     return ModularInt::BatchSubInPlace(&coeffs_, that.coeffs_, modular_params);
   }
 
@@ -251,6 +244,11 @@ class Polynomial {
     // Update the coefficients one by one: remember that they are stored in
     // bitreversed order.
     for (int i = 0; i < Len(); i++) {
+      if (ntt_params->bitrevs[psi_power_index] >= coeffs_.size()) {
+        return absl::InternalError(absl::StrFormat(
+            "Index %d out-of-bounds in coeffs_ of size %d.",
+            ntt_params->bitrevs[psi_power_index], coeffs_.size()));
+      }
       out.coeffs_[ntt_params->bitrevs[i]] =
           coeffs_[ntt_params->bitrevs[psi_power_index]];
       // Each time the index increases by 1, the psi_power_index increases by
@@ -285,10 +283,11 @@ class Polynomial {
   }
   bool operator!=(const Polynomial& that) const { return !(*this == that); }
 
+  int LogLen() const { return log_len_; }
   int Len() const { return coeffs_.size(); }
 
   // Accessor for coefficients.
-  std::vector<ModularInt> Coeffs() const { return coeffs_; }
+  const std::vector<ModularInt>& Coeffs() const { return coeffs_; }
 
   rlwe::StatusOr<SerializedNttPolynomial> Serialize(
       const ModularIntParams* modular_params) const {
@@ -305,7 +304,7 @@ class Polynomial {
     if (serialized.num_coeffs() <= 0) {
       return absl::InvalidArgumentError(
           "Number of serialized coefficients must be positive.");
-    } else if (serialized.num_coeffs() > kMaxNumCoeffs) {
+    } else if (serialized.num_coeffs() > static_cast<int>(kMaxNumCoeffs)) {
       return absl::InvalidArgumentError(absl::StrCat(
           "Number of serialized coefficients, ", serialized.num_coeffs(),
           ", must be less than ", kMaxNumCoeffs, "."));
@@ -318,54 +317,45 @@ class Polynomial {
     return output;
   }
 
+  // Compute a ConstantPolynomial representation of the coefficients for faster
+  // multiplication.
+  StatusOr<ConstantPolynomial<ModularInt>> ComputeConstantRepresentation(
+      const ModularIntParams* modular_params) const {
+    std::vector<typename ModularInt::Int> coeffs_constant,
+        coeffs_constant_barrett;
+    coeffs_constant.reserve(coeffs_.size());
+    coeffs_constant_barrett.reserve(coeffs_.size());
+    for (const ModularInt& coeff : coeffs_) {
+      const auto [constant, constant_barrett] =
+          coeff.GetConstant(modular_params);
+      coeffs_constant.push_back(constant);
+      coeffs_constant_barrett.push_back(constant_barrett);
+    }
+    return ConstantPolynomial<ModularInt>::Create(
+        std::move(coeffs_constant), std::move(coeffs_constant_barrett));
+  }
+
+  // Coordinate-wise multiplication by a constant polynomial.
+  rlwe::StatusOr<Polynomial> MulConstant(
+      const ConstantPolynomial<ModularInt>& that,
+      const ModularIntParams* modular_params) const {
+    Polynomial output(*this);
+    RLWE_RETURN_IF_ERROR(output.MulConstantInPlace(that, modular_params));
+    return output;
+  }
+
+  // Coordinate-wise multiplication in place by a constant polynomial.
+  absl::Status MulConstantInPlace(const ConstantPolynomial<ModularInt>& that,
+                                  const ModularIntParams* modular_params) {
+    return ModularInt::BatchMulConstantInPlace(&coeffs_, that.coeffs_constant_,
+                                               that.coeffs_constant_barrett_,
+                                               modular_params);
+  }
+
  private:
   // Instance variables.
   size_t log_len_;
   std::vector<ModularInt> coeffs_;
-
-  // Helper function: Perform iterations of the Cooley-Tukey butterfly.
-  void IterativeCooleyTukey(const std::vector<ModularInt>& psis_bitrev,
-                            const ModularIntParams* modular_params) {
-    int index_psi = 1;
-    for (int i = log_len_ - 1; i >= 0; i--) {
-      const unsigned int half_m = 1 << i;
-      const unsigned int m = half_m << 1;
-      for (int k = 0; k < Len(); k += m) {
-        const ModularInt psi = psis_bitrev[index_psi];
-        for (int j = 0; j < half_m; j++) {
-          // The Cooley-Tukey butterfly operation.
-          const ModularInt t = psi.Mul(coeffs_[k + j + half_m], modular_params);
-          ModularInt u = coeffs_[k + j];
-          coeffs_[k + j].AddInPlace(t, modular_params);
-          coeffs_[k + j + half_m] = std::move(u.SubInPlace(t, modular_params));
-        }
-        index_psi++;
-      }
-    }
-  }
-
-  // Helper function: Perform iterations of the Gentleman-Sande butterfly.
-  void IterativeGentlemanSande(const std::vector<ModularInt>& psis_inv_bitrev,
-                               const ModularIntParams* modular_params) {
-    int index_psi_inv = 0;
-    for (int i = 0; i < log_len_; i++) {
-      const unsigned int half_m = 1 << i;
-      const unsigned int m = half_m << 1;
-      for (int k = 0; k < Len(); k += m) {
-        const ModularInt psi_inv = psis_inv_bitrev[index_psi_inv];
-        for (int j = 0; j < half_m; j++) {
-          // The Gentleman-Sande butterfly operation.
-          const ModularInt t = coeffs_[k + j + half_m];
-          ModularInt u = coeffs_[k + j];
-          coeffs_[k + j].AddInPlace(t, modular_params);
-          coeffs_[k + j + half_m] =
-              std::move(u.SubInPlace(t, modular_params)
-                            .MulInPlace(psi_inv, modular_params));
-        }
-        index_psi_inv++;
-      }
-    }
-  }
 };
 
 template <typename ModularInt, typename Prng = rlwe::SecurePrng>
@@ -380,13 +370,14 @@ rlwe::StatusOr<Polynomial<ModularInt>> SamplePolynomialFromPrng(
         "SamplePolynomialFromPrng: number of coefficients must be a "
         "non-negative integer.");
   }
-  std::vector<ModularInt> a_ntt_coeffs(num_coeffs,
-                                       ModularInt::ImportZero(modulus_params));
+  std::vector<ModularInt> a_ntt_coeffs;
+  a_ntt_coeffs.reserve(num_coeffs);
   for (int i = 0; i < num_coeffs; i++) {
-    RLWE_ASSIGN_OR_RETURN(a_ntt_coeffs[i],
+    RLWE_ASSIGN_OR_RETURN(ModularInt coefficient,
                           ModularInt::ImportRandom(prng, modulus_params));
+    a_ntt_coeffs.push_back(std::move(coefficient));
   }
-  return Polynomial<ModularInt>(a_ntt_coeffs);
+  return Polynomial<ModularInt>(std::move(a_ntt_coeffs));
 }
 
 }  // namespace rlwe

@@ -53,8 +53,8 @@ class CoefficientPolynomialCiphertext {
       const ErrorParams<ModularInt>* error_params)
       : p_(std::move(p)),
         modulus_params_(p_[0].ModulusParams()),
-        error_params_(error_params), 
-        power_of_s_(power_of_s){}
+        error_params_(error_params),
+        power_of_s_(power_of_s) {}
 
   // Static method that creates a CoefficientPolynomialCiphertext from a
   // SymmetricRlweCiphertext by performing InverseNtt on each ciphertext
@@ -64,7 +64,7 @@ class CoefficientPolynomialCiphertext {
       const NttParameters<ModularInt>* ntt_params) {
     std::vector<CoefficientPolynomial<ModularInt>> result;
 
-    for (int i = 0; i < ntt_ciphertext.Len(); i++) {
+    for (unsigned int i = 0; i < ntt_ciphertext.Len(); i++) {
       RLWE_ASSIGN_OR_RETURN(auto comp, ntt_ciphertext.Component(i));
       result.push_back(CoefficientPolynomial<ModularInt>(
           comp.InverseNtt(ntt_params, ntt_ciphertext.ModulusParams()),
@@ -107,7 +107,7 @@ class CoefficientPolynomialCiphertext {
 
     std::vector<CoefficientPolynomial<ModularInt>> result(longer->p_);
 
-    for (int i = 0; i < shorter->p_.size(); i++) {
+    for (size_t i = 0; i < shorter->p_.size(); i++) {
       RLWE_ASSIGN_OR_RETURN(result[i], result[i] + shorter->p_[i]);
     }
 
@@ -164,11 +164,11 @@ class CoefficientPolynomialCiphertext {
   // ErrorParams.
   const rlwe::ErrorParams<ModularInt>* error_params_;
 
-  // The power a in s(x^a) that the ciphertext can be decrypted with.
-  int power_of_s_;
-
   // A heuristic on the amount of error in the ciphertext.
   double error_;
+
+  // The power a in s(x^a) that the ciphertext can be decrypted with.
+  int power_of_s_;
 };
 
 }  //  namespace testing

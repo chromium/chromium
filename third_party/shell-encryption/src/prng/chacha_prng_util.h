@@ -39,11 +39,8 @@ const int kChaChaOutputBytes = 255 * 32;
 // Once pseudorandom output is exhausted, the salt is updated to construct
 // new pseudorandom output.
 SHELL_ENCRYPTION_EXPORT absl::Status ChaChaPrngResalt(
-    absl::string_view key,
-    int buffer_size,
-    int* salt_counter,
-    int* position_in_buffer,
-    std::vector<Uint8>* buffer);
+    absl::string_view key, int buffer_size, int* salt_counter,
+    int* position_in_buffer, std::vector<Uint8>* buffer);
 
 // Generates a secure key for instantiating an CHACHA.
 SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::string> ChaChaPrngGenerateKey();
@@ -52,18 +49,14 @@ SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::string> ChaChaPrngGenerateKey();
 //
 // Fails on internal cryptographic errors.
 SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<Uint8> ChaChaPrngRand8(
-    absl::string_view key,
-    int* position_in_buffer,
-    int* salt_counter,
+    absl::string_view key, int* position_in_buffer, int* salt_counter,
     std::vector<Uint8>* buffer);
 
 // Returns 64 bits of randomness.
 //
 // Fails on internal cryptographic errors.
 SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<Uint64> ChaChaPrngRand64(
-    absl::string_view key,
-    int* position_in_buffer,
-    int* salt_counter,
+    absl::string_view key, int* position_in_buffer, int* salt_counter,
     std::vector<Uint8>* buffer);
 
 }  // namespace internal

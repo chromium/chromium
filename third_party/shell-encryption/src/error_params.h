@@ -40,11 +40,14 @@ class ErrorParams {
       const int log_t, Uint64 variance,
       const typename ModularInt::Params* params,
       const rlwe::NttParameters<ModularInt>* ntt_params) {
-    if (log_t > params->log_modulus - 1) {
+    if (log_t > static_cast<int>(params->log_modulus) - 1) {
       return absl::InvalidArgumentError(
           absl::StrCat("The value log_t, ", log_t,
                        ", must be smaller than log_modulus - 1, ",
                        params->log_modulus - 1, "."));
+    } else if (log_t <= 0) {
+      return absl::InvalidArgumentError(
+          absl::StrCat("The value log_t, ", log_t, ", must be positive."));
     }
     if (variance > kMaxVariance) {
       return absl::InvalidArgumentError(absl::StrCat(
@@ -61,15 +64,58 @@ class ErrorParams {
   // A polynomial consisting of error terms is added to the ciphertext during
   // relinearization. The noise of a ciphertext increases additively by the size
   // of the polynomial, which depends on the decomposition modulus of the
-  // key-switching matrix.
-  double B_relinearize(int log_decomposition_modulus) const {
+  // key-switching matrix and the number of ciphertext components applied on.
+  double B_relinearize(int num_components,
+                       int log_decomposition_modulus) const {
     // The number of digits needed to represent integers mod modulus in base
     // decomposition modulus.
     int num_digits = (log_decomposition_modulus + log_modulus_ - 1) /
                      log_decomposition_modulus;
-    int decomposition_modulus = 1 << log_decomposition_modulus;
+    double decomposition_modulus = static_cast<double>(
+        static_cast<typename ModularInt::Int>(1) << log_decomposition_modulus);
     return (8.0 / sqrt(3.0)) * ExportDoubleT() * num_digits * sigma_ *
-           dimension_ * decomposition_modulus;
+           dimension_ * decomposition_modulus * num_components;
+  }
+
+  // Returns the "size" of the error term introduced during relinearization
+  // using the auxiliary modulus technique. The error term can be expressed as
+  // p^(-1) * (t * sum(ei * ci, i=1..k) + d0 + s * d1), where p is the auxiliary
+  // modulus, ci is a ciphertext component wrt modulus q, ei is a fresh error
+  // term in the relinearization key, k = `num_components` is the number of key
+  // components of a relinearization key, s is the secret key polynomial, and
+  // d0, d1 are small conversion errors.
+  // We bound the coefficients of c_i by the ciphertext modulus q, and d0, d1
+  // by t * p; thus in the NTT domain, the norm of the entire error term is
+  // bounded by t * (N * q / p * 6 * sigma * k + sqrt(N) * 6 * sigma).
+  double B_aux_mod_relinearize(
+      int num_components,
+      const typename ModularInt::Params& mod_params_aux) const {
+    double p =
+        static_cast<double>(ModularInt::ExportUInt64(mod_params_aux.modulus));
+    double f = std::pow(2, log_modulus_);
+    f /= p;
+    return ExportDoubleT() * 6 * sigma_ *
+           (dimension_ * f * num_components + sqrt(dimension_));
+  }
+
+  // This represents the "size" of a freshly encrypted ciphertext using a public
+  // key, where the public key's error term, the public-key encryption's random
+  // element and error terms are all sampled from a centered binomial
+  // distribution with the specified standard deviation `sigma`. The error in a
+  // fresh public-key encryption is t * (v * e + e' + s * e''), where s, v, e,
+  // e', e'' are all sampled from the same error distribution of variance
+  // sigma^2. In the NTT domain, the norm of this error term is bounded by t *
+  // (72 * N * sigma^2 + 6 * sqrt(N) * sigma). Then adding the bound on the
+  // message t * sqrt(3 * N) and we get the bound on the error and message.
+  rlwe::StatusOr<double> B_publickey_encryption(int dimension,
+                                                int variance) const {
+    if (variance <= 0) {
+      return absl::InvalidArgumentError(
+          absl::StrCat("The variance, ", variance, ", must be positive."));
+    }
+    double sigma = sqrt(static_cast<double>(variance));
+    return ExportDoubleT() * (sqrt(dimension) * (6 * sigma + sqrt(3)) +
+                              72 * dimension * variance);
   }
 
  private:

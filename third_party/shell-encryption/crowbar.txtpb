@@ -1,9 +1,9 @@
 upstream {
-  commit: "f94f58852e9b3edaf2766e348a69a70f596bb9dd"
+  commit: "e81ce950f875ad183b92fff5d35efa35fb9cd9aa"
   artifacts {
     git {
       repository: "https://github.com/google/shell-encryption"
-      commit: "f94f58852e9b3edaf2766e348a69a70f596bb9dd"
+      commit: "e81ce950f875ad183b92fff5d35efa35fb9cd9aa"
     }
   }
 }
@@ -12,4 +12,10 @@ stages {
     patch { copybara {} }
   }
   publish { git {} }
+}
+latest {
+  git {
+    repository: "https://github.com/google/shell-encryption"
+    branch: "HEAD"
+  }
 }

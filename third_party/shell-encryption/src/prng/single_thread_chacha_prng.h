@@ -28,7 +28,7 @@
 
 namespace rlwe {
 
-class SingleThreadChaChaPrng : public SecurePrng {
+class SHELL_ENCRYPTION_EXPORT SingleThreadChaChaPrng : public SecurePrng {
  public:
   // Constructs a secure pseudorandom number generator using the ChaCha20 stream
   // cipher. The parameter in_key is the key for the ChaCha20.
@@ -53,8 +53,8 @@ class SingleThreadChaChaPrng : public SecurePrng {
   //
   // Fails if the key is not the expected size or on internal cryptographic
   // errors.
-  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::unique_ptr<SingleThreadChaChaPrng>> Create(
-      absl::string_view in_key);
+  static rlwe::StatusOr<std::unique_ptr<SingleThreadChaChaPrng>>
+      Create(absl::string_view in_key);
 
   // Returns 8 bits of randomness.
   //

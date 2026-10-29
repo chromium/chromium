@@ -3,6 +3,7 @@
 include_rules = [
   # Internal includes.
   '+glog',
+  '+opt',
   '+prng',
   '+testing',
   # Base test_runner includes.
@@ -13,4 +14,6 @@ include_rules = [
   # The lib will be able to use abseil, but without being imported directly in
   # chromium.
   '+absl',
+  '+google/protobuf',
+  '+hwy',
 ]

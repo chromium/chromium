@@ -23,6 +23,7 @@ option go_package = "github.com/google/shell-encryption";
 
 // NTT Polynomial
 message SerializedNttPolynomial {
+
   // Coefficients of the polynomial
   optional bytes coeffs = 1;
 
@@ -42,6 +43,13 @@ message SerializedSymmetricRlweCiphertext {
   optional double error = 3;
 }
 
+// Type of PRNG used to generate randomness.
+enum PrngType {
+  PRNG_TYPE_INVALID = 0;
+  PRNG_TYPE_HKDF = 1;
+  PRNG_TYPE_CHACHA = 2;
+}
+
 // RLWE RelinearizationKey
 message SerializedRelinearizationKey {
   // Polynomial composing the matrix
@@ -58,6 +66,9 @@ message SerializedRelinearizationKey {
   // Seed used to compress this key.
   optional bytes prng_seed = 4;  // Required
 
+  // Type of PRNG used to generate randomness.
+  optional PrngType prng_type = 6;  // Required
+
   // The power of s that corresponds to the key. The field is 1 if the key is
   // RelinearizationKey.
   optional int32 power_of_s = 5;
@@ -67,4 +78,40 @@ message SerializedRelinearizationKey {
 message SerializedGaloisKey {
   // The key-switching matrix
   optional SerializedRelinearizationKey key = 1;
+}
+
+// RLWE Public Key
+message SerializedPublicRlweKey {
+  // Seed used to generate the random polynomial "a" in the public key
+  optional bytes prng_seed = 1;
+  // Type of PRNG used to generate the random polynomial "a"
+  optional PrngType prng_type = 2;
+  // The polynomial "b" of the public key
+  optional SerializedNttPolynomial b = 3;
+}
+
+// RLWE AuxModRelinearizationKey
+message SerializedAuxModRelinearizationKey {
+  // Polynomials (both mod-q and mod-p) composing the "b" part of the key matrix
+  repeated SerializedNttPolynomial b = 1;
+
+  // For n parts, the key can relinearize an (n+1)-component ciphertext (if
+  // `power_of_s` == 1) or an n-component ciphertext to a 2-component ciphertext
+  optional int32 num_components = 2;
+
+  // Seed used to generate the random components in the key.
+  optional bytes prng_seed = 3;  // Required
+
+  // Type of PRNG used to generate randomness.
+  optional PrngType prng_type = 4;  // Required
+
+  // The power of s that corresponds to the key. The field is 1 if the key is
+  // AuxModRelinearizationKey.
+  optional int32 power_of_s = 5;
+}
+
+// RLWE AuxModRelinearizationKey
+message SerializedAuxModGaloisKey {
+  // The underlying key-switching key
+  optional SerializedAuxModRelinearizationKey key = 1;
 }

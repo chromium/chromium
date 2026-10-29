@@ -1,7 +1,7 @@
 Name: Simple Homomorphic Encryption Library with Lattices
 URL: https://github.com/google/shell-encryption
-Version: f94f58852e9b3edaf2766e348a69a70f596bb9dd
-Revision: f94f58852e9b3edaf2766e348a69a70f596bb9dd
+Version: N/A
+Revision: e81ce950f875ad183b92fff5d35efa35fb9cd9aa
 Update Mechanism: Manual
 License: Apache-2.0
 License File: src/LICENSE
@@ -17,26 +17,14 @@ computers.
 
 Local Modifications:
 patches/0001-lite-runtime-protos.patch: Build the protos with
-  LITE_RUNTIME, as Chromium links protobuf_lite, and compare them by
-  serialized bytes.
+  LITE_RUNTIME, as Chromium links protobuf_lite.
 patches/0002-fls64-no-dcheck.patch: Comment out the DCHECK_NE in
   Fls64().
-patches/0003-Support-SHELL-tests-in-chromium.patch: Build the tests in
-  Chromium.
+patches/0003-Support-SHELL-tests-in-chromium.patch: Run the tests with
+  the ChaCha PRNG only; the HKDF PRNG needs Tink and is not imported.
 patches/0004-Support-SHELL-component-build.patch: Export the public
   classes for the component build.
-patches/0005-Add-SHELL-go-package.patch: Set go_package in
-  serialization.proto.
-patches/0006-Quit-using-ValueOrDie.patch: Make rlwe::StatusOr an alias
-  of absl::StatusOr.
-patches/0007-Fix-Wunused-function-Wunused-local-typedef.patch: Fix
-  -Wunused-function and -Wunused-local-typedef.
-patches/0008-Fix-Wsign-compare.patch: Fix -Wsign-compare and
-  -Wignored-qualifiers.
-patches/0009-Drop-std-has_denorm-_loss-deprecated-in-C-23.patch: Drop
-  std::has_denorm, deprecated in C++23.
-patches/0010-use-std-optional.patch: Use std::optional instead of
-  absl::optional.
+patches/0008-Fix-Wsign-compare.patch: Fix -Wignored-qualifiers.
 
 Update instructions:
 Update commit hashes in crowbar.txtpb, then run from this directory:

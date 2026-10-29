@@ -52,7 +52,6 @@ rlwe::StatusOr<ModularInt> PrimitiveNthRootOfUnity(
 
   // Test each number t to see whether t^k is a primitive n-th root
   // of unity - that t^{nk} is a root of unity but t^{(n/2)k} is not.
-  ModularInt one = ModularInt::ImportOne(params);
   for (typename ModularInt::Int t = params->Two(); t < params->modulus;
        t = t + params->One()) {
     // Produce a candidate root of unity.
@@ -61,7 +60,7 @@ rlwe::StatusOr<ModularInt> PrimitiveNthRootOfUnity(
 
     // Check whether candidate^half_n = 1. If not, it is a primitive root of
     // unity.
-    if (candidate.ModExp(half_n, params) != one) {
+    if (candidate.ModExp(half_n, params).ExportInt(params) != 1) {
       return candidate;
     }
   }
@@ -95,18 +94,18 @@ rlwe::StatusOr<std::vector<ModularInt>> NttPsis(
 // Creates a vector containing the indices necessary to perform the NTT bit
 // reversal operation. Index i of the returned vector contains an integer with
 // the rightmost log_n bits of i reversed.
-SHELL_ENCRYPTION_EXPORT std::vector<unsigned int> BitrevArray(unsigned int log_n);
+SHELL_ENCRYPTION_EXPORT std::vector<unsigned int> BitrevArray(
+    unsigned int log_n);
 
 // Helper function: Perform the bit-reversal operation in-place on coeffs_.
 template <typename ModularInt>
 static void BitrevHelper(const std::vector<unsigned int>& bitrevs,
                          std::vector<ModularInt>* item_to_reverse) {
-  using std::swap;
-  for (int i = 0; i < item_to_reverse->size(); i++) {
+  for (size_t i = 0; i < item_to_reverse->size(); i++) {
     // Only swap in one direction - don't accidentally swap twice.
     unsigned int r = bitrevs[i];
-    if (static_cast<unsigned int>(i) < r) {
-      swap((*item_to_reverse)[i], (*item_to_reverse)[r]);
+    if (i < r) {
+      std::swap((*item_to_reverse)[i], (*item_to_reverse)[r]);
     }
   }
 }
@@ -150,7 +149,7 @@ rlwe::StatusOr<std::vector<ModularInt>> NttPsisInvBitrev(
   // Finally, multiply each of the items at indices 1 to (n-1) by -1. Multiply
   // every entry by psi_inv.
   row[0].MulInPlace(psi_inv, params);
-  for (int i = 1; i < row.size(); i++) {
+  for (size_t i = 1; i < row.size(); i++) {
     row[i].MulInPlace(negative_psi_inv, params);
   }
 
@@ -169,9 +168,13 @@ struct NttParameters {
   ~NttParameters() = default;
 
   int number_coeffs;
-  std::optional<ModularInt> n_inv_ptr;
+  absl::optional<ModularInt> n_inv_ptr;
   std::vector<ModularInt> psis_bitrev;
+  std::vector<std::tuple<typename ModularInt::Int, typename ModularInt::Int>>
+      psis_bitrev_constant;
   std::vector<ModularInt> psis_inv_bitrev;
+  std::vector<std::tuple<typename ModularInt::Int, typename ModularInt::Int>>
+      psis_inv_bitrev_constant;
   std::vector<unsigned int> bitrevs;
 };
 
@@ -183,7 +186,7 @@ rlwe::StatusOr<NttParameters<ModularInt>> InitializeNttParameters(
   // Abort if log_n is non-positive.
   if (log_n <= 0) {
     return absl::InvalidArgumentError("log_n must be positive");
-  } else if (static_cast<Uint64>(log_n) > kMaxLogNumCoeffs) {
+  } else if (log_n > static_cast<int>(kMaxLogNumCoeffs)) {
     return absl::InvalidArgumentError(absl::StrCat(
         "log_n, ", log_n, ", must be less than ", kMaxLogNumCoeffs, "."));
   }
@@ -199,7 +202,7 @@ rlwe::StatusOr<NttParameters<ModularInt>> InitializeNttParameters(
   output.number_coeffs = 1 << log_n;
   typename ModularInt::Int two_times_n = params->One() << (log_n + 1);
 
-  if (params->modulus % two_times_n != params->One()){
+  if (params->modulus % two_times_n != params->One()) {
     return absl::InvalidArgumentError(
         absl::StrCat("modulus is not 1 mod 2n for logn, ", log_n));
   }
@@ -213,6 +216,19 @@ rlwe::StatusOr<NttParameters<ModularInt>> InitializeNttParameters(
                         NttPsisBitrev<ModularInt>(log_n, params));
   RLWE_ASSIGN_OR_RETURN(output.psis_inv_bitrev,
                         NttPsisInvBitrev<ModularInt>(log_n, params));
+
+  // Compute the constants to speed up multiplication.
+  output.psis_bitrev_constant.reserve(output.psis_bitrev.size());
+  for (size_t i = 0; i < output.psis_bitrev.size(); i++) {
+    output.psis_bitrev_constant.push_back(
+        output.psis_bitrev[i].GetConstant(params));
+  }
+  output.psis_inv_bitrev_constant.reserve(output.psis_inv_bitrev.size());
+  for (size_t i = 0; i < output.psis_inv_bitrev.size(); i++) {
+    output.psis_inv_bitrev_constant.push_back(
+        output.psis_inv_bitrev[i].GetConstant(params));
+  }
+
   output.bitrevs = internal::BitrevArray(log_n);
 
   return output;

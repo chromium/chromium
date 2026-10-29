@@ -35,7 +35,6 @@
 #include <vector>
 
 #include "polynomial.h"
-#include "prng/integral_prng_types.h"
 #include "prng/prng.h"
 #include "status_macros.h"
 #include "statusor.h"
@@ -74,7 +73,7 @@ rlwe::StatusOr<std::vector<Polynomial<ModularInt>>> EncryptWithPrng(
     const std::vector<Polynomial<ModularInt>>& plaintexts, SecurePrng* prng,
     SecurePrng* prng_encryption) {
   std::vector<Polynomial<ModularInt>> c0s(plaintexts.size());
-  for (int i = 0; i < c0s.size(); ++i) {
+  for (size_t i = 0; i < c0s.size(); ++i) {
     RLWE_ASSIGN_OR_RETURN(auto a, SamplePolynomialFromPrng<ModularInt>(
                                       key.Len(), prng, key.ModulusParams()));
     RLWE_ASSIGN_OR_RETURN(
@@ -96,14 +95,15 @@ rlwe::StatusOr<std::vector<SymmetricRlweCiphertext<ModularInt>>> ExpandFromPrng(
     const NttParameters<ModularInt>* ntt_params,
     const ErrorParams<ModularInt>* error_params, SecurePrng* prng) {
   std::vector<SymmetricRlweCiphertext<ModularInt>> ciphertexts;
-  for (int i = 0; i < c0.size(); ++i) {
+  ciphertexts.reserve(c0.size());
+  for (size_t i = 0; i < c0.size(); ++i) {
     RLWE_ASSIGN_OR_RETURN(auto a, SamplePolynomialFromPrng<ModularInt>(
                                       c0[i].Len(), prng, modulus_params));
+    std::vector<Polynomial<ModularInt>> coeffs{
+        std::move(c0[i]), std::move(a.NegateInPlace(modulus_params))};
     // Ciphertexts that can be expanded from PRNG must be fresh encryptions.
-    ciphertexts.emplace_back(
-        std::vector<Polynomial<ModularInt>>(
-            {std::move(c0[i]), std::move(a.NegateInPlace(modulus_params))}),
-        1, error_params->B_encryption(), modulus_params, error_params);
+    ciphertexts.emplace_back(std::move(coeffs), 1, error_params->B_encryption(),
+                             modulus_params, error_params);
   }
   return ciphertexts;
 }

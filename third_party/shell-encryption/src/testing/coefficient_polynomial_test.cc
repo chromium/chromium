@@ -18,7 +18,6 @@
 #include <random>
 #include <vector>
 
-#include <google/protobuf/message_lite.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include "constants.h"
@@ -39,6 +38,7 @@ using Polynomial = rlwe::testing::CoefficientPolynomial<uint_m>;
 
 const int kDimension = 20;
 unsigned int seed = 0;
+std::mt19937 mt_rand(seed);
 
 class PolynomialTest : public ::testing::Test {
  protected:
@@ -48,7 +48,7 @@ class PolynomialTest : public ::testing::Test {
         zero_(uint_m::ImportZero(params14_.get())) {}
 
   rlwe::StatusOr<uint_m> SampleNonZero() {
-    return uint_m::ImportInt(1 + rand_r(&seed) % (params14_->modulus - 1),
+    return uint_m::ImportInt(1 + mt_rand() % (params14_->modulus - 1),
                              params14_.get());
   }
 
@@ -79,7 +79,7 @@ TEST_F(PolynomialTest, Equality) {
     ASSERT_OK_AND_ASSIGN(std::vector<uint_m> w, SampleRandomCoeffs(dimension));
 
     // Ensure v is really different than w.
-    int k = rand_r(&seed) % dimension;
+    int k = mt_rand() % dimension;
     v[k] = w[k].Add(one_, params14_.get());
 
     Polynomial p(v, params14_.get()), q(v, params14_.get()),
@@ -276,9 +276,8 @@ TEST_F(PolynomialTest, MonomialOutOfRange) {
 
 TEST_F(PolynomialTest, MultiplyByMonomial) {
   for (int dimension = 2; dimension < kDimension; dimension++) {
-    for (unsigned int monomial_degree :
-         {0, 1, dimension / 2, dimension - 1, dimension, dimension + 1,
-          2 * dimension - 1}) {
+    for (int monomial_degree : {0, 1, dimension / 2, dimension - 1, dimension,
+                                dimension + 1, 2 * dimension - 1}) {
       // Create a random polynomial and a random monomial.
       ASSERT_OK_AND_ASSIGN(std::vector<uint_m> v,
                            SampleRandomCoeffs(dimension));
@@ -416,7 +415,7 @@ TEST_F(PolynomialTest, Serialize) {
                          p.Serialize());
     ASSERT_OK_AND_ASSIGN(rlwe::SerializedCoefficientPolynomial serialized_q,
                          q.Serialize());
-    EXPECT_EQ(serialized_p.SerializeAsString(), serialized_q.SerializeAsString());
+    EXPECT_THAT(serialized_p, EqualsProto(serialized_q));
 
     // Ensure that a serialized polynomial can be deserialized.
     ASSERT_OK_AND_ASSIGN(

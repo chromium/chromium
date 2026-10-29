@@ -17,8 +17,12 @@
 #ifndef RLWE_STATUSOR_H_
 #define RLWE_STATUSOR_H_
 
+#include <cassert>
+
+#include "absl/base/attributes.h"
+#include "absl/status/status.h"
 #include "absl/status/statusor.h"
-#include "third_party/shell-encryption/base/shell_encryption_export.h"
+#include "absl/types/optional.h"
 
 namespace rlwe {
 
