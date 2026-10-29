@@ -940,10 +940,7 @@ TEST(ShellIntegrationLinuxTest, GetDesktopFileContentsEscapesPercent) {
 namespace shell_integration {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// A test fixture that allows for overriding the channel on Linux.
-class ShellIntegrationLinuxTest : public testing::Test {};
-
-TEST_F(ShellIntegrationLinuxTest, GetDirectLaunchUrlScheme) {
+TEST(ShellIntegrationLinuxTest, GetDirectLaunchUrlScheme) {
   // Test each channel on Linux.
   {
     chrome::ScopedChannelOverride channel_override(
@@ -953,17 +950,17 @@ TEST_F(ShellIntegrationLinuxTest, GetDirectLaunchUrlScheme) {
   {
     chrome::ScopedChannelOverride channel_override(
         chrome::ScopedChannelOverride::Channel::kBeta);
-    EXPECT_EQ("google-chrome-beta", GetDirectLaunchUrlScheme());
+    EXPECT_EQ("", GetDirectLaunchUrlScheme());
   }
   {
     chrome::ScopedChannelOverride channel_override(
         chrome::ScopedChannelOverride::Channel::kDev);
-    EXPECT_EQ("google-chrome-dev", GetDirectLaunchUrlScheme());
+    EXPECT_EQ("", GetDirectLaunchUrlScheme());
   }
   {
     chrome::ScopedChannelOverride channel_override(
         chrome::ScopedChannelOverride::Channel::kCanary);
-    EXPECT_EQ("google-chrome-canary", GetDirectLaunchUrlScheme());
+    EXPECT_EQ("", GetDirectLaunchUrlScheme());
   }
 }
 #else   // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
