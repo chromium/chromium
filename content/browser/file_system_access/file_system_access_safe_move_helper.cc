@@ -100,7 +100,7 @@ class HashCalculator : public base::RefCounted<HashCalculator> {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK_GE(file_size_, 0, base::NotFatalUntil::M159);
     int read_result =
-        reader_->Read(buffer_.get(), buffer_->size(),
+        reader_->Read(buffer_, buffer_->size(),
                       base::BindOnce(&HashCalculator::DidRead, this));
     if (read_result == net::ERR_IO_PENDING)
       return;

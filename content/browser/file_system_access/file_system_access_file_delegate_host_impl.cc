@@ -54,7 +54,7 @@ void ReadOnIOThread(scoped_refptr<storage::FileSystemContext> context,
   // Keep the reader alive by binding it to its callback.
   storage::FileStreamReader* reader_ptr = reader.get();
   int rv = reader_ptr->Read(
-      buffer.get(), buffer->size(),
+      buffer, buffer->size(),
       base::BindOnce(
           [](std::unique_ptr<storage::FileStreamReader>,
              base::OnceCallback<void(int)> callback,

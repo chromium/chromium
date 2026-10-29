@@ -54,7 +54,7 @@ class FakeFileStreamReader : public storage::FileStreamReader {
   ~FakeFileStreamReader() override = default;
 
   // storage::FileStreamReader overrides.
-  int Read(net::IOBuffer* buf,
+  int Read(scoped_refptr<net::IOBuffer> buf,
            int buf_len,
            net::CompletionOnceCallback callback) override {
     DCHECK(log_);
@@ -108,7 +108,7 @@ TEST_F(FileSystemProviderBufferingFileStreamReaderTest, Read) {
   {
     auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kChunkSize);
     std::vector<int> read_log;
-    const int result = reader.Read(buffer.get(), kChunkSize,
+    const int result = reader.Read(buffer, kChunkSize,
                                    base::BindOnce(&LogValue<int>, &read_log));
     base::RunLoop().RunUntilIdle();
 
@@ -125,7 +125,7 @@ TEST_F(FileSystemProviderBufferingFileStreamReaderTest, Read) {
     inner_read_log.clear();
     auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kChunkSize);
     std::vector<int> read_log;
-    const int result = reader.Read(buffer.get(), kChunkSize,
+    const int result = reader.Read(buffer, kChunkSize,
                                    base::BindOnce(&LogValue<int>, &read_log));
     base::RunLoop().RunUntilIdle();
 
@@ -141,7 +141,7 @@ TEST_F(FileSystemProviderBufferingFileStreamReaderTest, Read) {
     inner_read_log.clear();
     auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kChunkSize);
     std::vector<int> read_log;
-    const int result = reader.Read(buffer.get(), kChunkSize,
+    const int result = reader.Read(buffer, kChunkSize,
                                    base::BindOnce(&LogValue<int>, &read_log));
     base::RunLoop().RunUntilIdle();
 
@@ -157,7 +157,7 @@ TEST_F(FileSystemProviderBufferingFileStreamReaderTest, Read) {
     inner_read_log.clear();
     auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kChunkSize);
     std::vector<int> read_log;
-    const int result = reader.Read(buffer.get(), kChunkSize,
+    const int result = reader.Read(buffer, kChunkSize,
                                    base::BindOnce(&LogValue<int>, &read_log));
     base::RunLoop().RunUntilIdle();
 
@@ -180,7 +180,7 @@ TEST_F(FileSystemProviderBufferingFileStreamReaderTest, Read_Directly) {
   {
     auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kChunkSize);
     std::vector<int> read_log;
-    const int result = reader.Read(buffer.get(), kChunkSize,
+    const int result = reader.Read(buffer, kChunkSize,
                                    base::BindOnce(&LogValue<int>, &read_log));
     base::RunLoop().RunUntilIdle();
 
@@ -200,7 +200,7 @@ TEST_F(FileSystemProviderBufferingFileStreamReaderTest, Read_Directly) {
     inner_read_log.clear();
     auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(read_bytes);
     std::vector<int> read_log;
-    const int result = reader.Read(buffer.get(), read_bytes,
+    const int result = reader.Read(buffer, read_bytes,
                                    base::BindOnce(&LogValue<int>, &read_log));
     base::RunLoop().RunUntilIdle();
 
@@ -216,7 +216,7 @@ TEST_F(FileSystemProviderBufferingFileStreamReaderTest, Read_Directly) {
     inner_read_log.clear();
     auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(read_bytes);
     std::vector<int> read_log;
-    const int result = reader.Read(buffer.get(), read_bytes,
+    const int result = reader.Read(buffer, read_bytes,
                                    base::BindOnce(&LogValue<int>, &read_log));
     base::RunLoop().RunUntilIdle();
 
@@ -239,7 +239,7 @@ TEST_F(FileSystemProviderBufferingFileStreamReaderTest,
   {
     auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kChunkSize);
     std::vector<int> read_log;
-    const int result = reader.Read(buffer.get(), kChunkSize,
+    const int result = reader.Read(buffer, kChunkSize,
                                    base::BindOnce(&LogValue<int>, &read_log));
     base::RunLoop().RunUntilIdle();
 
@@ -258,7 +258,7 @@ TEST_F(FileSystemProviderBufferingFileStreamReaderTest,
     ASSERT_LT(kPreloadingBufferLength, chunk_size);
     auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(chunk_size);
     std::vector<int> read_log;
-    const int result = reader.Read(buffer.get(), chunk_size,
+    const int result = reader.Read(buffer, chunk_size,
                                    base::BindOnce(&LogValue<int>, &read_log));
     base::RunLoop().RunUntilIdle();
 
@@ -286,7 +286,7 @@ TEST_F(FileSystemProviderBufferingFileStreamReaderTest,
 
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(read_bytes);
   std::vector<int> read_log;
-  const int result = reader.Read(buffer.get(), read_bytes,
+  const int result = reader.Read(buffer, read_bytes,
                                  base::BindOnce(&LogValue<int>, &read_log));
   base::RunLoop().RunUntilIdle();
 
@@ -312,7 +312,7 @@ TEST_F(FileSystemProviderBufferingFileStreamReaderTest,
 
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(read_bytes);
   std::vector<int> read_log;
-  const int result = reader.Read(buffer.get(), read_bytes,
+  const int result = reader.Read(buffer, read_bytes,
                                  base::BindOnce(&LogValue<int>, &read_log));
   base::RunLoop().RunUntilIdle();
 
@@ -332,8 +332,8 @@ TEST_F(FileSystemProviderBufferingFileStreamReaderTest, Read_NegativeLength) {
 
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kChunkSize);
   std::vector<int> read_log;
-  const int result = reader.Read(buffer.get(), -123456,
-                                 base::BindOnce(&LogValue<int>, &read_log));
+  const int result =
+      reader.Read(buffer, -123456, base::BindOnce(&LogValue<int>, &read_log));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(net::ERR_INVALID_ARGUMENT, result);
@@ -350,7 +350,7 @@ TEST_F(FileSystemProviderBufferingFileStreamReaderTest, Read_WithError) {
 
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kChunkSize);
   std::vector<int> read_log;
-  const int result = reader.Read(buffer.get(), kChunkSize,
+  const int result = reader.Read(buffer, kChunkSize,
                                  base::BindOnce(&LogValue<int>, &read_log));
   base::RunLoop().RunUntilIdle();
 

@@ -30,7 +30,7 @@ ReadaheadFileStreamReader::ReadaheadFileStreamReader(FileStreamReader* source)
 
 ReadaheadFileStreamReader::~ReadaheadFileStreamReader() = default;
 
-int ReadaheadFileStreamReader::Read(net::IOBuffer* buf,
+int ReadaheadFileStreamReader::Read(scoped_refptr<net::IOBuffer> buf,
                                     int buf_len,
                                     net::CompletionOnceCallback callback) {
   CHECK(!pending_sink_buffer_.get(), base::NotFatalUntil::M161);
@@ -39,7 +39,7 @@ int ReadaheadFileStreamReader::Read(net::IOBuffer* buf,
   ReadFromSourceIfNeeded();
 
   scoped_refptr<net::DrainableIOBuffer> sink =
-      base::MakeRefCounted<net::DrainableIOBuffer>(buf, buf_len);
+      base::MakeRefCounted<net::DrainableIOBuffer>(std::move(buf), buf_len);
   int result = FinishReadFromCacheOrStoredError(sink.get());
 
   // We are waiting for an source read to complete, so save the request.
@@ -103,7 +103,7 @@ void ReadaheadFileStreamReader::ReadFromSourceIfNeeded() {
   scoped_refptr<net::IOBuffer> buf =
       base::MakeRefCounted<net::IOBufferWithSize>(kBufferSize);
   int result = source_->Read(
-      buf.get(), kBufferSize,
+      buf, kBufferSize,
       base::BindOnce(&ReadaheadFileStreamReader::OnFinishReadFromSource,
                      weak_factory_.GetWeakPtr(), base::RetainedRef(buf)));
 

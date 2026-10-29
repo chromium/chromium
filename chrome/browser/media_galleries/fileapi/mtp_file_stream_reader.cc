@@ -37,7 +37,7 @@ MTPFileStreamReader::MTPFileStreamReader(
 
 MTPFileStreamReader::~MTPFileStreamReader() = default;
 
-int MTPFileStreamReader::Read(net::IOBuffer* buf,
+int MTPFileStreamReader::Read(scoped_refptr<net::IOBuffer> buf,
                               int buf_len,
                               net::CompletionOnceCallback callback) {
   CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
@@ -64,7 +64,7 @@ int MTPFileStreamReader::Read(net::IOBuffer* buf,
       header_buf_len = net::kMaxBytesToSniff;
     }
 
-    ReadBytes(url_, header_buf.get(), 0, header_buf_len,
+    ReadBytes(url_, header_buf, 0, header_buf_len,
               base::BindOnce(&MTPFileStreamReader::FinishValidateMediaHeader,
                              weak_factory_.GetWeakPtr(),
                              base::RetainedRef(header_buf),

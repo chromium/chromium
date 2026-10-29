@@ -42,7 +42,7 @@ class ArcContentFileSystemFileStreamReader : public storage::FileStreamReader {
   ~ArcContentFileSystemFileStreamReader() override;
 
   // storage::FileStreamReader override:
-  int Read(net::IOBuffer* buffer,
+  int Read(scoped_refptr<net::IOBuffer> buffer,
            int buffer_length,
            net::CompletionOnceCallback callback) override;
   int64_t GetLength(GetLengthCallback callback) override;
@@ -54,7 +54,7 @@ class ArcContentFileSystemFileStreamReader : public storage::FileStreamReader {
   void CloseInternal(const CloseStatus status);
 
   // Actually performs read.
-  void ReadInternal(net::IOBuffer* buffer,
+  void ReadInternal(scoped_refptr<net::IOBuffer> buffer,
                     int buffer_length,
                     net::CompletionOnceCallback callback);
 

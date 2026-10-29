@@ -37,20 +37,21 @@ ArcDocumentsProviderFileStreamReader::~ArcDocumentsProviderFileStreamReader() {
 }
 
 int ArcDocumentsProviderFileStreamReader::Read(
-    net::IOBuffer* buffer,
+    scoped_refptr<net::IOBuffer> buffer,
     int buffer_length,
     net::CompletionOnceCallback callback) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   if (!content_url_resolved_) {
     pending_operations_.emplace_back(
         base::BindOnce(&ArcDocumentsProviderFileStreamReader::RunPendingRead,
-                       base::Unretained(this), base::WrapRefCounted(buffer),
-                       buffer_length, std::move(callback)));
+                       base::Unretained(this), std::move(buffer), buffer_length,
+                       std::move(callback)));
     return net::ERR_IO_PENDING;
   }
   if (!underlying_reader_)
     return net::ERR_FILE_NOT_FOUND;
-  return underlying_reader_->Read(buffer, buffer_length, std::move(callback));
+  return underlying_reader_->Read(std::move(buffer), buffer_length,
+                                  std::move(callback));
 }
 
 int64_t ArcDocumentsProviderFileStreamReader::GetLength(
@@ -96,7 +97,7 @@ void ArcDocumentsProviderFileStreamReader::RunPendingRead(
   // it returns synchronously.
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   int result = underlying_reader_
-                   ? underlying_reader_->Read(buffer.get(), buffer_length,
+                   ? underlying_reader_->Read(std::move(buffer), buffer_length,
                                               std::move(split_callback.first))
                    : net::ERR_FILE_NOT_FOUND;
   if (result != net::ERR_IO_PENDING)

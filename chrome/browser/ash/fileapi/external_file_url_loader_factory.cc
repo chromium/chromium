@@ -103,7 +103,7 @@ class FileSystemReaderDataPipeProducer {
       const int bytes_to_read = base::checked_cast<int>(
           std::min<int64_t>(read_buffer_->size(), remaining_bytes_));
       const int read_size = stream_reader_->Read(
-          read_buffer_.get(), bytes_to_read,
+          read_buffer_, bytes_to_read,
           base::BindOnce(
               &FileSystemReaderDataPipeProducer::OnPendingReadComplete,
               weak_ptr_factory_.GetWeakPtr()));

@@ -64,20 +64,19 @@ ArcContentFileSystemFileStreamReader::~ArcContentFileSystemFileStreamReader() {
 }
 
 int ArcContentFileSystemFileStreamReader::Read(
-    net::IOBuffer* buffer,
+    scoped_refptr<net::IOBuffer> buffer,
     int buffer_length,
     net::CompletionOnceCallback callback) {
   CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   if (file_) {
-    ReadInternal(buffer, buffer_length, std::move(callback));
+    ReadInternal(std::move(buffer), buffer_length, std::move(callback));
     return net::ERR_IO_PENDING;
   }
   file_system_operation_runner_util::OpenFileSessionToReadOnIOThread(
       arc_url_,
       base::BindOnce(&ArcContentFileSystemFileStreamReader::OnOpenFileSession,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::WrapRefCounted(buffer), buffer_length,
-                     std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(buffer),
+                     buffer_length, std::move(callback)));
   return net::ERR_IO_PENDING;
 }
 
@@ -102,7 +101,7 @@ void ArcContentFileSystemFileStreamReader::CloseInternal(
 }
 
 void ArcContentFileSystemFileStreamReader::ReadInternal(
-    net::IOBuffer* buffer,
+    scoped_refptr<net::IOBuffer> buffer,
     int buffer_length,
     net::CompletionOnceCallback callback) {
   CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
@@ -113,8 +112,7 @@ void ArcContentFileSystemFileStreamReader::ReadInternal(
   // |task_runner_| along with |file_| and ReadFile() won't be called.
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&ReadFile, file_.get(), base::WrapRefCounted(buffer),
-                     buffer_length),
+      base::BindOnce(&ReadFile, file_.get(), std::move(buffer), buffer_length),
       base::BindOnce(&ArcContentFileSystemFileStreamReader::OnRead,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -194,7 +192,7 @@ void ArcContentFileSystemFileStreamReader::OnSeekFile(
   switch (seek_result) {
     case 0:
       // File stream is ready. Resume Read().
-      ReadInternal(buf.get(), buffer_length, std::move(callback));
+      ReadInternal(std::move(buf), buffer_length, std::move(callback));
       break;
     case ESPIPE: {
       // Pipe is not seekable. Just consume the contents.
@@ -224,7 +222,7 @@ void ArcContentFileSystemFileStreamReader::ConsumeFileContents(
   CHECK(file_->IsValid(), base::NotFatalUntil::M160);
   if (num_bytes_to_consume == 0) {
     // File stream is ready. Resume Read().
-    ReadInternal(buf.get(), buffer_length, std::move(callback));
+    ReadInternal(std::move(buf), buffer_length, std::move(callback));
     return;
   }
   auto num_bytes_to_read = std::min(

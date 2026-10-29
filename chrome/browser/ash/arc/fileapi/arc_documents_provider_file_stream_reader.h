@@ -39,7 +39,7 @@ class ArcDocumentsProviderFileStreamReader : public storage::FileStreamReader {
   ~ArcDocumentsProviderFileStreamReader() override;
 
   // storage::FileStreamReader override:
-  int Read(net::IOBuffer* buffer,
+  int Read(scoped_refptr<net::IOBuffer> buffer,
            int buffer_length,
            net::CompletionOnceCallback callback) override;
   int64_t GetLength(GetLengthCallback callback) override;

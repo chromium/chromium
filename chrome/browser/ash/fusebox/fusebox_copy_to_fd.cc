@@ -72,7 +72,7 @@ FDCopier::FDCopier(scoped_refptr<storage::FileSystemContext> fs_context,
 
 void FDCopier::CallRead() {
   int read_result =
-      fs_reader_->Read(buffer_.get(), kBufferLen,
+      fs_reader_->Read(buffer_, kBufferLen,
                        base::BindOnce(&FDCopier::OnRead,
                                       // base::Unretained is safe because |this|
                                       // isn't deleted until Finish is called.

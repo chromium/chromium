@@ -168,7 +168,7 @@ class FileSystemAccessFileHandleImplTestBase : public testing::Test {
     while (true) {
       auto buf = base::MakeRefCounted<net::IOBufferWithSize>(4096);
       net::TestCompletionCallback callback;
-      int rv = reader->Read(buf.get(), buf->size(), callback.callback());
+      int rv = reader->Read(buf, buf->size(), callback.callback());
       if (rv == net::ERR_IO_PENDING) {
         rv = callback.WaitForResult();
       }

@@ -42,7 +42,7 @@ class BufferingFileStreamReader : public storage::FileStreamReader {
   ~BufferingFileStreamReader() override;
 
   // storage::FileStreamReader overrides.
-  int Read(net::IOBuffer* buf,
+  int Read(scoped_refptr<net::IOBuffer> buf,
            int buf_len,
            net::CompletionOnceCallback callback) override;
   int64_t GetLength(GetLengthCallback callback) override;

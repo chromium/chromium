@@ -14,6 +14,7 @@
 #include "base/files/file.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_delegate.h"
@@ -80,7 +81,7 @@ class FileStreamReader {
   //
   // If the stream is deleted while it has an in-flight Read operation
   // |callback| will not be called.
-  virtual int Read(net::IOBuffer* buf,
+  virtual int Read(scoped_refptr<net::IOBuffer> buf,
                    int buf_len,
                    net::CompletionOnceCallback callback) = 0;
 

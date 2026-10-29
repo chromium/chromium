@@ -577,7 +577,7 @@ BlobReader::Status BlobReader::ReadFileItem(FileStreamReader* reader,
   DCHECK_GE(read_buf_->BytesRemaining(), bytes_to_read);
   DCHECK(reader);
   const int result = reader->Read(
-      read_buf_.get(), bytes_to_read,
+      read_buf_, bytes_to_read,
       base::BindOnce(&BlobReader::DidReadFile, weak_factory_.GetWeakPtr()));
   if (result >= 0) {
     AdvanceBytesRead(result);

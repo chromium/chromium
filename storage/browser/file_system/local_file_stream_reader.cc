@@ -64,7 +64,7 @@ std::unique_ptr<FileStreamReader> FileStreamReader::CreateForLocalFile(
 
 LocalFileStreamReader::~LocalFileStreamReader() = default;
 
-int LocalFileStreamReader::Read(net::IOBuffer* buf,
+int LocalFileStreamReader::Read(scoped_refptr<net::IOBuffer> buf,
                                 int buf_len,
                                 net::CompletionOnceCallback callback) {
   DCHECK(!has_pending_open_);
@@ -72,7 +72,7 @@ int LocalFileStreamReader::Read(net::IOBuffer* buf,
   if (stream_impl_) {
     callback_ = std::move(callback);
     const auto result =
-        stream_impl_->Read(buf, buf_len,
+        stream_impl_->Read(buf.get(), buf_len,
                            base::BindOnce(&LocalFileStreamReader::OnRead,
                                           weak_factory_.GetWeakPtr()));
     const int read_result = result.has_value()
@@ -85,8 +85,8 @@ int LocalFileStreamReader::Read(net::IOBuffer* buf,
   }
 
   Open(base::BindOnce(&LocalFileStreamReader::DidOpenForRead,
-                      weak_factory_.GetWeakPtr(), base::RetainedRef(buf),
-                      buf_len, std::move(callback)));
+                      weak_factory_.GetWeakPtr(), std::move(buf), buf_len,
+                      std::move(callback)));
 
   return net::ERR_IO_PENDING;
 }
@@ -198,7 +198,7 @@ void LocalFileStreamReader::DidSeekFileStream(
   std::move(callback_).Run(net::OK);
 }
 
-void LocalFileStreamReader::DidOpenForRead(net::IOBuffer* buf,
+void LocalFileStreamReader::DidOpenForRead(scoped_refptr<net::IOBuffer> buf,
                                            int buf_len,
                                            net::CompletionOnceCallback callback,
                                            int open_result) {
@@ -213,7 +213,7 @@ void LocalFileStreamReader::DidOpenForRead(net::IOBuffer* buf,
 
   callback_ = std::move(callback);
   const auto result =
-      stream_impl_->Read(buf, buf_len,
+      stream_impl_->Read(buf.get(), buf_len,
                          base::BindOnce(&LocalFileStreamReader::OnRead,
                                         weak_factory_.GetWeakPtr()));
   const int read_result = result.has_value()

@@ -58,7 +58,7 @@ bool ReadData(ArcContentFileSystemFileStreamReader* reader,
   while (drainable_buffer->BytesRemaining()) {
     net::TestCompletionCallback callback;
     int result = callback.GetResult(
-        reader->Read(drainable_buffer.get(), drainable_buffer->BytesRemaining(),
+        reader->Read(drainable_buffer, drainable_buffer->BytesRemaining(),
                      callback.callback()));
     if (result < 0) {
       LOG(ERROR) << "Read failed: " << result;

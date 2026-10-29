@@ -102,14 +102,15 @@ class FakeFileStreamReader : public FileStreamReader {
     async_task_runner_ = runner;
   }
 
-  int Read(net::IOBuffer* buf,
+  int Read(scoped_refptr<net::IOBuffer> buf,
            int buf_length,
            net::CompletionOnceCallback done) override {
     DCHECK(buf);
     // When async_task_runner_ is not set, return synchronously.
     if (!async_task_runner_.get()) {
       if (net_error_ == net::OK) {
-        return ReadImpl(buf, buf_length, net::CompletionOnceCallback());
+        return ReadImpl(std::move(buf), buf_length,
+                        net::CompletionOnceCallback());
       } else {
         return net_error_;
       }
@@ -120,8 +121,8 @@ class FakeFileStreamReader : public FileStreamReader {
       async_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(base::IgnoreResult(&FakeFileStreamReader::ReadImpl),
-                         base::Unretained(this), base::WrapRefCounted(buf),
-                         buf_length, std::move(done)));
+                         base::Unretained(this), std::move(buf), buf_length,
+                         std::move(done)));
     } else {
       async_task_runner_->PostTask(FROM_HERE,
                                    base::BindOnce(std::move(done), net_error_));

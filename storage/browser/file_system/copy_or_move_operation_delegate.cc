@@ -825,7 +825,7 @@ void CopyOrMoveOperationDelegate::StreamCopyHelper::Cancel() {
 
 void CopyOrMoveOperationDelegate::StreamCopyHelper::Read() {
   int result = reader_->Read(
-      io_buffer_.get(), io_buffer_->size(),
+      io_buffer_, io_buffer_->size(),
       base::BindOnce(&StreamCopyHelper::DidRead, weak_factory_.GetWeakPtr()));
   if (result != net::ERR_IO_PENDING)
     DidRead(result);

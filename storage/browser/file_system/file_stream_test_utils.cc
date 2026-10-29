@@ -29,7 +29,7 @@ base::expected<std::string, net::Error> ReadFromReader(FileStreamReader& reader,
         base::MakeRefCounted<net::IOBufferWithSize>(bytes_to_read -
                                                     total_bytes_read));
     net::TestCompletionCallback callback;
-    int rv = reader.Read(buf.get(), buf->size(), callback.callback());
+    int rv = reader.Read(buf, buf->size(), callback.callback());
     if (rv == net::ERR_IO_PENDING) {
       rv = callback.WaitForResult();
     }

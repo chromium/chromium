@@ -296,7 +296,7 @@ void FileStreamReader::OnInitializeCompleted(
   std::move(pending_closure).Run();
 }
 
-int FileStreamReader::Read(net::IOBuffer* buffer,
+int FileStreamReader::Read(scoped_refptr<net::IOBuffer> buffer,
                            int buffer_length,
                            net::CompletionOnceCallback callback) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
@@ -309,8 +309,8 @@ int FileStreamReader::Read(net::IOBuffer* buffer,
       // Lazily initialize with the first call to Read().
       Initialize(
           base::BindOnce(&FileStreamReader::ReadAfterInitialized,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         base::WrapRefCounted(buffer), buffer_length,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(buffer),
+                         buffer_length,
                          base::BindRepeating(&FileStreamReader::OnReadCompleted,
                                              weak_ptr_factory_.GetWeakPtr())),
           base::BindOnce(&GetLengthToIntCompletionOnceCallback,
@@ -323,7 +323,7 @@ int FileStreamReader::Read(net::IOBuffer* buffer,
 
     case INITIALIZED:
       ReadAfterInitialized(
-          buffer, buffer_length,
+          std::move(buffer), buffer_length,
           base::BindRepeating(&FileStreamReader::OnReadCompleted,
                               weak_ptr_factory_.GetWeakPtr()));
       break;

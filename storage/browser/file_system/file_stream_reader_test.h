@@ -235,7 +235,7 @@ TYPED_TEST_P(FileStreamReaderTypedTest, DeleteWithUnfinishedRead) {
   net::TestCompletionCallback callback;
   scoped_refptr<net::IOBufferWithSize> buf =
       base::MakeRefCounted<net::IOBufferWithSize>(this->kTestData.size());
-  int rv = reader->Read(buf.get(), buf->size(),
+  int rv = reader->Read(buf, buf->size(),
                         base::BindOnce(&FileStreamReaderTest::NeverCalled));
   if (rv < 0)
     ASSERT_EQ(rv, net::ERR_IO_PENDING);

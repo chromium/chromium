@@ -99,7 +99,7 @@ void ShareInfoFileStreamAdapter::PerformReadFileStream() {
 
   // Read only the minimum between the bytes remaining or the IO buffer size.
   const int bytes_read = stream_reader_->Read(
-      net_iobuf_.get(), std::min<int64_t>(net_iobuf_->size(), bytes_remaining_),
+      net_iobuf_, std::min<int64_t>(net_iobuf_->size(), bytes_remaining_),
       base::BindOnce(&ShareInfoFileStreamAdapter::OnReadFile,
                      weak_ptr_factory_.GetWeakPtr()));
 

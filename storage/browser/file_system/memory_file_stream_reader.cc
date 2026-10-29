@@ -29,7 +29,7 @@ MemoryFileStreamReader::MemoryFileStreamReader(
 
 MemoryFileStreamReader::~MemoryFileStreamReader() = default;
 
-int MemoryFileStreamReader::Read(net::IOBuffer* buf,
+int MemoryFileStreamReader::Read(scoped_refptr<net::IOBuffer> buf,
                                  int buf_len,
                                  net::CompletionOnceCallback callback) {
   task_runner_->PostTaskAndReplyWithResult(
@@ -53,7 +53,7 @@ int MemoryFileStreamReader::Read(net::IOBuffer* buf,
             return util->ReadFile(path, offset, std::move(buf), buf_len);
           },
           memory_file_util_, file_path_, expected_modification_time_, offset_,
-          base::WrapRefCounted(buf), buf_len),
+          std::move(buf), buf_len),
       base::BindOnce(&MemoryFileStreamReader::OnReadCompleted,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 

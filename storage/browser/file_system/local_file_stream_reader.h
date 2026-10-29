@@ -51,7 +51,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileStreamReader
   ~LocalFileStreamReader() override;
 
   // FileStreamReader overrides.
-  int Read(net::IOBuffer* buf,
+  int Read(scoped_refptr<net::IOBuffer> buf,
            int buf_len,
            net::CompletionOnceCallback callback) override;
   int64_t GetLength(GetLengthCallback callback) override;
@@ -69,7 +69,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileStreamReader
   void DidOpenFileStream(file_access::ScopedFileAccess /*scoped_file_access*/,
                          net::Error result);
   void DidSeekFileStream(base::expected<int64_t, net::Error> seek_result);
-  void DidOpenForRead(net::IOBuffer* buf,
+  void DidOpenForRead(scoped_refptr<net::IOBuffer> buf,
                       int buf_len,
                       net::CompletionOnceCallback callback,
                       int open_result);

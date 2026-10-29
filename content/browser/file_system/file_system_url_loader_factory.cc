@@ -646,8 +646,7 @@ class FileSystemFileURLLoader final : public FileSystemEntryURLLoader {
     net::CompletionRepeatingCallback read_callback =
         base::BindRepeating(&FileSystemFileURLLoader::DidReadMoreFileData,
                             weak_ptr_factory_.GetWeakPtr());
-    const int rv =
-        reader_->Read(file_data_.get(), bytes_to_read, read_callback);
+    const int rv = reader_->Read(file_data_, bytes_to_read, read_callback);
     if (rv == net::ERR_IO_PENDING) {
       // async callback will be called.
       return;

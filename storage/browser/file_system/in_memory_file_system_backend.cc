@@ -72,7 +72,7 @@ class InMemoryFileStreamReader : public FileStreamReader {
   ~InMemoryFileStreamReader() override = default;
 
   // FileStreamReader:
-  int Read(net::IOBuffer* buf,
+  int Read(scoped_refptr<net::IOBuffer> buf,
            int buf_len,
            net::CompletionOnceCallback callback) override {
     if (!VerifyModificationTime()) {

@@ -53,7 +53,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamReader
   ~SandboxFileStreamReader() override;
 
   // FileStreamReader overrides.
-  int Read(net::IOBuffer* buf,
+  int Read(scoped_refptr<net::IOBuffer> buf,
            int buf_len,
            net::CompletionOnceCallback callback) override;
   int64_t GetLength(GetLengthCallback callback) override;
@@ -63,7 +63,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamReader
   using SnapshotCallback = FileSystemOperationRunner::SnapshotFileCallback;
 
   int CreateSnapshot(SnapshotCallback callback);
-  void DidCreateSnapshotForRead(net::IOBuffer* read_buf,
+  void DidCreateSnapshotForRead(scoped_refptr<net::IOBuffer> read_buf,
                                 int read_len,
                                 net::CompletionOnceCallback callback,
                                 base::File::Error file_error,

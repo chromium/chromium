@@ -325,7 +325,7 @@ class DiversionFileManager::Worker : public storage::FileStreamReader,
   ~Worker() override;
 
   // storage::FileStreamReader overrides.
-  int Read(net::IOBuffer* buf,
+  int Read(scoped_refptr<net::IOBuffer> buf,
            int buf_len,
            net::CompletionOnceCallback callback) override;
   int64_t GetLength(GetLengthCallback callback) override;
@@ -367,12 +367,12 @@ DiversionFileManager::Worker::~Worker() {
   entry_->OnWorkerDestroyed();
 }
 
-int DiversionFileManager::Worker::Read(net::IOBuffer* buf,
+int DiversionFileManager::Worker::Read(scoped_refptr<net::IOBuffer> buf,
                                        int buf_len,
                                        net::CompletionOnceCallback callback) {
   CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
   CHECK_EQ(role_, Role::kReader);
-  ReadOrWrite(buf, buf_len, std::move(callback));
+  ReadOrWrite(buf.get(), buf_len, std::move(callback));
   return net::ERR_IO_PENDING;
 }
 
