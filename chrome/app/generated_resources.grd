@@ -1527,8 +1527,8 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_APP_MENU_SEARCH_TAB_GROUPS_HEADER" desc="Section header for tab group matches in the App Menu search results.">
           Tab groups
         </message>
-        <message name="IDS_APP_MENU_TOOLS_AND_ACTIONS_HEADER" desc="Header title for the Tools and Actions section in the main App Menu">
-          Tools and Actions
+        <message name="IDS_APP_MENU_TOOLS_AND_ACTIONS_HEADER" desc="Header title for the Tools and actions section in the main App Menu">
+          Tools and actions
         </message>
         <message name="IDS_APP_MENU_INCOGNITO" desc="Label for the Incognito block button in the main App Menu">
           Incognito

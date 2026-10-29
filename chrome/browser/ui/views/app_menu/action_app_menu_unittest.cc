@@ -2723,7 +2723,7 @@ TEST_F(ActionAppMenuTest, HeaderAndMenuItemBorderLayout) {
             l10n_util::GetStringUTF16(IDS_AX_ROLE_HEADING));
   EXPECT_TRUE(root_titles[0]->GetViewAccessibility().GetIsEnabled());
 
-  // Second header ("Tools and Actions"):
+  // Second header ("Tools and actions"):
   // - Starts flush with the card (12dp horizontal insets, content start 12)
   // - Doubled top margin (16dp).
   EXPECT_EQ(root_titles[1]->GetParentMenuItem(), root);
