@@ -70,6 +70,11 @@ class PaintWorkletTest : public PageTestBase {
     return GetDocument().domWindow()->GetFrame()->ContentLayoutObject();
   }
 
+  bool HasPendingGenerator(PaintWorklet* paint_worklet, const String& name) {
+    return paint_worklet->pending_generator_registry_
+        ->HasPendingGeneratorForTesting(name);
+  }
+
   // Helper function used in GlobalScopeSelection test.
   void ExpectSwitchGlobalScope(bool expect_switch_within_frame,
                                size_t num_paint_calls,
@@ -204,8 +209,8 @@ TEST_F(PaintWorkletTest, NativeAndCustomProperties) {
       Vector<CSSSyntaxDefinition>(), true);
 
   CSSPaintImageGeneratorImpl* generator =
-      MakeGarbageCollected<CSSPaintImageGeneratorImpl>(paint_worklet_to_test,
-                                                       "foo");
+      MakeGarbageCollected<CSSPaintImageGeneratorImpl>(
+          nullptr, paint_worklet_to_test, "foo");
   EXPECT_NE(generator, nullptr);
   EXPECT_EQ(generator->NativeInvalidationProperties().size(), 3u);
   EXPECT_EQ(generator->CustomInvalidationProperties().size(), 2u);
@@ -546,10 +551,22 @@ TEST_F(PaintWorkletTest, GeneratorNotifiedAfterAllRegistrations) {
   EXPECT_TRUE(paint_worklet_to_test->GetDocumentDefinitionMap().at("foo"));
   EXPECT_FALSE(generator->IsImageGeneratorReady());
 
+  // Regression test for https://crbug.com/510186413: a generator created after
+  // main-thread registrations have populated the document definition map (but
+  // before off-thread finalization) is not ready yet and must still be
+  // registered to receive the ready notification.
+  MockObserver* late_observer = MakeGarbageCollected<MockObserver>();
+  CSSPaintImageGeneratorImpl* late_generator =
+      static_cast<CSSPaintImageGeneratorImpl*>(
+          CSSPaintImageGeneratorImpl::Create("foo", GetDocument(),
+                                             late_observer));
+  EXPECT_FALSE(late_generator->IsImageGeneratorReady());
+
   CSSPaintDefinition* definition = global_scopes[0]->FindDefinition("foo");
 
   // The cross thread check should cause the generator to fire
   EXPECT_CALL(*observer, PaintImageGeneratorReady).Times(1);
+  EXPECT_CALL(*late_observer, PaintImageGeneratorReady).Times(1);
 
   paint_worklet_to_test->RegisterMainThreadDocumentPaintDefinition(
       "foo", definition->NativeInvalidationProperties(),
@@ -559,6 +576,48 @@ TEST_F(PaintWorkletTest, GeneratorNotifiedAfterAllRegistrations) {
 
   EXPECT_TRUE(paint_worklet_to_test->GetDocumentDefinitionMap().at("foo"));
   EXPECT_TRUE(generator->IsImageGeneratorReady());
+  EXPECT_TRUE(late_generator->IsImageGeneratorReady());
+}
+
+TEST_F(PaintWorkletTest, InvalidatedDefinitionNotAddedAsPending) {
+  PaintWorklet* paint_worklet_to_test =
+      PaintWorklet::From(*GetFrame().GetDocument()->domWindow());
+  paint_worklet_to_test->ResetIsPaintOffThreadForTesting(true);
+
+  Vector<Persistent<PaintWorkletGlobalScope>> global_scopes;
+  for (wtf_size_t i = 0; i < PaintWorklet::kNumGlobalScopesPerThread; ++i) {
+    paint_worklet_to_test->AddGlobalScopeForTesting();
+    global_scopes.push_back(
+        PaintWorkletGlobalScopeProxy::From(
+            paint_worklet_to_test->GetGlobalScopesForTesting()[i])
+            ->global_scope());
+  }
+
+  String foo0 = R"JS(registerPaint('foo', class {
+        static get inputProperties() { return ['--foo0']; }
+        paint() {}
+      });)JS";
+  String foo1 = R"JS(registerPaint('foo', class {
+        static get inputProperties() { return ['--foo1']; }
+        paint() {}
+      });)JS";
+
+  ClassicScript::CreateUnspecifiedScript(foo0)->RunScriptOnScriptState(
+      global_scopes[0]->ScriptController()->GetScriptState());
+  ClassicScript::CreateUnspecifiedScript(foo1)->RunScriptOnScriptState(
+      global_scopes[1]->ScriptController()->GetScriptState());
+  ASSERT_FALSE(paint_worklet_to_test->GetDocumentDefinitionMap().at("foo"));
+
+  MockObserver* observer = MakeGarbageCollected<MockObserver>();
+  EXPECT_CALL(*observer, PaintImageGeneratorReady).Times(0);
+
+  CSSPaintImageGenerator* generator =
+      CSSPaintImageGeneratorImpl::Create("foo", GetDocument(), observer);
+  EXPECT_FALSE(generator->IsImageGeneratorReady());
+
+  // Verify the generator was not registered as pending for an already-invalid
+  // definition.
+  EXPECT_FALSE(HasPendingGenerator(paint_worklet_to_test, "foo"));
 }
 
 }  // namespace blink

@@ -29,7 +29,6 @@ class MODULES_EXPORT CSSPaintImageGeneratorImpl final
                                         Observer*);
 
   CSSPaintImageGeneratorImpl(Observer*, PaintWorklet*, const String&);
-  CSSPaintImageGeneratorImpl(PaintWorklet*, const String&);
   ~CSSPaintImageGeneratorImpl() override;
 
   // The |container_size| is without subpixel snapping.

@@ -31,6 +31,10 @@ class PaintWorkletPendingGeneratorRegistry
   void NotifyGeneratorReady(const String& name);
   void AddPendingGenerator(const String& name, CSSPaintImageGeneratorImpl*);
 
+  bool HasPendingGeneratorForTesting(const String& name) const {
+    return pending_generators_.Contains(name);
+  }
+
   void Trace(Visitor*) const;
 
  private:

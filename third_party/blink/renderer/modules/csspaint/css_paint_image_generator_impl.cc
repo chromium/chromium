@@ -37,23 +37,19 @@ CSSPaintImageGenerator* CSSPaintImageGeneratorImpl::Create(
   PaintWorklet* paint_worklet = PaintWorklet::From(*document.domWindow());
 
   DCHECK(paint_worklet);
-  CSSPaintImageGeneratorImpl* generator;
-  if (paint_worklet->GetDocumentDefinitionMap().Contains(name)) {
-    generator =
-        MakeGarbageCollected<CSSPaintImageGeneratorImpl>(paint_worklet, name);
-  } else {
-    generator = MakeGarbageCollected<CSSPaintImageGeneratorImpl>(
-        observer, paint_worklet, name);
-    paint_worklet->AddPendingGenerator(name, generator);
+  CSSPaintImageGeneratorImpl* generator =
+      MakeGarbageCollected<CSSPaintImageGeneratorImpl>(observer, paint_worklet,
+                                                       name);
+  if (!generator->IsImageGeneratorReady()) {
+    const auto& definition_map = paint_worklet->GetDocumentDefinitionMap();
+    auto it = definition_map.find(name);
+    if (it == definition_map.end() || it->value) {
+      paint_worklet->AddPendingGenerator(name, generator);
+    }
   }
 
   return generator;
 }
-
-CSSPaintImageGeneratorImpl::CSSPaintImageGeneratorImpl(
-    PaintWorklet* paint_worklet,
-    const String& name)
-    : CSSPaintImageGeneratorImpl(nullptr, paint_worklet, name) {}
 
 CSSPaintImageGeneratorImpl::CSSPaintImageGeneratorImpl(
     Observer* observer,
