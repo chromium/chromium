@@ -143,7 +143,6 @@ function_registration("api_registration") {
     "experimental_actor",
     "experimental_ai_data",
     "extension",
-    "login",
     "login_screen_storage",
     "login_state",
     "media_player_private",
@@ -158,7 +157,6 @@ function_registration("api_registration") {
   inputs = [
     "//chrome/browser/chromeos/extensions/accessibility_service_private/accessibility_service_private.h",
     "//chrome/browser/chromeos/extensions/info_private/info_private_api.h",
-    "//chrome/browser/chromeos/extensions/login_screen/login/login_api.h",
     "//chrome/browser/chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_api.h",
     "//chrome/browser/chromeos/extensions/login_screen/login_state/login_state_api.h",
     "//chrome/browser/ash/extensions/media_player_api.h",
