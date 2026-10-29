@@ -18,8 +18,6 @@
   (global-name "com.apple.audio.AudioComponentRegistrar")
   (global-name "com.apple.bsd.dirhelper")
   (global-name "com.apple.CARenderServer")
-  (global-name "com.apple.cfprefsd.agent")
-  (global-name "com.apple.cfprefsd.daemon")
   (global-name "com.apple.CoreServices.coreservicesd")
   (global-name "com.apple.coreservices.launchservicesd")
   (global-name "com.apple.cvmsServ")
