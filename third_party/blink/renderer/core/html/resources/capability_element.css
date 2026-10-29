@@ -77,14 +77,16 @@ permission::permission-icon, geolocation::permission-icon, install::permission-i
   margin-inline-start: 0px !important;
 }
 
-permission[displaymode="icon-only" i]::-internal-permission-text, geolocation[displaymode="icon-only" i]::-internal-permission-text, camera[displaymode="icon-only" i]::-internal-permission-text, microphone[displaymode="icon-only" i]::-internal-permission-text {
-  display: none !important;
-}
+@supports blink-feature(CapabilityElementIconOnlyMode) {
+  permission[displaymode="icon-only" i]::-internal-permission-text, geolocation[displaymode="icon-only" i]::-internal-permission-text, camera[displaymode="icon-only" i]::-internal-permission-text, microphone[displaymode="icon-only" i]::-internal-permission-text {
+    display: none !important;
+  }
 
-permission[displaymode="icon-only" i]::permission-icon, geolocation[displaymode="icon-only" i]::permission-icon, camera[displaymode="icon-only" i]::permission-icon, microphone[displaymode="icon-only" i]::permission-icon {
-  margin-inline-end: 0px !important;
-}
+  permission[displaymode="icon-only" i]::permission-icon, geolocation[displaymode="icon-only" i]::permission-icon, camera[displaymode="icon-only" i]::permission-icon, microphone[displaymode="icon-only" i]::permission-icon {
+    margin-inline-end: 0px !important;
+  }
 
-permission[displaymode="icon-only" i], geolocation[displaymode="icon-only" i], camera[displaymode="icon-only" i], microphone[displaymode="icon-only" i] {
-  padding: 8px;
+  permission[displaymode="icon-only" i], geolocation[displaymode="icon-only" i], camera[displaymode="icon-only" i], microphone[displaymode="icon-only" i] {
+    padding: 8px;
+  }
 }
