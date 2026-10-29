@@ -1,0 +1,106 @@
+This is a testharness.js-based test.
+Found 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] [SAFE] [setHTML] MathML <a> with href only (STANDARD)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [ShadowRoot.setHTML] MathML <a> with href only (STANDARD)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [parseHTML] MathML <a> with href only (STANDARD)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [setHTML] MathML <a> with href only (CASE_MIXED)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [ShadowRoot.setHTML] MathML <a> with href only (CASE_MIXED)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [parseHTML] MathML <a> with href only (CASE_MIXED)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [setHTML] MathML <a> with href only (TAB_ENTITY)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [ShadowRoot.setHTML] MathML <a> with href only (TAB_ENTITY)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [parseHTML] MathML <a> with href only (TAB_ENTITY)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [setHTML] MathML <a> with href only (NEWLINE_ENTITY)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [ShadowRoot.setHTML] MathML <a> with href only (NEWLINE_ENTITY)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [parseHTML] MathML <a> with href only (NEWLINE_ENTITY)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [setHTML] MathML <a> with href only (COLON_ENTITY)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [ShadowRoot.setHTML] MathML <a> with href only (COLON_ENTITY)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [parseHTML] MathML <a> with href only (COLON_ENTITY)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [setHTML] MathML <a> with href only (LEADING_WHITESPACE)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [ShadowRoot.setHTML] MathML <a> with href only (LEADING_WHITESPACE)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [parseHTML] MathML <a> with href only (LEADING_WHITESPACE)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [setHTML] MathML <a> with href only (TAB_RAW)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [ShadowRoot.setHTML] MathML <a> with href only (TAB_RAW)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [parseHTML] MathML <a> with href only (TAB_RAW)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [setHTML] MathML <a> with href only (NEWLINE_RAW)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [ShadowRoot.setHTML] MathML <a> with href only (NEWLINE_RAW)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [parseHTML] MathML <a> with href only (NEWLINE_RAW)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [setHTML] MathML <a> with xlink:href only (STANDARD)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [ShadowRoot.setHTML] MathML <a> with xlink:href only (STANDARD)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [parseHTML] MathML <a> with xlink:href only (STANDARD)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [setHTML] MathML <a> with both href (javascript:) and xlink:href (safe) (STANDARD)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [ShadowRoot.setHTML] MathML <a> with both href (javascript:) and xlink:href (safe) (STANDARD)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [parseHTML] MathML <a> with both href (javascript:) and xlink:href (safe) (STANDARD)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [setHTML] MathML <a> with both href (javascript:) and xlink:href (safe) (CASE_MIXED)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [ShadowRoot.setHTML] MathML <a> with both href (javascript:) and xlink:href (safe) (CASE_MIXED)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [parseHTML] MathML <a> with both href (javascript:) and xlink:href (safe) (CASE_MIXED)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [setHTML] MathML <a> with both href (javascript:) and xlink:href (safe) (TAB_ENTITY)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [ShadowRoot.setHTML] MathML <a> with both href (javascript:) and xlink:href (safe) (TAB_ENTITY)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [parseHTML] MathML <a> with both href (javascript:) and xlink:href (safe) (TAB_ENTITY)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [setHTML] MathML <a> with both href (javascript:) and xlink:href (safe) (NEWLINE_ENTITY)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [ShadowRoot.setHTML] MathML <a> with both href (javascript:) and xlink:href (safe) (NEWLINE_ENTITY)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [parseHTML] MathML <a> with both href (javascript:) and xlink:href (safe) (NEWLINE_ENTITY)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [setHTML] MathML <a> with both href (javascript:) and xlink:href (safe) (COLON_ENTITY)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [ShadowRoot.setHTML] MathML <a> with both href (javascript:) and xlink:href (safe) (COLON_ENTITY)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [parseHTML] MathML <a> with both href (javascript:) and xlink:href (safe) (COLON_ENTITY)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [setHTML] MathML <a> with both href (javascript:) and xlink:href (safe) (LEADING_WHITESPACE)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [ShadowRoot.setHTML] MathML <a> with both href (javascript:) and xlink:href (safe) (LEADING_WHITESPACE)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [parseHTML] MathML <a> with both href (javascript:) and xlink:href (safe) (LEADING_WHITESPACE)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [setHTML] MathML <a> with both href (javascript:) and xlink:href (safe) (TAB_RAW)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [ShadowRoot.setHTML] MathML <a> with both href (javascript:) and xlink:href (safe) (TAB_RAW)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [parseHTML] MathML <a> with both href (javascript:) and xlink:href (safe) (TAB_RAW)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [setHTML] MathML <a> with both href (javascript:) and xlink:href (safe) (NEWLINE_RAW)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [ShadowRoot.setHTML] MathML <a> with both href (javascript:) and xlink:href (safe) (NEWLINE_RAW)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+[FAIL] [SAFE] [parseHTML] MathML <a> with both href (javascript:) and xlink:href (safe) (NEWLINE_RAW)
+  assert_not_equals: Target link element must exist in sanitized DOM tree. got disallowed value null
+Harness: the test ran to completion.
+

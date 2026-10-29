@@ -1,0 +1,22 @@
+This is a testharness.js-based test.
+Found 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Element.setHTML [all] #0, "<math><a href="https://example.com" hreflang="en" type="text/html">MathML Link</a></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] ShadowRoot.setHTML [all] #0, "<math><a href="https://example.com" hreflang="en" type="text/html">MathML Link</a></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object ShadowRoot] / <math>. expected true got false
+[FAIL] Document.parseHTML [all] #0, "<math><a href="https://example.com" hreflang="en" type="text/html">MathML Link</a></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] Element.setHTML [safe] #0, "<math><a xlink:href="https://example.com">xlink Link</a></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] ShadowRoot.setHTML [safe] #0, "<math><a xlink:href="https://example.com">xlink Link</a></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object ShadowRoot] / <math>. expected true got false
+[FAIL] Document.parseHTML [safe] #0, "<math><a xlink:href="https://example.com">xlink Link</a></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] Element.setHTML [safe] #1, "<math><a href="https://example.com" download="file" ping="https://track.com" target="_blank">Restricted</a></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] ShadowRoot.setHTML [safe] #1, "<math><a href="https://example.com" download="file" ping="https://track.com" target="_blank">Restricted</a></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object ShadowRoot] / <math>. expected true got false
+[FAIL] Document.parseHTML [safe] #1, "<math><a href="https://example.com" download="file" ping="https://track.com" target="_blank">Restricted</a></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+Harness: the test ran to completion.
+
