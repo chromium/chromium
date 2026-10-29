@@ -55,7 +55,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) MojoHostResolverImpl {
  private:
   class Job;
 
-  // Removes |job| from the set of pending jobs.
+  // Removes `job` from the set of pending jobs and destroys it. Safe to call
+  // re-entrantly for other Jobs, including during destruction of a Job.
   void DeleteJob(std::list<Job>::iterator job);
 
   // Resolver for resolving incoming requests. Not owned.

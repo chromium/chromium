@@ -49,8 +49,8 @@ class MojoHostResolverImpl::Job {
   void OnMojoDisconnect();
 
   raw_ptr<MojoHostResolverImpl> resolver_service_;
-  // This Job's iterator in |resolver_service_|, so the Job may be removed on
-  // completion.
+  // This Job's iterator in `resolver_service_`'s list of pending jobs, so the
+  // Job may be removed on completion.
   std::list<Job>::iterator iter_;
   mojo::Remote<proxy_resolver::mojom::HostResolverRequestClient> client_;
   const std::string hostname_;
@@ -64,6 +64,12 @@ MojoHostResolverImpl::MojoHostResolverImpl(net::HostResolver* resolver,
 
 MojoHostResolverImpl::~MojoHostResolverImpl() {
   DCHECK(thread_checker_.CalledOnValidThread());
+  // Destroy jobs one at a time, rather than letting `pending_jobs_` destroy
+  // itself, since destroying a Job may synchronously complete other Jobs,
+  // which then call DeleteJob() on themselves.
+  while (!pending_jobs_.empty()) {
+    DeleteJob(pending_jobs_.begin());
+  }
 }
 
 void MojoHostResolverImpl::Resolve(
@@ -84,7 +90,10 @@ void MojoHostResolverImpl::Resolve(
 
 void MojoHostResolverImpl::DeleteJob(std::list<Job>::iterator job) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  pending_jobs_.erase(job);
+  // Splice `job` out of `pending_jobs_` before destroying it, since destroying
+  // a Job may synchronously complete other Jobs, re-entering DeleteJob().
+  std::list<Job> job_to_delete;
+  job_to_delete.splice(job_to_delete.begin(), pending_jobs_, job);
 }
 
 MojoHostResolverImpl::Job::Job(

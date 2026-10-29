@@ -5,12 +5,15 @@
 #include "services/network/mojo_host_resolver_impl.h"
 
 #include <memory>
+#include <optional>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -41,7 +44,7 @@ class TestRequestClient
   explicit TestRequestClient(
       mojo::PendingReceiver<proxy_resolver::mojom::HostResolverRequestClient>
           receiver)
-      : done_(false), receiver_(this, std::move(receiver)) {
+      : receiver_(this, std::move(receiver)) {
     receiver_.set_disconnect_handler(base::BindOnce(
         &TestRequestClient::OnMojoDisconnect, base::Unretained(this)));
   }
@@ -60,7 +63,8 @@ class TestRequestClient
   // Mojo disconnect handler.
   void OnMojoDisconnect();
 
-  bool done_;
+  bool done_ = false;
+  bool had_connection_error_ = false;
   base::OnceClosure run_loop_quit_closure_;
   base::OnceClosure connection_error_quit_closure_;
 
@@ -78,6 +82,9 @@ void TestRequestClient::WaitForResult() {
 }
 
 void TestRequestClient::WaitForConnectionError() {
+  if (had_connection_error_) {
+    return;
+  }
   base::RunLoop run_loop;
   connection_error_quit_closure_ = run_loop.QuitClosure();
   run_loop.Run();
@@ -96,9 +103,98 @@ void TestRequestClient::ReportResult(
 }
 
 void TestRequestClient::OnMojoDisconnect() {
+  had_connection_error_ = true;
   if (!connection_error_quit_closure_.is_null())
     std::move(connection_error_quit_closure_).Run();
 }
+
+// MockHostResolver that can run a callback when a request is destroyed, before
+// the underlying request is destroyed. Used to simulate destroying one request
+// synchronously completing another, which the network stack can do (e.g., when
+// tearing down a shared DNS-over-HTTPS session).
+class DestructionHookHostResolver : public net::MockHostResolver {
+ public:
+  DestructionHookHostResolver() = default;
+  ~DestructionHookHostResolver() override = default;
+
+  // `hook` will be invoked when the next request for `host` is destroyed, just
+  // before the underlying request is destroyed.
+  void set_destruction_hook(const std::string& host, base::OnceClosure hook) {
+    destruction_hook_host_ = host;
+    destruction_hook_ = std::move(hook);
+  }
+
+  // net::MockHostResolver implementation:
+  using net::MockHostResolver::CreateRequest;
+  std::unique_ptr<ResolveHostRequest> CreateRequest(
+      const net::HostPortPair& host,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      net::handles::NetworkHandle target_network,
+      const net::NetLogWithSource& net_log,
+      const std::optional<ResolveHostParameters>& optional_parameters)
+      override {
+    return std::make_unique<RequestWrapper>(
+        this, host.host(),
+        net::MockHostResolver::CreateRequest(host, network_anonymization_key,
+                                             target_network, net_log,
+                                             optional_parameters));
+  }
+
+ private:
+  class RequestWrapper : public ResolveHostRequest {
+   public:
+    RequestWrapper(DestructionHookHostResolver* resolver,
+                   const std::string& host,
+                   std::unique_ptr<ResolveHostRequest> request)
+        : resolver_(resolver), host_(host), request_(std::move(request)) {}
+
+    ~RequestWrapper() override {
+      if (resolver_->destruction_hook_ &&
+          resolver_->destruction_hook_host_ == host_) {
+        std::move(resolver_->destruction_hook_).Run();
+      }
+    }
+
+    int Start(net::CompletionOnceCallback callback) override {
+      return request_->Start(std::move(callback));
+    }
+    const net::AddressList& GetAddressResults() const override {
+      return request_->GetAddressResults();
+    }
+    base::span<const net::HostResolverEndpointResult> GetEndpointResults()
+        const override {
+      return request_->GetEndpointResults();
+    }
+    base::span<const std::string> GetTextResults() const override {
+      return request_->GetTextResults();
+    }
+    base::span<const net::HostPortPair> GetHostnameResults() const override {
+      return request_->GetHostnameResults();
+    }
+    const std::set<std::string>& GetDnsAliasResults() const override {
+      return request_->GetDnsAliasResults();
+    }
+    net::ResolveErrorInfo GetResolveErrorInfo() const override {
+      return request_->GetResolveErrorInfo();
+    }
+    const std::optional<net::HostCache::EntryStaleness>& GetStaleInfo()
+        const override {
+      return request_->GetStaleInfo();
+    }
+    std::optional<net::ResolutionDetails> GetResolutionDetails()
+        const override {
+      return request_->GetResolutionDetails();
+    }
+
+   private:
+    const raw_ptr<DestructionHookHostResolver> resolver_;
+    const std::string host_;
+    const std::unique_ptr<ResolveHostRequest> request_;
+  };
+
+  std::string destruction_hook_host_;
+  base::OnceClosure destruction_hook_;
+};
 
 }  // namespace
 
@@ -136,7 +232,7 @@ class MojoHostResolverImplTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  net::MockHostResolver mock_host_resolver_;
+  DestructionHookHostResolver mock_host_resolver_;
   std::unique_ptr<MojoHostResolverImpl> resolver_service_;
 };
 
@@ -285,6 +381,110 @@ TEST_F(MojoHostResolverImplTest, DestroyClient) {
 
   mock_host_resolver_.ResolveAllPending();
   base::RunLoop().RunUntilIdle();
+}
+
+// Regression test for a use-after-free when destroying the
+// MojoHostResolverImpl. Destroying the MojoHostResolverImpl destroys its
+// pending Jobs, which cancels their HostResolver requests. In the real network
+// stack, cancelling one request can synchronously complete another (e.g., when
+// they share a DNS-over-HTTPS session), which results in the completed Job
+// deleting itself while the MojoHostResolverImpl is in the middle of deleting
+// Jobs.
+TEST_F(MojoHostResolverImplTest,
+       DestroyServiceWithJobDestructionCompletingOtherJob) {
+  mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient>
+      client1_remote;
+  TestRequestClient client1(client1_remote.InitWithNewPipeAndPassReceiver());
+  mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient>
+      client2_remote;
+  TestRequestClient client2(client2_remote.InitWithNewPipeAndPassReceiver());
+
+  // Use on-demand mode, so requests don't complete until ResolveNow() is
+  // called.
+  mock_host_resolver_.set_ondemand_mode(true);
+
+  // Start two requests.
+  resolver_service_->Resolve("example.com", net::NetworkAnonymizationKey(),
+                             /*is_ex=*/false, std::move(client1_remote));
+  WaitForRequests(1);
+  const size_t request1_id = mock_host_resolver_.last_id();
+  resolver_service_->Resolve("chromium.org", net::NetworkAnonymizationKey(),
+                             /*is_ex=*/false, std::move(client2_remote));
+  WaitForRequests(2);
+
+  // Simulate the network stack behavior described above: when the request for
+  // "chromium.org" is cancelled, synchronously complete the "example.com"
+  // request. The mock resolver completes it successfully, using the rule set up
+  // in SetUp().
+  //
+  // MojoHostResolverImpl adds new Jobs to the front of its list of pending
+  // Jobs, and destroys Jobs from the front of that list, so the "chromium.org"
+  // Job is destroyed first.
+  mock_host_resolver_.set_destruction_hook(
+      "chromium.org",
+      base::BindOnce(&net::MockHostResolver::ResolveNow,
+                     base::Unretained(&mock_host_resolver_), request1_id));
+  resolver_service_.reset();
+
+  // The "example.com" request should have been completed successfully during
+  // destruction, rather than cancelled, due to the ResolveNow() call bound
+  // above. The destruction order is important for test validity, but the real
+  // point of the test is that there's no crash due to a UAF around destruction
+  // of the list.
+  client1.WaitForResult();
+  EXPECT_THAT(client1.error_, IsOk());
+  EXPECT_THAT(client1.results_, testing::ElementsAre(kExampleComAddress));
+
+  // The "chromium.org" request was cancelled, so its pipe should have been
+  // closed without a result.
+  client2.WaitForConnectionError();
+}
+
+// Similar to the above test, but the "chromium.org" Job is destroyed because
+// its client disconnected, rather than because the MojoHostResolverImpl was
+// destroyed. Cancelling its request synchronously completes the "example.com"
+// request, which results in the "example.com" Job being deleted while the
+// "chromium.org" Job is being deleted.
+TEST_F(MojoHostResolverImplTest,
+       DestroyClientWithJobDestructionCompletingOtherJob) {
+  mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient>
+      client1_remote;
+  TestRequestClient client1(client1_remote.InitWithNewPipeAndPassReceiver());
+  mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient>
+      client2_remote;
+  auto client2 = std::make_unique<TestRequestClient>(
+      client2_remote.InitWithNewPipeAndPassReceiver());
+
+  // Use on-demand mode, so requests don't complete until ResolveNow() is
+  // called.
+  mock_host_resolver_.set_ondemand_mode(true);
+
+  // Start two requests.
+  resolver_service_->Resolve("example.com", net::NetworkAnonymizationKey(),
+                             /*is_ex=*/false, std::move(client1_remote));
+  WaitForRequests(1);
+  const size_t request1_id = mock_host_resolver_.last_id();
+  resolver_service_->Resolve("chromium.org", net::NetworkAnonymizationKey(),
+                             /*is_ex=*/false, std::move(client2_remote));
+  WaitForRequests(2);
+
+  // When the request for "chromium.org" is cancelled, synchronously complete
+  // the "example.com" request. The mock resolver completes it successfully,
+  // using the rule set up in SetUp().
+  mock_host_resolver_.set_destruction_hook(
+      "chromium.org",
+      base::BindOnce(&net::MockHostResolver::ResolveNow,
+                     base::Unretained(&mock_host_resolver_), request1_id));
+
+  // Destroying the "chromium.org" client closes its pipe. When the
+  // MojoHostResolverImpl sees the pipe close, it destroys the corresponding
+  // Job, cancelling its request.
+  client2.reset();
+
+  client1.WaitForResult();
+  EXPECT_THAT(client1.error_, IsOk());
+  EXPECT_THAT(client1.results_, testing::ElementsAre(kExampleComAddress));
+  EXPECT_FALSE(resolver_service_->request_in_progress());
 }
 
 }  // namespace network
