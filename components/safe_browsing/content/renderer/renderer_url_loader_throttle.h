@@ -6,12 +6,10 @@
 #define COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_RENDERER_URL_LOADER_THROTTLE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
-#include "components/safe_browsing/core/common/safe_browsing_url_checker.mojom.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -65,21 +63,6 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
                            bool* defer) override;
   const char* NameForLoggingWillProcessResponse() override;
 
-  void OnCheckUrlResult(
-      bool proceed,
-      bool showed_interstitial);
-
-  void OnMojoDisconnect();
-
-  mojo::Remote<mojom::SafeBrowsingUrlChecker> url_checker_;
-
-  size_t pending_checks_ = 0;
-  bool blocked_ = false;
-
-  bool deferred_ = false;
-
-  GURL original_url_;
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Bind the pipe created in DetachFromCurrentSequence to the current
   // sequence.
@@ -98,8 +81,6 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
   std::string origin_extension_id_;
   bool initiated_from_content_script_ = false;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-  base::WeakPtrFactory<RendererURLLoaderThrottle> weak_factory_{this};
 };
 
 }  // namespace safe_browsing

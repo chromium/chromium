@@ -5,20 +5,13 @@
 #include "components/safe_browsing/content/renderer/renderer_url_loader_throttle.h"
 
 #include "base/check_op.h"
-#include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/strcat.h"
-#include "base/trace_event/trace_event.h"
-#include "components/safe_browsing/core/common/features.h"
-#include "components/safe_browsing/core/common/safebrowsing_constants.h"
-#include "components/safe_browsing/core/common/utils.h"
 #include "content/public/common/url_constants.h"
-#include "net/base/net_errors.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"  // nogncheck
@@ -47,13 +40,7 @@ RendererURLLoaderThrottle::RendererURLLoaderThrottle(
           std::move(extension_web_request_reporter)) {}
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-RendererURLLoaderThrottle::~RendererURLLoaderThrottle() {
-  if (deferred_) {
-    TRACE_EVENT_END("safe_browsing",
-                    /* Deferred */ perfetto::NamedTrack::FromPointer(
-                        "safe_browsing::RendererURLLoaderThrottle", this));
-  }
-}
+RendererURLLoaderThrottle::~RendererURLLoaderThrottle() = default;
 
 void RendererURLLoaderThrottle::DetachFromCurrentSequence() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -69,10 +56,6 @@ void RendererURLLoaderThrottle::DetachFromCurrentSequence() {
 void RendererURLLoaderThrottle::WillStartRequest(
     network::ResourceRequest* request,
     bool* defer) {
-  DCHECK_EQ(0u, pending_checks_);
-  DCHECK(!blocked_);
-  DCHECK(!url_checker_);
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   MaybeSendExtensionWebRequestData(request);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -94,10 +77,6 @@ void RendererURLLoaderThrottle::WillRedirectRequest(
     const network::mojom::URLResponseHead& /* response_head */,
     bool* /* defer */,
     network::HttpRequestHeadersUpdateParams* headers_update_params) {
-  // If |blocked_| is true, the resource load has been canceled and there
-  // shouldn't be such a notification.
-  DCHECK(!blocked_);
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   BindExtensionWebRequestReporterPipeIfDetached();
   // Send redirected request data to the browser if request originated from an
@@ -112,97 +91,19 @@ void RendererURLLoaderThrottle::WillRedirectRequest(
             : mojom::WebRequestContactInitiatorType::kExtension);
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-  if (!url_checker_) {
-    DCHECK_EQ(0u, pending_checks_);
-    return;
-  }
-
-  pending_checks_++;
-  url_checker_->CheckUrl(
-      redirect_info->new_url, redirect_info->new_method,
-      base::BindOnce(&RendererURLLoaderThrottle::OnCheckUrlResult,
-                     base::Unretained(this)));
 }
 
 void RendererURLLoaderThrottle::WillProcessResponse(
     const GURL& response_url,
     network::mojom::URLResponseHead* response_head,
     bool* defer) {
-  // If |blocked_| is true, the resource load has been canceled and there
-  // shouldn't be such a notification.
-  DCHECK(!blocked_);
-
-  bool check_completed = (pending_checks_ == 0);
   base::UmaHistogramBoolean(
       "SafeBrowsing.RendererThrottle.IsCheckCompletedOnProcessResponse",
-      check_completed);
-
-  if (check_completed) {
-    return;
-  }
-
-  DCHECK(!deferred_);
-  deferred_ = true;
-  *defer = true;
-  TRACE_EVENT_BEGIN("safe_browsing", "Deferred",
-                    perfetto::NamedTrack::FromPointer(
-                        "safe_browsing::RendererURLLoaderThrottle", this),
-                    "original_url", original_url_.spec());
+      /*sample=*/true);
 }
 
 const char* RendererURLLoaderThrottle::NameForLoggingWillProcessResponse() {
   return "SafeBrowsingRendererThrottle";
-}
-
-void RendererURLLoaderThrottle::OnCheckUrlResult(
-    bool proceed,
-    bool showed_interstitial) {
-  // When this is the callback of safe_browsing_->CreateCheckerAndCheck(), it is
-  // possible that we get here after a check with |url_checker_| has completed
-  // and blocked the request.
-  if (blocked_ || !url_checker_)
-    return;
-
-  DCHECK_LT(0u, pending_checks_);
-  pending_checks_--;
-
-  if (proceed) {
-    if (pending_checks_ == 0 && deferred_) {
-      deferred_ = false;
-      TRACE_EVENT_END("safe_browsing",
-                      /* Deferred */ perfetto::NamedTrack::FromPointer(
-                          "safe_browsing::RendererURLLoaderThrottle", this));
-      delegate_->Resume();
-    }
-  } else {
-    blocked_ = true;
-
-    url_checker_.reset();
-    pending_checks_ = 0;
-    // If we didn't show an interstitial, we cancel with ERR_ABORTED to not show
-    // an error page either.
-    delegate_->CancelWithError(
-        showed_interstitial ? kNetErrorCodeForSafeBrowsing : net::ERR_ABORTED,
-        kCustomCancelReasonForURLLoader);
-  }
-}
-
-void RendererURLLoaderThrottle::OnMojoDisconnect() {
-  DCHECK(!blocked_);
-
-  // If a service-side disconnect happens, treat all URLs as if they are safe.
-  url_checker_.reset();
-
-  pending_checks_ = 0;
-
-  if (deferred_) {
-    deferred_ = false;
-    TRACE_EVENT_END("safe_browsing",
-                    /* Deferred */ perfetto::NamedTrack::FromPointer(
-                        "safe_browsing::RendererURLLoaderThrottle", this));
-    delegate_->Resume();
-  }
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
