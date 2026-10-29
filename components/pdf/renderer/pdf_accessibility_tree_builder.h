@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "components/pdf/renderer/pdf_accessibility_table_detector.h"
 #include "components/pdf/renderer/pdf_accessibility_tree.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/page_character_index.h"
@@ -65,7 +66,7 @@ class PdfAccessibilityTreeBuilder {
   }
   ui::AXNodeData* page_node() const { return page_node_; }
   const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs() const {
-    return *text_runs_;
+    return split_text_runs_.empty() ? *text_runs_ : split_text_runs_;
   }
   const std::vector<chrome_pdf::AccessibilityCharInfo>& chars() const {
     return *chars_;
@@ -133,6 +134,18 @@ class PdfAccessibilityTreeBuilder {
   void NameHeadingsFromContents();
 
   const bool mark_headings_using_heuristic_;
+
+  // Each member through `text_run_start_indices_` is initialized from the ones
+  // before it, so keep them in this order.
+  //
+  // Whether `BuildPageTree()` uses the structure tree instead of heuristics.
+  const bool use_structure_mode_;
+  // Only extracted in heuristic mode, since the structure tree refers to text
+  // runs that must not change.
+  const std::vector<RulingLine> ruling_lines_;
+  // Text runs split at vertical lines in `ruling_lines_`, such as table column
+  // dividers. Used in place of `text_runs_` if not empty.
+  const std::vector<chrome_pdf::AccessibilityTextRunInfo> split_text_runs_;
   const std::vector<uint32_t> text_run_start_indices_;
   const raw_ref<const std::vector<chrome_pdf::AccessibilityTextRunInfo>>
       text_runs_;

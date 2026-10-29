@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
+#include "components/pdf/renderer/pdf_accessibility_table_detector.h"
 #include "components/pdf/renderer/pdf_accessibility_tree_builder_heuristic.h"
 #include "components/pdf/renderer/pdf_accessibility_tree_builder_structure.h"
 #include "components/strings/grit/components_strings.h"
@@ -174,6 +175,23 @@ void AppendStaticTextDescendants(
   }
 }
 
+bool ShouldUseStructureMode(
+    const chrome_pdf::AccessibilityStructureElement* page_structure_tree) {
+  return page_structure_tree &&
+         pdf::PdfAccessibilityTreeBuilderStructure::StructureTreeHasContent(
+             page_structure_tree);
+}
+
+std::vector<pdf::RulingLine> GetRulingLines(
+    const chrome_pdf::AccessibilityPageObjects& page_objects,
+    bool use_structure_mode) {
+  return features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
+                 !use_structure_mode
+             ? pdf::ExtractRulingLines(page_objects.line_segments,
+                                       page_objects.filled_rects)
+             : std::vector<pdf::RulingLine>();
+}
+
 }  // namespace
 
 namespace pdf {
@@ -194,7 +212,16 @@ PdfAccessibilityTreeBuilder::PdfAccessibilityTreeBuilder(
     std::map<int32_t, PdfAccessibilityTree::AnnotationInfo>*
         node_id_to_annotation_info)
     : mark_headings_using_heuristic_(mark_headings_using_heuristic),
-      text_run_start_indices_(GetTextRunStartIndices(text_runs)),
+      // Use structure tree mode if a structure tree exists. Structure tree mode
+      // preserves semantic structure from the PDF's tags and inserts any
+      // unassociated text runs as additional content. Fall back to heuristic
+      // mode only when no structure tree is available.
+      use_structure_mode_(ShouldUseStructureMode(page_structure_tree)),
+      ruling_lines_(GetRulingLines(page_objects, use_structure_mode_)),
+      split_text_runs_(
+          SplitTextRunsAtVerticalDividers(ruling_lines_, chars, text_runs)),
+      text_run_start_indices_(GetTextRunStartIndices(
+          split_text_runs_.empty() ? text_runs : split_text_runs_)),
       text_runs_(text_runs),
       chars_(chars),
       links_(page_objects.links),
@@ -226,19 +253,10 @@ PdfAccessibilityTreeBuilder::PdfAccessibilityTreeBuilder(
 PdfAccessibilityTreeBuilder::~PdfAccessibilityTreeBuilder() = default;
 
 void PdfAccessibilityTreeBuilder::BuildPageTree() {
-  // Use structure tree mode if a structure tree exists. Structure tree mode
-  // preserves semantic structure from the PDF's tags and inserts any
-  // unassociated text runs as additional content. Fall back to heuristic mode
-  // only when no structure tree is available.
-  bool use_structure_mode =
-      page_structure_tree_ &&
-      PdfAccessibilityTreeBuilderStructure::StructureTreeHasContent(
-          page_structure_tree_);
-
   VLOG(1) << "PDF page " << page_index_ << ": "
-          << (use_structure_mode ? "structure tree" : "heuristic") << " mode";
+          << (use_structure_mode_ ? "structure tree" : "heuristic") << " mode";
 
-  if (use_structure_mode) {
+  if (use_structure_mode_) {
     PdfAccessibilityTreeBuilderStructure(*this, page_structure_tree_)
         .BuildPageTree();
   } else {

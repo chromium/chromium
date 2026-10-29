@@ -7191,6 +7191,57 @@ TEST_F(PdfAccessibilityTreeTest,
                 ax::mojom::StringAttribute::kName));
 }
 
+class PdfAccessibilityTreeSplitTextRunsTest
+    : public PdfAccessibilityTreeTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  bool HeuristicEnhancementsEnabled() const { return GetParam(); }
+
+  // Returns the names of the inline text boxes under `node`, in tree order.
+  static std::vector<std::string> GetInlineTextBoxNames(
+      const ui::AXNode* node) {
+    std::vector<std::string> names;
+    if (node->GetRole() == ax::mojom::Role::kInlineTextBox) {
+      names.push_back(
+          node->GetStringAttribute(ax::mojom::StringAttribute::kName));
+    }
+    for (size_t i = 0; i < node->GetChildCount(); ++i) {
+      std::ranges::move(GetInlineTextBoxNames(node->GetChildAtIndex(i)),
+                        std::back_inserter(names));
+    }
+    return names;
+  }
+};
+
+TEST_P(PdfAccessibilityTreeSplitTextRunsTest, SplitsAtVerticalDivider) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureStates(
+      {{::features::kPdfAccessibilityHeuristicEnhancements,
+        HeuristicEnhancementsEnabled()},
+       {chrome_pdf::features::kPdfTags, false}});
+
+  // Each character is 10 px wide, so the space between "Left" and "Right"
+  // spans x = 140 to 150. A vertical line runs through it.
+  page_objects_.line_segments = {
+      {gfx::PointF(145.0f, 95.0f), gfx::PointF(145.0f, 117.0f)},
+  };
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"Left Right"}, {gfx::RectF(100.0f, 100.0f, 100.0f, 12.0f)});
+  ASSERT_NE(nullptr, page);
+
+  if (HeuristicEnhancementsEnabled()) {
+    EXPECT_THAT(GetInlineTextBoxNames(page),
+                testing::ElementsAre("Left ", "Right"));
+  } else {
+    EXPECT_THAT(GetInlineTextBoxNames(page),
+                testing::ElementsAre("Left Right"));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PdfAccessibilityTreeSplitTextRunsTest,
+                         testing::Bool());
+
 class PdfAccessibilityTreeHeaderFooterRepetitionTest
     : public PdfAccessibilityTreeTest {
  protected:
