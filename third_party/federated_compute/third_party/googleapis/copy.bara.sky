@@ -1,0 +1,19 @@
+load("//crowbar", "crowbar_workflow")
+
+# In order not to check out the whole googleapis repository (which is huge), we
+# check out only few required files, and strip them with features not supported
+# by Chrome (that are not needed by FCP anyway).
+crowbar_workflow(
+    origin_files = glob([
+        "google/longrunning/operations.proto",
+        "google/type/date.proto",
+        "google/type/datetime.proto",
+        "google/type/timeofday.proto",
+        "google/rpc/status.proto",
+        "google/rpc/code.proto",
+        "LICENSE",
+    ]),
+    transformations = [
+        patch.apply(patches = ["patches/000-remove-unused-rpc.patch"]),
+    ],
+)

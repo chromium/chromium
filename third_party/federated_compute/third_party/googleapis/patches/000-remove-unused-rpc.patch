@@ -1,7 +1,14 @@
-diff --git a/google/longrunning/operations.proto b/google/longrunning/operations.proto
+Remove RPC-related definitions from operations.proto.
+
+They cause build issues in Chrome. Drops the Operations service, the
+operation_info extension, ListOperationsResponse and their imports.
+
+Chromium: 449f1c4f00b1c (b:521418893). Not upstream.
+
+diff --git a/src/google/longrunning/operations.proto b/src/google/longrunning/operations.proto
 index 63df207d258db..84e758d5a9209 100644
---- a/google/longrunning/operations.proto
-+++ b/google/longrunning/operations.proto
+--- a/src/google/longrunning/operations.proto
++++ b/src/google/longrunning/operations.proto
 @@ -16,13 +16,9 @@ syntax = "proto3";
  
  package google.longrunning;

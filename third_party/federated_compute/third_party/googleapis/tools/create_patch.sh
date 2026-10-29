@@ -6,4 +6,6 @@
 set -e
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-git diff --relative=third_party/federated_compute/third_party/googleapis/src > "${SCRIPT_DIR}/../patches/999-new_patch.patch"
+git diff --relative=third_party/federated_compute/third_party/googleapis \
+  --src-prefix=a/ --dst-prefix=b/ \
+  -- "${SCRIPT_DIR}/../src" > "${SCRIPT_DIR}/../patches/999-new_patch.patch"

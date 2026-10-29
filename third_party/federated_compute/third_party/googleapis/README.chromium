@@ -20,3 +20,8 @@ Local Modifications:
   Removes RPC-related definitions that cause build issues in Chrome.  The
   patch can be removed when Chrome builds without it. (Note: be mindful of
   compile time, it might increase it.)
+
+Update instructions:
+Update commit hashes in crowbar.txtpb, then run from
+this directory:
+crowbar build --no-dry-run ./
