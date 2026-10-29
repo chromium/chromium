@@ -1173,13 +1173,6 @@ TEST_F(ReadAloudServiceTest, DistillPageAndArticleFailure) {
       dom_distiller::DistillationParseResult::kContentTooShort, 1);
 }
 
-TEST_F(ReadAloudServiceTest, OnArticleUpdated) {
-  dom_distiller::ArticleDistillationUpdate update({}, false, false);
-  // Should be a completely safe no-op.
-  auto* delegate = static_cast<dom_distiller::ViewRequestDelegate*>(service());
-  delegate->OnArticleUpdated(update);
-}
-
 TEST_F(ReadAloudServiceTest, ShutdownClearsHandle) {
   NavigateAndCommit(GURL("https://www.example.com/article"));
 

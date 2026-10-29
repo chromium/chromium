@@ -58,10 +58,6 @@ class ReaderModeDistillerViewer
       std::unique_ptr<dom_distiller::DistilledArticleProto> distilled_article,
       dom_distiller::DistillationParseResult result);
 
-  // Called by the distiller when article is updated.
-  void OnArticleDistillationUpdated(
-      const dom_distiller::ArticleDistillationUpdate& article_update);
-
   // The url of the distilled page.
   const GURL url_;
   // CSP nonce for the viewer's inline script. The viewer document is

@@ -83,12 +83,10 @@ class FakeDistillerService : public DistillerService {
   ~FakeDistillerService() override = default;
 
   // Does not perform any action on page distillation.
-  void DistillPage(
-      const GURL& url,
-      std::unique_ptr<dom_distiller::DistillerPage> distiller_page,
-      dom_distiller::Distiller::DistillationFinishedCallback finished_cb,
-      const dom_distiller::Distiller::DistillationUpdateCallback& update_cb)
-      override {}
+  void DistillPage(const GURL& url,
+                   std::unique_ptr<dom_distiller::DistillerPage> distiller_page,
+                   dom_distiller::Distiller::DistillationFinishedCallback
+                       finished_cb) override {}
 };
 
 class ReaderModeTabHelperTest : public ReaderModeTest {

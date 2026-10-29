@@ -23,13 +23,12 @@ DistillerService::~DistillerService() = default;
 void DistillerService::DistillPage(
     const GURL& url,
     std::unique_ptr<dom_distiller::DistillerPage> distiller_page,
-    dom_distiller::Distiller::DistillationFinishedCallback finished_cb,
-    const dom_distiller::Distiller::DistillationUpdateCallback& update_cb) {
+    dom_distiller::Distiller::DistillationFinishedCallback finished_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (distiller_) {
     // There is already a distillation in progress, enqueue the request.
     pending_requests_.emplace_back(url, std::move(distiller_page),
-                                   std::move(finished_cb), update_cb);
+                                   std::move(finished_cb));
     return;
   }
 
@@ -38,8 +37,7 @@ void DistillerService::DistillPage(
       url, std::move(distiller_page),
       std::move(finished_cb)
           .Then(base::BindOnce(&DistillerService::DistillationFinished,
-                               weak_ptr_factory_.GetWeakPtr())),
-      update_cb);
+                               weak_ptr_factory_.GetWeakPtr())));
 }
 
 dom_distiller::DistilledPagePrefs* DistillerService::GetDistilledPagePrefs() {
@@ -77,19 +75,17 @@ void DistillerService::ProcessNextDistillation() {
     pending_requests_.pop_front();
 
     DistillPage(request.url, std::move(request.distiller_page),
-                std::move(request.finished_cb), std::move(request.update_cb));
+                std::move(request.finished_cb));
   }
 }
 
 DistillerService::Request::Request(
     GURL url,
     std::unique_ptr<dom_distiller::DistillerPage> distiller_page,
-    dom_distiller::Distiller::DistillationFinishedCallback finished_cb,
-    dom_distiller::Distiller::DistillationUpdateCallback update_cb)
+    dom_distiller::Distiller::DistillationFinishedCallback finished_cb)
     : url(std::move(url)),
       distiller_page(std::move(distiller_page)),
-      finished_cb(std::move(finished_cb)),
-      update_cb(std::move(update_cb)) {}
+      finished_cb(std::move(finished_cb)) {}
 
 DistillerService::Request::Request(Request&&) = default;
 

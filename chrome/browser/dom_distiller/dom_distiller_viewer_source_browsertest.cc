@@ -325,21 +325,16 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, EarlyTemplateLoad) {
   EXPECT_THAT(result, Not(HasSubstr("content")));
 
   // Finish distillation and make sure the spinner has been replaced by text.
-  std::vector<scoped_refptr<ArticleDistillationUpdate::RefCountedPageProto>>
-      update_pages;
-  std::unique_ptr<DistilledArticleProto> article(new DistilledArticleProto());
+  auto article = std::make_unique<DistilledArticleProto>();
+  DistilledPageProto* page = article->add_pages();
+  page->set_url("http://foo.html");
+  page->set_html("<div>content</div>");
 
-  scoped_refptr<base::RefCountedData<DistilledPageProto>> page_proto =
-      new base::RefCountedData<DistilledPageProto>();
-  page_proto->data.set_url("http://foo.html");
-  page_proto->data.set_html("<div>content</div>");
-  update_pages.push_back(page_proto);
-  *(article->add_pages()) = page_proto->data;
-
-  ArticleDistillationUpdate update(update_pages, true, false);
-  distiller->RunDistillerUpdateCallback(update);
-
-  EXPECT_TRUE(content::WaitForLoadStop(contents));
+  distiller->RunDistillerCallback(std::move(article));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(contents, kGetLoadIndicatorClassName)
+               .ExtractString() == "hidden";
+  }));
 
   result = content::EvalJs(contents, kGetContent).ExtractString();
   EXPECT_THAT(result, HasSubstr("content"));
@@ -395,97 +390,6 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest,
   EXPECT_FALSE(content::WaitForLoadStop(contents));
 
   EXPECT_EQ(false, content::EvalJs(contents, kTestDistillerObject));
-}
-
-IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, MultiPageArticle) {
-  expect_distillation_ = false;
-  expect_distiller_page_ = true;
-  dom_distiller::DomDistillerServiceFactory::GetInstance()
-      ->SetTestingFactoryAndUse(
-          browser()->GetProfile(),
-          base::BindRepeating(&DomDistillerViewerSourceBrowserTest::Build,
-                              base::Unretained(this)));
-
-  base::RunLoop distillation_done_loop;
-
-  FakeDistiller* distiller =
-      new FakeDistiller(false, distillation_done_loop.QuitClosure());
-  EXPECT_CALL(*distiller_factory_, CreateDistillerImpl())
-      .WillOnce(testing::Return(distiller));
-
-  // Setup observer to inspect the RenderViewHost after committed navigation.
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Navigate to a URL and wait for the distiller to flush contents to the page.
-  GURL url(dom_distiller::url_utils::GetDistillerViewUrlFromUrl(
-      kDomDistillerScheme, GURL("http://urlthatlooksvalid.com"), "Title"));
-  NavigateParams params(browser(), url, ui::PAGE_TRANSITION_TYPED);
-  Navigate(&params);
-  distillation_done_loop.Run();
-
-  // Fake a multi-page response from distiller.
-
-  std::vector<scoped_refptr<ArticleDistillationUpdate::RefCountedPageProto>>
-      update_pages;
-  std::unique_ptr<DistilledArticleProto> article(new DistilledArticleProto());
-
-  // Flush page 1.
-  {
-    scoped_refptr<base::RefCountedData<DistilledPageProto>> page_proto =
-        new base::RefCountedData<DistilledPageProto>();
-    page_proto->data.set_url("http://foobar.1.html");
-    page_proto->data.set_html("<div>Page 1 content</div>");
-    update_pages.push_back(page_proto);
-    *(article->add_pages()) = page_proto->data;
-
-    ArticleDistillationUpdate update(update_pages, true, false);
-    distiller->RunDistillerUpdateCallback(update);
-
-    // Wait for the page load to complete as the first page completes the root
-    // document.
-    EXPECT_TRUE(content::WaitForLoadStop(contents));
-
-    std::string result =
-        content::EvalJs(contents, kGetLoadIndicatorClassName).ExtractString();
-    EXPECT_EQ("visible", result);
-
-    result = content::EvalJs(contents, kGetContent).ExtractString();
-    EXPECT_THAT(result, HasSubstr("Page 1 content"));
-    EXPECT_THAT(result, Not(HasSubstr("Page 2 content")));
-  }
-
-  // Flush page 2.
-  {
-    scoped_refptr<base::RefCountedData<DistilledPageProto>> page_proto =
-        new base::RefCountedData<DistilledPageProto>();
-    page_proto->data.set_url("http://foobar.2.html");
-    page_proto->data.set_html("<div>Page 2 content</div>");
-    update_pages.push_back(page_proto);
-    *(article->add_pages()) = page_proto->data;
-
-    ArticleDistillationUpdate update(update_pages, false, false);
-    distiller->RunDistillerUpdateCallback(update);
-
-    std::string result =
-        content::EvalJs(contents, kGetLoadIndicatorClassName).ExtractString();
-    EXPECT_EQ("hidden", result);
-
-    result = content::EvalJs(contents, kGetContent).ExtractString();
-    EXPECT_THAT(result, HasSubstr("Page 1 content"));
-    EXPECT_THAT(result, HasSubstr("Page 2 content"));
-  }
-
-  // Complete the load.
-  distiller->RunDistillerCallback(std::move(article));
-  base::RunLoop().RunUntilIdle();
-
-  std::string result =
-      content::EvalJs(contents, kGetLoadIndicatorClassName).ExtractString();
-  EXPECT_EQ("hidden", result);
-  result = content::EvalJs(contents, kGetContent).ExtractString();
-  EXPECT_THAT(result, HasSubstr("Page 1 content"));
-  EXPECT_THAT(result, HasSubstr("Page 2 content"));
 }
 
 IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, PrefChange) {

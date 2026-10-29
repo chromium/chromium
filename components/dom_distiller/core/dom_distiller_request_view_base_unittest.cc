@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
-#include <vector>
 
-#include "components/dom_distiller/core/article_distillation_update.h"
 #include "components/dom_distiller/core/test_request_view_handle.h"
 #include "components/grit/components_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -183,48 +181,20 @@ TEST_F(DomDistillerRequestViewTest, TestContentNeverEmpty) {
     EXPECT_THAT(handle.GetJavaScriptBuffer(), Not(HasSubstr(valid_content)));
     handle.ClearJavaScriptBuffer();
   }
-
-  // Test empty string page update
-  {
-    std::vector<scoped_refptr<ArticleDistillationUpdate::RefCountedPageProto>>
-        pages;
-    scoped_refptr<base::RefCountedData<DistilledPageProto>> page_proto =
-        new base::RefCountedData<DistilledPageProto>();
-    page_proto->data.set_html("");
-    pages.push_back(page_proto);
-
-    std::unique_ptr<ArticleDistillationUpdate> article_update(
-        new ArticleDistillationUpdate(pages, false, false));
-
-    handle.OnArticleUpdated(*article_update);
-
-    EXPECT_THAT(handle.GetJavaScriptBuffer(), HasSubstr(no_content));
-    EXPECT_THAT(handle.GetJavaScriptBuffer(), Not(HasSubstr(valid_content)));
-    handle.ClearJavaScriptBuffer();
-  }
 }
 
 TEST_F(DomDistillerRequestViewTest, TestLoadingIndicator) {
-  const std::string no_content =
-      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_NO_DATA_CONTENT);
-  // Showing the indicator does mean passing 'false' as the parameter.
-  const std::string show_loader = "showLoadingIndicator(false);";
-
   TestRequestViewHandle handle(distilled_page_prefs_.get());
   handle.TakeViewerHandle(nullptr);
+  EXPECT_THAT(handle.GetJavaScriptBuffer(),
+              Not(HasSubstr("hideLoadingIndicator();")));
 
-  std::vector<scoped_refptr<ArticleDistillationUpdate::RefCountedPageProto>>
-      pages;
-  scoped_refptr<base::RefCountedData<DistilledPageProto>> page_proto =
-      new base::RefCountedData<DistilledPageProto>();
-  pages.push_back(page_proto);
+  DistilledArticleProto article_proto;
+  article_proto.add_pages();
+  handle.OnArticleReady(&article_proto);
 
-  std::unique_ptr<ArticleDistillationUpdate> article_update(
-      new ArticleDistillationUpdate(pages, true, false));
-
-  handle.OnArticleUpdated(*article_update);
-
-  EXPECT_THAT(handle.GetJavaScriptBuffer(), HasSubstr(show_loader));
+  EXPECT_THAT(handle.GetJavaScriptBuffer(),
+              HasSubstr("hideLoadingIndicator();"));
 }
 
 TEST_F(DomDistillerRequestViewTest, TestSetLinksEnabled) {

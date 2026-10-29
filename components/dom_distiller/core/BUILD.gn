@@ -44,8 +44,6 @@ action("dom_distiller_viewer_js") {
 
 static_library("core") {
   sources = [
-    "article_distillation_update.cc",
-    "article_distillation_update.h",
     "article_entry.cc",
     "article_entry.h",
     "distillable_page_detector.cc",

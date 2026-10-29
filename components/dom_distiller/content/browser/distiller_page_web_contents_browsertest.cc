@@ -181,8 +181,6 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
   EXPECT_THAT(distiller_result_->html(), HasSubstr("Lorem ipsum"));
   EXPECT_THAT(distiller_result_->html(),
               Not(HasSubstr("questionable content")));
-  EXPECT_EQ("", distiller_result_->pagination_info().next_page());
-  EXPECT_EQ("", distiller_result_->pagination_info().prev_page());
 }
 
 #if BUILDFLAG(IS_WIN)

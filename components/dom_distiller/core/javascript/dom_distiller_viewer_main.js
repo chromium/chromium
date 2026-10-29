@@ -60,8 +60,8 @@ function addToPage(html) {
   postProcessElement(div);
 }
 
-function showLoadingIndicator(isLastPage) {
-  $('loading-indicator').className = isLastPage ? 'hidden' : 'visible';
+function hideLoadingIndicator() {
+  $('loading-indicator').className = 'hidden';
 }
 
 // Sets the title.

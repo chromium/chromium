@@ -12,7 +12,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
-#include "components/dom_distiller/core/article_distillation_update.h"
 #include "components/dom_distiller/core/article_entry.h"
 #include "components/dom_distiller/core/distilled_content_store.h"
 #include "components/dom_distiller/core/fake_distiller.h"
@@ -29,8 +28,6 @@ class FakeViewRequestDelegate : public ViewRequestDelegate {
   ~FakeViewRequestDelegate() override = default;
   MOCK_METHOD1(OnArticleReady,
                void(const DistilledArticleProto* article_proto));
-  MOCK_METHOD1(OnArticleUpdated,
-               void(ArticleDistillationUpdate article_update));
 };
 
 class MockContentStore : public DistilledContentStore {

@@ -34,11 +34,9 @@ DistillerImpl::~DistillerImpl() {
   DCHECK(destruction_allowed_);
 }
 
-void DistillerImpl::DistillPage(
-    const GURL& url,
-    std::unique_ptr<DistillerPage> distiller_page,
-    DistillationFinishedCallback finished_cb,
-    const DistillationUpdateCallback& /*update_cb*/) {
+void DistillerImpl::DistillPage(const GURL& url,
+                                std::unique_ptr<DistillerPage> distiller_page,
+                                DistillationFinishedCallback finished_cb) {
   DCHECK(destruction_allowed_);
   DCHECK(finished_cb_.is_null());
   DCHECK(url.is_valid());

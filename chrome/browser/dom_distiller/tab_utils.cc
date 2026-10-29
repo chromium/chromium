@@ -41,7 +41,6 @@
 
 namespace {
 
-using dom_distiller::ArticleDistillationUpdate;
 using dom_distiller::DistilledArticleProto;
 using dom_distiller::DistillerPage;
 using dom_distiller::DomDistillerService;
@@ -69,7 +68,6 @@ class SelfDeletingRequestDelegate : public ViewRequestDelegate,
 
   // ViewRequestDelegate implementation.
   void OnArticleReady(const DistilledArticleProto* article_proto) override;
-  void OnArticleUpdated(ArticleDistillationUpdate article_update) override;
 
   // content::WebContentsObserver implementation.
   void PrimaryPageChanged(content::Page& page) override;
@@ -127,9 +125,6 @@ void SelfDeletingRequestDelegate::OnArticleReady(
   // Now that the work is done, always schedule for deletion.
   DeleteSelf();
 }
-
-void SelfDeletingRequestDelegate::OnArticleUpdated(
-    ArticleDistillationUpdate article_update) {}
 
 void SelfDeletingRequestDelegate::PrimaryPageChanged(content::Page& page) {
   Observe(nullptr);

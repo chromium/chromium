@@ -159,11 +159,6 @@ class ReadAnythingUntrustedPageHandler::DomDistillerDelegate
     viewer_handle_.reset();
   }
 
-  void OnArticleUpdated(
-      dom_distiller::ArticleDistillationUpdate article_update) override {
-    // Unused.
-  }
-
  private:
   raw_ptr<ReadAnythingUntrustedPageHandler> handler_;
   std::unique_ptr<dom_distiller::ViewerHandle> viewer_handle_;

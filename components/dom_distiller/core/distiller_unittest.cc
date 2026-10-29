@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -69,8 +68,7 @@ class DistillerTest : public testing::Test {
                    std::unique_ptr<DistillerPage> distiller_page) {
     distiller_->DistillPage(GURL(url), std::move(distiller_page),
                             base::BindOnce(&DistillerTest::OnDistillArticleDone,
-                                           base::Unretained(this)),
-                            base::DoNothing());
+                                           base::Unretained(this)));
   }
 
  protected:

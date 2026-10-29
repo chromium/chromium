@@ -34,8 +34,6 @@ class DomDistillerRequestViewBase : public ViewRequestDelegate,
   // ViewRequestDelegate implementation:
   void OnArticleReady(const DistilledArticleProto* article_proto) override;
 
-  void OnArticleUpdated(ArticleDistillationUpdate article_update) override;
-
   void TakeViewerHandle(std::unique_ptr<ViewerHandle> viewer_handle);
 
  protected:
@@ -56,10 +54,6 @@ class DomDistillerRequestViewBase : public ViewRequestDelegate,
   // The handle to the view request towards the DomDistillerService. It
   // needs to be kept around to ensure the distillation request finishes.
   std::unique_ptr<ViewerHandle> viewer_handle_;
-
-  // Number of pages of the distilled article content that have been rendered by
-  // the viewer.
-  int page_count_;
 
   // Interface for accessing preferences for distilled pages.
   raw_ptr<DistilledPagePrefs> distilled_page_prefs_;

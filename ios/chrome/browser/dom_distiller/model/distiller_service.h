@@ -33,8 +33,7 @@ class DistillerService : public KeyedService {
   virtual void DistillPage(
       const GURL& url,
       std::unique_ptr<dom_distiller::DistillerPage> distiller_page,
-      dom_distiller::Distiller::DistillationFinishedCallback finished_cb,
-      const dom_distiller::Distiller::DistillationUpdateCallback& update_cb);
+      dom_distiller::Distiller::DistillationFinishedCallback finished_cb);
 
   // Returns the cross-platform customization preferences for viewing
   // distillation output.
@@ -50,12 +49,10 @@ class DistillerService : public KeyedService {
     GURL url;
     std::unique_ptr<dom_distiller::DistillerPage> distiller_page;
     dom_distiller::Distiller::DistillationFinishedCallback finished_cb;
-    dom_distiller::Distiller::DistillationUpdateCallback update_cb;
 
     Request(GURL url,
             std::unique_ptr<dom_distiller::DistillerPage> distiller_page,
-            dom_distiller::Distiller::DistillationFinishedCallback finished_cb,
-            dom_distiller::Distiller::DistillationUpdateCallback update_cb);
+            dom_distiller::Distiller::DistillationFinishedCallback finished_cb);
 
     Request(Request&&);
     Request& operator=(Request&&);

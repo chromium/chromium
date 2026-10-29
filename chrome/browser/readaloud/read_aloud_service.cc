@@ -479,9 +479,6 @@ bool ReadAloudService::IsWaitingForOverviewContent() const {
   return playback_mode_ == PlaybackMode::kOverview && !overview_script_loaded_;
 }
 
-void ReadAloudService::OnArticleUpdated(
-    dom_distiller::ArticleDistillationUpdate article_update) {}
-
 void ReadAloudService::Initialize(content::WebContents* new_web_contents) {
   if (!new_web_contents) {
     return;

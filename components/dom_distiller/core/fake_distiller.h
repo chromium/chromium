@@ -6,7 +6,6 @@
 #define COMPONENTS_DOM_DISTILLER_CORE_FAKE_DISTILLER_H_
 
 #include "base/functional/callback.h"
-#include "components/dom_distiller/core/article_distillation_update.h"
 #include "components/dom_distiller/core/article_entry.h"
 #include "components/dom_distiller/core/distiller.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -42,13 +41,11 @@ class FakeDistiller : public Distiller {
 
   void DistillPage(const GURL& url,
                    std::unique_ptr<DistillerPage> distiller_page,
-                   DistillationFinishedCallback article_callback,
-                   const DistillationUpdateCallback& page_callback) override;
+                   DistillationFinishedCallback article_callback) override;
 
   void RunDistillerCallback(
       std::unique_ptr<DistilledArticleProto> proto,
       DistillationParseResult result = DistillationParseResult::kSuccess);
-  void RunDistillerUpdateCallback(const ArticleDistillationUpdate& update);
 
   GURL GetUrl() { return url_; }
 
@@ -66,7 +63,6 @@ class FakeDistiller : public Distiller {
   bool execute_callback_;
   GURL url_;
   DistillationFinishedCallback article_callback_;
-  DistillationUpdateCallback page_callback_;
   bool destruction_allowed_;
   // Used to notify when distillation is complete.
   base::OnceClosure distillation_initiated_callback_;

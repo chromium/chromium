@@ -18,7 +18,6 @@
 namespace dom_distiller {
 
 class DistilledArticleProto;
-class DistilledPageProto;
 class DomDistillerServiceInterface;
 class ViewerHandle;
 class ViewRequestDelegate;
@@ -38,14 +37,6 @@ std::string GetArticleTemplateHtml(mojom::Theme theme,
 std::string GetUnsafeArticleContentJs(
     const DistilledArticleProto* article_proto);
 
-// Returns a JavaScript blob for updating a partial view request with additional
-// distilled content. Meant for use when viewing a slow or long multi-page
-// article. |is_last_page| indicates whether this is the last page of the
-// article.
-std::string GetUnsafeIncrementalDistilledPageJs(
-    const DistilledPageProto* page_proto,
-    bool is_last_page);
-
 // Returns the JavaScript to set the title of the distilled article page.
 std::string GetSetTitleJs(std::string_view title);
 
@@ -59,11 +50,6 @@ std::string GetErrorPageJs();
 // Returns a JavaScript blob with unsafe content converted to a JavaScript
 // string that adds it to the page.
 std::string GetAddToPageJs(std::string_view unsafe_content);
-
-// Returns a JavaScript blob for controlling the "in-progress" indicator when
-// viewing a partially-distilled page. |is_last_page| indicates whether this is
-// the last page of the article (i.e. loading indicator should be removed).
-std::string GetToggleLoadingIndicatorJs(bool is_last_page);
 
 // Returns the CSS to use for a viewer.
 std::string GetCss();

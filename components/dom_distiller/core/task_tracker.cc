@@ -63,9 +63,7 @@ void TaskTracker::StartDistiller(DistillerFactory* factory,
   distiller_->DistillPage(
       url, std::move(distiller_page),
       base::BindOnce(&TaskTracker::OnDistillerFinished,
-                     weak_ptr_factory_.GetWeakPtr(), use_cache),
-      base::BindRepeating(&TaskTracker::OnArticleDistillationUpdated,
-                          weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), use_cache));
 }
 
 void TaskTracker::StartBlobFetcher() {
@@ -268,13 +266,6 @@ void TaskTracker::DoSaveCallbacks(bool success) {
       std::move(callback).Run(entry_, distilled_article_.get(), success);
     save_callbacks_.clear();
     MaybeCancel();
-  }
-}
-
-void TaskTracker::OnArticleDistillationUpdated(
-    const ArticleDistillationUpdate& article_update) {
-  for (auto& viewer : viewers_) {
-    viewer.OnArticleUpdated(article_update);
   }
 }
 

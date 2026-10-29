@@ -46,17 +46,9 @@ message DistilledPageProto {
   // text directionality
   optional string text_direction = 7;
 
-  message PaginationInfo {
-    optional string next_page = 1;
-    optional string prev_page = 2;
-    optional string canonical_page = 3;
-  }
-
-  // Pagination info for this page.
-  optional PaginationInfo pagination_info = 8;
-
-  // Removed obsolete field.
-  reserved 9;
+  // Removed obsolete fields.
+  reserved 8, 9;
+  reserved "pagination_info";
 
   // The clean text content with all HTML tags stripped.
   optional string text_content = 10;

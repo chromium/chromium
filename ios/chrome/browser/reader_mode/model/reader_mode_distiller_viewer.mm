@@ -41,16 +41,10 @@ ReaderModeDistillerViewer::ReaderModeDistillerViewer(
   distiller_service->DistillPage(
       url, std::move(page),
       base::BindOnce(&ReaderModeDistillerViewer::OnDistillerFinished,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::BindRepeating(
-          &ReaderModeDistillerViewer::OnArticleDistillationUpdated,
-          weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 ReaderModeDistillerViewer::~ReaderModeDistillerViewer() {}
-
-void ReaderModeDistillerViewer::OnArticleDistillationUpdated(
-    const dom_distiller::ArticleDistillationUpdate& article_update) {}
 
 void ReaderModeDistillerViewer::OnDistillerFinished(
     std::unique_ptr<dom_distiller::DistilledArticleProto> distilled_article,

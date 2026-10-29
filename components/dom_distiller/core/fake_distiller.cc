@@ -37,14 +37,11 @@ FakeDistiller::~FakeDistiller() {
   Die();
 }
 
-void FakeDistiller::DistillPage(
-    const GURL& url,
-    std::unique_ptr<DistillerPage> distiller_page,
-    DistillationFinishedCallback article_callback,
-    const DistillationUpdateCallback& page_callback) {
+void FakeDistiller::DistillPage(const GURL& url,
+                                std::unique_ptr<DistillerPage> distiller_page,
+                                DistillationFinishedCallback article_callback) {
   url_ = url;
   article_callback_ = std::move(article_callback);
-  page_callback_ = page_callback;
   if (distillation_initiated_callback_) {
     std::move(distillation_initiated_callback_).Run();
   }
@@ -62,11 +59,6 @@ void FakeDistiller::RunDistillerCallback(
                                      "callback for a fake distiller created "
                                      "with automatic callback execution.";
   PostDistillerCallback(std::move(proto), result);
-}
-
-void FakeDistiller::RunDistillerUpdateCallback(
-    const ArticleDistillationUpdate& update) {
-  page_callback_.Run(update);
 }
 
 void FakeDistiller::PostDistillerCallback(

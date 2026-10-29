@@ -16,7 +16,6 @@
 
 namespace dom_distiller {
 
-class ArticleDistillationUpdate;
 class DistilledPageProto;
 
 class Distiller {
@@ -24,21 +23,14 @@ class Distiller {
   using DistillationFinishedCallback =
       base::OnceCallback<void(std::unique_ptr<DistilledArticleProto> proto,
                               DistillationParseResult result)>;
-  using DistillationUpdateCallback =
-      base::RepeatingCallback<void(const ArticleDistillationUpdate&)>;
 
   virtual ~Distiller() = default;
 
   // Distills a page, and asynchronously returns the article HTML to the
-  // supplied |finished_cb| callback. |update_cb| is invoked whenever article
-  // under distillation is updated with more data.
-  // E.g. when distilling a 2 page article, |update_cb| may be invoked each time
-  // a distilled page is added and |finished_cb| will be invoked once
-  // distillation is completed.
+  // supplied `finished_cb` callback.
   virtual void DistillPage(const GURL& url,
                            std::unique_ptr<DistillerPage> distiller_page,
-                           DistillationFinishedCallback finished_cb,
-                           const DistillationUpdateCallback& update_cb) = 0;
+                           DistillationFinishedCallback finished_cb) = 0;
 };
 
 class DistillerFactory {
@@ -66,8 +58,7 @@ class DistillerImpl : public Distiller {
 
   void DistillPage(const GURL& url,
                    std::unique_ptr<DistillerPage> distiller_page,
-                   DistillationFinishedCallback finished_cb,
-                   const DistillationUpdateCallback& update_cb) override;
+                   DistillationFinishedCallback finished_cb) override;
 
   DistillerImpl(const DistillerImpl&) = delete;
   DistillerImpl& operator=(const DistillerImpl&) = delete;

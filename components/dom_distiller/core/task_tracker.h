@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "components/dom_distiller/core/article_distillation_update.h"
 #include "components/dom_distiller/core/article_entry.h"
 #include "components/dom_distiller/core/distiller.h"
 #include "components/dom_distiller/core/distiller_page.h"
@@ -53,9 +52,6 @@ class ViewRequestDelegate : public base::CheckedObserver {
   // when the corresponding ViewerHandle is destroyed (or when the
   // DomDistillerService is destroyed).
   virtual void OnArticleReady(const DistilledArticleProto* article_proto) = 0;
-
-  // Called when an article that is currently under distillation is updated.
-  virtual void OnArticleUpdated(ArticleDistillationUpdate article_update) = 0;
 
   // Called when page distillation fails with a specific safety or parsing
   // reason.
@@ -115,9 +111,6 @@ class TaskTracker {
   TaskTracker& operator=(const TaskTracker&) = delete;
 
  private:
-  void OnArticleDistillationUpdated(
-      const ArticleDistillationUpdate& article_update);
-
   void OnDistillerFinished(
       bool use_cache,
       std::unique_ptr<DistilledArticleProto> distilled_article,

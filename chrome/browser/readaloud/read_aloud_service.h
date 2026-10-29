@@ -259,8 +259,6 @@ class ReadAloudService
   // dom_distiller::ViewRequestDelegate:
   void OnArticleReady(
       const dom_distiller::DistilledArticleProto* article_proto) override;
-  void OnArticleUpdated(
-      dom_distiller::ArticleDistillationUpdate article_update) override;
   void OnDistillationFailed(
       dom_distiller::DistillationParseResult reason) override;
 

@@ -233,13 +233,6 @@ std::string ReplaceHtmlTemplateValues(const mojom::Theme theme,
 
 }  // namespace
 
-std::string GetUnsafeIncrementalDistilledPageJs(
-    const DistilledPageProto* page_proto,
-    bool is_last_page) {
-  return base::StrCat({GetAddToPageJs(page_proto->html()),
-                       GetToggleLoadingIndicatorJs(is_last_page)});
-}
-
 std::string GetErrorPageJs() {
   std::string title(l10n_util::GetStringUTF8(
       IDS_DOM_DISTILLER_VIEWER_FAILED_TO_FIND_ARTICLE_TITLE));
@@ -247,7 +240,7 @@ std::string GetErrorPageJs() {
       {GetSetTitleJs(title),
        GetAddToPageJs(l10n_util::GetStringUTF8(
            IDS_DOM_DISTILLER_VIEWER_FAILED_TO_FIND_ARTICLE_CONTENT)),
-       GetSetTextDirectionJs("auto"), GetToggleLoadingIndicatorJs(true)});
+       GetSetTextDirectionJs("auto"), "hideLoadingIndicator();"});
 }
 
 std::string GetSetTitleJs(std::string_view title) {
@@ -270,12 +263,6 @@ std::string GetSetTextDirectionJs(std::string_view direction) {
   return base::StrCat({"setTextDirection(", output, ");"});
 }
 
-std::string GetToggleLoadingIndicatorJs(bool is_last_page) {
-  if (is_last_page)
-    return "showLoadingIndicator(true);";
-  return "showLoadingIndicator(false);";
-}
-
 std::string GetArticleTemplateHtml(mojom::Theme theme,
                                    mojom::FontFamily font_family,
                                    const std::string& csp_nonce) {
@@ -292,8 +279,8 @@ std::string GetUnsafeArticleContentJs(
     }
   }
 
-  return base::StrCat({GetAddToPageJs(unsafe_output_stream.str()),
-                       GetToggleLoadingIndicatorJs(true)});
+  return base::StrCat(
+      {GetAddToPageJs(unsafe_output_stream.str()), "hideLoadingIndicator();"});
 }
 
 std::string GetAddToPageJs(std::string_view unsafe_content) {

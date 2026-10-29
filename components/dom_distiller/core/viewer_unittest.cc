@@ -40,8 +40,6 @@ class FakeViewRequestDelegate : public ViewRequestDelegate {
  public:
   ~FakeViewRequestDelegate() override = default;
   MOCK_METHOD1(OnArticleReady, void(const DistilledArticleProto* proto));
-  MOCK_METHOD1(OnArticleUpdated,
-               void(ArticleDistillationUpdate article_update));
 };
 
 class TestDomDistillerService : public DomDistillerServiceInterface {
