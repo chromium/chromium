@@ -123,7 +123,10 @@ def main():
             )
         if os.path.exists(_BACKEND_STAR):
             os.remove(_BACKEND_STAR)
-        shutil.copy2(reapi_backend_config_path, _BACKEND_STAR)
+        # Copy only the contents. shutil.copy2 would also copy xattrs, and
+        # setting some of them (e.g. tags added by security agents) can fail
+        # with EACCES, which Python 3.11 doesn't ignore.
+        shutil.copyfile(reapi_backend_config_path, _BACKEND_STAR)
 
     if not os.path.exists(_BACKEND_STAR):
         print(
