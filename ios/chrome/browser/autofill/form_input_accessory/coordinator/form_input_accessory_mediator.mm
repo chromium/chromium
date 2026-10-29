@@ -63,7 +63,7 @@
 #import "ios/chrome/common/credential_provider/net_util.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -184,7 +184,8 @@ bool IsStateless() {
 @property(nonatomic, assign) web::WebState* webState;
 
 // Reauthentication Module used for re-authentication.
-@property(nonatomic, strong) ReauthenticationModule* reauthenticationModule;
+@property(nonatomic, strong) id<ReauthenticationProtocol>
+    reauthenticationModule;
 
 // Used to present alerts.
 @property(nonatomic, weak) id<SecurityAlertCommands> securityAlertHandler;
@@ -267,7 +268,7 @@ bool IsStateless() {
           (scoped_refptr<password_manager::PasswordStoreInterface>)
               accountPasswordStore
       securityAlertHandler:(id<SecurityAlertCommands>)securityAlertHandler
-    reauthenticationModule:(ReauthenticationModule*)reauthenticationModule
+    reauthenticationModule:(id<ReauthenticationProtocol>)reauthenticationModule
          engagementTracker:(feature_engagement::Tracker*)engagementTracker {
   self = [super init];
   if (self) {

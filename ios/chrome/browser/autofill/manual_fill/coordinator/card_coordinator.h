@@ -12,7 +12,6 @@ class CreditCard;
 }
 
 @class CardCoordinator;
-@class ReauthenticationModule;
 
 // Delegate for the coordinator actions.
 @protocol CardCoordinatorDelegate <FallbackCoordinatorDelegate>
@@ -47,7 +46,6 @@ class CreditCard;
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
               injectionHandler:(ManualFillInjectionHandler*)injectionHandler
-        reauthenticationModule:(ReauthenticationModule*)reauthenticationModule
         showAutofillFormButton:(BOOL)showAutofillFormButton
     NS_DESIGNATED_INITIALIZER;
 

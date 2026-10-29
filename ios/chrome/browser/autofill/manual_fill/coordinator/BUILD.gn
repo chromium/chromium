@@ -42,6 +42,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/autofill/manual_fill/public",
     "//ios/chrome/browser/autofill/manual_fill/ui",
     "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/device_reauth/model",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/net/model:crurl",

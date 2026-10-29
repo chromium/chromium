@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/public/provider/chrome/browser/keyboard/keyboard_api.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
@@ -41,9 +40,6 @@ using manual_fill::ManualFillDataType;
   // Stores the selected segment's data type.
   ManualFillDataType _selectedSegmentDataType;
 
-  // Reauthentication Module used for re-authentication.
-  ReauthenticationModule* _reauthenticationModule;
-
   // Used to show the manual fill passwords menu.
   ManualFillPasswordCoordinator* _manualFillPasswordCoordinator;
 
@@ -51,17 +47,15 @@ using manual_fill::ManualFillDataType;
   __weak UIButton* _sourceButton;
 }
 
-- (instancetype)
-    initWithBaseViewController:(UIViewController*)viewController
-                       browser:(Browser*)browser
-                   forDataType:(ManualFillDataType)dataType
-          focusedFieldDataType:(ManualFillDataType)focusedFieldDataType
-        reauthenticationModule:(ReauthenticationModule*)reauthenticationModule {
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                               forDataType:(ManualFillDataType)dataType
+                      focusedFieldDataType:
+                          (ManualFillDataType)focusedFieldDataType {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _selectedSegmentDataType = dataType;
     _focusedFieldDataType = focusedFieldDataType;
-    _reauthenticationModule = reauthenticationModule;
   }
   return self;
 }
@@ -273,7 +267,6 @@ using manual_fill::ManualFillDataType;
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                 injectionHandler:self.injectionHandler
-          reauthenticationModule:_reauthenticationModule
           showAutofillFormButton:(_focusedFieldDataType ==
                                   ManualFillDataType::kPaymentMethod)];
   cardCoordinator.delegate = self.delegate;

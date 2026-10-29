@@ -14,7 +14,6 @@ enum class ManualFillDataType;
 
 @class ManualFillInjectionHandler;
 @class ExpandedManualFillCoordinator;
-@class ReauthenticationModule;
 
 @protocol AddressCoordinatorDelegate;
 @protocol CardCoordinatorDelegate;
@@ -65,7 +64,6 @@ enum class ManualFillDataType;
                    forDataType:(manual_fill::ManualFillDataType)dataType
           focusedFieldDataType:
               (manual_fill::ManualFillDataType)focusedFieldDataType
-        reauthenticationModule:(ReauthenticationModule*)reauthenticationModule
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

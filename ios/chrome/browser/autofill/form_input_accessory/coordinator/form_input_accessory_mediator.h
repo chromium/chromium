@@ -17,7 +17,7 @@
 @protocol FormInputAccessoryConsumer;
 @protocol FormInputAccessoryMediatorHandler;
 @protocol FormInputSuggestionsProvider;
-@class ReauthenticationModule;
+@protocol ReauthenticationProtocol;
 @protocol SecurityAlertCommands;
 
 namespace autofill {
@@ -53,7 +53,7 @@ class WebStateList;
           (scoped_refptr<password_manager::PasswordStoreInterface>)
               accountPasswordStore
       securityAlertHandler:(id<SecurityAlertCommands>)securityAlertHandler
-    reauthenticationModule:(ReauthenticationModule*)reauthenticationModule
+    reauthenticationModule:(id<ReauthenticationProtocol>)reauthenticationModule
          engagementTracker:(feature_engagement::Tracker*)engagementTracker;
 
 // Unavailable, use initWithConsumer:webStateList: instead.

@@ -20,6 +20,8 @@
 #import "ios/chrome/browser/autofill/manual_fill/ui/card_view_controller.h"
 #import "ios/chrome/browser/autofill/model/manual_fill_virtual_card_cache.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -30,7 +32,7 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ui/base/device_form_factor.h"
@@ -42,7 +44,7 @@
   __weak id<SceneCommands> _dispatcher;
 
   // Reauthentication Module used for re-authentication.
-  ReauthenticationModule* _reauthenticationModule;
+  id<ReauthenticationProtocol> _reauthenticationModule;
 
   // PersonalDataManager
   raw_ptr<autofill::PersonalDataManager> _personalDataManager;
@@ -71,17 +73,19 @@
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
               injectionHandler:(ManualFillInjectionHandler*)injectionHandler
-        reauthenticationModule:(ReauthenticationModule*)reauthenticationModule
         showAutofillFormButton:(BOOL)showAutofillFormButton {
   self = [super initWithBaseViewController:viewController
                                    browser:browser
                           injectionHandler:injectionHandler];
   if (self) {
     _cardViewController = [[CardViewController alloc] init];
-    _reauthenticationModule = reauthenticationModule;
+    ProfileIOS* profile = self.profile;
+    _reauthenticationModule =
+        ReauthenticationServiceFactory::GetForProfile(profile)
+            ->GetReauthModule();
 
-    _personalDataManager = autofill::PersonalDataManagerFactory::GetForProfile(
-        super.browser->GetProfile());
+    _personalDataManager =
+        autofill::PersonalDataManagerFactory::GetForProfile(profile);
     CHECK(_personalDataManager);
 
     _cardMediator = [[ManualFillCardMediator alloc]
@@ -94,7 +98,7 @@
     _cardMediator.consumer = _cardViewController;
 
     _cardRequester = [[ManualFillFullCardRequester alloc]
-        initWithProfile:super.browser->GetProfile()->GetOriginalProfile()
+        initWithProfile:profile->GetOriginalProfile()
            webStateList:super.browser->GetWebStateList()
          resultDelegate:_cardMediator];
     _dispatcher =

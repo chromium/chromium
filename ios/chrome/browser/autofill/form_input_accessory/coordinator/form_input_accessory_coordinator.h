@@ -10,7 +10,6 @@
 #import "ios/web/common/crw_input_view_provider.h"
 
 @class ManualFillInjectionHandler;
-@class ReauthenticationModule;
 
 // Creates and manages a custom input accessory view while the user is
 // interacting with a form. Also handles hiding and showing the default

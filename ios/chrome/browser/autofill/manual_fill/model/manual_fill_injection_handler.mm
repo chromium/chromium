@@ -43,7 +43,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/security_alert_commands.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -105,7 +105,8 @@ void RecordPasswordAutofilledStat(web::WebState* webState) {
 
 // Interface for `reauthenticationModule`, handling mostly the case when no
 // hardware for authentication is available.
-@property(nonatomic, strong) ReauthenticationModule* reauthenticationModule;
+@property(nonatomic, strong) id<ReauthenticationProtocol>
+    reauthenticationModule;
 
 // YES if the last focused element is secure within its web frame. To be secure
 // means the web is HTTPS and the URL is trusted.
@@ -144,7 +145,7 @@ void RecordPasswordAutofilledStat(web::WebState* webState) {
 - (instancetype)
       initWithWebStateList:(WebStateList*)webStateList
       securityAlertHandler:(id<SecurityAlertCommands>)securityAlertHandler
-    reauthenticationModule:(ReauthenticationModule*)reauthenticationModule
+    reauthenticationModule:(id<ReauthenticationProtocol>)reauthenticationModule
       formSuggestionClient:(id<FormSuggestionClient>)formSuggestionClient
     autofillProviderGetter:(AutofillProviderGetter)autofillProviderGetter {
   self = [super init];

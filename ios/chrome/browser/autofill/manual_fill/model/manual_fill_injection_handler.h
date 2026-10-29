@@ -12,9 +12,9 @@
 #import "ios/web/public/web_state.h"
 #import "url/origin.h"
 
-@class ReauthenticationModule;
 @protocol FormSuggestionClient;
 @protocol FormSuggestionProvider;
+@protocol ReauthenticationProtocol;
 @protocol SecurityAlertCommands;
 class WebStateList;
 
@@ -35,7 +35,7 @@ using AutofillProviderGetter =
 - (instancetype)
       initWithWebStateList:(WebStateList*)webStateList
       securityAlertHandler:(id<SecurityAlertCommands>)securityAlertHandler
-    reauthenticationModule:(ReauthenticationModule*)reauthenticationModule
+    reauthenticationModule:(id<ReauthenticationProtocol>)reauthenticationModule
       formSuggestionClient:(id<FormSuggestionClient>)formSuggestionClient
     autofillProviderGetter:(AutofillProviderGetter)autofillProviderGetter;
 
