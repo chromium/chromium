@@ -16,8 +16,8 @@ PrivacyMetricsService::PrivacyMetricsService(
     HostContentSettingsMap* host_content_settings_map)
     : pref_service_(pref_service),
       host_content_settings_map_(host_content_settings_map) {
-  DCHECK(pref_service_);
-  DCHECK(host_content_settings_map_);
+  CHECK(pref_service_, base::NotFatalUntil::M163);
+  CHECK(host_content_settings_map_, base::NotFatalUntil::M163);
 
   RecordStartupMetrics();
 }

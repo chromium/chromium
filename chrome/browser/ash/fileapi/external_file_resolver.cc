@@ -36,7 +36,7 @@ const char kMimeTypeForMHTML[] = "multipart/related";
 void RevokeFileAccess(scoped_refptr<storage::FileSystemContext> context,
                       const url::Origin& origin) {
   FileSystemBackend* const backend = FileSystemBackend::Get(*context);
-  DCHECK(backend);
+  CHECK(backend, base::NotFatalUntil::M163);
   backend->RevokeAccessForOrigin(origin);
 }
 
@@ -108,7 +108,7 @@ class URLHelper {
     }
 
     FileSystemBackend* const backend = FileSystemBackend::Get(*context);
-    DCHECK(backend);
+    CHECK(backend, base::NotFatalUntil::M163);
     backend->GrantFileAccessToOrigin(origin, virtual_path);
     file_access_scope_ = base::ScopedClosureRunner(
         base::BindOnce(&RevokeFileAccess, context, origin));

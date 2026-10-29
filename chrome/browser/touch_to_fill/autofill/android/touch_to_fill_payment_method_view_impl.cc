@@ -82,7 +82,7 @@ CreateJavaBnplIssuerContextFromNative(
 TouchToFillPaymentMethodViewImpl::TouchToFillPaymentMethodViewImpl(
     content::WebContents* web_contents)
     : web_contents_(web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M163);
 }
 
 TouchToFillPaymentMethodViewImpl::~TouchToFillPaymentMethodViewImpl() {
@@ -100,7 +100,7 @@ bool TouchToFillPaymentMethodViewImpl::IsReadyToShow(
     return false;  // No window attached (yet or anymore).
   }
 
-  DCHECK(controller);
+  CHECK(controller, base::NotFatalUntil::M163);
   base::android::ScopedJavaLocalRef<jobject> java_controller =
       controller->GetJavaObject();
   if (!java_controller)

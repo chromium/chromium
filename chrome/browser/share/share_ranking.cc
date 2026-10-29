@@ -431,12 +431,15 @@ void ShareRanking::ComputeRanking(
     std::vector<std::string> available = available_on_system;
     available.push_back(kMoreTarget);
 
-    DCHECK(EveryElementInList(*display_ranking, available));
-    DCHECK(
-        ElementIndexesAreUnchanged(*display_ranking, old_ranking, above_fold));
-    DCHECK(AtMostOneSlotChanged(old_ranking, *persisted_ranking, above_fold));
+    CHECK(EveryElementInList(*display_ranking, available),
+          base::NotFatalUntil::M163);
+    CHECK(ElementIndexesAreUnchanged(*display_ranking, old_ranking, above_fold),
+          base::NotFatalUntil::M163);
+    CHECK(AtMostOneSlotChanged(old_ranking, *persisted_ranking, above_fold),
+          base::NotFatalUntil::M163);
 
-    DCHECK(std::ranges::contains(*display_ranking, kMoreTarget));
+    CHECK(std::ranges::contains(*display_ranking, kMoreTarget),
+          base::NotFatalUntil::M163);
   }
 #endif  // DCHECK_IS_ON()
 

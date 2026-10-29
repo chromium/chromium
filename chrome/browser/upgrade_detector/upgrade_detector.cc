@@ -198,7 +198,7 @@ UpgradeDetector::UpgradeDetector(const base::Clock* clock,
 UpgradeDetector::~UpgradeDetector() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Ensure that Shutdown() was called.
-  DCHECK(pref_change_registrar_.IsEmpty());
+  CHECK(pref_change_registrar_.IsEmpty(), base::NotFatalUntil::M163);
 }
 
 void UpgradeDetector::MonitorPrefChanges(const std::string& pref) {
@@ -244,7 +244,7 @@ bool UpgradeDetector::IsRelaunchNotificationPolicyEnabled() {
 // static
 base::Time UpgradeDetector::AdjustDeadline(base::Time deadline,
                                            const RelaunchWindow& window) {
-  DCHECK(window.IsValid());
+  CHECK(window.IsValid(), base::NotFatalUntil::M163);
   const base::TimeDelta duration = window.duration;
 
   // Window duration greater than equal to 24 hours means window covers the
@@ -315,12 +315,12 @@ UpgradeDetector::GetRelaunchWindowPolicyValue() {
     return std::nullopt;
 
   const auto* preference = local_state->FindPreference(prefs::kRelaunchWindow);
-  DCHECK(preference);
+  CHECK(preference, base::NotFatalUntil::M163);
   if (preference->IsDefaultValue())
     return std::nullopt;
 
   const base::Value* policy_value = preference->GetValue();
-  DCHECK(policy_value->is_dict());
+  CHECK(policy_value->is_dict(), base::NotFatalUntil::M163);
 
   const base::ListValue* entries = policy_value->GetDict().FindList("entries");
   if (!entries || entries->empty()) {

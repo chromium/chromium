@@ -33,8 +33,8 @@ RegistryMonitor::RegistryMonitor(base::win::RegKey key)
 RegistryMonitor::~RegistryMonitor() = default;
 
 void RegistryMonitor::Start(Callback on_change_callback) {
-  DCHECK(on_change_callback);
-  DCHECK(!on_change_callback_);
+  CHECK(on_change_callback, base::NotFatalUntil::M163);
+  CHECK(!on_change_callback_, base::NotFatalUntil::M163);
   on_change_callback_ = std::move(on_change_callback);
   StartWatching();
 }

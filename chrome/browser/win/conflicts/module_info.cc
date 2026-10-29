@@ -136,13 +136,13 @@ std::string GenerateCodeId(const ModuleInfoKey& module_key) {
 uint32_t ProcessTypeToBit(content::ProcessType process_type) {
   uint32_t bit_index =
       static_cast<uint32_t>(process_type) - kFirstValidProcessType;
-  DCHECK_GE(31u, bit_index);
+  CHECK_GE(31u, bit_index, base::NotFatalUntil::M163);
   uint32_t bit = (1 << bit_index);
   return bit;
 }
 
 content::ProcessType BitIndexToProcessType(uint32_t bit_index) {
-  DCHECK_GE(31u, bit_index);
+  CHECK_GE(31u, bit_index, base::NotFatalUntil::M163);
   return static_cast<content::ProcessType>(bit_index + kFirstValidProcessType);
 }
 

@@ -115,7 +115,7 @@ base::Time UpgradeDetectorChromeos::GetAnnoyanceLevelDeadline(
 
 void UpgradeDetectorChromeos::OverrideHighAnnoyanceDeadline(
     base::Time deadline) {
-  DCHECK(!upgrade_detected_time().is_null());
+  CHECK(!upgrade_detected_time().is_null(), base::NotFatalUntil::M163);
   if (deadline > upgrade_detected_time()) {
     high_deadline_override_ = deadline;
     CalculateDeadlines();
@@ -127,7 +127,7 @@ void UpgradeDetectorChromeos::ResetOverriddenDeadline() {
   if (high_deadline_override_.is_null())
     return;
 
-  DCHECK(!upgrade_detected_time().is_null());
+  CHECK(!upgrade_detected_time().is_null(), base::NotFatalUntil::M163);
   high_deadline_override_ = base::Time();
   CalculateDeadlines();
   NotifyOnUpgrade();
@@ -207,7 +207,7 @@ void UpgradeDetectorChromeos::CalculateDeadlines() {
     grace_period = GetGracePeriod(high_deadline_ - elevated_deadline_);
     grace_deadline_ = high_deadline_ - grace_period;
   }
-  DCHECK(grace_deadline_ >= elevated_deadline_);
+  CHECK(grace_deadline_ >= elevated_deadline_, base::NotFatalUntil::M163);
 }
 
 void UpgradeDetectorChromeos::UpdateStatusChanged(

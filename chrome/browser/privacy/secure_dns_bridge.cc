@@ -61,7 +61,8 @@ void RunProbe(base::WaitableEvent* waiter,
               const std::string& doh_config) {
   std::optional<net::DnsOverHttpsConfig> parsed =
       net::DnsOverHttpsConfig::FromString(doh_config);
-  DCHECK(parsed.has_value());  // `doh_config` must be valid.
+  CHECK(parsed.has_value(),
+        base::NotFatalUntil::M163);  // `doh_config` must be valid.
   auto* manager = g_browser_process->system_network_context_manager();
   auto runner = secure_dns::MakeProbeRunner(
       std::move(*parsed),
@@ -158,7 +159,7 @@ static bool JNI_SecureDnsBridge_ProbeConfig(const std::string& doh_config) {
   bool success;
   bool posted = content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(RunProbe, &waiter, &success, doh_config));
-  DCHECK(posted);
+  CHECK(posted, base::NotFatalUntil::M163);
   waiter.Wait();
 
   secure_dns::UpdateProbeHistogram(success);

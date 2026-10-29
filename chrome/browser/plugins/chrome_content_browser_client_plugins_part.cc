@@ -24,7 +24,7 @@ namespace {
 void BindPluginInfoHost(
     content::GlobalRenderFrameHostToken rfh_token,
     mojo::PendingAssociatedReceiver<chrome::mojom::PluginInfoHost> receiver) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   auto* rfh = content::RenderFrameHost::FromFrameToken(rfh_token);
   if (!rfh) {
     return;

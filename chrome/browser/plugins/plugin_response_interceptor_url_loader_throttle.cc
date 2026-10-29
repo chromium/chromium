@@ -78,7 +78,7 @@ void ClearAllButFrameAncestors(network::mojom::URLResponseHead* response_head) {
     auto raw_frame_ancestors = policy->raw_directives.find(
         network::mojom::CSPDirectiveName::FrameAncestors);
     if (raw_frame_ancestors == policy->raw_directives.end()) {
-      DCHECK(false);
+      CHECK(false, base::NotFatalUntil::M163);
     } else {
       cleared_policy->header->header_value =
           "frame-ancestors " + raw_frame_ancestors->second;
@@ -122,7 +122,7 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
     const GURL& response_url,
     network::mojom::URLResponseHead* response_head,
     bool* defer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   content::WebContents* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);

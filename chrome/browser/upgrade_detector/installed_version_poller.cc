@@ -52,7 +52,7 @@ uint32_t GetTestingOptions() {
 // --simulate-critical-update.
 void SimulateGetInstalledVersion(uint32_t testing_options,
                                  InstalledVersionCallback callback) {
-  DCHECK_NE(0U, testing_options);
+  CHECK_NE(0U, testing_options, base::NotFatalUntil::M163);
 
   std::vector<uint32_t> components = version_info::GetVersion().components();
   components[3] += 2;
@@ -146,7 +146,7 @@ InstalledVersionPoller::~InstalledVersionPoller() {
 void InstalledVersionPoller::StartMonitor(
     std::unique_ptr<InstalledVersionMonitor> monitor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!monitor_);
+  CHECK(!monitor_, base::NotFatalUntil::M163);
   monitor_ = std::move(monitor);
   monitor_->Start(base::BindRepeating(&InstalledVersionPoller::OnMonitorResult,
                                       weak_ptr_factory_.GetWeakPtr()));

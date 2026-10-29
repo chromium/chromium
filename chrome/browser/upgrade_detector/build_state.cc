@@ -21,8 +21,9 @@ void BuildState::SetUpdate(
     const base::Version& installed_version,
     const std::optional<base::Version>& critical_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(update_type != UpdateType::kNone ||
-         (!installed_version.IsValid() && !critical_version.has_value()));
+  CHECK(update_type != UpdateType::kNone ||
+            (!installed_version.IsValid() && !critical_version.has_value()),
+        base::NotFatalUntil::M163);
 
   std::optional<base::Version> new_installed_version;
   if (installed_version.IsValid())

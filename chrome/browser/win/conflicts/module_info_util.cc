@@ -227,9 +227,10 @@ CertificateInfo::CertificateInfo() : type(Type::NO_CERTIFICATE) {}
 // found.
 void GetCertificateInfo(const base::FilePath& filename,
                         CertificateInfo* certificate_info) {
-  DCHECK_EQ(CertificateInfo::Type::NO_CERTIFICATE, certificate_info->type);
-  DCHECK(certificate_info->path.empty());
-  DCHECK(certificate_info->subject.empty());
+  CHECK_EQ(CertificateInfo::Type::NO_CERTIFICATE, certificate_info->type,
+           base::NotFatalUntil::M163);
+  CHECK(certificate_info->path.empty(), base::NotFatalUntil::M163);
+  CHECK(certificate_info->subject.empty(), base::NotFatalUntil::M163);
 
   GetCatalogCertificateInfo(filename, certificate_info);
   if (certificate_info->type == CertificateInfo::Type::CERTIFICATE_IN_CATALOG)
@@ -272,11 +273,13 @@ StringMapping GetEnvironmentVariablesMapping(
 void CollapseMatchingPrefixInPath(const StringMapping& prefix_mapping,
                                   std::u16string* path) {
   const std::u16string path_copy = *path;
-  DCHECK_EQ(base::i18n::ToLower(path_copy), path_copy);
+  CHECK_EQ(base::i18n::ToLower(path_copy), path_copy,
+           base::NotFatalUntil::M163);
 
   size_t min_length = std::numeric_limits<size_t>::max();
   for (const auto& mapping : prefix_mapping) {
-    DCHECK_EQ(base::i18n::ToLower(mapping.first), mapping.first);
+    CHECK_EQ(base::i18n::ToLower(mapping.first), mapping.first,
+             base::NotFatalUntil::M163);
     if (base::StartsWith(path_copy, mapping.first)) {
       // Make sure the matching prefix is a full path component.
       if (path_copy[mapping.first.length()] != '\\' &&

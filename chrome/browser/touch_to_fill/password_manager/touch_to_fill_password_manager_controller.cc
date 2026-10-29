@@ -100,7 +100,7 @@ bool TouchToFillPasswordManagerController::Show(
     return false;
   }
 
-  DCHECK(!ttf_delegate_);
+  CHECK(!ttf_delegate_, base::NotFatalUntil::M163);
   ttf_delegate_ = std::move(ttf_delegate);
 
   cred_man_delegate_ = cred_man_delegate;

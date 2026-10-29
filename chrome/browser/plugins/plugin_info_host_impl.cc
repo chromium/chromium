@@ -183,7 +183,7 @@ PluginInfoHostImpl::PluginInfoHostImpl(
 }
 
 void PluginInfoHostImpl::ShutdownOnUIThread() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   shutdown_subscription_ = {};
 }
 
@@ -192,7 +192,7 @@ PluginInfoHostImpl::~PluginInfoHostImpl() = default;
 void PluginInfoHostImpl::GetPluginInfo(const GURL& url,
                                        const std::string& mime_type,
                                        GetPluginInfoCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   // Refresh plugins.
   PluginService::GetInstance()->GetPlugins();
   chrome::mojom::PluginInfoPtr output = chrome::mojom::PluginInfo::New();

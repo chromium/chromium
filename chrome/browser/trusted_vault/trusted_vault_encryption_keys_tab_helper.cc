@@ -278,7 +278,7 @@ DOCUMENT_USER_DATA_KEY_IMPL(EncryptionKeyApi);
 // static
 void TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(
     content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M163);
 
   if (FromWebContents(web_contents)) {
     return;

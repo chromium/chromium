@@ -39,7 +39,7 @@ base::FilePath GetDefaultMonitorLocation() {
 
 DirectoryMonitor::DirectoryMonitor(base::FilePath install_dir)
     : install_dir_(std::move(install_dir)) {
-  DCHECK(!install_dir_.empty());
+  CHECK(!install_dir_.empty(), base::NotFatalUntil::M163);
 }
 
 DirectoryMonitor::~DirectoryMonitor() {
@@ -48,7 +48,7 @@ DirectoryMonitor::~DirectoryMonitor() {
 }
 
 void DirectoryMonitor::Start(Callback on_change_callback) {
-  DCHECK(!watcher_);
+  CHECK(!watcher_, base::NotFatalUntil::M163);
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()});

@@ -66,7 +66,7 @@ ChromePluginServiceFilter* ChromePluginServiceFilter::GetInstance() {
 }
 
 void ChromePluginServiceFilter::RegisterProfile(Profile* profile) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   base::AutoLock lock(lock_);
   browser_context_map_[profile] = std::make_unique<ContextInfo>(
       PluginPrefs::GetForProfile(profile),
@@ -94,7 +94,7 @@ void ChromePluginServiceFilter::AuthorizeAllPlugins(
     content::RenderFrameHost* main_render_frame_host,
     bool load_blocked,
     const std::string& identifier) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   CHECK(!main_render_frame_host->GetParent());
 
   // Authorize all plugins is intended for the granting access to only
@@ -158,7 +158,7 @@ bool ChromePluginServiceFilter::CanLoadPlugin(int render_process_id,
 void ChromePluginServiceFilter::RenderProcessExited(
     content::RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   base::AutoLock auto_lock(lock_);
   plugin_details_.erase(host->GetDeprecatedID());
   host_observation_.RemoveObservation(host);
@@ -171,7 +171,7 @@ void ChromePluginServiceFilter::NotifyIfObserverAddedForTesting(
 }
 
 ChromePluginServiceFilter::ChromePluginServiceFilter() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
 }
 
 ChromePluginServiceFilter::~ChromePluginServiceFilter() = default;
@@ -193,7 +193,7 @@ ChromePluginServiceFilter::GetProcess(
 
 void ChromePluginServiceFilter::ObserveRenderProcessHost(
     int render_process_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   content::RenderProcessHost* host =
       content::RenderProcessHost::FromID(render_process_id);
   if (!host) {
