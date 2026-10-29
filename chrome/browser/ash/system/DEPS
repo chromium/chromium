@@ -36,6 +36,9 @@ include_rules = [
 
 specific_include_rules = {
   # Only tests need these //chrome dependencies.
+  "device_disabling_browsertest\\.cc": [
+    "+chrome/browser/global_features.h",
+  ],
   "timezone_resolver_manager_browsertest\\.cc": [
     "+chrome/browser/browser_process_platform_part_ash.h",
   ],

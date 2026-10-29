@@ -33,6 +33,8 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
@@ -147,7 +149,12 @@ class NetworkErrorScreenTest : public InProcessBrowserTest {
         /*use_default_devices_and_services=*/false);
     InProcessBrowserTest::SetUpOnMainThread();
 
-    ShowLoginWizard(WelcomeView::kScreenId);
+    ShowLoginWizard(
+        g_browser_process->local_state(), g_browser_process->metrics_service(),
+        g_browser_process->GetFeatures()->application_locale_storage(),
+        g_browser_process->shared_url_loader_factory(),
+        g_browser_process->platform_part()->browser_policy_connector_ash(),
+        WelcomeView::kScreenId);
     test::WaitForWelcomeScreen();
   }
 

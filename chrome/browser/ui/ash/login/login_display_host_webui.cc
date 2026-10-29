@@ -1236,18 +1236,13 @@ void LoginDisplayHostWebUI::PlayStartupSoundIfPossible() {
 
 // Declared in login_wizard.h so that others don't need to depend on our .h.
 // TODO(nkostylev): Split this into a smaller functions.
-void ShowLoginWizard(OobeScreenId first_screen) {
-  // TODO(crbug.com/403154552): Avoid using g_browser_process.
-  PrefService& local_state = CHECK_DEREF(g_browser_process->local_state());
-  ::metrics::MetricsService* metrics_service =
-      g_browser_process->metrics_service();
-  ApplicationLocaleStorage* application_locale_storage =
-      g_browser_process->GetFeatures()->application_locale_storage();
-  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
-      g_browser_process->shared_url_loader_factory();
-  policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-
+void ShowLoginWizard(
+    PrefService* local_state,
+    ::metrics::MetricsService* metrics_service,
+    ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    OobeScreenId first_screen) {
   if (ash::BrowserController::GetInstance()->IsTryingToQuit()) {
     return;
   }
@@ -1265,7 +1260,7 @@ void ShowLoginWizard(OobeScreenId first_screen) {
           switches::kNaturalScrollDefault));
 
   auto session_state = session_manager::SessionState::OOBE;
-  if (IsOobeComplete(local_state)) {
+  if (IsOobeComplete(CHECK_DEREF(local_state))) {
     session_state = session_manager::SessionState::LOGIN_PRIMARY;
   }
   session_manager::SessionManager::Get()->SetSessionState(session_state);
@@ -1277,13 +1272,14 @@ void ShowLoginWizard(OobeScreenId first_screen) {
   // TODO(b/338302062): Determine whether we should wait on OOBE config
   // retrieval before calling GetPrescribedEnrollmentConfig here.
   const policy::EnrollmentConfig enrollment_config =
-      policy::EnrollmentConfig::GetPrescribedEnrollmentConfig(local_state);
+      policy::EnrollmentConfig::GetPrescribedEnrollmentConfig(
+          CHECK_DEREF(local_state));
   if (enrollment_config.should_enroll() &&
       first_screen == ash::OOBE_SCREEN_UNKNOWN) {
     // Manages its own lifetime. See ShutdownDisplayHost().
     auto* display_host = new LoginDisplayHostWebUI(
-        &local_state, metrics_service, application_locale_storage,
-        shared_url_loader_factory, browser_policy_connector_ash);
+        local_state, metrics_service, application_locale_storage,
+        std::move(shared_url_loader_factory), browser_policy_connector_ash);
     // Shows networks screen instead of enrollment screen to resume the
     // interrupted auto start enrollment flow because enrollment screen does
     // not handle flaky network. See http://crbug.com/41082635
@@ -1296,21 +1292,22 @@ void ShowLoginWizard(OobeScreenId first_screen) {
     return;
   }
 
-  if (StartupUtils::IsEulaAccepted(local_state)) {
+  if (StartupUtils::IsEulaAccepted(CHECK_DEREF(local_state))) {
     DelayNetworkCall(ServicesCustomizationDocument::GetInstance()
                          .EnsureCustomizationAppliedClosure());
 
+    // TODO(crbug.com/403154552): Avoid using g_browser_process.
     g_browser_process->platform_part()
         ->GetTimezoneResolverManager()
         ->UpdateTimezoneResolver();
   }
 
   std::string current_locale =
-      local_state.GetString(language::prefs::kApplicationLocale);
+      local_state->GetString(language::prefs::kApplicationLocale);
   language::ConvertToActualUILocale(&current_locale);
   VLOG(1) << "Current locale: " << current_locale;
 
-  if (ShouldShowSigninScreen(local_state, first_screen)) {
+  if (ShouldShowSigninScreen(CHECK_DEREF(local_state), first_screen)) {
     std::string switch_locale = GetManagedLoginScreenLocale();
     if (switch_locale == current_locale) {
       switch_locale.clear();
@@ -1320,7 +1317,7 @@ void ShowLoginWizard(OobeScreenId first_screen) {
         std::make_unique<ShowLoginWizardSwitchLanguageCallbackData>(
             first_screen, nullptr);
     TriggerShowLoginWizardFinish(
-        &local_state, metrics_service, application_locale_storage,
+        local_state, metrics_service, application_locale_storage,
         std::move(shared_url_loader_factory), browser_policy_connector_ash,
         switch_locale, std::move(data),
         /*login_input_methods_only=*/true);
@@ -1351,7 +1348,7 @@ void ShowLoginWizard(OobeScreenId first_screen) {
 
   if (!current_locale.empty() || locale.empty()) {
     TriggerShowLoginWizardFinish(
-        &local_state, metrics_service, application_locale_storage,
+        local_state, metrics_service, application_locale_storage,
         std::move(shared_url_loader_factory), browser_policy_connector_ash,
         std::string(), std::move(data),
         /*login_input_methods_only=*/false);
@@ -1362,11 +1359,11 @@ void ShowLoginWizard(OobeScreenId first_screen) {
   // Chrome locale. Otherwise it will be lost if Chrome restarts.
   // Don't need to schedule pref save because setting initial local
   // will enforce preference saving.
-  local_state.SetString(language::prefs::kApplicationLocale, locale);
-  StartupUtils::SetInitialLocale(local_state, locale);
+  local_state->SetString(language::prefs::kApplicationLocale, locale);
+  StartupUtils::SetInitialLocale(CHECK_DEREF(local_state), locale);
 
   TriggerShowLoginWizardFinish(
-      &local_state, metrics_service, application_locale_storage,
+      local_state, metrics_service, application_locale_storage,
       std::move(shared_url_loader_factory), browser_policy_connector_ash,
       locale, std::move(data),
       /*login_input_methods_only=*/false);
@@ -1380,7 +1377,13 @@ void SwitchWebUItoMojo() {
   }
 
   // This replaces WebUI host with the Mojo (views) host.
-  ShowLoginWizard(ash::OOBE_SCREEN_UNKNOWN);
+  // TODO(crbug.com/403154552): Avoid using g_browser_process.
+  ShowLoginWizard(
+      g_browser_process->local_state(), g_browser_process->metrics_service(),
+      g_browser_process->GetFeatures()->application_locale_storage(),
+      g_browser_process->shared_url_loader_factory(),
+      g_browser_process->platform_part()->browser_policy_connector_ash(),
+      OOBE_SCREEN_UNKNOWN);
 }
 
 }  // namespace ash
