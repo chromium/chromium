@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_THEME_TRACKING_NON_ACCESSIBLE_IMAGE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_THEME_TRACKING_NON_ACCESSIBLE_IMAGE_VIEW_H_
 
-#include "base/functional/callback.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/theme_tracking_image_view.h"
+
+namespace ui {
+class ColorVariant;
+}  // namespace ui
 
 // ImageView that sets the "invisible" state on AXNodeData so that
 // the image is not traversed by screen readers. It also tracks the theme to
@@ -20,19 +23,15 @@ class ThemeTrackingNonAccessibleImageView
                   views::ThemeTrackingImageView)
 
  public:
-  ThemeTrackingNonAccessibleImageView(
-      const ui::ImageModel& light_image_model,
-      const ui::ImageModel& dark_image_model,
-      const base::RepeatingCallback<ui::ColorVariant()>&
-          get_background_color_callback);
+  ThemeTrackingNonAccessibleImageView(const ui::ImageModel& light_image_model,
+                                      const ui::ImageModel& dark_image_model,
+                                      ui::ColorVariant background_color);
 
   // TODO(crbug.com/40239900): Remove this constructor and migrate existing
   // callers to `ImageModel`.
-  ThemeTrackingNonAccessibleImageView(
-      const gfx::ImageSkia& light_image,
-      const gfx::ImageSkia& dark_image,
-      const base::RepeatingCallback<ui::ColorVariant()>&
-          get_background_color_callback);
+  ThemeTrackingNonAccessibleImageView(const gfx::ImageSkia& light_image,
+                                      const gfx::ImageSkia& dark_image,
+                                      ui::ColorVariant background_color);
 
   ThemeTrackingNonAccessibleImageView(
       const ThemeTrackingNonAccessibleImageView&) = delete;

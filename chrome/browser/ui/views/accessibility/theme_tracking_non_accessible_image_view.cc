@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 
-#include "base/functional/callback.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_variant.h"
@@ -14,22 +13,18 @@
 ThemeTrackingNonAccessibleImageView::ThemeTrackingNonAccessibleImageView(
     const ui::ImageModel& light_image_model,
     const ui::ImageModel& dark_image_model,
-    const base::RepeatingCallback<ui::ColorVariant()>&
-        get_background_color_callback)
+    ui::ColorVariant background_color)
     : views::ThemeTrackingImageView(light_image_model,
                                     dark_image_model,
-                                    get_background_color_callback) {
+                                    background_color) {
   GetViewAccessibility().SetIsInvisible(true);
 }
 
 ThemeTrackingNonAccessibleImageView::ThemeTrackingNonAccessibleImageView(
     const gfx::ImageSkia& light_image,
     const gfx::ImageSkia& dark_image,
-    const base::RepeatingCallback<ui::ColorVariant()>&
-        get_background_color_callback)
-    : views::ThemeTrackingImageView(light_image,
-                                    dark_image,
-                                    get_background_color_callback) {
+    ui::ColorVariant background_color)
+    : views::ThemeTrackingImageView(light_image, dark_image, background_color) {
   GetViewAccessibility().SetIsInvisible(true);
 }
 

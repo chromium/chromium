@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/functional/bind.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -15,6 +14,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/color_variant.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/test/views_test_base.h"
@@ -33,6 +33,7 @@ class ThemeTrackingImageViewTest : public ViewsTestBase {
   void SetUp() override {
     ViewsTestBase::SetUp();
     widget_ = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+    SetIsDarkMode(false);
   }
 
   void TearDown() override {
@@ -40,17 +41,13 @@ class ThemeTrackingImageViewTest : public ViewsTestBase {
     ViewsTestBase::TearDown();
   }
 
-  ui::ColorVariant GetSimulatedBackgroundColor() const {
-    return is_dark_ ? SK_ColorBLACK : SK_ColorWHITE;
-  }
-
  protected:
   bool IsDarkMode() const { return is_dark_; }
   void SetIsDarkMode(bool is_dark) {
     is_dark_ = is_dark;
-    if (view()) {
-      view()->OnThemeChanged();
-    }
+    widget_->SetColorModeOverride(
+        is_dark ? ui::ColorProviderKey::ColorMode::kDark
+                : ui::ColorProviderKey::ColorMode::kLight);
   }
 
   void SetView(std::unique_ptr<ThemeTrackingImageView> view) {
@@ -75,11 +72,8 @@ TEST_F(ThemeTrackingImageViewTest, CreateWithImageSkia) {
   gfx::ImageSkia dark_image =
       gfx::test::CreateImageSkia(kImageSize, SK_ColorBLUE);
 
-  SetView(std::make_unique<ThemeTrackingImageView>(
-      light_image, dark_image,
-      base::BindRepeating(
-          &ThemeTrackingImageViewTest::GetSimulatedBackgroundColor,
-          base::Unretained(this))));
+  SetView(std::make_unique<ThemeTrackingImageView>(light_image, dark_image,
+                                                   ui::kColorDialogBackground));
 
   ASSERT_FALSE(IsDarkMode());
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(*view()->GetImage().bitmap(),
@@ -102,11 +96,8 @@ TEST_F(ThemeTrackingImageViewTest, CreateWithImageModel) {
                                         : vector_icons::kCallOldIcon,
       ui::kColorMenuIcon, kImageSize)};
 
-  SetView(std::make_unique<ThemeTrackingImageView>(
-      light_model, dark_model,
-      base::BindRepeating(
-          &ThemeTrackingImageViewTest::GetSimulatedBackgroundColor,
-          base::Unretained(this))));
+  SetView(std::make_unique<ThemeTrackingImageView>(light_model, dark_model,
+                                                   ui::kColorDialogBackground));
 
   ASSERT_FALSE(IsDarkMode());
   EXPECT_EQ(view()->GetImageModel(), light_model);
@@ -130,11 +121,8 @@ TEST_F(ThemeTrackingImageViewTest, SetLightImage) {
                                         : vector_icons::kCallOldIcon,
       ui::kColorMenuIcon, kImageSize)};
 
-  SetView(std::make_unique<ThemeTrackingImageView>(
-      light_model1, dark_model,
-      base::BindRepeating(
-          &ThemeTrackingImageViewTest::GetSimulatedBackgroundColor,
-          base::Unretained(this))));
+  SetView(std::make_unique<ThemeTrackingImageView>(light_model1, dark_model,
+                                                   ui::kColorDialogBackground));
 
   ASSERT_FALSE(IsDarkMode());
   EXPECT_EQ(view()->GetImageModel(), light_model1);
@@ -167,11 +155,8 @@ TEST_F(ThemeTrackingImageViewTest, SetDarkImage) {
                                         : vector_icons::kCallOldIcon,
       ui::kColorMenuIcon, kImageSize)};
 
-  SetView(std::make_unique<ThemeTrackingImageView>(
-      light_model, dark_model1,
-      base::BindRepeating(
-          &ThemeTrackingImageViewTest::GetSimulatedBackgroundColor,
-          base::Unretained(this))));
+  SetView(std::make_unique<ThemeTrackingImageView>(light_model, dark_model1,
+                                                   ui::kColorDialogBackground));
 
   ASSERT_FALSE(IsDarkMode());
   EXPECT_EQ(view()->GetImageModel(), light_model);

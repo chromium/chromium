@@ -13,8 +13,7 @@ using ThemeTrackingNonAccessibleImageViewTest = views::ViewsTestBase;
 
 TEST_F(ThemeTrackingNonAccessibleImageViewTest, AccessibleProperties) {
   auto view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
-      ui::ImageModel(), ui::ImageModel(),
-      base::RepeatingCallback<ui::ColorVariant()>());
+      ui::ImageModel(), ui::ImageModel(), ui::ColorVariant());
   ui::AXNodeData node_data;
   view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_TRUE(node_data.HasState(ax::mojom::State::kInvisible));

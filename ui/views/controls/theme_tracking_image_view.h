@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_CONTROLS_THEME_TRACKING_IMAGE_VIEW_H_
 #define UI_VIEWS_CONTROLS_THEME_TRACKING_IMAGE_VIEW_H_
 
-#include "base/functional/callback.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_variant.h"
 #include "ui/gfx/image/image_skia.h"
@@ -14,8 +13,8 @@
 namespace views {
 
 // An ImageView that displays either `light_image` or `dark_image` based on the
-// current background color returned by `get_background_color_callback`. Tracks
-// theme changes so the image is always the correct version. `light_image` and
+// current background color resolved from `background_color`. Tracks theme
+// changes so the image is always the correct version. `light_image` and
 // `dark_image` must be of the same size. The `light_image` is set by default
 // upon construction.
 class VIEWS_EXPORT ThemeTrackingImageView : public ImageView {
@@ -24,15 +23,13 @@ class VIEWS_EXPORT ThemeTrackingImageView : public ImageView {
  public:
   ThemeTrackingImageView(const ui::ImageModel& light_image_model,
                          const ui::ImageModel& dark_image_model,
-                         const base::RepeatingCallback<ui::ColorVariant()>&
-                             get_background_color_callback);
+                         ui::ColorVariant background_color);
 
   // TODO(crbug.com/40239900): Remove this constructor and migrate existing
   // callers to `ImageModel`.
   ThemeTrackingImageView(const gfx::ImageSkia& light_image,
                          const gfx::ImageSkia& dark_image,
-                         const base::RepeatingCallback<ui::ColorVariant()>&
-                             get_background_color_callback);
+                         ui::ColorVariant background_color);
 
   ThemeTrackingImageView(const ThemeTrackingImageView&) = delete;
   ThemeTrackingImageView& operator=(const ThemeTrackingImageView&) = delete;
@@ -49,7 +46,7 @@ class VIEWS_EXPORT ThemeTrackingImageView : public ImageView {
   ui::ImageModel light_image_model_;
   ui::ImageModel dark_image_model_;
 
-  base::RepeatingCallback<ui::ColorVariant()> get_background_color_callback_;
+  ui::ColorVariant background_color_;
 };
 
 }  // namespace views

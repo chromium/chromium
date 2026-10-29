@@ -24,6 +24,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
@@ -61,8 +62,7 @@ constexpr int kTextWithIconViewIconSize = 24;
 
 std::unique_ptr<views::ImageView> CreateIconView(
     TitleWithIconAfterLabelView::Icon icon_to_show,
-    const base::RepeatingCallback<ui::ColorVariant()>&
-        get_background_color_callback) {
+    ui::ColorVariant background_color) {
   ui::ImageModel model;
   std::optional<ui::ImageModel> model_dark;
   switch (icon_to_show) {
@@ -178,7 +178,7 @@ std::unique_ptr<views::ImageView> CreateIconView(
     }
   }
   return std::make_unique<views::ThemeTrackingImageView>(
-      model, model_dark.value_or(model), get_background_color_callback);
+      model, model_dark.value_or(model), background_color);
 }
 
 }  // namespace
@@ -276,10 +276,8 @@ TitleWithIconAfterLabelView::TitleWithIconAfterLabelView(
       window_title, views::style::CONTEXT_DIALOG_TITLE));
   title_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
   title_label->SetMultiLine(true);
-  auto* icon_view = AddChildView(
-      CreateIconView(icon_to_show, base::BindRepeating([]() {
-                       return ui::ColorVariant(ui::kColorDialogBackground);
-                     })));
+  auto* icon_view =
+      AddChildView(CreateIconView(icon_to_show, ui::kColorDialogBackground));
   icon_view->SetID(DialogViewId::BUBBLE_TITLE_ICON);
 
   // Center the icon against the first line of the title label. This needs to be

@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -207,9 +208,7 @@ void FilledCardInformationBubbleViews::AddCardDescriptionView(
       std::make_unique<views::ThemeTrackingImageView>(
           /*light_image_model=*/card_images.first,
           /*dark_image_model=*/card_images.second.value_or(card_images.first),
-          /*get_background_color_callback=*/
-          base::BindRepeating(
-              []() { return ui::ColorVariant(ui::kColorDialogBackground); })));
+          /*background_color=*/ui::kColorDialogBackground));
   card_image_view->SetID(kCardImage);
 
   // Add a child container view for the two-line text view.

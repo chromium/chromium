@@ -4,10 +4,10 @@
 
 #include "ui/views/controls/theme_tracking_image_view.h"
 
-#include "base/functional/callback.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/native_theme/native_theme.h"
@@ -17,11 +17,10 @@ namespace views {
 ThemeTrackingImageView::ThemeTrackingImageView(
     const ui::ImageModel& light_image_model,
     const ui::ImageModel& dark_image_model,
-    const base::RepeatingCallback<ui::ColorVariant()>&
-        get_background_color_callback)
+    ui::ColorVariant background_color)
     : light_image_model_(light_image_model),
       dark_image_model_(dark_image_model),
-      get_background_color_callback_(get_background_color_callback) {
+      background_color_(background_color) {
   DCHECK_EQ(light_image_model_.Size(), dark_image_model_.Size());
   SetImage(light_image_model_);
 }
@@ -29,11 +28,10 @@ ThemeTrackingImageView::ThemeTrackingImageView(
 ThemeTrackingImageView::ThemeTrackingImageView(
     const gfx::ImageSkia& light_image,
     const gfx::ImageSkia& dark_image,
-    const base::RepeatingCallback<ui::ColorVariant()>&
-        get_background_color_callback)
+    ui::ColorVariant background_color)
     : light_image_model_(ui::ImageModel::FromImageSkia(light_image)),
       dark_image_model_(ui::ImageModel::FromImageSkia(dark_image)),
-      get_background_color_callback_(get_background_color_callback) {
+      background_color_(background_color) {
   DCHECK_EQ(light_image_model_.Size(), dark_image_model_.Size());
   SetImage(light_image_model_);
 }
@@ -42,19 +40,17 @@ ThemeTrackingImageView::~ThemeTrackingImageView() = default;
 
 void ThemeTrackingImageView::OnThemeChanged() {
   ImageView::OnThemeChanged();
-  SetImage(
-      color_utils::IsDark(get_background_color_callback_.Run().ResolveToSkColor(
-          GetColorProvider()))
-          ? dark_image_model_
-          : light_image_model_);
+  SetImage(color_utils::IsDark(
+               background_color_.ResolveToSkColor(GetColorProvider()))
+               ? dark_image_model_
+               : light_image_model_);
 }
 
 void ThemeTrackingImageView::SetLightImage(
     const ui::ImageModel& light_image_model) {
   light_image_model_ = light_image_model;
   if (!color_utils::IsDark(
-          get_background_color_callback_.Run().ResolveToSkColor(
-              GetColorProvider()))) {
+          background_color_.ResolveToSkColor(GetColorProvider()))) {
     SetImage(light_image_model_);
   }
 }
@@ -62,8 +58,8 @@ void ThemeTrackingImageView::SetLightImage(
 void ThemeTrackingImageView::SetDarkImage(
     const ui::ImageModel& dark_image_model) {
   dark_image_model_ = dark_image_model;
-  if (color_utils::IsDark(get_background_color_callback_.Run().ResolveToSkColor(
-          GetColorProvider()))) {
+  if (color_utils::IsDark(
+          background_color_.ResolveToSkColor(GetColorProvider()))) {
     SetImage(dark_image_model_);
   }
 }

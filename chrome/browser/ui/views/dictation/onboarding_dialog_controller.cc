@@ -253,8 +253,7 @@ void OnboardingDialogController::Show(base::OnceClosure complete_callback,
     auto banner_view = std::make_unique<views::ThemeTrackingImageView>(
         ui::ImageModel::FromResourceId(IDR_DICTATION_ONBOARDING_BANNER),
         ui::ImageModel::FromResourceId(IDR_DICTATION_ONBOARDING_BANNER_DARK),
-        base::BindRepeating(&views::BubbleDialogDelegate::background_color,
-                            base::Unretained(model_host)));
+        model_host->background_color());
     banner_view->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(kBannerTopPadding, 0, kBannerBottomPadding, 0)));
     // The banner is purely decorative.
