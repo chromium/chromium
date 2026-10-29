@@ -6,9 +6,10 @@
 
 #include "base/check.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "components/payments/core/error_logger.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace payments {
 namespace {
@@ -25,7 +26,7 @@ uint8_t HexDigitToByte(char c) {
 
 }  // namespace
 
-std::vector<uint8_t> FingerprintStringToByteArray(const std::string& input,
+std::vector<uint8_t> FingerprintStringToByteArray(std::string_view input,
                                                   const ErrorLogger& log) {
   std::vector<uint8_t> output;
   if (!base::IsStringASCII(input)) {
@@ -35,10 +36,11 @@ std::vector<uint8_t> FingerprintStringToByteArray(const std::string& input,
 
   const size_t kLength = 32 * 3 - 1;
   if (input.size() != kLength) {
-    log.Error(base::StringPrintf(
+    log.Error(absl::StrFormat(
         "Fingerprint \"%s\" should contain exactly %zu characters.",
-        (input.size() > kLength ? (input.substr(0, kLength) + "...") : input)
-            .c_str(),
+        (input.size() > kLength
+             ? base::StrCat({input.substr(0, kLength), "..."})
+             : input),
         kLength));
     return output;
   }
@@ -46,9 +48,9 @@ std::vector<uint8_t> FingerprintStringToByteArray(const std::string& input,
   for (size_t i = 0; i < input.size(); i += 3) {
     if (i < input.size() - 2 && input[i + 2] != ':') {
       log.Error(
-          base::StringPrintf("Bytes in fingerprint \"%s\" should be separated "
-                             "by \":\" characters.",
-                             input.c_str()));
+          absl::StrFormat("Bytes in fingerprint \"%s\" should be separated "
+                          "by \":\" characters.",
+                          input));
       output.clear();
       return output;
     }
@@ -56,10 +58,10 @@ std::vector<uint8_t> FingerprintStringToByteArray(const std::string& input,
     char big_end = input[i];
     char little_end = input[i + 1];
     if (!IsUpperCaseHexDigit(big_end) || !IsUpperCaseHexDigit(little_end)) {
-      log.Error(base::StringPrintf(
+      log.Error(absl::StrFormat(
           "Bytes in fingerprint \"%s\" should be upper case hex digits 0-9 and "
           "A-F.",
-          input.c_str()));
+          input));
       output.clear();
       return output;
     }
