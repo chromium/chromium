@@ -24,6 +24,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -2559,6 +2560,87 @@ TEST_F(HistoryBackendTest, QueryHistoryWithTextQueryIncludesActorSource) {
                   testing::AllOf(
                       testing::Property(&URLResult::url, url2),
                       testing::Property(&URLResult::has_actor_source, true))));
+}
+
+// Tests that a text search returns each visit's own content annotations.
+TEST_F(HistoryBackendTest,
+       QueryHistoryWithTextQueryIncludesContentAnnotations) {
+  ASSERT_TRUE(backend_.get());
+
+  const GURL url("http://www.example.com/page");
+  const base::Time now = base::Time::Now();
+  constexpr size_t kNumVisits = 5;
+  for (size_t i = 0; i < kNumVisits; ++i) {
+    HistoryAddPageArgs request(
+        url, now - base::Minutes(kNumVisits - i), /*context_id=*/1,
+        /*nav_entry_id=*/base::checked_cast<int>(i + 1),
+        /*local_navigation_id=*/std::nullopt, GURL(), RedirectList(),
+        ui::PAGE_TRANSITION_TYPED, false, SOURCE_BROWSED,
+        VisitResponseCodeCategory::kNot404, false, true);
+    backend_->AddPage(request);
+  }
+
+  URLRow row;
+  URLID url_id = backend_->db()->GetRowForURL(url, &row);
+  VisitVector visits;
+  ASSERT_TRUE(backend_->db()->GetVisitsForURL(url_id, &visits));
+  ASSERT_EQ(kNumVisits, visits.size());
+  for (const VisitRow& visit : visits) {
+    VisitContentAnnotations annotations;
+    annotations.alternative_title = base::NumberToString(visit.visit_id);
+    backend_->db()->AddContentAnnotationsForVisit(visit.visit_id, annotations);
+  }
+
+  QueryOptions options;
+  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+  options.max_count = 2;
+  QueryResults results = backend_->QueryHistory(u"example", options);
+
+  // Only the two newest visits are returned, and each keeps its annotations.
+  ASSERT_EQ(2u, results.size());
+  EXPECT_EQ(now - base::Minutes(1), results[0].visit_time());
+  EXPECT_EQ(now - base::Minutes(2), results[1].visit_time());
+  for (const URLResult& result : results) {
+    EXPECT_EQ(base::NumberToString(result.visit_id()),
+              result.content_annotations().alternative_title);
+  }
+}
+
+// Tests that a text search doesn't report reaching the beginning of history
+// when the per-URL visit query is truncated by `max_count`, even though the
+// merged results don't exceed `max_count`.
+TEST_F(HistoryBackendTest,
+       QueryHistoryTextNotReachedBeginningWhenPerUrlVisitsTruncated) {
+  ASSERT_TRUE(backend_.get());
+
+  const GURL url("http://www.example.com/page");
+  const base::Time now = base::Time::Now();
+  constexpr size_t kNumVisits = 3;
+  for (size_t i = 0; i < kNumVisits; ++i) {
+    HistoryAddPageArgs request(
+        url, now - base::Minutes(kNumVisits - i), /*context_id=*/1,
+        /*nav_entry_id=*/base::checked_cast<int>(i + 1),
+        /*local_navigation_id=*/std::nullopt, GURL(), RedirectList(),
+        ui::PAGE_TRANSITION_TYPED, false, SOURCE_BROWSED,
+        VisitResponseCodeCategory::kNot404, false, true);
+    backend_->AddPage(request);
+  }
+
+  QueryOptions options;
+  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+
+  // The only matching URL has more visits than `max_count`, so older visits
+  // remain beyond the returned results.
+  options.max_count = base::checked_cast<int>(kNumVisits - 1);
+  QueryResults results = backend_->QueryHistory(u"example", options);
+  EXPECT_EQ(kNumVisits - 1, results.size());
+  EXPECT_FALSE(results.reached_beginning());
+
+  // All visits fit within `max_count`, so the beginning is reached.
+  options.max_count = base::checked_cast<int>(kNumVisits);
+  results = backend_->QueryHistory(u"example", options);
+  EXPECT_EQ(kNumVisits, results.size());
+  EXPECT_TRUE(results.reached_beginning());
 }
 
 TEST_F(HistoryBackendTest, SetHasUrlKeyedImage) {

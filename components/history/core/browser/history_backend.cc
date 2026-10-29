@@ -20,6 +20,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -3084,10 +3085,15 @@ void HistoryBackend::QueryHistoryText(const std::u16string& text_query,
   }
 
   std::vector<URLResult> matching_visits;
+  // Whether any per-URL visit query was truncated by `options.max_count`. If
+  // so, older matching visits exist beyond what is returned.
+  bool has_more_results = false;
   for (const auto& text_match : text_matches) {
     // Get all visits for given URL match.
     VisitVector visits;
-    db_->GetVisibleVisitsForURL(text_match.id(), options, &visits);
+    if (db_->GetVisibleVisitsForURL(text_match.id(), options, &visits)) {
+      has_more_results = true;
+    }
 
     VisitSourceMap sources;
     GetVisitsSource(visits, &sources);
@@ -3097,10 +3103,6 @@ void HistoryBackend::QueryHistoryText(const std::u16string& text_query,
       url_result.set_visit_id(visit.visit_id);
       url_result.set_visit_time(visit.visit_time);
       url_result.set_app_id(visit.app_id);
-
-      VisitContentAnnotations content_annotations;
-      db_->GetContentAnnotationsForVisit(visit.visit_id, &content_annotations);
-      url_result.set_content_annotations(content_annotations);
 
       VisitSource visit_source;
       if (visit.source.has_value()) {
@@ -3122,10 +3124,23 @@ void HistoryBackend::QueryHistoryText(const std::u16string& text_query,
   size_t max_results = options.max_count == 0
                            ? std::numeric_limits<size_t>::max()
                            : static_cast<int>(options.max_count);
-  bool has_more_results = false;
   if (matching_visits.size() > max_results) {
     has_more_results = true;
     matching_visits.resize(max_results);
+  }
+
+  // Read annotations only for the returned visits, in a single batched query.
+  // Before trimming, `matching_visits` can hold up to `max_count` visits per
+  // matching URL.
+  std::vector<VisitID> visit_ids =
+      base::ToVector(matching_visits, &URLResult::visit_id);
+  base::flat_map<VisitID, VisitContentAnnotations> content_annotations_map;
+  db_->GetContentAnnotationsForVisits(visit_ids, &content_annotations_map);
+  for (URLResult& url_result : matching_visits) {
+    auto annot_it = content_annotations_map.find(url_result.visit_id());
+    if (annot_it != content_annotations_map.end()) {
+      url_result.set_content_annotations(std::move(annot_it->second));
+    }
   }
   result->SetURLResults(std::move(matching_visits));
 
