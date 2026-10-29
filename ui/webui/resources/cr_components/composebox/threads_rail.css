@@ -27,6 +27,10 @@
   padding: 24px 12px 20px 12px;
 }
 
+:host-context([dir='rtl']) #rail {
+  cursor: w-resize;
+}
+
 #iconsContainer {
   display: flex;
   flex-direction: column;
