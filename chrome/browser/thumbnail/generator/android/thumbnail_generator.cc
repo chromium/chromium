@@ -15,6 +15,7 @@
 #include "chrome/browser/thumbnail/generator/android/thumbnail_media_parser.h"
 #include "chrome/browser/thumbnail/generator/thumbnail_util.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/gfx/android/java_bitmap.h"
 
 // Must come after headers that provide symbols used by @JniType.
@@ -51,11 +52,8 @@ ThumbnailGenerator::ThumbnailGenerator(const JavaRef<jobject>& jobj)
   DCHECK(!jobj.is_null());
 }
 
-ThumbnailGenerator::~ThumbnailGenerator() = default;
-
-void ThumbnailGenerator::Destroy() {
+ThumbnailGenerator::~ThumbnailGenerator() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  delete this;
 }
 
 void ThumbnailGenerator::OnImageThumbnailRetrieved(
@@ -130,8 +128,9 @@ void ThumbnailGenerator::RetrieveThumbnail(const JavaRef<jstring>& jcontent_id,
 }
 
 // static
-static int64_t JNI_ThumbnailGenerator_Init(const JavaRef<jobject>& jobj) {
-  return reinterpret_cast<intptr_t>(new ThumbnailGenerator(jobj));
+static jni_zero::JniUniquePtr<ThumbnailGenerator> JNI_ThumbnailGenerator_Init(
+    const JavaRef<jobject>& jobj) {
+  return jni_zero::MakeUnique<ThumbnailGenerator>(jobj);
 }
 
 DEFINE_JNI(ThumbnailGenerator)

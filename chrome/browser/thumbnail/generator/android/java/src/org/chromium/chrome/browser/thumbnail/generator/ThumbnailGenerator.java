@@ -10,7 +10,10 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
@@ -26,11 +29,13 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 public class ThumbnailGenerator {
-    // The native side pointer that is owned and destroyed by the Java class.
-    private long mNativeThumbnailGenerator;
+    @JniType("::ThumbnailGenerator")
+    interface NativeThumbnailGenerator extends JniTypeToken {}
 
-    private long getNativeThumbnailGenerator() {
-        if (mNativeThumbnailGenerator == 0) {
+    private @Nullable JniUniquePtr<NativeThumbnailGenerator> mNativeThumbnailGenerator;
+
+    private JniPtr<NativeThumbnailGenerator> getNativeThumbnailGenerator() {
+        if (mNativeThumbnailGenerator == null) {
             mNativeThumbnailGenerator = ThumbnailGeneratorJni.get().init(this);
         }
         return mNativeThumbnailGenerator;
@@ -59,9 +64,9 @@ public class ThumbnailGenerator {
     /** Destroys the native {@link ThumbnailGenerator}. */
     public void destroy() {
         ThreadUtils.assertOnUiThread();
-        if (mNativeThumbnailGenerator == 0) return;
-        ThumbnailGeneratorJni.get().destroy(mNativeThumbnailGenerator);
-        mNativeThumbnailGenerator = 0;
+        if (mNativeThumbnailGenerator == null) return;
+        mNativeThumbnailGenerator.destroy();
+        mNativeThumbnailGenerator = null;
     }
 
     /**
@@ -92,12 +97,10 @@ public class ThumbnailGenerator {
 
     @NativeMethods
     interface Natives {
-        long init(ThumbnailGenerator self);
-
-        void destroy(long nativeThumbnailGenerator);
+        JniUniquePtr<NativeThumbnailGenerator> init(ThumbnailGenerator self);
 
         void retrieveThumbnail(
-                long nativeThumbnailGenerator,
+                JniPtr<NativeThumbnailGenerator> self,
                 @Nullable String contentId,
                 @JniType("std::string") @Nullable String filePath,
                 @JniType("std::string") @Nullable String mimeType,

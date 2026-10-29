@@ -22,12 +22,10 @@ class ThumbnailGenerator {
  public:
   explicit ThumbnailGenerator(const jni_zero::JavaRef<jobject>& jobj);
 
-  // Destroys the ThumbnailGenerator.  Any currently running ImageRequest will
-  // delete itself when it has completed.
-  void Destroy();
-
   ThumbnailGenerator(const ThumbnailGenerator&) = delete;
   ThumbnailGenerator& operator=(const ThumbnailGenerator&) = delete;
+
+  ~ThumbnailGenerator();
 
   // Kicks off an asynchronous process to retrieve the thumbnail for the file
   // located at |file_path| with a max size of |icon_size| in each dimension.
@@ -40,8 +38,6 @@ class ThumbnailGenerator {
                          const jni_zero::JavaRef<jobject>& callback);
 
  private:
-  ~ThumbnailGenerator();
-
   // Called when the image thumbnail is ready.  |thumbnail| will be empty on
   // failure.
   void OnImageThumbnailRetrieved(
