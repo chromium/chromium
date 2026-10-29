@@ -9,16 +9,22 @@
 
 @protocol SystemIdentity;
 
-// Callback for the signin operation methods.
+// Callback for the signin operation methods. When non-`nil`, the returned
+// identity corresponds to an account on the device and can be an account
+// filtered by `kRestrictAccountsToPatterns`.
 using SigninCompletionBlock = void (^)(id<SystemIdentity>, NSError*);
 
 // Protocol abstracting the interaction for adding identities on iOS.
+// This protocol ignores the `kRestrictAccountsToPatterns` policy and deals with
+// accounts on the device even if they are filtered by
+// `kRestrictAccountsToPatterns`.
 @protocol SystemIdentityInteractionManager
 
 // Starts the activity to add an account (if `userEmail` is nil or empty)
 // or to re-authenticate an account (if `userEmail` is not empty). For the
 // re-authentication, the screen to enter the credential will have the email
-// field pre-entered.
+// field pre-entered. `userEmail` does not need to correspond to an account on
+// the device.
 //
 // The activity will fail if there is already an authentication activity in
 // progress.

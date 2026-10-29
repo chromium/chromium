@@ -19,6 +19,8 @@ class IdentityManager;
 }  // namespace signin
 
 // Mediator for AccountPickerConfirmationScreenCoordinator.
+// Only deals with accounts on the device that match
+// `prefs::kRestrictAccountsToPatterns`.
 @interface AccountPickerConfirmationScreenMediator : NSObject
 
 // The designated initializer.

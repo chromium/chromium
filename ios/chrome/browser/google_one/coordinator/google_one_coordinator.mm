@@ -160,6 +160,10 @@ GoogleOneOutcomeMetrics HistogramOutcomeBucket(GoogleOneOutcome outcome,
   if (_inputURL.is_valid()) {
     NSString* accountParam = GoogleOneAccountFromURL(_inputURL);
     if (accountParam.length > 0) {
+      // TODO(crbug.com/576575308): `FindIdentityForGoogleOneAccount` does not
+      // filter by `kRestrictAccountsToPatterns`, so `identityToUse` may be a
+      // restricted account passed to `TriggerAccountSwitchSnackbarWithIdentity`
+      // and `GoogleOneConfiguration`.
       identityToUse = FindIdentityForGoogleOneAccount(accountParam);
     }
     if (!identityToUse) {

@@ -11,6 +11,8 @@ class Browser;
 @protocol ManageAccountsCoordinatorDelegate;
 
 // Coordinator for the Accounts TableView Controller.
+// Only deals with accounts on the device that match
+// `prefs::kRestrictAccountsToPatterns`.
 @interface ManageAccountsCoordinator : ChromeCoordinator
 
 // If YES, ManageAccountsTableViewController should not dismiss itself only for

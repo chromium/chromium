@@ -31,6 +31,8 @@ class DownloadTask;
 }
 
 // Mediator for the Save to Drive feature.
+// All identities handled by this mediator are on the device and match
+// `kRestrictAccountsToPatterns`.
 @interface SaveToDriveMediator : NSObject <FileDestinationPickerActionDelegate>
 
 @property(nonatomic, weak) id<AccountPickerConsumer> accountPickerConsumer;

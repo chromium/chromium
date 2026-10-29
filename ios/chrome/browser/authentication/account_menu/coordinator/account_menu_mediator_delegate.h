@@ -17,6 +17,9 @@
 @class AuthenticationFlow;
 @protocol SystemIdentity;
 
+// Delegate for `AccountMenuMediator`. All identities dealt with by this
+// protocol are on the device and match the `kRestrictAccountsToPatterns`
+// policy.
 @protocol AccountMenuMediatorDelegate <NSObject>
 
 // Requests to dismiss the account menu synchronously.

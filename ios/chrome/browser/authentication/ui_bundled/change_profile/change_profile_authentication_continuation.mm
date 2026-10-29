@@ -44,6 +44,9 @@ void SigninForContext(URLContext* context,
 
   // Iterate over all identities on device because the newGaia could
   // be in a different profile.
+  // TODO(crbug.com/576575308): Look up the identity via
+  // `ChromeAccountManagerService` instead of `SystemIdentityManager` so that
+  // restricted accounts are not passed to `AuthenticationService::SignIn`.
   id<SystemIdentity> new_identity = nil;
   NSMutableArray<id<SystemIdentity>>* identities =
       [[NSMutableArray alloc] init];

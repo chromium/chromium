@@ -12,6 +12,9 @@
 #import "ios/chrome/browser/signin/model/system_identity_manager_observer.h"
 
 // Objective-C protocol mirroring SystemIdentityManagerObserver.
+// This protocol ignores the `kRestrictAccountsToPatterns` policy and receives
+// events for accounts on the device even if they are filtered by
+// `kRestrictAccountsToPatterns`.
 @protocol SystemIdentityManagerObserving <NSObject>
 
 @optional
@@ -21,6 +24,9 @@
 @end
 
 // Simple observer bridge that forwards all events to its delegate observer.
+// This class ignores the `kRestrictAccountsToPatterns` policy and receives
+// events for accounts on the device even if they are filtered by
+// `kRestrictAccountsToPatterns`.
 class SystemIdentityManagerObserverBridge
     : public SystemIdentityManagerObserver {
  public:

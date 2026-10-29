@@ -53,6 +53,8 @@ extern NSString* const kGooglePhotosAppURLScheme;
 // image to be saved in their Photos library e.g. Google Photos. It lets the
 // user select an account as destination and notifies the user of progress and
 // completion.
+// All identities handled by this mediator are on the device and match
+// `kRestrictAccountsToPatterns`.
 @interface SaveToPhotosMediator : NSObject
 
 @property(nonatomic, weak) id<SaveToPhotosMediatorDelegate> delegate;

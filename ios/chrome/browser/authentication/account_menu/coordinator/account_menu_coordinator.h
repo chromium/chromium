@@ -14,6 +14,8 @@ enum class AccountMenuAccessPoint;
 class GURL;
 
 // Coordinator to display the fast account menu view controller.
+// This class respects the `kRestrictAccountsToPatterns` policy and only deals
+// with accounts on the device matching `kRestrictAccountsToPatterns`.
 @interface AccountMenuCoordinator : ChromeCoordinator
 
 @property(nonatomic, weak) id<AccountMenuCoordinatorDelegate> delegate;

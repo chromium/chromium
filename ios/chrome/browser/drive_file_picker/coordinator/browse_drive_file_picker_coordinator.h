@@ -22,6 +22,8 @@ class WebState;
 }
 
 // Coordinator of the Browse Drive file picker.
+// All identities handled by this coordinator are on the device and match
+// `kRestrictAccountsToPatterns`.
 @interface BrowseDriveFilePickerCoordinator : ChromeCoordinator
 
 @property(nonatomic, weak) id<BrowseDriveFilePickerCoordinatorDelegate>

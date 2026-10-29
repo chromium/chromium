@@ -33,6 +33,10 @@ class PrefService;
 // AuthenticationService handles sign-in/sign-out operations, including various
 // related state (prefs) and observing the SigninAllowed and BrowserSignin
 // policies.
+// This class respects the `kRestrictAccountsToPatterns` policy and only deals
+// with accounts on the device matching `kRestrictAccountsToPatterns`
+// (automatically signing out the primary account if it stops matching the
+// policy).
 class AuthenticationService : public KeyedService,
                               public signin::IdentityManager::Observer,
                               public ChromeAccountManagerService::Observer,

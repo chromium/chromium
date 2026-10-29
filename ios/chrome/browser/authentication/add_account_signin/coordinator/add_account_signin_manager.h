@@ -39,8 +39,9 @@ enum class SigninAddAccountToDeviceResult : int {
 
 // Completes the sign-in operation.
 //   * `result` the result of the add account flow.
-//   * `identity` is the identity of the added account (non-null when `result`
-//      is `SigninAddAccountToDeviceResult::kSuccess`).
+//   * `identity` is the identity of the added account on the device (non-null
+//      when `result` is `SigninAddAccountToDeviceResult::kSuccess`). Can be an
+//      account filtered by `kRestrictAccountsToPatterns`.
 //   * `error` is the error to be displayed (non-null only when `result` is
 //     `SigninAddAccountToDeviceResult::kError`).
 - (void)addAccountSigninManagerFinishedWithResult:
@@ -51,6 +52,10 @@ enum class SigninAddAccountToDeviceResult : int {
 @end
 
 // Manager that handles add account and reauthentication UI.
+// This class ignores the `kRestrictAccountsToPatterns` policy for the added
+// account on the device (the delegate is responsible for checking whether the
+// resulting identity matches `kRestrictAccountsToPatterns`), and
+// `prefilledEmail` does not need to correspond to an account on the device.
 // Note that, up to iOS 18, the add account view may disappear if the user turn
 // off their screen, without informing the delegate, due to a bug in UIKit. See
 // crbug.com/395959814.

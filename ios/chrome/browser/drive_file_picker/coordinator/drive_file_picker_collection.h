@@ -16,6 +16,8 @@
 
 // A class that holds information about a collection of Drive files.
 // The attributes of this class are immutable.
+// All identities in this class are on the device and match
+// `kRestrictAccountsToPatterns`.
 class DriveFilePickerCollection {
  public:
   // Creates a new root collection.

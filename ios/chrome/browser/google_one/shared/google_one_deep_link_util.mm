@@ -57,6 +57,8 @@ id<SystemIdentity> FindIdentityForGoogleOneAccount(NSString* account_param) {
   std::string account_std = base::SysNSStringToUTF8(account_param);
   NSMutableArray<id<SystemIdentity>>* identities =
       [[NSMutableArray alloc] init];
+  // TODO(crbug.com/576575308): Filter out identities that do not match
+  // `kRestrictAccountsToPatterns`.
   GetApplicationContext()->GetSystemIdentityManager()->IterateOverIdentities(
       base::BindRepeating(&IdentitiesOnDevice, identities));
   for (id<SystemIdentity> identity in identities) {

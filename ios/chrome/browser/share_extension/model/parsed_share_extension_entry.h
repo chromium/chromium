@@ -12,6 +12,7 @@
 class GaiaId;
 
 // An interface that represents a parsed share extension entry.
+// `gaiaID` does not necessarily correspond to an account on the device.
 @interface ParsedShareExtensionEntry : NSObject
 
 @property(nonatomic, assign) BOOL cancelled;

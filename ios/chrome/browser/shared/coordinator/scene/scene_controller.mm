@@ -1410,6 +1410,9 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
       if (accountParam.length == 0) {
         continue;
       }
+      // TODO(crbug.com/576575308): `FindGaiaIdForGoogleOneAccount` does not
+      // filter by `kRestrictAccountsToPatterns`, so `newGaiaID` may belong to a
+      // restricted account.
       newGaiaID = FindGaiaIdForGoogleOneAccount(accountParam);
       if (newGaiaID.empty()) {
         continue;

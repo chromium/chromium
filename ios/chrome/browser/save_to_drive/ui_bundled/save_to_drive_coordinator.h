@@ -15,6 +15,8 @@ class DownloadTask;
 // e.g. "Files" or "Drive". If the user selects "Drive" as destination, the view
 // also lets the user select the Drive account to be used.
 // This should not be started if sign-in is disabled.
+// All identities handled by this coordinator are on the device and match
+// `kRestrictAccountsToPatterns`.
 @interface SaveToDriveCoordinator : AnimatedCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

@@ -158,6 +158,8 @@ using DriveListCompletionCallback =
     base::OnceCallback<void(const DriveListResult&)>;
 
 // This interface is used to perform list/search queries in a user's Drive.
+// This class respects the `kRestrictAccountsToPatterns` policy and only deals
+// with identities on the device matching `kRestrictAccountsToPatterns`.
 class DriveList {
  public:
   DriveList();

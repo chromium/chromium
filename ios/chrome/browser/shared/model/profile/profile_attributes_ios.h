@@ -64,6 +64,9 @@ class ProfileAttributesIOS {
   GaiaId GetGaiaId() const;
   const std::string& GetUserName() const;
   bool HasAuthenticationError() const;
+  // Returns the Gaia IDs attached to the profile by `AccountProfileMapper`.
+  // Each Gaia ID corresponds to an account on the device and can be an account
+  // filtered by `kRestrictAccountsToPatterns`.
   GaiaIdSet GetAttachedGaiaIds() const;
   base::Time GetLastActiveTime() const;
   bool IsAuthenticated() const;
@@ -81,6 +84,8 @@ class ProfileAttributesIOS {
   void SetFullyInitialized();
   void SetAuthenticationInfo(const GaiaId& gaia_id, std::string_view user_name);
   void SetHasAuthenticationError(bool value);
+  // Each Gaia ID in `gaia_ids` must correspond to an account on the device and
+  // can be an account filtered by `kRestrictAccountsToPatterns`.
   void SetAttachedGaiaIds(const GaiaIdSet& gaia_ids);
   void SetLastActiveTime(base::Time time);
   void SetDiscardedSessions(const SessionIds& session_ids);

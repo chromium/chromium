@@ -18,6 +18,9 @@
 @protocol SystemIdentity;
 
 // Helper class that handles system account updates.
+// This class ignores the `kRestrictAccountsToPatterns` policy and deals with
+// accounts on the device even if they are filtered by
+// `kRestrictAccountsToPatterns`.
 class SystemAccountUpdater : public SystemIdentityManagerObserver {
  public:
   explicit SystemAccountUpdater(SystemIdentityManager* system_identity_manager);

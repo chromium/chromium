@@ -19,6 +19,7 @@ enum class AccountSwitchType {
 };
 
 // Context information for an URL with a request to switch account.
+// `gaiaID` does not necessarily correspond to an account on the device.
 @interface URLContext : NSObject
 
 // Initializes a `URLContext` with the underlying iOS `UIOpenURLContext`, the

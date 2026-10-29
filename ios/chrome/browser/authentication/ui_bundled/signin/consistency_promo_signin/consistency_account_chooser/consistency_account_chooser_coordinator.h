@@ -30,6 +30,8 @@
 
 // This coordinator presents an entry point to the Chrome sign-in flow with the
 // default account available on the device.
+// All identity properties and parameters in this class only deal with accounts
+// on the device that match `prefs::kRestrictAccountsToPatterns`.
 @interface ConsistencyAccountChooserCoordinator : ChromeCoordinator
 
 // Identity selected by the user.

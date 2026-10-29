@@ -13,6 +13,8 @@ class ChromeAccountManagerService;
 namespace ios {
 
 // iOS implementation of `AccountCapabilitiesFetcher`.
+// This class respects the `kRestrictAccountsToPatterns` policy and only deals
+// with accounts on the device matching `kRestrictAccountsToPatterns`.
 class AccountCapabilitiesFetcherIOS : public AccountCapabilitiesFetcher {
  public:
   AccountCapabilitiesFetcherIOS(

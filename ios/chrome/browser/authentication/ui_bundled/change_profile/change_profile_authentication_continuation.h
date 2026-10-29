@@ -9,7 +9,11 @@
 #import "ios/chrome/browser/shared/coordinator/scene/url_context.h"
 
 // Returns a `ChangeProfileContinuation` that starts the sign-in or sign-out
-// flow for `context`.
+// flow for `context`. `context.gaiaID` does not need to correspond to an
+// account on the device.
+// TODO(crbug.com/576575308): Currently does not filter out accounts on the
+// device that are filtered by `prefs::kRestrictAccountsToPatterns` before
+// signing in.
 // If `contexts` is not nil, `context.context` must belong to `contexts`, and
 // `sceneState.URLContextsToOpen` will be set to `contexts` upon completion so
 // that the URLs are opened in the scene.

@@ -48,6 +48,10 @@ enum class AuthenticationOperation {
 };
 
 // A command to perform a sign in operation.
+// All `SystemIdentity` parameters, properties, and completion results in this
+// class correspond to accounts on the device that match
+// `prefs::kRestrictAccountsToPatterns`, whereas `targetAccountEmail` does not
+// need to correspond to an account on the device.
 @interface ShowSigninCommand : NSObject
 
 // Mark inherited initializer as unavailable to prevent calling it by mistake.

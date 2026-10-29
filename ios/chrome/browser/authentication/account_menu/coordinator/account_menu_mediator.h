@@ -30,7 +30,9 @@ namespace syncer {
 class SyncService;
 }  // namespace syncer
 
-// Mediator for AccountMenu
+// Mediator for `AccountMenuCoordinator`.
+// This class respects the `kRestrictAccountsToPatterns` policy and only deals
+// with accounts on the device matching `kRestrictAccountsToPatterns`.
 @interface AccountMenuMediator
     : NSObject <AccountMenuDataSource, AccountMenuMutator>
 

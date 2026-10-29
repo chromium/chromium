@@ -18,6 +18,8 @@ namespace ios {
 // iOS implementation of `AccountFetcherFactory`. Creates platform-specific
 // fetchers for account info and capabilities available in the system identity
 // manager.
+// This class respects the `kRestrictAccountsToPatterns` policy and only deals
+// with accounts on the device matching `kRestrictAccountsToPatterns`.
 class AccountFetcherFactoryIOS : public AccountFetcherFactory {
  public:
   AccountFetcherFactoryIOS(

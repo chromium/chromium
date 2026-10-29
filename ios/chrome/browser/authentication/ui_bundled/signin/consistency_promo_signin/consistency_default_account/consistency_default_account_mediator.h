@@ -27,6 +27,8 @@ class ChromeAccountManagerService;
 enum class SigninContextStyle;
 
 // Mediator for ConsistencyDefaultAccountCoordinator.
+// Only deals with accounts on the device that match
+// `prefs::kRestrictAccountsToPatterns`.
 @interface ConsistencyDefaultAccountMediator : NSObject
 
 // The designated initializer.

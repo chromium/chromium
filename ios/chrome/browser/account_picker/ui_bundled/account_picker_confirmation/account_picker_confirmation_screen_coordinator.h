@@ -17,6 +17,8 @@
 // e.g. save an image to that account's Photos library. A switch can be shown to
 // let the user choose whether to be presented the account picker every time
 // that action is performed.
+// Only deals with accounts on the device that match
+// `prefs::kRestrictAccountsToPatterns`.
 @interface AccountPickerConfirmationScreenCoordinator : ChromeCoordinator
 
 // Inits the coordinator.

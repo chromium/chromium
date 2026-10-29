@@ -364,6 +364,8 @@ void ChromeAccountManagerService::OnIdentityInProfileUpdated(
 
 void ChromeAccountManagerService::OnIdentityOnDeviceUpdated(
     id<SystemIdentity> identity) {
+  // TODO(crbug.com/576575308): Filter out identities that do not match
+  // `kRestrictAccountsToPatterns`.
   for (auto& observer : observer_list_) {
     observer.OnIdentityOnDeviceUpdated(identity);
   }
@@ -399,4 +401,5 @@ ChromeAccountManagerService::GetWeakPtr() {
 void ChromeAccountManagerService::UpdateRestriction() {
   restriction_ = PatternAccountRestrictionFromPreference(local_state_);
   OnIdentitiesInProfileChanged();
+  // TODO(crbug.com/576575308): Also call `OnIdentitiesOnDeviceChanged()`.
 }

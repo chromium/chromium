@@ -18,6 +18,8 @@ enum class AccessPoint;
 
 // Presents a bottom sheet that lets the user pick or add an account on the
 // device to perform some action.
+// Only deals with accounts on the device that match
+// `prefs::kRestrictAccountsToPatterns`.
 @interface AccountPickerCoordinator : ChromeCoordinator <AccountPickerConsumer>
 
 @property(nonatomic, weak) id<AccountPickerCoordinatorDelegate> delegate;

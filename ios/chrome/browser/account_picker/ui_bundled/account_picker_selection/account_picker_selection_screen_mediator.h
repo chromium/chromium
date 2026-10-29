@@ -21,6 +21,8 @@ class IdentityManager;
 }  // namespace signin
 
 // Mediator for AccountPickerSelectionScreenCoordinator.
+// All identity properties and parameters in this class only deal with accounts
+// on the device that match `prefs::kRestrictAccountsToPatterns`.
 @interface AccountPickerSelectionScreenMediator
     : NSObject <AccountPickerSelectionScreenTableViewControllerModelDelegate>
 

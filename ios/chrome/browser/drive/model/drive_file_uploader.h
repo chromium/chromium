@@ -70,6 +70,8 @@ using DriveStorageQuotaCompletionCallback =
     base::OnceCallback<void(const DriveStorageQuotaResult&)>;
 
 // This interface is used to perform queries in a user's Drive account.
+// This class respects the `kRestrictAccountsToPatterns` policy and only deals
+// with identities on the device matching `kRestrictAccountsToPatterns`.
 class DriveFileUploader {
  public:
   DriveFileUploader();

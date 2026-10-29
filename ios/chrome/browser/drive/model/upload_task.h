@@ -14,6 +14,8 @@ class UploadTaskObserver;
 
 // Provides API for a single browser upload task. This is the model class that
 // stores all the state for an upload.
+// This class respects the `kRestrictAccountsToPatterns` policy and only deals
+// with identities on the device matching `kRestrictAccountsToPatterns`.
 class UploadTask {
  public:
   // Possible states of the upload task.

@@ -18,6 +18,9 @@ class DriveList;
 namespace drive {
 
 // Service responsible for providing access to the Drive API.
+// This service respects the `kRestrictAccountsToPatterns` policy and expects
+// all `identity` arguments to correspond to accounts on the device matching
+// `kRestrictAccountsToPatterns`.
 class DriveService : public KeyedService {
  public:
   DriveService();

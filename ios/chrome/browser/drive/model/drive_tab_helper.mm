@@ -50,6 +50,9 @@ NSError* CreateAccountNotFoundError() {
 
 // Returns true if `identity` is valid and has valid authentication on the
 // device.
+// TODO(crbug.com/576575308): Check `ChromeAccountManagerService` instead of
+// `SystemIdentityManager` so that accounts restricted by
+// `kRestrictAccountsToPatterns` are rejected before starting `upload_task_`.
 bool IsIdentityOnDeviceWithValidAuth(id<SystemIdentity> identity,
                                      SystemIdentityManager* manager) {
   if (!identity || !manager) {

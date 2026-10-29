@@ -14,6 +14,9 @@
 @protocol SystemIdentity;
 
 // Service responsible for providing access to the Photos Library API.
+// This service respects the `kRestrictAccountsToPatterns` policy and expects
+// `identity` to correspond to an account on the device matching
+// `kRestrictAccountsToPatterns`.
 class PhotosService : public KeyedService {
  public:
   // Progress of an upload operation.

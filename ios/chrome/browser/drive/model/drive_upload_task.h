@@ -14,6 +14,8 @@ class DriveFileUploader;
 
 // Upload task which uses a `DriveFileUploader` to retrieve a destination folder
 // in a user's Drive, creates it if necessary, and uploads a file to it.
+// This class respects the `kRestrictAccountsToPatterns` policy and only deals
+// with identities on the device matching `kRestrictAccountsToPatterns`.
 class DriveUploadTask final : public UploadTask {
  public:
   explicit DriveUploadTask(std::unique_ptr<DriveFileUploader> uploader);

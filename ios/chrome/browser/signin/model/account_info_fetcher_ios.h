@@ -19,6 +19,8 @@ namespace ios {
 // iOS implementation of `AccountInfoFetcher` that retrieves account
 // details (such as names and hosted domain) from the local system identity
 // manager via `ChromeAccountManagerService`.
+// This class respects the `kRestrictAccountsToPatterns` policy and only deals
+// with accounts on the device matching `kRestrictAccountsToPatterns`.
 class AccountInfoFetcherIos : public AccountInfoFetcher {
  public:
   AccountInfoFetcherIos(

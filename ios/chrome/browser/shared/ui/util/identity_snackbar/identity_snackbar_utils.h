@@ -12,10 +12,14 @@ class Browser;
 @protocol SystemIdentity;
 
 // Creates and returns a snackbar message with the user's identity information.
+// `identity` must correspond to an account on the device that matches
+// `prefs::kRestrictAccountsToPatterns`.
 SnackbarMessage* CreateIdentitySnackbarMessage(id<SystemIdentity> identity,
                                                Browser* browser);
 
 // Displays the identity confirmation snackbar with `identity`.
+// `identity` must correspond to an account on the device that matches
+// `prefs::kRestrictAccountsToPatterns`.
 void TriggerAccountSwitchSnackbarWithIdentity(id<SystemIdentity> identity,
                                               Browser* browser);
 

@@ -53,6 +53,9 @@ class SystemIdentityManagerObserver;
 // whether the accounts were added through Chrome or through some other Google
 // app. It also allows adding accounts to the device via
 // `SystemIdentityInteractionManager`, and displaying some account-related UIs.
+// This class ignores the `kRestrictAccountsToPatterns` policy and deals with
+// accounts on the device even if they are filtered by
+// `kRestrictAccountsToPatterns`.
 class SystemIdentityManager {
  public:
   using CapabilityResult = SystemIdentityCapabilityResult;

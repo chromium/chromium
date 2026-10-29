@@ -14,7 +14,8 @@ class GURL;
 @protocol GoogleOneCommands
 
 // Presents a Google One coordinator to present account management related to
-// `identity` on `viewController`.
+// `identity` on `viewController`. `identity` must be on the device and match
+// `kRestrictAccountsToPatterns`.
 - (void)showGoogleOneForIdentity:(id<SystemIdentity>)identity
                       entryPoint:(GoogleOneEntryPoint)entryPoint
               baseViewController:(UIViewController*)baseViewController;

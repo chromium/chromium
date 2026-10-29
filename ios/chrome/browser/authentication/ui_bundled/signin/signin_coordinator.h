@@ -37,6 +37,10 @@ class PrefRegistrySyncable;
 // `SystemIdentityInteractionManager` may be removed by UIKit without the
 // signoutCompletion being called. Use `viewWillPersist` to
 // check whether it currently is possible. See crbug.com/395959814.
+// All `SystemIdentity` parameters and completion results in this class
+// correspond to accounts on the device that match
+// `prefs::kRestrictAccountsToPatterns`, whereas `prefilledEmail` and
+// `selectedAccountEmail` do not need to correspond to an account on the device.
 @interface SigninCoordinator
     : AnimatedCoordinator <BuggyAuthenticationViewOwner>
 

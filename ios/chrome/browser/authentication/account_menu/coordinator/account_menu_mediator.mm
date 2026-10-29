@@ -285,6 +285,10 @@
 }
 
 - (void)extendedAccountInfoDidUpdate:(const AccountInfo&)info {
+  // TODO(crbug.com/576575308): Currently called even for identities that do
+  // not match `kRestrictAccountsToPatterns` because
+  // `ChromeAccountManagerService::OnIdentityOnDeviceUpdated` does not filter
+  // them out.
   [self updateIdentitiesIfAllowed];
 }
 

@@ -13,6 +13,8 @@
 @protocol SystemIdentity;
 
 // Delegate for the Save to Photos mediator.
+// All identities passed to this delegate must be on the device and match
+// `kRestrictAccountsToPatterns`.
 @protocol SaveToPhotosMediatorDelegate
 
 // Show and hide the account picker with a given configuration. If the

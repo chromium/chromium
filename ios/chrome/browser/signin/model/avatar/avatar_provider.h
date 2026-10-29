@@ -16,6 +16,9 @@ namespace signin {
 // Contains cache for the avatar for identities on device, and the default
 // avatar, at various sizes. The cache listens for memory constraints and
 // empties itself if needed.
+// This class ignores the `kRestrictAccountsToPatterns` policy and deals with
+// accounts on the device even if they are filtered by
+// `kRestrictAccountsToPatterns`.
 class AvatarProvider {
  public:
   // Returns the identity avatar. If the avatar is not available, it is fetched

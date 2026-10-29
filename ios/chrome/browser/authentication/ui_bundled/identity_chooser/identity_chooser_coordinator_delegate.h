@@ -19,8 +19,9 @@
     (IdentityChooserCoordinator*)coordinator;
 
 // Called when the user selects an identity. The view controller is
-// already dismissed when this call is made. The identity may be nil in case of
-// race condition.
+// already dismissed when this call is made. The identity may be `nil` in case
+// of race condition. When non-`nil`, `identity` is on the device and matches
+// `prefs::kRestrictAccountsToPatterns`.
 - (void)identityChooserCoordinator:(IdentityChooserCoordinator*)coordinator
       didCloseWithSelectedIdentity:(id<SystemIdentity>)identity;
 

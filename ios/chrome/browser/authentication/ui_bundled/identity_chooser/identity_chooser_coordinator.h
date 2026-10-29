@@ -13,6 +13,8 @@
 @protocol SystemIdentity;
 
 // Coordinator to display the identity chooser view controller.
+// Only deals with accounts on the device that match
+// `prefs::kRestrictAccountsToPatterns`.
 @interface IdentityChooserCoordinator : ChromeCoordinator
 
 // Delegate.

@@ -17,6 +17,8 @@ class IdentityManager;
 
 // A mediator object that monitors updates of chrome identities, and updates the
 // IdentityChooserViewController.
+// Only deals with accounts on the device that match
+// `prefs::kRestrictAccountsToPatterns`.
 @interface IdentityChooserMediator : NSObject
 
 // The designated initializer.

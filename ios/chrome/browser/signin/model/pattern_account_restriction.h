@@ -35,7 +35,8 @@ class Pattern {
   std::vector<std::string> chunks_;
 };
 
-// Contains a list of patterns.
+// Contains a list of patterns implementing the `kRestrictAccountsToPatterns`
+// policy filter.
 class PatternAccountRestriction {
  public:
   PatternAccountRestriction();
@@ -49,7 +50,8 @@ class PatternAccountRestriction {
   PatternAccountRestriction(PatternAccountRestriction&& from);
   PatternAccountRestriction& operator=(PatternAccountRestriction&& from);
 
-  // Checks if the account is restricted according to the given email.
+  // Checks if the account is restricted according to the given email. `email`
+  // does not need to correspond to an account on the device.
   bool IsAccountRestricted(std::string_view email) const;
 
  private:

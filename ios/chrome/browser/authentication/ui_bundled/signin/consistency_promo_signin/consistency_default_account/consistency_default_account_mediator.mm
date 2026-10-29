@@ -431,6 +431,11 @@ NSString* GetPromoLabelString(
 }
 
 - (void)extendedAccountInfoDidUpdate:(const AccountInfo&)info {
+  // TODO(crbug.com/576575308): `extendedAccountInfoDidUpdate:` can be called
+  // for accounts on the device that are filtered by
+  // `prefs::kRestrictAccountsToPatterns` via
+  // `ChromeAccountManagerService::OnIdentityOnDeviceUpdated`, for which
+  // `GetIdentityOnDeviceWithGaiaID` returns `nil`.
   id<SystemIdentity> identity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.GetGaiaId());
   [self handleIdentityUpdated:identity];

@@ -14,6 +14,8 @@ class GaiaId;
 
 // Identity data source for AccountMenuViewController instance, to
 // manage the model.
+// This protocol respects the `kRestrictAccountsToPatterns` policy and only
+// deals with accounts on the device matching `kRestrictAccountsToPatterns`.
 @protocol AccountMenuDataSource <NSObject>
 
 // Provides error UI info to the controller.

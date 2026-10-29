@@ -12,7 +12,8 @@ class GaiaId;
 @protocol SaveToPhotosSettingsMutator <NSObject>
 
 // Save `gaiaID` to preferences to use the associated identity as a default to
-// save images to Google Photos.
+// save images to Google Photos. `gaiaID` must correspond to an account on the
+// device that matches `kRestrictAccountsToPatterns`.
 - (void)setSelectedIdentityGaiaID:(const GaiaId*)gaiaID;
 
 // Opt-in to use the account picker to choose which account to use every time

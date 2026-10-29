@@ -58,7 +58,8 @@ signin::Tribool IsFirstSessionAfterDeviceRestore(
 std::optional<base::Time> LastDeviceRestoreTimestamp();
 
 // Stores a user's account info and whether history sync was enabled or not,
-// when we detect that it was forgotten during a device restore.
+// when we detect that it was forgotten during a device restore. `account` does
+// not need to correspond to an account currently on the device.
 void StorePreRestoreIdentity(PrefService* profile_pref,
                              AccountInfo account,
                              bool history_sync_enabled);
@@ -67,7 +68,8 @@ void StorePreRestoreIdentity(PrefService* profile_pref,
 void ClearPreRestoreIdentity(PrefService* profile_pref);
 
 // Returns the identity that was signed-in before the restore, but is now
-// not signed-in.
+// not signed-in. The returned account does not necessarily correspond to an
+// account currently on the device.
 std::optional<AccountInfo> GetPreRestoreIdentity(PrefService* profile_pref);
 
 // Returns whether history sync was enabled before the restore.
@@ -80,11 +82,13 @@ void ResetDeviceRestoreDataForTesting();
 void SetFirstSessionAfterDeviceRestoreForTesting(signin::Tribool tribool);
 
 // Returns the user given name of `identity`. In case it’s nil, returns the full
-// name or the email.
+// name or the email. `identity` corresponds to an account on the device and can
+// be an account filtered by `kRestrictAccountsToPatterns`.
 NSString* UserGivenNameFullNameOrEmail(id<SystemIdentity> identity);
 
 // Returns the user full name of `identity`. In case it’s nil, returns the
-// email.
+// email. `identity` corresponds to an account on the device and can be an
+// account filtered by `kRestrictAccountsToPatterns`.
 NSString* UserFullNameOrEmail(id<SystemIdentity> identity);
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_UTIL_H_

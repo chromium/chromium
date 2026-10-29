@@ -25,8 +25,12 @@ class ProfileManagerIOS;
 @protocol SystemIdentity;
 
 // Class to map the identities from SystemIdentityManager to profiles.
+// Unless stated otherwise, this class and its `Observer` ignore the
+// `kRestrictAccountsToPatterns` policy and deal with accounts on the device
+// even if they are filtered by `kRestrictAccountsToPatterns`.
 class AccountProfileMapper {
  public:
+  // Observer handling events related to `AccountProfileMapper`.
   class Observer : public base::CheckedObserver {
    public:
     Observer() = default;
@@ -91,7 +95,8 @@ class AccountProfileMapper {
   bool IsSigninSupported();
 
   // Returns the name of the profile to which `gaia_id` is assigned, or nullopt
-  // if no such profile exists.
+  // if no such profile exists. `gaia_id` does not need to correspond to an
+  // account on the device.
   std::optional<std::string> FindProfileNameForGaiaID(
       const GaiaId& gaia_id) const;
 

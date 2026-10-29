@@ -17,6 +17,9 @@
 class SystemIdentityManager;
 
 // Observer handling events related to SystemIdentityManager.
+// This observer ignores the `kRestrictAccountsToPatterns` policy and receives
+// events for accounts on the device even if they are filtered by
+// `kRestrictAccountsToPatterns`.
 class SystemIdentityManagerObserver : public base::CheckedObserver {
  public:
   SystemIdentityManagerObserver() = default;

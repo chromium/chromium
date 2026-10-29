@@ -25,15 +25,19 @@ class DeviceAccountsProviderImpl;
 class PrefService;
 @protocol RefreshAccessTokenError;
 
-// Service that provides SystemIdentities and avatar caches. Most methods only
-// return the identities belonging to `profile_name_`  according to
-// `AccountProfileMapper`, but this can also be used to access identities on
-// device. This service filters out identities according to the
-// RestrictAccountsToPatterns policy.
+// Service that provides `SystemIdentity` instances. Most methods only return
+// the identities belonging to `profile_name_` according to
+// `AccountProfileMapper`, but `ChromeAccountManagerService` can also be used to
+// access identities on device. Unless stated otherwise, this service filters
+// out identities according to the `kRestrictAccountsToPatterns` policy, and all
+// returned or passed `SystemIdentity` and `AccountInfo` instances correspond to
+// accounts on the device that match `kRestrictAccountsToPatterns`.
 class ChromeAccountManagerService : public KeyedService,
                                     public AccountProfileMapper::Observer {
  public:
   // Observer handling events related to the ChromeAccountManagerService.
+  // Unless stated otherwise, `identity` always corresponds to an account on the
+  // device that matches `kRestrictAccountsToPatterns`.
   class Observer : public base::CheckedObserver {
    public:
     Observer() = default;
@@ -55,6 +59,8 @@ class ChromeAccountManagerService : public KeyedService,
     virtual void OnIdentityInProfileUpdated(id<SystemIdentity> identity) {}
 
     // Called when an identity on this device is updated.
+    // TODO(crbug.com/576575308): Currently `identity` can be an account on the
+    // device that is filtered by `kRestrictAccountsToPatterns`.
     virtual void OnIdentityOnDeviceUpdated(id<SystemIdentity> identity) {}
 
     // Handles refresh token updated events.
@@ -92,15 +98,17 @@ class ChromeAccountManagerService : public KeyedService,
   bool HasIdentities() const;
 
   // Returns whether `gaia_id` is valid and belongs to the profile of this
-  // service.
+  // service. `gaia_id` does not need to correspond to an account on the device.
   bool IsValidIdentity(const GaiaId& gaia_id) const;
 
   // Returns whether `email` is restricted according to the
-  // RestrictAccountsToPatterns policy.
+  // `kRestrictAccountsToPatterns` policy. `email` does not need to correspond
+  // to an account on the device.
   bool IsEmailRestricted(std::string_view email) const;
 
-  // Returns the SystemIdentity with gaia ID equals to `gaia_id` or nil if
-  // no matching identity is found in the profile of this service.
+  // Returns the `SystemIdentity` with Gaia ID equals to `gaia_id` or `nil` if
+  // no matching identity is found in the profile of this service. `gaia_id`
+  // does not need to correspond to an account on the device.
   id<SystemIdentity> GetIdentityWithGaiaID(const GaiaId& gaia_id) const;
 
   // Returns all SystemIdentity objects of the profile of this service, sorted
@@ -149,7 +157,9 @@ class ChromeAccountManagerService : public KeyedService,
   NSArray<id<SystemIdentity>>* GetAllIdentitiesOnDevice(
       base::PassKey<DeviceAccountsProviderImpl>) const;
 
-  // AccountProfileMapper::Observer implementation.
+  // `AccountProfileMapper::Observer` implementation. `identity` corresponds to
+  // an account on the device and can be an account filtered by
+  // `kRestrictAccountsToPatterns`.
   void OnIdentitiesInProfileChanged() override;
   void OnIdentitiesOnDeviceChanged() override;
   void OnIdentityInProfileUpdated(id<SystemIdentity> identity) override;

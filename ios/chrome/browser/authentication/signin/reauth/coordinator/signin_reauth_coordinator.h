@@ -28,10 +28,13 @@ enum class ReauthResult : int {
 // The delegate for the reauth flow.
 @protocol SigninReauthCoordinatorDelegate
 
-// The result of the reauth process. If the result is success, `gaiaID` must be
-// the ID of the account passed to the init method. `gaiaID` may be a different
-// ID from the one used in the init method if the user authenticated with a
-// different account.
+// The result of the reauth process. When non-`nullptr`, `gaiaID` corresponds to
+// an account on the device. If the result is `ReauthResult::kSuccess`, `gaiaID`
+// must be the ID of the account passed to the `-initWith...` method (and
+// therefore matches `prefs::kRestrictAccountsToPatterns`). `gaiaID` may be a
+// different ID from the one used in the `-initWith...` method if the user
+// authenticated with a different account (in which case it can be an account
+// filtered by `prefs::kRestrictAccountsToPatterns`).
 - (void)reauthFinishedWithResult:(ReauthResult)result
                           gaiaID:(const GaiaId*)gaiaID;
 
@@ -42,6 +45,8 @@ enum class ReauthResult : int {
 // with LocalReauthenticationCoordinator, which checks whether the device
 // confirms that the person holding the device is a user having legitimate
 // access to sensitive content.
+// All `account` parameters in this class must correspond to an account on the
+// device that matches `prefs::kRestrictAccountsToPatterns`.
 //
 // Once started and up to iOS 18, the view may be removed by UIKit without the
 // signoutCompletion being called. Use `viewWillPersist` to

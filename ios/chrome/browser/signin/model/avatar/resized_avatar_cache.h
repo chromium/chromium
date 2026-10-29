@@ -28,6 +28,9 @@ enum class IOSResizedAvatarCacheGetAvatarResult {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:IOSResizedAvatarCacheGetAvatarResult)
 
 // This class manages an image cache for resized avatar images.
+// This class ignores the `kRestrictAccountsToPatterns` policy and deals with
+// accounts on the device even if they are filtered by
+// `kRestrictAccountsToPatterns`.
 @interface ResizedAvatarCache : NSObject
 
 // Initializes a new object based on `IdentityAvatarSize`.

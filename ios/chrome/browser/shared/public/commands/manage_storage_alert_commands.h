@@ -13,6 +13,7 @@
 
 // Presents the "Manage Storage" alert. The "Manage Storage" action should let
 // the user manage the storage for the account associated with `identity`.
+// `identity` must be on the device and match `kRestrictAccountsToPatterns`.
 - (void)showManageStorageAlertForIdentity:(id<SystemIdentity>)identity;
 
 @end

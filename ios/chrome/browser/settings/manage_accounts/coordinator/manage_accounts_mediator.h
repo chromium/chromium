@@ -19,6 +19,8 @@ class IdentityManager;
 @protocol ManageAccountsConsumer;
 
 // Mediator for the Accounts TableView Controller.
+// Only deals with accounts on the device that match
+// `prefs::kRestrictAccountsToPatterns`.
 @interface ManageAccountsMediator
     : NSObject <ManageAccountsModelIdentityDataSource, ManageAccountsMutator>
 

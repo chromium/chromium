@@ -17,7 +17,9 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
-// Mediator for ConsistencyAccountChooserCoordinator.
+// Mediator for `ConsistencyAccountChooserCoordinator`.
+// All identity properties and parameters in this class only deal with accounts
+// on the device that match `prefs::kRestrictAccountsToPatterns`.
 @interface ConsistencyAccountChooserMediator
     : NSObject <ConsistencyAccountChooserTableViewControllerModelDelegate>
 

@@ -21,6 +21,8 @@ class IdentityManager;
 }  // namespace signin
 
 // Mediator for Save to Photos settings.
+// All identities and Gaia IDs handled by this mediator are on the device and
+// match `kRestrictAccountsToPatterns`.
 @interface SaveToPhotosSettingsMediator : NSObject <SaveToPhotosSettingsMutator>
 
 // Delegate.

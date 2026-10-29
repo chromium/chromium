@@ -18,14 +18,22 @@ class GURL;
 bool IsGoogleOneDeepLinkURL(const GURL& url, GURL* out_url);
 
 // Returns the account string specified in the Google One deep link `url`.
+// The returned string does not necessarily correspond to an account on the
+// device.
 NSString* GoogleOneAccountFromURL(const GURL& url);
 
 // Returns the SystemIdentity matching `account_param` on the device, or nil if
 // no match is found.
+// TODO(crbug.com/576575308): Currently ignores `kRestrictAccountsToPatterns`
+// and can return an identity on the device that is filtered by
+// `kRestrictAccountsToPatterns`.
 id<SystemIdentity> FindIdentityForGoogleOneAccount(NSString* account_param);
 
 // Returns the GaiaId matching `account_param` on the device, or an empty GaiaId
 // if no match is found.
+// TODO(crbug.com/576575308): Currently ignores `kRestrictAccountsToPatterns`
+// and can return the `GaiaId` of an account on the device that is filtered by
+// `kRestrictAccountsToPatterns`.
 GaiaId FindGaiaIdForGoogleOneAccount(NSString* account_param);
 
 #endif  // IOS_CHROME_BROWSER_GOOGLE_ONE_SHARED_GOOGLE_ONE_DEEP_LINK_UTIL_H_

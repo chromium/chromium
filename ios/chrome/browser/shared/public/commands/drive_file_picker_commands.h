@@ -39,7 +39,8 @@ class WebState;
 - (void)hideDriveFilePicker;
 
 // Updates the identity of the root drive folder.
-// `selectedIdentity` must be non nil.
+// `selectedIdentity` must be non-`nil`, on the device, and match
+// `kRestrictAccountsToPatterns`.
 - (void)setDriveFilePickerSelectedIdentity:(id<SystemIdentity>)selectedIdentity;
 
 // Shows the Drive file picker for the Composebox context.

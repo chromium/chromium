@@ -14,6 +14,9 @@ class GURL;
 @protocol SystemIdentity;
 
 // A coordinator to display Google One management screen.
+// This class respects the `kRestrictAccountsToPatterns` policy and expects
+// `identity` to correspond to an account on the device that matches
+// `kRestrictAccountsToPatterns`.
 @interface GoogleOneCoordinator : ChromeCoordinator
 
 // Create a Google One coordinator to present account management related to

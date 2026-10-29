@@ -11,6 +11,10 @@
 // Coordinates adding an account with different intents:
 //  + adding account from the settings
 //  + reauthentication
+// This class respects the `kRestrictAccountsToPatterns` policy for the final
+// signed-in/added identity on the device (showing an error alert if the added
+// identity is filtered out by `kRestrictAccountsToPatterns`), whereas
+// `prefilledEmail` does not need to correspond to an account on the device.
 @interface AddAccountSigninCoordinator : SigninCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

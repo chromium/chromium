@@ -18,6 +18,9 @@
 class GaiaId;
 
 // Implementation of DeviceAccountsProvider.
+// Unless stated otherwise, this class respects the
+// `kRestrictAccountsToPatterns` policy and only deals with accounts on the
+// device matching `kRestrictAccountsToPatterns`.
 class DeviceAccountsProviderImpl
     : public DeviceAccountsProvider,
       public ChromeAccountManagerService::Observer {
@@ -44,6 +47,9 @@ class DeviceAccountsProviderImpl
 
   // ChromeAccountManagerService::Observer
   void OnIdentitiesOnDeviceChanged() override;
+  // TODO(crbug.com/576575308): Currently called by
+  // `ChromeAccountManagerService` even for identities on the device that are
+  // filtered by `kRestrictAccountsToPatterns`.
   void OnIdentityOnDeviceUpdated(id<SystemIdentity> identity) override;
 
  private:

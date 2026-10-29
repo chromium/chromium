@@ -32,6 +32,8 @@ using DriveFileDownloadCompletionCallback =
     base::OnceCallback<void(DriveFileDownloadID, BOOL, NSError*)>;
 
 // This interface is used to download items from a user's Drive account.
+// This class respects the `kRestrictAccountsToPatterns` policy and only deals
+// with identities on the device matching `kRestrictAccountsToPatterns`.
 class DriveFileDownloader {
  public:
   DriveFileDownloader();

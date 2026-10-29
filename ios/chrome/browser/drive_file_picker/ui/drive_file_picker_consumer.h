@@ -16,7 +16,9 @@
 // Consumer interface for the Drive file picker.
 @protocol DriveFilePickerConsumer <NSObject>
 
-// Sets the consumer's selected user identity email.
+// Sets the consumer's selected user identity email. `selectedUserIdentityEmail`
+// corresponds to an account on the device that matches
+// `kRestrictAccountsToPatterns`.
 - (void)setSelectedUserIdentityEmail:(NSString*)selectedUserIdentityEmail;
 
 // Sets the title in the navigation bar to `title`.

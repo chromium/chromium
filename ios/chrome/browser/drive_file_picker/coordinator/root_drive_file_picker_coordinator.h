@@ -15,6 +15,8 @@ class WebState;
 }
 
 // Coordinator of the Drive file picker.
+// All identities handled by this coordinator are on the device and match
+// `kRestrictAccountsToPatterns`.
 @interface RootDriveFilePickerCoordinator : ChromeCoordinator
 
 // Commands handler to forward Drive file picker results or cancellation to.

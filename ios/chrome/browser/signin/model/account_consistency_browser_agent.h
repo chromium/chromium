@@ -24,6 +24,8 @@ class Browser;
 // A browser agent that tracks the addition and removal of webstates, registers
 // them with the AccountConsistencyService, and handles events triggered from
 // them.
+// This class respects the `kRestrictAccountsToPatterns` policy and only deals
+// with accounts on the device matching `kRestrictAccountsToPatterns`.
 class AccountConsistencyBrowserAgent
     : public BrowserUserData<AccountConsistencyBrowserAgent>,
       public TabsDependencyInstaller,
@@ -41,6 +43,7 @@ class AccountConsistencyBrowserAgent
   // ManageAccountsDelegate
   void OnRestoreGaiaCookies() override;
   void OnManageAccounts(const GURL& url, web::WebState* web_state) override;
+  // `prefilled_email` does not need to correspond to an account on the device.
   void OnAddAccount(const GURL& url,
                     const std::string& prefilled_email,
                     web::WebState* web_state) override;

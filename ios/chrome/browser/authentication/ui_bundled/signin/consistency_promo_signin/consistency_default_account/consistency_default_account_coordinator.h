@@ -38,6 +38,8 @@ enum class AccessPoint : int;
 
 // This coordinator presents an entry point to the Chrome sign-in flow with the
 // default account available on the device.
+// Only deals with accounts on the device that match
+// `prefs::kRestrictAccountsToPatterns`.
 @interface ConsistencyDefaultAccountCoordinator : ChromeCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController

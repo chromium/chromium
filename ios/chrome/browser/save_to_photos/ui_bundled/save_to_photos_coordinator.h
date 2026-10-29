@@ -19,6 +19,8 @@ struct Referrer;
 class WebState;
 }  // namespace web
 
+// All identities handled by this coordinator are on the device and match
+// `kRestrictAccountsToPatterns`.
 @interface SaveToPhotosCoordinator : ChromeCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

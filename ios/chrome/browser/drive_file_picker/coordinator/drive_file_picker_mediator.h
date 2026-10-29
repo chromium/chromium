@@ -37,6 +37,8 @@ class ChromeAccountManagerService;
 class AuthenticationService;
 
 // Mediator of the Drive file picker.
+// All identities handled by this mediator are on the device and match
+// `kRestrictAccountsToPatterns`.
 @interface DriveFilePickerMediator : NSObject <DriveFilePickerMutator>
 
 // Dependencies.
