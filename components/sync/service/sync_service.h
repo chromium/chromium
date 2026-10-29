@@ -541,11 +541,9 @@ class SyncService : public KeyedService {
   // ACTIONS / STATE CHANGE REQUESTS
   //////////////////////////////////////////////////////////////////////////////
 
-  // Called when a datatype (SyncableService) has a need for sync to start
-  // ASAP, presumably because a local change event has occurred but we're
-  // still in deferred start mode, meaning the SyncableService hasn't been
-  // told to MergeDataAndStartSyncing yet.
-  // TODO(crbug.com/40901006): Remove this API.
+  // Called when a datatype has a need for sync to start ASAP, bypassing the
+  // deferred startup delay (see crbug.com/40872516), e.g. because a local
+  // change event or user interaction requires immediate server communication.
   virtual void OnDataTypeRequestsSyncStartup(DataType type) = 0;
 
   // The reason why TriggerRefresh() was called.

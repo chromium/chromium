@@ -10,12 +10,13 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
+#include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 #include "components/sync/model/data_type_store_service.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/version_info/channel.h"
-#include "base/scoped_observation.h"
 
 class GURL;
 class PrefService;
@@ -40,7 +41,8 @@ class SendTabToSelfModel;
 
 // KeyedService responsible for send tab to self sync.
 class SendTabToSelfSyncService : public KeyedService,
-                                 public syncer::SyncServiceObserver {
+                                 public syncer::SyncServiceObserver,
+                                 public SendTabToSelfModelObserver {
  public:
   SendTabToSelfSyncService(
       version_info::Channel channel,
@@ -79,6 +81,9 @@ class SendTabToSelfSyncService : public KeyedService,
   // SyncServiceObserver implementation.
   void OnSyncShutdown(syncer::SyncService* sync_service) override;
 
+  // SendTabToSelfModelObserver implementation.
+  void OnEntryAddedLocally(const SendTabToSelfEntry* entry) override;
+
   std::unique_ptr<SendTabToSelfBridge> bridge_;
   raw_ptr<PrefService> const pref_service_;
 
@@ -88,6 +93,8 @@ class SendTabToSelfSyncService : public KeyedService,
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
+  base::ScopedObservation<SendTabToSelfModel, SendTabToSelfModelObserver>
+      model_observation_{this};
 };
 
 }  // namespace send_tab_to_self

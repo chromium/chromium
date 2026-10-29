@@ -11,13 +11,29 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
+#include "components/send_tab_to_self/metrics_util.h"
+#include "components/send_tab_to_self/page_context.h"
+#include "components/send_tab_to_self/send_tab_to_self_entry.h"
+#include "components/send_tab_to_self/send_tab_to_self_model.h"
+#include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
+#include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/protocol/data_type_state.pb.h"
+#include "components/sync/test/data_type_store_test_util.h"
+#include "components/sync/test/mock_sync_service.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/fake_device_info_tracker.h"
+#include "components/sync_device_info/test_device_info_builder.h"
+#include "components/version_info/channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -32,6 +48,20 @@ using testing::IsNull;
 using testing::Test;
 
 const char kTestUrl[] = "https://www.example.com";
+
+class ModelReadyWaiter : public SendTabToSelfModelObserver {
+ public:
+  explicit ModelReadyWaiter(SendTabToSelfModel* model) {
+    observation_.Observe(model);
+  }
+  bool Wait() { return future_.Wait(); }
+  void OnModelReady() override { future_.SetValue(); }
+
+ private:
+  TestFuture<void> future_;
+  base::ScopedObservation<SendTabToSelfModel, SendTabToSelfModelObserver>
+      observation_{this};
+};
 
 class TargetDeviceListWaiterTest : public Test {
  public:
@@ -359,6 +389,58 @@ TEST_F(TargetDeviceListWaiterTest, ModelReadyKeepsWaitingWhileReasonPending) {
   model->SetIsReady(true);
   FlushPostedTasks();
   EXPECT_THAT(callback_count, Eq(1));
+}
+
+// Verifies that constructing a TargetDeviceListWaiter requests immediate sync
+// startup for SEND_TAB_TO_SELF so deferred sync initialization does not delay
+// device list readiness or subsequent commits.
+TEST_F(TargetDeviceListWaiterTest, RequestsSyncStartupOnConstruction) {
+  testing::NiceMock<syncer::MockSyncService> mock_sync_service;
+  EXPECT_CALL(mock_sync_service,
+              OnDataTypeRequestsSyncStartup(syncer::SEND_TAB_TO_SELF));
+
+  send_tab_to_self_service()->SetEntryPointDisplayReason(std::nullopt);
+  TargetDeviceListWaiter waiter(&mock_sync_service, send_tab_to_self_service(),
+                                GURL(kTestUrl), base::DoNothing());
+}
+
+// Verifies that SendTabToSelfSyncService requests immediate sync startup for
+// SEND_TAB_TO_SELF when a local entry is added to its model.
+TEST_F(TargetDeviceListWaiterTest,
+       ServiceRequestsSyncStartupOnLocalEntryAdded) {
+  std::unique_ptr<syncer::DataTypeStore> store =
+      syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest();
+  sync_pb::DataTypeState state;
+  state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
+      store->CreateWriteBatch();
+  batch->GetMetadataChangeList()->UpdateDataTypeState(state);
+  store->CommitWriteBatch(std::move(batch), base::DoNothing());
+
+  syncer::FakeDeviceInfoTracker device_info_tracker;
+  std::unique_ptr<syncer::DeviceInfo> local_device =
+      syncer::TestDeviceInfoBuilder().Build();
+  device_info_tracker.Add(local_device.get());
+
+  testing::NiceMock<syncer::MockSyncService> mock_sync_service;
+  SendTabToSelfSyncService service(
+      version_info::Channel::UNKNOWN,
+      syncer::DataTypeStoreTestUtil::MoveStoreToFactory(std::move(store)),
+      /*history_service=*/nullptr,
+      /*pref_service=*/nullptr, &device_info_tracker,
+      /*session_sync_service=*/nullptr);
+  ASSERT_TRUE(ModelReadyWaiter(service.GetSendTabToSelfModel()).Wait());
+
+  service.OnSyncServiceInitialized(&mock_sync_service);
+
+  EXPECT_CALL(mock_sync_service,
+              OnDataTypeRequestsSyncStartup(syncer::SEND_TAB_TO_SELF));
+  service.GetSendTabToSelfModel()->SendEntry(
+      GURL(kTestUrl), "Example", "target_guid", PageContext(),
+      NavigationHistory(), base::DoNothing(), ShareEntryPoint::kShareMenu);
+
+  service.Shutdown();
 }
 
 }  // namespace

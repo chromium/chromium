@@ -12,6 +12,7 @@
 #include "components/send_tab_to_self/entry_point_display_reason.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 
 namespace send_tab_to_self {
@@ -32,6 +33,7 @@ TargetDeviceListWaiter::TargetDeviceListWaiter(
       send_tab_to_self_service_->GetSendTabToSelfModel();
   CHECK(model);
   model_observation_.Observe(model);
+  sync_service->OnDataTypeRequestsSyncStartup(syncer::SEND_TAB_TO_SELF);
   OnStateChanged(nullptr);
 }
 

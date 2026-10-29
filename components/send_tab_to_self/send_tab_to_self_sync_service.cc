@@ -12,9 +12,11 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_bridge.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_store.h"
+#include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
 
 namespace send_tab_to_self {
@@ -38,11 +40,14 @@ SendTabToSelfSyncService::SendTabToSelfSyncService(
           device_info_tracker,
           session_sync_service,
           pref_service)),
-      pref_service_(pref_service) {}
+      pref_service_(pref_service) {
+  model_observation_.Observe(bridge_.get());
+}
 
 SendTabToSelfSyncService::~SendTabToSelfSyncService() = default;
 
 void SendTabToSelfSyncService::Shutdown() {
+  model_observation_.Reset();
   bridge_.reset();
 }
 
@@ -78,6 +83,16 @@ SendTabToSelfSyncService::GetControllerDelegate() {
 void SendTabToSelfSyncService::OnSyncShutdown(syncer::SyncService*) {
   sync_service_observation_.Reset();
   sync_service_ = nullptr;
+}
+
+void SendTabToSelfSyncService::OnEntryAddedLocally(
+    const SendTabToSelfEntry* entry) {
+  if (sync_service_) {
+    // Request immediate sync engine startup in case it is currently deferred
+    // (e.g. on a cold start without tab creation, such as Android Direct
+    // Share), so the outgoing entry can commit before the commit timeout.
+    sync_service_->OnDataTypeRequestsSyncStartup(syncer::SEND_TAB_TO_SELF);
+  }
 }
 
 }  // namespace send_tab_to_self
