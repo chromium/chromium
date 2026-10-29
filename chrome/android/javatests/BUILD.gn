@@ -700,6 +700,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.compositor") {
     "src/org/chromium/chrome/browser/compositor/PerformancePTTest.java",
     "src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerTest.java",
     "src/org/chromium/chrome/browser/compositor/layouts/content/TabContentManagerTest.java",
+    "src/org/chromium/chrome/browser/compositor/overlays/strip/MultiTabDragDropTest.java",
     "src/org/chromium/chrome/browser/compositor/overlays/strip/TabDragDropTest.java",
     "src/org/chromium/chrome/browser/compositor/overlays/strip/TabGroupDragDropTest.java",
     "src/org/chromium/chrome/browser/compositor/overlays/strip/TabStripContextMenuTest.java",
