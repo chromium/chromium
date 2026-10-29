@@ -158,6 +158,7 @@ if (toolkit_views) {
       "//chrome/common",
       "//components/vector_icons",
       "//content/public/browser",
+      "//third_party/blink/public:buildflags",
       "//ui/base",
       "//ui/views",
     ]

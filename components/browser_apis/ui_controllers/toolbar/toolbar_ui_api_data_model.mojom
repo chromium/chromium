@@ -451,7 +451,7 @@ enum ContentSettingImageType {
   // kMidi = 20, // Deprecated.
   kNotifications = 21,
 
-  [EnableIf=is_chromeos] kSmartCard = 22,
+  [EnableIf=enable_smart_card] kSmartCard = 22,
 
   [EnableIf=is_win] kProtectedMediaIdentifier = 23,
 };

@@ -57,6 +57,7 @@
 #include "testing/gmock/include/gmock/gmock-actions.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
@@ -920,7 +921,7 @@ TEST_F(ContentSettingImageModelTest, StorageAccess) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
 
 TEST_F(ContentSettingImageModelTest, SmartCard) {
   auto content_setting_image_model =
@@ -951,7 +952,7 @@ TEST_F(ContentSettingImageModelTest, SmartCard) {
   content_setting_image_model->Update(web_contents());
   EXPECT_FALSE(content_setting_image_model->is_visible());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_SMART_CARD)
 
 #if BUILDFLAG(IS_WIN)
 TEST_F(ContentSettingImageModelTest, ProtectedMediaIdentifier_Allowed) {

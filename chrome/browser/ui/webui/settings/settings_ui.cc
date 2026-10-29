@@ -159,6 +159,7 @@
 #include "services/device/public/cpp/device_features.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/public_buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
@@ -522,11 +523,14 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableCapturedSurfaceControl",
       base::FeatureList::IsEnabled(blink::features::kCapturedSurfaceControl));
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
   html_source->AddBoolean(
       "enableSmartCardReadersContentSetting",
       base::FeatureList::IsEnabled(blink::features::kSmartCard) &&
           content::AreIsolatedWebAppsEnabled(profile));
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
   html_source->AddBoolean("enableWebPrintingContentSetting",
                           content::AreIsolatedWebAppsEnabled(profile));
 #endif

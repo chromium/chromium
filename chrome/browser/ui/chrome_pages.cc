@@ -68,6 +68,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_urls.h"
 #include "net/base/url_util.h"
+#include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -226,7 +227,7 @@ std::string GenerateContentSettingsExceptionsSubPage(ContentSettingsType type) {
           {ContentSettingsType::ADS, "ads"},
           {ContentSettingsType::HID_CHOOSER_DATA, "hidDevices"},
           {ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER, "protectedContent"},
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
           {ContentSettingsType::SMART_CARD_GUARD, "smartCardReaders"},
 #endif
           {ContentSettingsType::STORAGE_ACCESS, "storageAccess"},

@@ -4,6 +4,7 @@
 
 import("//components/safe_browsing/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//third_party/blink/public/public_features.gni")
 
 source_set("page_info") {
   public = [
@@ -234,10 +235,11 @@ source_set("interactive_ui_tests") {
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//content/test:test_support",
+    "//third_party/blink/public:buildflags",
     "//ui/events:test_support",
   ]
 
-  if (is_chromeos) {
+  if (enable_smart_card) {
     deps += [ "//chrome/browser/smart_card" ]
   }
 }

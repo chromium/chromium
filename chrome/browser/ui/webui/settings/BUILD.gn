@@ -5,6 +5,7 @@
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//components/signin/features.gni")
+import("//third_party/blink/public/public_features.gni")
 
 assert(is_win || is_mac || is_linux || is_chromeos)
 
@@ -351,6 +352,7 @@ source_set("impl") {
     "//components/webauthn/core/browser:passkey_model",
     "//extensions/browser",
     "//services/device/public/cpp:device_features",
+    "//third_party/blink/public:buildflags",
     "//ui/base",
     "//ui/webui/tracked_element",
     "//v8:v8_version",
@@ -413,7 +415,6 @@ source_set("impl") {
       "//chrome/browser/ash/profiles",
       "//chrome/browser/ash/tpm",
       "//chrome/browser/search_engine_choice",
-      "//chrome/browser/smart_card",
       "//chrome/browser/ui:settings_window_manager_chromeos",
       "//chrome/browser/ui/ash/system_web_apps",
       "//chrome/browser/ui/webui:plural_string_handler",
@@ -428,6 +429,10 @@ source_set("impl") {
       "//chromeos/version",
       "//ui/chromeos",
     ]
+  }
+
+  if (enable_smart_card) {
+    deps += [ "//chrome/browser/smart_card" ]
   }
 
   if (enable_dice_support) {
@@ -704,6 +709,7 @@ if (!is_android) {
       "//services/preferences/public/cpp/tracked",
       "//testing/gmock",
       "//testing/gtest",
+      "//third_party/blink/public:buildflags",
       "//third_party/blink/public/common",
       "//ui/events/devices",
       "//ui/webui",
@@ -741,11 +747,14 @@ if (!is_android) {
       ]
     }
 
+    if (enable_smart_card) {
+      deps += [ "//chrome/browser/smart_card" ]
+    }
+
     if (is_chromeos) {
       deps += [
         "//ash/constants",
         "//chrome/browser/ash/login/users:test_support",
-        "//chrome/browser/smart_card",
         "//chromeos/constants",
         "//components/account_id",
         "//components/user_manager",

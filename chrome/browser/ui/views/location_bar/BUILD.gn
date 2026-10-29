@@ -192,6 +192,7 @@ source_set("impl") {
       "//extensions/browser",
       "//extensions/common",
       "//extensions/common:extension_features",
+      "//third_party/blink/public:buildflags",
       "//third_party/blink/public/common",
       "//ui/accessibility",
       "//ui/actions",

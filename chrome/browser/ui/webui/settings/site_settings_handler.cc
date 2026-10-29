@@ -125,6 +125,7 @@
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "url/gurl.h"
@@ -138,9 +139,12 @@
         // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "components/user_manager/user_manager.h"
+#endif
+
+#if BUILDFLAG(ENABLE_SMART_CARD)
 #include "chrome/browser/smart_card/smart_card_permission_context.h"
 #include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
-#include "components/user_manager/user_manager.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -2368,7 +2372,7 @@ void SiteSettingsHandler::ObserveSourcesForProfile(Profile* profile) {
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
   if (base::FeatureList::IsEnabled(blink::features::kSmartCard)) {
     auto& smart_card_context =
         SmartCardPermissionContextFactory::GetForProfile(*profile);
@@ -2421,7 +2425,7 @@ void SiteSettingsHandler::StopObservingSourcesForProfile(Profile* profile) {
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
   if (base::FeatureList::IsEnabled(blink::features::kSmartCard)) {
     auto& smart_card_context =
         SmartCardPermissionContextFactory::GetForProfile(*profile);

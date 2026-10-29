@@ -66,6 +66,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/base/window_open_disposition.h"
@@ -1634,7 +1635,7 @@ TEST_F(ContentSettingBubbleModelTest,
                                    ContentSettingsType::STORAGE_ACCESS));
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
 TEST_F(ContentSettingBubbleModelTest, SmartCard) {
   const GURL page_url("https://toplevel.example/");
   NavigateAndCommit(page_url);

@@ -90,6 +90,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
@@ -351,7 +352,7 @@ void ContentSettingSimpleBubbleModel::SetTitle() {
   };
 
   int title_id = [&]() {
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
     if (content_type() == ContentSettingsType::SMART_CARD_GUARD) {
       return IDS_ACCESSED_SMART_CARD_READER_TITLE;
     }
@@ -407,7 +408,7 @@ void ContentSettingSimpleBubbleModel::SetMessage() {
   };
 
   int message_id = [&]() {
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
     if (content_type() == ContentSettingsType::SMART_CARD_GUARD) {
       return IDS_ACCESSED_SMART_CARD_READER_BODY;
     }
@@ -2085,7 +2086,7 @@ ContentSettingBubbleModel::CreateContentSettingBubbleModel(
     case ContentSettingsType::STORAGE_ACCESS:
       return std::make_unique<ContentSettingStorageAccessBubbleModel>(delegate,
                                                                       page);
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
     case ContentSettingsType::SMART_CARD_GUARD:
       return std::make_unique<ContentSettingSimpleBubbleModel>(delegate, page,
                                                                content_type);

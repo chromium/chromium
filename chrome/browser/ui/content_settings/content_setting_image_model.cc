@@ -105,7 +105,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageModel,
                                       kClipboardRWElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageModel,
                                       kStorageAccessElementId);
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageModel,
                                       kSmartCardIconElementId);
 #endif
@@ -138,7 +138,7 @@ constexpr auto kContentSettingImageOrder = std::to_array<ImageType>({
     ImageType::kClipboardReadWrite,
     ImageType::kNotifications,
     ImageType::kStorageAccess,
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
     ImageType::kSmartCard,
 #endif
 #if BUILDFLAG(IS_WIN)
@@ -183,7 +183,7 @@ constexpr ui::ElementIdentifier GetElementIdentifierForType(
       return ContentSettingImageModel::kStorageAccessElementId;
     case ImageType::kNotifications:
       return kNotificationContentSettingImageView;
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
     case ImageType::kSmartCard:
       return ContentSettingImageModel::kSmartCardIconElementId;
 #endif
@@ -326,7 +326,7 @@ class ContentSettingMediaImageModel : public ContentSettingImageModel {
   PageSpecificContentSettings::MicrophoneCameraState state_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
 // Image model for displaying media icons in the location bar.
 class ContentSettingSmartCardImageModel
     : public ContentSettingSimpleImageModel {
@@ -361,7 +361,7 @@ class ContentSettingSmartCardImageModel
         delegate, page, ContentSettingsType::SMART_CARD_GUARD);
   }
 };
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_SMART_CARD)
 
 class ContentSettingSensorsImageModel : public ContentSettingSimpleImageModel {
  public:
@@ -612,7 +612,7 @@ void GetIconChromeRefresh(ContentSettingsType type,
                               ? vector_icons::kIframeIcon
                               : vector_icons::kIframeOldIcon);
       return;
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
     case ContentSettingsType::SMART_CARD_GUARD:
       // Indicator shows only when at least one connection is active, hence no
       // need for the off icon.
@@ -713,7 +713,7 @@ ContentSettingImageModel::CreateForContentType(ImageType image_type) {
       return std::make_unique<ContentSettingStorageAccessImageModel>();
     case ImageType::kNotifications:
       return std::make_unique<ContentSettingNotificationsImageModel>();
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
     case ImageType::kSmartCard:
       return std::make_unique<ContentSettingSmartCardImageModel>();
 #endif

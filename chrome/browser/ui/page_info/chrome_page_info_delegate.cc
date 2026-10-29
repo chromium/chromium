@@ -62,6 +62,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
@@ -111,6 +112,9 @@
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_service.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_service_factory.h"
+#endif
+
+#if BUILDFLAG(ENABLE_SMART_CARD)
 #include "chrome/browser/smart_card/smart_card_permission_context.h"
 #include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
 #endif
@@ -177,7 +181,7 @@ ChromePageInfoDelegate::GetChooserContext(ContentSettingsType type) {
     case ContentSettingsType::HID_CHOOSER_DATA:
       return HidChooserContextFactory::GetForProfile(GetProfile());
     case ContentSettingsType::SMART_CARD_DATA:
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
       if (base::FeatureList::IsEnabled(blink::features::kSmartCard)) {
         return &SmartCardPermissionContextFactory::GetForProfile(*GetProfile());
       }

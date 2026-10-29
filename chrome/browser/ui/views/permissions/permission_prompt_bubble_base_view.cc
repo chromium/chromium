@@ -22,6 +22,7 @@
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -273,14 +274,14 @@ void PermissionPromptBubbleBaseView::RunButtonCallback(int button_id) {
   permissions::PermissionUmaUtil::RecordActionBrowserAlwaysActive(
       request_type(), GetPermissionActionString(button),
       record_host_always_active_value());
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
   // `PERMISSION_SMART_CARD` is essentially a chooser permission without an
   // actual chooser - thus, there is no blocklist of devices and no real
   // difference between deny and dismiss. Ergo, deny clicks should be handled as
   // dismiss, including imposing embargo and recording appropriate histograms.
   const bool is_deny_supported =
       request_type() != permissions::RequestTypeForUma::PERMISSION_SMART_CARD;
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_SMART_CARD)
   LocationBar* location_bar =
       location_bar::GetLocationBarForWebContents(web_contents());
   ChipController* chip_controller =
@@ -299,12 +300,12 @@ void PermissionPromptBubbleBaseView::RunButtonCallback(int button_id) {
 
       case PermissionDialogButton::kDeny:
         chip_controller->PromptDecided(
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
             is_deny_supported ? permissions::PermissionAction::DENIED
                               : permissions::PermissionAction::DISMISSED
 #else
             permissions::PermissionAction::DENIED
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_SMART_CARD)
         );
         return;
     }
@@ -325,13 +326,13 @@ void PermissionPromptBubbleBaseView::RunButtonCallback(int button_id) {
       delegate_->AcceptThisTime(/*prompt_options=*/std::monostate());
       return;
     case PermissionDialogButton::kDeny:
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
       is_deny_supported
           ? delegate_->Deny(/*prompt_options=*/std::monostate())
           : delegate_->Dismiss(/*prompt_options=*/std::monostate());
 #else
       delegate_->Deny(/*prompt_options=*/std::monostate());
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_SMART_CARD)
       return;
   }
   NOTREACHED();

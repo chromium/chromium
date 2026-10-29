@@ -19,6 +19,7 @@
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom-shared.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "third_party/blink/public/public_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/image/image.h"
@@ -55,7 +56,7 @@ class ContentSettingImageModel {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kClipboardRWElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kStorageAccessElementId);
   // Notifications has global ID kNotificationContentSettingImageView.
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSmartCardIconElementId);
 #endif
 #if BUILDFLAG(IS_WIN)

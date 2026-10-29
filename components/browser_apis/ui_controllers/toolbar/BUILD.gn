@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//third_party/blink/public/public_features.gni")
 
 mojom("icon_handle_mojom") {
   sources = [ "icon_handle.mojom" ]
@@ -57,6 +58,10 @@ mojom("mojom_data_model") {
 
   # Generate TypeScript bindings for WebUI.
   webui_module_path = "/"
+
+  if (enable_smart_card) {
+    enabled_features = [ "enable_smart_card" ]
+  }
 }
 
 # Generate Mojo bindings from mojom API files.

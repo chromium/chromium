@@ -24,6 +24,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event_utils.h"
@@ -68,7 +69,7 @@ std::optional<ViewID> GetViewID(
     case ImageType::kSensors:
     case ImageType::kNotifications:
     case ImageType::kStorageAccess:
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
     case ImageType::kSmartCard:
 #endif
 #if BUILDFLAG(IS_WIN)
