@@ -292,6 +292,11 @@ WaitForClientReadyTask::~WaitForClientReadyTask() = default;
 
 void WaitForClientReadyTask::Start(base::OnceClosure done_callback) {
   done_callback_ = std::move(done_callback);
+  if (host_->client_load_state() == ClientLoadState::kReady) {
+    CheckState(ClientLoadState::kReady);
+    return;
+  }
+  observation_.Observe(&*host_);
   // TODO(b/573171097): Have Invoke send an explicit load request to the
   // instance/host that is guaranteed to resolve, rather than triggering load
   // and waiting for load separately.
@@ -301,15 +306,21 @@ void WaitForClientReadyTask::Start(base::OnceClosure done_callback) {
 }
 
 void WaitForClientReadyTask::OnWaitForLoadComplete(bool failed) {
+  wait_for_load_complete_ = true;
   if (failed) {
     CheckState(ClientLoadState::kError);
     return;
   }
-  observation_.Observe(&*host_);
   CheckState(host_->client_load_state());
 }
 
 void WaitForClientReadyTask::ClientLoadStateChanged(ClientLoadState state) {
+  // Before `WaitForLoad()` resolves, `ClientLoadState::kError` may reflect a
+  // stale error from before `IntentToShow()` triggered a reload. Readiness is
+  // authoritative in the browser process and can resolve immediately.
+  if (state == ClientLoadState::kError && !wait_for_load_complete_) {
+    return;
+  }
   CheckState(state);
 }
 

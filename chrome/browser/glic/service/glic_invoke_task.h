@@ -246,6 +246,7 @@ class WaitForClientReadyTask : public GlicInvokeTask, public Host::Observer {
   base::OnceCallback<void(GlicInvokeError)> error_callback_;
   base::ScopedObservation<Host, Host::Observer> observation_{this};
   base::OnceClosure done_callback_;
+  bool wait_for_load_complete_ = false;
   base::WeakPtrFactory<WaitForClientReadyTask> weak_ptr_factory_{this};
 };
 
