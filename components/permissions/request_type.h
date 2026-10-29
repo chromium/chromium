@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "printing/buildflags/buildflags.h"
+#include "third_party/blink/public/public_buildflags.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -61,7 +62,7 @@ enum class RequestType {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   kRegisterProtocolHandler,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
   kSmartCard,
 #endif
   kSensors,

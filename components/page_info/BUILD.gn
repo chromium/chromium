@@ -42,6 +42,7 @@ static_library("page_info") {
     "//content/public/browser",
     "//services/device/public/cpp:device_features",
     "//services/metrics/public/cpp:ukm_builders",
+    "//third_party/blink/public:buildflags",
   ]
 
   if (is_android) {

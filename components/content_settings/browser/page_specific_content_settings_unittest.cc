@@ -39,6 +39,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/public_buildflags.h"
 
 namespace content_settings {
 
@@ -1520,8 +1521,7 @@ TEST_F(PageSpecificContentSettingsTest, MediaBlockedStateIsResetIfMediaUsed) {
       PageSpecificContentSettings::kMicrophoneBlocked));
 }
 
-// The only currently implemented object-based type is for now ChromeOS only
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
 TEST_F(PageSpecificContentSettingsTest, ObjectBasedInUseIndicator) {
   NavigateAndCommit(GURL("http://google.com"));
 

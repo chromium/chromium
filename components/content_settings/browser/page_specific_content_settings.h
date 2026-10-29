@@ -34,6 +34,7 @@
 #include "content/public/browser/page_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/blink/public/public_buildflags.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -456,7 +457,7 @@ class PageSpecificContentSettings
   // This method is called when audio or video capturing is started or finished.
   void OnCapturingStateChanged(ContentSettingsType type, bool is_capturing);
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
   // This method is called every time when device capabilities (currently, only
   // Smart Cards) are used to communicate with a device. Because device
   // connections can be long-lived, this method may be called multiple times
@@ -471,7 +472,7 @@ class PageSpecificContentSettings
   // permission. Returns false otherwise.
   bool IsInUse(ContentSettingsType type) const;
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
   // This is specific to the object based content settings (for now, just smart
   // cards) - they should show for 15 more seconds after `IsInUse` turns false.
   bool ShouldShowDeviceInUseIndicator(ContentSettingsType type) const;

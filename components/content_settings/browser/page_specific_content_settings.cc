@@ -56,6 +56,7 @@
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/navigation/renderer_content_settings.mojom.h"
+#include "third_party/blink/public/public_buildflags.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -74,7 +75,7 @@ constexpr auto kMediaIndicatorHoldAfterUseDuration = base::Seconds(1);
 constexpr auto kMediaIndicatorMinimumHoldDuration = base::Seconds(4);
 // A delay before blocked media indicator disappears.
 constexpr auto kBlockedMediaIndicatorDismissDelay = base::Seconds(4);
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
 // A delay before in-use indicator for device (currently only smart cards)
 // disappears.
 constexpr auto kDeviceInUseIndicatorHideDelay = base::Seconds(15);
@@ -1623,7 +1624,7 @@ void PageSpecificContentSettings::OnCapturingStateChanged(
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
 void PageSpecificContentSettings::OnDeviceUsed(ContentSettingsType type) {
   // For now, only smart card permissions are supported.
   CHECK_EQ(ContentSettingsType::SMART_CARD_GUARD, type);
@@ -1649,7 +1650,7 @@ void PageSpecificContentSettings::OnLastDeviceConnectionLost(
                      weak_factory_.GetWeakPtr()),
       kDeviceInUseIndicatorHideDelay);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_SMART_CARD)
 
 bool PageSpecificContentSettings::IsInUse(ContentSettingsType type) const {
   auto it = content_settings_status_.find(type);
@@ -1687,7 +1688,7 @@ int PageSpecificContentSettings::active_available_sensors() const {
   return active_available_sensors_;
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
 bool PageSpecificContentSettings::ShouldShowDeviceInUseIndicator(
     ContentSettingsType type) const {
   return IsInUse(type) ||

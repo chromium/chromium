@@ -20,7 +20,10 @@ source_set("permissions_common") {
     "//base",
     "//components/content_settings/core/common",
   ]
-  public_deps = [ "//printing/buildflags" ]
+  public_deps = [
+    "//printing/buildflags",
+    "//third_party/blink/public:buildflags",
+  ]
 }
 
 source_set("permissions") {

@@ -56,6 +56,7 @@ include_rules = [
   "+third_party/blink/public/mojom/permissions_policy",
   "+third_party/blink/public/common/features.h",
   "+third_party/blink/public/mojom/quota",
+  "+third_party/blink/public/public_buildflags.h",
   "+ui/android/display_android_manager.h",
   "+ui/android/window_android.h",
   "+ui/base",

@@ -24,6 +24,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "services/device/public/cpp/device_features.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
+#include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_elider.h"
@@ -466,7 +467,7 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
     case RequestType::kRegisterProtocolHandler:
       // Handled by an override in `RegisterProtocolHandlerPermissionRequest`.
       NOTREACHED();
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
     case RequestType::kSmartCard:
       // Handled by an override in `SmartCardPermissionRequest`.
       NOTREACHED();

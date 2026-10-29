@@ -8,6 +8,7 @@
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/request_type.h"
+#include "third_party/blink/public/public_buildflags.h"
 
 namespace test {
 std::string_view ToString(
@@ -76,7 +77,7 @@ std::string_view ToString(permissions::RequestType request_type) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
           {RequestType::kRegisterProtocolHandler, "RegisterProtocolHandler"},
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
           {RequestType::kSmartCard, "SmartCard"},
 #endif
           {RequestType::kStorageAccess, "StorageAccess"},

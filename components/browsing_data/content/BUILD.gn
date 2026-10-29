@@ -39,6 +39,7 @@ static_library("content") {
     "//components/webid",
     "//content/public/browser",
     "//net",
+    "//third_party/blink/public:buildflags",
   ]
 }
 

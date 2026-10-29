@@ -34,6 +34,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/public_buildflags.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -203,7 +204,7 @@ RequestTypeForUma PermissionUtil::GetUmaValueForRequestType(
     case RequestType::kRegisterProtocolHandler:
       return RequestTypeForUma::REGISTER_PROTOCOL_HANDLER;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
     case RequestType::kSmartCard:
       return RequestTypeForUma::PERMISSION_SMART_CARD;
 #endif
