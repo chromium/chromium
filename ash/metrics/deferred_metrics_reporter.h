@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace ash {
@@ -22,7 +23,7 @@ class DeferredMetricsReporter {
     virtual ~Metric() = default;
 
     // Implementers should report the metric with the given `prefix`.
-    virtual void Report(const std::string& prefix) = 0;
+    virtual void Report(std::string_view prefix) = 0;
   };
 
   DeferredMetricsReporter();

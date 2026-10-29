@@ -5,7 +5,7 @@
 #include "ash/metrics/login_metrics_recorder.h"
 
 #include <memory>
-#include <string>
+#include <string_view>
 
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/mock_login_screen_client.h"
@@ -57,20 +57,20 @@ class LoginMetricsRecorderTest : public LoginTestBase {
     return Shell::Get()->metrics()->login_metrics_recorder();
   }
 
-  void ExpectBucketCount(const std::string& name,
+  void ExpectBucketCount(std::string_view name,
                          LoginMetricsRecorder::LockScreenUserClickTarget target,
                          int count) {
     histogram_tester_->ExpectBucketCount(name, static_cast<int>(target), count);
   }
 
   void ExpectBucketCount(
-      const std::string& name,
+      std::string_view name,
       LoginMetricsRecorder::LoginScreenUserClickTarget target,
       int count) {
     histogram_tester_->ExpectBucketCount(name, static_cast<int>(target), count);
   }
 
-  void ExpectBucketCount(const std::string& name,
+  void ExpectBucketCount(std::string_view name,
                          LoginMetricsRecorder::OobeUserClickTarget target,
                          int count) {
     histogram_tester_->ExpectBucketCount(name, static_cast<int>(target), count);
