@@ -137,7 +137,8 @@ class MockPasswordGenerationController
 
   MOCK_METHOD(void,
               OnGenerationRequested,
-              (autofill::password_generation::PasswordGenerationType));
+              (autofill::password_generation::PasswordGenerationType),
+              (override));
 };
 
 // static
@@ -158,7 +159,7 @@ class MockPasswordGenerationFrameHelper : public PasswordGenerationFrameHelper {
   MockPasswordGenerationFrameHelper(PasswordManagerClient* client,
                                     PasswordManagerDriver* driver)
       : PasswordGenerationFrameHelper(client, driver) {}
-  MOCK_METHOD(bool, IsGenerationEnabled, (bool), (const override));
+  MOCK_METHOD(bool, IsGenerationEnabled, (bool), (const, override));
 };
 
 class MockPasswordManagerClient
@@ -209,7 +210,7 @@ class MockPasswordManagerClient
   MOCK_METHOD(const PasswordManagerInterface*,
               GetPasswordManager,
               (),
-              (const override));
+              (const, override));
 
   password_manager::PasswordStoreInterface* GetAccountPasswordStore()
       const override {

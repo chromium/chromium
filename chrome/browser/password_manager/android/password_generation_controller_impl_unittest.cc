@@ -79,7 +79,7 @@ class TestPasswordManagerClient
               GetPasswordManager,
               (),
               (const, override));
-  MOCK_METHOD(PrefService*, GetPrefs, (), (const override));
+  MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
 
  private:
   scoped_refptr<MockPasswordStoreInterface> mock_password_store_;
