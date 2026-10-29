@@ -102,7 +102,15 @@ class GlicInvokeBrowserTest : public GlicBrowserTestMixin<PlatformBrowserTest> {
   // puts it into live mode. The active tab stays bound to the instance.
   [[nodiscard]] TestResult<GlicInstanceImpl*> OpenLiveModeFloatyForActiveTab() {
     ASSIGN_OR_RETURN(GlicInstanceImpl * instance,
-                     OpenGlicForActiveTabAndDetach());
+                     OpenGlicForActiveTabAndWaitIdle());
+    if (!instance->IsDetached()) {
+      instance->Detach(*GetTabListInterface()->GetActiveTab());
+      bool success = RunUntil([instance]() { return instance->IsDetached(); },
+                              "Failed to wait for Glic to detach");
+      if (!success) {
+        return base::unexpected("Failed to wait for Glic to detach");
+      }
+    }
     RETURN_IF_ERROR(EnterLiveMode(instance));
     return instance;
   }
@@ -2321,7 +2329,8 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
                        LiveModeForceFloatingTextModeRequestsTextMode) {
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
-  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance,
+                       OpenGlicForActiveTabAndWaitIdle());
   ASSERT_OK(WaitForActiveEmbedderToMatchTab(instance, tab));
   ASSERT_OK(EnterLiveMode(instance));
 
