@@ -135,6 +135,24 @@ class NewTabTitleObserver : public TabStripModelObserver {
   base::CallbackListSubscription text_changed_subscription_;
 };
 
+class TestContextMenuController : public views::ContextMenuController {
+ public:
+  TestContextMenuController() = default;
+  ~TestContextMenuController() override = default;
+
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override {
+    opened_ = true;
+  }
+
+  bool opened() const { return opened_; }
+
+ private:
+  bool opened_ = false;
+};
+
 class TabViewTestBase
     : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
  public:
@@ -867,6 +885,20 @@ IN_PROC_BROWSER_TEST_P(TabViewTest,
   EXPECT_TRUE(region_view->pane_has_focus());
 }
 
+#if BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_P(TabViewTest, ContextMenuFromControlReturnMac) {
+  views::View* tab_view = GetTabView(0);
+  ASSERT_TRUE(tab_view);
+
+  TestContextMenuController menu_controller;
+  tab_view->set_context_menu_controller(&menu_controller);
+
+  EXPECT_TRUE(tab_view->OnKeyPressed(ui::KeyEvent(
+      ui::EventType::kKeyPressed, ui::VKEY_RETURN, ui::EF_CONTROL_DOWN)));
+  EXPECT_TRUE(menu_controller.opened());
+}
+#endif
+
 class TabViewDataSharingEnabledTest : public TabViewTest {
  public:
   const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
@@ -945,17 +977,31 @@ IN_PROC_BROWSER_TEST_P(TabViewDataSharingEnabledTest, LogsTabSwitchMetrics) {
   EXPECT_EQ(1, user_action_tester.GetActionCount("SwitchTab_Click"));
 }
 
-class TabViewTabMutingEnabledTest : public TabViewTestBase {
+class TabViewTabMutingEnabledTest : public TabViewTest {
  public:
   const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       override {
-    auto enabled = TabViewTestBase::GetEnabledFeatures();
+    auto enabled = TabViewTest::GetEnabledFeatures();
     enabled.push_back({media::kEnableTabMuting, {}});
     return enabled;
   }
 };
 
-IN_PROC_BROWSER_TEST_F(TabViewTabMutingEnabledTest, AlertIndicatorMuteEnabled) {
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TabViewTabMutingEnabledTest,
+    testing::Values(TabStripOrientation::kVertical,
+                    TabStripOrientation::kHorizontal),
+    [](const testing::TestParamInfo<TabStripOrientation>& info) {
+      switch (info.param) {
+        case TabStripOrientation::kVertical:
+          return "Vertical";
+        case TabStripOrientation::kHorizontal:
+          return "Horizontal";
+      }
+    });
+
+IN_PROC_BROWSER_TEST_P(TabViewTabMutingEnabledTest, AlertIndicatorMuteEnabled) {
   TabCollectionNode* tab_node = unpinned_collection_node()->children()[0].get();
   TabView* tab_view = views::AsViewClass<TabView>(tab_node->view());
   auto* alert_indicator =
@@ -968,15 +1014,17 @@ IN_PROC_BROWSER_TEST_F(TabViewTabMutingEnabledTest, AlertIndicatorMuteEnabled) {
   tab_strip_model()->NotifyTabChanged(tab_strip_model()->GetActiveTab(),
                                       TabChangeType::kAll);
 
-  // Normally tab width would be a function of the size of the vertical tab
-  // strip and whether the tab is in a split/group. To make this test not depend
-  // on the layouts of those classes, manually set the bounds of the tab.
+  // Normally tab width would be a function of the size of the tab strip and
+  // whether the tab is in a split/group. To make this test not depend on the
+  // layouts of those classes, manually set the bounds of the tab.
   auto set_tab_width = [&](int width) {
+    tab_view->InvalidateLayout();
     tab_view->SetBounds(tab_view->x(), tab_view->y(), width,
                         tab_view->height());
   };
   constexpr int kEnabledWidth = 128;
-  constexpr int kDisabledWidth = 48;
+  const int kDisabledWidth =
+      GetParam() == TabStripOrientation::kVertical ? 48 : 72;
 
   // Initially the audio playing indicator should be visible and enabled.
   set_tab_width(kEnabledWidth);
@@ -985,6 +1033,7 @@ IN_PROC_BROWSER_TEST_F(TabViewTabMutingEnabledTest, AlertIndicatorMuteEnabled) {
 
   // Add a second tab. The alert indicator should still be enabled.
   AppendTab();
+  set_tab_width(kEnabledWidth);
   EXPECT_TRUE(alert_indicator->GetVisible());
   EXPECT_TRUE(alert_indicator->GetEnabled());
 
@@ -996,11 +1045,12 @@ IN_PROC_BROWSER_TEST_F(TabViewTabMutingEnabledTest, AlertIndicatorMuteEnabled) {
 
   // Activate the original tab. The alert indicator should be enabled again.
   tab_strip_model()->ActivateTabAt(0);
+  set_tab_width(kDisabledWidth);
   EXPECT_TRUE(alert_indicator->GetVisible());
   EXPECT_TRUE(alert_indicator->GetEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(TabViewTabMutingEnabledTest, AlertIndicatorMuteToggle) {
+IN_PROC_BROWSER_TEST_P(TabViewTabMutingEnabledTest, AlertIndicatorMuteToggle) {
   base::HistogramTester histogram_tester;
   TabCollectionNode* tab_node = unpinned_collection_node()->children()[0].get();
   TabView* tab_view = views::AsViewClass<TabView>(tab_node->view());

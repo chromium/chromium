@@ -549,6 +549,14 @@ void TabView::Layout(PassKey) {
 bool TabView::OnKeyPressed(const ui::KeyEvent& event) {
   CHECK(collection_node_);
 
+#if BUILDFLAG(IS_MAC)
+  if (event.key_code() == ui::VKEY_RETURN && event.IsControlDown()) {
+    ShowContextMenu(GetKeyboardContextMenuLocation(),
+                    ui::mojom::MenuSourceType::kKeyboard);
+    return true;
+  }
+#endif
+
   const views::LayoutOrientation layout_orientation =
       orientation_ == TabStripOrientation::kVertical
           ? views::LayoutOrientation::kVertical
@@ -1140,6 +1148,7 @@ void TabView::OnTabStateChanged() {
   UpdateFocusFreezing();
 
   UpdateColors();
+  alert_indicator_->UpdateEnabledForMuteToggle();
   UpdateZOrder();
   InvalidateLayout();
 }
