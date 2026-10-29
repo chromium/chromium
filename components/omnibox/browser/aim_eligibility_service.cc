@@ -541,7 +541,10 @@ bool AimEligibilityService::IsAimUrl(
       << "IsAimUrl: Checking " << url
       << " override: " << (host_override ? host_override->ToString() : "");
   bool is_aim_url =
-      IsAimHost(url, host_override) && IsAimPath(url) && HasAimUrlParams(url);
+      url.is_valid() && url.SchemeIsHTTPOrHTTPS() &&
+      ((url.host() == "g.ai" || url.host() == "www.g.ai") ||
+       (IsAimHost(url, host_override) && IsAimPath(url) &&
+        HasAimUrlParams(url)));
   OMNIBOX_LOG("aim_url_check") << "IsAimUrl: " << (is_aim_url ? "yes" : "no");
   return is_aim_url;
 }

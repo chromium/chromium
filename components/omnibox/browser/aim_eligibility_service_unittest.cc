@@ -262,6 +262,22 @@ TEST_F(AimEligibilityServiceTest, IsAimUrl) {
   EXPECT_FALSE(aim_eligibility_service_->IsAimUrl(
       GURL("https://goo.gl/search?a=1&b=2"),
       contextual_tasks::HostOverride::FromString("goo.gl:8888")));
+
+  // g.ai and www.g.ai should be recognized as AIM URLs without requiring query
+  // params or specific paths, as long as the scheme is HTTP or HTTPS.
+  EXPECT_TRUE(
+      aim_eligibility_service_->IsAimUrl(GURL("https://g.ai/"), std::nullopt));
+  EXPECT_TRUE(aim_eligibility_service_->IsAimUrl(GURL("https://www.g.ai/"),
+                                                 std::nullopt));
+  EXPECT_TRUE(aim_eligibility_service_->IsAimUrl(GURL("http://g.ai/path"),
+                                                 std::nullopt));
+  EXPECT_FALSE(
+      aim_eligibility_service_->IsAimUrl(GURL("chrome://g.ai/"), std::nullopt));
+  EXPECT_FALSE(
+      aim_eligibility_service_->IsAimUrl(GURL("file://g.ai/"), std::nullopt));
+  EXPECT_FALSE(aim_eligibility_service_->IsAimUrl(
+      GURL("chrome://google.com/search?a=1&b=2"), std::nullopt));
+  EXPECT_FALSE(aim_eligibility_service_->IsAimUrl(GURL(), std::nullopt));
 }
 
 TEST_F(AimEligibilityServiceTest, IsAimHost_HostOverrideWithPort) {

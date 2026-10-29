@@ -3829,15 +3829,6 @@ void ContextualTasksUiService::StartTaskUiInSidePanelWithErrorPage(
 }
 
 bool ContextualTasksUiService::IsAiUrl(const GURL& url) {
-  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
-    return false;
-  }
-
-  // TODO(crbug.com/543997783): Have the PEC API return this as an AIM URL
-  // instead of hardcoding it here.
-  if (url.host() == "g.ai" || url.host() == "www.g.ai") {
-    return true;
-  }
   return aim_eligibility_service_ &&
          aim_eligibility_service_->IsAimUrl(url, GetForcedEmbeddedPageHost());
 }
