@@ -6,14 +6,23 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
+
+// Category exposing private `FormSuggestionLabel` selectors and protocol
+// conformance for testing.
+@interface FormSuggestionLabel (Testing) <UIContextMenuInteractionDelegate>
+- (UIMenu*)contextMenu;
+@end
 
 using autofill::Suggestion;
 using autofill::SuggestionType;
@@ -28,6 +37,17 @@ FormSuggestion* CreateFormSuggestion(SuggestionType type) {
                                         type:type
                                      payload:Suggestion::Payload()
                               requiresReauth:NO];
+}
+
+// Returns the `UIContextMenuInteraction` attached to `view`, or nil if none.
+UIContextMenuInteraction* FindContextMenuInteraction(UIView* view) {
+  for (id<UIInteraction> interaction in view.interactions) {
+    if (auto* context_menu_interaction =
+            base::apple::ObjCCast<UIContextMenuInteraction>(interaction)) {
+      return context_menu_interaction;
+    }
+  }
+  return nil;
 }
 
 }  // namespace
@@ -214,4 +234,146 @@ TEST_F(FormSuggestionLabelTest,
   NSString* expectedLabel = l10n_util::GetNSStringF(
       IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION, u"Test", u"Passport · John Doe");
   EXPECT_NSEQ(expectedLabel, label.accessibilityLabel);
+}
+
+// Tests that an Ambient Autofill suggestion (`SuggestionType::kFillAutofillAi`)
+// renders an icon and a two-line layout with the primary value on the first
+// line and the display description on the second line in both compact and
+// non-compact modes.
+TEST_F(FormSuggestionLabelTest, AmbientAutofillTwoLineLayoutAndIcon) {
+  NSString* const kTestSuggestionValue = @"John Doe";
+  NSString* const kTestDisplayDescription = @"Passport · 12345";
+  UIImage* icon = [[UIImage alloc] init];
+  FormSuggestion* suggestion =
+      [FormSuggestion suggestionWithValue:kTestSuggestionValue
+                       displayDescription:kTestDisplayDescription
+                                     icon:icon
+                                     type:SuggestionType::kFillAutofillAi
+                                  payload:Suggestion::Payload()
+                           requiresReauth:NO];
+
+  id delegate = OCMProtocolMock(@protocol(FormSuggestionLabelDelegate));
+  OCMStub([delegate displayDescriptionForSuggestion:suggestion])
+      .andReturn(kTestDisplayDescription);
+
+  FormSuggestionLabel* label =
+      [[FormSuggestionLabel alloc] initWithSuggestion:suggestion
+                                                index:0
+                                  numberOfSuggestions:1
+                                accessoryTrailingView:nil
+                                 isContextMenuEnabled:YES
+                                            isCompact:YES
+                                             delegate:delegate];
+
+  ASSERT_EQ(label.subviews.count, 1u);
+  UIStackView* compact_horizontal_stack =
+      base::apple::ObjCCastStrict<UIStackView>(label.subviews[0]);
+  ASSERT_EQ(compact_horizontal_stack.arrangedSubviews.count, 2u);
+  UIImageView* compact_icon_view = base::apple::ObjCCastStrict<UIImageView>(
+      compact_horizontal_stack.arrangedSubviews[0]);
+  EXPECT_EQ(compact_icon_view.image, icon);
+
+  UIStackView* vertical_text_stack = base::apple::ObjCCastStrict<UIStackView>(
+      compact_horizontal_stack.arrangedSubviews[1]);
+  ASSERT_EQ(vertical_text_stack.arrangedSubviews.count, 2u);
+  UILabel* title_label = base::apple::ObjCCastStrict<UILabel>(
+      vertical_text_stack.arrangedSubviews[0]);
+  UILabel* subtitle_label = base::apple::ObjCCastStrict<UILabel>(
+      vertical_text_stack.arrangedSubviews[1]);
+  EXPECT_NSEQ(title_label.text, kTestSuggestionValue);
+  EXPECT_NSEQ(subtitle_label.text, kTestDisplayDescription);
+
+  // Switch to non-compact mode and verify the attributed two-line label.
+  [label setIsCompact:NO];
+  ASSERT_EQ(label.subviews.count, 1u);
+  UIStackView* non_compact_horizontal_stack =
+      base::apple::ObjCCastStrict<UIStackView>(label.subviews[0]);
+  ASSERT_EQ(non_compact_horizontal_stack.arrangedSubviews.count, 2u);
+  UIImageView* non_compact_icon_view = base::apple::ObjCCastStrict<UIImageView>(
+      non_compact_horizontal_stack.arrangedSubviews[0]);
+  EXPECT_EQ(non_compact_icon_view.image, icon);
+
+  UILabel* attributed_label = base::apple::ObjCCastStrict<UILabel>(
+      non_compact_horizontal_stack.arrangedSubviews[1]);
+  EXPECT_EQ(attributed_label.numberOfLines, 2);
+  NSString* expected_combined_text =
+      [NSString stringWithFormat:@"%@\n%@", kTestSuggestionValue,
+                                 kTestDisplayDescription];
+  EXPECT_NSEQ(attributed_label.attributedText.string, expected_combined_text);
+}
+
+// Tests that a Personal Context (`SuggestionType::kFillAutofillAi`) suggestion
+// chip builds a context menu with the "From Gemini and connected apps. Manage
+// enhanced autofill in settings." header and the "Open settings", "View
+// sources", and destructive "Remove" actions (without an "Edit" action), and
+// that selecting each action invokes the corresponding delegate method.
+TEST_F(FormSuggestionLabelTest, PersonalContextSuggestionContextMenu) {
+  FormSuggestion* suggestion =
+      CreateFormSuggestion(SuggestionType::kFillAutofillAi);
+
+  id delegate = OCMProtocolMock(@protocol(FormSuggestionLabelDelegate));
+  OCMStub([delegate displayDescriptionForSuggestion:suggestion]).andReturn(@"");
+  OCMStub([delegate isPersonalContextSuggestion:suggestion]).andReturn(YES);
+  OCMStub([delegate hasSourcesForSuggestion:suggestion]).andReturn(YES);
+  OCMStub([delegate canSuppressPersonalContextSuggestion:suggestion])
+      .andReturn(YES);
+
+  FormSuggestionLabel* label =
+      [[FormSuggestionLabel alloc] initWithSuggestion:suggestion
+                                                index:0
+                                  numberOfSuggestions:1
+                                accessoryTrailingView:nil
+                                 isContextMenuEnabled:YES
+                                            isCompact:YES
+                                             delegate:delegate];
+
+  UIContextMenuInteraction* interaction = FindContextMenuInteraction(label);
+  ASSERT_NE(interaction, nil);
+
+  UIContextMenuConfiguration* config =
+      [label contextMenuInteraction:interaction
+          configurationForMenuAtLocation:CGPointZero];
+  EXPECT_NE(config, nil);
+
+  UIMenu* menu = [label contextMenu];
+  ASSERT_NE(menu, nil);
+  EXPECT_NSEQ(
+      menu.title,
+      l10n_util::GetNSString(
+          IDS_IOS_AUTOFILL_AI_CONTEXT_MENU_PERSONAL_CONTEXT_DESCRIPTION));
+
+  ASSERT_EQ(menu.children.count, 3u);
+
+  UIAction* open_settings_action =
+      base::apple::ObjCCastStrict<UIAction>(menu.children[0]);
+  EXPECT_NSEQ(open_settings_action.accessibilityIdentifier,
+              kFormSuggestionLabelOpenSettingsAccessibilityIdentifier);
+  EXPECT_NSEQ(open_settings_action.title,
+              l10n_util::GetNSString(IDS_IOS_CONTEXT_MENU_OPEN_SETTINGS));
+
+  UIAction* view_sources_action =
+      base::apple::ObjCCastStrict<UIAction>(menu.children[1]);
+  EXPECT_NSEQ(view_sources_action.accessibilityIdentifier,
+              kFormSuggestionLabelViewSourcesAccessibilityIdentifier);
+  EXPECT_NSEQ(view_sources_action.title,
+              l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_VIEW_SOURCES));
+
+  UIAction* remove_action =
+      base::apple::ObjCCastStrict<UIAction>(menu.children[2]);
+  EXPECT_NSEQ(remove_action.accessibilityIdentifier,
+              kFormSuggestionLabelRemoveAccessibilityIdentifier);
+  EXPECT_NSEQ(remove_action.title,
+              l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_REMOVE_ACTION));
+  EXPECT_TRUE(remove_action.attributes & UIMenuElementAttributesDestructive);
+
+  OCMExpect([delegate openSettingsForSuggestion:suggestion]);
+  [open_settings_action performWithSender:nil target:nil];
+
+  OCMExpect([delegate openSourcesForSuggestion:suggestion]);
+  [view_sources_action performWithSender:nil target:nil];
+
+  OCMExpect([delegate suppressPersonalContextSuggestion:suggestion]);
+  [remove_action performWithSender:nil target:nil];
+
+  EXPECT_OCMOCK_VERIFY(delegate);
 }

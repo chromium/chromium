@@ -6,9 +6,14 @@
 
 #import <string>
 
+#import "base/functional/callback_helpers.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/filling/filling_product.h"
+#import "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #import "components/autofill/core/browser/ui/mock_autofill_suggestion_delegate.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
@@ -17,6 +22,9 @@
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator_handler.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/ui/form_input_accessory_consumer.h"
 #import "ios/chrome/browser/autofill/model/features.h"
+#import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -719,6 +727,53 @@ TEST_P(FormSuggestionControllerTest, CopyAndAdjustSuggestions) {
       [suggestion_controller_ copyAndAdjustSuggestions:suggestions];
   EXPECT_TRUE(adjusted_suggestions.count);
   EXPECT_TRUE(adjusted_suggestions[0].icon);
+}
+
+// Tests that Ambient Autofill (`SuggestionType::kFillAutofillAi`) suggestions
+// backed by a `RecordType::kPersonalContext` entity receive a default icon.
+TEST_P(FormSuggestionControllerTest,
+       CopyAndAdjustSuggestions_AmbientAutofillIcon) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{autofill::features::kAutofillAiWithDataSchema},
+      /*disabled_features=*/{
+          autofill::features::kAutofillAiNoFillingIconsExperiment});
+
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactory(ios::WebDataServiceFactory::GetInstance(),
+                            ios::WebDataServiceFactory::GetDefaultFactory());
+  std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
+  fake_web_state_.SetBrowserState(profile.get());
+  base::ScopedClosureRunner reset_browser_state(
+      base::BindOnce(&web::FakeWebState::SetBrowserState,
+                     base::Unretained(&fake_web_state_), nullptr));
+
+  constexpr char kTestPassportGuid[] = "00000000-0000-4000-8000-000000000001";
+  autofill::EntityDataManager* entity_manager =
+      IOSAutofillEntityDataManagerFactory::GetForProfile(profile.get());
+  ASSERT_NE(entity_manager, nullptr);
+  autofill::test::PassportEntityOptions options;
+  options.guid = kTestPassportGuid;
+  options.record_type = autofill::EntityInstance::RecordType::kPersonalContext;
+  entity_manager->SetPersonalContextEntitiesForTesting(
+      {autofill::test::GetPassportEntityInstance(options)});
+
+  SetUpController(@[ [TestSuggestionProvider providerWithSuggestions] ]);
+
+  autofill::Suggestion::AutofillAiPayload payload(
+      autofill::EntityInstance::EntityId{kTestPassportGuid});
+  FormSuggestion* suggestion = [FormSuggestion
+      suggestionWithValue:@"John Doe"
+       displayDescription:@"Passport · 12345"
+                     icon:nil
+                     type:autofill::SuggestionType::kFillAutofillAi
+                  payload:payload
+           requiresReauth:NO];
+
+  NSArray<FormSuggestion*>* adjusted_suggestions =
+      [suggestion_controller_ copyAndAdjustSuggestions:@[ suggestion ]];
+  ASSERT_EQ(adjusted_suggestions.count, 1u);
+  EXPECT_NE(adjusted_suggestions[0].icon, nil);
 }
 
 // Tests that metadata and suggestion_delegate are preserved when suggestions

@@ -576,8 +576,26 @@ TEST_F(FormInputAccessoryViewControllerTest,
   EXPECT_OCMOCK_VERIFY(context_menu_handler);
 }
 
-// Tests that FormInputAccessoryViewController forwards
-// isPersonalContextSuggestion: to the context menu handler.
+// Tests that `FormInputAccessoryViewController` forwards
+// `openSettingsForSuggestion:` to the context menu handler.
+TEST_F(FormInputAccessoryViewControllerTest, OpenSettingsForSuggestion) {
+  id context_menu_handler =
+      OCMProtocolMock(@protocol(AutofillSuggestionContextMenuHandler));
+  view_controller_.contextMenuHandler = context_menu_handler;
+
+  FormSuggestion* suggestion = SimpleFormSuggestion(
+      u"Test Suggestion", autofill::SuggestionType::kFillAutofillAi);
+
+  OCMExpect([context_menu_handler openSettingsForSuggestion:suggestion]);
+
+  [(id<FormSuggestionViewDelegate>)view_controller_
+      openSettingsForSuggestion:suggestion];
+
+  EXPECT_OCMOCK_VERIFY(context_menu_handler);
+}
+
+// Tests that `FormInputAccessoryViewController` forwards
+// `isPersonalContextSuggestion:` to the context menu handler.
 TEST_F(FormInputAccessoryViewControllerTest, IsPersonalContextSuggestion) {
   id context_menu_handler =
       OCMProtocolMock(@protocol(AutofillSuggestionContextMenuHandler));
