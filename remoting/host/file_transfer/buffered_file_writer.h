@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "remoting/host/file_transfer/file_operations.h"
 #include "remoting/proto/file_transfer.pb.h"
 
@@ -92,6 +93,8 @@ class BufferedFileWriter {
   // Chunks that have been provided to Write but have not yet been passed to the
   // Writer instance.
   base::queue<std::vector<std::uint8_t>> chunks_;
+
+  base::WeakPtrFactory<BufferedFileWriter> weak_factory_{this};
 };
 
 }  // namespace remoting

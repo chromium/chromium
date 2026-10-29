@@ -25,10 +25,8 @@ BufferedFileWriter::~BufferedFileWriter() = default;
 void BufferedFileWriter::Start(const base::FilePath& filename) {
   DCHECK_EQ(kNotStarted, state_);
   SetState(kWorking);
-  // Unretained is sound because no Writer callbacks will be invoked after the
-  // Writer is destroyed.
   writer_->Open(filename, base::BindOnce(&BufferedFileWriter::OnOperationResult,
-                                         base::Unretained(this)));
+                                         weak_factory_.GetWeakPtr()));
 }
 
 void BufferedFileWriter::Write(std::vector<std::uint8_t> data) {
@@ -64,7 +62,7 @@ void BufferedFileWriter::WriteNextChunk() {
   chunks_.pop();
   writer_->WriteChunk(std::move(data),
                       base::BindOnce(&BufferedFileWriter::OnOperationResult,
-                                     base::Unretained(this)));
+                                     weak_factory_.GetWeakPtr()));
 }
 
 // Handles the result from both Open and WriteChunk. For the former, it is
@@ -90,7 +88,7 @@ void BufferedFileWriter::DoClose() {
   DCHECK(chunks_.empty());
   DCHECK_EQ(kClosing, state_);
   writer_->Close(base::BindOnce(&BufferedFileWriter::OnCloseResult,
-                                base::Unretained(this)));
+                                weak_factory_.GetWeakPtr()));
 }
 
 void BufferedFileWriter::OnCloseResult(FileOperations::Writer::Result result) {

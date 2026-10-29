@@ -5,6 +5,7 @@
 #include "remoting/host/file_transfer/buffered_file_writer.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "remoting/host/file_transfer/fake_file_operations.h"
 #include "remoting/host/file_transfer/test_byte_vector_utils.h"
@@ -12,6 +13,32 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
+
+namespace {
+
+// A Writer that captures its Open callback without cancelling it on
+// destruction, simulating a buggy Writer implementation that invokes a callback
+// after destruction.
+class StaleCallbackWriter : public FileOperations::Writer {
+ public:
+  explicit StaleCallbackWriter(Callback* captured_callback)
+      : captured_callback_(captured_callback) {}
+  ~StaleCallbackWriter() override = default;
+
+  void Open(const base::FilePath& filename, Callback callback) override {
+    state_ = FileOperations::kBusy;
+    *captured_callback_ = std::move(callback);
+  }
+  void WriteChunk(std::vector<std::uint8_t> data, Callback callback) override {}
+  void Close(Callback callback) override {}
+  FileOperations::State state() const override { return state_; }
+
+ private:
+  FileOperations::State state_ = FileOperations::kCreated;
+  raw_ptr<Callback> captured_callback_;
+};
+
+}  // namespace
 
 class BufferedFileWriterTest : public testing::Test {
  public:
@@ -179,6 +206,37 @@ TEST_F(BufferedFileWriterTest, CancelsWriter) {
   std::vector<std::vector<std::uint8_t>> expected_chunks = {kTestDataOne,
                                                             kTestDataTwo};
   ASSERT_EQ(test_io.files_written[0].chunks, expected_chunks);
+}
+
+// Verifies that if a Writer implementation invokes a callback after
+// BufferedFileWriter is destroyed, the WeakPtr invalidation prevents a
+// use-after-free.
+TEST_F(BufferedFileWriterTest, StaleCallbackAfterDestructionIsIgnored) {
+  FileOperations::Writer::Callback stale_callback;
+  {
+    auto underlying_writer =
+        std::make_unique<StaleCallbackWriter>(&stale_callback);
+    BufferedFileWriter writer(
+        std::move(underlying_writer),
+        base::BindOnce(
+            &BufferedFileWriterTest_StaleCallbackAfterDestructionIsIgnored_Test::
+                OnCompleted,
+            base::Unretained(this)),
+        base::BindOnce(
+            &BufferedFileWriterTest_StaleCallbackAfterDestructionIsIgnored_Test::
+                OnError,
+            base::Unretained(this)));
+    writer.Start(kTestFilename);
+    ASSERT_TRUE(stale_callback);
+  }
+
+  // Invoking the captured callback after BufferedFileWriter is destroyed should
+  // safely no-op.
+  std::move(stale_callback)
+      .Run(protocol::MakeFileTransferError(
+          FROM_HERE, protocol::FileTransfer_Error_Type_IO_ERROR));
+  EXPECT_FALSE(complete_called_);
+  EXPECT_FALSE(error_);
 }
 
 }  // namespace remoting
