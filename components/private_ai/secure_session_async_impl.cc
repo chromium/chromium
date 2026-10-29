@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/private_ai/crypto/constants.h"
 #include "components/private_ai/mojom/oak_session.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -100,7 +101,8 @@ void SecureSessionAsyncImpl::GetHandshakeMessage(
             base::UmaHistogramBoolean(
                 "PrivateAi.OakSessionSandboxStability.InitiateHandshake",
                 false);
-            std::move(callback).Run(std::nullopt);
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
           },
           std::move(split_callback.second)));
 
@@ -132,7 +134,8 @@ void SecureSessionAsyncImpl::ProcessHandshakeResponse(
             base::UmaHistogramBoolean(
                 "PrivateAi.OakSessionSandboxStability.CompleteHandshake",
                 false);
-            std::move(callback).Run(false);
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE, base::BindOnce(std::move(callback), false));
           },
           std::move(split_callback.second)));
 
@@ -157,7 +160,8 @@ void SecureSessionAsyncImpl::Encrypt(const Request& data,
           [](EncryptOnceCallback callback) {
             base::UmaHistogramBoolean(
                 "PrivateAi.OakSessionSandboxStability.Encrypt", false);
-            std::move(callback).Run(std::nullopt);
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
           },
           std::move(split_callback.second)));
 
@@ -182,7 +186,8 @@ void SecureSessionAsyncImpl::Decrypt(
           [](DecryptOnceCallback callback) {
             base::UmaHistogramBoolean(
                 "PrivateAi.OakSessionSandboxStability.Decrypt", false);
-            std::move(callback).Run(std::nullopt);
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
           },
           std::move(split_callback.second)));
 
