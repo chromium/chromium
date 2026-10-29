@@ -619,9 +619,12 @@ template("single_apple_toolchain") {
       # file to a temporary file, (3) if the temporary file has differences from
       # the existing .TOC file, overwrite it, otherwise, don't change it.
       #
-      # As a special case, if the library reexports symbols from other dynamic
-      # libraries, we always update the .TOC and skip the temporary file and
-      # diffing steps, since that library always needs to be re-linked.
+      # Note: LC_REEXPORT_DYLIB (-Wl,-reexport_library) introduces an input
+      # dependency on the re-exported dylib for downstream link targets rather
+      # than altering this dylib's .TOC. Targets using -Wl,-reexport_library
+      # (such as chrome_framework in //chrome/BUILD.gn) must expose the
+      # re-exported target via public_deps so downstream link steps depend
+      # directly on the re-exported dylib's .TOC.
       tocname = dylib + ".TOC"
 
       # Use explicit paths to binaries. The binaries present on the default

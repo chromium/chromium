@@ -80,10 +80,8 @@ LINKER_DRIVER_COMPILER_ARG_PREFIX = '-Wcrl,driver,'
 # -Wcrl,nmpath,<nm path>
 #    Sets the path to the nm for solink process.
 #
-# -Wcrl.tocname,<tocname>
+# -Wcrl,tocname,<tocname>
 #    Output TOC for solink.
-#    It would be processed both before the linker (to check reexport
-#    in old module) and after the linker (to produce TOC if needed).
 
 
 class LinkerDriver(object):
@@ -107,7 +105,6 @@ class LinkerDriver(object):
             ('strippath,', self.set_strip_path),
             ('otoolpath,', self.set_otool_path),
             ('nmpath,', self.set_nm_path),
-            ('tocname,', self.check_reexport_in_old_module),
         ]
 
         # List of linker driver actions. **The sort order of this list affects
@@ -132,9 +129,6 @@ class LinkerDriver(object):
 
         # The linker output file, lazily computed in self._get_linker_output().
         self._linker_output = None
-
-        # may not need to reexport unless LC_REEXPORT_DYLIB is used.
-        self._reexport_in_old_module = False
 
         # temp directory for lto cache.
         self._object_path_lto = None
@@ -290,26 +284,6 @@ class LinkerDriver(object):
                 os.path.relpath(self._object_path_lto.name)
             )
         )
-
-    def check_reexport_in_old_module(self, tocname):
-        """Linker driver pre-action for -Wcrl,tocname,<path>.
-
-        Check whether it contains LC_REEXPORT_DYLIB in old module, so that
-        needs to ouptupt TOC file for solink even if the same TOC.
-
-        Returns:
-           True if old module have LC_REEXPORT_DYLIB
-        """
-        if not os.path.exists(tocname):
-            return
-        dylib = self._get_linker_output()
-        if not os.path.exists(dylib):
-            return
-        p = subprocess.run(self._otool_cmd + ['-l', dylib], capture_output=True)
-        if p.returncode != 0:
-            return
-        if re.search(rb'^\s+cmd LC_REEXPORT_DYLIB$', p.stdout, re.MULTILINE):
-            self._reexport_in_old_module = True
 
     def set_install_name_tool_path(self, install_name_tool_path):
         """Linker driver pre-action for -Wcrl,installnametoolpath,<path>.
@@ -474,10 +448,6 @@ class LinkerDriver(object):
 
         Produce *.TOC from linker output.
 
-        TODO(ukai): recursively collect symbols from all 'LC_REEXPORT_DYLIB'-
-        exported modules and present them all in the TOC, and
-        drop self._reexport_in_old_module.
-
         Args:
            tocname: string, The path to *.TOC file.
         Returns:
@@ -485,14 +455,13 @@ class LinkerDriver(object):
         """
         new_toc = self._extract_toc()
         old_toc = None
-        if not self._reexport_in_old_module:
-            try:
-                with open(tocname, 'rb') as f:
-                    old_toc = f.read()
-            except OSError:
-                pass
+        try:
+            with open(tocname, 'rb') as f:
+                old_toc = f.read()
+        except OSError:
+            pass
 
-        if self._reexport_in_old_module or new_toc != old_toc:
+        if new_toc != old_toc:
             # TODO: use delete_on_close in python 3.12 or later.
             with tempfile.NamedTemporaryFile(
                 prefix=tocname + '.', dir='.', delete=False
