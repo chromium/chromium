@@ -20,7 +20,6 @@
 #include "net/url_request/url_request_job.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/origin.h"
 
@@ -29,20 +28,7 @@ namespace customtabs {
 namespace {
 
 void RecordParallelRequestHistograms(const std::string& suffix,
-                                     int redirects,
                                      int net_error) {
-  bool success = net_error == net::OK;
-  if (success) {
-    // Max 20 redirects, 21 would be a bug.
-    base::UmaHistogramCustomCounts(
-        "CustomTabs.DetachedResourceRequest.RedirectsCount.Success" + suffix,
-        redirects, 1, 21, 21);
-  } else {
-    base::UmaHistogramCustomCounts(
-        "CustomTabs.DetachedResourceRequest.RedirectsCount.Failure" + suffix,
-        redirects, 1, 21, 21);
-  }
-
   base::UmaHistogramSparse(
       "CustomTabs.DetachedResourceRequest.FinalStatus" + suffix, net_error);
 }
@@ -77,8 +63,7 @@ DetachedResourceRequest::DetachedResourceRequest(
     : url_(url),
       site_for_referrer_(site_for_referrer),
       motivation_(motivation),
-      cb_(std::move(cb)),
-      redirects_(0) {
+      cb_(std::move(cb)) {
   is_from_aga_ = package_name == "com.google.android.googlequicksearchbox";
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("customtabs_parallel_request",
@@ -139,10 +124,6 @@ void DetachedResourceRequest::Start(
     content::BrowserContext* browser_context) {
   auto* storage_partition = browser_context->GetStoragePartition(nullptr);
 
-  request->url_loader_->SetOnRedirectCallback(
-      base::BindRepeating(&DetachedResourceRequest::OnRedirectCallback,
-                          base::Unretained(request.get())));
-
   // Retry for client-side transient failures: DNS resolution errors and network
   // configuration changes. Server HTTP 5xx errors are not retried.
   //
@@ -179,14 +160,6 @@ void DetachedResourceRequest::Start(
       kMaxResponseSize);
 }
 
-void DetachedResourceRequest::OnRedirectCallback(
-    const GURL& url_before_redirect,
-    const net::RedirectInfo& redirect_info,
-    const network::mojom::URLResponseHead& response_head,
-    std::vector<std::string>* to_be_removed_headers) {
-  redirects_++;
-}
-
 void DetachedResourceRequest::OnResponseCallback(
     std::optional<std::string> response_body) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
@@ -194,9 +167,9 @@ void DetachedResourceRequest::OnResponseCallback(
   net_error = std::abs(net_error);
 
   if (motivation_ == Motivation::kParallelRequest) {
-    RecordParallelRequestHistograms("", redirects_, net_error);
+    RecordParallelRequestHistograms("", net_error);
     if (is_from_aga_) {
-      RecordParallelRequestHistograms(".FromAga", redirects_, net_error);
+      RecordParallelRequestHistograms(".FromAga", net_error);
     }
   }
 

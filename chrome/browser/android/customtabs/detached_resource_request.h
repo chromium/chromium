@@ -8,22 +8,16 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "net/url_request/referrer_policy.h"
-#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace content {
 class BrowserContext;
 }  // namespace content
-
-namespace net {
-struct RedirectInfo;
-}  // namespace net
 
 namespace network {
 class SimpleURLLoader;
@@ -75,10 +69,6 @@ class DetachedResourceRequest {
 
   static void Start(std::unique_ptr<DetachedResourceRequest> request,
                     content::BrowserContext* browser_context);
-  void OnRedirectCallback(const GURL& url_before_redirect,
-                          const net::RedirectInfo& redirect_info,
-                          const network::mojom::URLResponseHead& response_head,
-                          std::vector<std::string>* to_be_removed_headers);
   void OnResponseCallback(std::optional<std::string> response_body);
 
   const GURL url_;
@@ -86,7 +76,6 @@ class DetachedResourceRequest {
   Motivation motivation_;
   OnResultCallback cb_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
-  int redirects_;
   bool is_from_aga_;
 };
 

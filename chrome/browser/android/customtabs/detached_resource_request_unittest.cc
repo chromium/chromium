@@ -341,8 +341,6 @@ TEST_F(DetachedResourceRequestTest, Simple) {
   server_request_waiter.Run();
   EXPECT_EQ(site_for_referrer.spec(), headers["referer"]);
   request_completion_waiter.Run();
-  histogram_tester.ExpectUniqueSample(
-      "CustomTabs.DetachedResourceRequest.RedirectsCount.Success", 0, 1);
   histogram_tester.ExpectBucketCount(
       "CustomTabs.DetachedResourceRequest.FinalStatus", net::OK, 1);
 }
@@ -362,8 +360,6 @@ TEST_F(DetachedResourceRequestTest, SimpleFailure) {
         request_waiter.Quit();
       }));
   request_waiter.Run();
-  histogram_tester.ExpectUniqueSample(
-      "CustomTabs.DetachedResourceRequest.RedirectsCount.Failure", 0, 1);
   histogram_tester.ExpectBucketCount(
       "CustomTabs.DetachedResourceRequest.FinalStatus",
       -net::ERR_HTTP_RESPONSE_CODE_FAILURE, 1);
@@ -390,8 +386,6 @@ TEST_F(DetachedResourceRequestTest, ResponseTooLarge) {
           request_waiter.Quit();
         }));
     request_waiter.Run();
-    histogram_tester.ExpectUniqueSample(
-        "CustomTabs.DetachedResourceRequest.RedirectsCount.Success", 0, 1);
     histogram_tester.ExpectBucketCount(
         "CustomTabs.DetachedResourceRequest.FinalStatus", net::OK, 1);
   }
@@ -411,8 +405,6 @@ TEST_F(DetachedResourceRequestTest, ResponseTooLarge) {
           request_waiter.Quit();
         }));
     request_waiter.Run();
-    histogram_tester.ExpectUniqueSample(
-        "CustomTabs.DetachedResourceRequest.RedirectsCount.Failure", 0, 1);
     histogram_tester.ExpectBucketCount(
         "CustomTabs.DetachedResourceRequest.FinalStatus",
         -net::ERR_INSUFFICIENT_RESOURCES, 1);
@@ -437,8 +429,6 @@ TEST_F(DetachedResourceRequestTest, CookieSetWithTruncatedResponse) {
         request_waiter.Quit();
       }));
   request_waiter.Run();
-  histogram_tester.ExpectUniqueSample(
-      "CustomTabs.DetachedResourceRequest.RedirectsCount.Failure", 0, 1);
   histogram_tester.ExpectBucketCount(
       "CustomTabs.DetachedResourceRequest.FinalStatus",
       -net::ERR_INSUFFICIENT_RESOURCES, 1);
@@ -613,12 +603,8 @@ TEST_F(DetachedResourceRequestTest, MultipleOrigins) {
 
   // Not from AGA, no samples recorded.
   histogram_tester.ExpectTotalCount(
-      "CustomTabs.DetachedResourceRequest.RedirectsCount.Success.FromAga", 0);
-  histogram_tester.ExpectTotalCount(
       "CustomTabs.DetachedResourceRequest.FinalStatus.FromAga", 0);
 
-  histogram_tester.ExpectUniqueSample(
-      "CustomTabs.DetachedResourceRequest.RedirectsCount.Success", 1, 1);
   histogram_tester.ExpectBucketCount(
       "CustomTabs.DetachedResourceRequest.FinalStatus", net::OK, 1);
 }
@@ -643,14 +629,9 @@ TEST_F(DetachedResourceRequestTest, ManyRedirects) {
       }));
   request_waiter.Run();
   // Histograms are recorded in both places.
-  histogram_tester.ExpectUniqueSample(
-      "CustomTabs.DetachedResourceRequest.RedirectsCount.Success", 9, 1);
   histogram_tester.ExpectBucketCount(
       "CustomTabs.DetachedResourceRequest.FinalStatus", net::OK, 1);
 
-  histogram_tester.ExpectUniqueSample(
-      "CustomTabs.DetachedResourceRequest.RedirectsCount.Success.FromAga", 9,
-      1);
   histogram_tester.ExpectBucketCount(
       "CustomTabs.DetachedResourceRequest.FinalStatus.FromAga", net::OK, 1);
 }
@@ -673,8 +654,6 @@ TEST_F(DetachedResourceRequestTest, TooManyRedirects) {
         request_waiter.Quit();
       }));
   request_waiter.Run();
-  histogram_tester.ExpectUniqueSample(
-      "CustomTabs.DetachedResourceRequest.RedirectsCount.Failure", 20, 1);
   histogram_tester.ExpectBucketCount(
       "CustomTabs.DetachedResourceRequest.FinalStatus",
       -net::ERR_TOO_MANY_REDIRECTS, 1);

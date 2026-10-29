@@ -22,16 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="DetachedResourceRequestFinalStatus">
-  <variant name="Failure" summary="Failed detached request"/>
-  <variant name="Success" summary="Successful detached request"/>
-</variants>
-
-<variants name="DetachedResourceRequestSource">
-  <variant name="" summary=""/>
-  <variant name=".FromAga" summary="Requests originating from AGA"/>
-</variants>
-
 <variants name="IntentToFirstCommitZoom">
   <variant name=".ZoomedIn"
       summary="Zoomed in view: shorter range, more buckets.">
@@ -252,19 +242,6 @@ chromium-metrics-reviews@google.com.
     Recorded once per detached resource request. Android only. Starting with M84
     this is is also recorded for webapps/WebAPKs. Filter the platform for just
     CCT/TWA data.
-  </summary>
-</histogram>
-
-<histogram
-    name="CustomTabs.DetachedResourceRequest.RedirectsCount.{DetachedResourceRequestFinalStatus}{DetachedResourceRequestSource}"
-    units="redirects" expires_after="2024-03-17">
-  <owner>lizeb@chromium.org</owner>
-  <owner>cct-team@google.com</owner>
-  <summary>
-    Number of redirects followed by a detached resource request until success or
-    failure. Android only. Starting with M84 this is is also recorded for
-    webapps/WebAPKs. Filter the platform for just CCT/TWA data.
-    {DetachedResourceRequestFinalStatus} {DetachedResourceRequestSource}
   </summary>
 </histogram>
 
