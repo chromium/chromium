@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "build/build_config.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
@@ -131,8 +132,6 @@ TEST(ProxyPrefsUtilsTest, ProxyOverrideRuleProxyFromString) {
   ASSERT_FALSE(ProxyOverrideRuleProxyFromString("123456789").IsValid());
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_ANDROID)
 namespace {
 
 void SetAffiliation(TestingPrefServiceSimple& prefs,
@@ -149,10 +148,15 @@ void SetAffiliation(TestingPrefServiceSimple& prefs,
   }
   EXPECT_CALL(policy_service, GetPolicies(testing::_))
       .WillRepeatedly(testing::ReturnRef(policy_map));
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
   prefs.SetInteger(prefs::kEnableProxyOverrideRulesForAllUsers,
                    enabled_for_all_users);
+#endif
 }
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
 void VerifyUnaffiliatedRestriction(TestingPrefServiceSimple& prefs,
                                    policy::MockPolicyService& policy_service,
                                    policy::PolicyMap& policy_map,
@@ -173,9 +177,13 @@ void VerifyUnaffiliatedRestriction(TestingPrefServiceSimple& prefs,
                  /*enabled_for_all_users=*/0);
   EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
 }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
 TEST(ProxyPrefsUtilsTest, ProxyOverrideRulesAllowed) {
   TestingPrefServiceSimple prefs;
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(prefs.registry());
@@ -218,6 +226,42 @@ TEST(ProxyPrefsUtilsTest, ProxyOverrideRulesAllowed) {
   VerifyUnaffiliatedRestriction(prefs, policy_service, policy_map,
                                 /*expected_restricted=*/true);
 }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
+
+TEST(ProxyPrefsUtilsTest, AreUserProxyOverrideRulesAllowed) {
+  TestingPrefServiceSimple prefs;
+  PrefProxyConfigTrackerImpl::RegisterProfilePrefs(prefs.registry());
+  testing::NiceMock<policy::MockPolicyService> policy_service;
+  policy::PolicyMap policy_map;
+
+  // Unlike `ProxyOverrideRulesAllowed`, `AreUserProxyOverrideRulesAllowed`
+  // evaluates user/extension eligibility even when `kProxyOverrideRules` has no
+  // value set yet. On ChromeOS, user rules are never blocked by unaffiliation
+  // and always return true.
+  SetAffiliation(prefs, policy_service, policy_map, /*affiliated=*/false,
+                 /*enabled_for_all_users=*/0);
+  EXPECT_EQ(AreUserProxyOverrideRulesAllowed(&prefs, &policy_service),
+            !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+              BUILDFLAG(IS_ANDROID)));
+
+  // Unaffiliated with policy enabled for all users: allowed.
+  SetAffiliation(prefs, policy_service, policy_map, /*affiliated=*/false,
+                 /*enabled_for_all_users=*/1);
+  EXPECT_TRUE(AreUserProxyOverrideRulesAllowed(&prefs, &policy_service));
+
+  // Affiliated: allowed even when `kEnableProxyOverrideRulesForAllUsers` is 0.
+  SetAffiliation(prefs, policy_service, policy_map, /*affiliated=*/true,
+                 /*enabled_for_all_users=*/0);
+  EXPECT_TRUE(AreUserProxyOverrideRulesAllowed(&prefs, &policy_service));
+
+  // Unmanaged device (empty device affiliation IDs): allowed.
+  policy_map.Clear();
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
+  prefs.SetInteger(prefs::kEnableProxyOverrideRulesForAllUsers, 0);
 #endif
+  EXPECT_TRUE(AreUserProxyOverrideRulesAllowed(&prefs, &policy_service));
+}
 
 }  // namespace proxy_config

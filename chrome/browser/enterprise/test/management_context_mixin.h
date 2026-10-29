@@ -67,6 +67,10 @@ class ManagementContextMixin : public InProcessBrowserTestMixin {
   void SetCloudUserPolicies(
       base::flat_map<std::string, std::optional<base::Value>> policy_entries);
 
+  // Updates the user's affiliation status and refreshes the active Chrome
+  // policies accordingly.
+  void SetAffiliation(bool affiliated);
+
 #if BUILDFLAG(IS_CHROMEOS)
   // Returns a scoped object which can be used to set device policies. When that
   // object goes out of scope, the policy update will be applied.

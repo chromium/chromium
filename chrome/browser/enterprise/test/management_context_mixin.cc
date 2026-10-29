@@ -89,6 +89,11 @@ void ManagementContextMixin::SetCloudUserPolicies(
   MergeNewChromePolicies(policy_map);
 }
 
+void ManagementContextMixin::SetAffiliation(bool affiliated) {
+  management_context_.affiliated = affiliated;
+  SetCloudUserPolicies({});
+}
+
 std::unique_ptr<enterprise_management::PolicyData>
 ManagementContextMixin::GetBaseUserPolicyData() const {
   const auto* user_customer_id =
@@ -107,8 +112,15 @@ ManagementContextMixin::GetBaseUserPolicyData() const {
 void ManagementContextMixin::MergeNewChromePolicies(
     policy::PolicyMap& new_policy_map) {
   // Merge the existing Chrome policies into the new map.
-  new_policy_map.MergeFrom(user_policy_provider_.policies().Get(
-      policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string())));
+  policy::PolicyMap existing_policy_map =
+      user_policy_provider_.policies()
+          .Get(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
+                                       std::string()))
+          .Clone();
+  if (!new_policy_map.GetUserAffiliationIds().empty()) {
+    existing_policy_map.SetUserAffiliationIds({});
+  }
+  new_policy_map.MergeFrom(std::move(existing_policy_map));
 
   EXPECT_NO_FATAL_FAILURE(
       user_policy_provider_.UpdateChromePolicy(new_policy_map));

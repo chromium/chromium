@@ -4,6 +4,7 @@
 
 #include "components/proxy_config/proxy_prefs_utils.h"
 
+#include "build/build_config.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
@@ -61,8 +62,8 @@ net::ProxyChain ProxyOverrideRuleProxyFromString(std::string_view raw_value) {
   return net::PacResultElementToProxyChain(raw_value);
 }
 
-bool ProxyOverrideRulesAllowed(const PrefService* pref_service,
-                               policy::PolicyService* policy_service) {
+bool AreUserProxyOverrideRulesAllowed(const PrefService* pref_service,
+                                      policy::PolicyService* policy_service) {
   CHECK(pref_service);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID)
@@ -78,6 +79,23 @@ bool ProxyOverrideRulesAllowed(const PrefService* pref_service,
         policies.IsUserAffiliated()) {
       return true;
     }
+  }
+
+  return false;
+#else   // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
+  return true;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
+}
+
+bool ProxyOverrideRulesAllowed(const PrefService* pref_service,
+                               policy::PolicyService* policy_service) {
+  CHECK(pref_service);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
+  if (AreUserProxyOverrideRulesAllowed(pref_service, policy_service)) {
+    return true;
   }
 
   const PrefService::Preference* pref =

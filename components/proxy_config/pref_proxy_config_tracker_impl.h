@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
+#include "build/build_config.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/proxy_config/pref_proxy_config_tracker.h"
@@ -24,6 +25,13 @@
 #include "base/scoped_observation.h"
 #include "components/enterprise/net/core/enterprise_proxy_service.h"
 #endif  // BUILDFLAG(ENTERPRISE_PROXY)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
+#include "base/scoped_observation.h"
+#include "components/policy/core/common/policy_service.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
 
 class PrefService;
 class PrefRegistrySimple;
@@ -111,6 +119,12 @@ class PROXY_CONFIG_EXPORT PrefProxyConfigTrackerImpl
     ,
       public enterprise_net::EnterpriseProxyService::Observer
 #endif  // BUILDFLAG(ENTERPRISE_PROXY)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
+    ,
+      public policy::PolicyService::ProviderUpdateObserver
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
 {
  public:
   // |proxy_config_service_task_runner| is the thread the ProxyConfigService
@@ -192,6 +206,14 @@ class PROXY_CONFIG_EXPORT PrefProxyConfigTrackerImpl
   void OnEnterpriseProxyServiceDestroyed() override;
 #endif  // BUILDFLAG(ENTERPRISE_PROXY)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
+  // policy::PolicyService::ProviderUpdateObserver implementation:
+  void OnProviderUpdatePropagated(
+      policy::ConfigurationPolicyProvider* provider) override;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
+
  protected:
   // Get the proxy configuration currently defined by preferences.
   // Status is indicated in the return value.
@@ -235,6 +257,14 @@ class PROXY_CONFIG_EXPORT PrefProxyConfigTrackerImpl
   scoped_refptr<base::SingleThreadTaskRunner> proxy_config_service_task_runner_;
 
   base::ThreadChecker thread_checker_;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
+  base::ScopedObservation<policy::PolicyService,
+                          policy::PolicyService::ProviderUpdateObserver>
+      policy_service_observation_{this};
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENTERPRISE_PROXY)
   base::ScopedObservation<enterprise_net::EnterpriseProxyService,

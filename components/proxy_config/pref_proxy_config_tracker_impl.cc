@@ -475,6 +475,21 @@ PrefProxyConfigTrackerImpl::PrefProxyConfigTrackerImpl(
         proxy_config::prefs::kProxyOverrideRules,
         base::BindRepeating(&PrefProxyConfigTrackerImpl::OnProxyPrefChanged,
                             base::Unretained(this)));
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
+    proxy_prefs_.Add(
+        proxy_config::prefs::kEnableProxyOverrideRulesForAllUsers,
+        base::BindRepeating(&PrefProxyConfigTrackerImpl::OnProxyPrefChanged,
+                            base::Unretained(this)));
+    proxy_prefs_.Add(
+        proxy_config::prefs::kProxyOverrideRulesScope,
+        base::BindRepeating(&PrefProxyConfigTrackerImpl::OnProxyPrefChanged,
+                            base::Unretained(this)));
+    if (policy_service_) {
+      policy_service_observation_.Observe(policy_service_);
+    }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
   }
 }
 
@@ -520,6 +535,13 @@ void PrefProxyConfigTrackerImpl::DetachFromPrefService() {
   proxy_prefs_.RemoveAll();
   pref_service_ = nullptr;
   proxy_config_service_impl_ = nullptr;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
+  // Stop observing policy provider updates for user affiliation changes.
+  policy_service_observation_.Reset();
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
+  policy_service_ = nullptr;
 #if BUILDFLAG(ENTERPRISE_PROXY)
   enterprise_proxy_observation_.Reset();
 #endif  // BUILDFLAG(ENTERPRISE_PROXY)
@@ -738,6 +760,16 @@ void PrefProxyConfigTrackerImpl::OnEnterpriseProxyServiceDestroyed() {
   enterprise_proxy_observation_.Reset();
 }
 #endif  // BUILDFLAG(ENTERPRISE_PROXY)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
+void PrefProxyConfigTrackerImpl::OnProviderUpdatePropagated(
+    policy::ConfigurationPolicyProvider* provider) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  OnProxyPrefChanged();
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
 
 bool PrefProxyConfigTrackerImpl::PrefConfigToNetConfig(
     const ProxyConfigDictionary& proxy_dict,

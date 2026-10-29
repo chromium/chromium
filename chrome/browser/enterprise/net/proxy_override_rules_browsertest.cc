@@ -366,6 +366,65 @@ IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesUnaffiliatedBrowserTest,
       chrome_test_utils::GetActiveWebContents(this), destination_url));
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Verifies that dynamically toggling EnableProxyOverrideRulesForAllUsers
+// after ProxyOverrideRules are already set immediately updates the active
+// proxy configuration for an unaffiliated user.
+IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesUnaffiliatedBrowserTest,
+                       DynamicallyTogglesEnableForAllUsers) {
+  base::ListValue rules;
+  rules.Append(CreateProxyRule(
+      kDestinationHost,
+      "PROXY " + embedded_test_server()->host_port_pair().ToString()));
+
+  SetUserProxyOverrideRules(std::move(rules));
+
+  GURL destination_url = GURL(base::StringPrintf(
+      "http://%s:%d/simple.html", kDestinationHost, kUnreachablePort));
+  EXPECT_FALSE(chrome_test_utils::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), destination_url));
+
+  SetEnableForAllUsers(true);
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), destination_url));
+
+  SetEnableForAllUsers(false);
+  EXPECT_FALSE(chrome_test_utils::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), destination_url));
+}
+
+// Verifies that dynamically toggling the user's affiliation status after
+// ProxyOverrideRules are already persisted in prefs immediately updates the
+// active proxy configuration.
+// TODO(crbug.com/481444351): Once extension-level affiliation checks land,
+// unaffiliated extensions will also be prevented from writing the pref and will
+// have their rules cleared when becoming unaffiliated.
+IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesBrowserTest,
+                       DynamicallyTogglesAffiliation) {
+  base::ListValue rules;
+  rules.Append(CreateProxyRule(
+      kDestinationHost,
+      "PROXY " + embedded_test_server()->host_port_pair().ToString()));
+
+  // Set the policy while affiliated so `ProxyOverrideRulesPolicyHandler`
+  // persists the preference value.
+  SetUserProxyOverrideRules(std::move(rules));
+
+  GURL destination_url = GURL(base::StringPrintf(
+      "http://%s:%d/simple.html", kDestinationHost, kUnreachablePort));
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), destination_url));
+
+  management_context_mixin_->SetAffiliation(false);
+  EXPECT_FALSE(chrome_test_utils::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), destination_url));
+
+  management_context_mixin_->SetAffiliation(true);
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), destination_url));
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 // Verifies that ProxyOverrideRules are applied for affiliated users even when
 // EnableProxyOverrideRulesForAllUsers is disabled.
 IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesBrowserTest, AppliedWhenDisabled) {

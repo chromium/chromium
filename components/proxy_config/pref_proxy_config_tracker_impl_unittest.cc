@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/functional/function_ref.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -532,6 +533,17 @@ TEST_F(PrefProxyConfigTrackerImplTest, DelegateConfigServiceGetsConfigLate) {
 
 class PrefProxyConfigOverrideRulesTest : public PrefProxyConfigTrackerImplTest {
  public:
+  void RunAndWaitForProxyConfigChange(base::FunctionRef<void()> action) {
+    base::RunLoop run_loop;
+    MockObserver observer;
+    EXPECT_CALL(observer, OnProxyConfigChanged(testing::_, testing::_))
+        .WillOnce([&] { run_loop.Quit(); });
+    proxy_config_service_->AddObserver(&observer);
+    action();
+    run_loop.Run();
+    proxy_config_service_->RemoveObserver(&observer);
+  }
+
   void SetOverrideRulesInternal(const std::string& pref,
                                 bool is_extension = false,
                                 bool is_valid = true) {
@@ -553,14 +565,7 @@ class PrefProxyConfigOverrideRulesTest : public PrefProxyConfigTrackerImplTest {
     };
 
     if (is_valid) {
-      base::RunLoop run_loop;
-      MockObserver observer;
-      EXPECT_CALL(observer, OnProxyConfigChanged(testing::_, testing::_))
-          .WillOnce([&] { run_loop.Quit(); });
-      proxy_config_service_->AddObserver(&observer);
-      set_pref();
-      run_loop.Run();
-      proxy_config_service_->RemoveObserver(&observer);
+      RunAndWaitForProxyConfigChange(set_pref);
     } else {
       set_pref();
     }
@@ -1418,6 +1423,77 @@ TEST_F(PrefProxyConfigOverrideRulesTest,
       rule.proxy_list.AllChains().at(0),
       net::PacResultElementToProxyChain("HTTPS ext-proxy.example.com:443"));
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+// Verifies that `PrefProxyConfigTrackerImpl` dynamically re-evaluates and
+// applies or removes `ProxyOverrideRules` from the active proxy configuration
+// when `kEnableProxyOverrideRulesForAllUsers` or user affiliation status in
+// `PolicyService` changes at runtime (and on ChromeOS, verifies that override
+// rules are always allowed even when unaffiliated).
+TEST_F(PrefProxyConfigOverrideRulesTest,
+       DynamicAffiliationAndEnableForAllUsers) {
+  InitConfigService(net::ProxyConfigService::CONFIG_UNSET);
+
+  policy::PolicyMap policy_map;
+  policy_map.SetDeviceAffiliationIds({"device_id"});
+  policy_map.SetUserAffiliationIds({"other_id"});
+  ON_CALL(mock_policy_service_, GetPolicies(_))
+      .WillByDefault(testing::ReturnRef(policy_map));
+
+  // On Linux/Mac/Win/Android, `SetExtensionOverrideRules()` sets
+  // `kEnableProxyOverrideRulesForAllUsers` = 1; on ChromeOS, override rules are
+  // always allowed even when unaffiliated.
+  SetExtensionOverrideRules(
+      R"([
+             {
+                 "DestinationMatchers": [
+                     "https://extension.example.com",
+                 ],
+                 "ProxyList": [
+                     "HTTPS ext-proxy.example.com:443",
+                 ]
+             }
+         ])");
+
+  net::ProxyConfigWithAnnotation actual_config;
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            proxy_config_service_->GetLatestProxyConfig(&actual_config));
+  EXPECT_EQ(actual_config.value().proxy_override_rules().size(), 1u);
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Dynamically disabling kEnableProxyOverrideRulesForAllUsers for an
+  // unaffiliated user should remove the override rules from the active config.
+  RunAndWaitForProxyConfigChange([&] {
+    pref_service_->SetInteger(
+        proxy_config::prefs::kEnableProxyOverrideRulesForAllUsers, 0);
+  });
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            proxy_config_service_->GetLatestProxyConfig(&actual_config));
+  EXPECT_TRUE(actual_config.value().proxy_override_rules().empty());
+
+  // Dynamically becoming affiliated via a PolicyService update should restore
+  // the override rules even while kEnableProxyOverrideRulesForAllUsers is 0.
+  RunAndWaitForProxyConfigChange([&] {
+    policy_map.SetUserAffiliationIds({"device_id"});
+    proxy_config_tracker_->OnProviderUpdatePropagated(nullptr);
+  });
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            proxy_config_service_->GetLatestProxyConfig(&actual_config));
+  EXPECT_EQ(actual_config.value().proxy_override_rules().size(), 1u);
+
+  // Dynamically becoming unaffiliated again should remove the override rules.
+  RunAndWaitForProxyConfigChange([&] {
+    policy_map.SetUserAffiliationIds({"other_id"});
+    proxy_config_tracker_->OnProviderUpdatePropagated(nullptr);
+  });
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            proxy_config_service_->GetLatestProxyConfig(&actual_config));
+  EXPECT_TRUE(actual_config.value().proxy_override_rules().empty());
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENTERPRISE_PROXY)
 TEST_F(PrefProxyConfigTrackerImplTest, DynamicRoutingConfigStatusChanged) {

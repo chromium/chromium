@@ -41,10 +41,29 @@ PROXY_CONFIG_EXPORT url::SchemeHostPort ProxyOverrideRuleHostFromString(
 PROXY_CONFIG_EXPORT net::ProxyChain ProxyOverrideRuleProxyFromString(
     std::string_view raw_value);
 
-// Returns false if the proxy override prefs should not be converted into
-// `ProxyConfig::ProxyOverrideRule`s. This is the case when they are set from an
-// unaffiliated user and the "EnableProxyOverrideRulesForAllUsers" is not set to
-// allow it.
+// Returns whether user-scoped or extension-controlled proxy override rules are
+// allowed for the current user based on user affiliation and the
+// "EnableProxyOverrideRulesForAllUsers" policy. Unlike
+// `ProxyOverrideRulesAllowed()`, this checks whether a user or extension is
+// eligible to set or control `kProxyOverrideRules` regardless of whether the
+// preference currently has a value or what scope controls it.
+// `pref_service` must be non-null. `policy_service` is used to check user
+// affiliation and may be null if affiliation is not applicable to the caller
+// (in which case the user is treated as unaffiliated). Neither pointer is
+// retained.
+PROXY_CONFIG_EXPORT bool AreUserProxyOverrideRulesAllowed(
+    const PrefService* pref_service,
+    policy::PolicyService* policy_service);
+
+// Returns whether the currently configured `kProxyOverrideRules` preference
+// value should be applied to `ProxyConfig::ProxyOverrideRule`s. Unlike
+// `AreUserProxyOverrideRulesAllowed()`, this inspects the active preference's
+// source and scope (allowing unset or machine-scoped rules even for
+// unaffiliated users) and delegates to `AreUserProxyOverrideRulesAllowed()`
+// when the preference is user-scoped or extension-controlled.
+// `pref_service` must be non-null. `policy_service` may be null if user
+// affiliation is not applicable to the caller (in which case the user is
+// treated as unaffiliated). Neither pointer is retained.
 PROXY_CONFIG_EXPORT bool ProxyOverrideRulesAllowed(
     const PrefService* pref_service,
     policy::PolicyService* policy_service);
