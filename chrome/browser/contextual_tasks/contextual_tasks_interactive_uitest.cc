@@ -1043,7 +1043,19 @@ class ConfigurableQueryRouterTestLensSearchController
     if (*use_real_query_flow_router_) {
       return LensSearchController::CreateLensQueryFlowRouter();
     }
-    return lens::TestLensSearchController::CreateLensQueryFlowRouter();
+    auto router = lens::TestLensSearchController::CreateLensQueryFlowRouter();
+    auto* fake_router =
+        static_cast<lens::FakeLensQueryFlowRouter*>(router.get());
+    auto* session_handle =
+        static_cast<contextual_search::MockContextualSearchSessionHandle*>(
+            fake_router->GetContextualSearchSessionHandle());
+    ON_CALL(*session_handle, CreateSearchUrl(::testing::_, ::testing::_))
+        .WillByDefault(
+            ::testing::WithArg<1>([](base::OnceCallback<void(GURL)> callback) {
+              std::move(callback).Run(
+                  GURL("https://www.google.com/search?lns_mode=un&vsrid=123"));
+            }));
+    return router;
   }
 
  private:
