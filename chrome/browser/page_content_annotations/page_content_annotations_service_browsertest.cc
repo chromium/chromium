@@ -1094,8 +1094,15 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitNoAnnotateTest,
       0);
 }
 
+// TODO(crbug.com/512459314): Disabled on Windows due to flakiness.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_NoModelExecutionWithoutFullBatch \
+  DISABLED_NoModelExecutionWithoutFullBatch
+#else
+#define MAYBE_NoModelExecutionWithoutFullBatch NoModelExecutionWithoutFullBatch
+#endif
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitTest,
-                       NoModelExecutionWithoutFullBatch) {
+                       MAYBE_NoModelExecutionWithoutFullBatch) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
