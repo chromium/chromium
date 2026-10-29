@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import re
 import sys
 
 import mako.runtime
@@ -10,14 +11,82 @@ import mako.util
 
 _MAKO_TEMPLATE_PASS_KEY = object()
 
+# Matches simple Mako variable interpolations of the form "${var}" or
+# "${obj.attr.subattr}". When used with re.split(), even-indexed elements are
+# literal text segments and odd-indexed elements are the captured variable
+# expressions.
+_SIMPLE_VAR_SPLIT_RE = re.compile(
+    r"\$\{([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)\}"
+)
+
+
+def _compile_fast_emit(parts):
+    """
+    Compiles a split template (alternating literal and variable expression
+    parts from |_SIMPLE_VAR_SPLIT_RE.split|) into a lightweight closure that
+    writes directly to the output buffer, bypassing Mako's template compilation
+    and |mako.runtime.Context| creation overhead.
+    """
+    steps = []
+    for i in range(0, len(parts) - 1, 2):
+        lit = parts[i]
+        var_expr = parts[i + 1]
+        var_name, *attr_names = var_expr.split(".")
+        steps.append((lit, var_name, tuple(attr_names)))
+    tail_lit = parts[-1]
+
+    def _emit(write, template_vars):
+        for lit, var_name, attr_names in steps:
+            if lit:
+                write(lit)
+            try:
+                value = template_vars[var_name]
+            except KeyError:
+                # Match Mako's strict_undefined=True behavior by raising
+                # NameError when a referenced template variable is unbound.
+                raise NameError(f"'{var_name}' is not defined") from None
+            for attr_name in attr_names:
+                value = getattr(value, attr_name)
+            s = str(value)
+            if s:
+                write(s)
+        if tail_lit:
+            write(tail_lit)
+
+    return _emit
+
 
 class MakoTemplate(object):
     """Represents a compiled template object."""
 
     _mako_template_cache = {}
+    # Cache mapping |template_text| to a compiled |_compile_fast_emit| closure
+    # for templates that only use simple variable interpolations.
+    _fast_emit_cache = {}
 
     def __init__(self, template_text):
         assert isinstance(template_text, str)
+
+        self._template_text = template_text
+        self._fast_emit = None
+        self._template = None
+
+        # Fast path for templates without Mako control lines/blocks ("%").
+        # If every "${...}" interpolation in |template_text| is a simple
+        # identifier or attribute lookup (leaving no remaining "${" in the
+        # literal segments), use a lightweight emitter closure instead of
+        # compiling a full Mako template module.
+        if "%" not in template_text:
+            fast_emit = self._fast_emit_cache.get(template_text)
+            if fast_emit is not None:
+                self._fast_emit = fast_emit
+                return
+            parts = _SIMPLE_VAR_SPLIT_RE.split(template_text)
+            if all("${" not in lit for lit in parts[0::2]):
+                fast_emit = _compile_fast_emit(parts)
+                self._fast_emit_cache[template_text] = fast_emit
+                self._fast_emit = fast_emit
+                return
 
         template_params = {
             "strict_undefined": True,
@@ -86,17 +155,30 @@ class MakoRenderer(object):
         assert isinstance(template_vars, dict)
 
         self._caller_stack.append(caller)
+        mako_template = None
 
         try:
-            mako_template = template.mako_template(
-                pass_key=_MAKO_TEMPLATE_PASS_KEY
-            )
-            mako_context = mako.runtime.Context(
-                self._text_buffer, **template_vars
-            )
-            mako_template.render_context(mako_context)
+            if template._fast_emit is not None:
+                # Bypass Mako runtime Context allocation for simple templates.
+                template._fast_emit(self._text_buffer.write, template_vars)
+            else:
+                mako_template = template.mako_template(
+                    pass_key=_MAKO_TEMPLATE_PASS_KEY
+                )
+                mako_context = mako.runtime.Context(
+                    self._text_buffer, **template_vars
+                )
+                mako_template.render_context(mako_context)
         except:
             # Print stacktrace of template rendering.
+            module_id = (
+                mako_template.module_id if mako_template else "<fast_emit>"
+            )
+            source = (
+                mako_template.source
+                if mako_template
+                else template._template_text
+            )
             sys.stderr.write("\n")
             sys.stderr.write("==== template rendering error ====\n")
             sys.stderr.write(
@@ -106,11 +188,11 @@ class MakoRenderer(object):
             )
             sys.stderr.write(
                 "  * depth: {}, module_id: {}\n".format(
-                    len(self._caller_stack), mako_template.module_id
+                    len(self._caller_stack), module_id
                 )
             )
             sys.stderr.write("---- template source ----\n")
-            sys.stderr.write(mako_template.source)
+            sys.stderr.write(source)
 
             # Save the error state at the deepest call.
             current = self._caller_stack
