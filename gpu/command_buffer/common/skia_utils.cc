@@ -6,8 +6,10 @@
 
 #include <inttypes.h>
 
-#include "base/compiler_specific.h"
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -58,14 +60,14 @@ class SkiaGpuTraceMemoryDump : public SkTraceMemoryDump {
                         const char* backing_object_id) override {
     // For uniformity, skia provides this value as a string. Convert back to a
     // uint32_t.
-    uint32_t gl_id = UNSAFE_TODO(
-        std::strtoul(backing_object_id, nullptr /* str_end */, 10 /* base */));
+    uint32_t gl_id = 0;
+    base::StringToUint(backing_object_id, &gl_id);
 
     // Constants used by SkiaGpuTraceMemoryDump to identify different memory
     // types.
-    const char* kGLTextureBackingType = "gl_texture";
-    const char* kGLBufferBackingType = "gl_buffer";
-    const char* kGLRenderbufferBackingType = "gl_renderbuffer";
+    constexpr std::string_view kGLTextureBackingType = "gl_texture";
+    constexpr std::string_view kGLBufferBackingType = "gl_buffer";
+    constexpr std::string_view kGLRenderbufferBackingType = "gl_renderbuffer";
 
     // Populated in if statements below.
     base::trace_event::MemoryAllocatorDumpGuid guid;
@@ -74,13 +76,12 @@ class SkiaGpuTraceMemoryDump : public SkTraceMemoryDump {
       // If we have a |share_group_tracing_guid_|, we are in a render process
       // and need to create client texture GUIDs for aliasing with the GPU
       // process.
-      if (UNSAFE_TODO(strcmp(backing_type, kGLTextureBackingType)) == 0) {
+      if (backing_type == kGLTextureBackingType) {
         guid = gl::GetGLTextureClientGUIDForTracing(*share_group_tracing_guid_,
                                                     gl_id);
-      } else if (UNSAFE_TODO(strcmp(backing_type, kGLBufferBackingType)) == 0) {
+      } else if (backing_type == kGLBufferBackingType) {
         guid = gl::GetGLBufferGUIDForTracing(tracing_process_id_, gl_id);
-      } else if (UNSAFE_TODO(
-                     strcmp(backing_type, kGLRenderbufferBackingType)) == 0) {
+      } else if (backing_type == kGLRenderbufferBackingType) {
         guid = gl::GetGLRenderbufferGUIDForTracing(tracing_process_id_, gl_id);
       }
     } else {
@@ -88,7 +89,7 @@ class SkiaGpuTraceMemoryDump : public SkTraceMemoryDump {
       // process, being used for OOP-R. We need to create Raster dumps for
       // aliasing with the transfer cache. Note that this is currently only
       // needed for textures (not buffers or renderbuffers).
-      if (UNSAFE_TODO(strcmp(backing_type, kGLTextureBackingType)) == 0) {
+      if (backing_type == kGLTextureBackingType) {
         guid = gl::GetGLTextureRasterGUIDForTracing(gl_id);
       }
     }
