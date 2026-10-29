@@ -3,14 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/extension_settings_helper.h"
 #include "chrome/browser/sync/test/integration/extensions_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "content/public/test/browser_test.h"
 
@@ -29,12 +27,7 @@ class TwoClientExtensionSettingsSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  TwoClientExtensionSettingsSyncTest() : SyncTest(TWO_CLIENT) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-  }
+  TwoClientExtensionSettingsSyncTest() : SyncTest(TWO_CLIENT) {}
   ~TwoClientExtensionSettingsSyncTest() override = default;
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
@@ -83,8 +76,6 @@ class TwoClientExtensionSettingsSyncTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   // TODO(https://crbug.com/40804030): Remove when these tests use only MV3
   // extensions.
   extensions::ScopedTestMV2Enabler mv2_enabler_;

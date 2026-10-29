@@ -100,10 +100,8 @@ class TwoClientBookmarksSyncTest
  public:
   TwoClientBookmarksSyncTest() : SyncTest(TWO_CLIENT) {
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      feature_overrides_.InitWithFeatures(
-          {syncer::kReplaceSyncPromosWithSignInPromos,
-           switches::kSyncEnableBookmarksInTransportMode},
-          {});
+      feature_overrides_.InitAndEnableFeature(
+          switches::kSyncEnableBookmarksInTransportMode);
     }
   }
   ~TwoClientBookmarksSyncTest() override = default;

@@ -15,7 +15,6 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -87,12 +86,7 @@ class TwoClientContactInfoSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  TwoClientContactInfoSyncTest() : SyncTest(TWO_CLIENT) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-  }
+  TwoClientContactInfoSyncTest() : SyncTest(TWO_CLIENT) {}
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
     return GetParam();
@@ -116,9 +110,6 @@ class TwoClientContactInfoSyncTest
             identity_manager->GetPrimaryAccountInfo(
                 signin::ConsentLevel::kSignin)));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,

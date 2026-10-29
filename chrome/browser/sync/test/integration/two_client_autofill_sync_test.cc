@@ -4,7 +4,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -20,7 +19,6 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/webdata/autofill_table_util.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/sync/base/features.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,10 +44,7 @@ using autofill_helper::UpdateProfile;
 
 class TwoClientAutofillProfileSyncTest : public SyncTest {
  public:
-  TwoClientAutofillProfileSyncTest() : SyncTest(TWO_CLIENT) {
-    features_override_.InitAndDisableFeature(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
+  TwoClientAutofillProfileSyncTest() : SyncTest(TWO_CLIENT) {}
 
   TwoClientAutofillProfileSyncTest(const TwoClientAutofillProfileSyncTest&) =
       delete;
@@ -81,9 +76,6 @@ class TwoClientAutofillProfileSyncTest : public SyncTest {
             identity_manager->GetPrimaryAccountInfo(
                 signin::ConsentLevel::kSignin)));
   }
-
- private:
-  base::test::ScopedFeatureList features_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,

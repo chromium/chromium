@@ -43,10 +43,8 @@ class TwoClientCustomPassphraseSyncTest
  public:
   TwoClientCustomPassphraseSyncTest() : SyncTest(TWO_CLIENT) {
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitWithFeatures(
-          {syncer::kReplaceSyncPromosWithSignInPromos,
-           switches::kSyncEnableBookmarksInTransportMode},
-          {});
+      scoped_feature_list_.InitAndEnableFeature(
+          switches::kSyncEnableBookmarksInTransportMode);
     }
   }
   ~TwoClientCustomPassphraseSyncTest() override = default;

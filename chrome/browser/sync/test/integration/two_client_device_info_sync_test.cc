@@ -14,7 +14,6 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/browser_sync/browser_sync_switches.h"
-#include "components/sync/base/features.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "content/public/test/browser_test.h"
@@ -71,10 +70,7 @@ class TwoClientDeviceInfoSyncTest
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   TwoClientDeviceInfoSyncTest() : SyncTest(TWO_CLIENT) {
-    if (GetParam() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    } else {
+    if (GetParam() != SetupSyncMode::kSyncTransportOnly) {
       scoped_feature_list_.InitAndDisableFeature(
           switches::kMigrateSyncingUserToSignedIn);
     }
