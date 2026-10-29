@@ -303,8 +303,9 @@ source_set("browser_tests") {
     ]
 
     if (enable_dice_support) {
-      sources +=
-          [ "signin/signout_confirmation/signout_confirmation_browsertest.cc" ]
+      sources += [
+        "signin/signout_confirmation/signout_confirmation_view_browsertest.cc",
+      ]
     }
   }
 

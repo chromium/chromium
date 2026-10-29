@@ -113,13 +113,20 @@ export class SignoutConfirmationAppElement extends CrLitElement {
     // Avoid requesting a view update if we are still using the sample data that
     // was set at construction. Since the first view update will trigger showing
     // the view, we should make sure to have valid data to show.
-    if (changedPrivateProperties.has('data_') && this.data_ !== SAMPLE_DATA) {
+    if (changedPrivateProperties.has('data_') && this.hasData_()) {
+      if (changedPrivateProperties.get('data_') === SAMPLE_DATA) {
+        this.$.acceptButton.focus();
+      }
       this.onUpdateViewHeight_();
     }
   }
 
   uninstallExtensionsOnSignoutForTesting(): boolean {
     return this.uninstallExtensionsOnSignout_();
+  }
+
+  protected hasData_(): boolean {
+    return this.data_ !== SAMPLE_DATA;
   }
 
   protected showExtensionsSection_(): boolean {

@@ -625,5 +625,11 @@ if (!is_chromeos) {
       "//testing/gmock",
       "//testing/gtest",
     ]
+
+    if (enable_dice_support) {
+      deps += [
+        "//chrome/browser/ui/webui/signin/signout_confirmation:browser_tests",
+      ]
+    }
   }
 }

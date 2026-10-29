@@ -8,7 +8,7 @@ import type {SignoutConfirmationAppElement} from './signout_confirmation_app.js'
 
 export function getHtml(this: SignoutConfirmationAppElement) {
   return html`<!--_html_template_start_-->
-<div id="signoutConfirmationDialog">
+<div id="signoutConfirmationDialog" ?hidden="${!this.hasData_()}">
   <div id="header">
     <h1 id="title">${this.data_.dialogTitle}</h1>
     <div id="subtitle">
@@ -40,7 +40,7 @@ export function getHtml(this: SignoutConfirmationAppElement) {
             this.isUnoPhase2FollowUpEnabled_ && this.data_.hasUnsyncedData ?
             'delete-button' :
             ''}"
-        @click="${this.onAcceptButtonClick_}" autofocus>
+        @click="${this.onAcceptButtonClick_}">
       ${this.data_.acceptButtonLabel}
     </cr-button>
   </div>

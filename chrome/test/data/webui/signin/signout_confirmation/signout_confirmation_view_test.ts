@@ -9,7 +9,7 @@ import type {ExtensionsSectionElement, PageRemote, SignoutConfirmationAppElement
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import type {ModifiersParam} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSignoutConfirmationBrowserProxy} from './test_signout_confirmation_browser_proxy.js';
 
@@ -56,6 +56,33 @@ suite('SignoutConfirmationViewTest', function() {
     // Buttons.
     assertTrue(isChildVisible(signoutConfirmationApp, '#acceptButton'));
     assertTrue(isChildVisible(signoutConfirmationApp, '#cancelButton'));
+  });
+
+  test('HiddenBeforeDataReceived', async function() {
+    testProxy.handler.reset();
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const uninitializedApp = document.createElement('signout-confirmation-app');
+    document.body.append(uninitializedApp);
+    await microtasksFinished();
+
+    assertFalse(isChildVisible(uninitializedApp, '#signoutConfirmationDialog'));
+    assertEquals(0, testProxy.handler.getCallCount('updateViewHeight'));
+
+    callbackRouterRemote.sendSignoutConfirmationData({
+      dialogTitle: 'title',
+      dialogSubtitle: 'subtitle',
+      acceptButtonLabel: 'accept',
+      cancelButtonLabel: 'cancel',
+      verifyButtonLabel: '',
+      accountExtensions: [],
+      hasUnsyncedData: false,
+    });
+    await testProxy.handler.whenCalled('updateViewHeight');
+
+    assertTrue(isChildVisible(uninitializedApp, '#signoutConfirmationDialog'));
+    assertEquals(
+        uninitializedApp.$.acceptButton,
+        uninitializedApp.shadowRoot.activeElement);
   });
 
   test('ExtensionsSectionVisible', async function() {

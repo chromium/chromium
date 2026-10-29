@@ -31,6 +31,9 @@ class SignoutConfirmationUIConfig
   SignoutConfirmationUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
                            chrome::kChromeUISignoutConfirmationHost) {}
+
+  // content::WebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 class SignoutConfirmationUI

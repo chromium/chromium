@@ -4,12 +4,10 @@
 
 #include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation_ui.h"
 
-#include "base/check_is_test.h"
 #include "base/feature_list.h"
-#include "base/functional/callback_helpers.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation_handler.h"
 #include "chrome/common/webui_url_constants.h"
@@ -20,6 +18,12 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/webui_util.h"
+
+bool SignoutConfirmationUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return !profile->IsOffTheRecord();
+}
 
 SignoutConfirmationUI::SignoutConfirmationUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, true) {
@@ -103,18 +107,12 @@ void SignoutConfirmationUI::CancelDialogAndReauthForTesting() {
 void SignoutConfirmationUI::CreateSignoutConfirmationHandler(
     mojo::PendingRemote<signout_confirmation::mojom::Page> page,
     mojo::PendingReceiver<signout_confirmation::mojom::PageHandler> receiver) {
-  // Usually `Initialize()` is called right after loading the URL into the view.
-  // However, some tests load the URL directly. In this case, populate the
-  // handler with sample data.
+  // `Initialize()` is only called when the URL is loaded inside the signout
+  // confirmation dialog. Ignore direct navigations (e.g. from the URL bar).
   if (!initialize_handler_callback_) {
-    CHECK_IS_TEST();
-    BrowserWindowInterface* browser =
-        GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
-    Initialize(browser, ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData,
-               /*unsynced_data_count=*/0, base::DoNothing());
+    return;
   }
 
-  CHECK(initialize_handler_callback_);
   std::move(initialize_handler_callback_)
       .Run(std::move(page), std::move(receiver));
 }

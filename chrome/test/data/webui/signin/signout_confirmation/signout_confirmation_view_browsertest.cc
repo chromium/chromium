@@ -6,19 +6,19 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
 
-class SignoutConfirmationBrowserTest : public WebUIMochaBrowserTest {
+class SignoutConfirmationViewBrowserTest : public WebUIMochaBrowserTest {
  public:
-  SignoutConfirmationBrowserTest() {
+  SignoutConfirmationViewBrowserTest() {
     set_test_loader_host(chrome::kChromeUISignoutConfirmationHost);
   }
 };
 
-IN_PROC_BROWSER_TEST_F(SignoutConfirmationBrowserTest, MainView) {
+IN_PROC_BROWSER_TEST_F(SignoutConfirmationViewBrowserTest, MainView) {
   RunTest("signin/signout_confirmation/signout_confirmation_view_test.js",
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SignoutConfirmationBrowserTest, ExtensionsSection) {
+IN_PROC_BROWSER_TEST_F(SignoutConfirmationViewBrowserTest, ExtensionsSection) {
   RunTest("signin/signout_confirmation/extensions_section_test.js",
           "mocha.run()");
 }
