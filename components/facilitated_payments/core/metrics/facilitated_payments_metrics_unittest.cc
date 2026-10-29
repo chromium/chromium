@@ -303,11 +303,8 @@ INSTANTIATE_TEST_SUITE_P(
         AccountLinkingFlowExitedReason::kScreenClosedNotByUser,
         AccountLinkingFlowExitedReason::kScreenClosedByUser,
         AccountLinkingFlowExitedReason::kUserDeclined,
-        AccountLinkingFlowExitedReason::kWalletNotInstalled,
-        AccountLinkingFlowExitedReason::kWalletVersionNotSupported,
         AccountLinkingFlowExitedReason::kUserOptedOut,
         AccountLinkingFlowExitedReason::kNoScreenlockOrBiometricSetup,
-        AccountLinkingFlowExitedReason::kServerSideIneligible,
         AccountLinkingFlowExitedReason::kTabIsNotActive,
         AccountLinkingFlowExitedReason::kUserSwitchedWebsite,
         AccountLinkingFlowExitedReason::kMaxStrikes,
@@ -318,7 +315,9 @@ INSTANTIATE_TEST_SUITE_P(
         AccountLinkingFlowExitedReason::kNotEligiblePerPaymentsBackend,
         AccountLinkingFlowExitedReason::kActionTokenNotAvailable,
         AccountLinkingFlowExitedReason::kUserLoggedOut,
-        AccountLinkingFlowExitedReason::kApiClientNotAvailable));
+        AccountLinkingFlowExitedReason::kApiClientNotAvailable,
+        AccountLinkingFlowExitedReason::kUserCanceledInGmsCore,
+        AccountLinkingFlowExitedReason::kGmsCoreFlowFailed));
 
 TEST(FacilitatedPaymentsMetricsTest,
      LogAccountLinkingGetDetailsForCreatePaymentInstrumentResultAndLatency) {

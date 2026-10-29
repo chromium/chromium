@@ -216,11 +216,15 @@ enum class AccountLinkingFlowExitedReason {
   kScreenClosedNotByUser = 1,
   kScreenClosedByUser = 2,
   kUserDeclined = 3,
-  kWalletNotInstalled = 4,
-  kWalletVersionNotSupported = 5,
+  // Obsolete: Only used by the Wallet-redirect account linking flow, which has
+  // been replaced by native account linking.
+  // kWalletNotInstalled = 4,
+  // kWalletVersionNotSupported = 5,
   kUserOptedOut = 6,
   kNoScreenlockOrBiometricSetup = 7,
-  kServerSideIneligible = 8,
+  // Obsolete: Replaced by `kGetDetailsFailed` and
+  // `kNotEligiblePerPaymentsBackend`.
+  // kServerSideIneligible = 8,
   kTabIsNotActive = 9,
   kUserSwitchedWebsite = 10,
   kMaxStrikes = 11,

@@ -46,13 +46,15 @@ reviewer.
   <int value="1" label="Screen was closed not by the user"/>
   <int value="2" label="Screen was closed by the user"/>
   <int value="3" label="User clicked the No Thanks button"/>
-  <int value="4" label="Wallet is not installed"/>
-  <int value="5" label="Wallet version is not supported"/>
+  <int value="4" label="(Obsolete) Wallet is not installed. Removed in M152."/>
+  <int value="5"
+      label="(Obsolete) Wallet version is not supported. Removed in M152."/>
   <int value="6"
       label="User opted out of the flow using the Settings page pref"/>
   <int value="7" label="No screen lock or biometric setup"/>
   <int value="8"
-      label="User's account was determined to be ineligible by the server"/>
+      label="(Obsolete) User's account was determined to be ineligible by the
+             server. Replaced by values 15 and 16. Removed in M153."/>
   <int value="9" label="User switched to a different tab"/>
   <int value="10" label="User navigated to a different website"/>
   <int value="11" label="Max strikes reached"/>
