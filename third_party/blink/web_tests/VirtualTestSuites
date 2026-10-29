@@ -1162,7 +1162,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=FedCmWellKnownEndpointValidation,FedCmPreservePortsForTesting"
+      "--enable-features=FedCmWellKnownEndpointValidation"
     ],
     "owners": [
       "cbiesinger@chromium.org",
