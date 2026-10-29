@@ -15,7 +15,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected_macros.h"
@@ -194,11 +193,6 @@ void CastActivityManager::DoLaunchSession(DoLaunchSessionParams params) {
   const content::FrameTreeNodeId frame_tree_node_id = params.frame_tree_node_id;
   std::string app_id = ChooseAppId(cast_source, params.sink);
   auto app_params = std::move(params.app_params);
-
-  if (IsSiteInitiatedMirroringSource(cast_source.source_id())) {
-    base::UmaHistogramBoolean(kHistogramAudioSender,
-                              cast_source.site_requested_audio_capture());
-  }
 
   cast_source.ContainsStreamingApp()
       ? AddMirroringActivity(route, app_id, frame_tree_node_id,

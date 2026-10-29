@@ -17,8 +17,6 @@ inline constexpr char kHistogramAppAvailabilitySuccess[] =
     "MediaRouter.Cast.App.Availability.Success";
 inline constexpr char kHistogramAppAvailabilityFailure[] =
     "MediaRouter.Cast.App.Availability.Failure";
-inline constexpr char kHistogramAudioSender[] =
-    "MediaRouter.CastStreaming.Audio.PlaybackOnReceiver";
 // Histogram name for appType set by the receiver device.
 inline constexpr char kHistogramCastAppType[] =
     "MediaRouter.Cast.LaunchSessionResponse.AppType";
