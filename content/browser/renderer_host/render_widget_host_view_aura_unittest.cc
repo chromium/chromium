@@ -1851,6 +1851,63 @@ TEST_F(RenderWidgetHostViewAuraTest,
   }
 }
 
+TEST_F(RenderWidgetHostViewAuraTest, KeyEventRoutingWithLockKeyboard) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kSystemKeyboardLock);
+
+  InitViewForFrame(parent_view_->GetNativeView());
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
+
+  aura::WindowTreeHost* host = view_->GetNativeView()->GetHost();
+  ASSERT_TRUE(host);
+  EXPECT_FALSE(view_->IsKeyboardLocked());
+  EXPECT_FALSE(host->IsKeyLocked(ui::DomCode::US_A));
+
+  ASSERT_TRUE(
+      view_->LockKeyboard(base::flat_set<ui::DomCode>{ui::DomCode::US_A}));
+  EXPECT_TRUE(view_->IsKeyboardLocked());
+  EXPECT_TRUE(host->IsKeyLocked(ui::DomCode::US_A));
+  EXPECT_FALSE(host->IsKeyLocked(ui::DomCode::US_B));
+
+  // Locked key skips the prehandler and is sent to the input handler.
+  ui::KeyEvent locked_key_event(
+      ui::EventType::kKeyPressed,
+      ui::DomCodeToUsLayoutKeyboardCode(ui::DomCode::US_A), ui::DomCode::US_A,
+      ui::EF_NONE);
+  view_->OnKeyEvent(&locked_key_event);
+  ASSERT_FALSE(render_widget_host_delegate()->last_keyboard_event());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !widget_host_->input_handler()->dispatched_messages().empty();
+  }));
+  auto events = GetAndResetDispatchedMessages();
+  ASSERT_FALSE(events.empty());
+  ASSERT_TRUE(events[0]->ToEvent());
+  const blink::WebKeyboardEvent* blink_key_event =
+      static_cast<const blink::WebKeyboardEvent*>(
+          &events[0]->ToEvent()->Event()->Event());
+  EXPECT_EQ(locked_key_event.key_code(), blink_key_event->windows_key_code);
+  EXPECT_EQ(
+      ui::KeycodeConverter::DomCodeToNativeKeycode(locked_key_event.code()),
+      blink_key_event->native_key_code);
+
+  // Unlocked key passes through the prehandler.
+  ui::KeyEvent unlocked_key_event(
+      ui::EventType::kKeyPressed,
+      ui::DomCodeToUsLayoutKeyboardCode(ui::DomCode::US_B), ui::DomCode::US_B,
+      ui::EF_NONE);
+  view_->OnKeyEvent(&unlocked_key_event);
+  const input::NativeWebKeyboardEvent* prehandled_event =
+      render_widget_host_delegate()->last_keyboard_event();
+  ASSERT_TRUE(prehandled_event);
+  EXPECT_EQ(unlocked_key_event.key_code(), prehandled_event->windows_key_code);
+
+  // Unlocking clears both RenderWidgetHostViewEventHandler and WindowTreeHost
+  // lock state.
+  view_->UnlockKeyboard();
+  EXPECT_FALSE(view_->IsKeyboardLocked());
+  EXPECT_FALSE(host->IsKeyLocked(ui::DomCode::US_A));
+}
+
 TEST_F(RenderWidgetHostViewAuraTest, TimerBasedWheelEventPhaseInfo) {
   InitViewForFrame(nullptr);
   view_->ShowWithVisibility(PageVisibilityState::kVisible);

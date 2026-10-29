@@ -10,6 +10,7 @@
 #include "ui/aura/client/capture_client_observer.h"
 #include "ui/aura/client/default_capture_client.h"
 #include "ui/aura/native_window_occlusion_tracker.h"
+#include "ui/aura/scoped_keyboard_hook.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/aura_test_utils.h"
 #include "ui/aura/test/test_screen.h"
@@ -806,6 +807,33 @@ TEST_F(WindowTreeHostDeathTest, DeleteHostDuringUnlockMouse) {
   EXPECT_DEATH(host->UnlockMouse(child.get()), "");
 
   capture_client->RemoveObserver(&observer);
+}
+
+TEST_F(WindowTreeHostTest, IsKeyLockedWithSimpleKeyboardHook) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kSystemKeyboardLock);
+
+  EXPECT_FALSE(host()->IsKeyLocked(ui::DomCode::US_A));
+
+  // Lock a specific key.
+  std::unique_ptr<ScopedKeyboardHook> keyboard_hook =
+      host()->CaptureSystemKeyEvents(
+          base::flat_set<ui::DomCode>{ui::DomCode::US_A});
+  ASSERT_TRUE(keyboard_hook);
+  EXPECT_TRUE(host()->IsKeyLocked(ui::DomCode::US_A));
+  EXPECT_FALSE(host()->IsKeyLocked(ui::DomCode::US_B));
+  EXPECT_FALSE(host()->IsKeyLocked(ui::DomCode::NONE));
+
+  // Releasing the hook unlocks the key.
+  keyboard_hook.reset();
+  EXPECT_FALSE(host()->IsKeyLocked(ui::DomCode::US_A));
+
+  // Lock all keys.
+  keyboard_hook = host()->CaptureSystemKeyEvents(std::nullopt);
+  ASSERT_TRUE(keyboard_hook);
+  EXPECT_TRUE(host()->IsKeyLocked(ui::DomCode::US_A));
+  EXPECT_TRUE(host()->IsKeyLocked(ui::DomCode::US_B));
+  EXPECT_FALSE(host()->IsKeyLocked(ui::DomCode::NONE));
 }
 
 }  // namespace aura

@@ -174,7 +174,8 @@ void WindowTreeHostPlatform::ReleaseSystemKeyEventCapture() {
 }
 
 bool WindowTreeHostPlatform::IsKeyLocked(ui::DomCode dom_code) {
-  return keyboard_hook_ && keyboard_hook_->IsKeyLocked(dom_code);
+  return WindowTreeHost::IsKeyLocked(dom_code) ||
+         (keyboard_hook_ && keyboard_hook_->IsKeyLocked(dom_code));
 }
 
 base::flat_map<std::string, std::string>

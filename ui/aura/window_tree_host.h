@@ -58,6 +58,7 @@ class WindowTreeHostTestApi;
 }
 
 class ScopedKeyboardHook;
+class ScopedSimpleKeyboardHook;
 class WindowEventDispatcher;
 class WindowTreeHostObserver;
 
@@ -255,6 +256,9 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
   std::unique_ptr<ScopedKeyboardHook> CaptureSystemKeyEvents(
       std::optional<base::flat_set<ui::DomCode>> codes);
 
+  // True if `dom_code` is reserved for an active KeyboardLock request.
+  virtual bool IsKeyLocked(ui::DomCode dom_code);
+
   // Returns a map of KeyboardEvent code to KeyboardEvent key values.
   virtual base::flat_map<std::string, std::string> GetKeyboardLayoutMap() = 0;
 
@@ -379,9 +383,6 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
 
   // Stops capturing system keyboard events.
   virtual void ReleaseSystemKeyEventCapture() = 0;
-
-  // True if |dom_code| is reserved for an active KeyboardLock request.
-  virtual bool IsKeyLocked(ui::DomCode dom_code) = 0;
 
   // Return root window size computed from given pixel size.
   virtual gfx::Rect GetTransformedRootWindowBoundsFromPixelSize(
@@ -510,6 +511,10 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
   // Number of VideoCaptureLocks that have been created and not destroyed.
   // This is only used when occlusion tracking is always enabled.
   int video_capture_count_for_occlusion_tracking_ = 0;
+
+  // Used by IsKeyLocked() to check keyboard lock state when
+  // `features::kSystemKeyboardLock` is disabled (e.g. in tests).
+  base::WeakPtr<ScopedSimpleKeyboardHook> simple_keyboard_hook_;
 
   base::WeakPtrFactory<WindowTreeHost> weak_factory_{this};
 };

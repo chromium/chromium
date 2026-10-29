@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/aura/scoped_keyboard_hook.h"
 
 namespace ui {
@@ -34,8 +35,13 @@ class ScopedSimpleKeyboardHook : public ScopedKeyboardHook {
   // ScopedKeyboardHook override.
   bool IsKeyLocked(ui::DomCode dom_code) override;
 
+  base::WeakPtr<ScopedSimpleKeyboardHook> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   std::optional<base::flat_set<ui::DomCode>> dom_codes_;
+  base::WeakPtrFactory<ScopedSimpleKeyboardHook> weak_factory_{this};
 };
 
 }  // namespace aura

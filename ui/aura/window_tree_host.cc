@@ -355,12 +355,20 @@ gfx::Rect WindowTreeHost::GetBoundsInAcceleratedWidgetPixelCoordinates() {
 std::unique_ptr<ScopedKeyboardHook> WindowTreeHost::CaptureSystemKeyEvents(
     std::optional<base::flat_set<ui::DomCode>> dom_codes) {
   // TODO(joedow): Remove the simple hook class/logic once this flag is removed.
-  if (!base::FeatureList::IsEnabled(features::kSystemKeyboardLock))
-    return std::make_unique<ScopedSimpleKeyboardHook>(std::move(dom_codes));
+  if (!base::FeatureList::IsEnabled(features::kSystemKeyboardLock)) {
+    auto hook =
+        std::make_unique<ScopedSimpleKeyboardHook>(std::move(dom_codes));
+    simple_keyboard_hook_ = hook->GetWeakPtr();
+    return hook;
+  }
 
   if (CaptureSystemKeyEventsImpl(std::move(dom_codes)))
     return std::make_unique<ScopedKeyboardHook>(weak_factory_.GetWeakPtr());
   return nullptr;
+}
+
+bool WindowTreeHost::IsKeyLocked(ui::DomCode dom_code) {
+  return simple_keyboard_hook_ && simple_keyboard_hook_->IsKeyLocked(dom_code);
 }
 
 bool WindowTreeHost::ShouldSendKeyEventToIme() {
