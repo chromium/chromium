@@ -32,6 +32,16 @@ enum class SessionLifecycle {
 
 std::ostream& operator<<(std::ostream& os, SessionLifecycle lifecycle);
 
+// What the UI of a TTC session shows.
+enum class UiState {
+  // The session is starting.
+  kInitializing,
+  // The session is active and the user can interact.
+  kLive,
+};
+
+std::ostream& operator<<(std::ostream& os, UiState state);
+
 }  // namespace ttc
 
 #endif  // CHROME_BROWSER_TTC_CORE_STATES_H_

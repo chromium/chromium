@@ -36,6 +36,12 @@ source_set("prefs") {
   deps = [ "//components/prefs" ]
 }
 
+source_set("states") {
+  public = [ "states.h" ]
+  sources = [ "states.cc" ]
+  deps = [ "//base" ]
+}
+
 if (enable_ttc_webui) {
   mojom("mojo_bindings") {
     sources = [ "eval_harness.mojom" ]
@@ -52,7 +58,6 @@ source_set("core") {
     "session_controller.h",
     "session_view.h",
     "session_view_delegate.h",
-    "states.h",
     "switches.h",
     "ttc_keyed_service.h",
     "ttc_keyed_service_factory.h",
@@ -62,6 +67,7 @@ source_set("core") {
   public_deps = [
     ":buildflags",
     ":features",
+    ":states",
     "//base",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
@@ -104,7 +110,6 @@ source_set("impl") {
     "session_controller_impl.h",
     "session_journal_impl.cc",
     "session_journal_impl.h",
-    "states.cc",
     "tool_controller.cc",
     "tool_controller.h",
     "transcript_tracker.cc",

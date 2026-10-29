@@ -22,4 +22,14 @@ std::ostream& operator<<(std::ostream& os, SessionLifecycle lifecycle) {
   NOTREACHED();
 }
 
+std::ostream& operator<<(std::ostream& os, UiState state) {
+  switch (state) {
+    case UiState::kInitializing:
+      return os << "Initializing";
+    case UiState::kLive:
+      return os << "Live";
+  }
+  NOTREACHED();
+}
+
 }  // namespace ttc
