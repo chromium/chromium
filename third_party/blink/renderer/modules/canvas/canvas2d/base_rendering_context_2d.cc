@@ -359,6 +359,8 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
     return;
   }
 
+  context_provider_wrapper_ = context_provider_wrapper;
+  context_provider_wrapper_->AddObserver(this);
   shared_image_provider_ = std::move(provider);
 
   if (is_accelerated) {
@@ -373,10 +375,19 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
     // An error might have occurred while clearing.
     if (!shared_image_provider_->IsValid()) {
       shared_image_provider_.reset();
+      canvas_image_provider_.reset();
+      if (context_provider_wrapper_) {
+        context_provider_wrapper_->RemoveObserver(this);
+        context_provider_wrapper_.reset();
+      }
       return;
     }
   } else if (!shared_image_provider_->resource()) {
     shared_image_provider_.reset();
+    if (context_provider_wrapper_) {
+      context_provider_wrapper_->RemoveObserver(this);
+      context_provider_wrapper_.reset();
+    }
     return;
   }
 
@@ -384,6 +395,10 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
     CreateSoftwareSurface();
     if (!surface_) {
       shared_image_provider_.reset();
+      if (context_provider_wrapper_) {
+        context_provider_wrapper_->RemoveObserver(this);
+        context_provider_wrapper_.reset();
+      }
     }
     return;
   }
@@ -505,15 +520,12 @@ void BaseRenderingContext2D::OnContextDestroyed() {
 }
 
 CanvasImageProvider* BaseRenderingContext2D::GetOrCreateCanvasImageProvider() {
-  const bool is_accelerated =
-      shared_image_provider_ && shared_image_provider_->IsAccelerated();
-  std::unique_ptr<CanvasImageProvider>& image_provider =
-      is_accelerated ? shared_image_provider_->canvas_image_provider_
-                     : canvas_image_provider_;
-  if (image_provider) {
-    return image_provider.get();
+  if (canvas_image_provider_) {
+    return canvas_image_provider_.get();
   }
 
+  const bool is_accelerated =
+      shared_image_provider_ && shared_image_provider_->IsAccelerated();
   const viz::SharedImageFormat format =
       is_accelerated ? shared_image_provider_->GetSharedImageFormat()
                      : color_params_.GetSharedImageFormat();
@@ -523,19 +535,19 @@ CanvasImageProvider* BaseRenderingContext2D::GetOrCreateCanvasImageProvider() {
   if (is_accelerated) {
     // Callsites are responsible for checking that the context is valid before
     // invoking this method.
-    CHECK(shared_image_provider_->context_provider_wrapper_);
+    CHECK(context_provider_wrapper_);
 
     // Create an ImageDecodeCache for half float images only if the canvas is
     // using half float back storage.
     if (format == viz::SinglePlaneFormat::kRGBA_F16) {
-      cache_f16 = shared_image_provider_->context_provider_wrapper_
-                      ->ContextProvider()
-                      .ImageDecodeCache(kRGBA_F16_SkColorType);
+      cache_f16 =
+          context_provider_wrapper_->ContextProvider().ImageDecodeCache(
+              kRGBA_F16_SkColorType);
     }
 
-    cache_rgba8 = shared_image_provider_->context_provider_wrapper_
-                      ->ContextProvider()
-                      .ImageDecodeCache(kN32_SkColorType);
+    cache_rgba8 =
+        context_provider_wrapper_->ContextProvider().ImageDecodeCache(
+            kN32_SkColorType);
   } else {
     if (format == viz::SinglePlaneFormat::kRGBA_F16) {
       cache_f16 = &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
@@ -551,25 +563,18 @@ CanvasImageProvider* BaseRenderingContext2D::GetOrCreateCanvasImageProvider() {
     }
   }
 
-  image_provider = std::make_unique<CanvasImageProvider>(
+  canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
       cache_rgba8, cache_f16, color_params_.GetGfxColorSpace(), format,
       is_accelerated ? cc::PlaybackImageProvider::RasterMode::kGpu
                      : cc::PlaybackImageProvider::RasterMode::kSoftware,
-      is_accelerated ? shared_image_provider_->context_provider_wrapper_
-                     : context_provider_wrapper_);
+      context_provider_wrapper_);
 
-  return image_provider.get();
+  return canvas_image_provider_.get();
 }
 
 void BaseRenderingContext2D::ApplyAnimatedImageFrameIndexesForId(
     SkCanvas* canvas,
     uint32_t id) {
-  if (shared_image_provider_ && shared_image_provider_->IsAccelerated()) {
-    CHECK(shared_image_provider_->canvas_image_provider_);
-    shared_image_provider_->canvas_image_provider_
-        ->SetAnimatedImageFrameIndexes(GetAnimatedImageFrameIndexMap(id));
-    return;
-  }
   CHECK(canvas_image_provider_);
   canvas_image_provider_->SetAnimatedImageFrameIndexes(
       GetAnimatedImageFrameIndexMap(id));
@@ -599,9 +604,9 @@ void BaseRenderingContext2D::RasterRecordToSharedImage(
     shared_image_provider_->resource()->SetReleaseSyncToken(sync_token);
   }
 
-  if (auto& image_provider = shared_image_provider_->canvas_image_provider_) {
-    image_provider->ReleaseLockedImages();
-    image_provider->UnbindTextureBackedImages();
+  if (canvas_image_provider_) {
+    canvas_image_provider_->ReleaseLockedImages();
+    canvas_image_provider_->UnbindTextureBackedImages();
   }
 }
 

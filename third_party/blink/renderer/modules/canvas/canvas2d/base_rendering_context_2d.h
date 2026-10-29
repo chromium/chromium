@@ -418,9 +418,10 @@ class MODULES_EXPORT BaseRenderingContext2D
   std::unique_ptr<Canvas2DResourceProvider> shared_image_provider_;
   sk_sp<SkSurface> surface_;
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
-  // Even when using a software surface, it may be called upon to
-  // rasterize a texture-backed resource, and that resource must be bound to a
-  // gpu context for the current thread.
+  // Initialized on GPU-composited `shared_image_provider_` creation. Also
+  // lazily initialized when rasterizing to a software surface, as that
+  // surface may be called upon to rasterize a texture-backed resource, which
+  // must be bound to a GPU context for the current thread.
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   cc::PaintImage::Id sw_snapshot_paint_image_id_ = cc::PaintImage::kInvalidId;
   cc::PaintImage::ContentId sw_snapshot_paint_image_content_id_ =

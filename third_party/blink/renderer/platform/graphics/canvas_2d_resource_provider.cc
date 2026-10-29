@@ -292,7 +292,6 @@ base::ByteSize Canvas2DResourceProvider::EstimatedSizeInBytes() const {
 }
 
 void Canvas2DResourceProvider::OnContextDestroyed() {
-  canvas_image_provider_.reset();
   if (image_pool_) {
     image_pool_->Clear();
   }

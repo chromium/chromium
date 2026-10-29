@@ -216,7 +216,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   // recycling.
   static constexpr int kMaxRecycledCanvasResources = 3;
 
-  std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   // If this instance is single-buffered or |resource_recycling_enabled_| is
   // false, |image_pool_| will not recycle resources.
   std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool_;
