@@ -156,12 +156,7 @@ class SingleClientIncomingPasswordSharingInvitationTest
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientIncomingPasswordSharingInvitationTest()
-      : SyncTest(SINGLE_CLIENT) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-  }
+      : SyncTest(SINGLE_CLIENT) {}
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
     return GetParam();
@@ -198,9 +193,6 @@ class SingleClientIncomingPasswordSharingInvitationTest
             specifics.incoming_password_sharing_invitation().guid(), specifics,
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,

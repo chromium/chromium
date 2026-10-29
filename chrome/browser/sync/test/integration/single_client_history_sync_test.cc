@@ -23,7 +23,6 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/protocol/history_specifics.pb.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "content/public/browser/navigation_controller.h"
@@ -148,14 +147,9 @@ class SingleClientHistorySyncTest
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientHistorySyncTest() : SyncTest(SINGLE_CLIENT) {
-    std::vector<base::test::FeatureRef> enabled_features;
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
-    }
     // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
     // disable this feature.
-    features_.InitWithFeatures(
-        enabled_features, /*disabled_features=*/{features::kHttpsUpgrades});
+    features_.InitAndDisableFeature(features::kHttpsUpgrades);
   }
   ~SingleClientHistorySyncTest() override = default;
 

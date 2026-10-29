@@ -99,10 +99,7 @@ class SingleClientPasswordsSyncTest
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientPasswordsSyncTest() : SyncTest(SINGLE_CLIENT) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    } else {
+    if (GetSetupSyncMode() != SetupSyncMode::kSyncTransportOnly) {
       // Skip sync-to-signin migration for sync-the-feature tests. This is to
       // avoid the sync state changing between the PRE_ tests.
       scoped_feature_list_.InitAndDisableFeature(

@@ -31,12 +31,7 @@ class SingleClientPollingSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientPollingSyncTest() : SyncTest(SINGLE_CLIENT) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-  }
+  SingleClientPollingSyncTest() : SyncTest(SINGLE_CLIENT) {}
 
   SingleClientPollingSyncTest(const SingleClientPollingSyncTest&) = delete;
   SingleClientPollingSyncTest& operator=(const SingleClientPollingSyncTest&) =
@@ -60,9 +55,6 @@ class SingleClientPollingSyncTest
     host_resolver()->AddRule("*", "127.0.0.1");
     SyncTest::SetUpOnMainThread();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,

@@ -258,10 +258,8 @@ class SingleClientNigoriSyncTest
  public:
   SingleClientNigoriSyncTest() : SyncTest(SINGLE_CLIENT) {
     if (GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitWithFeatures(
-          {syncer::kReplaceSyncPromosWithSignInPromos,
-           switches::kSyncEnableBookmarksInTransportMode},
-          {});
+      scoped_feature_list_.InitAndEnableFeature(
+          switches::kSyncEnableBookmarksInTransportMode);
     } else {
       // Skip sync-to-signin migration for sync-the-feature tests. This is to
       // avoid the sync state changing between the PRE_ tests.

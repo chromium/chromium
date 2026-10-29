@@ -72,12 +72,7 @@ class SingleClientHistoryDeleteDirectivesSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientHistoryDeleteDirectivesSyncTest() : SyncTest(SINGLE_CLIENT) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-  }
+  SingleClientHistoryDeleteDirectivesSyncTest() : SyncTest(SINGLE_CLIENT) {}
 
   SingleClientHistoryDeleteDirectivesSyncTest(
       const SingleClientHistoryDeleteDirectivesSyncTest&) = delete;
@@ -118,9 +113,6 @@ class SingleClientHistoryDeleteDirectivesSyncTest
     loop.Run();
     return exists;
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,

@@ -93,12 +93,7 @@ class SingleClientOutgoingPasswordSharingInvitationTest
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientOutgoingPasswordSharingInvitationTest()
-      : SyncTest(SINGLE_CLIENT) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-  }
+      : SyncTest(SINGLE_CLIENT) {}
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
     return GetParam();
@@ -127,9 +122,6 @@ class SingleClientOutgoingPasswordSharingInvitationTest
     DCHECK(nigori_specifics.has_cross_user_sharing_public_key());
     return nigori_specifics.cross_user_sharing_public_key();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,

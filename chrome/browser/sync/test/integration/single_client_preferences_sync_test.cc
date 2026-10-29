@@ -128,8 +128,7 @@ class SingleClientPreferencesSyncTest
   SingleClientPreferencesSyncTest() : SyncTest(SINGLE_CLIENT) {
     if (GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTransportOnly) {
       feature_list_.InitWithFeatures(
-          /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
-                                switches::kEnablePreferencesAccountStorage,
+          /*enabled_features=*/{switches::kEnablePreferencesAccountStorage,
                                 // This is needed to enable prefs in transport
                                 // mode.
                                 syncer::kSeparateLocalAndAccountSearchEngines},

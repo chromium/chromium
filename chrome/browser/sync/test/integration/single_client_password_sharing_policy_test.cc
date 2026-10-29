@@ -21,12 +21,7 @@ class SingleClientPasswordSharingPolicyTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientPasswordSharingPolicyTest() : SyncTest(SINGLE_CLIENT) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-  }
+  SingleClientPasswordSharingPolicyTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientPasswordSharingPolicyTest() override = default;
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
@@ -51,7 +46,6 @@ class SingleClientPasswordSharingPolicyTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
