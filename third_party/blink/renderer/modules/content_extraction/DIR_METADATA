@@ -1,1 +1,12 @@
-agentic_review {}
+# Gives the AI code reviewer knowledge base rules for CLs that touch this
+# directory.
+agentic_review: {
+  capability_groups: {
+    path_expression: "third_party/blink/renderer/modules/content_extraction/.*\\.(?:h|cc)"
+    path_expression_exclusion: "third_party/blink/renderer/modules/content_extraction/(?:.*/)?(?:[^/]*test[^/]*|mock_[^/]*)\\.(?:h|cc)"
+    rules: "third_party/blink/renderer/modules/content_extraction/knowledge_base/avoid-speculative-dom-node-id-allocation.md"
+    rules: "third_party/blink/renderer/modules/content_extraction/knowledge_base/maintain-coordinate-space-invariants.md"
+    rules: "third_party/blink/renderer/modules/content_extraction/knowledge_base/no-layout-or-style-updates-during-traversal.md"
+    rules: "third_party/blink/renderer/modules/content_extraction/knowledge_base/sanitize-dom-strings-for-mojom.md"
+  }
+}
