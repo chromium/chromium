@@ -513,7 +513,7 @@ void BluetoothAdapterMac::StartScanWithFilter(
   }
 
   if (transport & BLUETOOTH_TRANSPORT_LE) {
-    StartScanLowEnergy();
+    StartScanLowEnergy(discovery_filter.get());
   }
   for (auto& observer : observers_)
     observer.AdapterDiscoveringChanged(this, true);

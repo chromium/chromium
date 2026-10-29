@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 
@@ -315,7 +316,7 @@ void BluetoothLowEnergyAdapterApple::StartScanWithFilter(
   }
 
   if (transport & BLUETOOTH_TRANSPORT_LE) {
-    StartScanLowEnergy();
+    StartScanLowEnergy(discovery_filter.get());
   }
   for (auto& observer : observers_) {
     observer.AdapterDiscoveringChanged(this, true);
@@ -358,8 +359,20 @@ void BluetoothLowEnergyAdapterApple::UpdateFilter(
   StartScanWithFilter(std::move(discovery_filter), std::move(callback));
 }
 
-void BluetoothLowEnergyAdapterApple::StartScanLowEnergy() {
-  low_energy_discovery_manager_->StartDiscovery(BluetoothDevice::UUIDList());
+void BluetoothLowEnergyAdapterApple::StartScanLowEnergy(
+    const BluetoothDiscoveryFilter* discovery_filter) {
+  std::set<BluetoothUUID> service_uuids;
+  if (discovery_filter &&
+      std::ranges::all_of(
+          *discovery_filter->GetDeviceFilters(),
+          [](const auto& filter) { return !filter.uuids.empty(); })) {
+    // CoreBluetooth matches any of these services, whereas a device filter
+    // requires all of its services. This union is a safe superset; callers
+    // perform the remaining filtering. If any alternative has no services
+    // (for example, a name-only filter), the native scan must be unrestricted.
+    discovery_filter->GetUUIDs(service_uuids);
+  }
+  low_energy_discovery_manager_->StartDiscovery(base::ToVector(service_uuids));
 }
 
 void BluetoothLowEnergyAdapterApple::StopScanLowEnergy() {

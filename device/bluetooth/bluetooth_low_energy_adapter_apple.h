@@ -135,7 +135,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyAdapterApple
 
   // Starts a low energy discovery session or update it if one is already
   // running.
-  void StartScanLowEnergy();
+  void StartScanLowEnergy(const BluetoothDiscoveryFilter* discovery_filter);
 
   // Stops discovery and clears all advertisement data.
   void StopScanLowEnergy();

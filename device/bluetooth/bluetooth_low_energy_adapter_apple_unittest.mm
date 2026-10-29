@@ -200,6 +200,18 @@ class BluetoothLowEnergyAdapterAppleTest : public testing::Test {
     return adapter_low_energy_->NumDiscoverySessions();
   }
 
+  void StartDiscoveryWithFilter(
+      std::unique_ptr<BluetoothDiscoveryFilter> filter) {
+    adapter_low_energy_->StartDiscoverySessionWithFilter(
+        std::move(filter), /*client_name=*/std::string(),
+        base::BindOnce(
+            &BluetoothLowEnergyAdapterAppleTest::OnStartDiscoverySessionSuccess,
+            base::Unretained(this)),
+        base::BindOnce(&BluetoothLowEnergyAdapterAppleTest::ErrorCallback,
+                       base::Unretained(this)));
+    ui_task_runner_->RunPendingTasks();
+  }
+
   [[nodiscard]]
   FakeBluetoothLowEnergyDeviceWatcherMac* SetFakeLowEnergyDeviceWatcher() {
     FakeBluetoothLowEnergyDeviceWatcherMac* fake_low_energy_device_watcher =
@@ -263,10 +275,99 @@ TEST_F(BluetoothLowEnergyAdapterAppleTest,
   // Check that adding a discovery session resulted in
   // scanForPeripheralsWithServices being called on the Central Manager.
   EXPECT_EQ(1, [mock_central_manager_ scanForPeripheralsCallCount]);
+  EXPECT_EQ(nil, mock_central_manager_.scanForPeripheralsServiceUUIDs);
 }
 
-// TODO(krstnmnlsn): Test changing the filter when adding the second discovery
-// session (once we have that ability).
+TEST_F(BluetoothLowEnergyAdapterAppleTest, DiscoveryServiceUUIDUnion) {
+  ASSERT_TRUE(SetMockCentralManager(CBManagerStatePoweredOn));
+  auto filter =
+      std::make_unique<BluetoothDiscoveryFilter>(BLUETOOTH_TRANSPORT_LE);
+  BluetoothDiscoveryFilter::DeviceInfoFilter first;
+  first.uuids = {BluetoothUUID("180d"), BluetoothUUID("180f")};
+  first.name = "Heart rate monitor";
+  filter->AddDeviceFilter(first);
+  BluetoothDiscoveryFilter::DeviceInfoFilter second;
+  second.uuids = {BluetoothUUID("180f"),
+                  BluetoothUUID("12345678-1234-5678-1234-567812345678")};
+  filter->AddDeviceFilter(second);
+  StartDiscoveryWithFilter(std::move(filter));
+
+  EXPECT_EQ(1, callback_count_);
+  EXPECT_EQ(0, error_callback_count_);
+  EXPECT_EQ(1, mock_central_manager_.scanForPeripheralsCallCount);
+  NSArray* expected = @[
+    [CBUUID UUIDWithString:@"180d"], [CBUUID UUIDWithString:@"180f"],
+    [CBUUID UUIDWithString:@"12345678-1234-5678-1234-567812345678"]
+  ];
+  EXPECT_TRUE([[NSSet setWithArray:expected]
+      isEqualToSet:[NSSet setWithArray:mock_central_manager_
+                                           .scanForPeripheralsServiceUUIDs]]);
+  EXPECT_EQ(3u, mock_central_manager_.scanForPeripheralsServiceUUIDs.count);
+}
+
+TEST_F(BluetoothLowEnergyAdapterAppleTest,
+       DiscoveryNameOnlyAlternativeDoesNotRestrictServices) {
+  ASSERT_TRUE(SetMockCentralManager(CBManagerStatePoweredOn));
+  auto filter =
+      std::make_unique<BluetoothDiscoveryFilter>(BLUETOOTH_TRANSPORT_LE);
+  BluetoothDiscoveryFilter::DeviceInfoFilter service_filter;
+  service_filter.uuids.insert(BluetoothUUID("180d"));
+  filter->AddDeviceFilter(service_filter);
+  BluetoothDiscoveryFilter::DeviceInfoFilter name_filter;
+  name_filter.name = "Any service";
+  filter->AddDeviceFilter(name_filter);
+  StartDiscoveryWithFilter(std::move(filter));
+
+  EXPECT_EQ(1, callback_count_);
+  EXPECT_EQ(0, error_callback_count_);
+  EXPECT_EQ(1, mock_central_manager_.scanForPeripheralsCallCount);
+  EXPECT_EQ(nil, mock_central_manager_.scanForPeripheralsServiceUUIDs);
+}
+
+TEST_F(BluetoothLowEnergyAdapterAppleTest, DiscoveryRSSIOnlyFilter) {
+  ASSERT_TRUE(SetMockCentralManager(CBManagerStatePoweredOn));
+  auto filter =
+      std::make_unique<BluetoothDiscoveryFilter>(BLUETOOTH_TRANSPORT_LE);
+  filter->SetRSSI(-70);
+  StartDiscoveryWithFilter(std::move(filter));
+  EXPECT_EQ(1, callback_count_);
+  EXPECT_EQ(0, error_callback_count_);
+  EXPECT_EQ(1, mock_central_manager_.scanForPeripheralsCallCount);
+  EXPECT_EQ(nil, mock_central_manager_.scanForPeripheralsServiceUUIDs);
+}
+
+TEST_F(BluetoothLowEnergyAdapterAppleTest,
+       DiscoveryServicesMergeAcrossSessions) {
+  ASSERT_TRUE(SetMockCentralManager(CBManagerStatePoweredOn));
+  for (const char* uuid : {"180d", "180f"}) {
+    auto filter =
+        std::make_unique<BluetoothDiscoveryFilter>(BLUETOOTH_TRANSPORT_LE);
+    BluetoothDiscoveryFilter::DeviceInfoFilter device_filter;
+    device_filter.uuids.insert(BluetoothUUID(uuid));
+    filter->AddDeviceFilter(device_filter);
+    StartDiscoveryWithFilter(std::move(filter));
+  }
+  EXPECT_EQ(2, callback_count_);
+  EXPECT_EQ(0, error_callback_count_);
+  EXPECT_EQ(2, mock_central_manager_.scanForPeripheralsCallCount);
+  NSArray* expected =
+      @[ [CBUUID UUIDWithString:@"180d"], [CBUUID UUIDWithString:@"180f"] ];
+  EXPECT_TRUE([mock_central_manager_.scanForPeripheralsServiceUUIDs
+      isEqualToArray:expected]);
+
+  active_sessions_.back()->Stop(
+      base::BindOnce(&BluetoothLowEnergyAdapterAppleTest::Callback,
+                     base::Unretained(this)),
+      base::BindOnce(&BluetoothLowEnergyAdapterAppleTest::ErrorCallback,
+                     base::Unretained(this)));
+  ui_task_runner_->RunPendingTasks();
+  EXPECT_EQ(3, callback_count_);
+  EXPECT_EQ(0, error_callback_count_);
+  EXPECT_EQ(3, mock_central_manager_.scanForPeripheralsCallCount);
+  EXPECT_TRUE([mock_central_manager_.scanForPeripheralsServiceUUIDs
+      isEqualToArray:@[ [CBUUID UUIDWithString:@"180d"] ]]);
+}
+
 TEST_F(BluetoothLowEnergyAdapterAppleTest,
        AddSecondDiscoverySessionWithLowEnergyFilter) {
   if (!SetMockCentralManager(CBManagerStatePoweredOn)) {
@@ -298,6 +399,8 @@ TEST_F(BluetoothLowEnergyAdapterAppleTest,
   // We replaced the success callback handed to AddDiscoverySession, so
   // |adapter_low_energy_| should remain in a discovering state indefinitely.
   EXPECT_TRUE(adapter_low_energy_->IsDiscovering());
+  EXPECT_TRUE([mock_central_manager_.scanForPeripheralsServiceUUIDs
+      isEqualToArray:@[ [CBUUID UUIDWithString:@"1000"] ]]);
 
   adapter_low_energy_->StartDiscoverySessionWithFilter(
       std::move(discovery_filter2),
@@ -313,6 +416,19 @@ TEST_F(BluetoothLowEnergyAdapterAppleTest,
   EXPECT_EQ(2, callback_count_);
   EXPECT_EQ(0, error_callback_count_);
   EXPECT_EQ(2, NumDiscoverySessions());
+  EXPECT_EQ(nil, mock_central_manager_.scanForPeripheralsServiceUUIDs);
+
+  active_sessions_.back()->Stop(
+      base::BindOnce(&BluetoothLowEnergyAdapterAppleTest::Callback,
+                     base::Unretained(this)),
+      base::BindOnce(&BluetoothLowEnergyAdapterAppleTest::ErrorCallback,
+                     base::Unretained(this)));
+  ui_task_runner_->RunPendingTasks();
+  EXPECT_EQ(3, callback_count_);
+  EXPECT_EQ(0, error_callback_count_);
+  EXPECT_EQ(3, mock_central_manager_.scanForPeripheralsCallCount);
+  EXPECT_TRUE([mock_central_manager_.scanForPeripheralsServiceUUIDs
+      isEqualToArray:@[ [CBUUID UUIDWithString:@"1000"] ]]);
 }
 
 TEST_F(BluetoothLowEnergyAdapterAppleTest,

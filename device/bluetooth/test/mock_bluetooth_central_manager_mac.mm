@@ -14,6 +14,7 @@
 }
 
 @synthesize scanForPeripheralsCallCount = _scanForPeripheralsCallCount;
+@synthesize scanForPeripheralsServiceUUIDs = _scanForPeripheralsServiceUUIDs;
 @synthesize stopScanCallCount = _stopScanCallCount;
 @synthesize delegate = _delegate;
 @synthesize state = _state;
@@ -47,6 +48,7 @@
 - (void)scanForPeripheralsWithServices:(NSArray*)serviceUUIDs
                                options:(NSDictionary*)options {
   _scanForPeripheralsCallCount++;
+  _scanForPeripheralsServiceUUIDs = [serviceUUIDs copy];
 }
 
 - (void)stopScan {

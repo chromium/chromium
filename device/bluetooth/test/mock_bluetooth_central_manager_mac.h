@@ -19,6 +19,8 @@
 @interface MockCentralManager : NSObject
 
 @property(nonatomic, assign) NSInteger scanForPeripheralsCallCount;
+@property(nonatomic, readonly, copy)
+    NSArray<CBUUID*>* scanForPeripheralsServiceUUIDs;
 @property(nonatomic, assign) NSInteger stopScanCallCount;
 @property(nonatomic, weak) id<CBCentralManagerDelegate> delegate;
 @property(nonatomic, assign) CBManagerState state;
