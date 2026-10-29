@@ -283,14 +283,15 @@ base::FilePath GetDataDirectory();
 // redirected, false if it matches exactly.
 bool IsPathRedirected(const base::FilePath& path);
 
-// Creates a directory with restrictive DACLs that limit access exclusively to
-// NT AUTHORITY\SYSTEM and BUILTIN\Administrators, preventing inheritance from
-// parent folders (such as ProgramData). When `grant_read_on_children` is true,
-// also grants Authenticated Users and All Application Packages inherit-only
-// read access to child objects. If the directory already exists, its DACL is
+// Creates a directory owned by BUILTIN\Administrators with restrictive DACLs
+// that limit access exclusively to NT AUTHORITY\SYSTEM and
+// BUILTIN\Administrators, preventing inheritance from parent folders (such as
+// ProgramData). When `grant_read_on_children` is true, also grants
+// Authenticated Users and All Application Packages inherit-only read access to
+// child objects. If the directory already exists, its owner and DACL are
 // updated to be secure. Parent directories of `path` are created as-needed.
-// Returns false if the directory could not be created or the DACL could not be
-// applied.
+// Returns false if the directory could not be created or the security
+// descriptor could not be applied.
 bool SecureCreateDirectory(const base::FilePath& path,
                            bool grant_read_on_children = false);
 
