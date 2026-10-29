@@ -3151,6 +3151,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kEnableBackgroundContinuedProcessingDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableBackgroundContinuedProcessing)},
+    {"suspicious-site-warnings", flag_descriptions::kSuspiciousSiteWarningsName,
+     flag_descriptions::kSuspiciousSiteWarningsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(safe_browsing::kSuspiciousSiteWarnings)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

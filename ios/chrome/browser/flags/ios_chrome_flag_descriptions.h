@@ -1926,6 +1926,11 @@ inline constexpr char kSupportGoogleOneDeepLinkName[] =
 inline constexpr char kSupportGoogleOneDeepLinkDescription[] =
     "Enables deep linking to Google One management screen on startup.";
 
+inline constexpr char kSuspiciousSiteWarningsName[] =
+    "Suspicious Site Warnings";
+inline constexpr char kSuspiciousSiteWarningsDescription[] =
+    "Enables warnings on sites that Safe Browsing deem to be suspicious.";
+
 inline constexpr char kSyncAIThreadsName[] = "Sync AI Threads";
 inline constexpr char kSyncAIThreadsDescription[] =
     "Enables syncing of AI threads across devices.";
