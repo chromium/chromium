@@ -338,10 +338,7 @@
         delay:0
         options:UIViewAnimationCurveEaseInOut
         animations:^{
-          BOOL isLowerThan17 = !base::ios::IsRunningOnOrLater(17, 0, 0);
-          BOOL isHigherThan17_2 = base::ios::IsRunningOnOrLater(17, 2, 0);
-          BOOL isLowerThan26 = !base::ios::IsRunningOnOrLater(26, 0, 0);
-          if (isLowerThan17 || (isHigherThan17_2 && isLowerThan26)) {
+          if (!base::ios::IsRunningOnOrLater(26, 0, 0)) {
             [UIView addKeyframeWithRelativeStartTime:0
                                     relativeDuration:1
                                           animations:^{
@@ -356,8 +353,7 @@
                                           }];
           } else {
             // This is a workaround for a crash that is mostly happening on
-            // iOS 17.0-17.1. See crbug.com/369988988.
-            // Same crash occurs on iOS 26 (crbug.com/445914120).
+            // iOS 26 (crbug.com/445914120).
             [self expansion];
             [self.toolbarAnimatee hideControlButtons];
           }
@@ -385,10 +381,7 @@
         delay:0
         options:UIViewAnimationCurveEaseInOut
         animations:^{
-          BOOL isLowerThan17 = !base::ios::IsRunningOnOrLater(17, 0, 0);
-          BOOL isHigherThan17_2 = base::ios::IsRunningOnOrLater(17, 2, 0);
-          BOOL isLowerThan26 = !base::ios::IsRunningOnOrLater(26, 0, 0);
-          if (isLowerThan17 || (isHigherThan17_2 && isLowerThan26)) {
+          if (!base::ios::IsRunningOnOrLater(26, 0, 0)) {
             [UIView addKeyframeWithRelativeStartTime:0
                                     relativeDuration:relativeDurationAnimation1
                                           animations:^{
@@ -403,8 +396,7 @@
                                       }];
           } else {
             // This is a workaround for a crash that is mostly happening on
-            // iOS 17.0-17.1. See crbug.com/369988988.
-            // Same crash occurs on iOS 26 (crbug.com/445839307).
+            // iOS 26 (crbug.com/445839307).
             [self contraction];
             [self.toolbarAnimatee showControlButtons];
           }
