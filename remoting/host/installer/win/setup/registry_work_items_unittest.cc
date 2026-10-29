@@ -275,9 +275,10 @@ TEST_F(RegistryWorkItemsTest, RegisterComServer) {
   ASSERT_TRUE(RegisterHostEntries());
 
   std::wstring core_dll_path = install_dir_.Append(kCoreBinaryName).value();
-  std::wstring host_exe_path = install_dir_.Append(kHostBinaryName).value();
+  std::wstring curtain_exe_path =
+      install_dir_.Append(kCurtainBinaryName).value();
   std::wstring expected_local_server_cmd =
-      base::StrCat({L"\"", host_exe_path, L"\" --type=rdp_desktop_session"});
+      base::StrCat({L"\"", curtain_exe_path, L"\" --type=rdp_desktop_session"});
 
   // Verify AppId and binary security descriptors.
   std::wstring app_id_path =

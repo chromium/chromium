@@ -53,6 +53,7 @@ inline constexpr wchar_t kUrlForwarderProgId[] = L"ChromotingUrlForwarder";
 // Executable and library names.
 inline constexpr wchar_t kHostBinaryName[] = L"remoting_host.exe";
 inline constexpr wchar_t kCoreBinaryName[] = L"remoting_core.dll";
+inline constexpr wchar_t kCurtainBinaryName[] = L"remoting_curtain.exe";
 inline constexpr wchar_t kRemoteSecurityKeyBinaryName[] =
     L"remote_security_key.exe";
 inline constexpr wchar_t kRemoteOpenUrlBinaryName[] = L"remote_open_url.exe";

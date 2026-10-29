@@ -192,9 +192,10 @@ bool AddComServerWorkItems(const base::FilePath& install_dir,
       reinterpret_cast<const uint8_t*>(rdp_sd.get()), rdp_sd.length()));
 
   std::wstring core_dll_path = install_dir.Append(kCoreBinaryName).value();
-  std::wstring host_exe_path = install_dir.Append(kHostBinaryName).value();
+  std::wstring curtain_exe_path =
+      install_dir.Append(kCurtainBinaryName).value();
   std::wstring local_server_cmd =
-      base::StrCat({L"\"", host_exe_path, L"\" --type=rdp_desktop_session"});
+      base::StrCat({L"\"", curtain_exe_path, L"\" --type=rdp_desktop_session"});
 
   // Register AppId `{52e6fd1a-f16e-49c0-aacb-5436a915448b}`.
   std::wstring app_id_path =
