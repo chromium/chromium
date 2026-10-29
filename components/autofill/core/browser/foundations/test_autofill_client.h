@@ -456,12 +456,6 @@ class TestAutofillClientTemplate : public T {
            AutofillClient::IphFeature::kWalletDirectOffers;
   }
 
-  void NotifyIphFeatureUsed(AutofillClient::IphFeature feature) override {
-    if (notify_iph_feature_used_mock_callback_) {
-      notify_iph_feature_used_mock_callback_->Run(feature);
-    }
-  }
-
   bool IsTabInActorMode() const override { return is_tab_in_actor_mode_; }
   void set_is_tab_in_actor_mode(bool is_in_actor_mode) {
     is_tab_in_actor_mode_ = is_in_actor_mode;
@@ -804,11 +798,6 @@ class TestAutofillClientTemplate : public T {
     suggestion_ui_session_id_ = session_id;
   }
 
-  void set_notify_iph_feature_used_mock_callback(
-      base::RepeatingCallback<void(AutofillClient::IphFeature)> callback) {
-    notify_iph_feature_used_mock_callback_ = std::move(callback);
-  }
-
   signin::IdentityTestEnvironment& identity_test_environment() {
     return const_cast<signin::IdentityTestEnvironment&>(
         std::as_const(*this).identity_test_environment());
@@ -991,9 +980,6 @@ class TestAutofillClientTemplate : public T {
       blocked_policy_categories_;
 
   base::WeakPtr<AutofillSuggestionDelegate> active_suggestion_delegate_;
-
-  std::optional<base::RepeatingCallback<void(AutofillClient::IphFeature)>>
-      notify_iph_feature_used_mock_callback_;
 
   LogRouter log_router_;
   struct LogToTerminal {

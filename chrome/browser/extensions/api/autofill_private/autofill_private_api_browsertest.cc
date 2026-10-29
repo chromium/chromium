@@ -16,7 +16,6 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
@@ -242,6 +241,10 @@ class MockAutofillClient : public autofill::TestContentAutofillClient {
               GetConsentAuditor,
               (),
               (override));
+  MOCK_METHOD(void,
+              NotifyIphFeatureUsed,
+              (autofill::AutofillClient::IphFeature),
+              (override));
 };
 
 class AutofillPrivateApiBrowserTest : public extensions::ExtensionApiTest {
@@ -430,14 +433,10 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest, SetAutofillAiOptIn) {
   EXPECT_FALSE(autofill::GetAutofillAiOptInStatus(*autofill_client()));
   EXPECT_TRUE(RunAutofillSubtest("verifyUserOptedOutOfAutofillAi"));
 
-  base::test::TestFuture<autofill::AutofillClient::IphFeature>
-      feature_used_future;
-  autofill_client()->set_notify_iph_feature_used_mock_callback(
-      feature_used_future.GetRepeatingCallback());
-
+  EXPECT_CALL(
+      *autofill_client(),
+      NotifyIphFeatureUsed(autofill::AutofillClient::IphFeature::kAutofillAi));
   EXPECT_TRUE(RunAutofillSubtest("optIntoAutofillAi"));
-  EXPECT_EQ(feature_used_future.Get(),
-            autofill::AutofillClient::IphFeature::kAutofillAi);
   EXPECT_TRUE(autofill::GetAutofillAiOptInStatus(*autofill_client()));
   EXPECT_TRUE(RunAutofillSubtest("verifyUserOptedIntoAutofillAi"));
 
