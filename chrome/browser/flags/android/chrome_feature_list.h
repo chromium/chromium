@@ -75,6 +75,7 @@ BASE_DECLARE_FEATURE(kAndroidStartupImprovements);
 BASE_DECLARE_FEATURE(kAndroidSwapPressureTabDiscard);
 BASE_DECLARE_FEATURE(kAndroidTabDeclutterArchiveOnDesktop);
 BASE_DECLARE_FEATURE(kAndroidTabDeclutterDedupeTabIdsKillSwitch);
+BASE_DECLARE_FEATURE(kAndroidTabPersistentStoreActiveTabPrefs);
 BASE_DECLARE_FEATURE(kAndroidTabSkipSaveTabsKillswitch);
 BASE_DECLARE_FEATURE(kAndroidTabUiRefactor);
 BASE_DECLARE_FEATURE(kAndroidTabstripStartupCaptureBugFix);

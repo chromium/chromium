@@ -891,6 +891,21 @@
             ]
         }
     ],
+    "AndroidTabPersistentStoreActiveTabPrefs": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidTabPersistentStoreActiveTabPrefs"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidTabSearchRecentTabs": [
         {
             "platforms": [
