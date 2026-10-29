@@ -65,7 +65,9 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
             ?hidden="${!this.dropdownIsVisible}">
         </cr-searchbox-dropdown>
       </div>
-      <div id="bottomControls">
+      <div id="bottomControls"
+          @animationend="${this.onBottomControlsAnimationEnd_}"
+          @animationcancel="${this.onBottomControlsAnimationEnd_}">
         ${this.isFuseboxEnabled ? html`
         <div class="contextualEntrypointContainer
                     contextualEntrypointContainerCompact">

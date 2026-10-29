@@ -34,6 +34,10 @@
   --color-searchbox-selection-background: rgba(26, 115, 232, 0.2);
   --color-searchbox-selection-foreground: #1f1f1f;
   --cr-composebox-background-color: var(--color-searchbox-background);
+  /* Easing and duration tokens for expand/collapse animations (300ms
+   * when expanded, overridden to 220ms when collapsed). */
+  --loomnibox-animation-duration: 300ms;
+  --loomnibox-animation-easing: cubic-bezier(0.2, 0, 0, 1);
   border: var(--cr-searchbox-border, 2px solid transparent);
   box-sizing: border-box;
 
@@ -41,6 +45,8 @@
   font-size: var(--cr-searchbox-font-size, 16px);
   height: auto;
   min-height: var(--cr-searchbox-height);
+  transition: border-radius var(--loomnibox-animation-duration)
+      var(--loomnibox-animation-easing);
   width: var(--cr-searchbox-width);
   z-index: 99;
 }
@@ -109,6 +115,8 @@
   min-height: var(--cr-searchbox-height);
   padding-top: 6px;
   position: relative;
+  transition: border-radius var(--loomnibox-animation-duration)
+      var(--loomnibox-animation-easing);
   width: 100%;
 }
 
@@ -386,6 +394,7 @@ cr-searchbox-input::part(icon),
 :host(:not([dropdown-is-visible]):not([has-user-input])) {
   --cr-searchbox-border-radius: calc(var(--cr-searchbox-height, 48px) / 2);
   --enterprise-profile-clearance: 24px;
+  --loomnibox-animation-duration: 220ms;
   --omnibox-everywhere-top-actions-top: 10px;
 }
 
@@ -434,4 +443,56 @@ cr-searchbox-input::part(icon),
     #bottomControls .searchbox-icon-button-container {
   height: 28px;
   width: 28px;
+}
+
+:host([dropdown-is-visible]) cr-searchbox-dropdown {
+  animation: loomniboxDropdownExpand var(--loomnibox-animation-duration)
+      var(--loomnibox-animation-easing);
+  /* Custom elements default to display: inline, which ignores CSS
+   * transforms. */
+  display: block;
+}
+
+:host([has-expanded]:not([dropdown-is-visible]):not([has-user-input]))
+    #bottomControls,
+:host(:is([dropdown-is-visible], [has-user-input])) #composeButton {
+  animation: loomniboxTopControlsEnter var(--loomnibox-animation-duration)
+      var(--loomnibox-animation-easing);
+}
+
+:host(:is([dropdown-is-visible], [has-user-input])) #bottomControls {
+  animation: loomniboxBottomControlsExpand var(--loomnibox-animation-duration)
+      var(--loomnibox-animation-easing);
+}
+
+@keyframes loomniboxDropdownExpand {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+/* Fades and slides controls up into the top row (#composeButton when expanding,
+ * #bottomControls when collapsing back to the 1-line pill). */
+@keyframes loomniboxTopControlsEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+/* Counter-animates the vertical shift when #bottomControls moves from the
+ * inline 1-line pill position to the 2-line expanded bottom row. */
+@keyframes loomniboxBottomControlsExpand {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host,
+  :host(:not([dropdown-is-visible]):not([has-user-input])) {
+    --loomnibox-animation-duration: 0ms;
+  }
 }
