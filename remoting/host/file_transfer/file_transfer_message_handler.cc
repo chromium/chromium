@@ -129,12 +129,20 @@ void FileTransferMessageHandler::OnDisconnecting() {}
 
 void FileTransferMessageHandler::OnMetadata(
     protocol::FileTransfer::Metadata metadata) {
+  std::unique_ptr<FileOperations::Writer> writer =
+      file_operations_->CreateWriter();
+  if (!writer) {
+    Cancel();
+    SendError(protocol::MakeFileTransferError(
+        FROM_HERE, protocol::FileTransfer_Error_Type_PROTOCOL_ERROR));
+    return;
+  }
   SetState(kWriting);
   // Unretained is sound because the callbacks won't be called after
   // BufferedFileWriter is destroyed, which is in turn owned by this
   // FileTransferMessageHandler.
   buffered_file_writer_.emplace(
-      file_operations_->CreateWriter(),
+      std::move(writer),
       base::BindOnce(&FileTransferMessageHandler::OnWritingComplete,
                      base::Unretained(this)),
       base::BindOnce(&FileTransferMessageHandler::OnWriteError,
@@ -158,8 +166,14 @@ void FileTransferMessageHandler::OnEnd() {
 }
 
 void FileTransferMessageHandler::OnRequestTransfer() {
-  SetState(kReading);
   file_reader_ = file_operations_->CreateReader();
+  if (!file_reader_) {
+    Cancel();
+    SendError(protocol::MakeFileTransferError(
+        FROM_HERE, protocol::FileTransfer_Error_Type_PROTOCOL_ERROR));
+    return;
+  }
+  SetState(kReading);
   // Unretained is sound because FileReader will not call us after it is
   // destroyed, and we own it.
   file_reader_->Open(base::BindOnce(&FileTransferMessageHandler::OnOpenResult,

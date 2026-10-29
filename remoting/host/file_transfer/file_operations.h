@@ -107,7 +107,12 @@ class FileOperations {
 
   virtual ~FileOperations() = default;
 
+  // Creates a Reader for reading files. May return nullptr if reading is not
+  // supported by this implementation.
   virtual std::unique_ptr<Reader> CreateReader() = 0;
+
+  // Creates a Writer for writing files. May return nullptr if writing is not
+  // supported by this implementation.
   virtual std::unique_ptr<Writer> CreateWriter() = 0;
 };
 }  // namespace remoting

@@ -80,6 +80,10 @@ TEST_F(RtcLogFileOperationsTest, InitialState_IsCreated) {
   EXPECT_EQ(reader_->state(), FileOperations::State::kCreated);
 }
 
+TEST_F(RtcLogFileOperationsTest, CreateWriter_ReturnsNullptr) {
+  EXPECT_EQ(file_operations_.CreateWriter(), nullptr);
+}
+
 TEST_F(RtcLogFileOperationsTest, NonWebrtcConnection_RaisesProtocolError) {
   connection_.set_event_log(nullptr);
 

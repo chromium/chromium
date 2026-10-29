@@ -66,6 +66,15 @@ bool QueuesEqual(const base::queue<T>& a, const base::queue<T>& b) {
   return true;
 }
 
+class NullFileOperations : public remoting::FileOperations {
+ public:
+  NullFileOperations() = default;
+  ~NullFileOperations() override = default;
+
+  std::unique_ptr<Reader> CreateReader() override { return nullptr; }
+  std::unique_ptr<Writer> CreateWriter() override { return nullptr; }
+};
+
 }  // namespace
 
 namespace remoting {
@@ -436,6 +445,45 @@ TEST_F(FileTransferMessageHandlerTest, ForwardsReadError) {
   *error.mutable_error() = *test_io.input_file->io_error;
   expected_sent_messages.push(error.SerializeAsString());
   ASSERT_TRUE(QueuesEqual(expected_sent_messages, actual_sent_messages));
+}
+
+TEST_F(FileTransferMessageHandlerTest, NullWriter_SendsProtocolError) {
+  new FileTransferMessageHandler(kTestDatachannelName, fake_pipe_->Wrap(),
+                                 std::make_unique<NullFileOperations>());
+
+  protocol::FileTransfer fake_error_message;
+  *fake_error_message.mutable_error() = protocol::MakeFileTransferError(
+      FROM_HERE, protocol::FileTransfer_Error_Type_CANCELED);
+
+  fake_pipe_->OpenPipe();
+  fake_pipe_->Receive(MessageToBuffer(fake_metadata_));
+  fake_pipe_->Receive(MessageToBuffer(fake_error_message));
+  fake_pipe_->ClosePipe();
+
+  const base::queue<std::string>& sent_messages = fake_pipe_->sent_messages();
+  ASSERT_EQ(sent_messages.size(), 1ul);
+  protocol::FileTransfer response;
+  response.ParseFromString(sent_messages.front());
+  ASSERT_EQ(response.message_case(), protocol::FileTransfer::kError);
+  ASSERT_EQ(response.error().type(),
+            protocol::FileTransfer_Error_Type_PROTOCOL_ERROR);
+}
+
+TEST_F(FileTransferMessageHandlerTest, NullReader_SendsProtocolError) {
+  new FileTransferMessageHandler(kTestDatachannelName, fake_pipe_->Wrap(),
+                                 std::make_unique<NullFileOperations>());
+
+  fake_pipe_->OpenPipe();
+  fake_pipe_->Receive(MessageToBuffer(fake_request_transfer_));
+  fake_pipe_->ClosePipe();
+
+  const base::queue<std::string>& sent_messages = fake_pipe_->sent_messages();
+  ASSERT_EQ(sent_messages.size(), 1ul);
+  protocol::FileTransfer response;
+  response.ParseFromString(sent_messages.front());
+  ASSERT_EQ(response.message_case(), protocol::FileTransfer::kError);
+  ASSERT_EQ(response.error().type(),
+            protocol::FileTransfer_Error_Type_PROTOCOL_ERROR);
 }
 
 }  // namespace remoting
