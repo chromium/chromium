@@ -44,9 +44,17 @@ def CheckGoldenFilesUpToDate(input_api, output_api):
     subprocess.run(
       ['python3', generate_script, '--output-dir', tmp_dir], check=True
     )
+
     diff_files = []
-    for _, dcmp in dircmp(tmp_dir, generated_dir).subdirs.items():
-      diff_files += dcmp.diff_files
+
+    def collect_diffs(dcmp):
+      for name in dcmp.diff_files + dcmp.left_only + dcmp.right_only:
+        diff_files.append(name)
+      for sub_dcmp in dcmp.subdirs.values():
+        collect_diffs(sub_dcmp)
+
+    collect_diffs(dircmp(tmp_dir, generated_dir))
+
     if len(diff_files) == 0:
       return []
     return [
