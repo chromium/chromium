@@ -22,7 +22,6 @@ include_rules = [
   "+chrome/browser/ash/policy/arc",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/policy/test_support",
-  "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
   "+chrome/browser/net",
   "+chrome/browser/policy",
