@@ -314,23 +314,28 @@ void Emf::Record::SafePlayback(Emf::EnumerationContext* context) const {
       break;
     }
     case EMR_SETWORLDTRANSFORM: {
-      DCHECK_EQ(record()->nSize, sizeof(DWORD) * 2 + sizeof(XFORM));
-      const XFORM* xform = reinterpret_cast<const XFORM*>(record()->dParm);
+      if (record()->nSize != sizeof(EMRSETWORLDTRANSFORM)) {
+        return;
+      }
+      const auto* xform_record =
+          reinterpret_cast<const EMRSETWORLDTRANSFORM*>(record());
       HDC hdc = context->hdc;
       // Ignore the return value of the final WorldTransform API calls, as a
       // single GDI failure should not abort the entire page. This applies to
       // the rest of the function as well.
       if (base_matrix) {
         if (::SetWorldTransform(hdc, base_matrix)) {
-          ::ModifyWorldTransform(hdc, xform, MWT_LEFTMULTIPLY);
+          ::ModifyWorldTransform(hdc, &xform_record->xform, MWT_LEFTMULTIPLY);
         }
       } else {
-        ::SetWorldTransform(hdc, xform);
+        ::SetWorldTransform(hdc, &xform_record->xform);
       }
       break;
     }
     case EMR_MODIFYWORLDTRANSFORM: {
-      CHECK_EQ(record()->nSize, sizeof(EMRMODIFYWORLDTRANSFORM));
+      if (record()->nSize != sizeof(EMRMODIFYWORLDTRANSFORM)) {
+        return;
+      }
       const auto* modify_world_transform =
           reinterpret_cast<const EMRMODIFYWORLDTRANSFORM*>(record());
       HDC hdc = context->hdc;
