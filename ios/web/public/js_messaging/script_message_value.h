@@ -52,6 +52,9 @@ class ScriptMessageValue {
   const ScriptMessageDictValue& GetDict() const;
   const ScriptMessageListValue& GetList() const;
 
+  // Returns the stored dictionary if the type matches, or `nullptr` otherwise.
+  const ScriptMessageDictValue* GetIfDict() const;
+
   // Copies all data stored in this object into a base::Value object.
   // TODO(crbug.com/514993435): This is a temporary function. It will be removed
   // once all JavaScriptFeature callsites use ScriptMessageValue.

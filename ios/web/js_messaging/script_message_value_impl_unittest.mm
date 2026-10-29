@@ -49,6 +49,26 @@ TEST_F(ScriptMessageValueTest, ValueShouldSupportDictConstruction) {
   ASSERT_EQ(base::Value::Type::DICT, message_value.type());
 }
 
+// Tests that `GetIfDict` returns a pointer to the dictionary when the value is
+// a dictionary, and `nullptr` otherwise.
+TEST_F(ScriptMessageValueTest, GetIfDict) {
+  NSDictionary* ns_dict = @{@"key" : @"value"};
+  ScriptMessageValue dict_value(ns_dict);
+  const ScriptMessageDictValue* dict = dict_value.GetIfDict();
+  ASSERT_NE(nullptr, dict);
+  EXPECT_EQ("value", dict->FindString("key"));
+
+  ScriptMessageValue none_value;
+  EXPECT_EQ(nullptr, none_value.GetIfDict());
+
+  ScriptMessageValue bool_value(true);
+  EXPECT_EQ(nullptr, bool_value.GetIfDict());
+
+  NSArray* ns_array = @[ @"key", @"value" ];
+  ScriptMessageValue list_value(ns_array);
+  EXPECT_EQ(nullptr, list_value.GetIfDict());
+}
+
 // Tests initialization with a NSArray
 TEST_F(ScriptMessageValueTest, ValueShouldSupportArrayConstruction) {
   NSArray* ns_array = @[ @"key", @"value" ];

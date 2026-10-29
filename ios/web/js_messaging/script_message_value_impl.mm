@@ -78,6 +78,10 @@ const ScriptMessageListValue& ScriptMessageValue::GetList() const {
   return std::get<ScriptMessageListValue>(data_);
 }
 
+const ScriptMessageDictValue* ScriptMessageValue::GetIfDict() const {
+  return std::get_if<ScriptMessageDictValue>(&data_);
+}
+
 std::unique_ptr<base::Value> ScriptMessageValue::ConvertToValue() const {
   switch (type()) {
     case base::Value::Type::NONE:
