@@ -13,3 +13,9 @@ stages {
   }
   publish { git {} }
 }
+latest {
+  git {
+    repository: "https://chromium.googlesource.com/external/github.com/google/protodatastore-cpp"
+    branch: "HEAD"
+  }
+}
