@@ -361,24 +361,6 @@ class LocalDeviceTestRunTest(unittest.TestCase):
         with self.assertRaises(test_exception.InvalidShardingSettings):
             test_run._ApplyExternalSharding(['a', 'b'], 0, -1)
 
-    def testCompilePackages(self):
-        device = mock.MagicMock()
-        local_device_test_run.CompilePackages(
-            ['org.chromium.test'], device, num_tests=20
-        )
-        device.RunShellCommand.assert_not_called()
-
-        local_device_test_run.CompilePackages(
-            ['org.chromium.test', 'org.chromium.test', 'org.chromium.app'],
-            device,
-            num_tests=21,
-        )
-        self.assertEqual(device.RunShellCommand.call_count, 2)
-        self.assertEqual(
-            device.RunShellCommand.call_args_list[0][0][0],
-            ['cmd', 'package', 'compile', '-m', 'speed', 'org.chromium.test'],
-        )
-
     @mock.patch('devil.android.sdk.adb_wrapper.AdbWrapper.GetAdbPath')
     @mock.patch('pylib.constants.GetOutDirectory', return_value='/tmp/out')
     @mock.patch('devil_chromium.Initialize')

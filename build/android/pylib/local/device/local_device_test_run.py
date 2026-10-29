@@ -99,12 +99,11 @@ class LocalDeviceTestRun(test_run.TestRun):
         )
 
     @local_device_environment.handle_shard_failures
-    def _RunTestsOnDevice(self, dev, tests, results, exit_now, num_tests=0):
+    def _RunTestsOnDevice(self, dev, tests, results, exit_now):
         # This is performed here instead of during setup because restarting the
         # device clears app compatibility flags, which will happen if a device
         # needs to be recovered.
         SetAppCompatibilityFlagsIfNecessary(self._installed_packages, dev)
-        CompilePackages(self._installed_packages, dev, num_tests)
         consecutive_device_errors = 0
         for test in tests:
             if not test:
@@ -311,7 +310,6 @@ class LocalDeviceTestRun(test_run.TestRun):
                                 tc,
                                 try_results,
                                 exit_now,
-                                len(flatten_tests),
                             ).pGet(None)
                         else:
                             self._env.parallel_devices.pMap(
@@ -319,7 +317,6 @@ class LocalDeviceTestRun(test_run.TestRun):
                                 tests,
                                 try_results,
                                 exit_now,
-                                len(flatten_tests),
                             ).pGet(None)
                     except TestsTerminated:
                         for unknown_result in try_results.GetUnknown():
@@ -678,19 +675,6 @@ def SetAppCompatibilityFlagsIfNecessary(packages, device):
         # See crbug.com/1173699 for more information.
         set_flag_for_packages('DEFAULT_SCOPED_STORAGE', False)
         set_flag_for_packages('FORCE_ENABLE_SCOPED_STORAGE', False)
-
-
-def CompilePackages(packages, device, num_tests):
-    """Ahead-of-time compiles test APKs with ART when worthwhile."""
-    if num_tests <= 20:
-        return
-    for p in dict.fromkeys(packages):
-        device.RunShellCommand(
-            ['cmd', 'package', 'compile', '-m', 'speed', p],
-            check_return=False,
-            timeout=180,
-            retries=0,
-        )
 
 
 class NoTestsError(Exception):
