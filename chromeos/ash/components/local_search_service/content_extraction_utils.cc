@@ -51,6 +51,7 @@ std::unique_ptr<base::i18n::Transliterator> CreateHyphenRemover() {
 
 std::vector<Token> ConsolidateToken(const std::vector<Token>& tokens) {
   std::unordered_map<std::u16string, std::vector<WeightedPosition>> dictionary;
+  dictionary.reserve(tokens.size());
   for (const auto& token : tokens) {
     base::Extend(dictionary[token.content], token.positions);
   }
@@ -84,15 +85,16 @@ std::vector<Token> ExtractContent(const std::string& content_id,
   std::vector<Token> tokens;
 
   for (size_t i = 0; i < num_tokens; i++) {
-    const std::u16string word = Normalizer(tokenized_string.tokens()[i]);
-    if (IsStopword(word, locale))
+    std::u16string word = Normalizer(tokenized_string.tokens()[i]);
+    if (IsStopword(word, locale)) {
       continue;
-    tokens.push_back(Token(
-        word,
-        {WeightedPosition(
-            weight, Position(content_id, tokenized_string.mappings()[i].start(),
-                             tokenized_string.mappings()[i].end() -
-                                 tokenized_string.mappings()[i].start()))}));
+    }
+    std::vector<WeightedPosition> positions;
+    positions.emplace_back(
+        weight, Position(content_id, tokenized_string.mappings()[i].start(),
+                         tokenized_string.mappings()[i].end() -
+                             tokenized_string.mappings()[i].start()));
+    tokens.emplace_back(std::move(word), std::move(positions));
   }
 
   return tokens;

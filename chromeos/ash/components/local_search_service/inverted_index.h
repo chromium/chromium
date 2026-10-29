@@ -74,7 +74,7 @@ class InvertedIndex {
   // the index, remove the existing and add the new one. All tokens must be
   // unique (have unique content). It'll build TF-IDF cache after adding
   // documents.
-  void AddDocuments(const DocumentToUpdate& documents,
+  void AddDocuments(DocumentToUpdate documents,
                     base::OnceCallback<void()> callback);
 
   // Removes documents from the inverted index. Do nothing if the document id is
@@ -91,7 +91,7 @@ class InvertedIndex {
   //   - If a document ID is in the index and it's content is empty, remove it
   //   from the index.
   // It will build TF-IDF cache after updating the documents.
-  void UpdateDocuments(const DocumentToUpdate& documents,
+  void UpdateDocuments(DocumentToUpdate documents,
                        base::OnceCallback<void(uint32_t)> callback);
 
   // Gets TF-IDF scores for a term. This function returns the TF-IDF score from
