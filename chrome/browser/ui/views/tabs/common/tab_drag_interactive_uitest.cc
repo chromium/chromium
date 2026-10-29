@@ -58,6 +58,10 @@
 #include "ui/aura/env.h"
 #endif
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace {
 
 enum class DragPosition { kAbove, kBelow };
@@ -233,6 +237,27 @@ class TabDragTest
                : nullptr;
   }
 
+  UnpinnedTabContainerView* GetUnpinnedContainer() {
+    auto* region_view = GetTabStripRegionView();
+    return region_view ? region_view->GetUnpinnedTabsContainer() : nullptr;
+  }
+
+  TabGroupView* GetTabGroupViewAt(int group_index) {
+    TabStripModel* model = browser()->GetTabStripModel();
+    std::vector<tab_groups::TabGroupId> groups;
+    for (int i = 0; i < model->count(); ++i) {
+      std::optional<tab_groups::TabGroupId> group = model->GetTabGroupForTab(i);
+      if (group.has_value() && (groups.empty() || groups.back() != *group)) {
+        groups.push_back(*group);
+      }
+    }
+    if (static_cast<size_t>(group_index) >= groups.size()) {
+      return nullptr;
+    }
+    return views::AsViewClass<TabGroupView>(
+        GetTabStripRegionView()->GetTabGroupAnchorView(groups[group_index]));
+  }
+
   views::View* GetTabViewAt(int tab_index) {
     TabStripModel* tab_strip_model = browser()->GetTabStripModel();
     tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(tab_index);
@@ -283,6 +308,23 @@ class TabDragTest
     return Steps(
         Log("Continue drag to tab at " + base::NumberToString(to_tab_index)),
         NameTabViewAt(kTabToDragTo, to_tab_index), MoveMouseTo(kTabToDragTo),
+        RunScheduledLayout());
+  }
+
+  auto StartDragTabByOffset(int from_tab_index, const gfx::Vector2d& offset) {
+    const char kTabToDragFrom[] = "Tab to drag";
+    return Steps(
+        Log("Start drag tab " + base::NumberToString(from_tab_index)),
+        NameTabViewAt(kTabToDragFrom, from_tab_index),
+        MoveMouseTo(kTabToDragFrom),
+        ClickMouse(ui_controls::LEFT, /*release=*/false),
+        MoveMouseTo(
+            kTabToDragFrom,
+            base::BindOnce(
+                [](gfx::Vector2d drag_offset, ui::TrackedElement* element) {
+                  return element->GetScreenBounds().CenterPoint() + drag_offset;
+                },
+                offset)),
         RunScheduledLayout());
   }
 
@@ -383,6 +425,200 @@ class TabDragTest
       views::test::RunScheduledLayout(&GetBrowserView());
     });
   }
+
+  DraggedTabsContainer* GetHandlingDragContainer() {
+    DraggedTabsContainer* handling = nullptr;
+    if (GetUnpinnedContainer()->IsHandlingDrag()) {
+      handling = GetUnpinnedContainer();
+    }
+    TabStripModel* model = browser()->GetTabStripModel();
+    for (const tab_groups::TabGroupId& group_id :
+         model->group_model()->ListTabGroups()) {
+      auto* group_view = views::AsViewClass<TabGroupView>(
+          GetTabStripRegionView()->GetTabGroupAnchorView(group_id));
+      if (group_view && group_view->IsHandlingDrag()) {
+        EXPECT_EQ(nullptr, handling);
+        handling = group_view;
+      }
+    }
+    return handling;
+  }
+
+  auto StartDragAtTab(int tab_index) {
+    return Do([this, tab_index]() {
+      views::View* tab_view = GetTabViewAt(tab_index);
+      ASSERT_NE(nullptr, tab_view);
+      current_mouse_pos_ = tab_view->GetBoundsInScreen().CenterPoint();
+      ASSERT_TRUE(mouse_util().PerformGestures(
+          views::test::InteractionTestUtilMouse::GestureParams(
+              GetBrowserView().GetNativeWindow()),
+          views::test::InteractionTestUtilMouse::MoveTo(current_mouse_pos_),
+          views::test::InteractionTestUtilMouse::MouseDown(ui_controls::LEFT)));
+      views::test::RunScheduledLayout(&GetBrowserView());
+    });
+  }
+
+  void StepDrag(int step) {
+    if (is_horizontal()) {
+      current_mouse_pos_.Offset(step, 0);
+    } else {
+      current_mouse_pos_.Offset(0, step);
+    }
+
+    ASSERT_TRUE(mouse_util().PerformGestures(
+        views::test::InteractionTestUtilMouse::GestureParams(
+            GetBrowserView().GetNativeWindow()),
+        views::test::InteractionTestUtilMouse::MoveTo(current_mouse_pos_)));
+    views::test::RunScheduledLayout(&GetBrowserView());
+  }
+
+  auto DragToContainerIncrementally(
+      base::RepeatingCallback<DraggedTabsContainer*()> get_target_container,
+      int step) {
+    return Do([this, get_target_container, step]() {
+      const gfx::Rect draggable_bounds =
+          GetTabStripRegionView()->GetTabStripDraggableBounds();
+      while (GetHandlingDragContainer() != get_target_container.Run()) {
+        StepDrag(step);
+        if (HasFatalFailure()) {
+          return;
+        }
+        ASSERT_TRUE(draggable_bounds.Contains(current_mouse_pos_))
+            << "Reached edge of draggable bounds without entering target "
+               "container";
+      }
+      // Keep dragging in order to verify that we don't immediately transition
+      // back to the initial container on the next drag update. This also
+      // verifies that there is more than just 1dp of space between two tab
+      // groups where dragged tabs are placed in the unpinned container.
+      for (int extra_steps = 0; extra_steps < 3; ++extra_steps) {
+        StepDrag(step);
+        if (HasFatalFailure()) {
+          return;
+        }
+        EXPECT_EQ(get_target_container.Run(), GetHandlingDragContainer());
+      }
+    });
+  }
+
+  void AddTabsUntilScrolling() {
+    auto* scroll_view = GetTabStripView()->unpinned_tabs_scroll_view();
+    while (!scroll_view->IsHorizontalContentOverflowing()) {
+      chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1,
+                       /*foreground=*/false);
+      views::test::RunScheduledLayout(&GetBrowserView());
+    }
+  }
+
+  void RemoveTabsUntilNotScrolling() {
+    auto* scroll_view = GetTabStripView()->unpinned_tabs_scroll_view();
+    TabStripModel* model = browser()->GetTabStripModel();
+    while (scroll_view->IsHorizontalContentOverflowing()) {
+      model->CloseWebContentsAt(model->count() - 1, TabCloseTypes::CLOSE_NONE);
+      views::test::RunScheduledLayout(&GetBrowserView());
+    }
+  }
+
+  auto SelectTabsInRange(int first_index, int last_index) {
+    return Do([this, first_index, last_index]() {
+      ui::ListSelectionModel selection;
+      // Keep `first_index` active so the middle tab in the range is selected
+      // but inactive (avoiding the centered close button on compressed active
+      // tabs when starting a drag from the middle tab's center).
+      selection.SetSelectedIndex(first_index);
+      for (int i = first_index; i <= last_index; ++i) {
+        selection.AddIndexToSelection(i);
+      }
+      browser()->GetTabStripModel()->SetSelectionFromModel(selection);
+      views::test::RunScheduledLayout(&GetBrowserView());
+    });
+  }
+
+  void TestDragOutOfAndIntoGroup() {
+#if BUILDFLAG(IS_OZONE)
+    if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+      GTEST_SKIP() << "Incremental dragging times out on Wayland Mutter";
+    }
+#endif
+
+    TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+    ASSERT_NE(nullptr, tab_strip_model);
+    const int leading_step = (is_horizontal() && base::i18n::IsRTL()) ? 1 : -1;
+    const int trailing_step = -leading_step;
+
+    RunTestSequence(
+        AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
+        AddTabsToNewGroup({0, 1}),
+        CheckResult([&]() { return GetTabOrder(tab_strip_model).Run(); },
+                    URLs({
+                        TabGroupURLs({
+                            url::kAboutBlankURL,
+                            chrome::kChromeUIBookmarksURL,
+                        }),
+                    })),
+        // Drag the first tab out of the leading edge of the group, then back
+        // in.
+        StartDragAtTab(0),
+        DragToContainerIncrementally(
+            base::BindLambdaForTesting([this]() -> DraggedTabsContainer* {
+              return GetUnpinnedContainer();
+            }),
+            leading_step),
+        CheckResult([&]() { return GetTabOrder(tab_strip_model).Run(); },
+                    URLs({
+                        url::kAboutBlankURL,
+                        TabGroupURLs({
+                            chrome::kChromeUIBookmarksURL,
+                        }),
+                    })),
+        DragToContainerIncrementally(
+            base::BindLambdaForTesting([this]() -> DraggedTabsContainer* {
+              return GetTabGroupViewAt(0);
+            }),
+            trailing_step),
+        CheckResult([&]() { return GetTabOrder(tab_strip_model).Run(); },
+                    URLs({
+                        TabGroupURLs({
+                            url::kAboutBlankURL,
+                            chrome::kChromeUIBookmarksURL,
+                        }),
+                    })),
+        ReleaseMouse(), PollState(kDragStatePoller, GetDragActive()),
+        WaitForState(kDragStatePoller, false),
+        StopObservingState(kDragStatePoller),
+
+        // Drag the second tab out of the trailing edge of the group, then back
+        // in.
+        StartDragAtTab(1),
+        DragToContainerIncrementally(
+            base::BindLambdaForTesting([this]() -> DraggedTabsContainer* {
+              return GetUnpinnedContainer();
+            }),
+            trailing_step),
+        CheckResult([&]() { return GetTabOrder(tab_strip_model).Run(); },
+                    URLs({
+                        TabGroupURLs({
+                            url::kAboutBlankURL,
+                        }),
+                        chrome::kChromeUIBookmarksURL,
+                    })),
+        DragToContainerIncrementally(
+            base::BindLambdaForTesting([this]() -> DraggedTabsContainer* {
+              return GetTabGroupViewAt(0);
+            }),
+            leading_step),
+        CheckResult([&]() { return GetTabOrder(tab_strip_model).Run(); },
+                    URLs({
+                        TabGroupURLs({
+                            url::kAboutBlankURL,
+                            chrome::kChromeUIBookmarksURL,
+                        }),
+                    })),
+        ReleaseMouse(), PollState(kDragStatePoller, GetDragActive()),
+        WaitForState(kDragStatePoller, false));
+  }
+
+  gfx::Point current_mouse_pos_;
 
   gfx::AnimationTestApi::RenderModeResetter disable_animation_ =
       gfx::AnimationTestApi::SetRichAnimationRenderMode(
@@ -853,6 +1089,109 @@ IN_PROC_BROWSER_TEST_P(TabDragTest, DragOutOfGroup) {
         EXPECT_EQ(GURL(chrome::kChromeUIBookmarksURL),
                   tab_strip_model->GetWebContentsAt(2)->GetURL());
       }));
+}
+
+IN_PROC_BROWSER_TEST_P(TabDragTest, DragOutOfAndIntoGroup) {
+  TestDragOutOfAndIntoGroup();
+}
+
+IN_PROC_BROWSER_TEST_P(TabDragTest, DragTabBetweenTwoGroups) {
+#if BUILDFLAG(IS_OZONE)
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Incremental dragging times out on Wayland Mutter";
+  }
+#endif
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  ASSERT_NE(nullptr, tab_strip_model);
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
+      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
+      AddInstrumentedTab(kFourthTab, GURL(chrome::kChromeUIVersionURL), 3),
+      AddTabsToNewGroup({0, 1}), AddTabsToNewGroup({2, 3}),
+      CheckResult([&]() { return GetTabOrder(tab_strip_model).Run(); },
+                  URLs({
+                      TabGroupURLs({
+                          url::kAboutBlankURL,
+                          chrome::kChromeUIBookmarksURL,
+                      }),
+                      TabGroupURLs({
+                          chrome::kChromeUISettingsURL,
+                          chrome::kChromeUIVersionURL,
+                      }),
+                  })),
+      // Start dragging tab 1 inside Group 0 into the unpinned container between
+      // Group 0 and Group 1, then into Group 1.
+      StartDragAtTab(1),
+      DragToContainerIncrementally(
+          base::BindLambdaForTesting([this]() -> DraggedTabsContainer* {
+            return GetUnpinnedContainer();
+          }),
+          /*step=*/1),
+      CheckResult([&]() { return GetTabOrder(tab_strip_model).Run(); },
+                  URLs({
+                      TabGroupURLs({
+                          url::kAboutBlankURL,
+                      }),
+                      chrome::kChromeUIBookmarksURL,
+                      TabGroupURLs({
+                          chrome::kChromeUISettingsURL,
+                          chrome::kChromeUIVersionURL,
+                      }),
+                  })),
+      DragToContainerIncrementally(
+          base::BindLambdaForTesting([this]() -> DraggedTabsContainer* {
+            return GetTabGroupViewAt(1);
+          }),
+          /*step=*/1),
+      CheckResult([&]() { return GetTabOrder(tab_strip_model).Run(); },
+                  URLs({
+                      TabGroupURLs({
+                          url::kAboutBlankURL,
+                      }),
+                      TabGroupURLs({
+                          chrome::kChromeUIBookmarksURL,
+                          chrome::kChromeUISettingsURL,
+                          chrome::kChromeUIVersionURL,
+                      }),
+                  })),
+      // Drag tab 1 back out of Group 1 into the unpinned container between the
+      // two groups, and then back into Group 0.
+      DragToContainerIncrementally(
+          base::BindLambdaForTesting([this]() -> DraggedTabsContainer* {
+            return GetUnpinnedContainer();
+          }),
+          /*step=*/-1),
+      CheckResult([&]() { return GetTabOrder(tab_strip_model).Run(); },
+                  URLs({
+                      TabGroupURLs({
+                          url::kAboutBlankURL,
+                      }),
+                      chrome::kChromeUIBookmarksURL,
+                      TabGroupURLs({
+                          chrome::kChromeUISettingsURL,
+                          chrome::kChromeUIVersionURL,
+                      }),
+                  })),
+      DragToContainerIncrementally(
+          base::BindLambdaForTesting([this]() -> DraggedTabsContainer* {
+            return GetTabGroupViewAt(0);
+          }),
+          /*step=*/-1),
+      CheckResult([&]() { return GetTabOrder(tab_strip_model).Run(); },
+                  URLs({
+                      TabGroupURLs({
+                          url::kAboutBlankURL,
+                          chrome::kChromeUIBookmarksURL,
+                      }),
+                      TabGroupURLs({
+                          chrome::kChromeUISettingsURL,
+                          chrome::kChromeUIVersionURL,
+                      }),
+                  })),
+      ReleaseMouse(), PollState(kDragStatePoller, GetDragActive()),
+      WaitForState(kDragStatePoller, false));
 }
 
 IN_PROC_BROWSER_TEST_P(TabDragTest, DragMultiplePinnedTabsWithinContainer) {
@@ -1432,81 +1771,13 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
       }));
 }
 
-class HorizontalTabDragTest : public InteractiveBrowserTest {
+class HorizontalTabDragTest : public TabDragTest {
  public:
-  HorizontalTabDragTest() {
-    // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox is
-    // enabled and then remove this.
-    scoped_feature_list_.InitWithFeatures(
-        {tabs::kTabStripUnification},
-        {omnibox::internal::kWebUIOmniboxPopup,
-         omnibox::internal::kWebUIOmniboxAimPopup});
+  TabStripOrientation orientation() const override {
+    return TabStripOrientation::kHorizontal;
   }
-  ~HorizontalTabDragTest() override = default;
 
  protected:
-  BrowserView& GetBrowserView() {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    CHECK(browser_view);
-    return *browser_view;
-  }
-
-  UnpinnedTabContainerView* GetUnpinnedContainer() {
-    auto* region = views::AsViewClass<BaseTabStripRegionView>(
-        GetBrowserView().tab_strip_view());
-    return region ? region->GetUnpinnedTabsContainer() : nullptr;
-  }
-
-  views::View* GetTabViewAt(int index) {
-    auto* region = views::AsViewClass<BaseTabStripRegionView>(
-        GetBrowserView().tab_strip_view());
-    if (!region || !region->root_node_for_testing()) {
-      return nullptr;
-    }
-    auto* tab = browser()->GetTabStripModel()->GetTabAtIndex(index);
-    auto* node =
-        region->root_node_for_testing()->GetNodeForHandle(tab->GetHandle());
-    return node ? node->view() : nullptr;
-  }
-
-  auto NameTabViewAt(std::string_view tab_name, int tab_index) {
-    return NameView(tab_name, base::BindLambdaForTesting([this, tab_index]() {
-                      return GetTabViewAt(tab_index);
-                    }));
-  }
-
-  auto StartDragBetweenTabs(int from_tab_index, int to_tab_index) {
-    const char kTabToDragFrom[] = "Tab to drag";
-    const char kTabToDragTo[] = "Tab to drag to";
-    return Steps(
-        Log("Start drag from " + base::NumberToString(from_tab_index) + " to " +
-            base::NumberToString(to_tab_index)),
-        NameTabViewAt(kTabToDragFrom, from_tab_index),
-        NameTabViewAt(kTabToDragTo, to_tab_index), MoveMouseTo(kTabToDragFrom),
-        ClickMouse(ui_controls::LEFT, /*release=*/false),
-        MoveMouseTo(kTabToDragTo),
-        Do([this]() { views::test::RunScheduledLayout(&GetBrowserView()); }));
-  }
-
-  auto StartDragTabByOffset(int from_tab_index, const gfx::Vector2d& offset) {
-    const char kTabToDragFrom[] = "Tab to drag";
-    return Steps(
-        Log("Start drag tab " + base::NumberToString(from_tab_index)),
-        NameTabViewAt(kTabToDragFrom, from_tab_index),
-        MoveMouseTo(kTabToDragFrom),
-        ClickMouse(ui_controls::LEFT, /*release=*/false),
-        MoveMouseTo(
-            kTabToDragFrom,
-            base::BindOnce(
-                [](gfx::Vector2d drag_offset, ui::TrackedElement* element) {
-                  const gfx::Rect bounds = element->GetScreenBounds();
-                  return bounds.CenterPoint() + drag_offset;
-                },
-                offset)),
-        Do([this]() { views::test::RunScheduledLayout(&GetBrowserView()); }));
-  }
-
   void DispatchGestureToView(views::View* view,
                              const ui::GestureEventDetails& details) {
     gfx::Point point_in_widget = view->GetLocalBounds().CenterPoint();
@@ -1516,11 +1787,215 @@ class HorizontalTabDragTest : public InteractiveBrowserTest {
     GetBrowserView().GetWidget()->OnGestureEvent(&event);
   }
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  gfx::AnimationTestApi::RenderModeResetter disable_animation_ =
-      gfx::AnimationTestApi::SetRichAnimationRenderMode(
-          gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+  void TestDragMultipleCompressedTabsOutOfAndIntoGroup() {
+#if BUILDFLAG(IS_OZONE)
+    if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+      GTEST_SKIP() << "Incremental dragging times out on Wayland Mutter";
+    }
+#endif
+
+    TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+    ASSERT_NE(nullptr, tab_strip_model);
+    const int leading_step = base::i18n::IsRTL() ? 1 : -1;
+    const int trailing_step = -leading_step;
+    std::optional<tab_groups::TabGroupId> group_id;
+    tabs::TabInterface* tab0 = nullptr;
+    tabs::TabInterface* tab1 = nullptr;
+    tabs::TabInterface* tab2 = nullptr;
+    tabs::TabInterface* tab3 = nullptr;
+
+    RunTestSequence(
+        Do([&]() {
+          AddTabsUntilScrolling();
+          group_id = tab_strip_model->AddToNewGroup({0, 1, 2, 3});
+          RemoveTabsUntilNotScrolling();
+          tab0 = tab_strip_model->GetTabAtIndex(0);
+          tab1 = tab_strip_model->GetTabAtIndex(1);
+          tab2 = tab_strip_model->GetTabAtIndex(2);
+          tab3 = tab_strip_model->GetTabAtIndex(3);
+        }),
+        // Drag the first 3 tabs to the left out of the group (using the middle
+        // tab), then back into the group.
+        SelectTabsInRange(0, 2), StartDragAtTab(1),
+        DragToContainerIncrementally(
+            base::BindLambdaForTesting([this]() -> DraggedTabsContainer* {
+              return GetUnpinnedContainer();
+            }),
+            /*step=*/leading_step),
+        Do([&]() {
+          EXPECT_EQ(0, tab_strip_model->GetIndexOfTab(tab0));
+          EXPECT_EQ(1, tab_strip_model->GetIndexOfTab(tab1));
+          EXPECT_EQ(2, tab_strip_model->GetIndexOfTab(tab2));
+          EXPECT_EQ(3, tab_strip_model->GetIndexOfTab(tab3));
+          EXPECT_EQ(std::nullopt, tab0->GetGroup());
+          EXPECT_EQ(std::nullopt, tab1->GetGroup());
+          EXPECT_EQ(std::nullopt, tab2->GetGroup());
+          EXPECT_EQ(group_id, tab3->GetGroup());
+        }),
+        DragToContainerIncrementally(
+            base::BindLambdaForTesting([this]() -> DraggedTabsContainer* {
+              return GetTabGroupViewAt(0);
+            }),
+            /*step=*/trailing_step),
+        Do([&]() {
+          EXPECT_EQ(0, tab_strip_model->GetIndexOfTab(tab0));
+          EXPECT_EQ(1, tab_strip_model->GetIndexOfTab(tab1));
+          EXPECT_EQ(2, tab_strip_model->GetIndexOfTab(tab2));
+          EXPECT_EQ(3, tab_strip_model->GetIndexOfTab(tab3));
+          EXPECT_EQ(group_id, tab0->GetGroup());
+          EXPECT_EQ(group_id, tab1->GetGroup());
+          EXPECT_EQ(group_id, tab2->GetGroup());
+          EXPECT_EQ(group_id, tab3->GetGroup());
+        }),
+        ReleaseMouse(), PollState(kDragStatePoller, GetDragActive()),
+        WaitForState(kDragStatePoller, false),
+        StopObservingState(kDragStatePoller),
+
+        // Drag the last 3 tabs to the right out of the group (using the middle
+        // tab), then back into the group.
+        SelectTabsInRange(1, 3), StartDragAtTab(2),
+        DragToContainerIncrementally(
+            base::BindLambdaForTesting([this]() -> DraggedTabsContainer* {
+              return GetUnpinnedContainer();
+            }),
+            /*step=*/trailing_step),
+        Do([&]() {
+          EXPECT_EQ(0, tab_strip_model->GetIndexOfTab(tab0));
+          EXPECT_EQ(group_id, tab0->GetGroup());
+          EXPECT_EQ(std::nullopt, tab1->GetGroup());
+          EXPECT_EQ(std::nullopt, tab2->GetGroup());
+          EXPECT_EQ(std::nullopt, tab3->GetGroup());
+        }),
+        DragToContainerIncrementally(
+            base::BindLambdaForTesting([this]() -> DraggedTabsContainer* {
+              return GetTabGroupViewAt(0);
+            }),
+            /*step=*/leading_step),
+        Do([&]() {
+          EXPECT_EQ(0, tab_strip_model->GetIndexOfTab(tab0));
+          EXPECT_EQ(1, tab_strip_model->GetIndexOfTab(tab1));
+          EXPECT_EQ(2, tab_strip_model->GetIndexOfTab(tab2));
+          EXPECT_EQ(3, tab_strip_model->GetIndexOfTab(tab3));
+          EXPECT_EQ(group_id, tab0->GetGroup());
+          EXPECT_EQ(group_id, tab1->GetGroup());
+          EXPECT_EQ(group_id, tab2->GetGroup());
+          EXPECT_EQ(group_id, tab3->GetGroup());
+        }),
+        ReleaseMouse(), PollState(kDragStatePoller, GetDragActive()),
+        WaitForState(kDragStatePoller, false));
+  }
+
+  void TestDragMultipleCompressedTabsBetweenTwoGroups() {
+#if BUILDFLAG(IS_OZONE)
+    if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+      GTEST_SKIP() << "Incremental dragging times out on Wayland Mutter";
+    }
+#endif
+
+    TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+    ASSERT_NE(nullptr, tab_strip_model);
+    const int leading_step = base::i18n::IsRTL() ? 1 : -1;
+    const int trailing_step = -leading_step;
+    std::optional<tab_groups::TabGroupId> group0_id;
+    std::optional<tab_groups::TabGroupId> group1_id;
+    tabs::TabInterface* tab0 = nullptr;
+    tabs::TabInterface* tab1 = nullptr;
+    tabs::TabInterface* tab2 = nullptr;
+    tabs::TabInterface* tab3 = nullptr;
+    tabs::TabInterface* tab4 = nullptr;
+    tabs::TabInterface* tab5 = nullptr;
+
+    RunTestSequence(
+        Do([&]() {
+          AddTabsUntilScrolling();
+          group0_id = tab_strip_model->AddToNewGroup({0, 1, 2, 3});
+          group1_id = tab_strip_model->AddToNewGroup({4, 5});
+          RemoveTabsUntilNotScrolling();
+          tab0 = tab_strip_model->GetTabAtIndex(0);
+          tab1 = tab_strip_model->GetTabAtIndex(1);
+          tab2 = tab_strip_model->GetTabAtIndex(2);
+          tab3 = tab_strip_model->GetTabAtIndex(3);
+          tab4 = tab_strip_model->GetTabAtIndex(4);
+          tab5 = tab_strip_model->GetTabAtIndex(5);
+        }),
+        // Drag tabs 0, 1, 2 (using the middle tab 1) out of Group 0 into the
+        // unpinned space between Group 0 and Group 1, then into Group 1.
+        SelectTabsInRange(0, 2), StartDragAtTab(1),
+        DragToContainerIncrementally(
+            base::BindLambdaForTesting([this]() -> DraggedTabsContainer* {
+              return GetUnpinnedContainer();
+            }),
+            /*step=*/trailing_step),
+        Do([&]() {
+          EXPECT_EQ(0, tab_strip_model->GetIndexOfTab(tab3));
+          EXPECT_EQ(1, tab_strip_model->GetIndexOfTab(tab0));
+          EXPECT_EQ(2, tab_strip_model->GetIndexOfTab(tab1));
+          EXPECT_EQ(3, tab_strip_model->GetIndexOfTab(tab2));
+          EXPECT_EQ(4, tab_strip_model->GetIndexOfTab(tab4));
+          EXPECT_EQ(5, tab_strip_model->GetIndexOfTab(tab5));
+          EXPECT_EQ(group0_id, tab3->GetGroup());
+          EXPECT_EQ(std::nullopt, tab0->GetGroup());
+          EXPECT_EQ(std::nullopt, tab1->GetGroup());
+          EXPECT_EQ(std::nullopt, tab2->GetGroup());
+          EXPECT_EQ(group1_id, tab4->GetGroup());
+          EXPECT_EQ(group1_id, tab5->GetGroup());
+        }),
+        DragToContainerIncrementally(
+            base::BindLambdaForTesting([this]() -> DraggedTabsContainer* {
+              return GetTabGroupViewAt(1);
+            }),
+            /*step=*/trailing_step),
+        Do([&]() {
+          EXPECT_EQ(group0_id, tab3->GetGroup());
+          EXPECT_EQ(group1_id, tab0->GetGroup());
+          EXPECT_EQ(group1_id, tab1->GetGroup());
+          EXPECT_EQ(group1_id, tab2->GetGroup());
+          EXPECT_EQ(group1_id, tab4->GetGroup());
+          EXPECT_EQ(group1_id, tab5->GetGroup());
+        }),
+        // Drag tabs 0, 1, 2 back out of Group 1 into the unpinned space between
+        // the two groups, and then back into Group 0.
+        DragToContainerIncrementally(
+            base::BindLambdaForTesting([this]() -> DraggedTabsContainer* {
+              return GetUnpinnedContainer();
+            }),
+            /*step=*/leading_step),
+        Do([&]() {
+          EXPECT_EQ(0, tab_strip_model->GetIndexOfTab(tab3));
+          EXPECT_EQ(1, tab_strip_model->GetIndexOfTab(tab0));
+          EXPECT_EQ(2, tab_strip_model->GetIndexOfTab(tab1));
+          EXPECT_EQ(3, tab_strip_model->GetIndexOfTab(tab2));
+          EXPECT_EQ(4, tab_strip_model->GetIndexOfTab(tab4));
+          EXPECT_EQ(5, tab_strip_model->GetIndexOfTab(tab5));
+          EXPECT_EQ(group0_id, tab3->GetGroup());
+          EXPECT_EQ(std::nullopt, tab0->GetGroup());
+          EXPECT_EQ(std::nullopt, tab1->GetGroup());
+          EXPECT_EQ(std::nullopt, tab2->GetGroup());
+          EXPECT_EQ(group1_id, tab4->GetGroup());
+          EXPECT_EQ(group1_id, tab5->GetGroup());
+        }),
+        DragToContainerIncrementally(
+            base::BindLambdaForTesting([this]() -> DraggedTabsContainer* {
+              return GetTabGroupViewAt(0);
+            }),
+            /*step=*/leading_step),
+        Do([&]() {
+          EXPECT_EQ(0, tab_strip_model->GetIndexOfTab(tab3));
+          EXPECT_EQ(1, tab_strip_model->GetIndexOfTab(tab0));
+          EXPECT_EQ(2, tab_strip_model->GetIndexOfTab(tab1));
+          EXPECT_EQ(3, tab_strip_model->GetIndexOfTab(tab2));
+          EXPECT_EQ(4, tab_strip_model->GetIndexOfTab(tab4));
+          EXPECT_EQ(5, tab_strip_model->GetIndexOfTab(tab5));
+          EXPECT_EQ(group0_id, tab3->GetGroup());
+          EXPECT_EQ(group0_id, tab0->GetGroup());
+          EXPECT_EQ(group0_id, tab1->GetGroup());
+          EXPECT_EQ(group0_id, tab2->GetGroup());
+          EXPECT_EQ(group1_id, tab4->GetGroup());
+          EXPECT_EQ(group1_id, tab5->GetGroup());
+        }),
+        ReleaseMouse(), PollState(kDragStatePoller, GetDragActive()),
+        WaitForState(kDragStatePoller, false));
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest, DragMultipleCompressedTabs) {
@@ -1692,6 +2167,16 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest, DragPinnedTab) {
                   ReleaseMouse(), WaitForState(kDragStatePoller, false));
 }
 
+IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest,
+                       DragMultipleCompressedTabsOutOfAndIntoGroup) {
+  TestDragMultipleCompressedTabsOutOfAndIntoGroup();
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest,
+                       DragMultipleCompressedTabsBetweenTwoGroups) {
+  TestDragMultipleCompressedTabsBetweenTwoGroups();
+}
+
 class HorizontalTabDragRTLTest : public HorizontalTabDragTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -1804,6 +2289,20 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabDragRTLTest, DragPinnedTab) {
                         tab1->GetBoundsInScreen()));
                   }),
                   ReleaseMouse(), WaitForState(kDragStatePoller, false));
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabDragRTLTest, DragOutOfAndIntoGroup) {
+  TestDragOutOfAndIntoGroup();
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabDragRTLTest,
+                       DragMultipleCompressedTabsOutOfAndIntoGroup) {
+  TestDragMultipleCompressedTabsOutOfAndIntoGroup();
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabDragRTLTest,
+                       DragMultipleCompressedTabsBetweenTwoGroups) {
+  TestDragMultipleCompressedTabsBetweenTwoGroups();
 }
 
 INSTANTIATE_TEST_SUITE_P(

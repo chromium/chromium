@@ -340,6 +340,7 @@ void DraggedTabsContainer::BuildDragLayout(
   dragging_views_bounds_ = gfx::Rect();
   dragging_views_bounds_.Offset(
       GetSourceViewOffsetFromMouse(*source_dragged_view, session_data));
+  extremal_view_bounds_.reset();
 
   const auto& target_layout = GetLayoutForDrag();
   const std::vector<views::View*> attached_views =
@@ -407,7 +408,20 @@ void DraggedTabsContainer::AddViewToDragLayout(views::View* dragging_view,
                                     kDraggedViewVerticalPadding);
 
   if (is_source_dragged_view) {
-    dragging_views_bounds_.Offset({-1 * bounds.x(), -1 * bounds.y()});
+    gfx::Vector2d offset = bounds.OffsetFromOrigin();
+    dragging_views_bounds_ -= offset;
+    if (extremal_view_bounds_.has_value()) {
+      extremal_view_bounds_->first -= offset;
+      extremal_view_bounds_->second -= offset;
+    }
+  }
+
+  const gfx::Rect relative_bounds =
+      bounds + dragging_views_bounds_.OffsetFromOrigin();
+  if (extremal_view_bounds_.has_value()) {
+    extremal_view_bounds_->second = relative_bounds;
+  } else {
+    extremal_view_bounds_ = {relative_bounds, relative_bounds};
   }
 }
 
@@ -430,7 +444,20 @@ void DraggedTabsContainer::AddViewToHorizontalDragLayout(
       std::max(dragging_views_bounds_.height(), bounds.height()));
 
   if (is_source_dragged_view) {
-    dragging_views_bounds_.Offset({-1 * bounds.x(), -1 * bounds.y()});
+    gfx::Vector2d offset = bounds.OffsetFromOrigin();
+    dragging_views_bounds_ -= offset;
+    if (extremal_view_bounds_.has_value()) {
+      extremal_view_bounds_->first -= offset;
+      extremal_view_bounds_->second -= offset;
+    }
+  }
+
+  gfx::Rect relative_bounds =
+      bounds + dragging_views_bounds_.OffsetFromOrigin();
+  if (extremal_view_bounds_.has_value()) {
+    extremal_view_bounds_->second = relative_bounds;
+  } else {
+    extremal_view_bounds_ = {relative_bounds, relative_bounds};
   }
 }
 
@@ -444,6 +471,8 @@ void DraggedTabsContainer::AddViewToSquashedDragLayout(
     static constexpr int kDraggedViewHorizontalPadding = 4;
     dragging_views_bounds_.set_width(view_bounds.width() +
                                      kDraggedViewHorizontalPadding);
+
+    extremal_view_bounds_ = {dragging_views_bounds_, dragging_views_bounds_};
   }
   dragging_views_.insert(
       {dragging_view,
@@ -472,6 +501,7 @@ void DraggedTabsContainer::ResetDragState() {
   animating_views_start_offsets_.clear();
   drag_start_animation_.Reset(0.0);
   dragging_views_bounds_ = gfx::Rect();
+  extremal_view_bounds_.reset();
   last_move_drag_x_ = std::nullopt;
 
   on_scrolled_subscription_.reset();
@@ -522,6 +552,15 @@ gfx::Rect DraggedTabsContainer::GetDraggingViewsBounds() const {
                                           last_drag_point_in_screen_)
           .OffsetFromOrigin());
   return box_for_point;
+}
+
+std::pair<gfx::Rect, gfx::Rect>
+DraggedTabsContainer::GetExtremalDraggingViewsBoundsAtPoint(
+    const gfx::Point& point_in_container) const {
+  CHECK(extremal_view_bounds_.has_value());
+  gfx::Vector2d offset = point_in_container.OffsetFromOrigin();
+  return {extremal_view_bounds_->first + offset,
+          extremal_view_bounds_->second + offset};
 }
 
 gfx::Vector2d DraggedTabsContainer::GetDraggingViewPositionForBounds(
@@ -629,8 +668,8 @@ bool DraggedTabsContainer::IsVerticalDragSupported() const {
 bool DraggedTabsContainer::HasMinimumOverlap(
     const gfx::Rect& a,
     const gfx::Rect& b,
-    std::optional<int> min_x_overlap,
-    std::optional<int> min_y_overlap) const {
+    std::optional<float> min_x_overlap,
+    std::optional<float> min_y_overlap) const {
   if (min_y_overlap) {
     gfx::RangeF vertical_overlap =
         gfx::RangeF(a.y(), a.bottom())

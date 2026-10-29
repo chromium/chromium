@@ -301,4 +301,8 @@ source_set("interactive_ui_tests") {
     "//ui/events:test_support",
     "//ui/views",
   ]
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
 }

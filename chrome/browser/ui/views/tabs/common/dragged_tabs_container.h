@@ -94,6 +94,13 @@ class DraggedTabsContainer : public TabDragTarget,
   // bounds.
   gfx::Rect GetDraggingViewsBounds() const;
 
+  // Returns the bounds of the first and last dragging views, adjusted to
+  // `point_in_container`. The returned bounds are not clamped to the container
+  // bounds. `IsHandlingDrag()` needs to be true in order to call this, or else
+  // it will crash.
+  std::pair<gfx::Rect, gfx::Rect> GetExtremalDraggingViewsBoundsAtPoint(
+      const gfx::Point& point_in_container) const;
+
  protected:
   struct DraggedViewVisualData {
     gfx::Vector2d offset;
@@ -116,8 +123,8 @@ class DraggedTabsContainer : public TabDragTarget,
   // respective axis.
   bool HasMinimumOverlap(const gfx::Rect& a,
                          const gfx::Rect& b,
-                         std::optional<int> min_x_overlap,
-                         std::optional<int> min_y_overlap) const;
+                         std::optional<float> min_x_overlap,
+                         std::optional<float> min_y_overlap) const;
 
   TabDragHandler& GetDragHandler();
   const TabDragHandler& GetDragHandler() const;
@@ -244,6 +251,10 @@ class DraggedTabsContainer : public TabDragTarget,
 
   // The bounding box of all the dragged views, relative to the drag point.
   gfx::Rect dragging_views_bounds_;
+
+  // The bounding box of the first and last views along the drag layout axis,
+  // relative to the drag point.
+  std::optional<std::pair<gfx::Rect, gfx::Rect>> extremal_view_bounds_;
 
   // Child views that are being dragged, mapped to their DraggedViewVisualData,
   // whose offset is relative within `dragging_views_bounds_`.
