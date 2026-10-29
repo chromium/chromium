@@ -64,6 +64,11 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
+#include "chrome/browser/ui/waap/waap_utils.h"
+#endif
+
 namespace {
 
 using extensions::Extension;
@@ -450,8 +455,13 @@ void ChromeRuntimeAPIDelegate::OpenOptionsPage(
 #else
     // Other platforms create windows synchronously. Fallthrough and open
     // the options page afterwards.
+    const base::TimeTicks now = base::TimeTicks::Now();
     browser = CreateBrowserWindow(std::move(params));
     CHECK(browser);
+    if (auto* manager = InitialWebUIWindowMetricsManager::From(browser)) {
+      manager->SetWindowCreationInfo(waap::NewWindowCreationSource::kExtension,
+                                     now);
+    }
 #endif
   }
   std::move(callback).Run(

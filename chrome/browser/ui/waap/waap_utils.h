@@ -66,7 +66,12 @@ enum class NewWindowCreationSource {
   // profile, or capturing/reparenting a web app navigation into a new tabbed
   // browser window.
   kNavigation = 8,
-  kMaxValue = kNavigation,
+  // Created by an extension API or extension host helper opening a new normal
+  // browser window, e.g. `chrome.windows.create()`, `chrome.tabs.create()`,
+  // `chrome.runtime.openOptionsPage()`, `OpenTabHelper`, or
+  // `ChromeExtensionHostDelegate`.
+  kExtension = 9,
+  kMaxValue = kExtension,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/histograms.xml:CreationSource)
 

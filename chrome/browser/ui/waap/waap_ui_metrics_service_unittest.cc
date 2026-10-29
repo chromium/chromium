@@ -180,6 +180,7 @@ TEST_F(WaapUIMetricsServiceTest, OnNewWindowReloadButtonFirstPaint) {
       {waap::NewWindowCreationSource::kSessionRestoreFallback,
        "SessionRestoreFallback"},
       {waap::NewWindowCreationSource::kNavigation, "Navigation"},
+      {waap::NewWindowCreationSource::kExtension, "Extension"},
   };
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.variant);

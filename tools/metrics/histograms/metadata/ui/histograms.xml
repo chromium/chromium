@@ -59,6 +59,11 @@ chromium-metrics-reviews@google.com.
   <variant name=".AllSources" summary="Aggregated across all sources"/>
   <variant name=".DragToNewWindow"
       summary="Triggered by dragging a tab to a new window"/>
+  <variant name=".Extension"
+      summary="Triggered by an extension API or extension host helper opening
+               a new normal browser window (e.g. chrome.windows.create(),
+               chrome.tabs.create(), chrome.runtime.openOptionsPage(),
+               OpenTabHelper, or ChromeExtensionHostDelegate)"/>
   <variant name=".Launch"
       summary="Triggered by a browser launch that opens a new window (e.g. an
                OS/shell shortcut or --new-window handled by an already

@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
@@ -115,7 +116,8 @@ class TabsCreateFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("tabs.create", TABS_CREATE)
 
   // Called after a new browser window has been created.
-  void OnBrowserWindowCreated(BrowserWindowInterface* browser);
+  void OnBrowserWindowCreated(base::TimeTicks creation_time,
+                              BrowserWindowInterface* browser);
 
   // Opens a new tab in the given `browser`. If non-null, sets its opener to
   // `opener_tab`.

@@ -33,6 +33,13 @@ source_set("runtime") {
     "//net",
   ]
 
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/ui/waap:waap_utils",
+      "//chrome/browser/ui/waap:window_metrics_manager",
+    ]
+  }
+
   if (is_chromeos) {
     deps += [
       "//chromeos/components/kiosk",

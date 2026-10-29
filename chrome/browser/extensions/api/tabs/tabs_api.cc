@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/types/optional_util.h"
@@ -84,6 +85,8 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/unload_controller.h"
+#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
+#include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/webapps/isolated_web_apps/scheme.h"
@@ -1088,18 +1091,27 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
 
   BrowserWindowCreateParams create_params(BrowserWindowInterface::TYPE_NORMAL,
                                           *profile_to_use, user_gesture());
+  const base::TimeTicks now = base::TimeTicks::Now();
   CreateBrowserWindow(
       std::move(create_params),
-      base::BindOnce(&TabsCreateFunction::OnBrowserWindowCreated, this));
+      base::BindOnce(&TabsCreateFunction::OnBrowserWindowCreated, this, now));
   return RespondLater();
 }
 
 void TabsCreateFunction::OnBrowserWindowCreated(
+    [[maybe_unused]] base::TimeTicks creation_time,
     BrowserWindowInterface* browser) {
   if (!browser) {
     Respond(Error(ExtensionTabUtil::kBrowserWindowNotAllowed));
     return;
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* manager = InitialWebUIWindowMetricsManager::From(browser)) {
+    manager->SetWindowCreationInfo(waap::NewWindowCreationSource::kExtension,
+                                   creation_time);
+  }
+#endif
 
   base::WeakPtr<BrowserWindowInterface> weak_browser = browser->GetWeakPtr();
   browser->GetWindow()->Show();

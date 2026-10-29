@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/time/time.h"
 #include "chrome/browser/extensions/browser_window_util.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
@@ -38,6 +39,9 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/mojom/view_type.mojom.h"
+#else
+#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
+#include "chrome/browser/ui/waap/waap_utils.h"
 #endif
 
 // This file contains code shared between Android and non-Android platforms.
@@ -132,8 +136,13 @@ void ChromeExtensionHostDelegate::CreateTab(
   return;
 #else
   // Other platforms create windows synchronously.
+  const base::TimeTicks now = base::TimeTicks::Now();
   browser = CreateBrowserWindow(std::move(params));
   CHECK(browser);
+  if (auto* manager = InitialWebUIWindowMetricsManager::From(browser)) {
+    manager->SetWindowCreationInfo(waap::NewWindowCreationSource::kExtension,
+                                   now);
+  }
   NavigateBrowser(/*browser_created=*/true, std::move(web_contents), target_url,
                   extension_id, disposition, window_features, user_gesture,
                   browser);
