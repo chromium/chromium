@@ -404,6 +404,57 @@ public class WebSigninLoadingDialogTest {
         Assert.assertTrue(captor.getValue().getInitiatorOrigin().isOpaque());
     }
 
+    // Regression test for crbug.com/c/570450501: the result is reported synchronously when the
+    // bridge is started if it's already known, e.g. if the account is already in cookies.
+    @Test
+    @MediumTest
+    public void testRedirectWhenResultReportedSynchronously() {
+        when(mWebSigninTrackerBridgeMocks.createWithEmail(
+                        any(), anyString(), mCallbackCaptor.capture()))
+                .thenReturn(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
+        doAnswer(
+                        invocation -> {
+                            mCallbackCaptor.getValue().onResult(WebSigninTrackerResult.SUCCESS);
+                            return null;
+                        })
+                .when(mWebSigninTrackerBridgeMocks)
+                .start(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
+        Tab spyTab = spy(mActivityTestRule.getActivityTab());
+        when(spyTab.getWebContents()).thenReturn(mMockWebContents);
+        when(mMockWebContents.getLastCommittedUrl()).thenReturn(new GURL("https://initial.url"));
+        doReturn(null).when(spyTab).loadUrl(any(LoadUrlParams.class));
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.ProcessMirrorHeaders.LoadingDialog.Status",
+                                WebSigninRedirectCoordinator.DialogState.NOT_SHOWN)
+                        .expectAnyRecord("Signin.ProcessMirrorHeaders.LoadingDuration.Success")
+                        .expectIntRecord(
+                                "Signin.ProcessMirrorHeaders.WaitOutcome",
+                                WebSigninRedirectCoordinator.WaitOutcome.COMPLETED_WITHOUT_DIALOG)
+                        .build();
+
+        mCoordinator = new WebSigninRedirectCoordinator();
+        mCoordinator.setShowDialogTimerForTesting(mMockShowDialogTimer);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.initializeWebSigninAndRedirect(
+                            spyTab,
+                            "test@gmail.com",
+                            /* continueUrl= */ new GURL("https://continue.url"),
+                            /* initialTabURL= */ new GURL("https://initial.url"));
+                });
+
+        ArgumentCaptor<LoadUrlParams> captor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(spyTab).loadUrl(captor.capture());
+        Assert.assertEquals("https://continue.url/", captor.getValue().getUrl());
+        verify(mWebSigninTrackerBridgeMocks).destroy(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
+        verify(mMockShowDialogTimer, never()).startTimer(anyLong(), any());
+        Assert.assertNull(mCoordinator.getDialogModelForTesting());
+        watcher.assertExpected();
+    }
+
     @Test
     @MediumTest
     public void testNoRedirectWhenUrlMismatches() {

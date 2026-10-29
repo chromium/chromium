@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.signin.account_picker;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -37,6 +38,8 @@ import org.chromium.components.signin.browser.WebSigninTrackerResult;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for {@link SigninCookieWaiter}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -156,7 +159,9 @@ public class SigninCookieWaiterTest {
         mWaiter.waitForCookies(TestAccounts.ACCOUNT2.getId(), mOnCompleteMock);
 
         // The first bridge is destroyed, so it won't report its result.
+        verify(mWebSigninTrackerBridgeMock).start();
         verify(mWebSigninTrackerBridgeMock).destroy();
+        verify(secondBridgeMock).start();
         verify(secondBridgeMock, never()).destroy();
         verify(mWebSigninTrackerBridgeFactoryMock, times(2))
                 .createWithCoreAccountId(
@@ -167,14 +172,16 @@ public class SigninCookieWaiterTest {
     }
 
     @Test
-    public void testSynchronousResultDestroysBridge() {
+    public void testSynchronousResult() {
         stubSynchronousResult(TestAccounts.ACCOUNT1, WebSigninTrackerResult.SUCCESS);
 
         mWaiter.waitForCookies(TestAccounts.ACCOUNT1.getId(), mOnCompleteMock);
 
         verify(mOnCompleteMock).onResult(PostSigninOperationResult.SUCCESS);
-        // The bridge couldn't destroy itself, as the result was reported from its constructor.
-        verify(mWebSigninTrackerBridgeMock).destroy();
+        // The bridge destroys itself when reporting its result, even synchronously, so a subsequent
+        // cancel() is a no-op.
+        mWaiter.cancel();
+        verify(mWebSigninTrackerBridgeMock, never()).destroy();
     }
 
     @Test
@@ -189,8 +196,10 @@ public class SigninCookieWaiterTest {
 
         mWaiter.waitForCookies(TestAccounts.ACCOUNT1.getId(), retryingCallback);
 
-        // The first bridge is released, and the second wait is still pending.
-        verify(mWebSigninTrackerBridgeMock).destroy();
+        // The first bridge destroys itself when reporting its result, and the second wait is still
+        // pending.
+        verify(mWebSigninTrackerBridgeMock, never()).destroy();
+        verify(secondBridgeMock).start();
         verify(secondBridgeMock, never()).destroy();
         mWaiter.cancel();
         verify(secondBridgeMock).destroy();
@@ -198,14 +207,21 @@ public class SigninCookieWaiterTest {
 
     private void stubSynchronousResult(
             CoreAccountInfo account, @WebSigninTrackerResult int result) {
+        var callback = new AtomicReference<Callback<Integer>>();
         when(mWebSigninTrackerBridgeFactoryMock.createWithCoreAccountId(
                         eq(mProfileMock), eq(account.getId()), any()))
                 .thenAnswer(
                         invocation -> {
-                            Callback<Integer> callback = invocation.getArgument(2);
-                            callback.onResult(result);
+                            callback.set(invocation.getArgument(2));
                             return mWebSigninTrackerBridgeMock;
                         });
+        doAnswer(
+                        invocation -> {
+                            callback.get().onResult(result);
+                            return null;
+                        })
+                .when(mWebSigninTrackerBridgeMock)
+                .start();
     }
 
     private void triggerWebSigninCallback(@WebSigninTrackerResult int result) {
@@ -214,6 +230,7 @@ public class SigninCookieWaiterTest {
                         eq(mProfileMock),
                         eq(TestAccounts.ACCOUNT1.getId()),
                         mWebSigninCallbackCaptor.capture());
+        verify(mWebSigninTrackerBridgeMock).start();
         mWebSigninCallbackCaptor.getValue().onResult(result);
     }
 }

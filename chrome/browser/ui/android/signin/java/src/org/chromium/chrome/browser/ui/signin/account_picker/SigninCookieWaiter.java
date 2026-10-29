@@ -18,8 +18,6 @@ import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.google_apis.gaia.CoreAccountId;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /**
  * Waits for a freshly signed-in account to be available in the Gaia cookies, and reports the
  * outcome as a {@link PostSigninOperationResult}. Errors are recorded with {@link
@@ -67,25 +65,17 @@ public class SigninCookieWaiter {
         // Destroy the previous WebSigninTrackerBridge, if any, to avoid interference with the new
         // sign-in. A destroyed bridge doesn't report its result.
         cancel();
-        var isWaiting = new AtomicBoolean(true);
         WebSigninTrackerBridge webSigninTrackerBridge =
                 mWebSigninTrackerBridgeFactory.createWithCoreAccountId(
                         mProfile,
                         accountId,
                         result -> {
-                            isWaiting.set(false);
                             // The bridge destroys itself after reporting its result.
                             mWebSigninTrackerBridge = null;
                             onWebSigninTrackerResult(result, onComplete);
                         });
-        if (!isWaiting.get()) {
-            // The result was reported synchronously, before the construction of the bridge
-            // completed, so the bridge couldn't release its native resources by itself.
-            // `onComplete` may have started a new wait, which is left untouched.
-            webSigninTrackerBridge.destroy();
-            return;
-        }
         mWebSigninTrackerBridge = webSigninTrackerBridge;
+        webSigninTrackerBridge.start();
     }
 
     /** Cancels the pending wait, if any. Its callback will not be invoked. */
