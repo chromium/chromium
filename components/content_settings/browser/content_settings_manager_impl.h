@@ -42,7 +42,8 @@ class ContentSettingsManagerImpl
    public:
     virtual ~Delegate() = default;
 
-    // Gets cookie settings for this browser context.
+    // Gets cookie settings for this browser context. Returns null if the
+    // browser context has none, which denies all storage access.
     virtual scoped_refptr<CookieSettings> GetCookieSettings(
         content::BrowserContext* browser_context) = 0;
 
@@ -108,7 +109,8 @@ class ContentSettingsManagerImpl
   // Does not keep the renderer process or any frame alive.
   const content::ChildProcessId render_process_id_;
 
-  // Used to look up storage permissions.
+  // Used to look up storage permissions. Null if the browser context has no
+  // cookie settings.
   const scoped_refptr<CookieSettings> cookie_settings_;
 
   SEQUENCE_CHECKER(sequence_checker_);

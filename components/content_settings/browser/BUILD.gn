@@ -41,14 +41,19 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "page_specific_content_settings_unittest.cc" ]
+  sources = [
+    "content_settings_manager_impl_unittest.cc",
+    "page_specific_content_settings_unittest.cc",
+  ]
   deps = [
     ":browser",
     ":test_support",
     "//base",
+    "//base/test:test_support",
     "//components/browsing_data/content",
     "//components/browsing_data/core",
     "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
     "//components/security_state/core",
     "//components/services/storage/public/cpp",
     "//components/sync_preferences:test_support",
