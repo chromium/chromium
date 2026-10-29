@@ -1442,12 +1442,6 @@
       To clean up any duplicate bookmarks, save them in your Google Account
     </message>
   </if>
-    <message name="IDS_SIGN_IN_BENEFITS_IPH_TEXT" desc="Text of the IPH bubble announcing benefits for users who signed in before the sync-to-signin migration.">
-      While you're signed in, you can use the bookmarks, extensions, and more saved in your Google Account on all your devices
-    </message>
-    <message name="IDS_SIGN_IN_BENEFITS_WITHOUT_BOOKMARKS_AND_EXTENSIONS_IPH_TEXT" desc="Text of the IPH bubble announcing benefits for users who signed in before the sync-to-signin migration, not mentioning bookmarks and extensions because they require an explicit sign in.">
-      While you're signed in, you can use the themes, settings, and more saved in your Google Account on all your devices
-    </message>
     <!-- Sign in on your phone (QR code) strings  -->
     <if expr="not use_titlecase">
       <message name="IDS_AVATAR_BUTTON_SIGNIN_ON_PHONE" desc="Text on the avatar pill expanding while the QR code bubble is showing, which will let the user sign in on their phone.">

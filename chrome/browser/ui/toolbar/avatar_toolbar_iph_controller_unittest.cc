@@ -16,22 +16,17 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
-#include "chrome/browser/ui/signin/dice_migration_service.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/features.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
-#include "components/user_education/test/test_user_education_storage_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -131,15 +126,6 @@ class MockAppBrowserController : public web_app::AppBrowserController {
   MOCK_METHOD(bool, IsUrlInAppScope, (const GURL&), (const, override));
 };
 
-class MockUserEducationStorageService
-    : public user_education::test::TestUserEducationStorageService {
- public:
-  MOCK_METHOD(std::optional<user_education::FeaturePromoData>,
-              ReadPromoData,
-              (const base::Feature&),
-              (const, override));
-};
-
 class AvatarToolbarIphControllerTest : public testing::Test {
  protected:
   void SetUp() override {
@@ -152,8 +138,7 @@ class AvatarToolbarIphControllerTest : public testing::Test {
     toolbar_registration_.emplace(browser_.GetUnownedUserDataHost(),
                                   toolbar_button_provider_);
     controller_ = std::make_unique<AvatarToolbarIphController>(
-        browser_, profile_, identity_test_env_.identity_manager(),
-        &storage_service_);
+        browser_, profile_, identity_test_env_.identity_manager());
   }
 
   void PreparePromo() {}
@@ -172,8 +157,7 @@ class AvatarToolbarIphControllerTest : public testing::Test {
   void ExpectNoProfileSwitchIphForProfile(Profile& profile) {
     controller_.reset();
     AvatarToolbarIphController controller(browser_, profile,
-                                          /*identity_manager=*/nullptr,
-                                          &storage_service_);
+                                          /*identity_manager=*/nullptr);
     controller.MaybeShowProfileSwitchIPH();
     task_environment_.FastForwardBy(base::Seconds(2));
   }
@@ -182,7 +166,6 @@ class AvatarToolbarIphControllerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfile profile_;
   signin::IdentityTestEnvironment identity_test_env_;
-  testing::StrictMock<MockUserEducationStorageService> storage_service_;
   testing::NiceMock<MockBrowserWindowInterface> browser_;
   testing::NiceMock<MockToolbarButtonProvider> toolbar_button_provider_;
   testing::StrictMock<MockAvatarToolbarButton> avatar_button_;
@@ -193,10 +176,6 @@ class AvatarToolbarIphControllerTest : public testing::Test {
       toolbar_registration_;
   std::unique_ptr<AvatarToolbarIphController> controller_;
 };
-
-TEST_F(AvatarToolbarIphControllerTest, DoesNotReadStorageOnInitialization) {
-  task_environment_.FastForwardBy(base::Seconds(2));
-}
 
 TEST_F(AvatarToolbarIphControllerTest, ShowsImmediatelyAfterMinimumDelay) {
   task_environment_.FastForwardBy(base::Seconds(2));
@@ -331,162 +310,6 @@ TEST_F(SupervisedProfileIphControllerTest, RechecksAccountAfterDelay) {
   task_environment_.FastForwardBy(base::Seconds(2));
 }
 
-class SignInBenefitsIphControllerTest : public AvatarToolbarIphControllerTest {
- protected:
-  SignInBenefitsIphControllerTest() {
-    features_.InitWithFeatures(
-        {syncer::kReplaceSyncPromosWithSignInPromos,
-         feature_engagement::kIPHSignInBenefitsFeature},
-        {feature_engagement::kIPHSignInBenefitsNewSigninFeature});
-  }
-
-  void PreparePromo() {
-    identity_test_env_.MakePrimaryAccountAvailable(
-        "user@example.com", signin::ConsentLevel::kSignin);
-  }
-
-  void RequestPromo() { controller_->MaybeShowSignInBenefitsIPH(); }
-
-  void ExpectPromo() {
-    EXPECT_CALL(user_education_, MaybeShowStartupFeaturePromo(testing::_))
-        .WillOnce([](user_education::FeaturePromoParams params) {
-          EXPECT_EQ(&params.feature.get(),
-                    &feature_engagement::kIPHSignInBenefitsFeature);
-          return true;
-        });
-  }
-
-  base::test::ScopedFeatureList features_;
-};
-
-TEST_F(SignInBenefitsIphControllerTest, DoesNotShowWhenSignedOut) {
-  RequestPromo();
-  task_environment_.FastForwardBy(base::Seconds(2));
-}
-
-TEST_F(SignInBenefitsIphControllerTest, DoesNotShowForSyncingAccount) {
-  identity_test_env_.MakePrimaryAccountAvailable("user@example.com",
-                                                 signin::ConsentLevel::kSync);
-  RequestPromo();
-  task_environment_.FastForwardBy(base::Seconds(2));
-}
-
-TEST_F(SignInBenefitsIphControllerTest, RechecksAccountAfterDelay) {
-  PreparePromo();
-  RequestPromo();
-  identity_test_env_.ClearPrimaryAccount();
-  task_environment_.FastForwardBy(base::Seconds(2));
-}
-
-class SignInBenefitsMigrationTest
-    : public SignInBenefitsIphControllerTest,
-      public testing::WithParamInterface<const char*> {};
-
-TEST_P(SignInBenefitsMigrationTest, DoesNotShowForMigratedUser) {
-  PreparePromo();
-  profile_.GetPrefs()->SetBoolean(GetParam(), true);
-  RequestPromo();
-  task_environment_.FastForwardBy(base::Seconds(2));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SignInBenefitsMigrationTest,
-    testing::Values(prefs::kPrimaryAccountSetAfterSigninMigration,
-                    kDiceMigrationMigrated));
-
-struct SignInBenefitsPromoTestCase {
-  bool enable_legacy;
-  bool enable_new_signin;
-  int legacy_show_count;
-  raw_ptr<const base::Feature> expected_promo;
-  bool storage_service_available = true;
-};
-
-class SignInBenefitsPromoTest
-    : public SignInBenefitsIphControllerTest,
-      public testing::WithParamInterface<SignInBenefitsPromoTestCase> {
- protected:
-  void SetUp() override {
-    const auto& test_case = GetParam();
-    promo_features_.InitWithFeatureStates(
-        {{syncer::kReplaceSyncPromosWithSignInPromos, test_case.enable_legacy},
-         {feature_engagement::kIPHSignInBenefitsFeature,
-          test_case.enable_legacy},
-         {feature_engagement::kIPHSignInBenefitsNewSigninFeature,
-          test_case.enable_new_signin}});
-    SignInBenefitsIphControllerTest::SetUp();
-    if (!test_case.storage_service_available) {
-      controller_.reset();
-      controller_ = std::make_unique<AvatarToolbarIphController>(
-          browser_, profile_, identity_test_env_.identity_manager(), nullptr);
-    }
-  }
-
-  base::test::ScopedFeatureList promo_features_;
-};
-
-TEST_P(SignInBenefitsPromoTest, SelectsPromo) {
-  const auto& test_case = GetParam();
-  PreparePromo();
-  user_education::FeaturePromoData data;
-  data.show_count = test_case.legacy_show_count;
-  storage_service_.SavePromoData(feature_engagement::kIPHSignInBenefitsFeature,
-                                 data);
-  if (test_case.expected_promo) {
-    EXPECT_CALL(user_education_, MaybeShowStartupFeaturePromo(testing::_))
-        .WillOnce([&test_case](user_education::FeaturePromoParams params) {
-          EXPECT_EQ(&params.feature.get(), test_case.expected_promo);
-          return true;
-        });
-  }
-  RequestPromo();
-  task_environment_.FastForwardBy(base::Milliseconds(1999));
-
-  if (test_case.enable_new_signin && !test_case.enable_legacy &&
-      test_case.storage_service_available) {
-    EXPECT_CALL(storage_service_,
-                ReadPromoData(testing::Ref(
-                    feature_engagement::kIPHSignInBenefitsFeature)))
-        .WillOnce(testing::Return(data));
-  }
-  task_environment_.FastForwardBy(base::Milliseconds(1));
-}
-
-TEST_P(SignInBenefitsPromoTest, DoesNotAccessStorageWhenSignedOut) {
-  RequestPromo();
-  task_environment_.FastForwardBy(base::Seconds(2));
-}
-
-TEST_P(SignInBenefitsPromoTest, DoesNotAccessStorageForMigratedUser) {
-  PreparePromo();
-  for (const char* pref : {prefs::kPrimaryAccountSetAfterSigninMigration,
-                           kDiceMigrationMigrated}) {
-    profile_.GetPrefs()->SetBoolean(pref, true);
-    RequestPromo();
-    task_environment_.FastForwardBy(base::Seconds(2));
-    profile_.GetPrefs()->SetBoolean(pref, false);
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SignInBenefitsPromoTest,
-    testing::Values(
-        SignInBenefitsPromoTestCase{false, false, 0, nullptr},
-        SignInBenefitsPromoTestCase{
-            true, false, 0, &feature_engagement::kIPHSignInBenefitsFeature},
-        SignInBenefitsPromoTestCase{
-            false, true, 0,
-            &feature_engagement::kIPHSignInBenefitsNewSigninFeature},
-        SignInBenefitsPromoTestCase{false, true, 1, nullptr},
-        SignInBenefitsPromoTestCase{
-            true, true, 1, &feature_engagement::kIPHSignInBenefitsFeature},
-        SignInBenefitsPromoTestCase{
-            false, true, 1,
-            &feature_engagement::kIPHSignInBenefitsNewSigninFeature,
-            /*storage_service_available=*/false}));
-
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 template <typename IphTest>
@@ -500,8 +323,7 @@ class AvatarIphLifecycleTest : public IphTest {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 using AvatarIphTestTypes = testing::Types<AvatarToolbarIphControllerTest,
-                                          SupervisedProfileIphControllerTest,
-                                          SignInBenefitsIphControllerTest>;
+                                          SupervisedProfileIphControllerTest>;
 #else
 using AvatarIphTestTypes = testing::Types<AvatarToolbarIphControllerTest>;
 #endif

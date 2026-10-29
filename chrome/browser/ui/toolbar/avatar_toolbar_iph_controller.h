@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_TOOLBAR_AVATAR_TOOLBAR_IPH_CONTROLLER_H_
 #define CHROME_BROWSER_UI_TOOLBAR_AVATAR_TOOLBAR_IPH_CONTROLLER_H_
 
-#include <optional>
-
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -21,12 +19,8 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
-namespace user_education {
-class UserEducationStorageService;
-}  // namespace user_education
-
-// Owns the profile switch, supervised sign-in, and sign-in benefits IPHs
-// anchored to a window's avatar toolbar button.
+// Owns the profile switch and supervised sign-in IPHs anchored to a window's
+// avatar toolbar button.
 // Owned by BrowserWindowFeatures.
 class AvatarToolbarIphController {
  public:
@@ -35,13 +29,6 @@ class AvatarToolbarIphController {
   AvatarToolbarIphController(BrowserWindowInterface& browser,
                              Profile& profile,
                              signin::IdentityManager* identity_manager);
-
-  // Allows tests to provide promo storage without creating profile services.
-  AvatarToolbarIphController(
-      BrowserWindowInterface& browser,
-      Profile& profile,
-      signin::IdentityManager* identity_manager,
-      user_education::UserEducationStorageService* storage_service);
   AvatarToolbarIphController(const AvatarToolbarIphController&) = delete;
   AvatarToolbarIphController& operator=(const AvatarToolbarIphController&) =
       delete;
@@ -60,10 +47,6 @@ class AvatarToolbarIphController {
   // or turning on sync for an existing profile.
   void MaybeShowSupervisedUserProfileSignInIPH();
 
-  // Attempts to show the IPH listing benefits for signed-in users after the
-  // sync-to-signin migration.
-  void MaybeShowSignInBenefitsIPH();
-
   // Overrides the minimum IPH delay after controller creation.
   [[nodiscard]] static base::AutoReset<base::TimeDelta>
   SetScopedIPHMinDelayAfterCreationForTesting(base::TimeDelta delay);
@@ -74,16 +57,11 @@ class AvatarToolbarIphController {
   // Recheck avatar availability for both new requests and delayed retries.
   void MaybeShowProfileSwitchIPHImpl();
   void MaybeShowSupervisedUserProfileSignInIPHImpl();
-  void MaybeShowSignInBenefitsIPHImpl();
 
   const raw_ref<BrowserWindowInterface> browser_;
   const raw_ref<Profile> profile_;
   // May be null for profiles that do not support sign-in.
   const raw_ptr<signin::IdentityManager> identity_manager_;
-  // Unset in production: look up storage lazily when promo history is needed.
-  // Tests can inject storage or nullptr without creating profile services.
-  std::optional<raw_ptr<user_education::UserEducationStorageService>>
-      storage_service_for_testing_;
   const base::TimeTicks creation_time_;
   ui::ScopedUnownedUserData<AvatarToolbarIphController>
       scoped_unowned_user_data_;

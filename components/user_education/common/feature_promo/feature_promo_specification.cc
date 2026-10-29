@@ -41,8 +41,6 @@ bool IsAllowedActionableAlert(const base::Feature& promo_feature) {
           "IPH_DownloadEsbPromo",
           "IPH_HighEfficiencyMode",
           "IPH_iOSEnhancedBrowsingDesktop",
-          "IPH_SignInBenefits",
-          "IPH_SignInBenefitsNewSignin",
           "IPH_SupervisedUserProfileSignin",
           "IPH_TabSearchToolbarButton",
       });

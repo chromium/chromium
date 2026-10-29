@@ -50,9 +50,6 @@
       <message name="IDS_TUTORIAL_NEXT_BUTTON" desc="The text shown on the button for advancing a tutorial to the next step">
         Next
       </message>
-      <message name="IDS_PROMO_MANAGE_BUTTON" desc="The text of a button that opens a settings page to manage a feature.">
-        Manage
-      </message>
       <message name="IDS_PROMO_UNDO_BUTTON" desc="Text shown on the button for the user to undo the action described in the promotional UI.">
         Undo
       </message>

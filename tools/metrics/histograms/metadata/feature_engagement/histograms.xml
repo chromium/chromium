@@ -770,12 +770,6 @@ chromium-metrics-reviews@google.com.
       summary="side search automatic triggering"/>
   <variant name="IPH_SideSearchPageActionLabel"
       summary="side search page action label triggering"/>
-  <variant name="IPH_SignInBenefits"
-      summary="IPH informing signed-in users of benefits after the
-               sync-to-signin migration."/>
-  <variant name="IPH_SignInBenefitsNewSignin"
-      summary="IPH informing signed-in users of benefits after the
-               sync-to-signin migration."/>
   <variant name="IPH_SiteControls"
       summary="educating users that site controls have moved to the app menu"/>
   <variant name="IPH_SmartTabSharingDefaultOnFeature"

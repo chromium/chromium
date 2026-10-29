@@ -407,8 +407,6 @@ const base::Feature* const kAllFeatures[] = {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     // keep-sorted start case=no
-    &kIPHSignInBenefitsFeature,
-    &kIPHSignInBenefitsNewSigninFeature,
     &kIPHSupervisedUserProfileSigninFeature,
 // keep-sorted end
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

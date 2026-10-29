@@ -912,9 +912,6 @@ should be able to be added at any place in this file.
       summary="For side search feature automatic triggering."/>
   <variant name="_SideSearchPageActionLabel"
       summary="For side search feature page action label triggering."/>
-  <variant name="_SignInBenefits" summary="For sign-in benefits IPH feature."/>
-  <variant name="_SignInBenefitsNewSignin"
-      summary="For sign-in benefits IPH feature."/>
   <variant name="_SiteControls" summary="For SiteControls IPH feature."/>
   <variant name="_SmartTabSharingDefaultOnFeature"
       summary="For Smart Tab Sharing Default On custom UI feature."/>

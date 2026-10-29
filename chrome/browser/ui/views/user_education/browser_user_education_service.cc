@@ -1727,49 +1727,6 @@ void MaybeRegisterChromeFeaturePromos(
           .SetMetadata(128, "anthie@google.com",
                        "Triggered on signin-in a supervised user to "
                        "a new profile or an existing local profile")));
-
-  // kIPHSignInBenefitsFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForCustomAction(
-          feature_engagement::kIPHSignInBenefitsFeature,
-          kToolbarAvatarButtonElementId, IDS_SIGN_IN_BENEFITS_IPH_TEXT,
-          IDS_PROMO_MANAGE_BUTTON,
-          base::BindRepeating(
-              [](ContextPtr ctx,
-                 user_education::FeaturePromoHandle promo_handle) {
-                // Open account settings page.
-                ShowSingletonTab(GetBrowser(ctx),
-                                 GURL(chrome::kChromeUIAccountSettingsURL));
-              }))
-          .SetPromoSubtype(
-              FeaturePromoSpecification::PromoSubtype::kActionableAlert)
-          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .SetCustomActionIsDefault(false)
-          .SetMetadata(142, "ddac@google.com",
-                       "Triggered for a signed-in user who hasn't turned on "
-                       "sync yet, after the sync-to-signin migration.")));
-
-  // kIPHSignInBenefitsNewSigninFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForCustomAction(
-          feature_engagement::kIPHSignInBenefitsNewSigninFeature,
-          kToolbarAvatarButtonElementId,
-          IDS_SIGN_IN_BENEFITS_WITHOUT_BOOKMARKS_AND_EXTENSIONS_IPH_TEXT,
-          IDS_PROMO_MANAGE_BUTTON,
-          base::BindRepeating(
-              [](ContextPtr ctx,
-                 user_education::FeaturePromoHandle promo_handle) {
-                // Open account settings page.
-                ShowSingletonTab(GetBrowser(ctx),
-                                 GURL(chrome::kChromeUIAccountSettingsURL));
-              }))
-          .SetPromoSubtype(
-              FeaturePromoSpecification::PromoSubtype::kActionableAlert)
-          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .SetCustomActionIsDefault(false)
-          .SetMetadata(142, "ddac@google.com",
-                       "Triggered for a signed-in user who hasn't turned on "
-                       "sync yet, after the sync-to-signin migration.")));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   // kIPHDesktopSharedHighlightingFeature:

@@ -949,7 +949,6 @@ void BrowserWindowFeatures::InitPostWindowConstruction(
 
   if (browser_view) {
     user_education_->Init(browser_view);
-    avatar_toolbar_iph_controller_->MaybeShowSignInBenefitsIPH();
   }
 
 #if BUILDFLAG(IS_WIN)
