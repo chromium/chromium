@@ -42,6 +42,18 @@ constexpr float kCollinearMergeTolerancePx = 2.0f;
 // or within this many pixels to the left or right of the gap.
 constexpr float kRulingLineGapTolerancePx = 2.0f;
 
+// Minimum horizontal gap between two words for a vertical ruling line to
+// separate them: the larger of a fixed pixel floor and a fraction of the text
+// height. Character boxes are snapped to whole points (1.33 px), so the floor
+// sits above that step.
+constexpr float kMinDividerGapPx = 3.0f;
+constexpr float kMinDividerGapHeightRatio = 0.25f;
+
+// Minimum fraction of a text run's height that a vertical ruling line must
+// cover to count as running alongside or through its text, so lines that only
+// overlap at their ends are ignored.
+constexpr float kMinVerticalCoverageRatio = 0.5f;
+
 // An axis-aligned line segment. `position` is the fixed perpendicular
 // coordinate (y for horizontal, x for vertical), and `start` to `end` is the
 // span along the axis.
@@ -156,11 +168,17 @@ gfx::Range GetVerticalLineIndicesInXRange(
                     static_cast<size_t>(end - vertical_lines.begin()));
 }
 
-// Returns whether the vertical `line` overlaps the vertical range of `bounds`.
-bool OverlapsVerticalRange(const RulingLine& line, const gfx::RectF& bounds) {
+// Returns whether the vertical `line` covers at least
+// `kMinVerticalCoverageRatio` of the height of `bounds`. Returns false if
+// `bounds` has no height.
+bool CoversVerticalRange(const RulingLine& line, const gfx::RectF& bounds) {
   CHECK(!line.is_horizontal);
-  return std::min(line.end.y(), bounds.bottom()) >
-         std::max(line.start.y(), bounds.y());
+  if (bounds.height() <= 0.0f) {
+    return false;
+  }
+  const float overlap = std::min(line.end.y(), bounds.bottom()) -
+                        std::max(line.start.y(), bounds.y());
+  return overlap >= kMinVerticalCoverageRatio * bounds.height();
 }
 
 // Returns the vertical lines in `ruling_lines`, such as table column dividers,
@@ -181,18 +199,26 @@ base::span<const RulingLine> GetVerticalDividers(
 }
 
 // Returns whether a line in `vertical_dividers`, sorted by x, lies in the
-// horizontal `gap` between two words of `run` and overlaps the run vertically.
+// horizontal `gap` between two words of `run` and covers enough of the run's
+// height.
 bool IsSeparatedByVerticalDivider(
     base::span<const RulingLine> vertical_dividers,
     const chrome_pdf::AccessibilityTextRunInfo& run,
     const gfx::RangeF& gap) {
+  // Table cells have padding around their dividers. Require a gap that scales
+  // with text size.
+  const float min_gap = std::max(
+      kMinDividerGapPx, kMinDividerGapHeightRatio * run.bounds.height());
+  if (gap.length() < min_gap) {
+    return false;
+  }
   const gfx::Range indices = GetVerticalLineIndicesInXRange(
       vertical_dividers, gfx::RangeF(gap.start() - kRulingLineGapTolerancePx,
                                      gap.end() + kRulingLineGapTolerancePx));
   return std::ranges::any_of(
       vertical_dividers.subspan(indices.start(), indices.length()),
       [&](const RulingLine& line) {
-        return OverlapsVerticalRange(line, run.bounds);
+        return CoversVerticalRange(line, run.bounds);
       });
 }
 

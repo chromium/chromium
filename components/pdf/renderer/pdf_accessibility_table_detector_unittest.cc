@@ -225,17 +225,52 @@ TEST_F(PdfAccessibilityTableDetectorSplitTest, SplitsAtMultipleDividers) {
 }
 
 TEST_F(PdfAccessibilityTableDetectorSplitTest, NoSplitWithoutVerticalLines) {
+  ASSERT_EQ(2u, text_runs_.size());
   EXPECT_FALSE(Split({CreateSegment(100, 112, 200, 112)}));
   EXPECT_EQ(2u, text_runs_.size());
 }
 
+TEST_F(PdfAccessibilityTableDetectorSplitTest, NoSplitAtNarrowGap) {
+  ASSERT_EQ(14u, chars_.size());
+  ASSERT_EQ(2u, text_runs_.size());
+
+  // A 2 px space is too narrow for table cell padding.
+  chars_[4].char_width = 2;
+
+  EXPECT_FALSE(Split({CreateSegment(141, 95, 141, 117)}));
+  EXPECT_EQ(2u, text_runs_.size());
+}
+
+TEST_F(PdfAccessibilityTableDetectorSplitTest, NoSplitAtNarrowGapForTallText) {
+  ASSERT_EQ(14u, chars_.size());
+  ASSERT_EQ(2u, text_runs_.size());
+
+  // An 8 px space clears the 3 px floor, but is too narrow for 40 px text.
+  chars_[4].char_width = 8;
+  text_runs_[0].bounds.set_height(40);
+
+  EXPECT_FALSE(Split({CreateSegment(144, 95, 144, 145)}));
+  EXPECT_EQ(2u, text_runs_.size());
+}
+
+TEST_F(PdfAccessibilityTableDetectorSplitTest, NoSplitAtShortLine) {
+  ASSERT_EQ(2u, text_runs_.size());
+
+  // The line covers less than half of the text height.
+  EXPECT_FALSE(Split({CreateSegment(145, 90, 145, 104)}));
+  EXPECT_EQ(2u, text_runs_.size());
+}
+
 TEST_F(PdfAccessibilityTableDetectorSplitTest, NoSplitAtLineOutsideRun) {
+  ASSERT_EQ(2u, text_runs_.size());
+
   // The line is in the gap's x range, but above the text.
   EXPECT_FALSE(Split({CreateSegment(145, 50, 145, 90)}));
   EXPECT_EQ(2u, text_runs_.size());
 }
 
 TEST_F(PdfAccessibilityTableDetectorSplitTest, NoSplitRightToLeft) {
+  ASSERT_EQ(2u, text_runs_.size());
   text_runs_[0].direction =
       chrome_pdf::AccessibilityTextDirection::kRightToLeft;
 
