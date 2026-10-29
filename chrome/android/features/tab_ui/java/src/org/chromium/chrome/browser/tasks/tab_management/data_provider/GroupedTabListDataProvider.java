@@ -292,14 +292,8 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
     }
 
     private void updateGroupItemAt(int index, Token tabGroupId, @PayloadType int payload) {
-        TabModel model = getTabModelIfTabStateInitialized();
-        // Skip updating if the group is being removed or no longer exists in TabModel
-        // (didRemoveTabGroup will remove the group card next).
-        if (model == null
-                || !model.containsTabGroup(tabGroupId)
-                || mRemovingTabGroupIds.contains(tabGroupId)) {
-            return;
-        }
+        TabModel model = getTabModelIfGroupExists(tabGroupId);
+        if (model == null) return;
 
         TabGroupItem oldItem = (TabGroupItem) mItems.get(index);
         TabGroupItem updatedItem =
@@ -340,12 +334,8 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
         int index = indexOfTabGroupId(tabGroupId);
         if (index == TabList.INVALID_TAB_INDEX) return;
 
-        TabModel model = getTabModelIfTabStateInitialized();
-        if (model == null
-                || !model.containsTabGroup(tabGroupId)
-                || mRemovingTabGroupIds.contains(tabGroupId)) {
-            return;
-        }
+        TabModel model = getTabModelIfGroupExists(tabGroupId);
+        if (model == null) return;
 
         int count =
                 isGroupCollapsed(model, tabGroupId) ? 1 : 1 + model.getTabCountForGroup(tabGroupId);
@@ -359,12 +349,8 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
         TabGroupItem groupItem = (TabGroupItem) mItems.get(headerIndex);
         if (groupItem.isCollapsed() == isCollapsed) return;
 
-        TabModel model = getTabModelIfTabStateInitialized();
-        if (model == null
-                || !model.containsTabGroup(tabGroupId)
-                || mRemovingTabGroupIds.contains(tabGroupId)) {
-            return;
-        }
+        TabModel model = getTabModelIfGroupExists(tabGroupId);
+        if (model == null) return;
 
         TabGroupItem updatedGroupItem = groupItem.withCollapsed(isCollapsed);
         updateItemAt(headerIndex, updatedGroupItem, PayloadType.COLLAPSED);
@@ -394,10 +380,20 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
                 && tabGroupId.equals(selectedTab.getTabGroupId());
     }
 
-    private int indexOfTabGroupId(Token tabGroupId) {
-        for (int i = 0; i < mItems.size(); i++) {
-            if (matchesTabGroupId(mItems.get(i), tabGroupId)) return i;
+    /**
+     * Returns the active {@link TabModel} if {@code tabGroupId} still exists in it and is not being
+     * removed, or null otherwise. A removed group's card is removed next by didRemoveTabGroup, so
+     * callers skip updating it.
+     *
+     * @param tabGroupId The ID of the tab group to check.
+     */
+    private @Nullable TabModel getTabModelIfGroupExists(Token tabGroupId) {
+        TabModel model = getTabModelIfTabStateInitialized();
+        if (model == null
+                || !model.containsTabGroup(tabGroupId)
+                || mRemovingTabGroupIds.contains(tabGroupId)) {
+            return null;
         }
-        return TabList.INVALID_TAB_INDEX;
+        return model;
     }
 }

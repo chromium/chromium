@@ -780,6 +780,27 @@ public class GroupedTabListDataProviderUnitTest extends TabListDataProviderTestB
     }
 
     @Test
+    public void testUngroupAllTabs_GroupedMode_MatchesTabModelOrder() {
+        groupTabs(TAB_GROUP_ID, mTab1, mTab2);
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ false, mTab1, mTab2, mTab3);
+
+        ungroupAllTabsTrailing();
+
+        assertItems(item(TAB2_ID), item(TAB1_ID), item(TAB3_ID));
+    }
+
+    @Test
+    public void testUngroupAllTabs_NestedMode_Expanded_MatchesTabModelOrder() {
+        groupTabs(TAB_GROUP_ID, mTab1, mTab2);
+        mCollapsed.put(TAB_GROUP_ID, /* value= */ false);
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ true, mTab1, mTab2, mTab3);
+
+        ungroupAllTabsTrailing();
+
+        assertItems(item(TAB2_ID), item(TAB1_ID), item(TAB3_ID));
+    }
+
+    @Test
     public void testDidMoveTabOutOfGroup_GroupToGroupMerge_SkipsTabSyncAndUpdatesOldGroup() {
         groupTabs(TAB_GROUP_ID, mTab1, mTab2);
         groupTabs(TAB_GROUP_ID_2, mTab3);
@@ -1434,5 +1455,17 @@ public class GroupedTabListDataProviderUnitTest extends TabListDataProviderTestB
     private void setUpProviderWithTabs(boolean supportsGroupExpansion, Tab... tabs) {
         initProviderWithTabs(
                 new GroupedTabListDataProvider(mTabModelSupplier, supportsGroupExpansion), tabs);
+    }
+
+    /**
+     * Mirrors TabUngrouperImpl ungrouping all of TAB_GROUP_ID = [mTab1, mTab2] with trailing=true:
+     * onTabGroupRemoving fires first, each tab moves after the last tab still in the group, and
+     * didRemoveTabGroup fires after the last tab leaves. TabModel ends as [mTab2, mTab1, mTab3].
+     */
+    private void ungroupAllTabsTrailing() {
+        removingTabGroup(TAB_GROUP_ID);
+        ungroupTab(mTab1, TAB_GROUP_ID, /* newIndex= */ 1);
+        ungroupTab(mTab2, TAB_GROUP_ID, /* newIndex= */ 0);
+        removeTabGroup(TAB_GROUP_ID, DidRemoveTabGroupReason.UNGROUP);
     }
 }

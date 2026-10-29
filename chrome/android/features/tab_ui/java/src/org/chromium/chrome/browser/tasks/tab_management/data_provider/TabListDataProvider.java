@@ -106,11 +106,11 @@ public abstract class TabListDataProvider {
      *
      * @param tabModelObserver The {@link TabModelObserver} to register on the active {@link
      *     TabModel}.
-     * @param tabGroupObserver The optional {@link TabGroupObserver} to register on the active
-     *     {@link TabModel}.
+     * @param tabGroupObserver The {@link TabGroupObserver} to register on the active {@link
+     *     TabModel}.
      */
     protected void initObservers(
-            TabModelObserver tabModelObserver, @Nullable TabGroupObserver tabGroupObserver) {
+            TabModelObserver tabModelObserver, TabGroupObserver tabGroupObserver) {
         mTabModelObserver = tabModelObserver;
         mTabGroupObserver = tabGroupObserver;
         mTabModelSupplier.addSyncObserver(mOnTabModelChanged);
@@ -317,11 +317,12 @@ public abstract class TabListDataProvider {
             return;
         }
 
-        if (mItems.get(index) instanceof TabItem tabItem) {
-            boolean isPinned = tab.getIsPinned();
-            if (tabItem.isPinned() != isPinned) {
-                updateItemAt(index, tabItem.withPinned(isPinned), PayloadType.PIN_STATE);
-            }
+        // Only TabItems carry pin state: pinned tabs are never grouped, and indexOfTabId only
+        // matches TabItems.
+        TabItem tabItem = (TabItem) mItems.get(index);
+        boolean isPinned = tab.getIsPinned();
+        if (tabItem.isPinned() != isPinned) {
+            updateItemAt(index, tabItem.withPinned(isPinned), PayloadType.PIN_STATE);
         }
     }
 
@@ -473,15 +474,16 @@ public abstract class TabListDataProvider {
     }
 
     /**
-     * Returns whether {@code item} is a {@link TabGroupItem} matching {@code tabGroupId}.
+     * Returns the index in {@link #mItems} of the {@link TabGroupItem} for {@code tabGroupId}, or
+     * {@link TabList#INVALID_TAB_INDEX} if absent.
      *
-     * @param item The {@link TabListItem} to check.
-     * @param tabGroupId The tab group {@link Token} to match against, or null.
+     * @param tabGroupId The ID of the tab group to find.
      */
-    protected static boolean matchesTabGroupId(TabListItem item, @Nullable Token tabGroupId) {
-        return tabGroupId != null
-                && item instanceof TabGroupItem groupItem
-                && groupItem.getTabGroupId().equals(tabGroupId);
+    protected int indexOfTabGroupId(Token tabGroupId) {
+        for (int i = 0; i < mItems.size(); i++) {
+            if (matchesTabGroupId(mItems.get(i), tabGroupId)) return i;
+        }
+        return TabList.INVALID_TAB_INDEX;
     }
 
     private void updateSelection(int index, boolean isSelected) {
@@ -529,6 +531,18 @@ public abstract class TabListDataProvider {
 
     private static boolean matchesTabId(TabListItem item, @TabId int tabId) {
         return item instanceof TabItem tabItem && tabItem.getTabId() == tabId;
+    }
+
+    /**
+     * Returns whether {@code item} is a {@link TabGroupItem} matching {@code tabGroupId}.
+     *
+     * @param item The {@link TabListItem} to check.
+     * @param tabGroupId The tab group {@link Token} to match against, or null.
+     */
+    private static boolean matchesTabGroupId(TabListItem item, @Nullable Token tabGroupId) {
+        return tabGroupId != null
+                && item instanceof TabGroupItem groupItem
+                && groupItem.getTabGroupId().equals(tabGroupId);
     }
 
     /**
