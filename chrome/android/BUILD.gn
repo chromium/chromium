@@ -836,6 +836,7 @@ if (_is_default_toolchain) {
       "//third_party/androidx:androidx_viewpager2_viewpager2_java",
       "//third_party/androidx:androidx_viewpager_viewpager_java",
       "//third_party/androidx:androidx_window_window_java",
+      "//third_party/androidx/local_modifications/window:window_util_java",
       "//third_party/blink/public:blink_headers_java",
       "//third_party/blink/public/common:common_java",
       "//third_party/blink/public/mojom:android_mojo_bindings_java",

@@ -143,6 +143,7 @@ import org.chromium.ui.base.SelectFileDialog;
 import org.chromium.ui.color.ColorProviderBridgeFactory;
 import org.chromium.ui.native_theme.OsSettingsProviderAndroidBridge;
 import org.chromium.url.GURL;
+import org.chromium.window.WindowApiCheck;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -277,6 +278,10 @@ public class ProcessInitializationHandler {
         // - Pixel 2: ~10 ms
         // - Nokia 1 (Android Go): 20-200 ms
         warmUpSharedPrefs();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                && ChromeFeatureList.sClankStartupTabOptimizations.isEnabled()) {
+            PostTask.postTask(TaskTraits.USER_VISIBLE, WindowApiCheck::isAvailable);
+        }
 
         DeviceUtils.updateDeviceSpecificUserAgentSwitch(ContextUtils.getApplicationContext());
         // ChromeLifetimeController is pure Java and safe to initialize pre-native. It is
