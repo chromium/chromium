@@ -47,7 +47,7 @@ suite('SearchboxFocusTest', () => {
   let testProxy: TestSearchboxBrowserProxy;
   const testMetricsReporterProxy = TestMock.fromClass(BrowserProxyImpl);
 
-  setup(() => {
+  setup(async () => {
     loadTimeData.overrideValues({
       isLensSearchbox: false,
       searchboxCyclingPlaceholders: false,
@@ -69,10 +69,11 @@ suite('SearchboxFocusTest', () => {
     testMetricsReporterProxy.setResultFor('getMark', Promise.resolve(null));
     BrowserProxyImpl.setInstance(testMetricsReporterProxy);
     MetricsReporterImpl.setInstanceForTest(new MetricsReporterImpl());
+
+    await createAndAppendRealbox();
   });
 
-  test('searchbox renders', async () => {
-    await createAndAppendRealbox();
+  test('searchbox renders', () => {
     const realbox = document.querySelector('ntp-searchbox');
     assertTrue(!!realbox);
   });
@@ -85,50 +86,10 @@ suite('SearchboxFocusTest', () => {
           {ntpRealboxNextEnabled: true, searchboxLayoutMode: 'Compact'});
     });
 
-    // Regression test for b/564743397: after the "+" menu is used with
-    // the keyboard, focus must stay on "+" so that it is restored there when a
-    // dialog opened from the menu (e.g. the Drive sign-in promo) closes.
-    test('keyboard focus stays on "+" when its menu closes', async () => {
-      const {contextElement, entrypoint} =
-          await getContextMenuAndEntrypoint(realbox);
-
-      // The menu returns focus to "+" on close; simulate keyboard modality.
-      FocusOutlineManager.forDocument(document).visible = true;
-      entrypoint.focus({focusVisible: true});
-      assertEquals(entrypoint, getDeepActiveElement());
-      assertTrue(entrypoint.matches(':focus-visible'));
-
-      contextElement.dispatchEvent(new CustomEvent('context-menu-closed'));
-      await microtasksFinished();
-
-      assertEquals(entrypoint, getDeepActiveElement());
-      assertTrue(entrypoint.matches(':focus-visible'));
-      assertDeepEquals(
-          [{focused: true}], testProxy.handler.getArgs('onFocusChanged'));
-    });
-
-    // After mouse use, focus is dropped so #searchboxContainer drops its scrim
-    // (https://crrev.com/c/7540901).
-    test('mouse focus is dropped when "+" menu closes', async () => {
-      const {contextElement, entrypoint} =
-          await getContextMenuAndEntrypoint(realbox);
-
-      // The menu returns focus to "+" on close; simulate mouse modality.
-      FocusOutlineManager.forDocument(document).visible = false;
-      entrypoint.focus({focusVisible: false});
-      assertEquals(entrypoint, getDeepActiveElement());
-      assertFalse(entrypoint.matches(':focus-visible'));
-
-      contextElement.dispatchEvent(new CustomEvent('context-menu-closed'));
-      await microtasksFinished();
-
-      assertEquals(document.body, getDeepActiveElement());
-      assertDeepEquals(
-          [{focused: true}, {focused: false}],
-          testProxy.handler.getArgs('onFocusChanged'));
-    });
-
-    // Runs the real close sequence: <cr-action-menu> returns focus to "+", then
+    // Regression test for b/564743397: after the "+" menu is used with the
+    // keyboard, focus must stay on "+" so that it is restored there when a
+    // dialog opened from the menu (e.g. the Drive sign-in promo) closes. Runs
+    // the real close sequence: <cr-action-menu> returns focus to "+", then
     // 'context-menu-closed' fires on a later animation frame.
     test('keyboard focus stays on "+" after the real menu closes', async () => {
       const {contextElement, entrypoint} =
