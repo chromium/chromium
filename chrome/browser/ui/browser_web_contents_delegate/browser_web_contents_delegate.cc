@@ -140,7 +140,9 @@ const extensions::Extension* GetExtensionForOrigin(
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(
           security_origin.GetHost());
-  CHECK(extension, base::NotFatalUntil::M162);
+  // TODO(crbug.com/577309116): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(extension);
   return extension;
 #else
   return nullptr;
