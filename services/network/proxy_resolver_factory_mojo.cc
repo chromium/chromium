@@ -41,10 +41,6 @@
 #include "services/network/proxy_auto_config_library.h"
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 
-namespace net {
-class NetworkAnonymizationKey;
-}
-
 namespace network {
 
 namespace {
@@ -58,13 +54,17 @@ base::DictValue NetLogErrorParams(int line_number, const std::string& message) {
 // A mixin that forwards logging to (Bound)NetLog and ProxyResolverErrorObserver
 // and DNS requests to a MojoHostResolverImpl, which is implemented in terms of
 // a HostResolver, or myIpAddress[Ex]() which is implemented by MyIpAddressImpl.
+//
+// All DNS requests use `network_anonymization_key`, rather than one provided by
+// the (untrusted) proxy resolver process.
 template <typename ClientInterface>
 class ClientMixin : public ClientInterface {
  public:
   ClientMixin(net::HostResolver* host_resolver,
               net::ProxyResolverErrorObserver* error_observer,
               net::NetLog* net_log,
-              const net::NetLogWithSource& net_log_with_source)
+              const net::NetLogWithSource& net_log_with_source,
+              const net::NetworkAnonymizationKey& network_anonymization_key)
       : host_resolver_(host_resolver, net_log_with_source),
         my_ip_address_impl_(std::make_unique<MyIpAddressImpl>(
             MyIpAddressImpl::Mode::kMyIpAddress)),
@@ -72,7 +72,8 @@ class ClientMixin : public ClientInterface {
             MyIpAddressImpl::Mode::kMyIpAddressEx)),
         error_observer_(error_observer),
         net_log_(net_log),
-        net_log_with_source_(net_log_with_source) {}
+        net_log_with_source_(net_log_with_source),
+        network_anonymization_key_(network_anonymization_key) {}
 
   // Overridden from ClientInterface:
   void Alert(const std::string& message) override {
@@ -102,7 +103,6 @@ class ClientMixin : public ClientInterface {
   void ResolveDns(
       const std::string& hostname,
       net::ProxyResolveDnsOperation operation,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
       mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient>
           client) override {
     if (operation == net::ProxyResolveDnsOperation::MY_IP_ADDRESS) {
@@ -112,7 +112,7 @@ class ClientMixin : public ClientInterface {
     } else {
       bool is_ex = operation == net::ProxyResolveDnsOperation::DNS_RESOLVE_EX;
       // Request was for dnsResolve() or dnsResolveEx().
-      host_resolver_.Resolve(hostname, network_anonymization_key, is_ex,
+      host_resolver_.Resolve(hostname, network_anonymization_key_, is_ex,
                              std::move(client));
     }
   }
@@ -139,6 +139,10 @@ class ClientMixin : public ClientInterface {
   raw_ptr<net::ProxyResolverErrorObserver> error_observer_;
   raw_ptr<net::NetLog> net_log_;
   const net::NetLogWithSource net_log_with_source_;
+
+  // The NetworkAnonymizationKey used for all DNS lookups made through this
+  // client.
+  const net::NetworkAnonymizationKey network_anonymization_key_;
 
   base::WeakPtrFactory<ClientMixin> weak_ptr_factory_{this};
 };
@@ -244,7 +248,8 @@ ProxyResolverMojo::Job::Job(
           resolver->host_resolver_,
           resolver->error_observer_.get(),
           resolver->net_log_,
-          net_log),
+          net_log,
+          network_anonymization_key),
       url_(url),
       results_(results),
       callback_(std::move(callback)) {
@@ -354,7 +359,10 @@ class ProxyResolverFactoryMojo::Job
             factory->host_resolver_,
             error_observer.get(),
             factory->net_log_,
-            net::NetLogWithSource()),
+            net::NetLogWithSource(),
+            // DNS lookups while loading the PAC script use an empty key. See
+            // proxy_resolver::mojom::ProxyResolverFactoryRequestClient.
+            net::NetworkAnonymizationKey()),
         factory_(factory),
         resolver_(resolver),
         callback_(std::move(callback)),

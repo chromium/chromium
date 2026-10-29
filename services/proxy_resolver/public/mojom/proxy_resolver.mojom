@@ -50,17 +50,20 @@ interface ProxyResolverRequestClient {
   Alert(string error);
   OnError(int32 line_number, string error);
 
-  // Does a DNS lookup for |host|, and invokes |client|'s ReportResult() method
+  // Does a DNS lookup for `host`, and invokes `client`'s ReportResult() method
   // with the result.
   //
-  // |network_anonymization_key| is the NetworkAnonymizationKey used by the DNS cache
-  // to separate requests made in different contexts. An IP address received
-  // from a resolution using one NetworkAnonymizationKey must not be used for a
-  // request made with a different NetworkAnonymizationKey.
+  // The lookup is performed using the NetworkAnonymizationKey that was passed
+  // to the GetProxyForUrl() call that this ProxyResolverRequestClient was
+  // passed to, so the network process does not need to trust a
+  // NetworkAnonymizationKey provided by the proxy resolver. As a result, this
+  // method must only be used for DNS lookups made on behalf of the
+  // GetProxyForUrl() request associated with this client, and never for lookups
+  // for other requests. The results must not be used for requests made with a
+  // different NetworkAnonymizationKey.
   ResolveDns(
     string host,
     HostResolveOperation operation,
-    network.mojom.NetworkAnonymizationKey network_anonymization_key,
     pending_remote<HostResolverRequestClient> client);
 };
 
@@ -83,8 +86,15 @@ interface ProxyResolverFactoryRequestClient {
   Alert(string error);
   OnError(int32 line_number, string error);
 
+  // Does a DNS lookup for `host`, and invokes `client`'s ReportResult() method
+  // with the result.
+  //
+  // Lookups are performed using an empty NetworkAnonymizationKey, since the PAC
+  // script is loaded once and then used for requests made with many different
+  // NetworkAnonymizationKeys. As a result, this method must only be used for
+  // DNS lookups made while loading the PAC script, and never for lookups made
+  // on behalf of a GetProxyForUrl() request.
   ResolveDns(string host,
              HostResolveOperation operation,
-             network.mojom.NetworkAnonymizationKey network_anonymization_key,
              pending_remote<HostResolverRequestClient> client);
 };

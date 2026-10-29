@@ -94,12 +94,8 @@ class MockMojoHostResolver : public HostResolverMojo::Impl {
   // Information logged from a call to ResolveDns().
   struct RequestInfo {
     std::string hostname;
-    net::NetworkAnonymizationKey network_anonymization_key;
 
-    bool operator==(const RequestInfo& other) const {
-      return hostname == other.hostname &&
-             network_anonymization_key == other.network_anonymization_key;
-    }
+    bool operator==(const RequestInfo& other) const = default;
   };
 
   explicit MockMojoHostResolver(
@@ -120,9 +116,8 @@ class MockMojoHostResolver : public HostResolverMojo::Impl {
   void ResolveDns(
       const std::string& hostname,
       net::ProxyResolveDnsOperation operation,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
       mojo::PendingRemote<mojom::HostResolverRequestClient> client) override {
-    request_info_.push_back(RequestInfo{hostname, network_anonymization_key});
+    request_info_.push_back(RequestInfo{hostname});
     ASSERT_LE(results_returned_, actions_.size());
     switch (actions_[results_returned_].action) {
       case HostResolverAction::COMPLETE:
@@ -204,8 +199,6 @@ TEST_F(HostResolverMojoTest, Basic) {
 
   ASSERT_EQ(1u, mock_resolver_.request_info().size());
   EXPECT_EQ("example.com", mock_resolver_.request_info()[0].hostname);
-  EXPECT_EQ(kNetworkAnonymizationKey,
-            mock_resolver_.request_info()[0].network_anonymization_key);
 }
 
 TEST_F(HostResolverMojoTest, ResolveCachedResult) {
@@ -313,12 +306,10 @@ TEST_F(HostResolverMojoTest, Multiple) {
   EXPECT_EQ(addresses, request1->GetResults());
   ASSERT_EQ(0u, request2->GetResults().size());
 
-  EXPECT_THAT(mock_resolver_.request_info(),
-              testing::ElementsAre(
-                  MockMojoHostResolver::RequestInfo{
-                      "example.com", net::NetworkAnonymizationKey()},
-                  MockMojoHostResolver::RequestInfo{
-                      "example.org", net::NetworkAnonymizationKey()}));
+  EXPECT_THAT(
+      mock_resolver_.request_info(),
+      testing::ElementsAre(MockMojoHostResolver::RequestInfo{"example.com"},
+                           MockMojoHostResolver::RequestInfo{"example.org"}));
 }
 
 TEST_F(HostResolverMojoTest, Error) {

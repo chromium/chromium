@@ -74,7 +74,7 @@ class HostResolverMojo::RequestImpl : public ProxyHostResolver::Request,
     }
 
     callback_ = std::move(callback);
-    impl_->ResolveDns(hostname_, operation_, network_anonymization_key_,
+    impl_->ResolveDns(hostname_, operation_,
                       receiver_.BindNewPipeAndPassRemote());
     receiver_.set_disconnect_handler(
         base::BindOnce(&RequestImpl::OnDisconnect, base::Unretained(this)));

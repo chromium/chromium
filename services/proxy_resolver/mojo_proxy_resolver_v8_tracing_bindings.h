@@ -15,7 +15,6 @@
 #include "base/threading/thread_checker.h"
 #include "net/base/address_family.h"
 #include "net/base/host_port_pair.h"
-#include "net/base/network_anonymization_key.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_resolve_dns_operation.h"
 #include "services/proxy_resolver/host_resolver_mojo.h"
@@ -66,11 +65,9 @@ class MojoProxyResolverV8TracingBindings
   void ResolveDns(
       const std::string& hostname,
       net::ProxyResolveDnsOperation operation,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
       mojo::PendingRemote<mojom::HostResolverRequestClient> client) override {
     DCHECK(thread_checker_.CalledOnValidThread());
-    client_->ResolveDns(hostname, operation, network_anonymization_key,
-                        std::move(client));
+    client_->ResolveDns(hostname, operation, std::move(client));
   }
 
   base::ThreadChecker thread_checker_;

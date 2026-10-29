@@ -17,6 +17,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -24,6 +25,7 @@
 #include "net/base/load_states.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/log/net_log.h"
@@ -291,7 +293,7 @@ void MockMojoProxyResolver::GetProxyForUrl(
       std::ignore = dns_client.InitWithNewPipeAndPassReceiver();
       client->ResolveDns(url.GetHost(),
                          net::ProxyResolveDnsOperation::DNS_RESOLVE_EX,
-                         network_anonymization_key, std::move(dns_client));
+                         std::move(dns_client));
       blocked_clients_.push_back(std::move(client));
       break;
     }
@@ -477,7 +479,7 @@ void MockMojoProxyResolverFactory::CreateResolver(
       std::ignore = dns_client.InitWithNewPipeAndPassReceiver();
       client->ResolveDns(pac_script,
                          net::ProxyResolveDnsOperation::DNS_RESOLVE_EX,
-                         net::NetworkAnonymizationKey(), std::move(dns_client));
+                         std::move(dns_client));
       blocked_clients_.push_back(std::move(client));
       break;
     }
@@ -963,6 +965,79 @@ TEST_F(ProxyResolverFactoryMojoTest,
   EXPECT_EQ(kUrl.GetHost(), host_resolver_.last_host().host());
   EXPECT_EQ(kNetworkAnonymizationKey,
             host_resolver_.last_network_anonymization_key());
+}
+
+// Each Job's DNS lookups should use that Job's NetworkAnonymizationKey, even
+// when multiple Jobs with different keys are in progress at once.
+TEST_F(ProxyResolverFactoryMojoTest,
+       GetProxyForURL_DnsRequestsWithDifferentNetworkAnonymizationKeys) {
+  const auto kNetworkAnonymizationKey1 =
+      net::NetworkAnonymizationKey::CreateSameSite(
+          net::SchemefulSite(GURL("https://origin1.test/")));
+  const auto kNetworkAnonymizationKey2 =
+      net::NetworkAnonymizationKey::CreateSameSite(
+          net::SchemefulSite(GURL("https://origin2.test/")));
+  const GURL kUrl1("http://host1.test/");
+  const GURL kUrl2("http://host2.test/");
+
+  mock_proxy_resolver_.AddGetProxyAction(
+      GetProxyForUrlAction::MakeDnsRequest(kUrl1));
+  mock_proxy_resolver_.AddGetProxyAction(
+      GetProxyForUrlAction::MakeDnsRequest(kUrl2));
+  CreateProxyResolver();
+
+  std::unique_ptr<Request> request1(
+      MakeRequest(kUrl1, kNetworkAnonymizationKey1));
+  EXPECT_THAT(request1->Resolve(), IsError(net::ERR_IO_PENDING));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return kUrl1.GetHost() == host_resolver_.last_host().host(); }));
+  EXPECT_EQ(kNetworkAnonymizationKey1,
+            host_resolver_.last_network_anonymization_key());
+
+  std::unique_ptr<Request> request2(
+      MakeRequest(kUrl2, kNetworkAnonymizationKey2));
+  EXPECT_THAT(request2->Resolve(), IsError(net::ERR_IO_PENDING));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return kUrl2.GetHost() == host_resolver_.last_host().host(); }));
+  EXPECT_EQ(kNetworkAnonymizationKey2,
+            host_resolver_.last_network_anonymization_key());
+}
+
+// DNS lookups made while creating a resolver (i.e., while loading the PAC
+// script) should use an empty NetworkAnonymizationKey.
+TEST_F(ProxyResolverFactoryMojoTest,
+       CreateProxyResolver_DnsRequestUsesEmptyNetworkAnonymizationKey) {
+  const auto kNetworkAnonymizationKey =
+      net::NetworkAnonymizationKey::CreateSameSite(
+          net::SchemefulSite(GURL("https://origin.test/")));
+  const GURL kUrl(kExampleUrl);
+
+  // First make a lookup with a non-empty key, so the check below doesn't
+  // trivially pass because `host_resolver_` has never seen a key.
+  mock_proxy_resolver_.AddGetProxyAction(
+      GetProxyForUrlAction::MakeDnsRequest(kUrl));
+  CreateProxyResolver();
+  std::unique_ptr<Request> request(MakeRequest(kUrl, kNetworkAnonymizationKey));
+  EXPECT_THAT(request->Resolve(), IsError(net::ERR_IO_PENDING));
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return kNetworkAnonymizationKey ==
+           host_resolver_.last_network_anonymization_key();
+  }));
+
+  // Now create another resolver, which makes a DNS request while loading.
+  mock_proxy_resolver_factory_->AddCreateProxyResolverAction(
+      CreateProxyResolverAction::MakeDnsRequest(kScriptData));
+  scoped_refptr<net::PacFileData> pac_script(
+      net::PacFileData::FromUTF8(kScriptData));
+  std::unique_ptr<net::ProxyResolver> resolver;
+  std::unique_ptr<net::ProxyResolverFactory::Request> create_request;
+  net::TestCompletionCallback callback;
+  EXPECT_EQ(net::ERR_IO_PENDING,
+            proxy_resolver_factory_mojo_->CreateProxyResolver(
+                pac_script, &resolver, callback.callback(), &create_request));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return kScriptData == host_resolver_.last_host().host(); }));
+  EXPECT_TRUE(host_resolver_.last_network_anonymization_key().IsEmpty());
 }
 
 TEST_F(ProxyResolverFactoryMojoTest, DeleteResolver) {
