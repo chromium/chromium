@@ -134,8 +134,11 @@ void ProcessorEntityTracker::RemoveEntityForStorageKey(
     return;
   }
 
-  DCHECK_EQ(entities_[iter->second]->storage_key(), storage_key);
-  entities_.erase(iter->second);
+  auto entity_iter = entities_.find(iter->second);
+  CHECK(entity_iter != entities_.end());
+  DCHECK_EQ(entity_iter->second->storage_key(), storage_key);
+  entity_iter->second->RecordAttachmentUploadCancelled();
+  entities_.erase(entity_iter);
   storage_key_to_tag_hash_.erase(iter);
 }
 
@@ -153,6 +156,7 @@ std::vector<std::string> ProcessorEntityTracker::RemoveInactiveCollaborations(
       // updates for inactive collaborations (DataTypeWorker would filter them
       // out).
       CHECK(!entity->storage_key().empty());
+      entity->RecordAttachmentUploadCancelled();
       removed_storage_keys.push_back(entity->storage_key());
       return true;
     }

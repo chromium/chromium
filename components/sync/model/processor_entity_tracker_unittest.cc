@@ -4,10 +4,18 @@
 
 #include "components/sync/model/processor_entity_tracker.h"
 
+#include <string>
+#include <string_view>
 #include <utility>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/sync/base/collaboration_id.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/unique_position.h"
@@ -30,6 +38,11 @@ using testing::UnorderedElementsAre;
 constexpr char kEmptyStorageKey[] = "";
 constexpr char kStorageKey1[] = "key1";
 constexpr char kStorageKey2[] = "key2";
+constexpr char kSpecificsHash[] = "specifics_hash";
+constexpr char kActiveCollaborationId[] = "active_collaboration";
+constexpr char kInactiveCollaborationId[] = "inactive_collaboration";
+constexpr char kPreferenceName[] = "name";
+constexpr char kPreferenceValue[] = "value";
 constexpr int64_t kServerVersion = 5;
 
 sync_pb::DataTypeState GenerateDataTypeState() {
@@ -46,7 +59,7 @@ std::unique_ptr<sync_pb::EntityMetadata> GenerateMetadata(
   metadata.set_creation_time(1);
   metadata.set_modification_time(1);
   metadata.set_client_tag_hash(client_tag_hash.value());
-  metadata.set_specifics_hash("specifics_hash");
+  metadata.set_specifics_hash(kSpecificsHash);
   return std::make_unique<sync_pb::EntityMetadata>(std::move(metadata));
 }
 
@@ -58,6 +71,29 @@ std::unique_ptr<sync_pb::EntityMetadata> GenerateTombstoneMetadata(
   metadata->set_is_deleted(true);
   metadata->set_base_specifics_hash(metadata->specifics_hash());
   metadata->clear_specifics_hash();
+  return metadata;
+}
+
+std::unique_ptr<sync_pb::EntityMetadata>
+GenerateMetadataWithPendingAttachmentUpload(
+    const std::string& storage_key,
+    const ClientTagHash& client_tag_hash,
+    const base::FilePath& file_path,
+    std::string_view collaboration_id = "") {
+  std::unique_ptr<sync_pb::EntityMetadata> metadata =
+      GenerateMetadata(storage_key, client_tag_hash);
+  // Setting `sequence_number` > `acked_sequence_number` marks the metadata as
+  // unsynced, which `ProcessorEntityMetadata` requires when `pending_upload` is
+  // present.
+  metadata->set_sequence_number(2);
+  metadata->set_acked_sequence_number(1);
+  if (!collaboration_id.empty()) {
+    metadata->mutable_collaboration()->set_collaboration_id(
+        std::string(collaboration_id));
+  }
+  metadata->mutable_attachment_metadata()
+      ->mutable_pending_upload()
+      ->set_file_path(file_path.AsUTF8Unsafe());
   return metadata;
 }
 
@@ -120,8 +156,23 @@ sync_pb::UniquePosition GenerateUniquePosition(const ClientTagHash& hash) {
 
 class ProcessorEntityTrackerTest : public ::testing::Test {
  public:
-  ProcessorEntityTrackerTest() : entity_tracker_(GenerateDataTypeState(), {}) {}
-  ~ProcessorEntityTrackerTest() override = default;
+  ProcessorEntityTrackerTest() : entity_tracker_(GenerateDataTypeState(), {}) {
+    CHECK(temp_dir_.CreateUniqueTempDir());
+  }
+  ~ProcessorEntityTrackerTest() override { FlushThreadPoolTasks(); }
+
+  base::FilePath CreateStagingFile() {
+    base::FilePath file_path;
+    CHECK(base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &file_path));
+    return file_path;
+  }
+
+  void FlushThreadPoolTasks() {
+    base::test::TestFuture<void> future;
+    base::ThreadPoolInstance::Get()->FlushAsyncForTesting(
+        future.GetSequenceBoundCallback());
+    EXPECT_TRUE(future.Wait());
+  }
 
   const ClientTagHash kClientTagHash1 =
       ClientTagHash::FromHashed("client_tag_hash_1");
@@ -129,6 +180,8 @@ class ProcessorEntityTrackerTest : public ::testing::Test {
       ClientTagHash::FromHashed("client_tag_hash_2");
 
  protected:
+  base::test::TaskEnvironment task_environment_;
+  base::ScopedTempDir temp_dir_;
   ProcessorEntityTracker entity_tracker_;
 };
 
@@ -159,7 +212,7 @@ TEST_F(ProcessorEntityTrackerTest, ShouldLoadFromMetadata) {
   EXPECT_EQ(kStorageKey1, entity->storage_key());
   EXPECT_EQ(1u, entity->metadata().creation_time());
   EXPECT_EQ(1u, entity->metadata().modification_time());
-  EXPECT_EQ("specifics_hash", entity->metadata().specifics_hash());
+  EXPECT_EQ(kSpecificsHash, entity->metadata().specifics_hash());
   EXPECT_EQ(entity->metadata().client_tag_hash(), kClientTagHash1.value());
   EXPECT_FALSE(entity->metadata().is_deleted());
 
@@ -169,7 +222,7 @@ TEST_F(ProcessorEntityTrackerTest, ShouldLoadFromMetadata) {
   EXPECT_EQ(kStorageKey2, tombstone_entity->storage_key());
   EXPECT_EQ(1u, tombstone_entity->metadata().creation_time());
   EXPECT_EQ(1u, tombstone_entity->metadata().modification_time());
-  EXPECT_EQ("specifics_hash",
+  EXPECT_EQ(kSpecificsHash,
             tombstone_entity->metadata().base_specifics_hash());
   EXPECT_FALSE(tombstone_entity->metadata().has_specifics_hash());
   EXPECT_EQ(tombstone_entity->metadata().client_tag_hash(),
@@ -402,8 +455,8 @@ TEST_F(ProcessorEntityTrackerTest, ShouldUpdateSpecificsCacheOnLocalCreation) {
   std::unique_ptr<EntityData> entity_data = std::make_unique<EntityData>(
       GenerateEntityData(kStorageKey1, kClientTagHash1));
   sync_pb::EntitySpecifics specifics_for_caching;
-  specifics_for_caching.mutable_preference()->set_name("name");
-  specifics_for_caching.mutable_preference()->set_value("value");
+  specifics_for_caching.mutable_preference()->set_name(kPreferenceName);
+  specifics_for_caching.mutable_preference()->set_value(kPreferenceValue);
 
   ProcessorEntity* entity = entity_tracker_.AddLocalCreation(
       kStorageKey1, std::move(entity_data), specifics_for_caching,
@@ -416,8 +469,8 @@ TEST_F(ProcessorEntityTrackerTest, ShouldUpdateSpecificsCacheOnLocalCreation) {
 
 TEST_F(ProcessorEntityTrackerTest, ShouldUpdateSpecificsCacheOnRemoteCreation) {
   sync_pb::EntitySpecifics specifics_for_caching;
-  specifics_for_caching.mutable_preference()->set_name("name");
-  specifics_for_caching.mutable_preference()->set_value("value");
+  specifics_for_caching.mutable_preference()->set_name(kPreferenceName);
+  specifics_for_caching.mutable_preference()->set_value(kPreferenceValue);
 
   ProcessorEntity* entity = entity_tracker_.AddRemote(
       kStorageKey1,
@@ -433,21 +486,114 @@ TEST_F(ProcessorEntityTrackerTest, ShouldRemoveInactiveCollaborations) {
   entity_tracker_.AddRemote(
       kStorageKey1,
       GenerateSharedTabGroupDataUpdate(kStorageKey1, kClientTagHash1,
-                                       CollaborationId("active_collaboration")),
+                                       CollaborationId(kActiveCollaborationId)),
       /*trimmed_specifics=*/{}, /*unique_position=*/std::nullopt);
   entity_tracker_.AddRemote(kStorageKey2,
                             GenerateSharedTabGroupDataUpdate(
                                 kStorageKey2, kClientTagHash2,
-                                CollaborationId("inactive_collaboration")),
+                                CollaborationId(kInactiveCollaborationId)),
                             /*trimmed_specifics=*/{},
                             /*unique_position=*/std::nullopt);
   ASSERT_EQ(entity_tracker_.size(), 2U);
 
   std::vector<std::string> removed_storage_keys =
-      entity_tracker_.RemoveInactiveCollaborations({"active_collaboration"});
+      entity_tracker_.RemoveInactiveCollaborations({kActiveCollaborationId});
 
   EXPECT_THAT(removed_storage_keys, ElementsAre(kStorageKey2));
   EXPECT_EQ(entity_tracker_.size(), 1U);
+}
+
+// Verifies that `RemoveEntityForStorageKey()` cancels any pending attachment
+// upload and deletes its staging file for the removed entity.
+TEST_F(ProcessorEntityTrackerTest,
+       ShouldCancelPendingAttachmentUploadOnRemoveEntityForStorageKey) {
+  const base::FilePath file_path = CreateStagingFile();
+
+  EntityMetadataMap metadata_map;
+  metadata_map.emplace(
+      kStorageKey1, GenerateMetadataWithPendingAttachmentUpload(
+                        kStorageKey1, kClientTagHash1, file_path));
+  ProcessorEntityTracker tracker(GenerateDataTypeState(),
+                                 std::move(metadata_map));
+
+  base::test::TestFuture<void> cancel_future;
+  tracker.GetEntityForStorageKey(kStorageKey1)
+      ->RecordAttachmentUploadStarted(cancel_future.GetCallback());
+
+  tracker.RemoveEntityForStorageKey(kStorageKey1);
+  FlushThreadPoolTasks();
+
+  EXPECT_EQ(tracker.size(), 0U);
+  EXPECT_TRUE(cancel_future.IsReady());
+  EXPECT_FALSE(base::PathExists(file_path));
+}
+
+// Verifies that `RemoveEntityForClientTagHash()` cancels any pending attachment
+// upload and deletes its staging file for the removed entity.
+TEST_F(ProcessorEntityTrackerTest,
+       ShouldCancelPendingAttachmentUploadOnRemoveEntityForClientTagHash) {
+  const base::FilePath file_path = CreateStagingFile();
+
+  EntityMetadataMap metadata_map;
+  metadata_map.emplace(
+      kStorageKey1, GenerateMetadataWithPendingAttachmentUpload(
+                        kStorageKey1, kClientTagHash1, file_path));
+  ProcessorEntityTracker tracker(GenerateDataTypeState(),
+                                 std::move(metadata_map));
+
+  base::test::TestFuture<void> cancel_future;
+  tracker.GetEntityForClientTagHash(kClientTagHash1)
+      ->RecordAttachmentUploadStarted(cancel_future.GetCallback());
+
+  tracker.RemoveEntityForClientTagHash(kClientTagHash1);
+  FlushThreadPoolTasks();
+
+  EXPECT_EQ(tracker.size(), 0U);
+  EXPECT_TRUE(cancel_future.IsReady());
+  EXPECT_FALSE(base::PathExists(file_path));
+}
+
+// Verifies that `RemoveInactiveCollaborations()` cancels any pending attachment
+// upload and deletes its staging file for removed collaborative entities while
+// leaving active collaborative entities' uploads intact.
+TEST_F(ProcessorEntityTrackerTest,
+       ShouldCancelPendingAttachmentUploadOnRemoveInactiveCollaborations) {
+  // Set up two collaborative entities (`kStorageKey1` in an active
+  // collaboration and `kStorageKey2` in an inactive collaboration), each with a
+  // staged attachment file on disk and an in-flight upload callback.
+  const base::FilePath active_file_path = CreateStagingFile();
+  const base::FilePath inactive_file_path = CreateStagingFile();
+
+  EntityMetadataMap metadata_map;
+  metadata_map.emplace(
+      kStorageKey1, GenerateMetadataWithPendingAttachmentUpload(
+                        kStorageKey1, kClientTagHash1, active_file_path,
+                        kActiveCollaborationId));
+  metadata_map.emplace(
+      kStorageKey2, GenerateMetadataWithPendingAttachmentUpload(
+                        kStorageKey2, kClientTagHash2, inactive_file_path,
+                        kInactiveCollaborationId));
+  ProcessorEntityTracker tracker(GenerateDataTypeState(),
+                                 std::move(metadata_map));
+
+  base::test::TestFuture<void> active_cancel_future;
+  base::test::TestFuture<void> inactive_cancel_future;
+  tracker.GetEntityForStorageKey(kStorageKey1)
+      ->RecordAttachmentUploadStarted(active_cancel_future.GetCallback());
+  tracker.GetEntityForStorageKey(kStorageKey2)
+      ->RecordAttachmentUploadStarted(inactive_cancel_future.GetCallback());
+
+  // Removing inactive collaborations clears only `kStorageKey2`'s upload and
+  // asynchronously deletes its staging file while keeping `kStorageKey1`'s
+  // upload and staging file intact.
+  EXPECT_THAT(tracker.RemoveInactiveCollaborations({kActiveCollaborationId}),
+              ElementsAre(kStorageKey2));
+  FlushThreadPoolTasks();
+
+  EXPECT_TRUE(inactive_cancel_future.IsReady());
+  EXPECT_FALSE(base::PathExists(inactive_file_path));
+  EXPECT_FALSE(active_cancel_future.IsReady());
+  EXPECT_TRUE(base::PathExists(active_file_path));
 }
 
 }  // namespace

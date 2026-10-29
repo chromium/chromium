@@ -615,6 +615,7 @@ void ClientTagBasedDataTypeProcessor::PutImpl(
         UMA_HISTOGRAM_ENUMERATION("Sync.DataTypeOrphanMetadata.Put",
                                   DataTypeHistogramValue(type_));
       }
+      entity->RecordAttachmentUploadCancelled();
       // Remove the old storage key from the tracker and the corresponding
       // metadata record.
       metadata_change_list->ClearMetadata(entity->storage_key());

@@ -4093,6 +4093,97 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
               Optional(AttachmentMetadata::ForNew(kTemporaryBlobId)));
 }
 
+// Verifies that deleting an entity cancels its in-flight attachment upload.
+TEST_F(ClientTagBasedDataTypeProcessorTest,
+       ShouldCancelInFlightAttachmentUploadOnDelete) {
+  InitializeToReadyState();
+  FakeAttachmentUploader* uploader =
+      InstallFakeAttachmentUploader(type_processor());
+
+  type_processor()->PutWithAttachment(
+      kKey1, GeneratePrefEntityData(kKey1, kValue1), CreateTemporaryFile(),
+      std::make_unique<EmptyMetadataChangeList>().get());
+  ASSERT_TRUE(uploader->HasPendingUpload());
+
+  bridge()->DeleteItem(kKey1);
+  EXPECT_FALSE(uploader->HasPendingUpload());
+  EXPECT_EQ(uploader->cancelled_count(), 1);
+}
+
+// Verifies that overwriting an entity via `PutWithAttachment()` cancels the
+// previous in-flight attachment upload before starting the new upload.
+TEST_F(ClientTagBasedDataTypeProcessorTest,
+       ShouldCancelInFlightAttachmentUploadOnPutWithAttachment) {
+  InitializeToReadyState();
+  FakeAttachmentUploader* uploader =
+      InstallFakeAttachmentUploader(type_processor());
+
+  type_processor()->PutWithAttachment(
+      kKey1, GeneratePrefEntityData(kKey1, kValue1), CreateTemporaryFile(),
+      std::make_unique<EmptyMetadataChangeList>().get());
+  ASSERT_TRUE(uploader->HasPendingUpload());
+
+  type_processor()->PutWithAttachment(
+      kKey1, GeneratePrefEntityData(kKey1, kValue2), CreateTemporaryFile(),
+      std::make_unique<EmptyMetadataChangeList>().get());
+  EXPECT_TRUE(uploader->HasPendingUpload());
+  EXPECT_EQ(uploader->cancelled_count(), 1);
+}
+
+// Verifies that untracking an entity by storage key or client tag hash cancels
+// its in-flight attachment upload.
+TEST_F(ClientTagBasedDataTypeProcessorTest,
+       ShouldCancelInFlightAttachmentUploadOnUntrackEntity) {
+  InitializeToReadyState();
+  FakeAttachmentUploader* uploader =
+      InstallFakeAttachmentUploader(type_processor());
+
+  // Start an upload for `kKey1` and untrack it by storage key.
+  type_processor()->PutWithAttachment(
+      kKey1, GeneratePrefEntityData(kKey1, kValue1), CreateTemporaryFile(),
+      std::make_unique<EmptyMetadataChangeList>().get());
+  ASSERT_TRUE(uploader->HasPendingUpload());
+
+  type_processor()->UntrackEntityForStorageKey(kKey1);
+  EXPECT_FALSE(uploader->HasPendingUpload());
+  EXPECT_EQ(uploader->cancelled_count(), 1);
+
+  // Start an upload for `kKey2` and untrack it by client tag hash.
+  type_processor()->PutWithAttachment(
+      kKey2, GeneratePrefEntityData(kKey2, kValue2), CreateTemporaryFile(),
+      std::make_unique<EmptyMetadataChangeList>().get());
+  ASSERT_TRUE(uploader->HasPendingUpload());
+
+  type_processor()->UntrackEntityForClientTagHash(GetPrefHash(kKey2));
+  EXPECT_FALSE(uploader->HasPendingUpload());
+  EXPECT_EQ(uploader->cancelled_count(), 2);
+}
+
+// Verifies that overriding an existing entity with a new storage key for the
+// same client tag hash cancels its in-flight attachment upload.
+TEST_F(ClientTagBasedDataTypeProcessorTest,
+       ShouldCancelInFlightAttachmentUploadWhenOverridingStorageKey) {
+  InitializeToReadyState();
+  FakeAttachmentUploader* uploader =
+      InstallFakeAttachmentUploader(type_processor());
+
+  // Start an attachment upload for client tag `kKey1` under storage key
+  // `kKey1`.
+  type_processor()->PutWithAttachment(
+      kKey1, GeneratePrefEntityData(kKey1, kValue1), CreateTemporaryFile(),
+      std::make_unique<EmptyMetadataChangeList>().get());
+  ASSERT_TRUE(uploader->HasPendingUpload());
+
+  // Re-create the entity with the same client tag (`kKey1`) under a new storage
+  // key (`kKey2`) without an attachment, which cancels the previous upload and
+  // unblocks the entity to commit immediately.
+  type_processor()->Put(kKey2, GeneratePrefEntityData(kKey1, kValue2),
+                        std::make_unique<EmptyMetadataChangeList>().get());
+  EXPECT_FALSE(uploader->HasPendingUpload());
+  EXPECT_EQ(uploader->cancelled_count(), 1);
+  worker()->VerifyPendingCommits({{GetPrefHash(kKey1)}});
+}
+
 // Verifies that a failed attachment upload cancels the pending upload, persists
 // the cleared metadata, deletes the staging file on disk, and unblocks the
 // entity to commit its specifics without the attachment.
