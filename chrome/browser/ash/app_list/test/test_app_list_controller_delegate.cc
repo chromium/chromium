@@ -6,8 +6,8 @@
 
 #include <utility>
 
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -57,10 +57,11 @@ void TestAppListControllerDelegate::CreateNewWindow(
     bool incognito,
     bool should_trigger_session_restore) {}
 
-void TestAppListControllerDelegate::OpenURL(Profile* profile,
-                                            const GURL& url,
-                                            ui::PageTransition transition,
-                                            WindowOpenDisposition deposition) {
+void TestAppListControllerDelegate::OpenURL(
+    Profile* profile,
+    const GURL& url,
+    ui::PageTransition transition,
+    ui::mojom::WindowOpenDisposition deposition) {
   last_opened_url_ = url;
 }
 

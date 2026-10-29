@@ -64,8 +64,8 @@
 #include "components/user_manager/user_manager.h"
 #include "ui/aura/window.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/image/image.h"
@@ -619,7 +619,7 @@ void AppListClientImpl::CreateNewWindow(bool incognito,
 void AppListClientImpl::OpenURL(Profile* profile,
                                 const GURL& url,
                                 ui::PageTransition transition,
-                                WindowOpenDisposition disposition) {
+                                ui::mojom::WindowOpenDisposition disposition) {
   const AccountId& account_id =
       CHECK_DEREF(
           ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile))

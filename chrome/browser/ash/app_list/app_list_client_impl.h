@@ -32,6 +32,7 @@
 #include "components/web_modal/modal_dialog_host.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/image/image.h"
 
@@ -135,7 +136,7 @@ class AppListClientImpl
   void OpenURL(Profile* profile,
                const GURL& url,
                ui::PageTransition transition,
-               WindowOpenDisposition disposition) override;
+               ui::mojom::WindowOpenDisposition disposition) override;
 
   // Associates this client with the current active user, called when this
   // client is accessed or active user is changed.

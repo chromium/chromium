@@ -49,7 +49,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "ui/aura/window.h"
 #include "ui/base/base_window.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace ash {
 
@@ -247,9 +247,10 @@ content::WebContents* BrowserDelegateImpl::AddTab(
   const GURL resolved_url =
       url.is_empty() ? chrome::GetNewTabURL(&browser_.get()) : url;
   NavigateParams params(&browser_.get(), resolved_url, transition);
-  params.disposition = disposition == TabDisposition::kForeground
-                           ? WindowOpenDisposition::kNewForegroundTab
-                           : WindowOpenDisposition::kNewBackgroundTab;
+  params.disposition =
+      disposition == TabDisposition::kForeground
+          ? ui::mojom::WindowOpenDisposition::kNewForegroundTab
+          : ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
   if (index.has_value()) {
     params.tabstrip_index = static_cast<int>(*index);
   }

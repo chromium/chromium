@@ -46,8 +46,8 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -173,10 +173,10 @@ void RequestOpenApp(Profile* profile) {
           arc::kPlayStoreAppId);
   CHECK(extension);
   CHECK(extensions::util::IsAppLaunchable(arc::kPlayStoreAppId, profile));
-  ::OpenApplication(profile,
-                    CreateAppLaunchParamsUserContainer(
-                        profile, extension, WindowOpenDisposition::kNewWindow,
-                        apps::LaunchSource::kFromChromeInternal));
+  ::OpenApplication(profile, CreateAppLaunchParamsUserContainer(
+                                 profile, extension,
+                                 ui::mojom::WindowOpenDisposition::kNewWindow,
+                                 apps::LaunchSource::kFromChromeInternal));
 }
 
 std::ostream& operator<<(std::ostream& os, ArcSupportHost::UIPage ui_page) {

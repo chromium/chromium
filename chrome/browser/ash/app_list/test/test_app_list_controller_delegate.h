@@ -8,6 +8,7 @@
 #include <string>
 
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace test {
@@ -32,7 +33,7 @@ class TestAppListControllerDelegate : public AppListControllerDelegate {
   void OpenURL(Profile* profile,
                const GURL& url,
                ui::PageTransition transition,
-               WindowOpenDisposition deposition) override;
+               ui::mojom::WindowOpenDisposition deposition) override;
 
   void Reset();
 

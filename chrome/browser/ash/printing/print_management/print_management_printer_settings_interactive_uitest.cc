@@ -21,7 +21,7 @@
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/events/test/event_generator.h"
 
 namespace ash {
@@ -116,7 +116,7 @@ class PrintManagementInteractiveUiTest : public InteractiveAshTest {
       // will always be the first browser.
       ASSERT_FALSE(GlobalBrowserCollection::GetInstance()->IsEmpty());
       chrome::Reload(GetLastActiveBrowserWindowInterfaceWithAnyProfile(),
-                     WindowOpenDisposition::kCurrentTab);
+                     ui::mojom::WindowOpenDisposition::kCurrentTab);
     });
   }
 };

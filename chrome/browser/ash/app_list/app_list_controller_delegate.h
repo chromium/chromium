@@ -12,8 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "extensions/common/constants.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace aura {
 class Window;
@@ -71,7 +71,7 @@ class AppListControllerDelegate {
   virtual void OpenURL(Profile* profile,
                        const GURL& url,
                        ui::PageTransition transition,
-                       WindowOpenDisposition disposition) = 0;
+                       ui::mojom::WindowOpenDisposition disposition) = 0;
 
   // Uninstall the app identified by |app_id| from |profile|.
   void UninstallApp(Profile* profile, const std::string& app_id);

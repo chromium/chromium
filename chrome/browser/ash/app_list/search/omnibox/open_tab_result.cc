@@ -22,8 +22,8 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "url/gurl.h"
@@ -88,8 +88,8 @@ void OpenTabResult::Open(int event_flags) {
   list_controller_->OpenURL(
       profile_, search_result_->destination_url,
       search_result_->page_transition,
-      ui::DispositionFromEventFlags(event_flags,
-                                    WindowOpenDisposition::kSwitchToTab));
+      ui::DispositionFromEventFlags(
+          event_flags, ui::mojom::WindowOpenDisposition::kSwitchToTab));
 }
 
 std::optional<GURL> OpenTabResult::url() const {

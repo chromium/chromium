@@ -50,8 +50,8 @@
 #include "ui/base/ime/ash/input_method_descriptor.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace {
 
@@ -307,7 +307,7 @@ InputMethodPrivateOpenOptionsPageFunction::Run() {
     if (browser) {
       content::OpenURLParams url_params =
           content::OpenURLParams::CreateBrowserInitiated(
-              options_page_url, WindowOpenDisposition::kSingletonTab,
+              options_page_url, ui::mojom::WindowOpenDisposition::kSingletonTab,
               ui::PAGE_TRANSITION_LINK);
       browser->GetBrowser().OpenURL(url_params,
                                     /*navigation_handle_callback=*/{});

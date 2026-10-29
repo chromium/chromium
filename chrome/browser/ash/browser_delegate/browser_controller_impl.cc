@@ -50,8 +50,8 @@
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/blink/public/mojom/navigation/was_activated_option.mojom.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/origin.h"
 
 namespace {
@@ -307,12 +307,13 @@ content::WebContents* BrowserControllerImpl::OpenUrl(
     nav_params.initiator_origin = *params.initiating_origin;
   }
   if (params.popup_has_trusted_source) {
-    CHECK_EQ(params.disposition, WindowOpenDisposition::kNewPopup);
+    CHECK_EQ(params.disposition, ui::mojom::WindowOpenDisposition::kNewPopup);
     nav_params.trusted_source = true;
   }
   if (params.ignore_path_for_tab_reuse) {
-    CHECK(params.disposition == WindowOpenDisposition::kSingletonTab ||
-          params.disposition == WindowOpenDisposition::kSwitchToTab);
+    CHECK(params.disposition ==
+              ui::mojom::WindowOpenDisposition::kSingletonTab ||
+          params.disposition == ui::mojom::WindowOpenDisposition::kSwitchToTab);
     nav_params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
   }
   Navigate(&nav_params);
@@ -343,7 +344,7 @@ content::WebContents* BrowserControllerImpl::OpenCaptivePortalSignin(
       }
       NavigateParams nav_params(profile, url,
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-      nav_params.disposition = WindowOpenDisposition::kNewPopup;
+      nav_params.disposition = ui::mojom::WindowOpenDisposition::kNewPopup;
       nav_params.captive_portal_window_type =
           captive_portal::CaptivePortalWindowType::kPopup;
       Navigate(&nav_params);
@@ -351,7 +352,8 @@ content::WebContents* BrowserControllerImpl::OpenCaptivePortalSignin(
     }
     case CaptivePortalWindowMode::kTab: {
       NavigateParams nav_params(profile, url, ui::PAGE_TRANSITION_LINK);
-      nav_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+      nav_params.disposition =
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab;
       nav_params.captive_portal_window_type =
           captive_portal::CaptivePortalWindowType::kTab;
       Navigate(&nav_params);

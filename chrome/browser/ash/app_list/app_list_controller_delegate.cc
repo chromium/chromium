@@ -27,8 +27,8 @@
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "net/base/url_util.h"
 #include "rlz/buildflags/buildflags.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 
 #if BUILDFLAG(ENABLE_RLZ)
@@ -93,7 +93,8 @@ void AppListControllerDelegate::ShowOptionsPage(Profile* profile,
     return;
 
   OpenURL(profile, extensions::OptionsPageInfo::GetOptionsPage(extension),
-          ui::PAGE_TRANSITION_LINK, WindowOpenDisposition::kCurrentTab);
+          ui::PAGE_TRANSITION_LINK,
+          ui::mojom::WindowOpenDisposition::kCurrentTab);
 }
 
 extensions::LaunchType AppListControllerDelegate::GetExtensionLaunchType(

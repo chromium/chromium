@@ -51,8 +51,8 @@
 #include "net/base/url_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/native_theme/native_theme.h"
@@ -118,7 +118,7 @@ void LaunchTerminalImpl(Profile* profile,
   // LaunchSystemWebAppAsync.
 
   // Launch without a pinned home tab (settings page).
-  if (params.disposition == WindowOpenDisposition::kNewPopup) {
+  if (params.disposition == ui::mojom::WindowOpenDisposition::kNewPopup) {
     ash::LaunchSystemWebAppImpl(profile, ash::SystemWebAppType::TERMINAL, url,
                                 params);
     return;
@@ -316,7 +316,7 @@ void LaunchTerminalSettings(Profile* profile, int64_t display_id) {
   }
   std::string path = "html/terminal_settings.html";
   // Use an app pop window to host the settings page.
-  params->disposition = WindowOpenDisposition::kNewPopup;
+  params->disposition = ui::mojom::WindowOpenDisposition::kNewPopup;
 
   // Always launch asynchronously to avoid disturbing the caller. See
   // https://crbug.com/1262890#c12 for more details.
