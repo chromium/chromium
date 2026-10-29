@@ -5,10 +5,14 @@
 #ifndef BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_SELF_CONTAINED_TARGET_HEADER2_H_
 #define BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_SELF_CONTAINED_TARGET_HEADER2_H_
 
+namespace test_ns {
+
 int AddViaCc(int x, int y);
 
 struct CcPodStruct final {
   int value;
 };
+
+}  // namespace test_ns
 
 #endif  // BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_SELF_CONTAINED_TARGET_HEADER2_H_

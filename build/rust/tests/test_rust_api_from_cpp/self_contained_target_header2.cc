@@ -4,6 +4,10 @@
 
 #include "build/rust/tests/test_rust_api_from_cpp/self_contained_target_header2.h"
 
+namespace test_ns {
+
 int AddViaCc(int x, int y) {
   return x + y;
 }
+
+}  // namespace test_ns

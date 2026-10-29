@@ -9,6 +9,8 @@ chromium::import! {
         as target_depending_on_another;
     "//build/rust/tests/test_rust_api_from_cpp:test_browsing_instance_id_rs_api"
         as test_browsing_instance_id;
+    "//build/rust/tests/test_rust_api_from_cpp:test_root_namespaces_rs_api"
+        as test_root_namespaces;
 }
 
 use rust_gtest_interop::prelude::*;
@@ -29,6 +31,19 @@ fn test_self_contained_target_pod_struct_basics() {
 fn test_target_depending_on_another() {
     let x = ::target_depending_on_another::CreateCcPodStructFromValue(456);
     assert_eq!(x.value, 456);
+}
+
+#[gtest(TestRustApiFromCpp, RootNamespaces)]
+fn test_root_namespaces() {
+    use ::test_root_namespaces::test_outer::test_inner;
+
+    // `root_namespaces` re-exports items of the `test_outer::test_inner` and
+    // `test_other` namespaces at the root of the crate.
+    assert_eq!(::test_root_namespaces::GetValueFromNestedNamespace(), 123);
+    assert_eq!(::test_root_namespaces::GetValueFromOtherNamespace(), 456);
+
+    // The items are also still available in the namespace module.
+    assert_eq!(test_inner::GetValueFromNestedNamespace(), 123);
 }
 
 #[gtest(TestRustApiFromCpp, TemplateInstantiation)]

@@ -5,8 +5,12 @@
 #ifndef BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_SELF_CONTAINED_TARGET_HEADER1_H_
 #define BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_SELF_CONTAINED_TARGET_HEADER1_H_
 
+namespace test_ns {
+
 inline int MultiplyViaCc(int x, int y) {
   return x * y;
 }
+
+}  // namespace test_ns
 
 #endif  // BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_SELF_CONTAINED_TARGET_HEADER1_H_

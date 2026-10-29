@@ -11,8 +11,8 @@
 // Tests round-tripping a C++ type through `rust_api_from_cpp` and then
 // `cpp_api_from_rust`.
 TEST(RustApiFromCppRoundTrip, CppTypeUsedInRustApi) {
-  auto result =
-      rust_lib_using_cpp_type::double_cc_pod_struct(CcPodStruct{.value = 21});
-  static_assert(std::is_same_v<decltype(result), CcPodStruct>);
+  auto result = rust_lib_using_cpp_type::double_cc_pod_struct(
+      test_ns::CcPodStruct{.value = 21});
+  static_assert(std::is_same_v<decltype(result), test_ns::CcPodStruct>);
   EXPECT_EQ(42, result.value);
 }

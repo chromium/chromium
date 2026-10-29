@@ -115,6 +115,13 @@ _globally_enabled_crubit_features = [
 #     to provide items that Crubit-generated code expects at a specific module
 #     path).
 #
+#   root_namespaces: (optional)
+#     A list of C++ namespaces (e.g. `"foo::bar"`) whose items should also be
+#     re-exported (via `pub use`) at the root of the generated bindings crate.
+#     For example, with `root_namespaces = [ "base" ]` in `base_rs_api`, Rust
+#     code can use `base_rs_api::Foo` instead of `base_rs_api::base::Foo`
+#     (both paths work).
+#
 #   override_target_label, unsafe_globally_unique_crate_name: (optional)
 #     Internal parameters, used only by `//build/rust/crubit:cc_std` (bindings
 #     for the C++ standard library) to provide the target label and crate name
@@ -501,6 +508,11 @@ template("rust_api_from_cpp") {
         "--rustfmt_config_path=" +
             rebase_path(rustfmt_config_path, root_build_dir),
       ]
+    }
+
+    if (defined(invoker.root_namespaces)) {
+      args += [ "--reexported_namespaces=" +
+                string_join(",", invoker.root_namespaces) ]
     }
 
     if (_extra_rs_srcs_flag_values != []) {

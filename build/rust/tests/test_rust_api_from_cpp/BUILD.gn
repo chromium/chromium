@@ -26,6 +26,7 @@ rust_static_library("rust_api_from_cpp_unittests") {
     ":self_contained_target_rs_api",
     ":target_depending_on_another_rs_api",
     ":test_browsing_instance_id_rs_api",
+    ":test_root_namespaces_rs_api",
     "//testing/rust_gtest_interop",
   ]
 }
@@ -39,6 +40,10 @@ rust_api_from_cpp("self_contained_target_rs_api") {
     "self_contained_target_header1.h",
     "self_contained_target_header2.h",
   ]
+
+  # Lets Rust code write `self_contained_target_rs_api::AddViaCc` instead of
+  # `self_contained_target_rs_api::test_ns::AddViaCc`.
+  root_namespaces = [ "test_ns" ]
 }
 
 source_set("self_contained_target") {
@@ -64,6 +69,8 @@ rust_api_from_cpp("target_depending_on_another_rs_api") {
   # TODO(crbug.com/40215214): Is there something we can do (a convention?) to
   # avoid this duplication/repetition?
   bindings_deps = [ ":self_contained_target_rs_api" ]
+
+  root_namespaces = [ "test_ns" ]
 }
 
 source_set("target_depending_on_another") {
@@ -83,4 +90,20 @@ rust_api_from_cpp("test_browsing_instance_id_rs_api") {
 source_set("test_browsing_instance_id") {
   sources = [ "test_browsing_instance_id.h" ]
   public_deps = [ "//base" ]
+}
+
+rust_api_from_cpp("test_root_namespaces_rs_api") {
+  bindings_target = ":test_root_namespaces"
+  public_headers = [ "test_root_namespaces.h" ]
+
+  # Re-exports items from the `test_outer::test_inner` and `test_other` C++
+  # namespaces at the root of the generated crate.
+  root_namespaces = [
+    "test_outer::test_inner",
+    "test_other",
+  ]
+}
+
+source_set("test_root_namespaces") {
+  sources = [ "test_root_namespaces.h" ]
 }

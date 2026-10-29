@@ -2658,6 +2658,7 @@ if (enable_rust_api_from_cpp) {
   rust_api_from_cpp("base_rs_api") {
     bindings_target = ":base"
     public_headers = [ "types/id_type.h" ]
+    root_namespaces = [ "base" ]
 
     # Limiting visibility, because certain foundational libraries (`//base`,
     # `//net`, etc) can't use `rust_api_from_cpp` yet.  For more details see

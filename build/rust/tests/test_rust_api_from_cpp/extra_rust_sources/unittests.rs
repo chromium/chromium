@@ -13,7 +13,7 @@ use rust_gtest_interop::prelude::*;
 
 #[gtest(RustApiFromCppExtraRustSources, ExtraRustSources)]
 fn test_extra_rust_sources() {
-    use ::time_delta::test_base::TestTimeDelta;
+    use ::time_delta::TestTimeDelta;
     use std::time::Duration;
 
     // `TryFrom` impl comes from `extra_rust_sources`.

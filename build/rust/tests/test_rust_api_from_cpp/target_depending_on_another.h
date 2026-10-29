@@ -7,8 +7,12 @@
 
 #include "build/rust/tests/test_rust_api_from_cpp/self_contained_target_header2.h"
 
+namespace test_ns {
+
 inline CcPodStruct CreateCcPodStructFromValue(int x) {
   return CcPodStruct{.value = x};
 }
+
+}  // namespace test_ns
 
 #endif  // BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_TARGET_DEPENDING_ON_ANOTHER_H_

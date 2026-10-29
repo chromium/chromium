@@ -24,6 +24,7 @@ rust_api_from_cpp("time_delta_rs_api") {
   testonly = true
   bindings_target = ":time_delta"
   public_headers = [ "time_delta.h" ]
+  root_namespaces = [ "test_base" ]
 
   # Hand-written Rust code (e.g. trait impls) to merge into the generated
   # bindings.
