@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/block_types.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/task_request_url_context.h"
@@ -39,12 +40,16 @@ class GURL;
     targetModeForSceneState:(SceneState*)sceneState
                 defaultMode:(ApplicationModeForTabOpening)defaultMode;
 
-// Opens a tab with the specified parameters and dismisses modals.
+// Opens a tab with the specified parameters and dismisses modals. At most one
+// of `postOpeningAction` (other than `NO_ACTION`) and `postOpeningCompletion`
+// may be provided. If `postOpeningCompletion` is non-nil, it is executed after
+// opening; otherwise `postOpeningAction` is resolved via `TabOpening`.
 - (void)openTabWithSceneState:(SceneState*)sceneState
                   externalURL:(const GURL&)externalURL
                    virtualURL:(const GURL&)virtualURL
                    targetMode:(ApplicationModeForTabOpening)targetMode
             postOpeningAction:(TabOpeningPostOpeningAction)postOpeningAction
+        postOpeningCompletion:(ProceduralBlock)postOpeningCompletion
              fromWidgetOrSiri:(BOOL)fromWidgetOrSiri;
 
 @end

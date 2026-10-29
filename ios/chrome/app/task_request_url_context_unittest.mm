@@ -29,10 +29,15 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -40,6 +45,7 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 class TaskRequestForURLContextTest : public PlatformTest {
  protected:
@@ -709,4 +715,93 @@ TEST_F(TaskRequestForURLContextTest, TestStandardURLContextExecution) {
   scene_state_.controller = tab_opener;
   [unknown_request execute];
   EXPECT_TRUE(tab_opener.urlLoadParams.web_params.url.is_empty());
+}
+
+// Tests that Google One deep links do not open the URL in a tab and invoke
+// GoogleOneCommands with the normalized HTTPS URL when
+// kSupportGoogleOneDeepLink is enabled.
+TEST_F(TaskRequestForURLContextTest, TestGoogleOneDeepLinkEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kSupportGoogleOneDeepLink);
+
+  CommandDispatcher* dispatcher =
+      scene_state_.browserProviderInterface.currentBrowserProvider.browser
+          ->GetCommandDispatcher();
+  id mock_google_one_handler = OCMProtocolMock(@protocol(GoogleOneCommands));
+  [dispatcher startDispatchingToTarget:mock_google_one_handler
+                           forProtocol:@protocol(GoogleOneCommands)];
+
+  NSArray<NSString*>* url_strings = @[
+    @"https://one.google.com/deeplink",
+    [NSString stringWithFormat:@"%s://one.google.com/deeplink",
+                               BUILDFLAG(SECURE_CUSTOM_SCHEME)],
+  ];
+
+  for (NSString* url_string in url_strings) {
+    SCOPED_TRACE(base::SysNSStringToUTF8(url_string));
+    NSURL* url = [NSURL URLWithString:url_string];
+    UIOpenURLContext* context = CreateMockURLContext(url);
+
+    TaskRequestForURLContext* request =
+        [TaskRequestForURLContext taskRequestWithURLContext:context
+                                                 sceneState:scene_state_
+                                                isColdStart:YES];
+    ASSERT_NE(request, nil);
+
+    TaskRequestURLContextTestTabOpener* tab_opener =
+        [[TaskRequestURLContextTestTabOpener alloc]
+            initWithSceneState:scene_state_];
+    scene_state_.controller = tab_opener;
+
+    __block GURL shown_url;
+    OCMExpect([[mock_google_one_handler ignoringNonObjectArgs]
+                  showGoogleOneForURL:GURL()])
+        .andDo(^(NSInvocation* invocation) {
+          const GURL* url_arg = nullptr;
+          [invocation getArgument:&url_arg atIndex:2];
+          shown_url = *url_arg;
+        });
+
+    [request execute];
+
+    EXPECT_EQ(tab_opener.targetMode,
+              ApplicationModeForTabOpening::UNDETERMINED);
+    EXPECT_TRUE(tab_opener.urlLoadParams.web_params.url.is_empty());
+    EXPECT_FALSE(tab_opener.completionActionExecuted);
+    EXPECT_TRUE(tab_opener.dismissOmnibox);
+    EXPECT_EQ(shown_url, GURL("https://one.google.com/deeplink"));
+    EXPECT_OCMOCK_VERIFY(mock_google_one_handler);
+  }
+
+  [dispatcher stopDispatchingToTarget:mock_google_one_handler];
+}
+
+// Tests that Google One deep links open the URL normally when
+// kSupportGoogleOneDeepLink is disabled.
+TEST_F(TaskRequestForURLContextTest, TestGoogleOneDeepLinkDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kSupportGoogleOneDeepLink);
+
+  NSURL* url = [NSURL URLWithString:@"https://one.google.com/deeplink"];
+  UIOpenURLContext* context = CreateMockURLContext(url);
+
+  TaskRequestForURLContext* request =
+      [TaskRequestForURLContext taskRequestWithURLContext:context
+                                               sceneState:scene_state_
+                                              isColdStart:YES];
+  ASSERT_NE(request, nil);
+
+  TaskRequestURLContextTestTabOpener* tab_opener =
+      [[TaskRequestURLContextTestTabOpener alloc]
+          initWithSceneState:scene_state_];
+  scene_state_.controller = tab_opener;
+
+  [request execute];
+
+  EXPECT_EQ(tab_opener.targetMode, ApplicationModeForTabOpening::UNDETERMINED);
+  EXPECT_EQ(tab_opener.urlLoadParams.web_params.url,
+            GURL("https://one.google.com/deeplink"));
+  EXPECT_EQ(tab_opener.completionAction,
+            TabOpeningPostOpeningAction::NO_ACTION);
+  EXPECT_TRUE(tab_opener.dismissOmnibox);
 }

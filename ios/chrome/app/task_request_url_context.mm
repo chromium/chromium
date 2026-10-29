@@ -7,6 +7,9 @@
 #import <optional>
 
 #import "base/check.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
+#import "base/ios/block_types.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
@@ -87,6 +90,15 @@ bool IsShowDefaultBrowserSettings(NSURL* url) {
     }
   }
   return false;
+}
+
+// Triggers `post_opening_action` on `tab_opener`, if any.
+void TriggerPostOpeningAction(id<TabOpening> tab_opener,
+                              TabOpeningPostOpeningAction post_opening_action) {
+  if (ProceduralBlock trigger_block =
+          [tab_opener completionBlockForTriggeringAction:post_opening_action]) {
+    trigger_block();
+  }
 }
 
 }  // namespace
@@ -188,7 +200,11 @@ bool IsShowDefaultBrowserSettings(NSURL* url) {
                    virtualURL:(const GURL&)virtualURL
                    targetMode:(ApplicationModeForTabOpening)targetMode
             postOpeningAction:(TabOpeningPostOpeningAction)postOpeningAction
+        postOpeningCompletion:(ProceduralBlock)postOpeningCompletion
              fromWidgetOrSiri:(BOOL)fromWidgetOrSiri {
+  CHECK(!postOpeningAction || !postOpeningCompletion)
+      << "Can't provide both postOpeningAction and postOpeningCompletion";
+
   ApplicationModeForTabOpening resolvedMode =
       [self targetModeForSceneState:sceneState defaultMode:targetMode];
 
@@ -200,14 +216,13 @@ bool IsShowDefaultBrowserSettings(NSURL* url) {
       postOpeningAction != TabOpeningPostOpeningAction::FOCUS_OMNIBOX;
 
   id<TabOpening> tabOpener = sceneState.controller;
-  __weak id<TabOpening> weakTabOpener = tabOpener;
-  ProceduralBlock completion = ^{
-    ProceduralBlock triggerBlock =
-        [weakTabOpener completionBlockForTriggeringAction:postOpeningAction];
-    if (triggerBlock) {
-      triggerBlock();
-    }
-  };
+  ProceduralBlock completion = postOpeningCompletion;
+  if (!completion) {
+    __weak id<TabOpening> weakTabOpener = tabOpener;
+    completion = base::CallbackToBlock(base::BindOnce(
+        &TriggerPostOpeningAction, weakTabOpener, postOpeningAction));
+  }
+  CHECK(completion);
 
   [tabOpener dismissModalsAndMaybeOpenSelectedTabInMode:resolvedMode
                                       withUrlLoadParams:urlLoadParams

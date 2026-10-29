@@ -7,6 +7,9 @@
 #import <UIKit/UIKit.h>
 
 #import "base/check_deref.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
+#import "base/ios/block_types.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
@@ -17,11 +20,18 @@
 #import "ios/chrome/app/startup/app_startup_utils.h"
 #import "ios/chrome/app/task_request_url_context_private.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/google_one/shared/google_one_deep_link_util.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
 #import "url/gurl.h"
@@ -87,6 +97,17 @@ void RecordExternalActionMetrics(NSURL* url) {
   base::UmaHistogramEnumeration(kExternalActionHistogram, action);
 }
 
+// Presents the Google One screen for `url` on the current browser of
+// `scene_state`.
+void ShowGoogleOneForURL(SceneState* scene_state, const GURL& url) {
+  if (Browser* browser =
+          scene_state.browserProviderInterface.currentBrowserProvider.browser) {
+    id<GoogleOneCommands> google_one_handler =
+        HandlerForProtocol(browser->GetCommandDispatcher(), GoogleOneCommands);
+    [google_one_handler showGoogleOneForURL:url];
+  }
+}
+
 }  // namespace
 
 @implementation TaskRequestForStandardURLContext
@@ -147,6 +168,7 @@ void RecordExternalActionMetrics(NSURL* url) {
   GURL virtualGURL;
   TabOpeningPostOpeningAction postOpeningAction =
       TabOpeningPostOpeningAction::NO_ACTION;
+  ProceduralBlock postOpeningCompletion = nil;
   ApplicationModeForTabOpening targetMode =
       ApplicationModeForTabOpening::UNDETERMINED;
 
@@ -218,8 +240,16 @@ void RecordExternalActionMetrics(NSURL* url) {
     if (!externalGURL.is_valid()) {
       return;
     }
-    // TODO(crbug.com/493816082): Handle Google One deep links, Default Browser
-    // promo notifications, and App Switcher parameters.
+    GURL googleOneURL;
+    if (IsGoogleOneDeepLinkEnabled() &&
+        IsGoogleOneDeepLinkURL(externalGURL, &googleOneURL)) {
+      externalGURL = GURL();
+      __weak SceneState* weakSceneState = sceneState;
+      postOpeningCompletion = base::CallbackToBlock(
+          base::BindOnce(&ShowGoogleOneForURL, weakSceneState, googleOneURL));
+    }
+    // TODO(crbug.com/493816082): Handle Default Browser promo notifications and
+    // App Switcher parameters.
   }
 
   [self openTabWithSceneState:sceneState
@@ -227,6 +257,7 @@ void RecordExternalActionMetrics(NSURL* url) {
                    virtualURL:virtualGURL
                    targetMode:targetMode
             postOpeningAction:postOpeningAction
+        postOpeningCompletion:postOpeningCompletion
              fromWidgetOrSiri:NO];
 }
 
