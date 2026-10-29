@@ -173,6 +173,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
@@ -583,7 +584,11 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
 
 class MockAutofillClient : public TestAutofillClient {
  public:
-  MockAutofillClient() = default;
+  MockAutofillClient() {
+    ON_CALL(*this, GetAutocompleteHistoryManager).WillByDefault([this] {
+      return TestAutofillClient::GetAutocompleteHistoryManager();
+    });
+  }
   MockAutofillClient(const MockAutofillClient&) = delete;
   MockAutofillClient& operator=(const MockAutofillClient&) = delete;
   ~MockAutofillClient() override = default;
@@ -647,6 +652,10 @@ class MockAutofillClient : public TestAutofillClient {
               TriggerPersonalizationAndTrustSurveys,
               (FillingProduct filling_product,
                const HatsSurveyStringData& field_filling_stats_data),
+              (override));
+  MOCK_METHOD(AutocompleteHistoryManager*,
+              GetAutocompleteHistoryManager,
+              (),
               (override));
   MOCK_METHOD(AutofillComposeDelegate*, GetComposeDelegate, (), (override));
   MOCK_METHOD(bool,
@@ -5879,8 +5888,14 @@ TEST_F(BrowserAutofillManagerTest,
 
   auto mock_web_data_service =
       base::MakeRefCounted<testing::NiceMock<MockAutofillWebDataService>>();
-  autofill_client().set_autocomplete_history_manager(
-      std::make_unique<MockAutocompleteHistoryManager>(mock_web_data_service));
+  MockAutocompleteHistoryManager autocomplete_history_manager(
+      mock_web_data_service);
+  ON_CALL(autofill_client(), GetAutocompleteHistoryManager)
+      .WillByDefault(Return(&autocomplete_history_manager));
+  absl::Cleanup reset_autocomplete_manager = [&] {
+    ON_CALL(autofill_client(), GetAutocompleteHistoryManager)
+        .WillByDefault(Return(nullptr));
+  };
 
   FormData form =
       test::GetFormData({.fields = {{.label = u"label", .name = u"name"}}});
