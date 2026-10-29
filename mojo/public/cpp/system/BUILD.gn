@@ -24,8 +24,6 @@ component("system") {
     "functions.cc",
     "functions.h",
     "handle.h",
-    "handle_signal_tracker.cc",
-    "handle_signal_tracker.h",
     "handle_signals_state.h",
     "invitation.cc",
     "invitation.h",

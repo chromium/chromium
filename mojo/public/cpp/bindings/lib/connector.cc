@@ -318,19 +318,6 @@ MojoResult Connector::AcceptAndGetResult(Message* message) {
   }
 #endif
 
-  if (!message->is_serialized()) {
-    // The caller is sending an unserialized message. If we haven't set up a
-    // remoteness tracker yet, do so now. See PrefersSerializedMessages() above
-    // for more details. Note that if the Connector is not yet bound to a
-    // TaskRunner and activaly reading the pipe, we don't bother setting this up
-    // yet.
-    DCHECK_EQ(outgoing_serialization_mode_, OutgoingSerializationMode::kLazy);
-    if (!peer_remoteness_tracker_ && task_runner_) {
-      peer_remoteness_tracker_.emplace(
-          message_pipe_.get(), MOJO_HANDLE_SIGNAL_PEER_REMOTE, task_runner_);
-    }
-  }
-
   MojoResult rv =
       WriteMessageNew(message_pipe_.get(), message->TakeMojoMessage(),
                       MOJO_WRITE_MESSAGE_FLAG_NONE);
@@ -640,7 +627,6 @@ void Connector::ReadAllAvailableMessages() {
 void Connector::CancelWait() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_receiving_ = false;
-  peer_remoteness_tracker_.reset();
   handle_watcher_.reset();
   sync_watcher_.reset();
 }

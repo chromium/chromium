@@ -23,7 +23,6 @@
 #include "mojo/public/cpp/bindings/connection_group_ref.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/message_header_validator.h"
-#include "mojo/public/cpp/system/handle_signal_tracker.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 
@@ -328,7 +327,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<SimpleWatcher> handle_watcher_;
-  std::optional<HandleSignalTracker> peer_remoteness_tracker_;
 
   std::atomic<bool> error_ GUARDED_BY_CONTEXT(sequence_checker_);
   bool drop_writes_ = false;
