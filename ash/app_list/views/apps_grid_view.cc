@@ -721,7 +721,7 @@ void AppsGridView::EndDrag(bool cancel) {
   AnimateDragIconToTargetPosition(drag_item, target_folder_id);
 }
 
-AppListItemView* AppsGridView::GetItemViewForItem(const std::string& item_id) {
+AppListItemView* AppsGridView::GetItemViewForItem(std::string_view item_id) {
   const AppListItem* const item = item_list_->FindItem(item_id);
   if (!item) {
     return nullptr;
@@ -2498,7 +2498,7 @@ void AppsGridView::ReparentItemForReorder(AppListItem* item,
 }
 
 void AppsGridView::MaybeRecordFolderDeleteUserAction(
-    const std::string& folder_id) {
+    std::string_view folder_id) {
   // Ignore the top-level grid (which isn't a folder and can't be deleted).
   if (folder_id.empty()) {
     return;

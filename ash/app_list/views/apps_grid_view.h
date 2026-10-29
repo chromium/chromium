@@ -14,6 +14,7 @@
 #include <set>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -192,7 +193,7 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Returns the item view of the item with the provided item ID.
   // Returns nullptr if there is no such item.
-  AppListItemView* GetItemViewForItem(const std::string& item_id);
+  AppListItemView* GetItemViewForItem(std::string_view item_id);
 
   // Returns the item view of the item at |index|, or nullptr if there is no
   // view at |index|.
@@ -682,7 +683,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Records the user metrics action for deleting a folder if `folder_id` has
   // been removed from the data model. Called after an app item move which might
   // or might not cause a folder to be deleted.
-  void MaybeRecordFolderDeleteUserAction(const std::string& folder_id);
+  void MaybeRecordFolderDeleteUserAction(std::string_view folder_id);
 
   // Removes the AppListItemView at |index| in |view_model_|, removes it from
   // view structure as well and deletes it.

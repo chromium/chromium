@@ -94,7 +94,7 @@ void AppListBadgeController::OnAppRegistryCacheWillBeDestroyed(
 }
 
 void AppListBadgeController::UpdateItemNotificationBadge(
-    const std::string& app_id,
+    std::string_view app_id,
     bool has_badge) {
   if (!model_)
     return;

@@ -30,7 +30,7 @@ void AppListItemList::RemoveObserver(AppListItemListObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-AppListItem* AppListItemList::FindItem(const std::string& id) {
+AppListItem* AppListItemList::FindItem(std::string_view id) {
   for (const auto& item : app_list_items_) {
     if (item->id() == id)
       return item.get();
@@ -38,7 +38,7 @@ AppListItem* AppListItemList::FindItem(const std::string& id) {
   return nullptr;
 }
 
-bool AppListItemList::FindItemIndex(const std::string& id, size_t* index) {
+bool AppListItemList::FindItemIndex(std::string_view id, size_t* index) {
   for (size_t i = 0; i < app_list_items_.size(); ++i) {
     if (app_list_items_[i]->id() == id) {
       *index = i;
@@ -199,13 +199,12 @@ AppListItem* AppListItemList::AddItem(std::unique_ptr<AppListItem> item_ptr) {
   return item;
 }
 
-void AppListItemList::DeleteItem(const std::string& id) {
+void AppListItemList::DeleteItem(std::string_view id) {
   std::unique_ptr<AppListItem> item = RemoveItem(id);
   // |item| will be deleted on destruction.
 }
 
-std::unique_ptr<AppListItem> AppListItemList::RemoveItem(
-    const std::string& id) {
+std::unique_ptr<AppListItem> AppListItemList::RemoveItem(std::string_view id) {
   size_t index;
   if (!FindItemIndex(id, &index))
     LOG(FATAL) << "RemoveItem: Not found: " << id;

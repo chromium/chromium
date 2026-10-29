@@ -404,7 +404,7 @@ void AppListTestApi::WaitForAppListShowAnimation(bool is_bubble_window) {
   ui::LayerAnimationStoppedWaiter().Wait(scrollable_apps_grid_view->layer());
 }
 
-bool AppListTestApi::HasApp(const std::string& app_id) {
+bool AppListTestApi::HasApp(std::string_view app_id) {
   return GetAppListModel()->FindItem(app_id);
 }
 
@@ -460,12 +460,12 @@ std::string AppListTestApi::CreateFolderWithApps(
   return folder_id;
 }
 
-std::string AppListTestApi::GetFolderId(const std::string& app_id) {
+std::string AppListTestApi::GetFolderId(std::string_view app_id) {
   return GetAppListModel()->FindItem(app_id)->folder_id();
 }
 
 std::vector<std::string> AppListTestApi::GetAppIdsInFolder(
-    const std::string& folder_id) {
+    std::string_view folder_id) {
   AppListItem* folder_item = GetAppListModel()->FindItem(folder_id);
   DCHECK(folder_item->is_folder());
   AppListItemList* folder_list =
@@ -476,7 +476,7 @@ std::vector<std::string> AppListTestApi::GetAppIdsInFolder(
   return id_list;
 }
 
-void AppListTestApi::MoveItemToPosition(const std::string& item_id,
+void AppListTestApi::MoveItemToPosition(std::string_view item_id,
                                         const size_t to_index) {
   AppListItem* app_item = GetAppListModel()->FindItem(item_id);
   const std::string folder_id = app_item->folder_id();

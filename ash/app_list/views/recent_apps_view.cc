@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/app_list/app_list_util.h"
@@ -43,13 +44,13 @@ constexpr size_t kMinRecommendedApps = 4;
 constexpr size_t kMaxRecommendedApps = 5;
 
 // Converts a search result app ID to an app list item ID.
-std::string ItemIdFromAppId(const std::string& app_id) {
+std::string ItemIdFromAppId(std::string_view app_id) {
   // Convert chrome-extension://<id> to just <id>.
   if (base::StartsWith(app_id, extensions::kExtensionScheme)) {
     GURL url(app_id);
     return url.GetHost();
   }
-  return app_id;
+  return std::string(app_id);
 }
 
 struct RecentAppInfo {

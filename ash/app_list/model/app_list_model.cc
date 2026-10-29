@@ -43,7 +43,7 @@ void AppListModel::SetStatus(AppListModelStatus status) {
     observer.OnAppListModelStatusChanged();
 }
 
-AppListItem* AppListModel::FindItem(const std::string& id) {
+AppListItem* AppListModel::FindItem(std::string_view id) {
   AppListItem* item = top_level_item_list_->FindItem(id);
   if (item)
     return item;
@@ -56,7 +56,7 @@ AppListItem* AppListModel::FindItem(const std::string& id) {
   return nullptr;
 }
 
-AppListFolderItem* AppListModel::FindFolderItem(const std::string& id) {
+AppListFolderItem* AppListModel::FindFolderItem(std::string_view id) {
   AppListItem* item = top_level_item_list_->FindItem(id);
   if (item && item->GetItemType() == AppListFolderItem::kItemType)
     return static_cast<AppListFolderItem*>(item);
@@ -82,7 +82,7 @@ AppListItem* AppListModel::AddItem(std::unique_ptr<AppListItem> item) {
   return AddItemToRootListAndNotify(std::move(item), ReparentItemReason::kAdd);
 }
 
-void AppListModel::SetItemMetadata(const std::string& id,
+void AppListModel::SetItemMetadata(std::string_view id,
                                    std::unique_ptr<AppListItemMetadata> data) {
   AppListItem* item = FindItem(id);
   if (!item)
@@ -254,7 +254,7 @@ void AppListModel::SetItemAccessibleName(AppListItem* item,
   }
 }
 
-void AppListModel::DeleteItem(const std::string& id) {
+void AppListModel::DeleteItem(std::string_view id) {
   AppListItem* item = FindItem(id);
   if (!item)
     return;
@@ -388,7 +388,7 @@ std::unique_ptr<AppListItem> AppListModel::RemoveItemFromFolder(
   return removed_item;
 }
 
-void AppListModel::DeleteFolderIfEmpty(const std::string& folder_id) {
+void AppListModel::DeleteFolderIfEmpty(std::string_view folder_id) {
   const AppListFolderItem* folder = FindFolderItem(folder_id);
   if (!folder || folder->item_list()->item_count())
     return;

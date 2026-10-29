@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/app_list/model/app_list_item_list.h"
@@ -48,10 +49,10 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   void SetStatus(AppListModelStatus status);
 
   // Finds the item matching |id|.
-  AppListItem* FindItem(const std::string& id);
+  AppListItem* FindItem(std::string_view id);
 
   // Find a folder item matching |id|.
-  AppListFolderItem* FindFolderItem(const std::string& id);
+  AppListFolderItem* FindFolderItem(std::string_view id);
 
   // Creates and adds an empty folder item with the provided ID.
   AppListFolderItem* CreateFolderItem(const std::string& folder_id);
@@ -67,7 +68,7 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
                                const std::string& folder_id);
 
   // Updates an item's metadata (e.g. name, position, etc).
-  void SetItemMetadata(const std::string& id,
+  void SetItemMetadata(std::string_view id,
                        std::unique_ptr<AppListItemMetadata> data);
 
   // Merges two items. If the target item is a folder, the source item is
@@ -120,7 +121,7 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
 
   // Deletes the item matching |id| from |top_level_item_list_| or from the
   // appropriate folder.
-  void DeleteItem(const std::string& id);
+  void DeleteItem(std::string_view id);
 
   AppListModelDelegate* delegate() { return delegate_; }
 
@@ -176,7 +177,7 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
                                                     AppListItem* item);
 
   // Deletes folder with ID `folder_id` if it's empty.
-  void DeleteFolderIfEmpty(const std::string& folder_id);
+  void DeleteFolderIfEmpty(std::string_view folder_id);
 
   // Sets the position of a root item.
   void SetRootItemPosition(AppListItem* item,

@@ -49,12 +49,12 @@ class APP_LIST_MODEL_EXPORT AppListItemList {
   // Finds item matching |id|. NOTE: Requires a linear search.
   // Generally this should not be used directly, AppListModel::FindItem
   // should be used instead.
-  AppListItem* FindItem(const std::string& id);
+  AppListItem* FindItem(std::string_view id);
 
   // Finds the |index| of the the item matching |id| in |app_list_items_|.
   // Returns true if the matching item is found.
   // Note: Requires a linear search.
-  bool FindItemIndex(const std::string& id, size_t* index);
+  bool FindItemIndex(std::string_view id, size_t* index);
 
   // Moves item at |from_index| to |to_index|.
   // Triggers observers_.OnListItemMoved().
@@ -106,11 +106,11 @@ class APP_LIST_MODEL_EXPORT AppListItemList {
   // Finds item matching |id| in |app_list_items_| (linear search) and deletes
   // it. Triggers observers_.OnListItemRemoved() after removing the item from
   // the list and before deleting it.
-  void DeleteItem(const std::string& id);
+  void DeleteItem(std::string_view id);
 
   // Removes the item with matching |id| in |app_list_items_| without deleting
   // it. Returns a scoped pointer containing the removed item.
-  std::unique_ptr<AppListItem> RemoveItem(const std::string& id);
+  std::unique_ptr<AppListItem> RemoveItem(std::string_view id);
 
   // Removes the item at |index| from |app_list_items_| without deleting it.
   // Returns a scoped pointer containing the removed item.

@@ -65,7 +65,7 @@ class ASH_EXPORT AppListTestApi {
   void WaitForAppListShowAnimation(bool is_bubble_window);
 
   // Returns whether there is an item for |app_id|.
-  bool HasApp(const std::string& app_id);
+  bool HasApp(std::string_view app_id);
 
   // Returns the name displayed in the launcher for the provided app list item.
   std::u16string_view GetAppListItemViewName(std::string_view item_id);
@@ -83,14 +83,14 @@ class ASH_EXPORT AppListTestApi {
 
   // Returns the folder id that the app with |app_id| belongs to. Returns empty
   // string if the app is not in a folder.
-  std::string GetFolderId(const std::string& app_id);
+  std::string GetFolderId(std::string_view app_id);
 
   // Returns IDs of all apps that belong to the folder with |folder_id|.
-  std::vector<std::string> GetAppIdsInFolder(const std::string& folder_id);
+  std::vector<std::string> GetAppIdsInFolder(std::string_view folder_id);
 
   // Moves an item to position |to_index| within the item's item list. The item
   // can be a folder.
-  void MoveItemToPosition(const std::string& item_id, const size_t to_index);
+  void MoveItemToPosition(std::string_view item_id, const size_t to_index);
 
   // Adds one page break item after the item specified by `item_id`.
   void AddPageBreakItemAfterId(const std::string& item_id);

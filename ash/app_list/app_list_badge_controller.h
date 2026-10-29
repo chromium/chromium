@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_model.h"
@@ -56,7 +57,7 @@ class ASH_EXPORT AppListBadgeController
  private:
   // Updates whether a notification badge is shown for the AppListItemView
   // corresponding with the |app_id|.
-  void UpdateItemNotificationBadge(const std::string& app_id, bool has_badge);
+  void UpdateItemNotificationBadge(std::string_view app_id, bool has_badge);
 
   // Checks the notification badging pref and then updates whether a
   // notification badge is shown for each AppListItem.

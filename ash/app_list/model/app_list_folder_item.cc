@@ -61,7 +61,7 @@ const char* AppListFolderItem::GetItemType() const {
   return AppListFolderItem::kItemType;
 }
 
-AppListItem* AppListFolderItem::FindChildItem(const std::string& id) {
+AppListItem* AppListFolderItem::FindChildItem(std::string_view id) {
   return item_list_->FindItem(id);
 }
 

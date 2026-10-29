@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/app_list/model/app_list_item.h"
@@ -79,7 +80,7 @@ class APP_LIST_MODEL_EXPORT AppListFolderItem
   // AppListItem overrides:
   AppListFolderItem* AsFolderItem() override;
   const char* GetItemType() const override;
-  AppListItem* FindChildItem(const std::string& id) override;
+  AppListItem* FindChildItem(std::string_view id) override;
   AppListItem* GetChildItemAt(size_t index) override;
   size_t ChildItemCount() const override;
   void RequestFolderIconUpdate() override;

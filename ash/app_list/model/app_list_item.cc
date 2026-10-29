@@ -139,7 +139,7 @@ const char* AppListItem::GetItemType() const {
   return app_type;
 }
 
-AppListItem* AppListItem::FindChildItem(const std::string& id) {
+AppListItem* AppListItem::FindChildItem(std::string_view id) {
   return nullptr;
 }
 

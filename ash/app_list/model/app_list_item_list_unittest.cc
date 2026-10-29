@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "ash/app_list/model/app_list_folder_item.h"
@@ -129,11 +130,11 @@ class AppListItemListTest : public testing::Test {
   void TearDown() override { item_list_->RemoveObserver(&observer_); }
 
  protected:
-  AppListItem* FindItem(const std::string& id) {
+  AppListItem* FindItem(std::string_view id) {
     return item_list_->FindItem(id);
   }
 
-  bool FindItemIndex(const std::string& id, size_t* index) {
+  bool FindItemIndex(std::string_view id, size_t* index) {
     return item_list_->FindItemIndex(id, index);
   }
 
@@ -154,7 +155,7 @@ class AppListItemListTest : public testing::Test {
     return item_list_->AddItem(std::move(item));
   }
 
-  std::unique_ptr<AppListItem> RemoveItem(const std::string& id) {
+  std::unique_ptr<AppListItem> RemoveItem(std::string_view id) {
     return item_list_->RemoveItem(id);
   }
 
