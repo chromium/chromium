@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
@@ -80,7 +81,9 @@ public class NewTabPageCreationTest {
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
 
         Tab tab = mActivityTestRule.getActivityTab();
-        NewTabPageTestUtils.waitForNtpLoaded(tab);
+        // TODO(crbug.com/428022848): Hop on once there is a Station for the NTP with the Omnibox
+        // focused, which hides the toolbar buttons and the logo.
+        ChromeTabUtils.waitForNtpLoaded(tab);
 
         verify(mTestState).onNewTabCreated();
         verify(mTestState).onNtpLoaded(any(NewTabPageManager.class));

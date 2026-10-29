@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 
 import org.chromium.base.ThreadUtils;
@@ -25,9 +26,13 @@ import org.chromium.base.test.transit.SimpleConditions;
 import org.chromium.base.test.transit.Triggers;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
+import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabWebContentsObserver;
@@ -37,6 +42,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.url_constants.UrlOverrideUtils;
 import org.chromium.chrome.test.transit.page.PageHitTestDataCondition;
 import org.chromium.chrome.test.transit.page.PageInteractableOrHiddenCondition;
 import org.chromium.chrome.test.transit.page.PageLoadedCondition;
@@ -373,7 +379,7 @@ public class ChromeTabUtils {
                         new PageLoadedCondition(tabSelected, TriState.NOT_SET));
 
         Tab tab = tabSelected.get();
-        if (waitForNtpLoad) NewTabPageTestUtils.waitForNtpLoaded(tab);
+        if (waitForNtpLoad) waitForNtpLoaded(tab);
         instrumentation.waitForIdleSync();
         return tab;
     }
@@ -545,5 +551,43 @@ public class ChromeTabUtils {
 
         RenderWidgetHostView rwhv = webContents.getRenderWidgetHostView();
         return rwhv != null && rwhv.isReady();
+    }
+
+    /**
+     * Waits for the NTP owned by the passed in tab to be fully loaded.
+     *
+     * @param tab The tab to be monitored for NTP loading.
+     * @deprecated Use {@code NewTabPageTestUtils#waitForNtpLoaded(Tab)}, which hops on Public
+     *     Transit at the NTP Station, or start at the NTP with an entry point such as {@code
+     *     startOnNtp()}.
+     */
+    // TODO(crbug.com/428022848): Remove once legacy tests that start on the NTP or open NTPs via
+    // the *FromMenu() helpers use a Public Transit entry point or hop on.
+    @Deprecated
+    public static void waitForNtpLoaded(final Tab tab) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    if (!tab.isIncognito()) {
+                        // If the WebUI NTP override is enabled, check that the renderer is ready.
+                        // Otherwise, check that the NTP is loaded in the native page.
+                        if (UrlOverrideUtils.isWebUiNtpOverrideEnabled()) {
+                            Criteria.checkThat(
+                                    ChromeTabUtils.isRendererReady(tab), Matchers.is(true));
+                        } else {
+                            Criteria.checkThat(
+                                    tab.getNativePage(), Matchers.instanceOf(NewTabPage.class));
+                            Criteria.checkThat(
+                                    ((NewTabPage) tab.getNativePage()).isLoadedForTests(),
+                                    Matchers.is(true));
+                        }
+                    } else {
+                        Criteria.checkThat(
+                                tab.getNativePage(),
+                                Matchers.instanceOf(IncognitoNewTabPage.class));
+                        Criteria.checkThat(
+                                ((IncognitoNewTabPage) tab.getNativePage()).isLoadedForTests(),
+                                Matchers.is(true));
+                    }
+                });
     }
 }

@@ -592,7 +592,9 @@ public class ToolbarTest {
         // 6. Exit the tab switcher.
         LayoutTestUtils.startShowingAndWaitForLayout(
                 mActivity.getLayoutManager(), LayoutType.BROWSING, false);
-        NewTabPageTestUtils.waitForNtpLoaded(incognitoNtpTab);
+        // TODO(crbug.com/428022848): Hop on with NewTabPageTestUtils once the NTP Stations handle
+        // bottom controls after exiting the Hub, where the toolbar view stays invisible.
+        ChromeTabUtils.waitForNtpLoaded(incognitoNtpTab);
 
         // 7. Verify accessibility order is restored.
         verifyBottomControlsAccessibilityOrder(toolbarPhone, incognitoNtpTab.getView());

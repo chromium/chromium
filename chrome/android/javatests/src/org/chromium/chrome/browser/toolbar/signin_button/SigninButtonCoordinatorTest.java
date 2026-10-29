@@ -61,7 +61,6 @@ import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.signin.SignedOutAccountMenuFacility;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.SettingsTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
@@ -675,7 +674,6 @@ public class SigninButtonCoordinatorTest {
 
     private void startActivityOnNtp() {
         mPage = mActivityTestRule.startOnNtp();
-        NewTabPageTestUtils.waitForNtpLoaded(mPage.getTab());
         mContentDescriptionWithNameAndEmail =
                 mActivityTestRule
                         .getActivity()

@@ -4,17 +4,22 @@
 
 package org.chromium.chrome.test.util;
 
-import android.content.Context;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import org.hamcrest.Matchers;
+import static org.chromium.base.test.transit.Condition.whether;
+import static org.chromium.base.test.transit.Triggers.noopTo;
+
+import android.app.Activity;
+import android.content.Context;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.Criteria;
-import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.transit.SimpleConditions;
+import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
-import org.chromium.chrome.browser.ntp.NewTabPage;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.omnibox.SearchEngineService;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -23,8 +28,12 @@ import org.chromium.chrome.browser.suggestions.tile.TileSource;
 import org.chromium.chrome.browser.suggestions.tile.TileTitleSource;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.url_constants.UrlOverrideUtils;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -37,33 +46,62 @@ public class NewTabPageTestUtils {
     /**
      * Waits for the NTP owned by the passed in tab to be fully loaded.
      *
+     * <p>Hops on Public Transit at the {@link RegularNewTabPageStation} or {@link
+     * IncognitoNewTabPageStation} in |tab|'s Activity. The returned Station is left ACTIVE; callers
+     * that are not using Public Transit can ignore it, and the next hop on will discard it.
+     *
+     * <p>|tab| must be its Activity's current tab, since the NTP Stations check the Activity's
+     * current tab.
+     *
+     * <p>A Public Transit test that holds a live Station should travel to the NTP Station from it
+     * instead; calling this util from one logs a warning and makes the caller's Station unusable.
+     *
      * @param tab The tab to be monitored for NTP loading.
+     * @return the NTP Station hopped on at.
      */
-    public static void waitForNtpLoaded(final Tab tab) {
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    if (!tab.isIncognito()) {
-                        // If the WebUI NTP override is enabled, check that the renderer is ready.
-                        // Otherwise, check that the NTP is loaded in the native page.
-                        if (UrlOverrideUtils.isWebUiNtpOverrideEnabled()) {
-                            Criteria.checkThat(
-                                    ChromeTabUtils.isRendererReady(tab), Matchers.is(true));
-                        } else {
-                            Criteria.checkThat(
-                                    tab.getNativePage(), Matchers.instanceOf(NewTabPage.class));
-                            Criteria.checkThat(
-                                    ((NewTabPage) tab.getNativePage()).isLoadedForTests(),
-                                    Matchers.is(true));
-                        }
-                    } else {
-                        Criteria.checkThat(
-                                tab.getNativePage(),
-                                Matchers.instanceOf(IncognitoNewTabPage.class));
-                        Criteria.checkThat(
-                                ((IncognitoNewTabPage) tab.getNativePage()).isLoadedForTests(),
-                                Matchers.is(true));
-                    }
-                });
+    public static CtaPageStation waitForNtpLoaded(final Tab tab) {
+        ChromeTabbedActivity activity =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            WindowAndroid windowAndroid = tab.getWindowAndroid();
+                            assertNotNull("Tab is not attached to a window", windowAndroid);
+                            Activity tabActivity = windowAndroid.getActivity().get();
+                            assertTrue(
+                                    "Tab is not in a ChromeTabbedActivity: " + tabActivity,
+                                    tabActivity instanceof ChromeTabbedActivity);
+                            ChromeTabbedActivity cta = (ChromeTabbedActivity) tabActivity;
+                            // The NTP Stations follow the Activity's current tab, not |tab|.
+                            assertEquals(
+                                    "Tab is not the Activity's current tab",
+                                    tab,
+                                    cta.getActivityTab());
+                            return cta;
+                        });
+
+        if (tab.isIncognito()) {
+            return noopTo().hopOnTo(
+                            activity,
+                            IncognitoNewTabPageStation.newBuilder()
+                                    .withTabAlreadySelected(tab)
+                                    .build());
+        }
+
+        TripBuilder trip = noopTo();
+        if (UrlOverrideUtils.isWebUiNtpOverrideEnabled()) {
+            // With the WebUI NTP override, RegularNewTabPageStation skips the native page
+            // Conditions, so keep waiting for the renderer to be ready.
+            trip =
+                    trip.waitForAnd(
+                            SimpleConditions.uiThreadCondition(
+                                    "WebUI NTP renderer is ready",
+                                    () ->
+                                            whether(
+                                                    ChromeTabUtils.isRendererReady(tab),
+                                                    "isRendererReady")));
+        }
+        return trip.hopOnTo(
+                activity,
+                RegularNewTabPageStation.newBuilder().withTabAlreadySelected(tab).build());
     }
 
     public static List<SiteSuggestion> createFakeSiteSuggestions() {
