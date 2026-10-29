@@ -170,8 +170,6 @@ class MockAutocompleteProviderClient
   MOCK_CONST_METHOD0(IsUrlDataCollectionActive, bool());
   MOCK_CONST_METHOD0(IsPersonalizedUrlDataCollectionActive, bool());
   MOCK_CONST_METHOD0(IsAuthenticated, bool());
-  MOCK_CONST_METHOD0(IsHistoryEmbeddingsEnabled, bool());
-  MOCK_CONST_METHOD0(IsHistoryEmbeddingsSettingVisible, bool());
   MOCK_CONST_METHOD0(IsLensEnabled, bool());
   MOCK_CONST_METHOD0(AreLensEntrypointsVisible, bool());
   MOCK_CONST_METHOD0(IsPagePaywalled, std::optional<bool>());

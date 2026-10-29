@@ -1795,9 +1795,8 @@ void OmniboxEditModel::OnCurrentMatchChanged() {
   std::u16string keyword;
   std::u16string keyword_placeholder;
   TemplateURLService* service = controller_->client()->GetTemplateURLService();
-  match.GetKeywordUiState(service,
-                          controller_->client()->IsHistoryEmbeddingsEnabled(),
-                          &keyword_state, &keyword, &keyword_placeholder);
+  match.GetKeywordUiState(service, &keyword_state, &keyword,
+                          &keyword_placeholder);
 
   if (!is_keyword_selected() && is_keyword_selected(keyword_state)) {
     // We just entered keyword mode, so remove the keyword from the input.
@@ -2138,9 +2137,8 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
   std::u16string keyword;
   std::u16string keyword_placeholder;
   TemplateURLService* service = controller_->client()->GetTemplateURLService();
-  match.GetKeywordUiState(service,
-                          controller_->client()->IsHistoryEmbeddingsEnabled(),
-                          &keyword_state, &keyword, &keyword_placeholder);
+  match.GetKeywordUiState(service, &keyword_state, &keyword,
+                          &keyword_placeholder);
 
   // Don't update the edit model if entering or leaving keyword mode; doing so
   // breaks keyword mode. Updating when there is no line change is necessary

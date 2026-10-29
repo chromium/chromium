@@ -149,10 +149,8 @@ This scenario describes how a user can scope their search to their local browser
      - The `AutocompleteController` is restarted with the new input. It recognizes that the omnibox
        is in keyword mode with a `TemplateURL` that has a `starter_pack_id` for history.
      - Crucially, the controller then adjusts its logic to only run a limited set of providers
-       relevant to history search:
-       [`HistoryURLProvider`](https://source.chromium.org/chromium/chromium/src/+/main:components/omnibox/browser/history_url_provider.h),
-       [`HistoryEmbeddingsProvider`](https://source.chromium.org/chromium/chromium/src/+/main:components/omnibox/browser/history_embeddings_provider.h),
-       and `FeaturedSearchProvider`.
+       relevant to history search, such as
+       [`HistoryURLProvider`](https://source.chromium.org/chromium/chromium/src/+/main:components/omnibox/browser/history_url_provider.h).
 
 3. **UI State Management (The Chip and Text Replacement)**
 

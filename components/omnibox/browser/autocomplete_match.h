@@ -142,15 +142,8 @@ enum class IphType {
   kEnterpriseSearchAggregator,
   // Featured enterprise site search promo; shown in zero state.
   kFeaturedEnterpriseSiteSearch,
-  // Embeddings' setting promo when embeddings are disabled; shown in '@history'
-  // scope.
-  kHistoryEmbeddingsSettingsPromo,
-  // Disclaimer when embeddings are enabled; shown in '@history' scope.
-  kHistoryEmbeddingsDisclaimer,
-  // '@history' promo when embeddings are disabled; shown in zero state.
+  // '@history' promo; shown in zero state.
   kHistoryScopePromo,
-  // '@history' promo when embeddings are enabled; shown in zero state.
-  kHistoryEmbeddingsScopePromo,
 };
 
 enum class FeedbackType {
@@ -624,10 +617,7 @@ struct AutocompleteMatch {
   // `keyword_state` will be set to `KeywordState::kNone`.
   // `keyword_placeholder_out` will be set to any placeholder text the keyword
   // wants to display. Set for both hint and non-hint keyword modes.
-  // `is_history_embeddings_enabled` will affect the placeholder text for the
-  // @history keyword.
   void GetKeywordUiState(const TemplateURLService* template_url_service,
-                         bool is_history_embeddings_enabled,
                          KeywordState* keyword_state,
                          std::u16string* keyword_out,
                          std::u16string* keyword_placeholder_out) const;
@@ -642,9 +632,7 @@ struct AutocompleteMatch {
   // TemplateURL, returned for both hint and non-hint keyword modes.
   // The `template_url` may be nullptr and this method often defaults to
   // returning the empty string.
-  static std::u16string GetKeywordPlaceholder(
-      const TemplateURL* template_url,
-      bool is_history_embeddings_enabled);
+  static std::u16string GetKeywordPlaceholder(const TemplateURL* template_url);
 
   // Returns the `TemplateURL` associated with this match. This may be nullptr
   // if the match has no keyword OR if the keyword no longer corresponds to a

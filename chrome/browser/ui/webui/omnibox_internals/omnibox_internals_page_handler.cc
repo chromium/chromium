@@ -259,13 +259,6 @@ void OmniboxInternalsPageHandler::StartMl(
 std::unique_ptr<AutocompleteController>
 OmniboxInternalsPageHandler::CreateController(bool ml_disabled) {
   auto providers = AutocompleteClassifier::DefaultOmniboxProviders();
-  // `HistoryEmbeddingsProvider` only supports 1 query at a time. Running it for
-  // the traditional-scoring controller used in the ML before/after comparisons
-  // would break history embeddings for the other, more important controllers.
-  if (ml_disabled) {
-    providers &=
-        ~static_cast<int>(AutocompleteProvider::Type::kHistoryEmbeddings);
-  }
 
   auto controller = std::make_unique<AutocompleteController>(
       std::make_unique<ChromeAutocompleteProviderClient>(profile_),

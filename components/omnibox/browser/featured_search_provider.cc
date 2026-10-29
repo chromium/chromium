@@ -116,9 +116,6 @@ std::u16string StarterPackDescription(const AutocompleteInput& input,
 std::string GetIphDismissedPrefNameFor(IphType iph_type) {
   switch (iph_type) {
     case IphType::kNone:
-    case IphType::kHistoryEmbeddingsSettingsPromo:
-    case IphType::kHistoryEmbeddingsDisclaimer:
-    case IphType::kHistoryEmbeddingsScopePromo:
       NOTREACHED();
     case IphType::kGemini:
       return omnibox::kDismissedGeminiIph;
@@ -134,9 +131,6 @@ std::string GetIphDismissedPrefNameFor(IphType iph_type) {
 std::string GetIphShownCountPrefNameFor(IphType iph_type) {
   switch (iph_type) {
     case IphType::kNone:
-    case IphType::kHistoryEmbeddingsSettingsPromo:
-    case IphType::kHistoryEmbeddingsDisclaimer:
-    case IphType::kHistoryEmbeddingsScopePromo:
       NOTREACHED();
     case IphType::kGemini:
       return omnibox::kShownCountGeminiIph;
@@ -159,14 +153,8 @@ std::string IphTypeDebugString(IphType iph_type) {
       return "enterprise search aggregator";
     case IphType::kFeaturedEnterpriseSiteSearch:
       return "featured enterprise site search";
-    case IphType::kHistoryEmbeddingsSettingsPromo:
-      return "history embeddings settings promo";
-    case IphType::kHistoryEmbeddingsDisclaimer:
-      return "history embeddings disclaimer";
     case IphType::kHistoryScopePromo:
       return "history scope promo";
-    case IphType::kHistoryEmbeddingsScopePromo:
-      return "history embeddings scope promo";
   }
 }
 
@@ -231,9 +219,7 @@ void FeaturedSearchProvider::RegisterDisplayedMatches(
   IphType iph_type =
       iph_match == result.end() ? IphType::kNone : iph_match->iph_type;
 
-  // `kHistoryEmbeddingsDisclaimer` has no shown limit.
-  if (!iph_shown_in_omnibox_session_ && iph_type != IphType::kNone &&
-      iph_type != IphType::kHistoryEmbeddingsDisclaimer) {
+  if (!iph_shown_in_omnibox_session_ && iph_type != IphType::kNone) {
     PrefService* prefs = client_->GetPrefs();
     // `ShouldShowIPH()` shouldn't allow adding IPH matches if there is no
     // `prefs`.
@@ -415,10 +401,7 @@ bool FeaturedSearchProvider::ShouldShowIPH(IphType iph_type) const {
     return false;
   }
 
-  // The limit only applies once per session. E.g., when the user types
-  // '@history a', the `kHistoryEmbeddingsSettingsPromo` IPH might be shown.
-  // When they then type '@history abcdefg', the IPH should continue to be
-  // shown, and not disappear at '@history abcd', and only count as 1 shown.
+  // The limit only applies once per session.
   if (iph_shown_in_omnibox_session_) {
     return true;
   }

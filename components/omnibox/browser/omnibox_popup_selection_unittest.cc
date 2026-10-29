@@ -215,14 +215,14 @@ TEST_F(OmniboxPopupSelectionTest, SelectionWithIphDisclaimer) {
       {nullptr, 800, false, omnibox::AutocompleteMatchType::kNullResultMessage},
       {nullptr, 700, false, omnibox::AutocompleteMatchType::kNullResultMessage},
   });
-  // Regular IPH tip (not a disclaimer).
+  // Regular IPH tip (no link).
   result.match_at(1u)->iph_type = IphType::kGemini;
-  // IPH disclaimer.
-  result.match_at(2u)->iph_type = IphType::kHistoryEmbeddingsDisclaimer;
+  // IPH with link.
+  result.match_at(2u)->iph_type = IphType::kGemini;
   result.match_at(2u)->iph_link_url =
       GURL("chrome://settings/ai/historySearch");
-  // IPH settings promo.
-  result.match_at(3u)->iph_type = IphType::kHistoryEmbeddingsSettingsPromo;
+  // Second IPH with link.
+  result.match_at(3u)->iph_type = IphType::kHistoryScopePromo;
   result.match_at(3u)->iph_link_url =
       GURL("chrome://settings/ai/historySearch");
 
@@ -288,13 +288,13 @@ TEST_F(OmniboxPopupSelectionTest, IsControlPresentOnMatch) {
       {nullptr, 800, false, omnibox::AutocompleteMatchType::kNullResultMessage},
       {nullptr, 700, false, omnibox::AutocompleteMatchType::kNullResultMessage},
   });
-  // Regular IPH tip (not a disclaimer).
+  // Regular IPH tip (no link).
   result.match_at(1u)->iph_type = IphType::kGemini;
-  // IPH disclaimer.
-  result.match_at(2u)->iph_type = IphType::kHistoryEmbeddingsDisclaimer;
+  // IPH with link.
+  result.match_at(2u)->iph_type = IphType::kGemini;
   result.match_at(2u)->iph_link_url = GURL("chrome://settings");
-  // IPH settings promo.
-  result.match_at(3u)->iph_type = IphType::kHistoryEmbeddingsSettingsPromo;
+  // Second IPH with link.
+  result.match_at(3u)->iph_type = IphType::kHistoryScopePromo;
   result.match_at(3u)->iph_link_url = GURL("chrome://settings");
 
   // Normal state:

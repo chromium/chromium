@@ -70,8 +70,6 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   history::HistoryService* GetHistoryService() override;
   history_clusters::HistoryClustersService* GetHistoryClustersService()
       override;
-  history_embeddings::HistoryEmbeddingsSearch* GetHistoryEmbeddingsSearch()
-      override;
   scoped_refptr<history::TopSites> GetTopSites() override;
   bookmarks::BookmarkModel* GetBookmarkModel() override;
   history::URLDatabase* GetInMemoryDatabase() override;
@@ -137,8 +135,6 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   const TabMatcher& GetTabMatcher() const override;
   bool IsIncognitoModeAvailable() const override;
   bool IsSharingHubAvailable() const override;
-  bool IsHistoryEmbeddingsEnabled() const override;
-  bool IsHistoryEmbeddingsSettingVisible() const override;
   bool IsLensEnabled() const override;
   bool AreLensEntrypointsVisible() const override;
   std::optional<bool> IsPagePaywalled() const override;

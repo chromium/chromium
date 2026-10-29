@@ -1147,9 +1147,8 @@ SearchboxHandler::CreateAutocompleteMatch(
     KeywordState keyword_state;
     std::u16string keyword;
     std::u16string keyword_placeholder;
-    match.GetKeywordUiState(turl_service,
-                            client() && client()->IsHistoryEmbeddingsEnabled(),
-                            &keyword_state, &keyword, &keyword_placeholder);
+    match.GetKeywordUiState(turl_service, &keyword_state, &keyword,
+                            &keyword_placeholder);
 
     searchbox::mojom::KeywordType keyword_type;
     bool has_keyword = false;
@@ -1433,8 +1432,7 @@ void SearchboxHandler::SendAvailableKeywordModels() {
       keyword_model->icon_path = AutocompleteIconToResourceName(keyword_icon);
     }
     keyword_model->placeholder =
-        base::UTF16ToUTF8(AutocompleteMatch::GetKeywordPlaceholder(
-            turl, client() && client()->IsHistoryEmbeddingsEnabled()));
+        base::UTF16ToUTF8(AutocompleteMatch::GetKeywordPlaceholder(turl));
     models.push_back(std::move(keyword_model));
   }
 
@@ -1540,8 +1538,7 @@ void SearchboxHandler::QueryAutocomplete(
     if (is_keyword_selected && template_url) {
       edit_model()->SetKeywordInfo(
           KeywordState::kKeyword, template_url->keyword(),
-          AutocompleteMatch::GetKeywordPlaceholder(
-              template_url, client() && client()->IsHistoryEmbeddingsEnabled()),
+          AutocompleteMatch::GetKeywordPlaceholder(template_url),
           metrics::OmniboxEventProto::SPACE_AT_END);
     } else {
       edit_model()->SetKeywordInfo(KeywordState::kNone, u"", u"",

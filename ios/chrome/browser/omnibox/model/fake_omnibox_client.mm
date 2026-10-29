@@ -262,10 +262,6 @@ void FakeOmniboxClient::OnThumbnailRemoved() {}
 
 void FakeOmniboxClient::OpenIphLink(GURL gurl) {}
 
-bool FakeOmniboxClient::IsHistoryEmbeddingsEnabled() const {
-  return is_history_embeddings_enabled_;
-}
-
 base::WeakPtr<OmniboxClientIOS> FakeOmniboxClient::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }

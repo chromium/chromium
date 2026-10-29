@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/history/core/browser/top_sites.h"
-#include "components/history_embeddings/core/history_embeddings_search.h"
 #include "components/omnibox/browser/fake_autocomplete_scoring_model_service.h"
 #include "components/omnibox/browser/fake_on_device_tail_model_service.h"
 #include "components/omnibox/browser/fake_tab_matcher.h"
@@ -66,8 +65,6 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   history::HistoryService* GetHistoryService() override;
   history_clusters::HistoryClustersService* GetHistoryClustersService()
       override;
-  history_embeddings::HistoryEmbeddingsSearch* GetHistoryEmbeddingsSearch()
-      override;
   bookmarks::BookmarkModel* GetBookmarkModel() override;
   InMemoryURLIndex* GetInMemoryURLIndex() override;
   DocumentSuggestionsService* GetDocumentSuggestionsService() const override;
@@ -112,11 +109,6 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
     history_clusters_service_ = service;
   }
 
-  void set_history_embeddings_search(
-      std::unique_ptr<history_embeddings::HistoryEmbeddingsSearch> search) {
-    history_embeddings_search_ = std::move(search);
-  }
-
   // There should be no reason to set this unless the tested provider actually
   // uses the AutocompleteProviderClient's InMemoryURLIndex, like the
   // HistoryQuickProvider does.
@@ -153,8 +145,6 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   std::unique_ptr<history::HistoryService> history_service_;
   raw_ptr<history_clusters::HistoryClustersService> history_clusters_service_ =
       nullptr;
-  std::unique_ptr<history_embeddings::HistoryEmbeddingsSearch>
-      history_embeddings_search_;
   scoped_refptr<ShortcutsBackend> shortcuts_backend_;
   FakeTabMatcher fake_tab_matcher_;
   scoped_refptr<history::TopSites> top_sites_;

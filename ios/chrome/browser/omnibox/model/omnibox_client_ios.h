@@ -335,9 +335,6 @@ class OmniboxClientIOS {
   // these in a new tab.
   virtual void OpenIphLink(GURL gurl) {}
 
-  // Returns true if history embeddings is enabled and user has opted in.
-  virtual bool IsHistoryEmbeddingsEnabled() const;
-
   // Optionally warm-up for the default search engine so that we can navigate to
   // the search result page effectively.
   virtual void MaybePrewarmForDefaultSearchEngine() {}

@@ -7,14 +7,12 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/omnibox/omnibox_api.h"
-#include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
-#include "components/history_embeddings/core/history_embeddings_features.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
@@ -96,15 +94,6 @@ ui::ImageModel SelectedKeywordView::GetKeywordIcon(
   } else if (template_url &&
              template_url->starter_pack_id() ==
                  template_url_starter_pack_data::StarterPackId::kAiMode) {
-    vector_icon =
-        &(features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
-                                            : omnibox::kSearchSparkOldIcon);
-  } else if (history_embeddings::IsHistoryEmbeddingsEnabledForProfile(
-                 profile) &&
-             history_embeddings::GetFeatureParameters().omnibox_scoped &&
-             template_url &&
-             template_url->starter_pack_id() ==
-                 template_url_starter_pack_data::StarterPackId::kHistory) {
     vector_icon =
         &(features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
                                             : omnibox::kSearchSparkOldIcon);

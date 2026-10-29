@@ -31,7 +31,6 @@
 #include "build/android_buildflags.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "components/history_embeddings/core/history_embeddings_features.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
@@ -641,16 +640,10 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
           return features::IsRoundedIconsEnabled()
                      ? omnibox::kDomainIcon
                      : omnibox::kEnterpriseOldIcon;
-        case IphType::kHistoryEmbeddingsSettingsPromo:
-          return omnibox::kSparkIcon;
-        case IphType::kHistoryEmbeddingsDisclaimer:
-          return gfx::VectorIcon::EmptyIcon();
         case IphType::kHistoryScopePromo:
           return features::IsRoundedIconsEnabled()
                      ? vector_icons::kHistoryIcon
                      : vector_icons::kHistoryChromeRefreshOldIcon;
-        case IphType::kHistoryEmbeddingsScopePromo:
-          return omnibox::kSparkIcon;
       }
 
     case Type::kSearchSuggestTail:
@@ -1331,7 +1324,6 @@ bool AutocompleteMatch::ShouldHideBasedOnStarterPack(
 
 void AutocompleteMatch::GetKeywordUiState(
     const TemplateURLService* template_url_service,
-    bool is_history_embeddings_enabled,
     KeywordState* keyword_state,
     std::u16string* keyword_out,
     std::u16string* keyword_placeholder_out) const {
@@ -1348,8 +1340,7 @@ void AutocompleteMatch::GetKeywordUiState(
       keyword_out->empty()
           ? nullptr
           : GetTemplateURLWithKeyword(template_url_service, *keyword_out, "");
-  *keyword_placeholder_out =
-      GetKeywordPlaceholder(turl, is_history_embeddings_enabled);
+  *keyword_placeholder_out = GetKeywordPlaceholder(turl);
 }
 
 bool AutocompleteMatch::IsExplicitlyInvokedKeyword(
@@ -1367,17 +1358,11 @@ bool AutocompleteMatch::IsExplicitlyInvokedKeyword(
 
 // static
 std::u16string AutocompleteMatch::GetKeywordPlaceholder(
-    const TemplateURL* template_url,
-    bool is_history_embeddings_enabled) {
+    const TemplateURL* template_url) {
 #if BUILDFLAG(IS_IOS)
-  // `kOmniboxScoped` isn't defined on iOS and all history embedding subfeatures
-  // are disabled on iOS.
   return std::u16string();
 #else
   if (!template_url) {
-    return std::u16string();
-  }
-  if (!history_embeddings::GetFeatureParameters().omnibox_scoped) {
     return std::u16string();
   }
   if (template_url->CreatedByEnterpriseSearchAggregatorPolicy()) {
@@ -1389,9 +1374,7 @@ std::u16string AutocompleteMatch::GetKeywordPlaceholder(
       message_id = IDS_OMNIBOX_BOOKMARKS_SCOPE_PLACEHOLDER_TEXT;
       break;
     case template_url_starter_pack_data::StarterPackId::kHistory:
-      message_id = is_history_embeddings_enabled
-                       ? IDS_OMNIBOX_HISTORY_EMBEDDINGS_SCOPE_PLACEHOLDER_TEXT
-                       : IDS_OMNIBOX_HISTORY_SCOPE_PLACEHOLDER_TEXT;
+      message_id = IDS_OMNIBOX_HISTORY_SCOPE_PLACEHOLDER_TEXT;
       break;
     case template_url_starter_pack_data::StarterPackId::kTabs:
       message_id = IDS_OMNIBOX_TABS_SCOPE_PLACEHOLDER_TEXT;

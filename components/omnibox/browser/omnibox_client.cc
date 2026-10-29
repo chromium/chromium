@@ -170,10 +170,6 @@ gfx::Image OmniboxClient::GetFaviconForIconUrl(
   return gfx::Image();
 }
 
-bool OmniboxClient::IsHistoryEmbeddingsEnabled() const {
-  return false;
-}
-
 bool OmniboxClient::IsAimPopupEnabled() const {
   return false;
 }

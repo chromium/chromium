@@ -12,7 +12,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/android_buildflags.h"
 #include "build/build_config.h"
-#include "components/history_embeddings/core/history_embeddings_features.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -121,13 +120,6 @@ int AutocompleteClassifier::DefaultOmniboxProviders(bool is_low_memory_device) {
       AutocompleteProvider::Type::kHistoryFuzzy |
       AutocompleteProvider::Type::kCalculator |
       AutocompleteProvider::Type::kVerbatimMatch |
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-      (history_embeddings::GetFeatureParameters().omnibox_scoped ||
-               history_embeddings::GetFeatureParameters().omnibox_unscoped
-           ? AutocompleteProvider::Type::kHistoryEmbeddings
-           : AutocompleteProvider::Type::kNone) |
-#endif
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // The `chrome.omnibox` extension API uses
   // `AutocompleteProvider::Type::kKeyword`, including on desktop Android.

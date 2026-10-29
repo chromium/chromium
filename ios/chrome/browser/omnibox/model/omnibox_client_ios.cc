@@ -125,10 +125,6 @@ gfx::Image OmniboxClientIOS::GetFaviconForKeywordSearchProvider(
   return gfx::Image();
 }
 
-bool OmniboxClientIOS::IsHistoryEmbeddingsEnabled() const {
-  return false;
-}
-
 bool OmniboxClientIOS::IsAimPopupEnabled() const {
   return false;
 }

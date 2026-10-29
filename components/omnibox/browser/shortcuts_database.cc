@@ -260,6 +260,9 @@ void ShortcutsDatabase::LoadShortcuts(GuidToShortcutMap* shortcuts) {
       invalid_shortcuts.push_back(s.ColumnString(0));
       continue;
     }
+    if (type == omnibox::AutocompleteMatchType::kHistoryEmbeddings) {
+      type = omnibox::AutocompleteMatchType::kHistoryUrl;
+    }
 #pragma GCC diagnostic pop
 
     const int page_transition_integer = s.ColumnInt(9);

@@ -631,8 +631,7 @@ int QuickInsertClientImpl::LauncherSearchProviderTypes(bool bookmarks,
     providers |=
         static_cast<int>(AutocompleteProvider::Type::kHistoryQuick |
                          AutocompleteProvider::Type::kHistoryUrl |
-                         AutocompleteProvider::Type::kHistoryFuzzy |
-                         AutocompleteProvider::Type::kHistoryEmbeddings);
+                         AutocompleteProvider::Type::kHistoryFuzzy);
   }
 
   if (open_tabs) {

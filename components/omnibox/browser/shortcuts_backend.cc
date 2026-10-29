@@ -66,6 +66,7 @@ omnibox::AutocompleteMatchType GetTypeForShortcut(
     case omnibox::AutocompleteMatchType::kUrlWhatYouTyped:
     case omnibox::AutocompleteMatchType::kNavsuggest:
     case omnibox::AutocompleteMatchType::kNavsuggestPersonalized:
+    case omnibox::AutocompleteMatchType::kHistoryEmbeddings:
       return omnibox::AutocompleteMatchType::kHistoryUrl;
 
     case omnibox::AutocompleteMatchType::kSearchOtherEngine:

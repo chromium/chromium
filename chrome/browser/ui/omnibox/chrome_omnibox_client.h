@@ -155,7 +155,6 @@ class ChromeOmniboxClient final : public OmniboxClient {
       base::OnceCallback<void(base::WeakPtr<content::NavigationHandle>)>
           callback);
   void OpenIphLink(GURL gurl) override;
-  bool IsHistoryEmbeddingsEnabled() const override;
   bool IsAimPopupEnabled() const override;
   std::optional<lens::proto::LensOverlaySuggestInputs>
   GetLensOverlaySuggestInputs() const override;

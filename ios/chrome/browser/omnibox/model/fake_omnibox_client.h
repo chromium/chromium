@@ -113,7 +113,6 @@ class FakeOmniboxClient : public OmniboxClientIOS {
   void OnPopupVisibilityChanged(bool popup_is_open) override;
   void OnThumbnailRemoved() override;
   void OpenIphLink(GURL gurl) override;
-  bool IsHistoryEmbeddingsEnabled() const override;
   base::WeakPtr<OmniboxClientIOS> AsWeakPtr() override;
 
   // Setters for return values (for those not retrieved from ProfileIOS)
@@ -168,9 +167,6 @@ class FakeOmniboxClient : public OmniboxClientIOS {
   GURL get_on_autocomplete_accept_destination_url() {
     return on_autocomplete_accept_destination_url_;
   }
-  void set_is_history_embeddings_enabled(bool enabled) {
-    is_history_embeddings_enabled_ = enabled;
-  }
 
  private:
   raw_ptr<ProfileIOS, DanglingUntriaged> profile_;
@@ -203,7 +199,6 @@ class FakeOmniboxClient : public OmniboxClientIOS {
   std::optional<lens::proto::LensOverlaySuggestInputs>
       lens_overlay_suggest_inputs_ = std::nullopt;
   GURL on_autocomplete_accept_destination_url_ = GURL();
-  bool is_history_embeddings_enabled_ = false;
 
   base::WeakPtrFactory<FakeOmniboxClient> weak_factory_{this};
 };

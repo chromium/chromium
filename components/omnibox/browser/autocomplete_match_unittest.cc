@@ -1260,8 +1260,8 @@ TEST_F(AutocompleteMatchTest, GetKeywordUiState) {
   {
     SCOPED_TRACE("No keyword");
     AutocompleteMatch match;
-    match.GetKeywordUiState(template_url_service, false, &keyword_state,
-                            &keyword, &keyword_placeholder);
+    match.GetKeywordUiState(template_url_service, &keyword_state, &keyword,
+                            &keyword_placeholder);
     EXPECT_TRUE(keyword.empty());
     EXPECT_EQ(keyword_state, KeywordState::kNone);
     EXPECT_TRUE(keyword_placeholder.empty());
@@ -1271,8 +1271,8 @@ TEST_F(AutocompleteMatchTest, GetKeywordUiState) {
     SCOPED_TRACE("Keyword hint");
     AutocompleteMatch match;
     match.associated_keyword = u"keyword";
-    match.GetKeywordUiState(template_url_service, false, &keyword_state,
-                            &keyword, &keyword_placeholder);
+    match.GetKeywordUiState(template_url_service, &keyword_state, &keyword,
+                            &keyword_placeholder);
     EXPECT_EQ(keyword, u"keyword");
     EXPECT_EQ(keyword_state, KeywordState::kHint);
     EXPECT_TRUE(keyword_placeholder.empty());
@@ -1283,8 +1283,8 @@ TEST_F(AutocompleteMatchTest, GetKeywordUiState) {
     AutocompleteMatch match;
     match.keyword = u"keyword";
     match.transition = ui::PAGE_TRANSITION_KEYWORD;
-    match.GetKeywordUiState(template_url_service, false, &keyword_state,
-                            &keyword, &keyword_placeholder);
+    match.GetKeywordUiState(template_url_service, &keyword_state, &keyword,
+                            &keyword_placeholder);
     EXPECT_EQ(keyword, u"keyword");
     EXPECT_EQ(keyword_state, KeywordState::kKeyword);
     EXPECT_TRUE(keyword_placeholder.empty());
@@ -1304,8 +1304,8 @@ TEST_F(AutocompleteMatchTest, GetKeywordUiState) {
     AutocompleteMatch match;
     match.keyword = u"aggregator";
     match.transition = ui::PAGE_TRANSITION_KEYWORD;
-    match.GetKeywordUiState(template_url_service, false, &keyword_state,
-                            &keyword, &keyword_placeholder);
+    match.GetKeywordUiState(template_url_service, &keyword_state, &keyword,
+                            &keyword_placeholder);
     EXPECT_EQ(keyword, u"aggregator");
     EXPECT_EQ(keyword_state, KeywordState::kKeyword);
 #if BUILDFLAG(IS_IOS)
@@ -1316,8 +1316,8 @@ TEST_F(AutocompleteMatchTest, GetKeywordUiState) {
 
     AutocompleteMatch hint_match;
     hint_match.associated_keyword = u"aggregator";
-    hint_match.GetKeywordUiState(template_url_service, false, &keyword_state,
-                                 &keyword, &keyword_placeholder);
+    hint_match.GetKeywordUiState(template_url_service, &keyword_state, &keyword,
+                                 &keyword_placeholder);
     EXPECT_EQ(keyword, u"aggregator");
     EXPECT_EQ(keyword_state, KeywordState::kHint);
 #if BUILDFLAG(IS_IOS)
