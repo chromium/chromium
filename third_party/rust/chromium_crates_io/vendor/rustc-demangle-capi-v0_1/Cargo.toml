@@ -11,7 +11,7 @@
 
 [package]
 name = "rustc-demangle-capi"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Torste Aikio <zokier@gmail.com>"]
 build = false
 autolib = false
@@ -35,4 +35,4 @@ crate-type = [
 path = "src/lib.rs"
 
 [dependencies.rustc-demangle]
-version = "0.1.16"
+version = "0.1.28"

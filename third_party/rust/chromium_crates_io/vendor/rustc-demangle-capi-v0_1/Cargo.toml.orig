@@ -1,6 +1,6 @@
 [package]
 name = "rustc-demangle-capi"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Torste Aikio <zokier@gmail.com>"]
 description = """
 C API for the `rustc-demangle` crate
@@ -13,4 +13,4 @@ name = "rustc_demangle"
 crate-type = ["staticlib", "cdylib"]
 
 [dependencies]
-rustc-demangle = { version = "0.1.16", path = "../.." }
+rustc-demangle = { version = "0.1.28", path = "../.." }
