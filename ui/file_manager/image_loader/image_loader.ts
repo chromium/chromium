@@ -24,8 +24,9 @@ export class ImageLoader {
 
   /**
    * Manages pending requests and runs them in order of priorities.
+   * Closes the offscreen document when idle to free renderer memory.
    */
-  private scheduler_: Scheduler = new Scheduler();
+  private scheduler_: Scheduler = new Scheduler(() => window.close());
 
   constructor() {
     // Initialize the cache and then start the scheduler.

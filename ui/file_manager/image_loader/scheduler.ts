@@ -20,6 +20,12 @@ export const MAXIMUM_IN_PARALLEL = resourceCount / 2;
 console.warn(`Image Loader maximum parallel tasks: ${MAXIMUM_IN_PARALLEL}`);
 
 /**
+ * Delay before invoking the idle callback when no tasks are pending or active.
+ * Matches the 30-second MV3 service worker idle timeout.
+ */
+export const IDLE_TIMEOUT_MS = 30_000;
+
+/**
  * Scheduler for ImageRequestTask objects. Fetches tasks from a queue and
  * processes them synchronously, taking into account priorities. The highest
  * priority is 0.
@@ -47,6 +53,13 @@ export class Scheduler {
 
   /** If the scheduler has been started. */
   private started_: boolean = false;
+
+  /** Timer ID for the pending idle callback, if any. */
+  private idleTimerId_?: number;
+
+  constructor(
+      private readonly idleCallback_?: VoidCallback,
+      private readonly idleTimeoutMs_: number = IDLE_TIMEOUT_MS) {}
 
   /**
    * Adds a task to the internal priority queue and executes it when tasks
@@ -124,6 +137,12 @@ export class Scheduler {
       task.loadFromCacheAndProcess(
           () => this.finish_(task),
           () => task.downloadAndProcess(() => this.finish_(task)));
+    }
+
+    // Reset the idle timer; start it if no tasks are active.
+    clearTimeout(this.idleTimerId_);
+    if (this.activeTasks_.length === 0 && this.idleCallback_) {
+      this.idleTimerId_ = setTimeout(this.idleCallback_, this.idleTimeoutMs_);
     }
   }
 

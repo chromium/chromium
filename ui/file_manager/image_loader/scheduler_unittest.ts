@@ -105,3 +105,31 @@ export function testParallelTasks() {
   }
   assertEquals(0, taskList[MAXIMUM_IN_PARALLEL]!.runTime);
 }
+
+/**
+ * Checks that the idle callback is invoked after all tasks complete and is
+ * reset if a new task is added before the timeout expires.
+ */
+export async function testIdleCallback() {
+  let idleCount = 0;
+  const idleTimeoutMs = 10;
+  const scheduler = new Scheduler(() => {
+    ++idleCount;
+  }, idleTimeoutMs);
+
+  const priority = 0;
+  scheduler.add(newTask('task-1', priority) as unknown as ImageRequestTask);
+  scheduler.start();
+
+  // Wait for task-1 to finish (setTimeout(resolve, 0)), then add task-2 before
+  // the 10ms idle timeout fires.
+  const shortDelayMs = 2;
+  await new Promise(resolve => setTimeout(resolve, shortDelayMs));
+  assertEquals(0, idleCount);
+  scheduler.add(newTask('task-2', priority) as unknown as ImageRequestTask);
+
+  // Wait for task-2 and the subsequent 10ms idle timeout to complete.
+  const longDelayMs = 15;
+  await new Promise(resolve => setTimeout(resolve, longDelayMs));
+  assertEquals(1, idleCount);
+}
