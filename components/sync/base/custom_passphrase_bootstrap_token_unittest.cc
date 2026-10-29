@@ -33,7 +33,6 @@ TEST(CustomPassphraseBootstrapTokenTest,
   sync_pb::NigoriKey proto;
   proto.set_encryption_key("enc_key");
   proto.set_mac_key("mac_key");
-  proto.set_deprecated_name("key_name");
 
   CustomPassphraseBootstrapToken token =
       CustomPassphraseBootstrapToken::FromProto(proto);
@@ -42,7 +41,6 @@ TEST(CustomPassphraseBootstrapTokenTest,
   const sync_pb::NigoriKey& exported = token.ToProto();
   EXPECT_EQ(exported.encryption_key(), "enc_key");
   EXPECT_EQ(exported.mac_key(), "mac_key");
-  EXPECT_EQ(exported.deprecated_name(), "key_name");
 }
 
 TEST(CustomPassphraseBootstrapTokenTest,

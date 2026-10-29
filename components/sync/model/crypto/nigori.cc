@@ -116,21 +116,14 @@ void Nigori::Keys::InitByDerivationUsingPbkdf2(const std::string& password) {
 
   // The varying iteration counts here may look odd but this is how Nigori does
   // domain separation when generating subkeys - instead of varying the salt, it
-  // varies the iteration count. This has an unfortunate  cryptographic
+  // varies the iteration count. This has an unfortunate cryptographic
   // property, namely that
   //
-  //   Kenc = Kuser ^ HMAC-SHA1(P, Kuser)
   //   Kmac = Kenc ^ HMAC-SHA1(P, Kenc)
   //
-  // but we still do the involved work 3 times over, which is obviously
-  // undesirable, but also it's baked into the Nigori spec.
-
-  // Kuser = PBKDF2(P, Suser, Nuser, 16)
-  user_key = std::make_optional<std::array<uint8_t, kKeySizeBytes>>();
-  crypto::kdf::Pbkdf2HmacSha1(
-      crypto::kdf::Pbkdf2HmacSha1Params{.iterations = 1002},
-      base::as_byte_span(password), kSalt, user_key.value(),
-      Nigori::MakeCryptoPassKey());
+  // but we still do the involved work 2 times over, which is obviously
+  // undesirable, but also it's baked into the Nigori spec. Note that Kuser
+  // (1002 iterations) is deprecated and no longer derived.
 
   // Kenc = PBKDF2(P, Suser, Nenc, 16)
   crypto::kdf::Pbkdf2HmacSha1(
@@ -147,11 +140,6 @@ void Nigori::Keys::InitByDerivationUsingPbkdf2(const std::string& password) {
 
 void Nigori::Keys::InitByDerivationUsingScrypt(const std::string& salt,
                                                const std::string& password) {
-  // `user_key` is not used anymore. However, old clients may fail to import a
-  // Nigori node without one. We initialize it to all zeroes to prevent a
-  // failure on those clients.
-  user_key = std::make_optional<std::array<uint8_t, kKeySizeBytes>>();
-
   // Derive a master key twice as long as the required key size, and split it
   // into two to get the encryption and MAC keys.
   const crypto::kdf::ScryptParams params{
@@ -169,15 +157,8 @@ void Nigori::Keys::InitByDerivationUsingScrypt(const std::string& salt,
   base::span(mac_key).copy_from(base::span(keys).subspan(kKeySizeBytes));
 }
 
-bool Nigori::Keys::InitByImport(const std::string& user_key_str,
-                                const std::string& encryption_key_str,
+bool Nigori::Keys::InitByImport(const std::string& encryption_key_str,
                                 const std::string& mac_key_str) {
-  if (user_key_str.size() == kKeySizeBytes) {
-    user_key = std::make_optional<std::array<uint8_t, kKeySizeBytes>>();
-    // `user_key` is not used anymore so we tolerate a failed import.
-    base::span(user_key.value()).copy_from(base::as_byte_span(user_key_str));
-  }
-
   if (encryption_key_str.size() != encryption_key.size() ||
       mac_key_str.size() != mac_key.size()) {
     return false;
@@ -208,12 +189,11 @@ std::unique_ptr<Nigori> Nigori::CreateByDerivation(
 // static
 std::unique_ptr<Nigori> Nigori::CreateByImport(
     NigoriPassKey pass_key,
-    const std::string& user_key,
     const std::string& encryption_key,
     const std::string& mac_key) {
   // base::WrapUnique() is used because the constructor is private.
   auto nigori = base::WrapUnique(new Nigori());
-  if (!nigori->keys_.InitByImport(user_key, encryption_key, mac_key)) {
+  if (!nigori->keys_.InitByImport(encryption_key, mac_key)) {
     return nullptr;
   }
   return nigori;
@@ -303,18 +283,10 @@ std::optional<std::vector<uint8_t>> Nigori::DecryptFromBytes(
   return crypto::aes_cbc::Decrypt(keys_.encryption_key, iv, ciphertext);
 }
 
-void Nigori::ExportKeys(std::string* user_key,
-                        std::string* encryption_key,
+void Nigori::ExportKeys(std::string* encryption_key,
                         std::string* mac_key) const {
   DCHECK(encryption_key);
   DCHECK(mac_key);
-  DCHECK(user_key);
-
-  if (keys_.user_key) {
-    user_key->assign(base::as_string_view(*keys_.user_key));
-  } else {
-    user_key->clear();
-  }
 
   encryption_key->assign(base::as_string_view(keys_.encryption_key));
   mac_key->assign(base::as_string_view(keys_.mac_key));

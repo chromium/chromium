@@ -216,8 +216,7 @@ MATCHER_P(HasBootstrapTokenKeyDerivedFrom, expected_key_params, "") {
   }
   std::unique_ptr<Nigori> expected_nigori = MakeNigoriKey(expected_key_params);
   sync_pb::NigoriKey expected_key;
-  expected_nigori->ExportKeys(expected_key.mutable_deprecated_user_key(),
-                              expected_key.mutable_encryption_key(),
+  expected_nigori->ExportKeys(expected_key.mutable_encryption_key(),
                               expected_key.mutable_mac_key());
   const sync_pb::NigoriKey& given_key = arg.ToProto();
   return given_key.encryption_key() == expected_key.encryption_key() &&

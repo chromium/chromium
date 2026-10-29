@@ -208,10 +208,9 @@ TEST(CryptographerImplTest, ShouldExportDefaultKey) {
   ASSERT_TRUE(cryptographer->CanEncrypt());
 
   sync_pb::NigoriKey exported_key = cryptographer->ExportDefaultKey();
-  EXPECT_FALSE(exported_key.has_deprecated_name());
 
-  // The exported key, even without name, should be importable, and the
-  // resulting key name should match the original.
+  // The exported key should be importable, and the resulting key name should
+  // match the original.
   EXPECT_THAT(NigoriKeyBag::CreateEmpty().AddKeyFromProto(exported_key),
               Eq(key_name));
 }
@@ -515,7 +514,6 @@ TEST(CryptographerImplTest, ShouldExportEncryptedKeyBagWithOneKey) {
   ASSERT_EQ(decrypted_keys_proto.key_size(), 1);
   std::unique_ptr<Nigori> decrypted_key =
       Nigori::CreateByImport(NigoriPassKey::ForTesting(),
-                             decrypted_keys_proto.key(0).deprecated_user_key(),
                              decrypted_keys_proto.key(0).encryption_key(),
                              decrypted_keys_proto.key(0).mac_key());
   EXPECT_THAT(decrypted_key, HasKeyName(key_name));
@@ -540,8 +538,8 @@ TEST(CryptographerImplTest, ShouldExportEncryptedKeyBagWithMultipleKeys) {
   std::vector<std::unique_ptr<Nigori>> decrypted_keys;
   for (const sync_pb::NigoriKey& decrypted_key : decrypted_keys_proto.key()) {
     decrypted_keys.push_back(Nigori::CreateByImport(
-        NigoriPassKey::ForTesting(), decrypted_key.deprecated_user_key(),
-        decrypted_key.encryption_key(), decrypted_key.mac_key()));
+        NigoriPassKey::ForTesting(), decrypted_key.encryption_key(),
+        decrypted_key.mac_key()));
   }
 
   EXPECT_THAT(decrypted_keys, UnorderedElementsAre(HasKeyName(key_name1),

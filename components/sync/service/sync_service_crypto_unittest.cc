@@ -76,9 +76,7 @@ CustomPassphraseBootstrapToken CreateBootstrapToken(
       NigoriPassKey::ForTesting(), derivation_params, passphrase);
 
   sync_pb::NigoriKey proto;
-  proto.set_deprecated_name(nigori->GetKeyName());
-  nigori->ExportKeys(proto.mutable_deprecated_user_key(),
-                     proto.mutable_encryption_key(), proto.mutable_mac_key());
+  nigori->ExportKeys(proto.mutable_encryption_key(), proto.mutable_mac_key());
   return CustomPassphraseBootstrapToken::FromProto(std::move(proto));
 }
 

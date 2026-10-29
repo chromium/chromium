@@ -1000,8 +1000,6 @@ VISIT_PROTO_FIELDS(const sync_pb::CrossUserSharingPrivateKey& proto) {
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::NigoriKey& proto) {
-  VISIT(deprecated_name);
-  VISIT_SECRET(deprecated_user_key);
   VISIT_SECRET(encryption_key);
   VISIT_SECRET(mac_key);
 }

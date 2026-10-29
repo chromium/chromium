@@ -51,9 +51,8 @@ class NigoriKeyBag {
   std::string AddKey(const KeyDerivationParams& key_derivation_params,
                      const std::string& password);
 
-  // Similar to AddKey(), but reads the key material from a proto. The
-  // `name` field is ignored since it's redundant. Returns the name of the key
-  // or an empty string in case of failure.
+  // Similar to AddKey(), but reads the key material from a proto. Returns the
+  // name of the key or an empty string in case of failure.
   std::string AddKeyFromProto(const sync_pb::NigoriKey& key);
 
   // Merges all keys from another keybag, which means adding all keys that we

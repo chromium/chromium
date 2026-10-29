@@ -261,13 +261,12 @@ TEST(SyncNigoriTest, ExportImport) {
       "password");
   ASSERT_THAT(nigori1, NotNull());
 
-  std::string user_key;
   std::string encryption_key;
   std::string mac_key;
-  nigori1->ExportKeys(&user_key, &encryption_key, &mac_key);
+  nigori1->ExportKeys(&encryption_key, &mac_key);
 
   std::unique_ptr<Nigori> nigori2 = Nigori::CreateByImport(
-      NigoriPassKey::ForTesting(), user_key, encryption_key, mac_key);
+      NigoriPassKey::ForTesting(), encryption_key, mac_key);
   ASSERT_THAT(nigori2, NotNull());
 
   std::string original("test");
@@ -285,45 +284,6 @@ TEST(SyncNigoriTest, ExportImport) {
   EXPECT_EQ(keyname1, nigori2->GetKeyName());
 }
 
-TEST(SyncNigoriTest, CreateByDerivationSetsUserKey) {
-  std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
-      NigoriPassKey::ForTesting(), KeyDerivationParams::CreateForPbkdf2(),
-      "password");
-  ASSERT_THAT(nigori, NotNull());
-
-  std::string user_key;
-  std::string encryption_key;
-  std::string mac_key;
-  nigori->ExportKeys(&user_key, &encryption_key, &mac_key);
-
-  EXPECT_NE(user_key, "");
-}
-
-TEST(SyncNigoriTest, ToleratesEmptyUserKey) {
-  std::unique_ptr<Nigori> nigori1 = Nigori::CreateByDerivation(
-      NigoriPassKey::ForTesting(), KeyDerivationParams::CreateForPbkdf2(),
-      "password");
-  ASSERT_THAT(nigori1, NotNull());
-
-  std::string user_key;
-  std::string encryption_key;
-  std::string mac_key;
-  nigori1->ExportKeys(&user_key, &encryption_key, &mac_key);
-  EXPECT_FALSE(user_key.empty());
-  EXPECT_FALSE(encryption_key.empty());
-  EXPECT_FALSE(mac_key.empty());
-
-  std::unique_ptr<Nigori> nigori2 = Nigori::CreateByImport(
-      NigoriPassKey::ForTesting(), /*user_key=*/"", encryption_key, mac_key);
-  ASSERT_THAT(nigori2, NotNull());
-
-  user_key = "non-empty-value";
-  nigori2->ExportKeys(&user_key, &encryption_key, &mac_key);
-  EXPECT_TRUE(user_key.empty());
-  EXPECT_FALSE(encryption_key.empty());
-  EXPECT_FALSE(mac_key.empty());
-}
-
 TEST(SyncNigoriTest, CreateByDerivationShouldDeriveCorrectKeyUsingPbkdf2) {
   const std::string kPassphrase = "hunter2";
 
@@ -332,13 +292,11 @@ TEST(SyncNigoriTest, CreateByDerivationShouldDeriveCorrectKeyUsingPbkdf2) {
       kPassphrase);
   ASSERT_THAT(nigori, NotNull());
 
-  std::string user_key;
   std::string encryption_key;
   std::string mac_key;
-  nigori->ExportKeys(&user_key, &encryption_key, &mac_key);
+  nigori->ExportKeys(&encryption_key, &mac_key);
   // These are reference values obtained by running PBKDF2 with Nigori's
   // parameters and the input values given above.
-  EXPECT_EQ("025599e143c4923d77f65b99d97019a3", base::HexEncodeLower(user_key));
   EXPECT_EQ("4596bf346572497d92b2a0e2146d93c1",
             base::HexEncodeLower(encryption_key));
   EXPECT_EQ("2292ad9db96fe590b22a58db50f6f545", base::HexEncodeLower(mac_key));
@@ -353,14 +311,9 @@ TEST(SyncNigoriTest, CreateByDerivationShouldDeriveCorrectKeyUsingScrypt) {
       kPassphrase);
   ASSERT_THAT(nigori, NotNull());
 
-  std::string user_key;
   std::string encryption_key;
   std::string mac_key;
-  nigori->ExportKeys(&user_key, &encryption_key, &mac_key);
-  // user_key is not used anymore, but is being set for backwards compatibility
-  // (because legacy clients cannot import a Nigori node without one).
-  // Therefore, we just initialize it to all zeroes.
-  EXPECT_EQ("00000000000000000000000000000000", base::HexEncodeLower(user_key));
+  nigori->ExportKeys(&encryption_key, &mac_key);
   // These are reference values obtained by running scrypt with Nigori's
   // parameters and the input values given above.
   EXPECT_EQ("8aa735e0091339a5e51da3b3dd1b328a",
@@ -422,14 +375,13 @@ TEST(SyncNigoriTest, GenerateScryptSaltShouldReturnNontrivialSalt) {
 }
 
 TEST(SyncNigoriTest, ShouldFailToImportEmpty) {
-  EXPECT_THAT(Nigori::CreateByImport(NigoriPassKey::ForTesting(), "", "", ""),
+  EXPECT_THAT(Nigori::CreateByImport(NigoriPassKey::ForTesting(), "", ""),
               IsNull());
 }
 
 TEST(SyncNigoriTest, ShouldFailToImportInvalid) {
-  EXPECT_THAT(
-      Nigori::CreateByImport(NigoriPassKey::ForTesting(), "foo", "bar", "baz"),
-      IsNull());
+  EXPECT_THAT(Nigori::CreateByImport(NigoriPassKey::ForTesting(), "foo", "bar"),
+              IsNull());
 }
 
 }  // anonymous namespace

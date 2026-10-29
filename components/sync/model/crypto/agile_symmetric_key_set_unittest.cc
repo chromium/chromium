@@ -79,13 +79,12 @@ TEST(AgileSymmetricKeySetTest, ShouldRotateAndEncryptDecryptAEAD) {
 }
 
 TEST(AgileSymmetricKeySetTest, ShouldSupportLegacyNigoriCompatibility) {
-  const std::string kUserKey = "1234567890123456";
   const std::string kEncryptionKey = "abcdefghijklmnop";
   const std::string kMacKey = "qrstuvwxyz123456";
 
   // Create legacy Nigori class instance.
   const std::unique_ptr<Nigori> raw_nigori = Nigori::CreateByImport(
-      NigoriPassKey::ForTesting(), kUserKey, kEncryptionKey, kMacKey);
+      NigoriPassKey::ForTesting(), kEncryptionKey, kMacKey);
   ASSERT_NE(raw_nigori, nullptr);
   const std::string expected_legacy_name = raw_nigori->GetKeyName();
 
@@ -97,7 +96,6 @@ TEST(AgileSymmetricKeySetTest, ShouldSupportLegacyNigoriCompatibility) {
 
   sync_pb::AgileSymmetricKey* agile_key_proto = key_entry->mutable_key_data();
   sync_pb::NigoriKey* legacy_proto = agile_key_proto->mutable_legacy_nigori();
-  legacy_proto->set_deprecated_user_key(kUserKey);
   legacy_proto->set_encryption_key(kEncryptionKey);
   legacy_proto->set_mac_key(kMacKey);
 

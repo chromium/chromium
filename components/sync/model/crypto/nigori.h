@@ -66,7 +66,6 @@ class Nigori {
   // Returns null in case of failure.
   static std::unique_ptr<Nigori> CreateByImport(
       NigoriPassKey pass_key,
-      const std::string& user_key,
       const std::string& encryption_key,
       const std::string& mac_key);
 
@@ -92,9 +91,7 @@ class Nigori {
       base::span<const uint8_t> encrypted) const;
 
   // Exports the raw derived keys.
-  void ExportKeys(std::string* user_key,
-                  std::string* encryption_key,
-                  std::string* mac_key) const;
+  void ExportKeys(std::string* encryption_key, std::string* mac_key) const;
 
   // Same as CreateByDerivation() but allows overriding the clock.
   static std::unique_ptr<Nigori> CreateByDerivationForTesting(
@@ -117,19 +114,13 @@ class Nigori {
 
     static inline constexpr size_t kKeySizeBytes = 16;
 
-    // TODO(vitaliii): user_key isn't used any more, but legacy clients will
-    // fail to import a nigori node without one. We preserve it for the sake of
-    // those clients, but it should be removed once enough clients have upgraded
-    // to code that doesn't enforce its presence.
-    std::optional<std::array<uint8_t, kKeySizeBytes>> user_key;
     std::array<uint8_t, kKeySizeBytes> encryption_key;
     std::array<uint8_t, kKeySizeBytes> mac_key;
 
     void InitByDerivationUsingPbkdf2(const std::string& password);
     void InitByDerivationUsingScrypt(const std::string& salt,
                                      const std::string& password);
-    bool InitByImport(const std::string& user_key_str,
-                      const std::string& encryption_key_str,
+    bool InitByImport(const std::string& encryption_key_str,
                       const std::string& mac_key_str);
   };
 

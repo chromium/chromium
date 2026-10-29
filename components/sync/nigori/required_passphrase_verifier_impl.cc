@@ -41,9 +41,8 @@ bool RequiredPassphraseVerifierImpl::IsValidDecryptionBootstrapToken(
     return false;
   }
   const sync_pb::NigoriKey& proto = bootstrap_token.ToProto();
-  std::unique_ptr<Nigori> nigori =
-      Nigori::CreateByImport(NigoriPassKey(), proto.deprecated_user_key(),
-                             proto.encryption_key(), proto.mac_key());
+  std::unique_ptr<Nigori> nigori = Nigori::CreateByImport(
+      NigoriPassKey(), proto.encryption_key(), proto.mac_key());
   if (!nigori) {
     return false;
   }

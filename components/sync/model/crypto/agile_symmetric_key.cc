@@ -130,13 +130,8 @@ class AgileSymmetricKey::LegacyNigoriCipher : public AgileSymmetricKey::Cipher {
   sync_pb::AgileSymmetricKey ToProto() const override {
     sync_pb::AgileSymmetricKey proto;
     auto* legacy_proto = proto.mutable_legacy_nigori();
-
-    std::string user_key, encryption_key, mac_key;
-    nigori_->ExportKeys(&user_key, &encryption_key, &mac_key);
-
-    legacy_proto->set_deprecated_user_key(user_key);
-    legacy_proto->set_encryption_key(encryption_key);
-    legacy_proto->set_mac_key(mac_key);
+    nigori_->ExportKeys(legacy_proto->mutable_encryption_key(),
+                        legacy_proto->mutable_mac_key());
     return proto;
   }
 
@@ -164,9 +159,9 @@ std::unique_ptr<AgileSymmetricKey> AgileSymmetricKey::CreateRandom() {
 // static
 std::unique_ptr<AgileSymmetricKey> AgileSymmetricKey::FromLegacyNigoriProto(
     const sync_pb::NigoriKey& proto) {
-  return CreateFromCipherIfNotNull(LegacyNigoriCipher::Create(
-      Nigori::CreateByImport(NigoriPassKey(), proto.deprecated_user_key(),
-                             proto.encryption_key(), proto.mac_key())));
+  return CreateFromCipherIfNotNull(
+      LegacyNigoriCipher::Create(Nigori::CreateByImport(
+          NigoriPassKey(), proto.encryption_key(), proto.mac_key())));
 }
 
 // static
