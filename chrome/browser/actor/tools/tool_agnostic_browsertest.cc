@@ -25,6 +25,7 @@
 #include "components/actor/core/task_id.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
@@ -36,6 +37,7 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -159,6 +161,15 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
 
   WebContents* foreground_contents = web_contents();
   ASSERT_NE(foreground_contents, background_contents);
+  // Clear native widget focus and explicitly focus `foreground_contents`'s
+  // `RenderWidgetHost` so that `foreground_contents` has page focus regardless
+  // of OS window activation state in parallel browser_tests shards, and cannot
+  // lose it if another test window steals OS activation mid-test.
+  if (views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(
+          foreground_contents->GetNativeView())) {
+    widget->GetFocusManager()->ClearFocus();
+  }
+  foreground_contents->GetPrimaryMainFrame()->GetRenderWidgetHost()->Focus();
   ASSERT_FALSE(background_contents->GetPrimaryMainFrame()
                    ->GetRenderWidgetHost()
                    ->GetView()
