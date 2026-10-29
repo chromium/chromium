@@ -8,7 +8,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 
@@ -26,14 +25,12 @@ class OdfsFileDeleter
                      base::OnceCallback<void(bool delete_successful)> callback);
 
  private:
-  friend class OdfsFileDeleterTest;
-  friend class OdfsFileDeleterTest_Delete_Test;
-
   OdfsFileDeleter(const base::FilePath& path,
                   base::OnceCallback<void(bool delete_successful)> callback);
   ~OdfsFileDeleter() override;
 
   void StartDeletion();
+  void FinishDeletion(bool delete_successful);
 
   // IOTaskController::Observer:
   void OnIOTaskStatus(
@@ -41,11 +38,9 @@ class OdfsFileDeleter
 
   ::file_manager::io_task::IOTaskId task_id_;
   const base::FilePath path_;
-  raw_ptr<::file_manager::io_task::IOTaskController> io_task_controller_;
+  raw_ptr<::file_manager::io_task::IOTaskController> io_task_controller_ =
+      nullptr;
   base::OnceCallback<void(bool delete_successful)> callback_;
-
-  // Has to be the last.
-  base::WeakPtrFactory<OdfsFileDeleter> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::cloud_upload

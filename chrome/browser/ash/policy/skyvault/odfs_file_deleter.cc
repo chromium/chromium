@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/delete_io_task.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
@@ -22,7 +21,7 @@ namespace ash::cloud_upload {
 OdfsFileDeleter::OdfsFileDeleter(
     const base::FilePath& path,
     base::OnceCallback<void(bool delete_successful)> callback)
-    : path_(path), callback_(std::move(callback)), weak_ptr_factory_(this) {}
+    : path_(path), callback_(std::move(callback)) {}
 
 OdfsFileDeleter::~OdfsFileDeleter() = default;
 
@@ -38,7 +37,7 @@ void OdfsFileDeleter::StartDeletion() {
       FilePathToFileSystemURL(profile, file_system_context, path_);
   if (!filesystem_url.is_valid()) {
     LOG(ERROR) << "Unable to get filesystem URL for deleted file";
-    std::move(callback_).Run(/*delete_successful=*/false);
+    FinishDeletion(/*delete_successful=*/false);
     return;
   }
 
@@ -53,12 +52,31 @@ void OdfsFileDeleter::StartDeletion() {
       file_manager::VolumeManager::Get(profile);
   if (!volume_manager) {
     LOG(ERROR) << "Unable to get volume manager for deleted file";
-    std::move(callback_).Run(/*delete_successful=*/false);
+    FinishDeletion(/*delete_successful=*/false);
     return;
   }
   io_task_controller_ = volume_manager->io_task_controller();
+  if (!io_task_controller_) {
+    LOG(ERROR) << "Unable to get IO task controller for deleted file";
+    FinishDeletion(/*delete_successful=*/false);
+    return;
+  }
   task_id_ = io_task_controller_->Add(std::move(task));
   io_task_controller_->AddObserver(this);
+}
+
+void OdfsFileDeleter::FinishDeletion(bool delete_successful) {
+  if (io_task_controller_) {
+    io_task_controller_->RemoveObserver(this);
+    io_task_controller_ = nullptr;
+  }
+
+  if (callback_) {
+    std::move(callback_).Run(delete_successful);
+  }
+
+  // Delete this object as the task is complete and callback is executed.
+  delete this;
 }
 
 void OdfsFileDeleter::OnIOTaskStatus(
@@ -69,21 +87,14 @@ void OdfsFileDeleter::OnIOTaskStatus(
     return;
   }
 
-  // Ignore intermediate states.
-  if (status.state == file_manager::io_task::State::kQueued ||
-      status.state == file_manager::io_task::State::kScanning ||
-      status.state == file_manager::io_task::State::kInProgress ||
-      status.state == file_manager::io_task::State::kPaused) {
-    return;
-  }
-
   // Determine the delete_successful result based on the task state.
-  bool delete_successful;
+  bool delete_successful = false;
   switch (status.state) {
     case file_manager::io_task::State::kQueued:
     case file_manager::io_task::State::kScanning:
     case file_manager::io_task::State::kInProgress:
     case file_manager::io_task::State::kPaused:
+      // Ignore intermediate states.
       return;
     case file_manager::io_task::State::kSuccess:
       delete_successful = true;
@@ -92,17 +103,12 @@ void OdfsFileDeleter::OnIOTaskStatus(
     case file_manager::io_task::State::kNeedPassword:
     case file_manager::io_task::State::kCancelled:
       delete_successful = false;
-      // Handle specific error cases if needed.
       LOG(ERROR) << "OneDrive file deletion failed with state: "
                  << status.state;
       break;
   }
 
-  std::move(callback_).Run(delete_successful);
-
-  io_task_controller_->RemoveObserver(this);
-  // Delete this object as the task is complete and callback is executed.
-  delete this;
+  FinishDeletion(delete_successful);
 }
 
 // Static method to initiate the deletion process.

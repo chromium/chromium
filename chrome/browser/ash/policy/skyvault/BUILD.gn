@@ -96,6 +96,7 @@ source_set("unit_tests") {
 
   sources = [
     "local_files_migration_manager_unittest.cc",
+    "odfs_file_deleter_unittest.cc",
     "signin_notification_helper_unittest.cc",
     "skyvault_capture_upload_notification_unittest.cc",
     "skyvault_rename_handler_unittest.cc",
