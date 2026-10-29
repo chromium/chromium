@@ -530,6 +530,8 @@ public class FullscreenSigninMediator
     }
 
     void onAccountAdded(String accountEmail) {
+        if (mDestroyed) return;
+        SigninMetricsUtils.logSigninFunnelEvent(mAccessPoint, SigninFunnelEvent.ACCOUNT_ADDED);
         var accounts = getAccountsIfLoadedOrEmpty();
         mAddedAccount = AccountUtils.findAccountByEmail(accounts, accountEmail);
         if (mAddedAccount == null) {

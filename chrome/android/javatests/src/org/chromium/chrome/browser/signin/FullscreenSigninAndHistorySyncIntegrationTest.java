@@ -310,7 +310,8 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
                         .expectIntRecords(
                                 "Signin.SigninFunnel.FullscreenSigninPromo",
                                 SigninFunnelEvent.PROMO_SHOWN_NO_ACCOUNT,
-                                SigninFunnelEvent.ADD_ACCOUNT_CLICKED)
+                                SigninFunnelEvent.ADD_ACCOUNT_CLICKED,
+                                SigninFunnelEvent.ACCOUNT_ADDED)
                         .build();
 
         launchActivity();
@@ -742,7 +743,8 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
                                 SigninFunnelEvent.PROMO_SHOWN_WITH_ACCOUNT,
                                 SigninFunnelEvent.CHOOSE_OTHER_ACCOUNT_CLICKED,
                                 SigninFunnelEvent.ACCOUNT_PICKER_SHOWN,
-                                SigninFunnelEvent.ACCOUNT_PICKER_ADD_ACCOUNT_CLICKED)
+                                SigninFunnelEvent.ACCOUNT_PICKER_ADD_ACCOUNT_CLICKED,
+                                SigninFunnelEvent.ACCOUNT_ADDED)
                         .build();
         launchActivity();
 

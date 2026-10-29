@@ -637,6 +637,33 @@ public class FullscreenSigninMediatorTest {
                 .logSigninFunnelEvent(anyInt(), eq(SigninFunnelEvent.ACCOUNT_PICKER_DISMISSED));
     }
 
+    @Test
+    public void testSigninFunnel_accountAdded() {
+        setUpSigninSupported(true);
+        createMediator();
+        initializeNative();
+
+        mMediator.onAccountAdded(TestAccounts.ACCOUNT1.getEmail());
+
+        verify(mSigninMetricsUtilsJniMock)
+                .logSigninFunnelEvent(
+                        SigninAccessPoint.START_PAGE, SigninFunnelEvent.ACCOUNT_ADDED);
+    }
+
+    @Test
+    public void testSigninFunnel_accountAdded_notLoggedAfterDestroy() {
+        setUpSigninSupported(true);
+        createMediator();
+        initializeNative();
+
+        FullscreenSigninMediator mediator = mMediator;
+        destroyMediator();
+        mediator.onAccountAdded(TestAccounts.ACCOUNT1.getEmail());
+
+        verify(mSigninMetricsUtilsJniMock, never())
+                .logSigninFunnelEvent(anyInt(), eq(SigninFunnelEvent.ACCOUNT_ADDED));
+    }
+
     private void setUpSigninSupported(boolean isSigninSupported) {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(isSigninSupported);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
