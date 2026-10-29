@@ -702,8 +702,16 @@ suite('ProfilePickerProfilesReorderingTest', function() {
 
       const cycle = dragData.dragEventCycles[c]!;
       // - Perform the Drag Start.
-      cards[cycle.dragIndex]!.dispatchEvent(new DragEvent('dragstart'));
+      const dragStartEvent = new DragEvent('dragstart');
+      Object.defineProperty(dragStartEvent, 'dataTransfer', {
+        value: {
+          effectAllowed: 'uninitialized',
+          setDragImage: () => {},
+        },
+      });
+      cards[cycle.dragIndex]!.dispatchEvent(dragStartEvent);
       assertTrue(cards[cycle.dragIndex]!.classList.contains('dragging'));
+      assertEquals(dragStartEvent.dataTransfer!.effectAllowed, 'move');
 
       // - Perform the list of Drag Enter events with position checks.
       for (let e = 0; e < cycle.dragEnterEvents.length; ++e) {

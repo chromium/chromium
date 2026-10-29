@@ -184,7 +184,7 @@ export class DragDropReorderTileListDelegate {
     // cycle.
     this.setAllTilesTransitions_();
 
-    // `event.dataTransfer` is null in tests.
+    // `event.dataTransfer` may be null in tests.
     if (event.dataTransfer) {
       const pos = tile.getBoundingClientRect();
       // Make the dragging image the tile itself so that reaction to any sub
@@ -192,6 +192,8 @@ export class DragDropReorderTileListDelegate {
       // not the sub element only (e.g. images).
       event.dataTransfer.setDragImage(
           tile, event.x - pos.left, event.y - pos.top);
+      // Avoid showing the 'copy' (+) cursor icon when dragging (e.g. on MacOS).
+      event.dataTransfer.effectAllowed = 'move';
     }
   }
 
