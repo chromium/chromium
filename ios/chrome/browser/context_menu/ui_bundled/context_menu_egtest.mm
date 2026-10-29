@@ -350,7 +350,10 @@ void ClearContextMenu() {
 
 // Taps on `context_menu_item_button` context menu item.
 void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:context_menu_item_button];
+  // Waits for the item to be visible, so the menu has finished animating in
+  // before the tap is issued.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:context_menu_item_button];
   [[EarlGrey selectElementWithMatcher:context_menu_item_button]
       performAction:grey_tap()];
 }
