@@ -460,10 +460,10 @@
 #include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/gfx/color_utils.h"
@@ -4507,7 +4507,7 @@ bool ChromeContentBrowserClient::CanCreateWindow(
     const GURL& target_url,
     const content::Referrer& referrer,
     const std::string& frame_name,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& features,
     bool user_gesture,
     bool opener_suppressed,
@@ -4629,7 +4629,7 @@ bool ChromeContentBrowserClient::CanCreateWindow(
   // For Automatic Document Picture-in-Picture, the window creation is
   // authorized by the browser rather than a user gesture. If AutoPip
   // preconditions are met, permit the window creation.
-  if (disposition == WindowOpenDisposition::kNewPictureInPicture) {
+  if (disposition == ui::mojom::WindowOpenDisposition::kNewPictureInPicture) {
     auto* auto_pip_tab_helper =
         AutoPictureInPictureTabHelper::FromWebContents(web_contents);
     if (auto_pip_tab_helper &&
@@ -7622,7 +7622,8 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
             *new_url,
             content::Referrer(web_contents->GetLastCommittedURL(),
                               network::mojom::ReferrerPolicy::kDefault),
-            WindowOpenDisposition::kNewForegroundTab, page_transition,
+            ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+            page_transition,
             /*is_renderer_initiated=*/true);
         // Fallback to an opaque origin if the initiating origin is not
         // provided (e.g., for external OS-initiated or browser-initiated
@@ -9648,7 +9649,8 @@ void ChromeContentBrowserClient::ShowCaptionSettings(
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(captions::GetCaptionSettingsUrl()),
-          WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK);
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+          ui::PAGE_TRANSITION_LINK);
   web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 #endif
 }

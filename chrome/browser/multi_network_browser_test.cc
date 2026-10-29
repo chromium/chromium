@@ -62,8 +62,8 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace {
 
@@ -530,7 +530,7 @@ class PopupTestWebContentsDelegate : public content::WebContentsDelegate {
       content::WebContents* source,
       std::unique_ptr<content::WebContents> new_contents,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override {
@@ -570,7 +570,8 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest,
 
   content::OpenURLParams open_params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::kNewPopup, ui::PAGE_TRANSITION_LINK);
+          url, ui::mojom::WindowOpenDisposition::kNewPopup,
+          ui::PAGE_TRANSITION_LINK);
   content::WebContents* popup_contents =
       web_contents->OpenURL(open_params, /*navigation_handle_callback=*/{});
   ASSERT_TRUE(popup_contents);
@@ -616,7 +617,8 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest,
 
   content::OpenURLParams open_params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::kNewPopup, ui::PAGE_TRANSITION_LINK);
+          url, ui::mojom::WindowOpenDisposition::kNewPopup,
+          ui::PAGE_TRANSITION_LINK);
   open_params.has_rel_opener = false;
   content::WebContents* popup_contents =
       web_contents->OpenURL(open_params, /*navigation_handle_callback=*/{});

@@ -35,8 +35,8 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "net/base/apple/url_conversions.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
-#include "ui/base/window_open_disposition.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_show_state_waiter.h"
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
 
   // Open a URL in Incognito window.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), simple, WindowOpenDisposition::kOffTheRecord,
+      browser(), simple, ui::mojom::WindowOpenDisposition::kOffTheRecord,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
 
   // Check that there are exactly 2 browsers (regular and incognito).

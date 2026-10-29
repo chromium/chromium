@@ -22,8 +22,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
@@ -99,11 +99,11 @@ IN_PROC_BROWSER_TEST_F(RepostFormWarningTest, TestLoginAfterRepost) {
 
   // Navigate to a page that requires authentication, bringing up another
   // tab-modal sheet.
-  browser()->OpenURL(
-      content::OpenURLParams::CreateBrowserInitiated(
-          embedded_test_server()->GetURL("/auth-basic"),
-          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
-      /*navigation_handle_callback=*/{});
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         embedded_test_server()->GetURL("/auth-basic"),
+                         ui::mojom::WindowOpenDisposition::kCurrentTab,
+                         ui::PAGE_TRANSITION_TYPED),
+                     /*navigation_handle_callback=*/{});
   ASSERT_TRUE(base::test::RunUntil(
       []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
 
@@ -114,11 +114,11 @@ IN_PROC_BROWSER_TEST_F(RepostFormWarningTest, TestLoginAfterRepost) {
   // because that waits for the current page to stop loading first, which won't
   // happen while the auth dialog is up.
   content::TestNavigationObserver navigation_observer(web_contents);
-  browser()->OpenURL(
-      content::OpenURLParams::CreateBrowserInitiated(
-          embedded_test_server()->GetURL("/bar"),
-          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
-      /*navigation_handle_callback=*/{});
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         embedded_test_server()->GetURL("/bar"),
+                         ui::mojom::WindowOpenDisposition::kCurrentTab,
+                         ui::PAGE_TRANSITION_TYPED),
+                     /*navigation_handle_callback=*/{});
   navigation_observer.Wait();
 }
 

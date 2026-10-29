@@ -11,7 +11,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/command_observer.h"
 #include "chrome/browser/command_updater_delegate.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 struct CommandUpdaterImpl::Command {
   // Empty optional means not specified yet and thus implicitly disabled.
@@ -39,7 +39,7 @@ bool CommandUpdaterImpl::IsCommandEnabled(int id) const {
 
 bool CommandUpdaterImpl::ExecuteCommandWithDispositionAndContext(
     int id,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     std::optional<actions::ActionInvocationContext> context,
     base::TimeTicks time_stamp) {
   if (SupportsCommand(id) && IsCommandEnabled(id)) {

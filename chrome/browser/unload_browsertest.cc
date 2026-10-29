@@ -30,7 +30,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 using content::BrowserThread;
 
@@ -178,7 +178,7 @@ class UnloadTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
     GURL url(embedded_test_server()->GetURL("/title2.html"));
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::kCurrentTab, 0);
+        browser(), url, ui::mojom::WindowOpenDisposition::kCurrentTab, 0);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     CheckTitle("Title Of Awesomeness");
   }

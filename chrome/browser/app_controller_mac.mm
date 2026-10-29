@@ -144,7 +144,7 @@
 #import "ui/base/cocoa/nsmenuitem_additions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_provider_source.h"
@@ -2827,7 +2827,7 @@ void TabRestorer::DoRestoreTab(Profile* profile, SessionID session_id) {
       browser ? BrowserLiveTabContext::From(browser) : nullptr;
   if (session_id.is_valid()) {
     service->RestoreEntryById(context, session_id,
-                              WindowOpenDisposition::kUnknown);
+                              ui::mojom::WindowOpenDisposition::kUnknown);
   } else {
     service->RestoreMostRecentEntry(context);
   }

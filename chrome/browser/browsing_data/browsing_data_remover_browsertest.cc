@@ -89,7 +89,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -925,7 +925,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, HistoryDeletion) {
   GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
   // Create a new tab to avoid confusion from having a NTP navigation entry.
   ui_test_utils::NavigateToURLWithDisposition(
-      GetBrowser(), url, WindowOpenDisposition::kNewForegroundTab,
+      GetBrowser(), url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_FALSE(HasDataForType(kType));
   SetDataForType(kType);

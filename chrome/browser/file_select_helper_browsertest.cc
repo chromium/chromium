@@ -12,6 +12,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
 
 class FileSelectHelperBrowserTest : public InProcessBrowserTest {
@@ -41,7 +42,7 @@ IN_PROC_BROWSER_TEST_F(FileSelectHelperBrowserTest, NoDialogForBackgroundTab) {
   // active tab.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("/title1.html"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   ASSERT_NE(background_contents,
             browser()->tab_strip_model()->GetActiveWebContents());

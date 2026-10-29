@@ -57,6 +57,7 @@
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class ChromeContentBrowserClientParts;
 #if !BUILDFLAG(IS_ANDROID)
@@ -517,7 +518,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
                        const GURL& target_url,
                        const content::Referrer& referrer,
                        const std::string& frame_name,
-                       WindowOpenDisposition disposition,
+                       ui::mojom::WindowOpenDisposition disposition,
                        const blink::mojom::WindowFeatures& features,
                        bool user_gesture,
                        bool opener_suppressed,

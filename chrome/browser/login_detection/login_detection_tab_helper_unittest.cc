@@ -16,8 +16,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace login_detection {
 
@@ -200,7 +200,8 @@ TEST_F(LoginDetectionTabHelperTest, PopUpOAuthLogin) {
   opener_tab_helper->DidOpenRequestedURL(
       popup_web_contents.get(), web_contents()->GetPrimaryMainFrame(),
       GURL("https://oauth.com/authenticate?client_id=123"), content::Referrer(),
-      WindowOpenDisposition::kNewPopup, ui::PAGE_TRANSITION_LINK, false, true);
+      ui::mojom::WindowOpenDisposition::kNewPopup, ui::PAGE_TRANSITION_LINK,
+      false, true);
 
   // Navigate the popup.
   auto popup_simulator = content::NavigationSimulator::CreateBrowserInitiated(

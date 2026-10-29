@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_COMMAND_UPDATER_DELEGATE_H_
 
 #include "base/time/time.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 // Implement this interface so that your object can execute commands when
 // needed.
@@ -16,7 +16,7 @@ class CommandUpdaterDelegate {
   // using the given disposition and timestamp.
   virtual void HandleCommandWithDisposition(
       int id,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       base::TimeTicks time_stamp = base::TimeTicks::Now()) = 0;
 
  protected:

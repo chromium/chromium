@@ -10,7 +10,7 @@
 
 #include "base/time/time.h"
 #include "ui/actions/actions.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 class CommandObserver;
 
@@ -47,7 +47,8 @@ class CommandUpdater {
       std::optional<actions::ActionInvocationContext> context = std::nullopt,
       base::TimeTicks time_stamp = base::TimeTicks::Now()) {
     return ExecuteCommandWithDispositionAndContext(
-        id, WindowOpenDisposition::kCurrentTab, std::move(context), time_stamp);
+        id, ui::mojom::WindowOpenDisposition::kCurrentTab, std::move(context),
+        time_stamp);
   }
 
   // Performs the action associated with this command ID using the given
@@ -56,7 +57,7 @@ class CommandUpdater {
   // enabled).
   bool ExecuteCommandWithDisposition(
       int id,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       std::optional<actions::ActionInvocationContext> context = std::nullopt,
       base::TimeTicks time_stamp = base::TimeTicks::Now()) {
     return ExecuteCommandWithDispositionAndContext(
@@ -90,7 +91,7 @@ class CommandUpdater {
  protected:
   virtual bool ExecuteCommandWithDispositionAndContext(
       int id,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       std::optional<actions::ActionInvocationContext> context,
       base::TimeTicks time_stamp) = 0;
 };

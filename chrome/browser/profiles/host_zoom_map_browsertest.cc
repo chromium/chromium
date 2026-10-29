@@ -46,7 +46,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 using content::HostZoomMap;
@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(HostZoomMapBrowserTest, ToggleDefaultZoomLevel) {
 
   GURL test_url2 = SubstituteTestServerPort(GURL("http://host2/"));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), test_url2, WindowOpenDisposition::kNewForegroundTab,
+      browser(), test_url2, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_TRUE(
       blink::ZoomValuesEqual(default_zoom_level, GetZoomLevel(test_url2)));

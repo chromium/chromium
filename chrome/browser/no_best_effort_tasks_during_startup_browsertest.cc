@@ -32,7 +32,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace {
 
@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(NoBestEffortTasksDuringSessionRestoreStartupTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSlowURL()));
   chrome::AddTabAt(browser(), GetSlowURL(), -1, true);
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GetSlowURL(), WindowOpenDisposition::kCurrentTab,
+      browser(), GetSlowURL(), ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 }
 

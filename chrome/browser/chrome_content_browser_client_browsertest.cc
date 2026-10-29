@@ -126,8 +126,8 @@
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
@@ -2485,7 +2485,7 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientBrowserTest, OpenURL) {
   for (const GURL& url : urls) {
     content::OpenURLParams params =
         content::OpenURLParams::CreateBrowserInitiated(
-            url, WindowOpenDisposition::kNewForegroundTab,
+            url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
             ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
     // TODO(peter): We should have more in-depth browser tests for the window
     // opening functionality, which also covers Android. This test can currently

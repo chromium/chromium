@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/command_updater.h"
 #include "ui/actions/actions.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class CommandObserver;
 class CommandUpdaterDelegate;
@@ -54,7 +54,7 @@ class CommandUpdaterImpl : public CommandUpdater {
 
   bool ExecuteCommandWithDispositionAndContext(
       int id,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       std::optional<actions::ActionInvocationContext> context,
       base::TimeTicks time_stamp) override;
 

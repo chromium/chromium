@@ -25,7 +25,6 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 class FontPrewarmerTabHelperTest : public InProcessBrowserTest {
  public:

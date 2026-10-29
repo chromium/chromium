@@ -8,12 +8,12 @@
 #include "chrome/browser/command_observer.h"
 #include "chrome/browser/command_updater_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 class FakeCommandUpdaterDelegate : public CommandUpdaterDelegate {
  public:
   void HandleCommandWithDisposition(int id,
-                                    WindowOpenDisposition,
+                                    ui::mojom::WindowOpenDisposition,
                                     base::TimeTicks) override {
     EXPECT_EQ(1, id);
   }

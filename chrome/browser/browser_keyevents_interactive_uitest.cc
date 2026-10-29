@@ -32,7 +32,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/ime/text_input_type.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 using content::NavigationController;
@@ -914,7 +914,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, FocusAfterHideAndShow) {
   // is hidden or miniaturized. If there is no 2nd tab, there is no 2nd RWHV to
   // focus, hence the 1st RWHV won't lose focus.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
 

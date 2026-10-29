@@ -100,8 +100,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
@@ -1640,7 +1640,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerHandoffBrowserTest, TestHandoffURLs) {
   // Test that opening a new tab updates the handoff URL.
   GURL test_url2 = embedded_test_server()->GetURL("/title2.html");
   NavigateParams params(browser(), test_url2, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   ui_test_utils::NavigateToURL(&params);
   EXPECT_EQ(g_handoff_url, test_url2);
 
@@ -1661,7 +1661,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerHandoffBrowserTest, TestHandoffURLs) {
   auto browser_created_observer =
       std::make_optional<ui_test_utils::BrowserCreatedObserver>();
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(test_url3), WindowOpenDisposition::kNewWindow,
+      browser(), GURL(test_url3), ui::mojom::WindowOpenDisposition::kNewWindow,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   BrowserWindowInterface* const browser2 = browser_created_observer->Wait();
   EXPECT_EQ(g_handoff_url, test_url3);
@@ -1679,7 +1679,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerHandoffBrowserTest, TestHandoffURLs) {
   GURL test_url4 = embedded_test_server()->GetURL("/simple.html");
   browser_created_observer.emplace();
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(test_url4), WindowOpenDisposition::kOffTheRecord,
+      browser(), GURL(test_url4),
+      ui::mojom::WindowOpenDisposition::kOffTheRecord,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
   BrowserWindowInterface* const browser3 = browser_created_observer->Wait();
   EXPECT_EQ(g_handoff_url, GURL());
@@ -1688,7 +1689,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerHandoffBrowserTest, TestHandoffURLs) {
   // Open a new tab in the incognito window.
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   ui_test_utils::NavigateToURLWithDisposition(
-      browser3, test_url4, WindowOpenDisposition::kNewForegroundTab,
+      browser3, test_url4, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
   EXPECT_EQ(g_handoff_url, GURL());
   EXPECT_EQ(g_handoff_title, u"");

@@ -9,7 +9,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/features.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 class SelectPopupBrowsertest : public InProcessBrowserTest {
  public:
@@ -32,7 +32,7 @@ IN_PROC_BROWSER_TEST_F(SelectPopupBrowsertest, SelectPopupHiddenTab) {
   content::RenderFrameHost* second_rfh =
       ui_test_utils::NavigateToURLWithDisposition(
           browser(), GURL("data:text/html,<div>new tab</div>"),
-          WindowOpenDisposition::kNewForegroundTab,
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_TRUE(second_rfh);
 

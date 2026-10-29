@@ -21,7 +21,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 using content::BrowserThread;
 
@@ -53,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(FastShutdown, DISABLED_SlowTermination) {
 
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
   BrowserWindowInterface* second_browser = browser_created_observer.Wait();
   EXPECT_TRUE(second_browser);

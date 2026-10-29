@@ -31,8 +31,8 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 using content::OpenURLParams;
 using content::Referrer;
@@ -48,7 +48,7 @@ void SimulateRendererCrash(BrowserWindowInterface* browser) {
       browser->GetTabStripModel()->GetActiveWebContents(),
       content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   browser->OpenGURL(GURL(blink::kChromeUICrashURL),
-                    WindowOpenDisposition::kCurrentTab);
+                    ui::mojom::WindowOpenDisposition::kCurrentTab);
   crash_observer.Wait();
 }
 
@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(CrashRecoveryBrowserTest, Reload) {
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(),
                                                 &title_before_crash));
   SimulateRendererCrash(browser());
-  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
   EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(),
                                                 &title_after_crash));
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(CrashRecoveryBrowserTest,
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(),
                                                 &title_before_crash));
   SimulateRendererCrash(browser());
-  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
   EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(),
                                                 &title_after_crash));
@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(CrashRecoveryBrowserTest, MAYBE_LoadInNewTab) {
                                                 ->GetController()
                                                 .GetVisibleEntry()
                                                 ->GetVirtualURL());
-  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
   EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(),
                                                 &title_after_crash));
@@ -199,11 +199,11 @@ IN_PROC_BROWSER_TEST_F(CrashRecoveryBrowserTest, MAYBE_DoubleReloadWithError) {
 
   SimulateRendererCrash(browser());
 
-  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
   EXPECT_FALSE(content::WaitForLoadStop(GetActiveWebContents()));
   ASSERT_EQ(url, GetActiveWebContents()->GetVisibleURL());
 
-  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
   EXPECT_FALSE(content::WaitForLoadStop(GetActiveWebContents()));
   ASSERT_EQ(url, GetActiveWebContents()->GetVisibleURL());
 }
