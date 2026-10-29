@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">Uvezite podatke iz Safari-ja</translation>
 <translation id="2526166285241366046">Sačuvaj lozinku</translation>
 <translation id="2529021024822217800">Otvori sve</translation>
-<translation id="2530932541542751783">Došlo je do greške sa ovim podešavanjem. Ažurirajte i restartujte Chrome i iPadOS, pa probajte ponovo. Ako se ova greška i dalje bude javljala, iPad možda ne podržava ovo podešavanje.</translation>
 <translation id="2536991091671391962">Možete da koristite sačuvane lozinke na bilo kom uređaju. Čuvaju se u Google menadžeru lozinki za <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Skrivena lozinka</translation>
 <translation id="2538705697765638552">Sačuvajte informacije i brže obavljajte stvari, poput popunjavanja obrazaca u Google proizvodima. Možete da upravljate informacijama u Google novčaniku za: <ph name="USER_EMAIL" />.</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">Vizualizujte i izmenite</translation>
 <translation id="3485558910355485767">Novi prozor bez arhiviranja</translation>
 <translation id="3488501490964659223">Kartice su zatvorene i podaci pregledanja su izbrisani. Odjavljeni ste</translation>
-<translation id="3490396108106323715">Deli aktuelnu karticu</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> o predloženom sadržaju</translation>
 <translation id="349446645805573740">Odaberite gde želite da sačuvate „<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />“</translation>
 <translation id="3504377992102007712">Podešavanja</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">Učitavanje slika nije uspelo</translation>
 <translation id="3565930036634619844">Kartica. <ph name="TAB_INDEX" /> od <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Sačuvaj drugi način</translation>
-<translation id="3572503683475187385">Aktuelna kartica se deli sa Gemini-jem kada započnete novi čet. Kada delite karticu sa Gemini-jem, njen sadržaj i URL šalju se Google-u. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Na Google nalogu</translation>
 <translation id="3575234738189584619">Pretražujte pomoću Objektiva</translation>
 <translation id="3575426792457739946">Ova lista sadrži sve učitane profile.</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">Prikazuje pomoć</translation>
 <translation id="4095483462103784441">Napravi novu grupu kartica</translation>
 <translation id="4099756562043439968">Podesi podsetnik</translation>
-<translation id="4108998448622696017">Otkriva opasne događaje kada se dogode i upozorava vas na njih.</translation>
 <translation id="4111985840824673503">Označi sve kao pročitano</translation>
 <translation id="411254640334432676">Preuzimanje nije uspelo.</translation>
 <translation id="4112644173421521737">Pretraži</translation>
@@ -1169,6 +1165,7 @@
 <translation id="4658335131052370646">Sačuvaj</translation>
 <translation id="465947902531722727">Promeni profil</translation>
 <translation id="466307903888586355">Organizacija blokira čuvanje fajlova</translation>
+<translation id="4665303625242639572">Zatvori: <ph name="PAGE_TITLE" /></translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Organizacija zahteva da pregledate privatno. Grupe kartica se ne sinhronizuju u režimu bez arhiviranja.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -1286,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Boja grupe kartica <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopiranje lozinke</translation>
+<translation id="5007392906805964215">Pregledaj</translation>
 <translation id="5009127379503001909">Nastavi da pregledaš</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Pošaljite na <ph name="USER_EMAIL" /></translation>
@@ -1938,7 +1936,6 @@ Da biste nastavili sa računara, pređite na <ph name="OTHER_EMAIL" />. Dobiće
 <translation id="6938212956536472404">Ova kartica ne može da se deli</translation>
 <translation id="6945221475159498467">Izaberi</translation>
 <translation id="6946722113367118030">Razmišlja</translation>
-<translation id="6947751977892029882">Došlo je do greške sa ovim podešavanjem. Ažurirajte i restartujte Chrome i iOS, pa probajte ponovo. Ako se ova greška i dalje bude javljala, iPhone možda ne podržava ovo podešavanje.</translation>
 <translation id="6950522403736391608">Skriveno</translation>
 <translation id="6957084631403333422">Isprobajte fokusiranu stranicu nove kartice</translation>
 <translation id="695965663642079255">Sačuvajte informacije o plaćanju i upravljajte njima da biste brže plaćali</translation>
@@ -2189,7 +2186,6 @@ Možete ponovo da ga pokrenete u bilo kom trenutku.</translation>
 <translation id="7758789811447313947">Ljubičasta tema</translation>
 <translation id="7759809451544302770">Opcionalno</translation>
 <translation id="7765158879357617694">Premesti</translation>
-<translation id="7767651976342854115">Došlo je do greške pri podešavanju korišćenja podataka.</translation>
 <translation id="7768507955883790804">Sajtovi automatski prate ovo podešavanje kada ih posetite</translation>
 <translation id="7772032839648071052">Potvrdi pristupnu frazu</translation>
 <translation id="7772948288262733182">Dobro došli nazad</translation>
@@ -2502,7 +2498,6 @@ Možete ponovo da ga pokrenete u bilo kom trenutku.</translation>
 <translation id="8674716540979958118">Imate ugrožene lozinke.</translation>
 <translation id="8679900250380464358">Dodaj na Listu za čitanje</translation>
 <translation id="8680643216091361291">Podešavanje <ph name="BEGIN_LINK" />Čuvaj aktivnosti<ph name="END_LINK" /> podrazumevano je isključeno. Kad je isključeno, Google čuva četove 3 dana. Koristi ih da bi Gemini aplikacije pravilno radile, da bi bile bezbedne i da bi koristio povratne informacije za rešavanje problema. Možete da uključite čuvanje aktivnosti da biste pomogli da se Google veštačka inteligencija poboljša za svakoga.</translation>
-<translation id="8680786875305615692">Poboljšajte bezbednost na vebu za svakoga</translation>
 <translation id="8680787084697685621">Detalji za prijavljivanje na nalog su zastareli.</translation>
 <translation id="868648444055742370">Domenu <ph name="SITE_DOMAIN" /> nije dozvoljeno da pristupa mikrofonu</translation>
 <translation id="8690752723634292147">Potvrda brisanja</translation>
@@ -2578,7 +2573,6 @@ Možete ponovo da ga pokrenete u bilo kom trenutku.</translation>
 <translation id="8888595487174963247">Ukloni podsetnik</translation>
 <translation id="8890516388109605451">Izvori</translation>
 <translation id="8893208530912252670">Video snimci</translation>
-<translation id="8898822736010347272">Šalje Google-u URL-ove nekih stranica koje posećujete, ograničene informacije o sistemu i određeni sadržaj stranica da bi se otkrile nove pretnje i zaštitili svi širom veba.</translation>
 <translation id="890009681345348416">Više od 40 lozinki je automatski popunjeno</translation>
 <translation id="8900845556227858314">Browser App (aplikacija pregledača)</translation>
 <translation id="890565330728586731">Nazad</translation>
@@ -2609,6 +2603,7 @@ Možete ponovo da ga pokrenete u bilo kom trenutku.</translation>
 <translation id="8976414606286374109">Kartice se čuvaju na Google nalogu.</translation>
 <translation id="8981454092730389528">Google kontrole aktivnosti</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, zakačen sajt</translation>
+<translation id="8989779557457435460">Podrazumevano deli aktuelnu karticu</translation>
 <translation id="8990960056509724223">Čuvanje fajla nije moguće zbog smernica organizacije</translation>
 <translation id="8998289560386111590">Nije dostupno na vašem uređaju</translation>
 <translation id="9003677638446136377">Proverite ponovo</translation>

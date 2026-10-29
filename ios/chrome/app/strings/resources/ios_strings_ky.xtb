@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">Маалыматты Safari'ден өткөрүп алуу</translation>
 <translation id="2526166285241366046">Сырсөздү сактоо</translation>
 <translation id="2529021024822217800">Баарын ачуу</translation>
-<translation id="2530932541542751783">Бул параметрди тууралоодо ката кетти. Chrome менен iPadOS'ту жаңыртып, өчүрүп күйгүзүп, кайталап көрүңүз. Эгер бул ката кайталана берсе, iPad'ыңыз бул параметрди колдоого албашы мүмкүн.</translation>
 <translation id="2536991091671391962">Cакталган сырсөздөрдү каалаган түзмөктө колдоно аласыз. Алар <ph name="EMAIL" /> аккаунту үчүн Сырсөздөрдү башкаргычка сакталат.</translation>
 <translation id="2538103551183528357">Жашыруун, сырсөз</translation>
 <translation id="2538705697765638552">Маалыматыңызды сактап, Google кызматтарында формаларды толтуруу сыяктуу иштерди тезирээк бүтүрүңүз. Маалыматыңызды колдонуучунун (<ph name="USER_EMAIL" />) Google Капчыгында тескей аласыз.</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">Визуалдаштыруу жана түзөтүү</translation>
 <translation id="3485558910355485767">Жаңы жашыруун терезе</translation>
 <translation id="3488501490964659223">Өтмөктөр жабылып, серептөө дайындары өчүрүлдү. Аккаунттан чыгып кеттиңиз</translation>
-<translation id="3490396108106323715">Учурдагы өтмөктү бөлүшүү</translation>
 <translation id="3493531032208478708">Сунушталган мазмун жөнүндө <ph name="BEGIN_LINK" />көбүрөөк билүү<ph name="END_LINK" /></translation>
 <translation id="349446645805573740">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" сактала турган жерди тандаңыз</translation>
 <translation id="3504377992102007712">Параметрлер</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">Сүрөттөр жүктөлбөй калды</translation>
 <translation id="3565930036634619844">Өтмөк. <ph name="NUMBER_OF_TABS" /> ичинен <ph name="TAB_INDEX" />.</translation>
 <translation id="3567168891086460374">Башка жол менен сактоо</translation>
-<translation id="3572503683475187385">Жаңы сүйлөшүүнү баштаганыңызда учурдагы өтмөк Gemini менен бөлүшүлөт. Өтмөктү Gemini менен бөлүшсөңүз, андагы контент жана URL дареги Google'га жөнөтүлөт. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Google аккаунтуңузда</translation>
 <translation id="3575234738189584619">Lens менен издөө</translation>
 <translation id="3575426792457739946">Бул тизмеде бардык жүктөлгөн профилдер камтылат.</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">Жардам бөлүмүн көрсөтүү</translation>
 <translation id="4095483462103784441">Жаңы өтмөктөр тобун түзүү</translation>
 <translation id="4099756562043439968">Эстеткич коюу</translation>
-<translation id="4108998448622696017">Кооптуу нерселер орун алганда аларды аныктап, сизге кабарлап турат.</translation>
 <translation id="4111985840824673503">Баары окулган деп белгилөө</translation>
 <translation id="411254640334432676">Жүктөлүп алынбай калды.</translation>
 <translation id="4112644173421521737">Издөө</translation>
@@ -1169,6 +1165,7 @@
 <translation id="4658335131052370646">Сактоо</translation>
 <translation id="465947902531722727">Башка профилге которулуу</translation>
 <translation id="466307903888586355">Уюмуңуз файлдарды сактоого тыюу салган</translation>
+<translation id="4665303625242639572"><ph name="PAGE_TITLE" /> жабуу</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Уюмуңуз жекече серептөөңүздү талап кылат. Өтмөктөр топтору Жашыруун режимде шайкештирилбейт.
 <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
@@ -1286,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Өтмөктөр тобунун түсү: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Сырсөздү көчүрүү</translation>
+<translation id="5007392906805964215">Карап көрүү</translation>
 <translation id="5009127379503001909">Карай берүү</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Кимге: <ph name="USER_EMAIL" /></translation>
@@ -1938,7 +1936,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6938212956536472404">Бул өтмөктү бөлүшүүгө болбойт</translation>
 <translation id="6945221475159498467">Тандаңыз</translation>
 <translation id="6946722113367118030">Ойлонуп жаткан</translation>
-<translation id="6947751977892029882">Бул параметрди тууралоодо ката кетти. Chrome менен iOS'ту жаңыртып, өчүрүп күйгүзүп, кайталап көрүңүз. Эгер бул ката кайталана берсе, iPhone'уңуз бул параметрди колдоого албашы мүмкүн.</translation>
 <translation id="6950522403736391608">Жашырылды</translation>
 <translation id="6957084631403333422">Ынтаа коюлган жаңы өтмөк бетин колдонуп көрүңүз</translation>
 <translation id="695965663642079255">Тез төлөө үчүн төлөм маалыматын сактап жана тескеңиз</translation>
@@ -2189,7 +2186,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7758789811447313947">Кызгылт көк тема</translation>
 <translation id="7759809451544302770">Кошумча</translation>
 <translation id="7765158879357617694">Жылуу</translation>
-<translation id="7767651976342854115">Маалыматты колдонуу параметринде ката кетти.</translation>
 <translation id="7768507955883790804">Сайттарга киргениңизде, ушул жөндөө автоматтык түрдө колдонулат</translation>
 <translation id="7772032839648071052">Купуя сөз айкашын ырастаңыз</translation>
 <translation id="7772948288262733182">Кайрадан кош келиңиз</translation>
@@ -2502,7 +2498,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8674716540979958118">Уурдалган сырсөздөрүңүз бар.</translation>
 <translation id="8679900250380464358">Окуу тизмесине кошуу</translation>
 <translation id="8680643216091361291"><ph name="BEGIN_LINK" />Аракеттерди сактоо<ph name="END_LINK" /> параметриңиз демейки боюнча өчкөн. Ал өчүрүлгөндө, Google маектериңизди 3 күн бою сактайт Алар Gemini колдонмолорун туура иштетүү, алардын коопсуздугун камсыздоо үчүн колдонулат. Пикириңиз көйгөйлөрдү чечүү үчүн колдонулат. Keep Activity параметрин иштетип, Google'дун жасалма интеллектин бардык колдонуучулар үчүн жакшыртууга жардам бере аласыз.</translation>
-<translation id="8680786875305615692">Баары үчүн Интернеттеги коопсуздукту арттырууга жардам берүү</translation>
 <translation id="8680787084697685621">Аккаунтка кирүү чоо-жайлары эскирип калды.</translation>
 <translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" микрофонуңузду колдоно албайт</translation>
 <translation id="8690752723634292147">Өчүрүүнү ырастоо</translation>
@@ -2578,7 +2573,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8888595487174963247">Эстеткичти өчүрүү</translation>
 <translation id="8890516388109605451">Булактар</translation>
 <translation id="8893208530912252670">Видеолор</translation>
-<translation id="8898822736010347272">Сиз баш баккан айрым барактардын URL даректерин, чектелген тутум маалыматын жана айрым барактардын мазмунун бардык колдонуучулар үчүн мүмкүн болгон коркунучтарды аныктап, бөгөттөө үчүн Google'га жөнөтөт.</translation>
 <translation id="890009681345348416">40 ашуун сырсөз автотолтурулду</translation>
 <translation id="8900845556227858314">Серепчи колдонмосу</translation>
 <translation id="890565330728586731">Артка</translation>
@@ -2609,6 +2603,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8976414606286374109">Карталар Google аккаунтуңузга сакталат.</translation>
 <translation id="8981454092730389528">Google'дагы аракеттерди башкаруу каражаттары</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, кадалган сайт</translation>
+<translation id="8989779557457435460">Демейки шартта учурдагы өтмөктү бөлүшүү</translation>
 <translation id="8990960056509724223">Уюмуңуздун эрежелеринен улам файл сакталган жок</translation>
 <translation id="8998289560386111590">Түзмөгүңүздө жеткиликтүү эмес</translation>
 <translation id="9003677638446136377">Кайра текшерүү</translation>

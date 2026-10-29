@@ -58,7 +58,6 @@ Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om d
 <translation id="2027881372245801507">Om du inaktiverar förslag styr det inte Chromiums behandling av sidrubriker och webbadresser för andra funktioner. Du kan hantera åtkomsten till denna data i <ph name="BEGIN_LINK" />synkroniseringsinställningarna<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Logga in på den här webbplatsen och i Chromium om du vill få dina lösenord med mera på alla dina enheter</translation>
 <translation id="2042889939382983733">Visa Chromium-historiken</translation>
-<translation id="2052320862053429062">Chromium kontrollerar regelbundet om dina lösenord finns med på listor som har publicerats online. Under kontrollen krypteras dina lösenord och användarnamn så att varken Google eller någon annan kan läsa dem.</translation>
 <translation id="2059365270911640413">Slutför inställningen av Chromium</translation>
 <translation id="2168108852149185974">Några tillägg har fått Chromium att krascha. Avinstallera följande:</translation>
 <translation id="2168593389981132306">Gör Chromium bättre</translation>
@@ -69,7 +68,6 @@ Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om d
 <translation id="2236584955986023187">Detta betyder att datorversionen av webbplatsen begärs varje gång i Chromium.</translation>
 <translation id="2245694534483711162">Gemini kan använda din exakta plats beroende på vilken behörighet du redan har gett Chromium</translation>
 <translation id="2270466829363945454">Köp</translation>
-<translation id="2313870531055795960">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chromium. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chromium till Säker webbsökning tillsammans med delar av sidinnehållet.</translation>
 <translation id="2314220608288760290">Chromium öppnar automatiskt inkognitolänkar till YouTube i inkognitoläget.</translation>
 <translation id="231828342043114302">Logga in i Chromium om du vill få anpassat innehåll utifrån dina intressen.</translation>
 <translation id="2334943301233020675">Följande nycklar importerades inte till Lösenordshantering eftersom de inte uppfyller kraven.</translation>

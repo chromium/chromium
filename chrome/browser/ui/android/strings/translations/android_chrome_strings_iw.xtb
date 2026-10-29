@@ -337,6 +337,7 @@
 <translation id="2332515770639153015">הגרסה המשופרת של הגלישה הבטוחה מופעלת</translation>
 <translation id="233375395665273385">מחיקה ויציאה מהחשבון</translation>
 <translation id="2334275697832662087">‏אמצעי האבטחה של Chrome שמבוססים על AI מגינים עליך מפני איומים אונליין, ומעניקים לך יותר ביטחון בזמן הגלישה</translation>
+<translation id="2335758110242123814">פתיחת קבוצה</translation>
 <translation id="2341410551640223969">לא הצלחנו להתקין את <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">‏סך כל הנתונים שבהם משתמש Chrome, כולל חשבונות, סימניות והגדרות שמורות</translation>
 <translation id="2354001756790975382">סימניות אחרות</translation>
@@ -390,7 +391,6 @@
 <translation id="2532336938189706096">תצוגת אינטרנט</translation>
 <translation id="2535807170289627159">כל הכרטיסיות</translation>
 <translation id="2536728043171574184">מוצג העתק לא מקוון של עמוד זה</translation>
-<translation id="2537574774089209541">‏כדי לאפשר לך להגיע ל-Gemini בקלות בזמן הגלישה, חלק מהכלים עברו למקום אחר</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית שנבחרה והוצמדה, והתוכן בה מושתק</translation>
 <translation id="2542548955756682219">‫<ph name="TAB_TITLE" />, כרטיסייה</translation>
@@ -1037,6 +1037,7 @@
 <translation id="5096775069898886423">מקבלים אזהרה לפני שמבקרים באתרים שלא תומכים בחיבורים מאובטחים</translation>
 <translation id="510275257476243843">נותרה שעה אחת</translation>
 <translation id="5105442806410269908">‏ניהול נתונים אחרים בחשבון Google</translation>
+<translation id="5111326646107464148">פתיחת הקבוצה בחלון חדש</translation>
 <translation id="5114895953710637392">גיליון הסינון לפי אפליקציות סגור.</translation>
 <translation id="5115811374190515607">אל <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">‏אפשר להשתמש ב-Chrome בכל פעם שלוחצים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
@@ -1618,7 +1619,6 @@
 <translation id="7291910923717764901">נוספו תיאורי תמונות בדף זה</translation>
 <translation id="7293429513719260019">בחירת שפה</translation>
 <translation id="7298319215489933099">‫<ph name="TAB_TITLE" />, כרטיסייה שנבחרה והוצמדה, והתוכן בה משותף</translation>
-<translation id="7304003340539141201">‏רוצה לבקש מ-Gemini עזרה עם הכרטיסיות והמשימות?</translation>
 <translation id="7311244614769792472">לא נמצאו תוצאות</translation>
 <translation id="7314734791127433392">לא ניתן לבדוק את הסיסמאות</translation>
 <translation id="7324354302972299151">‏שליחה של בקשת Do Not Track</translation>
@@ -1754,6 +1754,7 @@
 <translation id="7821130663268546430">כל הכרטיסיות הפתוחות מופיעות בכלי למעבר בין כרטיסיות</translation>
 <translation id="7822705602465980873">‏אחרי הכניסה לחשבון, הנתונים האלה מקושרים לחשבון Google כדי להגן עליך בשירותי Google. לדוגמה, במקרה של אירוע אבטחה, ההגנה ב-Gmail מוגברת.</translation>
 <translation id="7824665136384946951">הארגון שלך השבית את הגלישה הבטוחה</translation>
+<translation id="782590969421016895">שימוש בדפים הנוכחיים</translation>
 <translation id="7825973332242257878">קבוצות של כרטיסיות</translation>
 <translation id="7845155831233417403">ניתן לפתוח עד <ph name="MAX_INSTANCE_COUNT" /> חלונות. כדי להמשיך, צריך לסגור חלון.</translation>
 <translation id="7846161022626028328">אירעה שגיאה. אפשר לנסות שוב.</translation>
@@ -1986,7 +1987,6 @@
 <translation id="8694622119922491927">‏אפליקציית <ph name="APP_NAME" /> זקוקה להרשאת גישה למכשירי ממשק אנושי (HID) בשביל האתר הזה. אפשר לשנות את ההגדרה הזו בהמשך דרך "הגדרות" &gt; "אפליקציות" &gt; "גישה מיוחדת לאפליקציה".</translation>
 <translation id="8696297579102085705">שליחה למכשיר שלך</translation>
 <translation id="8699120352855309748">לא להציע לי לתרגם את השפות האלה</translation>
-<translation id="8700565880437506364">‏חדש: Gemini ב-Chrome</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="8715286883001906001">‏חיזוק הסיסמאות בחשבון Google</translation>
 <translation id="8715300232952757586">‫<ph name="TAB_TITLE" /> ייסגר</translation>

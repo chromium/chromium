@@ -58,7 +58,6 @@ Non è possibile salvare nuovi preferiti nel tuo account finché non ne elimini 
 <translation id="2027881372245801507">La disattivazione dei suggerimenti non influisce sul trattamento da parte di Chromium dei titoli delle pagine e degli URL per altre funzionalità. Puoi gestire l'accesso a questi dati nelle <ph name="BEGIN_LINK" />impostazioni di sincronizzazione<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Accedi a questo sito e a Chromium per trovare le tue password e altri dati su tutti i tuoi dispositivi</translation>
 <translation id="2042889939382983733">Visualizza la cronologia di Chromium</translation>
-<translation id="2052320862053429062">Chromium confronta periodicamente le tue password con gli elenchi pubblicati online. Durante questa operazione, le tue password e i tuoi nomi utente vengono criptati, quindi non possono essere letti da nessuno, Google compresa.</translation>
 <translation id="2059365270911640413">Completa la configurazione di Chromium</translation>
 <translation id="2168108852149185974">Alcuni componenti aggiuntivi provocano l'arresto anomalo di Chromium. Disinstalla:</translation>
 <translation id="2168593389981132306">Migliora Chromium</translation>
@@ -69,7 +68,6 @@ Non è possibile salvare nuovi preferiti nel tuo account finché non ne elimini 
 <translation id="2236584955986023187">Ciò significa che Chromium richiederà ogni volta il sito desktop.</translation>
 <translation id="2245694534483711162">Gemini potrebbe usare la tua posizione esatta, a seconda dell'autorizzazione che hai già concesso a Chromium</translation>
 <translation id="2270466829363945454">Acquista</translation>
-<translation id="2313870531055795960">Controlla gli URL confrontandoli con un elenco di siti non sicuri memorizzato in Chromium. Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chromium potrebbe anche inviare gli URL, inclusi frammenti dei contenuti delle pagine, a Navigazione sicura.</translation>
 <translation id="2314220608288760290">Chromium apre automaticamente i link di YouTube in incognito in modalità Incognito.</translation>
 <translation id="231828342043114302">Accedi a Chromium per ricevere contenuti personalizzati in base ai tuoi interessi.</translation>
 <translation id="2334943301233020675">Le seguenti passkey non sono state importate nel Gestore delle password perché non soddisfano i requisiti.</translation>

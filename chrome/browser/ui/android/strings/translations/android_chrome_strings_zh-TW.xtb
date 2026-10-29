@@ -337,6 +337,7 @@
 <translation id="2332515770639153015">已啟用安全瀏覽強化防護功能</translation>
 <translation id="233375395665273385">刪除並登出</translation>
 <translation id="2334275697832662087">Chrome 的 AI 輔助安全機制可防範線上威脅，上網更安心</translation>
+<translation id="2335758110242123814">開啟群組</translation>
 <translation id="2341410551640223969">無法安裝「<ph name="WEBAPK_NAME" />」。</translation>
 <translation id="2349710944427398404">Chrome 使用的資料總量，包括帳戶、書籤和儲存的設定</translation>
 <translation id="2354001756790975382">其他書籤</translation>
@@ -390,7 +391,6 @@
 <translation id="2532336938189706096">網頁檢視</translation>
 <translation id="2535807170289627159">所有分頁</translation>
 <translation id="2536728043171574184">目前瀏覽的是這個網頁的離線複本</translation>
-<translation id="2537574774089209541">我們調整了部分工具的位置，方便你在瀏覽時使用 Gemini</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />，選取的固定無痕分頁，已設為靜音</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />，分頁</translation>
@@ -1037,6 +1037,7 @@
 <translation id="5096775069898886423">如果網站不支援安全連線，系統會在造訪前發出警告</translation>
 <translation id="510275257476243843">還剩 1 小時</translation>
 <translation id="5105442806410269908">管理其他 Google 資料</translation>
+<translation id="5111326646107464148">在新視窗中開啟分頁群組</translation>
 <translation id="5114895953710637392">應用程式篩選功能表已關閉。</translation>
 <translation id="5115811374190515607">移至<ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">你隨時可以輕觸訊息、文件或其他應用程式中的連結，使用 Chrome 開啟</translation>
@@ -1606,6 +1607,7 @@
 <translation id="72415438529550637">已關閉密碼建議功能。</translation>
 <translation id="724510009481365878">無法列印這個網頁</translation>
 <translation id="7248671827512403053">應用程式</translation>
+<translation id="7253205084599155458">將導覽功能和工具顯示在底部工具列，方便隨時存取</translation>
 <translation id="7253951228444156601">正在檢查密碼…</translation>
 <translation id="7265857422443387781">使用 Google 智慧鏡頭搜尋分頁 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">要將 <ph name="ONE_TIME_CODE" /> 提交至 <ph name="ORIGIN" /> 嗎？</translation>
@@ -1618,7 +1620,6 @@
 <translation id="7291910923717764901">已新增這個頁面的圖片說明</translation>
 <translation id="7293429513719260019">選取語言</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />，選取的固定分頁，正在分享內容</translation>
-<translation id="7304003340539141201">讓 Gemini 協助處理分頁和任務</translation>
 <translation id="7311244614769792472">找不到任何結果</translation>
 <translation id="7314734791127433392">無法檢查密碼</translation>
 <translation id="7324354302972299151">傳送「Do Not Track」要求</translation>
@@ -1754,6 +1755,7 @@
 <translation id="7821130663268546430">你可以在分頁切換工具中查看所有開啟的分頁</translation>
 <translation id="7822705602465980873">當你登入後，這類資料會連結到 Google 帳戶，保護你在各項 Google 服務中的安全，例如在安全事件發生後強化 Gmail 的防護機制。</translation>
 <translation id="7824665136384946951">貴機構已關閉安全瀏覽功能</translation>
+<translation id="782590969421016895">使用目前的網頁</translation>
 <translation id="7825973332242257878">分頁群組</translation>
 <translation id="7845155831233417403">最多只能開啟 <ph name="MAX_INSTANCE_COUNT" /> 個視窗。請關閉一個視窗再繼續操作。</translation>
 <translation id="7846161022626028328">發生錯誤，請再試一次。</translation>
@@ -1986,7 +1988,6 @@
 <translation id="8694622119922491927"><ph name="APP_NAME" /> 需要相關權限，才能讓這個網站使用人機介面裝置 (HID)。你之後可以前往「設定」&gt;「應用程式」&gt;「特殊應用程式存取權」變更這項設定。</translation>
 <translation id="8696297579102085705">傳送到裝置</translation>
 <translation id="8699120352855309748">不要詢問是否要翻譯這些語言</translation>
-<translation id="8700565880437506364">隆重推出 Chrome 內建 Gemini</translation>
 <translation id="8712637175834984815">知道了</translation>
 <translation id="8715286883001906001">強化 Google 帳戶中的密碼</translation>
 <translation id="8715300232952757586">系統將關閉「<ph name="TAB_TITLE" />」</translation>

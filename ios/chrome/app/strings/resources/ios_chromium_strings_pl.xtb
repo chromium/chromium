@@ -58,7 +58,6 @@ Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych
 <translation id="2027881372245801507">Wyłączenie sugestii nie ma wpływu na przetwarzanie przez Chromium tytułów stron i adresów URL na potrzeby innych funkcji. Możesz zarządzać dostępem do tych danych w <ph name="BEGIN_LINK" />ustawieniach synchronizacji<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Zaloguj się na tej stronie i w Chromium, aby mieć dostęp do haseł oraz innych danych na wszystkich swoich urządzeniach</translation>
 <translation id="2042889939382983733">Wyświetl historię Chromium</translation>
-<translation id="2052320862053429062">Co jakiś czas Chromium sprawdza, czy Twoje hasła nie pojawiły się na listach opublikowanych w internecie. Aby nikt (nawet Google) nie mógł odczytać haseł ani nazw użytkowników, podczas sprawdzania są one zaszyfrowane.</translation>
 <translation id="2059365270911640413">Dokończ konfigurowanie Chromium</translation>
 <translation id="2168108852149185974">Niektóre dodatki mogą powodować awarie Chromium. Odinstaluj je.</translation>
 <translation id="2168593389981132306">Ulepszaj Chromium</translation>
@@ -69,7 +68,6 @@ Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych
 <translation id="2236584955986023187">Oznacza to, że Chromium będzie za każdym razem wyświetlać witrynę w wersji na komputery.</translation>
 <translation id="2245694534483711162">Gemini może używać Twojej dokładnej lokalizacji w zależności od uprawnień, które zostały już przyznane Chromium</translation>
 <translation id="2270466829363945454">Kup</translation>
-<translation id="2313870531055795960">Sprawdza, czy URL jest na liście niebezpiecznych stron zapisanej w Chromium. Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chromium może też wysłać URL wraz z fragmentami zawartości strony do usługi Bezpieczne przeglądanie.</translation>
 <translation id="2314220608288760290">Chromium automatycznie otwiera linki incognito z YouTube w trybie incognito.</translation>
 <translation id="231828342043114302">Aby otrzymywać spersonalizowane treści na podstawie swoich zainteresowań, zaloguj się w Chromium.</translation>
 <translation id="2334943301233020675">Nie udało się zaimportować tych kluczy dostępu do Menedżera haseł, ponieważ nie spełniają wymagań.</translation>

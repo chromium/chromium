@@ -337,6 +337,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2332515770639153015">Droša pārlūkošana ar papildu aizsardzību ir ieslēgta</translation>
 <translation id="233375395665273385">Dzēst un izrakstīties</translation>
 <translation id="2334275697832662087">Chrome drošības risinājumi, ko nodrošina MI, aizsargā jūs no apdraudējumiem tiešsaistē, lai jūs bez raizēm varētu pārlūkot tīmekli.</translation>
+<translation id="2335758110242123814">Atvērt grupu</translation>
 <translation id="2341410551640223969">Nevarēja instalēt: <ph name="WEBAPK_NAME" /></translation>
 <translation id="2349710944427398404">Kopējais pārlūkā Chrome izmantoto datu apjoms, ieskaitot kontus, grāmatzīmes un saglabātos iestatījumus</translation>
 <translation id="2354001756790975382">Citas grāmatzīmes</translation>
@@ -390,7 +391,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2532336938189706096">Tīmekļa skatījums</translation>
 <translation id="2535807170289627159">Visas cilnes</translation>
 <translation id="2536728043171574184">Skata šīs lapas kopiju bezsaistē</translation>
-<translation id="2537574774089209541">Daži rīki ir pārvietoti, lai jūs varētu ērti piekļūt Gemini pārlūkošanas laikā.</translation>
 <translation id="2539002604555291451">Bezserifa</translation>
 <translation id="2542094237868555728">Atlasīta piesprausta inkognito cilne <ph name="TAB_TITLE" />, kuras skaņa ir izslēgta</translation>
 <translation id="2542548955756682219">“<ph name="TAB_TITLE" />”, cilne</translation>
@@ -1037,6 +1037,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5096775069898886423">Ja vietne neatbalsta drošus savienojumus, saņemsiet brīdinājumu pirms vietnes apmeklēšanas.</translation>
 <translation id="510275257476243843">Atlikusi 1 h</translation>
 <translation id="5105442806410269908">Pārvaldiet citus Google datus</translation>
+<translation id="5111326646107464148">Atvērt grupu jaunā logā</translation>
 <translation id="5114895953710637392">Lietotņu filtra lapa ir aizvērta.</translation>
 <translation id="5115811374190515607">uz: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Varat izmantot Chrome ikreiz, kad pieskaraties saitēm ziņojumos, dokumentos un citās lietotnēs.</translation>
@@ -1606,6 +1607,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="72415438529550637">Paroles ieteikums ir aizvērts.</translation>
 <translation id="724510009481365878">Šo lapu nevar drukāt.</translation>
 <translation id="7248671827512403053">Lietojumprogramma</translation>
+<translation id="7253205084599155458">Rādīt navigāciju un rīkus apakšējā rīkjoslā, lai tiem varētu ērti piekļūt</translation>
 <translation id="7253951228444156601">Notiek paroļu pārbaude…</translation>
 <translation id="7265857422443387781">Meklēt cilnē, izmantojot Google Lens <ph name="BEGIN_NEW" />Jaunums<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Vai iesniegt kodu <ph name="ONE_TIME_CODE" /> vietnē <ph name="ORIGIN" />?</translation>
@@ -1618,7 +1620,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7291910923717764901">Attēlu apraksti šajā lapā ir pievienoti</translation>
 <translation id="7293429513719260019">Atlasīt valodu</translation>
 <translation id="7298319215489933099">Atlasīta piesprausta cilne <ph name="TAB_TITLE" />, kuras saturs tiek kopīgots</translation>
-<translation id="7304003340539141201">Lūdziet Gemini palīdzēt jums ar cilnēm un uzdevumiem</translation>
 <translation id="7311244614769792472">Netika atrasts neviens rezultāts</translation>
 <translation id="7314734791127433392">Nevar pārbaudīt paroles</translation>
 <translation id="7324354302972299151">Sūtīt pieprasījumu “Do Not Track”</translation>
@@ -1754,6 +1755,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7821130663268546430">Visas atvērtās cilnes varat atrast ciļņu pārslēdzējā.</translation>
 <translation id="7822705602465980873">Kad esat pierakstījies, šie dati tiek saistīti ar jūsu Google kontu, lai aizsargātu jūs dažādos Google pakalpojumos, piemēram, palielinot aizsardzību pakalpojumā Gmail pēc drošības incidenta.</translation>
 <translation id="7824665136384946951">Jūsu organizācija izslēdza drošu pārlūkošanu</translation>
+<translation id="782590969421016895">Izmantot esošās lapas</translation>
 <translation id="7825973332242257878">Ciļņu grupas</translation>
 <translation id="7845155831233417403">Maksimālais logu skaits, ko varat atvērt, ir <ph name="MAX_INSTANCE_COUNT" />. Lai turpinātu, aizveriet logu.</translation>
 <translation id="7846161022626028328">Radās kļūda. Mēģiniet vēlreiz.</translation>
@@ -1986,7 +1988,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8694622119922491927">Lietotnei <ph name="APP_NAME" /> ir nepieciešama atļauja piekļūt cilvēka saskarnes ierīcēm (HID) šajā tīmekļa vietnē. Vēlāk šo iestatījumu varēsiet mainīt sadaļā Iestatījumi &gt; Lietotnes &gt; Īpaša piekļuve lietotnēm.</translation>
 <translation id="8696297579102085705">Nosūtīt uz jūsu ierīci</translation>
 <translation id="8699120352855309748">Nepiedāvāt tulkot no šīm valodām</translation>
-<translation id="8700565880437506364">Iepazīšanās ar Gemini pārlūkā Chrome</translation>
 <translation id="8712637175834984815">Sapratu!</translation>
 <translation id="8715286883001906001">Uzlabojiet paroļu drošumu savā Google kontā</translation>
 <translation id="8715300232952757586">Cilne “<ph name="TAB_TITLE" />” tiks aizvērta</translation>

@@ -337,6 +337,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2332515770639153015">Poboljšano bezbedno pregledanje je uključeno</translation>
 <translation id="233375395665273385">Izbriši i odjavi me</translation>
 <translation id="2334275697832662087">Chrome bezbednost koju omogućava veštačka inteligencija štiti vas od onlajn pretnji, a istovremeno vam pruža osećaj bezbednosti dok pregledate</translation>
+<translation id="2335758110242123814">Otvori grupu</translation>
 <translation id="2341410551640223969">Instaliranje aplikacije <ph name="WEBAPK_NAME" /> nije uspelo.</translation>
 <translation id="2349710944427398404">Svi podaci koje koristi Chrome, uključujući naloge, obeleživače i sačuvana podešavanja</translation>
 <translation id="2354001756790975382">Ostali obeleživači</translation>
@@ -390,7 +391,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2532336938189706096">Veb-prikaz</translation>
 <translation id="2535807170289627159">Sve kartice</translation>
 <translation id="2536728043171574184">Pregledate oflajn kopiju ove stranice</translation>
-<translation id="2537574774089209541">Neke alatke smo premestili da biste lakše pristupali Gemini-ju dok pregledate</translation>
 <translation id="2539002604555291451">Sans serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, izabrana zakačena kartica bez arhiviranja sa isključenim zvukom</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, kartica</translation>
@@ -1037,6 +1037,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="5096775069898886423">Za sajtove koji ne podržavaju bezbedne veze, dobijajte upozorenje pre nego što posetite sajt</translation>
 <translation id="510275257476243843">Još 1 sat</translation>
 <translation id="5105442806410269908">Upravljajte drugim Google podacima</translation>
+<translation id="5111326646107464148">Otvori grupu u novom prozoru</translation>
 <translation id="5114895953710637392">Tabela sa filterima aplikacija je zatvorena.</translation>
 <translation id="5115811374190515607">u <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Možete da koristite Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama</translation>
@@ -1606,6 +1607,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="72415438529550637">Predlog lozinke je zatvoren.</translation>
 <translation id="724510009481365878">Ne možete da odštampate ovu stranicu</translation>
 <translation id="7248671827512403053">Aplikacija</translation>
+<translation id="7253205084599155458">Prikazujte navigaciju i alatke na donjoj traci s alatkama radi lakšeg pristupa</translation>
 <translation id="7253951228444156601">Proveravaju se lozinke…</translation>
 <translation id="7265857422443387781">Pretraži karticu uz Google objektiv <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Želite da pošaljete <ph name="ONE_TIME_CODE" /> na <ph name="ORIGIN" />?</translation>
@@ -1618,7 +1620,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="7291910923717764901">Dodati su opisi slika za ovu stranicu</translation>
 <translation id="7293429513719260019">Izaberite jezik</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, izabrana zakačena kartica za deljenje</translation>
-<translation id="7304003340539141201">Zatražite od Gemini-ja da vam pomogne sa karticama i zadacima</translation>
 <translation id="7311244614769792472">Nije pronađen nijedan rezultat</translation>
 <translation id="7314734791127433392">Provera lozinki nije uspela</translation>
 <translation id="7324354302972299151">Pošaljite zahtev „Do Not Track“</translation>
@@ -1754,6 +1755,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="7821130663268546430">Sve otvorene kartice možete da pronađete u prebacivaču kartica</translation>
 <translation id="7822705602465980873">Kada ste prijavljeni, ovi podaci su povezani sa vašim Google nalogom da bismo vas zaštitili u svim Google uslugama, na primer, povećanjem zaštite u Gmail-u posle bezbednosnog incidenta.</translation>
 <translation id="7824665136384946951">Organizacija je isključila Bezbedno pregledanje</translation>
+<translation id="782590969421016895">Koristi ove stranice</translation>
 <translation id="7825973332242257878">Grupe kartica</translation>
 <translation id="7845155831233417403">Maksimalan broj prozora koje možete da imate je <ph name="MAX_INSTANCE_COUNT" />. Zatvorite prozor da biste nastavili.</translation>
 <translation id="7846161022626028328">Došlo je do greške. Probajte ponovo.</translation>
@@ -1986,7 +1988,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8694622119922491927"><ph name="APP_NAME" /> traži dozvolu da pristupi uređajima za ljudski interfejs (HID-ovima) za ovaj sajt. Ovo podešavanje možete da promenite kasnije u Podešavanja &gt; Aplikacije &gt; Poseban pristup aplikacijama.</translation>
 <translation id="8696297579102085705">Pošalji na uređaj</translation>
 <translation id="8699120352855309748">Ne nudi prevod ovih jezika</translation>
-<translation id="8700565880437506364">Predstavljamo Gemini u Chrome-u</translation>
 <translation id="8712637175834984815">Važi</translation>
 <translation id="8715286883001906001">Ojačajte lozinke na Google nalogu</translation>
 <translation id="8715300232952757586">Kartica <ph name="TAB_TITLE" /> će se zatvoriti</translation>

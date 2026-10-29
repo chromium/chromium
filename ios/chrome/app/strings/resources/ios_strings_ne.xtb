@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">Safari बाट आफ्नो डेटा इम्पोर्ट गर्नुहोस्</translation>
 <translation id="2526166285241366046">पासवर्ड सेभ गर्नुहोस्</translation>
 <translation id="2529021024822217800">सबै खोल्नुहोस्</translation>
-<translation id="2530932541542751783">यो सेटिङमा कुनै समस्या आयो। Chrome र iPadOS अपडेट गरी रिस्टार्ट गर्नुहोस् र फेरि प्रयास गर्नुहोस्। यो त्रुटि देखिइरहेको छ भने तपाईंको iPad मा यो सेटिङ प्रयोग गर्न नमिल्ने हुन सक्छ।</translation>
 <translation id="2536991091671391962">तपाईं सेभ गरिएका पासवर्डहरू जुनसुकै डिभाइसमा प्रयोग गर्न सक्नुहुन्छ। ती पासवर्डहरू <ph name="EMAIL" /> को Google पासवर्ड म्यानेजरमा सेभ गरिन्छन्।</translation>
 <translation id="2538103551183528357">लुकाइएको, पासवर्ड</translation>
 <translation id="2538705697765638552">आफ्नो जानकारी सेभ गर्नुहोस् र Google का विभिन्न उत्पादनमा फाराम भर्ने जस्ता कामहरू अझ छिटो पूरा गर्नुहोस्। तपाईं <ph name="USER_EMAIL" /> को आफ्नो जानकारी Google Wallet मा व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">भिजुअलाइज गर्नुहोस् र सम्पादन गर्नुहोस्</translation>
 <translation id="3485558910355485767">नयाँ इन्कोग्निटो विन्डो</translation>
 <translation id="3488501490964659223">ट्याबहरू बन्द गरिए र ब्राउजिङ डेटा मेटाइयो। तपाईंलाई साइन आउट गरियो</translation>
-<translation id="3490396108106323715">हालको ट्याब सेयर गर्नुहोस्</translation>
 <translation id="3493531032208478708">सुझाव दिइएको सामग्रीको बारेमा <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="349446645805573740">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" कहाँ सेभ गर्ने भन्ने कुरा छनौट गर्नुहोस्</translation>
 <translation id="3504377992102007712">सेटिङ</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">फोटोहरू लोड गर्न सकिएन</translation>
 <translation id="3565930036634619844">ट्याब। <ph name="NUMBER_OF_TABS" /> मध्ये <ph name="TAB_INDEX" /> औँ।</translation>
 <translation id="3567168891086460374">अर्को तरिकाले सेभ गर्नुहोस्</translation>
-<translation id="3572503683475187385">तपाईंले नयाँ च्याट सुरु गर्दा हालको ट्याब Gemini सँग सेयर गरिन्छ। तपाईंले Gemini सँग ट्याब सेयर गर्नुभयो भने उक्त ट्याबमा भएका कन्टेन्ट र URL हरू Google मा पठाइन्छन्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">तपाईंको Google खातामा</translation>
 <translation id="3575234738189584619">Google लेन्समार्फत खोज्नुहोस्</translation>
 <translation id="3575426792457739946">यो सूचीमा लोड गरिएका सबै प्रोफाइलहरू समावेश छन्।</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">मद्दत केन्द्र देखाउनुहोस्</translation>
 <translation id="4095483462103784441">नयाँ ट्याब समूह बनाउनुहोस्</translation>
 <translation id="4099756562043439968">रिमाइन्डर सेट गर्नुहोस्</translation>
-<translation id="4108998448622696017">खतरनाक गतिविधि हुँदा पत्ता लगाउँछ र तपाईंलाई सोबारे चेतावनी दिन्छ।</translation>
 <translation id="4111985840824673503">सबै सामग्री पढिसकिएको भनी चिन्ह लगाउनुहोस्</translation>
 <translation id="411254640334432676">डाउनलोड असफल भयो।</translation>
 <translation id="4112644173421521737">खोज्नुहोस्</translation>
@@ -1169,6 +1165,7 @@
 <translation id="4658335131052370646">सेभ गर्नुहोस्</translation>
 <translation id="465947902531722727">प्रोफाइलहरू बदल्नुहोस्</translation>
 <translation id="466307903888586355">तपाईंको सङ्गठनले फाइलहरू सेभ गर्ने सुविधा ब्लक गरेको छ</translation>
+<translation id="4665303625242639572"><ph name="PAGE_TITLE" /> बन्द गर्नुहोस्</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">तपाईंको सङ्गठनको नीतिअनुसार तपाईंले गोप्य रूपमा ब्राउज गर्नु पर्ने हुन्छ। ट्याब समूहहरू इन्कोग्निटो मोडमा सिंक हुँदैनन्।
 <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
@@ -1286,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />। <ph name="AI_TIER" />।</translation>
 <translation id="4992255726304765516">ट्याब समूहको रङ: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">पासवर्ड कपी गर्नुहोस्</translation>
+<translation id="5007392906805964215">समीक्षा गर्नुहोस्</translation>
 <translation id="5009127379503001909">ब्राउज गरिराख्नुहोस्</translation>
 <translation id="5016205925109358554">सेरिफ</translation>
 <translation id="5016420433031926653"><ph name="USER_EMAIL" /> मा पठाइयोस्</translation>
@@ -1938,7 +1936,6 @@
 <translation id="6938212956536472404">यो ट्याब सेयर गर्न मिल्दैन</translation>
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
 <translation id="6946722113367118030">सोचिरहेको</translation>
-<translation id="6947751977892029882">यो सेटिङमा कुनै समस्या आयो। Chrome र iOS अपडेट गरी रिस्टार्ट गर्नुहोस् र फेरि प्रयास गर्नुहोस्। यो त्रुटि देखिइरहेको छ भने तपाईंको iPhone मा यो सेटिङ प्रयोग गर्न नमिल्ने हुन सक्छ।</translation>
 <translation id="6950522403736391608">लुकाइएका</translation>
 <translation id="6957084631403333422">फोकस गरिएको नयाँ ट्याब पेज प्रयोग गरी हेर्नुहोस्</translation>
 <translation id="695965663642079255">अझ छिटो चेक आउट गर्न भुक्तानीसम्बन्धी जानकारी सेभ तथा व्यवस्थापन गर्नुहोस्</translation>
@@ -2189,7 +2186,6 @@
 <translation id="7758789811447313947">बैजनी थिम</translation>
 <translation id="7759809451544302770">वैकल्पिक</translation>
 <translation id="7765158879357617694">सार्नुहोस्</translation>
-<translation id="7767651976342854115">डेटाको प्रयोगसम्बन्धी सेटिङ लोड गर्ने क्रममा कुनै त्रुटि भयो।</translation>
 <translation id="7768507955883790804">तपाईं कुनै साइटमा जाँदा उक्त साइटमा स्वतः यो सेटिङ लागू हुन्छ</translation>
 <translation id="7772032839648071052">पासफ्रेज पक्का</translation>
 <translation id="7772948288262733182">फेरि स्वागत छ</translation>
@@ -2502,7 +2498,6 @@
 <translation id="8674716540979958118">तपाईंका पासवर्डहरू ह्याक वा चोरी भएका छन्।</translation>
 <translation id="8679900250380464358">रिडिङ लिस्टमा हाल्नुहोस्</translation>
 <translation id="8680643216091361291">तपाईंको <ph name="BEGIN_LINK" />गतिविधि सेभ गर्नुहोस्<ph name="END_LINK" /> सेटिङ स्वतः अफ गरिन्छ। यो सेटिङ अफ हुँदा Google ले तपाईंका च्याट ३ दिनसम्म सेभ गर्छ। Google ले Gemini एपहरूलाई सही तरिकाले काम गर्ने बनाउन, ती एपहरू सुरक्षित राख्न र तपाईंका प्रतिक्रियाका आधारमा समस्याहरू समाधान गर्न तपाईंका च्याट प्रयोग गर्छ। सबैका लागि Google AI को गुणस्तर सुधार्ने प्रयोजनका लागि तपाईं "गतिविधि सेभ गर्नुहोस्" अन गर्न सक्नुहुन्छ।</translation>
-<translation id="8680786875305615692">वेब प्रयोग गर्ने सम्पूर्ण प्रयोगकर्ताहरूलाई अझ सुरक्षित रहन मद्दत गर्नुहोस्</translation>
 <translation id="8680787084697685621">खाता साइन-इन विवरणहरूको समय समाप्त भएको छ।</translation>
 <translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" लाई तपाईंको माइक्रोफोन एक्सेस गर्ने अनुमति दिइएको छैन</translation>
 <translation id="8690752723634292147">मेटाउन चाहेको कुरा पुष्टि गर्नुहोस्</translation>
@@ -2578,7 +2573,6 @@
 <translation id="8888595487174963247">रिमाइन्डर हटाउनुहोस्</translation>
 <translation id="8890516388109605451">स्रोतहरू</translation>
 <translation id="8893208530912252670">भिडियोहरू</translation>
-<translation id="8898822736010347272">नयाँ खतराहरू पत्ता लगाउन र वेब प्रयोग गर्ने सम्पूर्ण प्रयोगकर्ताहरूलाई सुरक्षित राख्न Google लाई तपाईंले हेर्ने केही पृष्ठका URL, प्रणालीसम्बन्धी निश्चित जानकारी र पृष्ठका केही सामग्रीहरू पठाउँछ।</translation>
 <translation id="890009681345348416">४० भन्दा बढी पासवर्ड अटोफिल गरिएका छन्</translation>
 <translation id="8900845556227858314">ब्राउजर एप</translation>
 <translation id="890565330728586731">पछाडि</translation>
@@ -2609,6 +2603,7 @@
 <translation id="8976414606286374109">कार्डहरू तपाईंको Google खातामा सेभ गरिन्छन्।</translation>
 <translation id="8981454092730389528">Google गतिविधि नियन्त्रणहरू</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, पिन गरिएको साइट</translation>
+<translation id="8989779557457435460">हालको ट्याब स्वतः सेयर गर्नुहोस्</translation>
 <translation id="8990960056509724223">तपाईंको सङ्गठनका नीतिहरूका कारण फाइल सेभ गर्न सकिएन</translation>
 <translation id="8998289560386111590">तपाईंको डिभाइसमा उपलब्ध छैन</translation>
 <translation id="9003677638446136377">फेरि जाँच गर्नुहोस्</translation>

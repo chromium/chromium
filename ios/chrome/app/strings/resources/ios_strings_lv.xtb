@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">Datu pārsūtīšana no pārlūka Safari</translation>
 <translation id="2526166285241366046">Paroles saglabāšana</translation>
 <translation id="2529021024822217800">Atvērt visas</translation>
-<translation id="2530932541542751783">Radās ar iestatījumu saistīta problēma. Atjauniniet un restartējiet pārlūku Chrome un operētājsistēmu iPadOS un mēģiniet vēlreiz. Ja šī kļūda atkārtojas, iespējams, jūsu iPad planšetdatorā šis iestatījums netiek atbalstīts.</translation>
 <translation id="2536991091671391962">Saglabātās paroles varat izmantot jebkurā ierīcē. Tās ir saglabātas pakalpojumā Google paroļu pārvaldnieks kontam <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Slēpta, parole</translation>
 <translation id="2538705697765638552">Saglabājiet savu informāciju un ātrāk paveiciet darbus, piemēram, aizpildiet veidlapas Google produktos. Varat pārvaldīt savu informāciju lietotnē Google maks, izmantojot <ph name="USER_EMAIL" />.</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">Vizualizēt un rediģēt</translation>
 <translation id="3485558910355485767">Jauns inkognito režīma logs</translation>
 <translation id="3488501490964659223">Cilnes tika aizvērtas, un pārlūkošanas dati tika dzēsti. Jūs tikāt izrakstīts.</translation>
-<translation id="3490396108106323715">Kopīgot pašreizējo cilni</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" /> par ieteikto saturu.</translation>
 <translation id="349446645805573740">Izvēlieties, kur saglabāt failu “<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />”</translation>
 <translation id="3504377992102007712">Iestatījumi</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">Nevarēja ielādēt attēlus.</translation>
 <translation id="3565930036634619844">Cilne numur <ph name="TAB_INDEX" />, kopējais skaits ir <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Saglabāt citā veidā</translation>
-<translation id="3572503683475187385">Pašreizējā cilne tiek kopīgota ar Gemini, kad sākat jaunu tērzēšanas sarunu. Kad kopīgojat cilni ar Gemini, tās saturs un URL tiek nosūtīts uz Google serveriem. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="3572607909481582402">Jūsu Google kontā</translation>
 <translation id="3575234738189584619">Meklēt ar Lens</translation>
 <translation id="3575426792457739946">Šajā sarakstā ir iekļauti visi ielādētie profili.</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">Rādīt palīdzību</translation>
 <translation id="4095483462103784441">Izveidot jaunu ciļņu grupu</translation>
 <translation id="4099756562043439968">Iestatīt atgādinājumu</translation>
-<translation id="4108998448622696017">Kad atgadās bīstami notikumi, tie tiek noteikti un jūs saņemat brīdinājumus.</translation>
 <translation id="4111985840824673503">Atzīmēt visu kā izlasītu</translation>
 <translation id="411254640334432676">Lejupielāde neizdevās.</translation>
 <translation id="4112644173421521737">Meklēt</translation>
@@ -1169,6 +1165,7 @@
 <translation id="4658335131052370646">Saglabāt</translation>
 <translation id="465947902531722727">Pārslēgt profilus</translation>
 <translation id="466307903888586355">Jūsu organizācija ir bloķējusi failu saglabāšanu.</translation>
+<translation id="4665303625242639572">Aizvērt lapu <ph name="PAGE_TITLE" /></translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Saskaņā ar jūsu organizācijas politiku tīmeklis ir jāpārlūko privāti. Inkognito režīmā ciļņu grupas netiek sinhronizētas.
 <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
@@ -1286,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Ciļņu grupas krāsa: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Paroles kopēšana</translation>
+<translation id="5007392906805964215">Pārskatīt</translation>
 <translation id="5009127379503001909">Turpināt pārlūkošanu</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Nosūtīt uz e-pasta adresi <ph name="USER_EMAIL" /></translation>
@@ -1938,7 +1936,6 @@ Lai turpinātu datorā, pārslēdzieties uz kontu <ph name="OTHER_EMAIL" />. Jū
 <translation id="6938212956536472404">Šo cilni nevar kopīgot</translation>
 <translation id="6945221475159498467">Atlasīt</translation>
 <translation id="6946722113367118030">Domāšana</translation>
-<translation id="6947751977892029882">Radās ar iestatījumu saistīta problēma. Atjauniniet un restartējiet pārlūku Chrome un operētājsistēmu iOS un mēģiniet vēlreiz. Ja šī kļūda atkārtojas, iespējams, jūsu iPhone tālrunī netiek atbalstīts šis iestatījums.</translation>
 <translation id="6950522403736391608">Paslēptas</translation>
 <translation id="6957084631403333422">Vienkāršotas jaunas cilnes lapas izmēģināšana</translation>
 <translation id="695965663642079255">Saglabājiet un pārvaldiet maksājumu informāciju, lai norēķinātos ātrāk.</translation>
@@ -2189,7 +2186,6 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="7758789811447313947">Violets motīvs</translation>
 <translation id="7759809451544302770">Neobligātas</translation>
 <translation id="7765158879357617694">Pārvietot</translation>
-<translation id="7767651976342854115">Datu lietojuma iestatījumā radās kļūda.</translation>
 <translation id="7768507955883790804">Vietnēs tiks automātiski lietots šis iestatījums, kad tās apmeklēsiet.</translation>
 <translation id="7772032839648071052">Apstipriniet ieejas frāzi</translation>
 <translation id="7772948288262733182">Laipni lūdzam atpakaļ!</translation>
@@ -2502,7 +2498,6 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="8674716540979958118">Jums ir uzlauztas paroles.</translation>
 <translation id="8679900250380464358">Pievienot lasīšanas sarakstam</translation>
 <translation id="8680643216091361291">Jūsu iestatījums <ph name="BEGIN_LINK" />Darbību saglabāšana<ph name="END_LINK" /> pēc noklusējuma ir izslēgts. Ja šis iestatījums ir izslēgts, Google glabā jūsu tērzēšanas sarunas trīs dienas. Tās tiek izmantotas, lai nodrošinātu Gemini Apps pareizu darbību, palīdzētu tās aizsargāt un izmantotu jūsu atsauksmes problēmu novēršanai. Varat ieslēgt iestatījumu “Darbību saglabāšana”, lai palīdzētu uzlabot Google MI visiem lietotājiem.</translation>
-<translation id="8680786875305615692">Palīdziet uzlabot drošību tīmeklī visiem lietotājiem</translation>
 <translation id="8680787084697685621">Konta pierakstīšanās informācija ir novecojusi.</translation>
 <translation id="868648444055742370"><ph name="SITE_DOMAIN" /> nav atļauts piekļūt jūsu mikrofonam.</translation>
 <translation id="8690752723634292147">Apstipriniet dzēšanu</translation>
@@ -2578,7 +2573,6 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="8888595487174963247">Noņemt atgādinājumu</translation>
 <translation id="8890516388109605451">Avoti</translation>
 <translation id="8893208530912252670">Videoklipi</translation>
-<translation id="8898822736010347272">Tiek nosūtīti dažu apmeklēto lapu vietrāži URL, ierobežota sistēmas informācija un noteiktu lapu saturs Google serveriem, lai palīdzētu atklāt jaunus apdraudējumus un aizsargāt visus tīmekļa lietotājus.</translation>
 <translation id="890009681345348416">Vairāk nekā 40 automātiski aizpildītu paroļu</translation>
 <translation id="8900845556227858314">Pārlūka lietotne</translation>
 <translation id="890565330728586731">Atpakaļ</translation>
@@ -2609,6 +2603,7 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="8976414606286374109">Karšu informācija tiek saglabāta jūsu Google kontā.</translation>
 <translation id="8981454092730389528">Google aktivitātes vadīklas</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, piesprausta vietne</translation>
+<translation id="8989779557457435460">Pēc noklusējuma kopīgot pašreizējo cilni</translation>
 <translation id="8990960056509724223">Failu nevarēja saglabāt jūsu organizācijas politiku dēļ.</translation>
 <translation id="8998289560386111590">Nav pieejams jūsu ierīcē</translation>
 <translation id="9003677638446136377">Pārbaudīt vēlreiz</translation>

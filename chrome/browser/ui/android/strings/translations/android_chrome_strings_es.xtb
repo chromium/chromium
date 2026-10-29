@@ -337,6 +337,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2332515770639153015">Navegación segura mejorada está activada</translation>
 <translation id="233375395665273385">Eliminar y cerrar sesión</translation>
 <translation id="2334275697832662087">La seguridad basada en IA de Chrome te ayuda a protegerte frente a amenazas online para que puedas navegar sin preocupaciones</translation>
+<translation id="2335758110242123814">Abrir grupo</translation>
 <translation id="2341410551640223969">No se ha podido instalar <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Datos totales utilizados por Chrome, incluidos los marcadores, las cuentas y la configuración guardada</translation>
 <translation id="2354001756790975382">Otros marcadores</translation>
@@ -390,7 +391,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2532336938189706096">Vista web</translation>
 <translation id="2535807170289627159">Todas las pestañas</translation>
 <translation id="2536728043171574184">Se muestra una copia sin conexión de esta página</translation>
-<translation id="2537574774089209541">Algunas herramientas se han movido para que puedas acceder fácilmente a Gemini mientras navegas</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, pestaña de Incógnito silenciada seleccionada fijada</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, pestaña</translation>
@@ -1037,6 +1037,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="5096775069898886423">Recibe una advertencia antes de visitar sitios que no admitan conexiones seguras</translation>
 <translation id="510275257476243843">Queda 1 hora</translation>
 <translation id="5105442806410269908">Gestionar otros datos de Google</translation>
+<translation id="5111326646107464148">Abrir grupo en una ventana nueva</translation>
 <translation id="5114895953710637392">La hoja de filtros de aplicaciones está cerrada.</translation>
 <translation id="5115811374190515607">a <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Puedes usar Chrome cada vez que toques enlaces en mensajes, documentos y otras aplicaciones</translation>
@@ -1606,6 +1607,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="72415438529550637">La sugerencia de contraseña está cerrada.</translation>
 <translation id="724510009481365878">Esta página no se puede imprimir</translation>
 <translation id="7248671827512403053">Aplicación</translation>
+<translation id="7253205084599155458">Muestra la navegación y las herramientas en una barra de herramientas inferior para acceder a ellas fácilmente</translation>
 <translation id="7253951228444156601">Comprobando contraseñas…</translation>
 <translation id="7265857422443387781">Buscar en la pestaña con Google Lens <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">¿Enviar <ph name="ONE_TIME_CODE" /> a <ph name="ORIGIN" />?</translation>
@@ -1618,7 +1620,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7291910923717764901">Descripciones de imágenes añadidas para esta página</translation>
 <translation id="7293429513719260019">Seleccionar idioma</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, pestaña que comparte contenido fijada seleccionada</translation>
-<translation id="7304003340539141201">Pídele a Gemini que te ayude con tus pestañas y tareas</translation>
 <translation id="7311244614769792472">No se han encontrado resultados</translation>
 <translation id="7314734791127433392">No se pueden comprobar las contraseñas</translation>
 <translation id="7324354302972299151">Enviar una solicitud "Do Not Track"</translation>
@@ -1754,6 +1755,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7821130663268546430">Puedes ver todas las pestañas abiertas en la Función de cambio de pestaña</translation>
 <translation id="7822705602465980873">Cuando inicias sesión, estos datos se vinculan a tu cuenta de Google para protegerte en los servicios de Google (por ejemplo, con una mayor protección en Gmail tras un incidente de seguridad).</translation>
 <translation id="7824665136384946951">Tu organización ha desactivado Navegación segura</translation>
+<translation id="782590969421016895">Utilizar páginas actuales</translation>
 <translation id="7825973332242257878">Grupos de pestañas</translation>
 <translation id="7845155831233417403">Puedes tener hasta <ph name="MAX_INSTANCE_COUNT" /> ventanas. Cierra una ventana para continuar.</translation>
 <translation id="7846161022626028328">Se ha producido un error. Inténtalo de nuevo.</translation>
@@ -1986,7 +1988,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="8694622119922491927"><ph name="APP_NAME" /> necesita permiso para acceder a los dispositivos de interfaz humana (HID) en este sitio. Puedes cambiar este ajuste más tarde en Ajustes &gt; Aplicaciones &gt; Acceso especial de apps.</translation>
 <translation id="8696297579102085705">Enviar a tu dispositivo</translation>
 <translation id="8699120352855309748">No ofrecer que se traduzcan estos idiomas</translation>
-<translation id="8700565880437506364">Presentamos Gemini en Chrome</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="8715286883001906001">Refuerza tus contraseñas en tu cuenta de Google</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> se cerrará</translation>

@@ -96,7 +96,6 @@
 <translation id="1165174597379888365">Faqja është vizituar</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Asnjë}=1{Nga 1 sajt (do të qëndrosh i identifikuar në "Llogarinë tënde të Google")}other{Nga # sajte (do të qëndrosh i identifikuar në "Llogarinë tënde të Google")}}</translation>
 <translation id="1167877250265821930">Shkarkimi i gjuhës <ph name="LANGUAGE" /> dështoi</translation>
-<translation id="1171306609584863516">Verifikuar nga <ph name="IDP_ORIGIN" /></translation>
 <translation id="1174644974616730562">Zarf kinez nr. 1</translation>
 <translation id="1174723505405632867">Dëshiron ta lejosh <ph name="EMBEDDED_URL" /> të përdorë kukit dhe të dhënat e sajtit në <ph name="TOP_LEVEL_URL" />?
 
@@ -585,6 +584,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1988881251331415125">Nëse nuk ka ndonjë gabim drejtshkrimor, <ph name="BEGIN_LINK" />provo të ekzekutosh "Diagnostikimin e lidhshmërisë"<ph name="END_LINK" />.</translation>
 <translation id="1991370806334788445">Provo të lejosh kukit e palëve të treta, që do të thotë se ka më pak mbrojtje gjatë shfletimit, por veçoritë e sajteve ka më shumë gjasa të funksionojnë siç pritet.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
+<translation id="1996557034791506430">Të hiqet leja?</translation>
 <translation id="1997484222658892567"><ph name="URL" /> kërkon të ruajë të dhëna të mëdha në mënyrë të përhershme në kompjuterin tënd lokal</translation>
 <translation id="1997774360448418989">Letër (e lehtë)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{dhe 1 tjetër}other{dhe # të tjera}}</translation>
@@ -2309,7 +2309,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="484462545196658690">Automatike</translation>
 <translation id="4844937814014739139">Lëvizja dhe zmadhimi në skedat e ndara</translation>
 <translation id="484988093836683706">Përdor shkyçjen e pajisjes</translation>
-<translation id="4850669014075537160">Lëvizja</translation>
 <translation id="4850886885716139402">Pamja</translation>
 <translation id="4854853140771946034">Krijo shpejt një shënim të ri në Google Keep</translation>
 <translation id="4855395119669662878">Administratori yt do të fillojë ngarkimin e skedarëve të tu në <ph name="CLOUD_PROVIDER" /> më <ph name="DATE_TIME" />. Mbaje pajisjen të lidhur derisa ngarkimi i skedarit të përfundojë. Gjatë ngarkimit, do të mund të lexosh vetëm skedarët lokalë.</translation>
@@ -2911,7 +2910,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5826507051599432481">Emri i zakonshëm (CN)</translation>
 <translation id="5830698870816298009">Përdorimi dhe lëvizja e kamerës</translation>
 <translation id="5831217499016131155">Portofoli i Google</translation>
-<translation id="5832976493438355584">I kyçur</translation>
 <translation id="5837220895135257862">Liro hapësirë në "<ph name="CLOUD_PROVIDER" />" para se të provosh përsëri</translation>
 <translation id="5838278095973806738">Nuk duhet të futësh asnjë informacion delikat në këtë sajt (p.sh. fjalëkalimet ose karta krediti) pasi mund të vidhet nga sulmuesit.</translation>
 <translation id="5838732667866024867">Mund të përdorësh shigjetën majtas/djathtas për të shqyrtuar ndryshimet e çmimeve në grafik</translation>
@@ -3503,6 +3501,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6834757537110528125">ky sajt nuk mbështet një lidhje të sigurt</translation>
 <translation id="6841864657731852591">Cilindri i gravurës</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
+<translation id="6843919992766261684">Në të ardhmen, <ph name="ISSUER" /> do të ndalojë konfirmimin automatik të këtij email-i</translation>
 <translation id="6844746916504777213">Mos i ndaj asnjëherë këto sajte</translation>
 <translation id="6844998850832008753">Gjurmimi i duarve lejohet këtë herë</translation>
 <translation id="6849023911358004088">Butoni "Menaxho cilësimet e sigurisë". Aktivizoje për të menaxhuar "Shfletimin e sigurt" dhe më shumë te cilësimet e Chrome</translation>
@@ -3653,6 +3652,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="7083258188081898530">Tabakaja 9</translation>
 <translation id="70846382339153529">Skedar me tekst OpenDocument</translation>
 <translation id="7086090958708083563">Përditësimi u kërkua nga përdoruesi</translation>
+<translation id="7087807086191250928">Gemini mund të bëjë gabime. Mbaj shtypur gjatë sugjerimin për të rishikuar burimin origjinal dhe për t'u siguruar që këto informacione janë të sakta.</translation>
 <translation id="7089745480771070611">Hapet në panelin anësor</translation>
 <translation id="7090698782953528257">Më ndihmo të paraqes një funksion në grafik për të vizualizuar ekuacionin matematikor dhe për të parë formën e lakores</translation>
 <translation id="7092087596499105699">Administratori yt ka konfiguruar bashkuesin e portëkalimit të sigurt për të mbrojtur qasjen në aplikacionet private të uebit të organizatës sate. Ai mund të përdorë të dhëna nga profili yt i punës për të verifikuar qasjen.</translation>
@@ -4083,6 +4083,7 @@ Detaje shtesë:
 <translation id="7765158879357617694">Zhvendos</translation>
 <translation id="7766518757692125295">Bordura</translation>
 <translation id="776749070095465053">Pëlhurë</translation>
+<translation id="7770247511810814330">Hiq lejen</translation>
 <translation id="7772659560036894129">Emrat e produkteve</translation>
 <translation id="7773005668374414287">E njëjta renditje e kthyer lart</translation>
 <translation id="7779418012194492374">Revoko qasjen për <ph name="DEVICE_NAME" /></translation>
@@ -4194,7 +4195,6 @@ Detaje shtesë:
 <translation id="7961015016161918242">Asnjëherë</translation>
 <translation id="7961493403319780137">Mëso më shumë rreth kësaj veçorie - "Plotësimi automatik i kodeve të verifikimit" nga Gmail</translation>
 <translation id="7962467575542381659">Makineria e platformës</translation>
-<translation id="796439090588610411">Chrome do të ndalojë konfirmimin automatik të këtij email-i në sajtet e mbështetura.</translation>
 <translation id="7966803981046576691">Lloji i llogarisë së punës</translation>
 <translation id="7967973398323409409">Informacionet që plotëson automatikisht nuk shihen asnjëherë nga askush</translation>
 <translation id="79682505114836835">Vlera "<ph name="VALUE" />" është një ngjyrë hekzadecimale e pavlefshme.</translation>
@@ -4477,7 +4477,6 @@ Detaje shtesë:
 <translation id="8446884382197647889">Mëso më shumë</translation>
 <translation id="8449036207308062757">Menaxho hapësirën ruajtëse</translation>
 <translation id="8449155699563577224">17 x 24 inç</translation>
-<translation id="8449513475775663994">Të hiqet email-i i verifikuar?</translation>
 <translation id="8449836157089738489">Hapi të gjitha në një grup të ri skedash</translation>
 <translation id="8451518040456311377">Ruaj dhe plotëso dokumentet e identitetit</translation>
 <translation id="84561192812921051">Administratori yt mund të bëjë ndryshime në profilin dhe shfletuesin tënd në distancë, mund të analizojë informacionet rreth shfletuesit nëpërmjet raportimit dhe mund të kryejë detyra të tjera të nevojshme. Aktiviteti në këtë pajisje mund të menaxhohet edhe jashtë Chrome.  <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>

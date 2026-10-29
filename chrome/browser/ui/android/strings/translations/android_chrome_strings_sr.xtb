@@ -337,6 +337,7 @@
 <translation id="2332515770639153015">Побољшано безбедно прегледање је укључено</translation>
 <translation id="233375395665273385">Избриши и одјави ме</translation>
 <translation id="2334275697832662087">Chrome безбедност коју омогућава вештачка интелигенција штити вас од онлајн претњи, а истовремено вам пружа осећај безбедности док прегледате</translation>
+<translation id="2335758110242123814">Отвори групу</translation>
 <translation id="2341410551640223969">Инсталирање апликације <ph name="WEBAPK_NAME" /> није успело.</translation>
 <translation id="2349710944427398404">Сви подаци које користи Chrome, укључујући налоге, обележиваче и сачувана подешавања</translation>
 <translation id="2354001756790975382">Остали обележивачи</translation>
@@ -390,7 +391,6 @@
 <translation id="2532336938189706096">Веб-приказ</translation>
 <translation id="2535807170289627159">Све картице</translation>
 <translation id="2536728043171574184">Прегледате офлајн копију ове странице</translation>
-<translation id="2537574774089209541">Неке алатке смо преместили да бисте лакше приступали Gemini-ју док прегледате</translation>
 <translation id="2539002604555291451">Sans serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, изабрана закачена картица без архивирања са искљученим звуком</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, картица</translation>
@@ -1037,6 +1037,7 @@ Google налог можда има друге облике историје п�
 <translation id="5096775069898886423">За сајтове који не подржавају безбедне везе, добијајте упозорење пре него што посетите сајт</translation>
 <translation id="510275257476243843">Још 1 сат</translation>
 <translation id="5105442806410269908">Управљајте другим Google подацима</translation>
+<translation id="5111326646107464148">Отвори групу у новом прозору</translation>
 <translation id="5114895953710637392">Табела са филтерима апликација је затворена.</translation>
 <translation id="5115811374190515607">у <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Можете да користите Chrome сваки пут када додирнете линкове у порукама, документима и другим апликацијама</translation>
@@ -1606,6 +1607,7 @@ Google налог можда има друге облике историје п�
 <translation id="72415438529550637">Предлог лозинке је затворен.</translation>
 <translation id="724510009481365878">Не можете да одштампате ову страницу</translation>
 <translation id="7248671827512403053">Апликација</translation>
+<translation id="7253205084599155458">Приказујте навигацију и алатке на доњој траци с алаткама ради лакшег приступа</translation>
 <translation id="7253951228444156601">Проверавају се лозинке…</translation>
 <translation id="7265857422443387781">Претражи картицу уз Google објектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Желите да пошаљете <ph name="ONE_TIME_CODE" /> на <ph name="ORIGIN" />?</translation>
@@ -1618,7 +1620,6 @@ Google налог можда има друге облике историје п�
 <translation id="7291910923717764901">Додати су описи слика за ову страницу</translation>
 <translation id="7293429513719260019">Изаберите језик</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, изабрана закачена картица за дељење</translation>
-<translation id="7304003340539141201">Затражите од Gemini-ја да вам помогне са картицама и задацима</translation>
 <translation id="7311244614769792472">Није пронађен ниједан резултат</translation>
 <translation id="7314734791127433392">Провера лозинки није успела</translation>
 <translation id="7324354302972299151">Пошаљите захтев „Do Not Track“</translation>
@@ -1754,6 +1755,7 @@ Google налог можда има друге облике историје п�
 <translation id="7821130663268546430">Све отворене картице можете да пронађете у пребацивачу картица</translation>
 <translation id="7822705602465980873">Када сте пријављени, ови подаци су повезани са вашим Google налогом да бисмо вас заштитили у свим Google услугама, на пример, повећањем заштите у Gmail-у после безбедносног инцидента.</translation>
 <translation id="7824665136384946951">Организација је искључила Безбедно прегледање</translation>
+<translation id="782590969421016895">Користи ове странице</translation>
 <translation id="7825973332242257878">Групе картица</translation>
 <translation id="7845155831233417403">Максималан број прозора које можете да имате је <ph name="MAX_INSTANCE_COUNT" />. Затворите прозор да бисте наставили.</translation>
 <translation id="7846161022626028328">Дошло је до грешке. Пробајте поново.</translation>
@@ -1986,7 +1988,6 @@ Google налог можда има друге облике историје п�
 <translation id="8694622119922491927"><ph name="APP_NAME" /> тражи дозволу да приступи уређајима за људски интерфејс (HID-овима) за овај сајт. Ово подешавање можете да промените касније у Подешавања &gt; Апликације &gt; Посебан приступ апликацијама.</translation>
 <translation id="8696297579102085705">Пошаљи на уређај</translation>
 <translation id="8699120352855309748">Не нуди превод ових језика</translation>
-<translation id="8700565880437506364">Представљамо Gemini у Chrome-у</translation>
 <translation id="8712637175834984815">Важи</translation>
 <translation id="8715286883001906001">Ојачајте лозинке на Google налогу</translation>
 <translation id="8715300232952757586">Картица <ph name="TAB_TITLE" /> ће се затворити</translation>

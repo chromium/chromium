@@ -337,6 +337,7 @@
 <translation id="2332515770639153015">ଉନ୍ନତ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ଚାଲୁ ଅଛି</translation>
 <translation id="233375395665273385">ଡିଲିଟ କରି ସାଇନ ଆଉଟ କରନ୍ତୁ</translation>
 <translation id="2334275697832662087">Chromeର AI-ପରିଚାଳିତ ସିକ୍ୟୁରିଟି ଆପଣଙ୍କୁ ଅନଲାଇନ ବିପଦଗୁଡ଼ିକରୁ ସୁରକ୍ଷିତ ରଖିବାରେ ସାହାଯ୍ୟ କରେ, ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ଆପଣଙ୍କୁ ଆତ୍ମବିଶ୍ୱାସ ଦିଏ</translation>
+<translation id="2335758110242123814">ଗୋଷ୍ଠୀ ଖୋଲନ୍ତୁ</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" />କୁ ଇନଷ୍ଟଲ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="2349710944427398404">ଆକାଉଣ୍ଟ, ବୁକ୍‌ମାର୍କ୍ସ ତଥା ସେଭ୍ କରାଯାଇଥିବା ସେଟିଂସ୍ ସମେତ Chrome ଦ୍ୱାରା ବ୍ୟବହୃତ ସମୁଦାୟ ଡାଟା</translation>
 <translation id="2354001756790975382">ଅନ୍ୟ ବୁକମାର୍କସ୍</translation>
@@ -390,7 +391,6 @@
 <translation id="2532336938189706096">ୱେବ୍ ଦୃଶ୍ୟ</translation>
 <translation id="2535807170289627159">ସମସ୍ତ ଟାବ</translation>
 <translation id="2536728043171574184">ଏହି ପୃଷ୍ଠାର ଏକ ଅଫ୍‌ଲାଇନ୍‌ କପି ଦେଖୁଛି</translation>
-<translation id="2537574774089209541">ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ଆପଣ Geminiକୁ ସହଜରେ ଆକ୍ସେସ କରିବା ପାଇଁ କିଛି ଟୁଲ ମୁଭ ହୋଇଛି</translation>
 <translation id="2539002604555291451">Sans serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, ଚୟନିତ ପିନ କରାଯାଇଥିବା ମ୍ୟୁଟ କରାଯାଇଥିବା ଇନକଗ୍ନିଟୋ ଟାବ</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, ଟାବ</translation>
@@ -1037,6 +1037,7 @@
 <translation id="5096775069898886423">ସୁରକ୍ଷିତ କନେକ୍ସନକୁ ସପୋର୍ଟ କରୁନଥିବା ସାଇଟଗୁଡ଼ିକ ପାଇଁ ସାଇଟକୁ ଭିଜିଟ କରିବା ପୂର୍ବରୁ ଚେତାବନୀ ପାଆନ୍ତୁ</translation>
 <translation id="510275257476243843">1 ଘଣ୍ଟା ବାକି ଅଛି</translation>
 <translation id="5105442806410269908">ଅନ୍ୟ Google ଡାଟା ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="5111326646107464148">ନୂଆ ୱିଣ୍ଡୋରେ ଗୋଷ୍ଠୀ ଖୋଲନ୍ତୁ</translation>
 <translation id="5114895953710637392">ଆପ ଫିଲ୍ଟର ସିଟ ବନ୍ଦ ଅଛି।</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" />କୁ</translation>
 <translation id="5116239826668864748">ଆପଣ ମେସେଜ, ଡକ୍ୟୁମେଣ୍ଟ ଏବଂ ଅନ୍ୟ ଆପ୍ସରେ ଥିବା ଲିଙ୍କରେ ଟାପ କରି ଯେ କୌଣସି ସମୟରେ Chromeକୁ ବ୍ୟବହାର କରିପାରିବେ</translation>
@@ -1606,6 +1607,7 @@
 <translation id="72415438529550637">ପାସୱାର୍ଡ ପରାମର୍ଶକୁ ବନ୍ଦ କରାଯାଇଛି।</translation>
 <translation id="724510009481365878">ଏହି ପୃଷ୍ଠାକୁ ପ୍ରିଣ୍ଟ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="7248671827512403053">ଆପ୍ଲିକେସନ୍</translation>
+<translation id="7253205084599155458">ସହଜ ଆକ୍ସେସ ପାଇଁ ଏକ ନିମ୍ନ ଟୁଲବାରରେ ନାଭିଗେସନ ଏବଂ ଟୁଲଗୁଡ଼ିକ ଡିସପ୍ଲେ କରନ୍ତୁ</translation>
 <translation id="7253951228444156601">ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରାଯାଉଛି…</translation>
 <translation id="7265857422443387781">Google Lens <ph name="BEGIN_NEW" />ନୂଆ<ph name="END_NEW" /> ମାଧ୍ୟମରେ ଟାବ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="727288900855680735"><ph name="ORIGIN" />ରେ <ph name="ONE_TIME_CODE" /> ଦାଖଲ କରିବେ?</translation>
@@ -1618,7 +1620,6 @@
 <translation id="7291910923717764901">ଏହି ପୃଷ୍ଠା ପାଇଁ ଛବିର ବର୍ଣ୍ଣନା ଯୋଗ କରାଯାଇଛି</translation>
 <translation id="7293429513719260019">ଭାଷା ଚୟନ କରନ୍ତୁ</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, ଚୟନିତ ପିନ କରାଯାଇଥିବା ସେୟାର କରୁଥିବା ଟାବ</translation>
-<translation id="7304003340539141201">ଆପଣଙ୍କ ଟାବ ଏବଂ ଟାସ୍କଗୁଡ଼ିକରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ Geminiକୁ କୁହନ୍ତୁ</translation>
 <translation id="7311244614769792472">କୌଣସି ଫଳାଫଳ ମିଳିଲା ନାହିଁ</translation>
 <translation id="7314734791127433392">ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="7324354302972299151">ଏକ “Do Not Track” ଅନୁରୋଧ ପଠାନ୍ତୁ</translation>
@@ -1754,6 +1755,7 @@
 <translation id="7821130663268546430">ଆପଣ ଟାବ ସୁଇଚରରେ ସମସ୍ତ ଖୋଲା ଥିବା ଟାବ ପାଇପାରିବେ</translation>
 <translation id="7822705602465980873">ଆପଣ ସାଇନ ଇନ ଥିବା ବେଳେ, ଏକ ସୁରକ୍ଷା ଘଟଣା ପରେ Gmailରେ ସୁରକ୍ଷା ବ୍ୟବସ୍ଥାକୁ ବଢ଼ାଇବା ପରି ଏହି ଡାଟା ଆପଣଙ୍କୁ ସମଗ୍ର Google ସେବାରେ ସୁରକ୍ଷା ଦେବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ସହ ଲିଙ୍କ ହୋଇଥାଏ।</translation>
 <translation id="7824665136384946951">ଆପଣଙ୍କ ସଂସ୍ଥା ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂକୁ ବନ୍ଦ କରିଦେଇଛି</translation>
+<translation id="782590969421016895">ସାମ୍ପ୍ରତିକ ପୃଷ୍ଠାଗୁଡ଼ିକ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="7825973332242257878">ଟାବ ଗ୍ରୁପଗୁଡ଼ିକ</translation>
 <translation id="7845155831233417403">ଆପଣ <ph name="MAX_INSTANCE_COUNT" /> ପର୍ଯ୍ୟନ୍ତ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ରଖିପାରିବେ। ଜାରି ରଖିବା ପାଇଁ ଏକ ୱିଣ୍ଡୋକୁ ବନ୍ଦ କରନ୍ତୁ।</translation>
 <translation id="7846161022626028328">ଏକ ତ୍ରୁଟି ହୋଇଛି। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
@@ -1986,7 +1988,6 @@
 <translation id="8694622119922491927">ଏହି ସାଇଟ ପାଇଁ ହ୍ୟୁମାନ ଇଣ୍ଟରଫେସ ଡିଭାଇସ (HID)କୁ ଆକ୍ସେସ କରିବା ପାଇଁ <ph name="APP_NAME" /> ଅନୁମତି ଆବଶ୍ୟକ କରେ। ଆପଣ ପରେ ସେଟିଂସ &gt; ଆପ୍ସ &gt; ବିଶେଷ ଆପ ଆକ୍ସେସରେ ଏହି ସେଟିଂକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
 <translation id="8696297579102085705">ଆପଣଙ୍କ ଡିଭାଇସକୁ ପଠାନ୍ତୁ</translation>
 <translation id="8699120352855309748">ଏହି ଭାଷାଗୁଡ଼ିକର ଅନୁବାଦ କରିବାକୁ ଅଫର୍ କରନ୍ତୁ ନାହିଁ</translation>
-<translation id="8700565880437506364">Chromeରେ Gemini ଆସିଯାଇଛି</translation>
 <translation id="8712637175834984815">ବୁଝିଗଲି</translation>
 <translation id="8715286883001906001">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଆପଣଙ୍କର ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସୁଦୃଢ଼ କରନ୍ତୁ</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> ବନ୍ଦ ହୋଇଯିବ</translation>

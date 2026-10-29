@@ -337,6 +337,7 @@
 <translation id="2332515770639153015">“增强型安全浏览”已开启</translation>
 <translation id="233375395665273385">删除数据并退出账号</translation>
 <translation id="2334275697832662087">Chrome 依托 AI 技术的安全功能可帮助您防范在线威胁，让您安心地浏览网页</translation>
+<translation id="2335758110242123814">打开分组</translation>
 <translation id="2341410551640223969">无法安装 <ph name="WEBAPK_NAME" />。</translation>
 <translation id="2349710944427398404">Chrome 所使用的数据总量，包括账号、书签和已保存的设置</translation>
 <translation id="2354001756790975382">其他书签</translation>
@@ -390,7 +391,6 @@
 <translation id="2532336938189706096">网页视图</translation>
 <translation id="2535807170289627159">所有标签页</translation>
 <translation id="2536728043171574184">正在查看此网页的离线副本</translation>
-<translation id="2537574774089209541">部分工具的位置有所调整，以便您在浏览时能够轻松访问 Gemini</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />，已选择的固定无痕式标签页，已设为静音</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />，标签页</translation>
@@ -1037,6 +1037,7 @@
 <translation id="5096775069898886423">在您访问不支持安全连接的网站前，系统会发出警告</translation>
 <translation id="510275257476243843">还剩 1 小时</translation>
 <translation id="5105442806410269908">管理其他 Google 数据</translation>
+<translation id="5111326646107464148">在新窗口中打开群组</translation>
 <translation id="5114895953710637392">应用过滤器工作表已关闭。</translation>
 <translation id="5115811374190515607">已移至<ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">当您点按消息、文档和其他应用中的链接时，可以随时使用 Chrome 打开链接</translation>
@@ -1617,7 +1618,6 @@
 <translation id="7291910923717764901">已为此网页添加图片说明</translation>
 <translation id="7293429513719260019">选择语言</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />，已选择的固定标签页，正在共享内容</translation>
-<translation id="7304003340539141201">让 Gemini 为您提供标签页和任务方面的帮助</translation>
 <translation id="7311244614769792472">找不到任何结果</translation>
 <translation id="7314734791127433392">无法检查密码</translation>
 <translation id="7324354302972299151">发送“Do Not Track”请求</translation>
@@ -1753,6 +1753,7 @@
 <translation id="7821130663268546430">您可在标签页切换器中找到所有打开的标签页</translation>
 <translation id="7822705602465980873">当您登录后，这些数据将与您的 Google 账号关联，以便在各种 Google 服务中保护您，例如：在安全事件发生后加强 Gmail 的保护力度。</translation>
 <translation id="7824665136384946951">您的组织已关闭“安全浏览”功能</translation>
+<translation id="782590969421016895">使用当前网页</translation>
 <translation id="7825973332242257878">标签页分组</translation>
 <translation id="7845155831233417403">您最多只能打开 <ph name="MAX_INSTANCE_COUNT" /> 个窗口。请关闭一个窗口以继续。</translation>
 <translation id="7846161022626028328">出错了，请重试。</translation>
@@ -1985,7 +1986,6 @@
 <translation id="8694622119922491927">“<ph name="APP_NAME" />”需要获得相应权限，才能让此网站使用人机接口设备 (HID)。以后，您可以在“设置”&gt;“应用”&gt;“特殊应用权限”中更改此设置。</translation>
 <translation id="8696297579102085705">发送到设备</translation>
 <translation id="8699120352855309748">不询问是否翻译这些语言</translation>
-<translation id="8700565880437506364">Chrome 中的 Gemini 闪亮登场</translation>
 <translation id="8712637175834984815">知道了</translation>
 <translation id="8715286883001906001">提升您 Google 账号的密码强度</translation>
 <translation id="8715300232952757586">“<ph name="TAB_TITLE" />”将被关闭</translation>

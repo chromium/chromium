@@ -337,6 +337,7 @@
 <translation id="2332515770639153015">«مرور ایمن پیشرفته» روشن است</translation>
 <translation id="233375395665273385">حذف و خروج از سیستم</translation>
 <translation id="2334275697832662087">‏امنیت هوشواره‌ای Chrome از شما در برابر تهدیدات آنلاین محافظت می‌کند و به شما امکان می‌دهد با اطمینان وب را مرور کنید</translation>
+<translation id="2335758110242123814">باز کردن گروه</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> نصب نشد.</translation>
 <translation id="2349710944427398404">‏کل داده‌های استفاده‌شده توسط Chrome، شامل حساب‌ها، نشانک‌ها و تنظیمات ذخیره‌شده</translation>
 <translation id="2354001756790975382">نشانک‌های دیگر</translation>
@@ -390,7 +391,6 @@
 <translation id="2532336938189706096">نمای وب</translation>
 <translation id="2535807170289627159">همه زبانه‌ها</translation>
 <translation id="2536728043171574184">مشاهده یک کپی آفلاین از این صفحه</translation>
-<translation id="2537574774089209541">‏برخی‌از ابزارها جابه‌جا شده‌اند تا هنگام مرور کردن بتوانید به‌آسانی به Gemini دسترسی داشته باشید</translation>
 <translation id="2539002604555291451">سن‌سریف</translation>
 <translation id="2542094237868555728">‫<ph name="TAB_TITLE" />، زبانه ناشناس بی‌صدای سنجاق‌شده انتخابی</translation>
 <translation id="2542548955756682219">‫<ph name="TAB_TITLE" />، زبانه</translation>
@@ -1037,6 +1037,7 @@
 <translation id="5096775069898886423">برای سایت‌هایی که از اتصال‌های ایمن پشتیبانی نمی‌کنند، قبل‌از بازدید از سایت هشدار دریافت کنید</translation>
 <translation id="510275257476243843">۱ ساعت باقی‌مانده است</translation>
 <translation id="5105442806410269908">‏مدیریت سایر داده‌های Google</translation>
+<translation id="5111326646107464148">باز کردن گروه در پنجره جدید</translation>
 <translation id="5114895953710637392">برگ فیلتر کردن برنامه بسته شد.</translation>
 <translation id="5115811374190515607">به <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">‏در هرزمانی با تک‌ضرب زدن روی پیوندهای موجود در پیام‌ها، اسناد، و دیگر برنامه‌ها می‌توانید از Chrome استفاده کنید</translation>
@@ -1606,6 +1607,7 @@
 <translation id="72415438529550637">پیشنهاد گذرواژه بسته شد.</translation>
 <translation id="724510009481365878">امکان چاپ این صفحه وجود ندارد</translation>
 <translation id="7248671827512403053">برنامه کاربردی</translation>
+<translation id="7253205084599155458">نمایش دادن پیمایش و ابزارها در نوارابزار پایین برای دسترسی آسان</translation>
 <translation id="7253951228444156601">درحال بررسی گذرواژه‌ها…</translation>
 <translation id="7265857422443387781">‏جستجوی زبانه با «لنز Google» <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
 <translation id="727288900855680735"><ph name="ONE_TIME_CODE" /> به <ph name="ORIGIN" /> ارسال شود؟</translation>
@@ -1618,7 +1620,6 @@
 <translation id="7291910923717764901">توضیحات تصویر برای این صفحه اضافه شد</translation>
 <translation id="7293429513719260019">انتخاب زبان</translation>
 <translation id="7298319215489933099">‫<ph name="TAB_TITLE" />، زبانه هم‌رسانی سنجاق‌شده انتخابی</translation>
-<translation id="7304003340539141201">‏از Gemini بخواهید در زبانه‌ها و تکالیف به شما کمک کند</translation>
 <translation id="7311244614769792472">نتیجه‌ای پیدا نشد</translation>
 <translation id="7314734791127433392">بررسی گذرواژه‌ها امکان‌پذیر نیست</translation>
 <translation id="7324354302972299151">ارسال درخواست «ردیابی نشدن»</translation>
@@ -1754,6 +1755,7 @@
 <translation id="7821130663268546430">می‌توانید همه زبانه‌های باز را در تعویض‌کننده زبانه پیدا کنید</translation>
 <translation id="7822705602465980873">‏وقتی به سیستم وارد شده باشید، این داده‌ها به «حساب Google» شما پیوند داده می‌شود تا از شما در سراسر سرویس‌های Google محافظت کند؛ مثلاً افزایش محافظت در Gmail پس‌از یک حادثه امنیتی.</translation>
 <translation id="7824665136384946951">سازمانتان «مرور ایمن» را خاموش کرده است</translation>
+<translation id="782590969421016895">استفاده از صفحات فعلی</translation>
 <translation id="7825973332242257878">گروه زبانه</translation>
 <translation id="7845155831233417403">حداکثر <ph name="MAX_INSTANCE_COUNT" /> پنجره می‌توانید داشته باشید. برای ادامه دادن، پنجره‌ای را ببندید.</translation>
 <translation id="7846161022626028328">خطایی وجود داشت. دوباره امتحان کنید.</translation>
@@ -1986,7 +1988,6 @@
 <translation id="8694622119922491927">‏‫<ph name="APP_NAME" /> برای دست‌یابی به دستگاه‌های میانای انسانی (HID) برای این سایت به اجازه نیاز دارد. می‌توانید این تنظیم را بعداً در «تنظیمات &gt; برنامه‌ها &gt; دسترسی ویژه برنامه» تغییر دهید.</translation>
 <translation id="8696297579102085705">ارسال کردن به دستگاه شما</translation>
 <translation id="8699120352855309748">ترجمه این زبان‌ها پیشنهاد نشود</translation>
-<translation id="8700565880437506364">‏معرفی «Gemini در Chrome»</translation>
 <translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="8715286883001906001">‏گذرواژه‌های ذخیره‌شده در «حساب Google» خود را تقویت کنید</translation>
 <translation id="8715300232952757586">‫<ph name="TAB_TITLE" /> بسته می‌شود.</translation>

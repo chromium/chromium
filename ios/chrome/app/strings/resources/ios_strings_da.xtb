@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">Overfør dine data fra Safari</translation>
 <translation id="2526166285241366046">Gem en adgangskode</translation>
 <translation id="2529021024822217800">Åbn alle</translation>
-<translation id="2530932541542751783">Noget gik galt med denne indstilling. Opdater og genstart Chrome og iPadOS, og prøv igen. Hvis denne fejl fortsætter, understøtter din iPad muligvis ikke denne indstilling.</translation>
 <translation id="2536991091671391962">Du kan bruge gemte adgangskoder på alle enheder. De er gemt i Google Adgangs­kode­admin­istrator for <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Skjult, adgangskode</translation>
 <translation id="2538705697765638552">Gem dine oplysninger, og få mere fra hånden hurtigere, f.eks. ved at udfylde formularer i Google-produkter. Du kan administrere dine oplysninger i Google Wallet for <ph name="USER_EMAIL" />.</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">Visualiser og rediger</translation>
 <translation id="3485558910355485767">Nyt inkognitovindue</translation>
 <translation id="3488501490964659223">Fanerne er blevet lukket, og browserdataene er blevet slettet. Du er blevet logget ud</translation>
-<translation id="3490396108106323715">Del aktuel fane</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /> om anbefalet indhold</translation>
 <translation id="349446645805573740">Vælg, hvor du vil gemme "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
 <translation id="3504377992102007712">Indstillinger</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">Billederne kunne ikke indlæses</translation>
 <translation id="3565930036634619844">Fane. <ph name="TAB_INDEX" /> af <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Gem på en anden måde</translation>
-<translation id="3572503683475187385">Den aktuelle fane deles med Gemini, når du starter en ny chat. Når du deler en fane med Gemini, sendes dens indhold og webadresse til Google. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">På din Google-konto</translation>
 <translation id="3575234738189584619">Søg med Lens</translation>
 <translation id="3575426792457739946">Denne liste indeholder alle indlæste profiler.</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">Vis Hjælp</translation>
 <translation id="4095483462103784441">Opret ny fanegruppe</translation>
 <translation id="4099756562043439968">Opret en påmindelse</translation>
-<translation id="4108998448622696017">Registrerer og advarer dig om skadelige hændelser, når de opstår.</translation>
 <translation id="4111985840824673503">Markér alle som læste</translation>
 <translation id="411254640334432676">Download mislykkedes.</translation>
 <translation id="4112644173421521737">Søg</translation>
@@ -1169,6 +1165,7 @@
 <translation id="4658335131052370646">Gem</translation>
 <translation id="465947902531722727">Skift profil</translation>
 <translation id="466307903888586355">Din organisation har blokeret muligheden for at gemme filer</translation>
+<translation id="4665303625242639572">Luk <ph name="PAGE_TITLE" /></translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Din organisation kræver, at du bruger privat browsing. Fanegrupper synkroniseres ikke i inkognitotilstand.
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
@@ -1286,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Fanegruppens farve <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopiér adgangskode</translation>
+<translation id="5007392906805964215">Gennemgå</translation>
 <translation id="5009127379503001909">Fortsæt med at browse</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Send til <ph name="USER_EMAIL" /></translation>
@@ -1938,7 +1936,6 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="6938212956536472404">Denne fane kan ikke deles</translation>
 <translation id="6945221475159498467">Vælg</translation>
 <translation id="6946722113367118030">Tænker</translation>
-<translation id="6947751977892029882">Noget gik galt med denne indstilling. Opdater og genstart Chrome og iOS, og prøv igen. Hvis denne fejl fortsætter, understøtter din iPhone muligvis ikke denne indstilling.</translation>
 <translation id="6950522403736391608">Skjult</translation>
 <translation id="6957084631403333422">Prøv en fokuseret side med en ny fane</translation>
 <translation id="695965663642079255">Gem og administrer betalingsoplysninger for at betale hurtigere</translation>
@@ -2189,7 +2186,6 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="7758789811447313947">Violet tema</translation>
 <translation id="7759809451544302770">Valgfrit</translation>
 <translation id="7765158879357617694">Flyt</translation>
-<translation id="7767651976342854115">Der opstod en fejl med indstillingen for dataforbrug.</translation>
 <translation id="7768507955883790804">Websites følger automatisk denne indstilling, når du besøger dem</translation>
 <translation id="7772032839648071052">Bekræft adgangssætning</translation>
 <translation id="7772948288262733182">Velkommen tilbage</translation>
@@ -2502,7 +2498,6 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="8674716540979958118">Du har kompromitterede adgangskoder.</translation>
 <translation id="8679900250380464358">Føj til læseliste</translation>
 <translation id="8680643216091361291">Indstillingen <ph name="BEGIN_LINK" />Bevar aktivitet<ph name="END_LINK" /> er som standard deaktiveret. Når den er deaktiveret, gemmer Google dine chatsamtaler i 3 dage. Google bruger dem til at beskytte Gemini-apps, få dem til at fungere korrekt og løse problemer ud fra din feedback. Du kan aktivere Bevar aktivitet for at hjælpe med at forbedre Google AI for alle.</translation>
-<translation id="8680786875305615692">Vær med til at forbedre sikkerheden på nettet for alle</translation>
 <translation id="8680787084697685621">Oplysningerne om kontologin er forældede.</translation>
 <translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" har ikke adgang til din mikrofon</translation>
 <translation id="8690752723634292147">Bekræft sletning</translation>
@@ -2578,7 +2573,6 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="8888595487174963247">Fjern påmindelse</translation>
 <translation id="8890516388109605451">Kilder</translation>
 <translation id="8893208530912252670">Videoer</translation>
-<translation id="8898822736010347272">Sender webadresser på visse sider, du besøger, begrænsede systemoplysninger og indhold fra visse sider til Google med henblik på at opdage nye trusler og beskytte brugerne på nettet.</translation>
 <translation id="890009681345348416">Over 40 adgangskoder er udfyldt automatisk</translation>
 <translation id="8900845556227858314">Browserapp</translation>
 <translation id="890565330728586731">Tilbage</translation>
@@ -2609,6 +2603,7 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="8976414606286374109">Kort gemmes på din Google-konto.</translation>
 <translation id="8981454092730389528">Aktivitetsadministration på Google</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, fastgjort website</translation>
+<translation id="8989779557457435460">Del den aktuelle fane som standard</translation>
 <translation id="8990960056509724223">Filen kunne ikke gemmes på grund af din organisations politikker</translation>
 <translation id="8998289560386111590">Ikke tilgængelig på din enhed</translation>
 <translation id="9003677638446136377">Kontrollér igen</translation>

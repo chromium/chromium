@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">Прехвърляне на данните ви от Safari</translation>
 <translation id="2526166285241366046">Запазване на парола</translation>
 <translation id="2529021024822217800">Отваряне на всички</translation>
-<translation id="2530932541542751783">Нещо се обърка с тази настройка. Актуализирайте и рестартирайте Chrome и iPadOS и опитайте отново. Ако грешката продължи да се показва, възможно е вашият iPad да не поддържа тази настройка.</translation>
 <translation id="2536991091671391962">Можете да използвате запазените пароли на което и да е устройство. Те се запазват в Google Мениджър на пароли за <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Скрита парола</translation>
 <translation id="2538705697765638552">Запазете информацията си и извършвайте по-бързо различни неща, като например попълване на формуляри в продуктите на Google. Можете да управлявате информацията си в Google Wallet за <ph name="USER_EMAIL" />.</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">Визуализиране и редактиране</translation>
 <translation id="3485558910355485767">Нов прозорец в режим „инкогнито“</translation>
 <translation id="3488501490964659223">Разделите бяха затворени, а данните за сърфирането – изтрити. Излязохте от профила си</translation>
-<translation id="3490396108106323715">Споделяне на текущия раздел</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /> за предложеното съдържание</translation>
 <translation id="349446645805573740">Изберете къде да се запази <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /></translation>
 <translation id="3504377992102007712">Настройки</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">Изображенията не се заредиха</translation>
 <translation id="3565930036634619844">Раздел. <ph name="TAB_INDEX" /> от <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Запазване по друг начин</translation>
-<translation id="3572503683475187385">Текущият раздел се споделя с Gemini, когато започнете нов разговор. Когато споделите раздел с Gemini, съдържанието и URL адресът му се изпращат до Google. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">В профила ви в Google</translation>
 <translation id="3575234738189584619">Търсене с Обектив</translation>
 <translation id="3575426792457739946">Този списък съдържа всички заредени потребителски профили.</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">Показване на помощна информация</translation>
 <translation id="4095483462103784441">Създаване на нова група раздели</translation>
 <translation id="4099756562043439968">Задаване на напомняне</translation>
-<translation id="4108998448622696017">Открива опасни събития, когато се случват, и ви предупреждава за тях.</translation>
 <translation id="4111985840824673503">Означаване на всичко като прочетено</translation>
 <translation id="411254640334432676">Изтеглянето не бе успешно.</translation>
 <translation id="4112644173421521737">Търсене</translation>
@@ -1169,6 +1165,7 @@
 <translation id="4658335131052370646">Запазване</translation>
 <translation id="465947902531722727">Превключване на потребителските профили</translation>
 <translation id="466307903888586355">Запазването на файлове е блокирано от организацията ви</translation>
+<translation id="4665303625242639572">Затваряне на <ph name="PAGE_TITLE" /></translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Организацията ви изисква да сърфирате частно. Групите раздели не се синхронизират в режим „инкогнито“.
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -1286,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Цветът на групата раздели е <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Копиране на паролата</translation>
+<translation id="5007392906805964215">Преглед</translation>
 <translation id="5009127379503001909">Продължаване на разглеждането</translation>
 <translation id="5016205925109358554">Серифен</translation>
 <translation id="5016420433031926653">Изпращане до <ph name="USER_EMAIL" /></translation>
@@ -1938,7 +1936,6 @@
 <translation id="6938212956536472404">Този раздел не може да бъде споделен</translation>
 <translation id="6945221475159498467">Избиране</translation>
 <translation id="6946722113367118030">Замислено лице</translation>
-<translation id="6947751977892029882">Нещо се обърка с тази настройка. Актуализирайте и рестартирайте Chrome и iOS и опитайте отново. Ако грешката продължи да се показва, възможно е вашият iPhone да не поддържа тази настройка.</translation>
 <translation id="6950522403736391608">Скрити</translation>
 <translation id="6957084631403333422">Изпробвайте изчистения дизайн на новия раздел в браузъра</translation>
 <translation id="695965663642079255">Запазвайте и управлявайте данните за плащане, за да плащате по-бързо</translation>
@@ -2189,7 +2186,6 @@
 <translation id="7758789811447313947">Виолетова тема</translation>
 <translation id="7759809451544302770">По избор</translation>
 <translation id="7765158879357617694">Преместване</translation>
-<translation id="7767651976342854115">Възникна грешка в настройката за използване на данни.</translation>
 <translation id="7768507955883790804">Сайтовете автоматично следват тази настройка, когато ги посещавате</translation>
 <translation id="7772032839648071052">Потвърдете пропуска</translation>
 <translation id="7772948288262733182">Добре дошли отново</translation>
@@ -2502,7 +2498,6 @@
 <translation id="8674716540979958118">Имате компрометирани пароли.</translation>
 <translation id="8679900250380464358">Добавяне към списъка за четене</translation>
 <translation id="8680643216091361291">Настройката <ph name="BEGIN_LINK" />Запазване на активността<ph name="END_LINK" /> е изключена по подразбиране. Когато тя е изключена, Google запазва разговорите ви в продължение на 3 дни. По този начин приложенията Gemini могат да работят правилно и да бъдат по-безопасни, а отзивите ви могат да се използват за отстраняване на проблеми. Можете да включите „Запазване на активността“, за да помогнете за подобряването на AI на Google за всички.</translation>
-<translation id="8680786875305615692">Помогнете за всеобщото подобряване на сигурността в мрежата</translation>
 <translation id="8680787084697685621">Данните за вход в профила ви не са актуални.</translation>
 <translation id="868648444055742370"><ph name="SITE_DOMAIN" /> няма разрешение за достъп до микрофона ви</translation>
 <translation id="8690752723634292147">Потвърждаване на изтриването</translation>
@@ -2578,7 +2573,6 @@
 <translation id="8888595487174963247">Премахване на напомнянето</translation>
 <translation id="8890516388109605451">Източници</translation>
 <translation id="8893208530912252670">Видеоклипове</translation>
-<translation id="8898822736010347272">Изпраща до Google URL адресите на някои от посетените от вас страници, ограничена системна информация и част от съдържанието на страниците, за да помага за откриването на нови заплахи и да защитава всички потребители на мрежата.</translation>
 <translation id="890009681345348416">Над 40 пароли са попълнени автоматично</translation>
 <translation id="8900845556227858314">Browser App</translation>
 <translation id="890565330728586731">Назад</translation>
@@ -2609,6 +2603,7 @@
 <translation id="8976414606286374109">Данните за картите се запазват в профила ви в Google.</translation>
 <translation id="8981454092730389528">Контроли за активността в Google</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" /> – фиксиран сайт</translation>
+<translation id="8989779557457435460">Споделяне на текущия раздел по подразбиране</translation>
 <translation id="8990960056509724223">Файлът не бе запазен поради правилата на организацията ви</translation>
 <translation id="8998289560386111590">Не е налице на устройството ви</translation>
 <translation id="9003677638446136377">Повторна проверка</translation>

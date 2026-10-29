@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">Bawa data anda daripada Safari</translation>
 <translation id="2526166285241366046">Simpan kata laluan</translation>
 <translation id="2529021024822217800">Buka Semua</translation>
-<translation id="2530932541542751783">Ada masalah dengan tetapan ini. Kemas kinikan dan mulakan semula Chrome dan iPadOS, kemudian cuba lagi. Jika ralat ini terus berlaku, iPad anda mungkin tidak menyokong tetapan ini.</translation>
 <translation id="2536991091671391962">Anda boleh menggunakan kata laluan yang disimpan pada mana-mana peranti. Kata laluan tersebut disimpan pada Google Password Manager untuk <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Disembunyikan, kata laluan</translation>
 <translation id="2538705697765638552">Simpan maklumat anda dan selesaikan tugasan dengan lebih pantas, seperti mengisi borang merentas produk Google. Anda boleh mengurus maklumat anda dalam Google Wallet untuk <ph name="USER_EMAIL" />.</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">Gambarkan dan edit</translation>
 <translation id="3485558910355485767">Tetingkap Inkognito Baharu</translation>
 <translation id="3488501490964659223">Tab telah ditutup dan data semakan imbas dipadamkan. Anda telah dilog keluar</translation>
-<translation id="3490396108106323715">Kongsi tab semasa</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /> tentang kandungan yang disyorkan</translation>
 <translation id="349446645805573740">Pilih tempat untuk menyimpan "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
 <translation id="3504377992102007712">Tetapan</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">Tidak dapat memuatkan imej</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> daripada <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Simpan cara lain</translation>
-<translation id="3572503683475187385">Tab semasa dikongsi dengan Gemini apabila anda memulakan sembang baharu. Apabila anda berkongsi tab dengan Gemini, kandungan dan URL tab tersebut akan dihantar kepada Google. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Dalam Google Account anda</translation>
 <translation id="3575234738189584619">Cari dengan Lens</translation>
 <translation id="3575426792457739946">Senarai ini mengandungi semua profil yang dimuatkan.</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">Tunjukkan Bantuan</translation>
 <translation id="4095483462103784441">Buat kumpulan tab baharu</translation>
 <translation id="4099756562043439968">Tetapkan Peringatan</translation>
-<translation id="4108998448622696017">Mengesan dan memberikan amaran kepada anda tentang acara berbahaya apabila berlaku.</translation>
 <translation id="4111985840824673503">Tandai semua sebagai dibaca</translation>
 <translation id="411254640334432676">Muat turun gagal.</translation>
 <translation id="4112644173421521737">Cari</translation>
@@ -1287,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Kumpulan tab berwarna <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Salin kata laluan</translation>
+<translation id="5007392906805964215">Semak</translation>
 <translation id="5009127379503001909">Teruskan semak imbas</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Hantar kepada <ph name="USER_EMAIL" /></translation>
@@ -1939,7 +1936,6 @@ Untuk meneruskan proses daripada komputer anda, beralih kepada <ph name="OTHER_E
 <translation id="6938212956536472404">Tab ini tidak boleh dikongsi</translation>
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="6946722113367118030">Memikirkan</translation>
-<translation id="6947751977892029882">Ada masalah dengan tetapan ini. Kemas kinikan dan mulakan semula Chrome dan iOS, kemudian cuba lagi. Jika ralat ini terus berlaku, iPhone anda mungkin tidak menyokong tetapan ini.</translation>
 <translation id="6950522403736391608">Disembunyikan</translation>
 <translation id="6957084631403333422">Cuba halaman tab baharu yang difokuskan</translation>
 <translation id="695965663642079255">Simpan dan urus maklumat pembayaran untuk semak keluar dengan lebih pantas</translation>
@@ -2190,7 +2186,6 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="7758789811447313947">Tema ungu lembayung</translation>
 <translation id="7759809451544302770">Pilihan</translation>
 <translation id="7765158879357617694">Alih</translation>
-<translation id="7767651976342854115">Tetapan penggunaan data mengalami ralat.</translation>
 <translation id="7768507955883790804">Tapak mengikut tetapan ini secara automatik apabila anda melawatnya</translation>
 <translation id="7772032839648071052">Sahkan frasa laluan</translation>
 <translation id="7772948288262733182">Selamat kembali</translation>
@@ -2503,7 +2498,6 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="8674716540979958118">Anda mempunyai kata laluan yang terjejas.</translation>
 <translation id="8679900250380464358">Tambahkan pada Senarai Bacaan</translation>
 <translation id="8680643216091361291">Tetapan <ph name="BEGIN_LINK" />Simpan Aktiviti<ph name="END_LINK" /> anda dimatikan secara lalai. Apabila Simpan Aktiviti dimatikan, Google menyimpan sembang anda selama 3 hari. Google menggunakan data yang disimpan untuk memastikan Apl Gemini berfungsi dengan betul, membantu untuk memastikan Apl Gemini selamat dan menggunakan maklum balas anda untuk menyelesaikan masalah. Anda boleh menghidupkan Simpan Aktiviti untuk membantu kami meningkatkan Google AI untuk semua orang.</translation>
-<translation id="8680786875305615692">Bantu tingkatkan keselamatan pada Web untuk semua orang</translation>
 <translation id="8680787084697685621">Butiran log masuk akaun sudah lapuk.</translation>
 <translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" tidak dibenarkan untuk mengakses mikrofon anda</translation>
 <translation id="8690752723634292147">Sahkan pemadaman</translation>
@@ -2579,7 +2573,6 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="8888595487174963247">Alih Keluar Peringatan</translation>
 <translation id="8890516388109605451">Sumber</translation>
 <translation id="8893208530912252670">Video</translation>
-<translation id="8898822736010347272">Menghantar URL sesetengah halaman yang anda lawati, maklumat sistem yang terhad dan sebahagian kandungan halaman kepada Google untuk menemukan ancaman baharu dan melindungi semua pengguna web.</translation>
 <translation id="890009681345348416">40+ kata laluan diisi secara automatik</translation>
 <translation id="8900845556227858314">Apl Penyemak Imbas</translation>
 <translation id="890565330728586731">Kembali</translation>
@@ -2610,6 +2603,7 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="8976414606286374109">Kad disimpan pada Google Account anda.</translation>
 <translation id="8981454092730389528">Kawalan Aktiviti Google</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, laman yang disematkan</translation>
+<translation id="8989779557457435460">Kongsi tab semasa secara lalai</translation>
 <translation id="8990960056509724223">Fail tidak dapat disimpan disebabkan oleh dasar organisasi anda</translation>
 <translation id="8998289560386111590">Tidak tersedia pada peranti anda</translation>
 <translation id="9003677638446136377">Semak sekali lagi</translation>

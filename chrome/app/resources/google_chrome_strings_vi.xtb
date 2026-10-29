@@ -20,6 +20,7 @@
 <translation id="1125124144982679672">Ai sẽ sử dụng Chrome?</translation>
 <translation id="1142745911746664600">Không thể cập nhật Chrome</translation>
 <translation id="1148360048981192980">Lần tới, khi mở Chrome trên <ph name="DEVICE_TYPE" />, bạn sẽ thấy lời nhắc sử dụng Trình quản lý mật khẩu của Google.</translation>
+<translation id="1150418667633096194">Nút "Bảng điều khiển bên của Google Tìm kiếm" trên thanh công cụ vừa có biểu tượng mới. Hãy nhấp vào biểu tượng này để đặt câu hỏi trong khi duyệt web bằng bảng điều khiển bên của Google Tìm kiếm.</translation>
 <translation id="1152920704813762236">Giới thiệu về ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Mở trong Chrome</translation>
 <translation id="1157952955648710254">Đóng bảng điều khiển bên của Google Tìm kiếm</translation>
@@ -29,7 +30,6 @@
 <translation id="1194807384646768652">Chrome đã chặn tệp tải xuống này vì loại tệp này ít được tải xuống và có thể nguy hiểm</translation>
 <translation id="1197860368385086056">Lần tới, khi mở Chrome trên <ph name="DEVICE_TYPE" />, bạn sẽ thấy lời nhắc bật thông báo theo dõi giá.</translation>
 <translation id="1203500561924088507">Cảm ơn bạn đã cài đặt. Bạn phải khởi động lại trình duyệt trước khi sử dụng <ph name="BUNDLE_NAME" />.</translation>
-<translation id="122321322139970942">Có một <ph name="IMPORTANT_UPDATE" /> đang chờ xử lý. Để đảm bảo an toàn cho hoạt động duyệt web của bạn, Chrome sẽ cập nhật vào lần tới khi bạn không hoạt động trong <ph name="IDLE_DURATION" />.</translation>
 <translation id="1226003169284463347">Để sử dụng dấu trang và nhiều dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chrome</translation>
 <translation id="1278833599417554002">Chạy lại để cập nhật &amp;Chrome</translation>
 <translation id="1289911795790071537">Mở tính năng tìm kiếm bằng Chrome</translation>
@@ -51,11 +51,13 @@
 <translation id="1439793550875056299">Ghim Chrome</translation>
 <translation id="1446616215961349840">{COUNT,plural, =1{Quản trị viên yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. Cửa sổ biệt lập sẽ không mở lại.}other{Quản trị viên yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. # cửa sổ biệt lập sẽ không mở lại.}}</translation>
 <translation id="146866447420868597">Bạn muốn đăng nhập vào Chrome?</translation>
+<translation id="1470136641087909499">Bạn có thể mở lại Google Tìm kiếm trong Chrome để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="1476347941828409626">&amp;Quản lý hồ sơ trên Chrome</translation>
 <translation id="1492280395845991349">Chạy lại để hoàn tất quá trình cập nhật Chrome</translation>
 <translation id="1497802159252041924">Lỗi cài đặt: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Tùy chỉnh hồ sơ mới của bạn trên Chrome</translation>
 <translation id="1518627427551567882">Trang này được bảo vệ</translation>
+<translation id="15408169957028265">Mở lại Google Tìm kiếm trong Chrome</translation>
 <translation id="1547295885616600893">ChromeOS có thể hoạt động được là nhờ <ph name="BEGIN_LINK_CROS_OSS" />phần mềm nguồn mở<ph name="END_LINK_CROS_OSS" /> bổ sung.</translation>
 <translation id="1547469039832541117">Kết thúc tác vụ được làm nổi bật.</translation>
 <translation id="1553358976309200471">Cập nhật Chrome</translation>
@@ -88,6 +90,7 @@
 <translation id="1713301662689114961">{0,plural, =1{Chrome sẽ khởi động lại sau một giờ}other{Chrome sẽ khởi động lại sau # giờ}}</translation>
 <translation id="1722488837206509557">Thao tác này sẽ cho phép bạn chọn trong số các thiết bị có sẵn và hiển thị nội dung trên các thiết bị đó.</translation>
 <translation id="1724094881572874997">Để bảo mật công việc của bạn trên Chrome, tổ chức bạn sẽ có thể xem hoặc quản lý một số thông tin khi bạn đăng nhập vào Chrome.</translation>
+<translation id="1769661297620183092">Bạn có thể mở lại bảng điều khiển Google Tìm kiếm để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="177180974022074201">Dùng thử với Gemini trong Chrome</translation>
 <translation id="1786003790898721085">Đảm bảo bạn đã đăng nhập vào Chrome trên <ph name="TARGET_DEVICE_NAME" /> của mình rồi thử gửi lại.</translation>
 <translation id="1786044937610313874">Lối tắt sẽ mở trong Chrome</translation>
@@ -106,6 +109,7 @@
 <translation id="1880677175115548835">Chọn văn bản</translation>
 <translation id="1896602904211344018">Tải ứng dụng Chrome</translation>
 <translation id="1919130412786645364">Cho phép đăng nhập vào Chrome</translation>
+<translation id="1925069572871307609">Để nhận các bản cập nhật Google Chrome sau này, bạn cần có Windows 10 phiên bản 1809 trở lên. Máy tính này đang sử dụng một phiên bản Windows 10 cũ.</translation>
 <translation id="1953553007165777902">Đang tải xuống... Còn <ph name="MINUTE" /> phút</translation>
 <translation id="1975400514743766362">Mang theo các tính năng an toàn của Google mọi lúc, mọi nơi nhờ ứng dụng Chrome trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="1979600810166324878">An toàn hơn khi di chuyển nhờ tính năng Duyệt web an toàn có tăng cường bảo vệ trên Chrome cho iOS</translation>
@@ -119,6 +123,7 @@
 <translation id="2040220733769034247">Quét mã QR bằng điện thoại để tải Chrome xuống rồi đăng nhập vào Tài khoản Google của bạn.</translation>
 <translation id="2044908892530830113">Hiện tính năng tìm kiếm bằng Chrome trên thanh trình đơn của máy Mac và bật phím tắt</translation>
 <translation id="2050189601866423230">Bạn có thể ghim Chế độ AI của Google Tìm kiếm để đặt câu hỏi trong khi duyệt web</translation>
+<translation id="2060311596979880693">Thành công! Giờ đây, bạn có thể dễ dàng đặt câu hỏi trong khi duyệt web bằng Google Tìm kiếm trong Chrome</translation>
 <translation id="2091012649849228750">Để nhận các bản cập nhật Google Chrome sau này, máy tính của bạn cần sử dụng hệ điều hành Windows 10 trở lên. Hệ điều hành hiện tại là Windows 8.</translation>
 <translation id="2094648590148273905">Điều khoản của ChromeOS Flex</translation>
 <translation id="2094919256425865063">Bạn vẫn muốn thoát khỏi Chrome?</translation>
@@ -144,6 +149,7 @@
 <translation id="2216543877350048334">Để xoá Tài khoản Google của bạn khỏi Chrome, hãy đăng xuất</translation>
 <translation id="2236949375853147973">Hoạt động của tôi</translation>
 <translation id="22791603784558743">Đóng Gemini trong Chrome Dev</translation>
+<translation id="2283228908180457226">Biểu tượng mới, lối tắt không đổi: Nhấp vào biểu tượng này để đặt câu hỏi trong khi duyệt web bằng bảng điều khiển bên của Google Tìm kiếm.</translation>
 <translation id="2290014774651636340">Khóa API của Google bị thiếu. Một số chức năng của Google Chrome sẽ bị tắt.</translation>
 <translation id="2290095356545025170">Bạn có chắc chắn muốn gỡ cài đặt Google Chrome không?</translation>
 <translation id="2295218613066132598">Hiện lối tắt đến các trang web trên Chrome</translation>
@@ -206,6 +212,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="2861074815332034794">Đang cập nhật Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2869959624320573933">Đăng nhập vào Chrome</translation>
 <translation id="2875053229394024379">Khi đăng nhập vào Chrome bằng Tài khoản Google, bạn có thể dùng hồ sơ Chrome của mình với Gemini. <ph name="BEGIN_LINK" />Tìm hiểu cách đăng nhập vào Chrome<ph name="END_LINK" /></translation>
+<translation id="2876152561415416331">Mở lại bảng điều khiển Google Tìm kiếm</translation>
 <translation id="2876628302275096482">Tìm hiểu thêm về <ph name="BEGIN_LINK" />cách Chrome bảo mật dữ liệu của bạn<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Trình quản lý tác vụ</translation>
 <translation id="2888126860611144412">Giới thiệu về Chrome</translation>
@@ -221,6 +228,8 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="3003694935412297923">Tất cả tác vụ</translation>
 <translation id="3018957014024118866">Cũng xoá dữ liệu khỏi Chrome (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Chạy lại để cập nhật &amp;ChromeOS Flex</translation>
+<translation id="3034219227076811559">Google Tìm kiếm trong Chrome</translation>
+<translation id="3037190258341683404">Bạn có thể ghim Google Tìm kiếm vào Chrome để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="3037517125981011456">Hiện lời nhắc đăng nhập vào Chrome</translation>
 <translation id="3037838751736561277">Google Chrome đang chạy trong nền.</translation>
 <translation id="3038232873781883849">Đang chờ cài đặt...</translation>
@@ -327,6 +336,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="3967822245660637423">Đã tải xuống xong</translation>
 <translation id="3968962723676998462">Nhập cụm mật khẩu để sử dụng và lưu dữ liệu trên Chrome vào tài khoản <ph name="ACCOUNT_EMAIL" /> của bạn</translation>
 <translation id="3973161977468201858">Google Chrome muốn xoá dữ liệu của bạn trong Trình quản lý mật khẩu của Google. Nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
+<translation id="3984557288004650913">Từ nút "Google Tìm kiếm trong Chrome" trên thanh công cụ, bạn có thể mở lại Google Tìm kiếm trong Chrome để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="400161754580828648">Để chia sẻ màn hình, hãy cho phép Chrome ghi màn hình trong phần Cài đặt hệ thống.</translation>
 <translation id="4012899077942246412">Khi đăng nhập, bạn có thể sử dụng mật khẩu và nhiều nội dung khác từ Tài khoản Google của mình trong Chrome. Để thay đổi chế độ cài đặt này, hãy chuyển đến phần "Tài khoản của bạn trong Chrome".</translation>
 <translation id="4022972681110646219">Dịch màn hình</translation>
@@ -401,6 +411,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="4768676935374695498">Tìm kiếm video này bằng Google Ống kính</translation>
 <translation id="479167709087336770">Dịch vụ này sử dụng cùng một trình kiểm tra chính tả dùng trong Google Tìm kiếm. Thông tin bạn nhập vào trình duyệt sẽ được gửi tới Google. Bạn luôn có thể thay đổi hành động này trong phần cài đặt.</translation>
 <translation id="4793679854893018356">Tìm hiểu cách Chrome bảo vệ bạn</translation>
+<translation id="4803313124144656665">Đóng Google Tìm kiếm trong Chrome</translation>
 <translation id="4828579605166583682">Google Chrome đang cố gắng thay thế các mật khẩu hiện tại. Nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
 <translation id="4836321460899997044">Hồ sơ Chrome</translation>
 <translation id="4839733921943823254">Ghim lối tắt</translation>
@@ -451,6 +462,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="5234764350956374838">Đóng</translation>
 <translation id="5239627039202700673">Dùng Chrome mỗi khi bạn nhấp vào đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác</translation>
 <translation id="524751727772074981">Hỏi bất cứ điều gì và từ bất cứ đâu với Gemini trong Chrome</translation>
+<translation id="5247617065091903691">Bạn có thể ghim bảng điều khiển bên của Google Tìm kiếm để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="5251420635869119124">Khách có thể sử dụng Chrome mà không phải thoát khỏi bất cứ nội dung nào.</translation>
 <translation id="5271833978500241046">Sử dụng các kỹ năng này cùng với các tính năng khác của Gemini trong Chrome</translation>
 <translation id="5286907366254680517">Đã phát hiện</translation>
@@ -470,6 +482,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="5430073640787465221">Tệp tùy chọn của bạn bị hỏng hoặc không hợp lệ. Google Chrome không thể khôi phục cài đặt của bạn.</translation>
 <translation id="5465210843490471889">Chọn một hồ sơ Chrome để dùng với <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="547202872422499512">Chrome hiện khởi chạy khi Windows khởi động để bạn có thể bắt đầu duyệt web ngay lập tức. Bạn có thể tắt lựa chọn này trong phần cài đặt.</translation>
+<translation id="5482575505313585759">Đóng bảng điều khiển Google Tìm kiếm</translation>
 <translation id="5486346529181556467">Cải thiện mức độ an toàn trên mạng cho mọi người khi bạn báo cáo một trang web mà bạn cho là có hại. Tìm hiểu thêm về <ph name="BEGIN_LINK" />chính sách của Google về trang web không an toàn.<ph name="END_LINK" /></translation>
 <translation id="5503069778428381665">Khi bạn sử dụng Google Ống kính trên máy tính, thì nội dung, URL và tiêu đề của trang, bao gồm cả tệp PDF, sẽ được gửi đến Google</translation>
 <translation id="5524890928877629608">góc trên cùng bên trái của khu vực tìm kiếm: <ph name="LEFT" />% từ bên trái sang, <ph name="TOP" />% từ trên cùng xuống</translation>
@@ -487,6 +500,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="566568153320186256">Chrome sẽ tiết kiệm pin bằng cách hạn chế hoạt động trong nền và hiệu ứng hình ảnh, chẳng hạn như hiệu ứng cuộn mượt mà và tốc độ khung hình của video. <ph name="BEGIN_LINK" />Tìm hiểu thêm về Trình tiết kiệm pin<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Xoá dữ liệu trên Chrome khỏi tài khoản của bạn</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Quản trị viên của bạn yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật này}=1{Quản trị viên của bạn yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật này. Cửa sổ ẩn danh của bạn sẽ không mở lại.}other{Quản trị viên của bạn yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật này. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
+<translation id="568656514202614970">Thành công! Giờ đây, bạn có thể dễ dàng đặt câu hỏi trong khi duyệt web bằng bảng điều khiển bên của Google Tìm kiếm</translation>
 <translation id="5686916850681061684">Tùy chỉnh và kiểm soát Google Chrome. Bạn cần lưu ý - nhấp để xem thông tin chi tiết.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Không thể kết nối với Internet. Máy chủ proxy yêu cầu xác thực.</translation>
@@ -516,7 +530,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="5941830788786076944">Chọn Google Chrome làm trình duyệt mặc định</translation>
 <translation id="5947104538377036631">Lối tắt tới Chrome</translation>
 <translation id="5960071705175224773">Một ứng dụng lạ đã thay đổi chế độ cài đặt của bạn</translation>
-<translation id="5960404530854194706">Chrome sẽ cập nhật khi bạn rời đi</translation>
 <translation id="5980111191913430208">Các tiện ích, ứng dụng và giao diện không rõ nguồn gốc có thể làm hại thiết bị của bạn. Chrome đề xuất bạn chỉ nên cài đặt những mục nói trên qua <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Đang tải xuống... Còn <ph name="HOURS" /> giờ.</translation>
 <translation id="6004427865367382148">{COUNT,plural, =1{Quản trị viên yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. Có cửa sổ ẩn danh hoặc cửa sổ biệt lập đang mở. Cửa sổ ẩn danh hoặc cửa sổ biệt lập sẽ không mở lại sau khi bạn chạy lại.}other{Quản trị viên yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. Có # cửa sổ ẩn danh và cửa sổ biệt lập đang mở trên các hồ sơ. Những cửa sổ này sẽ không mở lại sau khi bạn chạy lại.}}</translation>
@@ -563,11 +576,14 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6288580400488258237">Đặt Google Chrome làm trình duyệt mặc định và ghim Google Chrome vào thanh tác vụ</translation>
 <translation id="6291089322031436445">Ứng dụng Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome đã được cài đặt cho tất cả người dùng trên máy tính của bạn.</translation>
+<translation id="6294638840436017818">Từ nút "Bảng điều khiển bên của Google Tìm kiếm" trên thanh công cụ, bạn có thể mở lại bảng điều khiển bên của Google Tìm kiếm để đặt câu hỏi trong khi duyệt web</translation>
+<translation id="6308106880471005841">Nút "Bảng điều khiển Google Tìm kiếm" trên thanh công cụ vừa có biểu tượng mới. Hãy nhấp vào biểu tượng này để đặt câu hỏi trong khi duyệt web bằng bảng điều khiển Google Tìm kiếm.</translation>
 <translation id="6311220991371174222">Không thể khởi động Chrome do đã xảy ra lỗi khi mở hồ sơ của bạn. Hãy thử khởi động lại Chrome.</translation>
 <translation id="6319856120645568262">Chrome cần có quyền tạo bản đồ về các khu vực xung quanh và theo dõi tay bạn</translation>
 <translation id="6321592572353357376">Tiện ích "<ph name="EXTENSION_NAME" />" muốn bạn đăng nhập vào Chrome</translation>
 <translation id="6326175484149238433">Xóa khỏi Chrome</translation>
 <translation id="6334815226785304306">Đặt Google Chrome làm trình duyệt mặc định và ghim vào thanh tác vụ</translation>
+<translation id="6339888439788291743">Biểu tượng mới, lối tắt không đổi: Nhấp vào biểu tượng này để đặt câu hỏi trong khi duyệt web bằng Chế độ AI của Google Tìm kiếm.</translation>
 <translation id="63540178978900677">Chrome không còn là trình duyệt mặc định của bạn. Đặt Chrome làm trình duyệt mặc định?</translation>
 <translation id="6357670763064300993">Gemini Enterprise trong Chrome</translation>
 <translation id="6360449101159168105">Mặc dù thẻ này không hoạt động nhưng bộ nhớ đã được giải phóng để giúp Chrome luôn hoạt động nhanh. Bạn có thể chọn luôn loại trừ trang web này khỏi trạng thái không hoạt động.</translation>
@@ -600,7 +616,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6556755379298048869">Tìm kiếm bằng phím tắt.</translation>
 <translation id="6585124893636629274">Đóng Gemini trong Chrome</translation>
 <translation id="659498884637196217">Trong Trình quản lý mật khẩu của Google trên thiết bị này</translation>
-<translation id="660312897435669152">Chrome cần cập nhật</translation>
 <translation id="6612152958212564387">Số liệu thống kê về việc sử dụng và báo cáo sự cố sẽ không được gửi cho Google. <ph name="BEGIN_LINK" />Quản lý<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Đặt Chrome làm trình duyệt mặc định để mật khẩu, dấu trang và nhật ký của bạn được đồng bộ hoá liền mạch trên mọi thiết bị.</translation>
 <translation id="6631524303639368205">Tiếp tục từ nơi bạn đã dừng lại: Chrome đã khôi phục các thẻ của bạn từ phiên trước đó. Bạn có thể tắt tính năng này trong phần</translation>
@@ -618,6 +633,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6723445727540769832">Tận hưởng những tính năng tuyệt vời nhất của Google nhờ ứng dụng Chrome trên điện thoại</translation>
 <translation id="6734827584173583205">Gần đây bạn không truy cập trang web này. Chrome đã xoá <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="COUNT" /> quyền khác.</translation>
 <translation id="6735387454586646204">Hệ thống ChromeOS Flex</translation>
+<translation id="674891594898436429">Đóng phiên tìm kiếm đang diễn ra trong thẻ này</translation>
 <translation id="6750954913813541382">Để sửa lỗi chính tả, Chrome sẽ gửi văn bản mà bạn nhập vào trình duyệt này cho Google</translation>
 <translation id="6760235774835597023">Tăng tốc độ tải trang web bằng công cụ V8 của Chrome nhưng làm giảm khả năng chống lại các cuộc tấn công của Chrome. Chế độ cài đặt này đang bật.</translation>
 <translation id="677276454032249905">Bạn vẫn muốn thoát khỏi Chrome?</translation>
@@ -636,6 +652,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="689368324615299626">Tận hưởng những tính năng tốt nhất của Google nhờ ứng dụng Chrome trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Sao chép</translation>
 <translation id="6908182077349113099">Đồng bộ hoá hoàn toàn mật khẩu, dấu trang và nhật ký trên các thiết bị. Dễ dàng sử dụng các tính năng bạn quen thuộc và yêu thích bằng cách cập nhật trình duyệt mặc định thành Chrome.</translation>
+<translation id="6926772305569367352">Nút "Google Tìm kiếm trong Chrome" trên thanh công cụ vừa có biểu tượng mới. Hãy nhấp vào biểu tượng này để đặt câu hỏi trong khi duyệt web bằng Google Tìm kiếm trong Chrome.</translation>
 <translation id="6930294499209825">Dịch vụ này giúp cập nhật phần mềm Google của bạn. Nếu dịch vụ này bị vô hiệu hoá hoặc bị dừng, phần mềm Google của bạn sẽ không được cập nhật. Điều này nghĩa là lỗ hổng bảo mật phát sinh sẽ không thể khắc phục được và các tính năng có thể không hoạt động. Dịch vụ này sẽ tự gỡ cài đặt khi không được phần mềm Google nào dùng.</translation>
 <translation id="6933858244219479645">Hệ thống ChromeOS</translation>
 <translation id="6938166777909186039">Để nhận các bản cập nhật Google Chrome sau này, máy tính của bạn cần sử dụng hệ điều hành Windows 10 trở lên. Hệ điều hành hiện tại là Windows 8.1.</translation>
@@ -672,6 +689,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7285616922384953075"><ph name="MANAGER" /> quản lý Chrome</translation>
 <translation id="7285990705317078173">Tải Chrome xuống điện thoại để theo dõi giá và nhận thông báo khi có chương trình giảm giá trên bất cứ trang web nào</translation>
 <translation id="7288567540154601580">Thẻ và tiện ích</translation>
+<translation id="7290997427370476749">Từ nút "Bảng điều khiển Google Tìm kiếm" trên thanh công cụ, bạn có thể mở lại bảng điều khiển Google Tìm kiếm để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="7296210096911315575">Thông tin quan trọng về sử dụng và an toàn</translation>
 <translation id="7299899569525778554">Tìm kiếm trên máy tính</translation>
 <translation id="7302361266603927550">Một số dữ liệu Chrome của bạn chưa được lưu vào Tài khoản Google. Hãy đợi một vài phút trước khi đăng xuất. Nếu bạn đăng xuất ngay, dữ liệu này sẽ bị xoá.</translation>
@@ -679,6 +697,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7308322188646931570">Chrome cần quyền truy cập vào bộ nhớ để tải tệp xuống</translation>
 <translation id="7352651011704765696">Đã xảy ra lỗi</translation>
 <translation id="7371412052245999753">Bảo vệ bộ nhớ của Chrome khỏi các ứng dụng khác trên máy tính của bạn.</translation>
+<translation id="7374061268215476070">Bạn có thể mở lại bảng điều khiển bên của Google Tìm kiếm để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="73786666777299047">Mở cửa hàng Chrome trực tuyến</translation>
 <translation id="7386878009611068389">Để giúp bạn an toàn hơn trên mạng với các lựa chọn của cha mẹ, hãy chuyển sang hồ sơ Chrome mà bạn đã đăng nhập bằng <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Bạn đã đăng nhập vào Chrome là <ph name="USER_EMAIL_ADDRESS" />. Vui lòng sử dụng cùng tài khoản để đăng nhập lại.</translation>
@@ -723,6 +742,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7723388585204724670">Đặt lại về Chrome mặc định</translation>
 <translation id="77283119132245232">Cung cấp dịch vụ theo dõi hệ thống cho <ph name="BROWSER_NAME" />. Nếu dịch vụ này bị vô hiệu hoá thì dấu vết hiệu suất do trình duyệt tạo ra sẽ không bao gồm các sự kiện trên toàn hệ thống như chuyển đổi ngữ cảnh và sự kiện luồng ở trạng thái sẵn sàng.</translation>
 <translation id="7736869414036750079">Tổ chức của bạn yêu cầu bạn đăng nhập vào Chrome</translation>
+<translation id="7745849183714722618">Để cung cấp các tính năng như phát hiện lừa đảo, Chrome có thể sử dụng các mô hình AI chạy trực tiếp trên thiết bị của bạn. Khi chế độ này tắt, các tính năng này có thể không hoạt động. <ph name="BEGIN_LINK" />Tìm hiểu thêm về AI trên thiết bị<ph name="END_LINK" /></translation>
 <translation id="7747138024166251722">Trình cài đặt không thể tạo thư mục tạm thời. Vui lòng kiểm tra dung lượng ổ đĩa còn trống và quyền cài đặt phần mềm.</translation>
 <translation id="7748969056734910029">Gần đây bạn không truy cập trang web này. Chrome đã xoá <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="7759944311003584891">Tìm kiếm bằng Chrome</translation>
@@ -731,6 +751,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="778331955594035129">Chrome cần có quyền truy cập thông tin vị trí đối với trang web này</translation>
 <translation id="7787950393032327779">Dường như cấu hình này đang được quy trình Google Chrome khác (<ph name="PROCESS_ID" />) trên máy tính khác (<ph name="HOST_NAME" />) sử dụng. Chrome đã khóa cấu hình này để cấu hình không bị lỗi. Nếu bạn chắc chắn không có quy trình nào khác đang sử dụng cấu hình này, bạn có thể mở khóa cấu hình và chạy lại Chrome.</translation>
 <translation id="7800043020703832708">Đóng Google Tìm kiếm trong bảng điều khiển bên</translation>
+<translation id="7801317262080715012">Biểu tượng mới, lối tắt không đổi: Nhấp vào biểu tượng này để đặt câu hỏi trong khi duyệt web bằng bảng điều khiển Google Tìm kiếm.</translation>
 <translation id="7801699035218095297">Google Chrome đang cố gắng sao chép mật khẩu. Hãy nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
 <translation id="7804364787702057554">Tài khoản của bạn trong Chrome</translation>
 <translation id="7804947029129221742">Công cụ tìm kiếm của bạn đã bị thay đổi từ bên ngoài Chrome. Để bảo vệ bạn, Chrome đã đặt lại công cụ này về chế độ mặc định ban đầu. <ph name="LEARN_MORE_LINK" /></translation>
@@ -785,7 +806,9 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8162006532256575008">Dùng Chrome mà không cần tài khoản</translation>
 <translation id="8172231188687329735">Tải ứng dụng Chrome để lưu mật khẩu mọi lúc, mọi nơi</translation>
 <translation id="8177472873527554730">Không tìm thấy nội dung trong trang</translation>
+<translation id="818985547157682832">Nút "Chế độ AI của Google Tìm kiếm" trên thanh công cụ vừa có biểu tượng mới. Hãy nhấp vào biểu tượng này để đặt câu hỏi trong khi duyệt web bằng Chế độ AI của Google Tìm kiếm.</translation>
 <translation id="8196526165798579689">Tìm kiếm bằng Chrome Dev</translation>
+<translation id="8203105157044679380">Bảng điều khiển Google Tìm kiếm</translation>
 <translation id="8221491193165283816">Bạn thường chặn các thông báo. Để cho phép trang web này thông báo cho bạn, hãy nhấp vào đây.</translation>
 <translation id="8227493674161801700">Tìm kiếm bằng Chrome Beta</translation>
 <translation id="8233224921566021881">Chrome cần có quyền truy cập vào mạng cục bộ của bạn để tìm và sử dụng thiết bị ở gần</translation>
@@ -797,6 +820,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8291415872436043161">Tải Chrome xuống</translation>
 <translation id="829923460755755423">Thêm lối tắt vào Trình quản lý mật khẩu của Google</translation>
 <translation id="8313851650939857356">Lỗi khi khởi động: <ph name="STARTUP_ERROR" />.</translation>
+<translation id="8321058241987390452">Thành công! Giờ đây, bạn có thể dễ dàng đặt câu hỏi trong khi duyệt web bằng bảng điều khiển Google Tìm kiếm</translation>
 <translation id="8321888067342493336">Lưu dưới dạng hình ảnh</translation>
 <translation id="8336463659890584292">Khi một trang web yêu cầu tải trước các đường liên kết trên trang ở chế độ riêng tư, Chrome sẽ sử dụng các máy chủ của Google. Điều này giúp ẩn danh tính của bạn khỏi trang web được tải trước, nhưng Google biết được trang web nào được tải trước.</translation>
 <translation id="8342675569599923794">Tệp này nguy hiểm, do đó Chrome đã chặn tệp.</translation>
@@ -822,10 +846,12 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 
 Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu trang mới vào tài khoản. Nếu bạn đăng xuất ngay bây giờ, các dấu trang chưa lưu sẽ bị xoá.</translation>
 <translation id="8458117863387545390">Tải Chrome về điện thoại</translation>
+<translation id="8467931559764188481">Đóng phiên Google Tìm kiếm đang diễn ra</translation>
 <translation id="848851325211467878">Đã đăng nhập bằng tài khoản <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, gói thành viên Google. Mở trình đơn tài khoản</translation>
 <translation id="8496177819998570653">Trình quản lý mật khẩu của Google</translation>
 <translation id="8498858610309223613">Google Chrome vừa áp dụng một bản cập nhật bảo mật đặc biệt. Vui lòng khởi động lại ngay bây giờ và chúng tôi sẽ khôi phục các thẻ của bạn.</translation>
 <translation id="8502181052659370">Tìm kiếm trên thẻ này bằng Google Ống kính</translation>
+<translation id="8520489851087523435">Mở lại bảng điều khiển bên của Google Tìm kiếm</translation>
 <translation id="8521348052903287641">Quy tắc kết nối để Google Chrome Dev cho phép lưu lượng truy cập mDNS.</translation>
 <translation id="852529348814672339">Hiển thị Chrome bằng ngôn ngữ này</translation>
 <translation id="8525579356836940628">Đã dừng cài đặt</translation>
@@ -834,6 +860,7 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="8555465886620020932">Lỗi dịch vụ: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8564408666201523086">Thành công! Giờ đây, bạn có thể dễ dàng đặt câu hỏi khi duyệt web bằng Google Tìm kiếm trong bảng điều khiển bên</translation>
 <translation id="856656450041460113">Tìm kiếm trong danh sách ngôn ngữ</translation>
+<translation id="8568499811906962479">Bạn có thể ghim bảng điều khiển Google Tìm kiếm để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="8575047640889685742">Sử dụng <ph name="BEGIN_LINK" />cụm mật khẩu của riêng bạn<ph name="END_LINK" /> để mã hoá tất cả dữ liệu Chrome trong Tài khoản Google Các địa chỉ và phương thức thanh toán từ Google Pay sẽ không được mã hoá. Nhật ký duyệt web trên Chrome sẽ không đồng bộ hoá.</translation>
 <translation id="8590782867495422699">Mở lại Chế độ AI của Google Tìm kiếm</translation>
 <translation id="8598779894319572882">Từ nút "Chế độ AI của Google Tìm kiếm" trên thanh công cụ, bạn có thể mở lại Chế độ AI của Google Tìm kiếm để đặt câu hỏi trong khi duyệt web</translation>
@@ -846,6 +873,7 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="8656634243791296665">Mở Gemini trong Chrome Dev</translation>
 <translation id="8669527147644353129">Trình trợ giúp của Google Chrome</translation>
 <translation id="8679801911857917785">Tiện ích này cũng điều khiển trang nào được hiển thị khi bạn khởi động Chrome.</translation>
+<translation id="8689408573494410517">Nút "Google Tìm kiếm trong bảng điều khiển bên" trên thanh công cụ vừa có biểu tượng mới. Hãy nhấp vào biểu tượng này để đặt câu hỏi trong khi duyệt web bằng Google Tìm kiếm trong bảng điều khiển bên.</translation>
 <translation id="8712637175834984815">Tôi hiểu</translation>
 <translation id="8712767363896337380">Sắp xong rồi! Hãy chạy lại Chrome để hoàn tất quá trình cập nhật.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> đã đăng nhập. Để tách biệt hoạt động duyệt web của bạn, hãy đăng nhập vào Chrome trong hồ sơ của riêng bạn qua địa chỉ <ph name="USER_EMAIL_ADDRESS" />. Bạn cũng có thể sử dụng danh sách đọc và nhiều nội dung khác trên <ph name="DEVICE" />.</translation>
@@ -865,8 +893,10 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="8834965163890861871">Google Chrome đang cố gắng chỉnh sửa mật khẩu. Hãy nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
 <translation id="8841151363570555833">Hiện Gemini trong Chrome trên thanh trình đơn của máy Mac</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome khuyên bạn nên xoá tiện ích đó}other{Chrome khuyên bạn nên xoá các tiện ích đó}}</translation>
+<translation id="8861692536395317751">Google Chrome yêu cầu Windows 10 phiên bản 1809 trở lên.</translation>
 <translation id="8862326446509486874">Bạn không có quyền thích hợp để cài đặt cấp hệ thống. Thử chạy lại trình cài đặt với vai trò Quản trị viên.</translation>
 <translation id="8865415417596392024">Dữ liệu trên Chrome trong tài khoản của bạn</translation>
+<translation id="8897637834206928776">Biểu tượng mới, lối tắt không đổi: Nhấp vào biểu tượng này để đặt câu hỏi trong khi duyệt web bằng Google Tìm kiếm trong bảng điều khiển bên.</translation>
 <translation id="8914504000324227558">Chạy lại Chrome</translation>
 <translation id="8920304659326707347">Tiếp tục ngay tại nơi bạn đã dừng lại với Chrome trên iOS.</translation>
 <translation id="8922998289262614701">Xoá dữ liệu của ứng dụng này khỏi Chrome</translation>
@@ -892,6 +922,7 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="9018218886431812662">Đã cài đặt xong</translation>
 <translation id="9066987883552592250">Đóng Gemini trong Chrome Canary</translation>
 <translation id="9074041031320636790">Thành công! Giờ đây, bạn có thể dễ dàng đặt câu hỏi khi duyệt web bằng Chế độ AI của Google Tìm kiếm</translation>
+<translation id="9074163480955555019">Biểu tượng mới, lối tắt không đổi: Nhấp vào biểu tượng này để đặt câu hỏi trong khi duyệt web bằng Google Tìm kiếm trong Chrome.</translation>
 <translation id="9090566250983691233">Tìm hiểu lý do Chrome chặn một số tệp</translation>
 <translation id="9106236359747881194">Chọn văn bản bạn muốn tìm</translation>
 <translation id="911206726377975832">Bạn cũng muốn xóa dữ liệu duyệt web của mình?</translation>

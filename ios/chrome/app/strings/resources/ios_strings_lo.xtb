@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">ດຶງຂໍ້ມູນຂອງທ່ານຈາກ Safari</translation>
 <translation id="2526166285241366046">ບັນທຶກລະຫັດຜ່ານ</translation>
 <translation id="2529021024822217800">ເປີດທັງຫມົດ</translation>
-<translation id="2530932541542751783">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນກັບການຕັ້ງຄ່ານີ້. ອັບເດດ ແລະ ຣີສະຕາດ Chrome ແລະ iPadOS, ແລ້ວລອງໃໝ່. ຫາກຂໍ້ຜິດພາດນີ້ຍັງຄົງເກີດຂຶ້ນ, iPad ຂອງທ່ານອາດບໍ່ຮອງຮັບການຕັ້ງຄ່ານີ້.</translation>
 <translation id="2536991091671391962">ທ່ານສາມາດໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ຢູ່ອຸປະກອນໃດກໍໄດ້. ພວກມັນຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google ສຳລັບ <ph name="EMAIL" /> ແລ້ວ.</translation>
 <translation id="2538103551183528357">ລະຫັດຜ່ານແບບເຊື່ອງ</translation>
 <translation id="2538705697765638552">ບັນທຶກຂໍ້ມູນຂອງທ່ານ ແລະ ເຮັດສິ່ງຕ່າງໆໃຫ້ສຳເລັດໄວຂຶ້ນ ເຊັ່ນ: ການຕື່ມຂໍ້ມູນໃສ່ແບບຟອມໃນຜະລິດຕະພັນຕ່າງໆຂອງ Google. ທ່ານສາມາດຈັດການຂໍ້ມູນຂອງທ່ານໃນ Google Wallet ສຳລັບ <ph name="USER_EMAIL" /> ໄດ້.</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">ສະແດງພາບ ແລະ ແກ້ໄຂ</translation>
 <translation id="3485558910355485767">ໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່</translation>
 <translation id="3488501490964659223">ແຖບຈະຖືກປິດໄວ້ ແລະ ຂໍ້ມູນການທ່ອງເວັບຈະຖືກລຶບ. ທ່ານອອກຈາກລະບົບແລ້ວ</translation>
-<translation id="3490396108106323715">ແບ່ງປັນແຖບປັດຈຸບັນ</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /> ກ່ຽວກັບເນື້ອຫາທີ່ແນະນຳ</translation>
 <translation id="349446645805573740">ເລືອກຕຳແໜ່ງທີ່ຈະບັນທຶກ "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
 <translation id="3504377992102007712">ການຕັ້ງຄ່າ</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">ບໍ່ສາມາດໂຫຼດຮູບໄດ້</translation>
 <translation id="3565930036634619844">ແຖບ. <ph name="TAB_INDEX" /> ຈາກທັງໝົດ <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">ບັນທຶກດ້ວຍວິທີອື່ນ</translation>
-<translation id="3572503683475187385">ລະບົບຈະແບ່ງປັນແຖບປັດຈຸບັນກັບ Gemini ເມື່ອທ່ານເລີ່ມການສົນທະນາໃໝ່. ເມື່ອທ່ານແບ່ງປັນແຖບກັບ Gemini, ລະບົບຈະສົ່ງເນື້ອຫາ ແລະ URL ຂອງແຖບໄປຫາ Google. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">ໃນບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="3575234738189584619">ຊອກຫາດ້ວຍ Lens</translation>
 <translation id="3575426792457739946">ລາຍຊື່ມີໂປຣໄຟລ໌ທີ່ໂຫຼດທັງໝົດ.</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">ສະແດງຂໍ້ມູນຊ່ວຍເຫຼືອ</translation>
 <translation id="4095483462103784441">ສ້າງກຸ່ມແຖບໃໝ່</translation>
 <translation id="4099756562043439968">ຕັ້ງຄ່າການແຈ້ງເຕືອນ</translation>
-<translation id="4108998448622696017">ກວດຫາ ແລະ ເຕືອນທ່ານກ່ຽວກັບເຫດການອັນຕະລາຍເມື່ອພວກມັນເກີດຂຶ້ນ.</translation>
 <translation id="4111985840824673503">ໝາຍທັງໝົດວ່າອ່ານແລ້ວ</translation>
 <translation id="411254640334432676">ດາວ​ໂຫລດ​ບໍ່​ສໍາ​ເລັດ​.</translation>
 <translation id="4112644173421521737">ຊອກຫາ</translation>
@@ -1169,6 +1165,7 @@
 <translation id="4658335131052370646">ບັນທຶກ</translation>
 <translation id="465947902531722727">ສະຫຼັບໂປຣໄຟລ໌</translation>
 <translation id="466307903888586355">ການບັນທຶກໄຟລ໌ຖືກບລັອກໂດຍອົງກອນຂອງທ່ານ</translation>
+<translation id="4665303625242639572">ປິດ <ph name="PAGE_TITLE" /></translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">ອົງກອນຂອງທ່ານກຳນົດໃຫ້ທ່ານເລືອກເບິ່ງແບບສ່ວນຕົວ. ກຸ່ມແຖບຈະບໍ່ຊິ້ງໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ.
 <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
@@ -1286,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">ສີຂອງກຸ່ມແຖບ <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">ອັດ​ສຳ​ເນົາ​ລະ​ຫັດ​ຜ່ານ</translation>
+<translation id="5007392906805964215">ກວດສອບ</translation>
 <translation id="5009127379503001909">ເລືອກເບິ່ງຕໍ່</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">ສົ່ງໄປຫາ <ph name="USER_EMAIL" /></translation>
@@ -1938,7 +1936,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6938212956536472404">ບໍ່ສາມາດແບ່ງປັນແຖບນີ້ໄດ້</translation>
 <translation id="6945221475159498467">ເລືອກ</translation>
 <translation id="6946722113367118030">ກຳລັງຄິດ</translation>
-<translation id="6947751977892029882">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນກັບການຕັ້ງຄ່ານີ້. ອັບເດດ ແລະ ຣີສະຕາດ Chrome ແລະ iOS, ແລ້ວລອງໃໝ່. ຫາກຂໍ້ຜິດພາດນີ້ຍັງຄົງເກີດຂຶ້ນ, iPhone ຂອງທ່ານອາດບໍ່ຮອງຮັບການຕັ້ງຄ່ານີ້.</translation>
 <translation id="6950522403736391608">ເຊື່ອງໄວ້</translation>
 <translation id="6957084631403333422">ລອງໃຊ້ໜ້າແຖບໃໝ່ແບບໂຟກັສ</translation>
 <translation id="695965663642079255">ບັນທຶກ ແລະ ຈັດການຂໍ້ມູນການຈ່າຍເງິນເພື່ອຈ່າຍເງິນໄດ້ໄວຂຶ້ນ</translation>
@@ -2189,7 +2186,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7758789811447313947">ຮູບແບບສີສັນສີມ່ວງ</translation>
 <translation id="7759809451544302770">ທາງ​ເລືອກ</translation>
 <translation id="7765158879357617694">ຍ້າຍ</translation>
-<translation id="7767651976342854115">ການຕັ້ງຄ່າການໃຊ້ຂໍ້ມູນພົບຂໍ້ຜິດພາດ.</translation>
 <translation id="7768507955883790804">ເວັບໄຊຈະປະຕິບັດຕາມການຕັ້ງຄ່ານີ້ໂດຍອັດຕະໂນມັດເມື່ອທ່ານເຂົ້າເບິ່ງພວກມັນ</translation>
 <translation id="7772032839648071052">ຢືນ​ຢັນວະລີຜ່ານ</translation>
 <translation id="7772948288262733182">ຍິນດີຕ້ອນຮັບກັບມາ</translation>
@@ -2502,7 +2498,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8674716540979958118">ທ່ານມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ.</translation>
 <translation id="8679900250380464358">ເພີ່ມໃສ່ລາຍຊື່ການອ່ານ</translation>
 <translation id="8680643216091361291">ການຕັ້ງຄ່າ <ph name="BEGIN_LINK" />ເກັບການເຄື່ອນໄຫວໄວ້<ph name="END_LINK" /> ຂອງທ່ານຈະປິດຢູ່ໂດຍຄ່າເລີ່ມຕົ້ນ. ເມື່ອການຕັ້ງຄ່າດັ່ງກ່າວປິດຢູ່, Google ຈະບັນທຶກການສົນທະນາຂອງທ່ານໄວ້ເປັນເວລາ 3 ມື້. ໂດຍຈະໃຊ້ຂໍ້ມູນດັ່ງກ່າວເພື່ອໃຫ້ແອັບ Gemini ເຮັດວຽກໄດ້ຢ່າງຖືກຕ້ອງ, ຊ່ວຍຮັກສາຄວາມປອດໄພ ແລະ ໃຊ້ຄຳຕິຊົມຂອງທ່ານເພື່ອແກ້ໄຂບັນຫາ. ທ່ານສາມາດເປີດເກັບການເຄື່ອນໄຫວໄວ້ເພື່ອຊ່ວຍປັບປຸງ Google AI ສຳລັບທຸກຄົນໄດ້.</translation>
-<translation id="8680786875305615692">ຊ່ວຍປັບປຸງຄວາມປອດໄພໃນອິນເຕີເນັດສຳລັບທຸກຄົນ</translation>
 <translation id="8680787084697685621">ລາຍ​ລະ​ອຽດ​ການລົງຊື່ເຂົ້າໃຊ້ບັນຊີລ້າສະໄໝແລ້ວ.</translation>
 <translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ເຂົ້າເຖິງໄມໂຄຣໂຟນຂອງທ່ານ</translation>
 <translation id="8690752723634292147">ຢືນຢັນການລຶບ</translation>
@@ -2578,7 +2573,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8888595487174963247">ລຶບການແຈ້ງເຕືອນອອກ</translation>
 <translation id="8890516388109605451">ແຫລ່ງທີ່ມາ</translation>
 <translation id="8893208530912252670">ວິດີໂອ</translation>
-<translation id="8898822736010347272">ສົ່ງ URL ຂອງບາງໜ້າທີ່ທ່ານເຂົ້າເບິ່ງ, ຂໍ້ມູນລະບົບທີ່ຈຳກັດ ແລະ ບາງເນື້ອຫາໃນໜ້າໃຫ້ Google ເພື່ອຊ່ວຍຄົ້ນພົບອັນຕະລາຍໃໝ່ ແລະ ປົກປ້ອງທຸກຄົນໃນເວັບ.</translation>
 <translation id="890009681345348416">ຕື່ມຂໍ້ມູນລະຫັດຜ່ານອັດຕະໂນມັດຫຼາຍກວ່າ 40 ລາຍການແລ້ວ</translation>
 <translation id="8900845556227858314">ແອັບໂປຣແກຣມທ່ອງເວັບ</translation>
 <translation id="890565330728586731">ກັບຄືນ</translation>
@@ -2609,6 +2603,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8976414606286374109">ບັດຕ່າງໆແມ່ນຖືກບັນທຶກໄປໃສ່ບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="8981454092730389528">ການຄວບຄຸມກິດຈະກຳ Google</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, ເວັບໄຊທີ່ປັກໝຸດແລ້ວ</translation>
+<translation id="8989779557457435460">ແບ່ງປັນແຖບປັດຈຸບັນໂດຍຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="8990960056509724223">ບໍ່ສາມາດບັນທຶກໄຟລ໌ໄດ້ເນື່ອງຈາກນະໂຍບາຍຂອງອົງກອນຂອງທ່ານ</translation>
 <translation id="8998289560386111590">ບໍ່ມີໃຫ້ໃນອຸປະກອນຂອງທ່ານ</translation>
 <translation id="9003677638446136377">ກວດ​ເບິ່ງ​ອີກ</translation>

@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">‏انقل بياناتك من Safari</translation>
 <translation id="2526166285241366046">حفظ كلمة مرور</translation>
 <translation id="2529021024822217800">فتح الكل</translation>
-<translation id="2530932541542751783">‏حدث خطأ أثناء ضبط هذا الإعداد. يُرجى تحديث Chrome وiPadOS وإعادة تشغيلهما، ثم إعادة المحاولة. في حال استمرار ظهور هذا الخطأ، قد لا يكون جهاز iPad متوافقًا مع هذا الإعداد.</translation>
 <translation id="2536991091671391962">‏يمكنك استخدام كلمات المرور المحفوظة على أي جهاز. تُحفظ كلمات المرور في "مدير كلمات المرور في Google" لدى <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">كلمة المرور مخفية</translation>
 <translation id="2538705697765638552">‏يمكنك حفظ معلوماتك لإنجاز المهام بشكل أسرع، مثل ملء النماذج في جميع منتجات Google. ويمكنك إدارة بياناتك في حساب <ph name="USER_EMAIL" /> على "محفظة Google".</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">إنشاء الصور وتعديلها</translation>
 <translation id="3485558910355485767">نافذة جديدة للتصفُّح المتخفي</translation>
 <translation id="3488501490964659223">تم إغلاق علامات التبويب وحذف بيانات التصفُّح وتسجيل خروجك</translation>
-<translation id="3490396108106323715">مشاركة علامة التبويب الحالية</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /> حول المحتوى المقترح</translation>
 <translation id="349446645805573740">يُرجى اختيار مكان لحفظ "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
 <translation id="3504377992102007712">الإعدادات</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">تعذَّر تحميل الصور</translation>
 <translation id="3565930036634619844">علامة التبويب رقم <ph name="TAB_INDEX" /> من <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="3567168891086460374">الحفظ بطريقة أخرى</translation>
-<translation id="3572503683475187385">‏ستتم مشاركة علامة التبويب الحالية مع Gemini عند بدء محادثة جديدة، وإرسال محتواها وعنوان URL إلى Google. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">‏في حسابك على Google</translation>
 <translation id="3575234738189584619">‏البحث باستخدام "عدسة Google"</translation>
 <translation id="3575426792457739946">تحتوي هذه القائمة على جميع الملفات الشخصية التي تم تحميلها.</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">عرض معلومات المساعدة</translation>
 <translation id="4095483462103784441">إنشاء مجموعة علامات تبويب جديدة</translation>
 <translation id="4099756562043439968">ضبط تذكير</translation>
-<translation id="4108998448622696017">اكتشاف الأحداث الخطيرة عند حدوثها والتحذير منها</translation>
 <translation id="4111985840824673503">وضع علامة "مقروءة" على الكل</translation>
 <translation id="411254640334432676">فشلت عملية التنزيل</translation>
 <translation id="4112644173421521737">بحث</translation>
@@ -1287,6 +1283,7 @@
 <translation id="4991383000638469704">‫"<ph name="USER_NAME" />"، <ph name="EMAIL" />. "<ph name="AI_TIER" />"</translation>
 <translation id="4992255726304765516">لون مجموعة علامات التبويب: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">نسخ كلمة المرور</translation>
+<translation id="5007392906805964215">مراجعة</translation>
 <translation id="5009127379503001909">مواصلة التصفّح</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">سيتم الإرسال إلى <ph name="USER_EMAIL" />.</translation>
@@ -1937,7 +1934,6 @@
 <translation id="6938212956536472404">لا يمكن مشاركة علامة التبويب هذه</translation>
 <translation id="6945221475159498467">اختيار</translation>
 <translation id="6946722113367118030">تفكير</translation>
-<translation id="6947751977892029882">‏حدث خطأ أثناء ضبط هذا الإعداد. يُرجى تحديث Chrome وiOS وإعادة تشغيلهما، ثم إعادة المحاولة. في حال استمرار ظهور هذا الخطأ، قد لا يكون جهاز iPhone متوافقًا مع هذا الإعداد.</translation>
 <translation id="6950522403736391608">مخفي</translation>
 <translation id="6957084631403333422">حان وقت تجربة صفحة علامة تبويب جديدة مركَّزة</translation>
 <translation id="695965663642079255">يمكنك حفظ معلومات الدفع وإدارتها لإتمام عمليات الدفع بسرعة أكبر</translation>
@@ -2188,7 +2184,6 @@
 <translation id="7758789811447313947">مظهر باللون البنفسجي</translation>
 <translation id="7759809451544302770">اختياري</translation>
 <translation id="7765158879357617694">نقل</translation>
-<translation id="7767651976342854115">حدث خطأ أثناء تحميل إعدادات استخدام البيانات.</translation>
 <translation id="7768507955883790804">ستتبع المواقع الإلكترونية هذا الإعداد تلقائيًا عند زيارتك لها.</translation>
 <translation id="7772032839648071052">تأكيد عبارة المرور</translation>
 <translation id="7772948288262733182">مرحبًا بك من جديد</translation>
@@ -2502,7 +2497,6 @@
 <translation id="8674716540979958118">لديك كلمات مرور محتمَل تعرّضها للاختراق.</translation>
 <translation id="8679900250380464358">الإضافة إلى "قائمة القراءة"</translation>
 <translation id="8680643216091361291">‏يكون الإعداد <ph name="BEGIN_LINK" />الاحتفاظ بالنشاط<ph name="END_LINK" /> غير مفعّل تلقائيًا. وعند إيقافه، تحفظ Google محادثاتك لمدة 3 أيام، وتستخدمها في تحسين عمل "تطبيقات Gemini" والحفاظ على أمانها واستخدام ملاحظاتك لإصلاح المشاكل. يمكنك تفعيل الإعداد "الاحتفاظ بالنشاط" للمساعدة في تحسين ذكاء Google الاصطناعي للجميع.</translation>
-<translation id="8680786875305615692">المساعدة في تحسين الأمان على الإنترنت من أجل الجميع</translation>
 <translation id="8680787084697685621">تفاصيل تسجيل الدخول إلى الحساب قديمة.</translation>
 <translation id="868648444055742370">لا يُسمح لـ "<ph name="SITE_DOMAIN" />" بالوصول إلى الميكروفون</translation>
 <translation id="8690752723634292147">تأكيد الحذف</translation>
@@ -2578,7 +2572,6 @@
 <translation id="8888595487174963247">إزالة التذكير</translation>
 <translation id="8890516388109605451">المصادر</translation>
 <translation id="8893208530912252670">الفيديوهات</translation>
-<translation id="8898822736010347272">‏إرسال عناوين URL الخاصّة ببعض الصفحات التي تزورها، وعدد محدود من معلومات النظام، وبعض أنواع محتوى الصفحات إلى Google، وذلك للمساعدة على اكتشاف التهديدات الجديدة وتوفير الحماية لجميع المستخدمين على الويب</translation>
 <translation id="890009681345348416">تم ملء أكثر من 40 كلمة مرور تلقائيًا</translation>
 <translation id="8900845556227858314">تطبيق المتصفّح</translation>
 <translation id="890565330728586731">رجوع</translation>
@@ -2609,6 +2602,7 @@
 <translation id="8976414606286374109">‏يتم حفظ بطاقات الائتمان في حسابك على Google.</translation>
 <translation id="8981454092730389528">‏عناصر التحكم في النشاط على Google</translation>
 <translation id="8988107725234939347">‫"<ph name="WEBSITE_TITLE" />"، موقع إلكتروني مثبَّت</translation>
+<translation id="8989779557457435460">مشاركة علامة التبويب الحالية تلقائيًا</translation>
 <translation id="8990960056509724223">يتعذَّر حفظ الملف بسبب سياسات مؤسستك</translation>
 <translation id="8998289560386111590">غير متاح على جهازك</translation>
 <translation id="9003677638446136377">التحقق مرة أخرى</translation>

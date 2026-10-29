@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">Je gegevens ophalen uit Safari</translation>
 <translation id="2526166285241366046">Een wachtwoord opslaan</translation>
 <translation id="2529021024822217800">Alles openen</translation>
-<translation id="2530932541542751783">Er is iets misgegaan met deze instelling. Update en herstart Chrome en iPadOS, en probeer het opnieuw. Als deze fout blijft optreden, ondersteunt je iPad deze instelling misschien niet.</translation>
 <translation id="2536991091671391962">Je kunt opgeslagen wachtwoorden op elk apparaat gebruiken. Ze worden opgeslagen in Google Wachtwoordmanager voor <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Verborgen, wachtwoord</translation>
 <translation id="2538705697765638552">Sla je informatie op en doe sneller dingen, zoals formulieren invullen in Google-producten. Je kunt je informatie in Google Wallet beheren voor <ph name="USER_EMAIL" />.</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">Visualiseren en bewerken</translation>
 <translation id="3485558910355485767">Nieuw incognitovenster</translation>
 <translation id="3488501490964659223">Tabbladen zijn gesloten en browsegegevens zijn verwijderd. Je bent uitgelogd.</translation>
-<translation id="3490396108106323715">Huidig tabblad delen</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /> over voorgestelde content</translation>
 <translation id="349446645805573740">Kies waar je <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> wilt opslaan</translation>
 <translation id="3504377992102007712">Instellingen</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">Kan afbeeldingen niet laden</translation>
 <translation id="3565930036634619844">Tabblad. <ph name="TAB_INDEX" /> van <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Op een andere manier opslaan</translation>
-<translation id="3572503683475187385">Het huidige tabblad wordt gedeeld met Gemini als je een nieuwe chat start. Als je een tabblad deelt met Gemini, worden de bijbehorende content en URL naar Google gestuurd. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">In je Google-account</translation>
 <translation id="3575234738189584619">Zoeken met Lens</translation>
 <translation id="3575426792457739946">Deze lijst bevat alle geladen profielen.</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">Hulp tonen</translation>
 <translation id="4095483462103784441">Nieuwe tabbladgroep maken</translation>
 <translation id="4099756562043439968">Herinnering instellen</translation>
-<translation id="4108998448622696017">Detecteert en waarschuwt je over gevaarlijke gebeurtenissen als deze plaatsvinden.</translation>
 <translation id="4111985840824673503">Alles als gelezen markeren</translation>
 <translation id="411254640334432676">Downloaden mislukt.</translation>
 <translation id="4112644173421521737">Zoeken</translation>
@@ -1169,6 +1165,7 @@
 <translation id="4658335131052370646">Opslaan</translation>
 <translation id="465947902531722727">Van profiel wisselen</translation>
 <translation id="466307903888586355">Bestanden opslaan wordt geblokkeerd door je organisatie</translation>
+<translation id="4665303625242639572"><ph name="PAGE_TITLE" /> sluiten</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Je organisatie vereist dat je privé browst. Tabbladgroepen worden niet gesynchroniseerd in de incognitomodus.
 <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
@@ -1286,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Kleur van tabbladgroep <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Wachtwoord kopiëren</translation>
+<translation id="5007392906805964215">Bekijken</translation>
 <translation id="5009127379503001909">Blijven browsen</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Sturen naar <ph name="USER_EMAIL" /></translation>
@@ -1938,7 +1936,6 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="6938212956536472404">Dit tabblad kan niet worden gedeeld</translation>
 <translation id="6945221475159498467">Selecteren</translation>
 <translation id="6946722113367118030">Denken</translation>
-<translation id="6947751977892029882">Er is iets misgegaan met deze instelling. Update en herstart Chrome en iOS, en probeer het opnieuw. Als deze fout blijft optreden, ondersteunt je iPhone deze instelling misschien niet.</translation>
 <translation id="6950522403736391608">Verborgen</translation>
 <translation id="6957084631403333422">Nieuwe tabbladpagina met focus uitproberen</translation>
 <translation id="695965663642079255">Betalingsgegevens opslaan en beheren om sneller af te rekenen</translation>
@@ -2189,7 +2186,6 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="7758789811447313947">Paars thema</translation>
 <translation id="7759809451544302770">Optioneel</translation>
 <translation id="7765158879357617694">Verplaatsen</translation>
-<translation id="7767651976342854115">Er is een fout opgetreden in de instelling voor gegevensgebruik.</translation>
 <translation id="7768507955883790804">Sites volgen deze instelling automatisch als je ze bezoekt</translation>
 <translation id="7772032839648071052">Bevestig de wachtwoordzin</translation>
 <translation id="7772948288262733182">Welkom terug</translation>
@@ -2502,7 +2498,6 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="8674716540979958118">Je hebt gehackte wachtwoorden.</translation>
 <translation id="8679900250380464358">Toevoegen aan leeslijst</translation>
 <translation id="8680643216091361291">Je instelling voor <ph name="BEGIN_LINK" />Activiteit bewaren<ph name="END_LINK" /> staat standaard uit. Wanneer deze instelling uitstaat, slaat Google je gesprekken 3 dagen op. We gebruiken deze gegevens om Gemini Apps correct te laten werken, ze te beveiligen en je feedback te gebruiken om problemen op te lossen. Je kunt Activiteit bewaren aanzetten om AI van Google voor iedereen te verbeteren.</translation>
-<translation id="8680786875305615692">Helpen om het internet voor iedereen veiliger te maken</translation>
 <translation id="8680787084697685621">De inloggegevens voor het account zijn verouderd.</translation>
 <translation id="868648444055742370"><ph name="SITE_DOMAIN" /> heeft geen toegang tot je microfoon</translation>
 <translation id="8690752723634292147">Verwijdering bevestigen</translation>
@@ -2578,7 +2573,6 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="8888595487174963247">Herinnering verwijderen</translation>
 <translation id="8890516388109605451">Bronnen</translation>
 <translation id="8893208530912252670">Video's</translation>
-<translation id="8898822736010347272">Stuurt URL's van sommige pagina's die je bezoekt, beperkte systeeminformatie en bepaalde paginacontent naar Google om nieuwe dreigingen te ontdekken en iedereen op internet te beschermen.</translation>
 <translation id="890009681345348416">40+ wachtwoorden automatisch ingevuld</translation>
 <translation id="8900845556227858314">Browser-app</translation>
 <translation id="890565330728586731">Terug</translation>
@@ -2609,6 +2603,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="8976414606286374109">Kaarten worden opgeslagen in je Google-account.</translation>
 <translation id="8981454092730389528">Google-activiteitsopties</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, vastgezette site</translation>
+<translation id="8989779557457435460">Huidig tabblad standaard delen</translation>
 <translation id="8990960056509724223">Kan het bestand niet opslaan vanwege het beleid van je organisatie</translation>
 <translation id="8998289560386111590">Niet beschikbaar op je apparaat</translation>
 <translation id="9003677638446136377">Nogmaals controleren</translation>

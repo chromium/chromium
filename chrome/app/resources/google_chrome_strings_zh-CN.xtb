@@ -29,7 +29,6 @@
 <translation id="1194807384646768652">Chrome 阻止了此项下载操作，因为这不是常下载的文件类型，可能具有危险性</translation>
 <translation id="1197860368385086056">下次在 <ph name="DEVICE_TYPE" /> 上打开 Chrome 时，系统会提示您启用价格跟踪提醒。</translation>
 <translation id="1203500561924088507">感谢您完成安装。您必须重启浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
-<translation id="122321322139970942">有一项<ph name="IMPORTANT_UPDATE" />待安装。为了确保您的浏览安全，Chrome 将在您下次连续 <ph name="IDLE_DURATION" />无操作后更新。</translation>
 <translation id="1226003169284463347">如需在您的所有设备上获取书签等内容，请登录 Chrome</translation>
 <translation id="1278833599417554002">重新启动以更新 Chrome(&amp;C)</translation>
 <translation id="1289911795790071537">使用 Chrome 打开搜索功能</translation>
@@ -159,6 +158,7 @@
 <translation id="2482846200327569645"><ph name="EXISTING_USER" />已登录。若要区分您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chrome。登录后，您还可以获取<ph name="DEVICE" />中的书签等信息。</translation>
 <translation id="2485422356828889247">卸载</translation>
 <translation id="2513154137948333830">需要重新启动：<ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2521391734665471391">关闭 Google 搜索 AI 模式</translation>
 <translation id="2523492931736391680">保障您在 Chrome 上的工作安全</translation>
 <translation id="2534365042754120737">为保护您的数据，对于您近期未访问的网站，请允许 Chrome 移除网站权限。此操作不会停用通知功能。</translation>
 <translation id="2556847002339236023">贵组织会在 Chrome 闲置 <ph name="TIMEOUT_DURATION" />后将其关闭。浏览数据已被删除，其中可能包括历史记录、自动填充和下载内容。</translation>
@@ -427,7 +427,7 @@
 <translation id="5105120510934353742">若要接收后续 Google Chrome 更新，您需要使用 macOS 13 或更高版本。该电脑目前使用的是 macOS 12。</translation>
 <translation id="5114340746415930644">请输入您的口令，以便将 Chrome 数据保存在您的账号 <ph name="USER_EMAIL" /> 中并使用这些数据</translation>
 <translation id="5120334927898581447">登录其他 Google 服务时登录 Chrome</translation>
-<translation id="5121592697493894155">侧边栏中的 Google 搜索结果</translation>
+<translation id="5121592697493894155">侧边栏中的 Google 搜索</translation>
 <translation id="5126049312684316860">Chrome 会预加载您可能会访问的更多网页，以便提高这些网页在您访问时的加载速度</translation>
 <translation id="5127558335897923940">将 Chrome 保留在程序坞中，即可随时快速访问</translation>
 <translation id="5132929315877954718">查找适用于Google Chrome的精彩应用、游戏、扩展程序和主题背景。</translation>
@@ -511,7 +511,6 @@
 <translation id="5941830788786076944">将 Google Chrome 浏览器设为默认浏览器</translation>
 <translation id="5947104538377036631">Chrome 快捷方式</translation>
 <translation id="5960071705175224773">未知应用更改了您的设置</translation>
-<translation id="5960404530854194706">Chrome 将在您离开时更新</translation>
 <translation id="5980111191913430208">来源不明的扩展程序、应用和主题可能会危害您的设备。Chrome 建议只从 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />安装这些内容</translation>
 <translation id="6003112304606738118">正在下载…还需 <ph name="HOURS" /> 小时</translation>
 <translation id="6004427865367382148">{COUNT,plural, =1{您的管理员要求您重新启动 Chrome 以应用一项更新。有无痕式窗口或隔离窗口处于打开状态。重新启动后，这个窗口将不会重新打开。}other{您的管理员要求您重新启动 Chrome 以应用一项更新。有 # 个无痕式窗口和隔离窗口在多份个人资料中打开。重新启动后，这些窗口将不会重新打开。}}</translation>
@@ -595,7 +594,6 @@
 <translation id="6556755379298048869">使用键盘快捷键搜索。</translation>
 <translation id="6585124893636629274">关闭 Chrome 中的 Gemini</translation>
 <translation id="659498884637196217">在此设备上的 Google 密码管理工具中</translation>
-<translation id="660312897435669152">Chrome 需要更新</translation>
 <translation id="6612152958212564387">您未向 Google 发送使用情况统计信息和崩溃报告。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">将 Chrome 设为默认浏览器，让您的密码、书签和历史记录在所有设备上实时同步。</translation>
 <translation id="6631524303639368205">从上次停下的地方继续：Chrome 已恢复您上次会话中的标签页。如需关闭此功能，请前往</translation>
@@ -718,6 +716,7 @@
 <translation id="7723388585204724670">重置为默认 Chrome</translation>
 <translation id="77283119132245232">为 <ph name="BROWSER_NAME" /> 提供系统跟踪服务。如果停用此服务，浏览器创建的性能轨迹将不包含系统级事件，例如上下文切换和就绪线程事件。</translation>
 <translation id="7736869414036750079">您的组织要求您登录 Chrome</translation>
+<translation id="7745849183714722618">为提供诈骗检测等功能，Chrome 可使用直接在设备上运行的 AI 模型。如果关闭此设置，这些功能可能无法正常运行。<ph name="BEGIN_LINK" />详细了解设备端 AI<ph name="END_LINK" /></translation>
 <translation id="7747138024166251722">安装程序无法创建临时目录。请检查您是否有足够的磁盘空间和权限来安装该软件。</translation>
 <translation id="7748969056734910029">您近期未访问过该网站，因此 Chrome 撤消了该网站的<ph name="PERMISSION_1" />权限和<ph name="PERMISSION_2" />权限。</translation>
 <translation id="7759944311003584891">使用 Chrome 搜索</translation>

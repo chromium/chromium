@@ -96,7 +96,6 @@
 <translation id="1165174597379888365">Síða var opnuð</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Ekkert}=1{Af einu vefsvæði (þú verður áfram skráð(ur) inn á Google-reikninginn þinn)}one{Af # vefsvæði (þú verður áfram skráð(ur) inn á Google-reikninginn þinn)}other{Af # vefsvæðum (þú verður áfram skráð(ur) inn á Google-reikninginn þinn)}}</translation>
 <translation id="1167877250265821930">Ekki tókst að sækja „<ph name="LANGUAGE" />“</translation>
-<translation id="1171306609584863516">Staðfest af <ph name="IDP_ORIGIN" /></translation>
 <translation id="1174644974616730562">Umslag: kínverskt #1</translation>
 <translation id="1174723505405632867">Viltu leyfa <ph name="EMBEDDED_URL" /> að nota fótspor og vefsvæðisgögn á <ph name="TOP_LEVEL_URL" />?
 
@@ -585,6 +584,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1988881251331415125">Ef stafsetningin er rétt skaltu <ph name="BEGIN_LINK" />prófa að keyra bilanaleit á tengigetu<ph name="END_LINK" />.</translation>
 <translation id="1991370806334788445">Prófaðu að leyfa fótspor þriðju aðila, það þýðir minni vernd við vefskoðun en líklegra er að eiginleikar vefsvæðisins virki sem skyldi.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
+<translation id="1996557034791506430">Fjarlægja heimild?</translation>
 <translation id="1997484222658892567"><ph name="URL" /> vill fá að geyma mikið magn gagna varanlega í tölvunni þinni</translation>
 <translation id="1997774360448418989">Pappír (þunnur)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{og eitt í viðbót}one{og # í viðbót}other{og # í viðbót}}</translation>
@@ -691,6 +691,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2155260325161282517">5 x 7 to.</translation>
 <translation id="2156467141257470387">Þú getur notað vistuð heimilisföng í Google-vörum. Þetta breytir ekki núverandi heimilisfangi vinnunnar þinnar. Það verður vistað á Google-reikningnum þínum, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Verðvöktunartilkynningar</translation>
+<translation id="2158964559178498011">Sjálfvirk útfylling virkar á fleiri stöðum — ýttu tvisvar á Ctrl til að finna og fylla út upplýsingar</translation>
 <translation id="2161656808144014275">Texti</translation>
 <translation id="2162435186600002085">Lógó aðalhauss</translation>
 <translation id="2162535140284745414">Fáðu tillögur í rauntíma sem geta hjálpað þér að finna nýjar leiðir til að skoða með gervigreind.</translation>
@@ -2201,6 +2202,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Þýða síðu?</translation>
 <translation id="468314109939257734">Skoðaðu sýndarkortsnúmerið þitt</translation>
+<translation id="4684818564800397688">Sjálfvirk útfylling virkar á fleiri stöðum — ýttu tvisvar á ⌘ til að finna og fylla út upplýsingar</translation>
 <translation id="4686942373615810936">Búinn til rétt í þessu</translation>
 <translation id="4690205240253392065">Velja þjónustuaðila greiðslufrestunar</translation>
 <translation id="469028408546145398">Hnappurinn „Loka huliðsgluggum“, virkjaðu til að loka öllum huliðsgluggum sem eru opnir</translation>
@@ -2307,7 +2309,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="484462545196658690">Sjálfvirkt</translation>
 <translation id="4844937814014739139">Skoða og stækka/minnka samnýtta flipa</translation>
 <translation id="484988093836683706">Nota „Taka tæki úr lás“</translation>
-<translation id="4850669014075537160">Fletting</translation>
 <translation id="4850886885716139402">Yfirlit</translation>
 <translation id="4854853140771946034">Búa til nýja glósu í Google Keep á skjótan hátt</translation>
 <translation id="4855395119669662878">Stjórnandinn þinn mun hefja upphleðslu skráa á <ph name="CLOUD_PROVIDER" /> kl. <ph name="DATE_TIME" />. Haltu tækinu þínu tengdu þar til upphleðslu skráa er lokið. Þú munt aðeins geta lesið staðbundnar skrár á meðan á upphleðslunni stendur.</translation>
@@ -2909,7 +2910,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5826507051599432481">Almennt heiti (CN)</translation>
 <translation id="5830698870816298009">notkun og hreyfing myndavélar</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
-<translation id="5832976493438355584">Læst</translation>
 <translation id="5837220895135257862">Losaðu um pláss á <ph name="CLOUD_PROVIDER" /> áður en þú reynir aftur</translation>
 <translation id="5838278095973806738">Þú ættir ekki að færa inn neinar viðkvæmar upplýsingar á þessu vefsvæði (t.d. aðgangsorð eða kreditkortanúmer) því að tölvuþrjótar gætu stolið þeim.</translation>
 <translation id="5838732667866024867">Þú getur notað ör til hægri/vinstri til að yfirfara verðbreytingar á myndritinu</translation>
@@ -3502,6 +3502,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="6834757537110528125">Þetta vefsvæði styður ekki örugga tengingu</translation>
 <translation id="6841864657731852591">Ætingarkefli</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
+<translation id="6843919992766261684">Héðan í frá mun <ph name="ISSUER" /> hætta að staðfesta þetta netfang sjálfkrafa</translation>
 <translation id="6844746916504777213">Aldrei deila þessum vefsvæðum</translation>
 <translation id="6844998850832008753">Rakning handahreyfinga leyfð í þetta skipti</translation>
 <translation id="6849023911358004088">Hnappurinn „Stjórna öryggisstillingum“ virkjaðu til að stjórna öruggri vefskoðun og fleiru í stillingum Chrome</translation>
@@ -3652,6 +3653,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7083258188081898530">Bakki 9</translation>
 <translation id="70846382339153529">OpenDocument-texti</translation>
 <translation id="7086090958708083563">Notandi bað um sendingu</translation>
+<translation id="7087807086191250928">Gemini getur gert mistök. Haltu tillögunni inni til að skoða upprunalegu heimildina og ganga úr skugga um að þessar upplýsingar séu réttar.</translation>
 <translation id="7089745480771070611">Opnast í hliðarglugga</translation>
 <translation id="7090698782953528257">Hjálpaðu mér að teikna fall til að útfæra stærðfræðiformúlu á myndrænan hátt og sjá lögun ferilsins</translation>
 <translation id="7092087596499105699">Kerfisstjórinn þinn stillti tengi öruggu gáttarinnar til að vernda aðgang að lokuðum vefforritum fyrirtækisins þíns. Hún kann að nota gögn af vinnusniðinu þínu til að staðfesta aðgang.</translation>
@@ -4082,6 +4084,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7765158879357617694">Færa</translation>
 <translation id="7766518757692125295">Kantur</translation>
 <translation id="776749070095465053">Vefnaður</translation>
+<translation id="7770247511810814330">Fjarlægja heimild</translation>
 <translation id="7772659560036894129">Vöruheiti</translation>
 <translation id="7773005668374414287">Sama röð, snýr upp</translation>
 <translation id="7779418012194492374">Afturkalla aðgang fyrir <ph name="DEVICE_NAME" /></translation>
@@ -4193,7 +4196,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7961015016161918242">Aldrei</translation>
 <translation id="7961493403319780137">Nánar um þennan eiginleika – Sjálfvirk útfylling staðfestingarkóða úr Gmail</translation>
 <translation id="7962467575542381659">Verkvangsvél</translation>
-<translation id="796439090588610411">Chrome mun hætta að staðfesta þetta netfang sjálfkrafa á studdum vefsvæðum.</translation>
 <translation id="7966803981046576691">Gerð vinnslureiknings</translation>
 <translation id="7967973398323409409">Enginn getur séð upplýsingarnar sem þú fyllir sjálfkrafa út</translation>
 <translation id="79682505114836835">Gildið „<ph name="VALUE" />“ er ógildur litur í sextándakerfi.</translation>
@@ -4476,7 +4478,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8446884382197647889">Frekari upplýsingar</translation>
 <translation id="8449036207308062757">Stjórna geymslurými</translation>
 <translation id="8449155699563577224">17 x 24 to.</translation>
-<translation id="8449513475775663994">Fjarlægja staðfest netfang?</translation>
 <translation id="8449836157089738489">Opna allt í nýjum flipahóp</translation>
 <translation id="8451518040456311377">Vista og fylla út skilríki</translation>
 <translation id="84561192812921051">Kerfisstjórinn þinn getur breytt prófíl- og vafrastillingunum þínum með fjaraðgangi, greint upplýsingar um vafrann í gegnum tilkynningar og innt önnur nauðsynleg verkefni af hendi. Virkni þinni í þessu tæki er einnig hægt að stjórna utan Chrome.  <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>

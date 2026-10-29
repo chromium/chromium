@@ -96,7 +96,6 @@
 <translation id="1165174597379888365">En nettside besøkes</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Ingen}=1{Fra 1 nettsted (du forblir logget på Google-kontoen din)}other{Fra # nettsteder (du forblir pålogget Google-kontoen din)}}</translation>
 <translation id="1167877250265821930">Kunne ikke laste ned <ph name="LANGUAGE" /></translation>
-<translation id="1171306609584863516">Bekreftet av <ph name="IDP_ORIGIN" /></translation>
 <translation id="1174644974616730562">Kinesisk konvolutt nr. 1</translation>
 <translation id="1174723505405632867">Vil du gi <ph name="EMBEDDED_URL" /> tillatelse til å bruke informasjonskapsler og nettstedsdata på <ph name="TOP_LEVEL_URL" />?
 
@@ -585,6 +584,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1988881251331415125">Hvis stavemåten er korrekt, kan du <ph name="BEGIN_LINK" />prøve å kjøre Tilkoblingsdiagnostikk<ph name="END_LINK" />.</translation>
 <translation id="1991370806334788445">Prøv å tillate informasjonskapsler fra tredjeparter. Det innebærer mindre beskyttelse under surfing, men øker sannsynligheten for at nettstedsfunksjoner virker som forventet.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
+<translation id="1996557034791506430">Vil du fjerne tillatelsen?</translation>
 <translation id="1997484222658892567"><ph name="URL" /> ber om å lagre store mengder data permanent på datamaskinen din</translation>
 <translation id="1997774360448418989">Papir (lett)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{og 1 til}other{og # til}}</translation>
@@ -691,6 +691,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2155260325161282517">5 x 7 tommer</translation>
 <translation id="2156467141257470387">Du kan bruke lagrede adresser i flere Google-produkter. Dette endrer ikke den eksisterende jobbadressen din. Det lagres i Google-kontoen din, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Varsler om prissporing</translation>
+<translation id="2158964559178498011">Autofyll fungerer flere steder – trykk på Ctrl to ganger for å finne og fylle ut informasjon</translation>
 <translation id="2161656808144014275">Tekst</translation>
 <translation id="2162435186600002085">Primær topptekstlogo</translation>
 <translation id="2162535140284745414">Få forslag i sanntid som kan hjelpe deg med å finne nye måter å surfe på med AI.</translation>
@@ -2201,6 +2202,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Vil du oversette siden?</translation>
 <translation id="468314109939257734">Se det virtuelle kortnummeret ditt</translation>
+<translation id="4684818564800397688">Autofyll fungerer flere steder – trykk på ⌘ to ganger for å finne og fylle ut informasjon</translation>
 <translation id="4686942373615810936">Opprettet nå nettopp</translation>
 <translation id="4690205240253392065">Velg en leverandør av kjøp på avbetaling</translation>
 <translation id="469028408546145398">Knappen «Lukk inkognitovinduer» – aktiver for å lukke alle åpne inkognitovinduer</translation>
@@ -2307,7 +2309,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="484462545196658690">Auto</translation>
 <translation id="4844937814014739139">Rulling og zooming på delte faner</translation>
 <translation id="484988093836683706">Bruk enhetsopplåsing</translation>
-<translation id="4850669014075537160">Rulling</translation>
 <translation id="4850886885716139402">Visning</translation>
 <translation id="4854853140771946034">Opprett et nytt notat i Google Keep raskt</translation>
 <translation id="4855395119669662878">Administratoren din begynner å laste opp filene dine til <ph name="CLOUD_PROVIDER" /> <ph name="DATE_TIME" />. Hold enheten tilkoblet frem til filene er lastet opp. Under opplastingen kan du bare lese lokale filer.</translation>
@@ -2909,7 +2910,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5826507051599432481">Vanlig navn (CN)</translation>
 <translation id="5830698870816298009">kamerabruk og -bevegelse</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
-<translation id="5832976493438355584">Låst</translation>
 <translation id="5837220895135257862">Frigjør plass i <ph name="CLOUD_PROVIDER" /> før du prøver på nytt</translation>
 <translation id="5838278095973806738">Du bør ikke oppgi sensitiv informasjon på dette nettstedet (for eksempel passord eller kredittkort) fordi den kan bli stjålet av angripere.</translation>
 <translation id="5838732667866024867">Du kan bruke venstre eller høyre pil for å se prisendringene i diagrammet</translation>
@@ -3502,6 +3502,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6834757537110528125">Dette nettstedet støtter ikke sikker tilkobling</translation>
 <translation id="6841864657731852591">Dyptrykksylinder</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
+<translation id="6843919992766261684">Fra nå av slutter <ph name="ISSUER" /> å bekrefte denne e-postadressen automatisk</translation>
 <translation id="6844746916504777213">Ikke del disse nettstedene</translation>
 <translation id="6844998850832008753">Håndsporing er tillatt denne gangen</translation>
 <translation id="6849023911358004088">Knappen «Administrer sikkerhetsinnstillinger» – aktiver for å administrere Safe Browsing med mer i Chrome-innstillingene</translation>
@@ -3652,6 +3653,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7083258188081898530">Skuff 9</translation>
 <translation id="70846382339153529">OpenDocument-tekst</translation>
 <translation id="7086090958708083563">Opplasting forespurt av bruker</translation>
+<translation id="7087807086191250928">Gemini kan gjøre feil. Trykk lenge på forslaget for å sjekke den opprinnelige kilden og sørge for at denne informasjonen er riktig.</translation>
 <translation id="7089745480771070611">Åpnes i sidepanelet</translation>
 <translation id="7090698782953528257">Hjelp meg med å lage et diagram av en funksjon for å visualisere den matematiske ligningen og se formen på kurven</translation>
 <translation id="7092087596499105699">Administratoren din har konfigurert koblingen for sikker gateway for å beskytte tilgangen til organisasjonens private nettapper. Den kan bruke data fra jobbprofilen til å bekrefte tilgang.</translation>
@@ -4082,6 +4084,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7765158879357617694">Flytt</translation>
 <translation id="7766518757692125295">Skjørt</translation>
 <translation id="776749070095465053">Stoff</translation>
+<translation id="7770247511810814330">Fjern tillatelsen</translation>
 <translation id="7772659560036894129">Produktnavn</translation>
 <translation id="7773005668374414287">Samme rekkefølge – forsiden opp</translation>
 <translation id="7779418012194492374">Opphev tilgangen for <ph name="DEVICE_NAME" /></translation>
@@ -4193,7 +4196,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7961015016161918242">Aldri</translation>
 <translation id="7961493403319780137">Finn ut mer om denne funksjonen – autofyll bekreftelseskoder fra Gmail</translation>
 <translation id="7962467575542381659">Plattformmaskin</translation>
-<translation id="796439090588610411">Chrome slutter å bekrefte denne e-postadressen automatisk på støttede nettsteder.</translation>
 <translation id="7966803981046576691">Jobbkontotype</translation>
 <translation id="7967973398323409409">Informasjonen du autofyller blir aldri sett av noen</translation>
 <translation id="79682505114836835">Verdien «<ph name="VALUE" />» er en ugyldig heksadesimal fargekode.</translation>
@@ -4476,7 +4478,6 @@ Mer informasjon:
 <translation id="8446884382197647889">Les mer</translation>
 <translation id="8449036207308062757">Administrer lagring</translation>
 <translation id="8449155699563577224">17 x 24 tommer</translation>
-<translation id="8449513475775663994">Vil du fjerne den bekreftede e-postadressen?</translation>
 <translation id="8449836157089738489">Åpne alle i en ny fanegruppe</translation>
 <translation id="8451518040456311377">Lagre og fyll ut identitetsdokumenter</translation>
 <translation id="84561192812921051">Administratoren din kan gjøre endringer i profilen og nettleseren eksternt, analysere informasjon om nettleseren gjennom rapportering og utføre andre nødvendige oppgaver. Aktiviteten på denne enheten kan også administreres utenfor Chrome.  <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>

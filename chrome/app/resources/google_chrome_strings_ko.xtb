@@ -31,7 +31,6 @@
 <translation id="1194807384646768652">일반적으로 다운로드하지 않는 파일 형식이며 위험할 가능성이 있기 때문에 Chrome에서 이 다운로드를 차단했습니다.</translation>
 <translation id="1197860368385086056">다음번에 <ph name="DEVICE_TYPE" />에서 Chrome을 열면 가격 추적 알림을 사용 설정하라는 메시지가 표시됩니다.</translation>
 <translation id="1203500561924088507">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 브라우저를 다시 시작해야 합니다.</translation>
-<translation id="122321322139970942"><ph name="IMPORTANT_UPDATE" />가 대기 중입니다. 안전한 탐색을 위해 다음에 <ph name="IDLE_DURATION" /> 동안 비활성 상태가 되면 Chrome이 업데이트됩니다.</translation>
 <translation id="1226003169284463347">모든 기기에서 북마크 등을 사용하려면 Chrome에 로그인하세요</translation>
 <translation id="1278833599417554002">다시 실행하여 Chrome 업데이트</translation>
 <translation id="1289911795790071537">Chrome으로 검색 열기</translation>
@@ -163,6 +162,7 @@
 <translation id="2482846200327569645"><ph name="EXISTING_USER" /> 계정은 이미 로그인되어 있습니다. 방문 기록을 별도로 보관하려면 내 프로필에서 <ph name="USER_EMAIL_ADDRESS" /> 주소로 Chrome에 로그인하세요. 이렇게 하면 <ph name="DEVICE" />에서 북마크 등을 사용할 수 있습니다.</translation>
 <translation id="2485422356828889247">제거</translation>
 <translation id="2513154137948333830">재부팅 필요: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2521391734665471391">Google 검색 AI 모드 닫기</translation>
 <translation id="2523492931736391680">Chrome에서 안전하게 업무 처리</translation>
 <translation id="2534365042754120737">데이터를 보호하려면 최근에 방문하지 않은 사이트의 권한을 Chrome에서 삭제하도록 허용하세요. 알림은 중지되지 않습니다.</translation>
 <translation id="2556847002339236023"><ph name="TIMEOUT_DURATION" /> 동안 사용하지 않으면 조직에서 Chrome을 종료합니다. 인터넷 사용 기록이 삭제되었습니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.</translation>
@@ -518,7 +518,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="5941830788786076944">Chrome을 기본 브라우저로</translation>
 <translation id="5947104538377036631">Chrome 단축키</translation>
 <translation id="5960071705175224773">알 수 없는 앱에서 설정을 변경했습니다</translation>
-<translation id="5960404530854194706">사용자가 자리를 비우면 Chrome이 업데이트됩니다</translation>
 <translation id="5980111191913430208">알 수 없는 소스의 확장 프로그램, 앱, 테마는 기기를 손상시킬 수 있습니다. Chrome에서는 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />에서 다운로드한 확장 프로그램, 앱, 테마만 설치할 것을 권장합니다.</translation>
 <translation id="6003112304606738118">다운로드 중... <ph name="HOURS" />시간 남음</translation>
 <translation id="6004427865367382148">{COUNT,plural, =1{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 시크릿 창 또는 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 프로필 전반에 #개의 시크릿 창 및 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}}</translation>
@@ -602,7 +601,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6556755379298048869">키보드 단축키로 검색합니다.</translation>
 <translation id="6585124893636629274">Chrome의 Gemini 종료</translation>
 <translation id="659498884637196217">이 기기의 Google 비밀번호 관리자에서</translation>
-<translation id="660312897435669152">Chrome 업데이트 필요</translation>
 <translation id="6612152958212564387">사용 통계 및 비정상 종료 보고서를 Google에 전송하지 않습니다. <ph name="BEGIN_LINK" />관리<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Chrome을 기본 브라우저로 설정하여 비밀번호, 북마크, 방문 기록을 모든 기기에서 완벽하게 동기화하세요.</translation>
 <translation id="6631524303639368205">중단한 위치에서 계속하기: Chrome에서 마지막 세션의 탭을 복원했습니다. 다음에서 이 기능을 사용 중지할 수 있습니다.</translation>
@@ -725,6 +723,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7723388585204724670">기본 Chrome으로 재설정</translation>
 <translation id="77283119132245232"><ph name="BROWSER_NAME" />에 시스템 추적 서비스가 제공됩니다. 이 서비스를 사용 중지하면 브라우저에서 생성한 성능 추적에 컨텍스트 전환 및 준비된 스레드 이벤트와 같은 시스템 전체 이벤트가 포함되지 않습니다.</translation>
 <translation id="7736869414036750079">조직에서 Chrome에 로그인할 것을 요구합니다</translation>
+<translation id="7745849183714722618">사기 탐지와 같은 기능을 지원하기 위해 Chrome은 기기에서 직접 실행되는 AI 모델을 사용할 수 있습니다. 이 기능이 사용 중지되면 이러한 기능이 작동하지 않을 수 있습니다. <ph name="BEGIN_LINK" />온디바이스 AI에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="7747138024166251722">설치 프로그램이 임시 디렉터리를 만들지 못했습니다. 디스크 공간 및 설치 권한을 확인해 보세요.</translation>
 <translation id="7748969056734910029">최근에 사이트를 방문하지 않았습니다. Chrome에서 <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 권한을 삭제했습니다.</translation>
 <translation id="7759944311003584891">Chrome으로 검색</translation>

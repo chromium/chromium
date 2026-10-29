@@ -337,6 +337,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2332515770639153015">Förbättrad säker webbsökning har aktiverats</translation>
 <translation id="233375395665273385">Radera och logga ut</translation>
 <translation id="2334275697832662087">Med Chromes AI-baserade säkerhet skyddas du mot hot online, så att du kan känna dig säker när du surfar</translation>
+<translation id="2335758110242123814">Öppna gruppen</translation>
 <translation id="2341410551640223969">Det gick inte att installera <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Total data som används av Chrome, inklusive konton, bokmärken och sparade inställningar</translation>
 <translation id="2354001756790975382">Övriga bokmärken</translation>
@@ -390,7 +391,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2532336938189706096">Webbvy</translation>
 <translation id="2535807170289627159">Alla flikar</translation>
 <translation id="2536728043171574184">En offlinekopia av sidan visas</translation>
-<translation id="2537574774089209541">Vissa verktyg har flyttats så att du enkelt kan komma åt Gemini medan du surfar</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, vald fäst inkognitoflik med ljud av</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, flik</translation>
@@ -1038,6 +1038,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5096775069898886423">Om webbplatsen inte har stöd för säkra anslutningar får du en varning innan du besöker webbplatsen</translation>
 <translation id="510275257476243843">1 timme kvar</translation>
 <translation id="5105442806410269908">Hantera annan Google-data</translation>
+<translation id="5111326646107464148">Öppna gruppen i ett nytt fönster</translation>
 <translation id="5114895953710637392">Arbetsbladet för appfilter har stängts.</translation>
 <translation id="5115811374190515607">i <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Du kan använda Chrome varje gång du trycker på länkar i meddelanden, dokument och andra appar</translation>
@@ -1607,6 +1608,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="72415438529550637">Lösenordsförslaget har stängts.</translation>
 <translation id="724510009481365878">Den här sidan kan inte skrivas ut</translation>
 <translation id="7248671827512403053">Program</translation>
+<translation id="7253205084599155458">Visa navigering och verktyg i ett verktygsfält längst ned för enkel åtkomst</translation>
 <translation id="7253951228444156601">Kontrollerar lösenord …</translation>
 <translation id="7265857422443387781">Sök på fliken med Google Lens <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Vill du skicka <ph name="ONE_TIME_CODE" /> till <ph name="ORIGIN" />?</translation>
@@ -1619,7 +1621,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7291910923717764901">Bildbeskrivningar för den här sidan har lagts till</translation>
 <translation id="7293429513719260019">Välj språk</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, vald fäst flik som delas</translation>
-<translation id="7304003340539141201">Be Gemini om hjälp med dina flikar och uppgifter</translation>
 <translation id="7311244614769792472">Inga resultat hittades</translation>
 <translation id="7314734791127433392">Det går inte att kontrollera lösenorden</translation>
 <translation id="7324354302972299151">Skicka en Do Not Track-begäran</translation>
@@ -1755,6 +1756,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7821130663268546430">Du hittar alla öppna flikar i flikbytaren</translation>
 <translation id="7822705602465980873">När du är inloggad kopplas denna data till ditt Google-konto för att skydda dig i Googles tjänster, till exempel genom att öka skyddet i Gmail efter en säkerhetsincident.</translation>
 <translation id="7824665136384946951">Organisationen har inaktiverat Säker webbsökning</translation>
+<translation id="782590969421016895">Använd aktuella sidor</translation>
 <translation id="7825973332242257878">Flikgrupper</translation>
 <translation id="7845155831233417403">Du kan ha upp till <ph name="MAX_INSTANCE_COUNT" /> fönster. Stäng ett fönster för att fortsätta.</translation>
 <translation id="7846161022626028328">Något gick fel. Försök igen.</translation>
@@ -1987,7 +1989,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8694622119922491927"><ph name="APP_NAME" /> behöver behörighet att komma åt styrdon för den här webbplatsen. Du kan ändra inställningen senare i Inställningar &gt; Appar &gt; Särskild appåtkomst.</translation>
 <translation id="8696297579102085705">Skicka till din enhet</translation>
 <translation id="8699120352855309748">Erbjud inte att översätta dessa språk</translation>
-<translation id="8700565880437506364">Vi presenterar Gemini i Chrome</translation>
 <translation id="8712637175834984815">Uppfattat</translation>
 <translation id="8715286883001906001">Gör dina lösenord säkrare i Google-kontot</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> stängs</translation>

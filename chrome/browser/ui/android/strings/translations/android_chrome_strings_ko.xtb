@@ -337,6 +337,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2332515770639153015">향상된 세이프 브라우징 사용 설정됨</translation>
 <translation id="233375395665273385">삭제 및 로그아웃</translation>
 <translation id="2334275697832662087">Chrome의 AI 기반 보안이 온라인 위협으로부터 사용자를 보호하므로 안심하고 웹을 탐색할 수 있습니다.</translation>
+<translation id="2335758110242123814">그룹 열기</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> APK를 설치할 수 없음</translation>
 <translation id="2349710944427398404">계정, 북마크, 저장된 설정 등 Chrome에서 사용한 전체 데이터</translation>
 <translation id="2354001756790975382">기타 북마크</translation>
@@ -390,7 +391,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2532336938189706096">웹 보기</translation>
 <translation id="2535807170289627159">모든 탭</translation>
 <translation id="2536728043171574184">이 페이지의 오프라인 사본 보는 중</translation>
-<translation id="2537574774089209541">탐색 중에 Gemini에 쉽게 액세스할 수 있도록 일부 도구가 이동되었습니다.</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, 선택되고 고정되고 음소거된 시크릿 탭</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, 탭</translation>
@@ -1037,6 +1037,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5096775069898886423">보안 연결을 지원하지 않는 사이트의 경우, 사이트를 방문하기 전에 경고를 표시합니다.</translation>
 <translation id="510275257476243843">1시간 남음</translation>
 <translation id="5105442806410269908">기타 Google 데이터 관리</translation>
+<translation id="5111326646107464148">새 창에서 그룹 열기</translation>
 <translation id="5114895953710637392">앱 필터 시트가 닫혔습니다.</translation>
 <translation id="5115811374190515607">이동 위치: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">메시지, 문서, 다른 앱에서 링크를 탭하여 언제든지 Chrome을 사용할 수 있습니다.</translation>
@@ -1606,6 +1607,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="72415438529550637">비밀번호 추천이 종료되었습니다.</translation>
 <translation id="724510009481365878">페이지를 인쇄할 수 없습니다.</translation>
 <translation id="7248671827512403053">애플리케이션</translation>
+<translation id="7253205084599155458">쉽게 액세스할 수 있도록 하단 툴바에 탐색 및 도구 표시</translation>
 <translation id="7253951228444156601">비밀번호 확인 중…</translation>
 <translation id="7265857422443387781">Google 렌즈로 탭 검색 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="727288900855680735"><ph name="ORIGIN" />에 <ph name="ONE_TIME_CODE" /> 코드를 제출하시겠습니까?</translation>
@@ -1618,7 +1620,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7291910923717764901">이 페이지에 추가된 이미지 설명</translation>
 <translation id="7293429513719260019">언어 선택</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, 선택되고 고정되고 공유 중인 탭</translation>
-<translation id="7304003340539141201">Gemini에게 탭 및 작업 관련 도움을 요청하세요</translation>
 <translation id="7311244614769792472">검색 결과 없음</translation>
 <translation id="7314734791127433392">비밀번호를 확인할 수 없음</translation>
 <translation id="7324354302972299151">'Do Not Track' 요청 전송</translation>
@@ -1754,6 +1755,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7821130663268546430">탭 전환 도구에서 열려 있는 모든 탭을 확인할 수 있습니다.</translation>
 <translation id="7822705602465980873">사용자가 로그인하면 이 데이터는 사용자의 Google 계정에 연결되어 Google 서비스 전반에서 사용자를 보호합니다(예: 보안 사고 발생 후 Gmail의 보안 강화).</translation>
 <translation id="7824665136384946951">조직에서 세이프 브라우징을 사용 중지했습니다.</translation>
+<translation id="782590969421016895">현재 페이지 사용</translation>
 <translation id="7825973332242257878">탭 그룹</translation>
 <translation id="7845155831233417403">최대 <ph name="MAX_INSTANCE_COUNT" />개의 창을 열 수 있습니다. 계속하려면 창을 닫으세요.</translation>
 <translation id="7846161022626028328">오류가 발생했습니다. 다시 시도하세요.</translation>
@@ -1986,7 +1988,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8694622119922491927"><ph name="APP_NAME" /> 앱이 사이트에서 인간 인터페이스 장치(HID)에 액세스할 권한이 필요합니다. 나중에 설정 &gt; 앱 &gt; 특수 앱 액세스에서 이 설정을 변경할 수 있습니다.</translation>
 <translation id="8696297579102085705">기기로 보내기</translation>
 <translation id="8699120352855309748">번역할지 묻지 않을 언어</translation>
-<translation id="8700565880437506364">Chrome의 Gemini 소개</translation>
 <translation id="8712637175834984815">확인</translation>
 <translation id="8715286883001906001">Google 계정의 비밀번호 강화</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> 탭이 닫힙니다.</translation>

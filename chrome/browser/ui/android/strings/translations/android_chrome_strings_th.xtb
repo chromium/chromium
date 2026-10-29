@@ -337,6 +337,7 @@
 <translation id="2332515770639153015">Google Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้นเปิดอยู่</translation>
 <translation id="233375395665273385">ลบและออกจากระบบ</translation>
 <translation id="2334275697832662087">การรักษาความปลอดภัยที่ทำงานด้วยระบบ AI ของ Chrome ช่วยปกป้องคุณจากภัยคุกคามออนไลน์ ซึ่งช่วยให้คุณท่องเว็บได้อย่างมั่นใจ</translation>
+<translation id="2335758110242123814">เปิดกลุ่ม</translation>
 <translation id="2341410551640223969">ติดตั้ง <ph name="WEBAPK_NAME" /> ไม่สำเร็จ</translation>
 <translation id="2349710944427398404">ข้อมูลทั้งหมดที่ Chrome ใช้ รวมถึงบัญชี บุ๊กมาร์ก และการตั้งค่าที่บันทึกไว้</translation>
 <translation id="2354001756790975382">บุ๊กมาร์กอื่นๆ</translation>
@@ -390,7 +391,6 @@
 <translation id="2532336938189706096">มุมมองเว็บ</translation>
 <translation id="2535807170289627159">แท็บทั้งหมด</translation>
 <translation id="2536728043171574184">ดูสำเนาแบบออฟไลน์ของหน้านี้</translation>
-<translation id="2537574774089209541">เครื่องมือบางอย่างย้ายไปเพื่อให้คุณเข้าถึง Gemini ได้ง่ายขณะท่องเว็บ</translation>
 <translation id="2539002604555291451">Sans serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, แท็บที่ไม่ระบุตัวตนที่ปักหมุดซึ่งเลือกไว้และปิดเสียงอยู่</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, แท็บ</translation>
@@ -1037,6 +1037,7 @@
 <translation id="5096775069898886423">สำหรับเว็บไซต์ที่ไม่รองรับการเชื่อมต่อที่ปลอดภัย โปรดรับคำเตือนก่อนเข้าชมเว็บไซต์</translation>
 <translation id="510275257476243843">เหลือ 1 ชั่วโมง</translation>
 <translation id="5105442806410269908">จัดการข้อมูลอื่นๆ ใน Google</translation>
+<translation id="5111326646107464148">เปิดกลุ่มในหน้าต่างใหม่</translation>
 <translation id="5114895953710637392">ชีตตัวกรองแอปปิดอยู่</translation>
 <translation id="5115811374190515607">ไปยัง<ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">คุณจะใช้ Chrome ได้ทุกครั้งที่แตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ</translation>
@@ -1606,6 +1607,7 @@
 <translation id="72415438529550637">คําแนะนํารหัสผ่านปิดอยู่</translation>
 <translation id="724510009481365878">พิมพ์หน้านี้ไม่ได้</translation>
 <translation id="7248671827512403053">แอปพลิเคชัน</translation>
+<translation id="7253205084599155458">แสดงการนำทางและเครื่องมือในแถบเครื่องมือด้านล่างเพื่อให้เข้าถึงได้ง่าย</translation>
 <translation id="7253951228444156601">กำลังตรวจสอบรหัสผ่าน…</translation>
 <translation id="7265857422443387781">ค้นหาแท็บด้วย Google Lens <ph name="BEGIN_NEW" />ใหม่<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">ส่ง <ph name="ONE_TIME_CODE" /> ไปยัง <ph name="ORIGIN" /> ไหม</translation>
@@ -1618,7 +1620,6 @@
 <translation id="7291910923717764901">เพิ่มคำอธิบายรูปภาพสำหรับหน้านี้แล้ว</translation>
 <translation id="7293429513719260019">เลือกภาษา</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, แท็บการแชร์ที่ปักหมุดซึ่งเลือกไว้</translation>
-<translation id="7304003340539141201">ขอความช่วยเหลือจาก Gemini ในการจัดการแท็บและงานต่างๆ</translation>
 <translation id="7311244614769792472">ไม่พบผลการค้นหา</translation>
 <translation id="7314734791127433392">ตรวจสอบรหัสผ่านไม่ได้</translation>
 <translation id="7324354302972299151">ส่งคำขอ Do Not Track</translation>
@@ -1754,6 +1755,7 @@
 <translation id="7821130663268546430">คุณค้นหาแท็บที่เปิดอยู่ทั้งหมดในตัวสลับแท็บได้</translation>
 <translation id="7822705602465980873">เมื่อลงชื่อเข้าใช้ ข้อมูลนี้จะลิงก์กับบัญชี Google ของคุณเพื่อปกป้องคุณในบริการต่างๆ ของ Google เช่น เพิ่มการปกป้องใน Gmail หลังจากเกิดเหตุการณ์ด้านความปลอดภัย</translation>
 <translation id="7824665136384946951">องค์กรปิด Google Safe Browsing ไว้</translation>
+<translation id="782590969421016895">ใช้หน้าเว็บปัจจุบัน</translation>
 <translation id="7825973332242257878">กลุ่มแท็บ</translation>
 <translation id="7845155831233417403">คุณมีหน้าต่างได้ไม่เกิน <ph name="MAX_INSTANCE_COUNT" /> รายการ ปิดหน้าต่างเพื่อดำเนินการต่อ</translation>
 <translation id="7846161022626028328">เกิดข้อผิดพลาด โปรดลองอีกครั้ง</translation>
@@ -1986,7 +1988,6 @@
 <translation id="8694622119922491927"><ph name="APP_NAME" /> ต้องการสิทธิ์เข้าถึงอุปกรณ์ที่โต้ตอบกับมนุษย์โดยตรง (HID) สำหรับเว็บไซต์นี้ คุณเปลี่ยนการตั้งค่านี้ได้ภายหลังในการตั้งค่า &gt; แอป &gt; สิทธิ์เข้าถึงพิเศษของแอป</translation>
 <translation id="8696297579102085705">ส่งไปที่อุปกรณ์</translation>
 <translation id="8699120352855309748">ไม่ต้องเสนอการแปลภาษาเหล่านี้</translation>
-<translation id="8700565880437506364">ขอแนะนำ Gemini ใน Chrome</translation>
 <translation id="8712637175834984815">รับทราบ</translation>
 <translation id="8715286883001906001">เสริมความรัดกุมให้รหัสผ่านในบัญชี Google</translation>
 <translation id="8715300232952757586">ระบบจะปิด <ph name="TAB_TITLE" /></translation>

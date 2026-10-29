@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">Перанос даных з Safari</translation>
 <translation id="2526166285241366046">Захаванне пароля</translation>
 <translation id="2529021024822217800">Адкрыць усе</translation>
-<translation id="2530932541542751783">Адбылася памылка. Не ўдалося прымяніць гэту наладу. Абнавіце і перазапусціце Chrome і iPadOS, а потым паўтарыце спробу. Калі памылка не знікне, магчыма, ваш планшэт iPad не падтрымлівае гэту наладу.</translation>
 <translation id="2536991091671391962">Вы можаце выкарыстоўваць захаваныя паролі на любой прыладзе. Яны захоўваюцца ў Менеджары пароляў Google для ўліковага запісу <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Схаваны, пароль</translation>
 <translation id="2538705697765638552">Захавайце звесткі, каб паскорыць працу ў розных прадуктах Google, напрыклад запаўненне форм. Вы можаце кіраваць сваёй інфармацыяй у Google Кашальку ўліковага запісу <ph name="USER_EMAIL" />.</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">Візуалізуйце і рэдагуйце</translation>
 <translation id="3485558910355485767">Новае акно ў рэжыме інкогніта</translation>
 <translation id="3488501490964659223">Укладкі былі закрыты, а даныя пра работу ў браўзеры – выдалены. Вы выйшлі з уліковага запісу.</translation>
-<translation id="3490396108106323715">Абагульваць бягучую ўкладку</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /> пра прапанаванае змесціва</translation>
 <translation id="349446645805573740">Выберыце, куды захаваць файл <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /></translation>
 <translation id="3504377992102007712">Налады</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">Не ўдалося загрузіць відарысы</translation>
 <translation id="3565930036634619844">Укладка. <ph name="TAB_INDEX" /> з <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Захаваць іншым спосабам</translation>
-<translation id="3572503683475187385">Бягучая ўкладка будзе абагульвацца з Gemini, калі вы пачынаеце новы чат. Калі ўкладка абагульваецца з Gemini, яе змесціва і URL-адрас адпраўляюцца ў Google. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Ва Уліковым запісе Google</translation>
 <translation id="3575234738189584619">Пошук з дапамогай Аб’ектыва</translation>
 <translation id="3575426792457739946">Гэты спіс змяшчае ўсе загружаныя профілі.</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">Паказаць даведку</translation>
 <translation id="4095483462103784441">Стварыць новую групу ўкладак</translation>
 <translation id="4099756562043439968">Задаць напамін</translation>
-<translation id="4108998448622696017">Выяўляе небяспечныя падзеі і папярэджвае пра іх.</translation>
 <translation id="4111985840824673503">Адзначыць усе як прачытаныя</translation>
 <translation id="411254640334432676">Збой спампоўкі.</translation>
 <translation id="4112644173421521737">Пошук</translation>
@@ -1169,6 +1165,7 @@
 <translation id="4658335131052370646">Захаваць</translation>
 <translation id="465947902531722727">Пераключыць профілі</translation>
 <translation id="466307903888586355">Захоўванне файлаў заблакіравана вашай арганізацыяй</translation>
+<translation id="4665303625242639572">Закрыць старонку "<ph name="PAGE_TITLE" />"</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Палітыка вашай арганізацыі патрабуе, каб вы праглядалі старонкі ў рэжыме інкогніта. Групы ўкладак у рэжыме інкогніта не сінхранізуюцца.
 <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
@@ -1286,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />: <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Колер групы ўкладак <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Капіраваць пароль</translation>
+<translation id="5007392906805964215">Праглядзець</translation>
 <translation id="5009127379503001909">Працягнуць прагляд</translation>
 <translation id="5016205925109358554">З засечкамі</translation>
 <translation id="5016420433031926653">Адправіць на адрас <ph name="USER_EMAIL" /></translation>
@@ -1938,7 +1936,6 @@
 <translation id="6938212956536472404">Не ўдалося абагуліць гэту ўкладку</translation>
 <translation id="6945221475159498467">Выбраць</translation>
 <translation id="6946722113367118030">У задуменні</translation>
-<translation id="6947751977892029882">Адбылася памылка. Не ўдалося прымяніць гэту наладу. Абнавіце і перазапусціце Chrome і iOS, а потым паўтарыце спробу. Калі памылка не знікае, магчыма, ваш тэлефон iPhone не падтрымлівае гэту наладу.</translation>
 <translation id="6950522403736391608">Схаваныя</translation>
 <translation id="6957084631403333422">Паспрабуйце старонку новай укладкі з фокусам на змесціве</translation>
 <translation id="695965663642079255">Захоўвайце плацежную інфармацыю і кіруйце ёй, каб хутчэй аплачваць пакупкі</translation>
@@ -2189,7 +2186,6 @@
 <translation id="7758789811447313947">Фіялетавая тэма</translation>
 <translation id="7759809451544302770">Неабавязкова</translation>
 <translation id="7765158879357617694">Перамясціць</translation>
-<translation id="7767651976342854115">Падчас загрузкі налады выкарыстання даных адбылася памылка.</translation>
 <translation id="7768507955883790804">Пры наведванні сайтаў яны будуць аўтаматычна ўлічваць гэту наладу</translation>
 <translation id="7772032839648071052">Пацвердзіце фразу-пароль</translation>
 <translation id="7772948288262733182">З вяртаннем!</translation>
@@ -2502,7 +2498,6 @@
 <translation id="8674716540979958118">У вас ёсць раскрытыя паролі.</translation>
 <translation id="8679900250380464358">Дадаць у Спіс на прагляд</translation>
 <translation id="8680643216091361291">Налада <ph name="BEGIN_LINK" />Захоўваць гісторыю дзеянняў<ph name="END_LINK" /> стандартна выключана. Калі гэта налада выключана, Google захоўвае вашы чаты на працягу трох дзён. Гэта дапамагае забяспечваць правільную работу і бяспеку праграм Gemini і дазваляе выкарыстоўваць вашы водгукі для вырашэння праблем. Вы можаце ўключыць наладу "Захоўваць гісторыю дзеянняў", каб дапамагчы палепшыць AI ад Google для ўсіх карыстальнікаў.</translation>
-<translation id="8680786875305615692">Дапамажыце павысіць бяспеку ў інтэрнэце для кожнага</translation>
 <translation id="8680787084697685621">Даныя ўліковага запісу для ўваходу састарэлі.</translation>
 <translation id="868648444055742370">Сайту "<ph name="SITE_DOMAIN" />" забаронены доступ да мікрафона</translation>
 <translation id="8690752723634292147">Пацвердзіце выдаленне</translation>
@@ -2578,7 +2573,6 @@
 <translation id="8888595487174963247">Выдаліць напамін</translation>
 <translation id="8890516388109605451">Крыніцы</translation>
 <translation id="8893208530912252670">Відэа</translation>
-<translation id="8898822736010347272">Адпраўляе URL-адрасы некаторых наведаных вамі старонак, пэўную сістэмную інфармацыю і фрагменты змесціва старонак у сэрвісы Google, каб дапамагаць выяўляць новыя кіберпагрозы і абараняць усіх у інтэрнэце.</translation>
 <translation id="890009681345348416">Аўтаматычна запоўнена больш за 40 пароляў</translation>
 <translation id="8900845556227858314">Праграма "Браўзер"</translation>
 <translation id="890565330728586731">Назад</translation>
@@ -2609,6 +2603,7 @@
 <translation id="8976414606286374109">Карткі захоўваюцца ў ваш Уліковы запіс Google.</translation>
 <translation id="8981454092730389528">Параметры дзейнасці для Уліковых запісаў Google</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, замацаваны сайт</translation>
+<translation id="8989779557457435460">Стандартна абагульваць гэту ўкладку</translation>
 <translation id="8990960056509724223">Не ўдалося захаваць файл з-за правіл вашай арганізацыі</translation>
 <translation id="8998289560386111590">Недаступна на вашай прыладзе</translation>
 <translation id="9003677638446136377">Паўтарыць праверку</translation>

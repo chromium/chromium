@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">Dod â'ch data o Safari</translation>
 <translation id="2526166285241366046">Cadw cyfrinair</translation>
 <translation id="2529021024822217800">Agor y Cyfan</translation>
-<translation id="2530932541542751783">Aeth rhywbeth o'i le gyda'r gosodiad hwn. Diweddarwch ac ailgychwynnwch Chrome ac iPadOS, a rhowch gynnig arall arni. Os yw'r gwall hwn yn parhau i ddigwydd, mae'n bosib na fydd eich iPad yn cefnogi'r gosodiad hwn.</translation>
 <translation id="2536991091671391962">Gallwch ddefnyddio cyfrineiriau sydd wedi'u cadw ar unrhyw ddyfais. Maent yn cael eu cadw i Rheolwr Cyfrineiriau Google ar gyfer <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Cudd, cyfrinair</translation>
 <translation id="2538705697765638552">Cadwch eich gwybodaeth a chael pethau wedi'u gwneud yn gyflymach, megis llenwi ffurflenni ar draws cynhyrchion Google. Gallwch reoli'ch gwybodaeth yn Google Wallet ar gyfer <ph name="USER_EMAIL" />.</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">Delweddu a golygu</translation>
 <translation id="3485558910355485767">Ffenestr Anhysbys Newydd</translation>
 <translation id="3488501490964659223">Cafodd y tabiau eu cau a chafodd data pori eu dileu. Cawsoch eich allgofnodi</translation>
-<translation id="3490396108106323715">Rhannu'r tab presennol</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /> am gynnwys a awgrymir</translation>
 <translation id="349446645805573740">Dewiswch ble i gadw "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
 <translation id="3504377992102007712">Gosodiadau</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">Methu â llwytho lluniau</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> o <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Cadw mewn ffordd arall</translation>
-<translation id="3572503683475187385">Mae'r tab presennol yn cael ei rannu â Gemini pan fyddwch yn dechrau sgwrs newydd. Pan fyddwch yn rhannu tab gyda Gemini, anfonir ei gynnwys a'i URL at Google. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Yn eich Cyfrif Google</translation>
 <translation id="3575234738189584619">Chwilio gyda Lens</translation>
 <translation id="3575426792457739946">Mae'r rhestr hon yn cynnwys yr holl broffiliau sydd wedi'u llwytho.</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">Dangos Help</translation>
 <translation id="4095483462103784441">Creu grŵp tabiau newydd</translation>
 <translation id="4099756562043439968">Gosod Atgoffwr</translation>
-<translation id="4108998448622696017">Yn canfod ac yn eich rhybuddio am ddigwyddiadau peryglus pan fyddant yn digwydd.</translation>
 <translation id="4111985840824673503">Marcio pob un ohonynt fel wedi'u darllen</translation>
 <translation id="411254640334432676">Lawrlwytho wedi methu.</translation>
 <translation id="4112644173421521737">Chwilio</translation>
@@ -1287,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Lliw grŵp tabiau <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Copïo'r cyfrinair</translation>
+<translation id="5007392906805964215">Adolygu</translation>
 <translation id="5009127379503001909">Parhau i bori</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Anfon at <ph name="USER_EMAIL" /></translation>
@@ -1939,7 +1936,6 @@ I barhau o'ch cyfrifiadur, newidiwch i <ph name="OTHER_EMAIL" />. Byddwch yn cae
 <translation id="6938212956536472404">Nid oes modd rhannu'r tab hwn</translation>
 <translation id="6945221475159498467">Dewis</translation>
 <translation id="6946722113367118030">Meddwl</translation>
-<translation id="6947751977892029882">Aeth rhywbeth o'i le gyda'r gosodiad hwn. Diweddarwch ac ailgychwynnwch Chrome ac iOS, a rhowch gynnig arall arni. Os yw'r gwall hwn yn parhau i ddigwydd, mae'n bosib na fydd eich iPhone yn cefnogi'r gosodiad hwn.</translation>
 <translation id="6950522403736391608">Wedi'i chuddio</translation>
 <translation id="6957084631403333422">Rhowch gynnig ar dudalen tab newydd â ffocws</translation>
 <translation id="695965663642079255">Cadw a rheoli gwybodaeth talu i dalu'n gyflymach</translation>
@@ -2190,7 +2186,6 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="7758789811447313947">Thema fioled</translation>
 <translation id="7759809451544302770">Dewisol</translation>
 <translation id="7765158879357617694">Symud</translation>
-<translation id="7767651976342854115">Daeth gosodiad defnydd data ar draws gwall.</translation>
 <translation id="7768507955883790804">Bydd gwefannau'n dilyn y gosodiad hwn yn awtomatig wrth i chi ymweld â nhw</translation>
 <translation id="7772032839648071052">Cadarnhau cyfrinymadrodd</translation>
 <translation id="7772948288262733182">Croeso'n ôl</translation>
@@ -2503,7 +2498,6 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="8674716540979958118">Mae gennych gyfrineiriau sydd wedi'u darganfod.</translation>
 <translation id="8679900250380464358">Ychwanegu at y Rhestr Ddarllen</translation>
 <translation id="8680643216091361291">Mae eich gosodiad <ph name="BEGIN_LINK" />Cadw Gweithgarwch<ph name="END_LINK" /> wedi'i ddiffodd yn ddiofyn. Pan fydd wedi'i ddiffodd, mae Google yn cadw'ch sgyrsiau am 3 diwrnod. Mae'n eu defnyddio i wneud i Gemini Apps weithio'n gywir, helpu i'w cadw'n ddiogel, a defnyddio'ch adborth i ddatrys problemau. Gallwch droi Cadw Gweithgarwch ymlaen i helpu i wella AI Google i bawb.</translation>
-<translation id="8680786875305615692">Helpwch i wella diogelwch ar y we i bawb</translation>
 <translation id="8680787084697685621">Mae manylion mewngofnodi'r cyfrif yn hen.</translation>
 <translation id="868648444055742370">Ni chaniateir i "<ph name="SITE_DOMAIN" />" gael mynediad at eich meicroffon</translation>
 <translation id="8690752723634292147">Cadarnhewch eich bod am ei ddileu</translation>
@@ -2579,7 +2573,6 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="8888595487174963247">Tynnu'r Atgoffwr</translation>
 <translation id="8890516388109605451">Ffynonellau</translation>
 <translation id="8893208530912252670">Fideos</translation>
-<translation id="8898822736010347272">Yn anfon cyfeiriadau URL o rai tudalennau rydych yn ymweld â nhw, gwybodaeth system gyfyngedig, a rhywfaint o gynnwys tudalen at Google, i helpu i ddarganfod bygythiadau newydd ac i amddiffyn pawb ar y we.</translation>
 <translation id="890009681345348416">40+ cyfrinair wedi'u llenwi'n awtomatig</translation>
 <translation id="8900845556227858314">Ap Pori</translation>
 <translation id="890565330728586731">Nôl</translation>
@@ -2610,6 +2603,7 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="8976414606286374109">Mae cardiau yn cael eu cadw i'ch Cyfrif Google.</translation>
 <translation id="8981454092730389528">Rheolaethau Gweithgarwch Google</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, gwefan wedi'i phinio</translation>
+<translation id="8989779557457435460">Rhannu'r tab presennol yn ddiofyn</translation>
 <translation id="8990960056509724223">Nid oedd modd cadw'r ffeil oherwydd polisïau eich sefydliad</translation>
 <translation id="8998289560386111590">Dim ar gael ar eich dyfais</translation>
 <translation id="9003677638446136377">Gwirio eto</translation>

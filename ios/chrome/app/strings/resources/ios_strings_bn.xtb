@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">Safari থেকে আপনার ডেটা নিয়ে আসুন</translation>
 <translation id="2526166285241366046">পাসওয়ার্ড সেভ করুন</translation>
 <translation id="2529021024822217800">সবকটি খুলুন</translation>
-<translation id="2530932541542751783">এই সেটিংয়ে কোনও সমস্যা হয়েছে। Chrome ও iPadOS আপডেট ও রিস্টার্ট করে আবার চেষ্টা করুন। এই সমস্যা হতে থাকলে, আপনার iPad-এ এই সেটিং কাজ নাও করতে পারে।</translation>
 <translation id="2536991091671391962">যেকোনও ডিভাইসে আপনি সেভ করা পাসওয়ার্ড ব্যবহার করতে পারবেন। এটি <ph name="EMAIL" />-এর Google পাসওয়ার্ড ম্যানেজার বিকল্পে সেভ করা আছে।</translation>
 <translation id="2538103551183528357">লুকানো আছে, পাসওয়ার্ড</translation>
 <translation id="2538705697765638552">আপনার তথ্য সেভ করুন এবং Google প্রোডাক্ট জুড়ে ফর্ম পূরণ করার মতো কাজগুলি আরও দ্রুত সেরে ফেলুন। আপনি <ph name="USER_EMAIL" />-এর জন্য Google Wallet-এ নিজের তথ্য ম্যানেজ করতে পারবেন।</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">ভিজ্যুয়ালাইজ ও এডিট করুন</translation>
 <translation id="3485558910355485767">নতুন ছদ্মবেশী উইন্ডো</translation>
 <translation id="3488501490964659223">ট্যাব বন্ধ করা এবং ব্রাউজ করা ডেটা মুছে দেওয়া হয়েছে। আপনি সাইন-আউট হয়ে গেছেন</translation>
-<translation id="3490396108106323715">বর্তমান ট্যাব শেয়ার করুন</translation>
 <translation id="3493531032208478708">প্রস্তাবিত কন্টেন্ট সম্পর্কে <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="349446645805573740">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" কোথায় সেভ করবেন তা বেছে নিন</translation>
 <translation id="3504377992102007712">সেটিংস</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">ছবি লোড করা যায়নি</translation>
 <translation id="3565930036634619844">ট্যাব। <ph name="NUMBER_OF_TABS" />টির মধ্যে <ph name="TAB_INDEX" /> নম্বর।</translation>
 <translation id="3567168891086460374">অন্যভাবে সেভ করুন</translation>
-<translation id="3572503683475187385">আপনি নতুন চ্যাট শুরু করলে, বর্তমান ট্যাবটি Gemini-র সাথে শেয়ার করা হয়। আপনি Gemini-র সাথে কোনও ট্যাব শেয়ার করলে, সেটির কন্টেন্ট ও URL Google-কে পাঠানো হয়। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">আপনার Google অ্যাকাউন্টে</translation>
 <translation id="3575234738189584619">Lens-এর মাধ্যমে সার্চ করুন</translation>
 <translation id="3575426792457739946">এই তালিকাতে লোড করা সব প্রোফাইল আছে।</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">সহায়তা দেখান</translation>
 <translation id="4095483462103784441">নতুন ট্যাব গ্রুপ তৈরি করুন</translation>
 <translation id="4099756562043439968">একটি রিমাইন্ডার সেট করুন</translation>
-<translation id="4108998448622696017">কোনও ঝুঁকিপূর্ণ ঘটনা ঘটলে সেটি শনাক্ত করে আপনাকে সতর্ক করা হয়।</translation>
 <translation id="4111985840824673503">সব পড়া হয়েছে হিসেবে চিহ্নিত করুন</translation>
 <translation id="411254640334432676">ডাউনলোড করা যায়নি।</translation>
 <translation id="4112644173421521737">Search</translation>
@@ -1169,6 +1165,7 @@
 <translation id="4658335131052370646">সেভ করুন</translation>
 <translation id="465947902531722727">প্রোফাইল পরিবর্তন করুন</translation>
 <translation id="466307903888586355">আপনার প্রতিষ্ঠানের মাধ্যমে ফাইল সেভ করার সুবিধা ব্লক করা হয়েছে</translation>
+<translation id="4665303625242639572"><ph name="PAGE_TITLE" /> বন্ধ করুন</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">আপনার সংস্থার নিয়ম অনুযায়ী আপনাকে ব্যক্তিগত মোডে ব্রাউজ করতে হবে। ছদ্মবেশী মোডে ট্যাব গ্রুপ সিঙ্ক করা হয় না।
 <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
@@ -1286,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">ট্যাব গ্রুপের রঙ <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">পাসওয়ার্ড কপি করুন</translation>
+<translation id="5007392906805964215">পর্যালোচনা করুন</translation>
 <translation id="5009127379503001909">ব্রাউজ করতে থাকুন</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653"><ph name="USER_EMAIL" />-এ পাঠান</translation>
@@ -1939,7 +1937,6 @@
 <translation id="6938212956536472404">এই ট্যাব শেয়ার করা যাবে না</translation>
 <translation id="6945221475159498467">নির্বাচন</translation>
 <translation id="6946722113367118030">চিন্তা করা</translation>
-<translation id="6947751977892029882">এই সেটিংয়ে কোনও সমস্যা হয়েছে। Chrome ও iOS আপডেট করে রিস্টার্ট করুন এবং আবার চেষ্টা করুন। এই সমস্যা চলতে থাকলে, আপনার iPhone-এ এই সেটিং কাজ নাও করতে পারে।</translation>
 <translation id="6950522403736391608">লুকানো আছে</translation>
 <translation id="6957084631403333422">ফোকাস করা নতুন ট্যাব পৃষ্ঠা ব্যবহার করে দেখুন</translation>
 <translation id="695965663642079255">আরও দ্রুত চেক-আউট করতে পেমেন্টের তথ্য সেভ ও ম্যানেজ করুন</translation>
@@ -2190,7 +2187,6 @@
 <translation id="7758789811447313947">ভায়োলেট থিম</translation>
 <translation id="7759809451544302770">ঐচ্ছিক</translation>
 <translation id="7765158879357617694">সরান</translation>
-<translation id="7767651976342854115">ডেটা ব্যবহারের সেটিংয়ে সমস্যা হয়েছে।</translation>
 <translation id="7768507955883790804">আপনি কোনও সাইট খুললে সেটি অটোমেটিক এই সেটিং মেনে কাজ করবে</translation>
 <translation id="7772032839648071052">পাসফ্রেজ নিশ্চিত করুন</translation>
 <translation id="7772948288262733182">আপনাকে আবার স্বাগত জানাই</translation>
@@ -2503,7 +2499,6 @@
 <translation id="8674716540979958118">আপনার চুরি হয়ে যাওয়া পাসওয়ার্ড আছে।</translation>
 <translation id="8679900250380464358">পড়ার তালিকায় যোগ করুন</translation>
 <translation id="8680643216091361291">ডিফল্ট হিসেবে আপনার <ph name="BEGIN_LINK" />অ্যাক্টিভিটি সেভ করে রাখুন<ph name="END_LINK" /> সংক্রান্ত সেটিং বন্ধ করা আছে। এটি বন্ধ থাকলে, Google আপনার চ্যাট ৩ দিন সেভ করে রাখে। Gemini অ্যাপকে সঠিকভাবে কাজ করার ব্যাপারে সাহায্য করতে, এটি নিরাপদ রাখতে এবং আপনার মতামত ব্যবহার করে সমস্যার সমাধান করতে Google আপনার চ্যাট ব্যবহার করে। Google AI-কে সকলের জন্য সহায়ক করে তুলতে, আপনি 'অ্যাক্টিভিটি সেভ করে রাখুন' সেটিং চালু করতে পারেন।</translation>
-<translation id="8680786875305615692">সকলের জন্য ওয়েবে নিরাপত্তা উন্নত করতে সাহায্য করে</translation>
 <translation id="8680787084697685621">অ্যাকাউন্ট সাইন-ইনের বিশদ বিবরণের তারিখ সীমার বাইরে৷</translation>
 <translation id="868648444055742370">"<ph name="SITE_DOMAIN" />"-কে আপনার মাইক্রোফোন অ্যাক্সেস করার অনুমতি দেওয়া হয়নি</translation>
 <translation id="8690752723634292147">মুছে দেওয়ার বিষয়টি কনফার্ম করুন</translation>
@@ -2579,7 +2574,6 @@
 <translation id="8888595487174963247">রিমাইন্ডার সরান</translation>
 <translation id="8890516388109605451">উৎস</translation>
 <translation id="8893208530912252670">ভিডিও</translation>
-<translation id="8898822736010347272">আপনার দেখা কিছু পৃষ্ঠার ইউআরএল, সীমিত সিস্টেম সম্পর্কিত তথ্য এবং কিছু পৃষ্ঠার কন্টেন্ট Google-এর কাছে পাঠান যাতে নতুন ঝুঁকি চিহ্নিত করে ওয়েব ব্যবহারকারীর প্রত্যেককে সুরক্ষিত রাখা যায়।</translation>
 <translation id="890009681345348416">৪০টির বেশি পাসওয়ার্ড অটোফিল করা হয়েছে</translation>
 <translation id="8900845556227858314">ব্রাউজার অ্যাপ</translation>
 <translation id="890565330728586731">ফিরে যান</translation>
@@ -2610,6 +2604,7 @@
 <translation id="8976414606286374109">কার্ড আপনার Google অ্যাকাউন্টে সেভ করা হয়।</translation>
 <translation id="8981454092730389528">Google অ্যাক্টিভিটির নিয়ন্ত্রণগুলি</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, পিন করা সাইট</translation>
+<translation id="8989779557457435460">ডিফল্ট হিসেবে বর্তমান ট্যাব শেয়ার করুন</translation>
 <translation id="8990960056509724223">আপনার প্রতিষ্ঠানের নীতির কারণে ফাইল সেভ করা যায়নি</translation>
 <translation id="8998289560386111590">আপনার ডিভাইসে উপলভ্য নয়</translation>
 <translation id="9003677638446136377">আবার পরীক্ষা করুন</translation>

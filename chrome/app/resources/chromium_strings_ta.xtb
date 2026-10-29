@@ -23,7 +23,6 @@
 <translation id="1185134272377778587">Chromium அறிமுகம்</translation>
 <translation id="1186645291482254714">உங்கள் மொபைலில் Chromium மூலம் விலைக் கண்காணிப்பு விழிப்பூட்டல்களைப் பெறுங்கள்</translation>
 <translation id="1203500561924088507">நிறுவியதற்கு நன்றி. <ph name="BUNDLE_NAME" /> ஐப் பயன்படுத்துவதற்கு முன் உலாவியை மீண்டும் தொடங்க வேண்டும்.</translation>
-<translation id="1222365723190436821"><ph name="IMPORTANT_UPDATE" /> நிலுவையில் உள்ளது. உங்கள் பிரவுசிங்கைப் பாதுகாப்பாக வைத்திருக்க, அடுத்த முறை நீங்கள் <ph name="IDLE_DURATION" /> செயலற்ற நிலையில் இருக்கும்போது Chromium புதுப்பிக்கப்படும்.</translation>
 <translation id="1232234696885483911">படத் தேடலைத் திறக்கும்போது பக்கத் தலைப்பு, URL, PDFகள் உள்ளிட்ட உள்ளடக்கம் ஆகியவை தானாகவே சேவையகத்திற்கு அனுப்பப்படும். <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">உள்நுழைந்திருக்கும்போது உங்கள் Google கணக்கில் உள்ள கடவுச்சொற்களையும், மேலும் பலவற்றையும் நீங்கள் Chromiumமில் பயன்படுத்தலாம். இதை மாற்ற, “Chromiumமில் உங்கள் கணக்கு” என்பதற்குச் செல்லவும்.</translation>
 <translation id="1244381985120794049">Mac மெனு பட்டியில் Chromiumமில் Geminiயைக் காட்டு</translation>
@@ -120,7 +119,7 @@
 <translation id="2190166659037789668">புதுப்பிப்புச் சரிபார்ப்புப் பிழை: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Chromiumமில் இருந்து கணக்கை அகற்று</translation>
 <translation id="2201788217099588893">சிறந்த ஷாப்பிங் கருவிகளை எங்கிருந்தும் அணுக Chromium ஆப்ஸைப் பயன்படுத்தலாம்</translation>
-<translation id="2209877494277346829">பிற ஆப்ஸில் இருந்து Chromiumமை ஐசோலேட் செய்</translation>
+<translation id="2209877494277346829">பிற ஆப்ஸில் இருந்து Chromiumமைத் தனிப்படுத்து</translation>
 <translation id="2210502920229141283">iOSஸிற்கான Chromiumமில் மேம்பட்ட பாதுகாப்பான பிரவுசிங் மூலம் எங்கும் பாதுகாப்பாக இருக்கலாம்</translation>
 <translation id="2210682093923538346">ஆபத்தான தளம். அறிவிப்புகள் அனுமதியை Chromium அகற்றிவிட்டது.</translation>
 <translation id="2236949375853147973">எனது செயல்பாடுகள்</translation>
@@ -149,6 +148,7 @@
 <translation id="2483889755041906834">Chromium இல்</translation>
 <translation id="2485422356828889247">நிறுவல் நீக்கு</translation>
 <translation id="2513154137948333830">மறுதொடக்கம் செய்ய வேண்டும்: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2521391734665471391">Google Search AI மோடை மூடும்</translation>
 <translation id="2542968102051442371">படத் தேடல் மூலம் வார்த்தையைத் தேர்ந்தெடுக்கலாம்</translation>
 <translation id="2554739539410784893">ஏற்கெனவே இருக்கும் கடவுச்சொற்களை Chromium மாற்ற விரும்புகிறது. இதை அனுமதிக்க உங்கள் Windows கடவுச்சொல்லை டைப்செய்யவும்.</translation>
 <translation id="2560420686485554789">ஃபைல்களைப் பதிவிறக்க, Chromiumக்குச் சேமிப்பிட அணுகல் தேவை</translation>
@@ -236,7 +236,6 @@
 <translation id="3286538390144397061">இப்போது மறுதொடக்கம் செய்க</translation>
 <translation id="328888136576916638">Google API விசைகள் காணப்படவில்லை. Chromium இன் சில செயல்பாடுகள் முடக்கப்படும்.</translation>
 <translation id="3296368748942286671">Chromium ஐ மூடியபிறகு, பின்புலப் பயன்பாடுகளைத் தொடர்ந்து இயக்கு</translation>
-<translation id="3300632735252839402">நீங்கள் பயன்படுத்தாதபோது Chromium புதுப்பிக்கப்படும்</translation>
 <translation id="3313189106987092621">பாதுகாப்பற்ற இணைப்பைப் பயன்படுத்தி ஒரு தளத்தை ஏற்றும் முன்னர் Chromium உங்களை எச்சரிக்கும்</translation>
 <translation id="3316771292331273802">ஆனால், Chromium சாளரங்கள் அனைத்தையும் மூடும்போது Chromiumமில் உள்நுழைந்திருக்கும் உங்களின் Google கணக்கைத் தவிர பெரும்பாலான தளங்களில் இருந்து வெளியேற்றப்படுவீர்கள். தளங்கள் உங்களை நினைவில் வைத்துக்கொள்ள அனுமதிக்க, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">தேடல் பகுதியின் மேல் வலது மூலை: வலது <ph name="RIGHT" />%, மேல் <ph name="TOP" />%</translation>
@@ -245,7 +244,6 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">ஏற்கெனவே உள்ள Chromium சுயவிவரத்திற்கு மாறவா?</translation>
 <translation id="3412460710772753638">இந்தச் சாதனத்தில் உள்ள Password Managerரில்</translation>
-<translation id="3425452599984451640">Chromiumமைப் புதுப்பிக்க வேண்டும்</translation>
 <translation id="3427159664004296878"><ph name="DEVICE" /> சாதனத்தில் உள்ள புக்மார்க்குகளையும் மேலும் பலவற்றையும் பெற Chromiumமில் உள்நுழையுங்கள்</translation>
 <translation id="3438772217992559640">படத் தேடல் மூலம் இந்தப் பக்கத்தைத் தேடுங்கள்</translation>
 <translation id="3455907671758333080">உங்கள் மொபைலில் Chromium மூலம் மேம்பட்ட பாதுகாப்பான பிரவுசிங்கைப் பெறுங்கள்</translation>

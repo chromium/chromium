@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">Увезите податке из Safari-ја</translation>
 <translation id="2526166285241366046">Сачувај лозинку</translation>
 <translation id="2529021024822217800">Отвори све</translation>
-<translation id="2530932541542751783">Дошло је до грешке са овим подешавањем. Ажурирајте и рестартујте Chrome и iPadOS, па пробајте поново. Ако се ова грешка и даље буде јављала, iPad можда не подржава ово подешавање.</translation>
 <translation id="2536991091671391962">Можете да користите сачуване лозинке на било ком уређају. Чувају се у Google менаџеру лозинки за <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Скривена лозинка</translation>
 <translation id="2538705697765638552">Сачувајте информације и брже обављајте ствари, попут попуњавања образаца у Google производима. Можете да управљате информацијама у Google новчанику за: <ph name="USER_EMAIL" />.</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">Визуализујте и измените</translation>
 <translation id="3485558910355485767">Нови прозор без архивирања</translation>
 <translation id="3488501490964659223">Картице су затворене и подаци прегледања су избрисани. Одјављени сте</translation>
-<translation id="3490396108106323715">Дели актуелну картицу</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /> о предложеном садржају</translation>
 <translation id="349446645805573740">Одаберите где желите да сачувате „<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />“</translation>
 <translation id="3504377992102007712">Подешавања</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">Учитавање слика није успело</translation>
 <translation id="3565930036634619844">Картица. <ph name="TAB_INDEX" /> од <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Сачувај други начин</translation>
-<translation id="3572503683475187385">Актуелна картица се дели са Gemini-јем када започнете нови чет. Када делите картицу са Gemini-јем, њен садржај и URL шаљу се Google-у. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">На Google налогу</translation>
 <translation id="3575234738189584619">Претражујте помоћу Објектива</translation>
 <translation id="3575426792457739946">Ова листа садржи све учитане профиле.</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">Приказује помоћ</translation>
 <translation id="4095483462103784441">Направи нову групу картица</translation>
 <translation id="4099756562043439968">Подеси подсетник</translation>
-<translation id="4108998448622696017">Открива опасне догађаје када се догоде и упозорава вас на њих.</translation>
 <translation id="4111985840824673503">Означи све као прочитано</translation>
 <translation id="411254640334432676">Преузимање није успело.</translation>
 <translation id="4112644173421521737">Претражи</translation>
@@ -1169,6 +1165,7 @@
 <translation id="4658335131052370646">Сачувај</translation>
 <translation id="465947902531722727">Промени профил</translation>
 <translation id="466307903888586355">Организација блокира чување фајлова</translation>
+<translation id="4665303625242639572">Затвори: <ph name="PAGE_TITLE" /></translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Организација захтева да прегледате приватно. Групе картица се не синхронизују у режиму без архивирања.
 <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
@@ -1286,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Боја групе картица <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Копирање лозинке</translation>
+<translation id="5007392906805964215">Прегледај</translation>
 <translation id="5009127379503001909">Настави да прегледаш</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Пошаљите на <ph name="USER_EMAIL" /></translation>
@@ -1938,7 +1936,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6938212956536472404">Ова картица не може да се дели</translation>
 <translation id="6945221475159498467">Изабери</translation>
 <translation id="6946722113367118030">Размишља</translation>
-<translation id="6947751977892029882">Дошло је до грешке са овим подешавањем. Ажурирајте и рестартујте Chrome и iOS, па пробајте поново. Ако се ова грешка и даље буде јављала, iPhone можда не подржава ово подешавање.</translation>
 <translation id="6950522403736391608">Скривено</translation>
 <translation id="6957084631403333422">Испробајте фокусирану страницу нове картице</translation>
 <translation id="695965663642079255">Сачувајте информације о плаћању и управљајте њима да бисте брже плаћали</translation>
@@ -2189,7 +2186,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7758789811447313947">Љубичаста тема</translation>
 <translation id="7759809451544302770">Опционално</translation>
 <translation id="7765158879357617694">Премести</translation>
-<translation id="7767651976342854115">Дошло је до грешке при подешавању коришћења података.</translation>
 <translation id="7768507955883790804">Сајтови аутоматски прате ово подешавање када их посетите</translation>
 <translation id="7772032839648071052">Потврди приступну фразу</translation>
 <translation id="7772948288262733182">Добро дошли назад</translation>
@@ -2502,7 +2498,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8674716540979958118">Имате угрожене лозинке.</translation>
 <translation id="8679900250380464358">Додај на Листу за читање</translation>
 <translation id="8680643216091361291">Подешавање <ph name="BEGIN_LINK" />Чувај активности<ph name="END_LINK" /> подразумевано је искључено. Кад је искључено, Google чува четове 3 дана. Користи их да би Gemini апликације правилно радиле, да би биле безбедне и да би користио повратне информације за решавање проблема. Можете да укључите чување активности да бисте помогли да се Google вештачка интелигенција побољша за свакога.</translation>
-<translation id="8680786875305615692">Побољшајте безбедност на вебу за свакога</translation>
 <translation id="8680787084697685621">Детаљи за пријављивање на налог су застарели.</translation>
 <translation id="868648444055742370">Домену <ph name="SITE_DOMAIN" /> није дозвољено да приступа микрофону</translation>
 <translation id="8690752723634292147">Потврда брисања</translation>
@@ -2578,7 +2573,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8888595487174963247">Уклони подсетник</translation>
 <translation id="8890516388109605451">Извори</translation>
 <translation id="8893208530912252670">Видео снимци</translation>
-<translation id="8898822736010347272">Шаље Google-у URL-ове неких страница које посећујете, ограничене информације о систему и одређени садржај страница да би се откриле нове претње и заштитили сви широм веба.</translation>
 <translation id="890009681345348416">Више од 40 лозинки је аутоматски попуњено</translation>
 <translation id="8900845556227858314">Browser App (апликација прегледача)</translation>
 <translation id="890565330728586731">Назад</translation>
@@ -2609,6 +2603,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8976414606286374109">Картице се чувају на Google налогу.</translation>
 <translation id="8981454092730389528">Google контроле активности</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, закачен сајт</translation>
+<translation id="8989779557457435460">Подразумевано дели актуелну картицу</translation>
 <translation id="8990960056509724223">Чување фајла није могуће због смерница организације</translation>
 <translation id="8998289560386111590">Није доступно на вашем уређају</translation>
 <translation id="9003677638446136377">Проверите поново</translation>

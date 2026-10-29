@@ -337,6 +337,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="2332515770639153015">Күшейтілген Safe Browsing қосулы</translation>
 <translation id="233375395665273385">Жою және шығу</translation>
 <translation id="2334275697832662087">Chrome-ның жасанды интеллектіге негізделген қауіпсіздік жүйесі интернеттегі қауіптерден қорғап, браузерді сенімді түрде пайдалануға мүмкіндік береді.</translation>
+<translation id="2335758110242123814">Топты ашу</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> орнатылмады.</translation>
 <translation id="2349710944427398404">Chrome пайдаланатын жалпы деректер, соның ішінде аккаунттар, бетбелгілер және сақталған параметрлер</translation>
 <translation id="2354001756790975382">Басқа бетбелгілер</translation>
@@ -390,7 +391,6 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="2532336938189706096">Веб-көрініс</translation>
 <translation id="2535807170289627159">Барлық қойынды</translation>
 <translation id="2536728043171574184">Бұл беттің желіден тыс күйдегі көшірмесі көрсетілуде</translation>
-<translation id="2537574774089209541">Шолған кезде, Gemini-ға оңай кіру үшін кейбір құралдар орны өзгертілді.</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, таңдалған, бекітілген, дыбысы өшірілген инкогнито қойындысы</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, қойынды</translation>
@@ -1037,6 +1037,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5096775069898886423">Қауіпсіз байланыстарға қолдау көрсетпейтін сайттарға кірер алдында ескертеді.</translation>
 <translation id="510275257476243843">1 сағат қалды</translation>
 <translation id="5105442806410269908">Басқа Google деректерін басқару</translation>
+<translation id="5111326646107464148">Топты жаңа терезеде ашу</translation>
 <translation id="5114895953710637392">Қолданба бойынша іріктеу парағы жабылды.</translation>
 <translation id="5115811374190515607">жаңа орны: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Хабарлардағы, құжаттардағы және басқа қолданбалардағы сілтемелерді түртіп, Chrome браузерін кез келген уақытта пайдалана аласыз.</translation>
@@ -1606,6 +1607,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="72415438529550637">Құпия сөз ұсынысы жабық.</translation>
 <translation id="724510009481365878">Бұл бет басып шығарылмай жатыр.</translation>
 <translation id="7248671827512403053">Қолданба</translation>
+<translation id="7253205084599155458">Оңай кіру үшін навигация мен құралдарды төменгі құралдар тақтасында көрсету</translation>
 <translation id="7253951228444156601">Құпия сөздер тексерілуде…</translation>
 <translation id="7265857422443387781">Қойындыны Google Lens арқылы іздеу <ph name="BEGIN_NEW" />Жаңа<ph name="END_NEW" /></translation>
 <translation id="727288900855680735"><ph name="ONE_TIME_CODE" /> коды <ph name="ORIGIN" /> сайтына жіберілсін бе?</translation>
@@ -1618,7 +1620,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7291910923717764901">Бұл бетке кескін сипаттамалары енгізілген.</translation>
 <translation id="7293429513719260019">Тілді таңдау</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, бөлісудің таңдалған, бекітілген қойындысы</translation>
-<translation id="7304003340539141201">Gemini-дан қойындылар мен тапсырмаларға қатысты көмек сұраңыз.</translation>
 <translation id="7311244614769792472">Ешбір нәтиже табылмады</translation>
 <translation id="7314734791127433392">Құпия сөздерді тексеру мүмкін емес</translation>
 <translation id="7324354302972299151">"Do Not Track" сұрауын жіберу</translation>
@@ -1754,6 +1755,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7821130663268546430">Қойынды ауыстырғышта барлық ашық қойынды болады</translation>
 <translation id="7822705602465980873">Аккаунтқа кірген кезде, осы деректер сізді Google қызметтерінде қорғау, мысалы, қауіпсіздікке қатысты оқиғадан кейін Gmail қызметінде қорғанысты жақсарту үшін Google аккаунтыңызбен байланыстырылады.</translation>
 <translation id="7824665136384946951">Ұйымыңыз Safe Browsing функциясын өшірді.</translation>
+<translation id="782590969421016895">Ағымдағы беттерді пайдалану</translation>
 <translation id="7825973332242257878">Қойындылар топтары</translation>
 <translation id="7845155831233417403">Көп дегенде жалпы <ph name="MAX_INSTANCE_COUNT" /> терезе ашуға болады. Жалғастыру үшін терезені жабыңыз.</translation>
 <translation id="7846161022626028328">Қате пайда болды. Қайталап көріңіз.</translation>
@@ -1986,7 +1988,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="8694622119922491927"><ph name="APP_NAME" /> браузеріне бұл сайтта адам интерфейсі құрылғыларын (HID) пайдалану рұқсаты қажет. Бұл параметрді кейінірек "Параметрлер" &gt; "Қолданбалар" &gt; "Арнайы қолданба рұқсаты" бөлімінен өзгерте аласыз.</translation>
 <translation id="8696297579102085705">Құрылғыға жіберу</translation>
 <translation id="8699120352855309748">Бұл тілдерді аударуды ұсынбау</translation>
-<translation id="8700565880437506364">Chrome-дағы Gemini-ды ұсынамыз</translation>
 <translation id="8712637175834984815">Түсінікті</translation>
 <translation id="8715286883001906001">Google аккаунтыңыздағы құпиясөздерді күшейтіңіз</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> жабылады.</translation>

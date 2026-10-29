@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">‏‫Safari سے اپنا ڈیٹا درآمد کریں</translation>
 <translation id="2526166285241366046">پاس ورڈ محفوظ کریں</translation>
 <translation id="2529021024822217800">تمام کھولیں</translation>
-<translation id="2530932541542751783">‏اس ترتیب کے ساتھ کچھ غلط ہو گیا۔ ‫Chrome اور iPadOS کو اپ ڈیٹ اور ری سٹارٹ کریں اور دوبارہ کوشش کریں۔ اگر یہ خرابی ہوتی رہتی ہے تو ہو سکتا ہے کہ آپ کا iPad اس ترتیب کو سپورٹ نہ کرے۔</translation>
 <translation id="2536991091671391962">‏آپ کسی بھی آلے پر محفوظ کردہ پاس ورڈز استعمال کر سکتے ہیں۔ وہ <ph name="EMAIL" /> کے Google پاس ورڈ مینیجر میں محفوظ ہوتے ہیں۔</translation>
 <translation id="2538103551183528357">مخفی، پاس ورڈ</translation>
 <translation id="2538705697765638552">‏اپنی معلومات محفوظ کریں اور Google پروڈکٹس پر فارمز پُر کرنے جیسے کام تیزی سے کریں۔ آپ <ph name="USER_EMAIL" /> کے لیے Google والٹ میں اپنی معلومات کا نظم کر سکتے ہیں۔</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">ویژوئلائز کریں اور ترمیم کریں</translation>
 <translation id="3485558910355485767">نئی پوشیدگی ونڈو</translation>
 <translation id="3488501490964659223">ٹیبز کو بند کر دیا گیا تھا اور براؤزنگ ڈیٹا کو حذف کر دیا گیا تھا آپ کو سائن آؤٹ کر دیا گیا</translation>
-<translation id="3490396108106323715">موجودہ ٹیب کا اشتراک کریں</translation>
 <translation id="3493531032208478708">تجویز کردہ مواد کے بارے میں <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="349446645805573740">منتخب کریں کہ "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" کو کہاں محفوظ کرنا ہے</translation>
 <translation id="3504377992102007712">ترتیبات</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">تصاویر لوڈ نہیں ہو سکیں</translation>
 <translation id="3565930036634619844">ٹیب۔ <ph name="NUMBER_OF_TABS" /> میں سے <ph name="TAB_INDEX" />۔</translation>
 <translation id="3567168891086460374">دوسرے طریقے سے محفوظ کریں</translation>
-<translation id="3572503683475187385">‏جب آپ نئی چیٹ شروع کرتے ہیں تو موجودہ ٹیب کا اشتراک Gemini کے ساتھ کیا جاتا ہے۔ جب آپ Gemini کے ساتھ کسی ٹیب کا اشتراک کرتے ہیں تو اس کے مواد اور URL کو Google کو بھیج دیا جاتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">‏آپ کے Google اکاؤنٹ میں</translation>
 <translation id="3575234738189584619">لینز کا استعمال کرتے ہوئے تلاش کریں</translation>
 <translation id="3575426792457739946">اس فہرست ميں تمام لوڈ کردہ پروفائلز شامل ہیں۔</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">مدد دکھائیں</translation>
 <translation id="4095483462103784441">نیا ٹیب گروپ تخلیق کریں</translation>
 <translation id="4099756562043439968">ایک یاد دہانی سیٹ کریں</translation>
-<translation id="4108998448622696017">جب خطرناک ایونٹس ہوتے ہیں تو ان کا پتہ لگا کر آپ کو ان کے بارے میں متنبہ کرتا ہے۔</translation>
 <translation id="4111985840824673503">سبھی کو پڑھا ہوا کے بطور نشان زد کریں</translation>
 <translation id="411254640334432676">ڈاؤن لوڈ ناکام ہوگیا۔</translation>
 <translation id="4112644173421521737">تلاش کریں</translation>
@@ -1169,6 +1165,7 @@
 <translation id="4658335131052370646">محفوظ کریں</translation>
 <translation id="465947902531722727">پروفائلز سوئچ کریں</translation>
 <translation id="466307903888586355">فائلز کو محفوظ کرنا آپ کی تنظیم نے مسدود کر دیا ہے</translation>
+<translation id="4665303625242639572">‫<ph name="PAGE_TITLE" /> بند کریں</translation>
 <translation id="4668929960204016307">،</translation>
 <translation id="4669618761237477717">آپ کی تنظیم چاہتی ہے کہ آپ نجی طور پر براؤز کریں۔ پوشیدگی وضع میں ٹیب گروپس کی مطابقت پذیری نہیں کی جاتی ہے۔
 <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
@@ -1286,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />، <ph name="EMAIL" />۔ <ph name="AI_TIER" />۔</translation>
 <translation id="4992255726304765516">ٹیب گروپ کا رنگ <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">پاس ورڈ کاپی کریں</translation>
+<translation id="5007392906805964215">جائزہ لیں</translation>
 <translation id="5009127379503001909">براؤز کرنا جاری رکھیں</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653"><ph name="USER_EMAIL" /> پر بھیجیں</translation>
@@ -1938,7 +1936,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6938212956536472404">اس ٹیب کا اشتراک نہیں کیا جا سکتا</translation>
 <translation id="6945221475159498467">منتخب کریں</translation>
 <translation id="6946722113367118030">فکر میں ڈوبا ہوا</translation>
-<translation id="6947751977892029882">‏اس ترتیب کے ساتھ کچھ غلط ہو گیا۔ ‫Chrome اور iOS کو اپ ڈیٹ اور ری سٹارٹ کریں اور دوبارہ کوشش کریں۔ اگر یہ خرابی ہوتی رہتی ہے تو ہو سکتا ہے کہ آپ کا iPhone اس ترتیب کو سپورٹ نہ کرے۔</translation>
 <translation id="6950522403736391608">پوشیدہ</translation>
 <translation id="6957084631403333422">ایک فوکسڈ نئے ٹیب کا صفحہ آزمائیں</translation>
 <translation id="695965663642079255">تیزی سے چیک آؤٹ کرنے کے لیے ادائیگی کی معلومات کو محفوظ کریں اور اس کا نظم کریں</translation>
@@ -2189,7 +2186,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7758789811447313947">بیگنی تھیم</translation>
 <translation id="7759809451544302770">اختیاری</translation>
 <translation id="7765158879357617694">منتقل کریں</translation>
-<translation id="7767651976342854115">ڈیٹا کے استعمال کی ترتیب میں ایک خرابی پیش آ گئی۔</translation>
 <translation id="7768507955883790804">آپ کے سائٹس کو ملاحظہ کرنے پر وہ خود کار طور پر اس ترتیب کی پیروی کرتی ہیں</translation>
 <translation id="7772032839648071052">پاس فریز کی توثیق کریں</translation>
 <translation id="7772948288262733182">پھر سے خوش آمدید</translation>
@@ -2502,7 +2498,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8674716540979958118">آپ کے پاس متاثرہ پاس ورڈز ہیں۔</translation>
 <translation id="8679900250380464358">پڑھنے کی فہرست میں شامل کریں</translation>
 <translation id="8680643216091361291">‏آپ کی <ph name="BEGIN_LINK" />سرگرمی برقرار رکھیں<ph name="END_LINK" /> کی ترتیب بطور ڈیفالٹ آف ہے۔ جب یہ آف ہو تو Google آپ کی چیٹس کو 3 دنوں کے لیے محفوظ کرتا ہے۔ یہ Gemini ایپس کو صحیح طریقے سے کام کرنے، انہیں محفوظ رکھنے میں مدد کرنے اور مسائل کو حل کرنے کی غرض سے آپ کے تاثرات کا استعمال کرنے کے لیے ان کا استعمال کرتا ہے۔ آپ سبھی کیلئے Google AI کو بہتر بنانے میں مدد کرنے کے لیے 'سرگرمی برقرار رکھیں' کو آن کر سکتے ہیں۔</translation>
-<translation id="8680786875305615692">سبھی کے لیے ویب پر سیکیورٹی کو بہتر بنانے میں مدد کریں</translation>
 <translation id="8680787084697685621">اکاؤنٹ سائن ان کی تفصیلات پرانی ہیں۔</translation>
 <translation id="868648444055742370">‫"<ph name="SITE_DOMAIN" />" کو آپ کے مائیکروفون تک رسائی کی اجازت نہیں ہے</translation>
 <translation id="8690752723634292147">حذف کرنے کی توثیق کریں</translation>
@@ -2578,7 +2573,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8888595487174963247">یاد دہانی ہٹائیں</translation>
 <translation id="8890516388109605451">مآخذ</translation>
 <translation id="8893208530912252670">ویڈیوز</translation>
-<translation id="8898822736010347272">‏آپ کے ملاحظہ کئے جانے والے چند صفحات کے URLs، سسٹم کی محدود معلومات اور صفحے کا کچھ مواد Google کو بھیجتا ہے تاکہ نئے خطرات کا پتا لگانے اور ویب پر موجود سبھی کی حفاظت میں مدد مل سکے۔</translation>
 <translation id="890009681345348416">‫40 سے زیادہ پاس ورڈز آٹو فل ہو گئے</translation>
 <translation id="8900845556227858314">براؤزر ایپ</translation>
 <translation id="890565330728586731">پیچھے</translation>
@@ -2609,6 +2603,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8976414606286374109">‏کارڈز آپ کے Google اکاؤنٹ میں محفوظ ہوتے ہیں۔</translation>
 <translation id="8981454092730389528">‏Google سرگرمی کنٹرولز</translation>
 <translation id="8988107725234939347">‫<ph name="WEBSITE_TITLE" />، پن کردہ سائٹ</translation>
+<translation id="8989779557457435460">بطور ڈیفالٹ موجودہ ٹیب کا اشتراک کریں</translation>
 <translation id="8990960056509724223">آپ کی تنظیم کی پالیسیوں کی وجہ سے فائل محفوظ نہیں ہو سکی</translation>
 <translation id="8998289560386111590">آپ کے آلے پر دستیاب نہیں ہے</translation>
 <translation id="9003677638446136377">دوبارہ چیک کریں</translation>

@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">Pakia data yako kutoka Safari</translation>
 <translation id="2526166285241366046">Hifadhi nenosiri</translation>
 <translation id="2529021024822217800">Fungua Zote</translation>
-<translation id="2530932541542751783">Hitilafu fulani imetokea katika mipangilio hii. Sasisha, zima kisha uwashe Chrome na iPadOS, kisha ujaribu tena. Hitilafu hii ikiendelea kutokea, huenda iPad yako haitumii mipangilio hii.</translation>
 <translation id="2536991091671391962">Unaweza kutumia manenosiri uliyohifadhi kwenye kifaa chochote. Manenosiri hayo huhifadhiwa kwenye Kidhibiti cha Manenosiri cha Google kwa ajili ya <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Nenosiri lililofichwa</translation>
 <translation id="2538705697765638552">Hifadhi taarifa zako ili ufanikishe mambo kwa haraka, kama vile kujaza fomu kwenye bidhaa za Google. Unaweza kudhibiti maelezo yako kwenye Pochi ya Google katika <ph name="USER_EMAIL" />.</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">Kubuni picha na kuhariri</translation>
 <translation id="3485558910355485767">Dirisha Fiche Jipya</translation>
 <translation id="3488501490964659223">Vichupo vilifungwa na data yako ya kuvinjari ilifutwa. Uliondolewa kwenye akaunti</translation>
-<translation id="3490396108106323715">Ruhusu kichupo unachotumia sasa kifikiwe</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /> kuhusu maudhui yaliyopendekezwa</translation>
 <translation id="349446645805573740">Chagua utakakohifadhi "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
 <translation id="3504377992102007712">Mipangilio</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">Imeshindwa kupakia picha</translation>
 <translation id="3565930036634619844">Kichupo. <ph name="TAB_INDEX" /> kati ya <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Hifadhi kwa njia nyingine</translation>
-<translation id="3572503683475187385">Kichupo unachotumia sasa kinaruhusiwa kufikiwa na Gemini unapoanzisha gumzo jipya. Ukiruhusu Gemini ifikie kichupo, maudhui na URL ya kichupo hutumwa kwenda Google. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Katika Akaunti yako ya Google</translation>
 <translation id="3575234738189584619">Tafuta ukitumia Lenzi</translation>
 <translation id="3575426792457739946">Orodha hii inajumuisha wasifu wote uliopakiwa.</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">Onyesha Usaidizi</translation>
 <translation id="4095483462103784441">Unda kikundi kipya cha vichupo</translation>
 <translation id="4099756562043439968">Weka Kikumbusho</translation>
-<translation id="4108998448622696017">Hutambua na kukuonya kuhusu matukio hatari yanapotendeka.</translation>
 <translation id="4111985840824673503">Weka alama kuwa umesoma zote</translation>
 <translation id="411254640334432676">Upakuaji haujafaulu.</translation>
 <translation id="4112644173421521737">Tafuta</translation>
@@ -1169,6 +1165,7 @@
 <translation id="4658335131052370646">Hifadhi</translation>
 <translation id="465947902531722727">Badili Wasifu</translation>
 <translation id="466307903888586355">Shirika lako limezuia hatua ya kuhifadhi faili</translation>
+<translation id="4665303625242639572">Funga <ph name="PAGE_TITLE" /></translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Shirika lako linahitaji uvinjari kwa faragha. Vikundi vya vichupo havijasawazishwa katika hali ya kutumia Faraghani.
 <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
@@ -1286,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Rangi ya <ph name="COLOR" /> ya kikundi cha vichupo</translation>
 <translation id="5005498671520578047">Nakili nenosiri</translation>
+<translation id="5007392906805964215">Maoni</translation>
 <translation id="5009127379503001909">Endelea kuvinjari</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Tuma kwa <ph name="USER_EMAIL" /></translation>
@@ -1938,7 +1936,6 @@ Ili uendelee kwenye kompyuta yako, badilisha utumie <ph name="OTHER_EMAIL" />. U
 <translation id="6938212956536472404">Huwezi kutuma kichupo hiki</translation>
 <translation id="6945221475159498467">Chagua</translation>
 <translation id="6946722113367118030">Kutafakari</translation>
-<translation id="6947751977892029882">Hitilafu fulani imetokea katika mipangilio hii. Sasisha, zima kisha uwashe Chrome na iOS, kisha ujaribu tena. Hitilafu hii ikiendelea kutokea, huenda iPhone yako haitumii mipangilio hii.</translation>
 <translation id="6950522403736391608">Zilizofichwa</translation>
 <translation id="6957084631403333422">Jaribu ukurasa mpya wa kichupo ulioangaziwa</translation>
 <translation id="695965663642079255">Hifadhi na udhibiti maelezo ya malipo ili ulipe kwa haraka zaidi</translation>
@@ -2189,7 +2186,6 @@ Unaweza kuanzisha upya wakati wowote.</translation>
 <translation id="7758789811447313947">Mandhari ya urujuani</translation>
 <translation id="7759809451544302770">Ya hiari</translation>
 <translation id="7765158879357617694">Sogeza</translation>
-<translation id="7767651976342854115">Hitilafu imetokea kwenye mipangilio ya matumizi ya data.</translation>
 <translation id="7768507955883790804">Tovuti hufuata mipangilio hii kiotomatiki unapozitembelea</translation>
 <translation id="7772032839648071052">Thibitisha kaulisiri</translation>
 <translation id="7772948288262733182">Karibu tena</translation>
@@ -2502,7 +2498,6 @@ Unaweza kuanzisha upya wakati wowote.</translation>
 <translation id="8674716540979958118">Una manenosiri yaliyoathiriwa.</translation>
 <translation id="8679900250380464358">Weka kwenye Orodha ya Kusoma</translation>
 <translation id="8680643216091361291">Mipangilio yako ya <ph name="BEGIN_LINK" />Kuhifadhi Shughuli<ph name="END_LINK" /> imezimwa kwa chaguomsingi. Wakati imezimwa, Google huhifadhi magumzo yako kwa siku 3. Huyatumia kufanya Programu za Gemini zifanye kazi ipasavyo, kusaidia kuzilinda na kutumia maoni yako kutatua matatizo. Unaweza kuwasha mipangilio ya Kuhifadhi Shughuli ili usaidie kuboresha Google AI kwa kila mtu.</translation>
-<translation id="8680786875305615692">Tusaidie kuboresha usalama kwa kila mtu kwenye Wavuti</translation>
 <translation id="8680787084697685621">Maelezo ya kuingia kwenye akaunti yamechina.</translation>
 <translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" hairuhusiwi kufikia maikrofoni yako</translation>
 <translation id="8690752723634292147">Thibitisha ufutaji</translation>
@@ -2578,7 +2573,6 @@ Unaweza kuanzisha upya wakati wowote.</translation>
 <translation id="8888595487174963247">Ondoa Kikumbusho</translation>
 <translation id="8890516388109605451">Vyanzo</translation>
 <translation id="8893208530912252670">Video</translation>
-<translation id="8898822736010347272">Hutuma URL za baadhi ya kurasa unazotembelea, maelezo machache ya mfumo na baadhi ya maudhui ya kurasa kwa Google, ili kusaidia kugundua na kuzuia vitisho vipya na kulinda kila mtu kwenye wavuti.</translation>
 <translation id="890009681345348416">Zaidi ya manenosiri 40 yamejazwa kiotomatiki</translation>
 <translation id="8900845556227858314">Programu ya Kivinjari</translation>
 <translation id="890565330728586731">Nyuma</translation>
@@ -2609,6 +2603,7 @@ Unaweza kuanzisha upya wakati wowote.</translation>
 <translation id="8976414606286374109">Kadi huhifadhiwa kwenye Akaunti yako ya Google.</translation>
 <translation id="8981454092730389528">Vidhibiti vya Shughuli za Google</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, tovuti imebandikwa</translation>
+<translation id="8989779557457435460">Ruhusu kichupo unachotumia sasa kifikiwe kwa chaguomsingi</translation>
 <translation id="8990960056509724223">Imeshindwa kuhifadhi faili kutokana na sera za shirika lako</translation>
 <translation id="8998289560386111590">Haipatikani katika kifaa chako</translation>
 <translation id="9003677638446136377">Angalia tena</translation>

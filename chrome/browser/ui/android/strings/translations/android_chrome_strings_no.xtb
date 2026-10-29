@@ -337,6 +337,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2332515770639153015">Safe Browsing med økt beskyttelse er påslått</translation>
 <translation id="233375395665273385">Slett og logg av</translation>
 <translation id="2334275697832662087">Med AI-basert sikkerhet i Chrome er du beskyttet mot trusler på nettet, slik at du kan føle deg trygg når du surfer</translation>
+<translation id="2335758110242123814">Åpne gruppen</translation>
 <translation id="2341410551640223969">Kunne ikke installere <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Total datamengde som brukes av Chrome, deriblant kontoer, bokmerker og lagrede innstillinger</translation>
 <translation id="2354001756790975382">Andre bokmerker</translation>
@@ -390,7 +391,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2532336938189706096">Nettvisning</translation>
 <translation id="2535807170289627159">Alle faner</translation>
 <translation id="2536728043171574184">Ser på en lokalt lagret versjon av denne siden</translation>
-<translation id="2537574774089209541">Noen verktøy er flyttet for å gi deg enkel tilgang til Gemini mens du surfer</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, valgt festet inkognitofane med dempet lyd</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" /> – fane</translation>
@@ -1037,6 +1037,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5096775069898886423">Du blir advart før du besøker nettsteder som ikke støtter sikre tilkoblinger</translation>
 <translation id="510275257476243843">1 time igjen</translation>
 <translation id="5105442806410269908">Administrer andre Google-data</translation>
+<translation id="5111326646107464148">Åpne gruppen i et nytt vindu</translation>
 <translation id="5114895953710637392">Arket for appfiltrering er lukket.</translation>
 <translation id="5115811374190515607">til <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Du kan bruke Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper</translation>
@@ -1606,6 +1607,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="72415438529550637">Passordforslaget er lukket.</translation>
 <translation id="724510009481365878">Denne siden kan ikke skrives ut</translation>
 <translation id="7248671827512403053">App</translation>
+<translation id="7253205084599155458">Vis navigasjon og verktøy på en verktøylinje nederst for enkel tilgang</translation>
 <translation id="7253951228444156601">Sjekker passord …</translation>
 <translation id="7265857422443387781">Søk i fanen med Google Lens <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Vil du sende inn <ph name="ONE_TIME_CODE" /> til <ph name="ORIGIN" />?</translation>
@@ -1618,7 +1620,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7291910923717764901">Bildebeskrivelser er lagt til for denne siden</translation>
 <translation id="7293429513719260019">Velg språk</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, valgt festet delingsfane</translation>
-<translation id="7304003340539141201">Be Gemini om hjelp med fanene og oppgavene dine</translation>
 <translation id="7311244614769792472">Fant ingen resultater</translation>
 <translation id="7314734791127433392">Kan ikke sjekke passordene</translation>
 <translation id="7324354302972299151">Send en «Do Not Track»-forespørsel</translation>
@@ -1754,6 +1755,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7821130663268546430">Du finner alle åpne faner i fanevelgeren</translation>
 <translation id="7822705602465980873">Når du er logget på, blir disse dataene knyttet til Google-kontoen din for å beskytte deg på alle Google-tjenester, for eksempel ved at beskyttelsen i Gmail økes etter sikkerhetshendelser.</translation>
 <translation id="7824665136384946951">Organisasjonen din har slått av Safe Browsing</translation>
+<translation id="782590969421016895">Bruk nåværende sider</translation>
 <translation id="7825973332242257878">Fanegrupper</translation>
 <translation id="7845155831233417403">Du kan ha opptil <ph name="MAX_INSTANCE_COUNT" /> vinduer. Lukk et vindu for å fortsette.</translation>
 <translation id="7846161022626028328">Det oppsto en feil. Prøv på nytt.</translation>
@@ -1986,7 +1988,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8694622119922491927"><ph name="APP_NAME" /> trenger tilgang til HID-enheter (Human Interface Devices) for dette nettstedet. Du kan endre denne innstillingen senere i Innstillinger &gt; Apper &gt; Spesiell apptilgang.</translation>
 <translation id="8696297579102085705">Send til enheten din</translation>
 <translation id="8699120352855309748">Ikke tilby å oversette disse språkene</translation>
-<translation id="8700565880437506364">Vi lanserer Gemini i Chrome</translation>
 <translation id="8712637175834984815">Skjønner</translation>
 <translation id="8715286883001906001">Gjør passordene i Google-kontoen din sikrere</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> lukkes</translation>

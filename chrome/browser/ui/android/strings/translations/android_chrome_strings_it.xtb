@@ -337,6 +337,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2332515770639153015">Navigazione sicura avanzata attiva</translation>
 <translation id="233375395665273385">Elimina ed esci</translation>
 <translation id="2334275697832662087">La sicurezza di Chrome basata sull'AI protegge dalle minacce online, garantendo la massima sicurezza durante la navigazione</translation>
+<translation id="2335758110242123814">Apri gruppo</translation>
 <translation id="2341410551640223969">Impossibile installare <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Dati totali utilizzati da Chrome, tra cui account, preferiti e impostazioni salvate</translation>
 <translation id="2354001756790975382">Altri preferiti</translation>
@@ -390,7 +391,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2532336938189706096">Visualizzazione web</translation>
 <translation id="2535807170289627159">Tutte le schede</translation>
 <translation id="2536728043171574184">È visualizzata una copia offline della pagina</translation>
-<translation id="2537574774089209541">Alcuni strumenti sono stati spostati per consentirti di accedere facilmente a Gemini durante la navigazione</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, scheda Incognito con audio disattivato fissata selezionata</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, scheda</translation>
@@ -1037,6 +1037,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5096775069898886423">Ricevi un avviso prima di visitare i siti che non supportano le connessioni sicure</translation>
 <translation id="510275257476243843">1 ora rimanente</translation>
 <translation id="5105442806410269908">Gestisci altri dati di Google</translation>
+<translation id="5111326646107464148">Apri il gruppo in una nuova finestra</translation>
 <translation id="5114895953710637392">Il foglio di filtro delle app è chiuso.</translation>
 <translation id="5115811374190515607">in <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Puoi usare Chrome ogni volta che tocchi link in messaggi, documenti e altre app</translation>
@@ -1606,6 +1607,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="72415438529550637">Il suggerimento per la password è chiuso.</translation>
 <translation id="724510009481365878">Impossibile stampare la pagina</translation>
 <translation id="7248671827512403053">Applicazione</translation>
+<translation id="7253205084599155458">Visualizza la navigazione e gli strumenti in una barra degli strumenti in basso per un facile accesso</translation>
 <translation id="7253951228444156601">Controllo delle password…</translation>
 <translation id="7265857422443387781">Cerca nella scheda con Google Lens <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Inviare <ph name="ONE_TIME_CODE" /> a <ph name="ORIGIN" />?</translation>
@@ -1618,7 +1620,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7291910923717764901">Descrizioni delle immagini aggiunte per questa pagina</translation>
 <translation id="7293429513719260019">Seleziona lingua</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, scheda condivisa fissata selezionata</translation>
-<translation id="7304003340539141201">Chiedi a Gemini di aiutarti con le schede e le attività</translation>
 <translation id="7311244614769792472">Nessun risultato trovato</translation>
 <translation id="7314734791127433392">Impossibile controllare le password</translation>
 <translation id="7324354302972299151">Invia una richiesta "Do Not Track"</translation>
@@ -1754,6 +1755,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7821130663268546430">Puoi trovare tutte le schede aperte nel Selettore di schede</translation>
 <translation id="7822705602465980873">Se hai eseguito l'accesso, questi dati vengono collegati al tuo Account Google per proteggerti nei servizi Google, ad esempio aumentando la protezione in Gmail dopo un incidente di sicurezza.</translation>
 <translation id="7824665136384946951">La tua organizzazione ha disattivato Navigazione sicura</translation>
+<translation id="782590969421016895">Usa pagine correnti</translation>
 <translation id="7825973332242257878">Gruppi di schede</translation>
 <translation id="7845155831233417403">Puoi avere fino a <ph name="MAX_INSTANCE_COUNT" /> finestre. Chiudi una finestra per continuare.</translation>
 <translation id="7846161022626028328">Si è verificato un errore. Riprova.</translation>
@@ -1986,7 +1988,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8694622119922491927"><ph name="APP_NAME" /> ha bisogno dell'autorizzazione per accedere ai dispositivi HID (Human Interface Device) per questo sito. Puoi modificare questa impostazione in un secondo momento in Impostazioni &gt; App &gt; Accesso speciale per le app.</translation>
 <translation id="8696297579102085705">Invia al tuo dispositivo</translation>
 <translation id="8699120352855309748">Non proporre di tradurre queste lingue</translation>
-<translation id="8700565880437506364">Ti presentiamo Gemini in Chrome</translation>
 <translation id="8712637175834984815">Ok</translation>
 <translation id="8715286883001906001">Rafforza le password nel tuo Account Google</translation>
 <translation id="8715300232952757586">La scheda <ph name="TAB_TITLE" /> verrà chiusa</translation>

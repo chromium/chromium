@@ -52,6 +52,7 @@
 <translation id="1080116354587839789">An Breite anpassen</translation>
 <translation id="1081061862829655580">Fach 19</translation>
 <translation id="1082026381988252344">Inhalte im geteilten Tab scrollen und zoomen</translation>
+<translation id="1083351079082239441">Hier siehst du die wichtigsten Aktionen, die Gemini beim Surfen für dich ausgeführt hat</translation>
 <translation id="108859316315249327">Noch einmal versuchen</translation>
 <translation id="1089439967362294234">Passwort ändern</translation>
 <translation id="1090629319939036170">VR-Menü</translation>
@@ -95,7 +96,6 @@
 <translation id="1165174597379888365">Seite aufgerufen</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Keine}=1{Von 1 Website (du bleibst in deinem Google-Konto angemeldet)}other{Von # Websites (du bleibst in deinem Google-Konto angemeldet)}}</translation>
 <translation id="1167877250265821930">Fehler beim Herunterladen des Sprachpakets für <ph name="LANGUAGE" /></translation>
-<translation id="1171306609584863516">Bestätigt von <ph name="IDP_ORIGIN" /></translation>
 <translation id="1174644974616730562">Umschlag Chinesisch Nr. 1</translation>
 <translation id="1174723505405632867">Möchtest du <ph name="EMBEDDED_URL" /> erlauben, auf <ph name="TOP_LEVEL_URL" /> Cookies und Websitedaten zu verwenden?
 
@@ -541,6 +541,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1913037223029790376">CVC für diese virtuelle Karte verwenden</translation>
 <translation id="191374271204266022">Als JSON kopieren</translation>
 <translation id="1914326953223720820">Dienst entpacken</translation>
+<translation id="1915335901851260370">Der Name des Karteninhabers kann momentan nicht gespeichert werden</translation>
 <translation id="1919367280705858090">Hilfe bei bestimmten Fehlermeldungen</translation>
 <translation id="1919526244108283799">400 × 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Keine}=1{1 Website}other{# Websites}}</translation>
@@ -583,6 +584,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1988881251331415125">Wenn die URL keinen Tippfehler enthält, <ph name="BEGIN_LINK" />kannst du die Verbindungsdiagnose durchführen<ph name="END_LINK" />.</translation>
 <translation id="1991370806334788445">Versuche, Drittanbieter-Cookies zuzulassen. Das bedeutet zwar weniger Schutz beim Surfen, aber dadurch erhöht sich die Wahrscheinlichkeit, dass Websites wie erwartet funktionieren.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
+<translation id="1996557034791506430">Berechtigung entfernen?</translation>
 <translation id="1997484222658892567"><ph name="URL" /> möchte umfangreiche Daten dauerhaft auf deinem lokalen Computer speichern</translation>
 <translation id="1997774360448418989">Papier (leicht)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{und 1 weitere}other{und # weitere}}</translation>
@@ -689,6 +691,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2155260325161282517">5 × 7 Zoll</translation>
 <translation id="2156467141257470387">Du kannst gespeicherte Adressen in verschiedenen Google-Produkten verwenden. Deine aktuelle Arbeitsadresse wird dadurch nicht geändert. Diese wird in deinem Google-Konto (<ph name="ACCOUNT" />) gespeichert.</translation>
 <translation id="2157640075051554492">Preisbenachrichtigungen</translation>
+<translation id="2158964559178498011">Autofill an mehr Orten verfügbar – zweimal „Strg“ drücken, um Informationen zu suchen und auszufüllen</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2162435186600002085">Logo der primären Kopfzeile</translation>
 <translation id="2162535140284745414">Du erhältst Echtzeitvorschläge, die dir helfen können, neue Möglichkeiten zum Surfen mit KI zu finden.</translation>
@@ -917,6 +920,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="251033673027346551">In Google Wallet kannst du deine <ph name="BEGIN_LINK" />Daten- und Datenschutzeinstellungen<ph name="END_LINK" /> verwalten.</translation>
 <translation id="2512101340618156538">Nicht zugelassen (Standardeinstellung)</translation>
 <translation id="2512413427717747692">Button „Google Chrome als Standardbrowser festlegen“ – drücke die Eingabetaste, um Chrome in den iOS-Einstellungen als Standardbrowser für das System festzulegen</translation>
+<translation id="2513217232843681817">Unter <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> sind möglicherweise weitere Arten von Browserverlaufsdaten für dein Google-Konto gespeichert, z. B. Besuche im Rahmen des automatischen Browsens in deinem <ph name="BEGIN_LINK_GAA" />Aktivitätsverlauf in Gemini-Apps<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">Signal an deinem Standort prüfen</translation>
 <translation id="2518584823165598232">Diese Karte ist nicht verfügbar. Bitte wende dich an deinen Kartenanbieter.</translation>
 <translation id="2521385132275182522">Heftklammer unten rechts</translation>
@@ -1364,6 +1368,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3282085321714087552">Deine Organisation, <ph name="ENROLLMENT_DOMAIN" />, hat Informationen wie z. B. Einstellungen oder Richtlinien an folgende Websites gesendet.</translation>
 <translation id="3286372614333682499">Hochformat</translation>
 <translation id="3287510313208355388">Herunterladen, sobald eine Internetverbindung besteht</translation>
+<translation id="3288416906300127968">Gemini-Chat aufrufen</translation>
 <translation id="3289578402369490638">Von anderen Onlineshops</translation>
 <translation id="3293642807462928945">Weitere Informationen zur "<ph name="POLICY_NAME" />"-Richtlinie</translation>
 <translation id="3295444047715739395">Passwörter in den Chrome-Einstellungen ansehen und verwalten</translation>
@@ -1384,6 +1389,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3324687287337751929">4 × 6 Zoll</translation>
 <translation id="3325568918769906282">in absteigender Reihenfolge</translation>
 <translation id="3325662270238538525">Letzte Zugriffe auf Dateien und Änderungen, einschließlich Dateinamen, digitale Fingerabdrücke des Dateiinhalts, Downloadquelle und Metadaten</translation>
+<translation id="3326857361043236066">Wichtige Gemini-Browseraktionen</translation>
 <translation id="3329013043687509092">Sättigung</translation>
 <translation id="3333762389743153920">Virtuelle Karte wird nicht unterstützt</translation>
 <translation id="3338095232262050444">Sicher</translation>
@@ -2018,6 +2024,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4333561522337981382">Fenster auf allen Bildschirmen verwalten</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 mit RSA-Verschlüsselung</translation>
 <translation id="4336913590841287350">Diese Richtlinie wird unter iOS noch nicht als Nutzerrichtlinie unterstützt.</translation>
+<translation id="4338516934178140574">Im Chrome-Verlauf kannst du die wichtigsten Aktionen sehen, die Gemini beim Surfen für dich ausgeführt hat</translation>
 <translation id="4340575312453649552">Diese Werbeanzeige erfordert auf deinem Gerät zu viele Ressourcen. Darum hat Chrome sie entfernt.</translation>
 <translation id="4340810192899866471">Aus JSON importieren</translation>
 <translation id="4340982228985273705">Dieser Computer wird nicht als von einem Unternehmen verwaltet erkannt, sodass nur Erweiterungen, die im Chrome Web Store gehostet sind, automatisch durch die Richtlinie installiert werden können. Die Update-URL des Chrome Web Store lautet "<ph name="CWS_UPDATE_URL" />".</translation>
@@ -2111,6 +2118,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4510703642214459906">Veranstaltungsort</translation>
 <translation id="4515275063822566619">Karten und Adressen stammen aus Chrome und aus deinem Google-Konto (<ph name="ACCOUNT_EMAIL" />). Du kannst sie in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> verwalten.</translation>
 <translation id="451601984112574365">Grün 3</translation>
+<translation id="4519245852815730903">Du wirst aufgefordert, jede E‑Mail-Adresse einzeln zuzulassen</translation>
 <translation id="4520048001084013693">Die Administratorrichtlinie blockiert das Herunterladen dieser Datei</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Umschlag Monarch</translation>
@@ -2192,6 +2200,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Weitere Infos<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Seite übersetzen?</translation>
 <translation id="468314109939257734">Virtuelle Kartennummer anzeigen</translation>
+<translation id="4684818564800397688">Autofill an mehr Orten verfügbar – zweimal ⌘ drücken, um Informationen zu suchen und auszufüllen</translation>
 <translation id="4686942373615810936">Gerade eben erstellt</translation>
 <translation id="4690205240253392065">Anbieter für „Später bezahlen“ auswählen</translation>
 <translation id="469028408546145398">Button „Alle Inkognitofenster schließen“ – aktivieren, um alle derzeit geöffneten Inkognitofenster zu schließen.</translation>
@@ -2298,7 +2307,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="484462545196658690">Auto</translation>
 <translation id="4844937814014739139">Scrollen und Zoomen auf geteilten Tabs</translation>
 <translation id="484988093836683706">Geräteentsperrung verwenden</translation>
-<translation id="4850669014075537160">Scrollen</translation>
 <translation id="4850886885716139402">Anzeigen</translation>
 <translation id="4854853140771946034">Schnell eine neue Notiz in Google Notizen erstellen</translation>
 <translation id="4855395119669662878">Dein Administrator beginnt um <ph name="DATE_TIME" /> damit, deine Dateien in <ph name="CLOUD_PROVIDER" /> hochzuladen. Lass dein Gerät verbunden, bis der Dateiupload abgeschlossen ist. Während des Uploads kannst du nur lokale Dateien lesen.</translation>
@@ -2381,6 +2389,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4969341057194253438">Aufnahme löschen</translation>
 <translation id="4973922308112707173">Doppelte Lochung oben</translation>
 <translation id="4976702386844183910">Zuletzt besucht am <ph name="DATE" /></translation>
+<translation id="4982928820514634045">Zu den Kontaktdaten</translation>
 <translation id="498323057460789381">Schemavalidierungsfehler: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Mikrofon verwenden?</translation>
 <translation id="4989542687859782284">Nicht verfügbar</translation>
@@ -2390,6 +2399,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4994095017621319069">1 Tabgruppe ist nicht mehr verfügbar</translation>
 <translation id="4995474875135717171">Geändert:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um die Website-Suche und deine Standardsuchmaschine zu verwalten</translation>
+<translation id="4996709766489151157">Kontaktdaten ausgefüllt</translation>
 <translation id="4998950033665438990">Einseitig</translation>
 <translation id="5000497292978544380">KI-Modus der Google Suche</translation>
 <translation id="5001338033791319371">Zum Beenden des Vollbildmodus und Ansehen des Downloads: von oben ziehen und auf den Button „Zurück“ tippen</translation>
@@ -2409,6 +2419,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5019293549442035120">Du kannst gespeicherte Adressen in verschiedenen Google-Produkten verwenden. Diese Adresse wird in deinem Google-Konto <ph name="USER_EMAIL" /> gespeichert.</translation>
 <translation id="5019819206251569004">Bewegungs- und Lichtsensoren</translation>
 <translation id="5019952743397118625">Die Richtlinie „<ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />“ ist festgelegt. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> steuert nicht die Verfügbarkeit des Entwicklermodus auf der Seite „Erweiterungen“.</translation>
+<translation id="502075697789439404">Datei heruntergeladen</translation>
 <translation id="5020862932518041900">Wenn du einen Vorschlag auswählst oder ignorierst, passt Chrome sich an, damit du nur für dich relevante Inhalte siehst</translation>
 <translation id="5021500396464456616">Kontaktiere die Person, die diesen Link gesendet hat</translation>
 <translation id="5021557570875267742">Preise mit Chrome beobachten</translation>
@@ -2897,7 +2908,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5826507051599432481">Allgemeiner Name (CN)</translation>
 <translation id="5830698870816298009">Kamera verwenden und bewegen</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
-<translation id="5832976493438355584">Gesperrt</translation>
 <translation id="5837220895135257862">Gib Speicherplatz in <ph name="CLOUD_PROVIDER" /> frei und versuche es dann noch einmal</translation>
 <translation id="5838278095973806738">Du solltest keine vertraulichen Informationen wie Passwörter oder Kreditkartennummern auf dieser Website eingeben, da sie von Angreifern gestohlen werden könnten.</translation>
 <translation id="5838732667866024867">Mit dem Links-/Rechtspfeil kannst du Preisänderungen über das Diagramm überprüfen</translation>
@@ -2957,6 +2967,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5927279462592128805">Microsoft Word</translation>
 <translation id="5930147475897662863">Aktiviere diese Einstellung, um „Formuliere für mich“ zu verwenden</translation>
 <translation id="5932224571077948991">Website zeigt aufdringliche oder irreführende Werbung an</translation>
+<translation id="5933647156166686601">Gemini-Aktivitäten ansehen</translation>
 <translation id="5937560539988385583">Seite übersetzt</translation>
 <translation id="5938153366081463283">Virtuelle Karte hinzufügen</translation>
 <translation id="5938793338444039872">Troy</translation>
@@ -3431,6 +3442,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6721164594124191969">Etiketten (glänzend)</translation>
 <translation id="6726832600570791992">(32-Bit-Emulation)</translation>
 <translation id="6727094998759448074">SRA4</translation>
+<translation id="672853333773293432">Mit Konto angemeldet</translation>
 <translation id="6732087373923685049">Kamera</translation>
 <translation id="6738516213925468394">Deine Daten wurden am <ph name="TIME" /> mit deiner <ph name="BEGIN_LINK" />Passphrase für die Synchronisierung<ph name="END_LINK" /> verschlüsselt. Gib diese ein, um die Synchronisierung zu starten.</translation>
 <translation id="6740851646645036700">Du hast dein Limit für „Formuliere für mich“ erreicht. Bitte versuche es später noch einmal.</translation>
@@ -3488,6 +3500,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6834757537110528125">Diese Website unterstützt keine verschlüsselte Verbindung</translation>
 <translation id="6841864657731852591">Tiefdruckzylinder</translation>
 <translation id="6842196666980060516">184 × 260 mm</translation>
+<translation id="6843919992766261684"><ph name="ISSUER" /> bestätigt diese E‑Mail-Adresse künftig nicht mehr automatisch</translation>
 <translation id="6844746916504777213">Diese Websites nie teilen</translation>
 <translation id="6844998850832008753">Handtracking dieses Mal zugelassen</translation>
 <translation id="6849023911358004088">Button „Sicherheitseinstellungen verwalten“ – aktivieren, um in den Chrome-Einstellungen beispielsweise Safe Browsing zu verwalten</translation>
@@ -3495,6 +3508,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6852204201400771460">App neu laden?</translation>
 <translation id="6854691830678097752">Du kannst diesen CVC in deinem Konto <ph name="ACCOUNT_EMAIL" /> speichern, um schneller zu bezahlen</translation>
 <translation id="6858034839887287663">A2x4</translation>
+<translation id="6858341433205161172"><ph name="DEVICE_NAME" /> (dieser Browser)</translation>
 <translation id="6860888819347870819">Darf nachfragen, ob der Bild-im-Bild-Modus aktiviert werden soll</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="6865412394715372076">Diese Karte kann momentan nicht geprüft werden</translation>
@@ -3546,6 +3560,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6936976777388162184">Dieses Gerät ist Teil eines Sets und kann nicht mit dem Upgrade für Kioske und Beschilderung registriert werden.</translation>
 <translation id="6942444979237658241">Kommentare – <ph name="GROUP_NAME" /></translation>
 <translation id="6944692733090228304">Du hast dein Passwort auf einer Website eingegeben, die nicht von <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> verwaltet wird. Zum Schutz deines Kontos solltest du das Passwort nicht für andere Apps und Websites verwenden.</translation>
+<translation id="6945116087771548601">Zu den Downloads</translation>
 <translation id="6948051842255602737">Spiel vorbei, deine Punktzahl ist <ph name="SCORE" />.</translation>
 <translation id="6948223029286835408">Wenn du in Chrome einkaufst, wird die Option für Pix angezeigt</translation>
 <translation id="6948701128805548767">Wähle eine Adresse aus, um Abholoptionen und -anforderungen zu sehen</translation>
@@ -3614,6 +3629,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="7048095965575426564">Zickzackfaltung (Europa)</translation>
 <translation id="7050187094878475250">Du hast versucht, <ph name="DOMAIN" /> zu erreichen. Der Server hat jedoch ein Zertifikat präsentiert, dessen Gültigkeitsdauer zu lang ist, um vertrauenswürdig zu sein.</translation>
 <translation id="7053983685419859001">Blockieren</translation>
+<translation id="7054563057916451424"><ph name="DESTINATION" /> (wird in einem neuen Tab geöffnet)</translation>
 <translation id="7054717457611655239">Speichere deine Dateien in Zukunft in <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="7057567173736333354">Bild beschreiben</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> hat verifiziert, dass <ph name="ISSUER" /> das Zertifikat dieser Website ausgestellt hat.</translation>
@@ -3635,6 +3651,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="7083258188081898530">Fach 9</translation>
 <translation id="70846382339153529">OpenDocument-Text</translation>
 <translation id="7086090958708083563">Upload vom Nutzer angefordert</translation>
+<translation id="7087807086191250928">Gemini kann Fehler machen. Drücke lange auf den Vorschlag, um die ursprüngliche Quelle zu prüfen und sicherzustellen, dass diese Informationen korrekt sind.</translation>
 <translation id="7089745480771070611">Wird in der Seitenleiste geöffnet</translation>
 <translation id="7090698782953528257">Hilf mir, eine Funktion grafisch darzustellen, um die mathematische Gleichung zu visualisieren und die Form der Kurve zu sehen</translation>
 <translation id="7092087596499105699">Dein Administrator hat den Connector für das sichere Gateway konfiguriert, um den Zugriff auf die privaten Webanwendungen deiner Organisation zu schützen. Möglicherweise werden Daten aus deinem Arbeitsprofil verwendet, um den Zugriff zu bestätigen.</translation>
@@ -3843,6 +3860,7 @@ Weitere Details:
 <translation id="7425037327577270384">Formuliere für mich</translation>
 <translation id="7426745633088095666">Geteilte Tabs</translation>
 <translation id="7429429656042611765">Executive</translation>
+<translation id="7430649113830485349">Wichtige Aktionen überprüfen</translation>
 <translation id="7432774160230062882">Bestätige deine Identität, damit Chromium deine Zahlungsinformationen eingeben kann.</translation>
 <translation id="7437289804838430631">Kontaktdaten hinzufügen</translation>
 <translation id="7441627299479586546">Falsche(r) Nutzername/Domain der Richtlinie</translation>
@@ -3988,6 +4006,7 @@ Weitere Details:
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7659327900411729175">Umschlag Kaku 8</translation>
 <translation id="766014026101194726">{0,plural, =1{Die Administratorrichtlinie blockiert das Hochladen dieser Datei}other{Die Administratorrichtlinie blockiert das Hochladen von # Dateien}}</translation>
+<translation id="7660909719765799166">Zur Kontoanmeldung</translation>
 <translation id="7661440329832413796">Hilf mir, das Programmieren in Python zu lernen</translation>
 <translation id="7662298039739062396">Einstellung wird von einer Erweiterung gesteuert</translation>
 <translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> hat die Gruppe verlassen</translation>
@@ -4003,6 +4022,7 @@ Weitere Details:
 <translation id="7675756033024037212">Scrollen und Zoomen nicht zulässig</translation>
 <translation id="7676643023259824263">Nach Text aus Zwischenablage suchen: <ph name="TEXT" /></translation>
 <translation id="7676840398262504532">Deine Organisation überwacht das Kopieren</translation>
+<translation id="767806704757698045">Funktioniert nur auf unterstützten Websites</translation>
 <translation id="7678730592635586336">Video neu aufnehmen</translation>
 <translation id="7679287273775285018">Mit E‑Wallet bezahlen</translation>
 <translation id="7679367271685653708">Browserverlauf in den Chrome-Einstellungen anzeigen und verwalten</translation>
@@ -4063,6 +4083,7 @@ Weitere Details:
 <translation id="7765158879357617694">Verschieben</translation>
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="776749070095465053">Stoff</translation>
+<translation id="7770247511810814330">Berechtigung entfernen</translation>
 <translation id="7772659560036894129">Produktnamen</translation>
 <translation id="7773005668374414287">Gleiche Reihenfolge Vorderseite nach oben</translation>
 <translation id="7779418012194492374">Zugriff für <ph name="DEVICE_NAME" /> widerrufen</translation>
@@ -4124,6 +4145,7 @@ Weitere Details:
 <translation id="7885670691503039914">Du erhältst eine E‑Mail-Benachrichtigung, wenn der Preis auf einer Website gesenkt wird. Diese Seite wird im Lesezeichenordner „<ph name="LAST_BOOKMARKS_FOLDER" />“ gespeichert.</translation>
 <translation id="7887683347370398519">Prüfe deinen CVC und versuche es dann noch einmal.</translation>
 <translation id="7887885240995164102">Bild im Bild aktivieren</translation>
+<translation id="7888219259712865185">E‑Mail-Anbieter wie google.com können deine E‑Mail-Adresse bestätigen, sodass du nicht in deinem Posteingang nachsehen musst</translation>
 <translation id="7888367499748383555">Keine Gebühren, bis zu 0 % effektiver Jahreszins (es gelten bestimmte Voraussetzungen)</translation>
 <translation id="7888575728750733395">Rendering Intent für Druck</translation>
 <translation id="7890748547282909375">Zum Speichern des Screenshots in Microsoft OneDrive anmelden</translation>
@@ -4173,7 +4195,6 @@ Weitere Details:
 <translation id="7961015016161918242">Nie</translation>
 <translation id="7961493403319780137">Weitere Informationen zu dieser Funktion – Bestätigungscodes aus Gmail automatisch einfügen</translation>
 <translation id="7962467575542381659">Plattformgerät</translation>
-<translation id="796439090588610411">Chrome bestätigt diese E‑Mail-Adresse auf unterstützten Websites nicht mehr automatisch.</translation>
 <translation id="7966803981046576691">Kontotyp des Auftrags</translation>
 <translation id="7967973398323409409">Informationen, die automatisch eingefügt werden, sind für niemanden sichtbar</translation>
 <translation id="79682505114836835">Der Wert „<ph name="VALUE" />“ ist kein gültiger Hex-Farbcode.</translation>
@@ -4368,6 +4389,7 @@ Weitere Details:
 <translation id="8298399736867690281">Karte nur auf Gerät gespeichert</translation>
 <translation id="8300302621078931927">Personalausweis sicher in Google Wallet speichern</translation>
 <translation id="8301894345671534559">Code eingeben</translation>
+<translation id="830342764194666561">Website-Einstellungen geändert</translation>
 <translation id="830498451218851433">Zur Hälfte falten</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8310477433309274098">Keine Gebühren, bis zu 0 % effektiver Jahreszins</translation>
@@ -4455,7 +4477,6 @@ Weitere Details:
 <translation id="8446884382197647889">Weitere Informationen</translation>
 <translation id="8449036207308062757">Speicherplatz verwalten</translation>
 <translation id="8449155699563577224">17 × 24 Zoll</translation>
-<translation id="8449513475775663994">Bestätigte E‑Mail-Adresse entfernen?</translation>
 <translation id="8449836157089738489">Alle in neuer Tabgruppe öffnen</translation>
 <translation id="8451518040456311377">Ausweisdokumente für Autofill speichern</translation>
 <translation id="84561192812921051">Dein Administrator kann Änderungen an deinem Profil und Browser per Fernzugriff vornehmen, Informationen über den Browser durch Berichte analysieren und andere notwendige Aufgaben ausführen. Aktivitäten auf diesem Gerät können auch außerhalb von Chrome verwaltet werden.  <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -4503,6 +4524,7 @@ Weitere Details:
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8544217240017914508">Google Chrome versucht, die Einstellungen für das Ausfüllen von Zahlungsmethoden zu ändern.</translation>
 <translation id="8544303911974837265">Polyester</translation>
+<translation id="8545237556624168656">Damit du die Funktion nutzen kannst, musst du in deinem E‑Mail-Konto angemeldet sein</translation>
 <translation id="854548366864113872">Hochpreisige Option</translation>
 <translation id="854583198371106098"><ph name="ATTRIBUTE_VALUE" />  <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
 <translation id="8546254312340305428">Gib den Grund für das Hochladen an (erforderlich)</translation>
@@ -4522,6 +4544,7 @@ Weitere Details:
 <translation id="8577192028579836704">Alle Optionen; in der Regel <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtuelle Karte nicht verfügbar</translation>
 <translation id="8579000896558714521">Tastaturüberschreibung</translation>
+<translation id="8579561564816585231">Über einen Google-Dienst wie den Passwortmanager angemeldet</translation>
 <translation id="8581064022803799721">Diese Seite wurde in „<ph name="LAST_BOOKMARKS_FOLDER" />“ gespeichert.</translation>
 <translation id="858637041960032120">Weitere Nummer
 </translation>
@@ -4612,6 +4635,7 @@ Weitere Details:
 <translation id="8759274551635299824">Diese Karte ist abgelaufen</translation>
 <translation id="87601671197631245">Diese Website nutzt eine veraltete Sicherheitskonfiguration. Hierdurch können Informationen wie etwa Passwörter, Nachrichten oder Kreditkartendaten, die an diese Website gesendet werden, in die Hände Unbefugter gelangen.</translation>
 <translation id="8762871163452985706">Anmerkung rückgängig gemacht</translation>
+<translation id="8762944800272172913">Gemini-Chat konnte nicht geöffnet werden</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{Link von <ph name="DEVICE_NAME" /> gesendet}other{# Links von <ph name="DEVICE_NAME" /> gesendet}}</translation>
 <translation id="8763927697961133303">USB-Gerät</translation>
 <translation id="8763986294015493060">Alle geöffneten Inkognitofenster schließen</translation>

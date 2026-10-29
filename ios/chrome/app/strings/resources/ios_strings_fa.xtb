@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">‏آوردن داده‌هایتان از Safari</translation>
 <translation id="2526166285241366046">ذخیره کردن گذرواژه</translation>
 <translation id="2529021024822217800">باز کردن همه</translation>
-<translation id="2530932541542751783">‏مشکلی در این تنظیم پیش آمد. ‫Chrome و iPadOS را به‌روزرسانی و بازراه‌اندازی کنید و دوباره امتحان کنید. اگر این خطا همچنان رخ می‌دهد، ممکن است iPad شما از این تنظیم پشتیبانی نکند.</translation>
 <translation id="2536991091671391962">‏گذرواژه‌های ذخیره‌شده را در هر دستگاهی می‌توانید استفاده کنید. این گذرواژه‌ها در «مدیر گذرواژه Google» برای <ph name="EMAIL" /> ذخیره می‌شود.</translation>
 <translation id="2538103551183528357">گذرواژه پنهان</translation>
 <translation id="2538705697765638552">‏اطلاعاتتان را ذخیره کنید تا کارهایی مانند پر کردن فرم‌ها در محصولات Google را سریع‌تر انجام دهید. می‌توانید اطلاعاتتان را در «کیف پول Google» مربوط به <ph name="USER_EMAIL" /> مدیریت کنید.</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">دیداری‌سازی و ویرایش کردن</translation>
 <translation id="3485558910355485767">پنجره جدید ناشناس</translation>
 <translation id="3488501490964659223">زبانه‌ها بسته شد و داده‌های مرور حذف شد. از سیستم خارج شدید</translation>
-<translation id="3490396108106323715">هم‌رسانی کردن زبانه فعلی</translation>
 <translation id="3493531032208478708">درباره محتوای پیشنهادی <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="349446645805573740">محل ذخیره کردن «<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />» را انتخاب کنید</translation>
 <translation id="3504377992102007712">تنظیمات</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">بار کردن تصاویر ممکن نبود</translation>
 <translation id="3565930036634619844">زبانه. ‫<ph name="TAB_INDEX" /> از <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">ذخیره به روشی دیگر</translation>
-<translation id="3572503683475187385">‏وقتی که گپ جدیدی شروع می‌کنید، زبانه فعلی با Gemini هم‌رسانی می‌شود. وقتی که زبانه‌ای را با Gemini هم‌رسانی می‌کنید، محتوا و نشانی وب آن به Google ارسال می‌شود. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">‏در «حساب Google» شما</translation>
 <translation id="3575234738189584619">جستجو با «لنز»</translation>
 <translation id="3575426792457739946">این فهرست حاوی همه نمایه‌های بارشده است.</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">نمایش راهنما</translation>
 <translation id="4095483462103784441">ایجاد گروه زبانه جدید</translation>
 <translation id="4099756562043439968">تنظیم یادآور</translation>
-<translation id="4108998448622696017">رویدادهای خطرناکی را که اتفاق می‌افتد شناسایی می‌کند و درباره آن‌ها به شما هشدار می‌دهد.</translation>
 <translation id="4111985840824673503">علامت‌گذاری همه به‌عنوان خوانده‌شده</translation>
 <translation id="411254640334432676">بارگیری نشد.</translation>
 <translation id="4112644173421521737">جستجو</translation>
@@ -1169,6 +1165,7 @@
 <translation id="4658335131052370646">ذخیره</translation>
 <translation id="465947902531722727">تعویض نمایه‌ها</translation>
 <translation id="466307903888586355">سازمانتان ذخیره کردن فایل را مسدود کرده است</translation>
+<translation id="4665303625242639572">بستن <ph name="PAGE_TITLE" /></translation>
 <translation id="4668929960204016307">،</translation>
 <translation id="4669618761237477717">سازمانتان از شما می‌خواهد به‌طور خصوصی مرور کنید. گروه‌های زبانه در حالت «ناشناس» همگام‌سازی نمی‌شود.
 <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
@@ -1286,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />، <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">رنگ <ph name="COLOR" /> گروه زبانه</translation>
 <translation id="5005498671520578047">کپی گذرواژه</translation>
+<translation id="5007392906805964215">مرور</translation>
 <translation id="5009127379503001909">ادامه مرور</translation>
 <translation id="5016205925109358554">سریف</translation>
 <translation id="5016420433031926653">ارسال به <ph name="USER_EMAIL" /></translation>
@@ -1938,7 +1936,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6938212956536472404">امکان هم‌رسانی این زبانه وجود ندارد</translation>
 <translation id="6945221475159498467">انتخاب</translation>
 <translation id="6946722113367118030">درحال فکر کردن</translation>
-<translation id="6947751977892029882">‏مشکلی در این تنظیم پیش آمد. ‫Chrome و iOS را به‌روزرسانی و بازراه‌اندازی کنید و دوباره امتحان کنید. اگر این خطا همچنان رخ می‌دهد، ممکن است iPhone شما از این تنظیم پشتیبانی نکند.</translation>
 <translation id="6950522403736391608">پنهان</translation>
 <translation id="6957084631403333422">صفحه زبانه جدید متمرکز را امتحان کنید</translation>
 <translation id="695965663642079255">برای تسویه‌حساب سریع‌تر، اطلاعات پرداخت را ذخیره و مدیریت کنید</translation>
@@ -2189,7 +2186,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7758789811447313947">زمینه بنفش</translation>
 <translation id="7759809451544302770">اختیاری</translation>
 <translation id="7765158879357617694">حرکت دادن</translation>
-<translation id="7767651976342854115">تنظیم مصرف داده با خطا مواجه شد.</translation>
 <translation id="7768507955883790804">وقتی از سایت‌ها بازدید می‌کنید، آن‌ها به‌طور خودکار این تنظیم را دنبال می‌کنند</translation>
 <translation id="7772032839648071052">تأیید گذرعبارت</translation>
 <translation id="7772948288262733182">بازگشتتان را خوشامد می‌گوییم</translation>
@@ -2502,7 +2498,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8674716540979958118">چند گذرواژه لورفته دارید.</translation>
 <translation id="8679900250380464358">افزودن به «فهرست خواندن»</translation>
 <translation id="8680643216091361291">‏تنظیم <ph name="BEGIN_LINK" />حفظ کردن فعالیت‌ها<ph name="END_LINK" /> به‌طور پیش‌فرض خاموش است. وقتی که این تنظیم خاموش باشد، Google گپ‌های شما را به‌مدت ۳ روز ذخیره می‌کند. Google از گپ‌های شما برای فراهم آوردن شرایط عملکرد صحیح «برنامه‌های Gemini» و کمک به ایمن نگه داشتن آن‌ها، و از بازخورد شما برای رفع مشکلات استفاده می‌کند. می‌توانید «حفظ کردن فعالیت‌ها» را روشن کنید تا به بهبود «هوشواره‌های Google» برای همه کمک کنید.</translation>
-<translation id="8680786875305615692">کمک به بهبود امنیت برای همه کاربران وب</translation>
 <translation id="8680787084697685621">جزئیات ورود به سیستم حساب قدیمی است.</translation>
 <translation id="868648444055742370">‫«<ph name="SITE_DOMAIN" />» اجازه ندارد به میکروفون شما دسترسی داشته باشد</translation>
 <translation id="8690752723634292147">تأیید حذف</translation>
@@ -2578,7 +2573,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8888595487174963247">حذف یادآور</translation>
 <translation id="8890516388109605451">منابع</translation>
 <translation id="8893208530912252670">ویدیو</translation>
-<translation id="8898822736010347272">‏نشانی‌های وب بعضی از صفحه‌هایی که بازدید می‌کنید، اطلاعات محدودی از سیستم، و برخی از محتوای صفحه را به Google ارسال می‌کند تا به کشف تهدیدهای جدید و محافظت از همه افراد در وب کمک کند.</translation>
 <translation id="890009681345348416">بیش‌از ۴۰ گذرواژه به‌طور خودکار تکمیل شدند</translation>
 <translation id="8900845556227858314">برنامه مرورگر</translation>
 <translation id="890565330728586731">برگشتن</translation>
@@ -2609,6 +2603,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8976414606286374109">‏کارت‌ها در «حساب Google» شما ذخیره می‌شوند.</translation>
 <translation id="8981454092730389528">‏کنترل‌های فعالیت Google</translation>
 <translation id="8988107725234939347">‫<ph name="WEBSITE_TITLE" />، سایت سنجاق‌شده</translation>
+<translation id="8989779557457435460">هم‌رسانی زبانه فعلی به‌طور پیش‌فرض</translation>
 <translation id="8990960056509724223">به‌دلیل خط‌مشی‌های سازمانتان، فایل ذخیره نشد</translation>
 <translation id="8998289560386111590">در دستگاهتان دردسترس نیست</translation>
 <translation id="9003677638446136377">بررسی مجدد</translation>

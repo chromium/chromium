@@ -29,7 +29,7 @@
 <translation id="1100066534610197918">الفتح في علامة تبويب جديدة في مجموعة</translation>
 <translation id="1103142993930332957">‏هل تريد المساهمة في تحسين أداء Chrome؟</translation>
 <translation id="1105960400813249514">التقاط الشاشة</translation>
-<translation id="1108214977745280468">عرض إحصاءات الصفحة</translation>
+<translation id="1108214977745280468">عرض "لمحة عن الصفحة"</translation>
 <translation id="1108938384783527433">مزامنة السجلّ</translation>
 <translation id="1109663842695712985">‏لم يتم حفظ بعض بيانات Chrome في حسابك على Google إلى الآن.\يُرجى الانتظار بضع دقائق قبل تسجيل الخروج. إذا تمّ تسجيل الخروج الآن، سيتم حذف هذه البيانات غير المحفوظة.</translation>
 <translation id="1111673857033749125">ستظهر هنا الإشارات التي تم حفظها على أجهزتك الأخرى.</translation>
@@ -337,6 +337,7 @@
 <translation id="2332515770639153015">ميزة "الحماية المُحسَّنة للتصفّح الآمن" مفعَّلة</translation>
 <translation id="233375395665273385">الحذف وتسجيل الخروج</translation>
 <translation id="2334275697832662087">‏يوفّر لك Chrome وسائل أمان مستندة إلى الذكاء الاصطناعي لحمايتك من التهديدات على الإنترنت، ما يعزِّز ثقتك أثناء التصفُّح</translation>
+<translation id="2335758110242123814">فتح المجموعة</translation>
 <translation id="2341410551640223969">تعذَّر تثبيت <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">‏إجمالي البيانات المُستخدَمة من قِبل Chrome، بما في ذلك الحسابات والإشارات المرجعية والإعدادات المحفوظة</translation>
 <translation id="2354001756790975382">الإشارات المرجعية الأخرى</translation>
@@ -390,7 +391,6 @@
 <translation id="2532336938189706096">عرض الويب</translation>
 <translation id="2535807170289627159">جميع علامات التبويب</translation>
 <translation id="2536728043171574184">جارٍ عرض نسخة متاحة بلا إنترنت من هذه الصفحة</translation>
-<translation id="2537574774089209541">‏تم نقل بعض الأدوات لتسهيل وصولك إلى Gemini أثناء التصفّح</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة ومكتومة الصوت تم اختيارها في "وضع التصفّح المتخفي"</translation>
 <translation id="2542548955756682219">علامة التبويب "<ph name="TAB_TITLE" />"</translation>
@@ -1038,6 +1038,7 @@
 <translation id="5096775069898886423">بالنسبة إلى المواقع الإلكترونية التي لا تتيح الاتصالات الآمنة، ستتلقّى تحذيرًا قبل الانتقال إليها</translation>
 <translation id="510275257476243843">يتبقى ساعة واحدة</translation>
 <translation id="5105442806410269908">‏إدارة البيانات الأخرى على Google</translation>
+<translation id="5111326646107464148">فتح المجموعة في نافذة جديدة</translation>
 <translation id="5114895953710637392">تم إغلاق ورقة بيانات فلتر التطبيقات.</translation>
 <translation id="5115811374190515607">إلى "<ph name="PRODUCT_NAME" />"</translation>
 <translation id="5116239826668864748">‏يمكنك استخدام Chrome في أي وقت تنقر فيه على روابط في الرسائل والمستندات والتطبيقات الأخرى</translation>
@@ -1621,7 +1622,6 @@
 <translation id="7291910923717764901">تم إضافة أوصاف الصور لهذه الصفحة.</translation>
 <translation id="7293429513719260019">اختيار لغة</translation>
 <translation id="7298319215489933099">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة تم اختيارها وتشارك محتواها</translation>
-<translation id="7304003340539141201">‏يمكنك طلب المساعدة من Gemini في مهامك وعلامات التبويب</translation>
 <translation id="7311244614769792472">لم يتم العثور على نتائج.</translation>
 <translation id="7314734791127433392">يتعذّر التحقّق من كلمات المرور</translation>
 <translation id="7324354302972299151">‏إرسال طلب Do Not Track
@@ -1758,6 +1758,7 @@
 <translation id="7821130663268546430">يمكنك الوصول إلى جميع علامات التبويب المفتوحة من خلال أداة التبديل بين علامات التبويب.</translation>
 <translation id="7822705602465980873">‏عندما تكون مسجّلاً للدخول، يتم ربط هذه البيانات بحسابك على Google لحمايتك على خدمات Google، مثلاً لزيادة مستوى الحماية في Gmail بعد وقوع محاولة اختراق أمني.</translation>
 <translation id="7824665136384946951">أوقفت مؤسستك ميزة "التصفُّح الآمن".</translation>
+<translation id="782590969421016895">استخدام الصفحات الحالية</translation>
 <translation id="7825973332242257878">مجموعات علامات التبويب</translation>
 <translation id="7845155831233417403">الحد الأقصى لعدد النوافذ التي يمكنك فتحها هو <ph name="MAX_INSTANCE_COUNT" />. يُرجى إغلاق إحدى النوافذ للمتابعة.</translation>
 <translation id="7846161022626028328">حدث خطأ. يُرجى إعادة المحاولة.</translation>
@@ -1991,7 +1992,6 @@
 <translation id="8694622119922491927">‏يحتاج التطبيق <ph name="APP_NAME" /> إلى منح هذا الموقع الإلكتروني إذنًا للوصول إلى أجهزة الواجهة البشرية (HID). ويمكنك تغيير هذا الإعداد لاحقًا من خلال "الإعدادات" &gt; "التطبيقات" &gt; "أذونات خاصة للتطبيقات".</translation>
 <translation id="8696297579102085705">الإرسال إلى جهازك</translation>
 <translation id="8699120352855309748">عدم اقتراح ترجمة لهذه اللغات</translation>
-<translation id="8700565880437506364">‏إليك "Gemini في Chrome"</translation>
 <translation id="8712637175834984815">حسنًا</translation>
 <translation id="8715286883001906001">‏يجب تعزيز أمان كلمات مرور في حسابك على Google</translation>
 <translation id="8715300232952757586">سيتم إغلاق "<ph name="TAB_TITLE" />"</translation>

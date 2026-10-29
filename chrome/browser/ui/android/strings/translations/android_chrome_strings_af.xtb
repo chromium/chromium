@@ -337,6 +337,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2332515770639153015">Verbeterde Veiligblaai is aan</translation>
 <translation id="233375395665273385">Vee uit en meld af</translation>
 <translation id="2334275697832662087">Chrome se KI-aangedrewe sekuriteit help om jou teen aanlyn bedreigings te beskerm sodat jy met selfvertroue kan blaai</translation>
+<translation id="2335758110242123814">Maak groep oop</translation>
 <translation id="2341410551640223969">Kon nie <ph name="WEBAPK_NAME" /> installeer nie.</translation>
 <translation id="2349710944427398404">Alle data deur Chrome gebruik, insluitend rekeninge, boekmerke en gestoorde instellings</translation>
 <translation id="2354001756790975382">Ander boekmerke</translation>
@@ -390,7 +391,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2532336938189706096">Webaansig</translation>
 <translation id="2535807170289627159">Alle oortjies</translation>
 <translation id="2536728043171574184">Bekyk tans 'n vanlyn kopie van hierdie bladsy</translation>
-<translation id="2537574774089209541">Sommige nutsgoed het geskuif om jou maklike toegang tot Gemini te gee terwyl jy blaai</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, gekose vasgespelde gedempte Incognito-oortjie</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, oortjie</translation>
@@ -1037,6 +1037,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5096775069898886423">Kry waarskuwings oor werwe wat nie veilige verbindings steun nie, voordat jy die werf besoek</translation>
 <translation id="510275257476243843">1 uur oor</translation>
 <translation id="5105442806410269908">Bestuur ander Google-data</translation>
+<translation id="5111326646107464148">Maak groep in nuwe venster oop</translation>
 <translation id="5114895953710637392">Appfilterblad is toe.</translation>
 <translation id="5115811374190515607">na <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Jy kan Chrome enige tyd gebruik wanneer jy tik op skakels in boodskappe, dokumente en ander apps.</translation>
@@ -1606,6 +1607,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="72415438529550637">Wagwoordvoorstel is toe.</translation>
 <translation id="724510009481365878">Hierdie bladsy kan nie gedruk word nie</translation>
 <translation id="7248671827512403053">App</translation>
+<translation id="7253205084599155458">Wys navigasie en nutsgoed in ’n onderste nutsbalk vir maklike toegang</translation>
 <translation id="7253951228444156601">Gaan tans wagwoorde na …</translation>
 <translation id="7265857422443387781">Deursoek oortjie met Google Lens <ph name="BEGIN_NEW" />Nuut<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Dien <ph name="ONE_TIME_CODE" /> in by <ph name="ORIGIN" />?</translation>
@@ -1618,7 +1620,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7291910923717764901">Prentbeskrywings is vir hierdie bladsy bygevoeg</translation>
 <translation id="7293429513719260019">Kies taal</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, gekose vasgespelde oortjie wat gedeel word</translation>
-<translation id="7304003340539141201">Vra Gemini om met jou oortjies en take te help</translation>
 <translation id="7311244614769792472">Geen resultate gekry nie</translation>
 <translation id="7314734791127433392">Kan nie wagwoorde kontroleer nie</translation>
 <translation id="7324354302972299151">Stuur ’n “Do Not Track”-versoek</translation>
@@ -1754,6 +1755,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7821130663268546430">Jy kan alle oop oortjies in die oortjiewisselaar vind</translation>
 <translation id="7822705602465980873">Wanneer jy aangemeld is, word hierdie data aan jou Google-rekening gekoppel om jou oral in Google-dienste te beskerm, byvoorbeeld deur beskerming in Gmail te verhoog ná ’n sekuriteitvoorval.</translation>
 <translation id="7824665136384946951">Jou organisasie het Veiligblaai afgeskakel</translation>
+<translation id="782590969421016895">Gebruik huidige bladsye</translation>
 <translation id="7825973332242257878">Oortjiegroepe</translation>
 <translation id="7845155831233417403">Jy kan tot <ph name="MAX_INSTANCE_COUNT" /> vensters hê. Maak ’n venster toe om voort te gaan.</translation>
 <translation id="7846161022626028328">Iets is fout. Probeer weer.</translation>
@@ -1986,7 +1988,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8694622119922491927"><ph name="APP_NAME" /> het toestemming nodig om toegang tot menskoppelvlaktoestelle (MKT’s) vir hierdie werf te kry. Jy kan hierdie instelling later verander in Instellings &gt; Apps &gt; Spesiale apptoegang.</translation>
 <translation id="8696297579102085705">Stuur na jou toestel toe</translation>
 <translation id="8699120352855309748">Moenie aanbied om hierdie tale te vertaal nie</translation>
-<translation id="8700565880437506364">Bekendstelling van Gemini in Chrome</translation>
 <translation id="8712637175834984815">Het dit</translation>
 <translation id="8715286883001906001">Maak jou wagwoorde in jou Google-rekening sterker</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> sal toegemaak word</translation>

@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">Przenieś dane z Safari</translation>
 <translation id="2526166285241366046">Zapisz hasło</translation>
 <translation id="2529021024822217800">Otwórz wszystkie</translation>
-<translation id="2530932541542751783">Podczas konfigurowania tego ustawienia coś poszło nie tak. Zaktualizuj i uruchom ponownie Chrome i iPadOS, a następnie spróbuj jeszcze raz. Jeśli ten błąd będzie się powtarzał, iPad może nie obsługiwać tego ustawienia.</translation>
 <translation id="2536991091671391962">Zapisanych haseł możesz używać na dowolnym urządzeniu. Menedżer haseł Google zapisuje je na koncie <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Ukryte, hasło</translation>
 <translation id="2538705697765638552">Zapisz swoje dane, aby szybciej wykonywać zadania, np. wypełniać formularze w usługach Google. Informacjami możesz zarządzać w Portfelu Google na koncie <ph name="USER_EMAIL" />.</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">Wizualizuj i edytuj</translation>
 <translation id="3485558910355485767">Nowe okno incognito</translation>
 <translation id="3488501490964659223">Karty zostały zamknięte, a dane przeglądania usunięte. Nastąpiło wylogowanie</translation>
-<translation id="3490396108106323715">Udostępnij bieżącą kartę</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Dowiedz się więcej<ph name="END_LINK" /> o proponowanej treści</translation>
 <translation id="349446645805573740">Wybierz, gdzie zapisać plik „<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />”</translation>
 <translation id="3504377992102007712">Ustawienia</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">Nie udało się załadować obrazów</translation>
 <translation id="3565930036634619844">Karta. <ph name="TAB_INDEX" /> z <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Zapisz w inny sposób</translation>
-<translation id="3572503683475187385">Gdy rozpoczynasz nowy czat, bieżąca karta jest udostępniana Gemini. Gdy udostępniasz kartę Gemini, jej zawartość i adres URL są wysyłane do Google. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Na Twoim koncie Google</translation>
 <translation id="3575234738189584619">Szukaj za pomocą Obiektywu</translation>
 <translation id="3575426792457739946">Ta lista zawiera wszystkie wczytane profile.</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">Pokaż pomoc</translation>
 <translation id="4095483462103784441">Utwórz nową grupę kart</translation>
 <translation id="4099756562043439968">Ustaw przypomnienie</translation>
-<translation id="4108998448622696017">Wykrywa niebezpieczne zdarzenia i natychmiast Cię o nich ostrzega.</translation>
 <translation id="4111985840824673503">Oznacz wszystkie jako przeczytane</translation>
 <translation id="411254640334432676">Błąd pobierania.</translation>
 <translation id="4112644173421521737">Szukaj</translation>
@@ -1287,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Kolor grupy kart: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Skopiuj hasło</translation>
+<translation id="5007392906805964215">Sprawdź</translation>
 <translation id="5009127379503001909">Przeglądaj dalej</translation>
 <translation id="5016205925109358554">Szeryfowa</translation>
 <translation id="5016420433031926653">Wysyłaj na adres <ph name="USER_EMAIL" /></translation>
@@ -1939,7 +1936,6 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="6938212956536472404">Tej karty nie można udostępnić</translation>
 <translation id="6945221475159498467">Wybierz</translation>
 <translation id="6946722113367118030">Myślenie</translation>
-<translation id="6947751977892029882">Podczas konfigurowania tego ustawienia coś poszło nie tak. Zaktualizuj i uruchom ponownie Chrome i iOS, a następnie spróbuj jeszcze raz. Jeśli ten błąd będzie się powtarzał, Twój iPhone może nie obsługiwać tego ustawienia.</translation>
 <translation id="6950522403736391608">Ukryte</translation>
 <translation id="6957084631403333422">Wypróbuj stronę nowej karty bez rozpraszaczy</translation>
 <translation id="695965663642079255">Zapisuj dane do płatności i zarządzaj nimi, aby płacić szybciej</translation>
@@ -2190,7 +2186,6 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="7758789811447313947">Motyw fioletowy</translation>
 <translation id="7759809451544302770">Opcjonalne</translation>
 <translation id="7765158879357617694">Przenieś</translation>
-<translation id="7767651976342854115">W ustawieniu użycia danych wystąpił błąd.</translation>
 <translation id="7768507955883790804">Otwierane witryny automatycznie działają zgodnie z tym ustawieniem.</translation>
 <translation id="7772032839648071052">Potwierdź hasło wielowyrazowe</translation>
 <translation id="7772948288262733182">Witamy z powrotem</translation>
@@ -2503,7 +2498,6 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="8674716540979958118">Masz przejęte hasła.</translation>
 <translation id="8679900250380464358">Dodaj do listy Do przeczytania</translation>
 <translation id="8680643216091361291">Ustawienie <ph name="BEGIN_LINK" />Zachowuj aktywność<ph name="END_LINK" /> jest domyślnie wyłączone. W takiej sytuacji Google przechowuje Twoje czaty przez 3 dni. Wykorzystujemy je, aby aplikacje z Gemini działały prawidłowo, były bezpieczne i aby na podstawie Twoich opinii rozwiązywać problemy. Możesz włączyć zachowywanie aktywności, żeby pomóc ulepszać AI od Google dla wszystkich użytkowników.</translation>
-<translation id="8680786875305615692">Pomóż poprawić bezpieczeństwo wszystkich użytkowników internetu</translation>
 <translation id="8680787084697685621">Dane logowania na konto są nieaktualne.</translation>
 <translation id="868648444055742370">„<ph name="SITE_DOMAIN" />” nie ma dostępu do mikrofonu</translation>
 <translation id="8690752723634292147">Potwierdź usunięcie</translation>
@@ -2579,7 +2573,6 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="8888595487174963247">Usuń przypomnienie</translation>
 <translation id="8890516388109605451">Źródła</translation>
 <translation id="8893208530912252670">Filmy</translation>
-<translation id="8898822736010347272">Wysyła do Google adresy URL niektórych odwiedzanych przez Ciebie stron, niektóre informacje o systemie i niektóre treści ze stron, by pomóc w wykrywaniu nowych zagrożeń i chronić wszystkich użytkowników internetu.</translation>
 <translation id="890009681345348416">Automatycznie uzupełniono ponad 40 haseł</translation>
 <translation id="8900845556227858314">Przeglądarka</translation>
 <translation id="890565330728586731">Wstecz</translation>
@@ -2610,6 +2603,7 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="8976414606286374109">Karty zostały zapisane na koncie Google.</translation>
 <translation id="8981454092730389528">Zarządzanie aktywnością w Google</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, przypięta witryna</translation>
+<translation id="8989779557457435460">Domyślnie udostępniaj bieżącą kartę</translation>
 <translation id="8990960056509724223">Ze względu na zasady obowiązujące w Twojej organizacji nie udało się zapisać pliku</translation>
 <translation id="8998289560386111590">Niedostępne na Twoim urządzeniu</translation>
 <translation id="9003677638446136377">Sprawdź ponownie</translation>

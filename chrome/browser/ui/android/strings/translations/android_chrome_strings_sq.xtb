@@ -337,6 +337,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2332515770639153015">"Shfletimi i sigurt i përmirësuar" është aktiv</translation>
 <translation id="233375395665273385">Fshi dhe dil</translation>
 <translation id="2334275697832662087">Siguria e mundësuar nga IA-ja e Chrome të ndihmon të mbrohesh nga kërcënimet online, duke të të dhënë besim ndërsa shfleton</translation>
+<translation id="2335758110242123814">Hap grupin</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> nuk mund të instalohej.</translation>
 <translation id="2349710944427398404">Të dhënat gjithsej të përdorura nga Chrome, duke përfshirë llogaritë, faqeshënuesit dhe cilësimet e ruajtura</translation>
 <translation id="2354001756790975382">Faqeshënues të tjerë</translation>
@@ -390,7 +391,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2532336938189706096">Pamja e uebit</translation>
 <translation id="2535807170289627159">Të gjitha skedat</translation>
 <translation id="2536728043171574184">Po shikon një kopje offline të kësaj faqeje</translation>
-<translation id="2537574774089209541">Disa vegla janë zhvendosur për të të dhënë qasje të lehtë te Gemini ndërkohë që shfleton</translation>
 <translation id="2539002604555291451">Sans serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, skeda "e fshehtë" e zgjedhur e gozhduar dhe e vendosur në heshtje</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, skedë</translation>
@@ -1037,6 +1037,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5096775069898886423">Për sajtet që nuk i mbështesin lidhjet e sigurta, merr paralajmërime para se të vizitosh sajtin</translation>
 <translation id="510275257476243843">1 orë e mbetur</translation>
 <translation id="5105442806410269908">Menaxho të dhënat e tjera të Google</translation>
+<translation id="5111326646107464148">Hape grupin në një dritare të re</translation>
 <translation id="5114895953710637392">Fleta e filtrit të aplikacioneve është mbyllur.</translation>
 <translation id="5115811374190515607">te <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Mund të përdorësh Chrome sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
@@ -1606,6 +1607,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="72415438529550637">Sugjerimi i fjalëkalimit u mbyll.</translation>
 <translation id="724510009481365878">Kjo faqe nuk mund të printohet</translation>
 <translation id="7248671827512403053">Aplikacion</translation>
+<translation id="7253205084599155458">Shfaq navigimin dhe veglat në një shirit veglash në fund për qasje të lehtë</translation>
 <translation id="7253951228444156601">Po kontrollon fjalëkalimet…</translation>
 <translation id="7265857422443387781">Kërko në skedë me "Lenten e Google" <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Të dërgohet <ph name="ONE_TIME_CODE" /> te <ph name="ORIGIN" />?</translation>
@@ -1618,7 +1620,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7291910923717764901">Përshkrimet e imazheve u shtuan për këtë faqe</translation>
 <translation id="7293429513719260019">Zgjidh gjuhën</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, skeda e zgjedhur e gozhduar duke ndarë përmbajtjen</translation>
-<translation id="7304003340539141201">Kërkoji Gemini të të ndihmojë me skedat dhe detyrat e tua</translation>
 <translation id="7311244614769792472">Nuk u gjet asnjë rezultat</translation>
 <translation id="7314734791127433392">Fjalëkalimet nuk mund të kontrollohen</translation>
 <translation id="7324354302972299151">Dërgo një kërkesë "Do Not Track"</translation>
@@ -1754,6 +1755,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7821130663268546430">Mund t'i gjesh të gjitha skedat e hapura te ndërruesi i skedave</translation>
 <translation id="7822705602465980873">Kur je i identifikuar, këto të dhëna lidhen me "Llogarinë tënde të Google" për të të mbrojtur nëpër shërbimet e Google, p.sh. duke rritur mbrojtjen në Gmail pas një incidenti sigurie.</translation>
 <translation id="7824665136384946951">Organizata jote ka e çaktivizuar "Shfletimin e sigurt"</translation>
+<translation id="782590969421016895">Përdor faqet aktuale</translation>
 <translation id="7825973332242257878">Grupet e skedave</translation>
 <translation id="7845155831233417403">Mund të kesh deri në <ph name="MAX_INSTANCE_COUNT" /> dritare. Mbyll një dritare për të vazhduar.</translation>
 <translation id="7846161022626028328">Ndodhi një gabim. Provo përsëri.</translation>
@@ -1986,7 +1988,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8694622119922491927"><ph name="APP_NAME" /> ka nevojë për leje për t'u qasur te pajisjet për ndërveprim me përdoruesin (HID) për këtë sajt. Mund ta ndryshosh këtë cilësim më vonë te Cilësimet &gt; Aplikacionet &gt; Qasja e veçantë e aplikacioneve.</translation>
 <translation id="8696297579102085705">Dërgo te pajisja jote</translation>
 <translation id="8699120352855309748">Mos ofro t'i përkthesh këto gjuhë</translation>
-<translation id="8700565880437506364">Prezantimi i Gemini në Chrome</translation>
 <translation id="8712637175834984815">E kuptova</translation>
 <translation id="8715286883001906001">Forco fjalëkalimet në "Llogarinë tënde të Google"</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> do të mbyllet</translation>

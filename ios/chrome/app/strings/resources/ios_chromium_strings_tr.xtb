@@ -58,7 +58,6 @@ Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedile
 <translation id="2027881372245801507">Önerileri devre dışı bıraktığınızda Chromium'un diğer özellikler için sayfa başlıklarını ve URL'leri işleme şekli değişmez. Bu verilere erişimi <ph name="BEGIN_LINK" />senkronizasyon ayarlarınızdan<ph name="END_LINK" /> yönetebilirsiniz.</translation>
 <translation id="2036929290919363111">Şifrelerinize ve daha fazlasına tüm cihazlarınızdan ulaşmak için bu sitede ve Chromium'da oturum açın</translation>
 <translation id="2042889939382983733">Chromium geçmişimi göster</translation>
-<translation id="2052320862053429062">Chromium, internette yayınlanan listelerle karşılaştırarak şifrelerinizi belirli aralıklarla kontrol eder. Bu işlem sırasında şifreleriniz ve kullanıcı adlarınız şifrelendiğinden, Google dahil olmak üzere hiç kimse tarafından okunamaz.</translation>
 <translation id="2059365270911640413">Chromium kurulumunu tamamlayın</translation>
 <translation id="2168108852149185974">Bazı eklentiler Chromium'un kilitlenmesine neden oluyor. Lütfen şunların yüklemelerini kaldırın:</translation>
 <translation id="2168593389981132306">Chromium'u daha iyi hale getirin</translation>
@@ -69,7 +68,6 @@ Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedile
 <translation id="2236584955986023187">Bu durumda Chromium her seferinde masaüstü siteyi ister.</translation>
 <translation id="2245694534483711162">Gemini, Chromium'a daha önce verdiğiniz izne bağlı olarak tam konumunuzu kullanabilir</translation>
 <translation id="2270466829363945454">Alışveriş</translation>
-<translation id="2313870531055795960">URL'leri, Chromium'da kayıtlı güvenli olmayan siteler listesine göre kontrol eder. Chromium, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir.</translation>
 <translation id="2314220608288760290">Chromium, YouTube Gizli mod bağlantılarını otomatik olarak Gizli modda açar.</translation>
 <translation id="231828342043114302">İlgi alanlarınıza dayalı kişiselleştirilmiş içerikler görmek için Chromium'da oturum açın.</translation>
 <translation id="2334943301233020675">Aşağıdaki geçiş anahtarları, koşulları karşılamadıkları için Şifre Yöneticisi'ne aktarılamadı.</translation>

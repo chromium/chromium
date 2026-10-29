@@ -58,7 +58,6 @@ No es poden desar adreces d'interès noves al teu compte fins que no en suprimei
 <translation id="2027881372245801507">Desactivar els suggeriments no afecta el processament que Chromium fa dels títols de pàgina i dels URL per a altres funcions. Pots gestionar l'accés a aquestes dades a la <ph name="BEGIN_LINK" />configuració de sincronització<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Inicia la sessió en aquest lloc web i a Chromium per accedir a les teves contrasenyes i altres dades en tots els teus dispositius</translation>
 <translation id="2042889939382983733">Consulta l'historial de Chromium</translation>
-<translation id="2052320862053429062">Chromium comprova periòdicament si les teves contrasenyes es troben en llistes publicades en línia. Quan ho fa, les teves contrasenyes i els teus noms d'usuari s'encripten i, per tant, ningú no els pot llegir (ni tan sols Google).</translation>
 <translation id="2059365270911640413">Acaba de configurar Chromium</translation>
 <translation id="2168108852149185974">Alguns complements fan que Chromium es bloquegi. Desinstal·la:</translation>
 <translation id="2168593389981132306">Millora Chromium</translation>
@@ -69,7 +68,6 @@ No es poden desar adreces d'interès noves al teu compte fins que no en suprimei
 <translation id="2236584955986023187">Això vol dir que Chromium sol·licitarà el lloc web per a ordinadors cada vegada.</translation>
 <translation id="2245694534483711162">És possible que Gemini utilitzi la teva ubicació precisa, en funció del permís que ja hagis donat a Chromium</translation>
 <translation id="2270466829363945454">Botiga</translation>
-<translation id="2313870531055795960">Compara els URL amb una llista de llocs web no segurs emmagatzemada a Chromium. Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chromium també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura.</translation>
 <translation id="2314220608288760290">Chromium obre automàticament els enllaços d'incògnit de YouTube en el mode d'incògnit.</translation>
 <translation id="231828342043114302">Per rebre contingut personalitzat basat en els teus interessos, inicia la sessió a Chromium.</translation>
 <translation id="2334943301233020675">Les claus d'accés següents no s'han importat al gestor de contrasenyes perquè no compleixen els requisits.</translation>

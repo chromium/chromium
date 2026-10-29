@@ -58,7 +58,6 @@ Jaunas grāmatzīmes nevarēs saglabāt jūsu kontā, kamēr neizdzēsīsiet da�
 <translation id="2027881372245801507">Ieteikumu izslēgšana neietekmē to, kā Chromium apstrādā lapu nosaukumus un vietrāžus URL citām funkcijām. Varat pārvaldīt piekļuvi šiem datiem savos <ph name="BEGIN_LINK" />sinhronizācijas iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Pierakstieties šajā vietnē un pārlūkā Chromium, lai visās savās ierīcēs iegūtu savas paroles un citu saturu.</translation>
 <translation id="2042889939382983733">Chromium vēstures skatīšana</translation>
-<translation id="2052320862053429062">Pārlūkā Chromium tiek periodiski pārbaudītas jūsu paroles, salīdzinot tās ar tiešsaistē publicētiem sarakstiem. Šo pārbaužu laikā paroles un lietotājvārdi ir šifrēti, lai neviens tos nevarētu lasīt, tostarp Google.</translation>
 <translation id="2059365270911640413">Chromium iestatīšanas pabeigšana</translation>
 <translation id="2168108852149185974">Daži papildinājumi var izraisīt pārlūka Chromium avarēšanu. Lūdzu, atinstalējiet šos papildinājumus:</translation>
 <translation id="2168593389981132306">Pārlūka Chromium uzlabošana</translation>
@@ -69,7 +68,6 @@ Jaunas grāmatzīmes nevarēs saglabāt jūsu kontā, kamēr neizdzēsīsiet da�
 <translation id="2236584955986023187">Tas nozīmē, ka Chromium katru reizi pieprasīs datoriem paredzēto vietni.</translation>
 <translation id="2245694534483711162">Gemini var izmantot precīzu jūsu atrašanās vietu atkarībā no atļaujas, ko jau piešķīrāt pārlūkam Chromium.</translation>
 <translation id="2270466829363945454">Veikals</translation>
-<translation id="2313870531055795960">Vietrāži URL tiek pārbaudīti, salīdzinot ar nedrošo vietņu sarakstu, kas ir saglabāts pārlūkprogrammā Chromium. Ja kādā vietnē tiek mēģināts nozagt jūsu paroli vai ja jūs lejupielādējat kaitīgu failu, Chromium var arī nosūtīt attiecīgos URL, tostarp lapas satura fragmentus, uz funkciju Droša pārlūkošana.</translation>
 <translation id="2314220608288760290">Pārlūkā Chromium YouTube inkognito saites tiek automātiski atvērtas inkognito režīmā.</translation>
 <translation id="231828342043114302">Lai saņemtu atbilstoši jūsu interesēm personalizētu saturu, pierakstieties pārlūkā Chromium.</translation>
 <translation id="2334943301233020675">Tālāk norādītās piekļuves atslēgas netika importētas paroļu pārvaldniekā, jo tās neatbilst prasībām.</translation>

@@ -337,6 +337,7 @@
 <translation id="2332515770639153015">بہتر کردہ محفوظ براؤزنگ آن ہے</translation>
 <translation id="233375395665273385">حذف کریں اور سائن آؤٹ کریں</translation>
 <translation id="2334275697832662087">‏‫Chrome کی AI تقویت یافتہ سیکیورٹی آپ کو آن لائن خطرات سے بچانے میں مدد کرتی ہے، جس سے آپ کو براؤز کرتے وقت اعتماد ملتا ہے</translation>
+<translation id="2335758110242123814">گروپ کھولیں</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> انسٹال نہیں کی جا سکی۔</translation>
 <translation id="2349710944427398404">‏اکاؤنٹس، بُک مارکس اور محفوظ کردہ ترتیبات سمیت، Chrome کے ذریعے استعمال کردہ کُل ڈیٹا</translation>
 <translation id="2354001756790975382">دیگر بُک مارکس</translation>
@@ -390,7 +391,6 @@
 <translation id="2532336938189706096">ویب منظر</translation>
 <translation id="2535807170289627159">سبھی ٹیبز</translation>
 <translation id="2536728043171574184">اس صفحہ کی ایک آف لائن کاپی دیکھی جا رہی ہے</translation>
-<translation id="2537574774089209541">‏براؤز کرتے وقت آپ کو Gemini تک آسان رسائی فراہم کرنے کے لیے کچھ ٹولز کو منتقل کر دیا گیا ہے</translation>
 <translation id="2539002604555291451">Sans serif</translation>
 <translation id="2542094237868555728">‫<ph name="TAB_TITLE" />، منتخب پن کردہ خاموش کردہ پوشیدگی ٹیب</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />، ٹیب</translation>
@@ -1037,6 +1037,7 @@
 <translation id="5096775069898886423">محفوظ کنکشنز کا تعاون کرنے والی سائٹس کیلئے، سائٹ ملاحظہ کرنے سے پہلے وارننگ حاصل کریں</translation>
 <translation id="510275257476243843">1 گھنٹہ باقی</translation>
 <translation id="5105442806410269908">‏دیگر Google ڈیٹا نظم کریں</translation>
+<translation id="5111326646107464148">نئی ونڈو میں گروپ کھولیں</translation>
 <translation id="5114895953710637392">ایپ فلٹر شیٹ بند ہے۔</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> تک</translation>
 <translation id="5116239826668864748">‏آپ جب بھی پیغامات، دستاویزات اور دیگر ایپس میں لنکس کو تھپتھپائیں تو آپ Chrome استعمال کر سکتے ہیں</translation>
@@ -1606,6 +1607,7 @@
 <translation id="72415438529550637">پاس ورڈ کی تجویز بند ہے۔</translation>
 <translation id="724510009481365878">اس صفحے کو پرنٹ نہیں کیا جا سکتا</translation>
 <translation id="7248671827512403053">اطلاق</translation>
+<translation id="7253205084599155458">آسان رسائی کے لیے نیچے والے ٹول بار میں نیویگیشن اور ٹولز ڈسپلے کریں</translation>
 <translation id="7253951228444156601">پاسورڈز چیک ہو رہے ہیں…</translation>
 <translation id="7265857422443387781">‏‫Google لینز کی مدد سے ٹیب تلاش کریں <ph name="BEGIN_NEW" />نیا<ph name="END_NEW" /></translation>
 <translation id="727288900855680735"><ph name="ORIGIN" /> میں <ph name="ONE_TIME_CODE" /> کو جمع کرائیں؟</translation>
@@ -1618,7 +1620,6 @@
 <translation id="7291910923717764901">اس صفحے کیلئے تصویر کی تفصیلات شامل کر دی گئیں</translation>
 <translation id="7293429513719260019">زبان منتخب کریں</translation>
 <translation id="7298319215489933099">‫<ph name="TAB_TITLE" />، منتخب کردہ پن کردہ اشتراک کا ٹیب</translation>
-<translation id="7304003340539141201">‏اپنے ٹیبز اور ٹاسکس میں مدد کے لیے Gemini سے پوچھیں</translation>
 <translation id="7311244614769792472">کوئی نتیجہ نہیں ملا</translation>
 <translation id="7314734791127433392">پاس ورڈز کو چیک نہیں کر سکتے</translation>
 <translation id="7324354302972299151">‏"Do Not Track" درخواست بھیجیں</translation>
@@ -1754,6 +1755,7 @@
 <translation id="7821130663268546430">آپ ٹیب سوئچر میں تمام کھلے ٹیبز تلاش کر سکتے ہیں</translation>
 <translation id="7822705602465980873">‏آپ کے سائن ان ہونے پر یہ ڈیٹا آپ کے Google اکاؤنٹ سے لنک کر دیا جاتا ہے تاکہ آپ کو تمام Google سروسز پر تحفظ فراہم کیا جا سکے، مثال کے طور پر سیکیورٹی کے واقعے کے بعد Gmail میں تحفظ میں اضافہ کرنا۔</translation>
 <translation id="7824665136384946951">آپ کی تنظیم نے محفوظ براؤزنگ کو آف کر دیا ہے</translation>
+<translation id="782590969421016895">حالیہ صفحات استعمال کریں</translation>
 <translation id="7825973332242257878">ٹیب گروپس</translation>
 <translation id="7845155831233417403">آپ کے پاس <ph name="MAX_INSTANCE_COUNT" /> ونڈوز تک ہو سکتی ہیں۔ جاری رکھنے کے لیے ایک ونڈو بند کریں۔</translation>
 <translation id="7846161022626028328">ایک خرابی پیش آ گئی۔ دوبارہ کوشش کریں۔</translation>
@@ -1986,7 +1988,6 @@
 <translation id="8694622119922491927">‏‫<ph name="APP_NAME" /> کو اس سائٹ کے لیے انسانی انٹرفیس آلات (HIDs) تک رسائی کی اجازت درکار ہے۔ آپ اس ترتیب کو بعد میں ترتیبات &gt; ایپس &gt; خصوصی ایپ تک رسائی میں تبدیل کر سکتے ہیں۔</translation>
 <translation id="8696297579102085705">اپنے آلے پر بھیجیں</translation>
 <translation id="8699120352855309748">ان زبانوں کو ترجمہ کرنے کی پیشکش نہ کریں</translation>
-<translation id="8700565880437506364">‏‫Chrome میں Gemini کا تعارف</translation>
 <translation id="8712637175834984815">سمجھ آ گئی</translation>
 <translation id="8715286883001906001">‏اپنے Google اکاؤنٹ میں اپنے پاس ورڈز کو مضبوط بنائیں</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> بند ہو جائے گا</translation>

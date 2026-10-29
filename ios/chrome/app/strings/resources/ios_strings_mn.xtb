@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">Safari-н өгөгдлөө авчрах</translation>
 <translation id="2526166285241366046">Нууц үг хадгалах</translation>
 <translation id="2529021024822217800">Бүгдийг нээх</translation>
-<translation id="2530932541542751783">Энэ тохиргоотой холбоотой ямар нэг алдаа гарлаа. Chrome, iPadOS-г шинэчилж, дахин эхлүүлээд, дахин оролдоно уу. Хэрэв энэ алдаа гарсаар байвал таны iPad энэ тохиргоог дэмждэггүй байж болзошгүй.</translation>
 <translation id="2536991091671391962">Та дурын төхөөрөмжид хадгалсан нууц үгнүүдийг ашиглах боломжтой. Тэдгээрийг <ph name="EMAIL" />-д зориулж Google Password Manager-т хадгалсан.</translation>
 <translation id="2538103551183528357">Нуусан, нууц үг</translation>
 <translation id="2538705697765638552">Мэдээллээ хадгалж, Google-н бүтээгдэхүүнүүд дээрх маягтыг бөглөх зэрэг зүйлсийг илүү хурдан хийгээрэй. Та <ph name="USER_EMAIL" />-н Google Wallet дэх мэдээллээ удирдах боломжтой.</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">Дүрсжүүлж, засах</translation>
 <translation id="3485558910355485767">Шинэ нууцлалтай цонх</translation>
 <translation id="3488501490964659223">Табуудыг хаасан бөгөөд интернэтээр үзсэн өгөгдлийг устгасан. Таныг гаргасан</translation>
-<translation id="3490396108106323715">Одоогийн табыг хуваалцах</translation>
 <translation id="3493531032208478708">Санал болгосон агуулгын талаар <ph name="BEGIN_LINK" />дэлгэрэнгүй үзэх<ph name="END_LINK" /></translation>
 <translation id="349446645805573740">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"-г хаана хадгалахыг сонгоно уу</translation>
 <translation id="3504377992102007712">Тохиргоо</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">Зургуудыг ачаалж чадсангүй</translation>
 <translation id="3565930036634619844">Таб. <ph name="NUMBER_OF_TABS" />-н <ph name="TAB_INDEX" />.</translation>
 <translation id="3567168891086460374">Өөр аргаар хадгалах</translation>
-<translation id="3572503683475187385">Таныг шинэ чат эхлүүлэхэд одоогийн табыг Gemini-тай хуваалцана. Таныг Gemini-тай таб хуваалцахад тухайн табын контент, URL-г Google-д илгээнэ. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Таны Google Бүртгэлд</translation>
 <translation id="3575234738189584619">Lens-р хайх</translation>
 <translation id="3575426792457739946">Энэ жагсаалт бүх ачаалсан профайлыг агуулж байна.</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">Тусламжийг харуулах</translation>
 <translation id="4095483462103784441">Шинэ табын бүлэг үүсгэх</translation>
 <translation id="4099756562043439968">Сануулагч тохируулах</translation>
-<translation id="4108998448622696017">Аюултай үйл явдал тохиолдох үед түүнийг илрүүлж, танд анхааруулга өгдөг.</translation>
 <translation id="4111985840824673503">Бүгдийг уншсан гэж тэмдэглэх</translation>
 <translation id="411254640334432676">Татаж авах үйлдэл амжилгүй болсон байна.</translation>
 <translation id="4112644173421521737">Хайх</translation>
@@ -1169,6 +1165,7 @@
 <translation id="4658335131052370646">Хадгалах</translation>
 <translation id="465947902531722727">Профайл сэлгэх</translation>
 <translation id="466307903888586355">Файл хадгалахыг танай байгууллагаас блоклосон</translation>
+<translation id="4665303625242639572"><ph name="PAGE_TITLE" />-г хаах</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Танай байгууллага танаас нууцлалтайгаар үзэхийг шаардаж байна. Табын бүлгүүдийг Нууцлалын горимд синк хийдэггүй.
 <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
@@ -1286,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Табын бүлгийн <ph name="COLOR" /> өнгө</translation>
 <translation id="5005498671520578047">Нууц үг хуулах</translation>
+<translation id="5007392906805964215">Шалгах</translation>
 <translation id="5009127379503001909">Үргэлжлүүлэн үзэх</translation>
 <translation id="5016205925109358554">Сериф</translation>
 <translation id="5016420433031926653"><ph name="USER_EMAIL" />-д илгээх</translation>
@@ -1938,7 +1936,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6938212956536472404">Энэ табыг хуваалцах боломжгүй</translation>
 <translation id="6945221475159498467">Сонгох</translation>
 <translation id="6946722113367118030">Бодож буй</translation>
-<translation id="6947751977892029882">Энэ тохиргоотой холбоотой ямар нэг алдаа гарлаа. Chrome, iOS-г шинэчилж, дахин эхлүүлээд, дахин оролдоно уу. Хэрэв энэ алдаа гарсаар байвал таны iPhone энэ тохиргоог дэмждэггүй байж болзошгүй.</translation>
 <translation id="6950522403736391608">Нуусан</translation>
 <translation id="6957084631403333422">Төвлөрсөн шинэ таб хуудсыг туршиж үзэх</translation>
 <translation id="695965663642079255">Илүү хурдан тооцоо хийхийн тулд төлбөрийн мэдээллийг хадгалж, удирдана уу</translation>
@@ -2189,7 +2186,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7758789811447313947">Хөх ягаан загвар</translation>
 <translation id="7759809451544302770">Сонголтын</translation>
 <translation id="7765158879357617694">Зөөх</translation>
-<translation id="7767651976342854115">Өгөгдөл ашиглалтын тохиргоонд алдаа гарлаа.</translation>
 <translation id="7768507955883790804">Таныг сайт руу зочлоход энэ тохиргоог сайт автоматаар дагана</translation>
 <translation id="7772032839648071052">Нэвтрэх үгүүдийг баталгаажуул</translation>
 <translation id="7772948288262733182">Эргээд тавтай морилно уу</translation>
@@ -2502,7 +2498,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8674716540979958118">Танд алдагдсан нууц үгнүүд байна.</translation>
 <translation id="8679900250380464358">Унших жагсаалтад нэмэх</translation>
 <translation id="8680643216091361291">Таны <ph name="BEGIN_LINK" />Үйл ажиллагааг хадгалах<ph name="END_LINK" /> тохиргоо өгөгдмөлөөр унтраалттай байна. Энэ нь унтраалттай байхад Google таны чатуудыг 3 хоногийн турш хадгална. Энэ нь Gemini-тай харилцдаг аппыг зөв ажиллуулж, аюулгүй байлгахад тусалж, таны санал хүсэлтийг ашиглан асуудал засахад ашиглана. Та Google-н ХОУ-ыг хүн бүрд зориулж сайжруулахад туслахын тулд Үйл ажиллагааг хадгалах тохиргоог асааж болно.</translation>
-<translation id="8680786875305615692">Хүн бүрд веб дээрх аюулгүй байдлыг сайжруулахад туслах</translation>
 <translation id="8680787084697685621">Дансны нэвтрэх мэдээлэл хуучирсан байна.</translation>
 <translation id="868648444055742370">"<ph name="SITE_DOMAIN" />"-д таны микрофонд хандахыг зөвшөөрөөгүй</translation>
 <translation id="8690752723634292147">Устгахыг баталгаажуулах</translation>
@@ -2578,7 +2573,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8888595487174963247">Сануулагчийг хасах</translation>
 <translation id="8890516388109605451">Эх сурвалж</translation>
 <translation id="8893208530912252670">Видео</translation>
-<translation id="8898822736010347272">Шинэ аюул заналыг олж илрүүлэх болон веб дээрх бүх хүнийг хамгаалахад туслахын тулд таны зочилдог зарим хуудасны URL, системийн хязгаарлагдмал мэдээлэл болон хуудасны зарим контентыг Google рүү илгээдэг.</translation>
 <translation id="890009681345348416">40+ нууц үгийг автоматаар бөглөсөн</translation>
 <translation id="8900845556227858314">Хөтчийн апп</translation>
 <translation id="890565330728586731">Буцах</translation>
@@ -2609,6 +2603,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8976414606286374109">Картыг таны Google Бүртгэлд хадгалсан.</translation>
 <translation id="8981454092730389528">Google-н Ашиглалтын удирдлага</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" /> сайтыг бэхэлсэн</translation>
+<translation id="8989779557457435460">Өгөгдмөлөөр одоогийн табыг хуваалцах</translation>
 <translation id="8990960056509724223">Танай байгууллагын бодлогын улмаас файлыг хадгалж чадсангүй</translation>
 <translation id="8998289560386111590">Таны төхөөрөмжид боломжгүй</translation>
 <translation id="9003677638446136377">Дахин шалгах</translation>

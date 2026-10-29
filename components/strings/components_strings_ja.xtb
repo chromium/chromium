@@ -96,7 +96,6 @@
 <translation id="1165174597379888365">ページがアクセスされた</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{なし}=1{1 件のサイトから（Google アカウントへのログイン状態は維持されます）}other{# 件のサイトから（Google アカウントへのログイン状態は維持されます）}}</translation>
 <translation id="1167877250265821930"><ph name="LANGUAGE" />をダウンロードできませんでした</translation>
-<translation id="1171306609584863516"><ph name="IDP_ORIGIN" /> で確認済み</translation>
 <translation id="1174644974616730562">中国 #1 封筒</translation>
 <translation id="1174723505405632867"><ph name="EMBEDDED_URL" /> が <ph name="TOP_LEVEL_URL" /> で Cookie とサイトデータを使用することを許可しますか？
 
@@ -585,6 +584,7 @@
 <translation id="1988881251331415125">タイプミスでない場合は、<ph name="BEGIN_LINK" />接続診断をお試しください<ph name="END_LINK" />。</translation>
 <translation id="1991370806334788445">サードパーティ Cookie を許可してみてください。ブラウジング保護の強度は低下しますが、サイトの機能が想定どおりに動作する可能性が高くなります。</translation>
 <translation id="1992331125980284532">JIS B3</translation>
+<translation id="1996557034791506430">権限を削除しますか？</translation>
 <translation id="1997484222658892567"><ph name="URL" /> から、ローカルのパソコンに大きなデータを永続的に保存する許可を求められています</translation>
 <translation id="1997774360448418989">紙（軽量）</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{他 1 件}other{他 # 件}}</translation>
@@ -1206,6 +1206,7 @@
 <translation id="3030331669969285614">以下は破壊的変更を防止したり元に戻したりするフラグです。期間限定でご利用いただけます。</translation>
 <translation id="3033200136993730761">自宅の住所は、関連性の高い検索結果や Google マップのルートの表示など、Google サービス全体の利便性の向上に役立ちます。住所は <ph name="BEGIN_LINK" />Google アカウント（<ph name="ACCOUNT" />）<ph name="END_LINK" />で編集、削除できます。</translation>
 <translation id="3033777742142108756">モーション センサーと光センサーの使用を一時的に許可しました</translation>
+<translation id="3034219227076811559">Chrome で Google 検索</translation>
 <translation id="3034526003882782781">スクロールとズームが許可されました</translation>
 <translation id="3037177537145227281">価格をトラッキングします</translation>
 <translation id="3037605927509011580">エラー</translation>
@@ -2309,7 +2310,6 @@
 <translation id="484462545196658690">自動</translation>
 <translation id="4844937814014739139">共有タブのスクロールとズーム</translation>
 <translation id="484988093836683706">デバイスのロック解除を使用</translation>
-<translation id="4850669014075537160">スクロール</translation>
 <translation id="4850886885716139402">表示</translation>
 <translation id="4854853140771946034">Google Keep で新しいメモをすばやく作成します</translation>
 <translation id="4855395119669662878">管理者は <ph name="DATE_TIME" /> に <ph name="CLOUD_PROVIDER" /> へのファイルのアップロードを開始します。ファイルのアップロードが完了するまでデバイスを接続したままにしてください。アップロード中は、ローカル ファイルの読み取りのみが可能です。</translation>
@@ -2911,7 +2911,6 @@
 <translation id="5826507051599432481">一般名（CN）</translation>
 <translation id="5830698870816298009">カメラの使用と移動</translation>
 <translation id="5831217499016131155">Google ウォレット</translation>
-<translation id="5832976493438355584">ロックされています</translation>
 <translation id="5837220895135257862"><ph name="CLOUD_PROVIDER" /> の空き容量を増やしてからもう一度お試しください</translation>
 <translation id="5838278095973806738">このサイトでは機密情報（パスワード、クレジット カードなど）を入力しないでください。悪意のあるユーザーに情報が盗まれる恐れがあります。</translation>
 <translation id="5838732667866024867">左右の矢印を使って、グラフで価格の変動を確認できます</translation>
@@ -3504,6 +3503,7 @@
 <translation id="6834757537110528125">このサイトは安全な接続をサポートしていません</translation>
 <translation id="6841864657731852591">グラビア シリンダー</translation>
 <translation id="6842196666980060516">184x260 mm</translation>
+<translation id="6843919992766261684">今後、<ph name="ISSUER" /> によるこのメールアドレスの自動確認を停止します</translation>
 <translation id="6844746916504777213">共有しないサイト</translation>
 <translation id="6844998850832008753">今回のみハンド トラッキングを許可しました</translation>
 <translation id="6849023911358004088">[セキュリティ設定を管理] ボタンです。実行すると、Chrome の設定でセーフ ブラウジングなどを管理できます</translation>
@@ -3654,6 +3654,7 @@
 <translation id="7083258188081898530">トレイ 9</translation>
 <translation id="70846382339153529">OpenDocument テキスト</translation>
 <translation id="7086090958708083563">ユーザーからアップロードがリクエストされました</translation>
+<translation id="7087807086191250928">Gemini は不正確な情報を表示することがあるため、候補を長押しして元のソースをチェックし、この情報が正確であることを確認してください。</translation>
 <translation id="7089745480771070611">サイドパネルで開く</translation>
 <translation id="7090698782953528257">数式を視覚化して曲線の形を確認したいので、関数をグラフ化して</translation>
 <translation id="7092087596499105699">組織のプライベート ウェブ アプリケーションへのアクセスを保護するため、管理者がセキュア ゲートウェイ コネクタを設定しています。アクセスを確認するため、仕事用プロファイルのデータが使用されることがあります。</translation>
@@ -4085,6 +4086,7 @@
 <translation id="7765158879357617694">移動</translation>
 <translation id="7766518757692125295">スカート</translation>
 <translation id="776749070095465053">布</translation>
+<translation id="7770247511810814330">権限を削除</translation>
 <translation id="7772659560036894129">商品名</translation>
 <translation id="7773005668374414287">同じ順序（上向き）</translation>
 <translation id="7779418012194492374"><ph name="DEVICE_NAME" /> へのアクセス権を取り消します</translation>
@@ -4196,7 +4198,6 @@
 <translation id="7961015016161918242">使用しない</translation>
 <translation id="7961493403319780137">この機能の詳細 - Gmail から確認コードを自動入力する</translation>
 <translation id="7962467575542381659">プラットフォーム マシン</translation>
-<translation id="796439090588610411">サポートされているサイトで、Chrome によるこのメールアドレスの自動確認を停止します。</translation>
 <translation id="7966803981046576691">ジョブ管理タイプ</translation>
 <translation id="7967973398323409409">自動入力された情報は誰にも閲覧されません</translation>
 <translation id="79682505114836835">値「<ph name="VALUE" />」は無効な 16 進数色コードです。</translation>
@@ -4322,6 +4323,7 @@
 <translation id="8199437620497683918">光ディスク（光沢）</translation>
 <translation id="8202097416529803614">ご注文概要</translation>
 <translation id="8202370299023114387">競合</translation>
+<translation id="8203105157044679380">Google 検索パネル</translation>
 <translation id="8208363704094329105">300x400 mm</translation>
 <translation id="8208629719488976364">印刷するページのコンテンツとプリンタに関する情報は、分析のため Google Cloud または第三者に送信されます。たとえば、機密データがないかスキャンされ、会社のポリシーに基づいて保存され、管理者に公開されます。</translation>
 <translation id="8210490490377416373">ポリシー名を選択</translation>
@@ -4479,7 +4481,6 @@
 <translation id="8446884382197647889">詳細</translation>
 <translation id="8449036207308062757">ストレージを管理</translation>
 <translation id="8449155699563577224">17x24 インチ</translation>
-<translation id="8449513475775663994">確認済みのメールアドレスを削除しますか？</translation>
 <translation id="8449836157089738489">すべてを新しいタブグループで開く</translation>
 <translation id="8451518040456311377">身分証明書を保存して自動入力する</translation>
 <translation id="84561192812921051">管理者は、ユーザーのプロフィールやブラウザをリモートで変更したり、レポートを通じてブラウザに関する情報を分析したり、その他の必要なタスクを行ったりすることができます。このデバイスでのアクティビティは、Chrome 以外でも管理されている可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>

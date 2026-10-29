@@ -58,7 +58,6 @@ Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que v
 <translation id="2027881372245801507">La désactivation des suggestions ne contrôle pas le traitement des titres des pages ni des URL par Chromium pour d'autres fonctionnalités. Vous pouvez gérer l'accès à ces données dans vos <ph name="BEGIN_LINK" />paramètres de synchronisation<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Connectez-vous à ce site et à Chromium pour accéder à vos mots de passe et bien plus sur tous vos appareils</translation>
 <translation id="2042889939382983733">Afficher votre historique Chromium</translation>
-<translation id="2052320862053429062">Chromium vérifie régulièrement que vos mots de passe ne figurent pas dans les listes qui ont été publiées en ligne. Lors de cette opération, vos mots de passe et vos noms d'utilisateur sont chiffrés afin que personne ne puisse les consulter, y compris Google.</translation>
 <translation id="2059365270911640413">Terminer la configuration de Chromium</translation>
 <translation id="2168108852149185974">Certains modules complémentaires entraînent le plantage de Chromium. Veuillez désinstaller les modules suivants :</translation>
 <translation id="2168593389981132306">Améliorer Chromium</translation>
@@ -69,7 +68,6 @@ Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que v
 <translation id="2236584955986023187">Cela signifie que Chromium demandera la version pour ordinateur à chaque fois.</translation>
 <translation id="2245694534483711162">Gemini peut utiliser votre position exacte, selon l'autorisation que vous avez déjà accordée à Chromium</translation>
 <translation id="2270466829363945454">Acheter</translation>
-<translation id="2313870531055795960">Il vérifie les URL d'après une liste de sites dangereux stockée dans Chromium. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chromium peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la fonctionnalité de navigation sécurisée.</translation>
 <translation id="2314220608288760290">Chromium ouvre automatiquement les liens YouTube en navigation privée en mode navigation privée.</translation>
 <translation id="231828342043114302">Pour recevoir des contenus personnalisés en fonction de vos centres d'intérêt, connectez-vous à Chromium.</translation>
 <translation id="2334943301233020675">Les clés d'accès suivantes n'ont pas été importées dans le Gestionnaire de mots de passe, car elles ne répondent pas aux exigences.</translation>

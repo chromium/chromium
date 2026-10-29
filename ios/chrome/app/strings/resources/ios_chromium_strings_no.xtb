@@ -58,7 +58,6 @@ Du kan ikke lagre nye bokmerker i kontoen din før du sletter noen. Hvis du logg
 <translation id="2027881372245801507">Selv om du slår av forslag, kontrollerer ikke det Chromiums behandling av sidetitler og nettadresser for andre funksjoner. Du kan administrere tilgangen til disse dataene i <ph name="BEGIN_LINK" />synkroniseringsinnstillingene<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Logg på dette nettstedet og Chromium for å få passordene med mer på alle enheter</translation>
 <translation id="2042889939382983733">Se Chromium-loggen din</translation>
-<translation id="2052320862053429062">Chromium sjekker passordene dine regelmessig opp mot lister som er lagt ut på nett. Når dette gjøres, er passordene og brukernavnene dine kryptert. Det betyr at ingen kan lese dem, ikke engang Google.</translation>
 <translation id="2059365270911640413">Fullfør konfigureringen av Chromium</translation>
 <translation id="2168108852149185974">Noen tillegg fører til at Chrome krasjer. Avinstaller dette:</translation>
 <translation id="2168593389981132306">Gjør Chromium bedre</translation>
@@ -69,7 +68,6 @@ Du kan ikke lagre nye bokmerker i kontoen din før du sletter noen. Hvis du logg
 <translation id="2236584955986023187">Dette betyr at Chromium kommer til å forespørre nettstedet for datamaskiner hver gang.</translation>
 <translation id="2245694534483711162">Gemini kan bruke den nøyaktige posisjonen din, avhengig av tillatelsen du allerede har gitt Chromium</translation>
 <translation id="2270466829363945454">Butikk</translation>
-<translation id="2313870531055795960">Kontrollerer nettadresser opp mot en liste i Chromium over utrygge nettsteder. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chromium også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing.</translation>
 <translation id="2314220608288760290">Chromium åpner automatisk YouTube-inkognitolinker i inkognitomodus.</translation>
 <translation id="231828342043114302">For å få personlig tilpasset innhold basert på interessene dine, logg på Chromium.</translation>
 <translation id="2334943301233020675">Følgende passnøkler ble ikke importert til Passordlagring fordi de ikke oppfyller kravene.</translation>

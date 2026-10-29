@@ -337,6 +337,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2332515770639153015">A Navegação segura melhorada está ativada</translation>
 <translation id="233375395665273385">Eliminar e terminar sessão</translation>
 <translation id="2334275697832662087">A segurança baseada em IA do Chrome ajuda a proteger a sua conta contra ameaças online, para que possa navegar com confiança</translation>
+<translation id="2335758110242123814">Abrir grupo</translation>
 <translation id="2341410551640223969">Não foi possível instalar <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Total de dados utilizados pelo Chrome, incluindo contas, marcadores e definições guardadas</translation>
 <translation id="2354001756790975382">Outros marcadores</translation>
@@ -390,7 +391,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2532336938189706096">Visualização na Web</translation>
 <translation id="2535807170289627159">Todos os separadores</translation>
 <translation id="2536728043171574184">Visualização de uma cópia offline desta página</translation>
-<translation id="2537574774089209541">Algumas ferramentas foram movidas para lhe dar acesso fácil ao Gemini enquanto navega</translation>
 <translation id="2539002604555291451">Sans serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, separador de navegação anónima com som desativado fixado selecionado</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, separador</translation>
@@ -1037,6 +1037,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5096775069898886423">Relativamente aos sites que não suportam ligações seguras, receba um aviso antes de visitar o site</translation>
 <translation id="510275257476243843">Falta 1 hora</translation>
 <translation id="5105442806410269908">Gerir outros dados da Google</translation>
+<translation id="5111326646107464148">Abrir o grupo numa nova janela</translation>
 <translation id="5114895953710637392">A página para filtrar por app está fechada.</translation>
 <translation id="5115811374190515607">para <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Pode usar o Chrome sempre que tocar em links de mensagens, documentos e outras apps</translation>
@@ -1606,6 +1607,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="72415438529550637">A sugestão de palavra-passe está fechada.</translation>
 <translation id="724510009481365878">Não é possível imprimir esta página</translation>
 <translation id="7248671827512403053">Aplicação</translation>
+<translation id="7253205084599155458">Apresente a navegação e as ferramentas numa barra de ferramentas inferior para um acesso fácil</translation>
 <translation id="7253951228444156601">A verificar palavras-passe…</translation>
 <translation id="7265857422443387781">Pesquisar separador com Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Quer enviar <ph name="ONE_TIME_CODE" /> para <ph name="ORIGIN" />?</translation>
@@ -1618,7 +1620,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="7291910923717764901">Descrições de imagens adicionadas a esta página.</translation>
 <translation id="7293429513719260019">Selecionar idioma</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, separador a partilhar fixado selecionado</translation>
-<translation id="7304003340539141201">Peça ajuda ao Gemini para gerir os seus separadores e tarefas</translation>
 <translation id="7311244614769792472">Não foram encontrados resultados</translation>
 <translation id="7314734791127433392">Não é possível verificar as palavras-passe</translation>
 <translation id="7324354302972299151">Enviar um pedido "Do Not Track"</translation>
@@ -1754,6 +1755,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="7821130663268546430">Pode encontrar todos os separadores abertos no Switcher de separadores</translation>
 <translation id="7822705602465980873">Quando tem sessão iniciada, estes dados são associados à sua Conta Google para obter proteção nos serviços Google, por exemplo, para aumentar a proteção no Gmail após um incidente de segurança.</translation>
 <translation id="7824665136384946951">A sua organização desativou a Navegação Segura</translation>
+<translation id="782590969421016895">Usar páginas atuais</translation>
 <translation id="7825973332242257878">Grupos de separadores</translation>
 <translation id="7845155831233417403">Pode ter até <ph name="MAX_INSTANCE_COUNT" /> janelas. Feche uma janela para continuar.</translation>
 <translation id="7846161022626028328">Ocorreu um erro. Tente novamente.</translation>
@@ -1986,7 +1988,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8694622119922491927">A app <ph name="APP_NAME" /> precisa de autorização de acesso a dispositivos de interface humana (HIDs) para este site. Pode alterar esta definição mais tarde em Definições &gt; Apps &gt; Acesso especial para apps.</translation>
 <translation id="8696297579102085705">Enviar para o dispositivo</translation>
 <translation id="8699120352855309748">Não se disponibilizar para traduzir estes idiomas</translation>
-<translation id="8700565880437506364">Apresentamos o Gemini no Chrome</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8715286883001906001">Reforce as palavras-passe na sua Conta Google</translation>
 <translation id="8715300232952757586">O separador <ph name="TAB_TITLE" /> vai ser fechado</translation>

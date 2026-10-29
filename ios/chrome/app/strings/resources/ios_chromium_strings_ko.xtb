@@ -58,7 +58,6 @@
 <translation id="2027881372245801507">추천을 사용 중지해도 다른 기능을 위해 Chromium에서 페이지 제목과 URL을 처리하는 방식을 제어하는 데에는 영향을 미치지 않습니다. <ph name="BEGIN_LINK" />동기화 설정<ph name="END_LINK" />에서 이 데이터에 대한 액세스를 관리할 수 있습니다.</translation>
 <translation id="2036929290919363111">모든 기기에서 비밀번호 등을 사용하려면 이 사이트 및 Chromium에 로그인하세요</translation>
 <translation id="2042889939382983733">Chromium 방문 기록 보기</translation>
-<translation id="2052320862053429062">Chromium에서는 온라인에 게시된 비밀번호 목록에 사용자의 비밀번호가 포함되어 있는지를 주기적으로 확인합니다. 이렇게 하면 비밀번호 및 사용자 이름이 암호화되어 Google을 포함해 누구도 읽을 수 없습니다.</translation>
 <translation id="2059365270911640413">Chromium 설정 완료</translation>
 <translation id="2168108852149185974">일부 부가기능이 Chromium의 비정상 종료를 유발합니다. 다음을 제거하세요.</translation>
 <translation id="2168593389981132306">Chromium 개선에 참여</translation>
@@ -69,7 +68,6 @@
 <translation id="2236584955986023187">Chromium에서 데스크톱 사이트를 매번 요청함을 의미합니다</translation>
 <translation id="2245694534483711162">Gemini는 사용자가 Chromium에 이미 부여한 권한에 따라 정확한 위치를 사용할 수 있습니다.</translation>
 <translation id="2270466829363945454">쇼핑</translation>
-<translation id="2313870531055795960">Chromium에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chromium에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="2314220608288760290">Chromium에서 시크릿 모드로 YouTube 시크릿 모드 링크를 자동으로 엽니다</translation>
 <translation id="231828342043114302">내 관심분야를 바탕으로 맞춤설정된 콘텐츠를 받으려면 Chromium에 로그인하세요.</translation>
 <translation id="2334943301233020675">다음 패스키는 요건을 충족하지 않아 비밀번호 관리자로 가져오지 않았습니다.</translation>

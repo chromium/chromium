@@ -337,6 +337,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2332515770639153015">Vylepšené Bezpečné prohlížení je zapnuté</translation>
 <translation id="233375395665273385">Vymazat a odhlásit se</translation>
 <translation id="2334275697832662087">Zabezpečení Chromu s podporou AI vás chrání před online hrozbami a dodává vám při procházení jistotu</translation>
+<translation id="2335758110242123814">Otevřít skupinu</translation>
 <translation id="2341410551640223969">Instalace balíčku <ph name="WEBAPK_NAME" /> se nezdařila.</translation>
 <translation id="2349710944427398404">Celkové množství dat využívané prohlížečem Chrome, včetně účtů, záložek a uložených nastavení</translation>
 <translation id="2354001756790975382">Ostatní záložky</translation>
@@ -390,7 +391,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2532336938189706096">Webové zobrazení</translation>
 <translation id="2535807170289627159">Všechny karty</translation>
 <translation id="2536728043171574184">Prohlížíte offline kopii stránky</translation>
-<translation id="2537574774089209541">Některé nástroje byly přesunuty, abyste měli při prohlížení snadno přístup k Gemini</translation>
 <translation id="2539002604555291451">Bezpatkové</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, vybraná připnutá ztlumená anonymní karta</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, karta</translation>
@@ -1037,6 +1037,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5096775069898886423">Před návštěvou webů, které nepodporují zabezpečená připojení, zobrazit upozornění</translation>
 <translation id="510275257476243843">Zbývá: 1 h</translation>
 <translation id="5105442806410269908">Spravovat další data na Googlu</translation>
+<translation id="5111326646107464148">Otevřít skupinu v novém okně</translation>
 <translation id="5114895953710637392">Panel filtrování podle aplikace je zavřený.</translation>
 <translation id="5115811374190515607">do: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Chrome můžete použít pokaždé, když klepnete na odkazy ve zprávách, dokumentech a ostatních aplikacích</translation>
@@ -1606,6 +1607,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="72415438529550637">Návrh hesla je zavřen.</translation>
 <translation id="724510009481365878">Tuto stránku nelze vytisknout</translation>
 <translation id="7248671827512403053">Aplikace</translation>
+<translation id="7253205084599155458">Zobrazit navigaci a nástroje na spodní liště pro snadný přístup</translation>
 <translation id="7253951228444156601">Kontrola hesel…</translation>
 <translation id="7265857422443387781">Vyhledat kartu pomocí Google Lens <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Odeslat <ph name="ONE_TIME_CODE" /> webu <ph name="ORIGIN" />?</translation>
@@ -1618,7 +1620,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7291910923717764901">Byly přidány popisy obrázků pro tuto stránku</translation>
 <translation id="7293429513719260019">Zvolte jazyk</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, vybraná připnutá sdílející karta</translation>
-<translation id="7304003340539141201">Požádat Gemini o pomoc s kartami a úkoly</translation>
 <translation id="7311244614769792472">Žádné výsledky</translation>
 <translation id="7314734791127433392">Hesla nelze zkontrolovat</translation>
 <translation id="7324354302972299151">Odesílat požadavek Do Not Track</translation>
@@ -1754,6 +1755,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7821130663268546430">Všechny otevřené karty najdete v přepínači karet</translation>
 <translation id="7822705602465980873">Když jste přihlášeni, jsou tato data propojena s vaším účtem Google, aby vás ve službách Google bylo možné lépe chránit, například zvýšit ochranu v Gmailu po bezpečnostním incidentu.</translation>
 <translation id="7824665136384946951">Vaše organizace Bezpečné prohlížení vypnula</translation>
+<translation id="782590969421016895">Použít aktuální stránky</translation>
 <translation id="7825973332242257878">Skupiny karet</translation>
 <translation id="7845155831233417403">Můžete mít maximálně <ph name="MAX_INSTANCE_COUNT" /> oken. Pokud chcete pokračovat, nějaké zavřete.</translation>
 <translation id="7846161022626028328">Došlo k chybě. Zkuste to znovu.</translation>
@@ -1986,7 +1988,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8694622119922491927"><ph name="APP_NAME" /> pro tento web potřebuje oprávnění pro přístup k zařízením s lidským rozhraním (HID). Toto nastavení můžete později změnit v Nastavení &gt; Aplikace &gt; Speciální přístup aplikací.</translation>
 <translation id="8696297579102085705">Odeslat na vaše zařízení</translation>
 <translation id="8699120352855309748">Nenabízet překlad do těchto jazyků</translation>
-<translation id="8700565880437506364">Představujeme Gemini v Chromu</translation>
 <translation id="8712637175834984815">Hotovo</translation>
 <translation id="8715286883001906001">Zesilte hesla ve svém účtu Google</translation>
 <translation id="8715300232952757586">Karta <ph name="TAB_TITLE" /> se zavře</translation>

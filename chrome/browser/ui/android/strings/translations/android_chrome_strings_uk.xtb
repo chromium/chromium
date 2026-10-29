@@ -337,6 +337,7 @@
 <translation id="2332515770639153015">Безпечний перегляд із розширеним захистом увімкнено</translation>
 <translation id="233375395665273385">Видалити й вийти</translation>
 <translation id="2334275697832662087">Система безпеки Chrome на основі ШІ захищає вас від онлайн-загроз, щоб ви могли впевнено переглядати вебконтент</translation>
+<translation id="2335758110242123814">Відкрити групу</translation>
 <translation id="2341410551640223969">Не вдалося встановити додаток <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Усі дані, які використовує Chrome, зокрема облікові записи, закладки та збережені налаштування</translation>
 <translation id="2354001756790975382">Інші закладки</translation>
@@ -390,7 +391,6 @@
 <translation id="2532336938189706096">Веб-версія</translation>
 <translation id="2535807170289627159">Усі вкладки</translation>
 <translation id="2536728043171574184">Перегляд копії сторінки в режимі офлайн</translation>
-<translation id="2537574774089209541">Ми перемістили деякі інструменти, щоб вам було зручніше користуватися Gemini під час вебперегляду</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" /> (вибрана анонімна вкладка, яку закріплено й на якій вимкнено звук)</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" /> (вкладка)</translation>
@@ -1037,6 +1037,7 @@
 <translation id="5096775069898886423">Отримуйте попередження про сайти, які не підтримують захищене підключення, перш ніж переходити на них</translation>
 <translation id="510275257476243843">Залишилась 1 година</translation>
 <translation id="5105442806410269908">Керувати іншими даними Google</translation>
+<translation id="5111326646107464148">Відкрити групу в новому вікні</translation>
 <translation id="5114895953710637392">Панель фільтра додатків закрито.</translation>
 <translation id="5115811374190515607">в <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Ви можете відкривати в Chrome посилання з повідомлень, документів і інших додатків</translation>
@@ -1606,6 +1607,7 @@
 <translation id="72415438529550637">Пропозицію пароля закрито.</translation>
 <translation id="724510009481365878">Цю сторінку не можна надрукувати</translation>
 <translation id="7248671827512403053">Додаток</translation>
+<translation id="7253205084599155458">Показувати елементи навігації і інструменти на нижній панелі для зручного доступу</translation>
 <translation id="7253951228444156601">Перевірка паролів…</translation>
 <translation id="7265857422443387781">Шукати на вкладці через Об’єктив <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Надіслати код <ph name="ONE_TIME_CODE" /> на сайт <ph name="ORIGIN" />?</translation>
@@ -1618,7 +1620,6 @@
 <translation id="7291910923717764901">Додано описи зображень для цієї сторінки</translation>
 <translation id="7293429513719260019">Вибрати мову</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" /> (вибрана закріплена вкладка, до якої надано доступ іншим користувачам)</translation>
-<translation id="7304003340539141201">Попросіть Gemini допомогти з вкладками й завданнями</translation>
 <translation id="7311244614769792472">Результатів не знайдено</translation>
 <translation id="7314734791127433392">Не вдалося перевірити паролі</translation>
 <translation id="7324354302972299151">Надсилати запит Do Not Track</translation>
@@ -1754,6 +1755,7 @@
 <translation id="7821130663268546430">Усі відкриті вкладки можна переглянути в перемикачі</translation>
 <translation id="7822705602465980873">Якщо ви ввійшли у свій обліковий запис Google, ці дані зв’язуються з ним. Завдяки цьому ми можемо захищати вас у всіх сервісах Google, наприклад підвищити захист у Gmail після інциденту безпеки.</translation>
 <translation id="7824665136384946951">Ваша організація вимкнула Безпечний перегляд</translation>
+<translation id="782590969421016895">Використати поточні сторінки</translation>
 <translation id="7825973332242257878">Групи вкладок</translation>
 <translation id="7845155831233417403">Максимальна кількість вікон: <ph name="MAX_INSTANCE_COUNT" />. Щоб продовжити, закрийте вікно.</translation>
 <translation id="7846161022626028328">Сталася помилка. Повторіть спробу.</translation>
@@ -1986,7 +1988,6 @@
 <translation id="8694622119922491927">Додаток <ph name="APP_NAME" /> запитує доступ до пристроїв взаємодії з людиною (HID) для цього сайту. Цей параметр можна змінити пізніше в розділі "Налаштування" &gt; "Додатки" &gt; "Спеціальний доступ".</translation>
 <translation id="8696297579102085705">Надіслати на ваш пристрій</translation>
 <translation id="8699120352855309748">Не пропонувати перекладати ці мови</translation>
-<translation id="8700565880437506364">Представляємо Gemini у Chrome</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8715286883001906001">Зробіть паролі в обліковому записі Google надійнішими</translation>
 <translation id="8715300232952757586">Вкладку "<ph name="TAB_TITLE" />" буде закрито</translation>

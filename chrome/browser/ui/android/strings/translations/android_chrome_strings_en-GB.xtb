@@ -337,6 +337,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2332515770639153015">Enhanced Safe Browsing is on</translation>
 <translation id="233375395665273385">Delete and sign out</translation>
 <translation id="2334275697832662087">Chrome's AI-powered security helps protect you against online threats, giving you confidence as you browse</translation>
+<translation id="2335758110242123814">Open group</translation>
 <translation id="2341410551640223969">Couldn’t install <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Total data used by Chrome, including accounts, bookmarks and saved settings</translation>
 <translation id="2354001756790975382">Other bookmarks</translation>
@@ -390,7 +391,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2532336938189706096">Web View</translation>
 <translation id="2535807170289627159">All tabs</translation>
 <translation id="2536728043171574184">Viewing an offline copy of this page</translation>
-<translation id="2537574774089209541">Some tools have moved to give you easy access to Gemini while you browse</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, selected pinned muted Incognito tab</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, tab</translation>
@@ -1037,6 +1037,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5096775069898886423">For sites that don't support secure connections, get warned before visiting the site</translation>
 <translation id="510275257476243843">1 hour left</translation>
 <translation id="5105442806410269908">Manage other Google data</translation>
+<translation id="5111326646107464148">Open group in new window</translation>
 <translation id="5114895953710637392">App filter sheet is closed.</translation>
 <translation id="5115811374190515607">to <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">You can use Chrome any time that you tap links in messages, documents and other apps</translation>
@@ -1606,6 +1607,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="72415438529550637">Password suggestion is closed.</translation>
 <translation id="724510009481365878">This page can't be printed</translation>
 <translation id="7248671827512403053">Application</translation>
+<translation id="7253205084599155458">Display navigation and tools in a bottom toolbar for easy access</translation>
 <translation id="7253951228444156601">Checking passwords…</translation>
 <translation id="7265857422443387781">Search tab with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Submit <ph name="ONE_TIME_CODE" /> to <ph name="ORIGIN" />?</translation>
@@ -1618,7 +1620,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7291910923717764901">Image descriptions added for this page</translation>
 <translation id="7293429513719260019">Select language</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, selected pinned sharing tab</translation>
-<translation id="7304003340539141201">Ask Gemini to help with your tabs and tasks</translation>
 <translation id="7311244614769792472">No results found</translation>
 <translation id="7314734791127433392">Can't check passwords</translation>
 <translation id="7324354302972299151">Send a 'Do Not Track' request</translation>
@@ -1754,6 +1755,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7821130663268546430">You can find all open tabs in the Tab Switcher</translation>
 <translation id="7822705602465980873">When you're signed in, this data is linked to your Google Account to protect you across Google services, for example increased protection in Gmail after a security incident.</translation>
 <translation id="7824665136384946951">Your organisation has turned off Safe Browsing</translation>
+<translation id="782590969421016895">Use current pages</translation>
 <translation id="7825973332242257878">Tab groups</translation>
 <translation id="7845155831233417403">You can have up to <ph name="MAX_INSTANCE_COUNT" /> windows. Close a window to continue.</translation>
 <translation id="7846161022626028328">There was an error. Try again.</translation>
@@ -1986,7 +1988,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8694622119922491927"><ph name="APP_NAME" /> needs permission to access human interface devices (HIDs) for this site. You can change this setting later in Settings &gt; Apps &gt; Special app access.</translation>
 <translation id="8696297579102085705">Send to your device</translation>
 <translation id="8699120352855309748">Don’t offer to translate these languages</translation>
-<translation id="8700565880437506364">Introducing Gemini in Chrome</translation>
 <translation id="8712637175834984815">Got it</translation>
 <translation id="8715286883001906001">Strengthen your passwords in your Google Account</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> will be closed</translation>

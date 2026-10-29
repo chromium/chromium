@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">Bawa serta data Anda dari Safari</translation>
 <translation id="2526166285241366046">Simpan sandi</translation>
 <translation id="2529021024822217800">Buka Semua</translation>
-<translation id="2530932541542751783">Terjadi error pada setelan ini. Update dan mulai ulang Chrome serta iPadOS, lalu coba lagi. Jika error ini terus terjadi, iPad Anda mungkin tidak mendukung setelan ini.</translation>
 <translation id="2536991091671391962">Anda dapat menggunakan sandi tersimpan di semua perangkat. Sandi disimpan ke Pengelola Sandi Google untuk <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Sandi tersembunyi</translation>
 <translation id="2538705697765638552">Simpan info Anda dan lakukan berbagai hal lebih cepat, misalnya mengisi formulir di produk-produk Google. Anda dapat mengelola info Anda di Google Wallet untuk <ph name="USER_EMAIL" />.</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">Visualisasikan dan edit</translation>
 <translation id="3485558910355485767">Jendela Samaran Baru</translation>
 <translation id="3488501490964659223">Tab ditutup dan data penjelajahan dihapus. Anda telah logout</translation>
-<translation id="3490396108106323715">Bagikan tab saat ini</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /> konten yang disarankan</translation>
 <translation id="349446645805573740">Pilih tempat untuk menyimpan "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
 <translation id="3504377992102007712">Setelan</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">Tidak dapat memuat gambar</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> dari <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Simpan dengan cara lain</translation>
-<translation id="3572503683475187385">Tab saat ini dibagikan kepada Gemini saat Anda memulai percakapan baru. Saat Anda membagikan tab kepada Gemini, konten dan URL-nya akan dikirim ke Google. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Di Akun Google Anda</translation>
 <translation id="3575234738189584619">Telusuri dengan Lens</translation>
 <translation id="3575426792457739946">Daftar ini berisi semua profil yang dimuat.</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">Tampilkan Bantuan</translation>
 <translation id="4095483462103784441">Buat grup tab baru</translation>
 <translation id="4099756562043439968">Setel Pengingat</translation>
-<translation id="4108998448622696017">Mendeteksi dan memberikan peringatan terkait peristiwa berbahaya ketika terjadi.</translation>
 <translation id="4111985840824673503">Tandai semua telah dibaca</translation>
 <translation id="411254640334432676">Download gagal.</translation>
 <translation id="4112644173421521737">Telusuri</translation>
@@ -1169,6 +1165,7 @@
 <translation id="4658335131052370646">Simpan</translation>
 <translation id="465947902531722727">Ganti Profil</translation>
 <translation id="466307903888586355">Penyimpanan file diblokir oleh organisasi Anda</translation>
+<translation id="4665303625242639572">Tutup <ph name="PAGE_TITLE" /></translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Organisasi mengharuskan Anda menjelajah secara pribadi. Grup tab tidak disinkronkan dalam mode Samaran.
 <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
@@ -1286,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Warna grup tab <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Salin sandi</translation>
+<translation id="5007392906805964215">Tinjau</translation>
 <translation id="5009127379503001909">Terus jelajahi</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Kirim ke <ph name="USER_EMAIL" /></translation>
@@ -1938,7 +1936,6 @@ Untuk melanjutkan dari komputer, beralihlah ke <ph name="OTHER_EMAIL" />. Anda a
 <translation id="6938212956536472404">Tab ini tidak dapat dibagikan</translation>
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="6946722113367118030">Berpikir</translation>
-<translation id="6947751977892029882">Terjadi error pada setelan ini. Update dan mulai ulang Chrome serta iOS, lalu coba lagi. Jika error ini terus terjadi, iPhone Anda mungkin tidak mendukung setelan ini.</translation>
 <translation id="6950522403736391608">Tersembunyi</translation>
 <translation id="6957084631403333422">Coba halaman tab baru yang difokuskan</translation>
 <translation id="695965663642079255">Simpan dan kelola info pembayaran untuk checkout yang lebih cepat</translation>
@@ -2189,7 +2186,6 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="7758789811447313947">Tema violet</translation>
 <translation id="7759809451544302770">Opsional</translation>
 <translation id="7765158879357617694">Pindahkan</translation>
-<translation id="7767651976342854115">Setelan penggunaan data mengalami error.</translation>
 <translation id="7768507955883790804">Situs akan otomatis mengikuti setelan ini saat Anda mengunjunginya</translation>
 <translation id="7772032839648071052">Konfirmasi frasa sandi</translation>
 <translation id="7772948288262733182">Selamat datang kembali</translation>
@@ -2502,7 +2498,6 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="8674716540979958118">Anda memiliki sandi yang telah dibobol.</translation>
 <translation id="8679900250380464358">Tambahkan ke Daftar Bacaan</translation>
 <translation id="8680643216091361291">Setelan <ph name="BEGIN_LINK" />Simpan Aktivitas<ph name="END_LINK" /> Anda dinonaktifkan secara default. Jika setelan ini dinonaktifkan, Google akan menyimpan percakapan Anda selama 3 hari. Kami menggunakannya untuk memastikan Aplikasi Gemini berfungsi dengan benar, membantu menjaganya tetap aman, dan menggunakan masukan Anda untuk memperbaiki masalah. Anda dapat mengaktifkan setelan Simpan Aktivitas untuk membantu meningkatkan kualitas AI Google bagi semua orang.</translation>
-<translation id="8680786875305615692">Bantu tingkatkan keamanan di Web untuk semuanya</translation>
 <translation id="8680787084697685621">Detail proses masuk akun sudah usang.</translation>
 <translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" tidak diizinkan mengakses mikrofon Anda</translation>
 <translation id="8690752723634292147">Konfirmasi penghapusan</translation>
@@ -2578,7 +2573,6 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="8888595487174963247">Hapus Pengingat</translation>
 <translation id="8890516388109605451">Sumber</translation>
 <translation id="8893208530912252670">Video</translation>
-<translation id="8898822736010347272">Kirim URL beberapa halaman yang Anda kunjungi, informasi sistem terbatas, dan beberapa konten halaman ke Google untuk membantu menemukan ancaman baru dan melindungi semua orang di web.</translation>
 <translation id="890009681345348416">40+ sandi diisi otomatis</translation>
 <translation id="8900845556227858314">Aplikasi Browser</translation>
 <translation id="890565330728586731">Kembali</translation>
@@ -2609,6 +2603,7 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="8976414606286374109">Kartu disimpan ke Akun Google Anda.</translation>
 <translation id="8981454092730389528">Kontrol Aktivitas Google</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, situs yang disematkan</translation>
+<translation id="8989779557457435460">Bagikan tab saat ini secara default</translation>
 <translation id="8990960056509724223">File tidak dapat disimpan karena kebijakan organisasi Anda</translation>
 <translation id="8998289560386111590">Tidak tersedia di perangkat Anda</translation>
 <translation id="9003677638446136377">Periksa lagi</translation>

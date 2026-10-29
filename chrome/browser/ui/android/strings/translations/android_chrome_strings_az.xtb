@@ -337,6 +337,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="2332515770639153015">Qabaqcıl Güvənli Baxış aktivdir</translation>
 <translation id="233375395665273385">Silin və çıxın</translation>
 <translation id="2334275697832662087">Chrome-un Sİ dəstəkli təhlükəsizliyi onlayn təhdidlərə qarşı qorunmağa kömək edir və axtarış zamanı güvən hissi yaradır</translation>
+<translation id="2335758110242123814">Qrupu açın</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> tətbiqini quraşdırmaq mümkün olmadı.</translation>
 <translation id="2349710944427398404">Hesablar, əlfəcinlər və yadda saxlanılan ayarlar daxil olmaqla, Chrome tərəfindən istifadə olunmuş ümumi data</translation>
 <translation id="2354001756790975382">Digər əlfəcinlər</translation>
@@ -390,7 +391,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="2532336938189706096">Veb Görünüşü</translation>
 <translation id="2535807170289627159">Bütün tablar</translation>
 <translation id="2536728043171574184">Bu səhifənin oflayn nüsxəsinə baxılır</translation>
-<translation id="2537574774089209541">Axtarış edərkən Gemini-a asanlıqla daxil olmaq üçün bəzi alətlər köçürülüb</translation>
 <translation id="2539002604555291451">Sans serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, Seçilmiş, bərkidilmiş, susdurulmuş anonim tab</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, tab</translation>
@@ -1037,6 +1037,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="5096775069898886423">Güvənli bağlantıları dəstəkləməyən saytlarda sayta daxil olmamışdan əvvəl xəbərdarlıq alın</translation>
 <translation id="510275257476243843">1 saat qaldı</translation>
 <translation id="5105442806410269908">Digər Google datasını idarə edin</translation>
+<translation id="5111326646107464148">Qrupu yeni pəncərədə açın</translation>
 <translation id="5114895953710637392">Tətbiq filtri vərəqi bağlıdır.</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> məkanına</translation>
 <translation id="5116239826668864748">İstənilən vaxt mesaj, sənəd və digər tətbiqlərdə keçidlərə toxunduqda Chrome istifadə edə bilərsiniz</translation>
@@ -1617,7 +1618,6 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="7291910923717764901">Bu səhifə üçün şəkil təsvirləri əlavə edildi</translation>
 <translation id="7293429513719260019">Dil seçin</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, Seçilmiş, bərkidilmiş paylaşım tabı</translation>
-<translation id="7304003340539141201">Gemini-dan tab və tapşırıqlarınızla bağlı kömək etməsini istəyin</translation>
 <translation id="7311244614769792472">Nəticə tapılmadı</translation>
 <translation id="7314734791127433392">Parolları yoxlamaq olmur</translation>
 <translation id="7324354302972299151">"Do Not Track" sorğusu göndərin</translation>
@@ -1753,6 +1753,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="7821130663268546430">Açıq tabları tab keçiricisində tapa bilərsiniz</translation>
 <translation id="7822705602465980873">Daxil olduqda sizi Google xidmətlərində qorumaq üçün bu data Google Hesabı ilə əlaqələndirilir. Məsələn, təhlükəsizlik insidentindən sonra Gmail-də qoruma artırılır.</translation>
 <translation id="7824665136384946951">Təşkilat Güvənli Baxışı deaktiv edib</translation>
+<translation id="782590969421016895">Cari səhifələri işlədin</translation>
 <translation id="7825973332242257878">Tab qrupları</translation>
 <translation id="7845155831233417403">Maksimum <ph name="MAX_INSTANCE_COUNT" /> pəncərəniz ola bilər. Davam etmək üçün pəncərəni bağlayın.</translation>
 <translation id="7846161022626028328">Xəta baş verdi. Yenidən cəhd edin.</translation>
@@ -1985,7 +1986,6 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8694622119922491927"><ph name="APP_NAME" /> bu sayt üçün insan interfeysi cihazlarına (HID) daxil olmaq icazəsi tələb edir. Bu ayarı daha sonra Ayarlar &gt; Tətbiqlər &gt; Xüsusi tətbiq girişi bölməsində dəyişə bilərsiniz.</translation>
 <translation id="8696297579102085705">Cihazınıza göndərin</translation>
 <translation id="8699120352855309748">Bu dillərin tərcümə edilməsini təklif etməyin</translation>
-<translation id="8700565880437506364">Chrome-da Gemini ilə tanış olun</translation>
 <translation id="8712637175834984815">Anladım</translation>
 <translation id="8715286883001906001">Google Hesabınızda parollarınızı gücləndirin</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> bağlanacaq</translation>

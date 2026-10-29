@@ -337,6 +337,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2332515770639153015">Penyemakan Imbas Selamat Dipertingkat dihidupkan</translation>
 <translation id="233375395665273385">Padamkan dan log keluar</translation>
 <translation id="2334275697832662087">Keselamatan Chrome yang dikuasakan AI melindungi anda daripada ancaman dalam talian serta memberi anda keyakinan semasa anda menyemak imbas</translation>
+<translation id="2335758110242123814">Buka kumpulan</translation>
 <translation id="2341410551640223969">Tidak dapat memasang <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Jumlah data yang digunakan oleh Chrome, termasuk akaun, penanda halaman dan tetapan yang disimpan</translation>
 <translation id="2354001756790975382">Penanda halaman lain</translation>
@@ -390,7 +391,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2532336938189706096">Paparan Web</translation>
 <translation id="2535807170289627159">Semua tab</translation>
 <translation id="2536728043171574184">Melihat salinan luar talian halaman ini</translation>
-<translation id="2537574774089209541">Beberapa alatan telah dialihkan untuk memberi anda akses mudah kepada Gemini semasa anda menyemak imbas kandungan</translation>
 <translation id="2539002604555291451">Sans serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, Tab Inkognito Diredamkan Dan Tersemat Yang Dipilih</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, Tab</translation>
@@ -1037,6 +1037,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5096775069898886423">Untuk laman yang tidak menyokong sambungan selamat, dapatkan amaran sebelum melawat laman tersebut</translation>
 <translation id="510275257476243843">1 jam lagi</translation>
 <translation id="5105442806410269908">Urus data Google lain</translation>
+<translation id="5111326646107464148">Buka kumpulan dalam tetingkap baharu</translation>
 <translation id="5114895953710637392">Helaian penapis apl ditutup.</translation>
 <translation id="5115811374190515607">ke <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Anda boleh menggunakan Chrome pada bila-bila masa anda mengetik pautan dalam mesej, dokumen dan apl lain</translation>
@@ -1619,7 +1620,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7291910923717764901">Perihalan imej ditambah untuk halaman ini</translation>
 <translation id="7293429513719260019">Pilih bahasa</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, Tab Perkongsian Yang Tersemat Dan Dipilih</translation>
-<translation id="7304003340539141201">Minta Gemini membantu anda berkenaan dengan tab dan tugasan anda</translation>
 <translation id="7311244614769792472">Tiada hasil ditemukan</translation>
 <translation id="7314734791127433392">Tidak dapat menyemak kata laluan</translation>
 <translation id="7324354302972299151">Hantar permintaan "Do Not Track"</translation>
@@ -1755,6 +1755,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7821130663268546430">Anda boleh menemukan semua tab yang dibuka dalam penukar tab</translation>
 <translation id="7822705602465980873">Apabila anda log masuk, data ini akan dipautkan kepada Google Account anda untuk melindungi anda merentas perkhidmatan Google, contohnya meningkatkan perlindungan dalam Gmail selepas insiden keselamatan.</translation>
 <translation id="7824665136384946951">Organisasi anda mematikan Penyemakan Imbas Selamat</translation>
+<translation id="782590969421016895">Gunakan halaman semasa</translation>
 <translation id="7825973332242257878">Kumpulan tab</translation>
 <translation id="7845155831233417403">Anda boleh membuka hingga <ph name="MAX_INSTANCE_COUNT" /> tetingkap. Tutup tetingkap untuk teruskan.</translation>
 <translation id="7846161022626028328">Terdapat ralat. Cuba lagi.</translation>
@@ -1987,7 +1988,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8694622119922491927"><ph name="APP_NAME" /> memerlukan kebenaran untuk mengakses peranti antara muka manusia (HID) untuk laman ini. Anda boleh menukar tetapan ini kemudian dalam Tetapan &gt; Apl &gt; Akses apl khas.</translation>
 <translation id="8696297579102085705">Hantar kepada peranti anda</translation>
 <translation id="8699120352855309748">Jangan tawarkan untuk menterjemahkan bahasa ini</translation>
-<translation id="8700565880437506364">Memperkenalkan Gemini dalam Chrome</translation>
 <translation id="8712637175834984815">Faham</translation>
 <translation id="8715286883001906001">Kukuhkan kata laluan anda dalam Google Account anda</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> akan ditutup</translation>

@@ -96,7 +96,6 @@
 <translation id="1165174597379888365">Visítase unha páxina</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Ningún}=1{De 1 sitio (seguirás tendo a sesión iniciada na túa Conta de Google)}other{De # sitios (seguirás tendo a sesión iniciada na túa Conta de Google)}}</translation>
 <translation id="1167877250265821930">Non se puido descargar: <ph name="LANGUAGE" /></translation>
-<translation id="1171306609584863516">Verificado por <ph name="IDP_ORIGIN" /></translation>
 <translation id="1174644974616730562">Sobre chinés n.º 1</translation>
 <translation id="1174723505405632867">Queres permitir que <ph name="EMBEDDED_URL" /> utilice as cookies e os datos dos sitios en <ph name="TOP_LEVEL_URL" />?
 
@@ -585,6 +584,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1988881251331415125">Se está ben escrito, podes <ph name="BEGIN_LINK" />probar a executar diagnósticos de conectividade<ph name="END_LINK" />.</translation>
 <translation id="1991370806334788445">Proba a permitir as cookies de terceiros. Terás menos protección durante a navegación, pero é máis probable que as funcións do sitio marchen segundo o previsto.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
+<translation id="1996557034791506430">Queres eliminar o permiso?</translation>
 <translation id="1997484222658892567">O URL <ph name="URL" /> quere almacenar un gran volume de datos de forma permanente no teu ordenador local</translation>
 <translation id="1997774360448418989">Papel (lixeiro)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{e 1 máis}other{e # máis}}</translation>
@@ -1206,6 +1206,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3030331669969285614">Estas funcións experimentais evitan ou desfán un cambio que pode provocar fallos e só están dispoñibles durante tempo limitado.</translation>
 <translation id="3033200136993730761">O teu enderezo particular pode axudarche a facer cousas nos servizos de Google, como obter resultados de busca máis relevantes e indicacións en Google Maps. Podes editalo ou eliminalo na túa <ph name="BEGIN_LINK" />Conta de Google (<ph name="ACCOUNT" />)<ph name="END_LINK" />.</translation>
 <translation id="3033777742142108756">Permiso concedido para usar os sensores de movemento e de luz por agora</translation>
+<translation id="3034219227076811559">Busca de Google en Chrome</translation>
 <translation id="3034526003882782781">Desprazamento e zoom permitidos</translation>
 <translation id="3037177537145227281">Estase facendo un seguimento do prezo</translation>
 <translation id="3037605927509011580">Vaia!</translation>
@@ -2309,7 +2310,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="484462545196658690">Automático</translation>
 <translation id="4844937814014739139">Desprazarse por pestanas compartidas e achegalas</translation>
 <translation id="484988093836683706">Usar desbloqueo do dispositivo</translation>
-<translation id="4850669014075537160">Desprazamento</translation>
 <translation id="4850886885716139402">Vista</translation>
 <translation id="4854853140771946034">Crear rapidamente unha nota nova en Google Keep</translation>
 <translation id="4855395119669662878">A persoa administradora comezará a cargar ficheiros en <ph name="CLOUD_PROVIDER" /> á/s <ph name="DATE_TIME" />. Mantén o dispositivo conectado ata que acabe o proceso. Durante a carga, só poderás ler os ficheiros locais.</translation>
@@ -2911,7 +2911,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5826507051599432481">Nome común (NC)</translation>
 <translation id="5830698870816298009">uso e movemento da cámara</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
-<translation id="5832976493438355584">Bloqueado</translation>
 <translation id="5837220895135257862">Libera espazo en <ph name="CLOUD_PROVIDER" /> e téntao de novo</translation>
 <translation id="5838278095973806738">Non debes introducir información confidencial neste sitio (por exemplo, contrasinais ou tarxetas de crédito), xa que os atacantes poden roubala.</translation>
 <translation id="5838732667866024867">Podes usar a frecha dereita ou esquerda para revisar os cambios de prezo no gráfico</translation>
@@ -3504,6 +3503,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6834757537110528125">Este sitio non admite unha conexión segura</translation>
 <translation id="6841864657731852591">Cilindro de gravado</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
+<translation id="6843919992766261684">A partir de agora, <ph name="ISSUER" /> deixará de confirmar automaticamente este correo electrónico</translation>
 <translation id="6844746916504777213">Non compartir nunca estes sitios</translation>
 <translation id="6844998850832008753">O seguimento das mans está permitido neste momento</translation>
 <translation id="6849023911358004088">Botón para xestionar a configuración de seguranza. Actívao para xestionar Navegación segura e outras opcións na configuración de Chrome</translation>
@@ -3654,6 +3654,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="7083258188081898530">Bandexa 9</translation>
 <translation id="70846382339153529">Texto de OpenDocument</translation>
 <translation id="7086090958708083563">O usuario solicitou a carga</translation>
+<translation id="7087807086191250928">Gemini pode cometer erros. Mantén premida a suxestión para revisar a fonte orixinal e asegurarte de que esta información sexa correcta.</translation>
 <translation id="7089745480771070611">Ábrese no panel lateral</translation>
 <translation id="7090698782953528257">Axúdame a representar graficamente unha función para visualizar a ecuación matemática e ver a forma da curva</translation>
 <translation id="7092087596499105699">A persoa administradora configurou o conector de pasarela segura para protexer o acceso ás aplicacións web privadas da túa organización. Este pode utilizar datos do teu perfil de traballo para verificar o acceso.</translation>
@@ -4084,6 +4085,7 @@ Detalles adicionais:
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7766518757692125295">Saia</translation>
 <translation id="776749070095465053">Tecido</translation>
+<translation id="7770247511810814330">Eliminar o permiso</translation>
 <translation id="7772659560036894129">Nomes de produtos</translation>
 <translation id="7773005668374414287">A mesma orde cara arriba</translation>
 <translation id="7779418012194492374">Revogar o acceso a <ph name="DEVICE_NAME" /></translation>
@@ -4195,7 +4197,6 @@ Detalles adicionais:
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7961493403319780137">Máis información sobre esta función: Autocompletar os códigos de verificación de Gmail</translation>
 <translation id="7962467575542381659">Máquina da plataforma</translation>
-<translation id="796439090588610411">Chrome deixará de confirmar automaticamente este correo electrónico nos sitios admitidos.</translation>
 <translation id="7966803981046576691">Tipo de conta para o traballo</translation>
 <translation id="7967973398323409409">Ninguén pode ver a información que autocompletas</translation>
 <translation id="79682505114836835">O valor "<ph name="VALUE" />" é unha cor hexadecimal non válida.</translation>
@@ -4321,6 +4322,7 @@ Detalles adicionais:
 <translation id="8199437620497683918">Disco óptico (brillo)</translation>
 <translation id="8202097416529803614">Resumo do pedido</translation>
 <translation id="8202370299023114387">Conflito</translation>
+<translation id="8203105157044679380">Panel da Busca de Google</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
 <translation id="8208629719488976364">O contido das páxinas que imprimas e a información sobre a impresora enviaranse a Google Cloud ou a terceiros para a súa análise. Por exemplo, poderían examinarse para ver se conteñen datos confidenciais e almacenarse en función das políticas da empresa. Tamén podería velos a persoa administradora.</translation>
 <translation id="8210490490377416373">Seleccionar nome da política</translation>
@@ -4478,7 +4480,6 @@ Detalles adicionais:
 <translation id="8446884382197647889">Máis información</translation>
 <translation id="8449036207308062757">Xestionar almacenamento</translation>
 <translation id="8449155699563577224">17 x 24 polgadas</translation>
-<translation id="8449513475775663994">Queres quitar o correo electrónico verificado?</translation>
 <translation id="8449836157089738489">Abrir todo nun grupo de pestanas novo</translation>
 <translation id="8451518040456311377">Gardar e completar os documentos de identidade</translation>
 <translation id="84561192812921051">A persoa administradora pode facer cambios no teu perfil e no teu navegador de forma remota, analizar información sobre o navegador mediante informes e realizar outras tarefas necesarias. A actividade deste dispositivo tamén se pode xestionar fóra de Chrome.  <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>

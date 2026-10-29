@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">Importar os teus datos de Safari</translation>
 <translation id="2526166285241366046">Gardar un contrasinal</translation>
 <translation id="2529021024822217800">Abrir todo</translation>
-<translation id="2530932541542751783">Produciuse un erro con esta opción de configuración. Actualiza e reinicia Chrome e iPadOS, e téntao de novo. Se o erro persiste, é posible que o teu iPad non sexa compatible con esta opción de configuración.</translation>
 <translation id="2536991091671391962">Podes usar os contrasinais gardados en calquera dispositivo. Estes gárdanse no xestor de contrasinais de Google asociado a <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Contrasinal oculto</translation>
 <translation id="2538705697765638552">Garda a túa información e realiza tarefas máis rápido, como completar formularios nos produtos de Google. Podes xestionar a túa información en Google Wallet de <ph name="USER_EMAIL" />.</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">Visualiza e edita</translation>
 <translation id="3485558910355485767">Nova ventá do modo de incógnito</translation>
 <translation id="3488501490964659223">Pecháronse as pestanas e elimináronse os datos de navegación. Pechouse a túa sesión</translation>
-<translation id="3490396108106323715">Compartir a pestana actual</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /> acerca do contido suxerido</translation>
 <translation id="349446645805573740">Escolle onde queres gardar <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /></translation>
 <translation id="3504377992102007712">Configuración</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">Non se puideron cargar as imaxes</translation>
 <translation id="3565930036634619844">Pestana. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Gardar doutro xeito</translation>
-<translation id="3572503683475187385">A pestana actual compártese con Gemini ao iniciar un novo chat. Cando iso sucede, envíanse a Google o seu contido e os URL. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Na túa Conta de Google</translation>
 <translation id="3575234738189584619">Buscar con Lens</translation>
 <translation id="3575426792457739946">Esta lista contén todos os perfís cargados.</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">Mostrar axuda:</translation>
 <translation id="4095483462103784441">Crear grupo de pestanas</translation>
 <translation id="4099756562043439968">Definir un recordatorio</translation>
-<translation id="4108998448622696017">Móstrache unha advertencia cando detecta eventos perigosos.</translation>
 <translation id="4111985840824673503">Marcar todo como lido</translation>
 <translation id="411254640334432676">Erro na descarga.</translation>
 <translation id="4112644173421521737">Buscar</translation>
@@ -1169,6 +1165,7 @@
 <translation id="4658335131052370646">Gardar</translation>
 <translation id="465947902531722727">Cambiar de perfil</translation>
 <translation id="466307903888586355">A túa organización bloqueou a opción de gardar ficheiros</translation>
+<translation id="4665303625242639572">Pechar <ph name="PAGE_TITLE" /></translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Segundo as políticas da túa organización, debes navegar de forma privada. Os grupos de pestanas non se sincronizarán no modo de incógnito.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
@@ -1286,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Tocar a cor do grupo <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Copiar contrasinal</translation>
+<translation id="5007392906805964215">Revisar</translation>
 <translation id="5009127379503001909">Seguir explorando</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Enviaranse a <ph name="USER_EMAIL" /></translation>
@@ -1938,7 +1936,6 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="6938212956536472404">Non se pode compartir esta pestana</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6946722113367118030">Pensar</translation>
-<translation id="6947751977892029882">Produciuse un erro con esta opción de configuración. Actualiza e reinicia Chrome e iOS, e téntao de novo. Se o erro persiste, é posible que o teu iPhone non sexa compatible con esta opción de configuración.</translation>
 <translation id="6950522403736391608">Ocultos</translation>
 <translation id="6957084631403333422">Proba un deseño enfocado da páxina Nova pestana</translation>
 <translation id="695965663642079255">Garda e xestiona a información de pago para tramitar as compras máis rápido</translation>
@@ -2189,7 +2186,6 @@ Podes reinicialo cando queiras.</translation>
 <translation id="7758789811447313947">Tema violeta</translation>
 <translation id="7759809451544302770">Opcionais</translation>
 <translation id="7765158879357617694">Mover</translation>
-<translation id="7767651976342854115">Produciuse un erro na configuración do uso de datos.</translation>
 <translation id="7768507955883790804">Esta opción de configuración aplicarase automaticamente aos sitios cando os visites</translation>
 <translation id="7772032839648071052">Confirmar frase de acceso</translation>
 <translation id="7772948288262733182">Dámosche a benvida de novo</translation>
@@ -2502,7 +2498,6 @@ Podes reinicialo cando queiras.</translation>
 <translation id="8674716540979958118">Tes contrasinais vulnerados.</translation>
 <translation id="8679900250380464358">Engadir á lista de lectura</translation>
 <translation id="8680643216091361291">A opción de configuración <ph name="BEGIN_LINK" />Manter actividade<ph name="END_LINK" /> está desactivada de forma predeterminada. Nese estado, Google gardará os teus chats durante 3 días e usaraos para que as aplicacións Gemini funcionen correctamente e sexan seguras, e para solucionar problemas a partir dos comentarios que fagas. Podes activar Manter actividade co fin de axudar a mellorar a IA de Google para todo o mundo.</translation>
-<translation id="8680786875305615692">Axudar a mellorar a seguranza na Web para todos</translation>
 <translation id="8680787084697685621">Os detalles de inicio de sesión da conta están caducados.</translation>
 <translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" non ten permiso para acceder ao micrófono</translation>
 <translation id="8690752723634292147">Confirmar eliminación</translation>
@@ -2578,7 +2573,6 @@ Podes reinicialo cando queiras.</translation>
 <translation id="8888595487174963247">Quitar recordatorio</translation>
 <translation id="8890516388109605451">Fontes</translation>
 <translation id="8893208530912252670">Vídeos</translation>
-<translation id="8898822736010347272">Envía os URL dalgunhas páxinas que visites, información limitada do sistema e certo contido das páxinas a Google para axudar a descubrir novas ameazas e protexer todos os usuarios da Web.</translation>
 <translation id="890009681345348416">Autocompletáronse máis de 40 contrasinais</translation>
 <translation id="8900845556227858314">Aplicación do navegador</translation>
 <translation id="890565330728586731">Atrás</translation>
@@ -2609,6 +2603,7 @@ Podes reinicialo cando queiras.</translation>
 <translation id="8976414606286374109">As tarxetas gárdanse na túa Conta de Google.</translation>
 <translation id="8981454092730389528">Controis de actividade de Google</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, sitio fixado</translation>
+<translation id="8989779557457435460">Compartir pestana actual de forma predeterminada</translation>
 <translation id="8990960056509724223">Non se puido gardar o ficheiro debido ás políticas da túa organización</translation>
 <translation id="8998289560386111590">Non está dispoñible no teu dispositivo</translation>
 <translation id="9003677638446136377">Comprobar de novo</translation>

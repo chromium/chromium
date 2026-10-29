@@ -337,6 +337,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2332515770639153015">Saytlarni kuchaytirilgan rejimda xavfsiz kezish rejimi yoniq</translation>
 <translation id="233375395665273385">Oʻchirish va hisobdan chiqish</translation>
 <translation id="2334275697832662087">Chrome brauzerining AI imkoniyatli xavfsizlik tizimi sizni onlayn tahdidlardan himoya qilishga yordam beradi va internetni ishonch bilan kezish imkonini beradi</translation>
+<translation id="2335758110242123814">Guruhni ochish</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> oʻrnatilmadi.</translation>
 <translation id="2349710944427398404">Chrome foydalanadigan barcha ma’lumotlar: hisoblar, xatcho‘plar va saqlangan sozlamalar</translation>
 <translation id="2354001756790975382">Boshqa xatcho‘plar</translation>
@@ -390,7 +391,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2532336938189706096">Veb-versiya</translation>
 <translation id="2535807170289627159">Barcha varaqlar</translation>
 <translation id="2536728043171574184">Bu sahifaning oflayn nusxasi ko‘rilmoqda</translation>
-<translation id="2537574774089209541">Kezish paytida Geminidan oson foydalanish uchun ayrim vositalar koʻchirildi</translation>
 <translation id="2539002604555291451">Sans-serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, ovozsiz mahkamlangan inkognito varaq tanlandi</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, varaq</translation>
@@ -1037,6 +1037,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5096775069898886423">Xavfsiz ulanishlarda ishlamaydigan saytlarga kirishdan avval ogohlantirish</translation>
 <translation id="510275257476243843">1 soat qoldi</translation>
 <translation id="5105442806410269908">Boshqa Google maʼlumotlarini boshqarish</translation>
+<translation id="5111326646107464148">Guruhni yangi oynada ochish</translation>
 <translation id="5114895953710637392">Ilova asosida filtrlash oynasi yopildi.</translation>
 <translation id="5115811374190515607">Qayerga: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Chromium brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin</translation>
@@ -1619,7 +1620,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="7291910923717764901">Bu sahifaga rasmlar tavsifi kiritilgan</translation>
 <translation id="7293429513719260019">Til tanlash</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, kontenti ulashilayotgan mahkamlangan varaq tanlandi</translation>
-<translation id="7304003340539141201">Varaqlar va vazifalar bilan ishlashda Geminidan yordam soʻrang</translation>
 <translation id="7311244614769792472">Hech narsa topilmadi</translation>
 <translation id="7314734791127433392">Parollar tekshirilmadi</translation>
 <translation id="7324354302972299151">“Do Not Track” soʻrovini yuborish</translation>
@@ -1755,6 +1755,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="7821130663268546430">Varaq almashtirgich orqali ochilgan barcha varaqlarni topish mumkin</translation>
 <translation id="7822705602465980873">Hisobingizga kirsangiz, maʼlumotlar Google hisobingizga ulanadi. Bu sizni Google xizmatlarida himoya qilishda (masalan, xavfsizlik hodisasidan keyin Gmailda himoyani kuchaytirishda) yordam beradi.</translation>
 <translation id="7824665136384946951">Saytlarni xavfsiz kezish tashkilotingiz tomonidan faolsizlantirilgan.</translation>
+<translation id="782590969421016895">Joriy sahifalarni ishlatish</translation>
 <translation id="7825973332242257878">Varaqlar guruhi</translation>
 <translation id="7845155831233417403">Maksimum <ph name="MAX_INSTANCE_COUNT" /> ta oyna ochish mumkin. Davom etish uchun oynani yoping.</translation>
 <translation id="7846161022626028328">Xatolik yuz berdi. Qayta urining.</translation>
@@ -1987,7 +1988,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8694622119922491927"><ph name="APP_NAME" /> bu sayt uchun inson interfeysi qurilmalaridan (HID) foydalanish uchun ruxsat talab qiladi. Bu sozlamani keyinroq Sozlamalar &gt; Ilovalar &gt; Maxsus ilova ruxsati orqali oʻzgartirishingiz mumkin.</translation>
 <translation id="8696297579102085705">Qurilmangizga yuborish</translation>
 <translation id="8699120352855309748">Quyidagi tillarga tarjima taklif qilinmasin</translation>
-<translation id="8700565880437506364">Chrome ichidagi Gemini bilan tanishing</translation>
 <translation id="8712637175834984815">Tushunarli</translation>
 <translation id="8715286883001906001">Google hisobidagi parollar himoyasini oshiring</translation>
 <translation id="8715300232952757586">Yopiladi: <ph name="TAB_TITLE" /></translation>

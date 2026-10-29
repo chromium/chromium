@@ -58,7 +58,6 @@ Nove oznake se ne mogu sačuvati na računu dok ne izbrišete neke. Ako se sada 
 <translation id="2027881372245801507">Isključivanje prijedloga ne upravlja Chromiumovom obradom naslova stranica i URL-ova za druge funkcije. Pristupom ovim podacima možete upravljati u <ph name="BEGIN_LINK" />postavkama sinhronizacije<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Prijavite se na ovu web lokaciju i u Chromium da dobijete lozinke i druge stavke na svim svojim uređajima</translation>
 <translation id="2042889939382983733">Pregledajte svoju historiju Chromiuma</translation>
-<translation id="2052320862053429062">Chromium povremeno provjerava nalaze li se vaše lozinke na listama koje su objavljene online. Prilikom toga, vaše lozinke i korisnička imena su šifrirani i niko, uključujući Google, ih ne može pročitati.</translation>
 <translation id="2059365270911640413">Završite postavljanje Chromiuma</translation>
 <translation id="2168108852149185974">Neki programski dodaci uzrokuju pad aplikacije Chromium. Deinstalirajte:</translation>
 <translation id="2168593389981132306">Poboljšajte Chromium</translation>
@@ -69,7 +68,6 @@ Nove oznake se ne mogu sačuvati na računu dok ne izbrišete neke. Ako se sada 
 <translation id="2236584955986023187">Ovo znači da će Chromium svaki put zatražiti web lokaciju za računar.</translation>
 <translation id="2245694534483711162">Gemini će možda koristiti vašu tačnu lokaciju ovisno o odobrenju koje ste već dali Chromiumu</translation>
 <translation id="2270466829363945454">Kupovina</translation>
-<translation id="2313870531055795960">Provjerava URL-ove s listom nesigurnih web lokacija pohranjenih u Chromiumu. Ako web lokacija pokuša ukrasti vašu lozinku ili kada preuzimate štetan fajl, Chromium može slati i URL-ove, uključujući dijelove sadržaja stranice, u Sigurno pregledanje.</translation>
 <translation id="2314220608288760290">Chromium automatski otvara anonimne linkove YouTubea u anonimnom načinu rada.</translation>
 <translation id="231828342043114302">Da primate personaliziran sadržaj na osnovu svojih interesovanja, prijavite se u Chromium.</translation>
 <translation id="2334943301233020675">Sljedeći pristupni ključevi nisu uvezeni na Upravitelj lozinki jer se ne podudaraju sa zahtjevima.</translation>

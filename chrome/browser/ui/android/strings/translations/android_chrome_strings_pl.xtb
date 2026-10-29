@@ -337,6 +337,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="2332515770639153015">Włączono Ulepszone Bezpieczne przeglądanie</translation>
 <translation id="233375395665273385">Usuń i wyloguj się</translation>
 <translation id="2334275697832662087">Zabezpieczenia Chrome oparte na AI chronią Cię przed zagrożeniami online, dzięki czemu możesz bez obaw przeglądać internet</translation>
+<translation id="2335758110242123814">Otwórz grupę</translation>
 <translation id="2341410551640223969">Nie udało się zainstalować: <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Łączna ilość danych używanych przez Chrome, w tym konta, zakładki i zapisane ustawienia</translation>
 <translation id="2354001756790975382">Inne zakładki</translation>
@@ -390,7 +391,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="2532336938189706096">Widok sieci</translation>
 <translation id="2535807170289627159">Wszystkie karty</translation>
 <translation id="2536728043171574184">Oglądasz kopię offline tej strony</translation>
-<translation id="2537574774089209541">Niektóre narzędzia przenieśliśmy, aby ułatwić Ci dostęp do Gemini podczas przeglądania</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, wybrana przypięta i wyciszona karta incognito</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, karta</translation>
@@ -1037,6 +1037,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5096775069898886423">Wyświetlaj ostrzeżenia przed odwiedzeniem witryn, które nie obsługują bezpiecznych połączeń</translation>
 <translation id="510275257476243843">Pozostała godzina</translation>
 <translation id="5105442806410269908">Zarządzaj innymi danymi Google</translation>
+<translation id="5111326646107464148">Otwórz grupę w nowym oknie</translation>
 <translation id="5114895953710637392">Arkusz filtra aplikacji jest zamknięty.</translation>
 <translation id="5115811374190515607">do: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Teraz możesz używać Chrome za każdym razem, gdy klikniesz link w wiadomościach, dokumentach i w innych aplikacjach</translation>
@@ -1619,7 +1620,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7291910923717764901">Dodano opisy do obrazów na tej stronie</translation>
 <translation id="7293429513719260019">Wybierz język</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, wybrana przypięta karta udostępniania</translation>
-<translation id="7304003340539141201">Poproś Gemini o pomoc w zarządzaniu kartami i zadaniami</translation>
 <translation id="7311244614769792472">Brak wyników</translation>
 <translation id="7314734791127433392">Nie udało się sprawdzić haseł</translation>
 <translation id="7324354302972299151">Wysyłaj żądanie „Do Not Track”</translation>
@@ -1755,6 +1755,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7821130663268546430">Wszystkie otwarte karty znajdziesz w przełączniku kart</translation>
 <translation id="7822705602465980873">Gdy się zalogujesz, dane te będą powiązane z Twoim kontem Google, co pozwoli chronić Cię we wszystkich usługach Google. Na przykład w razie incydentu związanego z bezpieczeństwem zwiększy się ochrona w Gmailu.</translation>
 <translation id="7824665136384946951">Twoja organizacja wyłączyła Bezpieczne przeglądanie</translation>
+<translation id="782590969421016895">Użyj bieżących stron</translation>
 <translation id="7825973332242257878">Grupy kart</translation>
 <translation id="7845155831233417403">Maksymalna dozwolona liczba okien: <ph name="MAX_INSTANCE_COUNT" />. Zamknij okno, aby kontynuować.</translation>
 <translation id="7846161022626028328">Wystąpił błąd. Spróbuj ponownie.</translation>
@@ -1987,7 +1988,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8694622119922491927"><ph name="APP_NAME" /> potrzebuje uprawnień dostępu do urządzeń interfejsu użytkownika (HID) na tej stronie. Możesz to zmienić później: wybierz Ustawienia &gt; Aplikacje &gt; Aplikacje ze specjalnym dostępem</translation>
 <translation id="8696297579102085705">Wyślij na swoje urządzenie</translation>
 <translation id="8699120352855309748">Nie proponuj tłumaczenia tych języków</translation>
-<translation id="8700565880437506364">Przedstawiamy Gemini w Chrome</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8715286883001906001">Zwiększ bezpieczeństwo haseł na swoim koncie Google</translation>
 <translation id="8715300232952757586">Karta <ph name="TAB_TITLE" /> zostanie zamknięta</translation>

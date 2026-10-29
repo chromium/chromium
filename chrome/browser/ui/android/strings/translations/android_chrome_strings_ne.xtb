@@ -337,6 +337,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2332515770639153015">परिष्कृत Safe Browsing अन छ</translation>
 <translation id="233375395665273385">मेटाउनुहोस् र साइन आउट गर्नुहोस्</translation>
 <translation id="2334275697832662087">Chrome को AI मा आधारित सुरक्षाले तपाईंलाई अनलाइन जोखिमहरूबाट सुरक्षित राख्न मद्दत गर्छ र तपाईंलाई ब्राउज गर्दा आत्मविश्वास प्रदान गर्छ</translation>
+<translation id="2335758110242123814">समूह खोल्नुहोस्</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> इन्स्टल गर्न सकिएन।</translation>
 <translation id="2349710944427398404">खाता, पुस्तक चिन्ह र सुरक्षित गरिएका सेटिङहरू सहित Chrome ले प्रयोग गरेको कुल डेटा</translation>
 <translation id="2354001756790975382">अन्य बुकमार्कहरू</translation>
@@ -390,7 +391,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2532336938189706096">वेब दृश्य</translation>
 <translation id="2535807170289627159">सबै ट्याबहरू</translation>
 <translation id="2536728043171574184">यो पृष्ठको एक अफलाइन प्रतिलिपि हेर्दै</translation>
-<translation id="2537574774089209541">तपाईंलाई ब्राउज गर्ने क्रममा Gemini सजिलैसँग एक्सेस गर्न दिन केही टुलहरू सारिएका छन्</translation>
 <translation id="2539002604555291451">Sans serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, चयन गरिएको पिन गरिएको म्युट गरिएको इन्कोग्निटो ट्याब</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, ट्याब</translation>
@@ -1036,6 +1036,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5096775069898886423">सुरक्षित कनेक्सन प्रयोग गर्न नमिल्ने साइटका हकमा उक्त साइटमा जानुअघि नै चेतावनी प्राप्त गर्नुहोस्</translation>
 <translation id="510275257476243843">१ घन्टा बाँकी छ</translation>
 <translation id="5105442806410269908">Google का अन्य डेटा व्यवस्थापन गर्नुहोस्</translation>
+<translation id="5111326646107464148">यो ट्याब समूह नयाँ विन्डोमा खोल्नुहोस्</translation>
 <translation id="5114895953710637392">एप फिल्टर सिट बन्द छ।</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> मा</translation>
 <translation id="5116239826668864748">तपाईंले कुनै म्यासेज, डकुमेन्ट वा अन्य एपमा भएका लिंकमा ट्याप गर्दा ती लिंक Chrome मा खुल्ने छन्</translation>
@@ -1605,6 +1606,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="72415438529550637">पासवर्ड सिफारिस गर्ने सुविधा बन्द गरिएको छ।</translation>
 <translation id="724510009481365878">यो पेज प्रिन्ट गर्न मिल्दैन</translation>
 <translation id="7248671827512403053">एप</translation>
+<translation id="7253205084599155458">सजिलै एक्सेस गर्न सकियोस् भन्नाका लागि पुछारको टुलबारमा नेभिगेसन र टुलहरू देखाउनुहोस्</translation>
 <translation id="7253951228444156601">पासवर्डहरू जाँच गरिँदै…</translation>
 <translation id="7265857422443387781">Google लेन्स प्रयोग गरी ट्याब खोज्नुहोस् <ph name="BEGIN_NEW" />नयाँ सुविधा<ph name="END_NEW" /></translation>
 <translation id="727288900855680735"><ph name="ORIGIN" /> मा <ph name="ONE_TIME_CODE" /> पेस गर्ने हो?</translation>
@@ -1617,7 +1619,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7291910923717764901">यो पेजमा फोटोसम्बन्धी विवरण हालिएको छ</translation>
 <translation id="7293429513719260019">भाषा चयन गर्नुहोस्</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, चयन गरिएको पिन गरिएको सेयरिङ ट्याब</translation>
-<translation id="7304003340539141201">आफ्ना ट्याब तथा कार्यहरूका सम्बन्धमा मद्दत गर्न Gemini लाई सोध्नुहोस्</translation>
 <translation id="7311244614769792472">कुनै पनि परिणाम भेटिएन</translation>
 <translation id="7314734791127433392">पासवर्डहरू जाँच्न सकिएन</translation>
 <translation id="7324354302972299151">“Do Not Track” अनुरोध पठाउनुहोस्</translation>
@@ -1753,6 +1754,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7821130663268546430">तपाईं ट्याब स्विचरमा सबै खुला ट्याबहरू भेट्टाउन सक्नुहुन्छ</translation>
 <translation id="7822705602465980873">तपाईं साइन इन अवस्थामा भएका बेला यो जानकारी तपाईंलाई Google का सेवाहरूमा सुरक्षित राख्ने (जस्तै, सुरक्षासम्बन्धी कुनै घटना घटेपछि Gmail मा सुरक्षा बढाउने) प्रयोजनका लागि तपाईंको Google खातामा लिंक गरिन्छ।</translation>
 <translation id="7824665136384946951">तपाईंको सङ्गठनले Safe Browsing अफ गरेको छ</translation>
+<translation id="782590969421016895">हालका पृष्ठहरू प्रयोग गर्नुहोस्</translation>
 <translation id="7825973332242257878">ट्याब समूहहरू</translation>
 <translation id="7845155831233417403">तपाईं बढीमा <ph name="MAX_INSTANCE_COUNT" /> वटा विन्डो खुला राख्न सक्नुहुन्छ। जारी राख्न कुनै विन्डो बन्द गर्नुहोस्।</translation>
 <translation id="7846161022626028328">कुनै त्रुटि भयो। फेरि प्रयास गर्नुहोस्।</translation>
@@ -1985,7 +1987,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8694622119922491927">यो साइटका हकमा <ph name="APP_NAME" /> लाई ह्युमन इन्टरफेस डिभाइस (HID) एक्सेस गर्ने अनुमति दिनु पर्ने हुन्छ। तपाईं पछि "सेटिङ &gt; एपहरू &gt; एपको विशेष एक्सेस" मा गई यो सेटिङ परिवर्तन गर्न सक्नुहुन्छ।</translation>
 <translation id="8696297579102085705">आफ्नो डिभाइसमा पठाउनुहोस्</translation>
 <translation id="8699120352855309748">यी भाषाहरू अनुवाद गर्ने प्रस्ताव नगर्नुहोस्</translation>
-<translation id="8700565880437506364">Chrome मा उपलब्ध Gemini प्रस्तुत गरिँदै छ</translation>
 <translation id="8712637175834984815">भयो</translation>
 <translation id="8715286883001906001">तपाईंको Google खातामा सेभ गरिएका तपाईंका पासवर्डहरू अझ सुरक्षित बनाउनुहोस्</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> बन्द गरिने छ</translation>

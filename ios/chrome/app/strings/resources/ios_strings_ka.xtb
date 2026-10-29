@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">გადმოიტანეთ თქვენი მონაცემები Safari-დან</translation>
 <translation id="2526166285241366046">პაროლის შენახვა</translation>
 <translation id="2529021024822217800">ყველას გახსნა</translation>
-<translation id="2530932541542751783">ამ პარამეტრთან დაკავშირებით წარმოიქმნა შეფერხება. განაახლეთ და გადატვირთეთ Chrome და iPadOS და ცადეთ ხელახლა. თუ ეს შეცდომა კიდევ განმეორდება, თქვენს iPad-ს შეიძლება არ ჰქონდეს ამ პარამეტრის მხარდაჭერა.</translation>
 <translation id="2536991091671391962">შენახული პაროლების გამოყენება შეგიძლიათ ნებისმიერ მოწყობილობაზე. ისინი Google პაროლების მმართველის მიერ <ph name="EMAIL" />-ისთვის ინახება.</translation>
 <translation id="2538103551183528357">დამალული, პაროლი</translation>
 <translation id="2538705697765638552">შეინახეთ თქვენი ინფორმაცია და უფრო სწრაფად შეასრულეთ ამოცანები, მაგალითად, შეავსეთ ფორმები Google პროდუქტებში. თქვენი ინფორმაციის მართვა შეგიძლიათ Google საფულეში <ph name="USER_EMAIL" />-ისთვის.</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">ვიზუალიზაცია და რედაქტირება</translation>
 <translation id="3485558910355485767">ახალი ინკოგნიტო ფანჯარა</translation>
 <translation id="3488501490964659223">ჩანართები დაიხურა, ხოლო ვების დათვალიერების მონაცემები წაიშალა. სისტემიდან გახვედით</translation>
-<translation id="3490396108106323715">მიმდინარე ჩანართის გაზიარება</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /> შემოთავაზებული კონტენტის შესახებ</translation>
 <translation id="349446645805573740">აირჩიეთ, სად შეინახოთ „<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />“</translation>
 <translation id="3504377992102007712">პარამეტრები</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">სურათები ვერ ჩაიტვირთა</translation>
 <translation id="3565930036634619844">ჩანართი. <ph name="TAB_INDEX" /> / <ph name="NUMBER_OF_TABS" />-დან.</translation>
 <translation id="3567168891086460374">სხვაგვარად შენახვა</translation>
-<translation id="3572503683475187385">მიმდინარე ჩანართი გაზიარდება Gemini-სთან, როცა ახალ ჩეთს დაიწყებთ. Gemini-სთან ჩანართის გაზიარებისას მისი კონტენტი და URL ეგზავნება Google-ს. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">თქვენს Google ანგარიშში</translation>
 <translation id="3575234738189584619">Lens-ით ძიება</translation>
 <translation id="3575426792457739946">ეს სია შეიცავს ყველა ჩატვირთულ პროფილს.</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">დახმარების ჩვენება</translation>
 <translation id="4095483462103784441">ჩანართების ახალი ჯგუფის შექმნა</translation>
 <translation id="4099756562043439968">შეხსენების დაყენება</translation>
-<translation id="4108998448622696017">აღმოაჩენს სახიფათო მოვლენებს და გაგაფრთხილებთ მათ შესახებ.</translation>
 <translation id="4111985840824673503">ყველას წაკითხულად მონიშვნა</translation>
 <translation id="411254640334432676">ჩამოტვირთვა ვერ მოხერხდა.</translation>
 <translation id="4112644173421521737">ძიება</translation>
@@ -1169,6 +1165,7 @@
 <translation id="4658335131052370646">შენახვა</translation>
 <translation id="465947902531722727">პროფილებს შორის გადართვა</translation>
 <translation id="466307903888586355">ფაილების შენახვა დაბლოკილია თქვენი ორგანიზაციის მიერ</translation>
+<translation id="4665303625242639572"><ph name="PAGE_TITLE" />-ის დახურვა</translation>
 <translation id="4668929960204016307">.</translation>
 <translation id="4669618761237477717">თქვენი ორგანიზაცია მოითხოვს, რომ ვები კონფიდენციალურ რეჟიმში დაათვალიეროთ. ჩანართების ჯგუფები არ სინქრონიზდება ინკოგნიტო რეჟიმში.
 <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
@@ -1286,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">ჩანართების ჯგუფის ფერი: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">პაროლის კოპირება</translation>
+<translation id="5007392906805964215">გადახედვა</translation>
 <translation id="5009127379503001909">გააგრძელეთ დათვალიერება</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653"><ph name="USER_EMAIL" />-ზე გაგზავნა</translation>
@@ -1938,7 +1936,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6938212956536472404">ამ ჩანართის გაზიარება შეუძლებელია</translation>
 <translation id="6945221475159498467">არჩევა</translation>
 <translation id="6946722113367118030">ფიქრი</translation>
-<translation id="6947751977892029882">ამ პარამეტრთან დაკავშირებით წარმოიქმნა შეფერხება. განაახლეთ და გადატვირთეთ Chrome და iOS და ცადეთ ხელახლა. თუ ეს შეცდომა კიდევ განმეორდება, თქვენს iPhone-ს შეიძლება არ ჰქონდეს ამ პარამეტრის მხარდაჭერა.</translation>
 <translation id="6950522403736391608">დამალული</translation>
 <translation id="6957084631403333422">სცადეთ ახალი ჩანართის გამარტივებული გვერდი</translation>
 <translation id="695965663642079255">შეინახეთ და მართეთ გადახდის ინფორმაცია, რათა უფრო სწრაფად გააფორმოთ შეკვეთა</translation>
@@ -2189,7 +2186,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="7758789811447313947">იისფერი თემა</translation>
 <translation id="7759809451544302770">არასავალდებულო</translation>
 <translation id="7765158879357617694">გადატანა</translation>
-<translation id="7767651976342854115">მონაცემთა გამოყენების პარამეტრს პრობლემა შეექმნა.</translation>
 <translation id="7768507955883790804">საიტები, რომლებსაც მოინახულებთ, ავტომატურად გაითვალისწინებს ამ პარამეტრს</translation>
 <translation id="7772032839648071052">დაადასტურეთ პაროლი</translation>
 <translation id="7772948288262733182">კლავ მოგესალმებით</translation>
@@ -2502,7 +2498,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8674716540979958118">გატეხილი პაროლები გაქვთ</translation>
 <translation id="8679900250380464358">საკითხავ სიაში დამატება</translation>
 <translation id="8680643216091361291">თქვენი <ph name="BEGIN_LINK" />აქტივობის შენარჩუნების<ph name="END_LINK" /> პარამეტრი ნაგულისხმევად გამორთულია. როდესაც იგი გამორთულია, Google თქვენს ჩეთებს 3 დღით ინახავს. ის ამ მონაცემებს იყენებს Gemini აპების გამართულად ფუნქციონირებისათვის, მათი უსაფრთხოების დასაცავად და თქვენი გამოხმაურების პრობლემების აღმოფხვრისთვის გამოსაყენებლად. შეგიძლიათ, ჩართოთ აქტივობის შენარჩუნება და ამით ხელი შეუწყოთ Google-ის ხელოვნური ინტელექტის ყველასთვის გაუმჯობესებას.</translation>
-<translation id="8680786875305615692">ხელი შეუწყვეთ ვებში უსაფრთხოების ყველასთვის გაუმჯობესებას</translation>
 <translation id="8680787084697685621">ანგარიშზე შესვლის დეტალები მოძველებულია.</translation>
 <translation id="868648444055742370">„<ph name="SITE_DOMAIN" />“-ს არ აქვს თქვენს მიკროფონზე წვდომის უფლება</translation>
 <translation id="8690752723634292147">წაშლის დასტური</translation>
@@ -2578,7 +2573,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8888595487174963247">შეხსენების ამოშლა</translation>
 <translation id="8890516388109605451">წყაროები</translation>
 <translation id="8893208530912252670">ვიდეოები</translation>
-<translation id="8898822736010347272">Google-ს გაუგზავნის თქვენ მიერ მონახულებული ზოგიერთი გვერდის URL-ებს, სისტემის შეზღუდულ ინფორმაციასა და გვერდების გარკვეულ კონტენტს ვების ყველა მომხმარებლისთვის ახალი საფრთხეების აღმოსაჩენად და დასაბლოკად.</translation>
 <translation id="890009681345348416">40-ზე მეტი პაროლი ავტომატურად შეივსო</translation>
 <translation id="8900845556227858314">ბრაუზერის აპი</translation>
 <translation id="890565330728586731">უკან</translation>
@@ -2609,6 +2603,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8976414606286374109">ბარათები შეინახება თქვენს Google ანგარიშში.</translation>
 <translation id="8981454092730389528">Google აქტივობის მართვის საშუალებები</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, ჩამაგრებული საიტი</translation>
+<translation id="8989779557457435460">მიმდინარე ჩანართის ნაგულისხმევად გაზიარება</translation>
 <translation id="8990960056509724223">ფაილის შენახვა ვერ მოხერხდა თქვენი ორგანიზაციის წესების გამო</translation>
 <translation id="8998289560386111590">მიუწვდომელია თქვენს მოწყობილობაზე</translation>
 <translation id="9003677638446136377">ხელახლა შემოწმება</translation>

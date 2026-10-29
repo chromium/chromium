@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">Nhập dữ liệu từ Safari</translation>
 <translation id="2526166285241366046">Lưu mật khẩu</translation>
 <translation id="2529021024822217800">Mở tất cả</translation>
-<translation id="2530932541542751783">Đã xảy ra lỗi với chế độ cài đặt này. Hãy cập nhật rồi khởi động lại Chrome và iPadOS, sau đó thử lại. Nếu lỗi này vẫn tiếp diễn, có thể iPad của bạn không hỗ trợ chế độ cài đặt này.</translation>
 <translation id="2536991091671391962">Bạn có thể dùng mật khẩu đã lưu trên mọi thiết bị. Những mật khẩu này được lưu vào Trình quản lý mật khẩu của Google cho tài khoản <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Mật khẩu ẩn</translation>
 <translation id="2538705697765638552">Lưu thông tin của bạn để hoàn thành công việc nhanh hơn, chẳng hạn như điền vào biểu mẫu trên các sản phẩm của Google. Bạn có thể quản lý thông tin của mình trong Google Wallet cho <ph name="USER_EMAIL" />.</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">Trực quan hoá và chỉnh sửa</translation>
 <translation id="3485558910355485767">Cửa sổ ẩn danh mới</translation>
 <translation id="3488501490964659223">Hệ thống đã đóng các thẻ và xoá dữ liệu duyệt web. Bạn cũng đã bị đăng xuất</translation>
-<translation id="3490396108106323715">Chia sẻ thẻ hiện tại</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /> về nội dung đề xuất</translation>
 <translation id="349446645805573740">Chọn vị trí lưu "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
 <translation id="3504377992102007712">Cài đặt</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">Không tải được hình ảnh</translation>
 <translation id="3565930036634619844">Thẻ. <ph name="TAB_INDEX" /> trên <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Lưu theo cách khác</translation>
-<translation id="3572503683475187385">Thẻ hiện tại sẽ được chia sẻ với Gemini khi bạn bắt đầu một cuộc trò chuyện mới. Khi bạn chia sẻ một thẻ với Gemini, nội dung và URL của thẻ đó sẽ được gửi đến Google. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Trong Tài khoản Google của bạn</translation>
 <translation id="3575234738189584619">Tìm kiếm bằng Ống kính</translation>
 <translation id="3575426792457739946">Danh sách này chứa mọi hồ sơ đã tải.</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">Hiện thông tin trợ giúp</translation>
 <translation id="4095483462103784441">Tạo nhóm thẻ mới</translation>
 <translation id="4099756562043439968">Đặt lời nhắc</translation>
-<translation id="4108998448622696017">Phát hiện và cảnh báo bạn các sự kiện nguy hiểm khi các sự kiện đó diễn ra.</translation>
 <translation id="4111985840824673503">Đánh dấu tất cả là đã đọc</translation>
 <translation id="411254640334432676">Tải xuống không thành công.</translation>
 <translation id="4112644173421521737">Tìm kiếm</translation>
@@ -1169,6 +1165,7 @@
 <translation id="4658335131052370646">Lưu</translation>
 <translation id="465947902531722727">Chuyển đổi hồ sơ</translation>
 <translation id="466307903888586355">Tổ chức của bạn đã chặn tính năng lưu tệp</translation>
+<translation id="4665303625242639572">Đóng <ph name="PAGE_TITLE" /></translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Tổ chức của bạn yêu cầu bạn duyệt web ở chế độ riêng tư. Nhóm thẻ không được đồng bộ hoá ở chế độ ẩn danh.
 <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
@@ -1286,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Màu của nhóm thẻ <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Sao chép mật khẩu</translation>
+<translation id="5007392906805964215">Xem</translation>
 <translation id="5009127379503001909">Tiếp tục duyệt xem</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Gửi tới <ph name="USER_EMAIL" /></translation>
@@ -1938,7 +1936,6 @@
 <translation id="6938212956536472404">Không thể chia sẻ thẻ này</translation>
 <translation id="6945221475159498467">Chọn</translation>
 <translation id="6946722113367118030">Đang suy nghĩ</translation>
-<translation id="6947751977892029882">Đã xảy ra lỗi với chế độ cài đặt này. Hãy cập nhật rồi khởi động lại Chrome và iOS, sau đó thử lại. Nếu lỗi này vẫn tiếp diễn, có thể iPhone của bạn không hỗ trợ chế độ cài đặt này.</translation>
 <translation id="6950522403736391608">Đã ẩn</translation>
 <translation id="6957084631403333422">Dùng thử trang thẻ mới tập trung</translation>
 <translation id="695965663642079255">Lưu và quản lý thông tin thanh toán để thanh toán nhanh hơn</translation>
@@ -2189,7 +2186,6 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="7758789811447313947">Giao diện màu tím</translation>
 <translation id="7759809451544302770">Không bắt buộc</translation>
 <translation id="7765158879357617694">Di chuyển</translation>
-<translation id="7767651976342854115">Đã xảy ra lỗi khi tải chế độ cài đặt sử dụng dữ liệu.</translation>
 <translation id="7768507955883790804">Các trang web sẽ tự động tuân theo chế độ cài đặt này khi bạn truy cập</translation>
 <translation id="7772032839648071052">Xác nhận cụm mật khẩu</translation>
 <translation id="7772948288262733182">Chào mừng bạn quay lại</translation>
@@ -2502,7 +2498,6 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="8674716540979958118">Bạn có mật khẩu bị lộ.</translation>
 <translation id="8679900250380464358">Thêm vào Danh sách đọc</translation>
 <translation id="8680643216091361291">Chế độ <ph name="BEGIN_LINK" />Lưu giữ hoạt động<ph name="END_LINK" /> đang tắt theo mặc định. Khi chế độ này tắt, Google sẽ lưu nội dung trò chuyện của bạn trong 3 ngày. Google sử dụng nội dung trò chuyện nêu trên để đảm bảo Các ứng dụng Gemini hoạt động đúng cách, bảo vệ an toàn cho các ứng dụng này và sử dụng ý kiến phản hồi của bạn để khắc phục sự cố. Bạn có thể bật chế độ Lưu giữ hoạt động để giúp cải thiện AI của Google cho mọi người.</translation>
-<translation id="8680786875305615692">Giúp tăng cường bảo mật cho mọi người trên Web</translation>
 <translation id="8680787084697685621">Chi tiết đăng nhập tài khoản đã lỗi thời.</translation>
 <translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" không được phép truy cập vào micrô</translation>
 <translation id="8690752723634292147">Xác nhận xoá</translation>
@@ -2578,7 +2573,6 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="8888595487174963247">Xoá lời nhắc</translation>
 <translation id="8890516388109605451">Nguồn</translation>
 <translation id="8893208530912252670">Video</translation>
-<translation id="8898822736010347272">Gửi URL của một số trang bạn truy cập, thông tin về hệ thống (có giới hạn) và một số nội dung trang cho Google, nhằm phát hiện các mối đe dọa mới và bảo vệ mọi người khi dùng web.</translation>
 <translation id="890009681345348416">Đã tự động điền hơn 40 mật khẩu</translation>
 <translation id="8900845556227858314">Ứng dụng trình duyệt</translation>
 <translation id="890565330728586731">Quay lại</translation>
@@ -2609,6 +2603,7 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="8976414606286374109">Các thẻ sẽ được lưu vào Tài khoản Google của bạn.</translation>
 <translation id="8981454092730389528">Kiểm soát hoạt động trên Google</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, trang web đã được ghim</translation>
+<translation id="8989779557457435460">Chia sẻ thẻ hiện tại theo mặc định</translation>
 <translation id="8990960056509724223">Không thể lưu tệp do các chính sách của tổ chức bạn</translation>
 <translation id="8998289560386111590">Tính năng đăng nhập không hoạt động trên thiết bị của bạn</translation>
 <translation id="9003677638446136377">Kiểm tra lại</translation>

@@ -96,7 +96,6 @@
 <translation id="1165174597379888365">ገፅ ተጎብኝቷል</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{ምንም}=1{ከ1 ጣቢያ (ወደ Google መለያዎ እንደገቡ ይቆያሉ)}one{ከ # ጣቢያዎች (ወደ Google መለያዎ እንደገቡ ይቆያሉ)}other{ከ # ጣቢያዎች (ወደ Google መለያዎ እንደገቡ ይቆያሉ)}}</translation>
 <translation id="1167877250265821930"><ph name="LANGUAGE" /> ማውረድ አልተሳካም</translation>
-<translation id="1171306609584863516">የተረጋገጠው በ<ph name="IDP_ORIGIN" /></translation>
 <translation id="1174644974616730562">#1 የቻይና ፖስታ</translation>
 <translation id="1174723505405632867"><ph name="EMBEDDED_URL" /> ኩኪዎችን እና የጣቢያ ውሂብን በ<ph name="TOP_LEVEL_URL" /> ላይ መጠቀም እንዲችል መፍቀድ ይፈልጋሉ?
 
@@ -585,6 +584,7 @@
 <translation id="1988881251331415125">የፊደል አጻጻፉ ትክክል ከሆነ <ph name="BEGIN_LINK" />የተገናኝነት ምርመራን ለማስኬድ ይሞክሩ<ph name="END_LINK" />።</translation>
 <translation id="1991370806334788445">የሦስተኛ ወገን ኩኪዎችን ለመፍቀድ ይሞክሩ፣ ይህ ማለት ያነሰ የአሰሳ ጥበቃ ነው ነገር ግን የጣቢያ ባህሪያት እንደተጠበቀው የመሥራት ዕድላቸው ከፍተኛ ነው።</translation>
 <translation id="1992331125980284532">JIS B3</translation>
+<translation id="1996557034791506430">ፈቃድ ይወገድ?</translation>
 <translation id="1997484222658892567"><ph name="URL" /> ትልቅ ውሂብ በአካባቢያዊ ኮምፒውተርዎ ላይ እስከመጨረሻው ማከማቸት ይፈልጋል</translation>
 <translation id="1997774360448418989">ወረቀት (ቀላል ክብደት)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{እና 1 ተጨማሪ}one{እና # ተጨማሪ}other{እና # ተጨማሪ}}</translation>
@@ -691,6 +691,7 @@
 <translation id="2155260325161282517">5 x 7 ኢንች</translation>
 <translation id="2156467141257470387">በመላ Google ምርቶች ላይ የተቀመጡ አድራሻዎችን መጠቀም ይችላሉ። ይህ ነባር የሥራ አድራሻዎን አይለውጥም። በእርስዎ Google መለያ፣ <ph name="ACCOUNT" /> ውስጥ ይቀመጣል።</translation>
 <translation id="2157640075051554492">የዋጋ መከታተያ ማሳወቂያዎች</translation>
+<translation id="2158964559178498011">ራስ-ሙላ ተጨማሪ ቦታዎች ውስጥ ይሠራል — መረጃን ለማግኘት እና ለመሙላት Ctrlን ሁለት ጊዜ ይጫኑ</translation>
 <translation id="2161656808144014275">ጽሁፍ</translation>
 <translation id="2162435186600002085">ቀዳሚ የራስጌ ዓርማ</translation>
 <translation id="2162535140284745414">በሰው ሠራሽ አስተውሎት ለማሰስ አዳዲስ መንገዶችን እንዲያገኙ የሚያግዙዎትን የእውነተኛ ጊዜ ጥቆማዎችን ያግኙ።</translation>
@@ -2200,6 +2201,7 @@
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />ተጨማሪ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">ገፅ ይተርጎም?</translation>
 <translation id="468314109939257734">የእርስዎን ምናባዊ ካርድ ቁጥር ይመልከቱ</translation>
+<translation id="4684818564800397688">ራስ-ሙላ ተጨማሪ ቦታዎች ውስጥ ይሠራል — መረጃን ለማግኘት እና ለመሙላት ⌘ ሁለቴ ይጫኑ</translation>
 <translation id="4686942373615810936">አሁን የተፈጠረ</translation>
 <translation id="4690205240253392065">የበኋላ ላይ መክፈል አቅራቢ ይምረጡ</translation>
 <translation id="469028408546145398">ማንነትን የማያሳውቅ የመስኮት አዝራርን ይዝጉ፣ አሁን ክፍት የሆኑትን ሁሉንም ማንነት የማያሳውቁ መስኮቶች ለመዝጋት ያግብሩ</translation>
@@ -2306,7 +2308,6 @@
 <translation id="484462545196658690">ራስ-ሰር</translation>
 <translation id="4844937814014739139">የተጋሩ ትሮችን መሸብለል እና ማጉላት</translation>
 <translation id="484988093836683706">የመሣሪያ መክፈቻን ተጠቀም</translation>
-<translation id="4850669014075537160">ሽብለላ</translation>
 <translation id="4850886885716139402">አሳይ</translation>
 <translation id="4854853140771946034">በGoogle Keep ውስጥ አዲስ ማስታወሻ በፍጥነት ፍጠር</translation>
 <translation id="4855395119669662878">አስተዳዳሪዎ የእርስዎን ፋይሎች ወደ <ph name="CLOUD_PROVIDER" /> <ph name="DATE_TIME" /> ላይ መስቀል ይጀምራሉ። የፋይልዎ ሰቀላ እስኪጠናቅቅ ድረስ መሣሪያዎን እንደተገናኘ ያቆዩ። በሰቀላው ወቅት ማንበብ የሚችሉት አካባቢያዊ ፋይሎችን ብቻ ነው።</translation>
@@ -2908,7 +2909,6 @@
 <translation id="5826507051599432481">የጋር ስም (CN)</translation>
 <translation id="5830698870816298009">የካሜራ አጠቃቀም እና እንቅስቃሴ</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
-<translation id="5832976493438355584">ተቆልፏል</translation>
 <translation id="5837220895135257862">እንደገና ከመሞከርዎ በፊት <ph name="CLOUD_PROVIDER" /> ውስጥ ቦታ ነፃ ያድርጉ</translation>
 <translation id="5838278095973806738">በአጥቂዎች ሊሰረቅ ስለሚችል በዚህ ጣቢያ ላይ ማናቸውም አደጋን ሊያስከትል የሚችል መረጃ (ለምሳሌ፦ የይለፍ ቃሎች ወይም የክሬዲት ካርዶች) ማስገባት የለብዎትም።</translation>
 <translation id="5838732667866024867">በግራፉ ላይ የዋጋ ለውጦችን ለመገምገም የግራ/የቀኝ ቀስትን መጠቀም ይችላሉ</translation>
@@ -3501,6 +3501,7 @@
 <translation id="6834757537110528125">ይህ ጣቢያ የተመሰጠረ ግንኙነትን አይደግፍም</translation>
 <translation id="6841864657731852591">ግራቩር ሲሊንደር</translation>
 <translation id="6842196666980060516">184 x 260 ሚሜ</translation>
+<translation id="6843919992766261684">ከዚህ በኋላ <ph name="ISSUER" /> ይህን ኢሜይል በራስ-ሰር ማረጋገጥ ያቆማል</translation>
 <translation id="6844746916504777213">እነዚህን ጣቢያዎች በጭራሽ አያጋሩ</translation>
 <translation id="6844998850832008753">የእጅ ክትትል በዚህ ጊዜ ተፈቅዷል</translation>
 <translation id="6849023911358004088">የደህንነት ቅንብሮች አዝራርን ያስተዳድሩ፣ በChrome ቅንብሮች ውስጥ ደህንነቱ የተጠበቀ አሰሳዎን እና ተጨማሪ ነገሮችን ለማስተዳደር ያግብሩ</translation>
@@ -3651,6 +3652,7 @@
 <translation id="7083258188081898530">መሳቢያ 9</translation>
 <translation id="70846382339153529">የOpenDocument ጽሑፍ</translation>
 <translation id="7086090958708083563">ሰቀላ በተጠቃሚ ተጠይቋል</translation>
+<translation id="7087807086191250928">Gemini ስህተቶችን ሊሠራ ይችላል። የመጀመሪያውን ምንጭ ለመገምገም እና ይህ መረጃ ትክክል መሆኑን ለማረጋገጥ የአስተያየት ጥቆማውን በረዥሙ ይጫኑ።</translation>
 <translation id="7089745480771070611">በጎን ፓነል ውስጥ ይከፈታል</translation>
 <translation id="7090698782953528257">የሒሳብ እኩልታውን በዓይነ ሕሊናዬ ለመሳል እና የኩርባውን ቅርጽ ለማየት ተግባርን በግራፍ እንድሠራ አግዘኝ</translation>
 <translation id="7092087596499105699">አስተዳዳሪዎ የድርጅትዎን የግል ድር መተግበሪያዎች መዳረሻ ለመጠበቅ ደኅንነቱ የተጠበቀ የአግባቢ ፍኖት አገናኝን አዋቅረዋል። መዳረሻን ለማረጋገጥ ከሥራ መገለጫዎ የሆነ ውሂብን ሊጠቀም ይችላል።</translation>
@@ -4082,6 +4084,7 @@
 <translation id="7765158879357617694">ውሰድ</translation>
 <translation id="7766518757692125295">ቀሚስ</translation>
 <translation id="776749070095465053">ጨርቃ ጨርቅ</translation>
+<translation id="7770247511810814330">ፈቃድ ያስወግዱ</translation>
 <translation id="7772659560036894129">የምርት ስሞች</translation>
 <translation id="7773005668374414287">ተመሳሳይ ቅደም-ተከተል ፊቱ ወደ ላይ</translation>
 <translation id="7779418012194492374">ለ<ph name="DEVICE_NAME" /> መዳረሻን ሻር</translation>
@@ -4193,7 +4196,6 @@
 <translation id="7961015016161918242">በፍጹም</translation>
 <translation id="7961493403319780137">ስለዚህ ባህሪ የበለጠ ይወቁ - ከGmail የማረጋገጫ ኮዶችን በራስ-ይሙሉ</translation>
 <translation id="7962467575542381659">የመሠረተ ሥርዓት ማሽን</translation>
-<translation id="796439090588610411">Chrome ይህን ኢሜይል በሚደገፉ ጣቢያዎች ላይ በራስ-ሰር ማረጋገጥ ያቆማል።</translation>
 <translation id="7966803981046576691">የስራ መለያ ዓይነት</translation>
 <translation id="7967973398323409409">በራስ-ሙላ የሚሞሉት መረጃ መቼም በማንም አይታይም</translation>
 <translation id="79682505114836835">እሴት «<ph name="VALUE" />» ልክ ያልሆነ የአስራስድስትዮሽ ቀለም ነው።</translation>
@@ -4476,7 +4478,6 @@
 <translation id="8446884382197647889">ተጨማሪ ለመረዳት</translation>
 <translation id="8449036207308062757">የማከማቻ ያቀናብሩ</translation>
 <translation id="8449155699563577224">17 x 24 ኢንች</translation>
-<translation id="8449513475775663994">የተረጋገጠ ኢሜይል ይወገድ?</translation>
 <translation id="8449836157089738489">ሁሉንም በአዲስ ትር ቡድን ውስጥ ይክፈቱ</translation>
 <translation id="8451518040456311377">የማንነት ሰነዶችን ያስቀምጡ እና ይሙሉ</translation>
 <translation id="84561192812921051">አስተዳዳሪዎ በመገለጫዎ ላይ በርቀት ለውጦችን ማድረግ፣ ሪፖርት በማድረግ ስለአሳሹ መረጃን መተንተን እና ሌሎች አስፈላጊ ተግባራትን ማከናወን ይችላል። በዚህ መሣሪያ ላይ ያለ እንቅስቃሴ ከChrome ውጭም ሊስተዳደር ይችላል።  <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>

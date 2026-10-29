@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">Ta med dataene dine fra Safari</translation>
 <translation id="2526166285241366046">Lagre et passord</translation>
 <translation id="2529021024822217800">Åpne alle</translation>
-<translation id="2530932541542751783">Noe gikk galt med denne innstillingen. Oppdater og start Chrome og iPadOS på nytt, og prøv igjen. Hvis denne feilen fortsatt oppstår, kan det hende at iPad-enheten ikke støtter denne innstillingen.</translation>
 <translation id="2536991091671391962">Du kan bruke lagrede passord på alle enheter. De lagres i Google Passordlagring for <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Skjult, passord</translation>
 <translation id="2538705697765638552">Lagre informasjonen din for å få ting gjort raskere, for eksempel å fylle ut skjemaer på tvers av Google-produkter. Du kan administrere informasjonen din i Google Wallet for <ph name="USER_EMAIL" />.</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">Visualiser og rediger</translation>
 <translation id="3485558910355485767">Nytt inkognitovindu</translation>
 <translation id="3488501490964659223">Faner ble lukket, og nettlesingsdata ble slettet. Du ble logget av</translation>
-<translation id="3490396108106323715">Del den aktive fanen</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /> om foreslått innhold</translation>
 <translation id="349446645805573740">Velg hvor du vil lagre «<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />»</translation>
 <translation id="3504377992102007712">Innstillinger</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">Kunne ikke laste inn bilder</translation>
 <translation id="3565930036634619844">Fane. <ph name="TAB_INDEX" /> av <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Lagre annerledes</translation>
-<translation id="3572503683475187385">Den aktive fanen deles med Gemini når du starter en ny chat. Når du deler en fane med Gemini, sendes innholdet og nettadressen til Google. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">I Google-kontoen din</translation>
 <translation id="3575234738189584619">Søk med Lens</translation>
 <translation id="3575426792457739946">På denne listen finner du alle innlastede profiler.</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">Vis Hjelp</translation>
 <translation id="4095483462103784441">Opprett en ny fanegruppe</translation>
 <translation id="4099756562043439968">Angi en påminnelse</translation>
-<translation id="4108998448622696017">Oppdager og advarer deg om farlige hendelser idet de inntreffer.</translation>
 <translation id="4111985840824673503">Merk alle som lest</translation>
 <translation id="411254640334432676">Nedlastingen mislyktes.</translation>
 <translation id="4112644173421521737">Søk</translation>
@@ -1169,6 +1165,7 @@
 <translation id="4658335131052370646">Lagre</translation>
 <translation id="465947902531722727">Bytt profil</translation>
 <translation id="466307903888586355">Organisasjonen din blokkerer lagring av filer</translation>
+<translation id="4665303625242639572">Lukk <ph name="PAGE_TITLE" /></translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Organisasjonen din krever at du surfer privat. Fanegrupper synkroniseres ikke i inkognitomodus.
 <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
@@ -1286,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Farge på fanegruppe: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopiér passordet</translation>
+<translation id="5007392906805964215">Se gjennom</translation>
 <translation id="5009127379503001909">Surf videre</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Send til <ph name="USER_EMAIL" /></translation>
@@ -1938,7 +1936,6 @@ Bytt til <ph name="OTHER_EMAIL" /> for å fortsette fra datamaskinen. Du får pa
 <translation id="6938212956536472404">Denne fanen kan ikke deles</translation>
 <translation id="6945221475159498467">Velg</translation>
 <translation id="6946722113367118030">Tenkende</translation>
-<translation id="6947751977892029882">Noe gikk galt med denne innstillingen. Oppdater og start Chrome og iOS på nytt, og prøv igjen. Hvis denne feilen fortsatt oppstår, kan det hende at iPhone-enheten ikke støtter denne innstillingen.</translation>
 <translation id="6950522403736391608">Skjult</translation>
 <translation id="6957084631403333422">Prøv en fokusert Ny fane-side</translation>
 <translation id="695965663642079255">Lagre og administrer betalingsopplysninger for å betale raskere</translation>
@@ -2189,7 +2186,6 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="7758789811447313947">Fiolett tema</translation>
 <translation id="7759809451544302770">Valgfritt</translation>
 <translation id="7765158879357617694">Flytt</translation>
-<translation id="7767651976342854115">Det oppsto en feil med innstillingen for databruk.</translation>
 <translation id="7768507955883790804">Nettsteder følger automatisk denne innstillingen når du besøker dem</translation>
 <translation id="7772032839648071052">Bekreft passord</translation>
 <translation id="7772948288262733182">Velkommen tilbake</translation>
@@ -2502,7 +2498,6 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="8674716540979958118">Du har passord som er utsatt for sikkerhetsbrudd.</translation>
 <translation id="8679900250380464358">Legg til på leselisten</translation>
 <translation id="8680643216091361291">Innstillingen <ph name="BEGIN_LINK" />Behold aktivitet<ph name="END_LINK" /> er av som standard. Når den er av, lagrer Google chattene dine i 3 dager. Den bruker dem for å sikre at Gemini-apper fungerer som de skal, bidrar til å holde dem trygge og bruker tilbakemeldingene dine for å løse problemer. Du kan slå på Behold aktivitet for å hjelpe til med å gjøre AI-løsninger fra Google bedre for alle.</translation>
-<translation id="8680786875305615692">Bidra til å gjøre nettet sikrere for alle</translation>
 <translation id="8680787084697685621">Kontoens påloggingsdetaljer er utdaterte.</translation>
 <translation id="868648444055742370">«<ph name="SITE_DOMAIN" />» har ikke tilgang til mikrofonen</translation>
 <translation id="8690752723634292147">Bekreft sletting</translation>
@@ -2578,7 +2573,6 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="8888595487174963247">Fjern påminnelsen</translation>
 <translation id="8890516388109605451">Kilder</translation>
 <translation id="8893208530912252670">Videoer</translation>
-<translation id="8898822736010347272">Sender nettadresser for noen av sidene du besøker, begrenset systeminformasjon og noe sideinnhold til Google for å bidra til å oppdage nye trusler og beskytte alle på nettet.</translation>
 <translation id="890009681345348416">40+ passord er autofylt</translation>
 <translation id="8900845556227858314">Nettleser-app</translation>
 <translation id="890565330728586731">Tilbake</translation>
@@ -2609,6 +2603,7 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="8976414606286374109">Kort lagres i Google-kontoen din.</translation>
 <translation id="8981454092730389528">Google Aktivitetslagring</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, festet nettsted</translation>
+<translation id="8989779557457435460">Del den aktive fanen som standard</translation>
 <translation id="8990960056509724223">Filen kunne ikke lagres på grunn av retningslinjene for organisasjonen din</translation>
 <translation id="8998289560386111590">Ikke tilgjengelig på enheten din</translation>
 <translation id="9003677638446136377">Sjekk på nytt</translation>

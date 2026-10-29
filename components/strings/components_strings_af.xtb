@@ -96,7 +96,6 @@
 <translation id="1165174597379888365">Bladsy is besoek</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Geen}=1{Van 1 werf af (jy sal by jou Google-rekening aangemeld bly)}other{Van # werwe af (jy sal by jou Google-rekening aangemeld bly)}}</translation>
 <translation id="1167877250265821930">Kon nie <ph name="LANGUAGE" /> aflaai nie</translation>
-<translation id="1171306609584863516">Geverifieer deur <ph name="IDP_ORIGIN" /></translation>
 <translation id="1174644974616730562">Koevert Chinees #1</translation>
 <translation id="1174723505405632867">Wil jy <ph name="EMBEDDED_URL" /> toelaat om webkoekies en werfdata te gebruik op <ph name="TOP_LEVEL_URL" />?
 
@@ -585,6 +584,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1988881251331415125">As die spelling korrek is, kan jy <ph name="BEGIN_LINK" />Konnektiwiteitdiagnostiek probeer gebruik<ph name="END_LINK" />.</translation>
 <translation id="1991370806334788445">Probeer om derdepartywebkoekies tydelik toe te laat, wat minder blaaibeskerming beteken, maar werfkenmerke is meer geneig om te werk soos verwag word.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
+<translation id="1996557034791506430">Verwyder toestemming?</translation>
 <translation id="1997484222658892567"><ph name="URL" /> wil groot data permanent op jou plaaslike rekenaar berg</translation>
 <translation id="1997774360448418989">Papier (lig)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{en nog 1}other{en nog #}}</translation>
@@ -691,6 +691,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2155260325161282517">5x7 dm.</translation>
 <translation id="2156467141257470387">Jy kan gestoorde adresse in alle Google-produkte gebruik. Dit sal nie jou bestaande werkadres verander nie. Dit sal in jou Google-rekening, <ph name="ACCOUNT" />, gestoor word.</translation>
 <translation id="2157640075051554492">Prysnasporingkennisgewings</translation>
+<translation id="2158964559178498011">Outovul werk op meer plekke – druk Ctrl twee keer om inligting te kry en in te vul</translation>
 <translation id="2161656808144014275">Teks</translation>
 <translation id="2162435186600002085">Logo vir primêre opskrif</translation>
 <translation id="2162535140284745414">Kry intydse voorstelle wat jou kan help om nuwe maniere te vind om met KI te blaai.</translation>
@@ -2201,6 +2202,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Vertaal bladsy?</translation>
 <translation id="468314109939257734">Bekyk jou virtuele kaart se nommer</translation>
+<translation id="4684818564800397688">Outovul werk op meer plekke – druk ⌘ twee keer om inligting te kry en in te vul</translation>
 <translation id="4686942373615810936">Pas geskep</translation>
 <translation id="4690205240253392065">Kies ’n Betaal Later-verskaffer</translation>
 <translation id="469028408546145398">Knoppie om Incognito-vensters toe te maak; aktiveer om alle Incognito-vensters wat tans oop is, toe te maak</translation>
@@ -2307,7 +2309,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="484462545196658690">Outo</translation>
 <translation id="4844937814014739139">Gedeelde oortjies vir rollees en zoem</translation>
 <translation id="484988093836683706">Gebruik toestelontsluiting</translation>
-<translation id="4850669014075537160">Rollees</translation>
 <translation id="4850886885716139402">Bekyk</translation>
 <translation id="4854853140771946034">Skep vinnig 'n nuwe nota in Google Keep</translation>
 <translation id="4855395119669662878">Jou administrateur sal op <ph name="DATE_TIME" /> jou lêers na <ph name="CLOUD_PROVIDER" /> begin oplaai. Hou jou toestel gekoppel tot jou lêeroplaai voltooi is. Jy sal tydens die oplaai net plaaslike lêers kan lees.</translation>
@@ -2909,7 +2910,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="5826507051599432481">Algemene naam (AN)</translation>
 <translation id="5830698870816298009">kameragebruik en -beweging</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
-<translation id="5832976493438355584">Gesluit</translation>
 <translation id="5837220895135257862">Maak spasie in <ph name="CLOUD_PROVIDER" /> beskikbaar voordat jy weer probeer</translation>
 <translation id="5838278095973806738">Jy moenie enige sensitiewe inligting (byvoorbeeld, wagwoorde en kredietkaartnommers) op hierdie werf invoer nie, want aanvallers kan dit steel.</translation>
 <translation id="5838732667866024867">Jy kan die links/regs-pyl gebruik om prysveranderinge op die grafiek te hersien</translation>
@@ -3502,6 +3502,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="6834757537110528125">Hierdie werf steun nie ’n veilige verbinding nie</translation>
 <translation id="6841864657731852591">Gravuresilinder</translation>
 <translation id="6842196666980060516">184x260 mm</translation>
+<translation id="6843919992766261684"><ph name="ISSUER" /> sal in die toekoms ophou om hierdie e-posadres outomaties te bevestig</translation>
 <translation id="6844746916504777213">Moet nooit hierdie werwe deel nie</translation>
 <translation id="6844998850832008753">Handnasporing word hierdie keer toegelaat</translation>
 <translation id="6849023911358004088">Knoppie om sekuriteitinstellings te bestuur; aktiveer om jou Veiligblaai en meer in Chrome-instellings te bestuur</translation>
@@ -3652,6 +3653,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="7083258188081898530">Laai 9</translation>
 <translation id="70846382339153529">OpenDocument-teks</translation>
 <translation id="7086090958708083563">Oplaai deur gebruiker versoek</translation>
+<translation id="7087807086191250928">Gemini kan foute maak. Langdruk die voorstel om die oorspronklike bron na te gaan en seker te maak dat hierdie inligting akkuraat is.</translation>
 <translation id="7089745480771070611">Maak in kantpaneel oop</translation>
 <translation id="7090698782953528257">Help my om ’n funksie grafies voor te stel om die wiskundige vergelyking te visualiseer en die vorm van die kurwe te sien</translation>
 <translation id="7092087596499105699">Jou admin het die veilige deurgangverbinder opgestel om toegang tot jou organisasie se privaat webapps te beskerm. Dit kan data uit jou werkprofiel gebruik om toegang te verifieer.</translation>
@@ -4082,6 +4084,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7765158879357617694">Skuif</translation>
 <translation id="7766518757692125295">Buitelyn</translation>
 <translation id="776749070095465053">Tekstiel</translation>
+<translation id="7770247511810814330">Verwyder toestemming</translation>
 <translation id="7772659560036894129">Produkname</translation>
 <translation id="7773005668374414287">Dieselfde volgorde, voorkant na bo</translation>
 <translation id="7779418012194492374">Herroep toegang vir <ph name="DEVICE_NAME" /></translation>
@@ -4193,7 +4196,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7961015016161918242">Nooit</translation>
 <translation id="7961493403319780137">Kry meer inligting oor hierdie kenmerk – Outovul verifikasiekodes vanaf Gmail</translation>
 <translation id="7962467575542381659">Platformmasjien</translation>
-<translation id="796439090588610411">Chrome sal ophou om hierdie e-posadres outomaties op gesteunde werwe te bevestig.</translation>
 <translation id="7966803981046576691">Taakrekeningsoort</translation>
 <translation id="7967973398323409409">Die inligting wat jy outovul, word nooit deur enigiemand gesien nie</translation>
 <translation id="79682505114836835">Waarde "<ph name="VALUE" />" is 'n ongeldige hekskleur.</translation>
@@ -4476,7 +4478,6 @@ Bykomende besonderhede:
 <translation id="8446884382197647889">Kom meer te wete</translation>
 <translation id="8449036207308062757">Bestuur berging</translation>
 <translation id="8449155699563577224">17x24 dm.</translation>
-<translation id="8449513475775663994">Verwyder geverifieerde e-posadres?</translation>
 <translation id="8449836157089738489">Maak almal in nuwe oortjiegroep oop</translation>
 <translation id="8451518040456311377">Stoor en vul identiteitsdokumente in</translation>
 <translation id="84561192812921051">Jou administrateur kan oor ’n afstand veranderinge aan jou profiel en blaaier maak, inligting oor die blaaier ontleed deur middel van verslagdoening, en ander nodige take uitvoer. Aktiwiteit op hierdie toestel kan ook buite Chrome bestuur word.  <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>

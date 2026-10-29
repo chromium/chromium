@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">Perkelkite duomenis iš „Safari“</translation>
 <translation id="2526166285241366046">Slaptažodžio išsaugojimas</translation>
 <translation id="2529021024822217800">Atidaryti viską</translation>
-<translation id="2530932541542751783">Įvyko klaida, susijusi su šiuo nustatymu. Atnaujinkite ir iš naujo paleiskite „Chrome“ bei „iPadOS“, tada bandykite dar kartą. Jei ši klaida vis tiek rodoma, gali būti, kad jūsų „iPad“ nepalaiko šio nustatymo.</translation>
 <translation id="2536991091671391962">Išsaugotus slaptažodžius galite naudoti bet kuriame įrenginyje. Jie išsaugomi „Google“ slaptažodžių tvarkyklėje kaip priskirti el. pašto adresui <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Paslėptas slaptažodis</translation>
 <translation id="2538705697765638552">Išsaugokite informaciją ir sparčiau atlikite užduotis, pvz., užpildykite formas „Google“ produktuose. Informaciją galite tvarkyti „Google Wallet“, naudodami „<ph name="USER_EMAIL" />“.</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">Vizualizuoti ir redaguoti</translation>
 <translation id="3485558910355485767">Naujas inkognito langas</translation>
 <translation id="3488501490964659223">Skirtukai uždaryti ir naršymo duomenys ištrinti. Buvote atjungti</translation>
-<translation id="3490396108106323715">Dabartinio skirtuko bendrinimas</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /> apie siūlomą turinį</translation>
 <translation id="349446645805573740">Pasirinkite, kur norite išsaugoti <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /></translation>
 <translation id="3504377992102007712">Nustatymai</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">Nepavyko įkelti vaizdų</translation>
 <translation id="3565930036634619844">Skirtukas. <ph name="TAB_INDEX" /> iš <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Išsaugoti kitu būdu</translation>
-<translation id="3572503683475187385">Pradėjus naują pokalbį, dabartinis skirtukas bendrinamas su „Gemini“. Kai bendrinate skirtuką su „Gemini“, jo turinys ir URL siunčiami „Google“. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">„Google“ paskyroje</translation>
 <translation id="3575234738189584619">Paieška naudojant „Lens“</translation>
 <translation id="3575426792457739946">Šiame sąraše yra visi įkelti profiliai.</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">Rodyti pagalbą</translation>
 <translation id="4095483462103784441">Kurti naują skirtukų grupę</translation>
 <translation id="4099756562043439968">Nustatyti priminimą</translation>
-<translation id="4108998448622696017">Aptinka ir įspėja jus apie pavojingus įvykius, kai jų nutinka.</translation>
 <translation id="4111985840824673503">Žymėti viską kaip skaitytą</translation>
 <translation id="411254640334432676">Nepavyko atsisiųsti.</translation>
 <translation id="4112644173421521737">Ieškoti</translation>
@@ -1169,6 +1165,7 @@
 <translation id="4658335131052370646">Išsaugoti</translation>
 <translation id="465947902531722727">Perjungti profilius</translation>
 <translation id="466307903888586355">Failų išsaugojimą užblokavo jūsų organizacija</translation>
+<translation id="4665303625242639572">Uždaryti „<ph name="PAGE_TITLE" />“</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Jūsų organizacija reikalauja, kad naršytumėte privačiai. Skirtukų grupės nesinchronizuojamos inkognito režimu.
 <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
@@ -1286,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Skirtukų grupės spalva <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopijuoti slaptažodį</translation>
+<translation id="5007392906805964215">Peržiūrėti</translation>
 <translation id="5009127379503001909">Naršyti toliau</translation>
 <translation id="5016205925109358554">Su užraitais</translation>
 <translation id="5016420433031926653">Siųsti: <ph name="USER_EMAIL" /></translation>
@@ -1938,7 +1936,6 @@ Jei norite tęsti kompiuteryje, perjunkite į <ph name="OTHER_EMAIL" />. Gausite
 <translation id="6938212956536472404">Šio skirtuko negalima bendrinti</translation>
 <translation id="6945221475159498467">Pasirinkti</translation>
 <translation id="6946722113367118030">Susimąstęs</translation>
-<translation id="6947751977892029882">Įvyko klaida, susijusi su šiuo nustatymu. Atnaujinkite ir iš naujo paleiskite „Chrome“ bei „iOS“, tada bandykite dar kartą. Jei ši klaida vis tiek rodoma, gali būti, kad jūsų „iPhone“ nepalaiko šio nustatymo.</translation>
 <translation id="6950522403736391608">Paslėpta</translation>
 <translation id="6957084631403333422">Išbandykite dėmesį sutelkiantį naujo skirtuko puslapį</translation>
 <translation id="695965663642079255">Išsaugokite ir tvarkykite mokėjimo informaciją, kad galėtumėte atsiskaityti sparčiau</translation>
@@ -2189,7 +2186,6 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="7758789811447313947">Violetinė tema</translation>
 <translation id="7759809451544302770">Pasirenkama</translation>
 <translation id="7765158879357617694">Perkelti</translation>
-<translation id="7767651976342854115">Įkeliant duomenų naudojimo nustatymą įvyko klaida.</translation>
 <translation id="7768507955883790804">Svetainėms automatiškai pritaikomas šis nustatymas, kai jose apsilankote</translation>
 <translation id="7772032839648071052">Patvirtinti slaptafrazę</translation>
 <translation id="7772948288262733182">Sveiki sugrįžę</translation>
@@ -2502,7 +2498,6 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="8674716540979958118">Turite pažeistų slaptažodžių.</translation>
 <translation id="8679900250380464358">Pridėti prie skaitymo sąrašo</translation>
 <translation id="8680643216091361291">Nustatymas <ph name="BEGIN_LINK" />„Keep“ veikla“<ph name="END_LINK" /> išjungtas pagal numatytuosius nustatymus. Kai jis išjungtas, „Google“ saugo jūsų pokalbius tris dienas. Ji naudoja juos, kad „Gemini Apps“ veiktų tinkamai, padėtų užtikrinti jų saugą ir naudotų jūsų atsiliepimus problemoms spręsti. Galite įjungti „Keep“ veiklą, kad padėtumėte tobulinti „Google“ DI visiems.</translation>
-<translation id="8680786875305615692">Padėkite pagerinti visų naudotojų saugą žiniatinklyje</translation>
 <translation id="8680787084697685621">Išsami prisijungimo prie paskyros informacija pasenusi.</translation>
 <translation id="868648444055742370"><ph name="SITE_DOMAIN" /> neleidžiama pasiekti mikrofono</translation>
 <translation id="8690752723634292147">Ištrynimo patvirtinimas</translation>
@@ -2578,7 +2573,6 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="8888595487174963247">Pašalinti priminimą</translation>
 <translation id="8890516388109605451">Šaltiniai</translation>
 <translation id="8893208530912252670">Vaizdo įrašai</translation>
-<translation id="8898822736010347272">„Google“ siunčiami kai kurių lankomų puslapių URL, ribota sistemos informacija ir kai kurių puslapių turinys, kad būtų galima aptikti naujas grėsmes ir apsaugoti visus žiniatinklio naudotojus.</translation>
 <translation id="890009681345348416">Automatiškai užpildyta daugiau nei 40 slaptažodžių</translation>
 <translation id="8900845556227858314">Naršyklės programa</translation>
 <translation id="890565330728586731">Atgal</translation>
@@ -2609,6 +2603,7 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="8976414606286374109">Kortelės išsaugomos „Google“ paskyroje.</translation>
 <translation id="8981454092730389528">„Google“ veiklos valdikliai</translation>
 <translation id="8988107725234939347">„<ph name="WEBSITE_TITLE" />“, prisegta svetainė</translation>
+<translation id="8989779557457435460">Pagal numatytuosius nustatymus bendrinti dabartinį skirtuką</translation>
 <translation id="8990960056509724223">Failo nepavyko išsaugoti dėl organizacijos politikos</translation>
 <translation id="8998289560386111590">Nepasiekiama jūsų įrenginyje</translation>
 <translation id="9003677638446136377">Tikrinti dar kartą</translation>

@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">Safaridan maʼlumotlaringizni import qiling</translation>
 <translation id="2526166285241366046">Parolni saqlash</translation>
 <translation id="2529021024822217800">Hammasini ochish</translation>
-<translation id="2530932541542751783">Bu sozlamada nimadir xato ketdi. Chrome va iPadOS tizimini yangilab, qayta ishga tushiring va qayta urining. Bu xatolik takrorlanaversa, iPad qurilmangiz bu sozlamani dastaklamasligi mumkin.</translation>
 <translation id="2536991091671391962">Saqlangan parollardan istalgan qurilmada foydalanishingiz mumkin. Ular Google Parollar menejerida <ph name="EMAIL" /> hisobiga saqlangan.</translation>
 <translation id="2538103551183528357">Yashirin, parol</translation>
 <translation id="2538705697765638552">Maʼlumotlaringizni saqlang va Google mahsulotlarida shakllarni toʻldirish kabi vazifalarni tezroq bajaring. <ph name="USER_EMAIL" /> uchun Google Walletdagi axborotni boshqarish mumkin.</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">Rasmlar yarating va tahrirlang</translation>
 <translation id="3485558910355485767">Yangi inkognito oyna</translation>
 <translation id="3488501490964659223">Varaqlar yopiladi va brauzer tarixi tozalanadi. Hisobingizdan chiqasiz</translation>
-<translation id="3490396108106323715">Joriy varaqni ulashish</translation>
 <translation id="3493531032208478708">Bildirgi takliflar haqida <ph name="BEGIN_LINK" />batafsil ma’lumot<ph name="END_LINK" /></translation>
 <translation id="349446645805573740">“<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />” faylini qayerga saqlashni tanlang</translation>
 <translation id="3504377992102007712">Sozlamalar</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">Rasmlar yuklanmadi</translation>
 <translation id="3565930036634619844">Varaq. <ph name="TAB_INDEX" /> / <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="3567168891086460374">Boshqa usulda saqlang</translation>
-<translation id="3572503683475187385">Yangi chat boshlaganingizda joriy varaq Gemini bilan ulashiladi. Varaq Gemini bilan ulashilganda uning kontenti va URL manzili Googlega yuboriladi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Google hisobingizda</translation>
 <translation id="3575234738189584619">Lens orqali qidirish</translation>
 <translation id="3575426792457739946">Bu roʻyxatda barcha profillar yuklangan.</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">Yordamni ochish</translation>
 <translation id="4095483462103784441">Yangi varaqlar guruhini yaratish</translation>
 <translation id="4099756562043439968">Eslatma belgilash</translation>
-<translation id="4108998448622696017">Xavfli tahdidlarni aniqlaydi va sizni ulardan himoya qiladi.</translation>
 <translation id="4111985840824673503">Hammasi ochilgan</translation>
 <translation id="411254640334432676">Yuklab olishda xatolik yuz berdi.</translation>
 <translation id="4112644173421521737">Qidiruv</translation>
@@ -1287,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Varaqlar guruhi rangi: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Parolni nusxalash</translation>
+<translation id="5007392906805964215">Tekshirish</translation>
 <translation id="5009127379503001909">Tanishishda davom etish</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Kimga: <ph name="USER_EMAIL" /></translation>
@@ -1939,7 +1936,6 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="6938212956536472404">Bu varaqni ulashish imkonsiz</translation>
 <translation id="6945221475159498467">Tanlash</translation>
 <translation id="6946722113367118030">Oʻychan</translation>
-<translation id="6947751977892029882">Bu sozlamada nimadir xato ketdi. Chrome va iOS tizimini yangilab, qayta ishga tushiring va qayta urining. Bu xatolik takrorlanaversa, iPhone qurilmangizda bu sozlama ishlamasligi mumkin.</translation>
 <translation id="6950522403736391608">Yashirin</translation>
 <translation id="6957084631403333422">Fokuslangan yangi varaq sahifasini sinang</translation>
 <translation id="695965663642079255">Tezroq hisob-kitob qilish uchun toʻlov axborotini saqlang va boshqaring</translation>
@@ -2190,7 +2186,6 @@ Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="7758789811447313947">Binafsharang mavzu</translation>
 <translation id="7759809451544302770">Ixtiyoriy</translation>
 <translation id="7765158879357617694">Ko‘chirib o‘tkazish</translation>
-<translation id="7767651976342854115">Maʼlumotlardan foydalanish sozlamalarida xatolik yuz berdi.</translation>
 <translation id="7768507955883790804">Saytlarga tashrif vaqtida bu sozlama avtomatik tatbiq qilinadi</translation>
 <translation id="7772032839648071052">Kodli iborani tasdiqlang</translation>
 <translation id="7772948288262733182">Qaytganingizdan mamnunmiz</translation>
@@ -2503,7 +2498,6 @@ Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="8674716540979958118">Oshkor boʻlgan parollaringiz bor</translation>
 <translation id="8679900250380464358">Saqlangan sahifalarga kiritish</translation>
 <translation id="8680643216091361291"><ph name="BEGIN_LINK" />Faoliyatni saqlash<ph name="END_LINK" /> sozlamasi standart oʻchiq boʻladi. U faolsizlantirilsa, Google chatlarni 3 kun davomida saqlaydi. Ularni Gemini ilovalarini toʻgʻri ishlatish, xavfsiz saqlash uchun ishlaatadi hamda muammolarni hal qilish uchun fikr-mulohazangizdan foydalanadi. Google AI ni barcha uchun yaxshilashga yordam berish uchun Faoliyatni saqlash funksiyasini yoqishingiz mumkin.</translation>
-<translation id="8680786875305615692">Internetni hamma uchun xavfsiz boʻlishiga yordam bering</translation>
 <translation id="8680787084697685621">Hisob haqidagi ma’lumotlar eskirgan.</translation>
 <translation id="868648444055742370">“<ph name="SITE_DOMAIN" />” saytiga mikrofondan foydalanish taqiqlangan</translation>
 <translation id="8690752723634292147">Oʻchirishni tasdiqlash</translation>
@@ -2579,7 +2573,6 @@ Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="8888595487174963247">Eslatmani olib tashlash</translation>
 <translation id="8890516388109605451">Manbalar</translation>
 <translation id="8893208530912252670">Videolar</translation>
-<translation id="8898822736010347272">Ochilgan sahifalarning URL manzillari, cheklangan tizim va sahifalar axborotini anonim ravishda Google serverlariga yuboradi va internetdagi yangi tahdidlarni aniqlashga yordam berib, barcha foydalanuvchilarni bu tahdidlardan himoya qiladi.</translation>
 <translation id="890009681345348416">40+ ta parol avtomatik kiritildi</translation>
 <translation id="8900845556227858314">Brauzer ilovasi</translation>
 <translation id="890565330728586731">Orqaga</translation>
@@ -2610,6 +2603,7 @@ Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="8976414606286374109">Kartalar Google hisobingizda saqlanadi.</translation>
 <translation id="8981454092730389528">Google hisobidagi harakatlarni kuzatish</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, mahkamlangan sayt</translation>
+<translation id="8989779557457435460">Birlamchi holatda joriy varaqni ulashish</translation>
 <translation id="8990960056509724223">Tashkilotingiz siyosatlari tufayli fayl saqlanmadi</translation>
 <translation id="8998289560386111590">Qurilmangizda ishlamaydi.</translation>
 <translation id="9003677638446136377">Qayta tekshirish</translation>

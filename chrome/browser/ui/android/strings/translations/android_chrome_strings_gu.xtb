@@ -337,6 +337,7 @@
 <translation id="2332515770639153015">Safe Browsingમાં વધારેલી સુરક્ષા ચાલુ છે</translation>
 <translation id="233375395665273385">ડિલીટ કરો અને સાઇન આઉટ કરો</translation>
 <translation id="2334275697832662087">Chromeની AI-સંચાલિત સુરક્ષા તમને ઑનલાઇન જોખમો સામે સુરક્ષિત રાખવામાં મદદ કરે છે, જેથી તમે બ્રાઉઝ કરો ત્યારે તમને વિશ્વાસ રહે</translation>
+<translation id="2335758110242123814">ગ્રૂપ ખોલો</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> ઇન્સ્ટૉલ કરી શકાઈ નથી.</translation>
 <translation id="2349710944427398404">Chrome દ્વારા ઉપયોગમાં લેવાયેલી કુલ સ્ટોરેજ, એકાઉન્ટ, બુકમાર્ક અને સાચવેલા સેટિંગ સહિત</translation>
 <translation id="2354001756790975382">અન્ય બુકમાર્ક</translation>
@@ -390,7 +391,6 @@
 <translation id="2532336938189706096">વેબ દૃશ્ય</translation>
 <translation id="2535807170289627159">તમામ ટૅબ</translation>
 <translation id="2536728043171574184">આ પેજની ઓફલાઇન કૉપિ જોઈ રહ્યા છે</translation>
-<translation id="2537574774089209541">તમે બ્રાઉઝ કરો ત્યારે તમને Geminiનો સરળ ઍક્સેસ આપવા માટે અમુક ટૂલ ખસેડવામાં આવ્યા છે</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, પસંદ કરેલું પિન કરેલું મ્યૂટ કરેલું છૂપું ટૅબ</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, ટૅબ</translation>
@@ -1037,6 +1037,7 @@
 <translation id="5096775069898886423">સુરક્ષિત કનેક્શનને સપોર્ટ કરતી ન હોય તેવી સાઇટ માટે, સાઇટની મુલાકાત લેતા પહેલાં ચેતવણી મેળવો</translation>
 <translation id="510275257476243843">1 કલાક બાકી</translation>
 <translation id="5105442806410269908">અન્ય Google ડેટા મેનેજ કરો</translation>
+<translation id="5111326646107464148">નવી વિન્ડોમાં ગ્રૂપ ખોલો</translation>
 <translation id="5114895953710637392">ઍપ ફિલ્ટર શીટ બંધ છે.</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> પર</translation>
 <translation id="5116239826668864748">તમે મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર કોઈપણ સમયે ટૅપ કરીને Chromeનો ઉપયોગ કરી શકશો</translation>
@@ -1606,6 +1607,7 @@
 <translation id="72415438529550637">પાસવર્ડ સૂચવવાની સુવિધા બંધ છે.</translation>
 <translation id="724510009481365878">આ પેજને પ્રિન્ટ કરી શકાતું નથી</translation>
 <translation id="7248671827512403053">ઍપ્લિકેશન</translation>
+<translation id="7253205084599155458">સરળ ઍક્સેસ માટે સૌથી નીચેના ટૂલબારમાં નૅવિગેશન અને ટૂલ ડિસ્પ્લે કરો</translation>
 <translation id="7253951228444156601">પાસવર્ડ ચેક કરી રહ્યાં છીએ…</translation>
 <translation id="7265857422443387781">Google Lens વડે ટૅબ શોધો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
 <translation id="727288900855680735"><ph name="ONE_TIME_CODE" />ને <ph name="ORIGIN" /> પર સબમિટ કરીએ?</translation>
@@ -1618,7 +1620,6 @@
 <translation id="7291910923717764901">આ પેજ માટે છબીના વર્ણનો ઉમેર્યા</translation>
 <translation id="7293429513719260019">ભાષા પસંદ કરો</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, પસંદ કરેલું પિન કરેલું, શેર કરતું ટૅબ</translation>
-<translation id="7304003340539141201">તમારા ટૅબ અને ટાસ્કમાં મદદ કરવા Geminiને પૂછો</translation>
 <translation id="7311244614769792472">કોઈ પરિણામ મળ્યું નથી</translation>
 <translation id="7314734791127433392">પાસવર્ડ ચેક કરી શકતા નથી</translation>
 <translation id="7324354302972299151">“Do Not Track"ની વિનંતી મોકલો</translation>
@@ -1754,6 +1755,7 @@
 <translation id="7821130663268546430">ટૅબ સ્વિચરમાં તમે બધા ખુલ્લા ટૅબ મેળવી શકશો</translation>
 <translation id="7822705602465980873">તમે સાઇન ઇન હો ત્યારે, આ ડેટા તમારા Google એકાઉન્ટ સાથે લિંક કરવામાં આવે છે, જેથી સમગ્ર Googleની સેવાઓમાં તમારી સુરક્ષા કરી શકાય, ઉદાહરણ તરીકે સુરક્ષા સંબંધી કોઈ બનાવ બાદ Gmailમાં સુરક્ષા વધારવી.</translation>
 <translation id="7824665136384946951">તમારી સંસ્થા દ્વારા Safe Browsingની સુવિધા બંધ કરવામાં આવી છે</translation>
+<translation id="782590969421016895">હાલના પેજનો ઉપયોગ કરો</translation>
 <translation id="7825973332242257878">ટૅબના ગ્રૂપ</translation>
 <translation id="7845155831233417403">તમે વધુમાં વધુ <ph name="MAX_INSTANCE_COUNT" /> વિન્ડો ખુલ્લી રાખી શકો છો. ચાલુ રાખવા માટે વિન્ડો બંધ કરો.</translation>
 <translation id="7846161022626028328">કોઈ ભૂલ આવી હતી. ફરી પ્રયાસ કરો.</translation>
@@ -1986,7 +1988,6 @@
 <translation id="8694622119922491927"><ph name="APP_NAME" />ને આ સાઇટ માટે હ્યુમન ઇન્ટરફેસ ડિવાઇસ (HIDs) ઍક્સેસ કરવાની પરવાનગી જોઈએ છે. તમે આ સેટિંગને પછીથી સેટિંગ &gt; ઍપ &gt; ઍપના વિશિષ્ટ ઍક્સેસમાં જઈને બદલી શકો છો.</translation>
 <translation id="8696297579102085705">તમારા ડિવાઇસ પર મોકલો</translation>
 <translation id="8699120352855309748">આ ભાષાઓનો અનુવાદ કરવાનું ઑફર કરશો નહીં</translation>
-<translation id="8700565880437506364">રજૂ કરી રહ્યાં છીએ Gemini in Chrome</translation>
 <translation id="8712637175834984815">સમજાઈ ગયું</translation>
 <translation id="8715286883001906001">તમારા Google એકાઉન્ટમાં તમારા પાસવર્ડને સશક્ત બનાવો</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> બંધ થઈ જશે</translation>

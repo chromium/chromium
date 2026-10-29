@@ -58,7 +58,6 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="2027881372245801507">Việc tắt tính năng đề xuất sẽ không kiểm soát cách Chromium xử lý tiêu đề trang và URL cho các tính năng khác. Bạn có thể quản lý quyền truy cập vào dữ liệu này trong phần <ph name="BEGIN_LINK" />cài đặt đồng bộ hoá<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Đăng nhập vào trang web này và Chromium để sử dụng mật khẩu và các nội dung khác trên mọi thiết bị của bạn</translation>
 <translation id="2042889939382983733">Xem nhật ký duyệt web trên Chromium</translation>
-<translation id="2052320862053429062">Chromium định kỳ kiểm tra mật khẩu của bạn so với các danh sách đăng trên Internet. Trong quá trình này, mật khẩu và tên người dùng của bạn được mã hoá nên không ai đọc được, kể cả Google.</translation>
 <translation id="2059365270911640413">Hoàn tất thiết lập Chromium</translation>
 <translation id="2168108852149185974">Một số tiện ích bổ sung khiến Chromium trục trặc. Hãy gỡ cài đặt:</translation>
 <translation id="2168593389981132306">Cải thiện Chromium</translation>
@@ -69,7 +68,6 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="2236584955986023187">Tức là lần nào Chromium cũng yêu cầu trang web dành cho máy tính.</translation>
 <translation id="2245694534483711162">Gemini có thể sử dụng vị trí chính xác của bạn, tuỳ thuộc vào quyền bạn đã cấp cho Chromium</translation>
 <translation id="2270466829363945454">Mua sắm</translation>
-<translation id="2313870531055795960">Kiểm tra đối chiếu các URL với danh sách trang web không an toàn được lưu trữ trong Chromium. Nếu một trang web cố ăn cắp mật khẩu của bạn hoặc nếu bạn tải một tệp gây hại xuống, thì Chrome cũng có thể gửi các URL đến tính năng Duyệt web an toàn, bao gồm cả các đoạn nội dung trên trang.</translation>
 <translation id="2314220608288760290">Chromium tự động mở các đường liên kết ẩn danh của YouTube ở chế độ ẩn danh.</translation>
 <translation id="231828342043114302">Để nhận nội dung được cá nhân hoá dựa trên sở thích của bạn, hãy đăng nhập vào Chromium.</translation>
 <translation id="2334943301233020675">Các khoá truy cập sau đây không được nhập vào Trình quản lý mật khẩu vì không đáp ứng được các yêu cầu.</translation>

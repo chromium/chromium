@@ -31,7 +31,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1194807384646768652">Na-block ng Chrome ang pag-download na ito dahil hindi karaniwang dina-download ang uri ng file at posibleng mapanganib ito</translation>
 <translation id="1197860368385086056">Sa susunod na buksan mo ang Chrome sa iyong <ph name="DEVICE_TYPE" />, makakakita ka ng prompt para i-enable ang mga alerto sa pagsubaybay sa presyo.</translation>
 <translation id="1203500561924088507">Salamat sa pag-install. Dapat mong i-restart ang iyong browser bago gamitin ang <ph name="BUNDLE_NAME" />.</translation>
-<translation id="122321322139970942">May nakabinbing <ph name="IMPORTANT_UPDATE" />. Para mapanatiling ligtas ang iyong pag-browse, mag-a-update ang Chrome sa susunod na hindi ka aktibo sa loob ng <ph name="IDLE_DURATION" />.</translation>
 <translation id="1226003169284463347">Para makuha ang iyong mga bookmark at higit pa sa lahat ng device mo, mag-sign in sa Chrome</translation>
 <translation id="1278833599417554002">Ilunsad ulit para ma-update ang Chrome</translation>
 <translation id="1289911795790071537">Buksan ang paghahanap gamit ang Chrome</translation>
@@ -163,6 +162,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2482846200327569645">Naka-sign in na si <ph name="EXISTING_USER" />. Para panatilihing hiwalay ang iyong pag-browse, mag-sign in sa Chrome sa sarili mong profile bilang <ph name="USER_EMAIL_ADDRESS" />. Makukuha mo rin ang iyong mga bookmark at higit pa mula sa <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">I-uninstall</translation>
 <translation id="2513154137948333830">Nire-require na i-reboot: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2521391734665471391">Isara ang AI Mode ng Google Search</translation>
 <translation id="2523492931736391680">Secure ang iyong gawa sa Chrome</translation>
 <translation id="2534365042754120737">Para protektahan ang iyong data, hayaan ang Chrome na mag-alis ng mga pahintulot sa mga site na hindi mo binisita kamakailan. Hindi nito mapapahinto ang mga notification.</translation>
 <translation id="2556847002339236023">Isinasara ng iyong organisasyon ang Chrome kapag hindi ito ginagamit sa loob ng <ph name="TIMEOUT_DURATION" />. Na-delete ang data mula sa pag-browse. Posibleng kasama rito ang history, autofill, at mga download.</translation>
@@ -519,7 +519,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="5941830788786076944">Gawin ang Google Chrome na default browser</translation>
 <translation id="5947104538377036631">Shortcut ng Chrome</translation>
 <translation id="5960071705175224773">Binago ng hindi kilalang app ang iyong mga setting</translation>
-<translation id="5960404530854194706">Mag-a-update ang Chrome kapag wala ka</translation>
 <translation id="5980111191913430208">Puwedeng mapinsala ng mga extension, app, at tema mula sa mga hindi kilalang source ang iyong device. Inirerekomenda ng Chrome na i-install lang ang mga ito mula sa <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Nagda-download... <ph name="HOURS" /> (na) oras na lang ang natitira</translation>
 <translation id="6004427865367382148">{COUNT,plural, =1{Nire-require ng iyong administrator na ilunsad mo ulit ang Chrome para ma-apply ang update. May Incognito o Isolated window na nakabukas. Hindi na ito muling magbubukas pagkatapos mong maglunsad ulit.}one{Nire-require ng iyong administrator na ilunsad mo ulit ang Chrome para ma-apply ang update. May # Incognito at Isolated window na nakabukas sa mga profile. Hindi na muling magbubukas ang mga ito pagkatapos mong maglunsad ulit.}other{Nire-require ng iyong administrator na ilunsad mo ulit ang Chrome para ma-apply ang update. May # na Incognito at Isolated window na nakabukas sa mga profile. Hindi na muling magbubukas ang mga ito pagkatapos mong maglunsad ulit.}}</translation>
@@ -603,7 +602,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6556755379298048869">Maghanap gamit ang keyboard shortcut.</translation>
 <translation id="6585124893636629274">Isara ang Gemini sa Chrome</translation>
 <translation id="659498884637196217">Sa Google Password Manager sa device na ito</translation>
-<translation id="660312897435669152">Gustong mag-update ng Chrome</translation>
 <translation id="6612152958212564387">Hindi ka nagpapadala ng mga istatistika sa paggamit at ulat ng pag-crash sa Google. <ph name="BEGIN_LINK" />Pamahalaan<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Panatilihing ganap na naka-sync ang iyong mga password, bookmark, at history sa lahat ng device sa pamamagitan ng pagtatakda ng Chrome bilang default browser mo.</translation>
 <translation id="6631524303639368205">Magpatuloy kung saan ka huminto: Ni-restore ng Chrome ang iyong mga tab mula sa huling session mo. Puwede mo itong i-off sa</translation>
@@ -726,6 +724,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7723388585204724670">I-reset sa Default na Chrome</translation>
 <translation id="77283119132245232">Nagbibigay ng mga serbisyo ng pag-trace ng system para sa <ph name="BROWSER_NAME" />. Kung naka-disable ang serbisyong ito, hindi isasama sa mga trace ng performance na ginawa ng browser ang mga system-wide na event gaya ng mga event na context switch at ready thread.</translation>
 <translation id="7736869414036750079">Nire-require ka ng iyong organisasyon na mag-sign in sa Chrome</translation>
+<translation id="7745849183714722618">Para paganahin ang mga feature tulad ng pag-detect ng scam, maaaring gumamit ang Chrome ng mga AI model na direktang tumatakbo sa iyong device. Tuwing naka-off ito, maaaring hindi gumana ang mga feature na ito. <ph name="BEGIN_LINK" />Matuto pa tungkol sa on-device na AI<ph name="END_LINK" /></translation>
 <translation id="7747138024166251722">Hindi makalikha ng pansamantalang direktoryo ang installer. Paki-suri para sa puwang sa disk na walang laman at pahintulot upang i-install ang software.</translation>
 <translation id="7748969056734910029">Hindi mo ito binisita kamakailan. Inalis ng Chrome ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="7759944311003584891">Maghanap gamit ang Chrome</translation>

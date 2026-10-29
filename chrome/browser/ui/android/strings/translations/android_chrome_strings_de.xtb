@@ -337,6 +337,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2332515770639153015">Erweitertes Safe Browsing ist aktiviert</translation>
 <translation id="233375395665273385">Löschen und abmelden</translation>
 <translation id="2334275697832662087">Mit den KI-Sicherheitsfunktionen von Chrome bist du effektiv vor Bedrohungen sowie beim Surfen im Web geschützt</translation>
+<translation id="2335758110242123814">Gruppe öffnen</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> konnte nicht installiert werden.</translation>
 <translation id="2349710944427398404">Gesamtdaten, die von Chrome verwendet werden, wie Konten, Lesezeichen und gespeicherte Einstellungen</translation>
 <translation id="2354001756790975382">Weitere Lesezeichen</translation>
@@ -390,7 +391,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2532336938189706096">Web-Ansicht</translation>
 <translation id="2535807170289627159">Alle Tabs</translation>
 <translation id="2536728043171574184">Eine Offline-Kopie dieser Seite wird angezeigt.</translation>
-<translation id="2537574774089209541">Einige Tools wurden verschoben, damit du beim Surfen ganz einfach auf Gemini zugreifen kannst</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, ausgewählter, angepinnter, stummgeschalteter Inkognitotab</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, Tab</translation>
@@ -1037,6 +1037,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5096775069898886423">Du wirst gewarnt, wenn du eine Website aufrufen möchtest, die keine sicheren Verbindungen unterstützt</translation>
 <translation id="510275257476243843">1 Stunde übrig</translation>
 <translation id="5105442806410269908">Andere Google-Daten verwalten</translation>
+<translation id="5111326646107464148">Gruppe in neuem Fenster öffnen</translation>
 <translation id="5114895953710637392">Die App-Filtertabelle ist geschlossen.</translation>
 <translation id="5115811374190515607">zu <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Du kannst Chrome jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
@@ -1618,7 +1619,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7291910923717764901">Für diese Seite wurden Bildbeschreibungen hinzugefügt</translation>
 <translation id="7293429513719260019">Sprache auswählen</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, ausgewählter, angepinnter Tab für die Freigabe</translation>
-<translation id="7304003340539141201">Gemini auffordern, dich bei deinen Tabs und Aufgaben zu unterstützen</translation>
 <translation id="7311244614769792472">Keine Ergebnisse gefunden</translation>
 <translation id="7314734791127433392">Passwörter können nicht geprüft werden</translation>
 <translation id="7324354302972299151">„Do Not Track“-Anfrage senden</translation>
@@ -1754,6 +1754,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7821130663268546430">Du findest alle geöffneten Tabs im Tab-Wechsler</translation>
 <translation id="7822705602465980873">Wenn du angemeldet bist, werden diese Daten mit deinem Google-Konto verknüpft, um dich in allen Google-Diensten besser zu schützen, beispielsweise durch erhöhten Schutz in Gmail nach einem Sicherheitsvorfall.</translation>
 <translation id="7824665136384946951">Deine Organisation hat Safe Browsing deaktiviert</translation>
+<translation id="782590969421016895">Aktuelle Seiten verwenden</translation>
 <translation id="7825973332242257878">Tabgruppen</translation>
 <translation id="7845155831233417403">Du kannst bis zu <ph name="MAX_INSTANCE_COUNT" /> Fenster nutzen. Schließe ein Fenster, um fortzufahren.</translation>
 <translation id="7846161022626028328">Ein Fehler ist aufgetreten. Versuche es noch einmal.</translation>
@@ -1986,7 +1987,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8694622119922491927"><ph name="APP_NAME" /> benötigt für diese Website die Berechtigung, auf Human Interface Devices (HID) zuzugreifen. Du kannst dies später in den Einstellungen unter „Apps“ &gt; „Spezieller App-Zugriff“ ändern.</translation>
 <translation id="8696297579102085705">An mein Gerät senden</translation>
 <translation id="8699120352855309748">Übersetzen dieser Sprachen nicht anbieten</translation>
-<translation id="8700565880437506364">Neu: Gemini in Chrome</translation>
 <translation id="8712637175834984815">Ok</translation>
 <translation id="8715286883001906001">Passwörter in deinem Google-Konto sicherer machen</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> wird geschlossen</translation>

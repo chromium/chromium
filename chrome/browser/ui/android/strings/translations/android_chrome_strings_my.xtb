@@ -337,6 +337,7 @@
 <translation id="2332515770639153015">‘အရည်အသွေးမြှင့် ဘေးကင်းလုံခြုံသည့် အသုံးပြုမှု’ ဖွင့်ထားသည်</translation>
 <translation id="233375395665273385">ဖျက်ပြီး ထွက်ရန်</translation>
 <translation id="2334275697832662087">Chrome ၏ AI သုံး လုံခြုံရေးစနစ်က အွန်လိုင်းနှောင့်ယှက်မှုများမှ ကာကွယ်ပေးသောကြောင့် စိတ်ချလက်ချ ဘရောက်စ်လုပ်နိုင်ပါမည်</translation>
+<translation id="2335758110242123814">အုပ်စုဖွင့်ရန်</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> ကို ထည့်သွင်း၍မရပါ။</translation>
 <translation id="2349710944427398404">အကောင့်များ၊ ဝဘ်လိပ်စာများနှင့် သိမ်းဆည်းထားသည့် ဆက်တင်များအပါအဝင် Chrome မှ သိမ်းဆည်းထားသည့် စုစုပေါင်းဒေတာများ ပါဝင်ပါသည်</translation>
 <translation id="2354001756790975382">အခြား စာညှပ်များ</translation>
@@ -390,7 +391,6 @@
 <translation id="2532336938189706096">ဝဘ် မြင်ကွင်း</translation>
 <translation id="2535807170289627159">တဘ်အားလုံး</translation>
 <translation id="2536728043171574184">ဤစာမျက်နှာ၏ အော့ဖ်လိုင်း မိတ္တူကို ကြည့်ရှုနေ</translation>
-<translation id="2537574774089209541">ဘရောက်စ်လုပ်နေစဉ် Gemini အလွယ်တကူသုံးနိုင်ရန် တူးလ်အချို့ကို ရွှေ့ထားသည်</translation>
 <translation id="2539002604555291451">Sans serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />၊ ရွေးထားပြီး ပင်ထိုးထားသည့် အသံပိတ်ထားသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />၊ တဘ်</translation>
@@ -1037,6 +1037,7 @@
 <translation id="5096775069898886423">လုံခြုံသော ချိတ်ဆက်မှုများကို မပံ့ပိုးသည့် ဝဘ်ဆိုက်များအတွက် ဝဘ်ဆိုက်သို့ ဝင်မကြည့်မီ သတိပေးချက် ရယူပါ</translation>
 <translation id="510275257476243843">၁ နာရီ ကျန်သည်</translation>
 <translation id="5105442806410269908">အခြား Google ဒေတာ စီမံရန်</translation>
+<translation id="5111326646107464148">ဝင်းဒိုးအသစ်တွင် အဖွဲ့ကို ဖွင့်ရန်</translation>
 <translation id="5114895953710637392">အက်ပ်စစ်ထုတ်မှု စာမျက်နှာကို ပိတ်ထားသည်။</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> သို့</translation>
 <translation id="5116239826668864748">မက်ဆေ့ဂျ်၊ မှတ်တမ်းနှင့် အခြားအက်ပ်များတွင် အချိန်မရွေး လင့်ခ်များကို တို့ပြီး Chrome သုံးနိုင်သည်</translation>
@@ -1605,6 +1606,7 @@
 <translation id="72415438529550637">စကားဝှက် အကြံပြုချက်ကို ပိတ်လိုက်သည်။</translation>
 <translation id="724510009481365878">ဤစာမျက်နှာကို ပုံနှိပ်၍မရပါ</translation>
 <translation id="7248671827512403053">အပလီကေးရှင်း</translation>
+<translation id="7253205084599155458">အလွယ်တကူသုံးနိုင်ရန်အတွက် အောက်ခြေကိရိယာဘားတွင် လမ်းညွှန်နှင့် တူးလ်များကို ပြသည်</translation>
 <translation id="7253951228444156601">စကားဝှက်များကို စစ်နေသည်…</translation>
 <translation id="7265857422443387781">Google Lens ဖြင့် တဘ်ရှာရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="727288900855680735"><ph name="ORIGIN" /> သို့ <ph name="ONE_TIME_CODE" /> ပို့မလား။</translation>
@@ -1617,7 +1619,6 @@
 <translation id="7291910923717764901">ဤစာမျက်နှာအတွက် ပုံအကြောင်းအရာများကို ထည့်လိုက်သည်</translation>
 <translation id="7293429513719260019">ဘာသာစကားရွေးချယ်ရန်</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />၊ ရွေးထားပြီး ပင်ထိုးထားသည့် မျှဝေနေသောတဘ်</translation>
-<translation id="7304003340539141201">သင်၏တဘ်နှင့် လုပ်ဆောင်စရာများအတွက် ကူညီပေးရန် Gemini ကို ပြောပါ</translation>
 <translation id="7311244614769792472">ရလဒ်မတွေ့ပါ</translation>
 <translation id="7314734791127433392">စကားဝှက်များကို စစ်ဆေး၍မရပါ</translation>
 <translation id="7324354302972299151">“Do Not Track” တောင်းဆိုမှု ပို့ရန်</translation>
@@ -1753,6 +1754,7 @@
 <translation id="7821130663268546430">ဖွင့်ထားသောတဘ်အားလုံးကို တဘ်ပြောင်းခလုတ်တွင် ရှာနိုင်သည်</translation>
 <translation id="7822705602465980873">သင်လက်မှတ်ထိုးဝင်ထားချိန်၌ Google ဝန်ဆောင်မှုများတွင် သင့်ကိုကာကွယ်ပေးရန် (ဥပမာ လုံခြုံရေးဆိုင်ရာ ဖြစ်ရပ်တစ်ခု ဖြစ်ပေါ်ပြီးနောက် Gmail တွင် ကာကွယ်မှု တိုးမြှင့်ခြင်း) ဤဒေတာကို သင့် Google Account တွင် လင့်ခ်ချိတ်ပါသည်။</translation>
 <translation id="7824665136384946951">သင့်အဖွဲ့အစည်းက ‘လုံခြုံစွာ ဖွင့်ကြည့်ခြင်း’ ကိုပိတ်ထားသည်</translation>
+<translation id="782590969421016895">လက်ရှိ စာမျက်နှာများကို သုံးရန်</translation>
 <translation id="7825973332242257878">တဘ်အုပ်စု</translation>
 <translation id="7845155831233417403">ဝင်းဒိုး <ph name="MAX_INSTANCE_COUNT" /> ခုအထိ ဖွင့်နိုင်သည်။ ရှေ့ဆက်ရန် ဝင်းဒိုးတစ်ခုကို ပိတ်ပါ။</translation>
 <translation id="7846161022626028328">အမှားတစ်ခု ဖြစ်သွားသည်။ ထပ်စမ်းကြည့်ပါ။</translation>
@@ -1985,7 +1987,6 @@
 <translation id="8694622119922491927"><ph name="APP_NAME" /> သည် ဤဝဘ်ဆိုက်တွင် လူများအတွက် ကြားခံစက် (HID) များကို သုံးခွင့်လိုအပ်သည်။ ဤဆက်တင်ကို ဆက်တင်များ &gt; အက်ပ်များ &gt; အထူးအက်ပ်သုံးခွင့်တွင် နောက်မှပြောင်းနိုင်သည်။</translation>
 <translation id="8696297579102085705">သင့်စက်သို့ ပို့ရန်</translation>
 <translation id="8699120352855309748">ဤဘာသာစကားများကို ပြန်ဆိုရန် မကမ်းလှမ်းပါနှင့်</translation>
-<translation id="8700565880437506364">Chrome ရှိ Gemini ကို မိတ်ဆက်ခြင်း</translation>
 <translation id="8712637175834984815">ရပါပြီ!</translation>
 <translation id="8715286883001906001">သင့် Google Account ရှိ စကားဝှက်များကို အားကောင်းအောင်လုပ်ပါ</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> ကို ပိတ်မည်</translation>

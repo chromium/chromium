@@ -337,6 +337,7 @@
 <translation id="2332515770639153015">გაძლიერებული Safe Browsing ჩართულია</translation>
 <translation id="233375395665273385">წაშლა და გასვლა</translation>
 <translation id="2334275697832662087">Chrome-ის ხელოვნური ინტელექტის მხარდაჭერით მოქმედი უსაფრთხოების ფუნქციები გიცავთ ონლაინ საფრთხეებისგან, რაც ინტერნეტში მუშაობისას დამატებით თავდაჯერებას გმატებთ</translation>
+<translation id="2335758110242123814">ჯგუფის გახსნა</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" />-ის ინსტალაცია ვერ მოხერხდა.</translation>
 <translation id="2349710944427398404">Chrome-ის მიერ გამოყენებული მეხსიერების საერთო მოცულობა, რომელშიც ინახება ანგარიშები, სანიშნეები და შენახული პარამეტრები</translation>
 <translation id="2354001756790975382">სხვა სანიშნეები</translation>
@@ -390,7 +391,6 @@
 <translation id="2532336938189706096">ვებ-ხედი</translation>
 <translation id="2535807170289627159">ყველა ჩანართი</translation>
 <translation id="2536728043171574184">თქვენ ამ გვერდის ხაზგარეშე ასლს ნახულობთ</translation>
-<translation id="2537574774089209541">ზოგიერთი ხელსაწყო გადაადგილდა, რათა მოგცეთ მარტივი წვდომა Gemini-ზე დათვალიერებისას</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, არჩეულია ჩამაგრებული და დადუმებული ინკოგნიტო ჩანართი</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, ჩანართი</translation>
@@ -1037,6 +1037,7 @@
 <translation id="5096775069898886423">საიტებისთვის, რომელიც არ სარგებლობს უსაფრთხო კავშირის მხარდაჭერით, გაფრთხილებას მიიღებთ მონახულებამდე</translation>
 <translation id="510275257476243843">დარჩენილია 1 საათი</translation>
 <translation id="5105442806410269908">Google-ის სხვა მონაცემების მართვა</translation>
+<translation id="5111326646107464148">ჯგუფის გახსნა ახალ ფანჯარაში</translation>
 <translation id="5114895953710637392">აპების ფილტრის ფურცელი დახურულია.</translation>
 <translation id="5115811374190515607">აქ: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">შეგიძლიათ გამოიყენოთ Chrome, როცა შეტყობინებებში, დოკუმენტებში ან სხვა აპებში ბმულებს ეხებით</translation>
@@ -1606,6 +1607,7 @@
 <translation id="72415438529550637">პაროლის შემოთავაზება დახურულია.</translation>
 <translation id="724510009481365878">ამ გვერდის დაბეჭდვა ვერ ხერხდება</translation>
 <translation id="7248671827512403053">პროგრამა</translation>
+<translation id="7253205084599155458">მარტივი წვდომისთვის ნავიგაციისა და ხელსაწყოების ჩვენება ქვედა ხელსაწყოთა ზოლში</translation>
 <translation id="7253951228444156601">მიმდინარეობს პაროლების შემოწმება…</translation>
 <translation id="7265857422443387781">ჩანართის ძიება Google Lens-ით <ph name="BEGIN_NEW" />ახალი<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">გსურთ, გადაგზავნოთ <ph name="ONE_TIME_CODE" /> <ph name="ORIGIN" />-ში?</translation>
@@ -1618,7 +1620,6 @@
 <translation id="7291910923717764901">ამ გვერდისთვის დამატებულია სურათების აღწერილობები</translation>
 <translation id="7293429513719260019">აირჩიეთ ენა</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, არჩეულია ჩამაგრებული ჩანართი, რომელიც აზიარებს კონტენტს</translation>
-<translation id="7304003340539141201">სთხოვეთ Gemini-ს დახმარება ჩანართებსა და ამოცანებთან დაკავშირებით</translation>
 <translation id="7311244614769792472">შედეგები ვერ მოიძებნა</translation>
 <translation id="7314734791127433392">პაროლების შემოწმება შეუძლებელია</translation>
 <translation id="7324354302972299151">გაგზავნეთ „Do Not Track“ მოთხოვნა</translation>
@@ -1754,6 +1755,7 @@
 <translation id="7821130663268546430">ყველა გახსნილი ჩანართის პოვნა ჩანართების გადამრთველში შეგიძლიათ</translation>
 <translation id="7822705602465980873">როცა სისტემაში შესული ხართ, ეს მონაცემები მიებმება თქვენს Google ანგარიშს, რომ დაცული იყოთ Google სერვისების ფარგლებში, მაგალითად, უსაფრთხოებასთან დაკავშირებული ინციდენტის შემდეგ გაძლიერდება დაცვა Gmail-ში.</translation>
 <translation id="7824665136384946951">თქვენმა ორგანიზაციამ გამორთო Safe Browsing</translation>
+<translation id="782590969421016895">გამოიყენეთ მიმდინარე გვერდები</translation>
 <translation id="7825973332242257878">ჩანართების ჯგუფები</translation>
 <translation id="7845155831233417403">დაშვებულია მაქსიმუმ <ph name="MAX_INSTANCE_COUNT" /> ფანჯარა. გასაგრძელებლად დახურეთ ფანჯარა.</translation>
 <translation id="7846161022626028328">შეცდომა მოხდა. ცადეთ ხელახლა.</translation>
@@ -1986,7 +1988,6 @@
 <translation id="8694622119922491927"><ph name="APP_NAME" /> საჭიროებს ადამიანის ინტერფეისის მოწყობილობებზე (HID) წვდომის ნებართვას ამ საიტისთვის. ამ პარამეტრის შეცვლა მოგვიანებით შეგიძლიათ აქ: პარამეტრები &gt; აპები &gt; სპეციალური წვდომა აპებზე.</translation>
 <translation id="8696297579102085705">თქვენს მოწყობილობებში გაგზავნა</translation>
 <translation id="8699120352855309748">ამ ენების თარგმნის შემოთავაზების აკრძალვა</translation>
-<translation id="8700565880437506364">გაიცანით Gemini Chrome-ში</translation>
 <translation id="8712637175834984815">კარგი</translation>
 <translation id="8715286883001906001">გააძლიერეთ პაროლები თქვენს Google ანგარიშში</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> დაიხურება</translation>

@@ -58,7 +58,6 @@ Uusi järjehoidjaid ei saa teie kontole salvestada, enne kui mõned kustutate. K
 <translation id="2027881372245801507">Soovituste väljalülitamine ei mõjuta Chromiumi lehtede pealkirjade ja URL-ide töötlemist muude funktsioonide puhul. Saate hallata juurdepääsu nendele andmetele oma <ph name="BEGIN_LINK" />sünkroonimisseadetes<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Logige sisse sellele saidile ja Chromiumi, et teie paroolid ja muu sisu oleksid saadaval kõigis seadmetes.</translation>
 <translation id="2042889939382983733">Chromiumi ajaloo vaatamine</translation>
-<translation id="2052320862053429062">Chromium võrdleb teie paroole regulaarselt veebis avaldatud loenditega. Selle käigus on teie paroolid ja kasutajanimed krüpteeritud, et mitte keegi (sh Google) ei saaks neid lugeda.</translation>
 <translation id="2059365270911640413">Viige Chromiumi seadistamine lõpule</translation>
 <translation id="2168108852149185974">Mõned pistikprogrammid põhjustavad Chromiumi kokkujooksmise. Desinstallige need:</translation>
 <translation id="2168593389981132306">Chromiumi täiustamine</translation>
@@ -69,7 +68,6 @@ Uusi järjehoidjaid ei saa teie kontole salvestada, enne kui mõned kustutate. K
 <translation id="2236584955986023187">See tähendab, et Chromium taotleb iga kord töölauasaiti.</translation>
 <translation id="2245694534483711162">Gemini võib teie täpset asukohta kasutada, olenevalt loast, mille olete Chromiumile juba andnud</translation>
 <translation id="2270466829363945454">Ostlemine</translation>
-<translation id="2313870531055795960">Kontrollib URL-e Chromiumi talletatud ohtlike saitide loendi alusel. Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chromium saata URL-id ja lehe sisu osad teenusesse Google'i ohutu sirvimine.</translation>
 <translation id="2314220608288760290">Chromium avab YouTube'i inkognito lingid automaatselt inkognito režiimis.</translation>
 <translation id="231828342043114302">Huvide põhjal loodud isikupärastatud sisu saamiseks logige Chromiumisse sisse.</translation>
 <translation id="2334943301233020675">Järgmisi pääsuvõtmeid ei imporditud paroolihaldurisse, kuna need ei vasta nõuetele.</translation>

@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">Importa tus datos desde Safari</translation>
 <translation id="2526166285241366046">Guardar una contraseña</translation>
 <translation id="2529021024822217800">Abrir todos</translation>
-<translation id="2530932541542751783">No se ha podido aplicar este ajuste. Actualiza y reinicia Chrome y iPadOS, e inténtalo de nuevo. Si este error sigue produciéndose, es posible que tu iPad no admita este ajuste.</translation>
 <translation id="2536991091671391962">Puedes usar las contraseñas guardadas en cualquier dispositivo. Se guardan en el Gestor de contraseñas de Google de <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Contraseña oculta</translation>
 <translation id="2538705697765638552">Guarda tu información y completa tareas más rápido, como rellenar formularios en los productos de Google. Puedes gestionar tu información en Google Wallet de <ph name="USER_EMAIL" />.</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">Visualiza y edita</translation>
 <translation id="3485558910355485767">Nueva ventana de Incógnito</translation>
 <translation id="3488501490964659223">Se han cerrado las pestañas y eliminado los datos de navegación. Se ha cerrado tu sesión.</translation>
-<translation id="3490396108106323715">Compartir pestaña actual</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /> sobre el contenido sugerido</translation>
 <translation id="349446645805573740">Elige dónde guardar "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
 <translation id="3504377992102007712">Configuración</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">No se han podido cargar las imágenes</translation>
 <translation id="3565930036634619844">Pestaña <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Guardar de otra forma</translation>
-<translation id="3572503683475187385">La pestaña actual se comparte con Gemini cuando inicias una conversación. Cuando compartes una pestaña con Gemini, el contenido y la URL se envían a Google. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">En tu cuenta de Google</translation>
 <translation id="3575234738189584619">Buscar con Lens</translation>
 <translation id="3575426792457739946">Esta lista contiene todos los perfiles cargados.</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">Mostrar ayuda</translation>
 <translation id="4095483462103784441">Crear grupo de pestañas</translation>
 <translation id="4099756562043439968">Crear recordatorio</translation>
-<translation id="4108998448622696017">Detecta y te advierte de los eventos peligrosos cuando suceden.</translation>
 <translation id="4111985840824673503">Marcar todo como leído</translation>
 <translation id="411254640334432676">Error de descarga.</translation>
 <translation id="4112644173421521737">Buscar</translation>
@@ -1169,6 +1165,7 @@
 <translation id="4658335131052370646">Guardar</translation>
 <translation id="465947902531722727">Cambiar de perfil</translation>
 <translation id="466307903888586355">Tu organización ha bloqueado la opción de guardar archivos</translation>
+<translation id="4665303625242639572">Cerrar <ph name="PAGE_TITLE" /></translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Tu organización requiere que navegues de forma privada. Los grupos de pestañas no se sincronizan en el modo Incógnito.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -1286,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Color del grupo de pestañas: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
+<translation id="5007392906805964215">Ver</translation>
 <translation id="5009127379503001909">Seguir explorando</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Enviar a <ph name="USER_EMAIL" /></translation>
@@ -1938,7 +1936,6 @@ Para continuar desde tu ordenador, cambia a <ph name="OTHER_EMAIL" />. Podrás a
 <translation id="6938212956536472404">Esta pestaña no se puede compartir</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6946722113367118030">Pensando</translation>
-<translation id="6947751977892029882">No se ha podido aplicar este ajuste. Actualiza y reinicia Chrome y iOS, e inténtalo de nuevo. Si este error sigue produciéndose, es posible que tu iPhone no admita este ajuste.</translation>
 <translation id="6950522403736391608">Ocultas</translation>
 <translation id="6957084631403333422">Prueba una página Nueva pestaña enfocada</translation>
 <translation id="695965663642079255">Guarda y gestiona la información para pagos para formalizar las compras más rápido</translation>
@@ -2189,7 +2186,6 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="7758789811447313947">Tema violeta</translation>
 <translation id="7759809451544302770">Opcional</translation>
 <translation id="7765158879357617694">Mover</translation>
-<translation id="7767651976342854115">Se ha producido un error en el ajuste de uso de datos.</translation>
 <translation id="7768507955883790804">Los sitios usan esta opción automáticamente cuando los visitas</translation>
 <translation id="7772032839648071052">Repite la frase de contraseña</translation>
 <translation id="7772948288262733182">Te damos la bienvenida de nuevo</translation>
@@ -2502,7 +2498,6 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="8674716540979958118">Tienes contraseñas vulneradas.</translation>
 <translation id="8679900250380464358">Añadir a lista de lectura</translation>
 <translation id="8680643216091361291">El ajuste <ph name="BEGIN_LINK" />Guardar actividad<ph name="END_LINK" /> está desactivado de forma predeterminada. Cuando está desactivado, Google guarda tus conversaciones durante 3 días y las usa para que las aplicaciones de Gemini funcionen correctamente, para proteger su seguridad y para solucionar problemas a partir de tus opiniones. Puedes activar el ajuste Guardar actividad y ayudar a mejorar la IA de Google para todos los usuarios.</translation>
-<translation id="8680786875305615692">Ayuda a mejorar la seguridad de todos los usuarios en la Web</translation>
 <translation id="8680787084697685621">La información de inicio de sesión no está actualizada.</translation>
 <translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" no tiene permiso para acceder a tu micrófono</translation>
 <translation id="8690752723634292147">Confirmar eliminación</translation>
@@ -2578,7 +2573,6 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="8888595487174963247">Eliminar recordatorio</translation>
 <translation id="8890516388109605451">Fuentes</translation>
 <translation id="8893208530912252670">Vídeos</translation>
-<translation id="8898822736010347272">Envía a Google las URLs de algunas páginas que visitas, información limitada del sistema y algún contenido de las páginas para ayudar a descubrir nuevas amenazas y proteger a los usuarios de la Web.</translation>
 <translation id="890009681345348416">Más de 40 contraseñas autocompletadas</translation>
 <translation id="8900845556227858314">Aplicación de navegador</translation>
 <translation id="890565330728586731">Atrás</translation>
@@ -2609,6 +2603,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="8976414606286374109">Las tarjetas se guardan en tu cuenta de Google.</translation>
 <translation id="8981454092730389528">Gestión de tu actividad en Google</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, sitio fijado</translation>
+<translation id="8989779557457435460">Compartir la pestaña actual de forma predeterminada</translation>
 <translation id="8990960056509724223">No se ha podido guardar el archivo debido a las políticas de tu organización</translation>
 <translation id="8998289560386111590">No disponible en tu dispositivo</translation>
 <translation id="9003677638446136377">Comprobar de nuevo</translation>

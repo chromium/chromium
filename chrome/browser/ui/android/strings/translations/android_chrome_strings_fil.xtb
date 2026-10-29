@@ -337,6 +337,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="2332515770639153015">Naka-on ang Pinahusay na Ligtas na Pag-browse</translation>
 <translation id="233375395665273385">I-delete at mag-sign out</translation>
 <translation id="2334275697832662087">Nakakatulong ang AI-powered na seguridad ng Chrome na protektahan ka laban sa mga banta online, na nagbibigay sa iyo ng kumpiyansa habang nagba-browse ka</translation>
+<translation id="2335758110242123814">Buksan ang grupo</translation>
 <translation id="2341410551640223969">Hindi ma-install ang <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Kabuuang data na ginagamit ng Chrome, kabilang ang mga account, bookmark at naka-save na setting</translation>
 <translation id="2354001756790975382">Iba pang mga bookmark</translation>
@@ -390,7 +391,6 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="2532336938189706096">View ng Web</translation>
 <translation id="2535807170289627159">Lahat ng tab</translation>
 <translation id="2536728043171574184">Tinitingnan ang isang offline na kopya ng page na ito</translation>
-<translation id="2537574774089209541">Inilipat ang ilang tool para mabigyan ka ng madaling access sa Gemini habang nagba-browse ka</translation>
 <translation id="2539002604555291451">Sans serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, Piniling Naka-pin at Naka-mute na Tab na Incognito</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, Tab</translation>
@@ -1037,6 +1037,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5096775069898886423">Para sa mga site na hindi sinusuportahan ang mga secure na koneksyon, mabigyan ng babala bago bisitahin ang site</translation>
 <translation id="510275257476243843">1 oras na lang ang natitira</translation>
 <translation id="5105442806410269908">Pamahalaan ang iba pang data sa Google</translation>
+<translation id="5111326646107464148">Buksan ang grupo sa bagong window</translation>
 <translation id="5114895953710637392">Nakasara ang sheet para sa filter ng app.</translation>
 <translation id="5115811374190515607">sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Magagamit mo ang Chrome sa tuwing magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app</translation>
@@ -1606,6 +1607,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="72415438529550637">Nakasara ang mungkahi sa password.</translation>
 <translation id="724510009481365878">Hindi mapi-print ang page na ito</translation>
 <translation id="7248671827512403053">Application</translation>
+<translation id="7253205084599155458">Ipakita ang navigation at mga tool sa toolbar sa ibaba para sa madaling pag-access</translation>
 <translation id="7253951228444156601">Sinusuri ang mga password…</translation>
 <translation id="7265857422443387781">Maghanap sa tab gamit ang Google Lens <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Isumite ang <ph name="ONE_TIME_CODE" /> sa <ph name="ORIGIN" />?</translation>
@@ -1618,7 +1620,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7291910923717764901">Nagdagdag ng mga paglalarawan ng larawan para sa page na ito</translation>
 <translation id="7293429513719260019">Pumili ng wika</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, Piniling Naka-pin at Nagshe-share na Tab</translation>
-<translation id="7304003340539141201">Magpatulong sa Gemini sa iyong mga tab at gawain</translation>
 <translation id="7311244614769792472">Walang nakitang resulta</translation>
 <translation id="7314734791127433392">Hindi masuri ang mga password</translation>
 <translation id="7324354302972299151">Magpadala ng request na “Do Not Track”</translation>
@@ -1754,6 +1755,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7821130663268546430">Mahahanap mo ang lahat ng bukas na tab sa tab switcher</translation>
 <translation id="7822705602465980873">Kapag naka-sign in ka, naka-link ang data na ito sa iyong Google Account para protektahan ka sa lahat ng serbisyo ng Google, halimbawa, pagpapaigting ng proteksyon sa Gmail pagkatapos ng isang insidente sa seguridad.</translation>
 <translation id="7824665136384946951">In-off ng iyong organisasyon ang Ligtas na Pag-browse</translation>
+<translation id="782590969421016895">Gamitin ang mga kasalukuyang page</translation>
 <translation id="7825973332242257878">Mga grupo ng tab</translation>
 <translation id="7845155831233417403">Puwede kang magkaroon ng hanggang <ph name="MAX_INSTANCE_COUNT" /> (na) window. Magsara ng window para magpatuloy.</translation>
 <translation id="7846161022626028328">Nagka-error. Subukan ulit.</translation>
@@ -1986,7 +1988,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8694622119922491927">Kailangan ng <ph name="APP_NAME" /> ng pahintulot na i-access ang mga human interface device (mga HID) para sa site na ito. Puwede mong baguhin ang setting na ito sa ibang pagkakataon sa Mga Setting &gt; Mga App &gt; Espesyal na access sa app.</translation>
 <translation id="8696297579102085705">Ipadala sa iyong device</translation>
 <translation id="8699120352855309748">Huwag mag-alok na isalin ang mga wikang ito</translation>
-<translation id="8700565880437506364">Ipinapakilala ang Gemini sa Chrome</translation>
 <translation id="8712637175834984815">Nakuha ko</translation>
 <translation id="8715286883001906001">Palakasin ang mga password mo sa iyong Google Account</translation>
 <translation id="8715300232952757586">Isasara ang <ph name="TAB_TITLE" /></translation>

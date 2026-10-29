@@ -58,7 +58,6 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="2027881372245801507">Desactivar las sugerencias no controla el procesamiento de Chromium de los títulos de las páginas y las URLs para otras funciones. Puedes administrar el acceso a estos datos en la <ph name="BEGIN_LINK" />configuración de sincronización<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Accede a este sitio y a Chromium para obtener tus contraseñas y más en todos tus dispositivos</translation>
 <translation id="2042889939382983733">Ver tu historial de Chromium</translation>
-<translation id="2052320862053429062">Chromium revisa tus contraseñas de forma periódica para comprobar si aparecen en listas que se hayan publicado en línea. Durante esta acción, se encriptan tus contraseñas y nombres de usuario para que nadie, ni siquiera Google, pueda leer esta información.</translation>
 <translation id="2059365270911640413">Termina de configurar Chromium</translation>
 <translation id="2168108852149185974">Algunos complementos causan fallos en Chromium. Desinstala los siguientes elementos:</translation>
 <translation id="2168593389981132306">Mejora Chromium</translation>
@@ -69,7 +68,6 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="2236584955986023187">Esto significa que Chromium solicitará la versión de escritorio del sitio cada vez.</translation>
 <translation id="2245694534483711162">Gemini puede usar tu ubicación precisa, según el permiso que ya le hayas otorgado a Chromium</translation>
 <translation id="2270466829363945454">Haz compras</translation>
-<translation id="2313870531055795960">Revisa las URL con una lista de sitios no seguros almacenados en Chromium. Si un sitio intenta robar tu contraseña, o cuando descargas un archivo dañino, es posible que Chromium también envíe las URL, con partes del contenido de la página, a la Navegación segura.</translation>
 <translation id="2314220608288760290">Chromium abre automáticamente los vínculos de Incógnito de YouTube en modo Incógnito.</translation>
 <translation id="231828342043114302">Para recibir contenido personalizado en función de tus intereses, accede a Chromium.</translation>
 <translation id="2334943301233020675">No se importaron las siguientes llaves de acceso al Administrador de contraseñas porque no cumplen con los requisitos.</translation>

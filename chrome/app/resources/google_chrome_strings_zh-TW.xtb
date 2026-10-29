@@ -29,7 +29,6 @@
 <translation id="1194807384646768652">這不是其他人經常下載的檔案類型，可能有危險，因此 Chrome 已禁止下載</translation>
 <translation id="1197860368385086056">下次在 <ph name="DEVICE_TYPE" /> 上開啟 Chrome 時，系統會提示你啟用價格追蹤通知。</translation>
 <translation id="1203500561924088507">感謝你安裝本服務。你必須重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
-<translation id="122321322139970942"><ph name="IMPORTANT_UPDATE" />待處理。為確保瀏覽安全，Chrome 會在下次閒置達 <ph name="IDLE_DURATION" />後更新。</translation>
 <translation id="1226003169284463347">如要在所有裝置上存取書籤和其他資料，請登入 Chrome</translation>
 <translation id="1278833599417554002">重新啟動以更新 &amp;Chrome</translation>
 <translation id="1289911795790071537">開啟「使用 Chrome 搜尋」</translation>
@@ -159,6 +158,7 @@
 <translation id="2482846200327569645">目前登入的帳戶為：<ph name="EXISTING_USER" />。如要分開保存你的瀏覽資料，請在 Chrome 中登入自己的設定檔 (<ph name="USER_EMAIL_ADDRESS" />)。你還能使用<ph name="DEVICE" />中的書籤和其他資料。</translation>
 <translation id="2485422356828889247">解除安裝</translation>
 <translation id="2513154137948333830">必須重新啟動：<ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2521391734665471391">關閉 Google 搜尋 AI 模式</translation>
 <translation id="2523492931736391680">Chrome 可確保工作安全無虞</translation>
 <translation id="2534365042754120737">為保護你的資料，允許 Chrome 從近期未造訪的網站移除權限。這項設定不會關閉通知。</translation>
 <translation id="2556847002339236023">由於 Chrome 閒置超過 <ph name="TIMEOUT_DURATION" />，貴機構已將其關閉。瀏覽資料已刪除，當中可能包含歷史記錄、自動填入的資料和下載內容。</translation>
@@ -510,7 +510,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="5941830788786076944">使用 Google Chrome 做為我的預設瀏覽器</translation>
 <translation id="5947104538377036631">Chrome 捷徑</translation>
 <translation id="5960071705175224773">你的設定遭到不明應用程式變更</translation>
-<translation id="5960404530854194706">Chrome 會在你離開時更新</translation>
 <translation id="5980111191913430208">來源不明的擴充功能、應用程式和主題可能會損害裝置。Chromium 建議你只透過 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />安裝這些項目</translation>
 <translation id="6003112304606738118">下載中… 還剩 <ph name="HOURS" /> 小時</translation>
 <translation id="6004427865367382148">{COUNT,plural, =1{系統管理員要求你重新啟動 Chrome，以套用更新。目前有開啟無痕或隔離視窗。重新啟動後，這個視窗不會重新開啟。}other{系統管理員要求你重新啟動 Chrome，以套用更新。各設定檔中目前共開啟 # 個無痕和隔離視窗。重新啟動後，這些視窗不會重新開啟。}}</translation>
@@ -594,7 +593,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6556755379298048869">使用鍵盤快速鍵搜尋。</translation>
 <translation id="6585124893636629274">關閉 Chrome 內建 Gemini</translation>
 <translation id="659498884637196217">前往這部裝置的 Google 密碼管理員進行更新</translation>
-<translation id="660312897435669152">Chrome 需要更新</translation>
 <translation id="6612152958212564387">使用統計資料和當機報告不會傳送給 Google。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">將 Chrome 設為預設瀏覽器，即可在各裝置完美同步密碼、書籤和歷史記錄。</translation>
 <translation id="6631524303639368205">接續上次的瀏覽內容：Chrome 已還原上次開啟的分頁。如要關閉這項功能，請前往</translation>
@@ -717,6 +715,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7723388585204724670">重設為預設的 Chrome</translation>
 <translation id="77283119132245232">提供 <ph name="BROWSER_NAME" /> 的系統追蹤服務。如果這項服務停用，瀏覽器建立的效能追蹤記錄就不會包含內容轉換和就緒執行緒事件等系統層級事件。</translation>
 <translation id="7736869414036750079">貴機構要求你登入 Chrome</translation>
+<translation id="7745849183714722618">Chrome 可使用直接在裝置執行的 AI 模型，提供詐騙偵測等功能。關閉裝置端 AI 後，這些功能可能無法運作。<ph name="BEGIN_LINK" />進一步瞭解裝置端 AI<ph name="END_LINK" /></translation>
 <translation id="7747138024166251722">安裝程式無法建立暫時目錄，請檢查可用磁碟空間與權限，以順利安裝軟體。</translation>
 <translation id="7748969056734910029">由於近期並未造訪，Chrome 已移除<ph name="PERMISSION_1" />和<ph name="PERMISSION_2" />權限。</translation>
 <translation id="7759944311003584891">使用 Chrome 搜尋</translation>

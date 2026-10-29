@@ -29,7 +29,6 @@
 <translation id="1194807384646768652">Chrome ha bloccato questo download perché il tipo di file non viene scaricato comunemente e potrebbe essere pericoloso</translation>
 <translation id="1197860368385086056">La prossima volta che aprirai Chrome sul tuo <ph name="DEVICE_TYPE" />, ti verrà chiesto se vuoi attivare gli avvisi di monitoraggio del prezzo.</translation>
 <translation id="1203500561924088507">L'installazione è terminata. Dovrai riavviare il browser per poter utilizzare <ph name="BUNDLE_NAME" />.</translation>
-<translation id="122321322139970942"><ph name="IMPORTANT_UPDATE" /> in attesa. Per mantenere la navigazione sicura, Chrome si aggiornerà la prossima volta che rimarrà inattivo per <ph name="IDLE_DURATION" />.</translation>
 <translation id="1226003169284463347">Accedi a Chrome per trovare i tuoi preferiti e altri dati su tutti i dispositivi</translation>
 <translation id="1278833599417554002">Riavvia per aggiornare &amp;Chrome</translation>
 <translation id="1289911795790071537">Apri la ricerca con Chrome</translation>
@@ -159,6 +158,7 @@
 <translation id="2482846200327569645"><ph name="EXISTING_USER" /> ha già eseguito l’accesso. Per tenere separata la tua navigazione, accedi a Chrome nel tuo profilo per <ph name="USER_EMAIL_ADDRESS" />. Potrai anche accedere ai preferiti e ad altri dati del <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">Disinstalla</translation>
 <translation id="2513154137948333830">È richiesto il riavvio: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2521391734665471391">Chiudi AI Mode della Ricerca Google</translation>
 <translation id="2523492931736391680">Il tuo lavoro al sicuro su Chrome</translation>
 <translation id="2534365042754120737">Per proteggere i tuoi dati, consenti a Chrome di rimuovere le autorizzazioni dai siti che non hai visitato di recente. Le notifiche non vengono interrotte.</translation>
 <translation id="2556847002339236023">La tua organizzazione chiude Chrome quando non viene utilizzato per <ph name="TIMEOUT_DURATION" />. I dati di navigazione sono stati eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.</translation>
@@ -510,7 +510,6 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="5941830788786076944">Imposta Google Chrome come browser predefinito</translation>
 <translation id="5947104538377036631">Scorciatoia Chrome</translation>
 <translation id="5960071705175224773">Le tue impostazioni sono state modificate da un'app sconosciuta</translation>
-<translation id="5960404530854194706">Chrome si aggiornerà quando non sarai al computer</translation>
 <translation id="5980111191913430208">Estensioni, app e temi da origini sconosciute possono danneggiare il tuo dispositivo. Chrome consiglia di installare questi elementi soltanto dal <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Download in corso… Ore rimanenti: <ph name="HOURS" /></translation>
 <translation id="6004427865367382148">{COUNT,plural, =1{L'amministratore richiede il riavvio di Chrome per applicare un aggiornamento. C'è una finestra Incognito o isolata aperta. Non verrà riaperta dopo il riavvio.}other{L'amministratore richiede il riavvio di Chrome per applicare un aggiornamento. Ci sono # finestre Incognito e isolate aperte nei profili. Non verranno riaperte dopo il riavvio.}}</translation>
@@ -594,7 +593,6 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="6556755379298048869">Cerca con una scorciatoia da tastiera.</translation>
 <translation id="6585124893636629274">Chiudi Gemini in Chrome</translation>
 <translation id="659498884637196217">In Gestore delle password di Google su questo dispositivo</translation>
-<translation id="660312897435669152">Chrome vuole fare l'aggiornamento</translation>
 <translation id="6612152958212564387">Non stai inviando a Google le statistiche sull'utilizzo e i report sugli arresti anomali. <ph name="BEGIN_LINK" />Gestisci<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Mantieni password, preferiti e cronologia perfettamente sincronizzati tra i dispositivi impostando Chrome come browser predefinito.</translation>
 <translation id="6631524303639368205">Continua da dove avevi interrotto: Chrome ha ripristinato le schede dell'ultima sessione. Puoi disattivare questa opzione in</translation>
@@ -717,6 +715,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="7723388585204724670">Reimposta tema predefinito di Chrome</translation>
 <translation id="77283119132245232">Fornisce servizi di tracciamento del sistema per <ph name="BROWSER_NAME" />. Se questo servizio viene disattivato, le tracce delle prestazioni create dal browser non includeranno eventi a livello di sistema, ad esempio eventi di commutazione di contesto e di thread pronti.</translation>
 <translation id="7736869414036750079">La tua organizzazione richiede l'accesso a Chrome</translation>
+<translation id="7745849183714722618">Per supportare funzionalità come la protezione antifrode, Chrome può utilizzare modelli di AI che vengono eseguiti direttamente sul tuo dispositivo. Se questa opzione è disattivata, queste funzionalità potrebbero non funzionare. <ph name="BEGIN_LINK" />Scopri di più sull'AI on-device<ph name="END_LINK" /></translation>
 <translation id="7747138024166251722">Il programma di installazione non ha creato una directory temporanea. Verifica di disporre di spazio libero sul disco e dell'autorizzazione per l'installazione del software.</translation>
 <translation id="7748969056734910029">Non hai visitato il sito di recente. Chrome ha rimosso <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" />.</translation>
 <translation id="7759944311003584891">Cerca con Chrome</translation>

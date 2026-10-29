@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">從 Safari 匯入資料</translation>
 <translation id="2526166285241366046">儲存密碼</translation>
 <translation id="2529021024822217800">全部開啟</translation>
-<translation id="2530932541542751783">這項設定發生錯誤，請更新並重新啟動 Chrome 和 iPadOS，然後再試一次。如果這個錯誤持續發生，表示你的 iPad 可能不支援這項設定。</translation>
 <translation id="2536991091671391962">你可以在任何裝置上使用儲存的密碼，系統會將密碼儲存至 <ph name="EMAIL" /> 的 Google 密碼管理工具。</translation>
 <translation id="2538103551183528357">目前為隱藏狀態的密碼</translation>
 <translation id="2538705697765638552">儲存資訊可讓你更有效率，例如能更快填妥各項 Google 產品的表單。你可以在 Google 錢包中管理 <ph name="USER_EMAIL" /> 的資訊。</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">視覺化呈現與編輯</translation>
 <translation id="3485558910355485767">新增無痕視窗</translation>
 <translation id="3488501490964659223">已關閉分頁並刪除瀏覽資料。系統已將你登出</translation>
-<translation id="3490396108106323715">分享目前的分頁</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />建議的內容</translation>
 <translation id="349446645805573740">請選擇「<ph name="FILENAME" />」<ph name="BEGIN_BOLD" /><ph name="END_BOLD" />的儲存位置</translation>
 <translation id="3504377992102007712">設定</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">無法載入圖片</translation>
 <translation id="3565930036634619844">分頁。第 <ph name="NUMBER_OF_TABS" /> 個，共 <ph name="TAB_INDEX" /> 個。</translation>
 <translation id="3567168891086460374">以其他方式儲存</translation>
-<translation id="3572503683475187385">展開新對話時，系統會與 Gemini 分享目前的分頁。與 Gemini 分享分頁時，系統會將內容和網址傳送給 Google。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">儲存到你的 Google 帳戶</translation>
 <translation id="3575234738189584619">使用智慧鏡頭搜尋</translation>
 <translation id="3575426792457739946">這份清單包含已載入的所有設定檔。</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">顯示說明資訊</translation>
 <translation id="4095483462103784441">建立新分頁群組</translation>
 <translation id="4099756562043439968">設定提醒</translation>
-<translation id="4108998448622696017">可偵測不安全事件，並在這類事件發生時顯示警告訊息。</translation>
 <translation id="4111985840824673503">全部標示為已讀取</translation>
 <translation id="411254640334432676">下載失敗。</translation>
 <translation id="4112644173421521737">搜尋</translation>
@@ -1169,6 +1165,7 @@
 <translation id="4658335131052370646">儲存</translation>
 <translation id="465947902531722727">切換設定檔</translation>
 <translation id="466307903888586355">貴機構已禁止儲存檔案</translation>
+<translation id="4665303625242639572">關閉「<ph name="PAGE_TITLE" />」</translation>
 <translation id="4668929960204016307">、</translation>
 <translation id="4669618761237477717">貴機構要求你使用私密瀏覽模式。在無痕模式下，系統不會同步分頁群組。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -1286,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />，<ph name="EMAIL" />，<ph name="AI_TIER" />。</translation>
 <translation id="4992255726304765516">分頁群組顏色：<ph name="COLOR" /></translation>
 <translation id="5005498671520578047">複製密碼</translation>
+<translation id="5007392906805964215">查看</translation>
 <translation id="5009127379503001909">繼續瀏覽</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">傳送至 <ph name="USER_EMAIL" /></translation>
@@ -1938,7 +1936,6 @@
 <translation id="6938212956536472404">無法分享這個分頁</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="6946722113367118030">思考</translation>
-<translation id="6947751977892029882">這項設定發生錯誤，請更新並重新啟動 Chrome 和 iOS，然後再試一次。如果這個錯誤持續發生，表示你的 iPhone 可能不支援這項設定。</translation>
 <translation id="6950522403736391608">隱藏</translation>
 <translation id="6957084631403333422">試用專注模式新分頁</translation>
 <translation id="695965663642079255">儲存及管理付款資訊，結帳更快速</translation>
@@ -2166,7 +2163,7 @@
 <translation id="7679915578945954324">已複製網址</translation>
 <translation id="7695953765525234038">搜尋列</translation>
 <translation id="7696316012653762532">網頁翻譯選項</translation>
-<translation id="7700527812567437847">用 Google 智慧鏡頭搜尋畫面內容</translation>
+<translation id="7700527812567437847">使用 Google 智慧鏡頭搜尋畫面內容</translation>
 <translation id="7701040980221191251">無</translation>
 <translation id="7702428539671224160">在 <ph name="URL" /> 自動填入付款資訊</translation>
 <translation id="7710096647785049958">開啟每個連結都更省時</translation>
@@ -2189,7 +2186,6 @@
 <translation id="7758789811447313947">紫羅蘭主題</translation>
 <translation id="7759809451544302770">選填</translation>
 <translation id="7765158879357617694">移動</translation>
-<translation id="7767651976342854115">「資料使用」設定發生錯誤。</translation>
 <translation id="7768507955883790804">網站會在你造訪時自動套用這項設定</translation>
 <translation id="7772032839648071052">確認通關密語</translation>
 <translation id="7772948288262733182">歡迎回來</translation>
@@ -2502,7 +2498,6 @@
 <translation id="8674716540979958118">你有密碼外洩。</translation>
 <translation id="8679900250380464358">加入閱讀清單</translation>
 <translation id="8680643216091361291">「<ph name="BEGIN_LINK" />保留活動記錄<ph name="END_LINK" />」設定預設為關閉。這項設定關閉時，Google 會保留對話內容 3 天，用於確保 Gemini 系列應用程式正常運作、維護應用程式安全，並根據你的意見回饋修正問題。你可以開啟「保留活動記錄」，協助我們提升 Google AI 品質，使人人受惠。</translation>
-<translation id="8680786875305615692">協助我們為所有人改善網路安全性</translation>
 <translation id="8680787084697685621">帳戶登入詳細資料已過期。</translation>
 <translation id="868648444055742370">「<ph name="SITE_DOMAIN" />」無法存取麥克風</translation>
 <translation id="8690752723634292147">確認刪除</translation>
@@ -2578,7 +2573,6 @@
 <translation id="8888595487174963247">移除提醒</translation>
 <translation id="8890516388109605451">來源</translation>
 <translation id="8893208530912252670">影片</translation>
-<translation id="8898822736010347272">將部分已造訪網頁的網址、特定的系統資訊和部分網頁內容傳送至 Google，以協助發現新威脅並保障所有網路使用者的安全。</translation>
 <translation id="890009681345348416">已自動填入超過 40 組密碼</translation>
 <translation id="8900845556227858314">瀏覽器 App</translation>
 <translation id="890565330728586731">返回</translation>
@@ -2609,6 +2603,7 @@
 <translation id="8976414606286374109">信用卡會儲存至你的 Google 帳戶。</translation>
 <translation id="8981454092730389528">Google 活動控制項</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />，釘選的網站</translation>
+<translation id="8989779557457435460">預設分享目前分頁</translation>
 <translation id="8990960056509724223">根據貴機構的政策，無法儲存檔案</translation>
 <translation id="8998289560386111590">這項功能無法在你的裝置上使用</translation>
 <translation id="9003677638446136377">重新檢查</translation>

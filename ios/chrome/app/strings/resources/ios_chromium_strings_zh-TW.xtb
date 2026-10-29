@@ -56,7 +56,6 @@
 <translation id="2027881372245801507">即使關閉建議，Chromium 仍可處理網頁標題和網址，並用於其他功能。如要管理這類資料的存取權，請前往<ph name="BEGIN_LINK" />同步設定<ph name="END_LINK" />。</translation>
 <translation id="2036929290919363111">登入這個網站和 Chromium，即可在所有裝置上存取密碼和其他內容</translation>
 <translation id="2042889939382983733">查看 Chromium 歷史記錄</translation>
-<translation id="2052320862053429062">Chromium 會定期將你的密碼與網路上發布的清單進行比對。在比對過程中，你的密碼和使用者名稱會經過加密，任何人 (包括 Google) 都無法讀取。</translation>
 <translation id="2059365270911640413">完成 Chromium 設定</translation>
 <translation id="2168108852149185974">部分外掛程式造成 Chromium 當機，請解除安裝這些外掛程式：</translation>
 <translation id="2168593389981132306">讓 Chromium 更臻完美</translation>
@@ -67,7 +66,6 @@
 <translation id="2236584955986023187">這代表 Chromium 每次都會對電腦版網站發出要求。</translation>
 <translation id="2245694534483711162">Gemini 可能會使用你的精確位置資訊，具體情況取決於你授予 Chromium 的權限</translation>
 <translation id="2270466829363945454">購物</translation>
-<translation id="2313870531055795960">可使用儲存在 Chromium 中的不安全網站清單檢查網址。如果有網站試圖竊取你的密碼，或當你下載有害檔案時，Chromium 可能也會將網址 (包括部分網頁內容) 傳送給安全瀏覽功能。</translation>
 <translation id="2314220608288760290">在無痕模式下，Chromium 會自動開啟 YouTube 無痕模式連結。</translation>
 <translation id="231828342043114302">如要接收符合興趣的個人化內容，請登入 Chromium。</translation>
 <translation id="2334943301233020675">以下密碼金鑰不符合規定，因此未匯入密碼管理工具。</translation>

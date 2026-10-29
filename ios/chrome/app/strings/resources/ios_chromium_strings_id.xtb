@@ -58,7 +58,6 @@ Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookma
 <translation id="2027881372245801507">Menonaktifkan saran tidak memengaruhi cara Chromium memproses judul halaman dan URL untuk fitur lainnya. Anda dapat mengelola akses ke data ini di <ph name="BEGIN_LINK" />setelan sinkronisasi<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Login ke situs ini dan Chromium untuk mendapatkan sandi Anda dan data lainnya di semua perangkat Anda</translation>
 <translation id="2042889939382983733">Lihat Histori Chromium Anda</translation>
-<translation id="2052320862053429062">Chromium memeriksa sandi Anda secara berkala berdasarkan daftar sandi yang telah dipublikasikan secara online. Saat pemeriksaan dilakukan, sandi dan nama pengguna Anda dienkripsi, sehingga tidak dapat dibaca oleh siapa pun, termasuk Google.</translation>
 <translation id="2059365270911640413">Selesaikan penyiapan Chromium</translation>
 <translation id="2168108852149185974">Beberapa add-on menyebabkan Chromium mogok. Uninstal:</translation>
 <translation id="2168593389981132306">Buat Chromium menjadi lebih baik</translation>
@@ -69,7 +68,6 @@ Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookma
 <translation id="2236584955986023187">Artinya, Chromium akan selalu meminta situs desktop.</translation>
 <translation id="2245694534483711162">Gemini dapat menggunakan lokasi presisi Anda, bergantung pada izin yang telah Anda berikan ke Chromium</translation>
 <translation id="2270466829363945454">Belanja</translation>
-<translation id="2313870531055795960">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chromium. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chromium mungkin juga mengirim URL, termasuk bit konten halaman, ke Safe Browsing.</translation>
 <translation id="2314220608288760290">Chromium otomatis membuka link Samaran YouTube dalam mode Samaran.</translation>
 <translation id="231828342043114302">Untuk menerima konten yang dipersonalisasi berdasarkan minat Anda, login ke Chromium.</translation>
 <translation id="2334943301233020675">Kunci sandi berikut tidak diimpor ke Pengelola Sandi karena tidak sesuai dengan persyaratan.</translation>

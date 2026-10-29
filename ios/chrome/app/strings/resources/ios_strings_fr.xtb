@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">Transférer vos données depuis Safari</translation>
 <translation id="2526166285241366046">Enregistrer un mot de passe</translation>
 <translation id="2529021024822217800">Tout ouvrir</translation>
-<translation id="2530932541542751783">Un problème est survenu avec ce paramètre. Mettez à jour et redémarrez Chrome et iPadOS, puis réessayez. Si cette erreur persiste, il est possible que votre iPad ne soit pas compatible avec ce paramètre.</translation>
 <translation id="2536991091671391962">Vous pouvez utiliser les mots de passe enregistrés sur n'importe quel appareil. Ils sont enregistrés dans le Gestionnaire de mots de passe de Google pour <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Masqué, mot de passe</translation>
 <translation id="2538705697765638552">Enregistrez vos informations pour gagner du temps, par exemple pour remplir des formulaires dans les produits Google. Vous pouvez gérer vos informations dans Google Wallet pour <ph name="USER_EMAIL" />.</translation>
@@ -800,7 +799,6 @@
 <translation id="3481315707647070701">Visualiser et modifier</translation>
 <translation id="3485558910355485767">Nouvelle fenêtre de navigation privée</translation>
 <translation id="3488501490964659223">Les onglets ont été fermés et les données de navigation ont été supprimées. Vous avez été déconnecté.</translation>
-<translation id="3490396108106323715">Partager l'onglet actuel</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> sur le contenu suggéré</translation>
 <translation id="349446645805573740">Choisissez où enregistrer "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
 <translation id="3504377992102007712">Paramètres</translation>
@@ -828,7 +826,6 @@
 <translation id="3565012355885596568">Impossible de charger les images</translation>
 <translation id="3565930036634619844">Onglet. <ph name="TAB_INDEX" /> sur <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Enregistrer autrement</translation>
-<translation id="3572503683475187385">L'onglet actuel est partagé avec Gemini lorsque vous démarrez une nouvelle discussion. Lorsque vous partagez un onglet avec Gemini, son contenu et son URL sont envoyés à Google. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Dans votre compte Google</translation>
 <translation id="3575234738189584619">Recherchez avec Lens</translation>
 <translation id="3575426792457739946">Cette liste contient tous les profils chargés.</translation>
@@ -987,7 +984,6 @@
 <translation id="4092655288299341041">Afficher l'aide</translation>
 <translation id="4095483462103784441">Créer un groupe d'onglets</translation>
 <translation id="4099756562043439968">Définir un rappel</translation>
-<translation id="4108998448622696017">Il détecte les événements dangereux et vous en informe lorsqu'ils surviennent.</translation>
 <translation id="4111985840824673503">Tout marquer comme lu</translation>
 <translation id="411254640334432676">Échec du téléchargement.</translation>
 <translation id="4112644173421521737">Rechercher</translation>
@@ -1169,6 +1165,7 @@
 <translation id="4658335131052370646">Enregistrer</translation>
 <translation id="465947902531722727">Changer de profil</translation>
 <translation id="466307903888586355">L'enregistrement de fichiers est bloqué par votre organisation</translation>
+<translation id="4665303625242639572">Fermer <ph name="PAGE_TITLE" /></translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Votre organisation exige que vous utilisiez le mode navigation privée. Dans ce mode, les groupes d'onglets ne sont pas synchronisés.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -1286,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Couleur du groupe d'onglets <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Copier mot de passe</translation>
+<translation id="5007392906805964215">Afficher</translation>
 <translation id="5009127379503001909">Poursuivre la navigation</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Envoyer à <ph name="USER_EMAIL" /></translation>
@@ -1938,7 +1936,6 @@ Pour continuer depuis votre ordinateur, connectez-vous à <ph name="OTHER_EMAIL"
 <translation id="6938212956536472404">Impossible de partager cet onglet</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6946722113367118030">Penser</translation>
-<translation id="6947751977892029882">Un problème est survenu avec ce paramètre. Mettez à jour et redémarrez Chrome et iOS, puis réessayez. Si cette erreur persiste, il est possible que votre iPhone ne soit pas compatible avec ce paramètre.</translation>
 <translation id="6950522403736391608">Masqué</translation>
 <translation id="6957084631403333422">Essayez une page "Nouvel onglet" simplifiée</translation>
 <translation id="695965663642079255">Enregistrez et gérez vos infos de paiement pour payer plus vite</translation>
@@ -2189,7 +2186,6 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="7758789811447313947">Thème mauve</translation>
 <translation id="7759809451544302770">Facultatif</translation>
 <translation id="7765158879357617694">Déplacer</translation>
-<translation id="7767651976342854115">Une erreur s'est produite au niveau du paramètre d'utilisation des données.</translation>
 <translation id="7768507955883790804">Les sites appliquent automatiquement ce paramètre lors de votre visite</translation>
 <translation id="7772032839648071052">Confirmez la phrase secrète</translation>
 <translation id="7772948288262733182">Heureux de vous retrouver</translation>
@@ -2502,7 +2498,6 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="8674716540979958118">Vous avez des mots de passe compromis.</translation>
 <translation id="8679900250380464358">Ajouter à la liste de lecture</translation>
 <translation id="8680643216091361291">Le paramètre <ph name="BEGIN_LINK" />Conserver l'activité<ph name="END_LINK" /> est désactivé par défaut. Lorsqu'il est désactivé, Google enregistre vos discussions pendant trois jours. Il les utilise pour assurer le bon fonctionnement des applications Gemini, contribuer à les sécuriser et résoudre les problèmes grâce à vos commentaires. Vous pouvez activer "Conserver l'activité" pour contribuer à améliorer l'IA de Google pour tous les utilisateurs.</translation>
-<translation id="8680786875305615692">Contribuer à renforcer la sécurité sur le Web pour tous</translation>
 <translation id="8680787084697685621">Les informations de connexion au compte sont obsolètes.</translation>
 <translation id="868648444055742370"><ph name="SITE_DOMAIN" /> n'est pas autorisé à accéder à votre micro</translation>
 <translation id="8690752723634292147">Confirmer la suppression</translation>
@@ -2578,7 +2573,6 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="8888595487174963247">Supprimer le rappel</translation>
 <translation id="8890516388109605451">Sources</translation>
 <translation id="8893208530912252670">Vidéos</translation>
-<translation id="8898822736010347272">Les URL de certaines pages que vous consultez, ainsi que des informations système limitées et une partie du contenu de certaines pages sont envoyées à Google, à la fois pour identifier les nouvelles menaces et pour protéger tous les utilisateurs sur le Web.</translation>
 <translation id="890009681345348416">Plus de 40 mots de passe saisis automatiquement</translation>
 <translation id="8900845556227858314">App du navigateur</translation>
 <translation id="890565330728586731">Précédent</translation>
@@ -2609,6 +2603,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="8976414606286374109">Les cartes sont enregistrées dans votre compte Google.</translation>
 <translation id="8981454092730389528">Commandes relatives à l'activité Google</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, site épinglé</translation>
+<translation id="8989779557457435460">Partager l'onglet actuel par défaut</translation>
 <translation id="8990960056509724223">Impossible d'enregistrer le fichier à cause des règles de votre organisation</translation>
 <translation id="8998289560386111590">Non disponible sur votre appareil</translation>
 <translation id="9003677638446136377">Revérifier</translation>
