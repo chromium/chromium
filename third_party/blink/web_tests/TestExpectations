@@ -2632,7 +2632,6 @@ crbug.com/579030527 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-
 crbug.com/579030527 external/wpt/css/css-sizing/replaced-percent-min-width-max-content.html [ Failure ]
 crbug.com/579016027 external/wpt/css/css-text/line-breaking/line-breaking-text-001.html [ Failure ]
 crbug.com/579016027 external/wpt/css/css-text/white-space/tab-stop-threshold-007.html [ Failure ]
-crbug.com/579038778 external/wpt/css/printing/mask-and-opacity-offset-print.html [ Failure ]
 crbug.com/579016025 external/wpt/html/cross-origin-embedder-policy/reporting-cached-and-service-worker-responses.https.html [ Skip Timeout ]
 crbug.com/579037499 external/wpt/html/document-isolation-policy/agent-cluster.tentative.https.html [ Skip Timeout ]
 crbug.com/579037499 external/wpt/html/document-isolation-policy/reporting-cached-and-service-worker-responses.tentative.https.html [ Skip Timeout ]
