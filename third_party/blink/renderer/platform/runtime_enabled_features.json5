@@ -7861,7 +7861,7 @@
     },
     {
       name: "WebTransportExportKeyingMaterial",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "WebTransportHeaders",
