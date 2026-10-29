@@ -35,10 +35,7 @@ class MojoBlobReaderDelegate : public storage::MojoBlobReader::Delegate {
 
  private:
   // storage::MojoBlobReader::Delegate
-  RequestSideData DidCalculateSize(uint64_t total_size,
-                                   uint64_t content_size) override {
-    return DONT_REQUEST_SIDE_DATA;
-  }
+  void DidCalculateSize(uint64_t total_size, uint64_t content_size) override {}
 
   void OnComplete(net::Error result, uint64_t total_written_bytes) override {
     std::move(callback_).Run(result);

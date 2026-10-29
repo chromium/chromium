@@ -134,28 +134,8 @@ void MojoBlobReader::DidCalculateSize(int result) {
     return;
   }
 
-  if (delegate_->DidCalculateSize(blob_reader_->total_size(),
-                                  blob_reader_->remaining_bytes()) ==
-      Delegate::REQUEST_SIDE_DATA) {
-    if (!blob_reader_->has_side_data()) {
-      DidReadSideData(BlobReader::Status::DONE);
-    } else {
-      blob_reader_->ReadSideData(base::BindOnce(
-          &MojoBlobReader::DidReadSideData, base::Unretained(this)));
-    }
-  } else {
-    StartReading();
-  }
-}
-
-void MojoBlobReader::DidReadSideData(BlobReader::Status status) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (status != BlobReader::Status::DONE) {
-    NotifyCompletedAndDeleteIfNeeded(blob_reader_->net_error());
-    return;
-  }
-  delegate_->DidReadSideData(blob_reader_->TakeSideData());
+  delegate_->DidCalculateSize(blob_reader_->total_size(),
+                              blob_reader_->remaining_bytes());
   StartReading();
 }
 

@@ -19,7 +19,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -41,7 +40,6 @@
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/browser/blob/blob_data_snapshot.h"
 #include "storage/browser/blob/blob_impl.h"
-#include "storage/browser/blob/blob_side_data_access_type.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/blob/blob_url_registry.h"
 #include "storage/browser/blob/blob_url_store_impl.h"
@@ -78,8 +76,6 @@ constexpr std::string_view kTestFileSystemFileData1 = "abcdefghijklmnop";
 constexpr std::string_view kTestFileSystemFileData2 =
     "File system file test data.";
 constexpr char kTestDataHandleData1[] = "data handle test data1.";
-constexpr char kTestDataHandleData2[] = "data handle test data2.";
-constexpr char kTestDiskCacheSideData[] = "test side data";
 constexpr char kTestContentType[] = "foo/bar";
 
 constexpr char kFileSystemURLOrigin[] = "http://remote";
@@ -201,7 +197,6 @@ class BlobURLTest : public testing::Test {
     expected_error_code_ = expected_error_code;
     expected_response_ = "";
     TestRequest("GET", net::HttpRequestHeaders());
-    EXPECT_FALSE(response_metadata_.has_value());
   }
 
   void TestRequest(const std::string& method,
@@ -247,7 +242,6 @@ class BlobURLTest : public testing::Test {
     response_headers_ = url_loader_client.response_head()
                             ? url_loader_client.response_head()->headers
                             : nullptr;
-    response_metadata_ = url_loader_client.cached_metadata();
     response_error_code_ = url_loader_client.completion_status().error_code;
 
     // Verify response.
@@ -343,7 +337,6 @@ class BlobURLTest : public testing::Test {
   std::string response_;
   int response_error_code_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
-  std::optional<std::string> response_metadata_;
 
   int expected_error_code_;
   int expected_status_code_;
@@ -484,7 +477,6 @@ TEST_F(BlobURLTest, TestGetRangeRequest1) {
   TestRequest("GET", extra_headers);
 
   EXPECT_EQ(6u, response_headers_->GetContentLength()->InBytes());
-  EXPECT_FALSE(response_metadata_.has_value());
 
   int64_t first = 0, last = 0, length = 0;
   EXPECT_TRUE(response_headers_->GetContentRangeFor206(&first, &last, &length));
@@ -504,7 +496,6 @@ TEST_F(BlobURLTest, TestGetRangeRequest2) {
   TestRequest("GET", extra_headers);
 
   EXPECT_EQ(10u, response_headers_->GetContentLength()->InBytes());
-  EXPECT_FALSE(response_metadata_.has_value());
 
   int64_t total = GetTotalBlobLength();
   int64_t first = 0, last = 0, length = 0;
@@ -525,7 +516,6 @@ TEST_F(BlobURLTest, TestGetRangeRequest3) {
   TestRequest("GET", extra_headers);
 
   EXPECT_EQ(3u, response_headers_->GetContentLength()->InBytes());
-  EXPECT_FALSE(response_metadata_.has_value());
 
   int64_t first = 0, last = 0, length = 0;
   EXPECT_TRUE(response_headers_->GetContentRangeFor206(&first, &last, &length));
@@ -544,41 +534,6 @@ TEST_F(BlobURLTest, TestExtraHeaders) {
   std::string content_type;
   EXPECT_TRUE(response_headers_->GetMimeType(&content_type));
   EXPECT_EQ(kTestContentType, content_type);
-  EXPECT_FALSE(response_metadata_.has_value());
-}
-
-TEST_F(BlobURLTest, TestSideData) {
-  base::HistogramTester histogram_tester;
-  blob_data_->AppendReadableDataHandle(
-      base::MakeRefCounted<storage::FakeBlobDataHandle>(
-          kTestDataHandleData2, kTestDiskCacheSideData));
-  expected_status_code_ = 200;
-  expected_response_ = kTestDataHandleData2;
-  TestRequest("GET", net::HttpRequestHeaders());
-  EXPECT_EQ(std::size(kTestDataHandleData2) - 1,
-            response_headers_->GetContentLength()->InBytes());
-
-  EXPECT_EQ(std::string(kTestDiskCacheSideData), *response_metadata_);
-  histogram_tester.ExpectUniqueSample(
-      "Storage.Blob.SideDataAccessType",
-      storage::BlobSideDataAccessType::kBlobURLWithSideData, 1);
-}
-
-TEST_F(BlobURLTest, TestZeroSizeSideData) {
-  base::HistogramTester histogram_tester;
-  blob_data_->AppendReadableDataHandle(
-      base::MakeRefCounted<storage::FakeBlobDataHandle>(kTestDataHandleData2,
-                                                        ""));
-  expected_status_code_ = 200;
-  expected_response_ = kTestDataHandleData2;
-  TestRequest("GET", net::HttpRequestHeaders());
-  EXPECT_EQ(std::size(kTestDataHandleData2) - 1,
-            response_headers_->GetContentLength()->InBytes());
-
-  EXPECT_FALSE(response_metadata_.has_value());
-  histogram_tester.ExpectUniqueSample(
-      "Storage.Blob.SideDataAccessType",
-      storage::BlobSideDataAccessType::kBlobURLWithoutSideData, 1);
 }
 
 TEST_F(BlobURLTest, BrokenBlob) {

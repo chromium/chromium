@@ -14,7 +14,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "storage/browser/blob/mojo_blob_reader.h"
@@ -63,14 +62,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLLoader
                    int32_t intra_priority_value) override {}
 
   // MojoBlobReader::Delegate implementation:
-  RequestSideData DidCalculateSize(uint64_t total_size,
-                                   uint64_t content_size) override;
-  void DidReadSideData(std::optional<mojo_base::BigBuffer> data) override;
+  void DidCalculateSize(uint64_t total_size, uint64_t content_size) override;
   void OnComplete(net::Error error_code, uint64_t total_written_bytes) override;
-
-  void HeadersCompleted(net::HttpStatusCode status_code,
-                        uint64_t content_size,
-                        std::optional<mojo_base::BigBuffer> metadata);
 
   mojo::Receiver<network::mojom::URLLoader> receiver_;
   mojo::Remote<network::mojom::URLLoaderClient> client_;
@@ -78,7 +71,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLLoader
   bool byte_range_set_ = false;
   net::HttpByteRange byte_range_;
 
-  uint64_t total_size_ = 0;
   bool sent_headers_ = false;
 
   std::unique_ptr<BlobDataHandle> blob_handle_;

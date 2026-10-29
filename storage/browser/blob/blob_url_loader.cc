@@ -33,7 +33,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "storage/browser/blob/blob_data_handle.h"
-#include "storage/browser/blob/blob_side_data_access_type.h"
 #include "storage/browser/blob/features.h"
 #include "storage/browser/blob/mojo_blob_reader.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
@@ -193,10 +192,8 @@ void BlobURLLoader::FollowRedirect(
   NOTREACHED();
 }
 
-MojoBlobReader::Delegate::RequestSideData BlobURLLoader::DidCalculateSize(
-    uint64_t total_size,
-    uint64_t content_size) {
-  total_size_ = total_size;
+void BlobURLLoader::DidCalculateSize(uint64_t total_size,
+                                     uint64_t content_size) {
   bool result = byte_range_.ComputeBounds(total_size);
   DCHECK(result);
 
@@ -205,46 +202,21 @@ MojoBlobReader::Delegate::RequestSideData BlobURLLoader::DidCalculateSize(
     status_code = net::HTTP_PARTIAL_CONTENT;
   } else {
     DCHECK_EQ(total_size, content_size);
-    // TODO(horo): When the requester doesn't need the side data
-    // (ex:FileReader) we should skip reading the side data.
-    return REQUEST_SIDE_DATA;
   }
-
-  HeadersCompleted(status_code, content_size, std::nullopt);
-  return DONT_REQUEST_SIDE_DATA;
-}
-
-void BlobURLLoader::DidReadSideData(std::optional<mojo_base::BigBuffer> data) {
-  HeadersCompleted(net::HTTP_OK, total_size_, std::move(data));
-}
-
-void BlobURLLoader::OnComplete(net::Error error_code,
-                               uint64_t total_written_bytes) {
-  network::URLLoaderCompletionStatus status(error_code);
-  status.encoded_body_length = base::ByteSize(total_written_bytes);
-  status.decoded_body_length = base::ByteSize(total_written_bytes);
-  client_->OnComplete(status);
-}
-void BlobURLLoader::HeadersCompleted(
-    net::HttpStatusCode status_code,
-    uint64_t content_size,
-    std::optional<mojo_base::BigBuffer> metadata) {
-  RecordBlobSideDataAccess(
-      metadata && metadata->size()
-          ? BlobSideDataAccessType::kBlobURLWithSideData
-          : BlobSideDataAccessType::kBlobURLWithoutSideData);
 
   auto response = network::mojom::URLResponseHead::New();
   response->content_length = 0;
-  if (status_code == net::HTTP_OK || status_code == net::HTTP_PARTIAL_CONTENT)
+  if (status_code == net::HTTP_OK || status_code == net::HTTP_PARTIAL_CONTENT) {
     response->content_length = content_size;
+  }
   response->headers = GenerateHeaders(status_code, blob_handle_.get(),
-                                      &byte_range_, total_size_, content_size);
+                                      &byte_range_, total_size, content_size);
 
   std::string mime_type;
   response->headers->GetMimeType(&mime_type);
-  if (mime_type.empty())
+  if (mime_type.empty()) {
     mime_type = "text/plain";
+  }
   response->mime_type = mime_type;
   response->headers->GetCharset(&response->charset);
 
@@ -253,8 +225,16 @@ void BlobURLLoader::HeadersCompleted(
 
   client_->OnReceiveResponse(std::move(response),
                              std::move(response_body_consumer_handle_),
-                             std::move(metadata));
+                             std::nullopt);
   sent_headers_ = true;
+}
+
+void BlobURLLoader::OnComplete(net::Error error_code,
+                               uint64_t total_written_bytes) {
+  network::URLLoaderCompletionStatus status(error_code);
+  status.encoded_body_length = base::ByteSize(total_written_bytes);
+  status.decoded_body_length = base::ByteSize(total_written_bytes);
+  client_->OnComplete(status);
 }
 
 }  // namespace storage

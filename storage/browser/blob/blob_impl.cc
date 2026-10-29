@@ -36,12 +36,9 @@ class ReaderDelegate : public MojoBlobReader::Delegate {
   ReaderDelegate(const ReaderDelegate&) = delete;
   ReaderDelegate& operator=(const ReaderDelegate&) = delete;
 
-  MojoBlobReader::Delegate::RequestSideData DidCalculateSize(
-      uint64_t total_size,
-      uint64_t content_size) override {
+  void DidCalculateSize(uint64_t total_size, uint64_t content_size) override {
     if (client_)
       client_->OnCalculatedSize(total_size, content_size);
-    return MojoBlobReader::Delegate::DONT_REQUEST_SIDE_DATA;
   }
 
   void OnComplete(net::Error result, uint64_t total_written_bytes) override {
@@ -63,14 +60,11 @@ class DataPipeGetterReaderDelegate : public MojoBlobReader::Delegate {
   DataPipeGetterReaderDelegate& operator=(const DataPipeGetterReaderDelegate&) =
       delete;
 
-  MojoBlobReader::Delegate::RequestSideData DidCalculateSize(
-      uint64_t total_size,
-      uint64_t content_size) override {
+  void DidCalculateSize(uint64_t total_size, uint64_t content_size) override {
     // Check if null since it's conceivable OnComplete() was already called
     // with error.
     if (!callback_.is_null())
       std::move(callback_).Run(base::ByteSize(content_size));
-    return MojoBlobReader::Delegate::DONT_REQUEST_SIDE_DATA;
   }
 
   void OnComplete(net::Error result, uint64_t total_written_bytes) override {
