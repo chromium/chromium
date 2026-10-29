@@ -41,10 +41,9 @@
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration_win.h"
-#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "content/public/browser/web_contents.h"
+#include "chrome/browser/ui/views/screen_capture_notification_virtual_desktop_helper_win.h"
 #include "ui/base/win/shell.h"
 #include "ui/views/win/hwnd_util.h"
 #endif
@@ -343,6 +342,12 @@ class ScreenCaptureNotificationUIImpl : public ScreenCaptureNotificationUI {
   std::u16string text_;
   base::WeakPtr<content::WebContents> capturing_web_contents_;
   std::unique_ptr<views::Widget> widget_;
+#if BUILDFLAG(IS_WIN)
+  // Keeps `widget_` reachable across virtual desktops. Declared after
+  // `widget_` so that it is destroyed first.
+  std::unique_ptr<ScreenCaptureNotificationVirtualDesktopHelperWin>
+      virtual_desktop_helper_;
+#endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_MAC)
   // Ensure the notification bar appears active without needing focus.
   std::unique_ptr<views::Widget::PaintAsActiveLock> paint_as_active_lock_;
@@ -418,7 +423,10 @@ gfx::NativeViewId ScreenCaptureNotificationUIImpl::OnStarted(
 
 #if BUILDFLAG(IS_WIN)
   SetWindowsAppId(widget_.get());
-#endif
+  virtual_desktop_helper_ =
+      std::make_unique<ScreenCaptureNotificationVirtualDesktopHelperWin>(
+          widget_.get());
+#endif  // BUILDFLAG(IS_WIN)
 
   if (media_ids.empty() ||
       media_ids.front().type == DesktopMediaID::Type::TYPE_SCREEN) {

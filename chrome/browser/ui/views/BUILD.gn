@@ -987,6 +987,12 @@ source_set("screen_capture_notification_ui_views") {
   if (is_chromeos) {
     deps += [ "//ash" ]
   }
+  if (is_win) {
+    sources += [
+      "screen_capture_notification_virtual_desktop_helper_win.cc",
+      "screen_capture_notification_virtual_desktop_helper_win.h",
+    ]
+  }
 }
 
 if (use_aura && !is_chromeos) {
@@ -2096,8 +2102,12 @@ source_set("unit_tests") {
     deps += [ ":crypto_module_password_dialog_view" ]
   }
   if (is_win) {
-    sources += [ "uninstall_view_unittest.cc" ]
+    sources += [
+      "screen_capture_notification_virtual_desktop_helper_win_unittest.cc",
+      "uninstall_view_unittest.cc",
+    ]
     deps += [
+      ":screen_capture_notification_ui_views",
       ":uninstall_browser_prompt",
       "//chrome/common:constants",
     ]
