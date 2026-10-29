@@ -47,7 +47,9 @@ import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-public class CustomD8 {
+// Note: Compiled standalone by //third_party/r8/3pp/3pp.py with only r8.jar on the
+// classpath, so do not depend on //build/android:build_java (e.g. @NullMarked).
+public class ChromeD8 {
     private static class CommandLineOrigin extends Origin {
         private CommandLineOrigin() {
             super(root());

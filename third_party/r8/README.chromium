@@ -16,11 +16,17 @@ Directory overview:
 * cipd/lib/r8.jar
   * The copy of R8 that is used for proguarding and dexing (for large inputs).
   * Updated daily by an auto-roller.
-* cipd/bin/custom_d8
-  * GraalVM native-image executable (linux-x64) of CustomD8 + lib/r8.jar,
-    built by 3pp. Same command-line as "org.chromium.build.CustomD8".
+* cipd/bin/chrome_d8
+  * GraalVM native-image executable (linux-x64, Serial GC) of ChromeD8 +
+    lib/r8.jar, built by 3pp. Same command-line as
+    "org.chromium.build.ChromeD8".
   * Uses JAVA_HOME (or -Djava.home=) to resolve --lib <jdk>.
-  * Uses Serial GC. Pass heap flags (e.g. -Xms4g -Xmn3g) for large inputs.
+* cipd/bin/chrome_r8
+  * GraalVM native-image executable (linux-x64, G1 GC) of ChromeR8 + ChromeD8 +
+    FlushingReTrace + lib/r8.jar, built by 3pp. Same command-line as
+    "org.chromium.build.ChromeR8" (supports R8, "--d8", "--tracereferences",
+    "--retrace", and "--disassemble").
+  * Uses JAVA_HOME (or -Djava.home=) to resolve --lib <jdk>.
 * 3pp
   * Contains code for 3pp-linux-amd64-packager to package and upload new
     versions of r8.
@@ -31,14 +37,20 @@ Local Modifications:
 * Refer to commit descriptions within "3pp/patches" directory.
 * Added "playground" directory for quick "how does this optimize" tests.
 * Added "dump_inputs.py" and "print_version.sh" scripts.
-* Added "java/src/org/chromium/build/CustomD8.java", custom_d8.jar, and BUILD.gn.
+* Added "java/src/org/chromium/build/ChromeD8.java", custom_d8.jar, and BUILD.gn.
   * Used in "build/android/gyp/dex.py" to enable filtered jar inputs and stored
     zip outputs.
-  * Also compiled into cipd/bin/custom_d8 by 3pp.
+  * Also compiled into cipd/bin/chrome_d8 by 3pp.
+* Added "java/src/org/chromium/build/ChromeR8.java" and custom_r8.jar.
+  * Used in "build/android/gyp/proguard.py", "build/android/gyp/dex.py" ("--d8"),
+    "build/android/gyp/tracereferences.py" ("--tracereferences"),
+    "build/android/stacktrace/java_deobfuscate.py" ("--retrace"), and
+    "third_party/r8/disassemble.py" ("--disassemble").
+  * Also compiled into cipd/bin/chrome_r8 by 3pp.
 
 Update Instructions:
 * For the custom r8/d8 jar:
-  * This is required only when Custom{R,D}8.java changes.
+  * This is required only when Chrome{R,D}8.java changes.
   * Uncomment the flag --skip-custom-d8 in internal_rules.gni to avoid depending
     on the previously built custom_d8.jar.
 autoninja -C out/Debug third_party/r8:custom_r8_java

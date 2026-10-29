@@ -10,12 +10,10 @@ import com.android.tools.r8.retrace.Retrace;
 import com.android.tools.r8.retrace.RetraceCommand;
 import com.android.tools.r8.retrace.StackTraceSupplier;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
-
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -23,9 +21,11 @@ import java.util.List;
 
 /**
  * A wrapper around ReTrace that: 1. Hardcodes a more useful line regular expression 2. Disables
- * output buffering
+ * output buffering.
+ *
+ * <p>Note: Compiled standalone by //third_party/r8/3pp/3pp.py with only r8.jar on the classpath, so
+ * do not depend on //build/android:build_java (e.g. @NullMarked).
  */
-@NullMarked
 public class FlushingReTrace {
     // E.g.: D/ConnectivityService(18029): Message
     // E.g.: W/GCM     ( 151): Message
@@ -113,7 +113,7 @@ public class FlushingReTrace {
 
     private static void usage() {
         System.err.println("Usage: echo $OBFUSCATED_CLASS | java_deobfuscate Foo.apk.mapping");
-        System.err.println("Usage: java_deobfuscate Foo.apk.mapping < foo.log");
+        System.err.println("Usage: java_deobfuscate Foo.apk.mapping [foo.log]");
         System.err.println(
                 "Note: Deobfuscation of symbols outside the context of stack "
                         + "traces will work only when lines match the regular expression defined "
@@ -125,11 +125,11 @@ public class FlushingReTrace {
     }
 
     public static void main(String[] args) {
-        if (args.length != 1 || args[0].startsWith("-")) {
+        if (args.length < 1 || args.length > 2 || args[0].startsWith("-")) {
             usage();
         }
 
-        try {
+        try (InputStream logStream = args.length == 2 ? new FileInputStream(args[1]) : System.in) {
             ProguardMappingSupplier mappingSupplier =
                     ProguardMappingSupplier.builder()
                             .setProguardMapProducer(() -> new FileInputStream(args[0]))
@@ -139,6 +139,8 @@ public class FlushingReTrace {
             // https://crbug.com/1351023
             mappingSupplier.createRetracer(new DiagnosticsHandler() {});
 
+            BufferedReader reader =
+                    new BufferedReader(new InputStreamReader(logStream, StandardCharsets.UTF_8));
             // This whole command was given to us by the R8 team in b/234758957.
             RetraceCommand retraceCommand =
                     RetraceCommand.builder()
@@ -148,15 +150,10 @@ public class FlushingReTrace {
                             .setRegularExpression(LINE_PARSE_REGEX)
                             .setStackTrace(
                                     new StackTraceSupplier() {
-                                        final BufferedReader mReader =
-                                                new BufferedReader(
-                                                        new InputStreamReader(
-                                                                System.in, StandardCharsets.UTF_8));
-
                                         @Override
-                                        public @Nullable List<String> get() {
+                                        public List<String> get() {
                                             try {
-                                                String line = mReader.readLine();
+                                                String line = reader.readLine();
                                                 if (line == null) {
                                                     return null;
                                                 }
@@ -174,6 +171,5 @@ public class FlushingReTrace {
             ex.printStackTrace();
             System.exit(1);
         }
-        System.exit(0);
     }
 }

@@ -425,7 +425,23 @@ def build_native_image(
                         f'PGO training run did not write {profile}'
                     )
                 profiles.append(profile)
-            final_args = ['-O3', '--pgo=' + ','.join(profiles)]
+            final_args = [
+                '-O3',
+                '--pgo=' + ','.join(profiles),
+                '-H:+UnlockExperimentalVMOptions',
+                # GraalVM's -H:+PGORemoveMonitorFields (on by default with
+                # --pgo) strips the inline monitor slot from any class whose
+                # monitor count is < 2 in monitorProfiles, falling back to a
+                # global secondary monitor map (contended across all threads).
+                # That hurts 3pp builds for two reasons:
+                # 1. Synthetic PGO inputs may not exercise every synchronized
+                #    class used in real builds.
+                # 2. When multiple .iprof files are passed, GraalVM 25's
+                #    PGOData$Builder.addMonitorProfiles calls
+                #    metadataBuilder.setKnownTypeIDs() per file, overwriting
+                #    earlier files' monitor types with only the last file's.
+                '-H:-PGORemoveMonitorFields',
+            ]
 
         temp_output = os.path.abspath(
             os.path.join(work_dir, os.path.basename(output_path))
