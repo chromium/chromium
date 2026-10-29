@@ -2185,10 +2185,15 @@ void MaybeRegisterChromeFeaturePromos(
               "Triggered the first time a user focuses on a tab group or "
               "tabs to point out the Unfocus button.")));
 
+  const ui::ElementIdentifier contextual_tasks_ephemeral_element_id =
+      contextual_tasks::IsContextualTasksEphemeralPinButtonRefactorEnabled()
+          ? kPinnedToolbarActionShowSidePanelContextualTasksElementId
+          : kContextualTasksEphemeralToolbarButtonElementId;
+
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(
           feature_engagement::kIPHSidePanelContextualTasksPinnableFeature,
-          kContextualTasksEphemeralToolbarButtonElementId,
+          contextual_tasks_ephemeral_element_id,
           IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH,
           IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH_PIN_SHORTCUT,
           base::BindRepeating(
@@ -2233,7 +2238,7 @@ void MaybeRegisterChromeFeaturePromos(
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(
           feature_engagement::kIPHContextualTasksEphemeralToolbarButtonFeature,
-          kContextualTasksEphemeralToolbarButtonElementId,
+          contextual_tasks_ephemeral_element_id,
           IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH,
           IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH_SCREENREADER,
           FeaturePromoSpecification::AcceleratorInfo())

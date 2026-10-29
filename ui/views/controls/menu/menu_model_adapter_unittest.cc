@@ -157,8 +157,9 @@ class SubmenuModel final : public MenuModelBase {
  public:
   SubmenuModel() : MenuModelBase(kSubmenuIdBase) {
     items_.emplace_back(TYPE_COMMAND, "submenu item 0", nullptr, false, true);
+    items_.emplace_back(TYPE_SEPARATOR, "", nullptr, true, false);
     items_.emplace_back(TYPE_COMMAND, "submenu item 1", nullptr);
-    items_[1].alerted = true;
+    items_[2].alerted = true;
   }
 
   SubmenuModel(const SubmenuModel&) = delete;
@@ -249,6 +250,8 @@ void CheckSubmenu(const RootModel& model,
     views::MenuItemView* item = menu->GetMenuItemByID(id);
     if (!item) {
       EXPECT_EQ(ui::MenuModel::TYPE_SEPARATOR, model_item.type);
+      EXPECT_EQ(model_item.visible,
+                subitem_container->children()[i]->GetVisible());
       continue;
     }
     // Check placement.
@@ -334,6 +337,8 @@ TEST_F(MenuModelAdapterTest, BasicTest) {
     MenuItemView* item = menu->GetMenuItemByID(id);
     if (!item) {
       EXPECT_EQ(ui::MenuModel::TYPE_SEPARATOR, model_item.type);
+      EXPECT_EQ(model_item.visible,
+                item_container->children()[i]->GetVisible());
       continue;
     }
 
@@ -391,7 +396,7 @@ TEST_F(MenuModelAdapterTest, BasicTest) {
 
   // Check the submenu.
   const int submenu_index = 3;
-  CheckSubmenu(model, menu, &delegate, kRootIdBase + submenu_index, 2,
+  CheckSubmenu(model, menu, &delegate, kRootIdBase + submenu_index, 3,
                submenu_index, kSubmenuIdBase);
 
   // Check the actionable submenu.
