@@ -297,23 +297,28 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
   // See |set_force_immediate_dispatch()|.
   bool force_immediate_dispatch_ = false;
 
+  bool allow_woken_up_by_others_ = false;
+
+  // Indicates whether the Connector is configured to actively read from its
+  // message pipe. As long as this is true, the Connector is only safe to
+  // destroy in sequence with `task_runner_` tasks.
+  bool is_receiving_ = false;
+
+  // |true| iff the Connector is currently dispatching a message. Used to detect
+  // nested dispatch operations.
+  bool is_dispatching_ = false;
+
   // If sending messages is allowed from multiple sequences, |lock_| is used to
   // protect modifications to |message_pipe_| and |drop_writes_|.
   std::optional<base::Lock> lock_;
 
   std::unique_ptr<SyncHandleWatcher> sync_watcher_;
 
-  bool allow_woken_up_by_others_ = false;
   // If non-zero, currently the control flow is inside the sync handle watcher
   // callback.
   size_t sync_handle_watcher_callback_count_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  // Indicates whether the Connector is configured to actively read from its
-  // message pipe. As long as this is true, the Connector is only safe to
-  // destroy in sequence with `task_runner_` tasks.
-  bool is_receiving_ = false;
 
   // The tag used to track heap allocations that originated from a Watcher
   // notification.
@@ -324,10 +329,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
   // `nesting_observer_` is not a raw_ptr<...> for performance reasons (based on
   // analysis of sampling profiler data).
   RAW_PTR_EXCLUSION RunLoopNestingObserver* nesting_observer_ = nullptr;
-
-  // |true| iff the Connector is currently dispatching a message. Used to detect
-  // nested dispatch operations.
-  bool is_dispatching_ = false;
 
   // The number of pending tasks for |CallDispatchNextMessageFromPipe|.
   size_t num_pending_dispatch_tasks_ = 0;
