@@ -634,6 +634,12 @@ extern const base::FeatureParam<bool>
 // menu should show a "Close/Hide side panel" item when active.
 extern bool ShouldShowCloseSidePanelInPinnedButtonContextMenu();
 
+// Whether the active status indicator on the pin button should use a blue
+// highlight for the circle when the side panel is closed instead of a blue icon
+// and underline pill.
+extern const base::FeatureParam<bool>
+    kContextualTasksPinnedButtonActiveIndicatorCircleHighlight;
+extern bool IsContextualTasksPinnedButtonActiveIndicatorCircleHighlightEnabled();
 // Returns whether the pin button in the side panel header is enabled on SRP.
 extern bool IsContextualTasksPinButtonOnSrpEnabled();
 

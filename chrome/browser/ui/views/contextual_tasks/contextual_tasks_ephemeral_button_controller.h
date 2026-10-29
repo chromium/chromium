@@ -105,6 +105,7 @@ class ContextualTasksEphemeralButtonController
 
   bool ShouldShowEphemeralButton();
   bool ShouldShowPinnedButtonActiveIndicator();
+  bool IsActiveTabAssociatedToTask();
   bool IsPanelOpen() const {
     return is_contextual_tasks_panel_open_ &&
            !is_hiding_contextual_tasks_panel_;
@@ -123,7 +124,6 @@ class ContextualTasksEphemeralButtonController
 
   contextual_tasks::ContextualTasksService* GetContextualTasksService();
   std::optional<SessionID> GetCurrentTabSessionId();
-  bool IsActiveTabAssociatedToTask();
   bool HasPanelResults() const;
   void OnActiveTabChange(BrowserWindowInterface* browser_window_interface);
   void OnSidePanelAlignmentChanged();

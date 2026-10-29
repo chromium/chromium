@@ -46,6 +46,7 @@ class ContextualTasksButton
   contextual_tasks::EphemeralButtonShape GetShape() const;
   float GetCornerRadiusFor(ToolbarButton::Edge edge) const override;
   bool IsHighlighted() const;
+  bool ShouldShowCircleHighlight() const;
   ui::Layer* GetDropShadowLayerForTesting() const;
   PinnedToolbarButtonStatusIndicator* GetStatusIndicatorForTesting() const {
     return status_indicator_;
@@ -94,6 +95,7 @@ class ContextualTasksButton
   void UpdateStatusIndicator();
   void AnimateShow();
   void ClearDropShadow();
+  bool IsPanelOpen() const;
   ui::ImageModel GetButtonImage();
 
   base::CallbackListSubscription should_update_visibility_subscription_;

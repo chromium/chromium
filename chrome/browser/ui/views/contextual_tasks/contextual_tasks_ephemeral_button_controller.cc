@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_menu_model.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_utils.h"
+#include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -114,14 +115,24 @@ ContextualTasksEphemeralButtonController::
       base::BindRepeating(&ContextualTasksEphemeralButtonController::
                               OnSidePanelAlignmentChanged,
                           base::Unretained(this)));
-  if (contextual_tasks::ShouldShowCloseSidePanelInPinnedButtonContextMenu()) {
-    if (BrowserActions* const browser_actions =
-            BrowserActions::From(browser_window_interface_);
-        browser_actions && browser_actions->root_action_item()) {
-      if (actions::ActionItem* const action_item =
-              actions::ActionManager::Get().FindAction(
-                  kActionSidePanelShowContextualTasks,
-                  browser_actions->root_action_item())) {
+  if (BrowserActions* const browser_actions =
+          BrowserActions::From(browser_window_interface_);
+      browser_actions && browser_actions->root_action_item()) {
+    if (actions::ActionItem* const action_item =
+            actions::ActionManager::Get().FindAction(
+                kActionSidePanelShowContextualTasks,
+                browser_actions->root_action_item())) {
+      if (contextual_tasks::
+              IsContextualTasksPinnedButtonActiveIndicatorEnabled()) {
+        action_item->SetProperty(
+            kActionItemEngagedIndicatorStyleKey,
+            contextual_tasks::
+                    IsContextualTasksPinnedButtonActiveIndicatorCircleHighlightEnabled()
+                ? ActionItemEngagedIndicatorStyle::kCircleHighlight
+                : ActionItemEngagedIndicatorStyle::kUnderline);
+      }
+      if (contextual_tasks::
+              ShouldShowCloseSidePanelInPinnedButtonContextMenu()) {
         const int close_label_id =
             contextual_tasks::
                     ShouldUseCloseSidePanelForEphemeralButtonContextMenu()
@@ -237,15 +248,17 @@ void ContextualTasksEphemeralButtonController::
 
 void ContextualTasksEphemeralButtonController::OnEntryShown(
     SidePanelEntry* entry) {
+  is_contextual_tasks_panel_open_ = true;
+  is_hiding_contextual_tasks_panel_ = false;
   if (contextual_tasks::kShowEntryPoint.Get() ==
       contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
-    is_contextual_tasks_panel_open_ = true;
-    is_hiding_contextual_tasks_panel_ = false;
     if (contextual_tasks::IsContextualTasksPinningV2Enabled()) {
       MarkActiveTaskTabsEligible();
     }
     CancelAutoDismissTimersForActiveTask();
     MaybeNotifyVisibilityShouldChange();
+  } else {
+    UpdatePinnedButtonActiveIndicator();
   }
 }
 
@@ -257,6 +270,8 @@ void ContextualTasksEphemeralButtonController::OnEntryWillHide(
       reason == SidePanelEntryHideReason::kBackgrounded) {
     if (contextual_tasks::IsContextualTasksPinningV2Enabled()) {
       MaybeNotifyVisibilityShouldChange();
+    } else {
+      UpdatePinnedButtonActiveIndicator();
     }
     return;
   }
@@ -289,22 +304,26 @@ void ContextualTasksEphemeralButtonController::OnEntryWillHide(
 
 void ContextualTasksEphemeralButtonController::OnEntryHideCancelled(
     SidePanelEntry* entry) {
+  is_hiding_contextual_tasks_panel_ = false;
+  is_contextual_tasks_panel_open_ = true;
   if (contextual_tasks::kShowEntryPoint.Get() ==
       contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
-    is_hiding_contextual_tasks_panel_ = false;
-    is_contextual_tasks_panel_open_ = true;
     CancelAutoDismissTimersForActiveTask();
     MaybeNotifyVisibilityShouldChange();
+  } else {
+    UpdatePinnedButtonActiveIndicator();
   }
 }
 
 void ContextualTasksEphemeralButtonController::OnEntryHidden(
     SidePanelEntry* entry) {
+  is_hiding_contextual_tasks_panel_ = false;
+  is_contextual_tasks_panel_open_ = false;
   if (contextual_tasks::kShowEntryPoint.Get() ==
       contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
-    is_hiding_contextual_tasks_panel_ = false;
-    is_contextual_tasks_panel_open_ = false;
     MaybeNotifyVisibilityShouldChange();
+  } else {
+    UpdatePinnedButtonActiveIndicator();
   }
 }
 
@@ -389,6 +408,12 @@ bool ContextualTasksEphemeralButtonController::
 
   if (!contextual_tasks::GetEffectivePinState(
           browser_window_interface_->GetProfile())) {
+    return false;
+  }
+
+  if (contextual_tasks::
+          IsContextualTasksPinnedButtonActiveIndicatorCircleHighlightEnabled() &&
+      IsPanelOpen()) {
     return false;
   }
 
@@ -664,7 +689,9 @@ void ContextualTasksEphemeralButtonController::
   }
   const bool should_show = ShouldShowPinnedButtonActiveIndicator();
   if (close_side_panel_action_item_) {
-    close_side_panel_action_item_->SetEnabled(should_show);
+    close_side_panel_action_item_->SetEnabled(
+        should_show ||
+        (contextual_task_observation_.IsObserving() && IsPanelOpen()));
   }
   BrowserActions* const browser_actions =
       BrowserActions::From(browser_window_interface_);

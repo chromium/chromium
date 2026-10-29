@@ -512,5 +512,9 @@ class ToolbarView : public views::AccessiblePaneView,
 };
 
 extern const ui::ClassProperty<bool>* const kActionItemUnderlineIndicatorKey;
+extern const ui::ClassProperty<ActionItemEngagedIndicatorStyle>* const
+    kActionItemEngagedIndicatorStyleKey;
+
+DECLARE_UI_CLASS_PROPERTY_TYPE(ActionItemEngagedIndicatorStyle)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_VIEW_H_

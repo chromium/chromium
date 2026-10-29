@@ -4671,6 +4671,14 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureParam
     kContextualTasksPinnedButtonActiveIndicatorWithContextMenu[] = {
         {"ContextualTasksPinnedButtonContextMenuCloseSidePanel", "true"}};
+const FeatureEntry::FeatureParam
+    kContextualTasksPinnedButtonActiveIndicatorCircleHighlight[] = {
+        {"ContextualTasksPinnedButtonActiveIndicatorCircleHighlight", "true"}};
+const FeatureEntry::FeatureParam
+    kContextualTasksPinnedButtonActiveIndicatorCircleHighlightWithContextMenu
+        [] = {{"ContextualTasksPinnedButtonActiveIndicatorCircleHighlight",
+               "true"},
+              {"ContextualTasksPinnedButtonContextMenuCloseSidePanel", "true"}};
 
 const FeatureEntry::FeatureVariation
     kContextualTasksPinnedButtonActiveIndicatorVariations[] = {
@@ -4678,7 +4686,12 @@ const FeatureEntry::FeatureVariation
          kContextualTasksPinnedButtonActiveIndicatorWithoutContextMenu,
          nullptr},
         {"with 'Close/Hide side panel' in context menu",
-         kContextualTasksPinnedButtonActiveIndicatorWithContextMenu, nullptr}};
+         kContextualTasksPinnedButtonActiveIndicatorWithContextMenu, nullptr},
+        {"with circle highlight",
+         kContextualTasksPinnedButtonActiveIndicatorCircleHighlight, nullptr},
+        {"with circle highlight and 'Close/Hide side panel' in context menu",
+         kContextualTasksPinnedButtonActiveIndicatorCircleHighlightWithContextMenu,
+         nullptr}};
 
 const FeatureEntry::FeatureParam kContextualTasksUnifyPinButtonLogosSpark[] = {
     {"ContextualTasksUnifyPinButtonLogo", "spark"}};

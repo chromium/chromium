@@ -396,6 +396,11 @@ bool ContextualTasksButton::ShouldShowMenu() {
 }
 
 void ContextualTasksButton::UpdateColorsAndInsets() {
+  if (contextual_tasks::IsContextualTasksPinningV2Enabled()) {
+    SetDefaultBackgroundColorId(ShouldShowCircleHighlight()
+                                    ? kColorAvatarButtonHighlightDefault
+                                    : kChromeColorsStart);
+  }
   ToolbarButton::UpdateColorsAndInsets();
 
   if (contextual_tasks::kShowEntryPoint.Get() !=
@@ -470,7 +475,9 @@ void ContextualTasksButton::UpdateIcon() {
                                     ? icons->touch_icon
                                     : icons->icon;
   if (contextual_tasks::
-          IsContextualTasksPinnedButtonActiveIndicatorEnabled()) {
+          IsContextualTasksPinnedButtonActiveIndicatorEnabled() &&
+      !contextual_tasks::
+          IsContextualTasksPinnedButtonActiveIndicatorCircleHighlightEnabled()) {
     const SkColor engaged_color =
         GetColorProvider()->GetColor(kColorToolbarActionItemEngaged);
     UpdateIconsWithColors(icon, engaged_color, engaged_color, engaged_color,
@@ -596,9 +603,7 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
         }
       }
     } else {
-      if (!drop_shadow_painted_layer_) {
-        UpdateDropShadow();
-      }
+      UpdateDropShadow();
       MaybeToggleFeaturePromo();
     }
     SetVisible(will_be_visible);
@@ -614,15 +619,7 @@ void ContextualTasksButton::UpdateHighlight() {
     anchor_highlight_.reset();
     return;
   }
-  ContextualTasksEphemeralButtonController* const ephemeral_controller =
-      ContextualTasksEphemeralButtonController::From(browser_window_interface_);
-  auto* const panel_controller =
-      contextual_tasks::ContextualTasksPanelController::From(
-          browser_window_interface_);
-  const bool should_highlight =
-      GetVisible() && ephemeral_controller &&
-      ephemeral_controller->IsPanelOpen() && panel_controller &&
-      panel_controller->IsPanelOpenForContextualTask();
+  const bool should_highlight = GetVisible() && IsPanelOpen();
   if (should_highlight) {
     if (!anchor_highlight_.has_value()) {
       anchor_highlight_ = AddAnchorHighlight();
@@ -630,20 +627,11 @@ void ContextualTasksButton::UpdateHighlight() {
   } else {
     anchor_highlight_.reset();
   }
+  UpdateColorsAndInsets();
 }
 
 void ContextualTasksButton::UpdateTooltipText() {
-  ContextualTasksEphemeralButtonController* const ephemeral_controller =
-      ContextualTasksEphemeralButtonController::From(browser_window_interface_);
-  auto* const panel_controller =
-      contextual_tasks::ContextualTasksPanelController::From(
-          browser_window_interface_);
-  const bool is_panel_open =
-      ephemeral_controller ? (ephemeral_controller->IsPanelOpen() &&
-                              panel_controller &&
-                              panel_controller->IsPanelOpenForContextualTask())
-                           : (panel_controller &&
-                              panel_controller->IsPanelOpenForContextualTask());
+  const bool is_panel_open = IsPanelOpen();
 
   int tooltip_id = IDS_CONTEXTUAL_TASKS_ENTRY_POINT_TOOLTIP;
   if (contextual_tasks::kShowEntryPoint.Get() ==
@@ -735,9 +723,12 @@ void ContextualTasksButton::UpdateDropShadow(bool force_paint,
 
   ClearDropShadow();
 
+  const ChromeColorIds bg_color_id =
+      ShouldShowCircleHighlight() ? kColorAvatarButtonHighlightDefault
+                                  : kColorToolbar;
   auto contextual_tasks_button_background_painter =
       std::make_unique<ContextualTasksButtonBackgroundPainter>(
-          color_provider->GetColor(kColorToolbar),
+          color_provider->GetColor(bg_color_id),
           color_provider->GetColor(kColorToolbarContextualTasksButtonShadow),
           GetShape());
 
@@ -768,6 +759,8 @@ void ContextualTasksButton::UpdateStatusIndicator() {
   }
   if (contextual_tasks::
           IsContextualTasksPinnedButtonActiveIndicatorEnabled() &&
+      !contextual_tasks::
+          IsContextualTasksPinnedButtonActiveIndicatorCircleHighlightEnabled() &&
       GetVisible()) {
     status_indicator_->Show();
   } else {
@@ -808,9 +801,36 @@ void ContextualTasksButton::ClearDropShadow() {
   }
 }
 
+bool ContextualTasksButton::IsPanelOpen() const {
+  ContextualTasksEphemeralButtonController* const ephemeral_controller =
+      ContextualTasksEphemeralButtonController::From(browser_window_interface_);
+  auto* const panel_controller =
+      contextual_tasks::ContextualTasksPanelController::From(
+          browser_window_interface_);
+  return ephemeral_controller
+             ? (ephemeral_controller->IsPanelOpen() && panel_controller &&
+                panel_controller->IsPanelOpenForContextualTask())
+             : (panel_controller &&
+                panel_controller->IsPanelOpenForContextualTask());
+}
+
+bool ContextualTasksButton::ShouldShowCircleHighlight() const {
+  if (!contextual_tasks::
+          IsContextualTasksPinnedButtonActiveIndicatorCircleHighlightEnabled() ||
+      IsPanelOpen()) {
+    return false;
+  }
+  ContextualTasksEphemeralButtonController* const ephemeral_controller =
+      ContextualTasksEphemeralButtonController::From(browser_window_interface_);
+  return ephemeral_controller &&
+         ephemeral_controller->IsActiveTabAssociatedToTask();
+}
+
 ui::ImageModel ContextualTasksButton::GetButtonImage() {
   const bool use_active_indicator =
-      contextual_tasks::IsContextualTasksPinnedButtonActiveIndicatorEnabled();
+      contextual_tasks::IsContextualTasksPinnedButtonActiveIndicatorEnabled() &&
+      !contextual_tasks::
+          IsContextualTasksPinnedButtonActiveIndicatorCircleHighlightEnabled();
   const ui::ColorId icon_color_id =
       use_active_indicator ? ui::ColorId{kColorToolbarActionItemEngaged}
                            : ui::ColorId{ui::kColorIcon};
