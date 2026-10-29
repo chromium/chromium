@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/byte_size.h"
-#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
@@ -1333,10 +1332,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, WriteAndReadResource) {
     ReadResponseHeadResult result = ReadResponseHead(reader.get());
     ASSERT_GT(result.status, 0);
     ASSERT_TRUE(result.metadata.has_value());
-    EXPECT_EQ(result.metadata->size(), kMetadata.size());
-    UNSAFE_TODO(EXPECT_EQ(
-        memcmp(result.metadata->data(), kMetadata.data(), kMetadata.size()),
-        0));
+    EXPECT_EQ(base::span(*result.metadata), kMetadata);
   }
 }
 
