@@ -646,6 +646,12 @@ TEST_F(MetricsServiceObserverTest, NotifiedCallbacks) {
     logs_observer.OnLogEvent(MetricsLogsEventManager::LogEvent::kLogStaged,
                              kLogHash, /*message=*/"");
     EXPECT_EQ(num_callback_executed, 2);
+    EXPECT_EQ(logs_observer.logs_for_testing()->size(), 1U);
+
+    // Verify that OnLogsCleared() clears stored logs and triggers the callback.
+    logs_observer.OnLogsCleared();
+    EXPECT_EQ(num_callback_executed, 3);
+    EXPECT_TRUE(logs_observer.logs_for_testing()->empty());
   }
 
   // Verify that after the callback list subscription |callback_subscription| is
@@ -656,6 +662,7 @@ TEST_F(MetricsServiceObserverTest, NotifiedCallbacks) {
                              MetricsLogsEventManager::CreateReason::kUnknown);
   logs_observer.OnLogEvent(MetricsLogsEventManager::LogEvent::kLogStaged,
                            kLogHash2, /*message=*/"");
+  logs_observer.OnLogsCleared();
   EXPECT_EQ(num_callback_executed, 0);
 }
 

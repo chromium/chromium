@@ -9943,6 +9943,14 @@ bool ChromeContentBrowserClient::IsFileSystemAccessApiFilePickerAllowed(
 
 bool ChromeContentBrowserClient::ShouldSkipBeforeUnloadDialog(
     content::RenderFrameHost* rfh) {
+  // Skip beforeunload dialogs on chrome://ukm so that browser-initiated
+  // reloads (e.g., when clearing UKM debug data on ChromeOS profile switch)
+  // cannot be blocked by a page-registered beforeunload listener.
+  const GURL& url = rfh->GetLastCommittedURL();
+  if (url.SchemeIs(content::kChromeUIScheme) &&
+      url.host() == content::kChromeUIUkmHost) {
+    return true;
+  }
 #if !BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(
           actor::kGlicSkipBeforeUnloadDialogAndNavigate)) {

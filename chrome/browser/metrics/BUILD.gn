@@ -304,6 +304,7 @@ source_set("impl") {
     "//chrome/browser/ui:browser_otr_state",
     "//chrome/browser/ui:recently_audible_helper",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/tab_contents",
     "//chrome/browser/upgrade_detector",
     "//components/crash/core/app",
     "//components/metrics:component_metrics",

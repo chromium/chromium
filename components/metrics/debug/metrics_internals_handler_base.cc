@@ -186,8 +186,13 @@ void MetricsInternalsHandlerBase::HandleFetchUkmLogsData(
     const base::Value& callback_id,
     bool include_log_proto_data) {
   std::string logs_json;
-  auto* observer = GetUkmObserver();
-  if (observer) {
+  if (ukm_service_ && !ukm_service_->IsDebugDataAllowed()) {
+    MetricsServiceObserver empty_observer(
+        MetricsServiceObserver::MetricsServiceType::UKM);
+    bool result =
+        empty_observer.ExportLogsAsJson(include_log_proto_data, &logs_json);
+    DCHECK(result);
+  } else if (auto* observer = GetUkmObserver()) {
     bool result =
         observer->ExportLogsAsJson(include_log_proto_data, &logs_json);
     DCHECK(result);

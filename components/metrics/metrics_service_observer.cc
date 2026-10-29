@@ -166,6 +166,12 @@ void MetricsServiceObserver::OnLogType(
   uma_log_type_ = log_type;
 }
 
+void MetricsServiceObserver::OnLogsCleared() {
+  indexed_logs_.clear();
+  logs_.clear();
+  notified_callbacks_.Notify();
+}
+
 bool MetricsServiceObserver::ExportLogsAsJson(bool include_log_proto_data,
                                               std::string* json_output) {
   base::ListValue logs_list;

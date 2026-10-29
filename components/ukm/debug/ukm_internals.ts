@@ -374,7 +374,12 @@ function addClearButton() {
   const clearButton = getRequiredElement('clear');
   clearButton.addEventListener('click', () => {
     // Note it won't be able to clear if UKM logs got cut during this call.
-    sendWithPromise<UkmSession>('requestUkmData').then((data: UkmSession) => {
+    sendWithPromise<UkmSession|null>('requestUkmData').then(data => {
+      // |data| can be null if UkmService is null (e.g., in
+      // content_browsertests or when the UKM feature is disabled).
+      if (!data) {
+        return;
+      }
       updateUkmCache(data);
       for (const source of cachedSources.values()) {
         clearedSources.set(as64Bit(source.id), source.events.length);
@@ -470,12 +475,80 @@ function updateUkmCache(data: UkmSession) {
   }
 }
 
+const TEXT_FILTER_PARAMS: Array<[string, string]> = [
+  ['events_select', 'events'],
+  ['url_select', 'url'],
+];
+const CHECKBOX_FILTER_IDS = ['hide_no_events', 'hide_no_url', 'include_cache'];
+
+/**
+ * Updates the page URL query parameters to reflect the current UI filter
+ * options so that filter state is preserved across page reloads.
+ */
+function updateUrlParamsFromFilterOptions() {
+  const params = new URLSearchParams();
+  for (const [id, param] of TEXT_FILTER_PARAMS) {
+    const value = getRequiredElement<HTMLInputElement>(id).value;
+    if (value) {
+      params.set(param, value);
+    }
+  }
+  for (const id of CHECKBOX_FILTER_IDS) {
+    if (!getRequiredElement<HTMLInputElement>(id).checked) {
+      params.set(id, '0');
+    }
+  }
+  const threadId = getRequiredElement<HTMLSelectElement>('thread_ids').value;
+  if (threadId && threadId !== 'All') {
+    params.set('thread_id', threadId);
+  }
+  const query = params.toString();
+  const newUrl = window.location.pathname + (query ? `?${query}` : '') +
+      window.location.hash;
+  if (newUrl !==
+      window.location.pathname + window.location.search +
+          window.location.hash) {
+    window.history.replaceState(null, '', newUrl);
+  }
+}
+
+/**
+ * Restores UI filter options from the page URL query parameters on load.
+ */
+function restoreFilterOptionsFromUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+  for (const [id, param] of TEXT_FILTER_PARAMS) {
+    if (params.has(param)) {
+      getRequiredElement<HTMLInputElement>(id).value = params.get(param)!;
+    }
+  }
+  for (const id of CHECKBOX_FILTER_IDS) {
+    if (params.has(id)) {
+      getRequiredElement<HTMLInputElement>(id).checked = params.get(id) !== '0';
+    }
+  }
+  const threadId = params.get('thread_id');
+  if (threadId && threadId !== 'All') {
+    const threadIdSelect = getRequiredElement<HTMLSelectElement>('thread_ids');
+    for (const id of ['All', threadId]) {
+      threadIdSelect.add(new Option(id, id));
+    }
+    threadIdSelect.value = threadId;
+  }
+}
+
 /**
  * Fetches data from the UKM service and updates the DOM to display it as a
  * table.
  */
 function updateUkmData() {
-  sendWithPromise<UkmSession>('requestUkmData').then((data: UkmSession) => {
+  updateUrlParamsFromFilterOptions();
+  sendWithPromise<UkmSession|null>('requestUkmData').then(data => {
+    // |data| can be null if UkmService is null (e.g., in content_browsertests
+    // or when the UKM feature is disabled).
+    if (!data) {
+      return;
+    }
     updateUkmCache(data);
     if (document.body.querySelector<HTMLInputElement>(
                          '#include_cache')!.checked) {
@@ -624,6 +697,7 @@ function filterSourcesUsingFormOptions(sources: UkmSource[]): UkmSource[] {
 function onLoad() {
   addExpandAllToggleButton();
   addClearButton();
+  restoreFilterOptionsFromUrlParams();
   updateUkmData();
   getRequiredElement('refresh').addEventListener('click', updateUkmData);
   getRequiredElement('hide_no_events').addEventListener('click', updateUkmData);

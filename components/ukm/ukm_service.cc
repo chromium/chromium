@@ -316,6 +316,10 @@ void UkmService::RemoveLogsObserver(
   logs_event_manager_.RemoveObserver(observer);
 }
 
+bool UkmService::IsDebugDataAllowed() const {
+  return client_->IsUkmDebugDataAllowed();
+}
+
 void UkmService::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!initialize_started_);
@@ -412,6 +416,13 @@ void UkmService::Purge() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(DebuggingLogLevel::Rare) << "UkmService::Purge";
   reporting_service_.ukm_log_store()->Purge();
+  UkmRecorderImpl::Purge();
+}
+
+void UkmService::PurgeInMemoryRecordings() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(DebuggingLogLevel::Rare) << "UkmService::PurgeInMemoryRecordings";
+  logs_event_manager_.NotifyLogsCleared();
   UkmRecorderImpl::Purge();
 }
 

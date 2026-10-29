@@ -77,6 +77,7 @@ class MetricsLogsEventManager {
                             std::string_view log_hash,
                             std::string_view message) = 0;
     virtual void OnLogType(std::optional<MetricsLog::LogType> log_type) {}
+    virtual void OnLogsCleared() {}
 
    protected:
     Observer() = default;
@@ -143,6 +144,10 @@ class MetricsLogsEventManager {
   // Note: Typically, this should not be called directly. Consider using
   // ScopedNotifyLogType.
   void NotifyLogType(std::optional<MetricsLog::LogType> log_type);
+
+  // Notifies observers that in-memory logs should be cleared (e.g., on user
+  // profile switch to prevent cross-user leakage in debug UIs).
+  void NotifyLogsCleared();
 
  private:
   base::ObserverList<Observer> observers_;

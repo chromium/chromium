@@ -163,6 +163,15 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
 
   bool ShouldDropEntryForTesting(mojom::UkmEntry* entry);
 
+  const std::map<SourceId, std::unique_ptr<UkmSource>>& sources_for_testing()
+      const {
+    return recordings_.sources;
+  }
+
+  const std::vector<mojom::UkmEntryPtr>& entries_for_testing() const {
+    return recordings_.entries;
+  }
+
  protected:
   // Returns whether kRestructureMetricsConsentSettings feature is enabled.
   // This is a pure virtual method to force subclasses to override this

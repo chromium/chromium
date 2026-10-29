@@ -285,6 +285,10 @@ bool MetricsServiceClient::IsMetricsReportingForceEnabled() const {
   return ::metrics::IsMetricsReportingForceEnabled();
 }
 
+bool MetricsServiceClient::IsUkmDebugDataAllowed() const {
+  return true;
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 bool MetricsServiceClient::ShouldUploadMetricsForUserId(uint64_t user_id) {
   return true;

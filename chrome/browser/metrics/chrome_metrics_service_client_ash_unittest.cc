@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
@@ -29,6 +30,7 @@
 #include "components/metrics/log_decoder.h"
 #include "components/metrics/metrics_logs_event_manager.h"
 #include "components/metrics/metrics_service.h"
+#include "components/metrics/metrics_service_observer.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/metrics/unsent_log_store.h"
@@ -224,6 +226,9 @@ class ChromeMetricsServiceClientTestIgnoredForAppMetrics
     ash::LoginState::Initialize();
     chromeos::TpmManagerClient::InitializeFake();
 
+    test_user_manager_ = std::make_unique<ash::FakeChromeUserManager>();
+    test_user_manager_->Initialize();
+
     SetupMultiDeviceFactory();
 
     testing_profile_ = profile_manager_->CreateTestingProfile("test_name");
@@ -241,6 +246,10 @@ class ChromeMetricsServiceClientTestIgnoredForAppMetrics
         SetFactoryForTesting(nullptr);
 
     profile_manager_.reset();
+
+    test_user_manager_->Shutdown();
+    test_user_manager_->Destroy();
+    test_user_manager_.reset();
   }
 
   std::unique_ptr<ChromeMetricsServiceClientTestWithoutUKMProviders> Init(
@@ -359,6 +368,7 @@ class ChromeMetricsServiceClientTestIgnoredForAppMetrics
   content::BrowserTaskEnvironment task_environment_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
+  std::unique_ptr<ash::FakeChromeUserManager> test_user_manager_;
   base::UserActionTester user_action_runner_;
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
   std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
@@ -628,4 +638,55 @@ TEST_F(ChromeMetricsServiceClientTestDemoModeRecordAppMetrics,
   // Expect that only APP events and sources originally recorded are present.
   EXPECT_EQ(report.sources_size(), 2);
   EXPECT_EQ(report.entries_size(), 2);
+}
+
+TEST_P(ChromeMetricsServiceClientTestIgnoredForAppMetrics, PurgeOnUserSwitch) {
+  sync_preferences::TestingPrefServiceSyncable prefs;
+  auto chrome_metrics_service_client = Init(prefs);
+
+  // UserManager is initialized in SetUp() (test_user_manager_).
+  // Call InitPerUserMetrics to register the observer.
+  chrome_metrics_service_client->InitPerUserMetrics();
+
+  metrics::MetricsServiceObserver ukm_logs_observer(
+      metrics::MetricsServiceObserver::MetricsServiceType::UKM);
+  GetUkmService()->AddLogsObserver(&ukm_logs_observer);
+
+  // 1. Record some UKM data before any user logs in.
+  RecordTestEvent1(ukm::SourceIdType::NAVIGATION_ID);
+  EXPECT_FALSE(GetUkmService()->entries_for_testing().empty());
+  EXPECT_TRUE(GetUkmService()->IsDebugDataAllowed());
+
+  // 2. Setup User A and login. Initial login should NOT purge pre-login data.
+  AccountId account_id1 = AccountId::FromUserEmail("user1@gmail.com");
+  test_user_manager_->AddUser(account_id1);
+  test_user_manager_->LoginUser(account_id1,
+                                /*set_profile_created_flag=*/false);
+  test_user_manager_->SwitchActiveUser(account_id1);
+  EXPECT_FALSE(GetUkmService()->entries_for_testing().empty());
+  EXPECT_TRUE(GetUkmService()->IsDebugDataAllowed());
+
+  // 3. Setup User B and switch to User B.
+  AccountId account_id2 = AccountId::FromUserEmail("user2@gmail.com");
+  test_user_manager_->AddUser(account_id2);
+  test_user_manager_->LoginUser(account_id2,
+                                /*set_profile_created_flag=*/false);
+
+  // This should trigger ActiveUserChanged in ChromeMetricsServiceClient.
+  test_user_manager_->SwitchActiveUser(account_id2);
+
+  // 4. Verify that User A's data was flushed to the persistent log store.
+  // The log store should now have 1 log.
+  metrics::UnsentLogStore* log_store =
+      GetUkmService()->reporting_service()->ukm_log_store();
+  EXPECT_EQ(log_store->size(), 1ul);
+
+  // 5. Verify that in-memory recordings and in-memory log observers are purged,
+  // and that UKM debug data is disallowed while multiple users are logged in.
+  EXPECT_TRUE(GetUkmService()->entries_for_testing().empty());
+  EXPECT_TRUE(GetUkmService()->sources_for_testing().empty());
+  EXPECT_TRUE(ukm_logs_observer.logs_for_testing()->empty());
+  EXPECT_FALSE(GetUkmService()->IsDebugDataAllowed());
+
+  GetUkmService()->RemoveLogsObserver(&ukm_logs_observer);
 }

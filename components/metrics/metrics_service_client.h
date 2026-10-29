@@ -232,6 +232,10 @@ class MetricsServiceClient {
   // Checks if the user has forced metrics collection on via the override flag.
   bool IsMetricsReportingForceEnabled() const;
 
+  // Returns whether UKM debug data (e.g., for chrome://ukm and
+  // chrome://metrics-internals) is allowed to be exposed.
+  virtual bool IsUkmDebugDataAllowed() const;
+
 // If expanding user-level metrics to other platforms, then, in addition to
 // implementing the functions below, remember to modify the callers of the
 // functions. Currently the callers have #if blocks that make them not call

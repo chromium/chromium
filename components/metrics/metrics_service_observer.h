@@ -98,6 +98,7 @@ class MetricsServiceObserver : public MetricsLogsEventManager::Observer {
                   std::string_view log_hash,
                   std::string_view message) override;
   void OnLogType(std::optional<MetricsLog::LogType> log_type) override;
+  void OnLogsCleared() override;
 
   // Exports |logs_| to a JSON string and writes it to |json_output|. If
   // |include_log_proto_data| is true, the protos of the logs will be included.
@@ -136,9 +137,9 @@ class MetricsServiceObserver : public MetricsLogsEventManager::Observer {
   void ExportLogsToFile(const base::FilePath& path);
 
   // Registers a callback. This callback will be run every time this observer is
-  // notified through OnLogCreated() or OnLogEvent(). When the returned
-  // CallbackListSubscription is destroyed, the callback is automatically
-  // de-registered.
+  // notified through OnLogCreated(), OnLogEvent(), or OnLogsCleared(). When the
+  // returned CallbackListSubscription is destroyed, the callback is
+  // automatically de-registered.
   [[nodiscard]] base::CallbackListSubscription AddNotifiedCallback(
       base::RepeatingClosure callback);
 

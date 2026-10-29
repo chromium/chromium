@@ -44,6 +44,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/metrics/cros_pre_choice_metrics_manager.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/user_manager.h"
 #endif
 
 class BrowserActivityWatcher;
@@ -83,7 +85,11 @@ class ChromeMetricsServiceClient
       public content::RenderProcessHostCreationObserver,
       public ProfileManagerObserver,
       public ProfileObserver,
-      public ui::UserActivityObserver {
+      public ui::UserActivityObserver
+#if BUILDFLAG(IS_CHROMEOS)
+      , public user_manager::UserManager::UserSessionStateObserver
+#endif
+{
  public:
   ChromeMetricsServiceClient(const ChromeMetricsServiceClient&) = delete;
   ChromeMetricsServiceClient& operator=(const ChromeMetricsServiceClient&) =
@@ -147,6 +153,7 @@ class ChromeMetricsServiceClient
   base::CallbackListSubscription AddOnClonedInstallDetectedCallback(
       base::OnceClosure callback) override;
 #if BUILDFLAG(IS_CHROMEOS)
+  bool IsUkmDebugDataAllowed() const override;
   bool ShouldUploadMetricsForUserId(const uint64_t user_id) override;
   void InitPerUserMetrics() override;
   void UpdateCurrentUserMetricsChoice(bool user_choice) override;
@@ -182,6 +189,11 @@ class ChromeMetricsServiceClient
 
   // ui::UserActivityObserver:
   void OnUserActivity(const ui::Event* event) override;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // user_manager::UserManager::UserSessionStateObserver:
+  void ActiveUserChanged(user_manager::User* active_user) override;
+#endif
 
   // Determine what to do with a file based on filename. Visible for testing.
   using IsProcessRunningFunction = bool (*)(base::ProcessId);
@@ -346,6 +358,13 @@ class ChromeMetricsServiceClient
   // metrics choice.
   std::unique_ptr<metrics::CrOSPreChoiceMetricsManager>
       cros_pre_choice_metrics_manager_;
+
+  // Tracks the active user to detect user switches.
+  AccountId current_user_account_id_;
+
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::UserSessionStateObserver>
+      user_session_state_observation_{this};
 #endif
 
   base::ScopedMultiSourceObservation<content::RenderProcessHost,

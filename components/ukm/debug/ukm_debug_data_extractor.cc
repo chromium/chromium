@@ -109,6 +109,11 @@ base::Value UkmDebugDataExtractor::GetStructuredData(
   ukm_data.Set("is_sampling_enabled",
                static_cast<bool>(ukm_service->IsSamplingConfigured()));
 
+  if (!ukm_service->IsDebugDataAllowed()) {
+    ukm_data.Set("sources", base::ListValue());
+    return base::Value(std::move(ukm_data));
+  }
+
   std::map<SourceId, SourceData> source_data;
   for (const auto& kv : ukm_service->recordings_.sources) {
     source_data[kv.first].source = kv.second.get();

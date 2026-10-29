@@ -62,4 +62,10 @@ void MetricsLogsEventManager::NotifyLogType(
     observer.OnLogType(log_type);
 }
 
+void MetricsLogsEventManager::NotifyLogsCleared() {
+  for (Observer& observer : observers_) {
+    observer.OnLogsCleared();
+  }
+}
+
 }  // namespace metrics
