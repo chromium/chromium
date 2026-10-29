@@ -141,9 +141,11 @@ int BaseFileInputStream::CopyingBaseFileInputStream::Read(void* buffer,
   if (!file_.IsValid()) {
     return -1;
   }
-  const std::optional<size_t> bytes_read = file_.ReadAtCurrentPos(
-      UNSAFE_TODO(base::span(reinterpret_cast<uint8_t*>(buffer),
-                             base::checked_cast<size_t>(size))));
+  // SAFETY: This overrides a protobuf virtual, so it can't take a span. Its
+  // caller, protobuf's CopyingInputStreamAdaptor, passes `size` bytes.
+  auto data = UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(buffer),
+                                        base::checked_cast<size_t>(size)));
+  const std::optional<size_t> bytes_read = file_.ReadAtCurrentPos(data);
   if (bytes_read) {
     return base::checked_cast<int>(*bytes_read);
   }
@@ -306,10 +308,12 @@ bool BaseFileOutputStream::CopyingBaseFileOutputStream::Write(
   if (!file_.IsValid()) {
     return false;
   }
-  std::optional<size_t> bytes_written = file_.WriteAtCurrentPos(
-      UNSAFE_TODO(base::span(reinterpret_cast<const uint8_t*>(buffer),
-                             base::checked_cast<size_t>(size))));
-  if (bytes_written == base::checked_cast<size_t>(size)) {
+  // SAFETY: This overrides a protobuf virtual, so it can't take a span. Its
+  // caller, protobuf's CopyingOutputStreamAdaptor, passes `size` bytes.
+  auto data = UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(buffer),
+                                        base::checked_cast<size_t>(size)));
+  std::optional<size_t> bytes_written = file_.WriteAtCurrentPos(data);
+  if (bytes_written == data.size()) {
     return true;
   }
   file_ = base::File(base::File::GetLastFileError());
