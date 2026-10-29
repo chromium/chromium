@@ -67,7 +67,6 @@ source_set("impl") {
     sources += [ "sharing_hub_bubble_controller_desktop_impl.cc" ]
     deps += [
       "//chrome/app:command_ids",
-      "//chrome/app:generated_resources",
       "//chrome/browser/favicon",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/qrcode_generator",

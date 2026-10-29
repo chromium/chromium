@@ -14,7 +14,6 @@
 #include "chrome/browser/sharing_hub/sharing_hub_service.h"
 #include "chrome/browser/sharing_hub/sharing_hub_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -23,16 +22,12 @@
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_window_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/favicon/content/content_favicon_util.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
 #include "components/media_router/browser/media_router_metrics.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/site_instance.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_provider.h"
 #include "ui/native_theme/native_theme.h"
 
@@ -72,7 +67,7 @@ void SharingHubBubbleControllerDesktopImpl::ShowBubble(
 
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-          web_contents());
+          &GetWebContents());
 
   sharing_hub_bubble_view_ =
       sharing_hub::SharingHubWindowController::From(browser)
@@ -88,14 +83,6 @@ SharingHubBubbleControllerDesktopImpl::sharing_hub_bubble_view() const {
 
 bool SharingHubBubbleControllerDesktopImpl::ShouldOfferOmniboxIcon() {
   return SharingHubOmniboxEnabled(GetWebContents().GetBrowserContext());
-}
-
-std::u16string SharingHubBubbleControllerDesktopImpl::GetWindowTitle() const {
-  return l10n_util::GetStringUTF16(IDS_SHARING_HUB_TITLE);
-}
-
-Profile* SharingHubBubbleControllerDesktopImpl::GetProfile() const {
-  return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 }
 
 std::vector<SharingHubAction>
@@ -156,8 +143,8 @@ void SharingHubBubbleControllerDesktopImpl::OnBubbleClosed() {
 
 SharingHubModel* SharingHubBubbleControllerDesktopImpl::GetSharingHubModel() {
   if (!sharing_hub_model_) {
-    SharingHubService* const service =
-        SharingHubServiceFactory::GetForProfile(GetProfile());
+    SharingHubService* const service = SharingHubServiceFactory::GetForProfile(
+        Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
     if (!service) {
       return nullptr;
     }
@@ -193,8 +180,7 @@ ui::ImageModel SharingHubBubbleControllerDesktopImpl::GetPreviewImage() {
 
 SharingHubBubbleControllerDesktopImpl::SharingHubBubbleControllerDesktopImpl(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<SharingHubBubbleControllerDesktopImpl>(
+    : content::WebContentsUserData<SharingHubBubbleControllerDesktopImpl>(
           *web_contents) {}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SharingHubBubbleControllerDesktopImpl);
