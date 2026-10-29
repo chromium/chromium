@@ -1013,6 +1013,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ProfilePicker.FirstRun.FinishWithoutResumeTaskPickerOpen"
+    enum="Boolean" expires_after="2027-03-28">
+  <owner>rsult@google.com</owner>
+  <owner>ydago@chromium.org</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <summary>
+    Recorded on macOS when FinishFirstRunWithoutResumeTask is called. Records
+    true if the profile picker was open at the time, and false if it was not
+    open (e.g., during early termination before the window is displayed or after
+    the window has already begun closing).
+  </summary>
+</histogram>
+
 <histogram name="ProfilePicker.FirstRun.OrganizationAvailableTiming" units="ms"
     expires_after="2026-12-14">
   <owner>ernn@google.com</owner>

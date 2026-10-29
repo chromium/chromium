@@ -63,8 +63,11 @@ class FirstRunService : public KeyedService {
   // callback is aborted (called with false), and is replaced by `callback`.
   virtual void OpenFirstRunIfNeeded(ResumeTaskCallback callback);
 
-  // Terminates the first run without re-opening a browser window.
-  virtual void FinishFirstRunWithoutResumeTask();
+#if BUILDFLAG(IS_MAC)
+  // Terminates the first run without re-opening a browser window. Must be
+  // called on the UI thread.
+  void FinishFirstRunWithoutResumeTask();
+#endif
 
  private:
   friend class FirstRunServiceFactory;

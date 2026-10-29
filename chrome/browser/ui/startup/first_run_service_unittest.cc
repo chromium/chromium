@@ -4,13 +4,20 @@
 
 #include "chrome/browser/ui/startup/first_run_service.h"
 
+#include <memory>
+
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/startup/first_run_test_util.h"
 #include "chrome/common/pref_names.h"
@@ -19,6 +26,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -133,3 +141,49 @@ TEST_F(FirstRunServiceTest, ShouldPopulateProfileNameFromPrimaryAccount) {
   EXPECT_TRUE(profile_name_future.IsReady());
   EXPECT_EQ(u"Primary", profile_name_future.Get());
 }
+
+#if BUILDFLAG(IS_MAC)
+TEST_F(FirstRunServiceTest, FinishFirstRunWithoutResumeTaskWhenPickerNotOpen) {
+  signin::IdentityTestEnvironment identity_test_env;
+  TestingProfileManager testing_profile_manager{
+      TestingBrowserProcess::GetGlobal()};
+  ASSERT_TRUE(testing_profile_manager.SetUp());
+
+  // `ProfilePicker::ComputeFirstRunSkipReason()` checks
+  // `SyncServiceFactory::IsSyncAllowed()`. By default, a `TestingProfile` has
+  // no `SyncService`, causing `IsSyncAllowed()` to return false and prematurely
+  // skipping first run via `FirstRunFinishReason::kSkippedByPolicies`. Provide
+  // a `TestSyncService` so the first run flow is not skipped by policy.
+  Profile* profile = testing_profile_manager.CreateTestingProfile(
+      "Test Profile",
+      TestingProfile::TestingFactories{TestingProfile::TestingFactory{
+          SyncServiceFactory::GetInstance(),
+          base::BindRepeating(
+              [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+                return std::make_unique<syncer::TestSyncService>();
+              })}});
+
+  SetIsFirstRun(true);
+  TestingBrowserProcess::GetGlobal()->SetShuttingDown(true);
+  base::ScopedClosureRunner reset_shutting_down(base::BindOnce(
+      [] { TestingBrowserProcess::GetGlobal()->SetShuttingDown(false); }));
+
+  auto first_run_service =
+      FirstRunService(*profile, *identity_test_env.identity_manager());
+
+  base::test::TestFuture<bool> future;
+  first_run_service.OpenFirstRunIfNeeded(future.GetCallback());
+
+  EXPECT_FALSE(ProfilePicker::IsFirstRunOpen());
+
+  base::HistogramTester histogram_tester;
+  first_run_service.FinishFirstRunWithoutResumeTask();
+
+  EXPECT_FALSE(future.Get());
+  EXPECT_TRUE(TestingBrowserProcess::GetGlobal()->local_state()->GetBoolean(
+      prefs::kFirstRunFinished));
+  EXPECT_FALSE(first_run_service.ShouldOpenFirstRun());
+  histogram_tester.ExpectUniqueSample(
+      "ProfilePicker.FirstRun.FinishWithoutResumeTaskPickerOpen", false, 1);
+}
+#endif

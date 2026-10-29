@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,6 +31,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace {
 bool IsFirstRunEligibleProfile(Profile* profile) {
@@ -231,18 +233,28 @@ void FirstRunService::OpenFirstRunInternal() {
                                           weak_ptr_factory_.GetWeakPtr())));
 }
 
+#if BUILDFLAG(IS_MAC)
 void FirstRunService::FinishFirstRunWithoutResumeTask() {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!resume_task_callback_) {
     return;
   }
 
-  // TODO(crbug.com/577151131): CHECK-exclusion: Convert to a CHECK once we are
-  // confident it won't be triggered.
-  DCHECK(ProfilePicker::IsFirstRunOpen());
+  // On macOS, this can be called when quitting or creating a browser window
+  // while `resume_task_callback_` is still pending but the picker is not open
+  // (e.g., during early termination before the window is displayed or after
+  // the window has already begun closing). It is safe to proceed because
+  // `OnFirstRunHasExited()` cleanly completes the flow and
+  // `ProfilePicker::Hide()` is a no-op if the picker is not open.
+  base::UmaHistogramBoolean(
+      "ProfilePicker.FirstRun.FinishWithoutResumeTaskPickerOpen",
+      ProfilePicker::IsFirstRunOpen());
+
   OnFirstRunHasExited(ProfilePicker::FirstRunExitStatus::kAbandonedFlow,
                       ProfilePicker::FirstRunFinishReason::kFinishedFlow);
   ProfilePicker::Hide();
 }
+#endif
 
 // FirstRunServiceFactory ------------------------------------------------------
 
