@@ -14,6 +14,7 @@ import android.os.Build;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,10 +27,10 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -57,9 +58,9 @@ import java.util.List;
  * <p>These tests initialize the native part of the service.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-@DoNotBatch(reason = "Integration test suite that changes the list of accounts")
+@Batch(Batch.PER_CLASS)
 public class SigninManagerIntegrationTest {
-    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
+    @Rule public final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -82,6 +83,12 @@ public class SigninManagerIntegrationTest {
                     mSigninManager = IdentityServicesProvider.get().getSigninManager(profile);
                     mSigninManager.addSignInStateObserver(mSignInStateObserverMock);
                 });
+    }
+
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mSigninManager.removeSignInStateObserver(mSignInStateObserverMock));
     }
 
     @Test
