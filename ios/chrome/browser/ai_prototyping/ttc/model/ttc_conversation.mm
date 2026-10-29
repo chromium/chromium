@@ -555,11 +555,10 @@ void TtcConversation::LogToolCallReceived(const std::string& tool_name) {
   if (!journal_) {
     return;
   }
+  // Omits summary so this entry is hidden in simplified journal mode;
+  // `TtcActuationHandler` logs simplified tool execution status instead.
   journal_->Log(TTCJournalComponent::kConversation, "TtcToolCallReceived",
-                TTCJournalDetailsBuilder()
-                    .SetSummary(base::StrCat({"Tool: ", tool_name}))
-                    .Add("tool_name", tool_name)
-                    .Build());
+                TTCJournalDetailsBuilder().Add("tool_name", tool_name).Build());
 }
 
 void TtcConversation::LogToolDefinitionsSent(

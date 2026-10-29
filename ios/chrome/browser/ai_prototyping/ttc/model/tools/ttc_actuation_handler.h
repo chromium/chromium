@@ -7,19 +7,27 @@
 
 #import <Foundation/Foundation.h>
 
+#import <memory>
+#import <string_view>
+#import <vector>
+
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
 #import "components/ttc/app/public/tool_types.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 
 @class TtcTaskInterventionHandler;
-class TTCJournal;
 
 namespace actor {
 class ActorService;
 }  // namespace actor
+
+namespace optimization_guide::proto {
+class Action;
+}  // namespace optimization_guide::proto
 
 namespace web {
 class WebState;
@@ -74,6 +82,18 @@ class TtcActuationHandler {
   // Handles completion of `ActorService::PerformActions`.
   void OnPerformActionsFinished(actor::PerformActionsResult result);
 
+  // Logs an `ActuationDispatchRejected` error entry to `journal_` (using
+  // `reason` if non-empty, or `base::ToString(code)` otherwise) and invokes
+  // `callback` with `code`.
+  void FailWithError(ActuationCallback callback,
+                     actor::mojom::ActionResultCode code,
+                     std::string_view reason = {});
+
+  // Begins an `ActuationExecute` async journal entry for `actions`, or returns
+  // `nullptr` if `journal_` is null.
+  std::unique_ptr<TTCJournal::PendingAsyncEntry> BeginActuationAsyncEntry(
+      const std::vector<optimization_guide::proto::Action>& actions);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The `ActorService` instance used to create tasks and perform actions.
@@ -85,6 +105,9 @@ class TtcActuationHandler {
 
   // Active actuation callback awaiting completion, if any.
   ActuationCallback active_callback_;
+
+  // Active async journal entry for the in-flight actuation, if any.
+  std::unique_ptr<TTCJournal::PendingAsyncEntry> active_async_entry_;
 
   // Intervention delegate used for Actor tasks created by this handler.
   TtcTaskInterventionHandler* intervention_delegate_ = nil;

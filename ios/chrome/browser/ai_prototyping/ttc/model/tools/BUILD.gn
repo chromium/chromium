@@ -19,11 +19,11 @@ source_set("tools") {
     "//components/actor/public/mojom:mojo_bindings",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/sessions:session_id",
-    "//ios/chrome/browser/ai_prototyping/ttc/model:journal",
     "//ios/chrome/browser/intelligence/actor/model",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/tools/public",
     "//ios/chrome/browser/intelligence/actor/tools/utils:actor_browser_utils",
+    "//ios/chrome/browser/intelligence/actor/tools/utils:actor_tool_utils",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list:utils",
     "//ios/web/public",
@@ -31,6 +31,7 @@ source_set("tools") {
   ]
   public_deps = [
     "//components/ttc/app/public",
+    "//ios/chrome/browser/ai_prototyping/ttc/model:journal",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
   ]
   frameworks = [ "Foundation.framework" ]
