@@ -110,7 +110,7 @@ void WindowRestoreTracker::Init(
   on_presented_ = std::move(on_all_window_presented);
 }
 
-void WindowRestoreTracker::AddWindow(int window_id, const std::string& app_id) {
+void WindowRestoreTracker::AddWindow(int window_id, std::string_view app_id) {
   DCHECK(window_id);
   DCHECK(!app_id.empty());
   if (app_id == app_constants::kChromeAppId) {

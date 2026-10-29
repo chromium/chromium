@@ -108,7 +108,7 @@ constexpr AppHistogramSuffix kAppsHistogramSuffix[] = {
 constexpr int kMaxPeriodsWithoutActivity = base::Seconds(15) / kSamplePeriod;
 
 // Maps a Chrome app ID to a DemoModeApp value for metrics.
-DemoModeApp GetAppFromAppId(const std::string& app_id) {
+DemoModeApp GetAppFromAppId(std::string_view app_id) {
   // Each version of the Highlights app is bucketed into the same value.
   if (app_id == extension_misc::kHighlightsAppId ||
       app_id == extension_misc::kNewHighlightsAppId ||
@@ -211,7 +211,7 @@ const std::string GetAppHistogramSuffix(DemoModeApp app_type) {
 }
 
 // Maps an ARC++ package name to a DemoModeApp value for metrics.
-DemoModeApp GetAppFromPackageName(const std::string& package_name) {
+DemoModeApp GetAppFromPackageName(std::string_view package_name) {
   // Google apps.
   if (package_name == "com.google.Photos" ||
       package_name == "com.google.android.apps.photos") {
@@ -578,7 +578,7 @@ DemoSessionMetricsRecorder::~DemoSessionMetricsRecorder() {
   g_demo_session_metrics_recorder = nullptr;
 }
 
-void DemoSessionMetricsRecorder::RecordAppLaunch(const std::string& id,
+void DemoSessionMetricsRecorder::RecordAppLaunch(std::string_view id,
                                                  chromeos::AppType app_type) {
   if (!ShouldRecordAppLaunch(id)) {
     return;
@@ -591,7 +591,7 @@ void DemoSessionMetricsRecorder::RecordAppLaunch(const std::string& id,
   }
 
   if (!unique_apps_launched_.contains(id)) {
-    unique_apps_launched_.insert(id);
+    unique_apps_launched_.emplace(id);
     // Only log each app launch once.  This is determined by
     // checking the package_name instead of the DemoApp enum,
     // because the DemoApp enum collapses unknown apps into
@@ -603,7 +603,7 @@ void DemoSessionMetricsRecorder::RecordAppLaunch(const std::string& id,
 // Indicates whether the specified app_id should be recorded for
 // the unique-apps-launched stat.
 bool DemoSessionMetricsRecorder::ShouldRecordAppLaunch(
-    const std::string& app_id) {
+    std::string_view app_id) {
   return unique_apps_launched_recording_enabled_ &&
          GetAppFromAppId(app_id) != DemoModeApp::kHighlights &&
          GetAppFromAppId(app_id) != DemoModeApp::kScreensaver;
@@ -709,7 +709,7 @@ void DemoSessionMetricsRecorder::ReportShopperSessionDwellTime() {
 }
 
 void DemoSessionMetricsRecorder::OnAppCreation(
-    const std::string& app_id_or_package,
+    std::string_view app_id_or_package,
     const bool is_arc_app) {
   const DemoModeApp app = is_arc_app ? GetAppFromPackageName(app_id_or_package)
                                      : GetAppFromAppId(app_id_or_package);
@@ -720,7 +720,7 @@ void DemoSessionMetricsRecorder::OnAppCreation(
 }
 
 void DemoSessionMetricsRecorder::OnAppDestruction(
-    const std::string& app_id_or_package,
+    std::string_view app_id_or_package,
     const bool is_arc_app) {
   const DemoModeApp app = is_arc_app ? GetAppFromPackageName(app_id_or_package)
                                      : GetAppFromAppId(app_id_or_package);

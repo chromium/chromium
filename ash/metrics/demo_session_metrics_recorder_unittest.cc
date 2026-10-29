@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/metrics/user_metrics_recorder.h"
@@ -188,12 +189,12 @@ class DemoSessionMetricsRecorderTest : public AshTestBase {
     generator.GestureTapAt(gfx::Point(0, 0));
   }
 
-  void MockOnAppCreation(const std::string& app_id_or_package,
+  void MockOnAppCreation(std::string_view app_id_or_package,
                          const bool is_arc_app) {
     metrics_recorder_->OnAppCreation(app_id_or_package, is_arc_app);
   }
 
-  void MockOnAppDestruction(const std::string& app_id_or_package,
+  void MockOnAppDestruction(std::string_view app_id_or_package,
                             const bool is_arc_app) {
     metrics_recorder_->OnAppDestruction(app_id_or_package, is_arc_app);
   }

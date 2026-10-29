@@ -8,6 +8,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/metrics/post_login_event_observer.h"
@@ -51,7 +52,7 @@ class ASH_EXPORT WindowRestoreTracker {
             NotifyCallback on_all_window_shown,
             NotifyCallback on_all_window_presented);
 
-  void AddWindow(int window_id, const std::string& app_id);
+  void AddWindow(int window_id, std::string_view app_id);
   void OnCreated(int window_id);
   void OnShown(int window_id, ui::Compositor* compositor);
   void OnPresentedForTesting(int window_id);

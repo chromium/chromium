@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -201,9 +202,8 @@ class ASH_EXPORT DemoSessionMetricsRecorder
   // Called by DemoModeWindowCloser::OnInstanceUpdate:
   // Passing `app_id_or_package` instead of `aura::Window` here because app
   // information set in window property might now be ready on app creation.
-  void OnAppCreation(const std::string& app_id_or_package,
-                     const bool is_arc_app);
-  void OnAppDestruction(const std::string& app_id_or_package,
+  void OnAppCreation(std::string_view app_id_or_package, const bool is_arc_app);
+  void OnAppDestruction(std::string_view app_id_or_package,
                         const bool is_arc_app);
 
  private:
@@ -222,11 +222,11 @@ class ASH_EXPORT DemoSessionMetricsRecorder
 
   // Indicates whether the specified app_id should be recorded for
   // the unique-apps-launched stat.
-  bool ShouldRecordAppLaunch(const std::string& app_id);
+  bool ShouldRecordAppLaunch(std::string_view app_id);
 
   // Records the specified app's launch, subject to the
   // restrictions of ShouldRecordAppLaunch().
-  void RecordAppLaunch(const std::string& id, chromeos::AppType app_type);
+  void RecordAppLaunch(std::string_view id, chromeos::AppType app_type);
 
   // Emits various histograms for unique apps launched.
   void ReportUniqueAppsLaunched();

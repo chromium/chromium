@@ -56,7 +56,7 @@ std::string GetDeviceModeSuffix() {
                                                 : "ClamshellMode";
 }
 
-void ReportLoginThroughputEvent(const std::string& event_name,
+void ReportLoginThroughputEvent(std::string_view event_name,
                                 base::TimeTicks begin,
                                 base::TimeTicks end) {
   // NOTE: list all expected event names with string literals here because we
