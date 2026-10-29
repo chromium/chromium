@@ -294,10 +294,6 @@ void GlicShareImageHandler::OnInvokeError(GlicInvokeError error) {
     case GlicInvokeError::kClientLoadError:
       ShareComplete(ShareImageResult::kFailedUnknown);
       break;
-    case GlicInvokeError::kSignInRequired:
-      // The invocation timed out waiting for the user to sign in.
-      ShareComplete(ShareImageResult::kFailedTimedOut);
-      break;
     case GlicInvokeError::kInstanceDestroyedBlankInstanceClosed:
     case GlicInvokeError::kInstanceDestroyedUnbound:
     case GlicInvokeError::kInstanceDestroyedArchived:

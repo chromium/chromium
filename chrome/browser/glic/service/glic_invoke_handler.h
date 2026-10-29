@@ -113,9 +113,6 @@ class GlicInvokeHandler {
   // Deletes `this`. Exactly one of these methods will be called.
   void OnSuccess();
   void OnError(GlicInvokeError error);
-  // The timeout timer fired. Ends the invocation with kTimeout, or with
-  // kSignInRequired if it spent the time waiting for the user to sign in.
-  void OnTimeout();
 
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);

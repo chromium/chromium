@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_GLIC_HOST_HOST_H_
 
 #include <deque>
-#include <optional>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -358,18 +357,6 @@ class Host : public GlicSharingManagerProvider {
   // placeholder view.
   virtual bool IsShowingNativeLoading() const;
 
-  // Why the client is in `ClientLoadState::kError`, when the host said. Hosts
-  // report a cause (`ClientLoadErrorOccurred()`) only for failures the user
-  // can see, and always before the failure bit that puts the client into
-  // `kError`, so this is set by the time `client_load_state()` reads `kError`
-  // for a visible failure, and empty for one the user never saw (a hidden
-  // panel, or `WebClientInitializeFailed()`). Cleared whenever the failure is
-  // withdrawn or the client becomes ready, so it never describes an earlier
-  // load.
-  std::optional<ClientLoadErrorReason> client_load_error_reason() const {
-    return client_load_error_reason_;
-  }
-
   // Called by whatever is hosting the client (the glic WebUI, or
   // `GlicNoWebviewContentsManager`) when the client enters or leaves a state it
   // cannot recover from without being reloaded.
@@ -540,9 +527,6 @@ class Host : public GlicSharingManagerProvider {
   mojom::WebUiState primary_webui_state_ = mojom::WebUiState::kUninitialized;
   // The last value passed to `SetClientLoadFailed()`.
   bool client_load_failed_ = false;
-  // The cause reported for the current failure, if any; see
-  // `client_load_error_reason()`.
-  std::optional<ClientLoadErrorReason> client_load_error_reason_;
   // Derived from `client_load_failed_` and web client connectivity.
   ClientLoadState client_load_state_ = ClientLoadState::kLoading;
   std::optional<mojom::PanelState> pending_panel_state_;

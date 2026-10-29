@@ -746,7 +746,6 @@ chromium-metrics-reviews@google.com.
   <int value="24" label="Instance destroyed: signed out"/>
   <int value="25" label="Instance destroyed: shutdown"/>
   <int value="26" label="Panel closed before the client was ready"/>
-  <int value="27" label="User did not sign in before the invocation timed out"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/public/glic_invoke_options.h:GlicInvokeError) -->
