@@ -40,6 +40,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_restore_data.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_base.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -2864,6 +2865,16 @@ void ContextualTasksSidePanelCoordinator::OnSurfaceStateChanged(
 }
 
 void ContextualTasksSidePanelCoordinator::MoveTaskUiToNewTab() {
+  if (IsContextualTasksSidePanelRearchitectureEnabled()) {
+    if (!IsContextualTasksSidePanelRearchitectureExpandToFullTabEnabled()) {
+      return;
+    }
+    if (ContextualTasksUIBase* toolbar_ui =
+            ContextualTasksUIBase::FromWebContents(GetToolbarWebContents())) {
+      toolbar_ui->MoveTaskUiToNewTab();
+    }
+    return;
+  }
   content::WebContents* web_contents = GetActiveWebContents();
   if (!web_contents) {
     return;
@@ -2989,6 +3000,14 @@ bool ContextualTasksSidePanelCoordinator::CanExpandToFullTab() const {
   content::WebContents* web_contents = GetActiveWebContents();
   if (!web_contents) {
     return false;
+  }
+  if (IsContextualTasksSidePanelRearchitectureEnabled()) {
+    if (!IsContextualTasksSidePanelRearchitectureExpandToFullTabEnabled()) {
+      return false;
+    }
+    ContextualTasksUIBase* toolbar_ui =
+        ContextualTasksUIBase::FromWebContents(GetToolbarWebContents());
+    return toolbar_ui ? toolbar_ui->CanExpandToFullTab() : false;
   }
   auto* web_ui_interface = GetWebUiInterface(web_contents);
   return web_ui_interface ? web_ui_interface->CanExpandToFullTab() : false;

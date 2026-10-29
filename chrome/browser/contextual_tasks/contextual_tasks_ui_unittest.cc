@@ -5243,6 +5243,90 @@ TEST_F(ContextualTasksUiTest,
       true);
 }
 
+TEST_F(ContextualTasksUiTest,
+       MoveTaskUiToNewTab_PostRearchitecture_CallsUiService) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
+
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller;
+  controller.set_panel_controller(&mock_panel_controller);
+
+  std::unique_ptr<content::WebContents> active_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  GURL active_url("https://www.google.com/search?udm=50&q=hello");
+  content::WebContentsTester::For(active_web_contents.get())
+      ->SetLastCommittedURL(active_url);
+  EXPECT_CALL(mock_panel_controller, GetActiveWebContents())
+      .WillRepeatedly(Return(active_web_contents.get()));
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  EXPECT_CALL(mock_panel_controller, GetCurrentTask())
+      .WillRepeatedly(Return(ContextualTask(task_id)));
+
+  EXPECT_CALL(*service_for_nav_, MoveTaskUiToNewTab(task_id, _, active_url))
+      .Times(1);
+
+  controller.MoveTaskUiToNewTab();
+}
+
+TEST_F(ContextualTasksUiTest,
+       CanExpandToFullTab_PostRearchitecture_NotifiesPanelController) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {contextual_tasks::kContextualTasksSidePanelRearchitecture,
+       contextual_tasks::
+           kContextualTasksSidePanelRearchitectureExpandToFullTab},
+      {});
+
+  FakeContextualTasksEligibilityManager eligibility_manager;
+  eligibility_manager.SetIsEligible(true);
+  EXPECT_CALL(*service_for_nav_, GetEligibilityManager())
+      .WillRepeatedly(Return(&eligibility_manager));
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
+
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller;
+  controller.set_panel_controller(&mock_panel_controller);
+
+  EXPECT_FALSE(controller.CanExpandToFullTab());
+  EXPECT_CALL(mock_panel_controller, NotifyExpandToFullTabStateChanged())
+      .Times(1);
+  controller.SetIsAiPage(true);
+  EXPECT_TRUE(controller.CanExpandToFullTab());
+}
+
+TEST_F(ContextualTasksUiTest,
+       CanExpandToFullTab_PostRearchitecture_FalseWithoutExpandToFullTabFlag) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {contextual_tasks::kContextualTasks,
+       contextual_tasks::kContextualTasksSidePanelRearchitecture},
+      {contextual_tasks::
+           kContextualTasksSidePanelRearchitectureExpandToFullTab});
+
+  FakeContextualTasksEligibilityManager eligibility_manager;
+  eligibility_manager.SetIsEligible(true);
+  EXPECT_CALL(*service_for_nav_, GetEligibilityManager())
+      .WillRepeatedly(Return(&eligibility_manager));
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
+
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller;
+  controller.set_panel_controller(&mock_panel_controller);
+
+  controller.SetIsAiPage(true);
+  EXPECT_FALSE(controller.CanExpandToFullTab());
+  EXPECT_EQ(
+      ContextualTasksUIBase::GetContextualTasksLoadTimeData(profile_).FindBool(
+          "expandButtonEnabled"),
+      false);
+}
+
 TEST_F(ContextualTasksUiTest, TrackedElementsRegistered_PostRearchitecture) {
   content::TestWebUI web_ui;
   web_ui.set_web_contents(embedded_web_contents_.get());

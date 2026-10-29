@@ -20,6 +20,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/uuid.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
@@ -322,8 +323,10 @@ ContextualTasksUIBase::ContextualTasksUIBase(content::WebUI* web_ui)
         std::make_unique<CookieJarObserver>(*this, identity_manager);
   }
 
-#if !BUILDFLAG(IS_ANDROID)
   Profile* profile = GetProfile();
+  is_contextual_tasks_eligible_on_init_ =
+      contextual_tasks::EntryPointEligibilityManager::IsEligible(profile);
+#if !BUILDFLAG(IS_ANDROID)
   if (contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(
           profile)) {
     if (auto* model = PinnedToolbarActionsModel::Get(profile)) {
@@ -558,7 +561,13 @@ base::DictValue ContextualTasksUIBase::GetContextualTasksLoadTimeData(
   dict.Set("isSignedIn", cookie_account.has_value() &&
                              !cookie_account->signed_out &&
                              cookie_account->valid);
-  dict.Set("expandButtonEnabled", false);
+  dict.Set(
+      "expandButtonEnabled",
+      contextual_tasks::
+              IsContextualTasksSidePanelRearchitectureExpandToFullTabEnabled() &&
+          is_eligible &&
+          contextual_tasks::GetExpandButtonOption() ==
+              contextual_tasks::ExpandButtonOption::kSidePanelExpandButton);
   dict.Set("profileAvatarUrl", GetProfileAvatarUrl(profile, GURL()).spec());
 
   dict.Set("isSmallDeviceFormFactor",
@@ -600,6 +609,12 @@ void ContextualTasksUIBase::CreatePageHandler(
 #endif
   if (IsAiPage()) {
     NotifyAiPageStatusChanged(true);
+  }
+  if (contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled()) {
+    if (ContextualTasksPanelController* panel_controller =
+            GetPanelController()) {
+      panel_controller->NotifyExpandToFullTabStateChanged();
+    }
   }
   if (GetThreadTitle().has_value() && toolbar_page_) {
     toolbar_page_->SetThreadTitle(*GetThreadTitle());
@@ -696,7 +711,33 @@ void ContextualTasksUIBase::OpenFeedbackUi() {
 }
 
 void ContextualTasksUIBase::MoveTaskUiToNewTab() {
-  // Base implementation is a no-op; overridden by ContextualTasksUI.
+  ContextualTasksPanelController* panel_controller = GetPanelController();
+  if (!panel_controller) {
+    return;
+  }
+  content::WebContents* active_contents =
+      panel_controller->GetActiveWebContents();
+  if (!active_contents) {
+    return;
+  }
+  std::optional<base::Uuid> task_id;
+  if (std::optional<ContextualTask> current_task =
+          panel_controller->GetCurrentTask()) {
+    task_id = current_task->GetTaskId();
+  } else if (ContextualSearchWebContentsHelper* helper =
+                 ContextualSearchWebContentsHelper::FromWebContents(
+                     active_contents)) {
+    task_id = helper->task_id();
+  }
+  if (!task_id.has_value()) {
+    return;
+  }
+  ContextualTasksUiService* ui_service = GetUiService();
+  if (!ui_service) {
+    return;
+  }
+  ui_service->MoveTaskUiToNewTab(task_id.value(), GetBrowser(),
+                                 active_contents->GetLastCommittedURL());
 }
 
 void ContextualTasksUIBase::ShowThreadHistory() {
@@ -1051,6 +1092,27 @@ void ContextualTasksUIBase::NotifyPermissionDashboardStateChanged(
 void ContextualTasksUIBase::SetIsAiPage(bool is_ai_page) {
   is_ai_page_ = is_ai_page;
   NotifyAiPageStatusChanged(is_ai_page);
+  if (contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled()) {
+    if (ContextualTasksPanelController* panel_controller =
+            GetPanelController()) {
+      panel_controller->NotifyExpandToFullTabStateChanged();
+    }
+  }
+}
+
+bool ContextualTasksUIBase::CanExpandToFullTab() const {
+  return contextual_tasks::
+             IsContextualTasksSidePanelRearchitectureExpandToFullTabEnabled() &&
+         is_ai_page_ && is_contextual_tasks_eligible_on_init_;
+}
+
+void ContextualTasksUIBase::UpdateExpandButtonEnabled(bool enabled) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (contextual_tasks_toolbar::mojom::Page* toolbar_page =
+          GetToolbarPageRemote()) {
+    toolbar_page->SetExpandButtonEnabled(enabled);
+  }
+#endif
 }
 
 const std::optional<std::string>& ContextualTasksUIBase::GetThreadTitle() {
