@@ -13,6 +13,7 @@
 #include "base/base64.h"
 #include "base/callback_list.h"
 #include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
@@ -3046,7 +3047,9 @@ class ContextualSearchboxHandlerTestTabsTest
 
     owned_tabs_.push_back(std::move(tab_model));
     all_tabs_.push_back(tab_interface);
-    ON_CALL(*tab_list_, GetAllTabs()).WillByDefault(testing::Return(all_tabs_));
+    ON_CALL(*tab_list_, GetAllTabs())
+        .WillByDefault(testing::Return(
+            base::ToVector(all_tabs_, &raw_ptr<tabs::TabInterface>::get)));
     ON_CALL(*tab_list_, GetTabCount())
         .WillByDefault(testing::Return(static_cast<int>(all_tabs_.size())));
     ON_CALL(*tab_list_, GetIndexOfTab(tab_interface->GetHandle()))
@@ -3061,7 +3064,7 @@ class ContextualSearchboxHandlerTestTabsTest
  protected:
   base::TimeTicks last_active_time_ticks_;
   std::vector<std::unique_ptr<tabs::TabModel>> owned_tabs_;
-  std::vector<tabs::TabInterface*> all_tabs_;
+  std::vector<raw_ptr<tabs::TabInterface>> all_tabs_;
   std::unique_ptr<MockTabListInterface> tab_list_;
   std::unique_ptr<ui::ScopedUnownedUserData<TabListInterface>>
       tab_list_registration_;
@@ -4339,7 +4342,9 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   ON_CALL(*unloaded_mock_tab, GetTabHandle).WillByDefault(testing::Return(999));
 
   all_tabs_.push_back(unloaded_tab);
-  ON_CALL(*tab_list(), GetAllTabs()).WillByDefault(testing::Return(all_tabs_));
+  ON_CALL(*tab_list(), GetAllTabs())
+      .WillByDefault(testing::Return(
+          base::ToVector(all_tabs_, &raw_ptr<tabs::TabInterface>::get)));
 
   base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future;
   handler().GetRecentTabs(future.GetCallback());

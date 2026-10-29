@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/utils.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -118,7 +119,7 @@ class TestHandlerDelegate : public PreTargetHandler::Delegate {
   views::View* GetRootView() override { return root_view_; }
 
   std::vector<views::View*> GetTraversableViewsByUpDownKeys() override {
-    return traversable_views_;
+    return base::ToVector(traversable_views_, &raw_ptr<views::View>::get);
   }
 
   views::View* GetTraversableViewByIndex(int index) {
@@ -127,7 +128,7 @@ class TestHandlerDelegate : public PreTargetHandler::Delegate {
 
  private:
   const raw_ptr<views::View> root_view_;
-  std::vector<views::View*> traversable_views_;
+  std::vector<raw_ptr<views::View>> traversable_views_;
 };
 
 class PreTargetHandlerTest : public ChromeViewsTestBase,
