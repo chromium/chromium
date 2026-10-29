@@ -20,6 +20,7 @@ include_rules = [
   "+ios/chrome/browser/location_bar/badge/model",
   "+ios/chrome/browser/location_bar/badge/ui",
   "+ios/chrome/browser/optimization_guide/model",
+  "+ios/chrome/browser/private_insights/model",
   "+ios/chrome/browser/shared/model/browser",
   "+ios/chrome/browser/shared/model/profile",
   "+ios/chrome/browser/shared/model/web_state_list",
