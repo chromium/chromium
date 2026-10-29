@@ -14375,6 +14375,13 @@ const FeatureEntry kFeatureEntries[] = {
      STRING_VALUE_TYPE(autofill::switches::kAutofillCustomFormControlScriptsDir,
                        "")},
 
+    {"autofill-enable-offers-and-loyalty-cards-settings",
+     flag_descriptions::kAutofillEnableOffersAndLoyaltyCardsSettingsName,
+     flag_descriptions::kAutofillEnableOffersAndLoyaltyCardsSettingsDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableOffersAndLoyaltyCardsSettings)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

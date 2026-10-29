@@ -225,6 +225,12 @@ BASE_FEATURE(kAutofillEnableNewCardBenefitsToggleText,
 // components.
 BASE_FEATURE(kAutofillEnableOAuth2TokenFix, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, loyalty cards and Wallet direct offers are moved from the
+// Payments settings leaf into a new "Offers and loyalty cards" settings leaf,
+// with a separate toggle to control them.
+BASE_FEATURE(kAutofillEnableOffersAndLoyaltyCardsSettings,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, offers will be displayed in the Clank keyboard accessory during
 // downstream.
 BASE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory,

@@ -1164,6 +1164,14 @@ inline constexpr char kAutofillEnableOAuth2TokenFixDescription[] =
     "identity service on each request, instead of keeping local cache in "
     "Autofill components.";
 
+inline constexpr char kAutofillEnableOffersAndLoyaltyCardsSettingsName[] =
+    "Enable Offers and loyalty cards settings";
+inline constexpr char
+    kAutofillEnableOffersAndLoyaltyCardsSettingsDescription[] =
+        "When enabled, loyalty cards and Wallet direct offers are moved from "
+        "the Payments settings page into a new Offers and loyalty cards "
+        "settings page, with a separate toggle to control them.";
+
 inline constexpr char kAutofillEnableOffersInClankKeyboardAccessoryName[] =
     "Enable Autofill offers in keyboard accessory";
 inline constexpr char

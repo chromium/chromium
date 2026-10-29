@@ -8950,6 +8950,8 @@ from previous Chrome versions.
   <int value="-1816838390"
       label="AllowEapDefaultCasWithoutSubjectVerification:enabled"/>
   <int value="-1816654207" label="SharedZstd:disabled"/>
+  <int value="-1816557896"
+      label="AutofillEnableOffersAndLoyaltyCardsSettings:enabled"/>
   <int value="-1816215700" label="FocusModeYTM:disabled"/>
   <int value="-1816066138" label="CastAllowAllIPs:enabled"/>
   <int value="-1814879125"
@@ -21198,6 +21200,8 @@ from previous Chrome versions.
   <int value="1839869519"
       label="AutofillEnablePaymentSettingsCardPromoAndScanCard:enabled"/>
   <int value="1840087820" label="NtpRealboxMatchSearchboxTheme:enabled"/>
+  <int value="1840134337"
+      label="AutofillEnableOffersAndLoyaltyCardsSettings:disabled"/>
   <int value="1840756750"
       label="PriceTrackingSubscriptionServiceLocaleKey:enabled"/>
   <int value="1840892133" label="StylusWritingToInput:enabled"/>
