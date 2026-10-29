@@ -4,6 +4,7 @@
 
 #include "components/enterprise/connectors/core/connectors_manager_base.h"
 
+#include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/connectors/core/features.h"
@@ -23,32 +24,32 @@ ConnectorsManagerBase::ConnectorsManagerBase(
 
 ConnectorsManagerBase::~ConnectorsManagerBase() = default;
 
-bool ConnectorsManagerBase::CanGetAnalysisSettings(
+AnalysisServiceSettingsBase*
+ConnectorsManagerBase::GetFirstAnalysisServiceSettings(
     AnalysisConnector connector) {
   if (!IsAnalysisConnectorEnabled(connector)) {
-    return false;
+    return nullptr;
   }
 
-  if (analysis_connector_settings_.count(connector) == 0) {
-    CacheAnalysisConnectorPolicy(connector);
+  if (auto* settings =
+          base::FindOrNull(analysis_connector_settings_, connector);
+      settings && !settings->empty()) {
+    return (*settings)[0].get();
   }
 
-  // If the connector is still not in memory, it means the pref is set to an
-  // empty list or that it is not a list.
-  return analysis_connector_settings_.count(connector) != 0;
+  return nullptr;
 }
 
 std::optional<AnalysisSettings> ConnectorsManagerBase::GetAnalysisSettings(
     const GURL& url,
     AnalysisConnector connector) {
-  if (!CanGetAnalysisSettings(connector)) {
-    return std::nullopt;
+  if (auto* settings = GetFirstAnalysisServiceSettings(connector)) {
+    // While multiple services can be set by the connector policies, only the
+    // first one is considered for now.
+    return settings->GetAnalysisSettings(url, GetDataRegion(connector));
   }
 
-  // While multiple services can be set by the connector policies, only the
-  // first one is considered for now.
-  return analysis_connector_settings_[connector][0]->GetAnalysisSettings(
-      url, GetDataRegion(connector));
+  return std::nullopt;
 }
 
 #if !BUILDFLAG(IS_IOS)
@@ -57,7 +58,13 @@ ConnectorsManagerBase::GetNetworkRequestAnalysisSettings(
     const GURL& tab_url,
     const GURL& request_url) {
   if (!base::FeatureList::IsEnabled(kEnableAuditOnlyNetworkRequestConnector) ||
-      !CanGetAnalysisSettings(AnalysisConnector::NETWORK_REQUEST)) {
+      !IsAnalysisConnectorEnabled(AnalysisConnector::NETWORK_REQUEST)) {
+    return std::nullopt;
+  }
+
+  const auto* settings = base::FindOrNull(analysis_connector_settings_,
+                                          AnalysisConnector::NETWORK_REQUEST);
+  if (!settings) {
     return std::nullopt;
   }
 
@@ -66,8 +73,7 @@ ConnectorsManagerBase::GetNetworkRequestAnalysisSettings(
   // policy array. We skip entries that don't match this pattern as it likely
   // indicates a future version of the policy that supports blocking requests.
   std::optional<AnalysisSettings> final_settings;
-  for (const auto& entry :
-       analysis_connector_settings_[AnalysisConnector::NETWORK_REQUEST]) {
+  for (const auto& entry : *settings) {
     auto sub_settings = entry->GetNetworkRequestAnalysisSettings(
         tab_url, request_url,
         GetDataRegion(AnalysisConnector::NETWORK_REQUEST));
@@ -89,26 +95,17 @@ ConnectorsManagerBase::GetNetworkRequestAnalysisSettings(
 
 bool ConnectorsManagerBase::IsAnalysisConnectorEnabled(
     AnalysisConnector connector) const {
-  if (analysis_connector_settings_.count(connector) == 0 &&
+  if (!analysis_connector_settings_.contains(connector) &&
       prefs()->HasPrefPath(AnalysisConnectorPref(connector))) {
     CacheAnalysisConnectorPolicy(connector);
   }
 
-  return analysis_connector_settings_.count(connector);
+  return analysis_connector_settings_.contains(connector);
 }
 
 bool ConnectorsManagerBase::DelayUntilVerdict(AnalysisConnector connector) {
-  if (IsAnalysisConnectorEnabled(connector)) {
-    if (analysis_connector_settings_.count(connector) == 0) {
-      CacheAnalysisConnectorPolicy(connector);
-    }
-
-    if (analysis_connector_settings_.count(connector) &&
-        !analysis_connector_settings_.at(connector).empty()) {
-      return analysis_connector_settings_.at(connector)
-          .at(0)
-          ->ShouldBlockUntilVerdict();
-    }
+  if (auto* settings = GetFirstAnalysisServiceSettings(connector)) {
+    return settings->ShouldBlockUntilVerdict();
   }
   return false;
 }
@@ -116,16 +113,8 @@ bool ConnectorsManagerBase::DelayUntilVerdict(AnalysisConnector connector) {
 std::optional<std::u16string> ConnectorsManagerBase::GetCustomMessage(
     AnalysisConnector connector,
     const std::string& tag) {
-  if (IsAnalysisConnectorEnabled(connector)) {
-    if (analysis_connector_settings_.count(connector) == 0) {
-      CacheAnalysisConnectorPolicy(connector);
-    }
-
-    if (analysis_connector_settings_.count(connector) &&
-        !analysis_connector_settings_.at(connector).empty()) {
-      return analysis_connector_settings_.at(connector).at(0)->GetCustomMessage(
-          tag);
-    }
+  if (auto* settings = GetFirstAnalysisServiceSettings(connector)) {
+    return settings->GetCustomMessage(tag);
   }
   return std::nullopt;
 }
@@ -133,16 +122,8 @@ std::optional<std::u16string> ConnectorsManagerBase::GetCustomMessage(
 std::optional<GURL> ConnectorsManagerBase::GetLearnMoreUrl(
     AnalysisConnector connector,
     const std::string& tag) {
-  if (IsAnalysisConnectorEnabled(connector)) {
-    if (analysis_connector_settings_.count(connector) == 0) {
-      CacheAnalysisConnectorPolicy(connector);
-    }
-
-    if (analysis_connector_settings_.count(connector) &&
-        !analysis_connector_settings_.at(connector).empty()) {
-      return analysis_connector_settings_.at(connector).at(0)->GetLearnMoreUrl(
-          tag);
-    }
+  if (auto* settings = GetFirstAnalysisServiceSettings(connector)) {
+    return settings->GetLearnMoreUrl(tag);
   }
   return std::nullopt;
 }
@@ -150,58 +131,29 @@ std::optional<GURL> ConnectorsManagerBase::GetLearnMoreUrl(
 bool ConnectorsManagerBase::GetBypassJustificationRequired(
     AnalysisConnector connector,
     const std::string& tag) {
-  if (IsAnalysisConnectorEnabled(connector)) {
-    if (analysis_connector_settings_.count(connector) == 0) {
-      CacheAnalysisConnectorPolicy(connector);
-    }
-
-    if (analysis_connector_settings_.count(connector) &&
-        !analysis_connector_settings_.at(connector).empty()) {
-      return analysis_connector_settings_.at(connector)
-          .at(0)
-          ->GetBypassJustificationRequired(tag);
-    }
+  if (auto* settings = GetFirstAnalysisServiceSettings(connector)) {
+    return settings->GetBypassJustificationRequired(tag);
   }
   return false;
 }
 
 std::vector<std::string> ConnectorsManagerBase::GetAnalysisServiceProviderNames(
     AnalysisConnector connector) {
-  if (IsAnalysisConnectorEnabled(connector)) {
-    if (analysis_connector_settings_.count(connector) == 0) {
-      CacheAnalysisConnectorPolicy(connector);
-    }
-
-    if (analysis_connector_settings_.count(connector) &&
-        !analysis_connector_settings_.at(connector).empty()) {
-      // There can only be one provider right now, but the system is designed to
-      // support multiples, so return a vector.
-      return {analysis_connector_settings_.at(connector)
-                  .at(0)
-                  ->service_provider_name()};
-    }
+  if (auto* settings = GetFirstAnalysisServiceSettings(connector)) {
+    // There can only be one provider right now, but the system is designed to
+    // support multiples, so return a vector.
+    return {settings->service_provider_name()};
   }
-
   return {};
 }
 
 std::vector<const AnalysisConfig*>
 ConnectorsManagerBase::GetAnalysisServiceConfigs(AnalysisConnector connector) {
-  if (IsAnalysisConnectorEnabled(connector)) {
-    if (analysis_connector_settings_.count(connector) == 0) {
-      CacheAnalysisConnectorPolicy(connector);
-    }
-
-    if (analysis_connector_settings_.count(connector) &&
-        !analysis_connector_settings_.at(connector).empty()) {
-      // There can only be one provider right now, but the system is designed to
-      // support multiples, so return a vector.
-      return {analysis_connector_settings_.at(connector)
-                  .at(0)
-                  ->GetAnalysisConfig()};
-    }
+  if (auto* settings = GetFirstAnalysisServiceSettings(connector)) {
+    // There can only be one provider right now, but the system is designed to
+    // support multiples, so return a vector.
+    return {settings->GetAnalysisConfig()};
   }
-
   return {};
 }
 

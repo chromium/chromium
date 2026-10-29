@@ -150,11 +150,10 @@ class ConnectorsManagerBase {
   // Re-cache reporting connector policy.
   void OnReportingPrefChanged();
 
-  // Returns false if `connector` shouldn't be obtained either because it's
-  // unset, set to a bad value or accessed from an incognito profile. This
-  // helper should only be used by `GetAnalysisSettings()` and
-  // `GetNetworkRequestAnalysisSettings()`.
-  bool CanGetAnalysisSettings(AnalysisConnector connector);
+  // Returns the first analysis service settings for `connector` if it is
+  // enabled and has non-empty settings, or nullptr otherwise.
+  AnalysisServiceSettingsBase* GetFirstAnalysisServiceSettings(
+      AnalysisConnector connector);
 };
 
 }  // namespace enterprise_connectors

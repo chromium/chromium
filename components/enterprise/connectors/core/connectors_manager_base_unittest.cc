@@ -23,6 +23,16 @@ constexpr char kNormalReportingSettingsPref[] = R"([
   }
 ])";
 
+constexpr char kNormalFileDownloadedSettingsPref[] = R"([
+  {
+    "service_provider": "google",
+    "enable": [
+      {"url_list": ["*"], "tags": ["dlp"]}
+    ],
+    "block_until_verdict": 1
+  }
+])";
+
 #if !BUILDFLAG(IS_IOS)
 constexpr char kNormalNetworkRequestSettingsPref[] = R"([
   {
@@ -129,6 +139,48 @@ class ConnectorsManagerBaseTest : public testing::Test {
  private:
   TestingPrefServiceSimple prefs_;
 };
+
+TEST_F(ConnectorsManagerBaseTest, AnalysisConnectorDisabledReturnsDefaults) {
+  TestConnectorsManagerBase manager(pref_service(), GetServiceProviderConfig());
+
+  EXPECT_FALSE(manager.DelayUntilVerdict(AnalysisConnector::FILE_DOWNLOADED));
+  EXPECT_EQ(std::nullopt, manager.GetCustomMessage(
+                              AnalysisConnector::FILE_DOWNLOADED, "dlp"));
+  EXPECT_EQ(std::nullopt,
+            manager.GetLearnMoreUrl(AnalysisConnector::FILE_DOWNLOADED, "dlp"));
+  EXPECT_FALSE(manager.GetBypassJustificationRequired(
+      AnalysisConnector::FILE_DOWNLOADED, "dlp"));
+  EXPECT_TRUE(
+      manager
+          .GetAnalysisServiceProviderNames(AnalysisConnector::FILE_DOWNLOADED)
+          .empty());
+  EXPECT_TRUE(
+      manager.GetAnalysisServiceConfigs(AnalysisConnector::FILE_DOWNLOADED)
+          .empty());
+  EXPECT_FALSE(manager
+                   .GetAnalysisSettings(GURL("https://foo.com"),
+                                        AnalysisConnector::FILE_DOWNLOADED)
+                   .has_value());
+}
+
+TEST_F(ConnectorsManagerBaseTest, AnalysisConnectorEnabled) {
+  TestConnectorsManagerBase manager(pref_service(), GetServiceProviderConfig());
+
+  ScopedConnectorPref scoped_pref(pref_service(), kOnFileDownloadedPref,
+                                  kNormalFileDownloadedSettingsPref);
+
+  EXPECT_TRUE(manager.DelayUntilVerdict(AnalysisConnector::FILE_DOWNLOADED));
+  EXPECT_EQ(std::vector<std::string>{"google"},
+            manager.GetAnalysisServiceProviderNames(
+                AnalysisConnector::FILE_DOWNLOADED));
+  EXPECT_FALSE(
+      manager.GetAnalysisServiceConfigs(AnalysisConnector::FILE_DOWNLOADED)
+          .empty());
+  EXPECT_TRUE(manager
+                  .GetAnalysisSettings(GURL("https://foo.com"),
+                                       AnalysisConnector::FILE_DOWNLOADED)
+                  .has_value());
+}
 
 class ConnectorsManagerBaseReportingTest : public ConnectorsManagerBaseTest {
  public:
