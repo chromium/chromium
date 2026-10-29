@@ -1631,6 +1631,14 @@ ScriptPromise<IDLUndefined> HTMLElement::showUnboundedElement(
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
 
+  if (IsUnboundedElementActive() ||
+      (GetUnboundedEventData() && GetUnboundedEventData()->isTransitioning())) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "The element is already an active unbounded element."));
+    return promise;
+  }
+
   if (!FastHasAttribute(html_names::kUnboundedAttr)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
@@ -1714,6 +1722,18 @@ ScriptPromise<IDLUndefined> HTMLElement::showUnboundedElement(
   }
 #endif
 
+  // Dismiss any currently active unbounded element on the widget before
+  // activating this element, so that multiple elements are never active at
+  // once and any third elements opened inside closing beforetoggle listeners
+  // are cleanly dismissed.
+  while (HTMLElement* active = widget->GetActiveUnboundedElement()) {
+    if (active == this) {
+      break;
+    }
+    widget->DismissUnboundedSurfaceState(
+        WebFrameWidgetImpl::UnboundedDismissReason::kProgrammatic);
+  }
+
   SetUnboundedElementActive(true, UnboundedEvents::kFireNonCancelable);
 
   mojo::PendingAssociatedRemote<mojom::blink::UnboundedSurfaceHost> host_remote;
@@ -1737,7 +1757,8 @@ ScriptPromise<IDLUndefined> HTMLElement::hideUnboundedElement(
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
 
-  if (!IsUnboundedElementActive()) {
+  if (!IsUnboundedElementActive() ||
+      (GetUnboundedEventData() && GetUnboundedEventData()->isTransitioning())) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "The element is not an active unbounded element."));
@@ -1775,6 +1796,32 @@ bool HTMLElement::SetUnboundedElementActive(bool active,
   }
 
   if (fire_events != UnboundedEvents::kSuppress) {
+    class ScopedTransitioning {
+      STACK_ALLOCATED();
+
+     public:
+      explicit ScopedTransitioning(UnboundedEventData& data)
+          : data_(data), was_transitioning_(data.isTransitioning()) {
+        data_.setIsTransitioning(true);
+      }
+      ~ScopedTransitioning() {
+        if (!was_transitioning_) {
+          DCHECK(data_.isTransitioning());
+          data_.setIsTransitioning(false);
+        }
+      }
+
+      bool WasTransitioning() const { return was_transitioning_; }
+
+     private:
+      UnboundedEventData& data_;
+      bool was_transitioning_;
+    };
+    ScopedTransitioning scoped_transitioning(EnsureUnboundedEventData());
+    if (scoped_transitioning.WasTransitioning()) {
+      return true;
+    }
+
     String old_state = active ? keywords::kClosed : keywords::kOpen;
     String new_state = active ? keywords::kOpen : keywords::kClosed;
     Event::Cancelable cancelable =

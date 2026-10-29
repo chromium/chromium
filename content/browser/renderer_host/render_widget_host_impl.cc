@@ -943,6 +943,12 @@ void RenderWidgetHostImpl::WasHidden() {
   // Tell the RenderProcessHost we were hidden.
   GetProcess()->UpdateClientPriority(this);
 
+  if (view_) {
+    // Synchronously tear down the floating window since a hidden widget will
+    // not present a post-dismissal frame.
+    view_->DestroyUnboundedSurfaceForThisView();
+  }
+
   NotifyVizOfPageVisibilityUpdates();
 
   for (auto& observer : observers_) {

@@ -2905,18 +2905,55 @@ void WebFrameWidgetImpl::DismissUnboundedSurfaceState(
   }
   auto state = unbounded_surface_state_;
 
-  if (state->active_element_) {
+  auto cleanup_displaced_state_resources = [](UnboundedSurfaceState* state,
+                                              UnboundedDismissReason reason) {
+    if (!state) {
+      return;
+    }
+    if (auto* resolver = state->unbounded_element_resolver_.Get()) {
+      auto reject_promise = [](ScriptPromiseResolver<IDLUndefined>* resolver) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kAbortError,
+            "The unbounded element was dismissed."));
+      };
+      if (reason != UnboundedDismissReason::kTeardown) {
+        reject_promise(resolver);
+      } else if (auto* context = resolver->GetExecutionContext()) {
+        context->GetTaskRunner(TaskType::kInternalDefault)
+            ->PostTask(FROM_HERE,
+                       BindOnce(reject_promise, WrapPersistent(resolver)));
+      }
+      state->unbounded_element_resolver_ = nullptr;
+    }
+    state->host_.reset();
+    state->client_receiver_.reset();
+  };
+
+  if (HTMLElement* active_element = state->active_element_.Release()) {
     UnboundedEvents events =
         (reason == UnboundedDismissReason::kTeardown)
             ? UnboundedEvents::kSuppress
             : ((reason == UnboundedDismissReason::kInteractive)
                    ? UnboundedEvents::kFireCancelable
                    : UnboundedEvents::kFireNonCancelable);
-    if (!state->active_element_->SetUnboundedElementActive(false, events)) {
-      // beforetoggle was canceled - notify host and do not dismiss.
+    if (!active_element->SetUnboundedElementActive(false, events)) {
+      if (unbounded_surface_state_ != state) {
+        // Another element became active during beforetoggle; finish
+        // deactivating this element without firing events.
+        active_element->SetUnboundedElementActive(false,
+                                                  UnboundedEvents::kSuppress);
+        cleanup_displaced_state_resources(state.Get(), reason);
+        return;
+      }
+      // beforetoggle was canceled - restore active_element_ and notify host.
+      state->active_element_ = active_element;
       if (state->host_.is_bound()) {
         state->host_->DidCancelDismissal();
       }
+      return;
+    }
+    if (unbounded_surface_state_ != state) {
+      cleanup_displaced_state_resources(state.Get(), reason);
       return;
     }
   }
@@ -2939,17 +2976,14 @@ void WebFrameWidgetImpl::DismissUnboundedSurfaceState(
     state->unbounded_element_resolver_ = nullptr;
   }
 
-  if (auto* host = LayerTreeHost()) {
+  auto* host = LayerTreeHost();
+  if (host) {
     host->DismissUnboundedFrameSink();
   }
 
-  if (reason == UnboundedDismissReason::kTeardown) {
-    state->host_.reset();
-    state->client_receiver_.reset();
-  } else {
-    if (auto* host = LayerTreeHost()) {
-      host->SetNeedsCommitWithForcedRedraw();
-    }
+  if (reason != UnboundedDismissReason::kTeardown && host &&
+      host->IsVisible()) {
+    host->SetNeedsCommitWithForcedRedraw();
     if (state->host_.is_bound()) {
       NotifyPresentationTime(BindOnce(
           [](mojo::PendingAssociatedRemote<mojom::blink::UnboundedSurfaceHost>
@@ -2963,8 +2997,10 @@ void WebFrameWidgetImpl::DismissUnboundedSurfaceState(
           },
           state->host_.Unbind()));
     }
-    state->client_receiver_.reset();
+  } else {
+    state->host_.reset();
   }
+  state->client_receiver_.reset();
 }
 
 void WebFrameWidgetImpl::UnboundedContextDestroyed() {
@@ -2990,7 +3026,7 @@ void WebFrameWidgetImpl::RegisterActiveUnboundedElement(
   // active at a time. This must not be cancelable: the new element replaces
   // the previous one regardless, so letting the page cancel would leave the
   // previous element active without a surface.
-  if (unbounded_surface_state_) {
+  while (unbounded_surface_state_) {
     DismissUnboundedSurfaceState(UnboundedDismissReason::kProgrammatic);
   }
   auto* execution_context = element->GetDocument().GetFrame()
@@ -3004,6 +3040,9 @@ void WebFrameWidgetImpl::RegisterActiveUnboundedElement(
     state->client_receiver_.Bind(
         std::move(client_receiver),
         execution_context->GetTaskRunner(TaskType::kInternalDefault));
+    state->client_receiver_.set_disconnect_handler(
+        BindOnce(&UnboundedSurfaceState::OnClientDisconnected,
+                 WrapWeakPersistent(state)));
     state->host_.reset();
     state->host_.Bind(std::move(host_remote), execution_context->GetTaskRunner(
                                                   TaskType::kInternalDefault));
@@ -5736,6 +5775,11 @@ void WebFrameWidgetImpl::WasHidden() {
   if (animation_frame_timing_monitor_) {
     animation_frame_timing_monitor_->Shutdown();
     animation_frame_timing_monitor_.Clear();
+  }
+
+  if (RuntimeEnabledFeatures::UnboundedElementEnabled() &&
+      unbounded_surface_state_) {
+    DismissUnboundedSurfaceState(UnboundedDismissReason::kProgrammatic);
   }
 }
 

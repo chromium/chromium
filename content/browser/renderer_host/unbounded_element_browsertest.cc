@@ -180,6 +180,20 @@ class UnboundedElementBrowserTestBase : public ContentBrowserTest {
     return web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
   }
 
+  void HideWebContents() {
+    web_contents()->WasHidden();
+#if defined(USE_AURA)
+    // In production Chrome (BrowserView/TabStripModel/NativeViewHost), hiding a
+    // tab detaches or hides the WebContents native view (aura::Window::Hide()).
+    // In content_shell, the WebContents native view is directly attached to
+    // the shell WindowTreeHost. On Aura (e.g. Windows), also hide the native
+    // view so the OS message pump in EvalJs() does not re-show the view.
+    if (web_contents()->GetNativeView()) {
+      web_contents()->GetNativeView()->Hide();
+    }
+#endif
+  }
+
   void WaitForFrameReady() {
     ASSERT_NE(GetActiveWindow(), nullptr);
     WaitForHitTestData(primary_main_frame_host());
@@ -1834,6 +1848,285 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, CloseOnWindowFocusLost) {
   WaitForDestruction(std::move(tracker));
 }
 
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, CloseOnTabHidden) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  std::string script = R"(
+    document.body.innerHTML = `
+      <div id="target" unbounded></div>
+    `;
+    document.getElementById('target').showUnboundedElement();
+  )";
+  ASSERT_TRUE(ExecJs(primary_main_frame_host(), script));
+  WaitForFrameReady();
+
+  UnboundedSurfaceWindow* window = GetActiveWindow();
+  ASSERT_TRUE(window);
+  EXPECT_TRUE(window->IsValid());
+  base::WeakPtr<UnboundedSurfaceWindow> weak_window = window->GetWeakPtr();
+
+  // Simulate switching tabs: Blur() initiates dismissal and WasHidden() hides
+  // the outgoing WebContents before a post-dismissal frame can be presented.
+  primary_main_frame_host()->GetRenderWidgetHost()->Blur();
+  HideWebContents();
+
+  // The native window must be destroyed synchronously on WasHidden() rather
+  // than waiting for the 10-second fallback timer.
+  EXPECT_FALSE(weak_window);
+  EXPECT_EQ(nullptr, primary_main_frame_host()->GetUnboundedSurfaceWindow());
+
+  std::string get_style =
+      "getComputedStyle(document.getElementById('target')).visibility";
+  EXPECT_EQ("hidden", EvalJs(primary_main_frame_host(), get_style));
+
+  // Requesting an unbounded surface while the tab is hidden must be rejected
+  // without allocating a native window.
+  EXPECT_EQ("AbortError", EvalJs(primary_main_frame_host(), R"(
+    document.getElementById('target').showUnboundedElement().then(
+        () => 'resolved', e => e.name);
+  )"));
+  EXPECT_EQ(nullptr, primary_main_frame_host()->GetUnboundedSurfaceWindow());
+}
+
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
+                       CloseOnTabHiddenCannotBeCanceledByBeforeToggle) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  std::string script = R"(
+    document.body.innerHTML = `
+      <div id="target" unbounded></div>
+    `;
+    const target = document.getElementById('target');
+    target.addEventListener('beforetoggle', e => {
+      if (e.cancelable && e.newState === 'closed') {
+        e.preventDefault();
+      }
+    });
+    target.showUnboundedElement();
+  )";
+  ASSERT_TRUE(ExecJs(primary_main_frame_host(), script));
+  WaitForFrameReady();
+
+  UnboundedSurfaceWindow* window = GetActiveWindow();
+  ASSERT_TRUE(window);
+  base::WeakPtr<UnboundedSurfaceWindow> weak_window = window->GetWeakPtr();
+
+  // Even when a beforetoggle listener cancels interactive dismissal from
+  // Blur(), hiding the tab must unconditionally dismiss the unbounded element
+  // and destroy the native surface window.
+  primary_main_frame_host()->GetRenderWidgetHost()->Blur();
+  HideWebContents();
+
+  EXPECT_FALSE(weak_window);
+  EXPECT_EQ(nullptr, primary_main_frame_host()->GetUnboundedSurfaceWindow());
+
+  std::string get_style =
+      "getComputedStyle(document.getElementById('target')).visibility";
+  EXPECT_EQ("hidden", EvalJs(primary_main_frame_host(), get_style));
+  EXPECT_EQ(false,
+            EvalJs(primary_main_frame_host(),
+                   "document.getElementById('target').matches(':unbounded')"));
+}
+
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
+                       CloseOnCrossSiteIframeTabHidden) {
+  GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL iframe_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  std::string setup_script = base::StringPrintf(R"(
+    const iframe = document.createElement('iframe');
+    iframe.id = 'subframe';
+    iframe.allow = 'unbounded-element';
+    iframe.src = '%s';
+    iframe.style.cssText = 'width:200px; height:200px; border:none;';
+    document.body.appendChild(iframe);
+  )",
+                                                iframe_url.spec().c_str());
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), setup_script));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  RenderFrameHost* iframe = ChildFrameAt(primary_main_frame_host(), 0);
+  ASSERT_TRUE(iframe);
+  ASSERT_TRUE(iframe->IsCrossProcessSubframe());
+  WaitForHitTestData(iframe);
+
+  std::string iframe_script = R"(
+    document.body.innerHTML = `<div id="target" unbounded></div>`;
+    const target = document.getElementById('target');
+    target.addEventListener('beforetoggle', e => {
+      if (e.cancelable && e.newState === 'closed') {
+        e.preventDefault();
+      }
+    });
+    target.showUnboundedElement();
+  )";
+  EXPECT_TRUE(ExecJs(iframe, iframe_script));
+  WaitForFrameReady();
+  MainThreadFrameObserver iframe_frame_observer(iframe->GetRenderWidgetHost());
+  iframe_frame_observer.Wait();
+
+  UnboundedSurfaceWindow* window = GetActiveWindow();
+  ASSERT_TRUE(window);
+  base::WeakPtr<UnboundedSurfaceWindow> weak_window = window->GetWeakPtr();
+
+  HideWebContents();
+
+  EXPECT_FALSE(weak_window);
+  EXPECT_EQ(nullptr, primary_main_frame_host()->GetUnboundedSurfaceWindow());
+
+  std::string get_style =
+      "getComputedStyle(document.getElementById('target')).visibility";
+  EXPECT_EQ("hidden", EvalJs(iframe, get_style));
+  EXPECT_EQ(false, EvalJs(iframe,
+                          "document.getElementById('target')"
+                          ".matches(':unbounded')"));
+}
+
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
+                       CloseOnCrossSiteIframeHiddenDirectly) {
+  GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL iframe_b_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL iframe_c_url(embedded_test_server()->GetURL("c.com", "/title1.html"));
+  std::string setup_script = base::StringPrintf(R"(
+    const iframeB = document.createElement('iframe');
+    iframeB.id = 'owner_subframe';
+    iframeB.allow = 'unbounded-element';
+    iframeB.src = '%s';
+    iframeB.style.cssText = 'width:200px; height:200px; border:none;';
+    document.body.appendChild(iframeB);
+
+    const iframeC = document.createElement('iframe');
+    iframeC.id = 'other_subframe';
+    iframeC.src = '%s';
+    iframeC.style.cssText = 'width:200px; height:200px; border:none;';
+    document.body.appendChild(iframeC);
+  )",
+                                                iframe_b_url.spec().c_str(),
+                                                iframe_c_url.spec().c_str());
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), setup_script));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  RenderFrameHost* iframe_b = ChildFrameAt(primary_main_frame_host(), 0);
+  RenderFrameHost* iframe_c = ChildFrameAt(primary_main_frame_host(), 1);
+  ASSERT_TRUE(iframe_b);
+  ASSERT_TRUE(iframe_c);
+  ASSERT_TRUE(iframe_b->IsCrossProcessSubframe());
+  ASSERT_TRUE(iframe_c->IsCrossProcessSubframe());
+  WaitForHitTestData(iframe_b);
+
+  std::string iframe_script = R"(
+    document.body.innerHTML = `<div id="target" unbounded></div>`;
+    document.getElementById('target').showUnboundedElement();
+  )";
+  EXPECT_TRUE(ExecJs(iframe_b, iframe_script));
+  WaitForFrameReady();
+  MainThreadFrameObserver iframe_frame_observer(
+      iframe_b->GetRenderWidgetHost());
+  iframe_frame_observer.Wait();
+
+  UnboundedSurfaceWindow* window = GetActiveWindow();
+  ASSERT_TRUE(window);
+  base::WeakPtr<UnboundedSurfaceWindow> weak_window = window->GetWeakPtr();
+
+  // Hiding a non-owning cross-site iframe must not destroy the active surface.
+  static_cast<RenderWidgetHostViewBase*>(
+      iframe_c->GetRenderWidgetHost()->GetView())
+      ->Hide();
+  EXPECT_TRUE(weak_window);
+
+  // Hiding the owning cross-site iframe directly while the root view remains
+  // visible must destroy the surface.
+  static_cast<RenderWidgetHostViewBase*>(
+      iframe_b->GetRenderWidgetHost()->GetView())
+      ->Hide();
+  EXPECT_FALSE(weak_window);
+  EXPECT_EQ(nullptr, primary_main_frame_host()->GetUnboundedSurfaceWindow());
+
+  std::string get_style =
+      "getComputedStyle(document.getElementById('target')).visibility";
+  EXPECT_EQ("hidden", EvalJs(iframe_b, get_style));
+
+  // Requesting an unbounded surface from a hidden cross-site iframe while the
+  // tab remains visible must be rejected without allocating a native window.
+  EXPECT_EQ("AbortError", EvalJs(iframe_b, R"(
+    document.getElementById('target').showUnboundedElement().then(
+        () => 'resolved', e => e.name);
+  )"));
+  EXPECT_EQ(nullptr, primary_main_frame_host()->GetUnboundedSurfaceWindow());
+}
+
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
+                       CrossSiteIframeDeletionDestroysOwnedUnboundedSurface) {
+  GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL iframe_b_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL iframe_c_url(embedded_test_server()->GetURL("c.com", "/title1.html"));
+  std::string setup_script = base::StringPrintf(R"(
+    const iframeB = document.createElement('iframe');
+    iframeB.id = 'owner_subframe';
+    iframeB.allow = 'unbounded-element';
+    iframeB.src = '%s';
+    iframeB.style.cssText = 'width:200px; height:200px; border:none;';
+    document.body.appendChild(iframeB);
+
+    const iframeC = document.createElement('iframe');
+    iframeC.id = 'other_subframe';
+    iframeC.src = '%s';
+    iframeC.style.cssText = 'width:200px; height:200px; border:none;';
+    document.body.appendChild(iframeC);
+  )",
+                                                iframe_b_url.spec().c_str(),
+                                                iframe_c_url.spec().c_str());
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), setup_script));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  RenderFrameHost* iframe_b = ChildFrameAt(primary_main_frame_host(), 0);
+  RenderFrameHost* iframe_c = ChildFrameAt(primary_main_frame_host(), 1);
+  ASSERT_TRUE(iframe_b);
+  ASSERT_TRUE(iframe_c);
+  ASSERT_TRUE(iframe_b->IsCrossProcessSubframe());
+  ASSERT_TRUE(iframe_c->IsCrossProcessSubframe());
+  WaitForHitTestData(iframe_b);
+
+  std::string iframe_script = R"(
+    document.body.innerHTML = `<div id="target" unbounded></div>`;
+    document.getElementById('target').showUnboundedElement();
+  )";
+  EXPECT_TRUE(ExecJs(iframe_b, iframe_script));
+  WaitForFrameReady();
+  MainThreadFrameObserver iframe_frame_observer(
+      iframe_b->GetRenderWidgetHost());
+  iframe_frame_observer.Wait();
+
+  UnboundedSurfaceWindow* window = GetActiveWindow();
+  ASSERT_TRUE(window);
+  base::WeakPtr<UnboundedSurfaceWindow> weak_window = window->GetWeakPtr();
+
+  // Removing a non-owning cross-site iframe must not destroy the active
+  // surface.
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(),
+                     "document.getElementById('other_subframe').remove();"));
+  RunUntilInputProcessed(primary_main_frame_host()->GetRenderWidgetHost());
+  EXPECT_TRUE(weak_window);
+
+  // Destroying the owning cross-site iframe's RenderWidgetHostViewChildFrame
+  // directly while its RenderFrameHostImpl and UnboundedSurfaceHostImpl are
+  // still alive must synchronously destroy the surface before
+  // CleanUpHostObservers() clears frame_connector_.
+  ASSERT_TRUE(UnboundedSurfaceHostImpl::GetForCurrentDocument(iframe_b));
+  static_cast<RenderWidgetHostViewBase*>(
+      iframe_b->GetRenderWidgetHost()->GetView())
+      ->DestroyOrDefer();
+  EXPECT_FALSE(weak_window);
+  EXPECT_EQ(nullptr, primary_main_frame_host()->GetUnboundedSurfaceWindow());
+}
+
 IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
                        MultipleUnboundedElementsDismissesFirst) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
@@ -1841,12 +2134,16 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
 
   std::string script = R"JS(
     document.body.innerHTML = `
-      <meta name="viewport" content="width=device-width, initial-scale=1">
       <div id="first" unbounded></div>
       <div id="second" unbounded></div>
     `;
     const first = document.getElementById('first');
     const second = document.getElementById('second');
+    first.addEventListener('beforetoggle', e => {
+      if (e.newState === 'closed') {
+        e.preventDefault();
+      }
+    });
     let results = [];
     first.showUnboundedElement()
       .then(() => {
@@ -1862,6 +2159,200 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
   )JS";
 
   EXPECT_EQ("visible,hidden,hidden,visible",
+            EvalJs(primary_main_frame_host(), script).ExtractString());
+}
+
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
+                       ShowSecondElementInsideBeforeToggleOnClose) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  std::string script = R"JS(
+    document.body.innerHTML = `
+      <div id="first" unbounded></div>
+      <div id="second" unbounded></div>
+    `;
+    const first = document.getElementById('first');
+    const second = document.getElementById('second');
+    let beforetoggle_count = 0;
+    let second_promise = null;
+    first.addEventListener('beforetoggle', e => {
+      if (e.newState === 'closed') {
+        beforetoggle_count++;
+        second_promise = second.showUnboundedElement();
+      }
+    });
+    first.showUnboundedElement()
+      .then(() => {
+        first.hideUnboundedElement();
+        return second_promise;
+      })
+      .then(() => {
+        return [
+          beforetoggle_count,
+          first.matches(':unbounded'),
+          second.matches(':unbounded'),
+          getComputedStyle(first).visibility,
+          getComputedStyle(second).visibility,
+        ].join(',');
+      }, err => 'error:' + err);
+  )JS";
+
+  EXPECT_EQ("1,false,true,hidden,visible",
+            EvalJs(primary_main_frame_host(), script).ExtractString());
+  EXPECT_NE(nullptr, GetActiveWindow());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    UnboundedElementBrowserTest,
+    DismissCancelableWithShowSecondElementAndPreventDefault) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  std::string script = R"JS(
+    document.body.innerHTML = `
+      <div id="first" unbounded></div>
+      <div id="second" unbounded></div>
+    `;
+    const first = document.getElementById('first');
+    const second = document.getElementById('second');
+    window.__beforetoggle_fired = false;
+    first.addEventListener('beforetoggle', e => {
+      if (e.newState === 'closed') {
+        window.__beforetoggle_fired = true;
+        e.preventDefault();
+        second.showUnboundedElement();
+      }
+    });
+    first.showUnboundedElement().then(() => 'first_ready');
+  )JS";
+  EXPECT_EQ("first_ready", EvalJs(primary_main_frame_host(), script));
+  WaitForFrameReady();
+
+  // Blur() initiates cancelable dismissal.
+  primary_main_frame_host()->GetRenderWidgetHost()->Blur();
+  RunUntilInputProcessed(primary_main_frame_host()->GetRenderWidgetHost());
+
+  // Even though beforetoggle called e.preventDefault(), showing second must
+  // suppress first and make second the active element.
+  EXPECT_EQ(true,
+            EvalJs(primary_main_frame_host(), "window.__beforetoggle_fired"));
+  EXPECT_EQ(false,
+            EvalJs(primary_main_frame_host(),
+                   "document.getElementById('first').matches(':unbounded')"));
+  EXPECT_EQ(
+      "hidden",
+      EvalJs(primary_main_frame_host(),
+             "getComputedStyle(document.getElementById('first')).visibility"));
+  EXPECT_EQ(true,
+            EvalJs(primary_main_frame_host(),
+                   "document.getElementById('second').matches(':unbounded')"));
+  EXPECT_EQ(
+      "visible",
+      EvalJs(primary_main_frame_host(),
+             "getComputedStyle(document.getElementById('second')).visibility"));
+  EXPECT_NE(nullptr, GetActiveWindow());
+}
+
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
+                       ReshowSameElementInsideBeforeToggleOnClose) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  std::string script = R"JS(
+    document.body.innerHTML = `<div id="target" unbounded></div>`;
+    const target = document.getElementById('target');
+    let beforetoggle_count = 0;
+    let reshow_promise = null;
+    target.addEventListener('beforetoggle', e => {
+      if (e.newState === 'closed') {
+        beforetoggle_count++;
+        reshow_promise = target.showUnboundedElement();
+      }
+    });
+    target.showUnboundedElement()
+      .then(() => {
+        target.hideUnboundedElement();
+        return reshow_promise;
+      })
+      .then(() => 'success', err => 'error:' + err.name);
+  )JS";
+
+  std::string result =
+      EvalJs(primary_main_frame_host(), script).ExtractString();
+  // Attempting to re-show the same element while it is being closed should
+  // cleanly reject with InvalidStateError and not corrupt the element.
+  EXPECT_EQ("error:InvalidStateError", result);
+}
+
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
+                       MutualBeforeTogglePingPongShowsDoNotLoop) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  std::string script = R"JS(
+    document.body.innerHTML = `
+      <div id="first" unbounded></div>
+      <div id="second" unbounded></div>
+    `;
+    const first = document.getElementById('first');
+    const second = document.getElementById('second');
+    let ping_count = 0;
+    first.addEventListener('beforetoggle', e => {
+      if (e.newState === 'closed' && ++ping_count < 10) {
+        second.showUnboundedElement();
+      }
+    });
+    second.addEventListener('beforetoggle', e => {
+      if (e.newState === 'closed' && ++ping_count < 10) {
+        first.showUnboundedElement();
+      }
+    });
+    first.showUnboundedElement().then(() => {
+      return second.showUnboundedElement();
+    }).then(() => 'done', err => 'error:' + err);
+  )JS";
+
+  EXPECT_EQ("done", EvalJs(primary_main_frame_host(), script).ExtractString());
+}
+
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
+                       ThreeElementBeforeToggleShowRaceDoesNotLeak) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  std::string script = R"JS(
+    document.body.innerHTML = `
+      <div id="a" unbounded></div>
+      <div id="b" unbounded></div>
+      <div id="c" unbounded></div>
+    `;
+    const a = document.getElementById('a');
+    const b = document.getElementById('b');
+    const c = document.getElementById('c');
+    let c_result = 'pending';
+
+    a.addEventListener('beforetoggle', e => {
+      if (e.newState === 'closed') {
+        c.showUnboundedElement()
+            .then(() => { c_result = 'resolved'; },
+                  err => { c_result = 'rejected:' + err.name; });
+      }
+    });
+
+    a.showUnboundedElement()
+      .then(() => b.showUnboundedElement())
+      .then(() => {
+        return [
+          c_result,
+          a.matches(':unbounded'),
+          b.matches(':unbounded'),
+          c.matches(':unbounded')
+        ].join(',');
+      }, err => 'error:' + err);
+  )JS";
+
+  EXPECT_EQ("rejected:AbortError,false,true,false",
             EvalJs(primary_main_frame_host(), script).ExtractString());
 }
 
@@ -2489,7 +2980,13 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
 
   EXPECT_TRUE(ExecJs(primary_main_frame_host(), R"(
     const target = document.createElement('div');
+    target.id = 'target';
     target.setAttribute('unbounded', '');
+    target.addEventListener('beforetoggle', e => {
+      if (e.newState === 'closed') {
+        e.preventDefault();
+      }
+    });
     document.body.appendChild(target);
     target.showUnboundedElement();
   )"));
@@ -2506,6 +3003,9 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
     return !UnboundedSurfaceHostImpl::GetForCurrentDocument(
         primary_main_frame_host());
   }));
+  EXPECT_EQ(false,
+            EvalJs(primary_main_frame_host(),
+                   "document.getElementById('target').matches(':unbounded')"));
   EXPECT_TRUE(UnboundedSurfaceHostImpl::GetForCurrentDocument(iframe));
   EXPECT_TRUE(primary_main_frame_host()->GetUnboundedSurfaceWindow());
 }

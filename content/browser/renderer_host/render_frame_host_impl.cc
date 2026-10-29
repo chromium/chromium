@@ -11602,6 +11602,15 @@ void RenderFrameHostImpl::RequestUnboundedSurface(
   }
   RenderWidgetHostViewBase* parent_view = nullptr;
   if (auto* root_view = GetUnboundedSurfaceRootView(&parent_view)) {
+    // Reject requests when the WebContents, this frame's widget (e.g. a hidden
+    // OOPIF), or the root widget is hidden. Dropping `client` disconnects
+    // `UnboundedSurfaceClient` in the renderer, which dismisses the element and
+    // rejects `showUnboundedElement()` with `AbortError`.
+    if (delegate()->GetVisibility() != Visibility::VISIBLE ||
+        GetRenderWidgetHost()->IsHidden() ||
+        (root_view->host() && root_view->host()->IsHidden())) {
+      return;
+    }
     if (UnboundedSurfaceHostImpl::GetForCurrentDocument(this)) {
       UnboundedSurfaceHostImpl::DeleteForCurrentDocument(this);
     }

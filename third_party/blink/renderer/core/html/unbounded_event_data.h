@@ -31,6 +31,11 @@ class UnboundedEventData final : public GarbageCollected<UnboundedEventData>,
     pending_event_started_closed_ = closed;
   }
 
+  bool isTransitioning() const { return is_transitioning_; }
+  void setIsTransitioning(bool transitioning) {
+    is_transitioning_ = transitioning;
+  }
+
   void Trace(Visitor* visitor) const override {
     NodeRareDataField::Trace(visitor);
   }
@@ -38,6 +43,7 @@ class UnboundedEventData final : public GarbageCollected<UnboundedEventData>,
  private:
   TaskHandle pending_event_task_;
   bool pending_event_started_closed_ = false;
+  bool is_transitioning_ = false;
 };
 
 }  // namespace blink

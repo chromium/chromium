@@ -461,6 +461,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
       const gfx::Rect& bounds_in_dips,
       RenderWidgetHostViewBase* subframe_view);
   virtual void DismissUnboundedSurface();
+  // Destroys the active unbounded surface if `this` is either the root view
+  // hosting it or the subframe view (`GetTargetView()`) that owns it.
+  void DestroyUnboundedSurfaceForThisView();
   virtual void DestroyUnboundedSurface(
       base::WeakPtr<UnboundedSurfaceWindow> window);
   virtual bool HasActiveUnboundedSurface() const;
