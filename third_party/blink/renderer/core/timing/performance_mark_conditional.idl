@@ -5,4 +5,5 @@
 //
 [Exposed=Window, RuntimeEnabled=ConditionalTracingLoAF]
 interface PerformanceMarkConditional : PerformanceEntry {
+    readonly attribute Window? window;
 };

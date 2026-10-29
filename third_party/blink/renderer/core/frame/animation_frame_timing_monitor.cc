@@ -105,44 +105,61 @@ void AnimationFrameTimingMonitor::WillHandleInput(LocalFrame* frame) {
 }
 
 void AnimationFrameTimingMonitor::MarkConditional(const AtomicString& name,
-                                                  base::TimeTicks start_time) {
+                                                  base::TimeTicks start_time,
+                                                  LocalDOMWindow* window) {
+  CHECK(window);
   if (conditional_marks_.size() + conditional_measures_.size() >=
       kConditionalUserTimingBufferSize) {
     return;
   }
-  conditional_marks_.push_back(ConditionalMarkInfo(name, start_time));
-  conditional_mark_names_to_timestamps_.Set(name, start_time);
+  conditional_marks_.push_back(
+      MakeGarbageCollected<ConditionalMarkInfo>(window, name, start_time));
+  window_to_conditional_mark_timestamps_
+      .insert(window, ConditionalMarkNameToTimestampMap())
+      .stored_value->value.Set(name, start_time);
 }
 
 void AnimationFrameTimingMonitor::MeasureConditional(
     const AtomicString& name,
     const AtomicString& start_mark,
     const AtomicString& end_mark,
-    base::TimeTicks end_time) {
+    base::TimeTicks end_time,
+    LocalDOMWindow* window) {
+  CHECK(window);
   if (conditional_marks_.size() + conditional_measures_.size() >=
       kConditionalUserTimingBufferSize) {
     return;
   }
 
+  // Only resolve conditional marks within the caller's own window.
+  auto own_marks_it = window_to_conditional_mark_timestamps_.find(window);
+  const ConditionalMarkNameToTimestampMap* own_marks =
+      own_marks_it == window_to_conditional_mark_timestamps_.end()
+          ? nullptr
+          : &own_marks_it->value;
+
   // Eagerly resolve mark names to timestamps using the map.
-  base::TimeTicks resolved_start_time;
-  if (!start_mark.IsNull()) {
-    auto it = conditional_mark_names_to_timestamps_.find(start_mark);
-    if (it != conditional_mark_names_to_timestamps_.end()) {
+  // A start mark that is not provided or not resolvable defaults to the time
+  // origin of the caller's window.
+  base::TimeTicks resolved_start_time =
+      DOMWindowPerformance::performance(*window)->GetTimeOriginInternal();
+  if (own_marks && !start_mark.IsNull()) {
+    auto it = own_marks->find(start_mark);
+    if (it != own_marks->end()) {
       resolved_start_time = it->value;
     }
   }
 
   base::TimeTicks resolved_end_time = end_time;
-  if (!end_mark.IsNull()) {
-    auto it = conditional_mark_names_to_timestamps_.find(end_mark);
-    if (it != conditional_mark_names_to_timestamps_.end()) {
+  if (own_marks && !end_mark.IsNull()) {
+    auto it = own_marks->find(end_mark);
+    if (it != own_marks->end()) {
       resolved_end_time = it->value;
     }
   }
 
-  conditional_measures_.push_back(
-      ConditionalMeasureInfo(name, resolved_start_time, resolved_end_time));
+  conditional_measures_.push_back(MakeGarbageCollected<ConditionalMeasureInfo>(
+      window, name, resolved_start_time, resolved_end_time));
 }
 
 void AnimationFrameTimingMonitor::BeginMainFrame(
@@ -201,12 +218,17 @@ AnimationFrameTimingMonitor::RecordRenderingUpdateEndTime(
 
   if (!conditional_marks_.empty()) {
     CHECK(RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled());
-    current_frame_timing_info_->SetConditionalMarks(conditional_marks_);
+    current_frame_timing_info_->SetConditionalMarks(
+        std::move(conditional_marks_));
+    conditional_marks_.clear();
+    window_to_conditional_mark_timestamps_.clear();
   }
 
   if (!conditional_measures_.empty()) {
     CHECK(RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled());
-    current_frame_timing_info_->SetConditionalMeasures(conditional_measures_);
+    current_frame_timing_info_->SetConditionalMeasures(
+        std::move(conditional_measures_));
+    conditional_measures_.clear();
   }
 
   current_frame_timing_info_->SetStyleDuration(render_style_duration_);
@@ -246,15 +268,6 @@ AnimationFrameTimingMonitor::RecordRenderingUpdateEndTime(
   current_frame_timing_info_.Clear();
   current_scripts_.clear();
   script_count_ = 0;
-  if (!conditional_marks_.empty()) {
-    CHECK(RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled());
-    conditional_marks_.clear();
-    conditional_mark_names_to_timestamps_.clear();
-  }
-  if (!conditional_measures_.empty()) {
-    CHECK(RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled());
-    conditional_measures_.clear();
-  }
   longest_task_duration_ = total_blocking_time_excluding_longest_task_ =
       base::TimeDelta();
   render_style_duration_ = base::TimeDelta();
@@ -490,14 +503,14 @@ void AnimationFrameTimingMonitor::OnMainThreadTaskCompleted(
   uint32_t script_count = script_count_;
   script_count_ = 0;
 
-  Vector<ConditionalMarkInfo> conditional_marks;
+  HeapVector<Member<ConditionalMarkInfo>> conditional_marks;
   if (!conditional_marks_.empty()) {
     CHECK(RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled());
     std::swap(conditional_marks, conditional_marks_);
-    conditional_mark_names_to_timestamps_.clear();
+    window_to_conditional_mark_timestamps_.clear();
   }
 
-  Vector<ConditionalMeasureInfo> conditional_measures;
+  HeapVector<Member<ConditionalMeasureInfo>> conditional_measures;
   if (!conditional_measures_.empty()) {
     CHECK(RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled());
     std::swap(conditional_measures, conditional_measures_);
@@ -535,12 +548,12 @@ void AnimationFrameTimingMonitor::OnMainThreadTaskCompleted(
 
   if (!conditional_marks.empty()) {
     CHECK(RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled());
-    timing_info->SetConditionalMarks(conditional_marks);
+    timing_info->SetConditionalMarks(std::move(conditional_marks));
   }
 
   if (!conditional_measures.empty()) {
     CHECK(RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled());
-    timing_info->SetConditionalMeasures(conditional_measures);
+    timing_info->SetConditionalMeasures(std::move(conditional_measures));
   }
 
   DOMWindowPerformance::performance(*frame->DomWindow())
@@ -776,6 +789,9 @@ void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKMAndTrace(
 void AnimationFrameTimingMonitor::Trace(Visitor* visitor) const {
   visitor->Trace(current_frame_timing_info_);
   visitor->Trace(current_scripts_);
+  visitor->Trace(conditional_marks_);
+  visitor->Trace(conditional_measures_);
+  visitor->Trace(window_to_conditional_mark_timestamps_);
   visitor->Trace(frame_handling_input_);
   visitor->Trace(task_attributed_window_);
   visitor->Trace(congestion_scripts_);

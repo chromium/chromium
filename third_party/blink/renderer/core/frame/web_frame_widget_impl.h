@@ -376,11 +376,13 @@ class CORE_EXPORT WebFrameWidgetImpl
       base::TimeTicks) override;
   void OnFirstContentfulPaint() override;
   void MarkConditional(const AtomicString& name,
-                       base::TimeTicks start_time) override;
+                       base::TimeTicks start_time,
+                       LocalDOMWindow* window) override;
   void MeasureConditional(const AtomicString& name,
                           const AtomicString& start_mark,
                           const AtomicString& end_mark,
-                          base::TimeTicks end_time) override;
+                          base::TimeTicks end_time,
+                          LocalDOMWindow* window) override;
   // TODO(https://crbug.com/515098190): Below are not FrameWidget overrides.
 
   void SetVirtualKeyboardResizeHeightForTesting(int);

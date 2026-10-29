@@ -15,6 +15,7 @@ PerformanceMeasureConditional* PerformanceMeasureConditional::Create(
     const AtomicString& name,
     base::TimeTicks start_time,
     base::TimeTicks end_time,
+    LocalDOMWindow* window,
     DOMWindow* source,
     uint64_t navigation_id) {
   Performance* performance =
@@ -24,16 +25,27 @@ PerformanceMeasureConditional* PerformanceMeasureConditional::Create(
   DOMHighResTimeStamp end =
       performance->MonotonicTimeToDOMHighResTimeStamp(end_time);
   return MakeGarbageCollected<PerformanceMeasureConditional>(
-      name, start, end - start, source, navigation_id);
+      name, start, end - start, window, source, navigation_id);
 }
 
 PerformanceMeasureConditional::PerformanceMeasureConditional(
     const AtomicString& name,
     double start_time,
     double duration,
+    LocalDOMWindow* window,
     DOMWindow* source,
     uint64_t navigation_id)
-    : PerformanceEntry(duration, name, start_time, source, navigation_id) {}
+    : PerformanceEntry(duration, name, start_time, source, navigation_id),
+      window_(window) {}
+
+DOMWindow* PerformanceMeasureConditional::window() const {
+  return window_ && window_->GetFrame() ? window_ : nullptr;
+}
+
+void PerformanceMeasureConditional::Trace(Visitor* visitor) const {
+  visitor->Trace(window_);
+  PerformanceEntry::Trace(visitor);
+}
 
 const AtomicString& PerformanceMeasureConditional::entryType() const {
   return performance_entry_names::kMeasureConditional;

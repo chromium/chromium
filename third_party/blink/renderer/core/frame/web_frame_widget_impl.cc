@@ -1839,22 +1839,24 @@ AnimationFrameTimingInfo* WebFrameWidgetImpl::RecordRenderingUpdateEndTime(
 }
 
 void WebFrameWidgetImpl::MarkConditional(const AtomicString& name,
-                                         base::TimeTicks start_time) {
+                                         base::TimeTicks start_time,
+                                         LocalDOMWindow* window) {
   if (!animation_frame_timing_monitor_) {
     return;
   }
-  animation_frame_timing_monitor_->MarkConditional(name, start_time);
+  animation_frame_timing_monitor_->MarkConditional(name, start_time, window);
 }
 
 void WebFrameWidgetImpl::MeasureConditional(const AtomicString& name,
                                             const AtomicString& start_mark,
                                             const AtomicString& end_mark,
-                                            base::TimeTicks end_time) {
+                                            base::TimeTicks end_time,
+                                            LocalDOMWindow* window) {
   if (!animation_frame_timing_monitor_) {
     return;
   }
-  animation_frame_timing_monitor_->MeasureConditional(name, start_mark,
-                                                      end_mark, end_time);
+  animation_frame_timing_monitor_->MeasureConditional(
+      name, start_mark, end_mark, end_time, window);
 }
 
 void WebFrameWidgetImpl::DidBeginMainFrame() {

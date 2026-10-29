@@ -40,8 +40,24 @@ void ScriptTimingInfo::Trace(Visitor* visitor) const {
   visitor->Trace(window_);
 }
 
+ConditionalUserTimingInfo::ConditionalUserTimingInfo(LocalDOMWindow* window,
+                                                     const AtomicString& name,
+                                                     base::TimeTicks start_time)
+    : name_(name),
+      start_time_(start_time),
+      window_(window),
+      security_origin_(window->GetSecurityOrigin()) {
+  CHECK(security_origin_);
+}
+
+void ConditionalUserTimingInfo::Trace(Visitor* visitor) const {
+  visitor->Trace(window_);
+}
+
 void AnimationFrameTimingInfo::Trace(Visitor* visitor) const {
   visitor->Trace(scripts_);
+  visitor->Trace(conditional_marks_);
+  visitor->Trace(conditional_measures_);
 }
 
 uint64_t AnimationFrameTimingInfo::GetTraceId() const {

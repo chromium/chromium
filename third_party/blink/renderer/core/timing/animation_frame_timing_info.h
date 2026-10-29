@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_ANIMATION_FRAME_TIMING_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_ANIMATION_FRAME_TIMING_INFO_H_
 
+#include <utility>
+
 #include "base/time/time.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
@@ -93,21 +95,54 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
   scoped_refptr<const SecurityOrigin> security_origin_;
 };
 
-struct ConditionalMarkInfo {
-  ConditionalMarkInfo(const AtomicString& name, base::TimeTicks start_time)
-      : name(name), start_time(start_time) {}
-  AtomicString name;
-  base::TimeTicks start_time;
+// Base class for the conditional user timing entries recorded during an
+// animation frame.
+class ConditionalUserTimingInfo
+    : public GarbageCollected<ConditionalUserTimingInfo> {
+ public:
+  ConditionalUserTimingInfo(LocalDOMWindow* window,
+                            const AtomicString& name,
+                            base::TimeTicks start_time);
+  virtual ~ConditionalUserTimingInfo() = default;
+
+  virtual void Trace(Visitor*) const;
+
+  const AtomicString& Name() const { return name_; }
+  base::TimeTicks StartTime() const { return start_time_; }
+  // The window that created this entry. Weak, so a buffered entry that outlives
+  // its window reports null rather than keeping a detached window alive.
+  LocalDOMWindow* Window() const { return window_.Get(); }
+  // Origin of the window that created this entry. An observer must be from the
+  // same origin to read it.
+  const SecurityOrigin* GetSecurityOrigin() const {
+    return security_origin_.get();
+  }
+
+ private:
+  AtomicString name_;
+  base::TimeTicks start_time_;
+  WeakMember<LocalDOMWindow> window_;
+  scoped_refptr<const SecurityOrigin> security_origin_;
 };
 
-struct ConditionalMeasureInfo {
-  ConditionalMeasureInfo(const AtomicString& name,
+class ConditionalMarkInfo final : public ConditionalUserTimingInfo {
+ public:
+  using ConditionalUserTimingInfo::ConditionalUserTimingInfo;
+};
+
+class ConditionalMeasureInfo final : public ConditionalUserTimingInfo {
+ public:
+  ConditionalMeasureInfo(LocalDOMWindow* window,
+                         const AtomicString& name,
                          base::TimeTicks start_time,
                          base::TimeTicks end_time)
-      : name(name), start_time(start_time), end_time(end_time) {}
-  AtomicString name;
-  base::TimeTicks start_time;
-  base::TimeTicks end_time;
+      : ConditionalUserTimingInfo(window, name, start_time),
+        end_time_(end_time) {}
+
+  base::TimeTicks EndTime() const { return end_time_; }
+
+ private:
+  base::TimeTicks end_time_;
 };
 
 class AnimationFrameTimingInfo final
@@ -139,26 +174,29 @@ class AnimationFrameTimingInfo final
     return scripts_;
   }
 
+  // TODO(crbug.com/576605915): Take `scripts` by value and std::move() it in
+  // from the call sites to avoid the copy.
   void SetScripts(const HeapVector<Member<ScriptTimingInfo>>& scripts) {
     scripts_ = scripts;
   }
 
-  const Vector<ConditionalMarkInfo>& ConditionalMarks() const {
+  const HeapVector<Member<ConditionalMarkInfo>>& ConditionalMarks() const {
     return conditional_marks_;
   }
 
   void SetConditionalMarks(
-      const Vector<ConditionalMarkInfo>& conditional_marks) {
-    conditional_marks_ = conditional_marks;
+      HeapVector<Member<ConditionalMarkInfo>> conditional_marks) {
+    conditional_marks_ = std::move(conditional_marks);
   }
 
-  const Vector<ConditionalMeasureInfo>& ConditionalMeasures() const {
+  const HeapVector<Member<ConditionalMeasureInfo>>& ConditionalMeasures()
+      const {
     return conditional_measures_;
   }
 
   void SetConditionalMeasures(
-      const Vector<ConditionalMeasureInfo>& conditional_measures) {
-    conditional_measures_ = conditional_measures;
+      HeapVector<Member<ConditionalMeasureInfo>> conditional_measures) {
+    conditional_measures_ = std::move(conditional_measures);
   }
 
   const base::TimeDelta& TotalBlockingDuration() const {
@@ -224,8 +262,8 @@ class AnimationFrameTimingInfo final
   base::TimeDelta layout_duration_;
 
   HeapVector<Member<ScriptTimingInfo>> scripts_;
-  Vector<ConditionalMarkInfo> conditional_marks_;
-  Vector<ConditionalMeasureInfo> conditional_measures_;
+  HeapVector<Member<ConditionalMarkInfo>> conditional_marks_;
+  HeapVector<Member<ConditionalMeasureInfo>> conditional_measures_;
 
   // Id for the BeginFrame, which triggered this animation frame.
   viz::BeginFrameId begin_frame_id_;

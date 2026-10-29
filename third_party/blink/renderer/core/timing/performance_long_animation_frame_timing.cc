@@ -110,20 +110,29 @@ PerformanceLongAnimationFrameTiming::PerformanceLongAnimationFrameTiming(
   if (RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled()) {
     // Build mark entries (already sorted by start_time).
     PerformanceEntryVector mark_entries;
-    for (const ConditionalMarkInfo& conditional_mark :
+    for (const ConditionalMarkInfo* conditional_mark :
          info->ConditionalMarks()) {
-      mark_entries.push_back(MakeGarbageCollected<PerformanceMarkConditional>(
-          conditional_mark.name, conditional_mark.start_time, source,
-          navigation_id));
+      if (!observer_security_origin ||
+          observer_security_origin->CanAccess(
+              conditional_mark->GetSecurityOrigin())) {
+        mark_entries.push_back(MakeGarbageCollected<PerformanceMarkConditional>(
+            conditional_mark->Name(), conditional_mark->StartTime(),
+            conditional_mark->Window(), source, navigation_id));
+      }
     }
 
     // Build measure entries and sort them by start_time.
     PerformanceEntryVector measure_entries;
-    for (const ConditionalMeasureInfo& conditional_measure :
+    for (const ConditionalMeasureInfo* conditional_measure :
          info->ConditionalMeasures()) {
-      measure_entries.push_back(PerformanceMeasureConditional::Create(
-          conditional_measure.name, conditional_measure.start_time,
-          conditional_measure.end_time, source, navigation_id));
+      if (!observer_security_origin ||
+          observer_security_origin->CanAccess(
+              conditional_measure->GetSecurityOrigin())) {
+        measure_entries.push_back(PerformanceMeasureConditional::Create(
+            conditional_measure->Name(), conditional_measure->StartTime(),
+            conditional_measure->EndTime(), conditional_measure->Window(),
+            source, navigation_id));
+      }
     }
     std::sort(measure_entries.begin(), measure_entries.end(),
               PerformanceEntry::StartTimeCompareLessThan);

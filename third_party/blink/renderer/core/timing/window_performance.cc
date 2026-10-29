@@ -595,8 +595,8 @@ void WindowPerformance::markConditional(ScriptState* script_state,
   }
 
   base::TimeTicks start_time = base::TimeTicks::Now();
-  window->GetFrame()->GetWidgetForLocalRoot()->MarkConditional(mark_name,
-                                                               start_time);
+  window->GetFrame()->GetWidgetForLocalRoot()->MarkConditional(
+      mark_name, start_time, window);
 }
 
 void WindowPerformance::measureConditional(ScriptState* script_state,
@@ -611,7 +611,7 @@ void WindowPerformance::measureConditional(ScriptState* script_state,
 
   base::TimeTicks end_time = base::TimeTicks::Now();
   window->GetFrame()->GetWidgetForLocalRoot()->MeasureConditional(
-      measure_name, start_mark, end_mark, end_time);
+      measure_name, start_mark, end_mark, end_time, window);
 }
 
 void WindowPerformance::ReportLongTask(base::TimeTicks start_time,

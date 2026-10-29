@@ -16,6 +16,7 @@ namespace blink {
 PerformanceMarkConditional::PerformanceMarkConditional(
     const AtomicString& name,
     base::TimeTicks start_time,
+    LocalDOMWindow* window,
     DOMWindow* source,
     uint64_t navigation_id)
     : PerformanceEntry(
@@ -24,7 +25,17 @@ PerformanceMarkConditional::PerformanceMarkConditional(
           DOMWindowPerformance::performance(*source->ToLocalDOMWindow())
               ->MonotonicTimeToDOMHighResTimeStamp(start_time),
           source,
-          navigation_id) {}
+          navigation_id),
+      window_(window) {}
+
+DOMWindow* PerformanceMarkConditional::window() const {
+  return window_ && window_->GetFrame() ? window_ : nullptr;
+}
+
+void PerformanceMarkConditional::Trace(Visitor* visitor) const {
+  visitor->Trace(window_);
+  PerformanceEntry::Trace(visitor);
+}
 
 const AtomicString& PerformanceMarkConditional::entryType() const {
   return performance_entry_names::kMarkConditional;

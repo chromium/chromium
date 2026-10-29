@@ -7374,6 +7374,7 @@ interface PerformanceMark : PerformanceEntry
     method constructor
 interface PerformanceMarkConditional : PerformanceEntry
     attribute @@toStringTag
+    getter window
     method constructor
 interface PerformanceMeasure : PerformanceEntry
     attribute @@toStringTag
@@ -7381,6 +7382,7 @@ interface PerformanceMeasure : PerformanceEntry
     method constructor
 interface PerformanceMeasureConditional : PerformanceEntry
     attribute @@toStringTag
+    getter window
     method constructor
 interface PerformanceNavigation
     attribute @@toStringTag

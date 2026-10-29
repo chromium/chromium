@@ -57,6 +57,7 @@ class FrameTimingDetails;
 namespace blink {
 
 class AnimationFrameTimingInfo;
+class LocalDOMWindow;
 class LocalFrame;
 // An interface exposed within Blink from local root frames that provides
 // local-root specific things related to compositing and input. This
@@ -362,12 +363,17 @@ class PLATFORM_EXPORT FrameWidget {
   virtual AnimationFrameTimingInfo* RecordRenderingUpdateEndTime(
       base::TimeTicks) = 0;
   // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ConditionalTracing/explainer-for-loaf.md
+  // `window` is the window creating the entry. Its origin restricts access to
+  // the mark or measure, and its identity scopes which marks a measure can
+  // resolve.
   virtual void MarkConditional(const AtomicString& name,
-                               base::TimeTicks start_time) = 0;
+                               base::TimeTicks start_time,
+                               LocalDOMWindow* window) = 0;
   virtual void MeasureConditional(const AtomicString& name,
                                   const AtomicString& start_mark,
                                   const AtomicString& end_mark,
-                                  base::TimeTicks end_time) = 0;
+                                  base::TimeTicks end_time,
+                                  LocalDOMWindow* window) = 0;
 
   virtual void OnFirstContentfulPaint() = 0;
 
