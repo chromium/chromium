@@ -9,13 +9,16 @@
 #include <objc/runtime.h>
 
 #include <string_view>
+#include <utility>
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
+#include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/thread_annotations.h"
 
 // There is no notification API on macOS for changes to the pasteboard (unlike
 // on iOS where there is UIPasteboardChangedNotification). However...
@@ -56,6 +59,31 @@ RepeatingClosureList& GetCallbackList() {
   return *callbacks;
 }
 
+// Captured at registration. The swizzled method can run after the main thread's
+// default handle is gone at shutdown; posts to this runner are then dropped.
+struct MainThreadTaskRunnerStorage {
+  Lock lock;
+  scoped_refptr<SingleThreadTaskRunner> task_runner GUARDED_BY(lock);
+};
+
+MainThreadTaskRunnerStorage& GetMainThreadTaskRunnerStorage() {
+  static NoDestructor<MainThreadTaskRunnerStorage> storage;
+  return *storage;
+}
+
+scoped_refptr<SingleThreadTaskRunner> GetMainThreadTaskRunner() {
+  MainThreadTaskRunnerStorage& storage = GetMainThreadTaskRunnerStorage();
+  AutoLock lock(storage.lock);
+  return storage.task_runner;
+}
+
+void SetMainThreadTaskRunner(
+    scoped_refptr<SingleThreadTaskRunner> task_runner) {
+  MainThreadTaskRunnerStorage& storage = GetMainThreadTaskRunnerStorage();
+  AutoLock lock(storage.lock);
+  storage.task_runner = std::move(task_runner);
+}
+
 bool SwizzleInternalClass() {
   Class pasteboard_cache_class = objc_getClass("_CFPasteboardCache");
   if (!pasteboard_cache_class) {
@@ -80,7 +108,7 @@ bool SwizzleInternalClass() {
       imp_implementationWithBlock(^(id object_self, int change_count) {
         // Hop to the main thread, as the cache is processed on an internal
         // CFPasteboard dispatch queue.
-        base::SingleThreadTaskRunner::GetMainThreadDefault()->PostTask(
+        GetMainThreadTaskRunner()->PostTask(
             FROM_HERE, base::BindOnce([] {
               GetCallbackList().Notify();
 
@@ -105,6 +133,8 @@ CallbackListSubscription RegisterPasteboardChangedCallback(
     RepeatingClosure callback) {
   CHECK(base::SingleThreadTaskRunner::GetMainThreadDefault()
             ->BelongsToCurrentThread());
+
+  SetMainThreadTaskRunner(SingleThreadTaskRunner::GetMainThreadDefault());
 
   static bool swizzle_internal_class [[maybe_unused]] = SwizzleInternalClass();
   // Intentionally DCHECK so that in the field it doesn't rely on that specific
