@@ -28,7 +28,6 @@
 
 #include <utility>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/expected.h"
@@ -228,7 +227,6 @@ const ParkableString& ScriptResource::GetSourceText() {
   CHECK(IsLoaded());
 
   if (source_text_.IsNull() && Data()) {
-    SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Blink.Script.SourceTextTime");
     String source_text = DecodedText();
     if (!(base::FeatureList::IsEnabled(
               blink::features::kJavaScriptSourcePhaseImports) &&
