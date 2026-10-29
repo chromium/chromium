@@ -74,10 +74,6 @@ class MockNearbySharingService : public NearbySharingService {
               SetArcTransferCleanupCallback,
               (base::OnceCallback<void()>),
               (override));
-  MOCK_METHOD(NearbyNotificationDelegate*,
-              GetNotificationDelegate,
-              (const std::string&),
-              (override));
   MOCK_METHOD(NearbyNotificationManager*,
               GetNotificationManager,
               (),

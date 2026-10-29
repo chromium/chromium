@@ -286,7 +286,6 @@ source_set("impl") {
       "//chrome/browser/content_settings",
       "//chrome/browser/extensions",
       "//chrome/browser/extensions/api/notifications",
-      "//chrome/browser/nearby_sharing",
       "//chrome/browser/ui:settings_window_manager_chromeos",
       "//chrome/browser/ui/ash/multi_user",
       "//ui/message_center",
@@ -534,7 +533,6 @@ source_set("unit_tests") {
 
   if (is_chromeos) {
     sources += [ "notification_platform_bridge_chromeos_unittest.cc" ]
-    deps += [ "//chrome/browser/nearby_sharing" ]
   }
 
   if (is_linux) {

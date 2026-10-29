@@ -1252,15 +1252,6 @@ void NearbyNotificationManager::CloseVisibilityReminder() {
   RemoveNotification(kNearbyVisibilityReminderNotificationId);
 }
 
-NearbyNotificationDelegate* NearbyNotificationManager::GetNotificationDelegate(
-    const std::string& notification_id) {
-  auto iter = delegate_map_.find(notification_id);
-  if (iter == delegate_map_.end())
-    return nullptr;
-
-  return iter->second.get();
-}
-
 void NearbyNotificationManager::OpenURL(GURL url) {
   nearby_service_->OpenURL(url);
 }
@@ -1440,6 +1431,16 @@ void NearbyNotificationManager::RemoveNotification(
       ash::CreateUserScopedNotificationId(notification_id,
                                           user_->username_hash()),
       /*by_user=*/false);
+}
+
+NearbyNotificationDelegate* NearbyNotificationManager::GetNotificationDelegate(
+    const std::string& notification_id) {
+  auto iter = delegate_map_.find(notification_id);
+  if (iter == delegate_map_.end()) {
+    return nullptr;
+  }
+
+  return iter->second.get();
 }
 
 void NearbyNotificationManager::OnNotificationClicked(

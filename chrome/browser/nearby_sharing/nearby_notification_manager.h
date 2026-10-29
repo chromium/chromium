@@ -139,10 +139,6 @@ class NearbyNotificationManager : public TransferUpdateCallback,
   // Closes any currently shown nearby visibility reminder notification.
   void CloseVisibilityReminder();
 
-  // Gets the currently registered delegate for |notification_id|.
-  NearbyNotificationDelegate* GetNotificationDelegate(
-      const std::string& notification_id);
-
   void OpenURL(GURL url);
 
   // Opens Wi-Fi Networks subpage in Settings.
@@ -190,6 +186,10 @@ class NearbyNotificationManager : public TransferUpdateCallback,
 
   // Removes the notification with |notification_id|, if it is shown.
   void RemoveNotification(const std::string& notification_id);
+
+  // Gets the currently registered delegate for |notification_id|.
+  NearbyNotificationDelegate* GetNotificationDelegate(
+      const std::string& notification_id);
 
   // Handles a click on the notification with |notification_id|, or on its
   // button |action_index|: runs the notification's NearbyNotificationDelegate,

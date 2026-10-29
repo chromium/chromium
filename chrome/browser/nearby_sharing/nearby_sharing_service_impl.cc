@@ -1068,15 +1068,6 @@ void NearbySharingServiceImpl::SetArcTransferCleanupCallback(
   }
 }
 
-NearbyNotificationDelegate* NearbySharingServiceImpl::GetNotificationDelegate(
-    const std::string& notification_id) {
-  if (!nearby_notification_manager_) {
-    return nullptr;
-  }
-
-  return nearby_notification_manager_->GetNotificationDelegate(notification_id);
-}
-
 void NearbySharingServiceImpl::RecordFastInitiationNotificationUsage(
     bool success) {
   fast_initiation_scanning_metrics_->RecordUsage(success);

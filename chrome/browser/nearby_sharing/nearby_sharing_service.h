@@ -16,7 +16,6 @@
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom-shared.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-class NearbyNotificationDelegate;
 class NearbyNotificationManager;
 class NearbyShareContactManager;
 class NearbyShareCertificateManager;
@@ -201,10 +200,6 @@ class NearbySharingService : public KeyedService {
   // Sets a cleanup callback to be called once done with transfer for ARC.
   virtual void SetArcTransferCleanupCallback(
       base::OnceCallback<void()> callback) = 0;
-
-  // Gets a delegate to handle events for |notification_id| or nullptr.
-  virtual NearbyNotificationDelegate* GetNotificationDelegate(
-      const std::string& notification_id) = 0;
 
   // Records via Standard Feature Usage Logging whether or not advertising
   // successfully starts when the user clicks the "Device nearby is sharing"

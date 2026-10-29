@@ -138,8 +138,6 @@ class NearbySharingServiceImpl
   void OpenURL(GURL url) override;
   void SetArcTransferCleanupCallback(
       base::OnceCallback<void()> callback) override;
-  NearbyNotificationDelegate* GetNotificationDelegate(
-      const std::string& notification_id) override;
   void RecordFastInitiationNotificationUsage(bool success) override;
   NearbyShareSettings* GetSettings() override;
   NearbyShareHttpNotifier* GetHttpNotifier() override;

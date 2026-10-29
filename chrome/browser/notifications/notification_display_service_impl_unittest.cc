@@ -34,10 +34,6 @@
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/notifications/muted_notification_handler.h"
 #include "chrome/browser/notifications/screen_capture_notification_blocker.h"
@@ -282,26 +278,6 @@ TEST_F(NotificationDisplayServiceImplTest, CloseQueuedNotification) {
   EXPECT_TRUE(GetDisplayedServiceSync().empty());
   EXPECT_TRUE(GetDisplayedPlatformSync().empty());
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-TEST_F(NotificationDisplayServiceImplTest, NearbyNotificationHandler) {
-  // Add the Nearby Share handler if and only if Nearby Share is supported.
-  {
-    NearbySharingServiceFactory::
-        SetIsNearbyShareSupportedForBrowserContextForTesting(false);
-    NotificationDisplayServiceImpl service(profile());
-    EXPECT_FALSE(service.GetNotificationHandler(
-        NotificationHandler::Type::NEARBY_SHARE));
-  }
-  {
-    NearbySharingServiceFactory::
-        SetIsNearbyShareSupportedForBrowserContextForTesting(true);
-    NotificationDisplayServiceImpl service(profile());
-    EXPECT_TRUE(service.GetNotificationHandler(
-        NotificationHandler::Type::NEARBY_SHARE));
-  }
-}
-#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 

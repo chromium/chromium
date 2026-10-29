@@ -36,7 +36,7 @@ class NotificationHandler {
     //                          // user via a notification.
     SHARING = 6,
     ANNOUNCEMENT = 7,
-    NEARBY_SHARE = 8,
+    // NEARBY_SHARE = 8,  // Deprecated.
     NOTIFICATIONS_MUTED = 9,
     TAILORED_SECURITY = 10,
     DEFAULT_BROWSER_CHANGED = 11,

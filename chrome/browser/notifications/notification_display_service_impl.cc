@@ -38,11 +38,6 @@
 #include "chrome/browser/sharing/sharing_notification_handler.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/nearby_sharing/nearby_notification_handler.h"
-#include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/notifications/glic_actor_task_notification_handler.h"
 #include "chrome/browser/notifications/muted_notification_handler.h"
@@ -128,14 +123,6 @@ NotificationDisplayServiceImpl::NotificationDisplayServiceImpl(Profile* profile)
               default_browser::DefaultBrowserChangedNotificationHandler>());
     }
 #endif
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-    if (NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
-            profile_)) {
-      AddNotificationHandler(NotificationHandler::Type::NEARBY_SHARE,
-                             std::make_unique<NearbyNotificationHandler>());
-    }
 #endif
   }
 
