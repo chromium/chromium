@@ -34,8 +34,8 @@ import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameterBefo
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -50,6 +50,7 @@ import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.UiAndroidFeatures;
 import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule.Component;
 
 import java.io.IOException;
@@ -61,7 +62,7 @@ import java.util.List;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE})
-@DoNotBatch(reason = "This test relies on native initialization")
+@Batch(Batch.PER_CLASS)
 @Restriction({DeviceFormFactor.PHONE})
 public class DefaultBrowserPromoFirstRunFragmentRenderTest {
     private static final int REVISION = 0;
@@ -188,10 +189,7 @@ public class DefaultBrowserPromoFirstRunFragmentRenderTest {
                     });
         }
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                });
+        NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
         ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
     }
 
