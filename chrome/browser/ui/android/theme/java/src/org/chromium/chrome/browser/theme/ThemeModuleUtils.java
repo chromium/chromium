@@ -21,7 +21,7 @@ public final class ThemeModuleUtils {
     /** Returns whether enable all the dependency features. */
     public static boolean isForceEnableDependencies() {
         return isEnabled()
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                && ChromeFeatureList.getParamValueAsBoolean(
                         ChromeFeatureList.ANDROID_THEME_MODULE,
                         ChromeFeatureList.ANDROID_THEME_MODULE_FORCE_DEPENDENCIES);
     }

@@ -105,7 +105,7 @@ public class NewTabPageUtils {
 
     /** Returns the {@link PaddingStyle} for NTP Aurora. */
     public static @PaddingStyle int getPaddingStyleForAurora() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+        return ChromeFeatureList.getParamValueAsInt(
                 ChromeFeatureList.NTP_AURORA, ChromeFeatureList.NTP_AURORA_PADDING_STYLE);
     }
 
@@ -131,7 +131,7 @@ public class NewTabPageUtils {
     /** Returns whether the Aurora layout with updated button colors is enabled. */
     public static boolean isNtpAuroraButtonColorEnabled() {
         return isNtpAuroraEnabled()
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                && ChromeFeatureList.getParamValueAsBoolean(
                         ChromeFeatureList.NTP_AURORA,
                         ChromeFeatureList.NTP_AURORA_CHANGE_BUTTON_COLOR);
     }
@@ -143,7 +143,7 @@ public class NewTabPageUtils {
     public static @ActionChips int getMerchandisingChipsType() {
         if (!isNtpAuroraV2Enabled()) return ActionChips.DEFAULT;
 
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+        return ChromeFeatureList.getParamValueAsInt(
                 ChromeFeatureList.NTP_AURORA_V2, ChromeFeatureList.NTP_AURORA_V2_ACTION_CHIPS);
     }
 
@@ -161,7 +161,7 @@ public class NewTabPageUtils {
         if (!isNtpAuroraV2Enabled()) {
             return LayoutType.DEFAULT;
         }
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+        return ChromeFeatureList.getParamValueAsInt(
                 ChromeFeatureList.NTP_AURORA_V2, ChromeFeatureList.NTP_AURORA_V2_LAYOUT_TYPE);
     }
 

@@ -18,6 +18,7 @@ import org.chromium.base.FeatureMap;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
@@ -190,7 +191,14 @@ public class ChromeCachedFlagsTest {
                 for (Map.Entry<String, String> defaultValueEntry : innerMap.entrySet()) {
                     String paramName = defaultValueEntry.getKey();
                     String defaultValueInTests = defaultValueEntry.getValue();
-                    String defaultValue = featureMap.getParamDefaultValue(featureName, paramName);
+                    String defaultValue = getParamDefaultValue(featureMap, featureName, paramName);
+                    // Params queried through FeatureMap#getParamValueAs*() use the default values
+                    // of their native params, which are not in getParamsDefaultValues(). For
+                    // those, fall back to the default value in tests, so that only the values set
+                    // in fieldtrial_testing_config.json are checked.
+                    if (defaultValue == null) {
+                        defaultValue = defaultValueInTests;
+                    }
                     String jsonValue =
                             featureMap.getFieldTrialParamByFeatureAsString(
                                     featureName, paramName, defaultValue);
@@ -208,5 +216,18 @@ public class ChromeCachedFlagsTest {
                             + "fieldtrial_testing_config.json value do not match for params: "
                             + String.join(", ", notMatching));
         }
+    }
+
+    /**
+     * Returns the default value of the param in {@link FeatureMap#getParamsDefaultValues()}, or
+     * null if the map does not contain the param.
+     */
+    private static @Nullable String getParamDefaultValue(
+            FeatureMap featureMap, String featureName, String paramName) {
+        Map<String, Map<String, String>> paramsDefaultValues = featureMap.getParamsDefaultValues();
+        if (paramsDefaultValues == null) return null;
+        Map<String, String> paramNameToDefaultValue = paramsDefaultValues.get(featureName);
+        if (paramNameToDefaultValue == null) return null;
+        return paramNameToDefaultValue.get(paramName);
     }
 }

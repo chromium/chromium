@@ -653,10 +653,33 @@ const base::Feature* const kFeaturesExposedToJava[] = {
 };
 // LINT.ThenChange(//chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java:FeaturesExposedToJava)
 
+// Arrays of params exposed through the Java ChromeFeatureList API, one array
+// per param type. Params in these arrays are queried through
+// ChromeFeatureList.getParamValueAs*().
+
+// Alphabetical:
+const base::FeatureParam<bool>* const kBooleanParamsExposedToJava[] = {
+// go/keep-sorted start
+    &kAndroidThemeModuleForceDependencies,
+    &kAndroidThemeResourceProviderForceLight,
+    &kNtpAuroraChangeButtonColor,
+// go/keep-sorted end
+};
+
+// Alphabetical:
+const base::FeatureParam<int>* const kIntParamsExposedToJava[] = {
+// go/keep-sorted start
+    &kNtpAuroraPaddingStyle,
+    &kNtpAuroraV2ActionChips,
+    &kNtpAuroraV2LayoutType,
+// go/keep-sorted end
+};
+
 // static
 base::android::FeatureMap* GetFeatureMap() {
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
-      kFeaturesExposedToJava);
+      kFeaturesExposedToJava, kBooleanParamsExposedToJava,
+      kIntParamsExposedToJava);
   return kFeatureMap.get();
 }
 
@@ -1029,6 +1052,41 @@ BASE_FEATURE(kWebUiAndroidTheming, BUILDFLAG(IS_DESKTOP_ANDROID) ? base::FEATURE
 BASE_FEATURE(kXplatSyncedSetupThemes, base::FEATURE_DISABLED_BY_DEFAULT);
 // go/keep-sorted end
 // BASE_FEATURE_END
+
+// FeatureParams exposed to Java through the k*ParamsExposedToJava arrays.
+// Alphabetical:
+// go/keep-sorted start sticky_comments=yes
+BASE_FEATURE_PARAM(bool,
+                   kAndroidThemeModuleForceDependencies,
+                   &kAndroidThemeModule,
+                   "force_theme_module_dependencies",
+                   false);
+BASE_FEATURE_PARAM(bool,
+                   kAndroidThemeResourceProviderForceLight,
+                   &kAndroidThemeResourceProvider,
+                   "force_light_theme",
+                   false);
+BASE_FEATURE_PARAM(bool,
+                   kNtpAuroraChangeButtonColor,
+                   &kNtpAurora,
+                   "change_button_color",
+                   false);
+BASE_FEATURE_PARAM(int,
+                   kNtpAuroraPaddingStyle,
+                   &kNtpAurora,
+                   "padding_style",
+                   0);
+BASE_FEATURE_PARAM(int,
+                   kNtpAuroraV2ActionChips,
+                   &kNtpAuroraV2,
+                   "action_chips",
+                   0);
+BASE_FEATURE_PARAM(int,
+                   kNtpAuroraV2LayoutType,
+                   &kNtpAuroraV2,
+                   "layout_type",
+                   0);
+// go/keep-sorted end
 
 // clang-format on
 

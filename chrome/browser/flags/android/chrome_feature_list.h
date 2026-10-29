@@ -376,6 +376,17 @@ BASE_DECLARE_FEATURE(kXplatSyncedSetupThemes);
 
 // clang-format on
 
+// FeatureParams exposed to Java through the k*ParamsExposedToJava arrays.
+// Alphabetical:
+// go/keep-sorted start
+BASE_DECLARE_FEATURE_PARAM(bool, kAndroidThemeModuleForceDependencies);
+BASE_DECLARE_FEATURE_PARAM(bool, kAndroidThemeResourceProviderForceLight);
+BASE_DECLARE_FEATURE_PARAM(bool, kNtpAuroraChangeButtonColor);
+BASE_DECLARE_FEATURE_PARAM(int, kNtpAuroraPaddingStyle);
+BASE_DECLARE_FEATURE_PARAM(int, kNtpAuroraV2ActionChips);
+BASE_DECLARE_FEATURE_PARAM(int, kNtpAuroraV2LayoutType);
+// go/keep-sorted end
+
 // For FeatureParam, Alphabetical:
 inline constexpr base::FeatureParam<bool> kAndroidBottomBarShowDomainOnlyParam(
     &kAndroidBottomBar,

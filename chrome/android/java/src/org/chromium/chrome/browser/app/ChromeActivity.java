@@ -3920,7 +3920,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         }
 
         int resourceId =
-                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.getParamValueAsBoolean(
                                 ChromeFeatureList.ANDROID_THEME_RESOURCE_PROVIDER,
                                 ChromeFeatureList.ANDROID_THEME_RESOURCE_PROVIDER_FORCE_LIGHT)
                         ? R.style.ThemeOverlay_BrowserUI_ForcedLightForTesting
