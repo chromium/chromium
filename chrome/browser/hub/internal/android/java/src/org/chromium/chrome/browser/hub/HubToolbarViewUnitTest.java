@@ -10,13 +10,17 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.CLOSE_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.HUB_SEARCH_ENABLED_STATE;
@@ -26,6 +30,9 @@ import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_V
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_BUTTON_LOOKUP_CALLBACK;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_INDEX;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_TRANSITION_IS_INCOGNITO;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_TRANSITION_OFFSET;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBILITY_FRACTION;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LISTENER;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LOUPE_VISIBLE;
@@ -35,9 +42,12 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.res.ColorStateList;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -70,6 +80,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRule;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
@@ -91,6 +102,9 @@ import java.util.List;
 /** Unit tests for {@link HubPaneHostView}. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 public class HubToolbarViewUnitTest {
+    private static final int TOOLBAR_WIDTH_PX = 1000;
+    private static final int TOOLBAR_HEIGHT_PX = 200;
+
     // All the tests in this file will run twice, once for isXrDevice=true and once for
     // isXrDevice=false. Expect all the tests with the same results on XR devices too.
     // The setup ensures the correct environment is configured for each run.
@@ -109,6 +123,7 @@ public class HubToolbarViewUnitTest {
     private final CallbackHelper mOnButtonHelper = new CallbackHelper();
     @Mock Callback<PaneButtonLookup> mPaneButtonLookupCallback;
     @Mock private Pane mPane;
+    @Mock private Canvas mCanvas;
 
     @Captor ArgumentCaptor<PaneButtonLookup> mPaneButtonLookupCaptor;
 
@@ -436,6 +451,18 @@ public class HubToolbarViewUnitTest {
     }
 
     @Test
+    public void testUpdateIncognitoElements_delayedHintUsesLatestState() {
+        mPropertyModel.set(APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION, true);
+        mPropertyModel.set(IS_INCOGNITO, true);
+        mPropertyModel.set(APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION, false);
+        mPropertyModel.set(IS_INCOGNITO, false);
+
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        assertEquals(mActivity.getString(R.string.hub_search_empty_hint), mSearchBoxText.getHint());
+    }
+
+    @Test
     public void testUpdateSearchBoxColorScheme() {
         forceSetColorScheme(HubColorScheme.INCOGNITO);
         assertEquals(
@@ -516,6 +543,257 @@ public class HubToolbarViewUnitTest {
 
         mPropertyModel.set(SEARCH_BOX_VISIBLE, false);
         assertEquals(View.GONE, mSearchBox.getVisibility());
+    }
+
+    @Test
+    public void testSearchBoxTransitionOffset_movesSearchBoxWithPane() {
+        layoutToolbar();
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, -0.25f);
+
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, -0.5f);
+
+        assertEquals(-0.5f * TOOLBAR_WIDTH_PX, mSearchBox.getTranslationX(), 0.01f);
+    }
+
+    @Test
+    public void testSearchBoxTransitionOffset_movesHairlineWithSearchBox() {
+        layoutToolbar();
+
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, -0.25f);
+
+        assertEquals(-0.25f * TOOLBAR_WIDTH_PX, mHairline.getTranslationX(), 0.01f);
+    }
+
+    @Test
+    public void testSearchBoxTransitionOffset_showsHiddenSearchBox() {
+        layoutToolbar();
+
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, 0.75f);
+
+        assertEquals(View.VISIBLE, mSearchBox.getVisibility());
+        assertEquals(0.75f * TOOLBAR_WIDTH_PX, mSearchBox.getTranslationX(), 0.01f);
+    }
+
+    @Test
+    public void testSearchBoxTransitionIsIncognito_overridesPaneHint() {
+        mPropertyModel.set(IS_INCOGNITO, false);
+
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_IS_INCOGNITO, true);
+
+        assertEquals(
+                mActivity.getString(R.string.hub_search_empty_hint_incognito),
+                mSearchBoxText.getHint());
+    }
+
+    @Test
+    public void testSearchBoxTransitionIsIncognito_winsOverPaneChange() {
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_IS_INCOGNITO, false);
+
+        mPropertyModel.set(IS_INCOGNITO, true);
+
+        assertEquals(mActivity.getString(R.string.hub_search_empty_hint), mSearchBoxText.getHint());
+    }
+
+    @Test
+    public void testSearchBoxTransitionIsIncognito_cleared_restoresPaneHint() {
+        mPropertyModel.set(IS_INCOGNITO, true);
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_IS_INCOGNITO, false);
+
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_IS_INCOGNITO, null);
+
+        assertEquals(
+                mActivity.getString(R.string.hub_search_empty_hint_incognito),
+                mSearchBoxText.getHint());
+    }
+
+    @Test
+    public void testSearchBoxTransition_defersVisibilityChange() {
+        mPropertyModel.set(SEARCH_BOX_VISIBLE, true);
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, -1.0f);
+
+        mPropertyModel.set(SEARCH_BOX_VISIBLE, false);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertEquals(View.VISIBLE, mSearchBox.getVisibility());
+        assertEquals(1.0f, mSearchBox.getScaleY(), 0.01f);
+    }
+
+    @Test
+    public void testSearchBoxTransition_start_endsRunningHideAnimation() {
+        mPropertyModel.set(SEARCH_BOX_VISIBLE, true);
+        mPropertyModel.set(SEARCH_BOX_VISIBLE, false);
+
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, 0.5f);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertEquals(View.VISIBLE, mSearchBox.getVisibility());
+        assertEquals(1.0f, mSearchBox.getScaleY(), 0.01f);
+    }
+
+    @Test
+    public void testSearchBoxTransition_defersVisibilityFraction() {
+        mPropertyModel.set(MANUAL_SEARCH_BOX_ANIMATION, true);
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, 0.5f);
+
+        mPropertyModel.set(SEARCH_BOX_VISIBILITY_FRACTION, 0.3f);
+
+        assertEquals(1.0f, mSearchBox.getScaleY(), 0.01f);
+    }
+
+    @Test
+    public void testSearchBoxTransition_finish_appliesDeferredVisibility() {
+        layoutToolbar();
+        mPropertyModel.set(SEARCH_BOX_VISIBLE, true);
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, -1.0f);
+        mPropertyModel.set(SEARCH_BOX_VISIBLE, false);
+
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, null);
+
+        assertEquals(View.GONE, mSearchBox.getVisibility());
+        assertEquals(0.0f, mSearchBox.getTranslationX(), 0.01f);
+    }
+
+    @Test
+    public void testSearchBoxTransition_finish_keepsVisibleSearchBoxOpen() {
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, -0.5f);
+        mPropertyModel.set(SEARCH_BOX_VISIBLE, true);
+
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, null);
+
+        assertEquals(View.VISIBLE, mSearchBox.getVisibility());
+        assertEquals(1.0f, mSearchBox.getScaleY(), 0.01f);
+    }
+
+    @Test
+    public void testSearchBoxTransition_finish_resetsHairline() {
+        layoutToolbar();
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, -0.25f);
+
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, null);
+
+        assertEquals(0.0f, mHairline.getTranslationX(), 0.01f);
+    }
+
+    @Test
+    public void testSearchBoxTransition_snapsCollapsedSearchBoxOpen() {
+        mPropertyModel.set(MANUAL_SEARCH_BOX_ANIMATION, true);
+        mPropertyModel.set(SEARCH_BOX_VISIBILITY_FRACTION, 0.3f);
+
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, 0.0f);
+
+        assertEquals(
+                mActivity.getResources().getDimensionPixelSize(R.dimen.hub_search_box_height),
+                mSearchBox.getLayoutParams().height);
+        assertEquals(1.0f, mSearchBox.getScaleY(), 0.01f);
+        assertEquals(1.0f, mSearchBox.getAlpha(), 0.01f);
+    }
+
+    @Test
+    public void testSearchBoxTransition_start_keepsDisabledAlpha() {
+        mPropertyModel.set(HUB_SEARCH_ENABLED_STATE, false);
+        float disabledAlpha = mSearchBox.getAlpha();
+        mPropertyModel.set(MANUAL_SEARCH_BOX_ANIMATION, true);
+        mPropertyModel.set(SEARCH_BOX_VISIBILITY_FRACTION, 0.3f);
+
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, 0.0f);
+
+        assertNotEquals(1.0f, disabledAlpha, 0.01f);
+        assertEquals(disabledAlpha, mSearchBox.getAlpha(), 0.01f);
+    }
+
+    @Test
+    public void testSearchBoxTransition_finish_restoresCollapsedFraction() {
+        mPropertyModel.set(MANUAL_SEARCH_BOX_ANIMATION, true);
+        mPropertyModel.set(SEARCH_BOX_VISIBLE, true);
+        mPropertyModel.set(SEARCH_BOX_VISIBILITY_FRACTION, 0.3f);
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, 0.0f);
+
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, null);
+
+        assertEquals(0.3f, mSearchBox.getScaleY(), 0.01f);
+    }
+
+    @Test
+    public void testSearchBoxTransition_finish_appliesDeferredFraction() {
+        mPropertyModel.set(MANUAL_SEARCH_BOX_ANIMATION, true);
+        mPropertyModel.set(SEARCH_BOX_VISIBLE, true);
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, 0.5f);
+        mPropertyModel.set(SEARCH_BOX_VISIBILITY_FRACTION, 0.3f);
+
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, null);
+
+        assertEquals(0.3f, mSearchBox.getScaleY(), 0.01f);
+    }
+
+    @Test
+    public void testSearchBoxTransition_finish_keepsDisabledAlpha() {
+        mPropertyModel.set(HUB_SEARCH_ENABLED_STATE, false);
+        float disabledAlpha = mSearchBox.getAlpha();
+        mPropertyModel.set(MANUAL_SEARCH_BOX_ANIMATION, true);
+        mPropertyModel.set(SEARCH_BOX_VISIBLE, true);
+        mPropertyModel.set(SEARCH_BOX_VISIBILITY_FRACTION, 1.0f);
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, 0.5f);
+
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, null);
+
+        assertEquals(disabledAlpha, mSearchBox.getAlpha(), 0.01f);
+    }
+
+    @Test
+    public void testSearchBoxTransition_finish_collapsesHiddenSearchBox() {
+        // Pinned tabs collapsed and hid the search box, then ended their animation.
+        mPropertyModel.set(MANUAL_SEARCH_BOX_ANIMATION, true);
+        mPropertyModel.set(SEARCH_BOX_VISIBILITY_FRACTION, 0.2f);
+        mPropertyModel.set(MANUAL_SEARCH_BOX_ANIMATION, false);
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, 0.75f);
+
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, null);
+
+        assertEquals(0.2f, mSearchBox.getScaleY(), 0.01f);
+        assertEquals(0.2f, mSearchBox.getAlpha(), 0.01f);
+    }
+
+    @Test
+    public void testSearchBoxTransition_paintsSearchRowBehindOwningPaneOnly() {
+        layoutToolbar();
+        int searchRowTop =
+                mToolbarContainer.findViewById(R.id.toolbar_action_container).getBottom();
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, 0.75f);
+
+        drawToolbarBackground();
+
+        verify(mCanvas).clipRect(0, 0, TOOLBAR_WIDTH_PX, searchRowTop);
+        verify(mCanvas)
+                .clipRect(
+                        0.75f * TOOLBAR_WIDTH_PX,
+                        (float) searchRowTop,
+                        1.75f * TOOLBAR_WIDTH_PX,
+                        (float) TOOLBAR_HEIGHT_PX);
+    }
+
+    @Test
+    public void testSearchBoxTransition_finish_paintsWholeBackground() {
+        layoutToolbar();
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, 0.75f);
+
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, null);
+        drawToolbarBackground();
+
+        verify(mCanvas, never()).clipRect(anyInt(), anyInt(), anyInt(), anyInt());
+        verify(mCanvas, never()).clipRect(anyFloat(), anyFloat(), anyFloat(), anyFloat());
+    }
+
+    private void drawToolbarBackground() {
+        Drawable background = mToolbarContainer.findViewById(R.id.hub_toolbar).getBackground();
+        background.setBounds(0, 0, TOOLBAR_WIDTH_PX, TOOLBAR_HEIGHT_PX);
+        background.draw(mCanvas);
+    }
+
+    private void layoutToolbar() {
+        mToolbarContainer.measure(
+                MeasureSpec.makeMeasureSpec(TOOLBAR_WIDTH_PX, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(TOOLBAR_HEIGHT_PX, MeasureSpec.EXACTLY));
+        mToolbarContainer.layout(0, 0, TOOLBAR_WIDTH_PX, TOOLBAR_HEIGHT_PX);
     }
 
     /**

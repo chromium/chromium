@@ -64,11 +64,14 @@ import java.util.List;
 public class HubToolbarView extends LinearLayout {
     private final HubColorMixerRegistrationHelper mColorMixerHelper =
             new HubColorMixerRegistrationHelper();
+    private final HubToolbarBackgroundDrawable mBackgroundDrawable =
+            new HubToolbarBackgroundDrawable();
     private final AnimationHandler mHubSearchAnimatorHandler;
     private final Handler mHandler;
     private final int mSearchBoxHeightPx;
 
     private TabLayout mPaneSwitcher;
+    private View mActionContainer;
     private LinearLayout mMenuButtonContainer;
     private ImageButton mMenuButton;
     private MenuButton mMenuButtonWrapper;
@@ -86,6 +89,11 @@ public class HubToolbarView extends LinearLayout {
     private @Nullable NonNullObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
     private @Nullable List<FullButtonData> mCachedButtonDataList;
     private @Nullable Drawable mTabIndicatorDrawable;
+    private @Nullable Float mSearchBoxTransitionOffset;
+    private @Nullable Boolean mSearchBoxTransitionIsIncognito;
+    private float mSearchBoxVisibilityFraction;
+    private boolean mSearchBoxVisible;
+    private boolean mIsIncognito;
 
     /** Default {@link LinearLayout} constructor called by inflation. */
     public HubToolbarView(Context context, AttributeSet attributeSet) {
@@ -99,6 +107,9 @@ public class HubToolbarView extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        // The color blends below update this background through setBackgroundColor().
+        setBackground(mBackgroundDrawable);
+        mActionContainer = findViewById(R.id.toolbar_action_container);
         mPaneSwitcher = findViewById(R.id.pane_switcher);
         ViewGroup slidingTabIndicator = (ViewGroup) mPaneSwitcher.getChildAt(0);
         // Unclip children here to get unbounded ripple to work.
@@ -535,6 +546,11 @@ public class HubToolbarView extends LinearLayout {
     }
 
     void setSearchBoxVisible(boolean visible) {
+        mSearchBoxVisible = visible;
+        // While the search box moves with a pane, the final visibility is applied without
+        // animation once the transition finishes.
+        if (mSearchBoxTransitionOffset != null) return;
+
         // When manual search box animation is enabled, the visibility is controlled directly
         // by the HubToolbarMediator and HubToolbarViewBinder via the
         // SEARCH_BOX_VISIBILITY_FRACTION property, and no animation is applied here.
@@ -571,12 +587,20 @@ public class HubToolbarView extends LinearLayout {
 
         // Manually apply disabled alpha since the color is applied programmatically and not through
         // a color state list.
-        TypedValue disabledAlpha = new TypedValue();
-        getResources().getValue(R.dimen.default_disabled_alpha, disabledAlpha, true);
-        float alpha = enabled ? 1.0f : disabledAlpha.getFloat();
+        float alpha = getSearchEnabledStateAlpha();
         mSearchBoxLayout.setAlpha(alpha);
         mSearchBoxTextView.setAlpha(alpha);
         mSearchLoupeView.setAlpha(alpha);
+    }
+
+    /** Returns the search box alpha for whether Hub search is enabled. */
+    private float getSearchEnabledStateAlpha() {
+        if (mSearchBoxLayout.isEnabled()) return 1.0f;
+
+        TypedValue disabledAlpha = new TypedValue();
+        getResources()
+                .getValue(R.dimen.default_disabled_alpha, disabledAlpha, /* resolveRefs= */ true);
+        return disabledAlpha.getFloat();
     }
 
     void setHairlineVisibility(boolean visible) {
@@ -596,9 +620,15 @@ public class HubToolbarView extends LinearLayout {
     }
 
     void setSearchBoxVisibilityFraction(float fraction) {
-        if (!mManualSearchBoxAnimation) return;
+        mSearchBoxVisibilityFraction = fraction;
+        // The search box stays fully open while it moves with a pane.
+        if (!mManualSearchBoxAnimation || mSearchBoxTransitionOffset != null) return;
 
-        mSearchBoxLayout.setAlpha(fraction);
+        applySearchBoxCollapse(fraction);
+    }
+
+    private void applySearchBoxCollapse(float fraction) {
+        mSearchBoxLayout.setAlpha(fraction * getSearchEnabledStateAlpha());
         mSearchBoxLayout.setPivotY(0);
         mSearchBoxLayout.setScaleY(fraction);
         mSearchBoxLayout.setTranslationY(0);
@@ -655,22 +685,71 @@ public class HubToolbarView extends LinearLayout {
     }
 
     private void updateSearchBoxElements(boolean isIncognito) {
-        Context context = getContext();
-        @StringRes int regularEmptyHintRes = R.string.hub_search_empty_hint;
-        @StringRes
-        int emptyHintRes =
-                isIncognito ? R.string.hub_search_empty_hint_incognito : regularEmptyHintRes;
+        mIsIncognito = isIncognito;
 
         // Delay the text from changing until the hub search animation is finished to prevent the
         // incorrect text from showing too early on pane toggles.
         if (mApplyDelayForSearchBoxAnimation) {
-            mHandler.postDelayed(
-                    () -> {
-                        mSearchBoxTextView.setHint(context.getString(emptyHintRes));
-                    },
-                    PANE_FADE_ANIMATION_DURATION_MS);
+            mHandler.postDelayed(this::updateSearchBoxHint, PANE_FADE_ANIMATION_DURATION_MS);
         } else {
-            mSearchBoxTextView.setHint(context.getString(emptyHintRes));
+            updateSearchBoxHint();
+        }
+    }
+
+    private void updateSearchBoxHint() {
+        // During a pane transition, the search box shows the hint of the pane it belongs to.
+        @Nullable Boolean transitionIsIncognito = mSearchBoxTransitionIsIncognito;
+        boolean isIncognito = transitionIsIncognito != null ? transitionIsIncognito : mIsIncognito;
+        @StringRes
+        int emptyHintRes =
+                isIncognito
+                        ? R.string.hub_search_empty_hint_incognito
+                        : R.string.hub_search_empty_hint;
+        mSearchBoxTextView.setHint(getContext().getString(emptyHintRes));
+    }
+
+    void setSearchBoxTransitionIsIncognito(@Nullable Boolean isIncognito) {
+        mSearchBoxTransitionIsIncognito = isIncognito;
+        updateSearchBoxHint();
+    }
+
+    void setSearchBoxTransitionOffset(@Nullable Float offset) {
+        boolean wasInTransition = mSearchBoxTransitionOffset != null;
+        mSearchBoxTransitionOffset = offset;
+        if (offset == null) {
+            if (wasInTransition) finishSearchBoxTransition();
+            return;
+        }
+
+        if (!wasInTransition) startSearchBoxTransition();
+        // Keep the search box in lockstep with the pane it belongs to.
+        int width = getWidth();
+        float translationX = offset * width;
+        mSearchBoxLayout.setTranslationX(translationX);
+        // The hairline closes the search row, so it moves with the pane that owns that row.
+        mHairline.setTranslationX(translationX);
+        // The toolbar grows to fit the search box. Only paint that extra row behind the pane that
+        // owns the search box, so the other pane's content stays visible underneath.
+        mBackgroundDrawable.clipSearchRow(
+                mActionContainer.getBottom(), translationX, translationX + width);
+    }
+
+    private void startSearchBoxTransition() {
+        // Snap the search box fully open, replacing any vertical animation or partial collapse.
+        mHubSearchAnimatorHandler.forceFinishAnimation();
+        applySearchBoxCollapse(1.0f);
+        mSearchBoxLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void finishSearchBoxTransition() {
+        mSearchBoxLayout.setTranslationX(0);
+        mHairline.setTranslationX(0);
+        mBackgroundDrawable.clearSearchRowClip();
+        mSearchBoxLayout.setVisibility(mSearchBoxVisible ? View.VISIBLE : View.GONE);
+        // A pinned tabs reveal shows a hidden search box before its first fraction arrives, so a
+        // hidden search box must drop the snap open as well.
+        if (mManualSearchBoxAnimation || !mSearchBoxVisible) {
+            applySearchBoxCollapse(mSearchBoxVisibilityFraction);
         }
     }
 

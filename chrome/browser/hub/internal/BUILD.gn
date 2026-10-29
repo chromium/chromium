@@ -53,6 +53,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/HubSearchBoxBackgroundCoordinator.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubSearchBoxBackgroundProperties.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubSearchBoxBackgroundViewBinder.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubToolbarBackgroundDrawable.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubToolbarCoordinator.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubToolbarMediator.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubToolbarProperties.java",

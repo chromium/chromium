@@ -63,11 +63,30 @@ class HubToolbarProperties {
             new WritableBooleanPropertyKey();
 
     /**
-     * The visibility fraction of the search box. This is only used when {@link
-     * #MANUAL_SEARCH_BOX_ANIMATION} is true. 0.0f is hidden, 1.0f is fully visible.
+     * The visibility fraction of the search box. 0.0f is hidden, 1.0f is fully visible. Applied
+     * while {@link #MANUAL_SEARCH_BOX_ANIMATION} is true, and to a hidden search box when a pane
+     * transition ends.
      */
     public static final WritableFloatPropertyKey SEARCH_BOX_VISIBILITY_FRACTION =
             new WritableFloatPropertyKey();
+
+    /**
+     * Horizontal offset of the search box, as a fraction of the toolbar width, while it moves with
+     * the pane that shows it during a switch to or from a pane without a search box. While set, the
+     * search box is shown fully open, and {@link #SEARCH_BOX_VISIBLE} and {@link
+     * #SEARCH_BOX_VISIBILITY_FRACTION} take effect once it is cleared. Null when the search box is
+     * not moving. Positive values move the search box right in screen coordinates, regardless of
+     * layout direction, matching the pane's own translation.
+     */
+    public static final WritableObjectPropertyKey<@Nullable Float> SEARCH_BOX_TRANSITION_OFFSET =
+            new WritableObjectPropertyKey<>();
+
+    /**
+     * Whether the search box shows the incognito hint while switching panes, overriding {@link
+     * #IS_INCOGNITO}. Null when no pane transition is overriding the hint.
+     */
+    public static final WritableObjectPropertyKey<@Nullable Boolean>
+            SEARCH_BOX_TRANSITION_IS_INCOGNITO = new WritableObjectPropertyKey<>();
 
     @FunctionalInterface
     public interface PaneButtonLookup {
@@ -93,5 +112,7 @@ class HubToolbarProperties {
         HAIRLINE_VISIBILITY,
         MANUAL_SEARCH_BOX_ANIMATION,
         SEARCH_BOX_VISIBILITY_FRACTION,
+        SEARCH_BOX_TRANSITION_OFFSET,
+        SEARCH_BOX_TRANSITION_IS_INCOGNITO,
     };
 }

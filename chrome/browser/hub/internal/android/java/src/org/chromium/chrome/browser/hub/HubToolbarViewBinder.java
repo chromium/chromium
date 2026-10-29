@@ -15,6 +15,8 @@ import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_V
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_BUTTON_LOOKUP_CALLBACK;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_INDEX;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_TRANSITION_IS_INCOGNITO;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_TRANSITION_OFFSET;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBILITY_FRACTION;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LISTENER;
@@ -61,6 +63,10 @@ public class HubToolbarViewBinder {
             view.setManualSearchBoxAnimation(model.get(MANUAL_SEARCH_BOX_ANIMATION));
         } else if (key == SEARCH_BOX_VISIBILITY_FRACTION) {
             view.setSearchBoxVisibilityFraction(model.get(SEARCH_BOX_VISIBILITY_FRACTION));
+        } else if (key == SEARCH_BOX_TRANSITION_OFFSET) {
+            view.setSearchBoxTransitionOffset(model.get(SEARCH_BOX_TRANSITION_OFFSET));
+        } else if (key == SEARCH_BOX_TRANSITION_IS_INCOGNITO) {
+            view.setSearchBoxTransitionIsIncognito(model.get(SEARCH_BOX_TRANSITION_IS_INCOGNITO));
         }
     }
 }
