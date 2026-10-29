@@ -114,7 +114,11 @@ Symbol SymbolForTip(TipIdentifier tip) {
     case TipIdentifier::kTipsNotifications:
       return SymbolBellBadge;
     case TipIdentifier::kNTPCustomization:
-      return SymbolHideAction;
+      if (segmentation_platform::features::
+              IsMagicStackNTPCustomizationTipIosActionableEnabled()) {
+        return SymbolMoon;
+      }
+      return SymbolSwitch2;
   }
 }
 
@@ -345,6 +349,10 @@ std::optional<Symbol> GetBadgeSymbolConfigForTip(TipIdentifier tip,
       }
       return [UIColor colorNamed:kPink500Color];
     case TipIdentifier::kNTPCustomization:
+      if (segmentation_platform::features::
+              IsMagicStackNTPCustomizationTipIosActionableEnabled()) {
+        return [UIColor colorNamed:kGrey600Color];
+      }
       return [UIColor colorNamed:kPurple500Color];
     case TipIdentifier::kNTPTheme:
       return nil;

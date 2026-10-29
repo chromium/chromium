@@ -481,6 +481,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"mic.slash", SymbolType::kSystem};
     case SymbolMinusInCircle:
       return {@"minus.circle", SymbolType::kSystem};
+    case SymbolMoon:
+      return {@"moon", SymbolType::kSystem};
     case SymbolMovePlatterToBottomPhone:
       return {@"platter.filled.bottom.and.arrow.down.iphone",
               SymbolType::kSystem};
@@ -630,6 +632,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"suitcase", SymbolType::kSystem};
     case SymbolSunFill:
       return {@"sun.max.fill", SymbolType::kSystem};
+    case SymbolSwitch2:
+      return {@"switch.2", SymbolType::kSystem};
     case SymbolSyncEnabled:
       return {@"arrow.triangle.2.circlepath", SymbolType::kSystem};
     case SymbolSyncError:

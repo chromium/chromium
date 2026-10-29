@@ -78,6 +78,7 @@ typedef NS_ENUM(NSInteger, Symbol) {
   SymbolLocation,
   SymbolLocationSpark,
   SymbolMagnifyingglassSpark,
+  SymbolMoon,
   SymbolMoveFolder,
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
   SymbolMulticolorPassword,
@@ -330,6 +331,7 @@ typedef NS_ENUM(NSInteger, Symbol) {
   SymbolStarLeadingHalfFilled,
   SymbolSuitcase,
   SymbolSunFill,
+  SymbolSwitch2,
   SymbolSyncEnabled,
   SymbolSyncError,
   SymbolSyncPasswordError,
