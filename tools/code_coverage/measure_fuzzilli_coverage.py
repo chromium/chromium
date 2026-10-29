@@ -11,10 +11,12 @@
                  --profile mojoLockManager
                  --minutes 20
 
-  Optionally, use --ignore-filename-regex to provide a regular
-  expression matching all the file paths to be excluded from the report.
-  Use --filters to explicitly state all the directories or files to get
-  include in the coverage report.
+  Optionally:
+  - Use --ignore-filename-regex to provide a regular expression matching all
+    the file paths to be excluded from the report.
+  - Use --filters to explicitly state all directories and files to include in
+    the coverage report.
+  - Use --debug to run a debug build of Fuzzilli.
 
   The following gn args, for use with `js_in_process_fuzzer`, are a mix
   of args required for coverage and args that improve fuzzing either by
@@ -162,12 +164,26 @@ def _ParseCommandArguments():
     'by the key defined in Fuzzilli\'s `profiles` Dictionary.',
   )
 
+  arg_parser.add_argument(
+    '-d',
+    '--debug',
+    action='store_true',
+    required=False,
+    help='Compile Fuzzilli as a debug build.',
+  )
+
   args = arg_parser.parse_args()
   return args
 
 
 def _RunFuzzilli(
-  pg_handler, fuzzilli_dir, build_out_dir, minutes, profile, profraw_dir
+  pg_handler,
+  fuzzilli_dir,
+  build_out_dir,
+  minutes,
+  profile,
+  profraw_dir,
+  is_debug,
 ):
   """Builds and runs Fuzzilli.
 
@@ -179,8 +195,9 @@ def _RunFuzzilli(
   os.environ["LLVM_PROFILE_FILE"] = os.path.join(
     profraw_dir, "fuzzilli.%4m%c.profraw"
   )
+  build_config = 'debug' if is_debug else 'release'
 
-  build_command = ['swift', 'build', '-c', 'release']
+  build_command = ['swift', 'build', '-c', build_config]
   try:
     subprocess.run(build_command, check=True, cwd=fuzzilli_dir)
   except (subprocess.CalledProcessError, FileNotFoundError) as e:
@@ -209,7 +226,7 @@ def _RunFuzzilli(
     print(f"The temporary file is located at: {temp_wrapper.name}")
 
     fuzzilli_executable = os.path.join(
-      fuzzilli_dir, '.build/release/FuzzilliCli'
+      fuzzilli_dir, f'.build/{build_config}/FuzzilliCli'
     )
     run_command = [
       fuzzilli_executable,
@@ -302,6 +319,7 @@ def Main():
       args.minutes,
       args.profile,
       profraw_path,
+      args.debug,
     ):
       sys.exit('Error: Fuzzilli failed to build or run.')
 

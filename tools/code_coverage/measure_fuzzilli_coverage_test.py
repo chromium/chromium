@@ -26,10 +26,8 @@ TEST_PROFRAW_DIR = '/tmp/fake_profraw_dir'
 
 
 class MeasureFuzzilliCoverageTest(unittest.TestCase):
-  @mock.patch.dict(os.environ, {}, clear=True)
-  @mock.patch('subprocess.Popen')
-  @mock.patch('subprocess.run')
-  def test_RunFuzzilli(self, mock_run, mock_popen):
+  def _assert_run_fuzzilli(self, mock_run, mock_popen, is_debug):
+    build_config = 'debug' if is_debug else 'release'
     mock_process = mock.Mock()
     mock_process.wait.side_effect = subprocess.TimeoutExpired(
       cmd='FuzzilliCli', timeout=TEST_SECONDS
@@ -44,6 +42,7 @@ class MeasureFuzzilliCoverageTest(unittest.TestCase):
       TEST_MINUTES,
       TEST_PROFILE,
       TEST_PROFRAW_DIR,
+      is_debug,
     )
 
     self.assertTrue(success)
@@ -53,11 +52,13 @@ class MeasureFuzzilliCoverageTest(unittest.TestCase):
     )
 
     mock_run.assert_called_with(
-      ['swift', 'build', '-c', 'release'], check=True, cwd=TEST_FUZZILLI_DIR
+      ['swift', 'build', '-c', build_config],
+      check=True,
+      cwd=TEST_FUZZILLI_DIR,
     )
 
     expected_run_command_prefix = [
-      os.path.join(TEST_FUZZILLI_DIR, '.build/release/FuzzilliCli'),
+      os.path.join(TEST_FUZZILLI_DIR, f'.build/{build_config}/FuzzilliCli'),
       '--storagePath=/tmp/fuzzilli_storage',
       '--overwrite',
       '--engine=hybrid',
@@ -82,6 +83,18 @@ class MeasureFuzzilliCoverageTest(unittest.TestCase):
   @mock.patch.dict(os.environ, {}, clear=True)
   @mock.patch('subprocess.Popen')
   @mock.patch('subprocess.run')
+  def test_RunFuzzilli(self, mock_run, mock_popen):
+    self._assert_run_fuzzilli(mock_run, mock_popen, is_debug=False)
+
+  @mock.patch.dict(os.environ, {}, clear=True)
+  @mock.patch('subprocess.Popen')
+  @mock.patch('subprocess.run')
+  def test_RunFuzzilliDebug(self, mock_run, mock_popen):
+    self._assert_run_fuzzilli(mock_run, mock_popen, is_debug=True)
+
+  @mock.patch.dict(os.environ, {}, clear=True)
+  @mock.patch('subprocess.Popen')
+  @mock.patch('subprocess.run')
   def test_RunFuzzilliBuildFails(self, mock_run, mock_popen):
     mock_run.side_effect = subprocess.CalledProcessError(
       returncode=1, cmd='swift build'
@@ -95,6 +108,7 @@ class MeasureFuzzilliCoverageTest(unittest.TestCase):
       TEST_MINUTES,
       TEST_PROFILE,
       TEST_PROFRAW_DIR,
+      False,
     )
 
     self.assertFalse(success)
@@ -122,6 +136,7 @@ class MeasureFuzzilliCoverageTest(unittest.TestCase):
       TEST_MINUTES,
       TEST_PROFILE,
       TEST_PROFRAW_DIR,
+      False,
     )
 
     self.assertFalse(success)
