@@ -26,7 +26,6 @@ if (is_android) {
       "//media",
       "//media/mojo/mojom",
       "//mojo/public/cpp/base",
-      "//services/media_session/public/cpp",
     ]
   }
 

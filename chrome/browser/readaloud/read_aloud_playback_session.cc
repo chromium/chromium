@@ -9,7 +9,6 @@
 #include "chrome/browser/readaloud/read_aloud_service.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/web_contents.h"
-#include "media/base/media_content_type.h"
 
 namespace readaloud {
 
