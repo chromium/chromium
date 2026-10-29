@@ -697,9 +697,11 @@ TEST_F(NtpCustomBackgroundServiceTest, RefreshesBackgroundAfter24Hours) {
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
 }
 
-// TODO (crbug.com/41493847): Fix and re-enable or remove if no longer relevant.
-TEST_F(NtpCustomBackgroundServiceTest,
-       DISABLED_TestUpdateCustomBackgroundColor) {
+// Verifies that `NtpCustomBackgroundService::UpdateCustomBackgroundColorAsync`
+// updates the background color only when valid metadata is present and the URL
+// matches the active custom background. Extraction under invalid conditions
+// leaves the background color unchanged.
+TEST_F(NtpCustomBackgroundServiceTest, TestUpdateCustomBackgroundColor) {
   EXPECT_CALL(observer_, OnCustomBackgroundImageUpdated).Times(2);
   EXPECT_CALL(mock_theme_delegate(), OnBackgroundColorExtracted).Times(1);
   SkBitmap bitmap;
