@@ -1,0 +1,30 @@
+load("//crowbar", "crowbar_workflow")
+
+crowbar_workflow(
+    origin_files = [
+        "CONTRIBUTING.md",
+        "LICENSE",
+        "README.md",
+        "private_join_and_compute/crypto/LICENSE",
+        "private_join_and_compute/crypto/big_num.cc",
+        "private_join_and_compute/crypto/big_num.h",
+        "private_join_and_compute/crypto/context.cc",
+        "private_join_and_compute/crypto/context.h",
+        "private_join_and_compute/crypto/ec_commutative_cipher.cc",
+        "private_join_and_compute/crypto/ec_commutative_cipher.h",
+        "private_join_and_compute/crypto/ec_group.cc",
+        "private_join_and_compute/crypto/ec_group.h",
+        "private_join_and_compute/crypto/ec_point.cc",
+        "private_join_and_compute/crypto/ec_point.h",
+        "private_join_and_compute/crypto/elgamal.cc",
+        "private_join_and_compute/crypto/elgamal.h",
+        "private_join_and_compute/crypto/openssl.inc",
+    ],
+    transformations = [
+        patch.apply(patches = [
+            "patches/0001-use-base-check.patch",
+            "patches/0002-drop-openssl-init.patch",
+            "patches/0003-component-build-export.patch",
+        ]),
+    ],
+)

@@ -1,0 +1,15 @@
+upstream {
+  commit: "08df854f9fa14304fb4f19df48c7b6bc31f140d3"
+  artifacts {
+    git {
+      repository: "https://github.com/google/private-join-and-compute"
+      commit: "08df854f9fa14304fb4f19df48c7b6bc31f140d3"
+    }
+  }
+}
+stages {
+  input {
+    patch { copybara {} }
+  }
+  publish { git {} }
+}

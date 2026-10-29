@@ -1,0 +1,145 @@
+Export the public classes for the component build
+
+ec_commutative_cipher is a component(), a shared library in the
+component build. Code outside it (leak_detection, private_membership)
+uses these classes, so each needs PRIVATE_COMPUTE_EXPORT from
+base/private_join_and_compute_export.h, a Chromium header next to src/.
+A class in a newly imported public header needs it too.
+
+Chromium commits 10fe65a5a7b9d and 969a33ce6838d.
+
+diff --git a/src/private_join_and_compute/crypto/big_num.h b/src/private_join_and_compute/crypto/big_num.h
+index a5bc696880ac8..804fffede19ff 100644
+--- a/src/private_join_and_compute/crypto/big_num.h
++++ b/src/private_join_and_compute/crypto/big_num.h
+@@ -25,6 +25,7 @@
+ #include "absl/base/attributes.h"
+ #include "absl/status/statusor.h"
+ #include "absl/strings/string_view.h"
++#include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
+ #include "private_join_and_compute/crypto/openssl.inc"
+ 
+ namespace private_join_and_compute {
+@@ -34,7 +35,7 @@ namespace private_join_and_compute {
+ // Makes use of a BN_CTX structure that holds temporary BIGNUMs needed for
+ // arithmetic operations as dynamic memory allocation to create BIGNUMs is
+ // expensive.
+-class ABSL_MUST_USE_RESULT BigNum {
++class ABSL_MUST_USE_RESULT PRIVATE_COMPUTE_EXPORT BigNum {
+  public:
+   // Deletes a BIGNUM.
+   class BnDeleter {
+diff --git a/src/private_join_and_compute/crypto/context.h b/src/private_join_and_compute/crypto/context.h
+index a7e239e8399cf..3d88f08f61df3 100644
+--- a/src/private_join_and_compute/crypto/context.h
++++ b/src/private_join_and_compute/crypto/context.h
+@@ -25,6 +25,7 @@
+ #include "absl/strings/string_view.h"
+ #include "private_join_and_compute/crypto/big_num.h"
+ #include "private_join_and_compute/crypto/openssl.inc"
++#include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
+ 
+ #define CRYPTO_CHECK(expr) CHECK(expr) << OpenSSLErrorString();
+ 
+@@ -41,7 +42,7 @@ std::string OpenSSLErrorString();
+ //
+ // This class is not thread-safe, so each thread needs to have a unique Context
+ // initialized.
+-class Context {
++class PRIVATE_COMPUTE_EXPORT Context {
+  public:
+   // Deletes a BN_CTX.
+   class BnCtxDeleter {
+diff --git a/src/private_join_and_compute/crypto/ec_commutative_cipher.h b/src/private_join_and_compute/crypto/ec_commutative_cipher.h
+index e3908a7bc1a72..5d00de072c53f 100644
+--- a/src/private_join_and_compute/crypto/ec_commutative_cipher.h
++++ b/src/private_join_and_compute/crypto/ec_commutative_cipher.h
+@@ -22,6 +22,7 @@
+ 
+ #include "absl/status/statusor.h"
+ #include "absl/strings/string_view.h"
++#include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
+ #include "private_join_and_compute/crypto/big_num.h"
+ #include "private_join_and_compute/crypto/context.h"
+ #include "private_join_and_compute/crypto/ec_group.h"
+@@ -85,7 +86,7 @@ namespace private_join_and_compute {
+ //    absl::StatusOr<std::pair<string, string>> double_encrypted_string =
+ //        cipher->ReEncryptElGamalCiphertext(elgamal_ciphertext);
+ 
+-class ECCommutativeCipher {
++class PRIVATE_COMPUTE_EXPORT ECCommutativeCipher {
+  public:
+   // The hash function used by the ECCommutativeCipher in order to hash strings
+   // to EC curve points.
+diff --git a/src/private_join_and_compute/crypto/ec_group.h b/src/private_join_and_compute/crypto/ec_group.h
+index 732336b4cd984..bfb062cd61b91 100644
+--- a/src/private_join_and_compute/crypto/ec_group.h
++++ b/src/private_join_and_compute/crypto/ec_group.h
+@@ -22,6 +22,7 @@
+ #include "absl/status/status.h"
+ #include "absl/status/statusor.h"
+ #include "absl/strings/string_view.h"
++#include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
+ #include "private_join_and_compute/crypto/big_num.h"
+ #include "private_join_and_compute/crypto/context.h"
+ #include "private_join_and_compute/crypto/openssl.inc"
+@@ -31,7 +32,7 @@ namespace private_join_and_compute {
+ class ECPoint;
+ 
+ // Wrapper class for openssl EC_GROUP.
+-class ECGroup {
++class PRIVATE_COMPUTE_EXPORT ECGroup {
+  public:
+   // Deletes a EC_GROUP.
+   class ECGroupDeleter {
+diff --git a/src/private_join_and_compute/crypto/ec_point.h b/src/private_join_and_compute/crypto/ec_point.h
+index e00abca839f88..c2e21712db50d 100644
+--- a/src/private_join_and_compute/crypto/ec_point.h
++++ b/src/private_join_and_compute/crypto/ec_point.h
+@@ -21,6 +21,7 @@
+ #include <utility>
+ 
+ #include "absl/status/statusor.h"
++#include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
+ #include "private_join_and_compute/crypto/big_num.h"
+ #include "private_join_and_compute/crypto/openssl.inc"
+ 
+@@ -30,7 +31,7 @@ class BigNum;
+ class ECGroup;
+ 
+ // Wrapper class for openssl EC_POINT.
+-class ECPoint {
++class PRIVATE_COMPUTE_EXPORT ECPoint {
+  public:
+   // Deletes an EC_POINT.
+   class ECPointDeleter {
+diff --git a/src/private_join_and_compute/crypto/elgamal.h b/src/private_join_and_compute/crypto/elgamal.h
+index f3aa385185342..9f29cf072adea 100644
+--- a/src/private_join_and_compute/crypto/elgamal.h
++++ b/src/private_join_and_compute/crypto/elgamal.h
+@@ -41,6 +41,7 @@
+ #include <vector>
+ 
+ #include "absl/status/statusor.h"
++#include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
+ #include "private_join_and_compute/crypto/ec_group.h"
+ #include "private_join_and_compute/crypto/ec_point.h"
+ 
+@@ -102,7 +103,7 @@ bool IsCiphertextZero(const Ciphertext& ciphertext);
+ }  // namespace elgamal
+ 
+ // Implements ElGamal encryption with a public key.
+-class ElGamalEncrypter {
++class PRIVATE_COMPUTE_EXPORT ElGamalEncrypter {
+  public:
+   // Creates a ElGamalEncrypter object from a given public key.
+   // Takes ownership of the public key.
+@@ -132,7 +133,7 @@ class ElGamalEncrypter {
+ };
+ 
+ // Implements ElGamal decryption using the private key.
+-class ElGamalDecrypter {
++class PRIVATE_COMPUTE_EXPORT ElGamalDecrypter {
+  public:
+   // Creates a ElGamalDecrypter object from a given private key.
+   // Takes ownership of the private key.
