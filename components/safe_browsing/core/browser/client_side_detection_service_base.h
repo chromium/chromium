@@ -45,6 +45,7 @@ namespace safe_browsing {
 
 class ClientSidePhishingModel;
 enum class CSDModelType;
+class Scorer;
 struct TargetEmbedding;
 
 // Enum used to keep stats on classification using threshold comparison.
@@ -128,6 +129,24 @@ class ClientSideDetectionServiceBase : public KeyedService {
   // phishing model has been downloaded and is ready to be distributed.
   virtual base::CallbackListSubscription RegisterCallbackForModelUpdates(
       base::RepeatingClosure callback);
+
+  // Returns the browser-side `Scorer` built from the current model files, or
+  // nullptr if none is available (no model, service disabled, or browser-side
+  // scoring not enabled on this platform; see `ShouldCreateBrowserScorer()`).
+  // The pointer is only valid until the next scorer update; use
+  // `RegisterCallbackForScorerUpdates()` to be notified of changes.
+  Scorer* GetScorer() const;
+
+  // Registers a callback that is invoked on the calling sequence whenever the
+  // `Scorer` returned by `GetScorer()` is replaced or cleared. Callbacks are
+  // not invoked for no-op updates (i.e. when there was no scorer before and
+  // there is none after).
+  base::CallbackListSubscription RegisterCallbackForScorerUpdates(
+      base::RepeatingClosure callback);
+
+  // Replaces the browser-side `Scorer` (nullptr clears it) and notifies
+  // callbacks registered via `RegisterCallbackForScorerUpdates()`.
+  void SetScorerForTesting(std::unique_ptr<Scorer> scorer);
 
   // Returns true if the given IP address falls within a private
   // (unroutable) network block.  Pages which are hosted on these IP addresses
@@ -251,13 +270,21 @@ class ClientSideDetectionServiceBase : public KeyedService {
       const ClientPhishingResponse& response) {}
 
   // Called when the phishing model files are updated on disk. Subclasses should
-  // override this to process the new model files.
+  // override this to process the new model files. A refresh of the
+  // browser-side `Scorer` (if any) has already been scheduled when this is
+  // called; hosts learn about the new `Scorer` through
+  // `RegisterCallbackForScorerUpdates()`.
   virtual void OnModelUpdated() {}
+
+  // Returns true if this service should build and own a browser-side `Scorer`
+  // from the current model files, for platforms that run phishing
+  // classification in the browser process. The default returns false.
+  virtual bool ShouldCreateBrowserScorer() const;
 
   // Internal helper called when either the underlying phishing model or the
   // service state (e.g., enabled/disabled preferences) changes. It manages
-  // subscriptions and delegates to the platform-specific `OnModelUpdated()`
-  // hook.
+  // subscriptions, refreshes the browser-side `Scorer`, and delegates to the
+  // platform-specific `OnModelUpdated()` hook.
   void OnModelAndServiceStateChanged();
 
   void OnURLLoaderComplete(network::SimpleURLLoader* url_loader,
@@ -318,6 +345,27 @@ class ClientSideDetectionServiceBase : public KeyedService {
   std::unique_ptr<Delegate> delegate_;
 
  private:
+  // Refreshes the browser-side `Scorer` from the current model state and then
+  // invokes the `OnModelUpdated()` hook. Bound to model-update notifications.
+  void OnModelUpdatedInternal();
+
+  // Builds a new `Scorer` on a background thread from the current model files
+  // (or clears the existing one if the service is disabled, the model is
+  // unavailable, or `ShouldCreateBrowserScorer()` is false).
+  void MaybeUpdateBrowserScorer();
+
+  // Reply for background `Scorer` creation. Discards `scorer` if
+  // `generation_id` no longer matches `current_model_generation_`.
+  void OnScorerCreated(int generation_id, std::unique_ptr<Scorer> scorer);
+
+  // Installs `scorer` as the active browser-side `Scorer`, notifies scorer
+  // update callbacks, and then destroys the previous `Scorer` on a background
+  // thread (closing memory-mapped model files performs blocking I/O).
+  void SetScorer(std::unique_ptr<Scorer> scorer);
+
+  // Clears the active browser-side `Scorer` if there is one.
+  void ClearScorer();
+
   // Cache of completed requests. Used to satisfy requests for the same urls
   // as long as the next request falls within our caching window (which is
   // determined by kNegativeCacheIntervalDays and
@@ -345,6 +393,18 @@ class ClientSideDetectionServiceBase : public KeyedService {
   PrefChangeRegistrar pref_change_registrar_;
 
   base::CallbackListSubscription update_model_subscription_;
+
+  // Tracks the current model generation so that asynchronous background
+  // `Scorer` creation tasks do not install a stale `Scorer` if a newer model
+  // arrives while the task is running. Model updates are infrequent, so
+  // overflow is not a concern.
+  int current_model_generation_ = 0;
+
+  // The browser-side `Scorer`, owned per profile. Null unless
+  // `ShouldCreateBrowserScorer()` is true and a valid model is available.
+  std::unique_ptr<Scorer> scorer_;
+
+  base::RepeatingClosureList scorer_update_callbacks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

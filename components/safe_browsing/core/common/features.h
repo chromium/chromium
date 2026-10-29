@@ -89,6 +89,13 @@ extern const base::FeatureParam<std::string> kCsdClipboardCopyApiRemoteRunners;
 extern const base::FeatureParam<std::string> kCsdClipboardCopyApiDecoders;
 extern const base::FeatureParam<bool> kCSDClipboardCopyApiSuspiciousTokenFilter;
 
+// Runs client-side phishing visual classification and image embedding in the
+// browser process, capturing page pixels via
+// `RenderWidgetHostView::CopyFromSurface`, instead of in the renderer process.
+// When enabled, the browser process owns the `Scorer` instead of distributing
+// the phishing models to renderers.
+BASE_DECLARE_FEATURE(kClientSideDetectionCopyFromSurface);
+
 // Enables sending a CSD ping on the detection of a credit card form.
 BASE_DECLARE_FEATURE(kClientSideDetectionCreditCardForm);
 // Sets the high-confidence allowlist acceptance rate for determining whether

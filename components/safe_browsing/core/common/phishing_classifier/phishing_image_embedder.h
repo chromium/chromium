@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "build/build_config.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "ui/gfx/image/image.h"
 
@@ -46,11 +45,11 @@ class PhishingImageEmbedder {
   // has had a scorer set via `set_scorer()`.
   bool is_ready() const;
 
-#if BUILDFLAG(IS_IOS)
-  // Sets the scorer. Required on iOS because `ScorerStorage` is a process-wide
-  // singleton and iOS runs in a multi-Profile browser process architecture.
+  // Sets the scorer explicitly. Once called, this embedder only ever uses the
+  // injected scorer (nullptr means "not ready") and never consults the
+  // process-wide `ScorerStorage`. Used by the browser process, which owns one
+  // `Scorer` per profile; renderers rely on `ScorerStorage` instead.
   void set_scorer(Scorer* scorer);
-#endif
 
   // Begins the image embedding process for the given image.
   //
@@ -117,10 +116,11 @@ class PhishingImageEmbedder {
   gfx::Image image_;
   DoneCallback done_callback_;
 
-#if BUILDFLAG(IS_IOS)
-  // An explicitly set scorer for platforms where ScorerStorage is not used.
+  // An explicitly injected scorer (see `set_scorer()`). `has_explicit_scorer_`
+  // records whether `set_scorer()` was ever called, in which case
+  // `ScorerStorage` is never consulted.
   raw_ptr<Scorer> scorer_ = nullptr;
-#endif
+  bool has_explicit_scorer_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

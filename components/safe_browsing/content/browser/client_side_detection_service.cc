@@ -82,6 +82,10 @@ void ClientSideDetectionService::OnModelUpdated() {
   }
 }
 
+bool ClientSideDetectionService::ShouldCreateBrowserScorer() const {
+  return base::FeatureList::IsEnabled(kClientSideDetectionCopyFromSurface);
+}
+
 void ClientSideDetectionService::SendModelToRenderers() {
   // We will not send models to the renderer process if the feature is disabled.
   // This is because the feature can be disabled via Finch in a scenario where a

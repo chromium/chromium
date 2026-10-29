@@ -117,6 +117,9 @@ const base::FeatureParam<bool> kCSDClipboardCopyApiSuspiciousTokenFilter{
     &kClientSideDetectionClipboardCopyApi, "SuspiciousTokenFilter",
     /*default_value=*/true};
 
+BASE_FEATURE(kClientSideDetectionCopyFromSurface,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kClientSideDetectionCreditCardForm,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<double> kCsdCreditCardFormHCAcceptanceRate{
@@ -600,6 +603,7 @@ base::ListValue GetFeatureStatusList() {
       &kBundledSecuritySettings,
       &kBundledSecuritySettingsAskBeforeHttp,
       &kClientSideDetectionClipboardCopyApi,
+      &kClientSideDetectionCopyFromSurface,
       &kClientSideDetectionEnabledIos,
       &kClientSideDetectionForcedLlamaRedirectChainKillswitch,
       &kClientSideDetectionImageEmbeddingMatch,

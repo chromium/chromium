@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -19,6 +20,7 @@
 #include "build/build_config.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
 #include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
+#include "components/safe_browsing/core/common/phishing_classifier/test_utils.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,26 +42,6 @@ constexpr int kExpectedVisualHeight = 48;
 #endif
 constexpr size_t kExpectedVisualDataSize =
     3u * kExpectedVisualWidth * kExpectedVisualHeight;
-
-// Mock implementation of Scorer used to intercept and verify calls to the
-// visual TfLite models without executing the real model logic.
-class MockScorer : public Scorer {
- public:
-  MockScorer() = default;
-  ~MockScorer() override = default;
-
-  MOCK_METHOD(void,
-              ApplyVisualTfLiteModel,
-              (const gfx::Image& image,
-               base::OnceCallback<void(std::vector<double>)> callback),
-              (const, override));
-
-  MOCK_METHOD(void,
-              ApplyVisualTfLiteModelImageEmbedding,
-              (const gfx::Image& image,
-               base::OnceCallback<void(ImageFeatureEmbedding)> callback),
-              (const, override));
-};
 
 std::string GetFlatBufferString() {
   flatbuffers::FlatBufferBuilder builder(1024);
@@ -89,37 +71,47 @@ class PhishingImageEmbedderTest : public testing::Test {
     mapped_region.mapping.GetMemoryAsSpan<char>().copy_from(model_str);
     image_embedder_ = std::make_unique<PhishingImageEmbedder>();
 
-    auto scorer =
-        Scorer::Create(mapped_region.region.Duplicate(), base::File());
-#if BUILDFLAG(IS_IOS)
-    image_embedder_->set_scorer(scorer.get());
-    scorer_ = std::move(scorer);
-#else
-    ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
-#endif
+    scorer_ = Scorer::Create(mapped_region.region.Duplicate(), base::File());
+    image_embedder_->set_scorer(scorer_.get());
   }
 
-  void TearDown() override {
-    image_embedder_.reset();
-#if !BUILDFLAG(IS_IOS)
-    ScorerStorage::GetInstance()->SetScorer(nullptr);
-#endif
-  }
+  void TearDown() override { image_embedder_.reset(); }
 
-  void ClearScorer() {
-#if BUILDFLAG(IS_IOS)
-    image_embedder_->set_scorer(nullptr);
-#else
-    ScorerStorage::GetInstance()->SetScorer(nullptr);
-#endif
-  }
+  void ClearScorer() { image_embedder_->set_scorer(nullptr); }
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<PhishingImageEmbedder> image_embedder_;
-#if BUILDFLAG(IS_IOS)
   std::unique_ptr<Scorer> scorer_;
-#endif
 };
+
+#if !BUILDFLAG(IS_IOS)
+// In renderer processes, `PhishingImageEmbedder` typically relies on the
+// process-wide `ScorerStorage` to obtain the model. In the browser process (or
+// on iOS), the scorer is injected explicitly for profile isolation. This test
+// ensures that once a scorer is explicitly set via `set_scorer()`,
+// `PhishingImageEmbedder` locks to that state and stops consulting the global
+// `ScorerStorage`.
+TEST_F(PhishingImageEmbedderTest, UsesScorerStorageUntilScorerIsInjected) {
+  base::ScopedClosureRunner cleanup_storage(
+      base::BindOnce([] { ScorerStorage::GetInstance()->ClearScorer(); }));
+  // Other tests in this process may share the `ScorerStorage` singleton.
+  ScorerStorage::GetInstance()->SetScorer(nullptr);
+  PhishingImageEmbedder embedder;
+  EXPECT_FALSE(embedder.is_ready());
+
+  ScorerStorage::GetInstance()->SetScorer(std::make_unique<Scorer>());
+  EXPECT_TRUE(embedder.is_ready());
+
+  embedder.set_scorer(nullptr);
+  EXPECT_FALSE(embedder.is_ready());
+
+  embedder.set_scorer(scorer_.get());
+  EXPECT_TRUE(embedder.is_ready());
+
+  ScorerStorage::GetInstance()->SetScorer(nullptr);
+  EXPECT_TRUE(embedder.is_ready());
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(PhishingImageEmbedderTest, NoImageEmbeddingWithVisualFeatures) {
   SkBitmap bitmap;
@@ -184,12 +176,8 @@ TEST_F(PhishingImageEmbedderTest, NoImageEmbeddingOrVisualFeatures) {
 TEST_F(PhishingImageEmbedderTest, ImageEmbeddingWithMockScorer) {
   auto mock_scorer = std::make_unique<MockScorer>();
   MockScorer* raw_mock_scorer = mock_scorer.get();
-#if BUILDFLAG(IS_IOS)
   image_embedder_->set_scorer(raw_mock_scorer);
   scorer_ = std::move(mock_scorer);
-#else
-  ScorerStorage::GetInstance()->SetScorer(std::move(mock_scorer));
-#endif
 
   SkBitmap bitmap;
   bitmap.allocN32Pixels(48, 48);

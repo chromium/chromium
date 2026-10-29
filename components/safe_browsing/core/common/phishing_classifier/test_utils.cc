@@ -12,6 +12,9 @@
 
 namespace safe_browsing {
 
+MockScorer::MockScorer() = default;
+MockScorer::~MockScorer() = default;
+
 void ExpectFeatureMapsAreEqual(const FeatureMap& first,
                                const FeatureMap& second) {
   std::map<std::string, double> sorted_first(first.features().begin(),

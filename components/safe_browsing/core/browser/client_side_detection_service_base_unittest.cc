@@ -7,12 +7,15 @@
 #include <memory>
 #include <vector>
 
+#include "base/files/file.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
@@ -20,6 +23,9 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/browser/client_side_phishing_model.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/phishing_classifier/phishing_classifier.h"
+#include "components/safe_browsing/core/common/phishing_classifier/phishing_image_embedder.h"
+#include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "net/base/ip_address.h"
@@ -79,6 +85,52 @@ class ClientSidePhishingModelObserverTracker
   raw_ptr<optimization_guide::OptimizationTargetModelObserver> model_observer_;
 };
 
+// A service whose platform hook requests a browser-side `Scorer`, as on iOS or
+// on content platforms with `kClientSideDetectionCopyFromSurface` enabled.
+class BrowserScorerClientSideDetectionService
+    : public ClientSideDetectionServiceBase {
+ public:
+  BrowserScorerClientSideDetectionService(
+      PrefService* prefs,
+      optimization_guide::OptimizationGuideModelProvider* opt_guide)
+      : ClientSideDetectionServiceBase(prefs, opt_guide) {
+    OnPrefsUpdated();
+  }
+
+  void SetFakeImageEmbeddingModel(base::File file) {
+    fake_image_embedding_model_ = std::move(file);
+  }
+
+  int get_image_embedding_model_call_count() const {
+    return get_image_embedding_model_call_count_;
+  }
+
+ private:
+  bool ShouldCreateBrowserScorer() const override { return true; }
+
+  bool HasImageEmbeddingModel() const override {
+    return fake_image_embedding_model_.IsValid() ||
+           ClientSideDetectionServiceBase::HasImageEmbeddingModel();
+  }
+
+  bool IsModelMetadataImageEmbeddingVersionMatching() const override {
+    return fake_image_embedding_model_.IsValid() ||
+           ClientSideDetectionServiceBase::
+               IsModelMetadataImageEmbeddingVersionMatching();
+  }
+
+  const base::File& GetImageEmbeddingModel() const override {
+    ++get_image_embedding_model_call_count_;
+    if (fake_image_embedding_model_.IsValid()) {
+      return fake_image_embedding_model_;
+    }
+    return ClientSideDetectionServiceBase::GetImageEmbeddingModel();
+  }
+
+  base::File fake_image_embedding_model_;
+  mutable int get_image_embedding_model_call_count_ = 0;
+};
+
 }  // namespace
 
 class ClientSideDetectionServiceBaseTest : public testing::Test {
@@ -120,12 +172,25 @@ class ClientSideDetectionServiceBaseTest : public testing::Test {
 #if BUILDFLAG(IS_ANDROID)
     additional_files_path =
         additional_files_path.AppendASCII("visual_model_android.tflite");
+#elif BUILDFLAG(IS_IOS)
+    additional_files_path =
+        additional_files_path.AppendASCII("visual_model_ios.tflite");
 #else
     additional_files_path =
         additional_files_path.AppendASCII("visual_model_desktop.tflite");
 #endif
     ValidateModel(model_file_path, {additional_files_path});
   }
+
+  // Accessors for private `Scorer` lifecycle state (this fixture is a friend of
+  // `ClientSideDetectionServiceBase`; derived fixtures are not).
+  void OnScorerCreated(int generation_id, std::unique_ptr<Scorer> scorer) {
+    service_->OnScorerCreated(generation_id, std::move(scorer));
+  }
+  int GetCurrentModelGeneration() {
+    return service_->current_model_generation_;
+  }
+  void TriggerModelUpdated() { service_->OnModelUpdatedInternal(); }
 
   size_t GetCacheSize() { return service_->cache_.size(); }
   bool HasCacheEntry(const GURL& url) {
@@ -798,5 +863,271 @@ TEST_P(ClientSideDetectionServiceBaseOnlyESBTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          ClientSideDetectionServiceBaseOnlyESBTest,
                          testing::Combine(testing::Bool(), testing::Bool()));
+
+// Tests for the browser-side `Scorer` lifecycle owned by the base class.
+class ClientSideDetectionServiceBaseScorerTest
+    : public ClientSideDetectionServiceBaseTest {
+ protected:
+  void SetUp() override {
+    ClientSideDetectionServiceBaseTest::SetUp();
+    prefs_.SetBoolean(prefs::kSafeBrowsingEnabled, true);
+    service_ = std::make_unique<BrowserScorerClientSideDetectionService>(
+        &prefs_, model_observer_tracker_.get());
+    SubscribeToScorerUpdates();
+  }
+
+  void SubscribeToScorerUpdates() {
+    scorer_update_subscription_ = service_->RegisterCallbackForScorerUpdates(
+        base::BindLambdaForTesting([this] { ++scorer_update_count_; }));
+  }
+
+  // Destroys the current service so that a replacement can register with the
+  // (single-observer) model provider tracker.
+  void ResetService() {
+    scorer_update_subscription_ = base::CallbackListSubscription();
+    service_.reset();
+    base::ThreadPoolInstance::Get()->FlushForTesting();
+    task_environment_.RunUntilIdle();
+  }
+
+  int scorer_update_count_ = 0;
+  base::CallbackListSubscription scorer_update_subscription_;
+};
+
+TEST_F(ClientSideDetectionServiceBaseScorerTest, ModelUpdateCreatesScorer) {
+  EXPECT_EQ(service_->GetScorer(), nullptr);
+  EXPECT_EQ(scorer_update_count_, 0);
+
+  base::HistogramTester histogram_tester;
+  ReadModelAndTfLiteFiles();
+
+  EXPECT_NE(service_->GetScorer(), nullptr);
+  EXPECT_EQ(scorer_update_count_, 1);
+  // Standard Protection is enabled by default, so the image embedding version
+  // match metric must not be recorded.
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ImageEmbeddingModelVersionMatch", 0);
+}
+
+TEST_F(ClientSideDetectionServiceBaseScorerTest,
+       ImageEmbeddingModelGatedOnEnhancedProtection) {
+  auto* browser_scorer_service =
+      static_cast<BrowserScorerClientSideDetectionService*>(service_.get());
+
+  base::FilePath embedding_path;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &embedding_path);
+  embedding_path = embedding_path.AppendASCII("components")
+                       .AppendASCII("test")
+                       .AppendASCII("data")
+                       .AppendASCII("safe_browsing")
+                       .AppendASCII("image_embedding.tflite");
+  base::File embedding_file(embedding_path,
+                            base::File::FLAG_OPEN | base::File::FLAG_READ);
+  ASSERT_TRUE(embedding_file.IsValid());
+  browser_scorer_service->SetFakeImageEmbeddingModel(std::move(embedding_file));
+
+  // Under Standard Protection, neither the histogram nor the image embedding
+  // model attachment should occur even when an embedding model is available.
+  {
+    base::HistogramTester histogram_tester;
+    ReadModelAndTfLiteFiles();
+    ASSERT_NE(service_->GetScorer(), nullptr);
+    histogram_tester.ExpectTotalCount(
+        "SBClientPhishing.ImageEmbeddingModelVersionMatch", 0);
+    EXPECT_EQ(browser_scorer_service->get_image_embedding_model_call_count(),
+              0);
+  }
+
+  // Enabling Enhanced Protection attaches the embedding model and records the
+  // version match metric.
+  {
+    base::HistogramTester histogram_tester;
+    prefs_.SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+    task_environment_.RunUntilIdle();
+    ASSERT_NE(service_->GetScorer(), nullptr);
+    histogram_tester.ExpectUniqueSample(
+        "SBClientPhishing.ImageEmbeddingModelVersionMatch", true, 1);
+    EXPECT_EQ(browser_scorer_service->get_image_embedding_model_call_count(),
+              1);
+  }
+}
+
+TEST_F(ClientSideDetectionServiceBaseScorerTest,
+       NoScorerWhenPlatformDoesNotRequestOne) {
+  // The plain base class does not request a browser-side scorer (the default
+  // for content platforms without `kClientSideDetectionCopyFromSurface`).
+  ResetService();
+  service_ = ClientSideDetectionServiceBase::CreateForTesting(
+      &prefs_, model_observer_tracker_.get());
+  SubscribeToScorerUpdates();
+
+  ReadModelAndTfLiteFiles();
+
+  EXPECT_EQ(service_->GetScorer(), nullptr);
+  // No notification for a null -> null update.
+  EXPECT_EQ(scorer_update_count_, 0);
+}
+
+TEST_F(ClientSideDetectionServiceBaseScorerTest,
+       DisablingSafeBrowsingClearsScorerAndNotifies) {
+  ReadModelAndTfLiteFiles();
+  ASSERT_NE(service_->GetScorer(), nullptr);
+  ASSERT_EQ(scorer_update_count_, 1);
+
+  prefs_.SetBoolean(prefs::kSafeBrowsingEnabled, false);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(service_->GetScorer(), nullptr);
+  EXPECT_EQ(scorer_update_count_, 2);
+
+  // A model update while disabled must not notify (null -> null).
+  TriggerModelUpdated();
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(service_->GetScorer(), nullptr);
+  EXPECT_EQ(scorer_update_count_, 2);
+}
+
+TEST_F(ClientSideDetectionServiceBaseScorerTest,
+       KillswitchPreventsScorerCreation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kClientSideDetectionKillswitch);
+  ResetService();
+  service_ = std::make_unique<BrowserScorerClientSideDetectionService>(
+      &prefs_, model_observer_tracker_.get());
+  SubscribeToScorerUpdates();
+
+  TriggerModelUpdated();
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(service_->GetScorer(), nullptr);
+  EXPECT_EQ(scorer_update_count_, 0);
+}
+
+TEST_F(ClientSideDetectionServiceBaseScorerTest,
+       StaleScorerCreationIsDiscarded) {
+  ReadModelAndTfLiteFiles();
+  ASSERT_NE(service_->GetScorer(), nullptr);
+  ASSERT_EQ(scorer_update_count_, 1);
+  const int current_generation = GetCurrentModelGeneration();
+
+  // A reply from a previous generation must be ignored.
+  OnScorerCreated(current_generation - 1, /*scorer=*/nullptr);
+  EXPECT_NE(service_->GetScorer(), nullptr);
+  EXPECT_EQ(scorer_update_count_, 1);
+
+  // A reply from the current generation is applied.
+  OnScorerCreated(current_generation, /*scorer=*/nullptr);
+  EXPECT_EQ(service_->GetScorer(), nullptr);
+  EXPECT_EQ(scorer_update_count_, 2);
+}
+
+TEST_F(ClientSideDetectionServiceBaseScorerTest,
+       EachModelUpdateBumpsGenerationEvenWhenCleared) {
+  const int initial_generation = GetCurrentModelGeneration();
+  // No model available: the scorer stays null, but the generation still moves
+  // so that any in-flight creation task is discarded.
+  TriggerModelUpdated();
+  EXPECT_EQ(GetCurrentModelGeneration(), initial_generation + 1);
+  EXPECT_EQ(service_->GetScorer(), nullptr);
+  EXPECT_EQ(scorer_update_count_, 0);
+}
+
+TEST_F(ClientSideDetectionServiceBaseScorerTest, SetScorerForTestingNotifies) {
+  service_->SetScorerForTesting(std::make_unique<Scorer>());
+  Scorer* first = service_->GetScorer();
+  EXPECT_NE(first, nullptr);
+  EXPECT_EQ(scorer_update_count_, 1);
+
+  service_->SetScorerForTesting(std::make_unique<Scorer>());
+  EXPECT_NE(service_->GetScorer(), nullptr);
+  EXPECT_NE(service_->GetScorer(), first);
+  EXPECT_EQ(scorer_update_count_, 2);
+
+  service_->SetScorerForTesting(nullptr);
+  EXPECT_EQ(service_->GetScorer(), nullptr);
+  EXPECT_EQ(scorer_update_count_, 3);
+
+  // Clearing an already-null scorer is a no-op.
+  service_->SetScorerForTesting(nullptr);
+  EXPECT_EQ(scorer_update_count_, 3);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(ClientSideDetectionServiceBaseScorerTest,
+       ShutdownClearsScorerAndNotifies) {
+  ReadModelAndTfLiteFiles();
+  ASSERT_NE(service_->GetScorer(), nullptr);
+  ASSERT_EQ(scorer_update_count_, 1);
+
+  service_->Shutdown();
+
+  EXPECT_EQ(service_->GetScorer(), nullptr);
+  EXPECT_EQ(scorer_update_count_, 2);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(ClientSideDetectionServiceBaseScorerTest,
+       DestructionWithoutShutdownClearsScorerAndNotifies) {
+  ReadModelAndTfLiteFiles();
+  ASSERT_NE(service_->GetScorer(), nullptr);
+  ASSERT_EQ(scorer_update_count_, 1);
+
+  // The `Scorer` owns memory-mapped files, so it must be released on a
+  // background thread even when the service is destroyed on a sequence that
+  // disallows blocking.
+  {
+    base::ScopedDisallowBlocking disallow_blocking;
+    service_.reset();
+  }
+  EXPECT_EQ(scorer_update_count_, 2);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(ClientSideDetectionServiceBaseScorerTest,
+       ServiceDestroyedDuringScorerCreation) {
+  ReadModelAndTfLiteFiles();
+  ASSERT_NE(service_->GetScorer(), nullptr);
+
+  // Post a new creation task and destroy the service before its reply runs.
+  // The orphaned `Scorer` must be destroyed off the main sequence.
+  TriggerModelUpdated();
+  service_.reset();
+
+  base::ScopedDisallowBlocking disallow_blocking;
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(ClientSideDetectionServiceBaseScorerTest, ScorersAreIsolatedPerService) {
+  auto model_observer_tracker2 =
+      std::make_unique<ClientSidePhishingModelObserverTracker>();
+  TestingPrefServiceSimple prefs2;
+  RegisterProfilePrefs(prefs2.registry());
+  prefs2.SetBoolean(prefs::kSafeBrowsingEnabled, true);
+  auto service2 = std::make_unique<BrowserScorerClientSideDetectionService>(
+      &prefs2, model_observer_tracker2.get());
+
+  ReadModelAndTfLiteFiles();
+
+  EXPECT_NE(service_->GetScorer(), nullptr);
+  EXPECT_EQ(service2->GetScorer(), nullptr);
+}
+
+TEST_F(ClientSideDetectionServiceBaseScorerTest,
+       ScorerCanBeInjectedIntoClassifierAndEmbedder) {
+  ReadModelAndTfLiteFiles();
+  ASSERT_NE(service_->GetScorer(), nullptr);
+
+  PhishingClassifier classifier;
+  classifier.set_scorer(service_->GetScorer());
+  EXPECT_TRUE(classifier.is_ready());
+  classifier.set_scorer(nullptr);
+  EXPECT_FALSE(classifier.is_ready());
+
+  PhishingImageEmbedder embedder;
+  embedder.set_scorer(service_->GetScorer());
+  EXPECT_TRUE(embedder.is_ready());
+  embedder.set_scorer(nullptr);
+  EXPECT_FALSE(embedder.is_ready());
+}
 
 }  // namespace safe_browsing

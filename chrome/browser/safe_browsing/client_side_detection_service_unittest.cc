@@ -5,9 +5,11 @@
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/safe_browsing/chrome_client_side_detection_service_delegate.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,9 +32,32 @@ class ClientSideDetectionServiceTest : public testing::Test {
     service->DidReceiveClientPhishingResponse(response);
   }
 
+  bool ShouldCreateBrowserScorer(ClientSideDetectionServiceBase* service) {
+    return service->ShouldCreateBrowserScorer();
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
 };
+
+TEST_F(ClientSideDetectionServiceTest,
+       BrowserScorerRequiresCopyFromSurfaceFeature) {
+  auto service = std::make_unique<ClientSideDetectionService>(
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(&profile_),
+      /*opt_guide=*/nullptr);
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(kClientSideDetectionCopyFromSurface);
+    EXPECT_FALSE(ShouldCreateBrowserScorer(service.get()));
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(kClientSideDetectionCopyFromSurface);
+    EXPECT_TRUE(ShouldCreateBrowserScorer(service.get()));
+  }
+  // Without a model provider there is never a scorer, regardless of the flag.
+  EXPECT_EQ(service->GetScorer(), nullptr);
+}
 
 TEST_F(ClientSideDetectionServiceTest, DiagnosticLogging) {
   auto service = std::make_unique<ClientSideDetectionService>(

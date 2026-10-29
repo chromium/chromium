@@ -228,7 +228,7 @@ class ClientSideDetectionServiceTest : public PlatformTest {
   }
 
   void TriggerModelUpdatedForTesting(ClientSideDetectionService* service) {
-    service->OnModelUpdated();
+    service->OnModelUpdatedInternal();
   }
 
   int GetCurrentModelGeneration(ClientSideDetectionService* service) {

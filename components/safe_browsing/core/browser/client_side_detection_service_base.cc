@@ -10,17 +10,22 @@
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/escape.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/client_side_phishing_model.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "google_apis/google_api_keys.h"
@@ -34,6 +39,40 @@
 #include "url/gurl.h"
 
 namespace safe_browsing {
+
+namespace {
+
+// Creates a `Scorer` from the flatbuffer model `region` and the visual TFLite
+// `visual_model`, attaching `embedding_model` when valid. Runs on a background
+// thread because `Scorer` memory-maps the model files.
+std::unique_ptr<Scorer> CreateScorerOnBackgroundThread(
+    base::ReadOnlySharedMemoryRegion region,
+    base::File visual_model,
+    base::File embedding_model,
+    int embedding_width,
+    int embedding_height) {
+  std::unique_ptr<Scorer> scorer =
+      Scorer::Create(std::move(region), std::move(visual_model));
+  if (scorer && embedding_model.IsValid()) {
+    scorer->AttachImageEmbeddingModel(embedding_width, embedding_height,
+                                      std::move(embedding_model));
+  }
+  return scorer;
+}
+
+// Destroys `scorer` on a background thread. Destroying a `Scorer` unmaps and
+// closes model files, which is blocking I/O that is forbidden on the UI thread.
+void DestroyScorerOnBackgroundThread(std::unique_ptr<Scorer> scorer) {
+  if (!scorer) {
+    return;
+  }
+  base::ThreadPool::PostTask(FROM_HERE,
+                             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+                              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+                             base::DoNothingWithBoundArgs(std::move(scorer)));
+}
+
+}  // namespace
 
 const int ClientSideDetectionServiceBase::kReportsIntervalDays = 1;
 const int ClientSideDetectionServiceBase::kMaxReportsPerInterval = 3;
@@ -99,12 +138,23 @@ ClientSideDetectionServiceBase::CreateForTesting(  // IN-TEST
   return service;
 }
 
-ClientSideDetectionServiceBase::~ClientSideDetectionServiceBase() = default;
+ClientSideDetectionServiceBase::~ClientSideDetectionServiceBase() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // The derived object is already gone; make sure hosts notified below cannot
+  // reach back into the service.
+  weak_factory_.InvalidateWeakPtrs();
+  // Normally already cleared by `Shutdown()`. Clear (and notify) here as well
+  // so that no one is left holding a dangling `Scorer*` when the service is
+  // destroyed without `Shutdown()` (e.g. in tests).
+  ClearScorer();
+}
 
 void ClientSideDetectionServiceBase::Shutdown() {
   url_loader_factory_.reset();
   delegate_.reset();
   SetEnabled(false);
+  // Notify scorer users before the model (and its files) go away.
+  ClearScorer();
   client_side_phishing_model_.reset();
 }
 
@@ -186,14 +236,143 @@ void ClientSideDetectionServiceBase::OnModelAndServiceStateChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (IsEnabled()) {
     if (!update_model_subscription_) {
-      update_model_subscription_ = RegisterCallbackForModelUpdates(
-          base::BindRepeating(&ClientSideDetectionServiceBase::OnModelUpdated,
-                              weak_factory_.GetWeakPtr()));
+      update_model_subscription_ =
+          RegisterCallbackForModelUpdates(base::BindRepeating(
+              &ClientSideDetectionServiceBase::OnModelUpdatedInternal,
+              weak_factory_.GetWeakPtr()));
     }
   } else {
     update_model_subscription_ = base::CallbackListSubscription();
   }
+  OnModelUpdatedInternal();
+}
+
+void ClientSideDetectionServiceBase::OnModelUpdatedInternal() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  MaybeUpdateBrowserScorer();
   OnModelUpdated();
+}
+
+bool ClientSideDetectionServiceBase::ShouldCreateBrowserScorer() const {
+  return false;
+}
+
+void ClientSideDetectionServiceBase::MaybeUpdateBrowserScorer() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Increment this now so that replies from in-flight creation tasks are
+  // discarded as stale, even if we exit early below.
+  current_model_generation_++;
+
+  // Platforms that classify in the browser process hold the `Scorer` here, so
+  // it must be cleared to free resources and stop detection as soon as the
+  // service is disabled or the model becomes unavailable.
+  if (!ShouldCreateBrowserScorer() || !IsEnabled() || !IsModelAvailable()) {
+    ClearScorer();
+    return;
+  }
+
+  // Only use the (virtual, null-safe) accessors here: test doubles commonly
+  // run without a `ClientSidePhishingModel`.
+  base::ReadOnlySharedMemoryRegion region = GetModelSharedMemoryRegion();
+  const base::File& visual_model = GetVisualTfLiteModel();
+  if (!region.IsValid() || !visual_model.IsValid()) {
+    DVLOG(1) << "Browser-side scorer update failed. Shared memory region is "
+             << (region.IsValid() ? "valid" : "invalid")
+             << ", visual TFLite file is "
+             << (visual_model.IsValid() ? "valid" : "invalid");
+    ClearScorer();
+    return;
+  }
+
+  base::File embedding_model_duplicate;
+  if (prefs_ && IsEnhancedProtectionEnabled(*prefs_)) {
+    const bool image_embedding_model_version_match =
+        IsModelMetadataImageEmbeddingVersionMatching() &&
+        HasImageEmbeddingModel();
+    if (image_embedding_model_version_match) {
+      if (const base::File& embedding_file = GetImageEmbeddingModel();
+          embedding_file.IsValid()) {
+        embedding_model_duplicate = embedding_file.Duplicate();
+      }
+    }
+    base::UmaHistogramBoolean(
+        "SBClientPhishing.ImageEmbeddingModelVersionMatch",
+        image_embedding_model_version_match);
+  }
+
+  // Do not bind `OnScorerCreated` directly to a `WeakPtr`: if this service is
+  // destroyed while `CreateScorerOnBackgroundThread` is in flight,
+  // `PostTaskAndReplyWithResult` would drop the cancelled reply and destroy the
+  // returned `Scorer` on the UI thread, triggering a blocking I/O assertion.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(
+          &CreateScorerOnBackgroundThread, std::move(region),
+          visual_model.Duplicate(), std::move(embedding_model_duplicate),
+          GetImageEmbeddingInputWidth(), GetImageEmbeddingInputHeight()),
+      base::BindOnce(
+          [](base::WeakPtr<ClientSideDetectionServiceBase> weak_service,
+             int generation_id, std::unique_ptr<Scorer> scorer) {
+            if (!weak_service) {
+              DestroyScorerOnBackgroundThread(std::move(scorer));
+              return;
+            }
+            weak_service->OnScorerCreated(generation_id, std::move(scorer));
+          },
+          weak_factory_.GetWeakPtr(), current_model_generation_));
+}
+
+void ClientSideDetectionServiceBase::OnScorerCreated(
+    int generation_id,
+    std::unique_ptr<Scorer> scorer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (generation_id != current_model_generation_) {
+    // Stale task, discard.
+    DestroyScorerOnBackgroundThread(std::move(scorer));
+    return;
+  }
+  SetScorer(std::move(scorer));
+}
+
+void ClientSideDetectionServiceBase::SetScorer(std::unique_ptr<Scorer> scorer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::unique_ptr<Scorer> previous_scorer = std::move(scorer_);
+  scorer_ = std::move(scorer);
+  // Notify before destroying the previous `Scorer` so that users can drop
+  // their raw pointers to it first. Skip no-op (null -> null) updates so that
+  // hosts on platforms without a browser-side scorer are not needlessly
+  // interrupted on pref or model churn.
+  if (previous_scorer || scorer_) {
+    scorer_update_callbacks_.Notify();
+  }
+  DestroyScorerOnBackgroundThread(std::move(previous_scorer));
+}
+
+void ClientSideDetectionServiceBase::ClearScorer() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (scorer_) {
+    SetScorer(nullptr);
+  }
+}
+
+Scorer* ClientSideDetectionServiceBase::GetScorer() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return scorer_.get();
+}
+
+base::CallbackListSubscription
+ClientSideDetectionServiceBase::RegisterCallbackForScorerUpdates(
+    base::RepeatingClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return scorer_update_callbacks_.Add(std::move(callback));
+}
+
+void ClientSideDetectionServiceBase::SetScorerForTesting(  // IN-TEST
+    std::unique_ptr<Scorer> scorer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SetScorer(std::move(scorer));
 }
 
 void ClientSideDetectionServiceBase::UnsubscribeToModelSubscription() {

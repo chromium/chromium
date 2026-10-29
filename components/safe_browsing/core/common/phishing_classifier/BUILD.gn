@@ -44,8 +44,10 @@ source_set("unit_tests_support") {
     "test_utils.cc",
     "test_utils.h",
   ]
-  deps = [
+  public_deps = [
     ":phishing_classifier",
+    "//base",
+    "//components/safe_browsing/core/common/proto:csd_proto",
     "//testing/gmock",
   ]
 }

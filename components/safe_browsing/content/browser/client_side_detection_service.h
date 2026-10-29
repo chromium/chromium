@@ -102,6 +102,7 @@ class ClientSideDetectionService
  private:
   // ClientSideDetectionServiceBase implementation:
   void OnModelUpdated() override;
+  bool ShouldCreateBrowserScorer() const override;
   void DidSendClientReportPhishingRequest(
       std::unique_ptr<ClientPhishingRequest> request,
       const std::string& access_token) override;
