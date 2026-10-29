@@ -10,10 +10,7 @@ build_webui("build") {
     "data_sharing_internals.css",
     "data_sharing_internals.html",
   ]
-  ts_files = [
-    "data_sharing_internals.ts",
-    "data_sharing_internals_browser_proxy.ts",
-  ]
+  ts_files = [ "data_sharing_internals.ts" ]
   mojo_files_deps = [
     "//components/data_sharing/data_sharing_internals/webui:mojo_bindings_ts__generator",
     "//components/data_sharing/public:logger_interfaces_ts__generator",

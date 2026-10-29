@@ -11,10 +11,7 @@ build_webui("resources") {
     "actor_internals.css",
     "actor_internals.html",
   ]
-  ts_files = [
-    "actor_internals.ts",
-    "browser_proxy.ts",
-  ]
+  ts_files = [ "actor_internals.ts" ]
 
   mojo_files_deps =
       [ "//components/actor/public/mojom:mojo_bindings_ts__generator" ]

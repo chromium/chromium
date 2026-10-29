@@ -8,13 +8,14 @@ import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 import type {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-import {DataSharingInternalsBrowserProxy} from './data_sharing_internals_browser_proxy.js';
+import {browserProxyFactory} from './data_sharing_internals.mojom-webui.js';
+import type {BrowserProxy} from './data_sharing_internals.mojom-webui.js';
 import type {GroupData, GroupMember} from './group_data.mojom-webui.js';
 import {MemberRole} from './group_data.mojom-webui.js';
 import {LogSource} from './logger_common.mojom-webui.js';
 
-function getProxy(): DataSharingInternalsBrowserProxy {
-  return DataSharingInternalsBrowserProxy.getInstance();
+function getProxy(): BrowserProxy {
+  return browserProxyFactory.getInstance();
 }
 
 // Contains all the log events received when the internals page is open.
@@ -171,7 +172,7 @@ function initialize() {
   getRequiredElement('log-messages-dump')
       .addEventListener('click', onLogMessagesDump);
 
-  getProxy().getCallbackRouter().onLogMessageAdded.addListener(
+  getProxy().callbackRouter.onLogMessageAdded.addListener(
       (eventTime, logSource, sourceFile, sourceLine, message) => {
         const eventTimeStr = convertMojoTimeToJS(eventTime).toISOString();
         const logSourceStr = logSourceToString(logSource);
@@ -224,7 +225,7 @@ function initialize() {
   window.onhashchange = activateTabByHash;
   activateTabByHash();
 
-  getProxy().getAllGroups().then(
+  getProxy().handler.getAllGroups().then(
       response => displayGroups(response.isSuccess, response.data));
 }
 

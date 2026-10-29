@@ -11,8 +11,8 @@
 
 import {getRequiredElement} from '//resources/js/util.js';
 
+import {browserProxyFactory} from './actor_internals.mojom-webui.js';
 import type {JournalEntry} from './actor_internals.mojom-webui.js';
-import {BrowserProxy} from './browser_proxy.js';
 
 /**
  * Manages the state and rendering of the actor event log table.
@@ -432,20 +432,20 @@ class ActorEventLog {
 
 
 function startLogging() {
-  BrowserProxy.getInstance().handler.startLogging();
+  browserProxyFactory.getInstance().handler.startLogging();
   getRequiredElement('start-logging').style.display = 'none';
   getRequiredElement('stop-logging').style.display = 'inline-block';
 }
 
 function stopLogging() {
-  BrowserProxy.getInstance().handler.stopLogging();
+  browserProxyFactory.getInstance().handler.stopLogging();
   getRequiredElement('start-logging').style.display = 'inline-block';
   getRequiredElement('stop-logging').style.display = 'none';
 }
 
 
 window.onload = function() {
-  const proxy = BrowserProxy.getInstance();
+  const proxy = browserProxyFactory.getInstance();
   const log = new ActorEventLog();
 
   // Route journal entries to the class instance
