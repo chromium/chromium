@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_store.h"
@@ -77,6 +78,9 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyStore
   const DMToken& machine_dm_token() const { return machine_dm_token_; }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(MachineLevelUserCloudPolicyStoreTest,
+                           LoadExternalCachedPoliciesMetrics);
+
   // Function used as a PolicyLoadFilter to use external policies if they are
   // newer than the ones previously written by the browser.
   static PolicyLoadResult MaybeUseExternalCachedPolicies(

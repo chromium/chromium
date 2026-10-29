@@ -6,6 +6,7 @@
 #define COMPONENTS_POLICY_CORE_COMMON_CLOUD_USER_CLOUD_POLICY_STORE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -108,9 +109,12 @@ class POLICY_EXPORT DesktopCloudPolicyStore : public UserCloudPolicyStoreBase {
  protected:
   // Loads cloud policies that have been written on the disk at |policy_path|
   // for caching purposes. Reads the optional |key_path| to load the signing key
-  // for those policies.
-  static PolicyLoadResult LoadPolicyFromDisk(const base::FilePath& policy_path,
-                                             const base::FilePath& key_path);
+  // for those policies. If |policy_scope| is provided, records the cache size
+  // metric for that scope.
+  static PolicyLoadResult LoadPolicyFromDisk(
+      const base::FilePath& policy_path,
+      const base::FilePath& key_path,
+      std::optional<PolicyScope> policy_scope = std::nullopt);
 
   // Callback invoked when a new policy has been loaded from disk. If
   // |validate_in_background| is true, then policy is validated via a background
@@ -155,7 +159,8 @@ class POLICY_EXPORT DesktopCloudPolicyStore : public UserCloudPolicyStoreBase {
   static PolicyLoadResult LoadAndFilterPolicyFromDisk(
       const base::FilePath& policy_path,
       const base::FilePath& key_path,
-      const PolicyLoadFilter& policy_load_filter);
+      const PolicyLoadFilter& policy_load_filter,
+      PolicyScope policy_scope = POLICY_SCOPE_USER);
 
   // The current key used to verify signatures of policy. This value is
   // eventually consistent with the one persisted in the key cache file. This
