@@ -95,6 +95,10 @@ BASE_FEATURE(kSearchSettingsUpdate, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSearchSettingsUpdateV2, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kChoiceEngineStatusReporting, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_WIN)
 // When enabled, will reject encrypted keyword table hashes that are weakly
 // encrypted.

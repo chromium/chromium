@@ -866,6 +866,13 @@ public final class ChromePreferenceKeys {
 
     public static final String RLZ_NOTIFIED = "rlz_first_search_notified";
 
+    /**
+     * Key used to store the Chrome version code (as {@code long}) after propagating an external
+     * search engine choice.
+     */
+    public static final String SEARCH_ENGINE_CHOICE_CHROME_VERSION =
+            "search_engine_choice_chrome_version";
+
     /** Key used to store the default Search Engine Type before choice is presented. */
     public static final String SEARCH_ENGINE_CHOICE_DEFAULT_TYPE_BEFORE =
             "search_engine_choice_default_type_before";
@@ -873,6 +880,13 @@ public final class ChromePreferenceKeys {
     /** Key used to store the version of Chrome in which the choice was presented. */
     public static final String SEARCH_ENGINE_CHOICE_PRESENTED_VERSION =
             "search_engine_choice_presented_version";
+
+    /**
+     * Key used to store the package name of the search provider (as {@code String}) after it was
+     * propagated to Chrome's search engines.
+     */
+    public static final String SEARCH_ENGINE_CHOICE_PROPAGATED_PACKAGE_NAME =
+            "search_engine_choice_propagated_package_name";
 
     /** Key used to store the date of when search engine choice was requested. */
     public static final String SEARCH_ENGINE_CHOICE_REQUESTED_TIMESTAMP =
