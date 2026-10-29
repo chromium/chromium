@@ -398,6 +398,46 @@ TEST_F(InputStateModelTest, ParsesActiveToolFromUrl) {
             omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
 }
 
+// A tool's `udm` dropped for `nem` doesn't stop it being recognized.
+TEST_F(InputStateModelTest, ParsesActiveToolFromUrl_NemStandsInForUdm) {
+  omnibox::SearchboxConfig config;
+
+  auto* canvas_config = config.add_tool_configs();
+  canvas_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  auto* canvas_rc_param = canvas_config->add_aim_url_params();
+  canvas_rc_param->set_param_key("rc");
+  canvas_rc_param->set_param_value("1");
+  auto* canvas_udm_param = canvas_config->add_aim_url_params();
+  canvas_udm_param->set_param_key("udm");
+  canvas_udm_param->set_param_value("50");
+
+  // A tool identified by `udm` alone.
+  auto* aim_config = config.add_tool_configs();
+  aim_config->set_tool(omnibox::ToolMode::TOOL_MODE_AIM);
+  auto* aim_param = aim_config->add_aim_url_params();
+  aim_param->set_param_key("udm");
+  aim_param->set_param_value("50");
+
+  auto tool_for_url = [&](const char* url) {
+    return InputStateModel(session_handle_, config, GURL(url),
+                           /*is_off_the_record=*/false,
+                           /*is_signed_in=*/false,
+                           /*browser_identity_matches_aim_identity=*/false)
+        .get_state_for_testing()
+        .active_tool;
+  };
+
+  // Canvas's `udm` was dropped for `nem`.
+  EXPECT_EQ(tool_for_url("https://example.com/?rc=1&nem=143"),
+            omnibox::ToolMode::TOOL_MODE_CANVAS);
+  // Without `nem`, Canvas still needs its `udm`.
+  EXPECT_EQ(tool_for_url("https://example.com/?rc=1"),
+            omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+  // A `udm`-only tool doesn't match a `nem` URL.
+  EXPECT_EQ(tool_for_url("https://example.com/?nem=143"),
+            omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+}
+
 TEST_F(InputStateModelTest, HidesToolsFromMenu) {
   omnibox::SearchboxConfig config;
   auto* tool_config = config.add_tool_configs();
@@ -1046,6 +1086,45 @@ TEST_F(InputStateModelTest, GetAdditionalQueryParams) {
   input_state_model_->SetActiveModel(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
   EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
               testing::UnorderedElementsAre(testing::Pair("dr", "1"),
+                                            testing::Pair("nem", "143")));
+}
+
+// `udm` (e.g. from a tool) is dropped when a model adds `nem`.
+TEST_F(InputStateModelTest, GetAdditionalQueryParams_NemDropsUdm) {
+  auto* canvas_config = config_.add_tool_configs();
+  canvas_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  auto* canvas_rc_param = canvas_config->add_aim_url_params();
+  canvas_rc_param->set_param_key("rc");
+  canvas_rc_param->set_param_value("1");
+  auto* canvas_udm_param = canvas_config->add_aim_url_params();
+  canvas_udm_param->set_param_key("udm");
+  canvas_udm_param->set_param_value("50");
+
+  auto* gemini_pro_config = config_.add_model_configs();
+  gemini_pro_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  auto* gp_param = gemini_pro_config->add_aim_url_params();
+  gp_param->set_param_key("nem");
+  gp_param->set_param_value("143");
+
+  // Recreate the model with the new config.
+  input_state_model_ = std::make_unique<InputStateModel>(
+      session_handle_, config_, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
+      /*browser_identity_matches_aim_identity=*/false);
+  input_state_model_->SetPrefService(&pref_service_);
+
+  // Canvas, no model: `udm` is kept.
+  input_state_model_->SetActiveTool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  input_state_model_->SetActiveModel(
+      omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+  EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
+              testing::UnorderedElementsAre(testing::Pair("rc", "1"),
+                                            testing::Pair("udm", "50")));
+
+  // Canvas + a `nem` model: `udm` is dropped.
+  input_state_model_->SetActiveModel(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
+              testing::UnorderedElementsAre(testing::Pair("rc", "1"),
                                             testing::Pair("nem", "143")));
 }
 
