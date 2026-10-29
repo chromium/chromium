@@ -243,6 +243,72 @@ TEST_F(ActivityReporterImplTest, ReportActiveNoCommitWithoutPrefService) {
   EXPECT_FALSE(pref_service_.user_prefs_store()->committed());
 }
 
+TEST_F(ActivityReporterImplTest, IncompleteReportsNoReports) {
+  base::HistogramTester histogram_tester;
+  activity_reporter_.reset();
+  histogram_tester.ExpectUniqueSample("ActivityReporter.IncompleteReports", 0,
+                                      1);
+}
+
+TEST_F(ActivityReporterImplTest, IncompleteReportsCompleted) {
+  base::HistogramTester histogram_tester;
+  update_client::Callback completion_callback = ReportActiveWithPendingWrite();
+  std::move(completion_callback).Run(update_client::Error::NONE);
+  activity_reporter_.reset();
+  histogram_tester.ExpectUniqueSample("ActivityReporter.IncompleteReports", 0,
+                                      1);
+}
+
+TEST_F(ActivityReporterImplTest, IncompleteReportsCompletedWithError) {
+  base::HistogramTester histogram_tester;
+  update_client::Callback completion_callback = ReportActiveWithPendingWrite();
+  std::move(completion_callback).Run(update_client::Error::UPDATE_CHECK_ERROR);
+  activity_reporter_.reset();
+  histogram_tester.ExpectUniqueSample("ActivityReporter.IncompleteReports", 0,
+                                      1);
+}
+
+TEST_F(ActivityReporterImplTest, IncompleteReportsOneInFlight) {
+  base::HistogramTester histogram_tester;
+  update_client::Callback completion_callback = ReportActiveWithPendingWrite();
+  activity_reporter_.reset();
+  histogram_tester.ExpectUniqueSample("ActivityReporter.IncompleteReports", 1,
+                                      1);
+
+  // Completing the report after destruction does not emit again.
+  std::move(completion_callback).Run(update_client::Error::NONE);
+  histogram_tester.ExpectTotalCount("ActivityReporter.IncompleteReports", 1);
+}
+
+TEST_F(ActivityReporterImplTest, IncompleteReportsThrottledNotCounted) {
+  base::HistogramTester histogram_tester;
+  ReportActiveWithPendingWrite();
+
+  // A report within the throttling interval does not start an update check, so
+  // it is not counted as incomplete.
+  EXPECT_CALL(*mock_update_client_, CheckForUpdate(_, _, _, _, _)).Times(0);
+  task_environment_.FastForwardBy(base::Hours(1));
+  activity_reporter_->ReportActive();
+  activity_reporter_.reset();
+  histogram_tester.ExpectUniqueSample("ActivityReporter.IncompleteReports", 1,
+                                      1);
+}
+
+TEST_F(ActivityReporterImplTest, IncompleteReportsMultipleInFlight) {
+  base::HistogramTester histogram_tester;
+  ReportActiveWithPendingWrite();
+  task_environment_.FastForwardBy(base::Hours(5));
+  update_client::Callback second_callback = ReportActiveWithPendingWrite();
+  task_environment_.FastForwardBy(base::Hours(5));
+  ReportActiveWithPendingWrite();
+
+  // Only the second report completes.
+  std::move(second_callback).Run(update_client::Error::NONE);
+  activity_reporter_.reset();
+  histogram_tester.ExpectUniqueSample("ActivityReporter.IncompleteReports", 2,
+                                      1);
+}
+
 TEST_F(ActivityReporterImplTest, InitialDateLastActiveStateUnknown) {
   TestingPrefServiceSimple pref_service;
   update_client::RegisterPrefs(pref_service.registry());

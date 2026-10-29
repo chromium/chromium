@@ -179,6 +179,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/ui/histograms.xml:WebUIHostname) -->
 
+<histogram name="ActivityReporter.IncompleteReports" units="reports"
+    expires_after="2027-01-27">
+  <owner>sorin@chromium.org</owner>
+  <owner>src/components/activity_reporter/OWNERS</owner>
+  <summary>
+    Records the number of activity report update checks still in progress when
+    the activity reporter is destroyed during a clean shutdown. Such reports may
+    have reached the server, but their responses were not processed. Emitted
+    once per session that reports activity; not emitted on Android or after
+    crashes, and rarely on iOS. Typically uploaded on the next browser launch.
+  </summary>
+</histogram>
+
 <histogram name="ActivityReporter.InitialDateLastActiveState"
     enum="InitialDateLastActiveState" expires_after="2027-01-19">
   <owner>noahrose@google.com</owner>

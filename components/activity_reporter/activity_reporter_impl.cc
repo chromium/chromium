@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -38,6 +39,10 @@
 namespace activity_reporter {
 
 namespace {
+
+// The exclusive maximum of the `ActivityReporter.IncompleteReports` histogram:
+// buckets 0 through 10, with an overflow bucket for larger counts.
+constexpr int kIncompleteReportsExclusiveMax = 11;
 
 InitialDateLastActiveState ToState(int dla) {
   if (dla == update_client::kDateUnknown) {
@@ -98,6 +103,13 @@ class ActivityReporterImpl : public ActivityReporter {
         channel_provider_(channel_provider),
         brand_provider_(brand_provider) {}
 
+  ~ActivityReporterImpl() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    base::UmaHistogramExactLinear("ActivityReporter.IncompleteReports",
+                                  incomplete_reports_,
+                                  kIncompleteReportsExclusiveMax);
+  }
+
   void ReportActive() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if !BUILDFLAG(USE_LEGACY_ACTIVE_DEFINITION)
@@ -120,6 +132,7 @@ class ActivityReporterImpl : public ActivityReporter {
     // weighted by active use.
     RecordVirtualMachineHistogramsAsync();
 #endif
+    ++incomplete_reports_;
     update_client_->CheckForUpdate(
         std::string{kChromeActivityId},
         base::BindOnce(
@@ -156,6 +169,8 @@ class ActivityReporterImpl : public ActivityReporter {
   // survive an early browser termination.
   void OnCheckForUpdateComplete(update_client::Error) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK_GT(incomplete_reports_, 0);
+    --incomplete_reports_;
     if (PrefService* pref_service = pref_service_provider_.Run()) {
       pref_service->CommitPendingWrite();
     }
@@ -163,6 +178,7 @@ class ActivityReporterImpl : public ActivityReporter {
 
   SEQUENCE_CHECKER(sequence_checker_);
   std::optional<base::Time> last_reported_;
+  int incomplete_reports_ = 0;
   base::RepeatingCallback<PrefService*()> pref_service_provider_;
   scoped_refptr<update_client::UpdateClient> update_client_;
   base::RepeatingClosure updater_active_callback_;
