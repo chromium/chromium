@@ -10,6 +10,11 @@ mojom("mojo_bindings") {
 
   webui_module_path = "/"
 
+  # The AIM Eligibility component extension is built and deployed out-of-band
+  # from the browser binary. Disable message ID scrambling so method ordinals
+  # remain consistent across builds.
+  scramble_message_ids = false
+
   public_deps = [ "//mojo/public/mojom/base" ]
 }
 

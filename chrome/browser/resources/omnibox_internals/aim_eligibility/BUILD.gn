@@ -39,5 +39,9 @@ build_webui("build") {
   if (optimize) {
     optimize_webui_host = "omnibox-internals"
     optimize_webui_in_files = [ "app.js" ]
+    optimize_webui_excludes = [
+      "chrome://resources/cr_components/color_change_listener/color_change_listener.mojom-webui.js",
+      "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js",
+    ]
   }
 }
