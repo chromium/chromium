@@ -523,10 +523,25 @@ def FormatNode(format_string, *args, **argv):
 
 class CompositeNode(CodeNode):
     """
-    Represents a composition of multiple code nodes.  Composition will be done
-    by using |CodeNode.gensym| so that it won't contaminate a namespace of the
-    template variables.
+    Represents a composition of multiple code nodes.
+
+    Instead of generating globally unique symbol names via |CodeNode.gensym|
+    on every instantiation (which would produce a distinct |template_text|
+    each time and defeat |MakoTemplate._mako_template_cache|), this class uses
+    deterministic placeholder names ("__c_a0", "__c_k_<key>", etc.) and caches
+    the formatted |template_text| by
+    |(template_format_str, len(args), frozenset(kwargs))|.
+
+    To prevent those deterministic placeholder names from colliding across
+    nested CompositeNodes (since |CodeNode.template_vars| merges
+    |own_template_vars| from all outer nodes and disallows duplicates), the
+    placeholder bindings are stored in |self._composite_vars| and applied only
+    when rendering this CompositeNode's own template.
     """
+
+    # Cache mapping (template_format_str, len(args), frozenset(kwargs)) to
+    # (formatted_template_text, positional_var_names, keyword_var_names).
+    _template_cache = {}
 
     def __init__(self, template_format_str, *args, **kwargs):
         """
@@ -539,26 +554,57 @@ class CompositeNode(CodeNode):
                 passed in.
         """
         assert isinstance(template_format_str, str)
-        gensym_args = []
-        gensym_kwargs = {}
-        template_vars = {}
-        for arg in args:
+
+        # Reuse the formatted template text and placeholder variable names when
+        # the format string and argument signature match a previous instance.
+        cache_key = (template_format_str, len(args), frozenset(kwargs))
+        cached = self._template_cache.get(cache_key)
+        if cached is None:
+            arg_names = tuple("__c_a{}".format(i) for i in range(len(args)))
+            kwarg_names = {k: "__c_k_{}".format(k) for k in kwargs}
+            gensym_args = ["${{{}}}".format(n) for n in arg_names]
+            gensym_kwargs = {
+                k: "${{{}}}".format(n) for k, n in kwarg_names.items()
+            }
+            template_text = format_template(
+                template_format_str, *gensym_args, **gensym_kwargs
+            )
+            cached = (template_text, arg_names, kwarg_names)
+            self._template_cache[cache_key] = cached
+        else:
+            template_text, arg_names, kwarg_names = cached
+
+        composite_vars = {}
+        for i, arg in enumerate(args):
             assert isinstance(arg, (CodeNode, int, str))
-            gensym = CodeNode.gensym()
-            gensym_args.append("${{{}}}".format(gensym))
-            template_vars[gensym] = arg
+            composite_vars[arg_names[i]] = arg
         for key, value in kwargs.items():
             assert isinstance(key, (int, str))
             assert isinstance(value, (CodeNode, int, str))
-            gensym = CodeNode.gensym()
-            gensym_kwargs[key] = "${{{}}}".format(gensym)
-            template_vars[gensym] = value
-        template_text = format_template(
-            template_format_str, *gensym_args, **gensym_kwargs
-        )
+            composite_vars[kwarg_names[key]] = value
 
-        CodeNode.__init__(
-            self, template_text=template_text, template_vars=template_vars
+        CodeNode.__init__(self, template_text=template_text)
+        # Link child CodeNodes to |self| without registering placeholder names
+        # in |self._own_template_vars|, so nested CompositeNodes do not see or
+        # collide with outer placeholder names.
+        for value in composite_vars.values():
+            if isinstance(value, CodeNode):
+                value.set_outer(self)
+        self._composite_vars = composite_vars
+        self._composite_template_vars = None
+
+    def _render(self, renderer, last_render_state):
+        if self._composite_template_vars is None:
+            # Overlay this node's placeholder bindings onto the inherited
+            # template variables only for this node's own template evaluation.
+            self._composite_template_vars = {
+                **self.template_vars,
+                **self._composite_vars,
+            }
+        renderer.render(
+            caller=self,
+            template=self._template,
+            template_vars=self._composite_template_vars,
         )
 
 
