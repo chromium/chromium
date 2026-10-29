@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/chrome_paths_internal.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/managed_state.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -122,10 +121,9 @@ bool IsUnderDriveMountPoint(const base::FilePath& path) {
 }
 
 base::FilePath GetCacheRootPath(const Profile* const profile) {
-  base::FilePath cache_base_path;
-  chrome::GetUserCacheDirectory(profile->GetPath(), &cache_base_path);
+  // On ChromeOS, the user cache directory is the profile directory.
   base::FilePath cache_root_path =
-      cache_base_path.Append(ash::kDriveCacheDirname);
+      profile->GetPath().Append(ash::kDriveCacheDirname);
   static const base::FilePath::CharType kFileCacheVersionDir[] =
       FILE_PATH_LITERAL("v1");
   return cache_root_path.Append(kFileCacheVersionDir);
