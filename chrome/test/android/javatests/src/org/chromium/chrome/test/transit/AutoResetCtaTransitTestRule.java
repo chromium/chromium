@@ -5,7 +5,6 @@
 package org.chromium.chrome.test.transit;
 
 import static org.chromium.base.test.transit.Triggers.noopTo;
-import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
@@ -91,8 +90,7 @@ public class AutoResetCtaTransitTestRule extends BaseCtaTransitTestRule implemen
      */
     public RegularNewTabPageStation startOnNtp() {
         WebPageStation blankPage = startOnBlankPage();
-        return blankPage.loadPageProgrammatically(
-                getOriginalNativeNtpUrl(), RegularNewTabPageStation.newBuilder());
+        return blankPage.loadNtp();
     }
 
     /**

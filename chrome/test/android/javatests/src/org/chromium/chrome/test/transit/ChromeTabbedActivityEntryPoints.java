@@ -5,6 +5,7 @@
 package org.chromium.chrome.test.transit;
 
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNtpUrl;
 
 import android.content.Intent;
 
@@ -16,6 +17,7 @@ import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.url_constants.UrlOverrideUtils;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
@@ -89,8 +91,7 @@ public class ChromeTabbedActivityEntryPoints {
     }
 
     /**
-     * Start the ChromeTabbedActivity in an NTP as if receiving an Intent to view
-     * "chrome-native://newtab/".
+     * Start the ChromeTabbedActivity in an NTP as if receiving an Intent to view the NTP URL.
      */
     public static RegularNewTabPageStation startOnNtp(ChromeTabbedActivityTestRule ctaTestRule) {
         disableFirstRunFlow();
@@ -98,10 +99,11 @@ public class ChromeTabbedActivityEntryPoints {
         EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
         sentinel.setAsEntryPoint();
 
-        return sentinel.runTo(
-                        () ->
-                                ctaTestRule.startMainActivityWithTrustedURL(
-                                        getOriginalNativeNtpUrl()))
+        String ntpUrl =
+                UrlOverrideUtils.isWebUiNtpOverrideEnabled()
+                        ? getOriginalNtpUrl()
+                        : getOriginalNativeNtpUrl();
+        return sentinel.runTo(() -> ctaTestRule.startMainActivityWithTrustedURL(ntpUrl))
                 .arriveAt(RegularNewTabPageStation.newBuilder().withEntryPoint().build());
     }
 

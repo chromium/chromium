@@ -12,6 +12,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNtpUrl;
 
 import android.app.Activity;
 import android.os.SystemClock;
@@ -40,6 +41,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
+import org.chromium.chrome.browser.url_constants.UrlOverrideUtils;
 import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
@@ -369,8 +371,11 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
 
     /** Loads the regular NTP in the same tab and waits to transition. */
     public RegularNewTabPageStation loadNtp() {
-        return loadPageProgrammatically(
-                getOriginalNativeNtpUrl(), RegularNewTabPageStation.newBuilder());
+        String ntpUrl =
+                UrlOverrideUtils.isWebUiNtpOverrideEnabled()
+                        ? getOriginalNtpUrl()
+                        : getOriginalNativeNtpUrl();
+        return loadPageProgrammatically(ntpUrl, RegularNewTabPageStation.newBuilder());
     }
 
     public WebPageStation loadAboutBlank() {
