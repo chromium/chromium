@@ -218,8 +218,13 @@ PositionWithAffinity HitTestResult::GetPosition() const {
   // the node as the position. This is because we don't paint contents of the
   // element. Furthermore, any caret adjustments below can access layout-dirty
   // state in the subtree of this object.
-  if (layout_object->ChildPaintBlockedByDisplayLock())
-    return PositionWithAffinity(Position(*node, 0), TextAffinity::kDefault);
+  if (layout_object->ChildPaintBlockedByDisplayLock()) {
+    const Node* anchor = node;
+    if (const auto* pseudo = DynamicTo<PseudoElement>(node)) {
+      anchor = &pseudo->UltimateOriginatingElement();
+    }
+    return PositionWithAffinity(Position(*anchor, 0), TextAffinity::kDefault);
+  }
 
   if (node->IsPseudoElement()) {
     // Pseudo-elements can't serve as caret anchors.
@@ -270,12 +275,19 @@ PositionWithAffinity HitTestResult::GetPositionForInnerNodeOrImageMapImage()
   // the node as the position. This is because we don't paint contents of the
   // element. Furthermore, any caret adjustments below can access layout-dirty
   // state in the subtree of this object.
-  if (layout_object->ChildPaintBlockedByDisplayLock())
-    return PositionWithAffinity(Position(*node, 0), TextAffinity::kDefault);
+  if (layout_object->ChildPaintBlockedByDisplayLock()) {
+    const Node* anchor = node;
+    if (const auto* pseudo = DynamicTo<PseudoElement>(node)) {
+      anchor = &pseudo->UltimateOriginatingElement();
+    }
+    return PositionWithAffinity(Position(*anchor, 0), TextAffinity::kDefault);
+  }
 
   PositionWithAffinity position = layout_object->PositionForPoint(LocalPoint());
-  if (position.IsNull())
-    return PositionWithAffinity(FirstPositionInOrBeforeNode(*node));
+  if (position.IsNull()) {
+    return PositionWithAffinity(
+        FirstPositionInOrBeforeNode(*InnerNodeOrImageMapImage()));
+  }
   return position;
 }
 
