@@ -26,6 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_DATE_TIME_EDIT_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_DATE_TIME_EDIT_ELEMENT_H_
 
+#include <optional>
+
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_field_element.h"
 #include "third_party/blink/renderer/core/html/forms/step_range.h"
@@ -63,21 +65,26 @@ class DateTimeEditElement final : public HTMLDivElement,
   };
 
   struct LayoutParameters {
-    STACK_ALLOCATED();
+    DISALLOW_NEW();
 
    public:
     String date_time_format;
     String fallback_date_time_format;
-    Locale& locale;
+    // The Locale must be owned by the Document and come from
+    // Document::GetCachedLocale.
+    Locale* locale;
     const StepRange step_range;
     DateComponents minimum;
     DateComponents maximum;
     String placeholder_for_day;
     String placeholder_for_month;
     String placeholder_for_year;
+    bool need_millisecond_field = false;
 
     LayoutParameters(Locale& locale, const StepRange& step_range)
-        : locale(locale), step_range(step_range) {}
+        : locale(&locale), step_range(step_range) {}
+
+    bool operator==(const LayoutParameters&) const = default;
   };
 
   DateTimeEditElement(Document&, EditControlOwner&);
@@ -157,6 +164,7 @@ class DateTimeEditElement final : public HTMLDivElement,
   void FieldDidChangeValueByKeyboard() override;
 
   HeapVector<Member<DateTimeFieldElement>, kMaximumNumberOfFields> fields_;
+  std::optional<LayoutParameters> current_layout_parameters_;
   Member<EditControlOwner> edit_control_owner_;
 };
 

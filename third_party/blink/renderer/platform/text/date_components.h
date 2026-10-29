@@ -63,6 +63,8 @@ class PLATFORM_EXPORT DateComponents {
         week_(0),
         type_(kInvalid) {}
 
+  bool operator==(const DateComponents&) const = default;
+
   enum Type {
     kInvalid,
     kDate,

@@ -176,6 +176,10 @@ String DateTimeNumericFieldElement::Placeholder() const {
   return placeholder_;
 }
 
+void DateTimeNumericFieldElement::ResetTypeAhead() {
+  type_ahead_buffer_.Clear();
+}
+
 void DateTimeNumericFieldElement::SetEmptyValue(EventBehavior event_behavior) {
   if (IsDisabled())
     return;
