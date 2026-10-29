@@ -47,7 +47,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
-#include "components/safe_browsing/core/browser/download_check_result.h"
+#include "components/safe_browsing/core/browser/download/download_check_result.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sessions/content/session_tab_helper.h"

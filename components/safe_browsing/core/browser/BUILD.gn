@@ -305,13 +305,6 @@ source_set("safe_browsing_hats_delegate_unittest") {
   ]
 }
 
-source_set("download_check_result") {
-  sources = [
-    "download_check_result.cc",
-    "download_check_result.h",
-  ]
-}
-
 source_set("referring_app_info") {
   sources = [
     "referring_app_info.cc",

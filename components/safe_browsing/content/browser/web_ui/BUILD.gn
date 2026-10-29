@@ -22,7 +22,7 @@ static_library("web_ui") {
     "//components/os_crypt/async/common",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/browser:safe_browsing_service",
-    "//components/safe_browsing/core/browser:download_check_result",
+    "//components/safe_browsing/core/browser/download:download_check_result",
     "//components/safe_browsing/core/browser/web_ui:cr_safe_browsing_log",
     "//components/safe_browsing/core/browser/web_ui:event_observer",
     "//components/safe_browsing/core/browser/web_ui:handler",

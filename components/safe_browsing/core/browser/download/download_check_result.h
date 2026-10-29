@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DOWNLOAD_CHECK_RESULT_H_
-#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DOWNLOAD_CHECK_RESULT_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DOWNLOAD_DOWNLOAD_CHECK_RESULT_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DOWNLOAD_DOWNLOAD_CHECK_RESULT_H_
 
 #include <string_view>
 
@@ -45,4 +45,4 @@ std::string_view DownloadCheckResultToString(DownloadCheckResult result);
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DOWNLOAD_CHECK_RESULT_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DOWNLOAD_DOWNLOAD_CHECK_RESULT_H_

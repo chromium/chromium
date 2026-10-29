@@ -7,7 +7,7 @@
 
 #import "base/values.h"
 #import "components/os_crypt/async/common/encryptor.h"
-#import "components/safe_browsing/core/browser/download_check_result.h"
+#import "components/safe_browsing/core/browser/download/download_check_result.h"
 #import "components/safe_browsing/core/browser/web_ui/safe_browsing_local_state_delegate.h"
 #import "components/safe_browsing/core/browser/web_ui/safe_browsing_ui_handler.h"
 #import "components/safe_browsing/core/browser/web_ui/safe_browsing_ui_util.h"

@@ -7,7 +7,7 @@
 
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
-#include "components/safe_browsing/core/browser/download_check_result.h"
+#include "components/safe_browsing/core/browser/download/download_check_result.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"

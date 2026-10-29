@@ -8,7 +8,7 @@
 #include "base/values.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
-#include "components/safe_browsing/core/browser/download_check_result.h"
+#include "components/safe_browsing/core/browser/download/download_check_result.h"
 #include "components/safe_browsing/core/browser/web_ui/safe_browsing_local_state_delegate.h"
 #include "components/safe_browsing/core/browser/web_ui/safe_browsing_ui_handler.h"
 #include "components/safe_browsing/core/browser/web_ui/safe_browsing_ui_util.h"
