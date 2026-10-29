@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
@@ -1095,7 +1096,12 @@ void TabsCreateFunction::OnBrowserWindowCreated(
     return;
   }
 
+  base::WeakPtr<BrowserWindowInterface> weak_browser = browser->GetWeakPtr();
   browser->GetWindow()->Show();
+  if (!weak_browser) {
+    Respond(Error(ExtensionTabUtil::kNoCurrentWindowError));
+    return;
+  }
 
   // Re-fetch the opener, if one was specified. This call might fail if the
   // opener tab was destroyed while the window was being created. In that case,

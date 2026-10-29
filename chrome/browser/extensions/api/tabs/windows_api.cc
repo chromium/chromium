@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -895,6 +896,11 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
     focused = *create_data_->focused;
   }
 
+  // Showing or transitioning the window state can spin a nested event loop on
+  // some platforms (e.g., macOS fullscreen transitions) and synchronously close
+  // the window, destroying `new_window`.
+  base::WeakPtr<BrowserWindowInterface> weak_window = new_window->GetWeakPtr();
+
   if (focused) {
     new_window->GetWindow()->Show();
   } else {
@@ -917,6 +923,9 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
     new_window->GetWindow()->ShowInactive();
 #endif  // BUILDFLAG(IS_ANDROID)
   }
+  if (!weak_window) {
+    return Error(ExtensionTabUtil::kNoCurrentWindowError);
+  }
 
 // Despite creating the window with initial_show_state() ==
 // ui::mojom::WindowShowState::kMinimized above, on Linux the window is not
@@ -927,6 +936,9 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
   if (BrowserInitState::From(new_window)->initial_show_state() ==
       ui::mojom::WindowShowState::kMinimized) {
     new_window->GetWindow()->Minimize();
+    if (!weak_window) {
+      return Error(ExtensionTabUtil::kNoCurrentWindowError);
+    }
   }
 #endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_X11)
 
@@ -948,6 +960,9 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
           delegate->EnterLockedFullscreen();
         }
       }
+    }
+    if (!weak_window) {
+      return Error(ExtensionTabUtil::kNoCurrentWindowError);
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
@@ -1110,17 +1125,28 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
   }
 #endif
 
-  // Parameters are valid. Now to perform the actual updates.
+  // Parameters are valid. Now to perform the actual updates. Platform window
+  // operations (such as entering or exiting fullscreen) may spin a nested event
+  // loop on some platforms (e.g. macOS) and synchronously close the window,
+  // destroying `browser` and `window_controller`.
 #if BUILDFLAG(IS_CHROMEOS)
+  base::WeakPtr<BrowserWindowInterface> weak_browser = browser->GetWeakPtr();
+  base::WeakPtr<WindowController> weak_window_controller =
+      window_controller->GetWeakPtr();
   if (base::expected<void, std::string> result =
           MaybeSetLockedFullscreenState(*params, extension(), browser);
       !result.has_value()) {
     return RespondNow(Error(std::move(result.error())));
   }
+  if (!weak_browser || !weak_window_controller) {
+    return RespondNow(Error(ExtensionTabUtil::kNoCurrentWindowError));
+  }
 #endif
 
-  UpdateWindowState(*params, browser, window_controller, show_state,
-                    set_window_bounds, window_bounds);
+  if (!UpdateWindowState(*params, browser, window_controller, show_state,
+                         set_window_bounds, window_bounds)) {
+    return RespondNow(Error(ExtensionTabUtil::kNoCurrentWindowError));
+  }
 
   return RespondNow(
       WithArguments(window_controller->CreateWindowValueForExtension(
@@ -1128,18 +1154,24 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
           source_context_type())));
 }
 
-void WindowsUpdateFunction::UpdateWindowState(
+bool WindowsUpdateFunction::UpdateWindowState(
     const api::windows::Update::Params& params,
     BrowserWindowInterface* browser,
     WindowController* window_controller,
     ui::mojom::WindowShowState show_state,
     bool set_window_bounds,
     const gfx::Rect& window_bounds) {
+  base::WeakPtr<BrowserWindowInterface> weak_browser = browser->GetWeakPtr();
+  base::WeakPtr<WindowController> weak_window_controller =
+      window_controller->GetWeakPtr();
   ui::BaseWindow* browser_window = browser->GetWindow();
 
   if (show_state != ui::mojom::WindowShowState::kFullscreen &&
       show_state != ui::mojom::WindowShowState::kDefault) {
     window_controller->SetFullscreenMode(false, extension()->url());
+    if (!weak_browser || !weak_window_controller) {
+      return false;
+    }
   }
 
   switch (show_state) {
@@ -1152,6 +1184,9 @@ void WindowsUpdateFunction::UpdateWindowState(
     case ui::mojom::WindowShowState::kFullscreen:
       if (browser_window->IsMinimized() || browser_window->IsMaximized()) {
         browser_window->Restore();
+        if (!weak_browser || !weak_window_controller) {
+          return false;
+        }
       }
       window_controller->SetFullscreenMode(true, extension()->url());
       break;
@@ -1161,11 +1196,17 @@ void WindowsUpdateFunction::UpdateWindowState(
     default:
       break;
   }
+  if (!weak_browser || !weak_window_controller) {
+    return false;
+  }
 
   if (set_window_bounds) {
     // TODO(varkha): Updating bounds during a drag can cause problems and a more
     // general solution is needed. See http://crbug.com/40322435 .
     browser_window->SetBounds(window_bounds);
+    if (!weak_browser || !weak_window_controller) {
+      return false;
+    }
   }
 
   if (params.update_info.focused) {
@@ -1174,11 +1215,16 @@ void WindowsUpdateFunction::UpdateWindowState(
     } else {
       browser_window->Deactivate();
     }
+    if (!weak_browser || !weak_window_controller) {
+      return false;
+    }
   }
 
   if (params.update_info.draw_attention) {
     browser_window->FlashFrame(*params.update_info.draw_attention);
   }
+
+  return weak_browser && weak_window_controller;
 }
 
 ExtensionFunction::ResponseAction WindowsRemoveFunction::Run() {
