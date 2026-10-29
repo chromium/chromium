@@ -32,6 +32,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
@@ -454,6 +455,9 @@ public class ProfileDataCacheIntegrationTest {
     @MediumTest
     @SigninTestRule.BlockGetAccounts
     @EnableFeatures(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
+    @RequiresRestart(
+            "Tests initial refresh token loading failure before IdentityManager loads refresh"
+                    + " tokens.")
     public void
             testAccountFetchFailsAfterInitializationShouldNotifyEmptyAccountsList_withIdentityManagerSourceOfTruth() {
         createProfileDataCache();
