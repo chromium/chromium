@@ -2329,7 +2329,7 @@
   {
     "name": "consistent-logo-doodle-height",
     "owners": [ "scottyoder@google.com", "bling-pandamonium@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 164
   },
   {
     "name": "content-notification-provisional-ignore-conditions",
