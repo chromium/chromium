@@ -10,10 +10,19 @@
 
 cr-action-menu {
   --cr-menu-border-radius: 16px;
+  --cr-menu-background-color: var(--toolbar-menu-background-color);
 }
 
 cr-action-menu::part(dialog) {
   max-height: none;
+}
+
+.dropdown-item {
+  color: var(--toolbar-text-color);
+  margin-top: 4px;
+  min-width: 230px;
+  padding-block: 4px;
+  padding-inline-start: 20px;
 }
 
 #accountInfo {

@@ -173,6 +173,7 @@ class ContextualTasksSidePanelCoordinator
                 std::nullopt) override;
   void Close() override;
   void OpenInZeroState() override;
+  void OpenUrlInNewTab(const GURL& url) override;
   bool MoveActiveTabToNewThreadIfShared() override;
   std::map<std::string, std::string> GetTabRestoreData(
       tabs::TabInterface* tab) const override;
@@ -473,6 +474,10 @@ class ContextualTasksSidePanelCoordinator
 
   bool in_cobrowsing_session_ = false;
   bool is_opening_in_zero_state_ = false;
+
+  // Whether `OpenUrlInNewTab()` is opening a tab for the panel's own UI, so
+  // `OnTabAdded()` doesn't treat it as a link opened from the active tab.
+  bool is_opening_tab_from_panel_ui_ = false;
 
   // When true, PrimaryPageChanged() will not auto-hide the panel on a
   // contextual tasks URL navigation. Set only by interactive tests that drive

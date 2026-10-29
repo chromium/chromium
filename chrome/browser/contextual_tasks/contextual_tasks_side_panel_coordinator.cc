@@ -52,6 +52,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/sessions/core/session_id.h"
 #include "extensions/buildflags/buildflags.h"
@@ -107,6 +109,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -777,6 +780,16 @@ void ContextualTasksSidePanelCoordinator::OpenInZeroState() {
                            kEphemeralToolbarButton));
 }
 
+void ContextualTasksSidePanelCoordinator::OpenUrlInNewTab(const GURL& url) {
+  base::AutoReset<bool> opening_tab_from_panel_ui(
+      &is_opening_tab_from_panel_ui_, true);
+  NavigateParams params(browser_window_->GetProfile(), url,
+                        ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.browser = browser_window_;
+  Navigate(&params);
+}
+
 bool ContextualTasksSidePanelCoordinator::MoveActiveTabToNewThreadIfShared() {
   TabListInterface* tab_list = TabListInterface::From(browser_window_);
   ContextualTasksUiService* ui_service = GetUiService();
@@ -1435,6 +1448,12 @@ void ContextualTasksSidePanelCoordinator::OnTabAdded(TabListInterface& tab_list,
   // not open (e.g. when the panel was closed and only the ephemeral button
   // remains, or when viewing a full-tab Contextual Tasks page).
   if (!IsPanelOpenForContextualTask()) {
+    return;
+  }
+
+  // A tab opened by the panel's own UI isn't a link opened from the opener
+  // tab's page, even though the tab strip makes the active tab its opener.
+  if (is_opening_tab_from_panel_ui_) {
     return;
   }
 

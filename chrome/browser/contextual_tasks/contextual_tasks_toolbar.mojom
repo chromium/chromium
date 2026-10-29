@@ -64,6 +64,9 @@ interface PageHandler {
   // Opens the overflow menu help page in a new tab.
   OpenOverflowMenuHelpUi();
 
+  // Opens the Google Account management page in a new foreground tab.
+  OpenManageAccountUi();
+
   // Opens the feedback UI.
   OpenFeedbackUi();
 

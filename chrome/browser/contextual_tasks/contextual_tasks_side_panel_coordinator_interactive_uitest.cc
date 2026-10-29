@@ -995,6 +995,28 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
+                       OpenUrlInNewTab_DoesNotInheritOpenerTask) {
+  SetUpTasks();
+  // Set tab1 as active tab and open a new tab from the panel's own UI.
+  TabListInterface* tab_list = TabListInterface::From(browser());
+  tab_list->ActivateTab(tab_list->GetTab(1)->GetHandle());
+  GetCoordinator()->OpenUrlInNewTab(GURL(chrome::kChromeUISettingsURL));
+  EXPECT_EQ(5, tab_list->GetTabCount());
+
+  // The new tab is a link from the tab strip's perspective, but it was not
+  // opened from tab1's page, so it does not inherit task1.
+  content::WebContents* new_contents = tab_list->GetActiveTab()->GetContents();
+  ASSERT_NE(new_contents, tab_list->GetTab(1)->GetContents());
+  ContextualTasksService* contextual_tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
+  EXPECT_TRUE(contextual_tasks_service->GetContextualTaskForTab(
+      sessions::SessionTabHelper::IdForTab(
+          tab_list->GetTab(1)->GetContents())));
+  EXPECT_FALSE(contextual_tasks_service->GetContextualTaskForTab(
+      sessions::SessionTabHelper::IdForTab(new_contents)));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
                        OpenNewTabWithLinkClick_InheritsOpenerTask) {
   SetUpTasks();
   // Set tab1 as active tab and create a new tab through link click.
