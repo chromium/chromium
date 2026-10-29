@@ -20,6 +20,15 @@ namespace display {
 // 1 inch in mm.
 constexpr float kInchInMm = 25.4f;
 
+// Minimum display size in DIP for landscape and portrait orientations.
+inline constexpr gfx::Size kMinLandscapeDisplaySize{320, 200};
+inline constexpr gfx::Size kMinPortraitDisplaySize{200, 320};
+
+constexpr gfx::Size GetMinimumDisplaySize(const gfx::Size& size) {
+  return size.width() >= size.height() ? kMinLandscapeDisplaySize
+                                       : kMinPortraitDisplaySize;
+}
+
 // Display ID that represents an invalid display. Often used as a default value
 // before display IDs are known.
 constexpr int64_t kInvalidDisplayId = -1;
