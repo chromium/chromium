@@ -359,11 +359,16 @@ void GlobalFeatures::PostMainMessageLoopRun() {
 }
 
 void GlobalFeatures::PostDestroyThreads() {
+#if !BUILDFLAG(IS_ANDROID)
+  // BrowserInfoBarManager should be destroyed before GlobalBrowserCollection
+  // since it observes GlobalBrowserCollection.
+  browser_infobar_manager_.reset();
+#endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN)
   // Startup launch manager should be destroyed before GlobalBrowserCollection
   // since its infobar manager observes GlobalBrowserCollection.
   startup_launch_manager_.reset();
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 std::unique_ptr<system_permission_settings::PlatformHandle>
