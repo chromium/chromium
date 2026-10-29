@@ -109,6 +109,14 @@ files. This ensures that all files remain in sync.
 Tag consistency is checked as part of presubmit, so it will be apparent if you
 accidentally modify the tag header in a file directly.
 
+**Note:** The WebGPU CTS expectation
+files in Dawn (`//third_party/dawn/webgpu-cts/expectations.txt`,
+`compat-expectations.txt` and `slow_tests.txt`) share the same header but are
+not automatically checked. Since the unexpected pass finder parses those files
+using the header from [validate_tag_consistency.py], any tag added to the Dawn
+header must also be added to [validate_tag_consistency.py] in Chromium. Otherwise, the WebGPU Unexpected Pass Finder builder will fail with
+`ParseError: Unknown tag` as soon as an expectation uses the new tag.
+
 [validate_tag_consistency.py]: https://chromium.googlesource.com/chromium/src/+/main/content/test/gpu/validate_tag_consistency.py
 
 ### Test Name

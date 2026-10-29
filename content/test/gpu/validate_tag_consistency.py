@@ -258,6 +258,8 @@ TAG_HEADER = """\
 #         webgpu-shared-worker ]
 # WebGPU Compat context
 # tags: [ compat-default compat-min-es31 ]
+# WebGPU default features
+# tags: [ unsafe-webgpu-disabled unsafe-webgpu-enabled ]
 # Clang coverage
 # tags: [ clang-coverage no-clang-coverage ]
 # Skia Graphite
