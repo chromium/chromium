@@ -549,12 +549,33 @@ void BaseRenderingContext2D::ApplyAnimatedImageFrameIndexesForId(
 
 void BaseRenderingContext2D::RasterRecordToSharedImage(
     cc::PaintRecord last_recording) {
-  cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback =
-      blink::BindRepeating(
-          &BaseRenderingContext2D::ApplyAnimatedImageFrameIndexesForId,
-          WrapWeakPersistent(this));
-  shared_image_provider_->RasterRecord(std::move(last_recording),
-                                       std::move(custom_callback));
+  CHECK(shared_image_provider_->IsAccelerated());
+  if (!shared_image_provider_->IsGpuContextLost()) {
+    shared_image_provider_->EnsureResourceReadyForDraw();
+    shared_image_provider_->EnsureWriteAccess();
+
+    const bool needs_clear = !shared_image_provider_->is_cleared_;
+    shared_image_provider_->is_cleared_ = true;
+    auto* image_provider =
+        shared_image_provider_->GetOrCreateCanvasImageProvider();
+    cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback =
+        blink::BindRepeating(
+            &BaseRenderingContext2D::ApplyAnimatedImageFrameIndexesForId,
+            WrapWeakPersistent(this));
+
+    gpu::SyncToken sync_token =
+        shared_image_provider_->RasterInterface()->RasterSharedImage(
+            shared_image_provider_->resource()->GetSharedImage(),
+            shared_image_provider_->resource()->acquire_sync_token(),
+            std::move(last_recording), image_provider, needs_clear,
+            std::move(custom_callback));
+    shared_image_provider_->resource()->SetReleaseSyncToken(sync_token);
+  }
+
+  if (auto& image_provider = shared_image_provider_->canvas_image_provider_) {
+    image_provider->ReleaseLockedImages();
+    image_provider->UnbindTextureBackedImages();
+  }
 }
 
 void BaseRenderingContext2D::RasterRecordToSoftwareSurface(

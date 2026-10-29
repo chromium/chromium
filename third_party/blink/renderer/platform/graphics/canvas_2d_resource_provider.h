@@ -50,6 +50,7 @@ PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvas2DReclaimUnusedResources);
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kAppendCpuUsages);
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvasResourceIsWebGPUCompatible);
 
+class BaseRenderingContext2D;
 class ExportedCanvasResource;
 class CanvasResourceSharedImage;
 class Canvas2DResourceProvider;
@@ -163,9 +164,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   void SetResourceRecyclingEnabled(bool value);
 
-  void RasterRecord(
-      cc::PaintRecord last_recording,
-      cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback);
   gpu::raster::RasterInterface* RasterInterface() const;
   bool IsGraphite() const;
   void RecordingCleared();
@@ -179,6 +177,8 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   }
 
  private:
+  friend class BaseRenderingContext2D;
+
   void ClearUnusedResources();
   bool IsGpuContextLost() const;
   gfx::Size Size() const { return image_pool_->GetImageInfo().size; }

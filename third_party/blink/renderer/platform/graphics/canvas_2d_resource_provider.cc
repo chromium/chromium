@@ -441,31 +441,6 @@ Canvas2DResourceProvider::GetOrCreateCanvasImageProvider() {
   return canvas_image_provider_.get();
 }
 
-void Canvas2DResourceProvider::RasterRecord(
-    cc::PaintRecord last_recording,
-    cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback) {
-  CHECK(is_accelerated_);
-  if (!IsGpuContextLost()) {
-    EnsureResourceReadyForDraw();
-    EnsureWriteAccess();
-
-    const bool needs_clear = !is_cleared_;
-    is_cleared_ = true;
-    auto* image_provider = GetOrCreateCanvasImageProvider();
-
-    gpu::SyncToken sync_token = RasterInterface()->RasterSharedImage(
-        resource()->GetSharedImage(), resource()->acquire_sync_token(),
-        std::move(last_recording), image_provider, needs_clear,
-        std::move(custom_callback));
-    resource()->SetReleaseSyncToken(sync_token);
-  }
-
-  if (canvas_image_provider_) {
-    canvas_image_provider_->ReleaseLockedImages();
-    canvas_image_provider_->UnbindTextureBackedImages();
-  }
-}
-
 void Canvas2DResourceProvider::OnFlushForImage(
     cc::PaintImage::ContentId content_id) {
   if (cached_snapshot_ &&
