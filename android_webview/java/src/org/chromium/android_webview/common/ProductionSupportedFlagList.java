@@ -532,6 +532,7 @@ public final class ProductionSupportedFlagList {
                 NetFeatures.CACHE_CERT_VERIFICATION,
                 "Enables caching of certificate verification results"),
         Flag.baseFeature("MojoFixGeometricBufferGrowth"),
+        Flag.baseFeature("MojoFixGeometricBufferGrowth2"),
         Flag.baseFeature(
                 "FixDataPipeTrapBug",
                 "Used to disable a specific bug fix for a long-standing bug that may"
