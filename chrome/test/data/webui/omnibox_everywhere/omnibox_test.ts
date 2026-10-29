@@ -1309,6 +1309,124 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         assertTrue(enterLensEvent.defaultPrevented);
         assertEquals(1, testProxy.handler.getCallCount('showScreenshotMenu'));
       });
+
+  test(
+      'cycles through all four placeholder hints when focused and Fusebox is ' +
+          'enabled',
+      async () => {
+        const inputEl = omnibox.$.input.inputElement;
+        const advanceToNextPlaceholder = async () => {
+          // Each transition runs HOLD -> FADE_OUT -> FADE_IN (which updates
+          // inputEl.placeholder at the start of FADE_IN). `Animation.finish()`
+          // queues the `finish` event for the next animation frame, so await
+          // `finish` before advancing the next stage.
+          for (let i = 0; i < 3; i++) {
+            const anim = inputEl.getAnimations()[0];
+            assertTrue(!!anim);
+            const finished = eventToPromise('finish', anim);
+            anim.finish();
+            await finished;
+          }
+        };
+
+        assertEquals('Ask Google or type a URL', inputEl.placeholder);
+
+        await advanceToNextPlaceholder();
+        assertEquals(
+            'Ask about your screen with Google Lens', inputEl.placeholder);
+
+        await advanceToNextPlaceholder();
+        assertEquals('Ask about a file or image', inputEl.placeholder);
+
+        await advanceToNextPlaceholder();
+        assertEquals('Drag and drop files here', inputEl.placeholder);
+
+        // Wraps back around to the first hint.
+        await advanceToNextPlaceholder();
+        assertEquals('Ask Google or type a URL', inputEl.placeholder);
+      });
+
+  test(
+      'pauses placeholder cycling when unfocused or typing and filters hints ' +
+          'by capability',
+      async () => {
+        const inputEl = omnibox.$.input.inputElement;
+        const advanceToNextPlaceholder =
+            async (targetInput: HTMLElement = inputEl) => {
+          for (let i = 0; i < 3; i++) {
+            const anim = targetInput.getAnimations()[0];
+            assertTrue(!!anim);
+            const finished = eventToPromise('finish', anim);
+            anim.finish();
+            await finished;
+          }
+        };
+
+        // Advance to the second hint ("Ask about your screen with Google Lens").
+        await advanceToNextPlaceholder();
+        assertEquals(
+            'Ask about your screen with Google Lens', inputEl.placeholder);
+
+        // Unfocusing (persistent resting state) stops cycling and resets to the
+        // initial placeholder.
+        omnibox.isActive = false;
+        await microtasksFinished();
+        assertEquals(0, inputEl.getAnimations().length);
+        assertEquals('Ask Google or type a URL', inputEl.placeholder);
+
+        // Refocusing resumes cycling from the first hint.
+        omnibox.isActive = true;
+        await microtasksFinished();
+        assertEquals(1, inputEl.getAnimations().length);
+        await advanceToNextPlaceholder();
+        assertEquals(
+            'Ask about your screen with Google Lens', inputEl.placeholder);
+
+        // Typing stops cycling; clearing restarts from the first hint.
+        omnibox.setInputText('cats');
+        await microtasksFinished();
+        assertEquals(0, inputEl.getAnimations().length);
+
+        omnibox.setInputText('');
+        await microtasksFinished();
+        assertEquals(1, inputEl.getAnimations().length);
+        assertEquals('Ask Google or type a URL', inputEl.placeholder);
+
+        // Disabling Lens search and drag-and-drop omits their respective hints.
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        loadTimeData.overrideValues({
+          isFuseboxEnabled: true,
+          searchboxLensSearch: false,
+          composeboxContextDragAndDropEnabled: false,
+        });
+        const filteredOmnibox =
+            document.createElement('omnibox-everywhere-omnibox');
+        document.body.appendChild(filteredOmnibox);
+        await microtasksFinished();
+
+        const filteredInput = filteredOmnibox.$.input.inputElement;
+        assertEquals('Ask Google or type a URL', filteredInput.placeholder);
+        await advanceToNextPlaceholder(filteredInput);
+        assertEquals('Ask about a file or image', filteredInput.placeholder);
+        await advanceToNextPlaceholder(filteredInput);
+        assertEquals('Ask Google or type a URL', filteredInput.placeholder);
+
+        // Disabling Fusebox falls back to static searchBoxHint without cycling.
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        loadTimeData.overrideValues({
+          isFuseboxEnabled: false,
+        });
+        const nonFuseboxOmnibox =
+            document.createElement('omnibox-everywhere-omnibox');
+        document.body.appendChild(nonFuseboxOmnibox);
+        await microtasksFinished();
+
+        const nonFuseboxInput = nonFuseboxOmnibox.$.input.inputElement;
+        assertEquals(0, nonFuseboxInput.getAnimations().length);
+        assertEquals(
+            loadTimeData.getString('searchBoxHint'),
+            nonFuseboxInput.placeholder);
+      });
 });
 
 

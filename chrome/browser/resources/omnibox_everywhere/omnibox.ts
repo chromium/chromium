@@ -16,6 +16,7 @@ import {HelpBubbleMixinLit} from '//resources/cr_components/help_bubble/help_bub
 import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
 import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
+import {PlaceholderTextCycler} from '//resources/cr_components/searchbox/placeholder_text_cycler.js';
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {ComposeClickEventDetail} from '//resources/cr_components/searchbox/searchbox_compose_button.js';
 import type {SearchboxDropdownElement} from '//resources/cr_components/searchbox/searchbox_dropdown.js';
@@ -39,6 +40,12 @@ import {getCss} from './omnibox.css.js';
 import {getHtml} from './omnibox.html.js';
 import type {OmniboxEverywhereProfileIconElement} from './profile_icon.js';
 
+
+// Default hold and cross-fade durations for rotating placeholder hints,
+// matching `NTPComposeboxConfig_PlaceholderConfig` defaults (4000ms hold, 250ms
+// fade).
+const DEFAULT_PLACEHOLDER_CHANGE_INTERVAL_MS = 4000;
+const DEFAULT_PLACEHOLDER_FADE_DURATION_MS = 250;
 
 export interface OmniboxEverywhereOmniboxElement {
   $: {
@@ -214,6 +221,11 @@ export class OmniboxEverywhereOmniboxElement extends
   private inputStateListenerId_: number|null = null;
   private aimPopupEligibilityListenerId_: number|null = null;
   private screenshotMenuClosedListenerId_: number|null = null;
+  private placeholderCycler_: PlaceholderTextCycler|null = null;
+  private currentCyclerTextsKey_: string = '';
+  private currentCyclerInputEl_: HTMLInputElement|HTMLTextAreaElement|null =
+      null;
+  private isPlaceholderCycling_: boolean = false;
 
   constructor() {
     super();
@@ -291,6 +303,8 @@ export class OmniboxEverywhereOmniboxElement extends
       this.callbackRouter_.removeListener(this.screenshotMenuClosedListenerId_);
       this.screenshotMenuClosedListenerId_ = null;
     }
+    this.placeholderCycler_?.stop();
+    this.isPlaceholderCycling_ = false;
     this.removeAttribute('has-expanded');
   }
 
@@ -324,6 +338,11 @@ export class OmniboxEverywhereOmniboxElement extends
             },
           });
     }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    this.updatePlaceholderCycler_();
   }
 
   focusInput() {
@@ -495,6 +514,68 @@ export class OmniboxEverywhereOmniboxElement extends
     // stay stuck in the 2-line expanded `[has-user-input]` state.
     if (e.detail.value) {
       this.hasUserInput_ = false;
+    }
+  }
+
+  private computeCyclingPlaceholderTexts_(): string[] {
+    if (this.placeholderText || !this.isFuseboxEnabled) {
+      return [];
+    }
+    const texts: string[] = [this.i18n('searchBoxHintAskOrType')];
+    if (this.showLensSearchButton_()) {
+      texts.push(this.i18n('searchBoxHintLens'));
+    }
+    texts.push(this.i18n('searchBoxHintFileOrImage'));
+    if (this.canAddFileContext_()) {
+      texts.push(this.i18n('searchBoxHintDragAndDrop'));
+    }
+    return texts.filter(Boolean);
+  }
+
+  private updatePlaceholderCycler_() {
+    const inputEl =
+        this.$.input?.shadowRoot
+            ?.querySelector<HTMLInputElement|HTMLTextAreaElement>('#input') ??
+        null;
+    if (!inputEl) {
+      this.$.input?.updateComplete.then(() => {
+        if (this.isConnected) {
+          this.updatePlaceholderCycler_();
+        }
+      });
+      return;
+    }
+
+    const texts = this.computeCyclingPlaceholderTexts_();
+    const shouldCycle = texts.length > 1 && this.isActive &&
+        !this.hasUserInput_ && !this.inKeywordMode && !this.inVoiceSearchMode;
+
+    if (!shouldCycle) {
+      if (this.isPlaceholderCycling_) {
+        this.placeholderCycler_?.stop();
+        this.isPlaceholderCycling_ = false;
+      }
+      inputEl.placeholder = this.inKeywordMode ?
+          (this.inputKeywordModel?.placeholder || '') :
+          this.computePlaceholderText_();
+      return;
+    }
+
+    const textsKey = texts.join('\n');
+    if (!this.placeholderCycler_ || this.currentCyclerTextsKey_ !== textsKey ||
+        this.currentCyclerInputEl_ !== inputEl) {
+      this.placeholderCycler_?.stop();
+      this.placeholderCycler_ = new PlaceholderTextCycler(
+          inputEl, texts, DEFAULT_PLACEHOLDER_CHANGE_INTERVAL_MS,
+          DEFAULT_PLACEHOLDER_FADE_DURATION_MS);
+      this.currentCyclerTextsKey_ = textsKey;
+      this.currentCyclerInputEl_ = inputEl;
+      this.isPlaceholderCycling_ = false;
+    }
+
+    if (!this.isPlaceholderCycling_) {
+      this.isPlaceholderCycling_ = true;
+      this.placeholderCycler_.start();
     }
   }
 
