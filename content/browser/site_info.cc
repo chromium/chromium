@@ -969,14 +969,14 @@ AgentClusterKey SiteInfo::GetAgentClusterKeyForURL(
   // Ideally, we should check that the origin we've received corresponds to a
   // data URL with an opaque origin when setting the following boolean
   // is_origin_isolated_sandboxed_data_iframe to true. However, doing so will
-  // make the ChildProcessSecurity::CanAccessOrigin check called from
-  // NavigationRequest::GetOriginForURLLoaderFactoryAfterResponse() fail.
+  // make the ChildProcessSecurityPolicyImpl::CanCommitNewOrigin check called
+  // from NavigationRequest::GetOriginForURLLoaderFactoryAfterResponse() fail.
   //
-  // ChildProcessSecurity::CanAccessOrigin eventually calls
-  // ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin, but the latter
-  // only takes a GURL as an argument and not an origin. So for a data URL with
-  // an opaque origin, the GURL passed to the function is the precursor origin.
-  // This GURL is passed to
+  // ChildProcessSecurityPolicyImpl::CanCommitNewOrigin eventually calls
+  // ChildProcessSecurityPolicyImpl::CanCommitMaybeOpaqueNewOrigin, but the
+  // latter only takes a GURL as an argument and not an origin. So for a data
+  // URL with an opaque origin, the GURL passed to the function is the precursor
+  // origin. This GURL is passed to
   // ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks. The function
   // then creates an expected ProcessLock based on this GURL, that is the
   // precursor URL for the data URL and not the actual data URL. However, it

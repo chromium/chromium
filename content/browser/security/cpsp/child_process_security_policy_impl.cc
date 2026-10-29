@@ -275,8 +275,6 @@ bool IsRunningOnExpectedThread() {
 using AccessType = ChildProcessSecurityPolicyImpl::AccessType;
 std::string AccessTypeToString(AccessType access_type) {
   switch (access_type) {
-    case AccessType::kCanCommitNewOrigin:
-      return "can_commit_new_origin";
     case AccessType::kHostsOrigin:
       return "hosts_origin";
     case AccessType::kCanAccessDataForCommittedOrigin:
@@ -2100,9 +2098,8 @@ bool ChildProcessSecurityPolicyImpl::CanCommitURL(ChildProcessId child_id,
   // state->CanCommitURL call below that the process has actually been granted
   // access to this URL, rather than just returning true for it.
   if (url != GURL(kUnreachableWebDataURL) &&
-      !CanAccessMaybeOpaqueOrigin(child_id, url,
-                                  false /* url_is_precursor_of_opaque_origin */,
-                                  AccessType::kCanCommitNewOrigin)) {
+      !CanCommitMaybeOpaqueNewOrigin(
+          child_id, url, false /* url_is_precursor_of_opaque_origin */)) {
     LogCanCommitUrlFailureReason("cannot_access_origin");
     return false;
   }
@@ -2676,14 +2673,14 @@ bool ChildProcessSecurityPolicyImpl::CanCommitNewOrigin(
   } else {
     url_to_check = origin.GetURL();
   }
-  bool success = CanAccessMaybeOpaqueOrigin(
-      child_id, url_to_check, origin.opaque(), AccessType::kCanCommitNewOrigin);
+  bool success =
+      CanCommitMaybeOpaqueNewOrigin(child_id, url_to_check, origin.opaque());
   if (success) {
     return true;
   }
 
   // Note: LogCanAccessDataForOriginCrashKeys() is called in the
-  // CanAccessMaybeOpaqueOrigin() call above. The code below overrides the
+  // CanCommitMaybeOpaqueNewOrigin() call above. The code below overrides the
   // origin crash key set in that call with data from |origin| because it
   // provides more accurate information than the origin derived from
   // |url_to_check|.
@@ -2698,16 +2695,6 @@ bool ChildProcessSecurityPolicyImpl::IsAccessAllowedForSandboxedProcess(
     bool url_is_for_opaque_origin,
     AccessType access_type) {
   switch (access_type) {
-    case AccessType::kCanCommitNewOrigin:
-      // TODO(crbug.com/325410297): Sandboxed frames may commit normal URLs, as
-      // long as they commit them with an opaque origin. However, some existing
-      // code paths leading here, such as CanCommitURL() and
-      // CanCommitOriginAndUrl(), do not indicate anything about the future
-      // origin being opaque. For now, don't restrict URLs from committing in
-      // sandboxed processes here, but eventually this should be strengthened
-      // by plumbing in the correct value for `url_is_for_opaque_origin` from
-      // code paths like CanCommitURL().
-      return true;
     case AccessType::kHostsOrigin:
       // Sandboxed frame processes should only be able to host opaque origins,
       // and only those origins should ever be used as a source or initiator
@@ -2722,13 +2709,11 @@ bool ChildProcessSecurityPolicyImpl::IsAccessAllowedForSandboxedProcess(
 
 bool ChildProcessSecurityPolicyImpl::IsAccessAllowedForPdfProcess(
     AccessType access_type) {
-  // PDF processes are allowed to commit normal URLs, and they should be able to
-  // claim that they host a regular origin for things like verifying source
-  // origins for postMessage. However, PDF renderers should never need to access
-  // passwords, storage, or other data for the PDF document's origin or any
-  // other origin.
+  // PDF processes should be able to claim that they host a regular origin for
+  // things like verifying source origins for postMessage. However, PDF
+  // renderers should never need to access passwords, storage, or other data for
+  // the PDF document's origin or any other origin.
   switch (access_type) {
-    case AccessType::kCanCommitNewOrigin:
     case AccessType::kHostsOrigin:
       return true;
     case AccessType::kCanAccessDataForCommittedOrigin:
@@ -3047,11 +3032,115 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
   return false;
 }
 
+bool ChildProcessSecurityPolicyImpl::CanCommitMaybeOpaqueNewOrigin(
+    ChildProcessId child_id,
+    const GURL& url,
+    bool url_is_precursor_of_opaque_origin) {
+  base::AutoLock lock(lock_);
+
+  const ProcessState* process_state =
+      process_states_.GetProcessStateForQuery(child_id);
+  ProcessLock expected_process_lock;
+  std::string failure_reason;
+
+  if (!process_state) {
+    failure_reason = "no_security_state";
+  } else {
+    ProcessLock actual_process_lock = process_state->process_lock();
+
+    if (actual_process_lock.is_invalid()) {
+      // Deny access if the process is unlocked. An unlocked process means
+      // that the process has not been associated with a SiteInstance yet
+      // and therefore this request is likely invalid.
+      failure_reason = "process_lock_is_invalid";
+    } else {
+      // TODO(crbug.com/325410297): Sandboxed frames (`actual_process_lock` with
+      // `is_sandboxed()` true) may commit normal URLs, as long as they commit
+      // them with an opaque origin. However, some existing code paths leading
+      // here, such as CanCommitURL() and CanCommitOriginAndUrl(), do not
+      // indicate anything about the future origin being opaque. For now, don't
+      // restrict URLs from committing in sandboxed processes here, but
+      // eventually this should be strengthened by plumbing in the correct value
+      // for `url_is_precursor_of_opaque_origin` from code paths like
+      // CanCommitURL().
+      //
+      // Note that PDF processes (`actual_process_lock` with `is_pdf()` true)
+      // are also allowed to commit normal URLs as long as they pass the Jail
+      // and Citadel checks below.
+      //
+      // Jail and Citadel checks require the process's BrowserContext, and can
+      // only run on the UI thread. ProcessState doesn't track the
+      // BrowserContext, so obtain it from the process's RenderProcessHost,
+      // which is guaranteed to exist whenever a new origin may legitimately
+      // commit in the process.
+      RenderProcessHost* process = RenderProcessHost::FromID(child_id);
+      BrowserContext* browser_context =
+          process ? process->GetBrowserContext() : nullptr;
+      if (!process) {
+        failure_reason = "no_render_process_host";
+      } else if (!browser_context) {
+        failure_reason = "no_browser_context";
+      } else if (browser_context->ShutdownStarted()) {
+        // Don't allow new origins to commit in processes whose
+        // BrowserContext is shutting down, since some of the state needed
+        // for the checks below (e.g., isolated origins) has already been
+        // removed in RemoveStateForBrowserContext().
+        failure_reason = "browser_context_shutdown_started";
+      } else if (PerformJailAndCitadelChecks(
+                     child_id, *process_state, *browser_context, url,
+                     url_is_precursor_of_opaque_origin, expected_process_lock,
+                     failure_reason)) {
+        return true;
+      }
+    }
+  }
+
+  // Record the duration of KeepAlive requests to include in the crash keys.
+  std::string keep_alive_durations;
+  std::string shutdown_delay_ref_count;
+  std::string process_rfh_count;
+  if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
+    if (auto* process = RenderProcessHostImpl::FromID(child_id)) {
+      keep_alive_durations = process->GetKeepAliveDurations();
+      shutdown_delay_ref_count =
+          base::NumberToString(process->GetShutdownDelayRefCount());
+      process_rfh_count =
+          base::NumberToString(process->GetRenderFrameHostCount());
+    }
+  } else {
+    keep_alive_durations = "no durations available: on IO thread.";
+  }
+
+  // Returning false here will often result in a renderer kill.  Set some crash
+  // keys that will help understand the circumstances of that kill.
+  // TODO(crbug.com/476412562): Find a way to scope these keys so that they do
+  // not appear in later unrelated crash reports.
+  LogCanAccessDataForOriginCrashKeys(
+      expected_process_lock.ToString(),
+      GetKilledProcessOriginLock(process_state),
+      url.DeprecatedGetOriginAsURL().spec(), failure_reason,
+      keep_alive_durations, shutdown_delay_ref_count, process_rfh_count,
+      GetCommittedOriginsForCrashKey(process_state), "can_commit_new_origin");
+  if (failure_reason == "no_security_state") {
+    // For the time being, log a crash report in this case with the crash keys
+    // above, to help diagnose any unknown causes.
+    // TODO(crbug.com/476409377): Once this case is fixed in practice and
+    // upgraded to a browser crash, move this call closer to where the missing
+    // ProcessState was detected.
+    NoChildProcessSecurityPolicySecurityStateFound();
+  }
+
+  return false;
+}
+
 bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
     ChildProcessId child_id,
     const GURL& url,
     bool url_is_precursor_of_opaque_origin,
     AccessType access_type) {
+  // TODO(crbug.com/522872468): Move the blocks duplicated between
+  // CanAccessMaybeOpaqueOrigin() and CanCommitMaybeOpaqueNewOrigin() into
+  // helper functions.
   base::AutoLock lock(lock_);
 
   const ProcessState* process_state =
@@ -3078,56 +3167,18 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
                !IsAccessAllowedForPdfProcess(access_type)) {
       failure_reason = "pdf_restrictions";
     } else {
-      switch (access_type) {
-        case AccessType::kHostsOrigin:
-        case AccessType::kCanAccessDataForCommittedOrigin:
-          // For checking kHostsOrigin or kCanAccessDataForOrigin access types,
-          // we can use a simpler check based on tracking the list of committed
-          // origins.
-          //
-          // Note that it's important to perform this check *after* the PDF and
-          // sandboxing restrictions above, since those checks may deny access
-          // even for origins that have previously committed in a process. In
-          // other words, PDF and sandboxed processes should never be allowed to
-          // access data, even to their own committed origins.
-          if (process_state->MatchesCommittedOrigin(
-                  url, url_is_precursor_of_opaque_origin)) {
-            return true;
-          }
-          failure_reason = "no_matching_committed_origin";
-          break;
-        case AccessType::kCanCommitNewOrigin: {
-          // If we couldn't use committed origin enforcements (i.e., for
-          // kCanCommitNewOrigin checks), Jail and Citadel checks are the source
-          // of truth. If they don't pass, collect crash keys below before
-          // returning false. Unlike committed origin enforcements, these checks
-          // require the process's BrowserContext, and can only run on the UI
-          // thread. ProcessState doesn't track the BrowserContext, so obtain
-          // it from the process's RenderProcessHost, which is guaranteed to
-          // exist whenever a new origin may legitimately commit in the
-          // process.
-          RenderProcessHost* process = RenderProcessHost::FromID(child_id);
-          BrowserContext* browser_context =
-              process ? process->GetBrowserContext() : nullptr;
-          if (!process) {
-            failure_reason = "no_render_process_host";
-          } else if (!browser_context) {
-            failure_reason = "no_browser_context";
-          } else if (browser_context->ShutdownStarted()) {
-            // Don't allow new origins to commit in processes whose
-            // BrowserContext is shutting down, since some of the state needed
-            // for the checks below (e.g., isolated origins) has already been
-            // removed in RemoveStateForBrowserContext().
-            failure_reason = "browser_context_shutdown_started";
-          } else if (PerformJailAndCitadelChecks(
-                         child_id, *process_state, *browser_context, url,
-                         url_is_precursor_of_opaque_origin,
-                         expected_process_lock, failure_reason)) {
-            return true;
-          }
-          break;
-        }
+      // Check whether `url` matches an origin that has previously committed
+      // in the process. Note that it's important to perform this check
+      // *after* the PDF and sandboxing restrictions above, since those
+      // checks may deny access even for origins that have previously
+      // committed in a process. In other words, PDF and sandboxed processes
+      // should never be allowed to access data, even to their own committed
+      // origins.
+      if (process_state->MatchesCommittedOrigin(
+              url, url_is_precursor_of_opaque_origin)) {
+        return true;
       }
+      failure_reason = "no_matching_committed_origin";
     }
   }
 
