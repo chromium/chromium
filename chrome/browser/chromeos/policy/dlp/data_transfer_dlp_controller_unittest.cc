@@ -251,6 +251,34 @@ TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_OffTheRecord) {
       &data_src, &data_dst, std::move(pasted_content), nullptr, callback.Get());
 }
 
+TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_BlockDst) {
+  ui::DataTransferEndpoint data_src((GURL(kExample1Url)));
+  ui::DataTransferEndpoint data_dst((GURL(kExample2Url)));
+
+  auto web_contents = CreateTestWebContents(testing_profile_.get());
+
+  ::testing::StrictMock<base::MockOnceCallback<void(bool)>> callback;
+
+  EXPECT_CALL(*rules_manager_, IsRestrictedDestination)
+      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+  EXPECT_CALL(*dlp_controller_, NotifyBlockedPaste);
+  EXPECT_CALL(callback, Run(false));
+
+  std::variant<size_t, std::vector<base::FilePath>> pasted_content =
+      kNonEmptyPastedContentSize;
+  dlp_controller_->PasteIfAllowed(
+      &data_src, &data_dst, std::move(pasted_content),
+      web_contents->GetPrimaryMainFrame(), callback.Get());
+
+  EXPECT_EQ(events_.size(), 1u);
+  EXPECT_THAT(
+      events_[0],
+      data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
+          GURL(kExample1Url).spec(), GURL(kExample2Url).spec(),
+          DlpRulesManager::Restriction::kClipboard, "", "",
+          DlpRulesManager::Level::kBlock)));
+}
+
 TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_WarnDst) {
   ui::DataTransferEndpoint data_src((GURL(kExample1Url)));
   ui::DataTransferEndpoint data_dst((GURL(kExample2Url)));
