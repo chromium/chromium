@@ -175,6 +175,7 @@ void PasswordSharingRecipientsDownloader::SendRequest(
           trigger: "When a user picks a password to be sent."
           data: "An OAuth2 access token."
           destination: GOOGLE_OWNED_SERVICE
+          legacy_api_url: "https://clients4.google.com/chrome-sync"
           user_data {
             type: ACCESS_TOKEN
           }
