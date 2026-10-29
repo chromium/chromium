@@ -31,7 +31,6 @@ class AppServiceRegistry;
 
 namespace arc {
 class ArcServiceLauncher;
-class ContainerAppKiller;
 }  // namespace arc
 
 namespace chromeos {
@@ -325,8 +324,6 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<CameraGeneralSurveyHandler> camera_general_survey_handler_;
 
   std::unique_ptr<ApnMigrator> apn_migrator_;
-
-  std::unique_ptr<arc::ContainerAppKiller> arc_container_app_killer_;
 
   // Only temporarily owned, will be null after PostCreateMainMessageLoop().
   // The Accessor is constructed before initialization of FeatureList and should

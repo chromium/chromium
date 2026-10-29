@@ -5,7 +5,6 @@ include_rules = [
   "+chrome/browser/ash/accessibility",
   "+chrome/browser/ash/ambient",
   "+chrome/browser/ash/app_mode",
-  "+chrome/browser/ash/arc/memory_pressure",
   "+chrome/browser/ash/arc/session",
   "+chrome/browser/ash/audio",
   "+chrome/browser/ash/bluetooth",

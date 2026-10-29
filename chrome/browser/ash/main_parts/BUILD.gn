@@ -37,7 +37,6 @@ static_library("main_parts") {
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/ambient",
     "//chrome/browser/ash/app_mode",
-    "//chrome/browser/ash/arc/memory_pressure",
     "//chrome/browser/ash/arc/session:service_launcher",
     "//chrome/browser/ash/audio",
     "//chrome/browser/ash/bluetooth",

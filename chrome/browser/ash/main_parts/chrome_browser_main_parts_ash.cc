@@ -59,7 +59,6 @@
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller_impl.h"
 #include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
-#include "chrome/browser/ash/arc/memory_pressure/container_app_killer.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/audio/audio_survey_handler.h"
 #include "chrome/browser/ash/audio/cras_audio_handler_delegate_impl.h"
@@ -1622,12 +1621,6 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
   diagnostics::DiagnosticsLogController::Initialize(
       std::make_unique<diagnostics::DiagnosticsBrowserDelegateImpl>());
 
-  // ARCVM defers to Android's LMK to kill apps in low memory situations because
-  // memory can't be reclaimed directly to ChromeOS.
-  if (!arc::IsArcVmEnabled()) {
-    arc_container_app_killer_ = std::make_unique<arc::ContainerAppKiller>();
-  }
-
   if (features::IsVideoConferenceEnabled()) {
     auto* vc_manager = ash::VideoConferenceManagerAsh::Get();
 
@@ -1667,8 +1660,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
       browser_shutdown::ShutdownPhase::kAshPreShell);
 
   video_conference_manager_client_.reset();
-
-  arc_container_app_killer_.reset();
 
   apn_migrator_.reset();
   SystemProxyManager::Shutdown();
