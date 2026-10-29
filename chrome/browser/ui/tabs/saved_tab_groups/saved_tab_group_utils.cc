@@ -169,7 +169,9 @@ void SavedTabGroupUtils::RemoveGroupFromTabstrip(
   BrowserWindowInterface* const browser_with_local_group_id =
       browser ? browser
               : SavedTabGroupUtils::GetBrowserWithTabGroupId(local_group);
-  CHECK(browser_with_local_group_id, base::NotFatalUntil::M162);
+  // TODO(crbug.com/577226586): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(browser_with_local_group_id);
   if (!browser_with_local_group_id) {
     return;
   }
