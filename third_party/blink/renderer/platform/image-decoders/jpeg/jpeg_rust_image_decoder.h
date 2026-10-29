@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_JPEG_JPEG_RUST_IMAGE_DECODER_H_
 
 #include "third_party/blink/renderer/platform/image-decoders/skia/skia_image_decoder_base.h"
+#include "third_party/skia/include/core/SkYUVAPixmaps.h"
 
 namespace blink {
 
@@ -22,6 +23,12 @@ class PLATFORM_EXPORT JpegRustImageDecoder final : public SkiaImageDecoderBase {
   // ImageDecoder:
   String FilenameExtension() const override;
   const AtomicString& MimeType() const override;
+  void OnSetData(scoped_refptr<SegmentReader> data) override;
+  cc::YUVSubsampling GetYUVSubsampling() const override;
+  gfx::Size DecodedYUVSize(cc::YUVIndex) const override;
+  wtf_size_t DecodedYUVWidthBytes(cc::YUVIndex) const override;
+  void DecodeToYUV() override;
+  SkYUVColorSpace GetYUVColorSpace() const override;
   bool GetGainmapInfoAndData(
       SkGainmapInfo& out_gainmap_info,
       scoped_refptr<SegmentReader>& out_gainmap_data) const override;
@@ -31,6 +38,9 @@ class PLATFORM_EXPORT JpegRustImageDecoder final : public SkiaImageDecoderBase {
   std::unique_ptr<SkCodec> OnCreateSkCodec(std::unique_ptr<SkStream>,
                                            SkCodec::Result* result) override;
   void OnSkCodecCreated() override;
+
+ private:
+  SkYUVAPixmapInfo yuva_pixmap_info_;
 };
 
 }  // namespace blink

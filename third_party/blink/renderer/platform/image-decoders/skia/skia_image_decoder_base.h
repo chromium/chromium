@@ -34,7 +34,7 @@ class PLATFORM_EXPORT SkiaImageDecoderBase : public ImageDecoder {
   ~SkiaImageDecoderBase() override;
 
   // ImageDecoder:
-  void OnSetData(scoped_refptr<SegmentReader> data) final;
+  void OnSetData(scoped_refptr<SegmentReader> data) override;
   int RepetitionCount() const final;
   bool FrameIsReceivedAtIndex(wtf_size_t) const final;
   base::TimeDelta FrameDurationAtIndex(wtf_size_t) const final;
