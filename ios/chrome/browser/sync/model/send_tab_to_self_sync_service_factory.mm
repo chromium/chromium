@@ -19,7 +19,7 @@ using send_tab_to_self::SendTabToSelfSyncService;
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildSendTabToSelfService(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildSendTabToSelfService(ProfileIOS& profile) {
   syncer::OnceDataTypeStoreFactory store_factory =
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
 
@@ -35,13 +35,13 @@ std::unique_ptr<KeyedService> BuildSendTabToSelfService(ProfileIOS* profile) {
 
   return std::make_unique<SendTabToSelfSyncService>(
       GetChannel(), std::move(store_factory), history_service,
-      profile->GetPrefs(), device_info_tracker, session_sync_service);
+      profile.GetPrefs(), device_info_tracker, session_sync_service);
 }
 
 }  // anonymous namespace
 
 // static
-SendTabToSelfSyncServiceFactory::TestingFactory
+SendTabToSelfSyncServiceFactory::TestingFactoryByRef
 SendTabToSelfSyncServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildSendTabToSelfService);
 }
@@ -57,6 +57,6 @@ SendTabToSelfSyncServiceFactory::SendTabToSelfSyncServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 SendTabToSelfSyncServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildSendTabToSelfService(profile);
 }
