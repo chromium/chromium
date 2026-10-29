@@ -120,4 +120,12 @@
   <message name="IDS_CONTEXTUAL_TASKS_LENS_REGION_CHIP_DISMISS_LABEL" desc="Accessible tooltip and label for the close button on the Lens region selection chip.">
     Remove selected region
   </message>
+
+  <!-- Search journey cue -->
+  <message name="IDS_CONTEXTUAL_TASKS_SEARCH_JOURNEY_CUE_ANCHORED_MESSAGE" desc="Text of a suggestion shown next to the address bar when the user returns to a tab after searching on Google in another tab. 'Search AI answer' is the AI-generated answer that Google Search showed for that search, which the suggestion opens in the side panel.">
+    See your Search AI answer here
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_SEARCH_JOURNEY_CUE_ACTION" desc="Label of a button in the address bar, shown when the user returns to a tab after searching on Google in another tab. Clicking it opens the side panel with the AI-generated answer that Google Search showed for that search. Also used as the button's tooltip and accessible name.">
+    Open side panel
+  </message>
 </grit-part>
