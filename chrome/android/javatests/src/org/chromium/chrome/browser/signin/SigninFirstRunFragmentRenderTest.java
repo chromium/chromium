@@ -41,10 +41,10 @@ import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -86,7 +86,7 @@ import java.util.List;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-@DoNotBatch(reason = "Relies on global state")
+@Batch(Batch.PER_CLASS)
 @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287860
 public class SigninFirstRunFragmentRenderTest {
     /** Parameter provider for night mode state and device orientation. */
@@ -114,7 +114,10 @@ public class SigninFirstRunFragmentRenderTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule
+    @Rule(order = 0)
+    public final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
+
+    @Rule(order = 1)
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
@@ -124,8 +127,6 @@ public class SigninFirstRunFragmentRenderTest {
                     .setRevision(6)
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_FIRST_RUN)
                     .build();
-
-    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Mock private ProfileProvider mProfileProviderMock;
     @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
@@ -196,6 +197,10 @@ public class SigninFirstRunFragmentRenderTest {
 
     @After
     public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LocalStatePrefs.get().clearPref(Pref.FORCE_BROWSER_SIGNIN);
+                });
         ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
     }
 
