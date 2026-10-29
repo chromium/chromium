@@ -10479,6 +10479,7 @@ from previous Chrome versions.
   <int value="-1359862112" label="AccessibilityCanvas:enabled"/>
   <int value="-1359521947"
       label="ContextualTasksEphemeralButtonContextMenu:enabled"/>
+  <int value="-1359269908" label="AndroidUnifiedKeyboardShortcuts:enabled"/>
   <int value="-1359250244" label="AutomaticUsbDetach:disabled"/>
   <int value="-1358669137" label="enable-supervised-user-blacklist"/>
   <int value="-1357655121" label="enable-iframe-based-signin"/>
@@ -19546,6 +19547,7 @@ from previous Chrome versions.
   <int value="1353563409" label="WallpaperRefreshRevamp:disabled"/>
   <int value="1353629763" label="MediaSessionAccelerators:enabled"/>
   <int value="1353749554" label="QuickAnswersTranslation:enabled"/>
+  <int value="1355415190" label="AndroidUnifiedKeyboardShortcuts:disabled"/>
   <int value="1355458262" label="WebIdentityMDocs:enabled"/>
   <int value="1355656242"
       label="DesktopPWAsMigrationUserDisplayModeCleanUp:disabled"/>

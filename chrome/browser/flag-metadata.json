@@ -623,6 +623,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "android-unified-keyboard-shortcuts",
+    "owners": ["mklw@google.com", "clank-large-form-factors@google.com"],
+    "expiry_milestone": 170
+  },
+  {
     "name": "android-unknown-gamepad-extra-axes",
     "owners": [
       "deviceapi-team@google.com",

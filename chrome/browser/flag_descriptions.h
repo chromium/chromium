@@ -5685,6 +5685,11 @@ inline constexpr char kAndroidTipsNotificationsV2Name[] =
 inline constexpr char kAndroidTipsNotificationsV2Description[] =
     "Enable tips notifications V2 for supported features on Android.";
 
+inline constexpr char kAndroidUnifiedKeyboardShortcutsName[] =
+    "Android Unified Keyboard Shortcuts";
+inline constexpr char kAndroidUnifiedKeyboardShortcutsDescription[] =
+    "Enables unified C++ keyboard shortcut handling on Android.";
+
 inline constexpr char kAndroidUnknownGamepadExtraAxesName[] =
     "Extra axes for unknown gamepads";
 inline constexpr char kAndroidUnknownGamepadExtraAxesDescription[] =

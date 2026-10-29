@@ -14073,6 +14073,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidKeyboardShortcutOpenFileName,
      flag_descriptions::kAndroidKeyboardShortcutOpenFileDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidKeyboardShortcutOpenFile)},
+    {"android-unified-keyboard-shortcuts",
+     flag_descriptions::kAndroidUnifiedKeyboardShortcutsName,
+     flag_descriptions::kAndroidUnifiedKeyboardShortcutsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidUnifiedKeyboardShortcuts)},
 #endif
     {"enable-desktop-qr-code-detection",
      flag_descriptions::kEnableDesktopQrCodeDetectionName,
