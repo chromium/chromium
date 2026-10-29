@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.omnibox;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.text.TextUtils;
 import android.view.ActionMode;
 
@@ -63,15 +62,7 @@ class UrlBarViewBinder {
         } else if (propertyKey == UrlBarProperties.FOCUS_CHANGE_CALLBACK) {
             view.setFocusChangeCallback(model.get(UrlBarProperties.FOCUS_CHANGE_CALLBACK));
         } else if (propertyKey == UrlBarProperties.HAS_URL_SUGGESTIONS) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                view.setHandwritingBoundsOffsets(
-                        view.getHandwritingBoundsOffsetLeft(),
-                        view.getHandwritingBoundsOffsetTop(),
-                        view.getHandwritingBoundsOffsetRight(),
-                        model.get(UrlBarProperties.HAS_URL_SUGGESTIONS)
-                                ? view.getHandwritingBoundsOffsetTop()
-                                : 0);
-            }
+            view.setHandwritingBoundsExtendBelow(model.get(UrlBarProperties.HAS_URL_SUGGESTIONS));
         } else if (propertyKey == UrlBarProperties.HINT_TEXT) {
             view.setHint(getHintForModelState(model));
         } else if (propertyKey == UrlBarProperties.HINT_TEXT_COLOR) {

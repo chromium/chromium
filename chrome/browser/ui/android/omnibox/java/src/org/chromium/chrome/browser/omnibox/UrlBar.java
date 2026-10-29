@@ -136,6 +136,12 @@ public class UrlBar extends AutocompleteEditText {
 
     private final Rect mClipBounds = new Rect();
 
+    /**
+     * The platform default vertical handwriting bounds offset (as applied by {@link TextView}),
+     * captured before it is overridden. Used to restore the bottom offset on demand.
+     */
+    private float mDefaultHandwritingBoundsOffsetVertical;
+
     private boolean mFocused;
     private boolean mDesiredCursorVisible = true;
     private boolean mFocusEventEmitted;
@@ -337,7 +343,38 @@ public class UrlBar extends AutocompleteEditText {
         setTextClassifier(TextClassifier.NO_OP);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             setIsHandwritingDelegate(true);
+            mDefaultHandwritingBoundsOffsetVertical = getHandwritingBoundsOffsetBottom();
+            if (OmniboxFeatures.sUrlBarNoHandwritingBoundsAbove.isEnabled()) {
+                // The platform extends the handwriting initiation area 40dp above an editable
+                // TextView. On tablets this overlaps the tab strip, so a stylus drag on a tab
+                // sitting above the omnibox starts handwriting instead of reaching the strip
+                // (b/514550853). Nothing editable or handwriting-worthy lives above the URL
+                // bar, so drop the top offset entirely.
+                setHandwritingBoundsOffsets(
+                        getHandwritingBoundsOffsetLeft(),
+                        0,
+                        getHandwritingBoundsOffsetRight(),
+                        getHandwritingBoundsOffsetBottom());
+            }
         }
+    }
+
+    /**
+     * Controls whether the stylus handwriting bounds extend below the URL bar.
+     *
+     * <p>While the URL bar is unfocused, the area directly below it is web content and should not
+     * initiate omnibox handwriting. Once suggestions are showing the user is actively writing, so
+     * the platform default offset is restored to tolerate slightly imprecise strokes.
+     *
+     * @param extend Whether the handwriting bounds should extend below the URL bar.
+     */
+    public void setHandwritingBoundsExtendBelow(boolean extend) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return;
+        setHandwritingBoundsOffsets(
+                getHandwritingBoundsOffsetLeft(),
+                getHandwritingBoundsOffsetTop(),
+                getHandwritingBoundsOffsetRight(),
+                extend ? mDefaultHandwritingBoundsOffsetVertical : 0);
     }
 
     @Override

@@ -666,6 +666,13 @@ BASE_FEATURE(kForceAndroidRealbox, DISABLED);
 // If enabled, disables ligatures in the URL bar on Android.
 BASE_FEATURE(kUrlBarWithoutLigatures, ENABLED);
 
+// Kill switch: when enabled, the URL bar's stylus handwriting bounds do not
+// extend above the URL bar. The Android platform default extends the
+// handwriting-initiation area 40dp above an editable TextView, which overlaps
+// the tablet tab strip and causes stylus drags on tabs to start handwriting in
+// the omnibox instead (b/514550853).
+BASE_FEATURE(kUrlBarNoHandwritingBoundsAbove, ENABLED);
+
 // If enabled, Java-cached ZPS will be served.
 // The cached ZPS made sense on sub-4GB Android Go devices
 BASE_FEATURE(kServeJavaCachedZeroSuggest, ENABLED);
@@ -709,6 +716,7 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kOmniboxEarlyInflation,
       &kRichAutocompletion,
       &kUrlBarWithoutLigatures,
+      &kUrlBarNoHandwritingBoundsAbove,
       &kPostDelayedTaskFocusTab,
       &kOmniboxMobileParityUpdateV2,
       &kOmniboxXGeoFailClosedOnPreciseLeak,

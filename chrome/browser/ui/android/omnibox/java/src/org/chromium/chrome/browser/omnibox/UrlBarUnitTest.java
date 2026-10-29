@@ -1548,6 +1548,51 @@ public class UrlBarUnitTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @EnableFeatures(OmniboxFeatureList.URL_BAR_NO_HANDWRITING_BOUNDS_ABOVE)
+    public void handwritingBounds_doNotExtendAboveUrlBar() {
+        // The platform applies a non-zero vertical offset by default; we only drop the top one.
+        float platformVerticalOffset = mUrlBar.getHandwritingBoundsOffsetBottom();
+        assertTrue(platformVerticalOffset > 0);
+        assertEquals(0, mUrlBar.getHandwritingBoundsOffsetTop(), 0f);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @DisableFeatures(OmniboxFeatureList.URL_BAR_NO_HANDWRITING_BOUNDS_ABOVE)
+    public void handwritingBounds_killSwitchRestoresPlatformTopOffset() {
+        assertTrue(mUrlBar.getHandwritingBoundsOffsetTop() > 0);
+        assertEquals(
+                mUrlBar.getHandwritingBoundsOffsetBottom(),
+                mUrlBar.getHandwritingBoundsOffsetTop(),
+                0f);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @EnableFeatures(OmniboxFeatureList.URL_BAR_NO_HANDWRITING_BOUNDS_ABOVE)
+    public void setHandwritingBoundsExtendBelow_togglesOnlyBottomOffset() {
+        float platformVerticalOffset = mUrlBar.getHandwritingBoundsOffsetBottom();
+        float left = mUrlBar.getHandwritingBoundsOffsetLeft();
+        float right = mUrlBar.getHandwritingBoundsOffsetRight();
+        assertTrue(platformVerticalOffset > 0);
+
+        mUrlBar.setHandwritingBoundsExtendBelow(false);
+        assertEquals(0, mUrlBar.getHandwritingBoundsOffsetBottom(), 0f);
+        assertEquals(0, mUrlBar.getHandwritingBoundsOffsetTop(), 0f);
+        assertEquals(left, mUrlBar.getHandwritingBoundsOffsetLeft(), 0f);
+        assertEquals(right, mUrlBar.getHandwritingBoundsOffsetRight(), 0f);
+
+        // Restoring must bring back the platform default even though the top offset is now 0
+        // (previously the bottom offset was derived from the top offset).
+        mUrlBar.setHandwritingBoundsExtendBelow(true);
+        assertEquals(platformVerticalOffset, mUrlBar.getHandwritingBoundsOffsetBottom(), 0f);
+        assertEquals(0, mUrlBar.getHandwritingBoundsOffsetTop(), 0f);
+        assertEquals(left, mUrlBar.getHandwritingBoundsOffsetLeft(), 0f);
+        assertEquals(right, mUrlBar.getHandwritingBoundsOffsetRight(), 0f);
+    }
+
+    @Test
     public void onFocusChanged_MultilineEligibility() {
         mUrlBar.setAllowMultilineInput(true);
         mUrlBar.onFocusChanged(
