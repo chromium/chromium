@@ -23,7 +23,6 @@
 #include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/cpu.h"
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -37,7 +36,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
-#include "base/system/sys_info.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
@@ -980,28 +978,9 @@ bool GetGraphicsMemoryInfoFdInfo(GraphicsMemoryInfoKB* gpu_meminfo) {
   return true;
 }
 
-}  // namespace
-
-bool GetGraphicsMemoryInfo(GraphicsMemoryInfoKB* gpu_meminfo) {
-  if (GetGraphicsMemoryInfoFdInfo(gpu_meminfo)) {
-    return true;
-  }
-#if defined(ARCH_CPU_X86_FAMILY)
-  // Reading i915_gem_objects on intel platform with kernel 5.4 is slow and is
-  // prohibited.
-  static bool is_newer_kernel =
-      base::StartsWith(base::SysInfo::KernelVersion(), "5.");
-  static bool is_intel_cpu = base::CPU().vendor_name() == "GenuineIntel";
-  if (is_newer_kernel && is_intel_cpu) {
-    return false;
-  }
-#endif
-
 #if defined(ARCH_CPU_ARM_FAMILY)
+bool GetGraphicsMemoryInfoARM(GraphicsMemoryInfoKB* gpu_meminfo) {
   const FilePath geminfo_path("/run/debugfs_gpu/exynos_gem_objects");
-#else
-  const FilePath geminfo_path("/run/debugfs_gpu/i915_gem_objects");
-#endif
   std::string geminfo_data;
   gpu_meminfo->gpu_objects = -1;
   gpu_meminfo->gpu_memory_size = -1;
@@ -1017,7 +996,6 @@ bool GetGraphicsMemoryInfo(GraphicsMemoryInfoKB* gpu_meminfo) {
     }
   }
 
-#if defined(ARCH_CPU_ARM_FAMILY)
   // Incorporate Mali graphics memory if present.
   FilePath mali_memory_file("/sys/class/misc/mali0/device/memory");
   std::string mali_memory_data;
@@ -1029,9 +1007,22 @@ bool GetGraphicsMemoryInfo(GraphicsMemoryInfoKB* gpu_meminfo) {
       gpu_meminfo->gpu_memory_size += mali_size;
     }
   }
-#endif  // defined(ARCH_CPU_ARM_FAMILY)
 
   return gpu_meminfo->gpu_memory_size != -1;
+}
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
+
+}  // namespace
+
+bool GetGraphicsMemoryInfo(GraphicsMemoryInfoKB* gpu_meminfo) {
+  if (GetGraphicsMemoryInfoFdInfo(gpu_meminfo)) {
+    return true;
+  }
+#if defined(ARCH_CPU_ARM_FAMILY)
+  return GetGraphicsMemoryInfoARM(gpu_meminfo);
+#else
+  return false;
+#endif
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
