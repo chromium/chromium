@@ -212,13 +212,7 @@ TEST_F(TextareaTest, LineSelection) {
   EXPECT_FALSE(textarea_->GetSelectedRange().is_reversed());
 }
 
-// Disabled on Mac for crbug.com/1171826.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_MoveUpDownAndModifySelection DISABLED_MoveUpDownAndModifySelection
-#else
-#define MAYBE_MoveUpDownAndModifySelection MoveUpDownAndModifySelection
-#endif  // BUILDFLAG(IS_MAC)
-TEST_F(TextareaTest, MAYBE_MoveUpDownAndModifySelection) {
+TEST_F(TextareaTest, MoveUpDownAndModifySelection) {
   textarea_->SetText(u"12\n34567 89");
   textarea_->SetEditableSelectionRange(gfx::Range(6));
   EXPECT_EQ(1U, GetCursorLine());
