@@ -119,12 +119,8 @@ external/wpt/dom/events/webkit-animation-iteration-event.html
 external/wpt/dom/nodes/moveBefore/select-option-optgroup.html
 external/wpt/dom/nodes/moveBefore/selection-preserve.html
 external/wpt/editing/crashtests/contenteditable-will-be-blurred-by-focus-event-listener.html
-external/wpt/editing/crashtests/designMode-document-will-be-blurred-by-focus-event-listener.html
-external/wpt/editing/crashtests/insertorderedlist-in-focused-inline-editing-host.html
-external/wpt/editing/crashtests/textarea-will-be-blurred-by-focus-event-listener.html
 external/wpt/editing/edit-context/edit-context-execCommand.tentative.https.html
 external/wpt/editing/edit-context/edit-context-inheritability.tentative.html
-external/wpt/editing/edit-context/edit-context-input.tentative.html
 external/wpt/editing/other/delete-in-child-of-html.tentative.html?designMode=off&method=forwarddelete
 external/wpt/editing/other/delete-in-child-of-html.tentative.html?designMode=on&method=forwarddelete
 external/wpt/editing/other/editable-state-and-focus-in-shadow-dom-in-designMode.tentative.html
