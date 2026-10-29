@@ -169,9 +169,6 @@ void InputTypeView::CreateShadowSubtreeIfNeeded(bool is_type_changing) {
     if (!GetElement().SuggestedValue().empty() ||
         GetElement().FastHasAttribute(html_names::kPlaceholderAttr)) {
       GetElement().UpdatePlaceholderVisibility();
-      if (auto* placeholder = GetElement().PlaceholderElement()) {
-        GetElement().UpdatePlaceholderShadowPseudoId(*placeholder);
-      }
     }
   }
   needs_update_view_in_create_shadow_subtree_ = false;
