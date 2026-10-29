@@ -33,5 +33,9 @@
   <message name="IDS_FIND_IN_PAGE_CLOSE_TOOLTIP" desc="The tooltip for the close button">
     Close find bar
   </message>
+  <!-- TODO(crbug.com/41298878): Remove translateable="false" before enabling kFindInPageMatchCase. -->
+  <message name="IDS_FIND_IN_PAGE_MATCH_CASE_TOOLTIP" desc="Tooltip and accessible name for the toggle button in the find-in-page bar that makes the search case-sensitive." translateable="false">
+    Match case
+  </message>
 
 </grit-part>

@@ -209,6 +209,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "logout_old.icon",
     "manage_accounts.icon",
     "manage_search.icon",
+    "match_case.icon",
     "media_toolbar_button_chrome_refresh_old.icon",
     "media_toolbar_button_touch_old.icon",
     "menu_book.icon",

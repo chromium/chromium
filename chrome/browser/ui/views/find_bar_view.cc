@@ -88,6 +88,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView,
                                       kPreviousOutsideViewportButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView,
                                       kNextOutsideViewportButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kMatchCaseButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kCloseButtonElementId);
 
 class FindBarMatchCountLabel : public views::Label {
@@ -303,6 +304,25 @@ FindBarView::FindBarView(FindBarHost* host) {
                       &FindBarView::FindNext, base::Unretained(this),
                       /*reverse=*/false, /*skip_viewport=*/true))
                   .SetProperty(views::kMarginsKey, image_button_margins),
+              views::Builder<views::ToggleImageButton>()
+                  .CopyAddressTo(&match_case_button_)
+                  .SetAccessibleName(l10n_util::GetStringUTF16(
+                      IDS_FIND_IN_PAGE_MATCH_CASE_TOOLTIP))
+                  .SetID(VIEW_ID_FIND_IN_PAGE_MATCH_CASE_BUTTON)
+                  .SetProperty(views::kElementIdentifierKey,
+                               kMatchCaseButtonElementId)
+                  .SetTooltipText(l10n_util::GetStringUTF16(
+                      IDS_FIND_IN_PAGE_MATCH_CASE_TOOLTIP))
+                  .SetToggledTooltipText(l10n_util::GetStringUTF16(
+                      IDS_FIND_IN_PAGE_MATCH_CASE_TOOLTIP))
+                  .SetVisible(base::FeatureList::IsEnabled(
+                      features::kFindInPageMatchCase))
+                  .SetCallback(base::BindRepeating(
+                      [](FindBarView* view) {
+                        view->SetMatchCase(!view->IsMatchCase());
+                      },
+                      base::Unretained(this)))
+                  .SetProperty(views::kMarginsKey, image_button_margins),
               views::Builder<views::ImageButton>()
                   .CopyAddressTo(&close_button_)
                   .SetID(VIEW_ID_FIND_IN_PAGE_CLOSE_BUTTON)
@@ -353,6 +373,20 @@ FindBarView::FindBarView(FindBarHost* host) {
                             kKeyboardDoubleArrowUpIcon);
   SetCommonButtonAttributes(find_next_outside_viewport_button_,
                             kKeyboardDoubleArrowDownIcon);
+  SetCommonButtonAttributes(match_case_button_, kMatchCaseIcon);
+  views::SetToggledImageFromVectorIconWithColor(
+      match_case_button_, kMatchCaseIcon,
+      {ui::kColorSysOnTonalContainer, kColorFindBarButtonIconDisabled});
+  const ui::ImageModel toggled_hovered_image =
+      ui::ImageModel::FromVectorIcon(kMatchCaseIcon,
+                                     ui::kColorSysOnTonalContainer);
+  match_case_button_->SetToggledImageModel(views::Button::STATE_HOVERED,
+                                           toggled_hovered_image);
+  match_case_button_->SetToggledImageModel(views::Button::STATE_PRESSED,
+                                           toggled_hovered_image);
+  match_case_button_->SetToggledBackground(views::CreateRoundedRectBackground(
+      ui::kColorSysTonalContainer,
+      layout_provider->GetCornerRadiusMetric(views::Emphasis::kMaximum)));
   SetCommonButtonAttributes(close_button_, features::IsRoundedIconsEnabled()
                                                ? kCloseSmallIcon
                                                : kCloseChromeRefreshOldIcon);
@@ -388,6 +422,31 @@ std::u16string_view FindBarView::GetFindSelectedText() const {
 
 std::u16string_view FindBarView::GetMatchCountText() const {
   return match_count_text_->GetText();
+}
+
+bool FindBarView::IsMatchCase() const {
+  return match_case_button_->GetToggled();
+}
+
+void FindBarView::SetMatchCase(bool match_case) {
+  if (match_case_button_->GetToggled() == match_case) {
+    return;
+  }
+  match_case_button_->SetToggled(match_case);
+  if (!find_bar_host_ || find_text_->GetText().empty()) {
+    return;
+  }
+  content::WebContents* web_contents =
+      find_bar_host_->GetFindBarController()->web_contents();
+  if (!web_contents) {
+    return;
+  }
+  find_in_page::FindTabHelper* find_tab_helper =
+      find_in_page::FindTabHelper::FromWebContents(web_contents);
+  if (find_tab_helper && find_tab_helper->find_ui_active() &&
+      find_tab_helper->last_search_case_sensitive() != match_case) {
+    Find(find_text_->GetText());
+  }
 }
 
 void FindBarView::UpdateForResult(
@@ -441,7 +500,7 @@ bool FindBarView::ContainsFocus() const {
          find_next_button_->HasFocus() ||
          find_previous_outside_viewport_button_->HasFocus() ||
          find_next_outside_viewport_button_->HasFocus() ||
-         close_button_->HasFocus();
+         match_case_button_->HasFocus() || close_button_->HasFocus();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -611,8 +670,8 @@ void FindBarView::Find(std::u16string_view search_text) {
 
   // Initiate a search (even though old searches might be in progress).
   find_tab_helper->StartFinding(
-      last_searched_text_, true /* forward_direction */,
-      false /* case_sensitive */, true /* find_match */);
+      last_searched_text_, /*forward_direction=*/true,
+      IsMatchCase(), /*find_match=*/true);
 }
 
 void FindBarView::FindNext(bool reverse, bool skip_viewport) {
@@ -625,7 +684,7 @@ void FindBarView::FindNext(bool reverse, bool skip_viewport) {
             find_bar_host_->GetFindBarController()->web_contents());
     find_tab_helper->StartFinding(
         std::u16string(find_text_->GetText()), /*forward_direction=*/!reverse,
-        /*case_sensitive=*/false, /*find_match=*/true, /*scroll_to_match=*/true,
+        IsMatchCase(), /*find_match=*/true, /*scroll_to_match=*/true,
         /*run_synchronously_for_testing=*/false, skip_viewport);
   }
 }

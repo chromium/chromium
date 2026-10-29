@@ -42,6 +42,9 @@ BASE_FEATURE(kFastFaviconDisplay, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFedCmPermissionUiWithContainer,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the Match Case (Aa) toggle button in the Find-in-Page bar.
+BASE_FEATURE(kFindInPageMatchCase, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kImportExportFlags, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kInfoBarQueuedCountPill, base::FEATURE_DISABLED_BY_DEFAULT);

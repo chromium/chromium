@@ -71,6 +71,13 @@ class FindBar {
   // Gets the selection.
   virtual gfx::Range GetSelectedRange() const = 0;
 
+  // Gets or sets whether the search is case-sensitive.
+  // TODO(crbug.com/41298878): Move FindBar state storage (such as match-case,
+  // find text, and selected range) out of FindBarView and into the
+  // model/controller.
+  virtual bool IsMatchCase() const = 0;
+  virtual void SetMatchCase(bool match_case) = 0;
+
   // Updates the FindBar with the find result details contained within the
   // specified |result|.
   virtual void UpdateUIForFindResult(

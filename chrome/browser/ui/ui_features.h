@@ -36,6 +36,8 @@ BASE_DECLARE_FEATURE(kLegacySearchIntegrityCheck);
 
 BASE_DECLARE_FEATURE(kFedCmPermissionUiWithContainer);
 
+BASE_DECLARE_FEATURE(kFindInPageMatchCase);
+
 BASE_DECLARE_FEATURE(kImportExportFlags);
 
 // Shows a "+N" count pill in the bottom-most infobar while lower-priority

@@ -135,6 +135,16 @@ class FindTabHelper : public content::WebContentsUserData<FindTabHelper>,
   bool should_find_match() const { return should_find_match_; }
   bool should_scroll_to_match() const { return should_scroll_to_match_; }
 
+  // TODO(crbug.com/41298878): Confirm with PM/UX whether the Match Case toggle
+  // state should persist per-tab across tab switches (including when the search
+  // box is empty) or be shared/reset.
+  bool last_search_case_sensitive() const {
+    return last_search_case_sensitive_;
+  }
+  void set_last_search_case_sensitive(bool last_search_case_sensitive) {
+    last_search_case_sensitive_ = last_search_case_sensitive;
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   // Selects and zooms to the find result nearest to the point (x, y)
   // defined in find-in-page coordinates.

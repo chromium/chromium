@@ -89,6 +89,8 @@ class FindBarHost : public FindBar,
                                    const gfx::Range& selected_range) override;
   std::u16string_view GetFindText() const override;
   gfx::Range GetSelectedRange() const override;
+  bool IsMatchCase() const override;
+  void SetMatchCase(bool match_case) override;
   void UpdateUIForFindResult(
       const find_in_page::FindNotificationDetails& result,
       const std::u16string& find_text) override;

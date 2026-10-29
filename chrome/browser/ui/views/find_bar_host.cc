@@ -369,6 +369,17 @@ gfx::Range FindBarHost::GetSelectedRange() const {
   return view_->GetSelectedRange();
 }
 
+// TODO(crbug.com/41298878): Move FindBar state storage (such as match-case,
+// find text, and selected range) out of FindBarView and into the
+// model/controller.
+bool FindBarHost::IsMatchCase() const {
+  return view_->IsMatchCase();
+}
+
+void FindBarHost::SetMatchCase(bool match_case) {
+  view_->SetMatchCase(match_case);
+}
+
 void FindBarHost::UpdateUIForFindResult(
     const find_in_page::FindNotificationDetails& result,
     const std::u16string& find_text) {

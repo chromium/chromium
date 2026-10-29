@@ -240,7 +240,8 @@ class FindBarViewsUiTest : public WebUIAndViewsToolbarInteractiveUiTestBase,
  public:
   FindBarViewsUiTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kFindInPageSkipViewport},
+        /*enabled_features=*/{features::kFindInPageSkipViewport,
+                              features::kFindInPageMatchCase},
         /*disabled_features=*/{features::kNonBlockingOsClipboardReads});
   }
 
@@ -632,6 +633,8 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, ButtonsDisabledWithoutText) {
       CheckViewProperty(FindBarView::kNextOutsideViewportButtonElementId,
                         &views::View::GetEnabled, false),
       SendKeyPress(ui::VKEY_TAB, false, false),
+      CheckHasFocus(FindBarView::kMatchCaseButtonElementId),
+      SendKeyPress(ui::VKEY_TAB, false, false),
       CheckHasFocus(FindBarView::kCloseButtonElementId));
 }
 
@@ -913,15 +916,16 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, PasteWithoutTextChange) {
       // Press Ctrl-C to copy the content.
       SendAccelerator(kTabId, ctrl_c_accelerator),
       // Make sure the text is copied successfully.
-      PollState(
-          kTextCopiedState,
-          [&]() {
-            ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-            std::u16string clipboard_text = ui::clipboard_test_util::ReadText(
-                clipboard, ui::ClipboardBuffer::kCopyPaste,
-                /* data_dst = */ nullptr);
-            return base::EqualsASCII(clipboard_text, "a");
-          }),
+      PollState(kTextCopiedState,
+                [&]() {
+                  ui::Clipboard* clipboard =
+                      ui::Clipboard::GetForCurrentThread();
+                  std::u16string clipboard_text =
+                      ui::clipboard_test_util::ReadText(
+                          clipboard, ui::ClipboardBuffer::kCopyPaste,
+                          /* data_dst = */ nullptr);
+                  return base::EqualsASCII(clipboard_text, "a");
+                }),
       WaitForState(kTextCopiedState, true),
       // Press Ctrl-V to paste the content back, it should start finding even if
       // the content is not changed.
@@ -1429,15 +1433,16 @@ IN_PROC_BROWSER_TEST_P(FindBarViewsUiTest, DISABLED_CopyBlockedByPolicy) {
                      std::to_underlying(ui::TouchEditable::MenuCommands::kCopy),
                      0);
                }),
-      PollState(
-          kTextCopiedState,
-          [&]() {
-            ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-            std::u16string clipboard_text = ui::clipboard_test_util::ReadText(
-                clipboard, ui::ClipboardBuffer::kCopyPaste,
-                /* data_dst = */ nullptr);
-            return base::EqualsASCII(clipboard_text, kExpectedText);
-          }),
+      PollState(kTextCopiedState,
+                [&]() {
+                  ui::Clipboard* clipboard =
+                      ui::Clipboard::GetForCurrentThread();
+                  std::u16string clipboard_text =
+                      ui::clipboard_test_util::ReadText(
+                          clipboard, ui::ClipboardBuffer::kCopyPaste,
+                          /* data_dst = */ nullptr);
+                  return base::EqualsASCII(clipboard_text, kExpectedText);
+                }),
       WaitForState(kTextCopiedState, true),
       // When copying to the clipboard is restricted, we have to wait for the
       // internal data tracking to identify the sequence number that will need
@@ -1462,4 +1467,39 @@ IN_PROC_BROWSER_TEST_P(FindBarViewsUiTest, DISABLED_CopyBlockedByPolicy) {
           }),
       WaitForViewProperty(FindBarView::kTextField, views::Textfield, Text,
                           u"some text"));
+}
+
+IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, MatchCaseToggle) {
+  const GURL page_a = embedded_test_server()->GetURL("/a.html");
+
+  RunTestSequence(
+      Init(page_a),
+      Do([this]() {
+        // Clear any text prepopulated from a global find pasteboard (e.g. on
+        // macOS across repeated test runs).
+        FindBarController::From(browser())->SetText(std::u16string());
+      }),
+      ShowFindBar(),
+      ObserveState(kFindResultState,
+                   [this]() {
+                     return find_in_page::FindTabHelper::FromWebContents(
+                         browser()->GetTabStripModel()->GetActiveWebContents());
+                   }),
+      CheckViewProperty(FindBarView::kElementId, &FindBarView::IsMatchCase,
+                        false),
+      // "/a.html" serves "This is some text with a link.", which has 1
+      // uppercase 'T' ("This") and 3 lowercase 't's ("text", "with").
+      EnterText(FindBarView::kTextField, u"T"),
+      WaitForState(kFindResultState, []() { return FindResultState(1, 4); }),
+      // Enable Match Case: only "This" should match.
+      PressButton(FindBarView::kMatchCaseButtonElementId),
+      CheckViewProperty(FindBarView::kElementId, &FindBarView::IsMatchCase,
+                        true),
+      WaitForState(kFindResultState, []() { return FindResultState(1, 1); }),
+      // Disable Match Case: all 4 occurrences of 'T'/'t' should match again.
+      PressButton(FindBarView::kMatchCaseButtonElementId),
+      CheckViewProperty(FindBarView::kElementId, &FindBarView::IsMatchCase,
+                        false),
+      WaitForState(kFindResultState, []() { return FindResultState(1, 4); }),
+      StopObservingState(kFindResultState));
 }
