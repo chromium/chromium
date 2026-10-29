@@ -970,7 +970,7 @@ IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest,
       RunGetProfileUserInfoWithEmail();
   // The account is only returned if extensions are syncing. Whether or not
   // extensions sync upon sign-in depends on
-  // `kReplaceSyncPromosWithSignInPromos`.
+  // `syncer::IsReplaceSyncPromosWithSignInPromosEnabled()`.
   if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     EXPECT_EQ("test@example.com", info->email);
     EXPECT_EQ("gaia_id_for_test_example.com", info->id);
@@ -1093,7 +1093,8 @@ IN_PROC_BROWSER_TEST_P(
   } else {
     // accountStatus is SYNC or unspecified. In this case, the account is only
     // returned if extensions are syncing. Whether or not extensions sync upon
-    // sign-in depends on `syncer::kReplaceSyncPromosWithSignInPromos`.
+    // sign-in depends on
+    // `syncer::IsReplaceSyncPromosWithSignInPromosEnabled()`.
     if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
       EXPECT_EQ("test@example.com", info->email);
       EXPECT_EQ("gaia_id_for_test_example.com", info->id);

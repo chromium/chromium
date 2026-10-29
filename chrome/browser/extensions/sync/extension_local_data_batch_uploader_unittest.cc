@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/sync/extension_local_data_batch_uploader.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -17,7 +16,6 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync/test/test_matchers.h"
@@ -96,11 +94,6 @@ TEST_F(ExtensionLocalDataBatchUploaderTest,
 
 TEST_F(ExtensionLocalDataBatchUploaderTest,
        LocalDataDescriptionOnlyReturnsUploadableExtensions) {
-  // Enable extension syncing in transport mode.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
   ExtensionLocalDataBatchUploader uploader(profile());
 
   // Add an extension that is marked as installed by default. This extension
@@ -149,10 +142,6 @@ TEST_F(ExtensionLocalDataBatchUploaderTest,
 }
 
 TEST_F(ExtensionLocalDataBatchUploaderTest, TriggerLocalDataMigration) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
   ExtensionLocalDataBatchUploader uploader(profile());
 
   // Add an uploadable extension.
@@ -194,10 +183,6 @@ TEST_F(ExtensionLocalDataBatchUploaderTest, TriggerLocalDataMigration) {
 }
 
 TEST_F(ExtensionLocalDataBatchUploaderTest, TriggerLocalDataMigrationForItems) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
   ExtensionLocalDataBatchUploader uploader(profile());
 
   // Add two uploadable extensions, though only `extension_1` will be uploaded.

@@ -14,7 +14,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/features.h"
 #include "extensions/browser/ui_util.h"
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -27,10 +26,6 @@ void ShowUploadExtensionToAccountDialog(Profile* profile,
                                         const Extension& extension,
                                         base::OnceClosure accept_callback,
                                         base::OnceClosure cancel_callback) {
-#if BUILDFLAG(IS_CHROMEOS)
-  CHECK(
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
-#endif
   CHECK(AccountExtensionTracker::Get(profile)->CanUploadAsAccountExtension(
       extension));
 
