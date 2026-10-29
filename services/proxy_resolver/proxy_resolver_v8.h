@@ -26,7 +26,8 @@ namespace proxy_resolver {
 // A synchronous ProxyResolver-like that uses V8 to evaluate PAC scripts.
 class ProxyResolverV8 {
  public:
-  // Interface for the javascript bindings.
+  // Interface for the javascript bindings. Methods are only invoked on the
+  // thread calling Create() / GetProxyForURL(), during that call.
   class JSBindings {
    public:
     JSBindings() {}

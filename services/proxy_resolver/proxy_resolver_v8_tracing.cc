@@ -459,7 +459,9 @@ Job::~Job() {
 }
 
 void Job::CheckIsOnWorkerThread() const {
-  DCHECK(params_->worker_task_runner->BelongsToCurrentThread());
+  // A CHECK since worker-side state isn't synchronized, and other threads don't
+  // hold a reference to the Job, so could use it after it's freed.
+  CHECK(params_->worker_task_runner->BelongsToCurrentThread());
 }
 
 void Job::CheckIsOnOriginThread() const {
@@ -617,6 +619,8 @@ bool Job::ResolveDns(const std::string& host,
                      net::ProxyResolveDnsOperation op,
                      std::string* output,
                      bool* terminate) {
+  CheckIsOnWorkerThread();
+
   if (cancelled_.IsSet()) {
     *terminate = true;
     return false;
