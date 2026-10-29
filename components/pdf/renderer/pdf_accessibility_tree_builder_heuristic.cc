@@ -1351,6 +1351,22 @@ HeadingClassifier GetHeadingClassifier(
   return HeadingClassifier::kNone;
 }
 
+// Returns how `run_context` classifies as a heading: `kFontSize` if its font
+// size exceeds the heading threshold, otherwise its styled classifier.
+HeadingClassifier ClassifyHeading(
+    const TextRunContext& run_context,
+    const HeuristicPageProperties& page_properties) {
+  if (page_properties.heading_font_size_threshold > 0 &&
+      run_context.run->style.font_size >
+          page_properties.heading_font_size_threshold) {
+    return HeadingClassifier::kFontSize;
+  }
+  if (!features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+    return HeadingClassifier::kNone;
+  }
+  return GetHeadingClassifier(run_context, page_properties);
+}
+
 void PromoteNodeToHeading(ui::AXNodeData* block_node, int heading_level) {
   CHECK(IsValidHeadingLevel(heading_level));
   block_node->role = ax::mojom::Role::kHeading;
@@ -2642,41 +2658,24 @@ PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
       header_footer_ax_role.has_value();
 
   if (!is_page_number_in_margin) {
-    float font_size = run_context.run->style.font_size;
-    if (page_properties.heading_font_size_threshold > 0 &&
-        font_size > page_properties.heading_font_size_threshold) {
-      int heading_level = kDefaultHeadingLevel;
+    const HeadingClassifier classifier =
+        ClassifyHeading(run_context, page_properties);
+    if (classifier != HeadingClassifier::kNone) {
+      int heading_level = classifier == HeadingClassifier::kFontSize
+                              ? kDefaultHeadingLevel
+                              : kLargestStyledHeadingLevel;
       if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
-        int heuristic_heading_level = GetHeadingLevelFromSize(
-            page_properties.heading_font_size_mapping, font_size);
+        int heuristic_heading_level =
+            GetHeadingLevelFromSize(page_properties.heading_font_size_mapping,
+                                    run_context.run->style.font_size);
         if (IsValidHeadingLevel(heuristic_heading_level)) {
           heading_level = heuristic_heading_level;
         }
       }
       PromoteNodeToHeading(block_node, heading_level);
       result.node = block_node;
-      result.heading_classifier = HeadingClassifier::kFontSize;
+      result.heading_classifier = classifier;
       return result;
-    }
-
-    // Use other styling information to classify headings for text that is
-    // smaller than the heading_font_size_threshold.
-    if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
-      HeadingClassifier classifier =
-          GetHeadingClassifier(run_context, page_properties);
-
-      if (classifier != HeadingClassifier::kNone) {
-        int heading_level = kLargestStyledHeadingLevel;
-        int heuristic_heading_level = GetHeadingLevelFromSize(
-            page_properties.heading_font_size_mapping, font_size);
-        if (IsValidHeadingLevel(heuristic_heading_level)) {
-          heading_level = heuristic_heading_level;
-        }
-        PromoteNodeToHeading(block_node, heading_level);
-        result.node = block_node;
-        result.heading_classifier = classifier;
-        return result;
-      }
     }
   }
 
