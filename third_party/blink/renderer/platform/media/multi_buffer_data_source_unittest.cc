@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
@@ -1914,6 +1915,8 @@ TEST_F(MultiBufferDataSourceTest, ResponseTypeOpaque) {
 }
 
 TEST_F(MultiBufferDataSourceTest, ResponseTypeOpaqueOnLaterRange) {
+  base::test::ScopedFeatureList feature_list(
+      media::kDisallowMixedOpaqueMediaResponses);
   Initialize(kHttpUrl, true);
   WebURLResponse response1 =
       response_generator_->GeneratePartial206(0, kDataSize - 1);
@@ -1925,6 +1928,8 @@ TEST_F(MultiBufferDataSourceTest, ResponseTypeOpaqueOnLaterRange) {
 }
 
 TEST_F(MultiBufferDataSourceTest, ResponseTypeNonOpaqueAfterOpaqueRange) {
+  base::test::ScopedFeatureList feature_list(
+      media::kDisallowMixedOpaqueMediaResponses);
   Initialize(kHttpUrl, true);
   WebURLResponse response1 =
       response_generator_->GeneratePartial206(0, kDataSize - 1);

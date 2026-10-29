@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,7 +23,8 @@ namespace blink {
 class UrlIndexTest : public testing::Test {
  public:
   UrlIndexTest()
-      : url_index_(std::make_unique<UrlIndex>(
+      : feature_list_(media::kDisallowMixedOpaqueMediaResponses),
+        url_index_(std::make_unique<UrlIndex>(
             nullptr,
             task_environment_.GetMainThreadTaskRunner())) {}
 
@@ -37,6 +39,7 @@ class UrlIndexTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
   scoped_refptr<const SecurityOrigin> security_origin_ =
       SecurityOrigin::CreateUniqueOpaque();
   std::unique_ptr<UrlIndex> url_index_;

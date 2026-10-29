@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
+[FAIL] range responses from single origin with both opaque and non-opaque responses
+  assert_equals: expected "LOAD_ERROR" but got "TAINTED"
 [FAIL] synth and same-origin fallback range responses
   assert_equals: expected "NOT_TAINTED" but got "LOAD_ERROR"
 Harness: the test ran to completion.

@@ -3524,7 +3524,7 @@ crbug.com/381945825 [ Mac13 ] external/wpt/webaudio/the-audio-api/the-audioworkl
 crbug.com/381945825 [ Mac13 ] external/wpt/webaudio/the-audio-api/the-channelmergernode-interface/active-processing.https.html [ Crash ]
 crbug.com/381945825 [ Mac13 ] external/wpt/webaudio/the-audio-api/the-convolvernode-interface/active-processing.https.html [ Crash ]
 crbug.com/381945825 [ Mac13 ] external/wpt/webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/cors-check.https.html [ Crash ]
-crbug.com/573441094 external/wpt/webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/no-cors.https.html [ Crash Failure Pass ]
+crbug.com/381945825 [ Mac13 ] external/wpt/webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/no-cors.https.html [ Crash ]
 external/wpt/streams/readable-byte-streams/patched-global.any.* [ Crash ]
 crbug.com/381937281 external/wpt/webrtc/simulcast/getStats.https.html [ Skip Timeout ]
 crbug.com/381129856 [ Mac13 ] external/wpt/shadow-dom/focus/focus-pseudo-on-shadow-host-1.html [ Failure ]
@@ -7722,6 +7722,10 @@ crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-text/whit
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-text/white-space/text-wrap-balance-line-clamp-004.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-text/white-space/text-wrap-balance-line-clamp-007.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/fast/overflow/line-clamp-floats-dont-grow-container.html [ Failure ]
+
+# DisallowMixedOpaqueMediaResponses killswitch disabled.
+crbug.com/572363265 external/wpt/service-workers/service-worker/fetch-canvas-tainting-video-with-range-request.https.html [ Failure ]
+crbug.com/572363265 http/tests/serviceworker/service-worker-mixed-response.html [ Failure ]
 
 # Dark Mode Failures
 crbug.com/513290098 [ Mac15 ] virtual/dark-mode-default/dark-mode/images/country-flags.html [ Failure Pass ]
