@@ -54,6 +54,7 @@
 
   if ([self isRunningTest:@selector(testAIHubNewBadgeAccessibility)]) {
     config.iph_feature_enabled = "IPH_iOSAIHubNewBadge";
+    config.features_disabled.push_back(kChromeNextIa);
     config.relaunch_policy = ForceRelaunchByKilling;
   }
 
@@ -62,9 +63,6 @@
 
 // Tests that the AI Hub entry point conveys the "New" context to accessibility.
 - (void)testAIHubNewBadgeAccessibility {
-  if ([ChromeEarlGrey isChromeNextEnabled]) {
-    EARL_GREY_TEST_DISABLED(@"No 'new' label with Next");
-  }
   NSString* baseLabel = l10n_util::GetNSString(
       IDS_IOS_BWG_PAGE_ACTION_MENU_ENTRY_POINT_ACCESSIBILITY_LABEL);
   NSString* expectedLabel =
