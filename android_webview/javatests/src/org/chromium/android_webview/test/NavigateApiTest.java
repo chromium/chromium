@@ -29,6 +29,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.browser.test.util.NavigationControllerUtil;
@@ -127,6 +128,7 @@ public class NavigateApiTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({"enable-features=WebViewNavigate"})
+    @RequiresRestart("crbug.com/579453055: chrome://hang hangs the shared WebView renderer process")
     public void navigate_failure_rendererDebugUrl() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
