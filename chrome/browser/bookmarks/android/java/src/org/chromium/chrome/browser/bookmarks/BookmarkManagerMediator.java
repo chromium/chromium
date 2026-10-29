@@ -11,6 +11,7 @@ import static org.chromium.components.browser_ui.widget.ListItemBuilder.buildSim
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -102,6 +103,7 @@ class BookmarkManagerMediator
         implements BookmarkDelegate, PartnerBookmarksReader.FaviconUpdateObserver {
     private static final int PROMO_MAX_INDEX = 1;
     private static final int SEARCH_BOX_MAX_INDEX = 0;
+    private static final String QUERY_PARAM_SEARCH = "q";
 
     private static boolean sPreventLoadingForTesting;
 
@@ -541,7 +543,7 @@ class BookmarkManagerMediator
         mSelectionDelegate.addObserver(mSelectionObserver);
 
         if (!TextUtils.isEmpty(mInitialUrl)) {
-            setState(BookmarkUiState.createStateFromUrl(mInitialUrl, mBookmarkModel));
+            updateForUrl(mInitialUrl);
         }
     }
 
@@ -658,6 +660,13 @@ class BookmarkManagerMediator
         if (mBookmarkModel == null) return;
 
         if (mBookmarkModel.isBookmarkModelLoaded()) {
+            if (getCurrentUiState() != null && TextUtils.equals(url, getCurrentUiState().mUrl)) {
+                return;
+            }
+
+            String searchQuery =
+                    url != null ? Uri.parse(url).getQueryParameter(QUERY_PARAM_SEARCH) : null;
+
             BookmarkUiState searchState = null;
             if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
                 searchState = mStateStack.removeLast();
@@ -665,7 +674,11 @@ class BookmarkManagerMediator
 
             setState(BookmarkUiState.createStateFromUrl(url, mBookmarkModel));
 
-            if (searchState != null) setState(searchState);
+            if (searchQuery != null) {
+                search(searchQuery);
+            } else if (searchState != null) {
+                setState(searchState);
+            }
         } else {
             mInitialUrl = url;
         }
@@ -989,10 +1002,7 @@ class BookmarkManagerMediator
             BookmarkUtils.setLastUsedUrl(state.mUrl);
             // If a loading state is replaced by another loading state, do not notify this change.
             if (mNativePage != null) {
-                boolean replaceLastUrl =
-                        TextUtils.equals(mNativePage.getUrl(), getOriginalBookmarksUrl())
-                                || TextUtils.equals(
-                                        mNativePage.getUrl(), getOriginalNativeBookmarksUrl());
+                boolean replaceLastUrl = isOriginalBookmarksUrl(mNativePage.getUrl());
                 if (replaceLastUrl) {
                     // When navigating to chrome://bookmarks, the initial entry commits
                     // asynchronously in NavigationController. Post to UI_DEFAULT so the initial
@@ -1022,6 +1032,13 @@ class BookmarkManagerMediator
         for (BookmarkUiObserver observer : mUiObservers) {
             notifyStateChange(observer);
         }
+    }
+
+    private boolean isOriginalBookmarksUrl(@Nullable String url) {
+        if (TextUtils.isEmpty(url)) return false;
+        String urlWithoutQuery = Uri.parse(url).buildUpon().clearQuery().build().toString();
+        return TextUtils.equals(urlWithoutQuery, getOriginalBookmarksUrl())
+                || TextUtils.equals(urlWithoutQuery, getOriginalNativeBookmarksUrl());
     }
 
     // TODO(lazzzis): This method can be moved to adapter after bookmark reordering launches.

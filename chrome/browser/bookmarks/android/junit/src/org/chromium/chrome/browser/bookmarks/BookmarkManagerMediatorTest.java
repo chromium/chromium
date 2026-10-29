@@ -3359,4 +3359,55 @@ public class BookmarkManagerMediatorTest {
 
         assertTrue(searchBoxRowPropertyModel.get(SearchBoxProperties.HAS_FOCUS));
     }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testUpdateForUrl_withSearchQuery_tablet() {
+        when(mBookmarkModel.searchBookmarks(eq("abc"), anyInt()))
+                .thenReturn(Collections.singletonList(mFolderId3));
+        mMediator.setBasicNativePage(mNativePage);
+        doReturn("chrome://bookmarks/?q=abc").when(mNativePage).getUrl();
+
+        mMediator.updateForUrl("chrome://bookmarks/?q=abc");
+        finishLoading();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        String defaultFolderUrl = "chrome-native://bookmarks/folder/" + mRootFolderId.getId();
+        verify(mNativePage).onStateChange(defaultFolderUrl, /* replaceLastUrl= */ true);
+
+        // Simulate the NativePage URL update triggered by onStateChange.
+        doReturn(defaultFolderUrl).when(mNativePage).getUrl();
+        mMediator.updateForUrl(defaultFolderUrl);
+
+        assertEquals(BookmarkUiMode.FOLDER, mMediator.getCurrentUiMode());
+        assertEquals(
+                "abc",
+                mMediator.getOrCreateSearchBoxPropertyModel().get(SearchBoxProperties.SEARCH_TEXT));
+        verifyCurrentBookmarkIds(null, mFolderId3);
+    }
+
+    @Test
+    public void testUpdateForUrl_withSearchQuery_phone() {
+        when(mBookmarkModel.searchBookmarks(eq("abc"), anyInt()))
+                .thenReturn(Collections.singletonList(mFolderId3));
+        mMediator.setBasicNativePage(mNativePage);
+        doReturn("chrome://bookmarks/?q=abc").when(mNativePage).getUrl();
+
+        mMediator.updateForUrl("chrome://bookmarks/?q=abc");
+        finishLoading();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        String defaultFolderUrl = "chrome-native://bookmarks/folder/" + mRootFolderId.getId();
+        verify(mNativePage).onStateChange(defaultFolderUrl, /* replaceLastUrl= */ true);
+
+        // Simulate the NativePage URL update triggered by onStateChange.
+        doReturn(defaultFolderUrl).when(mNativePage).getUrl();
+        mMediator.updateForUrl(defaultFolderUrl);
+
+        assertEquals(BookmarkUiMode.SEARCHING, mMediator.getCurrentUiMode());
+        assertEquals(
+                "abc",
+                mMediator.getOrCreateSearchBoxPropertyModel().get(SearchBoxProperties.SEARCH_TEXT));
+        verifyCurrentBookmarkIds(null, mFolderId3);
+    }
 }
