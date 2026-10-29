@@ -62,6 +62,7 @@
 #include "components/wallet/core/browser/walletable_permission_utils.h"
 #include "components/wallet/core/common/wallet_features.h"
 #include "components/wallet/core/common/wallet_prefs.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api_test_utils.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -245,6 +246,10 @@ class MockAutofillClient : public autofill::TestContentAutofillClient {
               NotifyIphFeatureUsed,
               (autofill::AutofillClient::IphFeature),
               (override));
+  autofill::EntityDataManager* GetEntityDataManager() override {
+    return autofill::AutofillEntityDataManagerFactory::GetForProfile(
+        Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
+  }
 };
 
 class AutofillPrivateApiBrowserTest : public extensions::ExtensionApiTest {
@@ -425,8 +430,6 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest, SetAutofillAiOptIn) {
-  autofill_client()->set_entity_data_manager(
-      autofill::AutofillEntityDataManagerFactory::GetForProfile(profile()));
   autofill_client()->SetUpPrefsAndIdentityForAutofillAi();
   EXPECT_TRUE(autofill::SetAutofillAiOptInStatus(
       *autofill_client(), autofill::AutofillAiOptInStatus::kOptedOut));
@@ -616,8 +619,6 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
                        AddEntityInstance_SavesToWalletIfEligible) {
-  autofill_client()->set_entity_data_manager(
-      autofill::AutofillEntityDataManagerFactory::GetForProfile(profile()));
   autofill_client()->SetUpPrefsAndIdentityForAutofillAi();
   autofill_client()->SetVariationConfigCountryCode(
       autofill::GeoIpCountryCode("US"));
@@ -669,8 +670,6 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     AutofillPrivateApiBrowserTest,
     AddEntityInstance_FallsBackToLocalIfSaveToWalletOnPaymentsOffToggle) {
-  autofill_client()->set_entity_data_manager(
-      autofill::AutofillEntityDataManagerFactory::GetForProfile(profile()));
   autofill_client()->SetUpPrefsAndIdentityForAutofillAi();
   autofill_client()->SetVariationConfigCountryCode(
       autofill::GeoIpCountryCode("US"));
@@ -726,10 +725,7 @@ class AutofillPrivateApiSavePrivatePassToWalletTest
   void SetUpOnMainThread() override {
     AutofillPrivateApiBrowserTest::SetUpOnMainThread();
 
-    autofill::EntityDataManager* edm =
-        autofill::AutofillEntityDataManagerFactory::GetForProfile(profile());
-    edm->SetReauthAvailability(true);
-    autofill_client()->set_entity_data_manager(edm);
+    autofill_client()->GetEntityDataManager()->SetReauthAvailability(true);
     autofill_client()->SetUpPrefsAndIdentityForAutofillAi();
     autofill_client()->SetVariationConfigCountryCode(
         autofill::GeoIpCountryCode("US"));
@@ -856,10 +852,7 @@ class AutofillPrivateApiPublicPassTest : public AutofillPrivateApiBrowserTest {
   void SetUpOnMainThread() override {
     AutofillPrivateApiBrowserTest::SetUpOnMainThread();
 
-    autofill::EntityDataManager* edm =
-        autofill::AutofillEntityDataManagerFactory::GetForProfile(profile());
-    edm->SetReauthAvailability(true);
-    autofill_client()->set_entity_data_manager(edm);
+    autofill_client()->GetEntityDataManager()->SetReauthAvailability(true);
     autofill_client()->SetUpPrefsAndIdentityForAutofillAi();
     autofill_client()->SetVariationConfigCountryCode(
         autofill::GeoIpCountryCode("US"));

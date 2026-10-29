@@ -174,9 +174,7 @@ class TestAutofillClientTemplate : public T {
   }
 
   EntityDataManager* GetEntityDataManager() override {
-    return entity_data_manager_non_owning_
-               ? entity_data_manager_non_owning_.get()
-               : entity_data_manager_.get();
+    return entity_data_manager_.get();
   }
 
   WalletPassAccessManager* GetWalletPassAccessManager() override {
@@ -680,13 +678,7 @@ class TestAutofillClientTemplate : public T {
 
   void set_entity_data_manager(
       std::unique_ptr<EntityDataManager> entity_data_manager) {
-    entity_data_manager_non_owning_ = nullptr;
     entity_data_manager_ = std::move(entity_data_manager);
-  }
-
-  void set_entity_data_manager(EntityDataManager* entity_data_manager) {
-    entity_data_manager_.reset();
-    entity_data_manager_non_owning_ = entity_data_manager;
   }
 
   void set_wallet_pass_access_manager(
@@ -893,7 +885,6 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<TestPersonalDataManager> test_personal_data_manager_;
   std::unique_ptr<ValuablesDataManager> valuables_data_manager_;
   std::unique_ptr<EntityDataManager> entity_data_manager_;
-  raw_ptr<EntityDataManager> entity_data_manager_non_owning_ = nullptr;
   // The below objects must be destroyed before `TestPersonalDataManager`
   // because they keep a reference to it.
   std::unique_ptr<payments::TestPaymentsAutofillClient>
