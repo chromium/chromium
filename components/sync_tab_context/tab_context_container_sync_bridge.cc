@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -29,21 +30,35 @@ namespace sync_tab_context {
 
 namespace {
 
-sync_pb::EncryptedTabContextContainerSpecifics ToSpecifics(
+sync_pb::EncryptedTabContextContainerSpecifics ToLocalStoreSpecifics(
     const ContainerId& container_id,
-    const syncer::AgileSymmetricKeySet& key_set) {
+    const syncer::AgileSymmetricKeySet* key_set,
+    std::optional<std::string_view> pre_minted_access_token) {
   sync_pb::EncryptedTabContextContainerSpecifics specifics;
   specifics.set_uuid(container_id.value().AsLowercaseString());
-  *specifics.mutable_encryption_key() = key_set.ToProto();
+  if (key_set) {
+    *specifics.mutable_encryption_key() = key_set->ToProto();
+  }
+  if (pre_minted_access_token.has_value()) {
+    specifics.set_container_access_token(std::string(*pre_minted_access_token));
+  }
   return specifics;
 }
 
 std::unique_ptr<syncer::EntityData> ToEntityData(
     const ContainerId& container_id,
-    const syncer::AgileSymmetricKeySet& key_set) {
+    const syncer::AgileSymmetricKeySet* key_set,
+    std::optional<std::string_view> pre_minted_access_token) {
   auto entity_data = std::make_unique<syncer::EntityData>();
-  *entity_data->specifics.mutable_encrypted_tab_context_container() =
-      ToSpecifics(container_id, key_set);
+  sync_pb::EncryptedTabContextContainerSpecifics* specifics =
+      entity_data->specifics.mutable_encrypted_tab_context_container();
+  // If `pre_minted_access_token` is present, omit `encryption_key` from the
+  // specifics handed to the Sync processor so that the raw key is never
+  // uploaded to the Sync server for ephemeral containers.
+  const syncer::AgileSymmetricKeySet* sync_key_set =
+      pre_minted_access_token.has_value() ? nullptr : key_set;
+  *specifics = ToLocalStoreSpecifics(container_id, sync_key_set,
+                                     pre_minted_access_token);
   entity_data->name = container_id.value().AsLowercaseString();
   return entity_data;
 }
@@ -54,12 +69,41 @@ bool AreSpecificsValid(
     return false;
   }
 
-  std::unique_ptr<syncer::AgileSymmetricKeySet> encryption_key =
-      syncer::AgileSymmetricKeySet::FromProto(specifics.encryption_key());
-  return encryption_key && encryption_key->size() != 0;
+  if (!specifics.has_encryption_key() &&
+      !specifics.has_container_access_token()) {
+    return false;
+  }
+
+  if (specifics.has_encryption_key()) {
+    std::unique_ptr<syncer::AgileSymmetricKeySet> encryption_key =
+        syncer::AgileSymmetricKeySet::FromProto(specifics.encryption_key());
+    if (!encryption_key || encryption_key->size() == 0) {
+      return false;
+    }
+  }
+
+  if (specifics.has_container_access_token() &&
+      specifics.container_access_token().empty()) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace
+
+TabContextContainerSyncBridge::Entry::Entry(
+    std::unique_ptr<syncer::AgileSymmetricKeySet> key_set,
+    std::optional<std::string> pre_minted_access_token)
+    : key_set(std::move(key_set)),
+      pre_minted_access_token(std::move(pre_minted_access_token)) {}
+
+TabContextContainerSyncBridge::Entry::Entry(Entry&&) = default;
+
+TabContextContainerSyncBridge::Entry&
+TabContextContainerSyncBridge::Entry::operator=(Entry&&) = default;
+
+TabContextContainerSyncBridge::Entry::~Entry() = default;
 
 TabContextContainerSyncBridge::TabContextContainerSyncBridge(
     syncer::OnceDataTypeStoreFactory store_factory,
@@ -77,38 +121,55 @@ TabContextContainerSyncBridge::~TabContextContainerSyncBridge() {
 
 void TabContextContainerSyncBridge::CreateContainer(
     const ContainerId& container_id,
-    std::unique_ptr<syncer::AgileSymmetricKeySet> key_set) {
+    std::unique_ptr<syncer::AgileSymmetricKeySet> key_set,
+    std::optional<std::string> pre_minted_access_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(change_processor()->IsTrackingMetadata());
   CHECK(store_);
   CHECK(container_id.value().is_valid());
   CHECK(key_set);
   CHECK_GT(key_set->size(), 0u);
+  CHECK(!pre_minted_access_token.has_value() ||
+        !pre_minted_access_token->empty());
 
-  const sync_pb::EncryptedTabContextContainerSpecifics specifics =
-      ToSpecifics(container_id, *key_set);
+  const sync_pb::EncryptedTabContextContainerSpecifics local_specifics =
+      ToLocalStoreSpecifics(container_id, key_set.get(),
+                            pre_minted_access_token);
   const std::string storage_key = container_id.value().AsLowercaseString();
 
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
-  write_batch->WriteData(storage_key, specifics.SerializeAsString());
+  write_batch->WriteData(storage_key, local_specifics.SerializeAsString());
 
-  change_processor()->Put(storage_key, ToEntityData(container_id, *key_set),
-                          write_batch->GetMetadataChangeList());
+  change_processor()->Put(
+      storage_key,
+      ToEntityData(container_id, key_set.get(), pre_minted_access_token),
+      write_batch->GetMetadataChangeList());
 
   store_->CommitWriteBatch(
       std::move(write_batch),
       base::BindOnce(&TabContextContainerSyncBridge::OnStoreCommit,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  entries_[container_id] = std::move(key_set);
+  entries_.insert_or_assign(
+      container_id,
+      Entry(std::move(key_set), std::move(pre_minted_access_token)));
 }
 
 const syncer::AgileSymmetricKeySet*
 TabContextContainerSyncBridge::GetStoredEncryptionKeyForContainer(
     const ContainerId& container_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::FindPtrOrNull(entries_, container_id);
+  const Entry* entry = base::FindOrNull(entries_, container_id);
+  return entry ? entry->key_set.get() : nullptr;
+}
+
+std::optional<std::string>
+TabContextContainerSyncBridge::GetStoredPreMintedAccessTokenForContainer(
+    const ContainerId& container_id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const Entry* entry = base::FindOrNull(entries_, container_id);
+  return entry ? entry->pre_minted_access_token : std::nullopt;
 }
 
 bool TabContextContainerSyncBridge::IsTrackingMetadata() const {
@@ -152,9 +213,19 @@ TabContextContainerSyncBridge::ApplyIncrementalSyncChanges(
         const ContainerId container_id(
             base::Uuid::ParseCaseInsensitive(specifics.uuid()));
         std::unique_ptr<syncer::AgileSymmetricKeySet> encryption_key =
-            syncer::AgileSymmetricKeySet::FromProto(specifics.encryption_key());
-        write_batch->WriteData(specifics.uuid(), specifics.SerializeAsString());
-        entries_[container_id] = std::move(encryption_key);
+            ExtractOrPreserveEncryptionKey(container_id, specifics);
+        std::optional<std::string> pre_minted_access_token =
+            specifics.has_container_access_token()
+                ? std::make_optional(specifics.container_access_token())
+                : std::nullopt;
+        write_batch->WriteData(
+            specifics.uuid(),
+            ToLocalStoreSpecifics(container_id, encryption_key.get(),
+                                  pre_minted_access_token)
+                .SerializeAsString());
+        entries_.insert_or_assign(container_id,
+                                  Entry(std::move(encryption_key),
+                                        std::move(pre_minted_access_token)));
         break;
       }
       case syncer::EntityChange::ACTION_DELETE: {
@@ -189,9 +260,9 @@ TabContextContainerSyncBridge::GetDataForCommit(StorageKeyList storage_keys) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const std::string& key : storage_keys) {
     const ContainerId container_id(base::Uuid::ParseCaseInsensitive(key));
-    if (const syncer::AgileSymmetricKeySet* key_set =
-            base::FindPtrOrNull(entries_, container_id)) {
-      batch->Put(key, ToEntityData(container_id, *key_set));
+    if (const Entry* entry = base::FindOrNull(entries_, container_id)) {
+      batch->Put(key, ToEntityData(container_id, entry->key_set.get(),
+                                   entry->pre_minted_access_token));
     }
   }
   return batch;
@@ -201,9 +272,10 @@ std::unique_ptr<syncer::DataBatch>
 TabContextContainerSyncBridge::GetAllDataForDebugging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto batch = std::make_unique<syncer::MutableDataBatch>();
-  for (const auto& [container_id, key_set] : entries_) {
+  for (const auto& [container_id, entry] : entries_) {
     const std::string key = container_id.value().AsLowercaseString();
-    batch->Put(key, ToEntityData(container_id, *key_set));
+    batch->Put(key, ToEntityData(container_id, entry.key_set.get(),
+                                 entry.pre_minted_access_token));
   }
   return batch;
 }
@@ -232,6 +304,24 @@ bool TabContextContainerSyncBridge::IsEntityDataValid(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return AreSpecificsValid(
       entity_data.specifics.encrypted_tab_context_container());
+}
+
+std::unique_ptr<syncer::AgileSymmetricKeySet>
+TabContextContainerSyncBridge::ExtractOrPreserveEncryptionKey(
+    const ContainerId& container_id,
+    const sync_pb::EncryptedTabContextContainerSpecifics& specifics) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (specifics.has_encryption_key()) {
+    return syncer::AgileSymmetricKeySet::FromProto(specifics.encryption_key());
+  }
+  if (const syncer::AgileSymmetricKeySet* existing_key =
+          GetStoredEncryptionKeyForContainer(container_id)) {
+    // Preserve any locally stored encryption key for an ephemeral container
+    // that originated on this device, since the Sync server only stores
+    // `container_access_token` for ephemeral containers.
+    return syncer::AgileSymmetricKeySet::FromProto(existing_key->ToProto());
+  }
+  return nullptr;
 }
 
 void TabContextContainerSyncBridge::OnStoreCreated(
@@ -271,8 +361,17 @@ void TabContextContainerSyncBridge::OnReadAllDataAndMetadata(
     const ContainerId container_id(
         base::Uuid::ParseCaseInsensitive(specifics.uuid()));
     std::unique_ptr<syncer::AgileSymmetricKeySet> encryption_key =
-        syncer::AgileSymmetricKeySet::FromProto(specifics.encryption_key());
-    entries_[container_id] = std::move(encryption_key);
+        specifics.has_encryption_key()
+            ? syncer::AgileSymmetricKeySet::FromProto(
+                  specifics.encryption_key())
+            : nullptr;
+    std::optional<std::string> pre_minted_access_token =
+        specifics.has_container_access_token()
+            ? std::make_optional(specifics.container_access_token())
+            : std::nullopt;
+    entries_.insert_or_assign(
+        container_id,
+        Entry(std::move(encryption_key), std::move(pre_minted_access_token)));
   }
 
   change_processor()->ModelReadyToSync(std::move(metadata_batch));

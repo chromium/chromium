@@ -4,6 +4,7 @@
 
 #include "components/sync_tab_context/tab_context_sync_service_impl.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -110,7 +111,8 @@ std::optional<ContainerId> TabContextSyncServiceImpl::CreateContainer() {
       syncer::AgileSymmetricKeySet::CreateEmpty();
   key_set->RotatePrimaryToNewlyGeneratedRandomKey();
 
-  container_bridge_->CreateContainer(container_id, std::move(key_set));
+  container_bridge_->CreateContainer(container_id, std::move(key_set),
+                                     /*pre_minted_access_token=*/std::nullopt);
   return container_id;
 }
 

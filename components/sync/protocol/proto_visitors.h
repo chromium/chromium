@@ -719,6 +719,7 @@ VISIT_PROTO_FIELDS(
     const sync_pb::EncryptedTabContextContainerSpecifics& proto) {
   VISIT(uuid);
   VISIT(encryption_key);
+  VISIT_BYTES(container_access_token);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::EntityMetadata& proto) {

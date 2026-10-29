@@ -38,15 +38,25 @@ class TabContextContainerSyncBridge : public syncer::DataTypeSyncBridge {
       const TabContextContainerSyncBridge&) = delete;
   ~TabContextContainerSyncBridge() override;
 
-  // Creates and persists a new container with `container_id` and `key_set`.
-  // Requires `IsTrackingMetadata()` to be true and `key_set` to be non-null and
-  // non-empty.
+  // Creates and persists a new container with `container_id`, `key_set`, and
+  // an optional `pre_minted_access_token`. Requires `IsTrackingMetadata()` to
+  // be true and `key_set` to be non-null and non-empty. If
+  // `pre_minted_access_token` is provided, it must be non-empty; both `key_set`
+  // and `pre_minted_access_token` are persisted in the local store, whereas
+  // `key_set` is omitted from the specifics committed to the Sync server.
   void CreateContainer(const ContainerId& container_id,
-                       std::unique_ptr<syncer::AgileSymmetricKeySet> key_set);
+                       std::unique_ptr<syncer::AgileSymmetricKeySet> key_set,
+                       std::optional<std::string> pre_minted_access_token);
 
   // Returns the stored encryption key for a container or null if no container
-  // exists with ID `container_id`.
+  // exists with ID `container_id` (or if it was downloaded remotely without an
+  // encryption key).
   const syncer::AgileSymmetricKeySet* GetStoredEncryptionKeyForContainer(
+      const ContainerId& container_id) const;
+
+  // Returns the stored pre-minted access token for a container if one is
+  // stored, or `std::nullopt` otherwise.
+  std::optional<std::string> GetStoredPreMintedAccessTokenForContainer(
       const ContainerId& container_id) const;
 
   // Returns true if the change processor is tracking metadata (i.e., local data
@@ -76,6 +86,21 @@ class TabContextContainerSyncBridge : public syncer::DataTypeSyncBridge {
   bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
 
  private:
+  struct Entry {
+    Entry(std::unique_ptr<syncer::AgileSymmetricKeySet> key_set,
+          std::optional<std::string> pre_minted_access_token);
+    Entry(Entry&&);
+    Entry& operator=(Entry&&);
+    ~Entry();
+
+    std::unique_ptr<syncer::AgileSymmetricKeySet> key_set;
+    std::optional<std::string> pre_minted_access_token;
+  };
+
+  std::unique_ptr<syncer::AgileSymmetricKeySet> ExtractOrPreserveEncryptionKey(
+      const ContainerId& container_id,
+      const sync_pb::EncryptedTabContextContainerSpecifics& specifics) const;
+
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
                       std::unique_ptr<syncer::DataTypeStore> store);
   void OnReadAllDataAndMetadata(
@@ -88,10 +113,7 @@ class TabContextContainerSyncBridge : public syncer::DataTypeSyncBridge {
 
   std::unique_ptr<syncer::DataTypeStore> store_;
 
-  absl::flat_hash_map<ContainerId,
-                      std::unique_ptr<syncer::AgileSymmetricKeySet>,
-                      ContainerIdHash>
-      entries_;
+  absl::flat_hash_map<ContainerId, Entry, ContainerIdHash> entries_;
 
   base::WeakPtrFactory<TabContextContainerSyncBridge> weak_ptr_factory_{this};
 };

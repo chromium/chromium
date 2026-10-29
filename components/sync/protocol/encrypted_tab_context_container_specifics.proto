@@ -17,4 +17,10 @@ import "components/sync/protocol/agile_encryption_keys.proto";
 message EncryptedTabContextContainerSpecifics {
   optional string uuid = 1;
   optional AgileSymmetricKeySet encryption_key = 2;
+
+  // Present only for ephemeral containers, where `encryption_key` is not
+  // uploaded to the Sync server. Contains a serialized
+  // `TabContextContainerAccessToken` proto wrapping the container's encryption
+  // key using a short-lived server-minted ephemeral key.
+  optional bytes container_access_token = 3;
 }
