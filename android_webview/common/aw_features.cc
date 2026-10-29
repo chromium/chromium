@@ -412,7 +412,7 @@ BASE_FEATURE(kWebViewRenderDocument, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables using a single shared gpu::SharedContextState across all
 // OutputSurfaceProviderWebView instances.
 BASE_FEATURE(kWebViewSingleSharedContextState,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, navigation headers will be saved and restored as part
 // of saved state for WebView.
