@@ -38,16 +38,18 @@ namespace {
 
 // Certificates in the Windows roots store may be used as either trust
 // anchors or trusted leafs (if self-signed).
-constexpr bssl::CertificateTrust kRootCertTrust =
-    bssl::CertificateTrust::ForTrustAnchorOrLeaf()
-        .WithEnforceAnchorExpiry()
-        .WithEnforceAnchorConstraints()
-        .WithRequireLeafSelfSigned();
+bssl::CertificateTrust RootCertTrust() {
+  return bssl::CertificateTrust::ForTrustAnchorOrLeaf()
+      .WithEnforceAnchorExpiry()
+      .WithEnforceAnchorConstraints()
+      .WithRequireLeafSelfSigned();
+}
 
 // Certificates in the Trusted People store may be trusted leafs (if
 // self-signed).
-constexpr bssl::CertificateTrust kTrustedPeopleTrust =
-    bssl::CertificateTrust::ForTrustedLeaf().WithRequireLeafSelfSigned();
+bssl::CertificateTrust TrustedPeopleTrust() {
+  return bssl::CertificateTrust::ForTrustedLeaf().WithRequireLeafSelfSigned();
+}
 
 // Returns true if the cert can be used for server authentication, based on
 // certificate properties.
@@ -517,7 +519,7 @@ class TrustStoreWin::Impl {
         // If we find at least one version of the cert that is trusted for TLS
         // Server Auth, we will trust the cert.
         if (IsCertTrustedForServerAuth(cert_from_store)) {
-          return kRootCertTrust;
+          return RootCertTrust();
         }
       }
     }
@@ -531,7 +533,7 @@ class TrustStoreWin::Impl {
         // If we find at least one version of the cert that is trusted for TLS
         // Server Auth, we will trust the cert.
         if (IsCertTrustedForServerAuth(cert_from_store)) {
-          return kTrustedPeopleTrust;
+          return TrustedPeopleTrust();
         }
       }
     }
@@ -570,14 +572,14 @@ class TrustStoreWin::Impl {
     while ((cert_from_store = CertEnumCertificatesInStore(
                 trusted_people_cert_store_.get(), cert_from_store))) {
       if (IsCertTrustedForServerAuth(cert_from_store)) {
-        AddCertWithTrust(cert_from_store, kTrustedPeopleTrust, &certs);
+        AddCertWithTrust(cert_from_store, TrustedPeopleTrust(), &certs);
       }
     }
 
     while ((cert_from_store = CertEnumCertificatesInStore(
                 root_cert_store_.get(), cert_from_store))) {
       if (IsCertTrustedForServerAuth(cert_from_store)) {
-        AddCertWithTrust(cert_from_store, kRootCertTrust, &certs);
+        AddCertWithTrust(cert_from_store, RootCertTrust(), &certs);
       }
     }
 
