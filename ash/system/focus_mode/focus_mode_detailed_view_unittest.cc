@@ -1014,10 +1014,13 @@ TEST_F(FocusModeDetailedViewTest, ReselectAddedTask) {
   auto* controller = FocusModeController::Get();
   EXPECT_FALSE(controller->HasSelectedTask());
   EXPECT_TRUE(chip_carousel->GetVisible());
+  // Showing the carousel again only schedules a layout. Run it so that the
+  // chips have up-to-date bounds before clicking on one of them.
+  views::test::RunScheduledLayout(chip_carousel);
   views::View* scroll_contents =
       chip_carousel->GetScrollViewForTesting()->contents();
   LeftClickOn(scroll_contents->GetChildrenInZOrder()[0]);
-  EXPECT_TRUE(controller->HasSelectedTask());
+  ASSERT_TRUE(controller->HasSelectedTask());
   EXPECT_EQ(controller->tasks_model().selected_task()->title,
             base::UTF16ToUTF8(new_task_title));
 }
