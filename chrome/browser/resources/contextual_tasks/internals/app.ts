@@ -20,6 +20,7 @@ import {TabSelectionMode} from '../contextual_tasks_types.mojom-webui.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
+import type {ContextualTasksSessionStateTabElement} from './session_state_tab.js';
 
 /**
  * Converts a mojo time to a JS time.
@@ -82,6 +83,7 @@ export interface ContextualTasksInternalsAppElement {
   $: {
     tabSelectionModeSelect: HTMLSelectElement,
     minModelScoreSlider: CrSliderElement,
+    sessionStateTab: ContextualTasksSessionStateTabElement,
   };
 }
 
@@ -143,7 +145,11 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
     const tabBox = this.shadowRoot.querySelector('cr-tab-box')!;
 
     tabBox.addEventListener('selected-index-change', e => {
-      window.location.hash = tabUrlHashes[e.detail] || '';
+      const selectedHash = tabUrlHashes[e.detail] || '';
+      window.location.hash = selectedHash;
+      if (selectedHash === '#session-state') {
+        this.$.sessionStateTab.refresh();
+      }
     });
 
     if (window.location.hash.startsWith('#')) {

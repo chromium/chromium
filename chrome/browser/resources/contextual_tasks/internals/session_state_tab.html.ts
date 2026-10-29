@@ -7,6 +7,9 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ContextualTasksSessionStateTabElement} from './session_state_tab.js';
 
 export function getHtml(this: ContextualTasksSessionStateTabElement) {
+  // Note: `url.mojom.Url` and `mojo_base.mojom.UnguessableToken` fields are
+  // typemapped to plain `string`s in WebUI Mojo bindings (via `UrlConverter`
+  // and `UnguessableTokenConverter`), so they are interpolated directly below.
   // clang-format off
   return html`
 <div class="card">
@@ -47,10 +50,10 @@ ${this.webContentsDebugStates_.map(wc => html`
       </div>
       <div class="wc-meta-row">
         <span class="mono-pill">
-          SessionID: ${wc.sessionTabId >= 0 ? wc.sessionTabId : 'N/A'}
+          SessionID: ${wc.sessionTabId ?? 'N/A'}
         </span>
         <span class="mono-pill">
-          TabHandle: ${wc.tabHandleId >= 0 ? wc.tabHandleId : 'N/A'}
+          TabHandle: ${wc.tabHandleId ?? 'N/A'}
         </span>
         <span class="wc-url">${wc.url || 'about:blank'}</span>
       </div>
@@ -348,9 +351,9 @@ ${this.webContentsDebugStates_.map(wc => html`
             <tbody>
               ${wc.userDataState.selectedTabs.map(tab => html`
                 <tr>
-                  <td>${tab.tabId}</td>
+                  <td>${tab.tabId ?? 'N/A'}</td>
                   <td title="${tab.url}">${tab.title || tab.url}</td>
-                  <td>${tab.contextToken}</td>
+                  <td>${tab.contextToken ?? 'None'}</td>
                   <td>${tab.requestId || 'None'}</td>
                   <td>
                     ${[
@@ -581,9 +584,9 @@ ${this.webContentsDebugStates_.map(wc => html`
               ${wc.sessionHandleState.attachedTabs.map(tab => html`
                 <tr>
                   <td>Attached</td>
-                  <td>${tab.tabId}</td>
+                  <td>${tab.tabId ?? 'N/A'}</td>
                   <td title="${tab.url}">${tab.title || tab.url}</td>
-                  <td>${tab.contextToken}</td>
+                  <td>${tab.contextToken ?? 'None'}</td>
                   <td>${tab.requestId || 'None'}</td>
                   <td>
                     ${[
@@ -598,9 +601,9 @@ ${this.webContentsDebugStates_.map(wc => html`
               ${wc.sessionHandleState.restoredTabs.map(tab => html`
                 <tr>
                   <td>Restored</td>
-                  <td>${tab.tabId}</td>
+                  <td>${tab.tabId ?? 'N/A'}</td>
                   <td title="${tab.url}">${tab.title || tab.url}</td>
-                  <td>${tab.contextToken}</td>
+                  <td>${tab.contextToken ?? 'None'}</td>
                   <td>${tab.requestId || 'None'}</td>
                   <td>
                     ${[

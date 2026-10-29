@@ -13,8 +13,11 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
-
 class OptimizationGuideKeyedService;
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace contextual_tasks {
 class ContextualTasksContextService;
@@ -41,6 +44,14 @@ class ContextualTasksInternalsPageHandler
   ContextualTasksInternalsPageHandler& operator=(
       const ContextualTasksInternalsPageHandler&) = delete;
 
+  // Builds a debug state snapshot for `web_contents` if it has either
+  // `ContextualTasksWebContentsUserData` or a `ContextualSearchSessionHandle`
+  // attached, or returns `nullptr` otherwise.
+  contextual_tasks_internals::mojom::WebContentsDebugStatePtr
+  BuildWebContentsDebugState(content::WebContents* web_contents,
+                             bool is_side_panel,
+                             bool is_active_tab_in_window) const;
+
   // contextual_tasks_internals::mojom::ContextualTasksInternalsPageHandler:
   void GetRelevantContext(
       contextual_tasks_internals::mojom::GetRelevantContextRequestPtr request,
@@ -49,6 +60,8 @@ class ContextualTasksInternalsPageHandler
   void GetForcedEmbeddedPageHost(
       GetForcedEmbeddedPageHostCallback callback) override;
   void GetEligibilityState(GetEligibilityStateCallback callback) override;
+  void GetSessionAndUserDataState(
+      GetSessionAndUserDataStateCallback callback) override;
 
   // OptimizationGuideLogger::Observer:
   void OnLogMessageAdded(base::Time event_time,
