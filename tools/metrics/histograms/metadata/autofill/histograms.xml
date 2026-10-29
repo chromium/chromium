@@ -2064,6 +2064,25 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
+    name="Autofill.Ai.KeyMetrics.FillingCorrectness.MergeConstraints{EntityGranularity}.PersonalContext"
+    enum="Boolean" expires_after="2027-04-18">
+  <owner>vidhanj@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records, at form submission, and given that the user filled an ambient
+    (Personal Context) Autofill AI suggestion, whether the user manually edited
+    an autofilled merge-constraint field filled by that suggestion or not.
+    Emitted only for users who have AutofillAi enabled in settings.
+
+    {EntityGranularity}
+  </summary>
+  <token key="EntityGranularity" variants="Autofill.Ai.EntityType">
+    <variant name="" summary="Aggregated across all entity types."/>
+  </token>
+</histogram>
+
+<histogram
     name="Autofill.Ai.KeyMetrics{KeyMetric}{EntityGranularity}{EntityRecordType}{Profile}"
     enum="Boolean" expires_after="2027-04-18">
   <owner>jihadghanna@google.com</owner>

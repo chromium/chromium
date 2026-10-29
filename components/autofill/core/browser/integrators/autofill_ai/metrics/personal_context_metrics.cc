@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -197,6 +198,17 @@ void LogEntitySuppressionConfirmationDialogResult(bool accepted) {
       "Autofill.Ai.Suppression.ConfirmationDialogResult",
       accepted ? EntitySuppressionConfirmationDialogResult::kAccepted
                : EntitySuppressionConfirmationDialogResult::kCancelled);
+}
+
+void LogPersonalContextFillingCorrectnessMergeConstraints(
+    std::optional<EntityType> type,
+    bool metric_value) {
+  base::UmaHistogramBoolean(
+      base::StrCat(
+          {"Autofill.Ai.KeyMetrics.FillingCorrectness.MergeConstraints",
+           type ? base::StrCat({".", EntityTypeToMetricsString(*type)}) : "",
+           ".PersonalContext"}),
+      metric_value);
 }
 
 }  // namespace autofill

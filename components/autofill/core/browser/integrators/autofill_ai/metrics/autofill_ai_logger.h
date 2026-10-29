@@ -97,6 +97,9 @@ class AutofillAiLogger {
     // Given a form, records whether the user corrected fields filled using
     // AutofillAi filling suggestions.
     bool edited_autofilled_field = false;
+    // Given a form, records whether the user corrected merge-constraint fields
+    // filled using AutofillAi filling suggestions.
+    bool edited_merge_constraint_field = false;
   };
 
   using FormFunnelStateMap =
@@ -170,7 +173,9 @@ class AutofillAiLogger {
         .suggestions_shown = combine(&FunnelState::suggestions_shown),
         .did_fill_suggestions = combine(&FunnelState::did_fill_suggestions),
         .edited_autofilled_field =
-            combine(&FunnelState::edited_autofilled_field)};
+            combine(&FunnelState::edited_autofilled_field),
+        .edited_merge_constraint_field =
+            combine(&FunnelState::edited_merge_constraint_field)};
   }
   template <class Key>
   FunnelState CombineStates(

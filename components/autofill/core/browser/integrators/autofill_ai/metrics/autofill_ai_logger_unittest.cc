@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -625,6 +626,25 @@ class AutofillAiKeyMetricsTest
     return BaseAutofillAiTest::CreateEntity(entity_type(), record_type());
   }
 
+  const AutofillField& GetMergeConstraintField(const FormStructure& form) {
+    switch (entity_type().name()) {
+      case EntityTypeName::kPassport:
+      case EntityTypeName::kDriversLicense:
+      case EntityTypeName::kVehicle:
+        return *form.field(1);
+      case EntityTypeName::kKnownTravelerNumber:
+      case EntityTypeName::kRedressNumber:
+      case EntityTypeName::kNationalIdCard:
+        return *form.field(0);
+      case EntityTypeName::kFlightReservation:
+      case EntityTypeName::kShipment:
+        return *form.field(2);
+      case EntityTypeName::kOrder:
+        return *form.field(3);
+    }
+    NOTREACHED();
+  }
+
   void ExpectKeyMetricsRecording(const base::HistogramTester& histogram_tester,
                                  std::string_view key_metric_name,
                                  int sample) {
@@ -750,6 +770,61 @@ TEST_P(AutofillAiKeyMetricsTest, FillingCorrectness) {
     manager().OnFormSubmitted(*form, /*ukm_source_id=*/{});
     ExpectKeyMetricsRecording(histogram_tester, "FillingCorrectness",
                               /*sample=*/0);
+  }
+}
+
+TEST_P(AutofillAiKeyMetricsTest, FillingCorrectnessMergeConstraints) {
+  std::unique_ptr<FormStructure> form = CreateForm();
+  EntityInstance entity = CreateEntity();
+  AddOrUpdateEntityInstance(entity);
+  manager().OnFormSeen(*form);
+  manager().OnAutofillAiSuggestionsShown(
+      *form, *form->field(0), {GetSuggestion(entity)},
+      /*ukm_source_id=*/{}, /*update_suggestions_callback=*/{});
+  manager().OnDidFillSuggestion(
+      entity, *form, *form->field(0),
+      /*filled_fields=*/
+      base::ToVector(form->fields(), &std::unique_ptr<AutofillField>::get),
+      /*ukm_source_id=*/{});
+  const AutofillField& merge_constraint_field = GetMergeConstraintField(*form);
+  const auto expect_merge_constraints_recording =
+      [&](const base::HistogramTester& histogram_tester, int sample) {
+        const std::string aggregate_histogram =
+            "Autofill.Ai.KeyMetrics.FillingCorrectness.MergeConstraints."
+            "PersonalContext";
+        const std::string entity_histogram = base::StrCat(
+            {"Autofill.Ai.KeyMetrics.FillingCorrectness.MergeConstraints.",
+             EntityTypeToMetricsString(entity_type()), ".PersonalContext"});
+        if (record_type() == EntityInstance::RecordType::kPersonalContext) {
+          histogram_tester.ExpectUniqueSample(aggregate_histogram, sample, 1);
+          histogram_tester.ExpectUniqueSample(entity_histogram, sample, 1);
+        } else {
+          histogram_tester.ExpectTotalCount(aggregate_histogram, 0);
+          histogram_tester.ExpectTotalCount(entity_histogram, 0);
+        }
+      };
+  {
+    base::HistogramTester histogram_tester;
+    manager().OnFormSubmitted(*form, /*ukm_source_id=*/{});
+    expect_merge_constraints_recording(histogram_tester, /*sample=*/1);
+  }
+  if (form->field(0) != &merge_constraint_field) {
+    manager().OnEditedAutofilledField(*form, *form->field(0),
+                                      /*ukm_source_id=*/{});
+    base::HistogramTester histogram_tester;
+    manager().OnFormSubmitted(*form, /*ukm_source_id=*/{});
+    ExpectKeyMetricsRecording(histogram_tester, "FillingCorrectness",
+                              /*sample=*/0);
+    expect_merge_constraints_recording(histogram_tester, /*sample=*/1);
+  }
+  {
+    manager().OnEditedAutofilledField(*form, merge_constraint_field,
+                                      /*ukm_source_id=*/{});
+    base::HistogramTester histogram_tester;
+    manager().OnFormSubmitted(*form, /*ukm_source_id=*/{});
+    ExpectKeyMetricsRecording(histogram_tester, "FillingCorrectness",
+                              /*sample=*/0);
+    expect_merge_constraints_recording(histogram_tester, /*sample=*/0);
   }
 }
 

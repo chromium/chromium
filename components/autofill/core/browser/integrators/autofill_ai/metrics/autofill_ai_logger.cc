@@ -27,12 +27,14 @@
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_ukm_logger.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -97,6 +99,19 @@ void LogKeyMetric(std::string_view key_metric_name,
       base::StringPrintf(kKeyMetricsHistogramMask, key_metric_name,
                          entity_type_str, record_type_str, suffix),
       metric_value);
+}
+
+bool IsMergeConstraintField(EntityType entity_type,
+                            const AutofillField& field) {
+  const FieldType ai_type = field.Type().GetAutofillAiType(entity_type);
+  return std::ranges::any_of(
+      entity_type.merge_constraints(),
+      [&](const DenseSet<AttributeType>& constraint_set) {
+        return std::ranges::any_of(
+            constraint_set, [&](AttributeType attr_type) {
+              return attr_type.field_subtypes().contains(ai_type);
+            });
+      });
 }
 
 }  // namespace
@@ -182,8 +197,12 @@ void AutofillAiLogger::OnEditedAutofilledField(const FormStructure& form,
     return;
   }
   const auto& [entity_type, entity_record_type] = *last_filled_entity;
-  form_states_[form.global_id()][entity_type][entity_record_type]
-      .edited_autofilled_field = true;
+  FunnelState& state =
+      form_states_[form.global_id()][entity_type][entity_record_type];
+  state.edited_autofilled_field = true;
+  if (IsMergeConstraintField(entity_type, field)) {
+    state.edited_merge_constraint_field = true;
+  }
   ukm_logger_.LogFieldEvent(
       ukm_source_id, form, field, entity_type, entity_record_type,
       AutofillAiUkmLogger::EventType::kEditedAutofilledValue);
@@ -385,6 +404,10 @@ void AutofillAiLogger::RecordKeyMetricsForState(
     LogKeyMetric("FillingCorrectness", entity_type, record_type,
                  !funnel_state.edited_autofilled_field,
                  *profile_metrics_service_);
+    if (record_type == EntityInstance::RecordType::kPersonalContext) {
+      LogPersonalContextFillingCorrectnessMergeConstraints(
+          entity_type, !funnel_state.edited_merge_constraint_field);
+    }
   }
 }
 

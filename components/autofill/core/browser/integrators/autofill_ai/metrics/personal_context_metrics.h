@@ -213,6 +213,13 @@ void LogEntitySuppressionLoadDropReason(EntitySuppressionLoadDropReason reason);
 // Logs whether the user `accepted` the suppression confirmation dialog.
 void LogEntitySuppressionConfirmationDialogResult(bool accepted);
 
+// Logs whether the user submitted a form without editing any autofilled
+// merge-constraint fields after filling a Personal Context suggestion. If
+// `type` is `std::nullopt`, logs the aggregate metric across all entity types.
+void LogPersonalContextFillingCorrectnessMergeConstraints(
+    std::optional<EntityType> type,
+    bool metric_value);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_METRICS_PERSONAL_CONTEXT_METRICS_H_
