@@ -27,9 +27,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.PersistableBundle;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -45,8 +46,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowBuild;
 import org.robolectric.shadows.ShadowToast;
-import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -83,8 +84,6 @@ import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.Toast;
-import org.chromium.ui.widget.ToastManager;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -390,7 +389,7 @@ public class MultiWindowUtilsUnitTest {
     @Config(sdk = VERSION_CODES.R)
     public void testCanEnterMultiWindowMode_withCustomOemSupport_returnsTrue() {
         mOverrideContextWrapperTestRule.setIsAutomotive(false);
-        ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "samsung");
+        ShadowBuild.setManufacturer("samsung");
         assertTrue(MultiWindowUtils.canEnterMultiWindowMode());
     }
 
@@ -1531,14 +1530,14 @@ public class MultiWindowUtilsUnitTest {
         Context context = ApplicationProvider.getApplicationContext();
         MultiWindowUtils.showInstanceCreationLimitToast(context);
 
-        ToastManager toastManager =
-                ReflectionHelpers.callStaticMethod(ToastManager.class, "getInstance");
-        Toast toast = ReflectionHelpers.callInstanceMethod(toastManager, "getCurrentToast");
+        Toast toast = ShadowToast.getLatestToast();
         Assert.assertNotNull("Toast should have been shown.", toast);
+        TextView textView = (TextView) toast.getView();
 
         String expectedText =
                 context.getString(R.string.multi_instance_creation_limit_message_toast, 3);
-        Assert.assertEquals("Toast text should match.", expectedText, toast.getText().toString());
+        Assert.assertEquals(
+                "Toast text should match.", expectedText, textView.getText().toString());
     }
 
     @Test
