@@ -16,9 +16,9 @@
 #ifndef UTIL_STATUS_MACROS_H_
 #define UTIL_STATUS_MACROS_H_
 
-#include "third_party/private-join-and-compute/src/chromium_patch.h"
-#include "third_party/private-join-and-compute/src/util/status.h"
-#include "third_party/private-join-and-compute/src/util/statusor.h"
+#include "third_party/private-join-and-compute/chromium_patch.h"
+#include "third_party/private-join-and-compute/util/status.h"
+#include "third_party/private-join-and-compute/util/statusor.h"
 
 // Helper macro that checks if the right hand side (rexpression) evaluates to a
 // StatusOr with Status OK, and if so assigns the value to the value on the left

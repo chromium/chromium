@@ -123,7 +123,7 @@ if (is_chromeos) {
       "//base",
       "//third_party/abseil-cpp:absl",
       "//third_party/boringssl",
-      "//third_party/private-join-and-compute/src:ec_commutative_cipher",
+      "//third_party/private-join-and-compute:ec_commutative_cipher",
       "//third_party/shell-encryption:shell_encryption",
     ]
   }

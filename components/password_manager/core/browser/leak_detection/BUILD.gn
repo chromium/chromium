@@ -77,7 +77,7 @@ source_set("leak_detection") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/signin/public/identity_manager",
     "//components/version_info:channel",
-    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
+    "//third_party/private-join-and-compute:ec_commutative_cipher",
     "//url",
   ]
 }
@@ -137,7 +137,7 @@ source_set("unit_tests") {
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
+    "//third_party/private-join-and-compute:ec_commutative_cipher",
   ]
 }
 

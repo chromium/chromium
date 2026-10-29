@@ -18,7 +18,7 @@
 
 #include <string>
 
-#include "third_party/private-join-and-compute/src/util/status.h"
+#include "third_party/private-join-and-compute/util/status.h"
 
 namespace private_join_and_compute {
 

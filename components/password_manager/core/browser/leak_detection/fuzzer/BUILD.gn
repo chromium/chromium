@@ -13,7 +13,7 @@ fuzzer_test("cypher_encrypt_with_key_fuzzer") {
   sources = [ "cypher_encrypt_with_key_fuzzer.cc" ]
   deps = [
     "//components/password_manager/core/browser/leak_detection",
-    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
+    "//third_party/private-join-and-compute:ec_commutative_cipher",
   ]
 }
 
@@ -26,6 +26,6 @@ fuzzer_test("cypher_decrypt_fuzzer") {
   sources = [ "cypher_decrypt_fuzzer.cc" ]
   deps = [
     "//components/password_manager/core/browser/leak_detection",
-    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
+    "//third_party/private-join-and-compute:ec_commutative_cipher",
   ]
 }

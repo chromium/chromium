@@ -20,7 +20,7 @@
 #include <vector>
 
 #include "third_party/abseil-cpp/absl/strings/str_cat.h"
-#include "third_party/private-join-and-compute/src/chromium_patch.h"
+#include "third_party/private-join-and-compute/chromium_patch.h"
 #include "third_party/private-join-and-compute/src/crypto/big_num.h"
 #include "third_party/private-join-and-compute/src/crypto/context.h"
 #include "third_party/private-join-and-compute/src/crypto/openssl.inc"
