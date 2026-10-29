@@ -343,9 +343,33 @@ web::WebState* WebStateDelegateBrowserAgent::OpenURLFromWebState(
 
   switch (params.disposition) {
     case WindowOpenDisposition::kNewForegroundTab:
-    case WindowOpenDisposition::kNewBackgroundTab: {
-      insertion_params.in_background =
-          params.disposition == WindowOpenDisposition::kNewBackgroundTab;
+    case WindowOpenDisposition::kNewBackgroundTab:
+    case WindowOpenDisposition::kNewPopup: {
+      // Under some circumstances, this callback may be triggered from WebKit
+      // synchronously as part of handling some other WebStateList mutation
+      // (typically deleting a WebState and then activating another as a side
+      // effect). See crbug.com/988504 for details. In this case, the request to
+      // create a new WebState is silently dropped.
+      if (web_state_list_->IsMutating()) {
+        return nullptr;
+      }
+
+      // Under certain circumstances, it is possible for this callback to be
+      // called while the WebState has been removed from the WebStateList but
+      // before the delegate could be updated. See crbug.com/520318841 for
+      // details. In that case, the request to create a new WebState is
+      // silently dropped.
+      int index = web_state_list_->GetIndexOfWebState(source);
+      if (index == WebStateList::kInvalidIndex) {
+        return nullptr;
+      }
+
+      if (params.disposition == WindowOpenDisposition::kNewPopup) {
+        insertion_params.opened_by_dom = true;
+      } else {
+        insertion_params.in_background =
+            params.disposition == WindowOpenDisposition::kNewBackgroundTab;
+      }
       return tab_insertion_agent()->InsertWebState(load_params,
                                                    insertion_params);
     }
@@ -353,15 +377,10 @@ web::WebState* WebStateDelegateBrowserAgent::OpenURLFromWebState(
       source->GetNavigationManager()->LoadURLWithParams(load_params);
       return source;
     }
-    case WindowOpenDisposition::kNewPopup: {
-      insertion_params.opened_by_dom = true;
-      return tab_insertion_agent()->InsertWebState(load_params,
-                                                   insertion_params);
-    }
     default:
       NOTIMPLEMENTED();
       return nullptr;
-  };
+  }
 }
 
 void WebStateDelegateBrowserAgent::ShowRepostFormWarningDialog(

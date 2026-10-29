@@ -346,6 +346,31 @@ TEST_F(WebStateDelegateBrowserAgentTest, OpenURLCurrentTab) {
   EXPECT_EQ(browser_->GetWebStateList()->count(), 1);
 }
 
+// Tests that OpenURLFromWebState() returns nullptr without crashing if the
+// source WebState is not in the WebStateList.
+TEST_F(WebStateDelegateBrowserAgentTest,
+       OpenURLFromWebStateNotInWebStateListReturnsNullptr) {
+  auto standalone_web_state = std::make_unique<web::FakeWebState>();
+  standalone_web_state->SetBrowserState(profile_.get());
+  web::WebState::OpenURLParams fg_open_params(
+      GURL(kURL2), web::Referrer(), WindowOpenDisposition::kNewForegroundTab,
+      ui::PAGE_TRANSITION_LINK, false);
+  EXPECT_EQ(nullptr, delegate()->OpenURLFromWebState(standalone_web_state.get(),
+                                                     fg_open_params));
+
+  web::WebState::OpenURLParams bg_open_params(
+      GURL(kURL2), web::Referrer(), WindowOpenDisposition::kNewBackgroundTab,
+      ui::PAGE_TRANSITION_LINK, false);
+  EXPECT_EQ(nullptr, delegate()->OpenURLFromWebState(standalone_web_state.get(),
+                                                     bg_open_params));
+
+  web::WebState::OpenURLParams popup_open_params(
+      GURL(kURL2), web::Referrer(), WindowOpenDisposition::kNewPopup,
+      ui::PAGE_TRANSITION_LINK, false);
+  EXPECT_EQ(nullptr, delegate()->OpenURLFromWebState(standalone_web_state.get(),
+                                                     popup_open_params));
+}
+
 // Tests that OnAuthRequired() adds an HTTP authentication overlay request to
 // the WebState's OverlayRequestQueue at OverlayModality::kWebContentArea.
 TEST_F(WebStateDelegateBrowserAgentTest, OnAuthRequired) {
