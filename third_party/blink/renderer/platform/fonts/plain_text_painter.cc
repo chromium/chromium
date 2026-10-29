@@ -147,7 +147,8 @@ bool PlainTextPainter::DrawWithBidiReorder(
     CharacterRange range(0, 0, 0, 0);
     if (is_sub_run) [[unlikely]] {
       // Calculate the required indexes for this specific run.
-      subrun_from = std::max(0u, from_index - item.StartOffset());
+      subrun_from =
+          from_index > item.StartOffset() ? from_index - item.StartOffset() : 0;
       subrun_to = std::min(item.Length(), to_index - item.StartOffset());
       TextRun subrun(item.Text(), item.Direction());
       const PlainTextNode& sub_node =
@@ -162,17 +163,16 @@ bool PlainTextPainter::DrawWithBidiReorder(
         ShapeResultBloberizer::FillGlyphs(font_desc, item.Text(), subrun_from,
                                           subrun_to, item.EnsureView(),
                                           blob_type);
+
+    gfx::PointF draw_pos = curr_point;
     if (is_sub_run) [[unlikely]] {
       // Align the subrun with the point given.
-      curr_point.Offset(-range.start, 0);
-    }
-    DrawTextBlobs(bloberizer.Blobs(), canvas, curr_point, flags);
-
-    if (is_sub_run) [[unlikely]] {
+      draw_pos.Offset(-range.start, 0);
       curr_point.Offset(range.Width(), 0);
     } else {
       curr_point.Offset(bloberizer.Advance(), 0);
     }
+    DrawTextBlobs(bloberizer.Blobs(), canvas, draw_pos, flags);
   }
   return true;
 }
@@ -200,7 +200,8 @@ float PlainTextPainter::ComputeSubInlineSize(const TextRun& run,
       continue;
     }
     // Calculate the required indexes for this specific run.
-    wtf_size_t run_from = std::max(0u, from_index - start_offset);
+    wtf_size_t run_from =
+        from_index > start_offset ? from_index - start_offset : 0;
     wtf_size_t run_to = std::min(item.Length(), to_index - start_offset);
     // Measure the subrun.
     StringView sub_text(node.TextContent(), start_offset, item.Length());
