@@ -16,8 +16,10 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_manager/trash_io_task.h"
@@ -618,6 +620,7 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsWarningTest,
   EXPECT_TRUE(fpnm_->HasWarningTimerForTesting(task_id));
 
   // Task is completed with error.
+  base::test::TestFuture<void> future;
   EXPECT_CALL(
       observer,
       OnIOTaskStatus(
@@ -628,7 +631,7 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsWarningTest,
                       file_manager::io_task::PolicyError(
                           file_manager::io_task::PolicyErrorType::kDlp,
                           /*blocked_files=*/1)))))
-      .Times(::testing::AtLeast(1));
+      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
 
   EXPECT_CALL(mock_cb,
               Run(/*user_justification=*/std::optional<std::u16string>(),
@@ -638,7 +641,7 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsWarningTest,
       file_manager::io_task::PolicyError(
           file_manager::io_task::PolicyErrorType::kDlp, /*blocked_files=*/1));
 
-  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(future.Wait());
   io_task_controller_->RemoveObserver(&observer);
   EXPECT_FALSE(fpnm_->HasWarningTimerForTesting(task_id));
 
@@ -694,12 +697,14 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsWarningTest,
   EXPECT_TRUE(fpnm_->HasWarningTimerForTesting(task_id));
 
   // Task is cancelled.
+  base::test::TestFuture<void> future;
   EXPECT_CALL(
       observer,
       OnIOTaskStatus(
           AllOf(Field(&file_manager::io_task::ProgressStatus::task_id, task_id),
                 Field(&file_manager::io_task::ProgressStatus::state,
-                      file_manager::io_task::State::kCancelled))));
+                      file_manager::io_task::State::kCancelled))))
+      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
   // Warning callback is run with should_proceed set to false when the task is
   // cancelled.
   EXPECT_CALL(mock_cb,
@@ -708,7 +713,7 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsWarningTest,
       .Times(1);
   io_task_controller_->Cancel(task_id);
 
-  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(future.Wait());
   io_task_controller_->RemoveObserver(&observer);
   EXPECT_FALSE(fpnm_->HasWarningTimerForTesting(task_id));
 
@@ -894,17 +899,20 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsBlockTest,
       OnIOTaskStatus(
           AllOf(Field(&file_manager::io_task::ProgressStatus::task_id, task_id),
                 Field(&file_manager::io_task::ProgressStatus::state,
-                      file_manager::io_task::State::kInProgress))));
+                      file_manager::io_task::State::kInProgress))))
+      .Times(testing::Between(0, 1));
 
   // Task completes successfully.
+  base::test::TestFuture<void> future;
   EXPECT_CALL(
       observer,
       OnIOTaskStatus(
           AllOf(Field(&file_manager::io_task::ProgressStatus::task_id, task_id),
                 Field(&file_manager::io_task::ProgressStatus::state,
-                      file_manager::io_task::State::kSuccess))));
+                      file_manager::io_task::State::kSuccess))))
+      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
 
-  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(future.Wait());
   io_task_controller_->RemoveObserver(&observer);
 
   // Task is not removed after completion.
