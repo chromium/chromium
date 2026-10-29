@@ -618,6 +618,15 @@ bool CollectGraphicsInfoGL(GPUInfo* gpu_info, gl::GLDisplay* display) {
 
   gl::GLVersionInfo gl_info(gpu_info->gl_version.c_str(),
                             gpu_info->gl_renderer.c_str(), extension_set);
+  bool active_gpu_identified = false;
+#if BUILDFLAG(IS_WIN)
+  active_gpu_identified = IdentifyActiveGPUWithLuid(gpu_info);
+#endif  // BUILDFLAG(IS_WIN)
+
+  if (!active_gpu_identified) {
+    IdentifyActiveGPU(gpu_info);
+  }
+
   GPUInfo::GPUDevice& active_gpu = gpu_info->active_gpu();
   if (!gl_info.driver_vendor.empty() && active_gpu.driver_vendor.empty()) {
     active_gpu.driver_vendor = gl_info.driver_vendor;
@@ -673,14 +682,6 @@ bool CollectGraphicsInfoGL(GPUInfo* gpu_info, gl::GLDisplay* display) {
   std::string glsl_version = GetVersionFromString(glsl_version_string);
   gpu_info->pixel_shader_version = glsl_version;
   gpu_info->vertex_shader_version = glsl_version;
-
-  bool active_gpu_identified = false;
-#if BUILDFLAG(IS_WIN)
-  active_gpu_identified = IdentifyActiveGPUWithLuid(gpu_info);
-#endif  // BUILDFLAG(IS_WIN)
-
-  if (!active_gpu_identified)
-    IdentifyActiveGPU(gpu_info);
 
   return true;
 }
