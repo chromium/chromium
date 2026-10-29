@@ -73,6 +73,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -249,8 +250,8 @@ public class MainSettingsFragmentTest {
     /** Test for the "Account" section. */
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testStartup() {
+        FeatureOverrides.disable(ChromeFeatureList.ANDROID_BOTTOM_BAR);
         startSettings();
 
         // For non-signed-in users, the section contains the generic header.
@@ -327,11 +328,11 @@ public class MainSettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @DisableFeatures({
-        SigninFeatures.SIGN_OUT_OF_CHROME,
-        SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA
-    })
     public void testPressingSignOut() {
+        FeatureOverrides.newBuilder()
+                .disable(SigninFeatures.SIGN_OUT_OF_CHROME)
+                .disable(SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA)
+                .apply();
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
 
         startSettings();
@@ -365,12 +366,12 @@ public class MainSettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @EnableFeatures({
-        SigninFeatures.SIGN_OUT_OF_CHROME,
-        SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA
-    })
     @Restriction(DeviceFormFactor.DESKTOP)
     public void testPressingSignOut_desktopSignOut() {
+        FeatureOverrides.newBuilder()
+                .enable(SigninFeatures.SIGN_OUT_OF_CHROME)
+                .enable(SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA)
+                .apply();
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
 
         startSettings();
@@ -406,11 +407,11 @@ public class MainSettingsFragmentTest {
     @LargeTest
     @Feature({"Sync"})
     @Policies.Add(@Policies.Item(key = "SyncDisabled", string = "true"))
-    @DisableFeatures({
-        SigninFeatures.SIGN_OUT_OF_CHROME,
-        SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA
-    })
     public void testPressingSignOutSyncDisabled() {
+        FeatureOverrides.newBuilder()
+                .disable(SigninFeatures.SIGN_OUT_OF_CHROME)
+                .disable(SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA)
+                .apply();
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInWithoutWaitingForTesting();
 
         startSettings();
@@ -446,12 +447,12 @@ public class MainSettingsFragmentTest {
     @LargeTest
     @Feature({"Sync"})
     @Policies.Add(@Policies.Item(key = "SyncDisabled", string = "true"))
-    @EnableFeatures({
-        SigninFeatures.SIGN_OUT_OF_CHROME,
-        SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA
-    })
     @Restriction(DeviceFormFactor.DESKTOP)
     public void testPressingSignOutSyncDisabled_desktopSignOut() {
+        FeatureOverrides.newBuilder()
+                .enable(SigninFeatures.SIGN_OUT_OF_CHROME)
+                .enable(SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA)
+                .apply();
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInWithoutWaitingForTesting();
 
         startSettings();
@@ -486,8 +487,8 @@ public class MainSettingsFragmentTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT)
     public void testSignInRowLaunchesSignInFlowForSignedOutAccounts_legacy() {
+        FeatureOverrides.disable(SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT);
         mSyncTestRule.addAccount(TestAccounts.ACCOUNT1);
         startSettings();
 
@@ -514,8 +515,8 @@ public class MainSettingsFragmentTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT)
     public void testSignInRowLaunchesSignInFlowForSignedOutAccounts() {
+        FeatureOverrides.enable(SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT);
         startSettings();
 
         onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_header))))
@@ -540,9 +541,6 @@ public class MainSettingsFragmentTest {
     // is the min version that supports split stores UPM backend, to avoid
     // UserActionableError.NEEDS_UPM_BACKEND_UPGRADE.
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
-    @RequiresRestart(
-            "SigninManagerImpl only observes the AccountManagerFacade installed for the first test"
-                    + " of a batched process, so accounts added later are never seeded into native")
     public void testSigninRowShowsNoAlertWhenNoIdentityErrors() {
         // Sign-in and open settings.
         mSyncTestRule.setUpAccountAndSignInForTesting();
@@ -556,9 +554,6 @@ public class MainSettingsFragmentTest {
     // signed-in non-syncing user.
     @Test
     @SmallTest
-    @RequiresRestart(
-            "SigninManagerImpl only observes the AccountManagerFacade installed for the first test"
-                    + " of a batched process, so accounts added later are never seeded into native")
     public void testSigninRowShowsAlertForIdentityErrors() {
         FakeSyncServiceImpl fakeSyncService =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -626,8 +621,8 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testHomepageOff() {
+        FeatureOverrides.disable(ChromeFeatureList.ANDROID_BOTTOM_BAR);
         mHomepageTestRule.disableHomepageForTest();
         startSettings();
 
@@ -645,8 +640,8 @@ public class MainSettingsFragmentTest {
      */
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testHomepageSummaryUpdatesOnHomepageStateChange() {
+        FeatureOverrides.disable(ChromeFeatureList.ANDROID_BOTTOM_BAR);
         // Start with the homepage enabled.
         mHomepageTestRule.useDefaultHomepageForTest();
         startSettings();
@@ -680,12 +675,13 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(
-            ChromeFeatureList.HOME_BUTTON_REMOVAL
-                    + ":remove_home_button_everywhere/true"
-                    + "/set_default_to_false_on_homepage_on_desktop/false")
-    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testHomeButtonRemovalEnabled() {
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.HOME_BUTTON_REMOVAL)
+                .param("remove_home_button_everywhere", true)
+                .param("set_default_to_false_on_homepage_on_desktop", false)
+                .disable(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+                .apply();
         startSettings();
 
         // Verify UI removal
@@ -710,9 +706,12 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.HOME_BUTTON_REMOVAL + ":remove_home_button_everywhere/false")
-    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testHomeButtonRemovalDisabled() {
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.HOME_BUTTON_REMOVAL)
+                .param("remove_home_button_everywhere", false)
+                .disable(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+                .apply();
         startSettings();
 
         // Verify UI visibility
@@ -755,7 +754,6 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @RequiresRestart("Child accounts alter device account state and automatically sign in")
     public void testAccountManagementRowForChildAccountWithNonDisplayableAccountEmail()
             throws InterruptedException {
         startSettings();
@@ -779,7 +777,6 @@ public class MainSettingsFragmentTest {
                 });
         ThreadUtils.runOnUiThreadBlocking(signInPreference::syncStateChanged);
 
-        mSettingsTestRule.startSettingsActivity();
         onView(
                         allOf(
                                 withText(accountInfo.getFullName()),
@@ -791,7 +788,6 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @RequiresRestart("Child accounts alter device account state and automatically sign in")
     public void testAccountManagementRowForChildAccountWithNonDisplayableEmailWithEmptyDisplayName()
             throws InterruptedException {
         startSettings();
@@ -815,8 +811,6 @@ public class MainSettingsFragmentTest {
                             .hasDisplayableEmailAddress();
                 });
         ThreadUtils.runOnUiThreadBlocking(signInPreference::syncStateChanged);
-
-        mSettingsTestRule.startSettingsActivity();
 
         onView(withText(TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME.getEmail()))
                 .check(doesNotExist());
@@ -876,8 +870,8 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testAndroidAddressBarFlagOn() {
+        FeatureOverrides.disable(ChromeFeatureList.ANDROID_BOTTOM_BAR);
         startSettings();
         // This setting should only appear for certain devices, even if the flag is enabled. Since
         // this is an instrumentation test there's not a good way to fake or force device
@@ -905,9 +899,9 @@ public class MainSettingsFragmentTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE)
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testToolbarSettingsMovedToAppearance() {
         Assume.assumeFalse(DeviceInfo.isAutomotive());
+        FeatureOverrides.enable(ChromeFeatureList.ANDROID_BOTTOM_BAR);
         startSettings();
 
         Assert.assertNull(mMainSettings.findPreference(MainSettings.PREF_ADDRESS_BAR));
@@ -934,10 +928,12 @@ public class MainSettingsFragmentTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE)
-    @EnableFeatures(
-            ChromeFeatureList.ANDROID_BOTTOM_BAR + ":move_toolbar_settings_to_appearance/false")
     public void testToolbarSettingsNotMovedToAppearanceWhenParamOff() {
         Assume.assumeFalse(DeviceInfo.isAutomotive());
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+                .param("move_toolbar_settings_to_appearance", false)
+                .apply();
         startSettings();
 
         assertSettingsExists(MainSettings.PREF_ADDRESS_BAR, AddressBarSettingsFragment.class);
@@ -963,8 +959,8 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
     public void testDefaultBrowserPromoCard() throws InterruptedException {
+        FeatureOverrides.enable(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2);
         when(mTestTracker.shouldTriggerHelpUi(any())).thenReturn(true);
         TrackerFactory.setTrackerForTests(mTestTracker);
         when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(any())).thenReturn(true);
@@ -978,8 +974,8 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ENTRY_POINT)
     public void testDefaultBrowserSettingEnabled() {
+        FeatureOverrides.enable(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ENTRY_POINT);
         startSettings();
         Preference preference = mMainSettings.findPreference(MainSettings.PREF_DEFAULT_BROWSER);
         Assert.assertNotNull(
@@ -1004,8 +1000,8 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ENTRY_POINT)
     public void testDefaultBrowserSettingDisabled() {
+        FeatureOverrides.disable(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ENTRY_POINT);
         startSettings();
         Assert.assertNull(
                 "Default Browser preference should not exist when flag is disabled",
