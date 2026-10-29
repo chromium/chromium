@@ -115,4 +115,11 @@ tast.crash.ValidateFirmwareDumpGeneration.policy_all
 tast.crash.ValidateFirmwareDumpGeneration.policy_none
 tast.crash.ValidateFirmwareDumpGeneration.policy_wifi
 
+# b/579292091: Consistently failing on jacuzzi since ChromeOS snapshot 122704
+# (LKGM 16872.0.0-1081298), blocking LKGM uprev.
+# TODO(b/579292091): Re-enable once the ChromeOS-side regression is fixed.
+tast.arc.AudioValidity.record_vm@jacuzzi
+tast.arc.AudioValidity.record_vm_fieldtrial_testing_config_on@jacuzzi
+tast.arc.AudioValidity.record_vm_fieldtrial_testing_config_off@jacuzzi
+
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
