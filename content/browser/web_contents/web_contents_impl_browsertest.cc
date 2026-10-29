@@ -1400,6 +1400,128 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_NEAR(initial_browser_scale_1, initial_renderer_scale_1, kEpsilon);
   EXPECT_NEAR(initial_browser_scale_2, initial_renderer_scale_2, kEpsilon);
 }
+
+namespace {
+
+// Stops the WebContents when it gets the navigation callback specified by
+// `stop_at`, which synchronously deletes the NavigationRequest. This simulates
+// e.g. an Android WebView app calling stopLoading() synchronously from its
+// navigation callback.
+class StopLoadingObserver : public WebContentsObserver {
+ public:
+  enum class StopAt { kStart, kRedirect };
+
+  StopLoadingObserver(WebContents* web_contents, StopAt stop_at)
+      : WebContentsObserver(web_contents), stop_at_(stop_at) {}
+
+  void DidStartNavigation(NavigationHandle*) override {
+    MaybeStop(StopAt::kStart);
+  }
+  void DidRedirectNavigation(NavigationHandle*) override {
+    MaybeStop(StopAt::kRedirect);
+  }
+
+  // Note that for `StopAt::kStart`, DidStartNavigation() is called
+  // synchronously from LoadURL(), so `run_loop_` might already be quit before
+  // this is called, in which case this returns immediately.
+  void WaitForStop() { run_loop_.Run(); }
+
+ private:
+  void MaybeStop(StopAt stop_at) {
+    if (stop_at != stop_at_) {
+      return;
+    }
+    web_contents()->Stop();
+    run_loop_.Quit();
+  }
+
+  const StopAt stop_at_;
+  base::RunLoop run_loop_;
+};
+
+// Counts the navigation callbacks it gets. Doesn't access the
+// NavigationHandle, since it might be dangling if the observer list keeps
+// notifying observers after the NavigationRequest got deleted.
+class NavigationCallbackCounter : public WebContentsObserver {
+ public:
+  explicit NavigationCallbackCounter(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  void DidStartNavigation(NavigationHandle*) override { ++did_start_count_; }
+  void DidRedirectNavigation(NavigationHandle*) override {
+    ++did_redirect_count_;
+  }
+  void DidFinishNavigation(NavigationHandle*) override { ++did_finish_count_; }
+
+  int did_start_count() const { return did_start_count_; }
+  int did_redirect_count() const { return did_redirect_count_; }
+  int did_finish_count() const { return did_finish_count_; }
+
+ private:
+  int did_start_count_ = 0;
+  int did_redirect_count_ = 0;
+  int did_finish_count_ = 0;
+};
+
+}  // namespace
+
+// Tests that if an observer deletes the NavigationRequest in
+// DidStartNavigation(), the observers after it are not notified with the
+// deleted NavigationHandle. They still get DidFinishNavigation(), which is safe
+// because it's called from the NavigationRequest's destructor after its owner
+// released it, so it can't be deleted again from there. This can only happen
+// on Android, as other platforms CHECK that the NavigationRequest is not
+// deleted at this point. See https://crbug.com/574791491.
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       NavigationDeletedInDidStartNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+
+  // `stopper` is added before `counter`, so it is notified first.
+  StopLoadingObserver stopper(shell()->web_contents(),
+                              StopLoadingObserver::StopAt::kStart);
+  NavigationCallbackCounter counter(shell()->web_contents());
+
+  shell()->LoadURL(embedded_test_server()->GetURL("/title2.html"));
+  stopper.WaitForStop();
+
+  // `counter` does not get notified in DidStartNavigation because the
+  // NavigationRequest is deleted by `stopper`.
+  EXPECT_EQ(0, counter.did_start_count());
+  EXPECT_EQ(1, counter.did_finish_count());
+  EXPECT_FALSE(static_cast<WebContentsImpl*>(shell()->web_contents())
+                   ->GetPrimaryFrameTree()
+                   .root()
+                   ->navigation_request());
+}
+
+// Same as above, but deletes the NavigationRequest in DidRedirectNavigation().
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       NavigationDeletedInDidRedirectNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+
+  StopLoadingObserver stopper(shell()->web_contents(),
+                              StopLoadingObserver::StopAt::kRedirect);
+  NavigationCallbackCounter counter(shell()->web_contents());
+
+  shell()->LoadURL(embedded_test_server()->GetURL(
+      "/server-redirect?" +
+      embedded_test_server()->GetURL("/title2.html").spec()));
+  stopper.WaitForStop();
+
+  // `counter` does not get notified in DidRedirectNavigation because the
+  // NavigationRequest is deleted by `stopper`.
+  EXPECT_EQ(1, counter.did_start_count());
+  EXPECT_EQ(0, counter.did_redirect_count());
+  EXPECT_EQ(1, counter.did_finish_count());
+  EXPECT_FALSE(static_cast<WebContentsImpl*>(shell()->web_contents())
+                   ->GetPrimaryFrameTree()
+                   .root()
+                   ->navigation_request());
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Test that a direct navigation to a view-source URL works.

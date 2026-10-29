@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
+import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwNavigation;
 import org.chromium.android_webview.AwNavigationState;
 import org.chromium.android_webview.AwPage;
@@ -418,5 +419,86 @@ mWebServer.setResponse("/page1.html", "<html><body>Page 1</body></html>", null);
         Assert.assertTrue(
                 "Start time should be before or equal to finish time",
                 startTime <= timeAfterFinished);
+    }
+
+    /** Calls stopLoading() from onNavigationStarted() or onNavigationRedirected(). */
+    private static class StopLoadingNavigationListener extends TestAwNavigationListener {
+        private final AwContents mAwContents;
+        private final boolean mStopOnRedirect;
+
+        StopLoadingNavigationListener(AwContents awContents, boolean stopOnRedirect) {
+            super(new CallbackHelper());
+            mAwContents = awContents;
+            mStopOnRedirect = stopOnRedirect;
+        }
+
+        @Override
+        public void onNavigationStarted(AwNavigationState navigationState) {
+            super.onNavigationStarted(navigationState);
+            if (!mStopOnRedirect) mAwContents.stopLoading();
+        }
+
+        @Override
+        public void onNavigationRedirected(
+                AwNavigationState navigationState,
+                Map<String, String> responseHeaders,
+                int statusCode) {
+            super.onNavigationRedirected(navigationState, responseHeaders, statusCode);
+            if (mStopOnRedirect) mAwContents.stopLoading();
+        }
+    }
+
+    private void doTestStopLoadingInNavigationCallback(boolean stopOnRedirect) throws Throwable {
+        AwContents awContents = mTestContainerView.getAwContents();
+        String page1Url =
+                mWebServer.setResponse("/page1.html", "<html><body>Page 1</body></html>", null);
+        String page2Url =
+                mWebServer.setResponse("/page2.html", "<html><body>Page 2</body></html>", null);
+        mActivityTestRule.loadUrlSync(
+                awContents, mContentsClient.getOnPageFinishedHelper(), page1Url);
+        AwNavigation page1Navigation = mNavigationListener.getLastCompletedNavigation();
+        // Wait for page 1's onNavigationVisible(), so that listeners added below don't get it.
+        AwActivityTestRule.pollInstrumentationThread(
+                () -> page1Navigation.equals(mNavigationListener.getLastVisibleNavigation()));
+
+        // Added after `mNavigationListener`, so `mNavigationListener` gets each callback before
+        // the navigation is stopped. Listeners added after `stopper` would currently get
+        // onNavigationCompleted() before onNavigationStarted() (https://crbug.com/577964537).
+        StopLoadingNavigationListener stopper =
+                new StopLoadingNavigationListener(awContents, stopOnRedirect);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> awContents.getNavigationClient().addListener(stopper));
+
+        mActivityTestRule.loadUrlAsync(
+                awContents,
+                stopOnRedirect ? mWebServer.setRedirect("/redirect.html", page2Url) : page2Url);
+        AwActivityTestRule.pollInstrumentationThread(
+                () -> {
+                    AwNavigation navigation = mNavigationListener.getLastCompletedNavigation();
+                    return navigation != null && !navigation.equals(page1Navigation);
+                });
+
+        // The navigation was stopped, and the WebView stays on the previous page.
+        Assert.assertFalse(mNavigationListener.getLastCompletedNavigation().didCommit());
+        Assert.assertEquals(
+                page1Url,
+                ThreadUtils.runOnUiThreadBlocking(() -> awContents.getLastCommittedUrl()));
+    }
+
+    // Tests that calling stopLoading() from onNavigationStarted() doesn't crash and keeps the
+    // WebView on the previous page.
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testStopLoadingInOnNavigationStarted() throws Throwable {
+        doTestStopLoadingInNavigationCallback(/* stopOnRedirect= */ false);
+    }
+
+    // Same as above, but calls stopLoading() from onNavigationRedirected().
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testStopLoadingInOnNavigationRedirected() throws Throwable {
+        doTestStopLoadingInNavigationCallback(/* stopOnRedirect= */ true);
     }
 }
