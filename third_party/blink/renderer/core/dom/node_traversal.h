@@ -106,7 +106,23 @@ class CORE_EXPORT NodeTraversal {
 
   static Node* NextAncestorSibling(const Node&);
   static Node* NextAncestorSibling(const Node&, const Node* stay_within);
-  static Node& HighestAncestorOrSelf(const Node&);
+
+  // Returns the ancestor of `node` with the maximum distance, but at least
+  // `node` and at most `limit` (if provided).
+  //
+  // That is:
+  // - If `node` has no ancestor, it returns `node`.
+  // - If `limit` is non-nullptr and either `*limit` is an ancestor of `node` or
+  //   `*limit == node`, it returns `limit`.
+  // - Otherwise, it returns the ancestor that itself has no parent.
+  //
+  // Note that `HighestAncestorOrSelf` is used most commonly in `RemovedFrom`
+  // and `InsertedInfo`, during which `node.isConnected()` hasn't yet been
+  // updated to its new state. Which means `HighestAncestorOrSelf` cannot use
+  // `node.TreeRoot()` because it might return the root of the old tree,
+  // rather than the highest ancestor of the newly-removed/inserted node.
+  static Node& HighestAncestorOrSelf(const Node& node,
+                                     const Node* limit = nullptr);
 
   // Children traversal.
   static Node* ChildAt(const Node& parent, unsigned index) {
@@ -237,14 +253,10 @@ inline Node* NodeTraversal::NextSkippingChildren(const Node& current,
   return NextAncestorSibling(current, stay_within);
 }
 
-// Note that `HighestAncestorOrSelf` is used most commonly in `RemovedFrom` and
-// `InsertedInfo`, during which `current.isConnected()` hasn't yet been
-// updated to its new state. Which means `HighestAncestorOrSelf` cannot use
-// `current.TreeRoot()` because it might return the root of the old tree,
-// rather than the highest ancestor of the newly-removed/inserted node.
-inline Node& NodeTraversal::HighestAncestorOrSelf(const Node& current) {
+inline Node& NodeTraversal::HighestAncestorOrSelf(const Node& current,
+                                                  const Node* limit) {
   Node* highest = const_cast<Node*>(&current);
-  while (highest->parentNode()) {
+  while (highest->parentNode() && highest != limit) {
     highest = highest->parentNode();
   }
   return *highest;

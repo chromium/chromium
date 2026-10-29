@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -433,6 +434,52 @@ TEST_F(NodeTraversalTest, IsInclusiveDescendantOf) {
 
   // Siblings are not inclusive descendants of each other.
   EXPECT_FALSE(NodeTraversal::IsInclusiveDescendantOf(*c00, *c01));
+}
+
+TEST_F(NodeTraversalTest, HighestAncestorOrSelf) {
+  SetupSampleHTML(R"(
+      <div id='c0'>
+        <div id='c00'>
+          <div id='c000'></div>
+        </div>
+        <div id='c01'></div>
+      </div>
+      <div id='c1'></div>)");
+
+  Element* body = GetDocument().body();
+  Element* c0 = body->QuerySelector(AtomicString("#c0"));
+  Element* c00 = body->QuerySelector(AtomicString("#c00"));
+  Element* c000 = body->QuerySelector(AtomicString("#c000"));
+  Element* c01 = body->QuerySelector(AtomicString("#c01"));
+  Element* c1 = body->QuerySelector(AtomicString("#c1"));
+
+  // No limit is specified.
+  EXPECT_EQ(c0->GetDocument(), NodeTraversal::HighestAncestorOrSelf(*c0));
+
+  // Self: returns `possible_ancestor`.
+  EXPECT_EQ(c0, NodeTraversal::HighestAncestorOrSelf(*c0, c0));
+
+  // Strict ancestors: stops at `possible_ancestor`.
+  EXPECT_EQ(c0, NodeTraversal::HighestAncestorOrSelf(*c00, c0));
+  EXPECT_EQ(c0, NodeTraversal::HighestAncestorOrSelf(*c000, c0));
+  EXPECT_EQ(c00, NodeTraversal::HighestAncestorOrSelf(*c000, c00));
+
+  // Non-ancestors in the same connected tree: returns `GetDocument()`.
+  EXPECT_EQ(&GetDocument(), &NodeTraversal::HighestAncestorOrSelf(*c0, c00));
+  EXPECT_EQ(&GetDocument(), &NodeTraversal::HighestAncestorOrSelf(*c00, c01));
+  EXPECT_EQ(&GetDocument(), &NodeTraversal::HighestAncestorOrSelf(*c000, c1));
+
+  // Detached tree: returns `possible_ancestor` if found, otherwise the root of
+  // the detached tree.
+  auto* detached_root = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  auto* detached_child = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  detached_root->AppendChild(detached_child);
+  EXPECT_EQ(detached_root,
+            NodeTraversal::HighestAncestorOrSelf(*detached_child));
+  EXPECT_EQ(detached_root, NodeTraversal::HighestAncestorOrSelf(*detached_child,
+                                                                detached_root));
+  EXPECT_EQ(detached_root,
+            NodeTraversal::HighestAncestorOrSelf(*detached_child, c0));
 }
 
 }  // namespace node_traversal_test

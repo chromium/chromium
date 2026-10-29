@@ -159,16 +159,20 @@ void ListedElement::InsertedInto(ContainerNode& insertion_point) {
   UpdateWillValidateCache(WillValidateReason::kForInsertionOrRemoval);
 
   HTMLElement& element = ToHTMLElement();
-
-  // TODO(crbug.com/578370708): Avoid redundant node traversals.
   DCHECK(!form_was_set_by_parser_ || form_);
-  if (!form_was_set_by_parser_ ||
-      NodeTraversal::HighestAncestorOrSelf(insertion_point) !=
-          NodeTraversal::HighestAncestorOrSelf(*form_.Get())) {
+  if (!form_was_set_by_parser_) {
     ResetFormOwner();
-  } else if (!NodeTraversal::IsInclusiveDescendantOf(*element.parentNode(),
-                                                     *form_)) {
-    form_->DidAssociateByParser(/*maybe_descendant=*/false);
+  } else {
+    const Node& form_or_highest_ancestor =
+        NodeTraversal::HighestAncestorOrSelf(element, /*limit=*/form_);
+    if (form_or_highest_ancestor != *form_) [[unlikely]] {
+      if (form_or_highest_ancestor ==
+          NodeTraversal::HighestAncestorOrSelf(*form_)) {
+        form_->DidAssociateByParser(/*maybe_descendant=*/false);
+      } else {
+        ResetFormOwner();
+      }
+    }
   }
 
   if (insertion_point.isConnected()) {

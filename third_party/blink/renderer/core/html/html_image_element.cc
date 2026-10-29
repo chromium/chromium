@@ -642,14 +642,20 @@ void HTMLImageElement::AttachLayoutTree(AttachContext& context) {
 
 Node::InsertionNotificationRequest HTMLImageElement::InsertedInto(
     ContainerNode& insertion_point) {
-  // TODO(crbug.com/578370708): Avoid redundant node traversals.
   DCHECK(!form_was_set_by_parser_ || form_);
-  if (!form_was_set_by_parser_ ||
-      NodeTraversal::HighestAncestorOrSelf(insertion_point) !=
-          NodeTraversal::HighestAncestorOrSelf(*form_.Get())) {
+  if (!form_was_set_by_parser_) {
     ResetFormOwner();
-  } else if (!NodeTraversal::IsInclusiveDescendantOf(*parentNode(), *form_)) {
-    form_->DidAssociateByParser(/*maybe_descendant=*/false);
+  } else {
+    const Node& form_or_highest_ancestor =
+        NodeTraversal::HighestAncestorOrSelf(*this, /*limit=*/form_);
+    if (form_or_highest_ancestor != *form_) [[unlikely]] {
+      if (form_or_highest_ancestor ==
+          NodeTraversal::HighestAncestorOrSelf(*form_)) {
+        form_->DidAssociateByParser(/*maybe_descendant=*/false);
+      } else {
+        ResetFormOwner();
+      }
+    }
   }
 
   if (listener_)
