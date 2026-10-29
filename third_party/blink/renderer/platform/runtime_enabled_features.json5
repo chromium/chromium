@@ -800,6 +800,10 @@
       status: "experimental",
     },
     {
+      name: "AudioWorkletProcessorErrorEventType",
+      status: "stable",
+    },
+    {
       // Shared MessagePort between AudioWorklet and AudioWorkletGlobalScope.
       // https://chromestatus.com/feature/5079784523694080
       name: "AudioWorkletSharedPort",

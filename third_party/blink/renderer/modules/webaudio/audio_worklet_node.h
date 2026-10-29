@@ -37,16 +37,16 @@ class MODULES_EXPORT AudioWorkletNode final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static AudioWorkletNode* Create(ScriptState*,
-                                  BaseAudioContext*,
+  static AudioWorkletNode* Create(ScriptState* script_state,
+                                  BaseAudioContext* context,
                                   const String& name,
-                                  const AudioWorkletNodeOptions*,
-                                  ExceptionState&);
+                                  const AudioWorkletNodeOptions* options,
+                                  ExceptionState& exception_state);
 
-  AudioWorkletNode(BaseAudioContext&,
+  AudioWorkletNode(BaseAudioContext& context,
                    const String& name,
-                   const AudioWorkletNodeOptions*,
-                   const Vector<CrossThreadAudioParamInfo>,
+                   const AudioWorkletNodeOptions* options,
+                   const Vector<CrossThreadAudioParamInfo> param_info_list,
                    MessagePort* node_port);
 
   // ActiveScriptWrappable
@@ -55,12 +55,13 @@ class MODULES_EXPORT AudioWorkletNode final
   // IDL
   AudioParamMap* parameters() const;
   MessagePort* port() const;
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(processorerror, kError)
+  EventListener* onprocessorerror();
+  void setOnprocessorerror(EventListener* listener);
 
   void FireProcessorError(
       const AudioWorkletProcessorErrorDetails& error_details);
 
-  void Trace(Visitor*) const override;
+  void Trace(Visitor* visitor) const override;
 
   // InspectorHelperMixin
   void ReportDidCreate() final;
