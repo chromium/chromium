@@ -20,9 +20,9 @@
 
 namespace {
 // Default factory for IOSChromePasswordCheckManager.
-scoped_refptr<RefcountedKeyedService> BuildInstance(ProfileIOS* profile) {
+scoped_refptr<RefcountedKeyedService> BuildInstance(ProfileIOS& profile) {
   return base::MakeRefCounted<IOSChromePasswordCheckManager>(
-      profile->GetPrefs(),
+      profile.GetPrefs(),
       IOSChromeBulkLeakCheckServiceFactory::GetForProfile(profile),
       std::make_unique<password_manager::SavedPasswordsPresenter>(
           IOSChromeAffiliationServiceFactory::GetForProfile(profile),
@@ -46,13 +46,13 @@ IOSChromePasswordCheckManagerFactory::IOSChromePasswordCheckManagerFactory(
 }
 
 // static
-IOSChromePasswordCheckManagerFactory::TestingFactory
+IOSChromePasswordCheckManagerFactory::TestingFactoryByRef
 IOSChromePasswordCheckManagerFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildInstance);
 }
 
 scoped_refptr<RefcountedKeyedService>
 IOSChromePasswordCheckManagerFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildInstance(profile);
 }
