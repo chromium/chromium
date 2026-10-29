@@ -56,11 +56,16 @@ ReadAnythingOmniboxController::~ReadAnythingOmniboxController() = default;
 void ReadAnythingOmniboxController::TabWillDetach(
     tabs::TabInterface* tab,
     tabs::TabInterface::DetachReason reason) {
+  // Moving the tab to another window doesn't mean the entry point was ignored.
+  if (reason != tabs::TabInterface::DetachReason::kDelete) {
+    return;
+  }
+
   // Use the cached was_last_checked_page_distillable_ since
   // GetCurrentPageAction().showing will already be false if it was showing
   // before. If it was a good candidate, then it's likely the entry point was
-  // showing, so mark it as "ignored".
-  UpdateIgnored(was_last_checked_page_distillable_);
+  // showing, so mark it as "ignored" if it was unused.
+  UpdateIgnored(was_last_checked_page_distillable_ && !was_triggered_);
 }
 
 void ReadAnythingOmniboxController::OnTabForegrounded(tabs::TabInterface* tab) {
@@ -144,6 +149,8 @@ void ReadAnythingOmniboxController::OnDiscardContents(
 }
 
 void ReadAnythingOmniboxController::PrimaryPageChanged(content::Page& page) {
+  // LogUkm() resets was_triggered_, so cache it for UpdateIgnored().
+  const bool was_triggered = was_triggered_;
   LogUkm();
   // Reset the distillable indicator when the page changes.
   was_last_checked_page_distillable_ = false;
@@ -153,7 +160,9 @@ void ReadAnythingOmniboxController::PrimaryPageChanged(content::Page& page) {
   }
 
   StopTimers();
-  UpdateIgnored(GetCurrentPageActionState().showing);
+  // The entry point re-shows after RM is closed, but it wasn't ignored if it
+  // was used on this page.
+  UpdateIgnored(GetCurrentPageActionState().showing && !was_triggered);
   DebounceCheckSuggestion();
 }
 
