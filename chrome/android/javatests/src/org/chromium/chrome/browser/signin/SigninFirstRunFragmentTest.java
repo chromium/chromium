@@ -82,6 +82,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.R;
@@ -1484,6 +1485,8 @@ public class SigninFirstRunFragmentTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @SigninTestRule.BlockGetAccounts
+    @RequiresRestart(
+            "Tests initial account loading state before IdentityManager loads refresh tokens")
     public void testFragmentWhenAccountsAreLoadedAfterChildStatusAndNativeAndPolicy() {
         launchActivityWithFragment();
         checkFragmentWhenLoading();
