@@ -161,6 +161,7 @@ public class TabBottomSheetCoordinatorUnitTest {
                 new WebViewResizingHelper(
                         mView,
                         mWindowAndroid,
+                        /* bottomSheetController= */ null,
                         Color.WHITE,
                         Color.LTGRAY,
                         false,

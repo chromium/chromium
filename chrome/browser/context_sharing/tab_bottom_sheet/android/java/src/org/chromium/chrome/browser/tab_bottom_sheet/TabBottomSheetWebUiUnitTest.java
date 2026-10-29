@@ -13,7 +13,6 @@ import static org.mockito.ArgumentCaptor.captor;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -25,7 +24,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.view.ContextThemeWrapper;
 import android.view.DragAndDropPermissions;
 import android.view.DragEvent;
@@ -68,7 +66,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuItemDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -83,9 +80,6 @@ import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
-import org.chromium.ui.display.DisplayAndroid;
-import org.chromium.ui.insets.InsetObserver;
-import org.chromium.ui.insets.InsetObserver.WindowInsetObserver;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
@@ -103,7 +97,6 @@ public class TabBottomSheetWebUiUnitTest {
 
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private BottomSheetController mBottomSheetController;
-    @Mock private DisplayAndroid mDisplayAndroid;
     @Mock private WebContents mWebContents;
     @Mock private ThinWebView mThinWebView;
     @Mock private ContextMenuPopulatorFactory mContextMenuPopulatorFactory;
@@ -131,8 +124,6 @@ public class TabBottomSheetWebUiUnitTest {
 
         WeakReference<Activity> weakActivity = new WeakReference<>(mActivity);
         when(mWindowAndroid.getActivity()).thenReturn(weakActivity);
-        Mockito.lenient().when(mWindowAndroid.getDisplay()).thenReturn(mDisplayAndroid);
-        Mockito.lenient().when(mDisplayAndroid.getDipScale()).thenReturn(1.0f);
 
         View decorView = new View(mActivity);
         decorView.layout(0, 0, /* right= */ 0, /* bottom= */ 1000);
@@ -987,147 +978,6 @@ public class TabBottomSheetWebUiUnitTest {
         mWebUi.setWebContents(mWebContents, true);
 
         assertEquals(selectorSupplier, TabModelSelectorSupplier.from(thinWindow));
-    }
-
-    @Test
-    @EnableFeatures({
-        ChromeFeatureList.TAB_BOTTOM_SHEET,
-        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE,
-        ChromeFeatureList.GLIC_NO_WEBVIEW
-    })
-    public void testSetWebContents_UpdatesSafeAreaInsetsWhenEdgeToEdgeEnabled() {
-        when(mDisplayAndroid.getDipScale()).thenReturn(2.0f);
-
-        int topMarginPx =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(
-                                org.chromium.chrome.browser.context_sharing.R.dimen
-                                        .tab_bottom_sheet_web_ui_top_margin);
-        int expectedTopDip = (int) Math.ceil(topMarginPx / 2.0f);
-
-        mWebUi.setWebContents(mWebContents, false);
-
-        verify(mWebContents).setDisplayCutoutSafeArea(eq(new Rect(0, expectedTopDip, 0, 0)));
-    }
-
-    @Test
-    @EnableFeatures({
-        ChromeFeatureList.TAB_BOTTOM_SHEET,
-        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE,
-        ChromeFeatureList.GLIC_NO_WEBVIEW
-    })
-    public void testSetWebContents_UpdatesBottomSafeAreaInsetAndObservesChanges() {
-        when(mDisplayAndroid.getDipScale()).thenReturn(2.0f);
-        InsetObserver mockInsetObserver = mock(InsetObserver.class);
-        when(mWindowAndroid.getInsetObserver()).thenReturn(mockInsetObserver);
-        when(mBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(48);
-
-        int topMarginPx =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(
-                                org.chromium.chrome.browser.context_sharing.R.dimen
-                                        .tab_bottom_sheet_web_ui_top_margin);
-        int expectedTopDip = (int) Math.ceil(topMarginPx / 2.0f);
-
-        mWebUi.setWebContents(mWebContents, /* requestFocus= */ false);
-
-        verify(mWebContents).setDisplayCutoutSafeArea(eq(new Rect(0, expectedTopDip, 0, 24)));
-
-        ArgumentCaptor<WindowInsetObserver> insetObserverCaptor =
-                ArgumentCaptor.forClass(WindowInsetObserver.class);
-        ArgumentCaptor<BottomSheetObserver> bottomSheetObserverCaptor =
-                ArgumentCaptor.forClass(BottomSheetObserver.class);
-        verify(mockInsetObserver).addObserver(insetObserverCaptor.capture());
-        verify(mBottomSheetController).addObserver(bottomSheetObserverCaptor.capture());
-
-        // When keyboard is showing, BottomSheetController#getEdgeToEdgeBottomInset returns 0.
-        clearInvocations(mWebContents);
-        when(mBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(0);
-        insetObserverCaptor.getValue().onKeyboardInsetChanged(300);
-        verify(mWebContents).setDisplayCutoutSafeArea(eq(new Rect(0, expectedTopDip, 0, 0)));
-
-        // When window insets change, bottom safe area inset is updated from BottomSheetController.
-        clearInvocations(mWebContents);
-        when(mBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(60);
-        insetObserverCaptor.getValue().onInsetChanged();
-        verify(mWebContents).setDisplayCutoutSafeArea(eq(new Rect(0, expectedTopDip, 0, 30)));
-
-        // When bottom sheet container bottom margin changes, safe area inset is updated.
-        clearInvocations(mWebContents);
-        when(mBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(0);
-        bottomSheetObserverCaptor.getValue().onContainerBottomMarginChanged(100);
-        verify(mWebContents).setDisplayCutoutSafeArea(eq(new Rect(0, expectedTopDip, 0, 0)));
-
-        // When WebContents is destroyed, inset changes are ignored.
-        clearInvocations(mWebContents);
-        when(mWebContents.isDestroyed()).thenReturn(true);
-        insetObserverCaptor.getValue().onInsetChanged();
-        verify(mWebContents, never()).setDisplayCutoutSafeArea(any());
-
-        // Destroy unregisters both observers.
-        mWebUi.destroy();
-        verify(mockInsetObserver).removeObserver(insetObserverCaptor.getValue());
-        verify(mBottomSheetController).removeObserver(bottomSheetObserverCaptor.getValue());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.TAB_BOTTOM_SHEET, ChromeFeatureList.GLIC_NO_WEBVIEW})
-    @DisableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE)
-    public void testSetWebContents_DoesNotUpdateSafeAreaInsetsWhenEdgeToEdgeDisabled() {
-        mWebUi.setWebContents(mWebContents, /* requestFocus= */ false);
-
-        verify(mWebContents, never()).setDisplayCutoutSafeArea(any());
-    }
-
-    @Test
-    @EnableFeatures({
-        ChromeFeatureList.TAB_BOTTOM_SHEET,
-        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE
-    })
-    @DisableFeatures(ChromeFeatureList.GLIC_NO_WEBVIEW)
-    public void testSetWebContents_DoesNotUpdateSafeAreaInsetsWhenGlicNoWebviewDisabled() {
-        mWebUi.setWebContents(mWebContents, /* requestFocus= */ false);
-
-        verify(mWebContents, never()).setDisplayCutoutSafeArea(any());
-    }
-
-    @Test
-    @EnableFeatures({
-        ChromeFeatureList.TAB_BOTTOM_SHEET,
-        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE,
-        ChromeFeatureList.GLIC_NO_WEBVIEW
-    })
-    public void testSetWebContents_SidePanel_DoesNotUpdateSafeAreaInsets() {
-        Context context =
-                new ContextThemeWrapper(
-                        ApplicationProvider.getApplicationContext(),
-                        R.style.Theme_BrowserUI_DayNight);
-        View containerView =
-                LayoutInflater.from(context)
-                        .inflate(
-                                org.chromium.chrome.browser.context_sharing.R.layout
-                                        .tab_bottom_sheet,
-                                null);
-        TabBottomSheetWebUi sidePanelWebUi =
-                new TestTabBottomSheetWebUi(
-                        context,
-                        containerView,
-                        mWindowAndroid,
-                        mContextMenuPopulatorFactory,
-                        mSelectionDropdownMenuDelegate,
-                        Color.WHITE,
-                        Color.LTGRAY,
-                        TabBottomSheetClientType.UNKNOWN,
-                        CoBrowseContainerType.SIDE_PANEL,
-                        /* ephemeralTabOpener= */ null,
-                        /* readLaterOpener= */ null,
-                        mContentView);
-
-        sidePanelWebUi.setWebContents(mWebContents, false);
-
-        verify(mWebContents, never()).setDisplayCutoutSafeArea(any());
     }
 
     /**
