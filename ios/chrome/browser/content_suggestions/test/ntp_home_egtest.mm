@@ -6,7 +6,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
-#import "base/ios/ios_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
@@ -1093,12 +1092,6 @@ TAG_SMOKE_TEST(NTPHomeTestCase, testTapFakeOmnibox);
 
 // TODO(crbug.com/522830813): Test is failing.
 - (void)DISABLED_testMinimumHeight {
-  if (!base::ios::IsRunningOnIOS18OrLater()) {
-    EARL_GREY_TEST_SKIPPED(
-        @"On iOS 17, EarlGrey finishes the test before the "
-        @"MostVisitedTilesCollectionView goes through its next layout pass "
-        @"based on the actual width of the new tab page content.");
-  }
   [ChromeCoordinatorAppInterface startNewTabPageCoordinator];
   GREYWaitForAppToIdle(@"App failed to idle");
   [self
