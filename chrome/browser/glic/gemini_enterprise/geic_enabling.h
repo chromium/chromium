@@ -47,10 +47,17 @@ bool IsGeicEnabledByFeature();
 //
 // Precedence:
 // 1. Command-line switch `--geic-guest-url`.
-// 2. Enterprise policy (`glic.gemini_enterprise_settings.url`).
+// 2. Enterprise policy (`GeminiEnterpriseUrl`, stored in
+//    `prefs::kGlicGeminiEnterpriseUrl`).
 // 3. Finch parameter `features::kGeicGuestURL` (when `features::kGeic` is
 //    controlled by a `google_groups`-filtered Finch study, the Finch URL
 //    parameter only applies to profiles in those groups).
+//
+// `--geic-guest-url` intentionally takes precedence over the enterprise policy
+// to simplify development and local testing on managed profiles. This poses no
+// risk of abuse because `IsValidGuestUrl()` only accepts valid Gemini
+// Enterprise origins (unless `--glic-dev` is also set), and accessing GEiC
+// still requires the user to sign in to Gemini Enterprise.
 GURL ResolveGeicGuestUrl(content::BrowserContext* browser_context);
 
 }  // namespace geic

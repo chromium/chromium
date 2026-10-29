@@ -131,6 +131,9 @@ GURL ResolveGeicGuestUrl(content::BrowserContext* browser_context) {
     return GURL();
   }
 
+  // `--geic-guest-url` is evaluated before the enterprise policy to simplify
+  // development and local testing; `IsValidGuestUrl()` still restricts the URL
+  // to valid Gemini Enterprise origins and GEiC requires signing in to GE.
   const base::expected<GURL, GuestUrlError> candidates[] = {
       ToGuestUrl(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           kGeicGuestURLSwitch)),
