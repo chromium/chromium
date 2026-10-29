@@ -75,9 +75,11 @@ inline void TransitionPseudoElementData::ClearPseudoElements() {
                        ? transition_incoming_image_->GetPseudoArgument()
                        : g_null_atom);
 
-  for (auto& entry : transition_containers_)
+  HeapHashMap<AtomicString, Member<PseudoElement>> containers;
+  std::swap(containers, transition_containers_);
+  for (auto& entry : containers) {
     entry.value->Dispose();
-  transition_containers_.clear();
+  }
 }
 
 inline void TransitionPseudoElementData::SetPseudoElement(
