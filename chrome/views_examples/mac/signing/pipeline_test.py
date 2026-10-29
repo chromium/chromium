@@ -6,7 +6,7 @@ import asyncio
 import unittest
 from unittest import mock
 
-from signing import model, pipeline
+from signing import config, driver, model, pipeline, standard_invoker
 
 
 def _get_work_dir(*args, **kwargs):
@@ -171,3 +171,42 @@ class TestPipeline(unittest.TestCase):
             ),
             kwargs['run_command'].call_args,
         )
+
+
+class _DriverTestConfig(config.CodeSignConfig):
+    @property
+    def app_product(self):
+        return 'ViewsExamples'
+
+    @property
+    def product(self):
+        return 'ViewsExamples'
+
+    @property
+    def version(self):
+        return '1.0.0.0'
+
+    @property
+    def base_bundle_id(self):
+        return 'org.chromium.ViewsExamples'
+
+
+@mock.patch(
+    'signing.config_factory.get_class',
+    mock.Mock(return_value=_DriverTestConfig),
+)
+@mock.patch(
+    'signing.config_factory.get_invoker_class',
+    mock.Mock(return_value=standard_invoker.Invoker),
+)
+@mock.patch('signing.commands.run_command')
+@mock.patch('signing.commands.file_exists', mock.Mock(return_value=True))
+class TestDriverCompatibility(unittest.TestCase):
+    def test_driver_calls_sign_all(self, run_command):
+        # The shared driver calls the overridden |pipeline.sign_all|, so its
+        # signature must accept everything the driver passes.
+        with mock.patch('signing.pipeline.sign_all', autospec=True) as sign_all:
+            driver.main(
+                ['--input', '/input', '--output', '/output', '--identity', '-']
+            )
+        sign_all.assert_called_once()
