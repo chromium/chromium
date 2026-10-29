@@ -162,7 +162,7 @@ found in the LICENSE file.
   <int value="7" label="FrameIsWwwPsl"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/one_time_tokens/core/browser/gmail_otp_retriever.h:GmailOtpSenderDomainMatchType) -->
+<!-- LINT.ThenChange(//components/one_time_tokens/core/browser/gmail_otp_sender_domain_matcher.h:GmailOtpSenderDomainMatchType) -->
 
 </enums>
 
