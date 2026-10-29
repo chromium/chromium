@@ -444,21 +444,7 @@ action_with_pydeps("check_generated_file_list") {
     rebase_path(result_file, root_build_dir),
   ]
 
-  deps = [
-    # A lot of C++ compile tasks are waiting for the completion of the
-    # bindings generator because most Blink C++ source files directly or
-    # indirectly depend on the generated bindings files.  Since we'd like
-    # `generate_bindings_all` to use the most CPU power and memory so that
-    # it unblocks Blink C++ compile tasks as soon as possible, we do not like
-    # `check_generated_file_list` running in parallel to
-    # `generate_bindings_all`.
-    #
-    # This trick (unnecessary dependency to `generate_bindings_all`) makes
-    # `check_generated_file_list` wait for the completion of
-    # `generate_bindings_all`.
-    ":generate_bindings_all",
-    ":web_idl_database",
-  ]
+  deps = [ ":web_idl_database" ]
 }
 
 action_with_pydeps("validate_web_idl") {
@@ -484,19 +470,7 @@ action_with_pydeps("validate_web_idl") {
     rebase_path(validate_web_idl_result, root_build_dir),
   ]
 
-  deps = [
-    # A lot of C++ compile tasks are waiting for the completion of the
-    # bindings generator because most Blink C++ source files directly or
-    # indirectly depend on the generated bindings files.  Since we'd like
-    # `generate_bindings_all` to use the most CPU power and memory so that
-    # it unblocks Blink C++ compile tasks as soon as possible, we do not like
-    # `validate_web_idl` running in parallel to `generate_bindings_all`.
-    #
-    # This trick (unnecessary dependency to `generate_bindings_all`) makes
-    # `validate_web_idl` wait for the completion of `generate_bindings_all`.
-    ":generate_bindings_all",
-    ":web_idl_database",
-  ]
+  deps = [ ":web_idl_database" ]
 }
 
 # Exposes the libraries that affect the resulting blob image of the V8 context

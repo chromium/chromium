@@ -127,7 +127,9 @@ component("controller") {
   # adding/editing *.idl files, especially because it's very easy to forget to
   # add generated bindings files to the lists defined in
   # generated_in_{core,modules}.gni. Hence, run the check scripts here.
-  deps += [
+  # Use data_deps so they don't become order-only .harddeps that block
+  # downstream C++ compilation.
+  data_deps = [
     "//third_party/blink/renderer/bindings:check_generated_file_list",
     "//third_party/blink/renderer/bindings:validate_web_idl",
   ]
