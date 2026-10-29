@@ -15,6 +15,11 @@ class AutoThreadTaskRunner;
 // ChromotingModule runs a MessageLoop allowing Chromium code to post tasks to
 // it. Unlike traditional COM servers, ChromotingModule shuts itself down
 // immediately once the last COM object is released.
+//
+// If the main thread stops running tasks for too long, e.g. because the RDP
+// ActiveX control hosted by this process is hung, the process crashes itself.
+// This releases clients that are blocked on synchronous calls into this
+// process, and keeps hung processes from lingering forever.
 class ChromotingModule {
  public:
   ChromotingModule();

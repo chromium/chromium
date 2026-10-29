@@ -7,23 +7,50 @@
 #include <wrl/client.h>
 
 #include "base/compiler_specific.h"
+#include "base/debug/debugger.h"
+#include "base/functional/bind.h"
+#include "base/immediate_crash.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/wrl_module.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/typed_buffer.h"
 #include "remoting/host/base/host_exit_codes.h"
+#include "remoting/host/win/hang_watchdog.h"
 #include "remoting/host/win/rdp_desktop_session.h"
 #include "remoting/host/win/rdp_desktop_session_class_factory.h"
 
 namespace remoting {
 
 namespace {
+
+// If the main thread stops running tasks for about this long, e.g. because the
+// RDP ActiveX control is hung, the process crashes itself.
+constexpr base::TimeDelta kHangTimeout = base::Seconds(30);
+
+// How often the main thread records a heartbeat and the watchdog thread checks
+// it.
+constexpr base::TimeDelta kHeartbeatInterval = base::Seconds(5);
+static_assert(kHeartbeatInterval < kHangTimeout);
+
+// Run on the watchdog thread. Crashes the process rather than terminating it,
+// so that a crash dump captures the stack of the hung main thread.
+void CrashHungProcess() {
+  // Breaking into a debugger or stepping stops the main thread from running
+  // tasks while `base::LiveTicks` keeps advancing, which looks like a hang.
+  if (base::debug::BeingDebugged()) {
+    return;
+  }
+  LOG(ERROR) << "The main thread has been hung for about " << kHangTimeout
+             << ", crashing the RDP desktop session process.";
+  base::ImmediateCrash();
+}
 
 // Holds a reference to the task runner used by the module.
 base::LazyInstance<scoped_refptr<AutoThreadTaskRunner>>::Leaky
@@ -155,8 +182,17 @@ bool ChromotingModule::Run() {
     return false;
   }
 
-  // Run the loop until the module lock counter reaches zero.
-  run_loop.Run();
+  // Crash the process if the main thread stops running tasks, e.g. because the
+  // RDP ActiveX control is hung. The heartbeat timer posts to
+  // `main_task_executor`'s task runner rather than the module's
+  // AutoThreadTaskRunner, so it doesn't keep the run loop alive.
+  {
+    HangWatchdog hang_watchdog(kHangTimeout, kHeartbeatInterval,
+                               base::BindRepeating(&CrashHungProcess));
+
+    // Run the loop until the module lock counter reaches zero.
+    run_loop.Run();
+  }
 
   // Unregister class objects.
   hr = wrl_module.UnregisterCOMObject(nullptr, &cookie, 1);

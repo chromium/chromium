@@ -247,6 +247,7 @@ source_set("unit_tests") {
     "event_trace_data.cc",
     "event_trace_data.h",
     "event_trace_data_unittest.cc",
+    "hang_watchdog_unittest.cc",
     "host_window_win_util_unittest.cc",
     "input_extra_info_unittest.cc",
     "mouse_cursor_monitor_win_unittest.cc",
@@ -441,6 +442,8 @@ source_set("chromoting_module") {
   sources = [
     "chromoting_module.cc",
     "chromoting_module.h",
+    "hang_watchdog.cc",
+    "hang_watchdog.h",
     "rdp_desktop_session.cc",
     "rdp_desktop_session.h",
     "rdp_desktop_session_class_factory.cc",
