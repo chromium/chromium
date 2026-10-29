@@ -717,6 +717,40 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h:AccountMenuAccessPoint) -->
 
+<!-- LINT.IfChange(IOSAccountProfileMappingStartupState) -->
+
+<enum name="IOSAccountProfileMappingStartupState">
+  <int value="0" label="Each managed account in a single Managed profile"/>
+  <int value="1"
+      label="Cohort A1: Shadowed by uninit Managed, Personal uninit"/>
+  <int value="2" label="Cohort A2: Shadowed by uninit Managed, Personal init"/>
+  <int value="3"
+      label="Cohort A3a: Two init Managed, first (UUID_M) more recent"/>
+  <int value="4" label="Cohort A3b: Two init Managed, Personal more recent"/>
+  <int value="5"
+      label="Cohort A3c: Two init Managed, second (orig) more recent
+             (unexpected)"/>
+  <int value="6"
+      label="Cohort B1: Extra uninit Managed, original Managed more recent"/>
+  <int value="7" label="Cohort B2: Extra uninit Managed, Personal more recent"/>
+  <int value="8"
+      label="Cohort B: Two init Managed, first is Default (unexpected)"/>
+  <int value="9"
+      label="Cohort B: First (Default) uninit, second (UUID_M) init
+             (unexpected)"/>
+  <int value="10" label="Two uninitialized Managed profiles (unexpected)"/>
+  <int value="11" label="Cohort C1: Personal and Managed, Personal uninit"/>
+  <int value="12"
+      label="Cohort C2: Personal and Managed, not primary in Personal"/>
+  <int value="13" label="Cohort C3: Personal and Managed, primary in Personal"/>
+  <int value="14" label="Cohort C3: Primary in Personal, Managed more recent"/>
+  <int value="15" label="Attached to 3 or more profiles (unexpected)"/>
+  <int value="16"
+      label="Multiple corrupted managed accounts on device (unexpected)"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/signin/model/account_profile_mapper.h:IOSAccountProfileMappingStartupState) -->
+
 <!-- LINT.IfChange(IOSAccountSwitchType) -->
 
 <enum name="IOSAccountSwitchType">

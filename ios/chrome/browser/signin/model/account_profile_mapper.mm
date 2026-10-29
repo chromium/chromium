@@ -6,6 +6,12 @@
 
 #import <Foundation/Foundation.h>
 
+#import <map>
+#import <optional>
+#import <string>
+#import <string_view>
+#import <vector>
+
 #import "base/auto_reset.h"
 #import "base/check_is_test.h"
 #import "base/containers/map_util.h"
@@ -137,6 +143,177 @@ void RecordAccountProfileStartupState(bool is_primary_account,
   }
 
   base::UmaHistogramEnumeration("Signin.AccountProfileStartupState2", state);
+}
+
+constexpr char kDefaultProfileName[] = "Default";
+
+// Classifies the corruption cohort for a managed `gaia_id` attached to 2 or
+// more `profiles` (sorted in ASCII order).
+IOSAccountProfileMappingStartupState ClassifyCorruptedManagedGaia(
+    const GaiaId& gaia_id,
+    const std::vector<std::string>& profiles,
+    const std::string& personal_profile_name,
+    const ProfileAttributesStorageIOS* storage) {
+  CHECK_GE(profiles.size(), 2u);
+  if (profiles.size() >= 3) {
+    return IOSAccountProfileMappingStartupState::kThreeOrMoreProfiles;
+  }
+
+  // `profiles.size() == 2`, with `profiles[0] < profiles[1]` in ASCII order.
+  const ProfileAttributesIOS attr0 =
+      storage->GetAttributesForProfileWithName(profiles[0]);
+  const ProfileAttributesIOS attr1 =
+      storage->GetAttributesForProfileWithName(profiles[1]);
+  const bool is_personal_0 = (profiles[0] == personal_profile_name);
+  const bool is_personal_1 = (profiles[1] == personal_profile_name);
+
+  const std::optional<ProfileAttributesIOS> personal_attr =
+      (!personal_profile_name.empty() &&
+       storage->HasProfileWithName(personal_profile_name))
+          ? std::make_optional(
+                storage->GetAttributesForProfileWithName(personal_profile_name))
+          : std::nullopt;
+  const bool personal_init =
+      personal_attr.has_value() && personal_attr->IsFullyInitialized();
+  const base::Time personal_last_active =
+      personal_attr.has_value() ? personal_attr->GetLastActiveTime()
+                                : base::Time();
+
+  if (!is_personal_0 && !is_personal_1) {
+    // Attached to 2 Managed profiles (Cohorts A and B).
+    // Note: `orig_profile` was the active profile when migrated to Managed, so
+    // it is guaranteed to have Init=1. `UUID_M` starts with Init=0 and can only
+    // be initialized if it sits at `profiles[0]` (since
+    // `FindProfileNameForGaiaID` always returns `profiles[0]`). Furthermore,
+    // `"Default"` can only ever be `orig_profile` (newly created profiles
+    // always get a random UUID), so `profiles[0] == "Default"` implies Cohort B
+    // (`orig_profile < UUID_M`).
+    const bool init0 = attr0.IsFullyInitialized();
+    const bool init1 = attr1.IsFullyInitialized();
+    if (!init0 && init1) {
+      if (profiles[0] == kDefaultProfileName) {
+        return IOSAccountProfileMappingStartupState::
+            kCohortB_FirstIsDefaultUninit_SecondInit;
+      }
+      // Cohort A (`UUID_M < orig_profile`): `profiles[0]` is uninitialized
+      // `UUID_M`, `profiles[1]` is initialized `orig_profile`.
+      return personal_init
+                 ? IOSAccountProfileMappingStartupState::
+                       kCohortA2_ShadowedByUninitManaged_PersonalInit
+                 : IOSAccountProfileMappingStartupState::
+                       kCohortA1_ShadowedByUninitManaged_PersonalUninit;
+    }
+    if (init0 && init1) {
+      if (profiles[0] == kDefaultProfileName) {
+        return IOSAccountProfileMappingStartupState::
+            kCohortB_TwoInitManaged_FirstIsDefault;
+      }
+      // Cohort A3: both Managed profiles are initialized.
+      if (attr1.GetLastActiveTime() > attr0.GetLastActiveTime()) {
+        return IOSAccountProfileMappingStartupState::
+            kCohortA3c_TwoInitManaged_SecondMoreRecent;
+      }
+      if (personal_init && personal_last_active > attr0.GetLastActiveTime()) {
+        return IOSAccountProfileMappingStartupState::
+            kCohortA3b_TwoInitManaged_PersonalMoreRecent;
+      }
+      return IOSAccountProfileMappingStartupState::
+          kCohortA3a_TwoInitManaged_FirstMoreRecent;
+    }
+    if (init0 && !init1) {
+      // Cohort B (`orig_profile < UUID_M`): `profiles[0]` is initialized
+      // `orig_profile`, `profiles[1]` is uninitialized `UUID_M`.
+      return (personal_init && personal_last_active > attr0.GetLastActiveTime())
+                 ? IOSAccountProfileMappingStartupState::
+                       kCohortB2_ExtraUninitManaged_PersonalMoreRecent
+                 : IOSAccountProfileMappingStartupState::
+                       kCohortB1_ExtraUninitManaged_OrigMoreRecent;
+    }
+    return IOSAccountProfileMappingStartupState::kTwoUninitManagedProfiles;
+  }
+
+  // Attached to 1 Personal profile and 1 Managed profile (Cohort C).
+  const ProfileAttributesIOS& managed_attr = is_personal_0 ? attr1 : attr0;
+  if (!personal_init) {
+    return IOSAccountProfileMappingStartupState::
+        kCohortC1_PersonalAndManaged_PersonalUninit;
+  }
+  if (personal_attr->GetGaiaId() != gaia_id) {
+    return IOSAccountProfileMappingStartupState::
+        kCohortC2_PersonalAndManaged_NotPrimaryInPersonal;
+  }
+  if (managed_attr.GetLastActiveTime() > personal_last_active) {
+    return IOSAccountProfileMappingStartupState::
+        kCohortC3_PersonalAndManaged_PrimaryInPersonal_ManagedMoreRecent;
+  }
+  return IOSAccountProfileMappingStartupState::
+      kCohortC3_PersonalAndManaged_PrimaryInPersonal;
+}
+
+// Records the on-disk profile attachment state for managed Gaia IDs stored in
+// `storage` once at browser startup.
+void RecordAccountProfileMappingStartupState(
+    const ProfileNameToGaiaIds& profile_to_gaia_ids,
+    const ProfileAttributesStorageIOS* storage) {
+  if (!storage) {
+    CHECK_IS_TEST();
+    return;
+  }
+
+  // Invert `profile_to_gaia_ids` (which is sorted in ASCII order of profile
+  // names) into a map from `GaiaId` to sorted vector of profile names.
+  std::map<GaiaId, std::vector<std::string>> gaia_id_to_profiles;
+  for (const auto& [profile_name, gaia_ids] : profile_to_gaia_ids) {
+    for (const GaiaId& gaia_id : gaia_ids) {
+      gaia_id_to_profiles[gaia_id].push_back(profile_name);
+    }
+  }
+
+  const std::string personal_profile_name = storage->GetPersonalProfileName();
+  bool has_any_managed_account = false;
+  std::vector<IOSAccountProfileMappingStartupState> corrupted_states;
+
+  for (const auto& [gaia_id, profiles] : gaia_id_to_profiles) {
+    // Skip personal accounts (attached only to `personal_profile_name`). Note
+    // that this also skips a pre-multi-profile managed primary account that has
+    // not yet been force-migrated out of the personal profile, which is fine
+    // since unmigrated accounts cannot be affected by crbug.com/577577623.
+    if (profiles.size() == 1 && profiles[0] == personal_profile_name) {
+      continue;
+    }
+    has_any_managed_account = true;
+    if (profiles.size() >= 2) {
+      corrupted_states.push_back(ClassifyCorruptedManagedGaia(
+          gaia_id, profiles, personal_profile_name, storage));
+    }
+  }
+
+  // Do not emit on devices with no managed accounts.
+  if (!has_any_managed_account) {
+    return;
+  }
+
+  const IOSAccountProfileMappingStartupState state =
+      corrupted_states.empty() ? IOSAccountProfileMappingStartupState::
+                                     kEachManagedAccountInSingleProfile
+                               : (corrupted_states.size() == 1
+                                      ? corrupted_states[0]
+                                      : IOSAccountProfileMappingStartupState::
+                                            kMultipleCorruptedManagedAccounts);
+
+  constexpr char kProfileMappingStartupStateHistogram[] =
+      "Signin.IOSAccountProfileMappingStartupState";
+  constexpr char kProfileMappingStartupStateHasDefaultHistogram[] =
+      "Signin.IOSAccountProfileMappingStartupState.HasDefaultProfile";
+  constexpr char kProfileMappingStartupStateNoDefaultHistogram[] =
+      "Signin.IOSAccountProfileMappingStartupState.NoDefaultProfile";
+
+  base::UmaHistogramEnumeration(kProfileMappingStartupStateHistogram, state);
+  base::UmaHistogramEnumeration(
+      storage->HasProfileWithName(kDefaultProfileName)
+          ? kProfileMappingStartupStateHasDefaultHistogram
+          : kProfileMappingStartupStateNoDefaultHistogram,
+      state);
 }
 
 }  // namespace
@@ -342,6 +519,7 @@ AccountProfileMapper::Assigner::Assigner(
   ProfileAttributesStorageIOS* storage = GetProfileAttributesStorage();
   profile_to_gaia_ids_ =
       GetMappingFromProfileAttributes(system_identity_manager_, storage);
+  RecordAccountProfileMappingStartupState(profile_to_gaia_ids_, storage);
   // Ensure the mapping is populated and up-to-date.
   UpdateIdentityProfileMappings();
 

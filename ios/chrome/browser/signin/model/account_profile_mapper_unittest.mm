@@ -10,8 +10,10 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "base/test/gmock_callback_support.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/test_file_util.h"
 #import "base/test/test_future.h"
+#import "base/time/time.h"
 #import "base/uuid.h"
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -1199,6 +1201,626 @@ TEST_F(AccountProfileMapperTest, StopsRetryingHostedDomainFetches) {
   EXPECT_NSEQ(@[], GetIdentitiesForProfile(kPersonalProfileName));
 
   system_identity_manager_->OverrideGetHostedDomainImplementation({});
+}
+
+// Tests that `Signin.IOSAccountProfileMappingStartupState` is not recorded when
+// there are no managed accounts on the device (signed out or only personal
+// accounts in the personal profile).
+TEST_F(AccountProfileMapperTest, StartupStateHistogram_NoManagedAccounts) {
+  constexpr char kStartupStateHistogram[] =
+      "Signin.IOSAccountProfileMappingStartupState";
+  constexpr char kStartupStateHasDefaultHistogram[] =
+      "Signin.IOSAccountProfileMappingStartupState.HasDefaultProfile";
+  constexpr char kStartupStateNoDefaultHistogram[] =
+      "Signin.IOSAccountProfileMappingStartupState.NoDefaultProfile";
+
+  // Signed out (no accounts).
+  {
+    base::HistogramTester histogram_tester;
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        system_identity_manager_, profile_manager_.get(),
+        GetApplicationContext()->GetLocalState());
+
+    histogram_tester.ExpectTotalCount(kStartupStateHistogram, 0);
+    histogram_tester.ExpectTotalCount(kStartupStateHasDefaultHistogram, 0);
+    histogram_tester.ExpectTotalCount(kStartupStateNoDefaultHistogram, 0);
+  }
+
+  // Only personal accounts attached to `kPersonalProfileName`.
+  account_profile_mapper_.reset();
+  system_identity_manager_->AddIdentity(gmail_identity1);
+  system_identity_manager_->AddIdentity(gmail_identity2);
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS& attr) {
+        attr.SetAttachedGaiaIds(
+            {gmail_identity1.gaiaId, gmail_identity2.gaiaId});
+      }));
+  {
+    base::HistogramTester histogram_tester;
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        system_identity_manager_, profile_manager_.get(),
+        GetApplicationContext()->GetLocalState());
+
+    histogram_tester.ExpectTotalCount(kStartupStateHistogram, 0);
+    histogram_tester.ExpectTotalCount(kStartupStateHasDefaultHistogram, 0);
+    histogram_tester.ExpectTotalCount(kStartupStateNoDefaultHistogram, 0);
+  }
+}
+
+// Tests that `Signin.IOSAccountProfileMappingStartupState` and its
+// `.NoDefaultProfile` / `.HasDefaultProfile` variants record
+// `kEachManagedAccountInSingleProfile` once per startup for healthy single or
+// multiple managed accounts.
+TEST_F(AccountProfileMapperTest, StartupStateHistogram_HealthyManagedAccounts) {
+  constexpr char kManagedProfile1[] = "11111111-1111-1111-1111-111111111111";
+  constexpr char kDefaultProfile[] = "Default";
+  constexpr char kStartupStateHistogram[] =
+      "Signin.IOSAccountProfileMappingStartupState";
+  constexpr char kStartupStateHasDefaultHistogram[] =
+      "Signin.IOSAccountProfileMappingStartupState.HasDefaultProfile";
+  constexpr char kStartupStateNoDefaultHistogram[] =
+      "Signin.IOSAccountProfileMappingStartupState.NoDefaultProfile";
+
+  system_identity_manager_->AddIdentity(gmail_identity1);
+  system_identity_manager_->AddIdentity(google_identity);
+  profile_manager_->CreateProfileAsync(kManagedProfile1, {}, {});
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS& attr) {
+        attr.SetAttachedGaiaIds({gmail_identity1.gaiaId});
+      }));
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kManagedProfile1, base::BindOnce([](ProfileAttributesIOS& attr) {
+        attr.SetAttachedGaiaIds({google_identity.gaiaId});
+      }));
+
+  {
+    base::HistogramTester histogram_tester;
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        system_identity_manager_, profile_manager_.get(),
+        GetApplicationContext()->GetLocalState());
+
+    histogram_tester.ExpectUniqueSample(kStartupStateHistogram,
+                                        IOSAccountProfileMappingStartupState::
+                                            kEachManagedAccountInSingleProfile,
+                                        1);
+    histogram_tester.ExpectUniqueSample(kStartupStateNoDefaultHistogram,
+                                        IOSAccountProfileMappingStartupState::
+                                            kEachManagedAccountInSingleProfile,
+                                        1);
+    histogram_tester.ExpectTotalCount(kStartupStateHasDefaultHistogram, 0);
+  }
+
+  // Add a second managed account in `"Default"` and verify `.HasDefaultProfile`
+  // still records a single sample per startup.
+  account_profile_mapper_.reset();
+  system_identity_manager_->AddIdentity(chromium_identity);
+  profile_manager_->CreateProfileAsync(kDefaultProfile, {}, {});
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kDefaultProfile, base::BindOnce([](ProfileAttributesIOS& attr) {
+        attr.SetAttachedGaiaIds({chromium_identity.gaiaId});
+      }));
+  {
+    base::HistogramTester histogram_tester;
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        system_identity_manager_, profile_manager_.get(),
+        GetApplicationContext()->GetLocalState());
+
+    histogram_tester.ExpectUniqueSample(kStartupStateHistogram,
+                                        IOSAccountProfileMappingStartupState::
+                                            kEachManagedAccountInSingleProfile,
+                                        1);
+    histogram_tester.ExpectUniqueSample(kStartupStateHasDefaultHistogram,
+                                        IOSAccountProfileMappingStartupState::
+                                            kEachManagedAccountInSingleProfile,
+                                        1);
+    histogram_tester.ExpectTotalCount(kStartupStateNoDefaultHistogram, 0);
+  }
+}
+
+// Tests that `Signin.IOSAccountProfileMappingStartupState` records Cohort A1
+// and A2 (`UUID_M < "Default"`, `UUID_M` uninitialized, `"Default"`
+// initialized, `UUID_P` uninitialized vs. initialized).
+TEST_F(AccountProfileMapperTest, StartupStateHistogram_CohortA1AndA2) {
+  constexpr char kManagedProfile[] = "11111111-1111-1111-1111-111111111111";
+  constexpr char kDefaultProfile[] = "Default";
+  constexpr char kStartupStateHistogram[] =
+      "Signin.IOSAccountProfileMappingStartupState";
+  constexpr char kStartupStateHasDefaultHistogram[] =
+      "Signin.IOSAccountProfileMappingStartupState.HasDefaultProfile";
+
+  system_identity_manager_->AddIdentity(gmail_identity1);
+  system_identity_manager_->AddIdentity(google_identity);
+  profile_manager_->CreateProfileAsync(kManagedProfile, {}, {});
+  profile_manager_->CreateProfileAsync(kDefaultProfile, {}, {});
+
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS& attr) {
+        attr.SetAttachedGaiaIds({gmail_identity1.gaiaId});
+      }));
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kManagedProfile, base::BindOnce([](ProfileAttributesIOS& attr) {
+        attr.SetAttachedGaiaIds({google_identity.gaiaId});
+      }));
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kDefaultProfile, base::BindOnce([](ProfileAttributesIOS& attr) {
+        attr.SetAttachedGaiaIds({google_identity.gaiaId});
+        attr.SetFullyInitialized();
+      }));
+
+  // A1: Personal profile is uninitialized.
+  {
+    base::HistogramTester histogram_tester;
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        system_identity_manager_, profile_manager_.get(),
+        GetApplicationContext()->GetLocalState());
+
+    histogram_tester.ExpectUniqueSample(
+        kStartupStateHistogram,
+        IOSAccountProfileMappingStartupState::
+            kCohortA1_ShadowedByUninitManaged_PersonalUninit,
+        1);
+    histogram_tester.ExpectUniqueSample(
+        kStartupStateHasDefaultHistogram,
+        IOSAccountProfileMappingStartupState::
+            kCohortA1_ShadowedByUninitManaged_PersonalUninit,
+        1);
+  }
+
+  // A2: Personal profile is initialized.
+  account_profile_mapper_.reset();
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS& attr) {
+        attr.SetFullyInitialized();
+      }));
+  {
+    base::HistogramTester histogram_tester;
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        system_identity_manager_, profile_manager_.get(),
+        GetApplicationContext()->GetLocalState());
+
+    histogram_tester.ExpectUniqueSample(
+        kStartupStateHistogram,
+        IOSAccountProfileMappingStartupState::
+            kCohortA2_ShadowedByUninitManaged_PersonalInit,
+        1);
+    histogram_tester.ExpectUniqueSample(
+        kStartupStateHasDefaultHistogram,
+        IOSAccountProfileMappingStartupState::
+            kCohortA2_ShadowedByUninitManaged_PersonalInit,
+        1);
+  }
+}
+
+// Tests that `Signin.IOSAccountProfileMappingStartupState` records Cohort A3a,
+// A3b, and `SecondMoreRecent` (`UUID_M < "Default"`, both initialized, varying
+// `LastActiveTime`).
+TEST_F(AccountProfileMapperTest, StartupStateHistogram_CohortA3) {
+  constexpr char kManagedProfile[] = "11111111-1111-1111-1111-111111111111";
+  constexpr char kDefaultProfile[] = "Default";
+  constexpr char kStartupStateHistogram[] =
+      "Signin.IOSAccountProfileMappingStartupState";
+  const base::Time t1 = base::Time::FromSecondsSinceUnixEpoch(100);
+  const base::Time t2 = base::Time::FromSecondsSinceUnixEpoch(200);
+  const base::Time t3 = base::Time::FromSecondsSinceUnixEpoch(300);
+
+  system_identity_manager_->AddIdentity(google_identity);
+  profile_manager_->CreateProfileAsync(kManagedProfile, {}, {});
+  profile_manager_->CreateProfileAsync(kDefaultProfile, {}, {});
+
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kManagedProfile, base::BindOnce(
+                           [](base::Time t, ProfileAttributesIOS& attr) {
+                             attr.SetAttachedGaiaIds({google_identity.gaiaId});
+                             attr.SetFullyInitialized();
+                             attr.SetLastActiveTime(t);
+                           },
+                           t2));
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kDefaultProfile, base::BindOnce(
+                           [](base::Time t, ProfileAttributesIOS& attr) {
+                             attr.SetAttachedGaiaIds({google_identity.gaiaId});
+                             attr.SetFullyInitialized();
+                             attr.SetLastActiveTime(t);
+                           },
+                           t1));
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kPersonalProfileName, base::BindOnce(
+                                [](base::Time t, ProfileAttributesIOS& attr) {
+                                  attr.SetFullyInitialized();
+                                  attr.SetLastActiveTime(t);
+                                },
+                                t1));
+
+  // A3a: `UUID_M` (`t2`) is more recently active than both `"Default"` (`t1`)
+  // and `UUID_P` (`t1`).
+  {
+    base::HistogramTester histogram_tester;
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        system_identity_manager_, profile_manager_.get(),
+        GetApplicationContext()->GetLocalState());
+
+    histogram_tester.ExpectUniqueSample(
+        kStartupStateHistogram,
+        IOSAccountProfileMappingStartupState::
+            kCohortA3a_TwoInitManaged_FirstMoreRecent,
+        1);
+  }
+
+  // A3b: `UUID_P` (`t3`) is more recently active than `UUID_M` (`t2`), which is
+  // more recently active than `"Default"` (`t1`).
+  account_profile_mapper_.reset();
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kPersonalProfileName, base::BindOnce(
+                                [](base::Time t, ProfileAttributesIOS& attr) {
+                                  attr.SetLastActiveTime(t);
+                                },
+                                t3));
+  {
+    base::HistogramTester histogram_tester;
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        system_identity_manager_, profile_manager_.get(),
+        GetApplicationContext()->GetLocalState());
+
+    histogram_tester.ExpectUniqueSample(
+        kStartupStateHistogram,
+        IOSAccountProfileMappingStartupState::
+            kCohortA3b_TwoInitManaged_PersonalMoreRecent,
+        1);
+  }
+
+  // A3c: `"Default"` (`t3`) is more recently active than `UUID_M` (`t2`).
+  account_profile_mapper_.reset();
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kDefaultProfile, base::BindOnce(
+                           [](base::Time t, ProfileAttributesIOS& attr) {
+                             attr.SetLastActiveTime(t);
+                           },
+                           t3));
+  {
+    base::HistogramTester histogram_tester;
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        system_identity_manager_, profile_manager_.get(),
+        GetApplicationContext()->GetLocalState());
+
+    histogram_tester.ExpectUniqueSample(
+        kStartupStateHistogram,
+        IOSAccountProfileMappingStartupState::
+            kCohortA3c_TwoInitManaged_SecondMoreRecent,
+        1);
+  }
+}
+
+// Tests that `Signin.IOSAccountProfileMappingStartupState` records Cohort B1
+// and B2 (`"Default" < UUID_M`, `UUID_M` uninitialized).
+TEST_F(AccountProfileMapperTest, StartupStateHistogram_CohortB1AndB2) {
+  constexpr char kDefaultProfile[] = "Default";
+  constexpr char kManagedProfile[] = "ffffffff-ffff-ffff-ffff-ffffffffffff";
+  constexpr char kStartupStateHistogram[] =
+      "Signin.IOSAccountProfileMappingStartupState";
+  const base::Time t1 = base::Time::FromSecondsSinceUnixEpoch(100);
+  const base::Time t2 = base::Time::FromSecondsSinceUnixEpoch(200);
+
+  system_identity_manager_->AddIdentity(google_identity);
+  profile_manager_->CreateProfileAsync(kDefaultProfile, {}, {});
+  profile_manager_->CreateProfileAsync(kManagedProfile, {}, {});
+
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kDefaultProfile, base::BindOnce(
+                           [](base::Time t, ProfileAttributesIOS& attr) {
+                             attr.SetAttachedGaiaIds({google_identity.gaiaId});
+                             attr.SetFullyInitialized();
+                             attr.SetLastActiveTime(t);
+                           },
+                           t1));
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kManagedProfile, base::BindOnce([](ProfileAttributesIOS& attr) {
+        attr.SetAttachedGaiaIds({google_identity.gaiaId});
+      }));
+
+  // B1: Personal profile is uninitialized.
+  {
+    base::HistogramTester histogram_tester;
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        system_identity_manager_, profile_manager_.get(),
+        GetApplicationContext()->GetLocalState());
+
+    histogram_tester.ExpectUniqueSample(
+        kStartupStateHistogram,
+        IOSAccountProfileMappingStartupState::
+            kCohortB1_ExtraUninitManaged_OrigMoreRecent,
+        1);
+  }
+
+  // B2: Personal profile is initialized and more recently active (`t2`) than
+  // `"Default"` (`t1`).
+  account_profile_mapper_.reset();
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kPersonalProfileName, base::BindOnce(
+                                [](base::Time t, ProfileAttributesIOS& attr) {
+                                  attr.SetFullyInitialized();
+                                  attr.SetLastActiveTime(t);
+                                },
+                                t2));
+  {
+    base::HistogramTester histogram_tester;
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        system_identity_manager_, profile_manager_.get(),
+        GetApplicationContext()->GetLocalState());
+
+    histogram_tester.ExpectUniqueSample(
+        kStartupStateHistogram,
+        IOSAccountProfileMappingStartupState::
+            kCohortB2_ExtraUninitManaged_PersonalMoreRecent,
+        1);
+  }
+}
+
+// Tests that `Signin.IOSAccountProfileMappingStartupState` records Cohort C1,
+// C2, and C3 (`Gaia_M` attached to both `"Default"` and `UUID_P`, varying
+// `UUID_P` initialization, primary account, and `LastActiveTime`, even when a
+// second healthy managed account is present).
+TEST_F(AccountProfileMapperTest, StartupStateHistogram_CohortC) {
+  constexpr char kDefaultProfile[] = "Default";
+  constexpr char kSecondManagedProfile[] =
+      "22222222-2222-2222-2222-222222222222";
+  constexpr char kPersonalProfile[] = "ffffffff-ffff-ffff-ffff-ffffffffffff";
+  constexpr char kStartupStateHistogram[] =
+      "Signin.IOSAccountProfileMappingStartupState";
+  const base::Time t1 = base::Time::FromSecondsSinceUnixEpoch(100);
+  const base::Time t2 = base::Time::FromSecondsSinceUnixEpoch(200);
+  const base::Time t3 = base::Time::FromSecondsSinceUnixEpoch(300);
+
+  system_identity_manager_->AddIdentity(google_identity);
+  system_identity_manager_->AddIdentity(chromium_identity);
+  profile_manager_->CreateProfileAsync(kDefaultProfile, {}, {});
+  profile_manager_->CreateProfileAsync(kSecondManagedProfile, {}, {});
+  profile_manager_->CreateProfileAsync(kPersonalProfile, {}, {});
+  profile_attributes_storage()->SetPersonalProfileName(kPersonalProfile);
+
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kDefaultProfile, base::BindOnce(
+                           [](base::Time t, ProfileAttributesIOS& attr) {
+                             attr.SetAttachedGaiaIds({google_identity.gaiaId});
+                             attr.SetFullyInitialized();
+                             attr.SetLastActiveTime(t);
+                           },
+                           t1));
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kSecondManagedProfile, base::BindOnce([](ProfileAttributesIOS& attr) {
+        attr.SetAttachedGaiaIds({chromium_identity.gaiaId});
+        attr.SetFullyInitialized();
+      }));
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kPersonalProfile, base::BindOnce([](ProfileAttributesIOS& attr) {
+        attr.SetAttachedGaiaIds({google_identity.gaiaId});
+      }));
+
+  // C1: Personal profile is uninitialized.
+  {
+    base::HistogramTester histogram_tester;
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        system_identity_manager_, profile_manager_.get(),
+        GetApplicationContext()->GetLocalState());
+
+    histogram_tester.ExpectUniqueSample(
+        kStartupStateHistogram,
+        IOSAccountProfileMappingStartupState::
+            kCohortC1_PersonalAndManaged_PersonalUninit,
+        1);
+  }
+
+  // C2: Personal profile is initialized, and `google_identity` is NOT the
+  // primary account of the personal profile.
+  account_profile_mapper_.reset();
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kPersonalProfile, base::BindOnce([](ProfileAttributesIOS& attr) {
+        attr.SetFullyInitialized();
+      }));
+  {
+    base::HistogramTester histogram_tester;
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        system_identity_manager_, profile_manager_.get(),
+        GetApplicationContext()->GetLocalState());
+
+    histogram_tester.ExpectUniqueSample(
+        kStartupStateHistogram,
+        IOSAccountProfileMappingStartupState::
+            kCohortC2_PersonalAndManaged_NotPrimaryInPersonal,
+        1);
+  }
+
+  // C3: Personal profile is initialized, `google_identity` IS the primary
+  // account of the personal profile, and personal (`t2`) is more recent than
+  // managed (`t1`).
+  account_profile_mapper_.reset();
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kPersonalProfile,
+      base::BindOnce(
+          [](base::Time t, ProfileAttributesIOS& attr) {
+            attr.SetAuthenticationInfo(
+                google_identity.gaiaId,
+                base::SysNSStringToUTF8(google_identity.userEmail));
+            attr.SetLastActiveTime(t);
+          },
+          t2));
+  {
+    base::HistogramTester histogram_tester;
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        system_identity_manager_, profile_manager_.get(),
+        GetApplicationContext()->GetLocalState());
+
+    histogram_tester.ExpectUniqueSample(
+        kStartupStateHistogram,
+        IOSAccountProfileMappingStartupState::
+            kCohortC3_PersonalAndManaged_PrimaryInPersonal,
+        1);
+  }
+
+  // C3 edge case (`ManagedMoreRecent`): Managed profile (`t3`) was active more
+  // recently than personal (`t2`).
+  account_profile_mapper_.reset();
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kDefaultProfile, base::BindOnce(
+                           [](base::Time t, ProfileAttributesIOS& attr) {
+                             attr.SetLastActiveTime(t);
+                           },
+                           t3));
+  {
+    base::HistogramTester histogram_tester;
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        system_identity_manager_, profile_manager_.get(),
+        GetApplicationContext()->GetLocalState());
+
+    histogram_tester.ExpectUniqueSample(
+        kStartupStateHistogram,
+        IOSAccountProfileMappingStartupState::
+            kCohortC3_PersonalAndManaged_PrimaryInPersonal_ManagedMoreRecent,
+        1);
+  }
+}
+
+// Tests that `Signin.IOSAccountProfileMappingStartupState` records unexpected
+// corruption buckets (`kCohortB_FirstIsDefaultUninit_SecondInit`,
+// `kCohortB_TwoInitManaged_FirstIsDefault`, `kTwoUninitManagedProfiles`,
+// `kThreeOrMoreProfiles`, and `kMultipleCorruptedManagedAccounts`).
+TEST_F(AccountProfileMapperTest, StartupStateHistogram_UnexpectedBuckets) {
+  constexpr char kDefaultProfile[] = "Default";
+  constexpr char kManagedProfile1[] = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee";
+  constexpr char kManagedProfile2[] = "ffffffff-ffff-ffff-ffff-ffffffffffff";
+  constexpr char kStartupStateHistogram[] =
+      "Signin.IOSAccountProfileMappingStartupState";
+
+  system_identity_manager_->AddIdentity(google_identity);
+  system_identity_manager_->AddIdentity(chromium_identity);
+  profile_manager_->CreateProfileAsync(kDefaultProfile, {}, {});
+  profile_manager_->CreateProfileAsync(kManagedProfile1, {}, {});
+  profile_manager_->CreateProfileAsync(kManagedProfile2, {}, {});
+
+  // 1. `"Default" < kManagedProfile1`: `"Default"` uninitialized,
+  // `kManagedProfile1` initialized
+  // (`kCohortB_FirstIsDefaultUninit_SecondInit`).
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kDefaultProfile, base::BindOnce([](ProfileAttributesIOS& attr) {
+        attr.SetAttachedGaiaIds({google_identity.gaiaId});
+      }));
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kManagedProfile1, base::BindOnce([](ProfileAttributesIOS& attr) {
+        attr.SetAttachedGaiaIds({google_identity.gaiaId});
+        attr.SetFullyInitialized();
+      }));
+  {
+    base::HistogramTester histogram_tester;
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        system_identity_manager_, profile_manager_.get(),
+        GetApplicationContext()->GetLocalState());
+
+    histogram_tester.ExpectUniqueSample(
+        kStartupStateHistogram,
+        IOSAccountProfileMappingStartupState::
+            kCohortB_FirstIsDefaultUninit_SecondInit,
+        1);
+  }
+
+  // 2. `"Default" < kManagedProfile1`: both `"Default"` and `kManagedProfile1`
+  // initialized (`kCohortB_TwoInitManaged_FirstIsDefault`).
+  account_profile_mapper_.reset();
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kDefaultProfile, base::BindOnce([](ProfileAttributesIOS& attr) {
+        attr.SetFullyInitialized();
+      }));
+  {
+    base::HistogramTester histogram_tester;
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        system_identity_manager_, profile_manager_.get(),
+        GetApplicationContext()->GetLocalState());
+
+    histogram_tester.ExpectUniqueSample(
+        kStartupStateHistogram,
+        IOSAccountProfileMappingStartupState::
+            kCohortB_TwoInitManaged_FirstIsDefault,
+        1);
+  }
+
+  // 3. `google_identity` attached to 2 uninitialized Managed profiles.
+  account_profile_mapper_.reset();
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kDefaultProfile, base::BindOnce([](ProfileAttributesIOS& attr) {
+        attr.SetAttachedGaiaIds({});
+      }));
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kManagedProfile1, base::BindOnce([](ProfileAttributesIOS& attr) {
+        attr.SetAttachedGaiaIds({google_identity.gaiaId});
+        // Reset initialized state by clearing and re-adding or using
+        // `kManagedProfile1` and `kManagedProfile2`:
+      }));
+  // Recreate `kManagedProfile1` uninitialized by detaching from it and using a
+  // fresh uninitialized profile `kManagedProfile3`.
+  constexpr char kManagedProfile3[] = "dddddddd-dddd-dddd-dddd-dddddddddddd";
+  profile_manager_->CreateProfileAsync(kManagedProfile3, {}, {});
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kManagedProfile1, base::BindOnce([](ProfileAttributesIOS& attr) {
+        attr.SetAttachedGaiaIds({});
+      }));
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kManagedProfile3, base::BindOnce([](ProfileAttributesIOS& attr) {
+        attr.SetAttachedGaiaIds({google_identity.gaiaId});
+      }));
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kManagedProfile2, base::BindOnce([](ProfileAttributesIOS& attr) {
+        attr.SetAttachedGaiaIds({google_identity.gaiaId});
+      }));
+  {
+    base::HistogramTester histogram_tester;
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        system_identity_manager_, profile_manager_.get(),
+        GetApplicationContext()->GetLocalState());
+
+    histogram_tester.ExpectUniqueSample(
+        kStartupStateHistogram,
+        IOSAccountProfileMappingStartupState::kTwoUninitManagedProfiles, 1);
+  }
+
+  // 4. `google_identity` attached to 3 Managed profiles.
+  account_profile_mapper_.reset();
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kManagedProfile1, base::BindOnce([](ProfileAttributesIOS& attr) {
+        attr.SetAttachedGaiaIds({google_identity.gaiaId});
+      }));
+  {
+    base::HistogramTester histogram_tester;
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        system_identity_manager_, profile_manager_.get(),
+        GetApplicationContext()->GetLocalState());
+
+    histogram_tester.ExpectUniqueSample(
+        kStartupStateHistogram,
+        IOSAccountProfileMappingStartupState::kThreeOrMoreProfiles, 1);
+  }
+
+  // 5. Both `google_identity` and `chromium_identity` attached to >= 2
+  // profiles.
+  account_profile_mapper_.reset();
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kManagedProfile1, base::BindOnce([](ProfileAttributesIOS& attr) {
+        attr.SetAttachedGaiaIds(
+            {google_identity.gaiaId, chromium_identity.gaiaId});
+      }));
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
+      kManagedProfile2, base::BindOnce([](ProfileAttributesIOS& attr) {
+        attr.SetAttachedGaiaIds(
+            {google_identity.gaiaId, chromium_identity.gaiaId});
+      }));
+  {
+    base::HistogramTester histogram_tester;
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        system_identity_manager_, profile_manager_.get(),
+        GetApplicationContext()->GetLocalState());
+
+    histogram_tester.ExpectUniqueSample(
+        kStartupStateHistogram,
+        IOSAccountProfileMappingStartupState::kMultipleCorruptedManagedAccounts,
+        1);
+  }
 }
 
 }  // namespace
