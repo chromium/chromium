@@ -9,7 +9,6 @@
 #include <unicode/uchar.h>
 #include <unicode/utf.h>
 
-#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -37,7 +36,7 @@ inline bool LocaleIdMatchesLang(const AtomicString& locale_id,
   if (locale_id_impl->length() == lang_length) {
     return true;
   }
-  const UChar maybe_delimiter = UNSAFE_TODO((*locale_id_impl)[lang_length]);
+  const UChar maybe_delimiter = locale_id[lang_length];
   return maybe_delimiter == '-' || maybe_delimiter == '_' ||
          maybe_delimiter == '@';
 }
