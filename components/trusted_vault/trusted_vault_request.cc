@@ -73,6 +73,7 @@ net::NetworkTrafficAnnotationTag CreateTrafficAnnotationTag() {
           "An OAuth2 access token, metadata associated with encryption keys: "
           "encrypted encryption keys, public counterpart of encryption keys."
         destination: GOOGLE_OWNED_SERVICE
+        api_service_name: "securitydomain-pa.googleapis.com"
       }
       policy {
         cookies_allowed: NO

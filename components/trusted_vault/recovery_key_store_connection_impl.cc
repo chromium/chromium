@@ -63,6 +63,7 @@ static constexpr net::NetworkTrafficAnnotationTag kCertXmlTrafficAnnotation =
           "signs in Chrome profile."
         data: "None"
         destination: GOOGLE_OWNED_SERVICE
+        api_service_name: "securitydomain-pa.googleapis.com"
         last_reviewed: "2025-06-05"
         user_data {
           type: NONE
