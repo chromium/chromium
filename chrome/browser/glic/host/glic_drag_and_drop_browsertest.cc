@@ -5,9 +5,12 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/run_until.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_drag_and_drop_test_base.h"
 #include "chrome/test/base/drag_and_drop_test_utils.h"
+#include "components/glic/glic_pref_names.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/browser_test.h"
@@ -76,6 +79,44 @@ IN_PROC_BROWSER_TEST_P(GlicDragAndDropBrowserTest,
   // first so its async Viz hit-test callback finishes and queues any
   // forwarded DragTarget* IPCs to the inner guest frame before
   // ContinueJsTest() evaluates on the guest frame.
+  if (!GetParam()) {
+    ASSERT_TRUE(
+        content::ExecJs(glic_host->webui_contents()->GetPrimaryMainFrame(), "",
+                        content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  }
+
+  ContinueJsTest();
+}
+
+// System-file drags are rejected by GlicView::CanDragEnter before the FRE is
+// complete, so the guest never sees any drag events.
+IN_PROC_BROWSER_TEST_P(GlicDragAndDropBrowserTest,
+                       testDragAndDropFileRejectedBeforeFre) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
+                       OpenGlicForActiveTab());
+  Host* glic_host = &glic_instance->host();
+  PrepareGuestForDrag(*glic_host);
+  gfx::Point host_relative_point = GetGuestCenterInHost(*glic_host);
+
+  // Reset the FRE after the panel is open, as a pre-consent (e.g. action-first
+  // FRE) user would have it.
+  GlicKeyedService::Get(GetProfile())
+      ->enabling()
+      .SetCompletedFre(prefs::FreStatus::kNotStarted);
+  ASSERT_FALSE(GlicEnabling::HasConsentedForProfile(GetProfile()));
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  base::FilePath test_file = CreateTestFile(
+      temp_dir, "test.txt", "This is some test content for file drop.");
+
+  drag_and_drop_test_utils::DragAndDropSimulator simulator(
+      glic_host->webui_contents());
+  ASSERT_TRUE(simulator.SimulateDragEnter(host_relative_point, test_file));
+  ASSERT_TRUE(simulator.SimulateDrop(host_relative_point));
+
+  // See testDragAndDropTextRejected for why the Webview variant flushes the
+  // outer WebUI frame first.
   if (!GetParam()) {
     ASSERT_TRUE(
         content::ExecJs(glic_host->webui_contents()->GetPrimaryMainFrame(), "",

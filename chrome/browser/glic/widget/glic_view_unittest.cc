@@ -22,6 +22,8 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/glic/glic_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/file_select_listener.h"
@@ -241,10 +243,18 @@ class GlicViewNoWebviewTest : public ChromeViewsTestBase {
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
+    SetFreCompleted(true);
     glic_view_ =
         std::make_unique<GlicView>(profile(), gfx::Size(800, 600), nullptr);
     pwc_ = CreatePwc();
     glic_view_->SetWebContents(pwc_->web_contents());
+  }
+
+  void SetFreCompleted(bool completed) {
+    profile()->GetPrefs()->SetInteger(
+        prefs::kGlicCompletedFre,
+        static_cast<int>(completed ? prefs::FreStatus::kCompleted
+                                   : prefs::FreStatus::kNotStarted));
   }
 
   void TearDown() override {
@@ -470,6 +480,21 @@ TEST_F(GlicViewNoWebviewTest, CanDragEnter_ForwardsFromPwc) {
   content::DropData empty_drop_data;
   EXPECT_FALSE(pwc()->web_contents()->GetDelegate()->CanDragEnter(
       pwc()->web_contents(), empty_drop_data, ops));
+}
+
+TEST_F(GlicViewNoWebviewTest, CanDragEnter_RejectedBeforeFreCompleted) {
+  content::DropData drop_data;
+  drop_data.filenames.emplace_back(
+      base::FilePath(FILE_PATH_LITERAL("test.txt")),
+      base::FilePath(FILE_PATH_LITERAL("test.txt")));
+  blink::DragOperationsMask ops = blink::kDragOperationCopy;
+
+  SetFreCompleted(false);
+  EXPECT_FALSE(
+      glic_view()->CanDragEnter(pwc()->web_contents(), drop_data, ops));
+
+  SetFreCompleted(true);
+  EXPECT_TRUE(glic_view()->CanDragEnter(pwc()->web_contents(), drop_data, ops));
 }
 
 TEST_F(GlicViewNoWebviewTest, DraggableRegionsChanged_ForwardsFromPwc) {

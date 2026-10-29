@@ -9,6 +9,7 @@
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/widget/web_contents_delegate_util.h"
@@ -95,6 +96,14 @@ void GlicView::RunFileChooser(
 bool GlicView::CanDragEnter(content::WebContents* source,
                             const content::DropData& data,
                             blink::DragOperationsMask operations_allowed) {
+  // File upload is unavailable until the user completes the FRE; mirror the
+  // disabled "+" upload menu by rejecting drags too.
+  if (web_contents() &&
+      !GlicEnabling::HasConsentedForProfile(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext()))) {
+    return false;
+  }
+
   if (!base::FeatureList::IsEnabled(features::kGlicDragAndDropFileUpload)) {
     return false;
   }

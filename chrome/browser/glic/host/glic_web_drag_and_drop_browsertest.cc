@@ -23,6 +23,8 @@
 #include "chrome/browser/glic/host/glic_drag_and_drop_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/metrics/glic_invoke_metrics.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
@@ -32,6 +34,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/drag_and_drop_test_utils.h"
+#include "components/glic/glic_pref_names.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -376,6 +379,42 @@ IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,
                "Glic.InvokeResult2.WebDragDrop",
                static_cast<int>(GlicInvokeResult::kSuccess)) == 1;
   }));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,
+                       BlockDragBeforeFreCompleted) {
+  base::HistogramTester histogram_tester;
+  const GURL url = embedded_test_server()->GetURL(
+      "a.com", "/drag_and_drop/image_source.html");
+  tabs::TabInterface* active_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(content::NavigateToURL(active_tab->GetContents(), url));
+
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
+                       OpenGlicForActiveTab());
+  content::WebContents* glic_webui = glic_instance->host().webui_contents();
+  ASSERT_TRUE(glic_webui);
+
+  // Reset the FRE after the panel is open, as a pre-consent (e.g. action-first
+  // FRE) user would have it.
+  GlicKeyedService::Get(GetProfile())
+      ->enabling()
+      .SetCompletedFre(prefs::FreStatus::kNotStarted);
+  ASSERT_FALSE(GlicEnabling::HasConsentedForProfile(GetProfile()));
+
+  content::DropData drop_data;
+  drop_data.file_contents = {1, 2, 3, 4};
+  drop_data.url_infos.emplace_back(
+      embedded_test_server()->GetURL("a.com",
+                                     "/drag_and_drop/cors-allowed.jpg"),
+      u"cors-allowed.jpg");
+  content::SimulateDragStartForTesting(
+      active_tab->GetContents()->GetPrimaryMainFrame(), &drop_data);
+  glic::StartDragAndDropInvoke(glic_webui, drop_data);
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.DragAndDrop.ValidationResult2",
+      GlicDragAndDropValidationResult::kFreNotCompleted, 1);
+  histogram_tester.ExpectTotalCount("Glic.InvokeResult2.WebDragDrop", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,

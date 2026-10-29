@@ -271,6 +271,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Page context ineligible"/>
   <int value="11" label="Unknown drag source"/>
   <int value="12" label="Source frame destroyed"/>
+  <int value="13" label="FRE not completed"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:GlicDragAndDropValidationResult) -->

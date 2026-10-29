@@ -56,6 +56,20 @@ class GlicDragAndDropBrowserTest extends ApiTestFixtureBase {
 
     assertFalse(dragEventReceived);
   }
+
+  async testDragAndDropFileRejectedBeforeFre() {
+    let dragEventReceived = false;
+    const onDragEvent = () => {
+      dragEventReceived = true;
+    };
+    window.addEventListener('dragenter', onDragEvent);
+    window.addEventListener('dragover', onDragEvent);
+    window.addEventListener('drop', onDragEvent);
+
+    await this.advanceToNextStep();
+
+    assertFalse(dragEventReceived);
+  }
 }
 
 testMain([GlicDragAndDropBrowserTest]);

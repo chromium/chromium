@@ -306,6 +306,16 @@ void StartDragAndDropInvoke(content::WebContents* target_web_contents,
   reporter.RecordEnumeration("DragAndDrop.ContentType",
                              GetDragAndDropContentType(drop_data));
 
+  // File upload is unavailable until the user completes the FRE; mirror the
+  // disabled "+" upload menu by rejecting drags too.
+  if (!GlicEnabling::HasConsentedForProfile(Profile::FromBrowserContext(
+          target_web_contents->GetBrowserContext()))) {
+    reporter.RecordEnumeration(
+        "DragAndDrop.ValidationResult2",
+        GlicDragAndDropValidationResult::kFreNotCompleted);
+    return;
+  }
+
   if (!base::FeatureList::IsEnabled(features::kGlicWebDragAndDropFileUpload)) {
     reporter.RecordEnumeration(
         "DragAndDrop.ValidationResult2",

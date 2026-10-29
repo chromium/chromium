@@ -230,6 +230,13 @@ class GlicSidePanelUiAndroidTest : public testing::Test {
   ~GlicSidePanelUiAndroidTest() override = default;
 
   TestingProfile* profile() { return &profile_; }
+
+  void SetFreCompleted(bool completed) {
+    profile()->GetPrefs()->SetInteger(
+        prefs::kGlicCompletedFre,
+        static_cast<int>(completed ? prefs::FreStatus::kCompleted
+                                   : prefs::FreStatus::kNotStarted));
+  }
   FakeHost& host() { return host_; }
   FakeGlicUiEmbedderDelegate& delegate() { return delegate_; }
   GlicInstanceMetrics& instance_metrics() { return instance_metrics_; }
@@ -282,6 +289,7 @@ TEST_F(GlicSidePanelUiAndroidTest, CanDragEnter) {
   feature_list.InitWithFeatures({features::kGlicDragAndDropFileUpload,
                                  features::kGlicDragAndDropFileUploadAndroid},
                                 {});
+  SetFreCompleted(true);
 
   GlicSidePanelUi side_panel_ui(profile(), base::WeakPtr<tabs::TabInterface>(),
                                 delegate(), instance_metrics());
@@ -319,6 +327,28 @@ TEST_F(GlicSidePanelUiAndroidTest, CanDragEnter) {
   drop_data.text.reset();
   drop_data.html = u"<b>test html</b>";
   EXPECT_FALSE(side_panel_ui.CanDragEnter(nullptr, drop_data, ops));
+}
+
+TEST_F(GlicSidePanelUiAndroidTest, CanDragEnter_RejectedBeforeFreCompleted) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kGlicDragAndDropFileUpload,
+                                 features::kGlicDragAndDropFileUploadAndroid},
+                                {});
+
+  GlicSidePanelUi side_panel_ui(profile(), base::WeakPtr<tabs::TabInterface>(),
+                                delegate(), instance_metrics());
+
+  content::DropData drop_data;
+  drop_data.filenames.emplace_back(
+      base::FilePath(FILE_PATH_LITERAL("test.txt")),
+      base::FilePath(FILE_PATH_LITERAL("test.txt")));
+  blink::DragOperationsMask ops = blink::kDragOperationCopy;
+
+  SetFreCompleted(false);
+  EXPECT_FALSE(side_panel_ui.CanDragEnter(nullptr, drop_data, ops));
+
+  SetFreCompleted(true);
+  EXPECT_TRUE(side_panel_ui.CanDragEnter(nullptr, drop_data, ops));
 }
 
 TEST_F(GlicSidePanelUiAndroidTest, CanDragEnter_FeatureDisabled) {

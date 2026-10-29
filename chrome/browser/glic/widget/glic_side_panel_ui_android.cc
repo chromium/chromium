@@ -21,6 +21,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_android.h"
@@ -321,6 +322,11 @@ bool GlicSidePanelUi::CanDragEnter(
   if (!base::FeatureList::IsEnabled(features::kGlicDragAndDropFileUpload) ||
       !base::FeatureList::IsEnabled(
           features::kGlicDragAndDropFileUploadAndroid)) {
+    return false;
+  }
+  // File upload is unavailable until the user completes the FRE; mirror the
+  // disabled "+" upload menu by rejecting drags too.
+  if (!GlicEnabling::HasConsentedForProfile(profile_)) {
     return false;
   }
   return !data.filenames.empty() || !data.file_system_files.empty();

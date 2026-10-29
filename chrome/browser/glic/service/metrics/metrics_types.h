@@ -267,7 +267,8 @@ enum class GlicDragAndDropValidationResult {
   kPageContextIneligible = 10,
   kUnknownDragSource = 11,
   kSourceFrameDestroyed = 12,
-  kMaxValue = kSourceFrameDestroyed,
+  kFreNotCompleted = 13,
+  kMaxValue = kFreNotCompleted,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicDragAndDropValidationResult)
 
