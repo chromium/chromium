@@ -11,6 +11,7 @@
 #include "base/callback_list.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "url/gurl.h"
 
 namespace base {
 class Uuid;
@@ -68,10 +69,16 @@ class ContextualTasksPanelThreadObserver
 
   // Moves the panel from `old_task_id` to `new_task_id`, along with the tabs
   // associated with `old_task_id`.
-  void ChangeTask(const base::Uuid& old_task_id, const base::Uuid& new_task_id);
+  void ChangeTask(const base::Uuid& old_task_id,
+                  const base::Uuid& new_task_id,
+                  const GURL& old_thread_url);
 
   // The AI Mode thread (`mtid`) currently in the panel.
   std::optional<std::string> thread_id_;
+
+  // The last committed URL of `thread_id_`, saved for other tabs associated
+  // with the task when the panel moves to another task.
+  GURL last_thread_url_;
 
   // Whether the panel's task has had a turn (see `HasTurn()`), i.e. isn't in
   // its initial zero state.

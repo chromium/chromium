@@ -3710,10 +3710,12 @@ void ContextualTasksUiService::StartTaskUiInSidePanelImpl(
   // initial pull request via GetUrlForTask.
   if (helper->task_id().has_value() &&
       IsTaskWaitingForUrl(helper->task_id().value())) {
-    if (IsContextualTasksSidePanelRearchitectureEnabled()) {
-      LoadUrlInSidePanel(panel_contents, url);
-    }
     OnInitialThreadUrlAvailable(helper->task_id().value(), url);
+    if (IsContextualTasksSidePanelRearchitectureEnabled()) {
+      LoadUrlInSidePanel(
+          panel_contents,
+          GetInitialUrlForTask(helper->task_id().value()).value_or(url));
+    }
     return;
   }
 
