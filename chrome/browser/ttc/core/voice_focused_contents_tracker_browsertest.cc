@@ -95,6 +95,7 @@ IN_PROC_BROWSER_TEST_F(VoiceFocusedContentsTrackerBrowserTest,
                        InitialActiveTab) {
   std::unique_ptr<VoiceFocusedContentsTracker> tracker = CreateTracker();
   EXPECT_EQ(tracker->GetActiveWebContents(), ActiveContents(browser()));
+  EXPECT_EQ(tracker->GetActiveBrowserWindow(), browser());
 }
 
 // Switching tabs within the bound window updates the active tab.
@@ -148,6 +149,7 @@ IN_PROC_BROWSER_TEST_F(VoiceFocusedContentsTrackerBrowserTest,
   content::WebContents* second_window_tab1 = ActiveContents(second_browser);
   ASSERT_NE(first_window_tab, second_window_tab1);
   EXPECT_EQ(tracker->GetActiveWebContents(), second_window_tab1);
+  EXPECT_EQ(tracker->GetActiveBrowserWindow(), second_browser);
   EXPECT_THAT(observer.TakeChanges(),
               ElementsAre(first_window_tab, second_window_tab1));
 
@@ -159,6 +161,7 @@ IN_PROC_BROWSER_TEST_F(VoiceFocusedContentsTrackerBrowserTest,
 
   ActivateBrowser(browser());
   EXPECT_EQ(tracker->GetActiveWebContents(), first_window_tab);
+  EXPECT_EQ(tracker->GetActiveBrowserWindow(), browser());
   EXPECT_THAT(observer.TakeChanges(), ElementsAre(first_window_tab));
 }
 
@@ -214,10 +217,12 @@ IN_PROC_BROWSER_TEST_F(VoiceFocusedContentsTrackerBrowserTest,
 
   CloseBrowserSynchronously(second_browser);
   EXPECT_EQ(tracker->GetActiveWebContents(), first_tab);
+  EXPECT_EQ(tracker->GetActiveBrowserWindow(), first_browser);
   EXPECT_THAT(observer.TakeChanges(), ElementsAre(first_tab));
 
   CloseBrowserSynchronously(first_browser);
   EXPECT_EQ(tracker->GetActiveWebContents(), nullptr);
+  EXPECT_EQ(tracker->GetActiveBrowserWindow(), nullptr);
   EXPECT_THAT(observer.TakeChanges(), ElementsAre(nullptr));
 }
 

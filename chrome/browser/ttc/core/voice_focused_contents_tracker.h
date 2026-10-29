@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
+class BrowserWindowInterface;
 class Profile;
 
 namespace content {
@@ -59,6 +60,11 @@ class VoiceFocusedContentsTracker {
   // Returns the contents of the active tab across the profile's browser
   // windows, or null if there is no active tab.
   virtual content::WebContents* GetActiveWebContents() const = 0;
+
+  // Returns the browser window the tracker is bound to, i.e. the one whose
+  // active tab GetActiveWebContents() reports, or null if the profile has no
+  // browser window.
+  virtual BrowserWindowInterface* GetActiveBrowserWindow() = 0;
 
  protected:
   VoiceFocusedContentsTracker();

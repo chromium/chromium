@@ -43,6 +43,11 @@ content::WebContents* VoiceFocusedContentsTrackerDesktop::GetActiveWebContents()
   return active_tab ? active_tab->GetContents() : nullptr;
 }
 
+BrowserWindowInterface*
+VoiceFocusedContentsTrackerDesktop::GetActiveBrowserWindow() {
+  return bound_browser_;
+}
+
 void VoiceFocusedContentsTrackerDesktop::OnBrowserActivated(
     BrowserWindowInterface* browser) {
   BindToBrowser(browser);

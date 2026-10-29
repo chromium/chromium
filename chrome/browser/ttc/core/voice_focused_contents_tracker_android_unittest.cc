@@ -270,6 +270,7 @@ class FakeWindow {
 
   void Add(FakeTabModel& tab_model) { tab_model.SetWindowId(session_id_); }
   void Activate() { browsers_->SimulateBrowserActivated(&browser_); }
+  BrowserWindowInterface* browser() { return &browser_; }
 
  private:
   const raw_ref<FakeGlobalBrowserCollection> browsers_;
@@ -300,6 +301,7 @@ TEST_F(VoiceFocusedContentsTrackerAndroidTest, ActiveTabAtCreation) {
   EXPECT_EQ(
       tabs::TabInterface::MaybeGetFromContents(tracker.GetActiveWebContents()),
       tab);
+  EXPECT_EQ(tracker.GetActiveBrowserWindow(), window_.browser());
 }
 
 // When no TabModel of the profile is active, GetActiveWebContents() is null.
@@ -431,7 +433,9 @@ TEST_F(VoiceFocusedContentsTrackerAndroidTest, FollowsWindowActivation) {
   model_b.SetIsActiveModel(true);
   TabAndroid* tab_b = model_b.AddWebContentsTab(&profile_);
   EXPECT_EQ(tracker.GetActiveWebContents(), tab_a->web_contents());
+  EXPECT_EQ(tracker.GetActiveBrowserWindow(), window_.browser());
   window_b.Activate();
+  EXPECT_EQ(tracker.GetActiveBrowserWindow(), window_b.browser());
   EXPECT_THAT(observer.TakeChanges(),
               ::testing::ElementsAre(tab_b->web_contents()));
 
@@ -440,6 +444,7 @@ TEST_F(VoiceFocusedContentsTrackerAndroidTest, FollowsWindowActivation) {
   window_.Activate();
   model_b.AddWebContentsTab(&profile_, /*select=*/true);
   EXPECT_EQ(tracker.GetActiveWebContents(), tab_a->web_contents());
+  EXPECT_EQ(tracker.GetActiveBrowserWindow(), window_.browser());
   EXPECT_THAT(observer.TakeChanges(),
               ::testing::ElementsAre(tab_a->web_contents()));
 
@@ -466,8 +471,10 @@ TEST_F(VoiceFocusedContentsTrackerAndroidTest,
   window_b->Activate();
 
   VoiceFocusedContentsTrackerAndroid tracker(profile_, &browsers_);
+  ASSERT_EQ(tracker.GetActiveBrowserWindow(), window_b->browser());
   window_b.reset();
   EXPECT_EQ(tracker.GetActiveWebContents(), tab_a->web_contents());
+  EXPECT_EQ(tracker.GetActiveBrowserWindow(), window_.browser());
 }
 
 // TabModels belonging to a different profile or an incognito/OTR profile are

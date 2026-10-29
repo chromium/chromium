@@ -28,6 +28,7 @@ class VoiceFocusedContentsTrackerDesktop : public VoiceFocusedContentsTracker,
 
   // VoiceFocusedContentsTracker:
   content::WebContents* GetActiveWebContents() const override;
+  BrowserWindowInterface* GetActiveBrowserWindow() override;
 
   // BrowserCollectionObserver:
   void OnBrowserActivated(BrowserWindowInterface* browser) override;

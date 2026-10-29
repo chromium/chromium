@@ -43,6 +43,7 @@ class VoiceFocusedContentsTrackerAndroid : public VoiceFocusedContentsTracker,
 
   // VoiceFocusedContentsTracker:
   content::WebContents* GetActiveWebContents() const override;
+  BrowserWindowInterface* GetActiveBrowserWindow() override;
 
   // BrowserCollectionObserver:
   void OnBrowserClosed(BrowserWindowInterface* browser) override;
@@ -72,6 +73,7 @@ class VoiceFocusedContentsTrackerAndroid : public VoiceFocusedContentsTracker,
   void OnActiveTabWillDetach(tabs::TabInterface* tab,
                              tabs::TabInterface::DetachReason reason);
   void ResetActiveTabObservation();
+  // Returns the active TabModel of GetActiveBrowserWindow(), or null.
   TabModel* FindFocusedTabModel();
 
   const raw_ref<Profile> profile_;

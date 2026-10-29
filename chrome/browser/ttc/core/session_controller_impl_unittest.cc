@@ -16,6 +16,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "chrome/browser/ttc/core/buildflags.h"
@@ -37,6 +38,12 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/test/native_unit_test_support_jni/BrowserWindowInterfaceIteratorAndroidNativeUnitTestSupport_jni.h"
+#endif
 
 namespace ttc {
 
@@ -389,5 +396,59 @@ TEST_F(TtcSessionControllerImplViewTest, FinishedSessionStopsUpdatingView) {
   EXPECT_EQ(record_.user_transcript, "Hello");
   EXPECT_EQ(record_.model_transcript, "");
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Creates Android browser windows that register with GlobalBrowserCollection
+// the way ChromeAndroidTaskTracker does in production, and destroys them all on
+// destruction. Windows are identified by the Android task id they live in.
+class ScopedAndroidBrowserWindows {
+ public:
+  ScopedAndroidBrowserWindows() = default;
+  ScopedAndroidBrowserWindows(const ScopedAndroidBrowserWindows&) = delete;
+  ScopedAndroidBrowserWindows& operator=(const ScopedAndroidBrowserWindows&) =
+      delete;
+  ~ScopedAndroidBrowserWindows() {
+    Java_BrowserWindowInterfaceIteratorAndroidNativeUnitTestSupport_destroyAllBrowserWindows(
+        base::android::AttachCurrentThread());
+  }
+
+  BrowserWindowInterface* Create(Profile& profile, int task_id) {
+    return reinterpret_cast<BrowserWindowInterface*>(
+        Java_BrowserWindowInterfaceIteratorAndroidNativeUnitTestSupport_createBrowserWindow(
+            base::android::AttachCurrentThread(), task_id,
+            profile.GetJavaObject()));
+  }
+
+  void Destroy(int task_id) {
+    Java_BrowserWindowInterfaceIteratorAndroidNativeUnitTestSupport_destroyBrowserWindow(
+        base::android::AttachCurrentThread(), task_id);
+  }
+};
+
+TEST_F(TtcSessionControllerImplTest, GetBrowserWindowInterfaceNoWindows) {
+  SessionControllerImpl controller(*service_);
+  EXPECT_EQ(controller.GetBrowserWindowInterface(), nullptr);
+}
+
+TEST_F(TtcSessionControllerImplTest,
+       GetBrowserWindowInterfaceFollowsProfileWindows) {
+  ScopedAndroidBrowserWindows windows;
+
+  // A window that already exists when the session starts.
+  BrowserWindowInterface* window1 = windows.Create(profile_, /*task_id=*/1);
+  ASSERT_TRUE(window1);
+  SessionControllerImpl controller(*service_);
+  EXPECT_EQ(controller.GetBrowserWindowInterface(), window1);
+
+  // A newly created window is not the last active one.
+  BrowserWindowInterface* window2 = windows.Create(profile_, /*task_id=*/2);
+  ASSERT_TRUE(window2);
+  EXPECT_EQ(controller.GetBrowserWindowInterface(), window1);
+
+  // Closing the current window falls back to the remaining one.
+  windows.Destroy(/*task_id=*/1);
+  EXPECT_EQ(controller.GetBrowserWindowInterface(), window2);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace ttc

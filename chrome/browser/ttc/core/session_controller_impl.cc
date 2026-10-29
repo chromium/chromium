@@ -33,10 +33,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
-#endif
-
 namespace ttc {
 
 namespace {
@@ -177,13 +173,7 @@ void SessionControllerImpl::UserAudioLevelUpdate(float audio_level) {
 }
 
 BrowserWindowInterface* SessionControllerImpl::GetBrowserWindowInterface() {
-#if BUILDFLAG(IS_ANDROID)
-  return nullptr;
-#else
-  ProfileBrowserCollection* browsers =
-      ProfileBrowserCollection::GetForProfile(service_->profile());
-  return browsers ? browsers->GetLastActiveBrowser() : nullptr;
-#endif
+  return voice_focused_contents_tracker_->GetActiveBrowserWindow();
 }
 
 void SessionControllerImpl::OnSessionInitialized() {

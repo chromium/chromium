@@ -45,6 +45,14 @@ content::WebContents* VoiceFocusedContentsTrackerAndroid::GetActiveWebContents()
   return bound_tab_model_ ? bound_tab_model_->GetActiveWebContents() : nullptr;
 }
 
+BrowserWindowInterface*
+VoiceFocusedContentsTrackerAndroid::GetActiveBrowserWindow() {
+  return browser_collection_observation_.IsObserving()
+             ? browser_collection_observation_.GetSource()
+                   ->GetLastActiveBrowser()
+             : nullptr;
+}
+
 void VoiceFocusedContentsTrackerAndroid::OnBrowserClosed(
     BrowserWindowInterface* browser) {
   UpdateBoundTabModel();
@@ -193,10 +201,7 @@ void VoiceFocusedContentsTrackerAndroid::ResetActiveTabObservation() {
 }
 
 TabModel* VoiceFocusedContentsTrackerAndroid::FindFocusedTabModel() {
-  BrowserWindowInterface* browser =
-      browser_collection_observation_.IsObserving()
-          ? browser_collection_observation_.GetSource()->GetLastActiveBrowser()
-          : nullptr;
+  BrowserWindowInterface* browser = GetActiveBrowserWindow();
   if (!browser) {
     return nullptr;
   }
