@@ -115,8 +115,6 @@ suite('<settings-nearby-share-subpage>', () => {
 
   teardown(() => {
     subpage.remove();
-    // TODO(b/350547931): Permanently enable QSv2, remove flag and need to
-    // override it.
     accountManagerBrowserProxy.reset();
     Router.getInstance().resetRouteForTesting();
   });

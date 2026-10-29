@@ -248,9 +248,6 @@ suite('<settings-multidevice-page>', () => {
       isNearbyShareSupported: true,
       isChromeosScreenLockEnabled: false,
       isPhoneScreenLockEnabled: false,
-      // TODO(b/350547931): Permanently enable QSv2, remove flag and need to
-      // override it.
-      isQuickShareV2Enabled: false,
     });
     await init();
   });
@@ -325,19 +322,6 @@ suite('<settings-multidevice-page>', () => {
               'Visible to all contacts', nearbyShareSecondary.innerText.trim());
         });
 
-    test(
-        'nearby share visible to all description shows when it is only visible to selected contacts',
-        async () => {
-          setNearbyShareEnabled(true);
-          fakeSettings.setVisibility(Visibility.kSelectedContacts);
-          await flushTasks();
-
-          const nearbyShareSecondary = getNearbyShareSecondary();
-          assertTrue(!!nearbyShareSecondary);
-          assertEquals(
-              'Visible to some contacts',
-              nearbyShareSecondary.innerText.trim());
-        });
 
     test(
         'nearby share visible to your devices shows when it is only visible to your devices',
@@ -396,10 +380,10 @@ suite('<settings-multidevice-page>', () => {
 
           setNearbyShareEnabled(true);
           flush();
-          fakeSettings.setVisibility(Visibility.kSelectedContacts);
+          fakeSettings.setVisibility(Visibility.kAllContacts);
           await flushTasks();
           assertEquals(
-              'Visible to some contacts',
+              'Visible to all contacts',
               nearbyShareSecondaryEnabled.innerText.trim());
         });
   });

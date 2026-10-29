@@ -281,9 +281,6 @@ function getOnboardingCompleteFlowEventOnVisibilityPage(
   switch (visibility) {
     case Visibility.kAllContacts:
       return NearbyShareOnboardingFlowEvent.ALL_CONTACTS_SELECTED_AND_CONFIRMED;
-    case Visibility.kSelectedContacts:
-      return NearbyShareOnboardingFlowEvent
-          .SOME_CONTACTS_SELECTED_AND_CONFIRMED;
     case Visibility.kYourDevices:
       return NearbyShareOnboardingFlowEvent.YOUR_DEVICES_SELECTED_AND_CONFIRMED;
     case Visibility.kNoOne:

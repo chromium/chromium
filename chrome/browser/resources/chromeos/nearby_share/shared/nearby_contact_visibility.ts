@@ -53,7 +53,6 @@ export interface NearbyVisibilityContact {
   id: string;
   name: string;
   description: string;
-  checked: boolean;
 }
 
 const NearbyContactVisibilityElementBase = I18nMixin(PolymerElement);
@@ -129,27 +128,9 @@ export class NearbyContactVisibilityElement extends
         value: false,
       },
 
-      /**
-       * True if the user toggles All Contacts visibility.
-       */
-      isAllContactsToggledOn_: {
-        type: Boolean,
-        value() {
-          return true;
-        },
-      },
-
       profileEmail: {
         type: String,
         value: '',
-      },
-
-      /**
-       * Determines whether the QuickShareV2 flag is enabled.
-       */
-      isQuickShareV2Enabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('isQuickShareV2Enabled'),
       },
     };
   }
@@ -175,8 +156,6 @@ export class NearbyContactVisibilityElement extends
       null;
   private downloadTimeoutId_: number|null;
   declare private isDarkModeActive_: boolean;
-  declare private isAllContactsToggledOn_: boolean;
-  declare private isQuickShareV2Enabled_: boolean;
   declare private numUnreachable_: number;
   declare private numUnreachableMessage_: string;
 
@@ -231,14 +210,7 @@ export class NearbyContactVisibilityElement extends
       |null {
     switch (visibilityString) {
       case 'contacts':
-        if (this.isQuickShareV2Enabled_) {
-          return Visibility.kAllContacts;
-        }
-
-        if (this.isAllContactsToggledOn_) {
-          return Visibility.kAllContacts;
-        }
-        return Visibility.kSelectedContacts;
+        return Visibility.kAllContacts;
       case 'yourDevices':
         return Visibility.kYourDevices;
       case 'none':
@@ -254,8 +226,6 @@ export class NearbyContactVisibilityElement extends
   private visibilityValueToString(visibility: Visibility|null): string|null {
     switch (visibility) {
       case Visibility.kAllContacts:
-        return 'contacts';
-      case Visibility.kSelectedContacts:
         return 'contacts';
       case Visibility.kYourDevices:
         return 'yourDevices';
@@ -281,8 +251,8 @@ export class NearbyContactVisibilityElement extends
         setTimeout(this.onContactsDownloadFailed.bind(this), 30 * 1000);
   }
 
-  private toNearbyVisibilityContact_(
-      allowed: boolean, contactRecord: ContactRecord): NearbyVisibilityContact {
+  private toNearbyVisibilityContact_(contactRecord: ContactRecord):
+      NearbyVisibilityContact {
     // TODO (vecore): Support multiple identifiers with template string.
     // We should always have at least 1 identifier.
     assert(contactRecord.identifiers.length > 0);
@@ -294,44 +264,34 @@ export class NearbyContactVisibilityElement extends
       id: contactRecord.id,
       description: description,
       name: contactRecord.personName,
-      checked: allowed,
     };
   }
 
   /**
    * From DownloadContactsObserver, called when contacts have
    * been successfully downloaded.
-   * @param allowedContacts the server ids of the contacts
-   *     that are allowed to see this device when visibility is
-   *     kSelectedContacts. This corresponds to the checkbox shown next to the
-   *     contact for kSelectedContacts visibility.
+   * @param _allowedContacts the server ids of the contacts
+   *     that are allowed to see this device.
    * @param contactRecords the full
-   *     set of contacts returned from the people api. All contacts are shown to
-   *     the user so they can see who can see their device for visibility
-   *     kAllContacts and so they can choose which contacts are
-   *     |allowedContacts| for kSelectedContacts visibility.
+   *     set of contacts returned from the people api.
    * @param numUnreachableExcluded the number of contact records that
    *     are not reachable for Nearby Share. These are not included in the list
    *     of contact records.
    */
   onContactsDownloaded(
-      allowedContacts: string[], contactRecords: ContactRecord[],
+      _allowedContacts: string[], contactRecords: ContactRecord[],
       numUnreachableExcluded: number): void {
     clearTimeout(this.downloadTimeoutId_!);
 
-    // TODO(vecore): Do a smart two-way merge that only splices actual changes.
-    // For now we will do simple regenerate and bind.
-    const allowed = new Set(allowedContacts);
     const items: NearbyVisibilityContact[] = [];
     for (const contact of contactRecords) {
-      const visibilityContact =
-          this.toNearbyVisibilityContact_(allowed.has(contact.id), contact);
-      items.push(visibilityContact);
+      items.push(this.toNearbyVisibilityContact_(contact));
     }
     this.contacts = items;
     this.contactsState = items.length > 0 ? ContactsState.HAS_CONTACTS :
                                             ContactsState.ZERO_CONTACTS;
     this.numUnreachable_ = numUnreachableExcluded;
+    this.updateNumUnreachableMessage_();
   }
 
   /**
@@ -341,31 +301,6 @@ export class NearbyContactVisibilityElement extends
   onContactsDownloadFailed(): void {
     this.contactsState = ContactsState.FAILED;
     clearTimeout(this.downloadTimeoutId_!);
-  }
-
-  /**
-   * Used to show/hide parts of the UI based on current visibility selection.
-   * @return true when checkboxes should be shown for contacts.
-   */
-  private showContactCheckBoxes_(): boolean {
-    if (this.isQuickShareV2Enabled_) {
-      return false;
-    }
-
-    return this.getSelectedVisibility() === Visibility.kSelectedContacts;
-  }
-
-  /**
-   * When the contact check boxes are visible, the contact name and description
-   * can be aria-hidden since they are used as labels for the checkbox.
-   * @return Whether the contact name and description should
-   *     be aria-hidden. "true" or undefined.
-   */
-  private getContactAriaHidden_(): string|undefined {
-    if (this.showContactCheckBoxes_()) {
-      return 'true';
-    }
-    return undefined;
   }
 
   /**
@@ -380,8 +315,6 @@ export class NearbyContactVisibilityElement extends
     if (this.settings && this.settings.visibility !== null) {
       this.selectedVisibility =
           this.visibilityValueToString(this.settings.visibility);
-      this.isAllContactsToggledOn_ =
-          this.settings.visibility === Visibility.kAllContacts;
     } else {
       this.selectedVisibility = null;
     }
@@ -426,20 +359,6 @@ export class NearbyContactVisibilityElement extends
       boolean {
     return selectedVisibility === 'contacts' &&
         contactsState === ContactsState.HAS_CONTACTS;
-  }
-
-  private showAllContactsToggle_(
-      selectedVisibility: string, contactsState: ContactsState): boolean {
-    if (this.isQuickShareV2Enabled_) {
-      return false;
-    }
-
-    return selectedVisibility === 'contacts' &&
-        contactsState === ContactsState.HAS_CONTACTS;
-  }
-
-  private toggleAllContacts_(): void {
-    this.isAllContactsToggledOn_ = !this.isAllContactsToggledOn_;
   }
 
   /**
@@ -596,10 +515,6 @@ export class NearbyContactVisibilityElement extends
         return this.i18nAdvanced(
             'nearbyShareContactVisibilityOwnAllSelfShare',
             {substitutions: [this.profileEmail]});
-      case Visibility.kSelectedContacts:
-        return this.i18nAdvanced(
-            'nearbyShareContactVisibilityOwnSomeSelfShare',
-            {substitutions: [this.profileEmail]});
       case Visibility.kYourDevices:
         return this.i18nAdvanced(
             'nearbyShareContactVisibilityOwnYourDevices',
@@ -621,30 +536,13 @@ export class NearbyContactVisibilityElement extends
       this.set('settings.visibility', visibility);
     }
 
-    if (!this.contacts) {
+    if (!this.contacts || visibility !== Visibility.kAllContacts) {
       this.contactManager_!.setAllowedContacts([]);
       return;
     }
 
-    const allowedContacts: string[] = [];
-
-    switch (visibility) {
-      case Visibility.kAllContacts:
-        for (const contact of this.contacts) {
-          allowedContacts.push(contact.id);
-        }
-        break;
-      case Visibility.kSelectedContacts:
-        for (const contact of this.contacts) {
-          if (contact.checked) {
-            allowedContacts.push(contact.id);
-          }
-        }
-        break;
-      default:
-        break;
-    }
-    this.contactManager_!.setAllowedContacts(allowedContacts);
+    this.contactManager_!.setAllowedContacts(
+        this.contacts.map(contact => contact.id));
   }
 
   /**

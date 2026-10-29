@@ -188,12 +188,6 @@
     white-space: nowrap;
   }
 
-  .contact-toggle {
-    align-self: center;
-    margin-inline-end: 12px;
-    margin-inline-start: auto;
-  }
-
   .contact-icon {
     align-self: center;
   }
@@ -221,15 +215,6 @@
     display: flex;
     flex: 1;
     justify-content: space-between;
-  }
-
-  #nearbyVisibilityAllContactsToggle {
-    display: flex;
-    flex-direction: row;
-    flex: 1;
-    justify-content: space-between;
-    margin-block-end: 8px;
-    margin-block-start: 8px;
   }
 </style>
 <div id="main">
@@ -333,7 +318,8 @@
               contactsState)]]">
         <div id="explanation">
           <div class="cr-secondary-text"
-              inner-h-t-m-l="[[getVisibilityDescription_(selectedVisibility, isAllContactsToggledOn_, profileEmail)]]">
+              inner-h-t-m-l="[[getVisibilityDescription_(
+                  selectedVisibility, profileEmail)]]">
           </div>
         </div>
       </template>
@@ -343,19 +329,6 @@
           if="[[showContactList_(selectedVisibility,
               contactsState)]]">
         <div id="contactList">
-          <!-- All Contacts toggle is shown only if the Contacts tab is selected and Self Share is enabled -->
-          <template is="dom-if" if="[[showAllContactsToggle_(selectedVisibility, contactsState)]]">
-            <div id="nearbyVisibilityAllContactsToggle">
-              <div id="nearbyVisibilityAllContactsToggleTitle">
-                $i18n{nearbyShareAllContactsToggle}
-              </div>
-              <cr-toggle id="AllContactsToggle"
-                checked="[[isAllContactsToggledOn_]]"
-                on-change="toggleAllContacts_"
-                aria-describedby="nearbyVisibilityAllContactsToggleTitle">
-              </cr-toggle>
-            </div>
-          </template>
           <template is="dom-if"
               if="[[showUnreachableContactsMessage_(
                   numUnreachable_)]]">
@@ -375,9 +348,7 @@
                   class="padded-icon grey-icon contact-icon">
               </iron-icon>
               <div class="contact-row">
-                <div aria-hidden$="[[getContactAriaHidden_(
-                                    selectedVisibility)]]"
-                    aria-labelledby$="contact-name-[[itemsIndex]]"
+                <div aria-labelledby$="contact-name-[[itemsIndex]]"
                     aria-describedby$="contact-description-[[itemsIndex]]">
                   <div id="contact-name-[[itemsIndex]]"
                       class="cr-title-text elide"
@@ -390,14 +361,6 @@
                     [[item.description]]
                   </div>
                 </div>
-                <template is="dom-if"
-                    if="[[showContactCheckBoxes_(isAllContactsToggledOn_, selectedVisibility)]]">
-                  <cr-toggle class="contact-toggle"
-                      checked="{{item.checked}}"
-                      aria-labelledby$="contact-name-[[itemsIndex]]"
-                      aria-describedby$="contact-description-[[itemsIndex]]">
-                  </cr-toggle>
-                </template>
               </div>
             </div>
           </template>

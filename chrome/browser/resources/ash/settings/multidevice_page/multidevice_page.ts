@@ -650,8 +650,6 @@ export class SettingsMultidevicePageElement extends
     switch (visibility) {
       case Visibility.kAllContacts:
         return this.i18n('nearbyShareDescriptionVisibleToAllContacts');
-      case Visibility.kSelectedContacts:
-        return this.i18n('nearbyShareDescriptionVisibleToSelectedContacts');
       case Visibility.kYourDevices:
         return this.i18n('nearbyShareDescriptionVisibleToYourDevices');
       case Visibility.kNoOne:

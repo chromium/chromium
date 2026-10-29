@@ -63,21 +63,12 @@ export class NearbyOnboardingOnePageElement extends
         type: NearbyShareOnboardingEntryPoint,
         value: NearbyShareOnboardingEntryPoint.MAX,
       },
-
-      /**
-       * Determines whether the QuickShareV2 flag is enabled.
-       */
-      isQuickShareV2Enabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('isQuickShareV2Enabled'),
-      },
     };
   }
 
   declare errorMessage: string;
   declare settings: NearbySettings|null;
   declare private entryPoint_: NearbyShareOnboardingEntryPoint;
-  declare private isQuickShareV2Enabled_: boolean;
 
   override ready(): void {
     super.ready();
@@ -210,27 +201,9 @@ export class NearbyOnboardingOnePageElement extends
   private getVisibilitySelectionButtonText_(): string {
     const visibility = this.getDefaultVisibility_();
 
-    if (this.isQuickShareV2Enabled_) {
-      switch (visibility) {
-        case Visibility.kAllContacts:
-          return this.i18n('nearbyShareContactVisiblityContactsButton');
-        case Visibility
-            .kSelectedContacts:  // Selected Contacts does not exist in Quick
-        // Share v2. Your devices set instead.
-        case Visibility.kYourDevices:
-          return this.i18n('nearbyShareContactVisibilityYourDevices');
-        case Visibility.kNoOne:
-          return this.i18n('nearbyShareContactVisibilityNone');
-        default:
-          return this.i18n('nearbyShareContactVisiblityContactsButton');
-      }
-    }
-
     switch (visibility) {
       case Visibility.kAllContacts:
         return this.i18n('nearbyShareContactVisiblityContactsButton');
-      case Visibility.kSelectedContacts:
-        return this.i18n('nearbyShareContactVisibilitySome');
       case Visibility.kYourDevices:
         return this.i18n('nearbyShareContactVisibilityYourDevices');
       case Visibility.kNoOne:
@@ -242,26 +215,9 @@ export class NearbyOnboardingOnePageElement extends
 
   private getVisibilitySelectionButtonIcon_(): string {
     const visibility = this.getDefaultVisibility_();
-    if (this.isQuickShareV2Enabled_) {
-      switch (visibility) {
-        case Visibility.kAllContacts:
-          return 'contact-all';
-        case Visibility
-            .kSelectedContacts:  // Selected Contacts does not exist in Quick
-                                 // Share v2. Your devices set instead.
-        case Visibility.kYourDevices:
-          return 'your-devices';
-        case Visibility.kNoOne:
-          return 'visibility-off';
-        default:
-          return 'contact-all';
-      }
-    }
     switch (visibility) {
       case Visibility.kAllContacts:
         return 'contact-all';
-      case Visibility.kSelectedContacts:
-        return 'contact-group';
       case Visibility.kYourDevices:
         return 'your-devices';
       case Visibility.kNoOne:
