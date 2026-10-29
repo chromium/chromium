@@ -1,4 +1,5 @@
 Testing that touch emulation affects certain media queries
+navigator.maxTouchPoints: 17
 window.matchMedia('(pointer: none)').matches : false
 window.matchMedia('(pointer: none)').matches applied: false
 window.matchMedia('(pointer: coarse)').matches : true

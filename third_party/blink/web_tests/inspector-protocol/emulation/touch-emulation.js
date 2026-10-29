@@ -1,7 +1,8 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank('Testing that touch emulation affects certain media queries');
 
-  await dp.Emulation.setTouchEmulationEnabled({enabled: true, maxTouchPoints: 11});
+  await dp.Emulation.setTouchEmulationEnabled({enabled: true, maxTouchPoints: 17});
+  testRunner.log(`navigator.maxTouchPoints: ${await session.evaluate('navigator.maxTouchPoints')}`);
 
   var mqs = [
     '(pointer: none)',

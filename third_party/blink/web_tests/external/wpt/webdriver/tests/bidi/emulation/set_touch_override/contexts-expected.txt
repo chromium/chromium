@@ -1,0 +1,6 @@
+This is a wdspec test.
+# crbug.com/572515591: ChromeDriver cannot represent this value in CDP int32.
+[FAIL] test_max_touch_points_at_js_safe_integer_limit
+  AssertionError: maxTouchPoints does not match the requested override
+Harness: the test ran to completion.
+
