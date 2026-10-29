@@ -254,7 +254,6 @@ void BrowserURLLoaderThrottle::WillStartRequest(
         /*hash_realtime_selection=*/
         hash_realtime_utils::HashRealTimeSelection::kNone,
         /*is_async_check=*/false,
-        /*check_allowlist_before_hash_database=*/false,
         /*tab_id=*/SessionID::InvalidValue(), referring_app_info_,
         v5_get_hash_protocol_manager_,
         /*prioritize_navigation_callbacks=*/
@@ -268,8 +267,8 @@ void BrowserURLLoaderThrottle::WillStartRequest(
         url_real_time_lookup_enabled_, can_check_db,
         can_check_high_confidence_allowlist, url_lookup_service_metric_suffix_,
         url_lookup_service_, hash_realtime_service_, hash_realtime_selection_,
-        /*is_async_check=*/true, /*check_allowlist_before_hash_database=*/false,
-        tab_id_, referring_app_info_, v5_get_hash_protocol_manager_,
+        /*is_async_check=*/true, tab_id_, referring_app_info_,
+        v5_get_hash_protocol_manager_,
         /*prioritize_navigation_callbacks=*/false);
     if (on_sync_sb_checker_created_callback_for_testing_) {
       std::move(on_sync_sb_checker_created_callback_for_testing_).Run();
@@ -287,9 +286,8 @@ void BrowserURLLoaderThrottle::WillStartRequest(
         url_real_time_lookup_enabled_, can_check_db,
         can_check_high_confidence_allowlist, url_lookup_service_metric_suffix_,
         url_lookup_service_, hash_realtime_service_, hash_realtime_selection_,
-        /*is_async_check=*/false,
-        /*check_allowlist_before_hash_database=*/false, tab_id_,
-        referring_app_info_, v5_get_hash_protocol_manager_,
+        /*is_async_check=*/false, tab_id_, referring_app_info_,
+        v5_get_hash_protocol_manager_,
         /*prioritize_navigation_callbacks=*/
         can_prioritize_navigation_callbacks && !is_real_time_lookup_enabled);
     if (on_sync_sb_checker_created_callback_for_testing_) {

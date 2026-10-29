@@ -133,7 +133,6 @@ class FakeSafeBrowsingUrlCheckerImpl
             /*hash_realtime_selection=*/
             safe_browsing::hash_realtime_utils::HashRealTimeSelection::kNone,
             /*is_async_check=*/false,
-            /*check_allowlist_before_hash_database=*/false,
             /*tab_id=*/SessionID::InvalidValue(),
             /*referring_app_info=*/std::nullopt,
             /*v5_get_hash_protocol_manager=*/nullptr) {}

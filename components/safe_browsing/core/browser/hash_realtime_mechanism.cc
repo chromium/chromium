@@ -133,7 +133,7 @@ void HashRealTimeMechanism::PerformHashBasedCheck(
   hash_database_mechanism_ = std::make_unique<DatabaseManagerMechanism>(
       url, threat_types_, database_manager_,
       /*check_type=*/CheckBrowseUrlType::kHashDatabase,
-      /*check_allowlist=*/false, v5_get_hash_protocol_manager_,
+      v5_get_hash_protocol_manager_,
       /*custom_callback_task_runner=*/nullptr);
   auto result = hash_database_mechanism_->StartCheck(
       base::BindOnce(&HashRealTimeMechanism::OnHashDatabaseCompleteCheckResult,

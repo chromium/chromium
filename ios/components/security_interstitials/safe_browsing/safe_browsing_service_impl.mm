@@ -213,7 +213,7 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
       url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr,
       hash_real_time_service ? hash_real_time_service->GetWeakPtr() : nullptr,
       hash_real_time_selection,
-      /*is_async_check=*/false, /*check_allowlist_before_hash_database=*/false,
+      /*is_async_check=*/false,
       /*tab_id=*/SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt,
       v5_get_hash_protocol_manager ? v5_get_hash_protocol_manager->GetWeakPtr()
                                    : nullptr);
@@ -278,7 +278,7 @@ SafeBrowsingServiceImpl::CreateAsyncChecker(
       url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr,
       hash_real_time_service ? hash_real_time_service->GetWeakPtr() : nullptr,
       hash_real_time_selection,
-      /*is_async_check=*/true, /*check_allowlist_before_hash_database=*/false,
+      /*is_async_check=*/true,
       /*tab_id=*/SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt,
       v5_get_hash_protocol_manager ? v5_get_hash_protocol_manager->GetWeakPtr()
                                    : nullptr);
@@ -314,7 +314,7 @@ SafeBrowsingServiceImpl::CreateSyncChecker(
       /*hash_realtime_service=*/nullptr,
       /*hash_realtime_selection=*/
       safe_browsing::hash_realtime_utils::HashRealTimeSelection::kNone,
-      /*is_async_check=*/false, /*check_allowlist_before_hash_database=*/false,
+      /*is_async_check=*/false,
       /*tab_id=*/SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt,
       v5_get_hash_protocol_manager ? v5_get_hash_protocol_manager->GetWeakPtr()
                                    : nullptr);

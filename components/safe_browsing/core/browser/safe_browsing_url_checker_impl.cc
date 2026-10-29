@@ -153,7 +153,6 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
     base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui,
     HashRealTimeSelection hash_realtime_selection,
     bool is_async_check,
-    bool check_allowlist_before_hash_database,
     SessionID tab_id,
     std::optional<internal::ReferringAppInfo> referring_app_info,
     base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager)
@@ -177,8 +176,6 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
       hash_realtime_service_on_ui_(hash_realtime_service_on_ui),
       hash_realtime_selection_(hash_realtime_selection),
       is_async_check_(is_async_check),
-      check_allowlist_before_hash_database_(
-          check_allowlist_before_hash_database),
       tab_id_(tab_id),
       referring_app_info_(referring_app_info),
       v5_get_hash_protocol_manager_(v5_get_hash_protocol_manager) {
@@ -470,7 +467,7 @@ SafeBrowsingUrlCheckerImpl::GetHashRealTimeLookupMechanism(
   return std::make_unique<DatabaseManagerMechanism>(
       url, url_checker_delegate_->GetThreatTypes(), database_manager_,
       /*check_type=*/CheckBrowseUrlType::kHashRealTime,
-      /*check_allowlist=*/false, v5_get_hash_protocol_manager_,
+      v5_get_hash_protocol_manager_,
       /*custom_callback_task_runner=*/nullptr);
 }
 
@@ -533,7 +530,6 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(const GURL& url) {
     lookup_mechanism = std::make_unique<DatabaseManagerMechanism>(
         url, url_checker_delegate_->GetThreatTypes(), database_manager_,
         /*check_type=*/CheckBrowseUrlType::kHashDatabase,
-        /*check_allowlist=*/check_allowlist_before_hash_database_,
         v5_get_hash_protocol_manager_, ui_task_runner_);
   }
   DCHECK(performed_check != PerformedCheck::kUnknown);

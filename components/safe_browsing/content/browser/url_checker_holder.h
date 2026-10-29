@@ -85,7 +85,6 @@ class UrlCheckerHolder final {
       base::WeakPtr<HashRealTimeService> hash_realtime_service,
       hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
       bool is_async_check,
-      bool check_allowlist_before_hash_database,
       SessionID tab_id,
       std::optional<internal::ReferringAppInfo> referring_app_info,
       base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager,
@@ -113,8 +112,6 @@ class UrlCheckerHolder final {
   bool IsRealTimeCheckForTesting();
 
   bool IsAsyncCheckForTesting();
-
-  bool IsCheckAllowlistBeforeHashDatabaseForTesting();
 
   void AddUrlInRedirectChainForTesting(const GURL& url);
 
@@ -152,7 +149,6 @@ class UrlCheckerHolder final {
   hash_realtime_utils::HashRealTimeSelection hash_realtime_selection_ =
       hash_realtime_utils::HashRealTimeSelection::kNone;
   bool is_async_check_ = false;
-  bool check_allowlist_before_hash_database_ = false;
   SessionID tab_id_;
   std::optional<internal::ReferringAppInfo> referring_app_info_;
   base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager_;

@@ -120,7 +120,7 @@ class AsyncCheckTrackerTest : public content::RenderViewHostTestHarness {
         /*hash_realtime_service=*/nullptr,
         /*hash_realtime_selection=*/
         hash_realtime_utils::HashRealTimeSelection::kNone,
-        /*is_async_check=*/true, /*check_allowlist_before_hash_database=*/false,
+        /*is_async_check=*/true,
         /*tab_id=*/SessionID::InvalidValue(),
         /*referring_app_info=*/std::nullopt,
         /*v5_get_hash_protocol_manager=*/nullptr,

@@ -222,7 +222,6 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
             hash_realtime_service_on_ui,
             hash_realtime_selection,
             is_async_check,
-            /*check_allowlist_before_hash_database=*/false,
             SessionID::InvalidValue(),
             /*referring_app_info=*/std::nullopt,
             /*v5_get_hash_protocol_manager=*/nullptr) {}
@@ -1031,14 +1030,10 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest, VerifyCheckerParams) {
       throttle_->GetSyncSBCheckerForTesting()->IsRealTimeCheckForTesting());
   EXPECT_FALSE(
       throttle_->GetSyncSBCheckerForTesting()->IsAsyncCheckForTesting());
-  EXPECT_FALSE(throttle_->GetSyncSBCheckerForTesting()
-                   ->IsCheckAllowlistBeforeHashDatabaseForTesting());
   EXPECT_TRUE(
       throttle_->GetAsyncSBCheckerForTesting()->IsRealTimeCheckForTesting());
   EXPECT_TRUE(
       throttle_->GetAsyncSBCheckerForTesting()->IsAsyncCheckForTesting());
-  EXPECT_FALSE(throttle_->GetSyncSBCheckerForTesting()
-                   ->IsCheckAllowlistBeforeHashDatabaseForTesting());
 }
 
 // Sync check completed -> WillProcessResponse called -> async check completed.

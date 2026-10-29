@@ -66,7 +66,6 @@ UrlCheckerHolder::UrlCheckerHolder(
     base::WeakPtr<HashRealTimeService> hash_realtime_service,
     hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
     bool is_async_check,
-    bool check_allowlist_before_hash_database,
     SessionID tab_id,
     std::optional<internal::ReferringAppInfo> referring_app_info,
     base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
@@ -85,8 +84,6 @@ UrlCheckerHolder::UrlCheckerHolder(
       hash_realtime_service_(hash_realtime_service),
       hash_realtime_selection_(hash_realtime_selection),
       is_async_check_(is_async_check),
-      check_allowlist_before_hash_database_(
-          check_allowlist_before_hash_database),
       tab_id_(tab_id),
       referring_app_info_(referring_app_info),
       v5_get_hash_protocol_manager_(v5_get_hash_protocol_manager),
@@ -117,8 +114,8 @@ void UrlCheckerHolder::Start(const StartParams& params) {
                                                  kNavigationNetworkResponse}
                 : content::BrowserTaskTraits{}),
         url_lookup_service_, hash_realtime_service_, hash_realtime_selection_,
-        is_async_check_, check_allowlist_before_hash_database_, tab_id_,
-        referring_app_info_, v5_get_hash_protocol_manager_);
+        is_async_check_, tab_id_, referring_app_info_,
+        v5_get_hash_protocol_manager_);
   }
 
   CheckUrl(params.url, params.method);
@@ -155,10 +152,6 @@ bool UrlCheckerHolder::IsRealTimeCheckForTesting() {
 
 bool UrlCheckerHolder::IsAsyncCheckForTesting() {
   return is_async_check_;
-}
-
-bool UrlCheckerHolder::IsCheckAllowlistBeforeHashDatabaseForTesting() {
-  return check_allowlist_before_hash_database_;
 }
 
 void UrlCheckerHolder::AddUrlInRedirectChainForTesting(const GURL& url) {
