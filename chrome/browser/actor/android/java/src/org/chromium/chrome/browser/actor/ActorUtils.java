@@ -117,16 +117,23 @@ public class ActorUtils {
     }
 
     /**
+     * Returns whether background actuation is supported and enabled as a feature. Desktop keeps
+     * tasks running with offscreen rendering rather than background actuation.
+     */
+    public static boolean isBackgroundActuationFeatureEnabled() {
+        if (DeviceInfo.isDesktop()) {
+            return false;
+        }
+        return ChromeFeatureList.sGlicBackgroundActuation.isEnabled();
+    }
+
+    /**
      * Returns whether background actuation is enabled and allowed (i.e. the device is not a
      * desktop, the base GlicBackgroundActuation feature flag is enabled, and either notifications
      * are enabled or the feature param is configured not to require notifications).
      */
     public static boolean isBackgroundActuationEnabled() {
-        // Desktop keeps tasks running with offscreen rendering rather than background actuation.
-        if (DeviceInfo.isDesktop()) {
-            return false;
-        }
-        if (!ChromeFeatureList.sGlicBackgroundActuation.isEnabled()) {
+        if (!isBackgroundActuationFeatureEnabled()) {
             return false;
         }
         return !ChromeFeatureList.sGlicBackgroundActuationRequireNotifications.getValue()
