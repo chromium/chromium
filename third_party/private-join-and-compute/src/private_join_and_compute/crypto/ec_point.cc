@@ -19,7 +19,7 @@
 #include <utility>
 #include <vector>
 
-#include "third_party/abseil-cpp/absl/strings/str_cat.h"
+#include "absl/strings/str_cat.h"
 #include "third_party/private-join-and-compute/chromium_patch.h"
 #include "private_join_and_compute/crypto/big_num.h"
 #include "private_join_and_compute/crypto/context.h"

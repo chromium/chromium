@@ -20,7 +20,7 @@
 #include <string>
 #include <utility>
 
-#include "third_party/abseil-cpp/absl/strings/string_view.h"
+#include "absl/strings/string_view.h"
 #include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
 #include "private_join_and_compute/crypto/big_num.h"
 #include "private_join_and_compute/crypto/context.h"

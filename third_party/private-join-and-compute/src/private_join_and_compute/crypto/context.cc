@@ -19,8 +19,8 @@
 #include <memory>
 #include <string>
 
-#include "third_party/abseil-cpp/absl/strings/str_cat.h"
-#include "third_party/abseil-cpp/absl/strings/string_view.h"
+#include "absl/strings/str_cat.h"
+#include "absl/strings/string_view.h"
 #include "third_party/private-join-and-compute/chromium_patch.h"
 
 namespace private_join_and_compute {

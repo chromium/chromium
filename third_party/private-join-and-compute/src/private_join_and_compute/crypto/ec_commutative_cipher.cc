@@ -19,7 +19,7 @@
 #include <string>
 #include <utility>
 
-#include "third_party/abseil-cpp/absl/strings/string_view.h"
+#include "absl/strings/string_view.h"
 #include "private_join_and_compute/crypto/big_num.h"
 #include "private_join_and_compute/crypto/ec_group.h"
 #include "private_join_and_compute/crypto/elgamal.h"
