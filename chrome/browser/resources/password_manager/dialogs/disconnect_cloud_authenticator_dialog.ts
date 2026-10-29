@@ -4,16 +4,15 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import '../shared_style.css.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {PasswordManagerImpl} from '../password_manager_proxy.js';
 
-import {getTemplate} from './disconnect_cloud_authenticator_dialog.html.js';
+import {getHtml} from './disconnect_cloud_authenticator_dialog.html.js';
 
 export interface DisconnectCloudAuthenticatorDialogElement {
   $: {
@@ -23,7 +22,8 @@ export interface DisconnectCloudAuthenticatorDialogElement {
   };
 }
 
-const DisconnectCloudAuthenticatorDialogElementBase = I18nMixin(PolymerElement);
+const DisconnectCloudAuthenticatorDialogElementBase =
+    I18nMixinLit(CrLitElement);
 
 export class DisconnectCloudAuthenticatorDialogElement extends
     DisconnectCloudAuthenticatorDialogElementBase {
@@ -31,34 +31,22 @@ export class DisconnectCloudAuthenticatorDialogElement extends
     return 'disconnect-cloud-authenticator-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  override render() {
+    return getHtml.bind(this)();
   }
 
-  static get properties() {
-    return {};
-  }
-
-  override ready() {
-    super.ready();
-  }
-
-  private onCancel_(): void {
+  protected onCancelClick_(): void {
     this.$.dialog.close();
   }
 
-  private onConfirm_(): void {
+  protected onConfirmClick_(): void {
     PasswordManagerImpl.getInstance().disconnectCloudAuthenticator().then(
         this.onDisconnectCloudAuthenticatorResponse_.bind(this));
     this.$.dialog.close();
   }
 
   private onDisconnectCloudAuthenticatorResponse_(success: boolean): void {
-    this.dispatchEvent(new CustomEvent('disconnect-cloud-authenticator', {
-      bubbles: true,
-      composed: true,
-      detail: {success: success},
-    }));
+    this.fire('disconnect-cloud-authenticator', {success});
   }
 }
 

@@ -7,10 +7,10 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './edit_password_disclaimer_dialog.html.js';
+import {getHtml} from './edit_password_disclaimer_dialog.html.js';
 
 export interface EditPasswordDisclaimerDialogElement {
   $: {
@@ -19,7 +19,7 @@ export interface EditPasswordDisclaimerDialogElement {
   };
 }
 
-const EditPasswordDisclaimerDialogElementBase = I18nMixin(PolymerElement);
+const EditPasswordDisclaimerDialogElementBase = I18nMixinLit(CrLitElement);
 
 export class EditPasswordDisclaimerDialogElement extends
     EditPasswordDisclaimerDialogElementBase {
@@ -27,20 +27,20 @@ export class EditPasswordDisclaimerDialogElement extends
     return 'edit-password-disclaimer-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  override render() {
+    return getHtml.bind(this)();
   }
 
-  static get properties() {
+  static override get properties() {
     return {
       /**
        * The website origin that is being displayed.
        */
-      origin: String,
+      origin: {type: String},
     };
   }
 
-  declare origin: string;
+  accessor origin: string = '';
 
   override connectedCallback() {
     super.connectedCallback();
@@ -48,21 +48,20 @@ export class EditPasswordDisclaimerDialogElement extends
     this.$.dialog.showModal();
   }
 
-  private onEditClick_() {
-    this.dispatchEvent(new CustomEvent(
-        'edit-password-click', {bubbles: true, composed: true}));
+  protected onEditClick_() {
+    this.fire('edit-password-click');
     this.$.dialog.close();
   }
 
-  private onCancel_() {
+  protected onCancelClick_() {
     this.$.dialog.close();
   }
 
-  private getDisclaimerTitle_(): string {
+  protected getDisclaimerTitle_(): string {
     return this.i18n('editDisclaimerTitle', this.origin);
   }
 
-  private getDisclaimerDescription_(): string {
+  protected getDisclaimerDescription_(): string {
     const brandingName = this.i18n('localPasswordManager');
     return this.i18n('editDisclaimerDescription', brandingName);
   }

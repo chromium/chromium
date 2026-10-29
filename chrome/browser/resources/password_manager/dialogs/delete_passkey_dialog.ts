@@ -4,17 +4,18 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import '../shared_style.css.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {PasswordManagerImpl} from '../password_manager_proxy.js';
 
-import {getTemplate} from './delete_passkey_dialog.html.js';
+import {getCss} from './delete_passkey_dialog.css.js';
+import {getHtml} from './delete_passkey_dialog.html.js';
 
 export interface DeletePasskeyDialogElement {
   $: {
@@ -24,45 +25,49 @@ export interface DeletePasskeyDialogElement {
   };
 }
 
-const DeletePasskeyDialogElementBase = I18nMixin(PolymerElement);
+const DeletePasskeyDialogElementBase = I18nMixinLit(CrLitElement);
 
 export class DeletePasskeyDialogElement extends DeletePasskeyDialogElementBase {
   static get is() {
     return 'delete-passkey-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      passkey: Object,
+      passkey: {type: Object},
     };
   }
 
-  declare passkey: chrome.passwordsPrivate.PasswordUiEntry;
+  accessor passkey: chrome.passwordsPrivate.PasswordUiEntry;
 
-  override ready() {
-    super.ready();
-    assert(this.passkey.isPasskey);
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('passkey')) {
+      assert(this.passkey.isPasskey);
+    }
   }
 
-  private onCancel_() {
+  protected onCancelClick_() {
     this.$.dialog.close();
   }
 
-  private onDelete_() {
+  protected onDeleteClick_() {
     PasswordManagerImpl.getInstance().removeCredential(
         this.passkey.id, this.passkey.storedIn);
-    this.dispatchEvent(new CustomEvent('passkey-removed', {
-      bubbles: true,
-      composed: true,
-    }));
+    this.fire('passkey-removed');
     this.$.dialog.close();
   }
 
-  private getDescriptionHtml_(): TrustedHTML {
+  protected getDescriptionHtml_(): TrustedHTML {
     // Passkeys have a single https affiliated origin corresponding to the
     // relying party identifier.
     assert(this.passkey.affiliatedDomains);

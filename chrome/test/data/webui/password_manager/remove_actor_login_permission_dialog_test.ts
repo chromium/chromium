@@ -5,7 +5,6 @@
 import 'chrome://password-manager/password_manager.js';
 
 import type {RemoveActorLoginPermissionDialogElement} from 'chrome://password-manager/password_manager.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -19,7 +18,6 @@ suite('RemoveActorLoginPermissionDialogTest', function() {
     dialog = document.createElement('remove-actor-login-permission-dialog');
     dialog.origin = ORIGIN;
     document.body.appendChild(dialog);
-    flush();
   });
 
   test('dialog is visible', function() {
@@ -40,7 +38,7 @@ suite('RemoveActorLoginPermissionDialogTest', function() {
   });
 
   test('cancel button closes dialog', function() {
-    dialog.shadowRoot!.querySelector<HTMLElement>('#cancel')!.click();
+    dialog.shadowRoot.querySelector<HTMLElement>('#cancel')!.click();
     assertFalse(dialog.$.dialog.open);
   });
 });

@@ -667,7 +667,7 @@ suite('SettingsSectionTest', function() {
         'remove-actor-login-permission-dialog');
     assertTrue(!!dialog);
 
-    dialog.shadowRoot!.querySelector<HTMLElement>('#disconnect')!.click();
+    dialog.$.disconnect.click();
     await passwordManager.whenCalled('revokeActorLoginPermission');
     assertEquals(passwordManager.data.actorLoginPermissions.length, 0);
   });

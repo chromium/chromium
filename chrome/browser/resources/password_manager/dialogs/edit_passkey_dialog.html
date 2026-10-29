@@ -1,46 +1,34 @@
-<style include="shared-style cr-shared-style">
-  cr-input:not(:first-of-type) {
-    margin-top: var(--cr-form-field-bottom-spacing);
-  }
-
-  cr-input {
-    --cr-input-error-display: none;
-  }
-
-  #usernameInput[invalid] {
-    --cr-input-error-display: block;
-  }
-
-  #displayNameInput {
-    margin-top: var(--cr-form-field-bottom-spacing);
-  }
-</style>
 <cr-dialog id="dialog" show-on-attach>
   <div slot="title" id="title" class="dialog-title">
     $i18n{editPasskeyTitle}
   </div>
   <div slot="body">
     <div class="cr-form-field-label">$i18n{sitesLabel}</div>
-    <template id="links" is="dom-repeat"
-        items="[[passkey.affiliatedDomains]]">
+    ${this.passkey.affiliatedDomains.map(item => html`
       <div class="elide-left">
-        <a href="[[item.url]]" class="site-link" target="_blank">
-          [[item.name]]
+        <a href="${item.url}" class="site-link" target="_blank">
+          ${item.name}
         </a>
       </div>
-    </template>
+    `)}
     <cr-input id="displayNameInput" label="$i18n{displayNameLabel}" autofocus
-        value="{{displayName_}}" placeholder="$i18n{displayNamePlaceholder}">
+        .value="${this.displayName_}"
+        @value-changed="${this.onDisplayNameValueChanged_}"
+        placeholder="$i18n{displayNamePlaceholder}">
     </cr-input>
     <cr-input id="usernameInput" label="$i18n{usernameLabel}"
-        value="{{username_}}" placeholder="$i18n{usernamePlaceholder}">
+        .value="${this.username_}"
+        @value-changed="${this.onUsernameValueChanged_}"
+        placeholder="$i18n{usernamePlaceholder}">
     </cr-input>
   </div>
   <div slot="button-container">
-    <cr-button id="cancelButton" class="cancel-button" on-click="onCancel_">
+    <cr-button id="cancelButton" class="cancel-button"
+        @click="${this.onCancelClick_}">
       $i18n{cancel}
     </cr-button>
-    <cr-button id="saveButton" class="action-button" on-click="onEditClick_">
+    <cr-button id="saveButton" class="action-button"
+        @click="${this.onEditClick_}">
       $i18n{save}
     </cr-button>
   </div>

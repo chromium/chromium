@@ -6,27 +6,23 @@ import 'chrome://password-manager/password_manager.js';
 
 import type {CrButtonElement, CrDialogElement, PasswordsExporterElement} from 'chrome://password-manager/password_manager.js';
 import {ExportPasswordsResult, ExportProgressStatus, PasswordManagerImpl} from 'chrome://password-manager/password_manager.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {MockTimer} from 'chrome://webui-test/mock_timer.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 
 // Checks the expected display of elements on PasswordsExporterElement creation.
 function verifyInitialUIState(exporter: PasswordsExporterElement) {
-  assertTrue(!!exporter.shadowRoot!.querySelector('#exportPasswordsButton'));
-  assertFalse(isVisible(exporter.shadowRoot!.querySelector('.spinner')));
-  assertFalse(!!exporter.shadowRoot!.querySelector('#dialogError'));
+  assertTrue(!!exporter.shadowRoot.querySelector('#exportPasswordsButton'));
+  assertFalse(isVisible(exporter.shadowRoot.querySelector('.spinner')));
+  assertFalse(!!exporter.shadowRoot.querySelector('#dialogError'));
 }
 
 function clickExportPasswordsButton(exporter: PasswordsExporterElement) {
   const exportPassswordsButton =
-      exporter.shadowRoot!.querySelector<HTMLElement>('#exportPasswordsButton');
+      exporter.shadowRoot.querySelector<HTMLElement>('#exportPasswordsButton');
   assertTrue(!!exportPassswordsButton);
   exportPassswordsButton.click();
-  flush();
 }
 
 async function updateExportStatus(
@@ -48,7 +44,6 @@ suite('PasswordExporterTest', function() {
 
     passwordsExporter = document.createElement('passwords-exporter');
     document.body.appendChild(passwordsExporter);
-    flush();
     verifyInitialUIState(passwordsExporter);
   });
 
@@ -60,15 +55,15 @@ suite('PasswordExporterTest', function() {
     await passwordManager.whenCalled('exportPasswords');
 
     await updateExportStatus(passwordManager, ExportProgressStatus.kInProgress);
-    flush();
+    await microtasksFinished();
     assertTrue(
-        isVisible(passwordsExporter.shadowRoot!.querySelector('.spinner')));
+        isVisible(passwordsExporter.shadowRoot.querySelector('.spinner')));
 
     const successToast = passwordsExporter.$.exportSuccessToast;
     assertFalse(successToast.open);
 
     await updateExportStatus(passwordManager, ExportProgressStatus.kSucceeded);
-    flush();
+    await microtasksFinished();
     // On SUCCEEDED, the exporter UI is back to the initial state and the
     // success toast is shown.
     verifyInitialUIState(passwordsExporter);
@@ -89,9 +84,9 @@ suite('PasswordExporterTest', function() {
     await updateExportStatus(passwordManager, ExportProgressStatus.kInProgress);
     await updateExportStatus(
         passwordManager, ExportProgressStatus.kFailedWrite, 'tmp');
-    flush();
+    await microtasksFinished();
     const errorDialog =
-        passwordsExporter.shadowRoot!.querySelector<CrDialogElement>(
+        passwordsExporter.shadowRoot.querySelector<CrDialogElement>(
             '#dialogError');
     assertTrue(!!errorDialog);
 
@@ -100,27 +95,23 @@ suite('PasswordExporterTest', function() {
         errorDialog.querySelector<CrButtonElement>('#cancelButton');
     assertTrue(!!cancelButton);
     cancelButton.click();
-    flush();
+    await microtasksFinished();
 
     verifyInitialUIState(passwordsExporter);
   });
 
   // The error view allows to retry.
   test('exportFlowErrorRetry', async function() {
-    // Use this to freeze the delayed progress spinner and avoid flakiness.
-    const mockTimer = new MockTimer();
-    mockTimer.install();
-
     clickExportPasswordsButton(passwordsExporter);
     await passwordManager.whenCalled('exportPasswords');
 
     await updateExportStatus(passwordManager, ExportProgressStatus.kInProgress);
     await updateExportStatus(
         passwordManager, ExportProgressStatus.kFailedWrite, 'tmp');
-    flush();
+    await microtasksFinished();
     // Test that the error dialog is shown.
     const errorDialog =
-        passwordsExporter.shadowRoot!.querySelector<CrDialogElement>(
+        passwordsExporter.shadowRoot.querySelector<CrDialogElement>(
             '#dialogError');
     assertTrue(!!errorDialog);
 
@@ -130,10 +121,9 @@ suite('PasswordExporterTest', function() {
         errorDialog.querySelector<CrButtonElement>('#tryAgainButton');
     assertTrue(!!tryAgainButton);
     tryAgainButton.click();
-    flush();
+    await microtasksFinished();
 
     await passwordManager.whenCalled('exportPasswords');
-    mockTimer.uninstall();
   });
 
   test('exportFlowErrorInProgress', async function() {
@@ -143,9 +133,9 @@ suite('PasswordExporterTest', function() {
     await passwordManager.whenCalled('exportPasswords');
 
     // Wait for the .then block to execute.
-    await flushTasks();
+    await microtasksFinished();
 
     assertTrue(
-        isVisible(passwordsExporter.shadowRoot!.querySelector('.spinner')));
+        isVisible(passwordsExporter.shadowRoot.querySelector('.spinner')));
   });
 });

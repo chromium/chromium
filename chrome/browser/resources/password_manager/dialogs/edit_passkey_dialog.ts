@@ -4,20 +4,18 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import '../shared_style.css.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {PasswordManagerImpl} from '../password_manager_proxy.js';
 
-import {getTemplate} from './edit_passkey_dialog.html.js';
+import {getCss} from './edit_passkey_dialog.css.js';
+import {getHtml} from './edit_passkey_dialog.html.js';
 
 export interface EditPasskeyDialogElement {
   $: {
@@ -29,42 +27,54 @@ export interface EditPasskeyDialogElement {
   };
 }
 
-const EditPasskeyDialogElementBase = I18nMixin(PolymerElement);
+const EditPasskeyDialogElementBase = I18nMixinLit(CrLitElement);
 
 export class EditPasskeyDialogElement extends EditPasskeyDialogElementBase {
   static get is() {
     return 'edit-passkey-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      passkey: Object,
-      username_: String,
-      displayName_: String,
+      passkey: {type: Object},
+      username_: {type: String},
+      displayName_: {type: String},
     };
   }
 
-  declare passkey: chrome.passwordsPrivate.PasswordUiEntry;
-  declare private username_: string;
-  declare private displayName_: string;
+  accessor passkey: chrome.passwordsPrivate.PasswordUiEntry;
+  protected accessor username_: string = '';
+  protected accessor displayName_: string = '';
 
-  override ready() {
-    super.ready();
+  override connectedCallback() {
+    super.connectedCallback();
     assert(this.passkey.isPasskey);
 
     this.username_ = this.passkey.username;
     this.displayName_ = this.passkey.displayName || '';
   }
 
-  private onCancel_() {
+  protected onDisplayNameValueChanged_(e: CustomEvent<{value: string}>) {
+    this.displayName_ = e.detail.value;
+  }
+
+  protected onUsernameValueChanged_(e: CustomEvent<{value: string}>) {
+    this.username_ = e.detail.value;
+  }
+
+  protected onCancelClick_() {
     this.$.dialog.close();
   }
 
-  private onEditClick_() {
+  protected onEditClick_() {
     this.passkey.username = this.username_;
     this.passkey.displayName = this.displayName_;
     PasswordManagerImpl.getInstance()

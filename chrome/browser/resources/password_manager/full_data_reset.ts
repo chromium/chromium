@@ -6,19 +6,18 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import './shared_style.css.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './full_data_reset.html.js';
+import {getCss} from './full_data_reset.css.js';
+import {getHtml} from './full_data_reset.html.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 
 export interface FullDataResetElement {
@@ -32,57 +31,38 @@ export interface FullDataResetElement {
   };
 }
 
-const FullDataResetElementBase = I18nMixin(PolymerElement);
+const FullDataResetElementBase = I18nMixinLit(CrLitElement);
 
 export class FullDataResetElement extends FullDataResetElementBase {
   static get is() {
     return 'full-data-reset';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      isSyncingPasswords: {
-        type: Boolean,
-        value: false,
-      },
-
-      isAccountStoreUser: {
-        type: Boolean,
-        value: false,
-      },
-
-      passwordsCount_: {
-        type: String,
-        value: '',
-      },
-
-      passkeysCount_: {
-        type: String,
-        value: '',
-      },
-
-      passwordsCountDetails_: {
-        type: String,
-        value: '',
-      },
-
-      passkeysCountDetails_: {
-        type: String,
-        value: '',
-      },
+      isSyncingPasswords: {type: Boolean},
+      isAccountStoreUser: {type: Boolean},
+      passwordsCount_: {type: String},
+      passkeysCount_: {type: String},
+      passwordsCountDetails_: {type: String},
+      passkeysCountDetails_: {type: String},
     };
   }
 
-  declare isSyncingPasswords: boolean;
-  declare isAccountStoreUser: boolean;
-  declare private passwordsCount_: string;
-  declare private passkeysCount_: string;
-  declare private passwordsCountDetails_: string;
-  declare private passkeysCountDetails_: string;
+  accessor isSyncingPasswords: boolean = false;
+  accessor isAccountStoreUser: boolean = false;
+  protected accessor passwordsCount_: string = '';
+  protected accessor passkeysCount_: string = '';
+  protected accessor passwordsCountDetails_: string = '';
+  protected accessor passkeysCountDetails_: string = '';
 
   private async updateCounters_(credentials:
                                     chrome.passwordsPrivate.PasswordUiEntry[]) {
@@ -146,17 +126,17 @@ export class FullDataResetElement extends FullDataResetElementBase {
     }
   }
 
-  private onDeleteAllClick_(): void {
+  protected onDeleteAllClick_(): void {
     PasswordManagerImpl.getInstance().getSavedPasswordList().then(
         credentials => this.updateCounters_(credentials));
     this.$.dialog.showModal();
   }
 
-  private onCancel_(): void {
+  protected onCancelClick_(): void {
     this.$.dialog.close();
   }
 
-  private async onConfirm_() {
+  protected async onConfirmClick_() {
     this.$.dialog.close();
     const success =
         await PasswordManagerImpl.getInstance().deleteAllPasswordManagerData();
@@ -171,14 +151,14 @@ export class FullDataResetElement extends FullDataResetElementBase {
     }
   }
 
-  private getConfirmationDialogTitle_(): string {
+  protected getConfirmationDialogTitle_(): string {
     if (this.isSyncingPasswords || this.isAccountStoreUser) {
       return this.i18n('fullResetConfirmationTitle');
     }
     return this.i18n('fullResetConfirmationTitleLocal');
   }
 
-  private getAriaDescription_(): string {
+  protected getAriaDescription_(): string {
     return [
       this.i18n('fullResetTitle'),
       this.i18n('fullResetRowDescription'),

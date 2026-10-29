@@ -5,19 +5,17 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import './cr_spinner_style.css.js';
-import './shared_style.css.js';
 
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {ExportPasswordsResult, ExportProgressStatus} from './password_manager.mojom-webui.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
-import {getTemplate} from './passwords_exporter.html.js';
+import {getCss} from './passwords_exporter.css.js';
+import {getHtml} from './passwords_exporter.html.js';
 
 export interface PasswordsExporterElement {
   $: {
@@ -25,45 +23,39 @@ export interface PasswordsExporterElement {
   };
 }
 
-const PasswordsExporterElementBase = I18nMixin(PolymerElement);
+const PasswordsExporterElementBase = I18nMixinLit(CrLitElement);
 
 export class PasswordsExporterElement extends PasswordsExporterElementBase {
   static get is() {
     return 'passwords-exporter';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /** Whether password export progress spinner is shown. */
-      showExportInProgress_: {
-        type: Boolean,
-        value: false,
-      },
+      showExportInProgress_: {type: Boolean},
 
       /** Whether password export error dialog is shown. */
-      showPasswordsExportErrorDialog_: {
-        type: Boolean,
-        value: false,
-      },
+      showPasswordsExportErrorDialog_: {type: Boolean},
 
       /** The error that occurred while exporting. */
-      exportErrorMessage_: {
-        type: String,
-        value: null,
-      },
+      exportErrorMessage_: {type: String},
     };
   }
 
+  protected accessor showPasswordsExportErrorDialog_: boolean = false;
+  protected accessor showExportInProgress_: boolean = false;
+  protected accessor exportErrorMessage_: string|null = null;
+
   private exportListenerId_: number|null = null;
-
-  declare private showPasswordsExportErrorDialog_: boolean;
-  declare private showExportInProgress_: boolean;
-  declare private exportErrorMessage_: string|null;
-
 
   override connectedCallback() {
     super.connectedCallback();
@@ -93,7 +85,7 @@ export class PasswordsExporterElement extends PasswordsExporterElementBase {
   /**
    * Tells the PasswordsPrivate API to export saved passwords in a .csv file.
    */
-  private onExportClick_() {
+  protected onExportClick_() {
     PasswordManagerImpl.getInstance().exportPasswords().then(
         (result: ExportPasswordsResult) => {
           if (result === ExportPasswordsResult.kInProgress) {
@@ -108,15 +100,15 @@ export class PasswordsExporterElement extends PasswordsExporterElementBase {
   /**
    * Closes the export error dialog.
    */
-  private closePasswordsExportErrorDialog_() {
+  protected onCancelButtonClick_() {
     this.showPasswordsExportErrorDialog_ = false;
   }
 
   /**
    * Retries export from the error dialog.
    */
-  private onTryAgainClick_() {
-    this.closePasswordsExportErrorDialog_();
+  protected onTryAgainClick_() {
+    this.onCancelButtonClick_();
     this.onExportClick_();
   }
 
@@ -148,12 +140,12 @@ export class PasswordsExporterElement extends PasswordsExporterElementBase {
     }
   }
 
-  private onOpenInShellButtonClick_() {
+  protected onOpenInShellButtonClick_() {
     PasswordManagerImpl.getInstance().showLastExportedFileInShell();
     this.$.exportSuccessToast.hide();
   }
 
-  private getAriaDescription_(): string {
+  protected getAriaDescription_(): string {
     return [
       this.i18n('exportPasswords'),
       this.i18n('exportPasswordsDescription'),

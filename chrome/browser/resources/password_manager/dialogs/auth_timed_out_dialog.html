@@ -1,11 +1,11 @@
 <cr-dialog id="dialog">
-  <div slot="title" class="dialog-title">[[getTitle_()]]</div>
+  <div slot="title" class="dialog-title">${this.getTitle_()}</div>
   <div slot="body">
     <div>$i18n{authTimedOutDescription}</div>
   </div>
   <div slot="button-container">
     <cr-button class="action-button" autofocus
-        on-click="onCloseButtonClick_">
+        @click="${this.onCloseButtonClick_}">
       $i18n{gotIt}
     </cr-button>
   </div>

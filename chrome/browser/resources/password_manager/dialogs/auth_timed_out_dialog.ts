@@ -6,10 +6,10 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './auth_timed_out_dialog.html.js';
+import {getHtml} from './auth_timed_out_dialog.html.js';
 
 export interface AuthTimedOutDialogElement {
   $: {
@@ -17,15 +17,15 @@ export interface AuthTimedOutDialogElement {
   };
 }
 
-const AuthTimedOutDialogElementBase = I18nMixin(PolymerElement);
+const AuthTimedOutDialogElementBase = I18nMixinLit(CrLitElement);
 
 export class AuthTimedOutDialogElement extends AuthTimedOutDialogElementBase {
   static get is() {
     return 'auth-timed-out-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  override render() {
+    return getHtml.bind(this)();
   }
 
   override connectedCallback() {
@@ -34,11 +34,11 @@ export class AuthTimedOutDialogElement extends AuthTimedOutDialogElementBase {
     this.$.dialog.showModal();
   }
 
-  private onCloseButtonClick_() {
+  protected onCloseButtonClick_() {
     this.$.dialog.close();
   }
 
-  private getTitle_(): string {
+  protected getTitle_(): string {
     return this.i18n('authTimedOut', this.i18n('localPasswordManager'));
   }
 }

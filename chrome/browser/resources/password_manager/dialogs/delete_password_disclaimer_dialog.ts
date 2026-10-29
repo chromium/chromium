@@ -4,18 +4,18 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import '../shared_style.css.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {htmlEscape} from 'chrome://resources/js/util.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {PasswordManagerProxy} from '../password_manager_proxy.js';
 import {PasswordCheckInteraction, PasswordManagerImpl} from '../password_manager_proxy.js';
 
-import {getTemplate} from './delete_password_disclaimer_dialog.html.js';
+import {getCss} from './delete_password_disclaimer_dialog.css.js';
+import {getHtml} from './delete_password_disclaimer_dialog.html.js';
 
 export interface DeletePasswordDisclaimerDialogElement {
   $: {
@@ -26,7 +26,7 @@ export interface DeletePasswordDisclaimerDialogElement {
   };
 }
 
-const DeletePasswordDisclaimerDialogElementBase = I18nMixin(PolymerElement);
+const DeletePasswordDisclaimerDialogElementBase = I18nMixinLit(CrLitElement);
 
 export class DeletePasswordDisclaimerDialogElement extends
     DeletePasswordDisclaimerDialogElementBase {
@@ -34,23 +34,27 @@ export class DeletePasswordDisclaimerDialogElement extends
     return 'delete-password-disclaimer-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * The password that is being displayed.
        */
-      origin: String,
-
-      actionUrl: String,
+      origin: {type: String},
+      actionUrl: {type: String},
     };
   }
 
-  declare origin: string;
-  declare actionUrl: string;
+  accessor origin: string = '';
+  accessor actionUrl: string = '';
+
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
 
@@ -60,19 +64,18 @@ export class DeletePasswordDisclaimerDialogElement extends
     this.$.dialog.showModal();
   }
 
-  private onDeleteClick_() {
-    this.dispatchEvent(new CustomEvent(
-        'delete-password-click', {bubbles: true, composed: true}));
+  protected onDeleteClick_() {
+    this.fire('delete-password-click');
     this.passwordManager_.recordPasswordCheckInteraction(
         PasswordCheckInteraction.REMOVE_PASSWORD);
     this.$.dialog.close();
   }
 
-  private onCancelClick_() {
+  protected onCancelClick_() {
     this.$.dialog.close();
   }
 
-  private hasSecureChangePasswordUrl_(): boolean {
+  protected hasSecureChangePasswordUrl_(): boolean {
     const url = this.actionUrl;
     return !!url && (url.startsWith('https://'));
   }
@@ -81,7 +84,7 @@ export class DeletePasswordDisclaimerDialogElement extends
    * Returns the delete password description with a linkified change password
    * URL. Requires the change password URL to be present and secure.
    */
-  private getDescriptionHtml_(): TrustedHTML {
+  protected getDescriptionHtml_(): TrustedHTML {
     if (!this.hasSecureChangePasswordUrl_()) {
       return window.trustedTypes!.emptyHTML;
     }
@@ -99,7 +102,7 @@ export class DeletePasswordDisclaimerDialogElement extends
    * Returns the delete password description as a plain text.
    * Used when the change password URL is not present or insecure.
    */
-  private getDescriptionText_(): string {
+  protected getDescriptionText_(): string {
     return this.i18n(
         'deletePasswordConfirmationDescription', this.origin, this.origin);
   }

@@ -7,7 +7,6 @@ import 'chrome://password-manager/password_manager.js';
 import type {DeletePasskeyDialogElement} from 'chrome://password-manager/password_manager.js';
 import {PasswordManagerImpl} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -18,11 +17,10 @@ suite('DeletePasskeyDialogTest', function() {
   let passkey: chrome.passwordsPrivate.PasswordUiEntry;
   let dialog: DeletePasskeyDialogElement;
 
-  setup(async function() {
+  setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
-    await flushTasks();
 
     passkey = createPasswordEntry({
       id: 0,
@@ -34,12 +32,10 @@ suite('DeletePasskeyDialogTest', function() {
     dialog = document.createElement('delete-passkey-dialog');
     dialog.passkey = passkey;
     document.body.appendChild(dialog);
-    await flushTasks();
   });
 
   test('displays a warning with links to the website', function() {
-    const link =
-        dialog.shadowRoot!.querySelector<HTMLAnchorElement>('#link a')!;
+    const link = dialog.shadowRoot.querySelector<HTMLAnchorElement>('#link a')!;
     assertTrue(!!link);
     assertEquals(link.textContent.trim(), 'test.com');
     assertEquals(link.href.trim(), passkey.affiliatedDomains[0]!.url);

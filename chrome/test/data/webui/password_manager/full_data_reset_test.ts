@@ -5,9 +5,8 @@
 import 'chrome://password-manager/password_manager.js';
 
 import {PasswordManagerImpl} from 'chrome://password-manager/password_manager.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 
@@ -25,7 +24,6 @@ suite('FullDataResetTest', function() {
   test('confirmation dialog is closed by default', function() {
     const dataReset = document.createElement('full-data-reset');
     document.body.appendChild(dataReset);
-    flush();
 
     assertFalse(dataReset.$.dialog.open);
   });
@@ -35,7 +33,6 @@ suite('FullDataResetTest', function() {
       async function() {
         const dataReset = document.createElement('full-data-reset');
         document.body.appendChild(dataReset);
-        flush();
 
         // Open the dialog.
         dataReset.$.deleteAllButton.click();
@@ -47,17 +44,14 @@ suite('FullDataResetTest', function() {
       function() {
         const dataReset = document.createElement('full-data-reset');
         document.body.appendChild(dataReset);
-        flush();
 
         // Open the dialog.
         dataReset.$.deleteAllButton.click();
-        flush();
         assertTrue(dataReset.$.dialog.open);
 
         // Should close the dialog.
         assertTrue(isVisible(dataReset.$.cancelButton));
         dataReset.$.cancelButton.click();
-        flush();
 
         assertFalse(dataReset.$.dialog.open);
       });
@@ -67,11 +61,9 @@ suite('FullDataResetTest', function() {
       async function() {
         const dataReset = document.createElement('full-data-reset');
         document.body.appendChild(dataReset);
-        flush();
 
         // Open the dialog.
         dataReset.$.deleteAllButton.click();
-        flush();
         assertTrue(dataReset.$.dialog.open);
 
         // Should close the dialog and trigger passwordsPrivate call.
@@ -79,7 +71,7 @@ suite('FullDataResetTest', function() {
         dataReset.$.confirmButton.click();
 
         await passwordManager.whenCalled('deleteAllPasswordManagerData');
-        flush();
+        await microtasksFinished();
 
         assertTrue(dataReset.$.successToast.open);
         assertFalse(dataReset.$.dialog.open);
@@ -90,11 +82,9 @@ suite('FullDataResetTest', function() {
         const dataReset = document.createElement('full-data-reset');
         dataReset.isSyncingPasswords = false;
         document.body.appendChild(dataReset);
-        flush();
 
         // Open the dialog.
         dataReset.$.deleteAllButton.click();
-        flush();
 
         assertEquals(
             dataReset.$.confirmationDialogTitle.textContent?.trim(),
@@ -106,11 +96,9 @@ suite('FullDataResetTest', function() {
         const dataReset = document.createElement('full-data-reset');
         dataReset.isSyncingPasswords = true;
         document.body.appendChild(dataReset);
-        flush();
 
         // Open the dialog.
         dataReset.$.deleteAllButton.click();
-        flush();
 
         assertEquals(
             dataReset.$.confirmationDialogTitle.textContent?.trim(),

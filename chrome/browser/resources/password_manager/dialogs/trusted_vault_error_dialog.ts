@@ -4,15 +4,14 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import '../shared_style.css.js';
 
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {PasswordManagerImpl} from '../password_manager_proxy.js';
 
-import {getTemplate} from './trusted_vault_error_dialog.html.js';
+import {getCss} from './trusted_vault_error_dialog.css.js';
+import {getHtml} from './trusted_vault_error_dialog.html.js';
 
 export interface TrustedVaultErrorDialogElement {
   $: {
@@ -20,20 +19,24 @@ export interface TrustedVaultErrorDialogElement {
   };
 }
 
-export class TrustedVaultErrorDialogElement extends PolymerElement {
+export class TrustedVaultErrorDialogElement extends CrLitElement {
   static get is() {
     return 'trusted-vault-error-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  private onCancelButtonClick_() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  protected onCancelButtonClick_() {
     this.$.dialog.cancel();
   }
 
-  private onVerifyButtonClick_() {
+  protected onVerifyButtonClick_() {
     PasswordManagerImpl.getInstance().startTrustedVaultUnlock();
     this.$.dialog.close();
   }

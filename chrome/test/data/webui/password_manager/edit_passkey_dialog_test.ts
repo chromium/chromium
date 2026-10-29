@@ -8,7 +8,7 @@ import type {EditPasskeyDialogElement} from 'chrome://password-manager/password_
 import {PasswordManagerImpl} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {createAffiliatedDomain, createPasswordEntry} from './test_util.js';
@@ -18,11 +18,10 @@ suite('EditPasskeyDialogTest', function() {
   let passkey: chrome.passwordsPrivate.PasswordUiEntry;
   let dialog: EditPasskeyDialogElement;
 
-  setup(async function() {
+  setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
-    await flushTasks();
 
     passkey = createPasswordEntry({
       id: 0,
@@ -34,7 +33,7 @@ suite('EditPasskeyDialogTest', function() {
     dialog = document.createElement('edit-passkey-dialog');
     dialog.passkey = passkey;
     document.body.appendChild(dialog);
-    await flushTasks();
+    return microtasksFinished();
   });
 
   test('passkey displayed correctly', function() {
@@ -48,7 +47,7 @@ suite('EditPasskeyDialogTest', function() {
         loadTimeData.getString('displayNamePlaceholder'));
 
     const listItemElements =
-        dialog.shadowRoot!.querySelectorAll<HTMLAnchorElement>('a.site-link');
+        dialog.shadowRoot.querySelectorAll<HTMLAnchorElement>('a.site-link');
     assertEquals(listItemElements.length, 1);
     assertEquals(listItemElements[0]!.textContent.trim(), 'test.com');
     assertEquals(listItemElements[0]!.href, passkey.affiliatedDomains[0]!.url);
@@ -57,10 +56,7 @@ suite('EditPasskeyDialogTest', function() {
   test('passkey is updated', async function() {
     dialog.$.usernameInput.value = 'teko';
     dialog.$.displayNameInput.value = 'Futaba Ooki';
-    await Promise.all([
-      dialog.$.usernameInput.updateComplete,
-      dialog.$.displayNameInput.updateComplete,
-    ]);
+    await microtasksFinished();
 
     assertFalse(dialog.$.saveButton.disabled);
     dialog.$.saveButton.click();

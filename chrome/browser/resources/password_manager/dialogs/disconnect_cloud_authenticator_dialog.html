@@ -6,11 +6,12 @@
     $i18n{disconnectCloudAuthenticatorConfirmationDialogDescription}
   </div>
   <div slot="button-container">
-    <cr-button class="cancel-button" on-click="onCancel_" id="cancelButton"
-        autofocus>
+    <cr-button class="cancel-button" @click="${this.onCancelClick_}"
+        id="cancelButton" autofocus>
       $i18n{cancel}
     </cr-button>
-    <cr-button class="action-button" on-click="onConfirm_" id="confirmButton">
+    <cr-button class="action-button" @click="${this.onConfirmClick_}"
+        id="confirmButton">
       $i18n{confirm}
     </cr-button>
   </div>
