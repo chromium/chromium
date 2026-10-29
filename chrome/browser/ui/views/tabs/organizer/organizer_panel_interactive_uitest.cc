@@ -413,6 +413,23 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest, TrayClosesOnFocusLost) {
                   WaitForPanelClose(), CheckControllerState(false));
 }
 
+IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest, ClickAboveSearchFieldUnfocuses) {
+  const DeepQuery kAppQuery{"organizer-panel-app"};
+  RunTestSequence(
+      SetVerticalTabsEnabled(false), OpenOrganizerPanel(), WaitForPanelLoad(),
+      CheckJsResultAt(kWebContentsId, kAppQuery,
+                      "el => el.$.searchField.isSearchFocused()", true),
+      MoveMouseTo(kOrganizerPanelControlsElementId), ClickMouse(),
+      CheckJsResultAt(kWebContentsId, kAppQuery,
+                      "el => el.$.searchField.isSearchFocused()", false),
+      CheckView(kBrowserViewElementId,
+                [](BrowserView* browser_view) {
+                  return browser_view->GetFocusManager()->GetFocusedView() !=
+                         nullptr;
+                }),
+      CloseOrganizerPanel());
+}
+
 IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest, TrayRestoresFocusOnClose) {
   RunTestSequence(SetVerticalTabsEnabled(false),
                   // Focus the web contents.

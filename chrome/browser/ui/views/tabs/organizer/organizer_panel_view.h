@@ -41,6 +41,9 @@ class OrganizerPanelView : public views::View {
   // caption (for dragging the window).
   virtual bool IsPositionInWindowCaption(const gfx::Point& point) const;
 
+  // Clears focus on any focused element within the panel.
+  virtual void ClearFocusedElement();
+
  protected:
   explicit OrganizerPanelView(BrowserWindowInterface& browser);
 

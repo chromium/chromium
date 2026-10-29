@@ -10,9 +10,34 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_test.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/views/view.h"
+
+namespace {
+
+class TestOrganizerPanelView : public OrganizerPanelView {
+ public:
+  explicit TestOrganizerPanelView(BrowserWindowInterface& browser)
+      : OrganizerPanelView(browser) {}
+  ~TestOrganizerPanelView() override = default;
+
+  void ClearFocusedElement() override { clear_focused_element_called_ = true; }
+
+  bool clear_focused_element_called() const {
+    return clear_focused_element_called_;
+  }
+  void reset_clear_focused_element_called() {
+    clear_focused_element_called_ = false;
+  }
+
+ private:
+  bool clear_focused_element_called_ = false;
+};
+
+}  // namespace
 
 using OrganizerTrayViewTest = organizer_panel::test::OrganizerPanelTestBase;
 
@@ -174,4 +199,69 @@ TEST_F(OrganizerTrayViewTest, NotWindowCaption) {
             return tray_view()->IsPositionInWindowCaption(point_in_tray);
           },
           false));
+}
+
+TEST_F(OrganizerTrayViewTest, ClickAbovePanelClearsFocusedElement) {
+  TestOrganizerPanelView* test_panel = nullptr;
+  views::View* focused_child = nullptr;
+  RunTestSequence(
+      Do([this, &test_panel]() {
+        auto panel = std::make_unique<TestOrganizerPanelView>(browser_);
+        test_panel = panel.get();
+        panel_ = test_panel;
+        state_controller_->SetPanelViewForTesting(std::move(panel));
+      }),
+      ShowPanel(), Do([this, &test_panel, &focused_child]() {
+        auto child = std::make_unique<views::View>();
+        child->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+        focused_child = panel_->AddChildView(std::move(child));
+        focused_child->RequestFocus();
+        EXPECT_EQ(tray_view()->GetFocusManager()->GetFocusedView(),
+                  focused_child);
+
+        // Click above the panel in the tray (e.g. at (10, 10)).
+        const gfx::Point point_above(10, 10);
+        ui::MouseEvent press_above(ui::EventType::kMousePressed, point_above,
+                                   point_above, ui::EventTimeForNow(),
+                                   ui::EF_LEFT_MOUSE_BUTTON,
+                                   ui::EF_LEFT_MOUSE_BUTTON);
+        EXPECT_TRUE(tray_view()->OnMousePressed(press_above));
+        EXPECT_TRUE(test_panel->clear_focused_element_called());
+        // Verify native Views focus was preserved.
+        EXPECT_EQ(tray_view()->GetFocusManager()->GetFocusedView(),
+                  focused_child);
+
+        test_panel->reset_clear_focused_element_called();
+
+        // Re-focus the child and verify that a right click above the panel does
+        // not clear focused element and is not handled.
+        focused_child->RequestFocus();
+        EXPECT_EQ(tray_view()->GetFocusManager()->GetFocusedView(),
+                  focused_child);
+
+        ui::MouseEvent right_click(ui::EventType::kMousePressed, point_above,
+                                   point_above, ui::EventTimeForNow(),
+                                   ui::EF_RIGHT_MOUSE_BUTTON,
+                                   ui::EF_RIGHT_MOUSE_BUTTON);
+        EXPECT_FALSE(tray_view()->OnMousePressed(right_click));
+        EXPECT_FALSE(test_panel->clear_focused_element_called());
+        EXPECT_EQ(tray_view()->GetFocusManager()->GetFocusedView(),
+                  focused_child);
+
+        // Verify that a click within the panel does not clear focused element
+        // and is not handled.
+        focused_child->RequestFocus();
+        EXPECT_EQ(tray_view()->GetFocusManager()->GetFocusedView(),
+                  focused_child);
+
+        const gfx::Point point_in_panel = panel_->bounds().CenterPoint();
+        ui::MouseEvent press_in_panel(
+            ui::EventType::kMousePressed, point_in_panel, point_in_panel,
+            ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+            ui::EF_LEFT_MOUSE_BUTTON);
+        EXPECT_FALSE(tray_view()->OnMousePressed(press_in_panel));
+        EXPECT_FALSE(test_panel->clear_focused_element_called());
+        EXPECT_EQ(tray_view()->GetFocusManager()->GetFocusedView(),
+                  focused_child);
+      }));
 }

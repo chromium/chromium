@@ -146,6 +146,12 @@ class OrganizerPanelViewImpl : public OrganizerPanelView,
     return web_view_->IsPositionInWindowCaption(point_in_webview);
   }
 
+  void ClearFocusedElement() override {
+    if (web_view_ && web_view_->web_contents()) {
+      web_view_->web_contents()->ClearFocusedElement();
+    }
+  }
+
  private:
   const raw_ref<BrowserWindowInterface> browser_;
   raw_ptr<OrganizerPanelWebView> web_view_ = nullptr;
@@ -200,6 +206,8 @@ bool OrganizerPanelView::IsPositionInWindowCaption(
     const gfx::Point& point) const {
   return false;
 }
+
+void OrganizerPanelView::ClearFocusedElement() {}
 
 BEGIN_METADATA(OrganizerPanelView)
 END_METADATA

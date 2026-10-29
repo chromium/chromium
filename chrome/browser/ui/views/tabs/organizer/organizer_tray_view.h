@@ -53,6 +53,9 @@ class OrganizerTrayView : public views::FlexLayoutView,
   // Used to enable dragging.
   bool IsPositionInWindowCaption(const gfx::Point& point);
 
+  // views::View:
+  bool OnMousePressed(const ui::MouseEvent& event) override;
+
  protected:
   // OrganizerPanelHost:
   void SetOrganizerPanelView(std::unique_ptr<views::View> panel_view) override;
