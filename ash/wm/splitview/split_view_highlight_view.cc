@@ -8,6 +8,7 @@
 
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/shell.h"
+#include "ash/style/system_decoration.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_types.h"
 #include "base/i18n/rtl.h"
@@ -18,8 +19,6 @@
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
-#include "ui/views/highlight_border.h"
-#include "ui/views/view_decoration.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 
@@ -69,20 +68,13 @@ SplitViewHighlightView::SplitViewHighlightView(bool is_right_or_bottom)
       cros_tokens::kCrosSysPrimary,
       gfx::RoundedCornersF(kHighlightScreenRoundRectRadius)));
 
-  view_decoration_ = std::make_unique<views::ViewDecoration>(this);
+  view_decoration_ = SystemDecoration::CreateForView(
+      this, SystemDecoration::ShadowType::kNone,
+      SystemDecoration::HighlightBorderMode::kHighlightBorder);
   view_decoration_->SetRoundedCornerRadius(kHighlightScreenRoundRectRadius);
 }
 
 SplitViewHighlightView::~SplitViewHighlightView() = default;
-
-void SplitViewHighlightView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  view_decoration_->SetHighlightBorder(
-      views::HighlightBorder::GetHighlightColor(
-          *this, views::HighlightBorder::Type::kHighlightBorderNoShadow),
-      views::HighlightBorder::GetBorderColor(
-          *this, views::HighlightBorder::Type::kHighlightBorderNoShadow));
-}
 
 void SplitViewHighlightView::SetBounds(
     const gfx::Rect& bounds,

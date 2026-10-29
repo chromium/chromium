@@ -11,6 +11,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
+#include "ash/style/system_decoration.h"
 #include "ash/wm/window_util.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -30,7 +31,6 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
-#include "ui/views/view_decoration.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/shadow_controller.h"
@@ -236,17 +236,11 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreatePhantomWidget(
       kColorAshPhantomWindowBackgroundColor,
       gfx::RoundedCornersF(kPhantomWindowCornerRadius)));
   content_view->GetBackground()->SetInternalName("PhantomWindow:Background");
-  phantom_window_decoration_ =
-      std::make_unique<views::ViewDecoration>(content_view);
+  phantom_window_decoration_ = SystemDecoration::CreateForView(
+      content_view, SystemDecoration::ShadowType::kNone,
+      SystemDecoration::HighlightBorderMode::kHighlightBorder);
   phantom_window_decoration_->SetRoundedCornerRadius(
       kPhantomWindowCornerRadius);
-  phantom_window_decoration_->SetHighlightBorder(
-      views::HighlightBorder::GetHighlightColor(
-          *content_view,
-          views::HighlightBorder::Type::kHighlightBorderNoShadow),
-      views::HighlightBorder::GetBorderColor(
-          *content_view,
-          views::HighlightBorder::Type::kHighlightBorderNoShadow));
   return phantom_widget;
 }
 

@@ -16,11 +16,12 @@ class Window;
 }
 
 namespace views {
-class ViewDecoration;
 class Widget;
 }  // namespace views
 
 namespace ash {
+
+class SystemDecoration;
 
 // PhantomWindowController is responsible for showing a phantom representation
 // of a window. It's used to show a preview of how snapping or docking a window
@@ -83,7 +84,7 @@ class ASH_EXPORT PhantomWindowController {
   // Phantom representation of the window.
   std::unique_ptr<views::Widget> phantom_widget_;
 
-  std::unique_ptr<views::ViewDecoration> phantom_window_decoration_;
+  std::unique_ptr<SystemDecoration> phantom_window_decoration_;
 
   // Maximize cue on top-snap phantom to inform users to hold longer if they
   // want to maximize instead of snap top.
