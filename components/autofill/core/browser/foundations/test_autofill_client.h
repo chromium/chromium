@@ -787,11 +787,6 @@ class TestAutofillClientTemplate : public T {
     compose_delegate_ = std::move(compose_delegate);
   }
 
-  void set_suggestion_ui_session_id(
-      std::optional<AutofillClient::SuggestionUiSessionId> session_id) {
-    suggestion_ui_session_id_ = session_id;
-  }
-
   signin::IdentityTestEnvironment& identity_test_environment() {
     return const_cast<signin::IdentityTestEnvironment&>(
         std::as_const(*this).identity_test_environment());

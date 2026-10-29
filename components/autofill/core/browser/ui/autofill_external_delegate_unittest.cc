@@ -301,6 +301,10 @@ class MockAutofillClient : public TestAutofillClient {
               GetAutofillSuggestions,
               (),
               (const, override));
+  MOCK_METHOD(std::optional<AutofillClient::SuggestionUiSessionId>,
+              GetSessionIdForCurrentAutofillSuggestions,
+              (),
+              (const, override));
   MOCK_METHOD(void,
               UpdateAutofillDataListValues,
               (const LocalFrameToken&, base::span<const SelectOption> options),
@@ -652,8 +656,8 @@ class AutofillExternalDelegateTest : public testing::Test,
     // Initialize the delegate's query form and field state.
     IssueOnQuery(trigger_source);
     // Assign a valid session ID to enable suggestion update callbacks.
-    autofill_client().set_suggestion_ui_session_id(
-        AutofillClient::SuggestionUiSessionId(1));
+    ON_CALL(autofill_client(), GetSessionIdForCurrentAutofillSuggestions)
+        .WillByDefault(Return(AutofillClient::SuggestionUiSessionId(1)));
     // Simulate that the popup is displayed to set up the session and its
     // callbacks.
     external_delegate().OnSuggestionsShown({}, /*metadata=*/{});
@@ -5324,8 +5328,8 @@ TEST_F(AutofillExternalDelegateTest, RemoveSuggestion_ServerCard) {
 TEST_F(AutofillExternalDelegateTest,
        OnSuggestionsShown_PersonalContextNotice_AmbientAutofill) {
   IssueOnQuery();
-  autofill_client().set_suggestion_ui_session_id(
-      AutofillClient::SuggestionUiSessionId(1));
+  ON_CALL(autofill_client(), GetSessionIdForCurrentAutofillSuggestions)
+      .WillByDefault(Return(AutofillClient::SuggestionUiSessionId(1)));
   EXPECT_EQ(autofill_client()
                 .GetPersonalContextFirstRunService()
                 ->ambient_autofill_notice_impressions(),
@@ -5354,8 +5358,8 @@ TEST_F(AutofillExternalDelegateTest,
 
   // Hiding and showing again should increment if we generate a new session ID.
   external_delegate().OnSuggestionsHidden(SuggestionHidingReason::kTabGone);
-  autofill_client().set_suggestion_ui_session_id(
-      AutofillClient::SuggestionUiSessionId(2));
+  ON_CALL(autofill_client(), GetSessionIdForCurrentAutofillSuggestions)
+      .WillByDefault(Return(AutofillClient::SuggestionUiSessionId(2)));
   external_delegate().OnSuggestionsShown(
       std::vector<Suggestion>{
           Suggestion(SuggestionType::kPersonalContextNotice)},
@@ -5372,8 +5376,8 @@ TEST_F(AutofillExternalDelegateTest,
 TEST_F(AutofillExternalDelegateTest,
        OnSuggestionsShown_PersonalContextNotice_AtMemory) {
   IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl);
-  autofill_client().set_suggestion_ui_session_id(
-      AutofillClient::SuggestionUiSessionId(1));
+  ON_CALL(autofill_client(), GetSessionIdForCurrentAutofillSuggestions)
+      .WillByDefault(Return(AutofillClient::SuggestionUiSessionId(1)));
   EXPECT_EQ(autofill_client()
                 .GetPersonalContextFirstRunService()
                 ->at_memory_notice_impressions(),
@@ -5402,8 +5406,8 @@ TEST_F(AutofillExternalDelegateTest,
 
   // Hiding and showing again should increment if we generate a new session ID.
   external_delegate().OnSuggestionsHidden(SuggestionHidingReason::kTabGone);
-  autofill_client().set_suggestion_ui_session_id(
-      AutofillClient::SuggestionUiSessionId(2));
+  ON_CALL(autofill_client(), GetSessionIdForCurrentAutofillSuggestions)
+      .WillByDefault(Return(AutofillClient::SuggestionUiSessionId(2)));
   external_delegate().OnSuggestionsShown(
       std::vector<Suggestion>{
           Suggestion(SuggestionType::kPersonalContextNotice)},
