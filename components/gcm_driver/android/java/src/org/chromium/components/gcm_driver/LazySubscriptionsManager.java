@@ -32,7 +32,6 @@ import java.util.Set;
 public class LazySubscriptionsManager {
     private static final String TAG = "LazySubscriptions";
     private static final String FCM_LAZY_SUBSCRIPTIONS = "fcm_lazy_subscriptions";
-    static final String LEGACY_HAS_PERSISTED_MESSAGES_KEY = "has_persisted_messages";
     private static final String SUBSCRIPTIONS_WITH_PERSISTED_MESSAGES_KEY =
             "subscriptions_with_persisted_messages";
     private static final String PREF_PACKAGE =
@@ -45,27 +44,6 @@ public class LazySubscriptionsManager {
     // Private constructor because all methods in this class are static, and it
     // shouldn't be instantiated.
     private LazySubscriptionsManager() {}
-
-    /**
-     * A one time migration from the deprecated "has persisted messages" boolean
-     * flag to a set of subscription ids that have persisted messages. If the
-     * global flag is set, it add all lazy subscription ids have persisted
-     * messages and then clears the global flag.
-     */
-    public static void migrateHasPersistedMessagesPref() {
-        SharedPreferences sharedPrefs = ContextUtils.getAppSharedPreferences();
-        boolean hasPersistedMessages =
-                sharedPrefs.getBoolean(LEGACY_HAS_PERSISTED_MESSAGES_KEY, false);
-        if (!hasPersistedMessages) {
-            return;
-        }
-        Set<String> lazySubscriptionIds = getLazySubscriptionIds();
-        sharedPrefs
-                .edit()
-                .putStringSet(SUBSCRIPTIONS_WITH_PERSISTED_MESSAGES_KEY, lazySubscriptionIds)
-                .apply();
-        sharedPrefs.edit().remove(LEGACY_HAS_PERSISTED_MESSAGES_KEY).apply();
-    }
 
     /**
      * Adds/Removes the |subscriptionId| to indicate whether there are any persisted messages to
@@ -172,20 +150,6 @@ public class LazySubscriptionsManager {
                             sharedPrefs.getStringSet(
                                     FCM_LAZY_SUBSCRIPTIONS, Collections.emptySet()));
             return lazyIds.contains(subscriptionId);
-        }
-    }
-
-    /**
-     * Returns the ids of all lazy subscriptions.
-     * @return Set of subscriptions ids.
-     */
-    public static Set<String> getLazySubscriptionIds() {
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            Context context = ContextUtils.getApplicationContext();
-            SharedPreferences sharedPrefs =
-                    context.getSharedPreferences(PREF_PACKAGE, Context.MODE_PRIVATE);
-            return new HashSet<>(
-                    sharedPrefs.getStringSet(FCM_LAZY_SUBSCRIPTIONS, Collections.emptySet()));
         }
     }
 

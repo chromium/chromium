@@ -159,16 +159,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GCM.SendWebPushMessageResult" enum="SendWebPushMessageResult"
-    expires_after="2025-08-17">
-  <owner>knollr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Result of sending web push messages. Recorded when the message has either
-    been sent, or has been dropped because an error happened.
-  </summary>
-</histogram>
-
 <histogram name="GCM.StoreSizeKB" units="KB" expires_after="2022-01-16">
   <owner>peter@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>

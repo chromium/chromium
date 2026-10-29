@@ -222,11 +222,6 @@ class GCMStoreImpl::Backend
   void RemoveOutgoingMessages(
       const PersistentIdList& persistent_ids,
       base::OnceCallback<void(bool, const AppIdToMessageCountMap&)> callback);
-  void AddUserSerialNumber(const std::string& username,
-                           int64_t serial_number,
-                           UpdateCallback callback);
-  void RemoveUserSerialNumber(const std::string& username,
-                              UpdateCallback callback);
   void SetLastCheckinInfo(const base::Time& time, UpdateCallback callback);
   void SetGServicesSettings(const std::map<std::string, std::string>& settings,
                             const std::string& digest,

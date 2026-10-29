@@ -9,16 +9,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-
-import java.util.Set;
 
 /** Unit tests for LazySubscriptionsManager. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -42,47 +38,6 @@ public class LazySubscriptionsManagerTest {
         assertTrue(
                 LazySubscriptionsManager.getSubscriptionIdsWithPersistedMessages(subscriptionId)
                         .isEmpty());
-    }
-
-    /**
-     * Tests the migration path from one boolean pref to a set subscription ids for persisted
-     * messages.
-     */
-    @Test
-    public void testMigrateHasPersistedMessagesPref() {
-        final String subscriptionId1 = "subscription_id1";
-        final String subscriptionId2 = "subscription_id2";
-        LazySubscriptionsManager.storeLazinessInformation(subscriptionId1, true);
-        LazySubscriptionsManager.storeLazinessInformation(subscriptionId2, true);
-
-        SharedPreferences sharedPrefs = ContextUtils.getAppSharedPreferences();
-        sharedPrefs
-                .edit()
-                .putBoolean(LazySubscriptionsManager.LEGACY_HAS_PERSISTED_MESSAGES_KEY, false)
-                .apply();
-        LazySubscriptionsManager.migrateHasPersistedMessagesPref();
-
-        assertTrue(
-                LazySubscriptionsManager.getSubscriptionIdsWithPersistedMessages(subscriptionId1)
-                        .isEmpty());
-        assertTrue(
-                LazySubscriptionsManager.getSubscriptionIdsWithPersistedMessages(subscriptionId2)
-                        .isEmpty());
-
-        sharedPrefs
-                .edit()
-                .putBoolean(LazySubscriptionsManager.LEGACY_HAS_PERSISTED_MESSAGES_KEY, true)
-                .apply();
-        LazySubscriptionsManager.migrateHasPersistedMessagesPref();
-
-        assertEquals(
-                1,
-                LazySubscriptionsManager.getSubscriptionIdsWithPersistedMessages(subscriptionId1)
-                        .size());
-        assertEquals(
-                1,
-                LazySubscriptionsManager.getSubscriptionIdsWithPersistedMessages(subscriptionId2)
-                        .size());
     }
 
     /** Tests that lazy subscriptions are stored. */
@@ -136,21 +91,6 @@ public class LazySubscriptionsManagerTest {
         assertFalse(LazySubscriptionsManager.isSubscriptionLazy(subscriptionId));
         LazySubscriptionsManager.storeLazinessInformation(subscriptionId, true);
         assertTrue(LazySubscriptionsManager.isSubscriptionLazy(subscriptionId));
-    }
-
-    @Test
-    public void testGetLazySubscriptionIds() {
-        final String subscriptionId1 = "subscription_id1";
-        final String subscriptionId2 = "subscription_id2";
-        final String subscriptionId3 = "subscription_id3";
-        LazySubscriptionsManager.storeLazinessInformation(subscriptionId1, true);
-        LazySubscriptionsManager.storeLazinessInformation(subscriptionId2, true);
-        LazySubscriptionsManager.storeLazinessInformation(subscriptionId3, true);
-        Set<String> lazySubscriptionIds = LazySubscriptionsManager.getLazySubscriptionIds();
-        assertEquals(3, lazySubscriptionIds.size());
-        assertTrue(lazySubscriptionIds.contains(subscriptionId1));
-        assertTrue(lazySubscriptionIds.contains(subscriptionId2));
-        assertTrue(lazySubscriptionIds.contains(subscriptionId3));
     }
 
     /** Tests that GCM messages are persisted and read. */
