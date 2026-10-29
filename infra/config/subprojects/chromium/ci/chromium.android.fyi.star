@@ -432,7 +432,7 @@ ci.builder(
             "android_fyi_isolated_scripts",
         ],
         mixins = [
-            "17-beta-x64-emulator",
+            "17-x64-emulator",
             "emulator-8-cores",
             "has_native_resultdb_integration",
             "linux-jammy",
