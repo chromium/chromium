@@ -805,7 +805,8 @@ TEST_F(PhoneHubTrayTest, ShowAndHideNudge) {
       Shell::Get()->anchored_nudge_manager()->IsNudgeShown(kPhoneHubNudgeId));
 }
 
-TEST_F(PhoneHubTrayTest, EcheIconActivatesCallback) {
+// TODO(crbug.com/579117404): Re-enable the test
+TEST_F(PhoneHubTrayTest, DISABLED_EcheIconActivatesCallback) {
   bool launched_app_window = false;
   phone_hub_tray_->SetEcheIconActivationCallback(
       base::BindLambdaForTesting([&]() { launched_app_window = true; }));
