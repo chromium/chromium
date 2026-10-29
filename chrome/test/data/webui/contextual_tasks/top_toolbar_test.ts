@@ -1380,5 +1380,39 @@ suite('TopToolbarTest', () => {
       assertEquals(
           null, topToolbar.shadowRoot.querySelector('#profileIndicator'));
     });
+
+    test('opens account menu when profile indicator is clicked', async () => {
+      topToolbar.profileAvatarUrl = 'data:image/png;base64,fakeImageData';
+      await microtasksFinished();
+      assertEquals(null, topToolbar.$.accountMenu.getIfExists());
+
+      const profileIndicator =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#profileIndicator');
+      assertTrue(!!profileIndicator);
+      assertEquals('menu', profileIndicator.getAttribute('aria-haspopup'));
+      profileIndicator.click();
+      await microtasksFinished();
+
+      const accountMenu = topToolbar.$.accountMenu.getIfExists();
+      assertTrue(!!accountMenu);
+      assertTrue(accountMenu.$.menu.open);
+    });
+
+    test('closes account menu when the window loses focus', async () => {
+      topToolbar.profileAvatarUrl = 'data:image/png;base64,fakeImageData';
+      await microtasksFinished();
+
+      const profileIndicator =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#profileIndicator');
+      assertTrue(!!profileIndicator);
+      profileIndicator.click();
+      await microtasksFinished();
+      const accountMenu = topToolbar.$.accountMenu.get();
+      assertTrue(accountMenu.$.menu.open);
+
+      window.dispatchEvent(new Event('blur'));
+      await microtasksFinished();
+      assertFalse(accountMenu.$.menu.open);
+    });
   });
 });

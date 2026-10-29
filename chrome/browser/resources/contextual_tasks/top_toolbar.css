@@ -202,7 +202,9 @@ cr-icon-button[hidden] {
 }
 
 .profile-indicator {
+  --cr-button-height: 32px;
   align-items: center;
+  border: none;
   border-radius: 50%;
   box-sizing: border-box;
   display: flex;
@@ -210,6 +212,7 @@ cr-icon-button[hidden] {
   height: 32px;
   justify-content: center;
   margin: 0;
+  min-width: 32px;
   padding: 0;
   width: 32px;
 }

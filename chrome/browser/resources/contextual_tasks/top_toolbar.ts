@@ -8,6 +8,7 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import '//resources/cr_elements/icons.html.js';
+import './account_menu.js';
 import './favicon_group.js';
 import './sources_menu.js';
 import './overflow_menu.js';
@@ -26,6 +27,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import type {AccountMenuElement} from './account_menu.js';
 import type {ContextInfo} from './contextual_tasks_toolbar.mojom-webui.js';
 import {ToolbarBrowserProxyImpl} from './contextual_tasks_toolbar_browser_proxy.js';
 import type {OverflowMenuElement} from './overflow_menu.js';
@@ -36,6 +38,7 @@ import {recordAction} from './utils.js';
 
 export interface TopToolbarElement {
   $: {
+    accountMenu: CrLazyRenderLitElement<AccountMenuElement>,
     closeButton: HTMLImageElement,
     overflowMenu: CrLazyRenderLitElement<OverflowMenuElement>,
     newThreadButton: HTMLImageElement,
@@ -255,6 +258,7 @@ export class TopToolbarElement extends TopToolbarElementBase {
   // result in the sandboxed results frame) never reach this document, so
   // `cr-action-menu`'s own light dismiss does not run. See crbug.com/543760434.
   private onWindowBlur_() {
+    this.$.accountMenu.getIfExists()?.close();
     this.$.overflowMenu.getIfExists()?.close();
     this.$.sourcesMenu.getIfExists()?.close();
   }
@@ -342,6 +346,10 @@ export class TopToolbarElement extends TopToolbarElementBase {
 
   protected onOverflowMenuOpenChanged_(e: CustomEvent<{value: boolean}>) {
     this.overflowMenuOpen_ = e.detail.value;
+  }
+
+  protected onProfileIndicatorClick_(e: Event) {
+    this.$.accountMenu.get().showAt(e.currentTarget as HTMLElement);
   }
 
   protected onSourcesClick_(e: Event) {

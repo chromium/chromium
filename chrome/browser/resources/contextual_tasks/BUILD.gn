@@ -32,6 +32,8 @@ build_webui("build") {
   }
 
   ts_files = [
+    "account_menu.html.ts",
+    "account_menu.ts",
     "app.html.ts",
     "app.ts",
     "toolbar_app.ts",
@@ -83,6 +85,7 @@ build_webui("build") {
   }
 
   css_files = [
+    "account_menu.css",
     "app.css",
     "error_dialog.css",
     "error_page.css",
