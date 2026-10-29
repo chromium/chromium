@@ -193,6 +193,50 @@ public abstract class ChromeFeatureList {
         return ChromeFeatureMap.getInstance().getFieldTrialParamsForFeature(featureName);
     }
 
+    /**
+     * Convenience method to get the value of a Chrome-layer feature param, see {@link
+     * FeatureMap#getParamValueAsBoolean(String, String)}.
+     *
+     * <p>Note: Params queried through this API must be added to the array
+     * |kBooleanParamsExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
+     */
+    public static boolean getParamValueAsBoolean(String featureName, String paramName) {
+        return ChromeFeatureMap.getInstance().getParamValueAsBoolean(featureName, paramName);
+    }
+
+    /**
+     * Convenience method to get the value of a Chrome-layer feature param, see {@link
+     * FeatureMap#getParamValueAsInt(String, String)}.
+     *
+     * <p>Note: Params queried through this API must be added to the array |kIntParamsExposedToJava|
+     * in chrome/browser/flags/android/chrome_feature_list.cc
+     */
+    public static int getParamValueAsInt(String featureName, String paramName) {
+        return ChromeFeatureMap.getInstance().getParamValueAsInt(featureName, paramName);
+    }
+
+    /**
+     * Convenience method to get the value of a Chrome-layer feature param, see {@link
+     * FeatureMap#getParamValueAsDouble(String, String)}.
+     *
+     * <p>Note: Params queried through this API must be added to the array
+     * |kDoubleParamsExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
+     */
+    public static double getParamValueAsDouble(String featureName, String paramName) {
+        return ChromeFeatureMap.getInstance().getParamValueAsDouble(featureName, paramName);
+    }
+
+    /**
+     * Convenience method to get the value of a Chrome-layer feature param, see {@link
+     * FeatureMap#getParamValueAsString(String, String)}.
+     *
+     * <p>Note: Params queried through this API must be added to the array
+     * |kStringParamsExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
+     */
+    public static String getParamValueAsString(String featureName, String paramName) {
+        return ChromeFeatureMap.getInstance().getParamValueAsString(featureName, paramName);
+    }
+
     public static BooleanCachedFeatureParam newBooleanCachedFeatureParam(
             String featureName, String variationName, boolean defaultValue) {
         return new BooleanCachedFeatureParam(

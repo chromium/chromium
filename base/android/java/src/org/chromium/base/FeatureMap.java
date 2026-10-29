@@ -377,6 +377,90 @@ public abstract class FeatureMap {
         return result;
     }
 
+    /**
+     * Returns the value of a param exposed to Java as a boolean.
+     *
+     * <p>The param must be included in the kBooleanParamsExposedToJava list of the native
+     * base::android::FeatureMap. The value is retrieved through the native FeatureParam::Get(), so
+     * the default value is the one specified in the native FeatureParam declaration.
+     *
+     * @param featureName The name of the feature to retrieve a param for.
+     * @param paramName The name of the param for which to get the value.
+     * @return The parameter value as a boolean.
+     */
+    public boolean getParamValueAsBoolean(String featureName, String paramName) {
+        String testValue = FeatureOverrides.getTestValueForFieldTrialParam(featureName, paramName);
+        if (testValue != null) return Boolean.valueOf(testValue);
+        String defaultValueInTests = getParamDefaultValueInTests(featureName, paramName);
+        if (defaultValueInTests != null) return Boolean.valueOf(defaultValueInTests);
+        if (FeatureList.getDisableNativeForTesting()) throwException(featureName, paramName);
+        ensureNativeMapInit();
+        return FeatureMapJni.get().getParamValueAsBoolean(mNativeMapPtr, featureName, paramName);
+    }
+
+    /**
+     * Returns the value of a param exposed to Java as an int.
+     *
+     * <p>The param must be included in the kIntParamsExposedToJava list of the native
+     * base::android::FeatureMap. The value is retrieved through the native FeatureParam::Get(), so
+     * the default value is the one specified in the native FeatureParam declaration.
+     *
+     * @param featureName The name of the feature to retrieve a param for.
+     * @param paramName The name of the param for which to get the value.
+     * @return The parameter value as an int.
+     */
+    public int getParamValueAsInt(String featureName, String paramName) {
+        String testValue = FeatureOverrides.getTestValueForFieldTrialParam(featureName, paramName);
+        if (testValue != null) return Integer.valueOf(testValue);
+        String defaultValueInTests = getParamDefaultValueInTests(featureName, paramName);
+        if (defaultValueInTests != null) return Integer.valueOf(defaultValueInTests);
+        if (FeatureList.getDisableNativeForTesting()) throwException(featureName, paramName);
+        ensureNativeMapInit();
+        return FeatureMapJni.get().getParamValueAsInt(mNativeMapPtr, featureName, paramName);
+    }
+
+    /**
+     * Returns the value of a param exposed to Java as a double.
+     *
+     * <p>The param must be included in the kDoubleParamsExposedToJava list of the native
+     * base::android::FeatureMap. The value is retrieved through the native FeatureParam::Get(), so
+     * the default value is the one specified in the native FeatureParam declaration.
+     *
+     * @param featureName The name of the feature to retrieve a param for.
+     * @param paramName The name of the param for which to get the value.
+     * @return The parameter value as a double.
+     */
+    public double getParamValueAsDouble(String featureName, String paramName) {
+        String testValue = FeatureOverrides.getTestValueForFieldTrialParam(featureName, paramName);
+        if (testValue != null) return Double.valueOf(testValue);
+        String defaultValueInTests = getParamDefaultValueInTests(featureName, paramName);
+        if (defaultValueInTests != null) return Double.valueOf(defaultValueInTests);
+        if (FeatureList.getDisableNativeForTesting()) throwException(featureName, paramName);
+        ensureNativeMapInit();
+        return FeatureMapJni.get().getParamValueAsDouble(mNativeMapPtr, featureName, paramName);
+    }
+
+    /**
+     * Returns the value of a param exposed to Java as a String.
+     *
+     * <p>The param must be included in the kStringParamsExposedToJava list of the native
+     * base::android::FeatureMap. The value is retrieved through the native FeatureParam::Get(), so
+     * the default value is the one specified in the native FeatureParam declaration.
+     *
+     * @param featureName The name of the feature to retrieve a param for.
+     * @param paramName The name of the param for which to get the value.
+     * @return The parameter value as a String.
+     */
+    public String getParamValueAsString(String featureName, String paramName) {
+        String testValue = FeatureOverrides.getTestValueForFieldTrialParam(featureName, paramName);
+        if (testValue != null) return testValue;
+        String defaultValueInTests = getParamDefaultValueInTests(featureName, paramName);
+        if (defaultValueInTests != null) return defaultValueInTests;
+        if (FeatureList.getDisableNativeForTesting()) throwException(featureName, paramName);
+        ensureNativeMapInit();
+        return FeatureMapJni.get().getParamValueAsString(mNativeMapPtr, featureName, paramName);
+    }
+
     /** Create a {@link MutableFlagWithSafeDefault} in this FeatureMap. */
     public MutableFlagWithSafeDefault mutableFlagWithSafeDefault(
             String featureName, boolean defaultValue) {
@@ -428,5 +512,26 @@ public abstract class FeatureMap {
         @JniType("std::vector<std::string>")
         String[] getFlattedFieldTrialParamsForFeature(
                 long featureMap, @JniType("std::string") String featureName);
+
+        boolean getParamValueAsBoolean(
+                long featureMap,
+                @JniType("std::string") String featureName,
+                @JniType("std::string") String paramName);
+
+        int getParamValueAsInt(
+                long featureMap,
+                @JniType("std::string") String featureName,
+                @JniType("std::string") String paramName);
+
+        double getParamValueAsDouble(
+                long featureMap,
+                @JniType("std::string") String featureName,
+                @JniType("std::string") String paramName);
+
+        @JniType("std::string")
+        String getParamValueAsString(
+                long featureMap,
+                @JniType("std::string") String featureName,
+                @JniType("std::string") String paramName);
     }
 }
