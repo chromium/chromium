@@ -50,9 +50,9 @@ class MockVideoEncoderDelegate : public D3D12VideoEncodeDelegate {
       : D3D12VideoEncodeDelegate(video_device, gpu_workarounds) {}
 
   MOCK_METHOD1(Initialize, EncoderStatus(VideoEncodeAccelerator::Config));
-  MOCK_METHOD(size_t, GetMaxNumOfRefFrames, (), (const override));
-  MOCK_METHOD(size_t, GetMaxNumOfManualRefBuffers, (), (const override));
-  MOCK_METHOD(bool, SupportsRateControlReconfiguration, (), (const override));
+  MOCK_METHOD(size_t, GetMaxNumOfRefFrames, (), (const, override));
+  MOCK_METHOD(size_t, GetMaxNumOfManualRefBuffers, (), (const, override));
+  MOCK_METHOD(bool, SupportsRateControlReconfiguration, (), (const, override));
   MOCK_METHOD((base::expected<EncodeResult, EncoderStatus>),
               Encode,
               (D3D12PictureBuffer,

@@ -56,11 +56,11 @@ class MockD3D12VideoEncoderWrapper : public D3D12VideoEncoderWrapper {
   MOCK_METHOD((base::expected<ScopedD3D12ResourceMap, EncoderStatus>),
               GetEncoderOutputMetadata,
               (),
-              (const override));
+              (const, override));
   MOCK_METHOD(EncoderStatus,
               ReadbackBitstream,
               (base::span<uint8_t>),
-              (const override));
+              (const, override));
 };
 
 class D3D12VideoEncodeDelegateTestBase : public ::testing::Test {

@@ -47,7 +47,7 @@ class MockEngine : public ManifestDemuxer::Engine {
               (override));
   MOCK_METHOD(void, StartWaitingForSeek, (), (override));
   MOCK_METHOD(void, AbortPendingReads, (base::OnceClosure), (override));
-  MOCK_METHOD(bool, IsSeekable, (), (const override));
+  MOCK_METHOD(bool, IsSeekable, (), (const, override));
   MOCK_METHOD(int64_t, GetMemoryUsage, (), (const, override));
   MOCK_METHOD(void, Stop, (), (override));
   MOCK_METHOD(void, SelectAudioTrack, (const MediaTrack::Id&), (override));

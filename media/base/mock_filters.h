@@ -176,7 +176,7 @@ class MockDemuxer : public Demuxer {
   void Seek(base::TimeDelta time, PipelineStatusCallback cb) override {
     OnSeek(time, cb);
   }
-  MOCK_METHOD(bool, IsSeekable, (), (const override));
+  MOCK_METHOD(bool, IsSeekable, (), (const, override));
   MOCK_METHOD(void,
               OnSeek,
               (base::TimeDelta time, PipelineStatusCallback& cb),

@@ -79,7 +79,7 @@ class MockVideoCaptureDeviceClient : public VideoCaptureDevice::Client {
               (override));
   MOCK_METHOD(void, OnStarted, (), (override));
   MOCK_METHOD(void, InvalidateBuffers, (), (override));
-  MOCK_METHOD(double, GetBufferPoolUtilization, (), (const override));
+  MOCK_METHOD(double, GetBufferPoolUtilization, (), (const, override));
 
   void OnIncomingCapturedBufferExt(
       Buffer buffer,
