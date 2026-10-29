@@ -7,9 +7,12 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
-#include "base/gtest_prod_util.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -26,6 +29,7 @@
 #include "ui/android/view_android.h"
 #include "ui/android/view_android_observer.h"
 #include "ui/events/android/event_handler_android.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace cc::slim {
@@ -187,44 +191,106 @@ class CONTENT_EXPORT WebContentsViewAndroid : public WebContentsView,
       RenderWidgetHostViewCreateFunction create_render_widget_host_view);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAndroidTest,
-                           DragInaccessibleImage_SameTab_Filtered);
-  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAndroidTest,
-                           DragAccessibleImage_SameTab_Allowed);
-  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAndroidTest,
-                           DragImage_ExternalSource_Allowed);
-  FRIEND_TEST_ALL_PREFIXES(
-      WebContentsViewAndroidTest,
-      DragInaccessibleImage_MixedMimeTypes_PreservesStringTypes);
-  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAndroidTest,
-                           OnDragEnded_ResetsDropDataAndSecurityInfo);
-  FRIEND_TEST_ALL_PREFIXES(
-      WebContentsViewAndroidTest,
-      CanDragEnter_RejectedSuppressesDragEnterLocationAndDrop);
-  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAndroidTest,
-                           CanDragEnter_AcceptedSetsTargetRwh);
-  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAndroidTest,
-                           UpdateDragOperation_IgnoresStaleTargetRwh);
+  friend class WebContentsViewAndroidTest;
 
+  // Per-drag target state for an incoming drag on this view. Created from the
+  // drag event's `ClipDescription` on `ACTION_DRAG_ENTERED` (or lazily on
+  // `ACTION_DRAG_LOCATION` / `ACTION_DROP` if no session exists yet) via
+  // `CreateDragTargetSession()`. `active_drag_` drops its reference when the
+  // drag exits (`OnDragExited()`, including drop aborts and replacement
+  // `ACTION_DRAG_ENTERED`) or ends (`OnDragEnded()`), while in-flight
+  // `DragUpdatedCallback()` and `OnPerformingDropContext` callbacks retain a
+  // reference so late hit-test or delegate completions still enforce
+  // per-session target entry and `CanDragEnter` checks.
+  struct DragTargetSession : public base::RefCounted<DragTargetSession> {
+    DragTargetSession();
+    DragTargetSession(const DragTargetSession&) = delete;
+    DragTargetSession& operator=(const DragTargetSession&) = delete;
+
+    // Metadata parsed from the drag event's `ClipDescription` when the session
+    // was created.
+    std::vector<DropData::Metadata> metadata;
+    // Target RenderWidgetHost currently entered by this drag. If hit-testing
+    // moves onto a different RenderWidgetHost during the drag, the previous one
+    // receives `DragTargetDragLeave` and the new one receives
+    // `DragTargetDragEnterWithMetaData`.
+    base::WeakPtr<RenderWidgetHostImpl> target_rwh;
+    // The operation `target_rwh` decided to perform on drop.
+    ui::mojom::DragOperation operation = ui::mojom::DragOperation::kNone;
+    // True when `target_rwh`'s document has registered interest in the dragged
+    // data so the renderer should pass the data to the document on drop.
+    bool document_is_handling_drag = false;
+    // True when `WebContentsDelegate::CanDragEnter` rejected this drag, so
+    // subsequent `ACTION_DRAG_LOCATION` and `ACTION_DROP` events do not
+    // re-invoke `CanDragEnter` or dispatch drag events to the renderer.
+    bool rejected_by_delegate = false;
+    // True once an unrejected `ACTION_DROP` arrives during this drag session
+    // (set before async hit-testing or `OnPerformingDrop()` completes). Used by
+    // `OnDragEnded()` to report `operation` instead of `kNone` when the session
+    // was not exited by a drop abort before `ACTION_DRAG_ENDED`.
+    bool dropped = false;
+    // True from `ACTION_DROP` until the drop has been dispatched to the
+    // renderer, aborted, or otherwise given up (`FinishDrop()`). While set,
+    // `OnDragEnded()` defers notifying the drag source (see
+    // `pending_source_drag_end`) so that, when the source and target are the
+    // same widget, the renderer receives `DragTargetDrop` before
+    // `DragSourceEndedAt`, which clears Blink's drag session.
+    bool drop_in_flight = false;
+    // Source-end notification deferred by `OnDragEnded()` while
+    // `drop_in_flight`; run by `FinishDrop()` with the final drop operation.
+    base::OnceCallback<void(ui::mojom::DragOperation)> pending_source_drag_end;
+
+   private:
+    friend class base::RefCounted<DragTargetSession>;
+    ~DragTargetSession();
+  };
+
+  struct OnPerformingDropContext;
+
+  scoped_refptr<DragTargetSession> CreateDragTargetSession(
+      const ui::DragEventAndroid& event) const;
   void OnDragEntered(const gfx::PointF& location,
                      const gfx::PointF& screen_location);
-  void DragEnteredCallback(const gfx::PointF& location,
+  void DragEnteredCallback(DragTargetSession& drag_session,
+                           const WebContentsViewDragSecurityInfo& security_info,
+                           const gfx::PointF& location,
                            const gfx::PointF& screen_location,
                            base::WeakPtr<RenderWidgetHostViewBase> target);
   void OnDragUpdated(const gfx::PointF& location,
                      const gfx::PointF& screen_location);
-  void DragUpdatedCallback(const gfx::PointF& location,
+  void DragUpdatedCallback(scoped_refptr<DragTargetSession> drag_session,
+                           const gfx::PointF& location,
                            const gfx::PointF& screen_location,
                            base::WeakPtr<RenderWidgetHostViewBase> target,
                            std::optional<gfx::PointF> transformed_pt);
   void OnDragExited();
-  void OnPerformDrop(const gfx::PointF& location,
-                     const gfx::PointF& screen_location);
-  void PerformDropCallback(const gfx::PointF& location,
-                           const gfx::PointF& screen_location,
+  void OnPerformDrop(std::unique_ptr<DropData> initial_drop_data,
+                     OnPerformingDropContext drop_context);
+  void PerformDropCallback(std::unique_ptr<DropData> initial_drop_data,
+                           OnPerformingDropContext drop_context,
                            base::WeakPtr<RenderWidgetHostViewBase> target,
                            std::optional<gfx::PointF> transformed_pt);
+  // Called once `delegate_` has processed the drop. `modified_drop_data` holds
+  // the (possibly modified) data to dispatch to the renderer, or nothing if
+  // the delegate aborted the drop.
+  void GotModifiedDropDataFromDelegate(
+      OnPerformingDropContext drop_context,
+      std::optional<DropData> modified_drop_data);
+  // Dispatches `drop_data` to `drop_context.target_rwh`.
+  void CompleteDrop(OnPerformingDropContext drop_context,
+                    std::unique_ptr<DropData> drop_data);
+  // Marks `drag_session`'s drop as no longer in flight and runs any source-end
+  // notification `OnDragEnded()` deferred until then, reporting `operation`.
+  // No-op if the drop already finished.
+  void FinishDrop(scoped_refptr<DragTargetSession> drag_session,
+                  ui::mojom::DragOperation operation);
   void OnDragEnded();
+  // Tells the source renderer `source_rwh` that its drag ended at `location`
+  // with `operation` (`DragSourceEndedAt` + `OnSystemDragEnded`).
+  void EndSourceDrag(base::WeakPtr<RenderWidgetHostImpl> source_rwh,
+                     const gfx::PointF& location,
+                     const gfx::PointF& screen_location,
+                     ui::mojom::DragOperation operation);
   virtual void OnSystemDragEnded(RenderWidgetHost* source_rwh);
 
   // Clears internal and system drag-and-drop state when a drag attempt fails to
@@ -248,7 +314,8 @@ class CONTENT_EXPORT WebContentsViewAndroid : public WebContentsView,
   // Handles "overscroll to refresh" events
   std::unique_ptr<ui::OverscrollRefreshHandler> overscroll_refresh_handler_;
 
-  // Interface for extensions to WebContentsView. Used to show the context menu.
+  // Interface for extensions to WebContentsView (e.g. context menu and drop
+  // processing).
   std::unique_ptr<WebContentsViewDelegate> delegate_;
 
   // The native view associated with the contents of the web.
@@ -283,16 +350,25 @@ class CONTENT_EXPORT WebContentsViewAndroid : public WebContentsView,
 
   // Source RenderWidgetHost when dragging out of this WebContents.
   base::WeakPtr<RenderWidgetHostImpl> current_source_rwh_for_drag_;
-  // Current drop data set on drop event.
+  // Current incoming drag target session (see `DragTargetSession` for lifetime;
+  // kept alive between an un-aborted `ACTION_DROP` and `ACTION_DRAG_ENDED` so
+  // `OnDragEnded()` can read `dropped` and `operation`). Distinct from
+  // `is_active_drag_`, which tracks drag movement for context-menu dismissal.
+  scoped_refptr<DragTargetSession> active_drag_;
+  // Drop data for the most recent drop dispatched to the renderer via
+  // `CompleteDrop()`, retained for post-drop `WebContents::GetDropData()`
+  // callers.
   std::unique_ptr<DropData> drop_data_;
-  // Metadata for the current drag.
-  std::vector<DropData::Metadata> drag_metadata_;
-  // We keep track of the target RenderWidgetHost we are currently over when
-  // dragging into this WebContents. If it changes during a drag, we need to
-  // re-send the DragEnter message.
-  base::WeakPtr<RenderWidgetHostImpl> current_target_rwh_for_drag_;
-  // Holds the security info for the current drag.
+  // Holds the security info for the current drag. `OnPerformingDropContext`
+  // copies it at `ACTION_DROP` so in-flight drop callbacks keep a snapshot
+  // across `OnDragEnded()` resetting it.
   WebContentsViewDragSecurityInfo drag_security_info_;
+  // True while `OnDragEnded()` has deferred notifying the drag source because
+  // a drop from this view's own drag is still in flight (see
+  // `DragTargetSession::pending_source_drag_end`). `StartDragging()` refuses
+  // a new drag from this view until that notification has been sent, as the
+  // source renderer still has the previous drag's session open.
+  bool source_drag_end_pending_ = false;
   // Whether drag went beyond the movement threshold to be considered as an
   // intentional drag. If true, ::ShowContextMenu will be ignored.
   bool drag_exceeded_movement_threshold_ = false;
@@ -304,26 +380,6 @@ class CONTENT_EXPORT WebContentsViewAndroid : public WebContentsView,
   gfx::PointF drag_location_;
   gfx::PointF drag_screen_location_;
 
-  // The operation the target decided to perform on drop. Valid only if
-  // |drag_dropped_| is true.
-  ui::mojom::DragOperation drag_operation_ = ui::mojom::DragOperation::kNone;
-  // True if we received an ACTION_DROP. This is used to distinguish between a
-  // successfully completed drag and a cancelled drag (where the user releases
-  // the drag outside a valid target, firing ACTION_DRAG_ENDED without an
-  // ACTION_DROP). Without this, we might erroneously report a successful drop
-  // if the drag was cancelled while hovering over a valid target.
-  // This variable is only valid while handling ACTION_DRAG_ENDED.
-  bool drag_dropped_ = false;
-
-  // Set to true when the document is handling the drag.  This means that
-  // the document has registeted interest in the dropped data and the
-  // renderer process should pass the data to the document on drop.
-  bool document_is_handling_drag_ = false;
-  // Set to true when `WebContentsDelegate::CanDragEnter` rejects the current
-  // drag so subsequent `ACTION_DRAG_LOCATION` and `ACTION_DROP` events do not
-  // re-invoke `CanDragEnter` or dispatch drag events to the renderer.
-  bool drag_rejected_by_delegate_ = false;
-
   // Manages the animation during a session history navigation.
   std::unique_ptr<BackForwardTransitionAnimationManagerAndroid>
       back_forward_animation_manager_;
@@ -331,6 +387,6 @@ class CONTENT_EXPORT WebContentsViewAndroid : public WebContentsView,
   base::WeakPtrFactory<WebContentsViewAndroid> weak_ptr_factory_{this};
 };
 
-} // namespace content
+}  // namespace content
 
 #endif  // CONTENT_BROWSER_WEB_CONTENTS_WEB_CONTENTS_VIEW_ANDROID_H_

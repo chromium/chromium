@@ -25,6 +25,9 @@ class RenderWidgetHostImpl;
 class CONTENT_EXPORT WebContentsViewDragSecurityInfo {
  public:
   WebContentsViewDragSecurityInfo();
+  WebContentsViewDragSecurityInfo(const WebContentsViewDragSecurityInfo&);
+  WebContentsViewDragSecurityInfo& operator=(
+      const WebContentsViewDragSecurityInfo&);
   ~WebContentsViewDragSecurityInfo();
 
   // Calls to be made by the owner to indicate that it has initiated or ended a

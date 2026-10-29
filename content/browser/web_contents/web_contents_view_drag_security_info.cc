@@ -31,6 +31,10 @@ bool IsDragBetweenGuestAndOtherPage(RenderWidgetHostImpl* a,
 }  // namespace
 
 WebContentsViewDragSecurityInfo::WebContentsViewDragSecurityInfo() = default;
+WebContentsViewDragSecurityInfo::WebContentsViewDragSecurityInfo(
+    const WebContentsViewDragSecurityInfo&) = default;
+WebContentsViewDragSecurityInfo& WebContentsViewDragSecurityInfo::operator=(
+    const WebContentsViewDragSecurityInfo&) = default;
 WebContentsViewDragSecurityInfo::~WebContentsViewDragSecurityInfo() = default;
 
 void WebContentsViewDragSecurityInfo::OnDragInitiated(

@@ -4,27 +4,56 @@
 
 #include "content/browser/web_contents/web_contents_view_android.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <deque>
 #include <memory>
+#include <optional>
+#include <ostream>
+#include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
+#include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/browser/android/drop_data_android.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/browser/web_contents/web_contents_view_drag_security_info.h"
 #include "content/public/browser/clipboard_types.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/common/drop_data.h"
+#include "content/public/common/url_constants.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fake_frame_widget.h"
 #include "content/public/test/test_renderer_host.h"
-#include "ipc/constants.mojom.h"
+#include "content/public/test/web_contents_tester.h"
+#include "content/test/test_web_contents.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/page/drag_operation.h"
+#include "third_party/blink/public/mojom/drag/drag.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/android/window_android.h"
 #include "ui/base/clipboard/clipboard_constants.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/android/drag_event_android.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/image/image_skia.h"
+#include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/jar_jni/DragEvent_jni.h"
@@ -80,6 +109,176 @@ class MockWebContentsViewAndroid : public WebContentsViewAndroid {
   bool allowed_ = false;
 };
 
+// A WebContentsViewDelegate that records OnPerformingDrop() calls and lets the
+// test decide when and how each drop completes (including out-of-order across
+// overlapping drops).
+class FakeWebContentsViewDelegate : public WebContentsViewDelegate {
+ public:
+  void OnPerformingDrop(const DropData& drop_data,
+                        DropCompletionCallback callback) override {
+    on_performing_drop_call_count_++;
+    last_drop_data_ = drop_data;
+    pending_callbacks_.push_back(std::move(callback));
+  }
+
+  // Completes the oldest pending drop with `drop_data`, or aborts if nullopt.
+  void CompletePendingDrop(std::optional<DropData> drop_data) {
+    CompletePendingDropAt(0, std::move(drop_data));
+  }
+
+  // Completes the pending drop at `index` and removes it from the queue.
+  void CompletePendingDropAt(size_t index, std::optional<DropData> drop_data) {
+    ASSERT_LT(index, pending_callbacks_.size());
+    DropCompletionCallback callback = std::move(pending_callbacks_[index]);
+    pending_callbacks_.erase(pending_callbacks_.begin() + index);
+    std::move(callback).Run(std::move(drop_data));
+  }
+
+  int on_performing_drop_call_count() const {
+    return on_performing_drop_call_count_;
+  }
+  const DropData& last_drop_data() const { return last_drop_data_; }
+
+ private:
+  int on_performing_drop_call_count_ = 0;
+  DropData last_drop_data_;
+  std::deque<DropCompletionCallback> pending_callbacks_;
+};
+
+// A drag-and-drop call received by `DragTrackingFrameWidget`, in order.
+struct DragCall {
+  enum class Kind {
+    kDragTargetDrop,
+    // `DragTargetDrop` received after `DragSourceEndedAt` cancelled the
+    // widget's drag session, which Blink ignores.
+    kDragTargetDropIgnored,
+    kDragTargetDragLeave,
+    kDragSourceEndedAt,
+  };
+
+  Kind kind;
+  // Set for `kDragSourceEndedAt`.
+  ui::mojom::DragOperation operation = ui::mojom::DragOperation::kNone;
+
+  bool operator==(const DragCall&) const = default;
+};
+
+void PrintTo(const DragCall& call, std::ostream* os) {
+  switch (call.kind) {
+    case DragCall::Kind::kDragTargetDrop:
+      *os << "DragTargetDrop";
+      return;
+    case DragCall::Kind::kDragTargetDropIgnored:
+      *os << "DragTargetDrop(ignored)";
+      return;
+    case DragCall::Kind::kDragTargetDragLeave:
+      *os << "DragTargetDragLeave";
+      return;
+    case DragCall::Kind::kDragSourceEndedAt:
+      *os << "DragSourceEndedAt(" << static_cast<int>(call.operation) << ")";
+      return;
+  }
+}
+
+// Intercepts FrameWidget drag-and-drop Mojo calls sent to Blink and runs
+// response callbacks on `DragTargetDragEnter`, `DragTargetDragOver`, and
+// `DragSourceEndedAt` (which `FakeFrameWidget`'s empty overrides otherwise drop
+// while `receiver_` remains bound).
+class DragTrackingFrameWidget : public FakeFrameWidget {
+ public:
+  explicit DragTrackingFrameWidget(
+      mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget> receiver)
+      : FakeFrameWidget(mojo::NullAssociatedReceiver()),
+        receiver_(this, std::move(receiver)) {}
+
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
+  void DragTargetDragEnter(blink::mojom::DragDataPtr drag_data,
+                           const gfx::PointF& point_in_viewport,
+                           const gfx::PointF& screen_point,
+                           blink::DragOperationsMask operations_allowed,
+                           uint32_t key_modifiers,
+                           DragTargetDragEnterCallback callback) override {
+    drag_enter_count_++;
+    last_entered_item_count_ = drag_data ? drag_data->items.size() : 0u;
+    std::move(callback).Run(ui::mojom::DragOperation::kCopy,
+                            /*document_is_handling_drag=*/true);
+  }
+
+  void DragTargetDragOver(const gfx::PointF& point_in_viewport,
+                          const gfx::PointF& screen_point,
+                          blink::DragOperationsMask operations_allowed,
+                          uint32_t modifiers,
+                          DragTargetDragOverCallback callback) override {
+    std::move(callback).Run(ui::mojom::DragOperation::kCopy,
+                            /*document_is_handling_drag=*/true);
+  }
+
+  void DragTargetDragLeave(const gfx::PointF& point_in_viewport,
+                           const gfx::PointF& screen_point) override {
+    calls_.push_back({DragCall::Kind::kDragTargetDragLeave});
+    drag_leave_count_++;
+  }
+
+  void DragTargetDrop(blink::mojom::DragDataPtr drag_data,
+                      const gfx::PointF& point_in_viewport,
+                      const gfx::PointF& screen_point,
+                      uint32_t key_modifiers,
+                      base::OnceClosure callback) override {
+    // Mirror `WebFrameWidgetImpl::DragTargetDrop`, which ignores a drop once
+    // `DragSourceEndedAt` has cancelled the widget's drag session.
+    if (drag_session_cancelled_) {
+      calls_.push_back({DragCall::Kind::kDragTargetDropIgnored});
+      std::move(callback).Run();
+      return;
+    }
+    calls_.push_back({DragCall::Kind::kDragTargetDrop});
+    drop_count_++;
+    last_dropped_text_.reset();
+    if (drag_data) {
+      for (const auto& item : drag_data->items) {
+        if (item->is_string() &&
+            item->get_string()->string_type == ui::kMimeTypePlainText) {
+          last_dropped_text_ = item->get_string()->string_data;
+        }
+      }
+    }
+    std::move(callback).Run();
+  }
+
+  void DragSourceEndedAt(const gfx::PointF& client_point,
+                         const gfx::PointF& screen_point,
+                         ui::mojom::DragOperation operation,
+                         base::OnceClosure callback) override {
+    // Mirror `WebFrameWidgetImpl::DragSourceEndedAt`, which ends with
+    // `DragSourceSystemDragEnded()` -> `CancelDrag()`.
+    drag_session_cancelled_ = true;
+    calls_.push_back({DragCall::Kind::kDragSourceEndedAt, operation});
+    std::move(callback).Run();
+  }
+
+  int drag_enter_count() const { return drag_enter_count_; }
+  size_t last_entered_item_count() const { return last_entered_item_count_; }
+  int drag_leave_count() const { return drag_leave_count_; }
+  int drop_count() const { return drop_count_; }
+  const std::optional<std::u16string>& last_dropped_text() const {
+    return last_dropped_text_;
+  }
+  // Drag-and-drop calls in the order Blink received them (drop, leave and
+  // source-ended only).
+  const std::vector<DragCall>& calls() const { return calls_; }
+
+ private:
+  mojo::AssociatedReceiver<blink::mojom::FrameWidget> receiver_;
+  bool drag_session_cancelled_ = false;
+  std::vector<DragCall> calls_;
+  int drag_enter_count_ = 0;
+  size_t last_entered_item_count_ = 0;
+  int drag_leave_count_ = 0;
+  int drop_count_ = 0;
+  std::optional<std::u16string> last_dropped_text_;
+};
+
 // Named fields for MakeDragEvent(). Unset fields are null or empty, so tests
 // only spell out what they care about.
 struct DragEventParams {
@@ -118,13 +317,60 @@ class WebContentsViewAndroidTest : public RenderViewHostTestHarness {
     const char kGoogleUrl[] = "https://google.com/";
     NavigateAndCommit(GURL(kGoogleUrl));
 
-    view_ = std::make_unique<MockWebContentsViewAndroid>(
-        static_cast<WebContentsImpl*>(web_contents()), nullptr);
+    view_ = std::make_unique<MockWebContentsViewAndroid>(test_web_contents(),
+                                                         nullptr);
+    test_web_contents()->set_delegate_view(view_.get());
   }
 
   void TearDown() override {
+    test_web_contents()->SetDeferGetRenderWidgetHostAtPoint(false);
+    test_web_contents()->set_delegate_view(nullptr);
     view_.reset();
     RenderViewHostTestHarness::TearDown();
+  }
+
+  // Replaces the view under test with one owning `delegate`.
+  void RecreateViewWithDelegate(
+      std::unique_ptr<WebContentsViewDelegate> delegate) {
+    test_web_contents()->set_delegate_view(nullptr);
+    view_ = std::make_unique<MockWebContentsViewAndroid>(test_web_contents(),
+                                                         std::move(delegate));
+    test_web_contents()->set_delegate_view(view_.get());
+  }
+
+  // Simulates a drag entering the view and dropping `text` on it.
+  void SimulateTextDrop(std::string_view text) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    std::vector<std::u16string> mime_types = {ui::kMimeTypePlainText16};
+    ui::DragEventAndroid enter_event =
+        MakeDragEvent({.action = DragEventJni::ACTION_DRAG_ENTERED,
+                       .mime_types = &mime_types});
+    view()->OnDragEvent(enter_event);
+
+    base::android::ScopedJavaLocalRef<jstring> j_text =
+        base::android::ConvertUTF8ToJavaString(env, text);
+    ui::DragEventAndroid drop_event =
+        MakeDragEvent({.action = DragEventJni::ACTION_DROP,
+                       .location = gfx::PointF(10, 10),
+                       .screen_location = gfx::PointF(10, 10),
+                       .mime_types = &mime_types,
+                       .text = j_text});
+    view()->OnDragEvent(drop_event);
+  }
+
+  void SimulateDragEnded() {
+    ui::DragEventAndroid end_event =
+        MakeDragEvent({.action = DragEventJni::ACTION_DRAG_ENDED});
+    view()->OnDragEvent(end_event);
+  }
+
+  void TriggerDeferredHitTest() {
+    base::RunLoop run_loop;
+    test_web_contents()
+        ->TriggerGetRenderWidgetHostAtPointAsynchronouslyCallback();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
   }
 
   gfx::ImageSkia CreateValidDragImage() {
@@ -138,7 +384,36 @@ class WebContentsViewAndroidTest : public RenderViewHostTestHarness {
         web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
   }
 
+  TestWebContents* test_web_contents() {
+    return static_cast<TestWebContents*>(web_contents());
+  }
+
   MockWebContentsViewAndroid* view() { return view_.get(); }
+
+ protected:
+  using DragTargetSession = WebContentsViewAndroid::DragTargetSession;
+
+  const DragTargetSession* active_drag() const {
+    return view_->active_drag_.get();
+  }
+
+  const WebContentsViewDragSecurityInfo& drag_security_info() const {
+    return view_->drag_security_info_;
+  }
+
+  void InitiateDragSecurityInfo(RenderWidgetHostImpl* source_rwh,
+                                const DropData& drop_data) {
+    view_->drag_security_info_.OnDragInitiated(source_rwh, drop_data);
+  }
+
+  // Puts the view in the state `StartDragging()` leaves it in once the system
+  // drag has started from `source_rwh`. (The unit test harness has no Java
+  // `ViewAndroidDelegate`, so `StartDragging()` itself cannot start one.)
+  void SetDragSource(RenderWidgetHostImpl* source_rwh,
+                     const DropData& drop_data) {
+    view_->current_source_rwh_for_drag_ = source_rwh->GetWeakPtr();
+    InitiateDragSecurityInfo(source_rwh, drop_data);
+  }
 
  private:
   std::unique_ptr<MockWebContentsViewAndroid> view_;
@@ -196,7 +471,7 @@ TEST_F(WebContentsViewAndroidTest, DragInaccessibleImage_SameTab_Filtered) {
   drop_data.file_contents_source_url =
       GURL("https://different-origin.com/image.png");
   drop_data.file_contents_filename_extension = "png";
-  view()->drag_security_info_.OnDragInitiated(GetRenderWidgetHost(), drop_data);
+  InitiateDragSecurityInfo(GetRenderWidgetHost(), drop_data);
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
@@ -208,7 +483,8 @@ TEST_F(WebContentsViewAndroidTest, DragInaccessibleImage_SameTab_Filtered) {
   view()->OnDragEvent(enter_event);
 
   // File metadata should not be advertised when image access is not allowed.
-  EXPECT_TRUE(view()->drag_metadata_.empty());
+  ASSERT_TRUE(active_drag());
+  EXPECT_TRUE(active_drag()->metadata.empty());
 
   // ACTION_DROP with filenames.
   std::vector<std::vector<std::string>> filenames_vec = {
@@ -234,7 +510,7 @@ TEST_F(WebContentsViewAndroidTest, DragAccessibleImage_SameTab_Allowed) {
   drop_data.file_contents_image_accessible = true;
   drop_data.file_contents_source_url = GURL("https://google.com/image.png");
   drop_data.file_contents_filename_extension = "png";
-  view()->drag_security_info_.OnDragInitiated(GetRenderWidgetHost(), drop_data);
+  InitiateDragSecurityInfo(GetRenderWidgetHost(), drop_data);
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
@@ -246,9 +522,10 @@ TEST_F(WebContentsViewAndroidTest, DragAccessibleImage_SameTab_Allowed) {
   view()->OnDragEvent(enter_event);
 
   // File metadata should be advertised when image access is allowed.
-  ASSERT_EQ(view()->drag_metadata_.size(), 1u);
-  EXPECT_EQ(view()->drag_metadata_[0].kind, DropData::Kind::FILENAME);
-  EXPECT_EQ(view()->drag_metadata_[0].filename, base::FilePath("file.png"));
+  ASSERT_TRUE(active_drag());
+  ASSERT_EQ(active_drag()->metadata.size(), 1u);
+  EXPECT_EQ(active_drag()->metadata[0].kind, DropData::Kind::FILENAME);
+  EXPECT_EQ(active_drag()->metadata[0].filename, base::FilePath("file.png"));
 
   // ACTION_DROP with filenames.
   std::vector<std::vector<std::string>> filenames_vec = {
@@ -272,7 +549,7 @@ TEST_F(WebContentsViewAndroidTest, DragAccessibleImage_SameTab_Allowed) {
 
 TEST_F(WebContentsViewAndroidTest, DragImage_ExternalSource_Allowed) {
   // No drag initiated on view.
-  EXPECT_FALSE(view()->drag_security_info_.did_initiate());
+  EXPECT_FALSE(drag_security_info().did_initiate());
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
@@ -283,8 +560,9 @@ TEST_F(WebContentsViewAndroidTest, DragImage_ExternalSource_Allowed) {
                      .mime_types = &enter_mime_types});
   view()->OnDragEvent(enter_event);
 
-  ASSERT_EQ(view()->drag_metadata_.size(), 1u);
-  EXPECT_EQ(view()->drag_metadata_[0].kind, DropData::Kind::FILENAME);
+  ASSERT_TRUE(active_drag());
+  ASSERT_EQ(active_drag()->metadata.size(), 1u);
+  EXPECT_EQ(active_drag()->metadata[0].kind, DropData::Kind::FILENAME);
 
   // ACTION_DROP with filenames.
   std::vector<std::vector<std::string>> filenames_vec = {
@@ -312,7 +590,7 @@ TEST_F(WebContentsViewAndroidTest,
   drop_data.file_contents_source_url =
       GURL("https://different-origin.com/image.png");
   drop_data.file_contents_filename_extension = "png";
-  view()->drag_security_info_.OnDragInitiated(GetRenderWidgetHost(), drop_data);
+  InitiateDragSecurityInfo(GetRenderWidgetHost(), drop_data);
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
@@ -325,9 +603,10 @@ TEST_F(WebContentsViewAndroidTest,
   view()->OnDragEvent(enter_event);
 
   // String MIME type is kept in metadata, while file metadata is omitted.
-  ASSERT_EQ(view()->drag_metadata_.size(), 1u);
-  EXPECT_EQ(view()->drag_metadata_[0].kind, DropData::Kind::STRING);
-  EXPECT_EQ(view()->drag_metadata_[0].mime_type, ui::kMimeTypePlainText16);
+  ASSERT_TRUE(active_drag());
+  ASSERT_EQ(active_drag()->metadata.size(), 1u);
+  EXPECT_EQ(active_drag()->metadata[0].kind, DropData::Kind::STRING);
+  EXPECT_EQ(active_drag()->metadata[0].mime_type, ui::kMimeTypePlainText16);
 
   // ACTION_DROP with text and filenames.
   base::android::ScopedJavaLocalRef<jstring> j_text =
@@ -353,18 +632,18 @@ TEST_F(WebContentsViewAndroidTest, OnDragEnded_ResetsDropDataAndSecurityInfo) {
   DropData drop_data;
   drop_data.file_contents = {'t', 'e', 's', 't'};
   drop_data.file_contents_image_accessible = false;
-  view()->drag_security_info_.OnDragInitiated(GetRenderWidgetHost(), drop_data);
+  InitiateDragSecurityInfo(GetRenderWidgetHost(), drop_data);
 
-  EXPECT_TRUE(view()->drag_security_info_.did_initiate());
-  EXPECT_FALSE(view()->drag_security_info_.IsImageAccessibleFromFrame());
+  EXPECT_TRUE(drag_security_info().did_initiate());
+  EXPECT_FALSE(drag_security_info().IsImageAccessibleFromFrame());
 
   ui::DragEventAndroid end_event =
       MakeDragEvent({.action = DragEventJni::ACTION_DRAG_ENDED});
 
   view()->OnDragEvent(end_event);
 
-  EXPECT_FALSE(view()->drag_security_info_.did_initiate());
-  EXPECT_TRUE(view()->drag_security_info_.IsImageAccessibleFromFrame());
+  EXPECT_FALSE(drag_security_info().did_initiate());
+  EXPECT_TRUE(drag_security_info().IsImageAccessibleFromFrame());
 }
 
 TEST_F(WebContentsViewAndroidTest, ColorProviderSourceFallback) {
@@ -399,6 +678,12 @@ TEST_F(WebContentsViewAndroidTest, ColorProviderSourceFallback) {
 
 TEST_F(WebContentsViewAndroidTest,
        CanDragEnter_RejectedSuppressesDragEnterLocationAndDrop) {
+  DragTrackingFrameWidget frame_widget(
+      BindFakeFrameWidgetInterfaces(main_rfh()));
+  auto owned_view_delegate = std::make_unique<FakeWebContentsViewDelegate>();
+  FakeWebContentsViewDelegate* view_delegate = owned_view_delegate.get();
+  RecreateViewWithDelegate(std::move(owned_view_delegate));
+
   MockWebContentsDelegate delegate(/*can_drag_enter=*/false);
   web_contents()->SetDelegate(&delegate);
 
@@ -411,7 +696,9 @@ TEST_F(WebContentsViewAndroidTest,
 
   EXPECT_EQ(delegate.can_drag_enter_call_count(), 1);
   EXPECT_TRUE(delegate.last_drop_data().text.has_value());
-  EXPECT_FALSE(view()->current_target_rwh_for_drag_);
+  ASSERT_TRUE(active_drag());
+  EXPECT_TRUE(active_drag()->rejected_by_delegate);
+  EXPECT_FALSE(active_drag()->target_rwh);
 
   ui::DragEventAndroid location_event =
       MakeDragEvent({.action = DragEventJni::ACTION_DRAG_LOCATION,
@@ -420,7 +707,8 @@ TEST_F(WebContentsViewAndroidTest,
                      .mime_types = &mime_types});
   view()->OnDragEvent(location_event);
   EXPECT_EQ(delegate.can_drag_enter_call_count(), 1);
-  EXPECT_FALSE(view()->current_target_rwh_for_drag_);
+  ASSERT_TRUE(active_drag());
+  EXPECT_FALSE(active_drag()->target_rwh);
 
   base::android::ScopedJavaLocalRef<jstring> j_text =
       base::android::ConvertUTF8ToJavaString(env, "rejected text");
@@ -431,17 +719,20 @@ TEST_F(WebContentsViewAndroidTest,
                      .mime_types = &mime_types,
                      .text = j_text});
   view()->OnDragEvent(drop_event);
+  frame_widget.FlushForTesting();
   EXPECT_EQ(delegate.can_drag_enter_call_count(), 1);
-  EXPECT_FALSE(view()->current_target_rwh_for_drag_);
-  ASSERT_TRUE(view()->GetDropData());
-  // FilterDropData sets view_id to the target RWH routing ID; when rejected,
-  // FilterDropData and DragTargetDrop are not called.
-  EXPECT_EQ(view()->GetDropData()->view_id, IPC::mojom::kRoutingIdNone);
+  EXPECT_EQ(view_delegate->on_performing_drop_call_count(), 0);
+  EXPECT_EQ(frame_widget.drag_enter_count(), 0);
+  EXPECT_EQ(frame_widget.drop_count(), 0);
+  ASSERT_TRUE(active_drag());
+  EXPECT_FALSE(active_drag()->target_rwh);
+  EXPECT_FALSE(view()->GetDropData());
 
-  // Exiting resets `drag_rejected_by_delegate_` so the next drag is evaluated.
+  // Exiting destroys `active_drag_` so the next drag is evaluated afresh.
   ui::DragEventAndroid exit_event =
       MakeDragEvent({.action = DragEventJni::ACTION_DRAG_EXITED});
   view()->OnDragEvent(exit_event);
+  EXPECT_FALSE(active_drag());
   view()->OnDragEvent(enter_event);
   EXPECT_EQ(delegate.can_drag_enter_call_count(), 2);
 
@@ -462,7 +753,8 @@ TEST_F(WebContentsViewAndroidTest, CanDragEnter_AcceptedSetsTargetRwh) {
 
   EXPECT_EQ(delegate.can_drag_enter_call_count(), 1);
   ASSERT_EQ(delegate.last_drop_data().filenames.size(), 1u);
-  EXPECT_EQ(view()->current_target_rwh_for_drag_.get(), GetRenderWidgetHost());
+  ASSERT_TRUE(active_drag());
+  EXPECT_EQ(active_drag()->target_rwh.get(), GetRenderWidgetHost());
 
   web_contents()->SetDelegate(nullptr);
 }
@@ -473,14 +765,15 @@ TEST_F(WebContentsViewAndroidTest, UpdateDragOperation_IgnoresStaleTargetRwh) {
   ui::DragEventAndroid enter_event = MakeDragEvent(
       {.action = DragEventJni::ACTION_DRAG_ENTERED, .mime_types = &mime_types});
   view()->OnDragEvent(enter_event);
-  ASSERT_EQ(GetRenderWidgetHost(), view()->current_target_rwh_for_drag_.get());
+  ASSERT_TRUE(active_drag());
+  ASSERT_EQ(active_drag()->target_rwh.get(), GetRenderWidgetHost());
 
   // Update from the current target RWH succeeds.
   view()->UpdateDragOperation(ui::mojom::DragOperation::kCopy,
                               /*document_is_handling_drag=*/true,
                               GetRenderWidgetHost());
-  EXPECT_EQ(ui::mojom::DragOperation::kCopy, view()->drag_operation_);
-  EXPECT_TRUE(view()->document_is_handling_drag_);
+  EXPECT_EQ(active_drag()->operation, ui::mojom::DragOperation::kCopy);
+  EXPECT_TRUE(active_drag()->document_is_handling_drag);
 
   // UpdateDragOperation from a non-current or null RWH must not overwrite the
   // current target RWH's state.
@@ -491,44 +784,614 @@ TEST_F(WebContentsViewAndroidTest, UpdateDragOperation_IgnoresStaleTargetRwh) {
                               /*document_is_handling_drag=*/false, other_rwh);
   view()->UpdateDragOperation(ui::mojom::DragOperation::kNone,
                               /*document_is_handling_drag=*/false, nullptr);
-  EXPECT_EQ(ui::mojom::DragOperation::kCopy, view()->drag_operation_);
-  EXPECT_TRUE(view()->document_is_handling_drag_);
+  EXPECT_EQ(active_drag()->operation, ui::mojom::DragOperation::kCopy);
+  EXPECT_TRUE(active_drag()->document_is_handling_drag);
 
-  // Exiting the drag resets current_target_rwh_for_drag_, drag_operation_, and
-  // document_is_handling_drag_, and ignores late replies arriving after exit.
+  // Exiting the drag destroys `active_drag_` and ignores late replies arriving
+  // after exit.
   ui::DragEventAndroid exit_event =
       MakeDragEvent({.action = DragEventJni::ACTION_DRAG_EXITED});
   view()->OnDragEvent(exit_event);
-  EXPECT_FALSE(view()->current_target_rwh_for_drag_);
-  EXPECT_EQ(ui::mojom::DragOperation::kNone, view()->drag_operation_);
-  EXPECT_FALSE(view()->document_is_handling_drag_);
+  EXPECT_FALSE(active_drag());
 
   view()->UpdateDragOperation(ui::mojom::DragOperation::kCopy,
                               /*document_is_handling_drag=*/true,
                               GetRenderWidgetHost());
-  EXPECT_EQ(ui::mojom::DragOperation::kNone, view()->drag_operation_);
-  EXPECT_FALSE(view()->document_is_handling_drag_);
+  EXPECT_FALSE(active_drag());
 
-  // Re-entering and then ending the drag also resets drag_operation_ and
-  // document_is_handling_drag_, and ignores late replies arriving after end.
+  // Re-entering and then ending the drag also destroys `active_drag_` and
+  // ignores late replies arriving after end.
   view()->OnDragEvent(enter_event);
   view()->UpdateDragOperation(ui::mojom::DragOperation::kCopy,
                               /*document_is_handling_drag=*/true,
                               GetRenderWidgetHost());
-  EXPECT_EQ(ui::mojom::DragOperation::kCopy, view()->drag_operation_);
-  EXPECT_TRUE(view()->document_is_handling_drag_);
+  ASSERT_TRUE(active_drag());
+  EXPECT_EQ(active_drag()->operation, ui::mojom::DragOperation::kCopy);
+  EXPECT_TRUE(active_drag()->document_is_handling_drag);
 
   ui::DragEventAndroid end_event =
       MakeDragEvent({.action = DragEventJni::ACTION_DRAG_ENDED});
   view()->OnDragEvent(end_event);
-  EXPECT_EQ(ui::mojom::DragOperation::kNone, view()->drag_operation_);
-  EXPECT_FALSE(view()->document_is_handling_drag_);
+  EXPECT_FALSE(active_drag());
 
   view()->UpdateDragOperation(ui::mojom::DragOperation::kCopy,
                               /*document_is_handling_drag=*/true,
                               GetRenderWidgetHost());
-  EXPECT_EQ(ui::mojom::DragOperation::kNone, view()->drag_operation_);
-  EXPECT_FALSE(view()->document_is_handling_drag_);
+  EXPECT_FALSE(active_drag());
+}
+
+// Without a WebContentsViewDelegate the drop is dispatched to the renderer
+// directly.
+TEST_F(WebContentsViewAndroidTest, OnPerformingDrop_NoDelegateDispatchesDrop) {
+  DragTrackingFrameWidget frame_widget(
+      BindFakeFrameWidgetInterfaces(main_rfh()));
+
+  SimulateTextDrop("dropped text");
+  frame_widget.FlushForTesting();
+
+  EXPECT_EQ(frame_widget.drop_count(), 1);
+  EXPECT_EQ(frame_widget.last_dropped_text(), u"dropped text");
+  ASSERT_TRUE(view()->GetDropData());
+  EXPECT_EQ(view()->GetDropData()->view_id,
+            GetRenderWidgetHost()->GetRoutingID());
+}
+
+// The default WebContentsViewDelegate::OnPerformingDrop() implementation
+// synchronously passes the drop through unchanged.
+TEST_F(WebContentsViewAndroidTest,
+       OnPerformingDrop_DefaultDelegatePassesDropThrough) {
+  DragTrackingFrameWidget frame_widget(
+      BindFakeFrameWidgetInterfaces(main_rfh()));
+  RecreateViewWithDelegate(std::make_unique<WebContentsViewDelegate>());
+
+  SimulateTextDrop("default delegate text");
+  frame_widget.FlushForTesting();
+
+  EXPECT_EQ(frame_widget.drop_count(), 1);
+  EXPECT_EQ(frame_widget.last_dropped_text(), u"default delegate text");
+  ASSERT_TRUE(view()->GetDropData());
+  EXPECT_EQ(view()->GetDropData()->text, u"default delegate text");
+  EXPECT_EQ(view()->GetDropData()->view_id,
+            GetRenderWidgetHost()->GetRoutingID());
+}
+
+// `FilterDropData` runs on the target RenderWidgetHost before
+// `delegate_->OnPerformingDrop()`, matching Aura and Mac so delegates see
+// renderer-filtered URLs and `view_id`.
+TEST_F(WebContentsViewAndroidTest,
+       OnPerformingDrop_FiltersDropDataBeforeDelegate) {
+  auto owned_delegate = std::make_unique<FakeWebContentsViewDelegate>();
+  FakeWebContentsViewDelegate* delegate = owned_delegate.get();
+  RecreateViewWithDelegate(std::move(owned_delegate));
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::vector<std::u16string> mime_types = {ui::kMimeTypeMozillaUrl16};
+  ui::DragEventAndroid enter_event = MakeDragEvent(
+      {.action = DragEventJni::ACTION_DRAG_ENTERED, .mime_types = &mime_types});
+  view()->OnDragEvent(enter_event);
+
+  base::android::ScopedJavaLocalRef<jstring> j_url =
+      base::android::ConvertUTF8ToJavaString(env, "javascript:alert(1)");
+  ui::DragEventAndroid drop_event =
+      MakeDragEvent({.action = DragEventJni::ACTION_DROP,
+                     .location = gfx::PointF(10, 10),
+                     .screen_location = gfx::PointF(10, 10),
+                     .mime_types = &mime_types,
+                     .url = j_url});
+  view()->OnDragEvent(drop_event);
+
+  ASSERT_EQ(delegate->on_performing_drop_call_count(), 1);
+  EXPECT_EQ(delegate->last_drop_data().view_id,
+            GetRenderWidgetHost()->GetRoutingID());
+  ASSERT_EQ(delegate->last_drop_data().url_infos.size(), 1u);
+  EXPECT_EQ(delegate->last_drop_data().url_infos[0].url, GURL(kBlockedURL));
+}
+
+TEST_F(WebContentsViewAndroidTest,
+       OnPerformingDrop_DispatchesDelegateModifiedDropData) {
+  DragTrackingFrameWidget frame_widget(
+      BindFakeFrameWidgetInterfaces(main_rfh()));
+  auto owned_delegate = std::make_unique<FakeWebContentsViewDelegate>();
+  FakeWebContentsViewDelegate* delegate = owned_delegate.get();
+  RecreateViewWithDelegate(std::move(owned_delegate));
+
+  SimulateTextDrop("original text");
+  frame_widget.FlushForTesting();
+
+  // The delegate sees the drop data and the drop waits for its completion
+  // before reaching Blink or populating `GetDropData()`.
+  EXPECT_EQ(delegate->on_performing_drop_call_count(), 1);
+  EXPECT_EQ(delegate->last_drop_data().text, u"original text");
+  EXPECT_EQ(frame_widget.drop_count(), 0);
+  EXPECT_FALSE(view()->GetDropData());
+
+  DropData modified_drop_data = delegate->last_drop_data();
+  modified_drop_data.text = u"modified text";
+  delegate->CompletePendingDrop(std::move(modified_drop_data));
+  frame_widget.FlushForTesting();
+
+  // The delegate-modified data is what gets dispatched to the renderer.
+  EXPECT_EQ(frame_widget.drop_count(), 1);
+  EXPECT_EQ(frame_widget.last_dropped_text(), u"modified text");
+  ASSERT_TRUE(view()->GetDropData());
+  EXPECT_EQ(view()->GetDropData()->text, u"modified text");
+  EXPECT_EQ(view()->GetDropData()->view_id,
+            GetRenderWidgetHost()->GetRoutingID());
+}
+
+TEST_F(WebContentsViewAndroidTest,
+       OnPerformingDrop_AbortLeavesDragWithoutDrop) {
+  DragTrackingFrameWidget frame_widget(
+      BindFakeFrameWidgetInterfaces(main_rfh()));
+  auto owned_delegate = std::make_unique<FakeWebContentsViewDelegate>();
+  FakeWebContentsViewDelegate* delegate = owned_delegate.get();
+  RecreateViewWithDelegate(std::move(owned_delegate));
+
+  SimulateTextDrop("aborted text");
+  EXPECT_EQ(delegate->on_performing_drop_call_count(), 1);
+  ASSERT_TRUE(active_drag());
+  EXPECT_EQ(active_drag()->target_rwh.get(), GetRenderWidgetHost());
+
+  delegate->CompletePendingDrop(std::nullopt);
+  frame_widget.FlushForTesting();
+
+  // The drop is never dispatched and the renderer's drag session is left, as
+  // if the drag had exited the view.
+  EXPECT_EQ(frame_widget.drag_leave_count(), 1);
+  EXPECT_EQ(frame_widget.drop_count(), 0);
+  EXPECT_FALSE(view()->GetDropData());
+  EXPECT_FALSE(active_drag());
+
+  SimulateDragEnded();
+  EXPECT_FALSE(active_drag());
+}
+
+// An asynchronous `OnPerformingDrop()` completion that arrives after
+// `ACTION_DRAG_ENDED` still dispatches the drop it was given.
+TEST_F(WebContentsViewAndroidTest,
+       OnPerformingDrop_CompletedAfterDragEndedStillDispatchesDrop) {
+  DragTrackingFrameWidget frame_widget(
+      BindFakeFrameWidgetInterfaces(main_rfh()));
+  auto owned_delegate = std::make_unique<FakeWebContentsViewDelegate>();
+  FakeWebContentsViewDelegate* delegate = owned_delegate.get();
+  RecreateViewWithDelegate(std::move(owned_delegate));
+
+  SimulateTextDrop("late text");
+  EXPECT_EQ(delegate->on_performing_drop_call_count(), 1);
+
+  SimulateDragEnded();
+  EXPECT_FALSE(view()->GetDropData());
+
+  delegate->CompletePendingDrop(delegate->last_drop_data());
+  frame_widget.FlushForTesting();
+
+  EXPECT_EQ(frame_widget.drop_count(), 1);
+  EXPECT_EQ(frame_widget.last_dropped_text(), u"late text");
+  ASSERT_TRUE(view()->GetDropData());
+  EXPECT_EQ(view()->GetDropData()->text, u"late text");
+  EXPECT_EQ(view()->GetDropData()->view_id,
+            GetRenderWidgetHost()->GetRoutingID());
+}
+
+// On Android, `OnDragEnded()` destroys `active_drag_` without sending
+// `DragTargetDragLeave`. If an asynchronous `OnPerformingDrop()` callback
+// aborts after `ACTION_DRAG_ENDED`, `DragTargetDragLeave` must still reach the
+// target RenderWidgetHost so Blink dismisses its drag-over state.
+TEST_F(WebContentsViewAndroidTest,
+       OnPerformingDrop_AsyncAbortAfterDragEndedSendsDragLeave) {
+  DragTrackingFrameWidget frame_widget(
+      BindFakeFrameWidgetInterfaces(main_rfh()));
+  auto owned_delegate = std::make_unique<FakeWebContentsViewDelegate>();
+  FakeWebContentsViewDelegate* delegate = owned_delegate.get();
+  RecreateViewWithDelegate(std::move(owned_delegate));
+
+  SimulateTextDrop("late aborted text");
+  EXPECT_EQ(delegate->on_performing_drop_call_count(), 1);
+
+  SimulateDragEnded();
+  frame_widget.FlushForTesting();
+  EXPECT_EQ(frame_widget.drag_leave_count(), 0);
+
+  delegate->CompletePendingDrop(std::nullopt);
+  frame_widget.FlushForTesting();
+
+  EXPECT_EQ(frame_widget.drag_leave_count(), 1);
+  EXPECT_EQ(frame_widget.drop_count(), 0);
+  EXPECT_FALSE(view()->GetDropData());
+}
+
+// If a second drag enters the view before the first drop's asynchronous
+// `OnPerformingDrop()` callback aborts, aborting the first drop must not exit
+// or send `DragTargetDragLeave` to the active second drag session.
+TEST_F(WebContentsViewAndroidTest,
+       OnPerformingDrop_AsyncAbortDoesNotExitNewerDragSession) {
+  DragTrackingFrameWidget frame_widget(
+      BindFakeFrameWidgetInterfaces(main_rfh()));
+  auto owned_delegate = std::make_unique<FakeWebContentsViewDelegate>();
+  FakeWebContentsViewDelegate* delegate = owned_delegate.get();
+  RecreateViewWithDelegate(std::move(owned_delegate));
+
+  SimulateTextDrop("first drag");
+  EXPECT_EQ(delegate->on_performing_drop_call_count(), 1);
+  SimulateDragEnded();
+
+  // Start a second drag over the same RenderWidgetHost.
+  std::vector<std::u16string> mime_types = {ui::kMimeTypePlainText16};
+  ui::DragEventAndroid enter_event = MakeDragEvent(
+      {.action = DragEventJni::ACTION_DRAG_ENTERED, .mime_types = &mime_types});
+  view()->OnDragEvent(enter_event);
+  view()->UpdateDragOperation(ui::mojom::DragOperation::kCopy,
+                              /*document_is_handling_drag=*/true,
+                              GetRenderWidgetHost());
+  ASSERT_TRUE(active_drag());
+  ASSERT_EQ(active_drag()->target_rwh.get(), GetRenderWidgetHost());
+
+  // Abort the first drop asynchronously while the second drag is active.
+  delegate->CompletePendingDrop(std::nullopt);
+  frame_widget.FlushForTesting();
+
+  ASSERT_TRUE(active_drag());
+  EXPECT_EQ(active_drag()->target_rwh.get(), GetRenderWidgetHost());
+  EXPECT_EQ(active_drag()->operation, ui::mojom::DragOperation::kCopy);
+  EXPECT_TRUE(active_drag()->document_is_handling_drag);
+  EXPECT_EQ(frame_widget.drag_leave_count(), 0);
+  EXPECT_EQ(frame_widget.drop_count(), 0);
+}
+
+// Overlapping asynchronous drops each carry their own `OnPerformingDropContext`
+// and isolated `DropData` payload, so out-of-order completion dispatches each
+// drop's payload to Blink and updates `GetDropData()` to the drop just
+// dispatched.
+TEST_F(WebContentsViewAndroidTest,
+       OnPerformingDrop_OverlappingDropsIsolateDropData) {
+  DragTrackingFrameWidget frame_widget(
+      BindFakeFrameWidgetInterfaces(main_rfh()));
+  auto owned_delegate = std::make_unique<FakeWebContentsViewDelegate>();
+  FakeWebContentsViewDelegate* delegate = owned_delegate.get();
+  RecreateViewWithDelegate(std::move(owned_delegate));
+
+  SimulateTextDrop("first drop");
+  ASSERT_EQ(delegate->on_performing_drop_call_count(), 1);
+  DropData first_drop_data = delegate->last_drop_data();
+  SimulateDragEnded();
+  EXPECT_FALSE(view()->GetDropData());
+
+  // Perform and complete a second drop while the first callback is still
+  // pending.
+  SimulateTextDrop("second drop");
+  ASSERT_EQ(delegate->on_performing_drop_call_count(), 2);
+  delegate->CompletePendingDropAt(1, delegate->last_drop_data());
+  SimulateDragEnded();
+  frame_widget.FlushForTesting();
+
+  EXPECT_EQ(frame_widget.drop_count(), 1);
+  EXPECT_EQ(frame_widget.last_dropped_text(), u"second drop");
+  ASSERT_TRUE(view()->GetDropData());
+  EXPECT_EQ(view()->GetDropData()->text, u"second drop");
+
+  // Complete the first drop late with modified text; its own drop context was
+  // not overwritten by the second drop.
+  first_drop_data.text = u"first drop modified";
+  delegate->CompletePendingDropAt(0, std::move(first_drop_data));
+  frame_widget.FlushForTesting();
+
+  EXPECT_EQ(frame_widget.drop_count(), 2);
+  EXPECT_EQ(frame_widget.last_dropped_text(), u"first drop modified");
+  ASSERT_TRUE(view()->GetDropData());
+  EXPECT_EQ(view()->GetDropData()->text, u"first drop modified");
+}
+
+// `OnDragEnded()` resets `view()->drag_security_info_` at `ACTION_DRAG_ENDED`,
+// so `GotModifiedDropDataFromDelegate()` must re-validate against the
+// `WebContentsViewDragSecurityInfo` snapshotted at `ACTION_DROP`.
+TEST_F(WebContentsViewAndroidTest,
+       OnPerformingDrop_AsyncCompletionRevalidatesSnapshottedDragSecurityInfo) {
+  DragTrackingFrameWidget frame_widget(
+      BindFakeFrameWidgetInterfaces(main_rfh()));
+  auto owned_delegate = std::make_unique<FakeWebContentsViewDelegate>();
+  FakeWebContentsViewDelegate* delegate = owned_delegate.get();
+  RecreateViewWithDelegate(std::move(owned_delegate));
+
+  // Initiate a drag from a cross-site page hosted in another WebContents
+  // (mirroring an embedded guest page). While `other_web_contents` is alive,
+  // `IsValidDragTarget()` allows the cross-page drag into `view()`.
+  constexpr char kOtherOriginUrl[] = "https://other-origin.com/";
+  std::unique_ptr<WebContents> other_web_contents =
+      WebContentsTester::CreateTestWebContents(
+          browser_context(),
+          SiteInstance::CreateForURL(browser_context(), GURL(kOtherOriginUrl)));
+  WebContentsTester::For(other_web_contents.get())
+      ->NavigateAndCommit(GURL(kOtherOriginUrl));
+  RenderWidgetHostImpl* other_rwh = static_cast<RenderWidgetHostImpl*>(
+      other_web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost());
+  ASSERT_NE(other_rwh->GetSiteInstanceGroup()->GetId(),
+            GetRenderWidgetHost()->GetSiteInstanceGroup()->GetId());
+
+  InitiateDragSecurityInfo(other_rwh, DropData());
+  ASSERT_TRUE(drag_security_info().IsValidDragTarget(GetRenderWidgetHost()));
+
+  SimulateTextDrop("cross-page drop");
+  ASSERT_EQ(delegate->on_performing_drop_call_count(), 1);
+
+  // `ACTION_DRAG_ENDED` resets `view()->drag_security_info_`.
+  SimulateDragEnded();
+  EXPECT_FALSE(drag_security_info().did_initiate());
+
+  // Destroying the source WebContents invalidates `source_rwh_` in the
+  // snapshotted `WebContentsViewDragSecurityInfo`, so `IsValidDragTarget()` no
+  // longer treats the cross-SiteInstanceGroup target as a valid cross-page
+  // drop target.
+  other_web_contents.reset();
+
+  delegate->CompletePendingDrop(delegate->last_drop_data());
+  frame_widget.FlushForTesting();
+
+  EXPECT_EQ(frame_widget.drop_count(), 0);
+  EXPECT_FALSE(view()->GetDropData());
+}
+
+// If `ACTION_DRAG_ENDED` clears `active_drag_` while `OnPerformDrop()`'s async
+// hit-test is still in flight, `PerformDropCallback()` must still run
+// `CanDragEnter` against the `DragTargetSession` retained by
+// `OnPerformingDropContext` (including metadata parsed lazily on `ACTION_DROP`)
+// and suppress rejected drops.
+TEST_F(WebContentsViewAndroidTest,
+       PerformDropCallback_AfterDragEndedEnforcesCanDragEnter) {
+  DragTrackingFrameWidget frame_widget(
+      BindFakeFrameWidgetInterfaces(main_rfh()));
+  auto owned_view_delegate = std::make_unique<FakeWebContentsViewDelegate>();
+  FakeWebContentsViewDelegate* view_delegate = owned_view_delegate.get();
+  RecreateViewWithDelegate(std::move(owned_view_delegate));
+
+  MockWebContentsDelegate web_contents_delegate(/*can_drag_enter=*/false);
+  web_contents()->SetDelegate(&web_contents_delegate);
+  test_web_contents()->SetDeferGetRenderWidgetHostAtPoint(true);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::vector<std::u16string> mime_types = {ui::kMimeTypePlainText16};
+  base::android::ScopedJavaLocalRef<jstring> j_text =
+      base::android::ConvertUTF8ToJavaString(env, "blocked lazy drop");
+  ui::DragEventAndroid drop_event =
+      MakeDragEvent({.action = DragEventJni::ACTION_DROP,
+                     .location = gfx::PointF(10, 10),
+                     .screen_location = gfx::PointF(10, 10),
+                     .mime_types = &mime_types,
+                     .text = j_text});
+  view()->OnDragEvent(drop_event);
+
+  // `ACTION_DRAG_ENDED` arrives before the async hit-test callback runs.
+  SimulateDragEnded();
+  EXPECT_FALSE(active_drag());
+  EXPECT_EQ(web_contents_delegate.can_drag_enter_call_count(), 0);
+
+  TriggerDeferredHitTest();
+  frame_widget.FlushForTesting();
+
+  EXPECT_EQ(web_contents_delegate.can_drag_enter_call_count(), 1);
+  EXPECT_TRUE(web_contents_delegate.last_drop_data().text.has_value());
+  EXPECT_EQ(view_delegate->on_performing_drop_call_count(), 0);
+  EXPECT_EQ(frame_widget.drag_enter_count(), 0);
+  EXPECT_EQ(frame_widget.drop_count(), 0);
+  EXPECT_FALSE(view()->GetDropData());
+
+  web_contents()->SetDelegate(nullptr);
+}
+
+// If `ACTION_DRAG_ENDED` clears `active_drag_` before `PerformDropCallback()`
+// enters a target RenderWidgetHost that had not yet received
+// `DragTargetDragEnter`, `PerformDropCallback()` still enters that target with
+// parsed metadata before dispatching `DragTargetDrop`.
+TEST_F(WebContentsViewAndroidTest,
+       PerformDropCallback_AfterDragEndedEntersTargetWithMetadataBeforeDrop) {
+  DragTrackingFrameWidget frame_widget(
+      BindFakeFrameWidgetInterfaces(main_rfh()));
+  RecreateViewWithDelegate(std::make_unique<WebContentsViewDelegate>());
+
+  MockWebContentsDelegate web_contents_delegate(/*can_drag_enter=*/true);
+  web_contents()->SetDelegate(&web_contents_delegate);
+  test_web_contents()->SetDeferGetRenderWidgetHostAtPoint(true);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::vector<std::u16string> mime_types = {ui::kMimeTypePlainText16};
+  base::android::ScopedJavaLocalRef<jstring> j_text =
+      base::android::ConvertUTF8ToJavaString(env, "lazy async drop");
+  ui::DragEventAndroid drop_event =
+      MakeDragEvent({.action = DragEventJni::ACTION_DROP,
+                     .location = gfx::PointF(10, 10),
+                     .screen_location = gfx::PointF(10, 10),
+                     .mime_types = &mime_types,
+                     .text = j_text});
+  view()->OnDragEvent(drop_event);
+
+  SimulateDragEnded();
+  EXPECT_FALSE(active_drag());
+
+  TriggerDeferredHitTest();
+  frame_widget.FlushForTesting();
+
+  EXPECT_EQ(web_contents_delegate.can_drag_enter_call_count(), 1);
+  EXPECT_TRUE(web_contents_delegate.last_drop_data().text.has_value());
+  EXPECT_EQ(frame_widget.drag_enter_count(), 1);
+  EXPECT_EQ(frame_widget.last_entered_item_count(), 1u);
+  EXPECT_EQ(frame_widget.drop_count(), 1);
+  EXPECT_EQ(frame_widget.last_dropped_text(), u"lazy async drop");
+
+  web_contents()->SetDelegate(nullptr);
+}
+
+// A failed outgoing `StartDragging()` attempt must not wipe an active incoming
+// `DragTargetSession` (or its latched `rejected_by_delegate` decision).
+TEST_F(WebContentsViewAndroidTest,
+       StartDragging_FailurePreservesActiveIncomingDragSession) {
+  DragTrackingFrameWidget frame_widget(
+      BindFakeFrameWidgetInterfaces(main_rfh()));
+  auto owned_view_delegate = std::make_unique<FakeWebContentsViewDelegate>();
+  FakeWebContentsViewDelegate* view_delegate = owned_view_delegate.get();
+  RecreateViewWithDelegate(std::move(owned_view_delegate));
+
+  MockWebContentsDelegate web_contents_delegate(/*can_drag_enter=*/false);
+  web_contents()->SetDelegate(&web_contents_delegate);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::vector<std::u16string> mime_types = {ui::kMimeTypePlainText16};
+  ui::DragEventAndroid enter_event = MakeDragEvent(
+      {.action = DragEventJni::ACTION_DRAG_ENTERED, .mime_types = &mime_types});
+  view()->OnDragEvent(enter_event);
+  ASSERT_TRUE(active_drag());
+  EXPECT_TRUE(active_drag()->rejected_by_delegate);
+  EXPECT_EQ(web_contents_delegate.can_drag_enter_call_count(), 1);
+
+  // Trigger an outgoing drag start failure while the incoming drag is active.
+  view()->set_allowed(false);
+  DropData outgoing_drop_data;
+  outgoing_drop_data.text = u"Blocked outgoing drag";
+  view()->StartDragging(*web_contents()->GetPrimaryMainFrame(),
+                        outgoing_drop_data, blink::kDragOperationCopy,
+                        CreateValidDragImage(), gfx::Vector2d(), gfx::Rect(),
+                        blink::mojom::DragEventSourceInfo());
+  EXPECT_TRUE(view()->system_drag_ended_called());
+
+  ASSERT_TRUE(active_drag());
+  EXPECT_TRUE(active_drag()->rejected_by_delegate);
+
+  base::android::ScopedJavaLocalRef<jstring> j_text =
+      base::android::ConvertUTF8ToJavaString(env, "still rejected");
+  ui::DragEventAndroid drop_event =
+      MakeDragEvent({.action = DragEventJni::ACTION_DROP,
+                     .location = gfx::PointF(10, 10),
+                     .screen_location = gfx::PointF(10, 10),
+                     .mime_types = &mime_types,
+                     .text = j_text});
+  view()->OnDragEvent(drop_event);
+  frame_widget.FlushForTesting();
+
+  EXPECT_EQ(web_contents_delegate.can_drag_enter_call_count(), 1);
+  EXPECT_EQ(view_delegate->on_performing_drop_call_count(), 0);
+  EXPECT_EQ(frame_widget.drop_count(), 0);
+
+  web_contents()->SetDelegate(nullptr);
+}
+
+// When the drag source and drop target are the same widget and the drop
+// completes asynchronously after `ACTION_DRAG_ENDED`, the renderer must still
+// receive `DragTargetDrop` before `DragSourceEndedAt`: Blink's
+// `DragSourceEndedAt` cancels the widget's drag session, after which it ignores
+// `DragTargetDrop`.
+TEST_F(WebContentsViewAndroidTest,
+       OnDragEnded_DefersDragSourceEndedAtUntilAsyncDropCompletes) {
+  DragTrackingFrameWidget frame_widget(
+      BindFakeFrameWidgetInterfaces(main_rfh()));
+  auto owned_delegate = std::make_unique<FakeWebContentsViewDelegate>();
+  FakeWebContentsViewDelegate* delegate = owned_delegate.get();
+  RecreateViewWithDelegate(std::move(owned_delegate));
+
+  DropData source_drop_data;
+  source_drop_data.text = u"same-page text";
+  SetDragSource(GetRenderWidgetHost(), source_drop_data);
+
+  SimulateTextDrop("same-page text");
+  // Deliver the renderer's `DragTargetDragEnter` reply (operation = kCopy)
+  // while the drag is still active, as happens long before a real drop.
+  frame_widget.FlushForTesting();
+  EXPECT_EQ(delegate->on_performing_drop_call_count(), 1);
+  EXPECT_TRUE(frame_widget.calls().empty());
+
+  SimulateDragEnded();
+  frame_widget.FlushForTesting();
+  EXPECT_TRUE(frame_widget.calls().empty());
+  EXPECT_FALSE(view()->system_drag_ended_called());
+
+  // The source renderer's drag session is still open for the pending drop, so
+  // a new drag from this view must be refused until the deferred source
+  // notification has been sent. It is refused before any drag-start work, so
+  // neither the policy check nor `ClearDragStateOnStartFailure()` runs.
+  view()->set_allowed(true);
+  DropData new_drag_data;
+  new_drag_data.text = u"reentrant drag";
+  view()->StartDragging(*web_contents()->GetPrimaryMainFrame(), new_drag_data,
+                        blink::kDragOperationCopy, CreateValidDragImage(),
+                        gfx::Vector2d(), gfx::Rect(),
+                        blink::mojom::DragEventSourceInfo());
+  EXPECT_FALSE(view()->was_called());
+  EXPECT_FALSE(view()->system_drag_ended_called());
+  frame_widget.FlushForTesting();
+  EXPECT_TRUE(frame_widget.calls().empty());
+
+  delegate->CompletePendingDrop(delegate->last_drop_data());
+  frame_widget.FlushForTesting();
+
+  EXPECT_EQ(frame_widget.calls(),
+            (std::vector<DragCall>{{DragCall::Kind::kDragTargetDrop},
+                                   {DragCall::Kind::kDragSourceEndedAt,
+                                    ui::mojom::DragOperation::kCopy}}));
+  EXPECT_EQ(frame_widget.last_dropped_text(), u"same-page text");
+  EXPECT_TRUE(view()->system_drag_ended_called());
+
+  // Once the deferred notification has been sent, new drags start again. (In
+  // this harness the system drag cannot be started, so `StartDragging()` gets
+  // as far as the policy check and then clears its state.)
+  view()->StartDragging(*web_contents()->GetPrimaryMainFrame(), new_drag_data,
+                        blink::kDragOperationCopy, CreateValidDragImage(),
+                        gfx::Vector2d(), gfx::Rect(),
+                        blink::mojom::DragEventSourceInfo());
+  EXPECT_TRUE(view()->was_called());
+}
+
+// If the asynchronous drop is aborted after `ACTION_DRAG_ENDED`, the deferred
+// source notification reports `kNone` and follows `DragTargetDragLeave`.
+TEST_F(WebContentsViewAndroidTest,
+       OnDragEnded_DeferredDragSourceEndedAtReportsNoneOnAbort) {
+  DragTrackingFrameWidget frame_widget(
+      BindFakeFrameWidgetInterfaces(main_rfh()));
+  auto owned_delegate = std::make_unique<FakeWebContentsViewDelegate>();
+  FakeWebContentsViewDelegate* delegate = owned_delegate.get();
+  RecreateViewWithDelegate(std::move(owned_delegate));
+
+  DropData source_drop_data;
+  source_drop_data.text = u"aborted same-page text";
+  SetDragSource(GetRenderWidgetHost(), source_drop_data);
+
+  SimulateTextDrop("aborted same-page text");
+  frame_widget.FlushForTesting();
+  SimulateDragEnded();
+  frame_widget.FlushForTesting();
+  EXPECT_TRUE(frame_widget.calls().empty());
+
+  delegate->CompletePendingDrop(std::nullopt);
+  frame_widget.FlushForTesting();
+
+  EXPECT_EQ(frame_widget.calls(),
+            (std::vector<DragCall>{{DragCall::Kind::kDragTargetDragLeave},
+                                   {DragCall::Kind::kDragSourceEndedAt,
+                                    ui::mojom::DragOperation::kNone}}));
+  EXPECT_EQ(frame_widget.drop_count(), 0);
+  EXPECT_TRUE(view()->system_drag_ended_called());
+}
+
+// A drop that completes synchronously (the default delegate) is not affected:
+// the source is notified from `OnDragEnded()` as before, after the drop.
+TEST_F(WebContentsViewAndroidTest,
+       OnDragEnded_SynchronousDropNotifiesSourceImmediately) {
+  DragTrackingFrameWidget frame_widget(
+      BindFakeFrameWidgetInterfaces(main_rfh()));
+  RecreateViewWithDelegate(std::make_unique<WebContentsViewDelegate>());
+
+  DropData source_drop_data;
+  source_drop_data.text = u"sync same-page text";
+  SetDragSource(GetRenderWidgetHost(), source_drop_data);
+
+  SimulateTextDrop("sync same-page text");
+  frame_widget.FlushForTesting();
+  EXPECT_EQ(frame_widget.calls(),
+            (std::vector<DragCall>{{DragCall::Kind::kDragTargetDrop}}));
+
+  SimulateDragEnded();
+  frame_widget.FlushForTesting();
+  EXPECT_EQ(frame_widget.calls(),
+            (std::vector<DragCall>{{DragCall::Kind::kDragTargetDrop},
+                                   {DragCall::Kind::kDragSourceEndedAt,
+                                    ui::mojom::DragOperation::kCopy}}));
+  EXPECT_TRUE(view()->system_drag_ended_called());
 }
 
 }  // namespace content
