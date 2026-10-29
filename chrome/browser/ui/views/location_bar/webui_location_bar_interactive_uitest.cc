@@ -1814,7 +1814,8 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, UnelideCaretMove) {
 }
 
 // Test of Ctrl-K focus omnibox + activates default search shortcut.
-IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, FocusSearch) {
+IN_PROC_BROWSER_TEST_P(WebUILocationBarEagerPopupInteractiveUiTest,
+                       FocusSearch) {
   FAILS_IN_MODE(Mode::kFull,
                 "SearchboxHandler::QueryAutocomplete overwrites "
                 "KEYBOARD_SHORTCUT KeywordModeEntryMethod, breaking clearing "
@@ -1850,7 +1851,8 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, FocusSearch) {
 }
 
 // Test of Ctrl-K focus omnibox when the user has edited the text.
-IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, FocusSearch2) {
+IN_PROC_BROWSER_TEST_P(WebUILocationBarEagerPopupInteractiveUiTest,
+                       FocusSearch2) {
   ui::Accelerator accelerator;
   EXPECT_TRUE(
       AcceleratorProviderForBrowser(browser())->GetAcceleratorForCommandId(
