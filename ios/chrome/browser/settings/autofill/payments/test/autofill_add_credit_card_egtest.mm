@@ -4,6 +4,7 @@
 
 #import "base/ios/ios_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -98,7 +99,7 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:grey_accessibilityID(
-                                @"kSettingsAutofillAndPasswordsCellId")];
+                                kSettingsAutofillAndPasswordsCellId)];
   [[EarlGrey selectElementWithMatcher:PaymentMethodsButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]

@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -96,7 +97,7 @@ void OpenAddressSettings() {
   if ([ChromeEarlGrey isYourSavedInfoSettingsPageIosEnabled]) {
     [ChromeEarlGreyUI
         tapSettingsMenuButton:grey_accessibilityID(
-                                  @"kSettingsAutofillAndPasswordsCellId")];
+                                  kSettingsAutofillAndPasswordsCellId)];
     [[EarlGrey
         selectElementWithMatcher:chrome_test_util::AddressesAndMoreButton()]
         performAction:grey_tap()];

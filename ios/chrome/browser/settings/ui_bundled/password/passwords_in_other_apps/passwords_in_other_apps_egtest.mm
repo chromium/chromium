@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps/passwords_in_other_apps_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -75,7 +76,7 @@ void OpensPasswordsInOtherApps() {
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:grey_accessibilityID(
-                                @"kSettingsAutofillAndPasswordsCellId")];
+                                kSettingsAutofillAndPasswordsCellId)];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::SettingsMenuPasswordsButton()]
       performAction:grey_tap()];
