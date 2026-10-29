@@ -2716,7 +2716,7 @@ deps = {
   },
 
   'src/third_party/material_color_utilities/src': {
-      'url': Var('chromium_git') + '/external/github.com/material-foundation/material-color-utilities.git' + '@' + 'dd62982dfdefdfc9232ce8d76e122fb1c6d188ae',
+      'url': Var('chromium_git') + '/external/github.com/material-foundation/material-color-utilities.git' + '@' + 'bd811e4ca2ab94c4ce3cadc89c19b1820b9704b3',
   },
 
   'src/third_party/microsoft_dxheaders/src': {
