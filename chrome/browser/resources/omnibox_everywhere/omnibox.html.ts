@@ -11,7 +11,7 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
     <div id="inputWrapper" @focusout="${this.onInputWrapperFocusout}"
         @keydown="${this.onInputWrapperKeydown}"
         @dragenter="${this.dragAndDropHandler.handleDragEnter}"
-        @dragover="${this.dragAndDropHandler.handleDragOver}"
+        @dragover="${this.onInputWrapperDragover_}"
         @dragleave="${this.dragAndDropHandler.handleDragLeave}"
         @drop="${this.dragAndDropHandler.handleDrop}">
       <search-animated-glow
