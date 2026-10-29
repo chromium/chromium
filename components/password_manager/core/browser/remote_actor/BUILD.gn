@@ -40,14 +40,18 @@ source_set("remote_actor") {
   ]
 
   deps = [
+    "//components/device_reauth",
     "//components/password_manager/core/browser:metrics_util",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/features:utils",
     "//components/password_manager/core/browser/remote_actor/protos",
     "//components/password_manager/core/common:features",
     "//components/signin/public/identity_manager",
+    "//components/strings:components_strings",
     "//components/sync/service",
     "//google_apis",
     "//google_apis/common",
+    "//ui/base",
   ]
 }
 
@@ -64,14 +68,19 @@ source_set("unit_tests") {
     ":remote_actor",
     "//base/test:test_support",
     "//components/affiliations/core/browser:test_support",
+    "//components/device_reauth",
+    "//components/device_reauth:test_support",
     "//components/password_manager/core/browser:password_form",
     "//components/password_manager/core/browser:password_string",
+    "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/browser/affiliation:test_support",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/password_store:test_support",
     "//components/password_manager/core/browser/remote_actor/protos",
     "//components/password_manager/core/browser/sync",
     "//components/password_manager/core/common:features",
     "//components/signin/public/identity_manager:test_support",
+    "//components/strings:components_strings",
     "//components/sync:test_support",
     "//components/sync/base",
     "//components/sync/protocol",
@@ -83,6 +92,7 @@ source_set("unit_tests") {
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
     "//url",
   ]
 }

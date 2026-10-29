@@ -27,10 +27,6 @@ class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
-namespace device_reauth {
-class DeviceAuthenticator;
-}
-
 namespace url {
 class Origin;
 }  // namespace url
@@ -97,18 +93,11 @@ class RemoteActorCredentialSharingImpl
       std::vector<std::unique_ptr<PasswordForm>> credentials,
       const url::Origin& origin,
       base::OnceCallback<void(CredentialOrError)> callback) override;
-  void AuthenticateIfNeeded(
-      const url::Origin& origin,
-      base::OnceCallback<void(AuthResult)> callback) override;
 
   // Callback triggered when the user selects a credential or cancels the
   // dialog.
   void OnDialogResult(base::OnceCallback<void(CredentialOrError)> callback,
                       std::optional<PasswordForm> selected_form);
-
-  // Callback triggered when device re-authentication completes.
-  void OnAuthenticationResult(base::OnceCallback<void(AuthResult)> callback,
-                              bool success);
 
   // Callback triggered when the sharing service completes the operation.
   void OnShareCompleted(RequestAgentAuthenticationCallback callback,
@@ -124,7 +113,6 @@ class RemoteActorCredentialSharingImpl
 
   std::unique_ptr<RemoteActorCredentialSharingController> controller_;
   std::unique_ptr<RemoteActorSelectionDialogController> dialog_controller_;
-  std::unique_ptr<device_reauth::DeviceAuthenticator> device_authenticator_;
 
   base::WeakPtrFactory<RemoteActorCredentialSharingImpl> weak_ptr_factory_{
       this};

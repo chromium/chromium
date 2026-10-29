@@ -23,6 +23,10 @@
 #include "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_result.h"
 #include "url/origin.h"
 
+namespace device_reauth {
+class DeviceAuthenticator;
+}  // namespace device_reauth
+
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -33,6 +37,7 @@ class SyncService;
 
 namespace password_manager {
 
+class PasswordManagerClient;
 class PasswordStoreInterface;
 class RemoteActorCredentialSharingService;
 
@@ -51,9 +56,6 @@ class RemoteActorCredentialSharingController : public PasswordStoreConsumer {
     // Selected credential on success, or the failure reason.
     using CredentialOrError =
         base::expected<PasswordForm, RemoteActorCredentialSharingResult>;
-    // `base::ok()` if re-authentication succeeded (or was not needed), or the
-    // failure reason.
-    using AuthResult = base::expected<void, RemoteActorCredentialSharingResult>;
 
     virtual ~Delegate() = default;
 
@@ -62,16 +64,10 @@ class RemoteActorCredentialSharingController : public PasswordStoreConsumer {
         std::vector<std::unique_ptr<PasswordForm>> credentials,
         const url::Origin& origin,
         base::OnceCallback<void(CredentialOrError)> callback) = 0;
-
-    // Re-authenticates the user before sharing a credential for `origin`, if
-    // required.
-    virtual void AuthenticateIfNeeded(
-        const url::Origin& origin,
-        base::OnceCallback<void(AuthResult)> callback) = 0;
   };
 
-  // `identity_manager`, `sync_service` and `sharing_service` may be null when
-  // unavailable for the profile. The store matching the user's sync state and
+  // `identity_manager`, `sync_service`, `sharing_service` and `client` may be
+  // null when unavailable. The store matching the user's sync state and
   // `delegate` must be non-null. All must outlive this controller.
   RemoteActorCredentialSharingController(
       signin::IdentityManager* identity_manager,
@@ -79,6 +75,7 @@ class RemoteActorCredentialSharingController : public PasswordStoreConsumer {
       PasswordStoreInterface* profile_store,
       PasswordStoreInterface* account_store,
       RemoteActorCredentialSharingService* sharing_service,
+      PasswordManagerClient* client,
       Delegate* delegate);
   RemoteActorCredentialSharingController(
       const RemoteActorCredentialSharingController&) = delete;
@@ -115,9 +112,15 @@ class RemoteActorCredentialSharingController : public PasswordStoreConsumer {
   // Called with the selected credential, or the error if none was selected.
   void OnCredentialSelected(Delegate::CredentialOrError selected_form);
 
-  // Called when re-authentication completed or was not required.
-  void ProceedWithCredential(PasswordForm selected_form,
-                             Delegate::AuthResult auth_result);
+  // Re-authenticates the user if required before proceeding with
+  // `selected_form`.
+  void AuthenticateIfNeeded(PasswordForm selected_form);
+
+  // Callback triggered when device re-authentication completes.
+  void OnAuthenticationResult(PasswordForm selected_form, bool success);
+
+  // Shares `selected_form` via `sharing_service_`.
+  void ProceedWithCredential(PasswordForm selected_form);
 
   // Callback triggered when the sharing service completes the operation.
   void OnShareCompleted(bool success);
@@ -133,6 +136,7 @@ class RemoteActorCredentialSharingController : public PasswordStoreConsumer {
   const raw_ptr<PasswordStoreInterface> profile_store_;
   const raw_ptr<PasswordStoreInterface> account_store_;
   const raw_ptr<RemoteActorCredentialSharingService> sharing_service_;
+  const raw_ptr<PasswordManagerClient> client_;
   const raw_ref<Delegate> delegate_;
 
   // The GAIA ID of the user requesting authentication.
@@ -149,6 +153,8 @@ class RemoteActorCredentialSharingController : public PasswordStoreConsumer {
   size_t received_callbacks_ = 0;
   // Collected credentials from the stores.
   std::vector<PasswordForm> credentials_;
+  // Device authenticator used when re-authentication is required.
+  std::unique_ptr<device_reauth::DeviceAuthenticator> device_authenticator_;
 
   base::WeakPtrFactory<RemoteActorCredentialSharingController>
       weak_ptr_factory_{this};

@@ -11,29 +11,39 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "build/build_config.h"
+#include "components/device_reauth/device_auth_availability_checker.h"
+#include "components/device_reauth/device_authenticator.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
+#include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_service.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -45,16 +55,23 @@ RemoteActorCredentialSharingController::RemoteActorCredentialSharingController(
     PasswordStoreInterface* profile_store,
     PasswordStoreInterface* account_store,
     RemoteActorCredentialSharingService* sharing_service,
+    PasswordManagerClient* client,
     Delegate* delegate)
     : identity_manager_(identity_manager),
       sync_service_(sync_service),
       profile_store_(profile_store),
       account_store_(account_store),
       sharing_service_(sharing_service),
+      client_(client),
       delegate_(raw_ref<Delegate>::from_ptr(delegate)) {}
 
 RemoteActorCredentialSharingController::
-    ~RemoteActorCredentialSharingController() = default;
+    ~RemoteActorCredentialSharingController() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  if (device_authenticator_) {
+    device_authenticator_->Cancel();
+  }
+}
 
 void RemoteActorCredentialSharingController::Start(std::string_view gaia_id,
                                                    std::string_view domain,
@@ -65,6 +82,13 @@ void RemoteActorCredentialSharingController::Start(std::string_view gaia_id,
   origin_ = url::Origin::Create(GURL(base::StrCat({"https://", domain})));
   task_id_ = task_id;
   callback_ = std::move(callback);
+
+  if (!client_) {
+    LogRemoteActorCredentialSharingResult(
+        RemoteActorCredentialSharingResult::kOtherError);
+    RespondWithError(RemoteActorCredentialSharingResult::kOtherError);
+    return;
+  }
 
   if (!VerifyUserIdentityAndSyncState(gaia_id)) {
     LogRemoteActorCredentialSharingResult(
@@ -223,23 +247,76 @@ void RemoteActorCredentialSharingController::OnCredentialSelected(
     return;
   }
 
-  delegate_->AuthenticateIfNeeded(
-      origin_,
-      base::BindOnce(
-          &RemoteActorCredentialSharingController::ProceedWithCredential,
-          weak_ptr_factory_.GetWeakPtr(), std::move(*selected_form)));
+  AuthenticateIfNeeded(std::move(*selected_form));
 }
 
-void RemoteActorCredentialSharingController::ProceedWithCredential(
+void RemoteActorCredentialSharingController::AuthenticateIfNeeded(
+    PasswordForm selected_form) {
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator;
+  bool reauth_required = false;
+  if (!base::FeatureList::IsEnabled(features::kDeviceReauthRefactor)) {
+    authenticator = client_->GetDeviceAuthenticator();
+    reauth_required =
+        authenticator &&
+        client_->IsReauthBeforeFillingRequiredLegacy(authenticator.get());
+  } else {
+    std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker> checker =
+        client_->GetDeviceAuthAvailabilityChecker();
+    if (checker && client_->IsReauthBeforeFillingRequired(checker.get())) {
+      authenticator = client_->GetDeviceAuthenticator();
+      reauth_required = true;
+    }
+  }
+
+  if (reauth_required) {
+    if (!authenticator) {
+      LogRemoteActorCredentialSharingResult(
+          RemoteActorCredentialSharingResult::kAuthenticatorFailed);
+      RespondWithError(
+          RemoteActorCredentialSharingResult::kAuthenticatorFailed);
+      return;
+    }
+    device_authenticator_ = std::move(authenticator);
+    std::u16string message;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_IOS)
+    const std::u16string origin_str =
+        base::UTF8ToUTF16(GetShownOrigin(origin_));
+    message = l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_FILLING_REAUTH,
+                                         origin_str);
+#endif
+    device_authenticator_->AuthenticateWithMessage(
+        message,
+        base::BindOnce(
+            &RemoteActorCredentialSharingController::OnAuthenticationResult,
+            weak_ptr_factory_.GetWeakPtr(), std::move(selected_form)));
+    return;
+  }
+
+  ProceedWithCredential(std::move(selected_form));
+}
+
+void RemoteActorCredentialSharingController::OnAuthenticationResult(
     PasswordForm selected_form,
-    Delegate::AuthResult auth_result) {
+    bool success) {
+  device_authenticator_.reset();
   if (!IsActive()) {
     return;
   }
 
-  if (!auth_result.has_value()) {
-    LogRemoteActorCredentialSharingResult(auth_result.error());
-    RespondWithError(auth_result.error());
+  if (!success) {
+    LogRemoteActorCredentialSharingResult(
+        RemoteActorCredentialSharingResult::kAuthenticatorFailed);
+    RespondWithError(RemoteActorCredentialSharingResult::kAuthenticatorFailed);
+    return;
+  }
+
+  ProceedWithCredential(std::move(selected_form));
+}
+
+void RemoteActorCredentialSharingController::ProceedWithCredential(
+    PasswordForm selected_form) {
+  if (!IsActive()) {
     return;
   }
 
