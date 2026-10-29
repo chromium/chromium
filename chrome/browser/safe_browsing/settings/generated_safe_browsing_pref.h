@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_GENERATED_SAFE_BROWSING_PREF_H_
-#define CHROME_BROWSER_SAFE_BROWSING_GENERATED_SAFE_BROWSING_PREF_H_
+#ifndef CHROME_BROWSER_SAFE_BROWSING_SETTINGS_GENERATED_SAFE_BROWSING_PREF_H_
+#define CHROME_BROWSER_SAFE_BROWSING_SETTINGS_GENERATED_SAFE_BROWSING_PREF_H_
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
@@ -51,4 +51,4 @@ class GeneratedSafeBrowsingPref
 
 }  // namespace safe_browsing
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_GENERATED_SAFE_BROWSING_PREF_H_
+#endif  // CHROME_BROWSER_SAFE_BROWSING_SETTINGS_GENERATED_SAFE_BROWSING_PREF_H_

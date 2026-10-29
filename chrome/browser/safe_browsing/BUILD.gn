@@ -141,12 +141,12 @@ static_library("safe_browsing") {
       "//chrome/browser/ui/views/frame:browser_view_header",
     ]
     public += [
-      "generated_safe_browsing_pref.h",
       "generated_security_settings_bundle_pref.h",
+      "settings/generated_safe_browsing_pref.h",
     ]
     sources += [
-      "generated_safe_browsing_pref.cc",
       "generated_security_settings_bundle_pref.cc",
+      "settings/generated_safe_browsing_pref.cc",
     ]
   }
 
@@ -241,10 +241,10 @@ static_library("safe_browsing") {
       "notification_telemetry/notification_telemetry_service_factory.h",
       "phishy_interaction_tracker.h",
       "safe_browsing_navigation_observer_manager_factory.h",
-      "safe_browsing_pref_change_handler.h",
       "safe_browsing_service.h",
       "security_settings_bundle_pref_change_handler.h",
       "services_delegate.h",
+      "settings/safe_browsing_pref_change_handler.h",
       "tailored_security/chrome_tailored_security_service.h",
       "tailored_security/message_retry_handler.h",
       "tailored_security/tailored_security_service_factory.h",
@@ -300,10 +300,10 @@ static_library("safe_browsing") {
       "notification_telemetry/notification_telemetry_service_factory.cc",
       "phishy_interaction_tracker.cc",
       "safe_browsing_navigation_observer_manager_factory.cc",
-      "safe_browsing_pref_change_handler.cc",
       "safe_browsing_service.cc",
       "security_settings_bundle_pref_change_handler.cc",
       "services_delegate.cc",
+      "settings/safe_browsing_pref_change_handler.cc",
       "tailored_security/chrome_tailored_security_service.cc",
       "tailored_security/message_retry_handler.cc",
       "tailored_security/tailored_security_service_factory.cc",
@@ -1035,7 +1035,7 @@ source_set("unit_tests") {
       "android/password_reuse_controller_android_unittest.cc",
       "android/suspicious_site_controller_android_unittest.cc",
       "download_protection/rate_limiting_key_manager_unittest.cc",
-      "safe_browsing_pref_change_handler_android_unittest.cc",
+      "settings/safe_browsing_pref_change_handler_android_unittest.cc",
       "tailored_security/chrome_tailored_security_service_android_unittest.cc",
       "tailored_security/consented_message_android_unittest.cc",
       "telemetry/android/android_telemetry_service_unittest.cc",
@@ -1073,15 +1073,15 @@ source_set("unit_tests") {
   }
   if (is_win || is_mac || is_linux || is_chromeos) {
     sources += [
-      "generated_safe_browsing_pref_unittest.cc",
       "generated_security_settings_bundle_pref_unittest.cc",
       "security_settings_bundle_toast_helper_unittest.cc",
+      "settings/generated_safe_browsing_pref_unittest.cc",
     ]
 
     if (safe_browsing_mode != 0) {
       sources += [
-        "safe_browsing_pref_change_handler_unittest.cc",
         "security_settings_bundle_pref_change_handler_unittest.cc",
+        "settings/safe_browsing_pref_change_handler_unittest.cc",
       ]
     }
 

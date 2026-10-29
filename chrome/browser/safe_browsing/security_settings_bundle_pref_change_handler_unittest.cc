@@ -6,7 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref_test_base.h"
-#include "chrome/browser/safe_browsing/generated_safe_browsing_pref.h"
+#include "chrome/browser/safe_browsing/settings/generated_safe_browsing_pref.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/test/base/testing_profile.h"
