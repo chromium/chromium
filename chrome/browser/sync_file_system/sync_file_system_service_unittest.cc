@@ -262,8 +262,10 @@ TEST_F(SyncFileSystemServiceTest, InitializeForAppWithNetworkFailure) {
       SYNC_STATUS_NETWORK_ERROR);
 }
 
-// Disabled due to flakiness: crbug.com/40774357
-TEST_F(SyncFileSystemServiceTest, DISABLED_InitializeForAppWithError) {
+// Verifies that initializing an app fails gracefully when the remote service is
+// disabled and returns an error status. Ensures that
+// `InitializeAppForObserverTest` propagates `SYNC_STATUS_FAILED`.
+TEST_F(SyncFileSystemServiceTest, InitializeForAppWithError) {
   // Notify REMOTE_SERVICE_DISABLED and callback with
   // SYNC_STATUS_FAILED.  This should let the InitializeApp fail.
   InitializeAppForObserverTest(
@@ -272,8 +274,10 @@ TEST_F(SyncFileSystemServiceTest, DISABLED_InitializeForAppWithError) {
       SYNC_STATUS_FAILED);
 }
 
-// Disabled due to flakiness: crbug.com/40853276
-TEST_F(SyncFileSystemServiceTest, DISABLED_SimpleLocalSyncFlow) {
+// Verifies end-to-end local synchronization when a new file is created
+// locally. Ensures that write and sync events are notified and
+// `mock_local_change_processor()` receives `ApplyLocalChange`.
+TEST_F(SyncFileSystemServiceTest, SimpleLocalSyncFlow) {
   InitializeApp();
 
   StrictMock<MockSyncStatusObserver> status_observer;
