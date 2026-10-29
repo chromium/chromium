@@ -11,7 +11,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -28,7 +29,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -48,7 +50,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -66,7 +69,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -83,7 +87,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 5
@@ -101,7 +106,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -118,7 +124,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -135,7 +142,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -152,7 +160,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -169,7 +178,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -186,7 +196,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -212,7 +223,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -229,7 +241,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
@@ -247,7 +260,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -264,7 +278,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -284,7 +299,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 200
@@ -305,7 +321,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -322,7 +339,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -339,7 +357,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -356,7 +375,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -373,7 +393,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -390,7 +411,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -407,7 +429,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -424,7 +447,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -441,7 +465,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
@@ -459,7 +484,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -476,7 +502,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 16
@@ -494,7 +521,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -511,7 +539,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -528,7 +557,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -545,7 +575,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -562,7 +593,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -579,7 +611,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -597,7 +630,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -614,7 +648,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -631,7 +666,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -648,7 +684,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -665,7 +702,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -682,7 +720,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -699,7 +738,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -716,7 +756,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -733,7 +774,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -750,7 +792,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -767,7 +810,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -784,7 +828,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -801,7 +846,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -821,7 +867,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 24
@@ -839,7 +886,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -856,7 +904,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -873,7 +922,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -891,7 +941,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -908,7 +959,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -925,7 +977,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -942,7 +995,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -959,7 +1013,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -976,7 +1031,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -993,7 +1049,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1010,7 +1067,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1027,7 +1085,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1044,7 +1103,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1061,7 +1121,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
@@ -1082,7 +1143,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1099,7 +1161,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1116,7 +1179,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1133,7 +1197,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1150,7 +1215,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1167,7 +1233,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1184,7 +1251,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1201,7 +1269,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1218,7 +1287,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1235,7 +1305,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1252,7 +1323,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1269,7 +1341,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1286,7 +1359,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1303,7 +1377,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1320,7 +1395,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1337,7 +1413,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1357,7 +1434,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
@@ -1375,7 +1453,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1392,7 +1471,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1409,7 +1489,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1426,7 +1507,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1443,7 +1525,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
@@ -1461,7 +1544,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1479,7 +1563,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1501,7 +1586,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1518,7 +1604,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1535,7 +1622,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1552,7 +1640,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1569,7 +1658,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1586,7 +1676,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1603,7 +1694,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1629,7 +1721,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1659,7 +1752,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
