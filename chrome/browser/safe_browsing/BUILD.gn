@@ -1342,6 +1342,7 @@ source_set("browser_tests") {
         "//components/safe_browsing/content/common/file_type_policies:file_type_policies_test_support",
         "//components/safe_browsing/content/common/file_type_policies/proto:download_file_types_proto",
         "//components/safe_browsing/content/renderer/phishing_classifier",
+        "//components/safe_browsing/core/common:features",
         "//components/safe_browsing/core/common/phishing_classifier",
       ]
     }
