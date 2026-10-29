@@ -58,6 +58,10 @@ class WebState;
 // Stops child coordinators presenting UI.
 - (void)clearPresentedState;
 
+// Dismisses the NTP Theme tip if active and commits any uncommitted inline
+// theme when the main Home Customization menu is opened.
+- (void)didOpenMainCustomizationMenu;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_COORDINATOR_CONTENT_SUGGESTIONS_COORDINATOR_H_

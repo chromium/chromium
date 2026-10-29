@@ -623,9 +623,27 @@ using segmentation_platform::TipIdentifier;
 
 #pragma mark - Public methods
 
+- (void)didOpenMainCustomizationMenu {
+  if (!_tipsMediator ||
+      _tipsMediator.config.identifier != TipIdentifier::kNTPTheme) {
+    return;
+  }
+  segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
+      segmentation_platform::SegmentationPlatformServiceFactory::
+          GetHomeCardRegistryForProfile(self.profile);
+  if (registry) {
+    registry->NotifyCardInteracted(
+        segmentation_platform::kNTPThemeEphemeralModule);
+  }
+  [_tipsMediator removeModuleWithCompletion:nil];
+}
+
 - (void)setWebState:(web::WebState*)webState {
   if (_webState == webState) {
     return;
+  }
+  if (_webState) {
+    [_tipsMediator completeInPlaceInteractionIfNeeded];
   }
   _webState = webState;
   _deferredEphemeralCard = std::nullopt;

@@ -74,6 +74,10 @@ enum class TipIdentifier;
 // The `completion` is called after the removal is finished.
 - (void)removeModuleWithCompletion:(ProceduralBlock)completion;
 
+// Commits any pending in-place interaction (such as a selected NTP theme
+// swatch) and removes the module from the Magic Stack.
+- (void)completeInPlaceInteractionIfNeeded;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_TIPS_COORDINATOR_TIPS_MAGIC_STACK_MEDIATOR_H_

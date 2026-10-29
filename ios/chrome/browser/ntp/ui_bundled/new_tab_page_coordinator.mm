@@ -1310,7 +1310,7 @@
 
   [self.NTPMetricsRecorder recordHomeCustomizationMenuOpenedFromEntrypoint:
                                HomeCustomizationEntrypoint::kMain];
-
+  [self.contentSuggestionsCoordinator didOpenMainCustomizationMenu];
   [self openCustomizationMenuAtPage:CustomizationMenuPage::kMain animated:YES];
 }
 
@@ -1325,7 +1325,7 @@
 
   [self.NTPMetricsRecorder recordHomeCustomizationMenuOpenedFromEntrypoint:
                                HomeCustomizationEntrypoint::kMain];
-
+  [self.contentSuggestionsCoordinator didOpenMainCustomizationMenu];
   [self openCustomizationMenuAtPage:CustomizationMenuPage::kMain animated:YES];
 }
 

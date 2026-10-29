@@ -91,6 +91,10 @@ using segmentation_platform::TipIdentifier;
   // The current actionable module configuration when an actionable tip is
   // active.
   NTPThemeActionableTipConfig* _actionableConfig;
+
+  // YES when the user has selected an inline NTP theme swatch on the current
+  // tab that has not yet been committed to storage.
+  BOOL _hasUncommittedInlineTheme;
 }
 
 - (instancetype)initWithIdentifier:(TipIdentifier)identifier
@@ -137,14 +141,20 @@ using segmentation_platform::TipIdentifier;
 }
 
 - (void)disconnect {
+  // Stop observing prefs before StoreCurrentTheme() mutates background prefs.
+  _profilePrefChangeRegistrar.RemoveAll();
+  _prefObserverBridge.reset();
+  _profilePrefService = nil;
+
+  if (_hasUncommittedInlineTheme && _backgroundCustomizationService) {
+    _hasUncommittedInlineTheme = NO;
+    _backgroundCustomizationService->StoreCurrentTheme();
+  }
+
   _shoppingService = nil;
   _imageFetcher = nullptr;
   _bookmarkModel = nullptr;
   _backgroundCustomizationService = nullptr;
-
-  _profilePrefChangeRegistrar.RemoveAll();
-  _prefObserverBridge.reset();
-  _profilePrefService = nil;
 }
 
 - (void)reconfigureWithTipIdentifier:(TipIdentifier)identifier {
@@ -157,6 +167,7 @@ using segmentation_platform::TipIdentifier;
   // Reset `_actionableConfig` so `activeConfig` falls back to `_config` when
   // reconfigured with an informational tip.
   _actionableConfig = nil;
+  _hasUncommittedInlineTheme = NO;
 
   if (identifier == TipIdentifier::kNTPTheme &&
       segmentation_platform::features::
@@ -174,7 +185,20 @@ using segmentation_platform::TipIdentifier;
 }
 
 - (void)removeModuleWithCompletion:(ProceduralBlock)completion {
+  if (_hasUncommittedInlineTheme) {
+    _hasUncommittedInlineTheme = NO;
+    if (_backgroundCustomizationService) {
+      _backgroundCustomizationService->StoreCurrentTheme();
+    }
+  }
   [self.delegate removeTipsModuleWithCompletion:completion];
+}
+
+- (void)completeInPlaceInteractionIfNeeded {
+  if (!_hasUncommittedInlineTheme) {
+    return;
+  }
+  [self removeModuleWithCompletion:nil];
 }
 
 - (MagicStackModule*)activeConfig {
@@ -198,6 +222,7 @@ using segmentation_platform::TipIdentifier;
     if (_actionableConfig &&
         !_profilePrefService->GetDict(prefs::kIosUserUploadedBackground)
              .empty()) {
+      _hasUncommittedInlineTheme = NO;
       __weak TipsMagicStackMediator* weakSelf = self;
       [self.delegate removeTipsModuleWithCompletion:^{
         [weakSelf.presentationAudience didSaveNTPThemeBackgroundPhoto];
@@ -227,6 +252,7 @@ using segmentation_platform::TipIdentifier;
     return;
   }
   _actionableConfig.selectedIndex = index;
+  _hasUncommittedInlineTheme = YES;
 
   if (index == 0) {
     _backgroundCustomizationService->ClearCurrentBackground();
@@ -246,7 +272,6 @@ using segmentation_platform::TipIdentifier;
         background.attribution_line_2(),
         GURL(background.attribution_action_url()), background.collection_id());
   }
-  _backgroundCustomizationService->StoreCurrentTheme();
   [self.delegate logMagicStackEngagementForType:self.activeConfig.type];
   [self.presentationAudience didSelectNTPThemeOption];
 }
