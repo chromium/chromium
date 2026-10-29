@@ -1299,9 +1299,10 @@ void HTMLFormElement::Disassociate(HTMLImageElement& e) {
   RemoveFromPastNamesMap(e);
 }
 
-void HTMLFormElement::DidAssociateByParser() {
-  if (!did_finish_parsing_children_)
+void HTMLFormElement::DidAssociateByParser(bool maybe_descendant) {
+  if (!did_finish_parsing_children_ && maybe_descendant) {
     return;
+  }
   has_elements_associated_by_parser_ = true;
   UseCounter::Count(GetDocument(), WebFeature::kFormAssociationByParser);
 }

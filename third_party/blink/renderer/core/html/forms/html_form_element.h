@@ -102,7 +102,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   void Disassociate(ListedElement&);
   void Associate(HTMLImageElement&);
   void Disassociate(HTMLImageElement&);
-  void DidAssociateByParser();
+  void DidAssociateByParser(bool maybe_descendant);
 
   // For native form controls, pass the submit button as submitter. For custom
   // elements with `HTMLSubmitButtonBehavior`, pass the custom element as

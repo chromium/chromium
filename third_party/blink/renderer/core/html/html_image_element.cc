@@ -642,10 +642,16 @@ void HTMLImageElement::AttachLayoutTree(AttachContext& context) {
 
 Node::InsertionNotificationRequest HTMLImageElement::InsertedInto(
     ContainerNode& insertion_point) {
+  // TODO(crbug.com/578370708): Avoid redundant node traversals.
+  DCHECK(!form_was_set_by_parser_ || form_);
   if (!form_was_set_by_parser_ ||
       NodeTraversal::HighestAncestorOrSelf(insertion_point) !=
-          NodeTraversal::HighestAncestorOrSelf(*form_.Get()))
+          NodeTraversal::HighestAncestorOrSelf(*form_.Get())) {
     ResetFormOwner();
+  } else if (!NodeTraversal::IsInclusiveDescendantOf(*parentNode(), *form_)) {
+    form_->DidAssociateByParser(/*maybe_descendant=*/false);
+  }
+
   if (listener_)
     GetDocument().GetMediaQueryMatcher().AddViewportListener(listener_);
   bool was_added_to_picture_parent = false;
@@ -1333,7 +1339,7 @@ void HTMLImageElement::AssociateWith(HTMLFormElement* form) {
     form_ = form;
     form_was_set_by_parser_ = true;
     form_->Associate(*this);
-    form_->DidAssociateByParser();
+    form_->DidAssociateByParser(/*maybe_descendant=*/true);
   }
 }
 

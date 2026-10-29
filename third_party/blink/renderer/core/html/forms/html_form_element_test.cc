@@ -7,11 +7,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -746,6 +748,99 @@ TEST_F(HTMLFormElementSimTest,
 
   EXPECT_THAT(f1->AllContainedFormElementsForAutofill(),
               ElementsAre(t2, t3, t4));
+}
+
+// Tests that when an inline script moves a still-open container out of an
+// unfinished `<form>` elsewhere in the same Document, elements subsequently
+// parsed into that container remain associated with the `<form>` and are
+// included in `ListedElements()`, `AllContainedFormElementsForAutofill()`, and
+// `ImageElements()`.
+// Regression test for crbug.com/347059988.
+TEST_F(HTMLFormElementSimTest, ReparentedOpenElementDuringParsing) {
+  LoadHTML(R"HTML(
+    <!DOCTYPE html>
+    <form id=f>
+      <div id=d>
+        <script>
+          document.body.appendChild(document.getElementById('d'));
+        </script>
+        <input id=t>
+        <img id=img name=img>
+      </div>
+    </form>
+  )HTML");
+
+  Document& doc = GetDocument();
+  auto* f = To<HTMLFormElement>(doc.getElementById(AtomicString("f")));
+  auto* t = To<HTMLInputElement>(doc.getElementById(AtomicString("t")));
+  auto* img = To<HTMLImageElement>(doc.getElementById(AtomicString("img")));
+
+  ASSERT_FALSE(t->IsDescendantOf(f));
+  ASSERT_FALSE(img->IsDescendantOf(f));
+  EXPECT_EQ(t->Form(), f);
+  EXPECT_EQ(img->formOwner(), f);
+  EXPECT_THAT(f->ListedElements(), ElementsAre(t));
+  EXPECT_THAT(f->AllContainedFormElementsForAutofill(), ElementsAre(t));
+  EXPECT_THAT(f->ImageElements(), ElementsAre(img));
+  EXPECT_TRUE(doc.IsUseCounted(WebFeature::kFormAssociationByParser));
+
+  f->remove();
+  EXPECT_EQ(t->Form(), nullptr);
+  EXPECT_EQ(img->formOwner(), nullptr);
+  EXPECT_THAT(f->ListedElements(), IsEmpty());
+  EXPECT_THAT(f->ImageElements(), IsEmpty());
+}
+
+// Tests that when an inline script detaches a still-open container from the
+// Document mid-parse, elements subsequently parsed into that detached container
+// are not associated with the connected `<form>` (since they are not in the
+// same tree).
+TEST_F(HTMLFormElementSimTest, DetachedOpenElementDuringParsing) {
+  LoadHTML(R"HTML(
+    <!DOCTYPE html>
+    <form id=f>
+      <div id=d>
+        <script>
+          window.detachedDiv = document.getElementById('d');
+          window.detachedDiv.remove();
+        </script>
+        <input id=t>
+        <img id=img name=img>
+      </div>
+    </form>
+  )HTML");
+
+  Document& doc = GetDocument();
+  auto* f = To<HTMLFormElement>(doc.getElementById(AtomicString("f")));
+  EXPECT_THAT(f->ListedElements(), IsEmpty());
+  EXPECT_THAT(f->AllContainedFormElementsForAutofill(), IsEmpty());
+  EXPECT_THAT(f->ImageElements(), IsEmpty());
+  EXPECT_FALSE(doc.IsUseCounted(WebFeature::kFormAssociationByParser));
+}
+
+// Tests that normal parser-inserted descendants inside `<form>` do not count
+// `WebFeature::kFormAssociationByParser`.
+TEST_F(HTMLFormElementSimTest, DescendantAssociatedByParserDoesNotUseCount) {
+  LoadHTML(R"HTML(
+    <!DOCTYPE html>
+    <form id=f>
+      <div>
+        <input id=t>
+        <img id=img name=img>
+      </div>
+    </form>
+  )HTML");
+
+  Document& doc = GetDocument();
+  auto* f = To<HTMLFormElement>(doc.getElementById(AtomicString("f")));
+  auto* t = To<HTMLInputElement>(doc.getElementById(AtomicString("t")));
+  auto* img = To<HTMLImageElement>(doc.getElementById(AtomicString("img")));
+
+  EXPECT_EQ(t->Form(), f);
+  EXPECT_EQ(img->formOwner(), f);
+  EXPECT_THAT(f->ListedElements(), ElementsAre(t));
+  EXPECT_THAT(f->ImageElements(), ElementsAre(img));
+  EXPECT_FALSE(doc.IsUseCounted(WebFeature::kFormAssociationByParser));
 }
 
 }  // namespace blink
