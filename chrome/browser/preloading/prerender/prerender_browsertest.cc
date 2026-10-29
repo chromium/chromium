@@ -1550,10 +1550,18 @@ class PrerenderPrewarmPageLoadAndTabSwitchAfterPaintBrowserTest
                 kEnabledWithPageLoadAndTabSwitchAfterPaintTrigger) {}
 };
 
-// TODO(crbug.com/578450648): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(
     PrerenderPrewarmPageLoadAndTabSwitchAfterPaintBrowserTest,
-    DISABLED_PageLoadAndTabSwitchTriggersPrewarm) {
+    PageLoadAndTabSwitchTriggersPrewarm) {
+  auto* prerender_manager =
+      PrerenderManager::FromWebContents(GetActiveWebContents());
+  ASSERT_TRUE(prerender_manager);
+  // Stop any prewarm that may have been triggered on the initial about:blank
+  // page after SetPrewarmUrlForTesting() in SetUpOnMainThread().
+  ASSERT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
+  prerender_manager->StopPrewarmSearchResultForTesting();
+  EXPECT_FALSE(prerender_manager->HasSearchPrewarmTaskForTesting());
+
   content::test::PrerenderHostRegistryObserver registry_observer(
       *GetActiveWebContents());
 
@@ -1563,10 +1571,6 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
   FirstVisuallyNonEmptyPaintObserver(GetActiveWebContents()).Wait();
   registry_observer.WaitForTrigger(prewarm_url_);
-
-  auto* prerender_manager =
-      PrerenderManager::FromWebContents(GetActiveWebContents());
-  ASSERT_TRUE(prerender_manager);
   EXPECT_TRUE(prerender_manager->HasSearchPrewarmTaskForTesting());
 
   // Stop the prewarm.
@@ -1624,13 +1628,17 @@ IN_PROC_BROWSER_TEST_F(
   GetActiveWebContents()->WasShown();
   EXPECT_FALSE(prerender_manager->HasSearchPrewarmTaskForTesting());
 
-  // Removing the delayed stylesheet allows the page to finish loading, which
-  // triggers prewarm automatically.
+  // Stopping the delayed stylesheet load allows the page to finish loading,
+  // which triggers prewarm automatically. Note that `link.remove()` alone only
+  // removes the pending sheet from StyleEngine without calling ClearResource()
+  // until Oilpan GC runs, so `window.stop()` is called to deterministically
+  // cancel the in-flight resource load.
   content::test::PrerenderHostRegistryObserver registry_observer3(
       *GetActiveWebContents());
-  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(),
-                              "document.querySelector('link').remove();"));
-  EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
+  ASSERT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      "document.querySelector('link').remove(); window.stop();"));
+  ASSERT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
   registry_observer3.WaitForTrigger(prewarm_url_);
   EXPECT_TRUE(prerender_manager->HasSearchPrewarmTaskForTesting());
 }
