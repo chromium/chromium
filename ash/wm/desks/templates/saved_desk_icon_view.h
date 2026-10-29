@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -109,7 +110,7 @@ class SavedDeskRegularIconView : public SavedDeskIconView {
   SavedDeskRegularIconView(
       const ui::ColorProvider* incognito_window_color_provider,
       const SavedDeskIconIdentifier& icon_identifier,
-      const std::string& app_title,
+      std::string_view app_title,
       int count,
       size_t sorting_key,
       base::OnceCallback<void(views::View*)> on_icon_loaded);
@@ -138,7 +139,7 @@ class SavedDeskRegularIconView : public SavedDeskIconView {
   // task of loading icons if necessary.
   void CreateChildViews(
       const ui::ColorProvider* incognito_window_color_provider,
-      const std::string& app_title);
+      std::string_view app_title);
 
   // Callbacks for when the app icon/favicon has been fetched. If the result is
   // non-null/empty then we'll set this's image to the result. Otherwise, we'll

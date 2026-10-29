@@ -6,6 +6,7 @@
 #define ASH_WM_WINDOW_RESTORE_WINDOW_RESTORE_UTIL_H_
 
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "base/functional/callback_forward.h"
@@ -77,7 +78,7 @@ bool IsBrowserAppId(const std::string& id);
 // it, standardized, via `callback`. Runs `callback` with an empty image if
 // there is no active session, no favicon service for the user, or the page has
 // no favicon. `tracker` owns the cancelable request.
-void GetFaviconForUrl(const std::string& page_url,
+void GetFaviconForUrl(std::string_view page_url,
                       base::OnceCallback<void(const gfx::ImageSkia&)> callback,
                       base::CancelableTaskTracker* tracker);
 

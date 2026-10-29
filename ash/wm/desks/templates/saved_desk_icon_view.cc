@@ -133,7 +133,7 @@ END_METADATA
 SavedDeskRegularIconView::SavedDeskRegularIconView(
     const ui::ColorProvider* incognito_window_color_provider,
     const SavedDeskIconIdentifier& icon_identifier,
-    const std::string& app_title,
+    std::string_view app_title,
     int count,
     size_t sorting_key,
     base::OnceCallback<void(views::View*)> on_icon_loaded)
@@ -193,7 +193,7 @@ bool SavedDeskRegularIconView::IsOverflowIcon() const {
 
 void SavedDeskRegularIconView::CreateChildViews(
     const ui::ColorProvider* incognito_window_color_provider,
-    const std::string& app_title) {
+    std::string_view app_title) {
   if (GetCountToShow())
     CreateCountLabelChildView(/*show_plush*/ true, 2 * kCountLabelInsetSize);
 

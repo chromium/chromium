@@ -4,6 +4,8 @@
 
 #include "ash/wm/window_restore/window_restore_metrics.h"
 
+#include <string_view>
+
 #include "ash/constants/ash_pref_names.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/prefs/pref_service.h"
@@ -27,8 +29,8 @@ void RecordScreenshotOnShutdownStatus(ScreenshotOnShutdownStatus status) {
 }
 
 void RecordScreenshotDurations(PrefService* local_state) {
-  auto record_uma = [](PrefService* local_state, const std::string& name,
-                       const std::string& pref_name) -> void {
+  auto record_uma = [](PrefService* local_state, std::string_view name,
+                       std::string_view pref_name) -> void {
     const base::TimeDelta duration = local_state->GetTimeDelta(pref_name);
     // Don't record the metric if we don't have a value.
     if (!duration.is_zero()) {
