@@ -66,6 +66,7 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
       {"searchTabs", IDS_TAB_SEARCH_SEARCH_TABS},
       {"showAll", IDS_ORGANIZER_PANEL_SHOW_ALL},
       {"showSome", IDS_ORGANIZER_PANEL_SHOW_SOME},
+      {"signInOnPhone", IDS_SEND_TAB_TO_SELF_SIGN_IN_ON_PHONE},
       {"splitView", IDS_ORGANIZER_PANEL_SPLIT_VIEW},
       {"tabCount", IDS_TAB_SEARCH_TAB_COUNT},
       {"tabGroupMoreOptions", IDS_TAB_GROUP_MORE_OPTIONS},

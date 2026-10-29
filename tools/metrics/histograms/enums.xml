@@ -2743,6 +2743,7 @@ shown properly on the user-facing crash UI.
   <int value="1" label="HistoryPage"/>
   <int value="2" label="SendTabToSelf"/>
   <int value="3" label="WhatsNewPage"/>
+  <int value="4" label="ForeignTabs"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/signin/cross_device_signin_promo_manager.h:CrossDeviceSigninPromoEntryPoint) -->

@@ -107,6 +107,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(CrossDeviceSigninPromoEntryPointVariant) -->
 
 <variants name="CrossDeviceSigninPromoEntryPoint">
+  <variant name="ForeignTabs" summary="Foreign tabs entry point"/>
   <variant name="HistoryPage" summary="History Page entry point"/>
   <variant name="ProfileMenu" summary="Profile Menu entry point"/>
   <variant name="SendTabToSelf" summary="Send Tab to Self entry point"/>

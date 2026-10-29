@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 import {foreignTabsBrowserProxyFactory, ForeignTabsDelegate, ForeignTabsPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
-import type {ForeignTab} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import type {ForeignTab, OrganizerListSectionItemElement} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
@@ -45,6 +47,7 @@ suite('ForeignTabsDelegateTest', () => {
       diceSupportEnabled: true,
       isUserSignedIn: true,
       tabsOnOtherDevices: 'Tabs on other devices',
+      signInOnPhone: 'Sign in on your phone',
     });
     mockHandler = TestMock.fromClass(ForeignTabsPageHandlerRemote);
     mockHandler.setResultFor(
@@ -166,4 +169,33 @@ suite('ForeignTabsDelegateTest', () => {
     assertEquals(0, items.length);
     assertFalse(delegate.shouldHide());
   });
+
+  test(
+      'returns zero state and triggers showCrossDeviceSignInPromo on click',
+      () => {
+        const zeroState = delegate.getZeroState();
+        assertTrue(!!zeroState);
+
+        const container = document.createElement('div');
+        document.body.appendChild(container);
+        render(zeroState, container);
+
+        const item = container.querySelector<OrganizerListSectionItemElement>(
+            'organizer-list-section-item');
+        assertTrue(!!item);
+        assertDeepEquals(['Sign in on your phone'], item.item.title);
+
+        const icon = item.item.prefixIcon?.element;
+        assertTrue(!!icon);
+
+        const iconContainer = document.createElement('div');
+        document.body.appendChild(iconContainer);
+        render(icon, iconContainer);
+        const crIcon = iconContainer.querySelector<CrIconElement>('cr-icon');
+        assertTrue(!!crIcon);
+        assertEquals('organizer-panel:login', crIcon.icon);
+
+        item.click();
+        assertEquals(1, mockHandler.getCallCount('showCrossDeviceSignInPromo'));
+      });
 });

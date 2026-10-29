@@ -9,15 +9,24 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/cross_device_signin_promo_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/organizer_panel/foreign_tabs.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_sessions/fake_open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/sessions_global_id_mapper.h"
@@ -248,5 +257,42 @@ IN_PROC_BROWSER_TEST_F(ForeignTabsPageHandlerBrowserTest,
 
   EXPECT_EQ(initial_tab_count, browser()->GetTabStripModel()->count());
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+class ForeignTabsPageHandlerPromoBrowserTest
+    : public ForeignTabsPageHandlerBrowserTest {
+ public:
+  ForeignTabsPageHandlerPromoBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        switches::kCrossDeviceSigninFromDesktopFollowup);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ForeignTabsPageHandlerPromoBrowserTest,
+                       ShowCrossDeviceSignInPromo) {
+  base::HistogramTester histogram_tester;
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
+  signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
+                                      signin::ConsentLevel::kSignin);
+
+  mojo::Remote<organizer_panel::mojom::ForeignTabsPageHandler> remote;
+  ForeignTabsPageHandler handler(
+      remote.BindNewPipeAndPassReceiver(),
+      browser()->GetTabStripModel()->GetActiveWebContents());
+
+  remote->ShowCrossDeviceSignInPromo();
+  remote.FlushForTesting();
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.OpenedQrCodeBubble",
+      CrossDeviceSigninPromoEntryPoint::kForeignTabs, 1);
+  EXPECT_TRUE(IsCrossDeviceSigninPromoBubbleOpen(browser()->GetProfile()));
+}
+#endif
 
 }  // namespace

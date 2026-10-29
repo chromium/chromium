@@ -24,6 +24,9 @@ interface ForeignTabsPageHandler {
 
   // Opens a foreign tab from another device.
   OpenTab(string session_tag, int32 session_tab_id);
+
+  // Opens the sign-in promo for cross device tabs.
+  ShowCrossDeviceSignInPromo();
 };
 
 // Factory interface to bootstrap communication between WebUI and browser.

@@ -30,6 +30,7 @@ class ForeignTabsPageHandler
   // organizer_panel::mojom::ForeignTabsPageHandler:
   void GetForeignTabs(GetForeignTabsCallback callback) override;
   void OpenTab(const std::string& session_tag, int32_t session_tab_id) override;
+  void ShowCrossDeviceSignInPromo() override;
 
  private:
   mojo::Receiver<organizer_panel::mojom::ForeignTabsPageHandler> receiver_;

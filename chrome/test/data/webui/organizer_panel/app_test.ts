@@ -45,6 +45,7 @@ suite('OrganizerPanelAppTest', () => {
       recentlyVisited: 'Recently visited',
       searchTabs: 'Search Tabs',
       shortcutText: 'Ctrl+Shift+A',
+      signInOnPhone: 'Sign in on your phone',
       tabGroupMoreOptions: 'More options',
       tabGroups: 'Tab Groups',
       tabsOnOtherDevices: 'Tabs on other devices',

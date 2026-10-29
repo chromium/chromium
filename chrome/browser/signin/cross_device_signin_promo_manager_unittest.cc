@@ -104,6 +104,11 @@ class CrossDeviceSigninPromoManagerTest : public testing::Test {
                                    /*is_type_on=*/enable_sync);
   }
 
+  void SetTabsSyncingPreference(bool enable_sync) {
+    sync_service()->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kTabs, /*is_type_on=*/enable_sync);
+  }
+
   void AddDevice(
       const std::string& guid,
       bool is_local,
@@ -254,6 +259,38 @@ TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromoHistorySyncEnabled) {
       CrossDeviceSigninPromoEntryPoint::kHistoryPage, profile()));
   histogram_tester.ExpectUniqueSample(
       "Signin.CrossDeviceSigninPromo.ShouldShowResult.HistoryPage",
+      CrossDeviceSigninPromoShouldShowResult::kCanShow, 1);
+}
+
+TEST_F(CrossDeviceSigninPromoManagerTest,
+       ShouldShowPromoForeignTabsSyncDisabled) {
+  base::HistogramTester histogram_tester;
+  // Setup: Signed in, only local device, tabs sync disabled.
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
+  AddDevice("local_device_guid", /*is_local=*/true);
+  SetTabsSyncingPreference(false);
+
+  EXPECT_FALSE(ShouldStartShowingCrossDeviceSigninPromo(
+      CrossDeviceSigninPromoEntryPoint::kForeignTabs, profile()));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.ForeignTabs",
+      CrossDeviceSigninPromoShouldShowResult::kDataTypeNotEnabled, 1);
+}
+
+TEST_F(CrossDeviceSigninPromoManagerTest,
+       ShouldShowPromoForeignTabsSyncEnabled) {
+  base::HistogramTester histogram_tester;
+  // Setup: Signed in, only local device, tabs sync enabled.
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
+  AddDevice("local_device_guid", /*is_local=*/true);
+  SetTabsSyncingPreference(true);
+
+  EXPECT_TRUE(ShouldStartShowingCrossDeviceSigninPromo(
+      CrossDeviceSigninPromoEntryPoint::kForeignTabs, profile()));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.ForeignTabs",
       CrossDeviceSigninPromoShouldShowResult::kCanShow, 1);
 }
 
@@ -716,6 +753,50 @@ TEST_F(CrossDeviceSigninPromoManagerTest,
   EXPECT_TRUE(net::GetValueForKeyInQuery(captured_url, "android-campaign",
                                          &campaign_val));
   EXPECT_EQ(campaign_val, "XDeviceSendTabToSelf");
+
+  std::string email_val;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(captured_url, "email", &email_val));
+  EXPECT_EQ(email_val, "user+test@gmail.com");
+}
+
+// Verifies that OpenSigninToPhoneQrCodeBubble generates the expected URL with
+// the ForeignTabs campaign and forwards the ForeignTabs entry point.
+TEST_F(CrossDeviceSigninPromoManagerTest,
+       OpenSigninToPhoneQrCodeBubble_ForeignTabs) {
+  base::HistogramTester histogram_tester;
+
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "user+test@gmail.com", signin::ConsentLevel::kSignin);
+
+  MockBrowserWindowInterface browser_window;
+  EXPECT_CALL(browser_window, GetProfile())
+      .WillRepeatedly(testing::Return(profile()));
+
+  MockSigninUiDelegate mock_delegate;
+  base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_reset =
+      signin_ui_util::SetSigninUiDelegateForTesting(&mock_delegate);
+
+  GURL captured_url;
+  EXPECT_CALL(mock_delegate,
+              ShowCrossDeviceSigninQrBubble(
+                  &browser_window, testing::_, testing::_,
+                  CrossDeviceSigninPromoEntryPoint::kForeignTabs))
+      .WillOnce(testing::SaveArg<1>(&captured_url));
+
+  OpenSigninToPhoneQrCodeBubble(&browser_window,
+                                CrossDeviceSigninPromoEntryPoint::kForeignTabs,
+                                base::DoNothing());
+  histogram_tester.ExpectBucketCount(
+      "Signin.CrossDeviceSigninPromo.OpenedQrCodeBubble",
+      CrossDeviceSigninPromoEntryPoint::kForeignTabs, 1);
+
+  std::string campaign_val;
+  EXPECT_TRUE(
+      net::GetValueForKeyInQuery(captured_url, "ios-campaign", &campaign_val));
+  EXPECT_EQ(campaign_val, "XDeviceForeignTabs");
+  EXPECT_TRUE(net::GetValueForKeyInQuery(captured_url, "android-campaign",
+                                         &campaign_val));
+  EXPECT_EQ(campaign_val, "XDeviceForeignTabs");
 
   std::string email_val;
   EXPECT_TRUE(net::GetValueForKeyInQuery(captured_url, "email", &email_val));
