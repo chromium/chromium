@@ -210,8 +210,7 @@ class GpuWatchdogInitScope {
 // Android WebView is allowed for now because it CHECKs on context loss.
 void DisableInProcessGpuVulkan(GpuFeatureInfo* gpu_feature_info,
                                GpuPreferences* gpu_preferences) {
-  if (gpu_feature_info->status_values[GPU_FEATURE_TYPE_VULKAN] ==
-          kGpuFeatureStatusEnabled ||
+  if (gpu_feature_info->IsFeatureEnabled(GPU_FEATURE_TYPE_VULKAN) ||
       gpu_preferences->gr_context_type == GrContextType::kVulkan) {
     LOG(ERROR) << "Vulkan not supported with in process gpu";
     gpu_preferences->use_vulkan = VulkanImplementationName::kNone;
@@ -531,8 +530,7 @@ void GpuInit2::InitializeInProcess(base::CommandLine* command_line,
   }
 
   if (command_line->HasSwitch(switches::kWebViewDrawFunctorUsesVulkan)) {
-    if (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
-        kGpuFeatureStatusEnabled) {
+    if (gpu_feature_info_.IsFeatureEnabled(GPU_FEATURE_TYPE_SKIA_GRAPHITE)) {
       gpu_feature_info_.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] =
           kGpuFeatureStatusDisabled;
     }
@@ -887,8 +885,7 @@ bool GpuInit2::ResolveGrContextType(InitState& state) {
     return false;
   }
   gpu_preferences_.perform_graphite_precompilation =
-      gpu_feature_info_.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
-          kGpuFeatureStatusEnabled &&
+      gpu_feature_info_.IsFeatureEnabled(GPU_FEATURE_TYPE_SKIA_GRAPHITE) &&
       features::IsSkiaGraphitePrecompilationEnabled(state.command_line);
 
 #if BUILDFLAG(IS_WIN)
@@ -906,9 +903,8 @@ bool GpuInit2::InitializeVulkanIfNeeded() {
   gpu_init_internal::MaybeDisableWebGPUOnVulkanViaGLInterop(gpu_feature_info_);
 #endif  // BUILDFLAG(IS_OZONE)
 
-  if (gpu_feature_info_
-          .status_values[GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP] ==
-      kGpuFeatureStatusEnabled) {
+  if (gpu_feature_info_.IsFeatureEnabled(
+          GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP)) {
     if (gpu_preferences_.use_vulkan == gpu::VulkanImplementationName::kNone) {
       gpu_preferences_.use_vulkan = gpu::VulkanImplementationName::kNative;
     }
@@ -1013,15 +1009,13 @@ bool GpuInit2::FinalizeGLInitialization(InitState& state) {
 }
 
 void GpuInit2::ApplyFeatureStatusToPreferences() {
-  if (kGpuFeatureStatusEnabled !=
-      gpu_feature_info_
-          .status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE]) {
+  if (!gpu_feature_info_.IsFeatureEnabled(
+          GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE)) {
     gpu_preferences_.disable_accelerated_video_decode = true;
   }
 
-  if (kGpuFeatureStatusEnabled !=
-      gpu_feature_info_
-          .status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE]) {
+  if (!gpu_feature_info_.IsFeatureEnabled(
+          GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE)) {
     gpu_preferences_.disable_accelerated_video_encode = true;
   }
 }
@@ -1039,21 +1033,18 @@ void GpuInit2::FinalizeWatchdog(InitState& state) {
 bool GpuInit2::InitializeSkiaBackend() {
   if (gpu_preferences_.gr_context_type == GrContextType::kGraphiteDawn) {
     if (!InitializeDawn()) {
-      auto& graphite_feature =
-          gpu_feature_info_.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE];
+      if (gpu_feature_info_.IsFeatureEnabled(GPU_FEATURE_TYPE_SKIA_GRAPHITE)) {
 #if BUILDFLAG(IS_ANDROID)
-      // On Android it's expected most users don't support Vulkan so dawn
-      // initialization will fail. Immediately fallback to Ganesh/GL for those
-      // users to avoid regressing startup time.
-      if (graphite_feature == kGpuFeatureStatusEnabled) {
-        graphite_feature = kGpuFeatureStatusDisabled;
-      }
+        // On Android it's expected most users don't support Vulkan so dawn
+        // initialization will fail. Immediately fallback to Ganesh/GL for
+        // those users to avoid regressing startup time.
+        gpu_feature_info_.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] =
+            kGpuFeatureStatusDisabled;
 #else
-      if (graphite_feature == kGpuFeatureStatusEnabled) {
         return false;
+#endif  // BUILDFLAG(IS_ANDROID)
       }
       // SkiaGraphite is disabled by software_rendering_list.json
-#endif  // BUILDFLAG(IS_ANDROID)
       gpu_preferences_.gr_context_type = GrContextType::kGL;
     }
   } else if (gpu_preferences_.gr_context_type ==
@@ -1121,8 +1112,7 @@ void GpuInit2::SetSkiaBackendType() {
 bool GpuInit2::InitializeDawn() {
 #if BUILDFLAG(SKIA_USE_DAWN)
   TRACE_EVENT("gpu,startup", "gpu::GpuInit::InitializeDawn");
-  if (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] !=
-          kGpuFeatureStatusEnabled &&
+  if (!gpu_feature_info_.IsFeatureEnabled(GPU_FEATURE_TYPE_SKIA_GRAPHITE) &&
       !gpu::DawnContextProvider::DefaultForceFallbackAdapter()) {
     // Return false, if skia_graphite is blocked in
     // gpu/config/software_rendering_list.json. Unless dawn is using the

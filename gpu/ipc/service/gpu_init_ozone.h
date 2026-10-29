@@ -38,7 +38,7 @@ struct SetDrmModifiersFilterParams {
 };
 
 void AfterSandboxEntryAndSetDrmModifiersFilter(
-    GpuFeatureInfo& gpu_feature_info,
+    const GpuFeatureInfo& gpu_feature_info,
     const SetDrmModifiersFilterParams& params);
 
 }  // namespace gpu_init_internal

@@ -50,7 +50,7 @@ struct GPU_CONFIG_EXPORT GpuFeatureInfo {
   // Return true if GpuFeatureInfo is computed.
   bool IsInitialized() const;
 
-  bool IsFeatureEnabled(GpuFeatureType feature);
+  bool IsFeatureEnabled(GpuFeatureType feature) const;
 
   // An array of GpuFeatureStatus values, one per GpuFeatureType.
   // By default, all features are disabled.

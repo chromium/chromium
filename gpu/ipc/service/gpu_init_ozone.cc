@@ -74,15 +74,14 @@ void QueryNativePixmapSupport(GpuFeatureInfo& gpu_feature_info) {
 }
 
 void AfterSandboxEntryAndSetDrmModifiersFilter(
-    GpuFeatureInfo& gpu_feature_info,
+    const GpuFeatureInfo& gpu_feature_info,
     const SetDrmModifiersFilterParams& params) {
   ui::OzonePlatform::GetInstance()->AfterSandboxEntry();
   [[maybe_unused]] auto* factory =
       ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
   bool filter_set = false;
 #if BUILDFLAG(ENABLE_VULKAN)
-  if (gpu_feature_info.status_values[GPU_FEATURE_TYPE_VULKAN] ==
-          kGpuFeatureStatusEnabled &&
+  if (gpu_feature_info.IsFeatureEnabled(GPU_FEATURE_TYPE_VULKAN) &&
       factory->SupportsDrmModifiersFilter()) {
     CHECK(!filter_set);
     DCHECK(params.vulkan_implementation &&
