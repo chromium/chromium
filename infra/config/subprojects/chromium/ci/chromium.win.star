@@ -232,11 +232,14 @@ ci.builder(
             "chromedriver_py_tests": targets.remove(
                 reason = "Timeout happens sometimes (crbug.com/951799)",
             ),
-            "components_unittests": targets.mixin(
-                swarming = targets.swarming(
-                    shards = 2,
+            "components_unittests": [
+                targets.mixin(
+                    swarming = targets.swarming(
+                        shards = 2,
+                    ),
                 ),
-            ),
+                "no_ssd",
+            ],
             "content_shell_crash_test": targets.mixin(
                 # https://crbug.com/861730
                 experiment_percentage = 100,
@@ -250,12 +253,15 @@ ci.builder(
                     "--test-launcher-timeout=90000",
                 ],
             ),
-            "performance_test_suite": targets.mixin(
-                args = [
-                    "--browser=debug_x64",
-                ],
-                experiment_percentage = 100,
-            ),
+            "performance_test_suite": [
+                targets.mixin(
+                    args = [
+                        "--browser=debug_x64",
+                    ],
+                    experiment_percentage = 100,
+                ),
+                "no_ssd",
+            ],
             "sync_integration_tests": targets.mixin(
                 # https://crbug.com/840369
                 experiment_percentage = 100,
@@ -263,10 +269,13 @@ ci.builder(
             "telemetry_perf_unittests": targets.remove(
                 reason = "Disabled due to failing test suites (crbug/40565753)",
             ),
-            "telemetry_unittests": targets.mixin(
-                # crbug.com/870673
-                experiment_percentage = 100,
-            ),
+            "telemetry_unittests": [
+                targets.mixin(
+                    # crbug.com/870673
+                    experiment_percentage = 100,
+                ),
+                "no_ssd",
+            ],
             "content_browsertests": targets.mixin(
                 swarming = targets.swarming(
                     shards = 12,
@@ -481,6 +490,8 @@ ci.builder(
             "telemetry_unittests": targets.remove(
                 reason = "Some test cases fail on win-rel (crbug/40622135).",
             ),
+            "telemetry_desktop_minidump_unittests": "no_ssd",
+            "webui_resources_tools_python_unittests": "no_ssd",
         },
     ),
     builderless = False,
