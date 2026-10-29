@@ -63,8 +63,7 @@ ReportingJobConfigurationBase::DeviceDictionaryBuilder::BuildDeviceDictionary(
   device_dictionary.Set(kOSVersion, GetOSVersion());
   device_dictionary.Set(kOSPlatform, GetOSPlatform());
   device_dictionary.Set(kName, GetDeviceName());
-  if (base::FeatureList::IsEnabled(
-          policy::features::kEnhancedSecurityEventFields)) {
+  if (policy::features::IsEnhancedSecurityEventFieldsEnabled()) {
     device_dictionary.Set(kDeviceFqdn, GetDeviceFqdn());
     device_dictionary.Set(kNetworkName, GetNetworkName());
   }
@@ -82,8 +81,7 @@ ReportingJobConfigurationBase::DeviceDictionaryBuilder::BuildDeviceProto(
   device.set_os_version(GetOSVersion());
   device.set_os_platform(GetOSPlatform());
   device.set_name(GetDeviceName());
-  if (base::FeatureList::IsEnabled(
-          policy::features::kEnhancedSecurityEventFields)) {
+  if (policy::features::IsEnhancedSecurityEventFieldsEnabled()) {
     device.set_device_fqdn(GetDeviceFqdn());
     device.set_network_name(GetNetworkName());
   }
