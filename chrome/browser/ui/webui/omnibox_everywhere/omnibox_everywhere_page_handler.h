@@ -35,6 +35,7 @@ class OmniboxEverywherePageHandler
   // omnibox_everywhere::mojom::PageHandler:
   void ShowContextActionMenu(const gfx::Rect& anchor_rect) override;
   void SetIsComposebox(bool is_composebox) override;
+  void OnDismissMostVisited() override;
 
   // Forwards context menu / composebox events to the WebUI page.
   void OnContextMenuClosed();
