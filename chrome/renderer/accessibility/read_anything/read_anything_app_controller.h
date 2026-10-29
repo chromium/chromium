@@ -287,10 +287,10 @@ class ReadAnythingAppController
   std::string GetDocumentUrl() const;
   std::string GetHtmlId(ui::AXNodeID ax_node_id) const;
   std::string GetAltText(ui::AXNodeID ax_node_id) const;
-  std::string GetDomDistillerTitle() const;
-  std::string GetDomDistillerContentHtml() const;
+  std::string GetReadabilityTitle() const;
+  std::string GetReadabilityContentHtml() const;
   // Serializes accessibility tree anchors into a V8 object for the frontend.
-  v8::Local<v8::Value> GetDomDistillerAnchors() const;
+  v8::Local<v8::Value> GetReadabilityAnchors() const;
   // Returns the presentation through the OnGetPresentationState callback.
   void SendGetPresentationStateRequest() const;
   // The results of these are sent back via UntrustedPage::OnGetVoicePackInfo.
@@ -703,15 +703,15 @@ class ReadAnythingAppController
   // is re-triggered multiple times before completion. Used for logging.
   int distillation_attempts_;
 
-  // The distilled title result of DOM distiller distillation.
-  std::string dom_distiller_title_;
+  // The distilled title result of Readability distillation.
+  std::string readability_title_;
 
   // Tracks whether the distillation status for the current active tree
   // navigation has already been recorded.
   bool has_logged_distillation_status_ = false;
 
-  // The distilled content result of DOM distiller distillation.
-  std::string dom_distiller_content_html_;
+  // The distilled content result of Readability distillation.
+  std::string readability_content_html_;
 
   std::optional<ReadAnythingAppModel::DistillationMethod>
       forced_distillation_method_for_testing_;

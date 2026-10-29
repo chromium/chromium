@@ -185,11 +185,11 @@ class ReadAnythingUntrustedPageHandler :
       const ReadAnythingUntrustedPageHandler&) = delete;
   ~ReadAnythingUntrustedPageHandler() override;
 
-  const std::optional<std::string>& dom_distiller_title() const {
-    return dom_distiller_title_;
+  const std::optional<std::string>& readability_title() const {
+    return readability_title_;
   }
-  const std::optional<std::string>& dom_distiller_content() const {
-    return dom_distiller_content_;
+  const std::optional<std::string>& readability_content() const {
+    return readability_content_;
   }
 
   base::TimeTicks readability_distillation_tree_change_start_time() const {
@@ -438,13 +438,13 @@ class ReadAnythingUntrustedPageHandler :
       bool is_available);
 
   // Called if IsReadAnythingWithReadabilityEnabled is enabled. Triggers
-  // DomDistiller Distillation for the current page. Returns true if
+  // Readability distillation for the current page if eligible. Returns true if
   // distillation was successfully started.
-  bool RequestDomDistillerDistillation(content::WebContents* contents);
+  bool MaybeStartReadabilityDistillation(content::WebContents* contents);
 
   // Resets the state of the current readability distillation: resolves an
   // outstanding RequestReadabilityDistillation callback with kCancelled and
-  // empty strings, cancels the in-flight DomDistiller distillation, if any, and
+  // empty strings, cancels the in-flight Readability distillation, if any, and
   // clears the cached article and its timing state.
   void ResetReadabilityState();
 
@@ -452,8 +452,8 @@ class ReadAnythingUntrustedPageHandler :
   // the current url scheme in ReadAnything.DistillationScheme.
   void RecordDistillationSchemeHistogram(const GURL& url) const;
 
-  // Called by the DomDistillerDelegate with the result of a DomDistiller
-  // distillation.
+  // Called by the ReadabilityDistillerDelegate with the result of a
+  // Readability distillation.
   void ProcessDistilledArticle(
       const dom_distiller::DistilledArticleProto* article_proto);
 
@@ -488,8 +488,8 @@ class ReadAnythingUntrustedPageHandler :
 
   // Private implementation for dom_distiller::ViewRequestDelegate, not part of
   // the public API.
-  class DomDistillerDelegate;
-  std::unique_ptr<DomDistillerDelegate> distiller_delegate_;
+  class ReadabilityDistillerDelegate;
+  std::unique_ptr<ReadabilityDistillerDelegate> distiller_delegate_;
 
   const mojo::Receiver<read_anything::mojom::UntrustedPageHandler> receiver_;
   const mojo::Remote<read_anything::mojom::UntrustedPage> page_;
@@ -572,9 +572,9 @@ class ReadAnythingUntrustedPageHandler :
   ListenToThisPagePlaybackMetricState listen_to_this_page_playback_state_ =
       ListenToThisPagePlaybackMetricState::kInactive;
 
-  // Hold DOM distiller distillation results.
-  std::optional<std::string> dom_distiller_title_;
-  std::optional<std::string> dom_distiller_content_;
+  // Holds Readability distillation results.
+  std::optional<std::string> readability_title_;
+  std::optional<std::string> readability_content_;
 
   // Tracks the start time of a readability distillation triggered by an active
   // accessibility tree ID change. This is used to measure readability

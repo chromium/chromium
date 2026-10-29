@@ -64,7 +64,7 @@ class ReadAnythingDistillerFactory {
   ScreenAIReadinessCallback is_screen_ai_ready_callback_;
 
   // Callback forwarded to ReadabilityDistiller to request a distillation from
-  // the browser process, which owns the DOM distiller.
+  // the browser process, which runs the Readability distillation.
   RequestReadabilityDistillationCallback request_distillation_callback_;
 };
 

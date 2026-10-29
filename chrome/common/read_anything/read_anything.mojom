@@ -488,8 +488,8 @@ interface UntrustedPage {
   // Lets the renderer process know that the browser has sent a new pin state.
   OnPinStatusReceived(bool new_pin_state);
 
-  // Sets the distilled title and content from DOM distiller to be available in
-  // the WebUI and notifies the WebUI that DOM distiller has processed a
+  // Sets the distilled title and content from Readability to be available in
+  // the WebUI and notifies the WebUI that Readability has processed a
   // distillation request.
   UpdateContent(string title, string content);
 

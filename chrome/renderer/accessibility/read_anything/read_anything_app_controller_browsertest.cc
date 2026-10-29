@@ -580,7 +580,7 @@ class ReadAnythingAppControllerReadabilityTest
 };
 
 TEST_F(ReadAnythingAppControllerReadabilityTest,
-       GetDomDistillerAnchors_ReturnsCorrectMapping) {
+       GetReadabilityAnchors_ReturnsCorrectMapping) {
   std::string url = "https://www.google.com";
   std::string link_text = "Google Homepage";
   std::string title_text = "Google Search Tooltip";
@@ -623,7 +623,7 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
       v8_env->isolate, v8_env->context->GetMicrotaskQueue(),
       v8::MicrotasksScope::kDoNotRunMicrotasks);
 
-  v8::Local<v8::Value> result = controller().GetDomDistillerAnchors();
+  v8::Local<v8::Value> result = controller().GetReadabilityAnchors();
 
   // Verify that the result is a V8 object mapping URLs to arrays of anchor
   // objects extracted from the active accessibility tree.

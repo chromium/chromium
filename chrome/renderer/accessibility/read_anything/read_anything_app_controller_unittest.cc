@@ -7105,7 +7105,7 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
   model().set_readability_distillation_complete_for_current_tree(false);
 
   // Sanity check: Ensure content is actually there before we start.
-  ASSERT_EQ(controller().GetDomDistillerContentHtml(), stale_content);
+  ASSERT_EQ(controller().GetReadabilityContentHtml(), stale_content);
 
   EXPECT_CALL(
       page_handler_,
@@ -7117,7 +7117,7 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
   ProcessModelUpdates();
 
   EXPECT_FALSE(model().requires_readability_distillation());
-  EXPECT_TRUE(controller().GetDomDistillerContentHtml().empty());
+  EXPECT_TRUE(controller().GetReadabilityContentHtml().empty());
 }
 
 TEST_F(ReadAnythingAppControllerReadabilityTest,
@@ -8078,8 +8078,8 @@ TEST_F(ReadAnythingAppControllerDistillerRefactorTest,
   EXPECT_EQ(model().next_distillation_method(),
             ReadAnythingAppModel::DistillationMethod::kReadability);
   EXPECT_TRUE(model().readability_distillation_complete_for_current_tree());
-  EXPECT_EQ(controller().GetDomDistillerTitle(), "Title");
-  EXPECT_EQ(controller().GetDomDistillerContentHtml(), "<p>Content</p>");
+  EXPECT_EQ(controller().GetReadabilityTitle(), "Title");
+  EXPECT_EQ(controller().GetReadabilityContentHtml(), "<p>Content</p>");
 }
 
 TEST_F(ReadAnythingAppControllerDistillerRefactorTest,
@@ -8279,7 +8279,7 @@ TEST_F(ReadAnythingAppControllerDistillerRefactorTest,
   Reply(stale_reply,
         read_anything::mojom::ReadabilityDistillationResult::kSuccess, "Stale",
         "<p>Stale</p>");
-  EXPECT_TRUE(controller().GetDomDistillerContentHtml().empty());
+  EXPECT_TRUE(controller().GetReadabilityContentHtml().empty());
 }
 
 TEST_F(
@@ -8310,7 +8310,7 @@ TEST_F(
   Reply(stale_reply,
         read_anything::mojom::ReadabilityDistillationResult::kSuccess, "Stale",
         "<p>Stale</p>");
-  EXPECT_TRUE(controller().GetDomDistillerContentHtml().empty());
+  EXPECT_TRUE(controller().GetReadabilityContentHtml().empty());
 }
 
 TEST_F(ReadAnythingAppControllerDistillerRefactorTest,
@@ -8332,12 +8332,12 @@ TEST_F(ReadAnythingAppControllerDistillerRefactorTest,
         read_anything::mojom::ReadabilityDistillationResult::kSuccess, "Stale",
         "<p>Stale</p>");
   EXPECT_FALSE(model().readability_distillation_complete_for_current_tree());
-  EXPECT_TRUE(controller().GetDomDistillerContentHtml().empty());
+  EXPECT_TRUE(controller().GetReadabilityContentHtml().empty());
 
   Reply(fresh_reply,
         read_anything::mojom::ReadabilityDistillationResult::kSuccess, "Fresh",
         "<p>Fresh</p>");
-  EXPECT_EQ(controller().GetDomDistillerContentHtml(), "<p>Fresh</p>");
+  EXPECT_EQ(controller().GetReadabilityContentHtml(), "<p>Fresh</p>");
 }
 
 TEST_F(ReadAnythingAppControllerDistillerRefactorTest,
@@ -8353,7 +8353,7 @@ TEST_F(ReadAnythingAppControllerDistillerRefactorTest,
   Reply(reply, read_anything::mojom::ReadabilityDistillationResult::kSuccess,
         "Title", "<p>Content</p>");
 
-  EXPECT_TRUE(controller().GetDomDistillerContentHtml().empty());
+  EXPECT_TRUE(controller().GetReadabilityContentHtml().empty());
 }
 
 class ReadAnythingAppControllerDistillerRefactorSelectTextTest
@@ -8392,7 +8392,7 @@ TEST_F(ReadAnythingAppControllerDistillerRefactorSelectTextTest,
   EXPECT_FALSE(model().requires_readability_distillation());
   Reply(reply, read_anything::mojom::ReadabilityDistillationResult::kSuccess,
         "Title", "<p>New content</p>");
-  EXPECT_EQ(controller().GetDomDistillerContentHtml(), "<p>New content</p>");
+  EXPECT_EQ(controller().GetReadabilityContentHtml(), "<p>New content</p>");
 }
 
 TEST_F(ReadAnythingAppControllerDistillerRefactorSelectTextTest,
@@ -8445,7 +8445,7 @@ TEST_F(
   EXPECT_EQ(model().distillation_state(),
             read_anything::mojom::ReadAnythingDistillationState::
                 kDistillationWithContent);
-  EXPECT_EQ(controller().GetDomDistillerContentHtml(), "<p>Page 2 content</p>");
+  EXPECT_EQ(controller().GetReadabilityContentHtml(), "<p>Page 2 content</p>");
 }
 
 TEST_F(ReadAnythingAppControllerDistillerRefactorSelectTextTest,

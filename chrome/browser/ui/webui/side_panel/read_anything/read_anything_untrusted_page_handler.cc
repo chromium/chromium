@@ -107,7 +107,7 @@ using read_anything::mojom::UntrustedPage;
 using read_anything::mojom::UntrustedPageHandler;
 using read_anything::mojom::VoicePackInstallationState;
 
-// A helper class that orchestrates page distillation using the
+// A helper class that orchestrates Readability page distillation using the
 // DomDistillerService.
 //
 // It triggers distillation via StartDistillation() and implements the
@@ -118,12 +118,13 @@ using read_anything::mojom::VoicePackInstallationState;
 // outstanding request, ensuring that only one distillation request is active
 // at any given time. Once distillation completes, it forwards the resulting
 // article to the enclosing ReadAnythingUntrustedPageHandler.
-class ReadAnythingUntrustedPageHandler::DomDistillerDelegate
+class ReadAnythingUntrustedPageHandler::ReadabilityDistillerDelegate
     : public dom_distiller::ViewRequestDelegate {
  public:
-  explicit DomDistillerDelegate(ReadAnythingUntrustedPageHandler* handler)
+  explicit ReadabilityDistillerDelegate(
+      ReadAnythingUntrustedPageHandler* handler)
       : handler_(handler) {}
-  ~DomDistillerDelegate() override = default;
+  ~ReadabilityDistillerDelegate() override = default;
 
   void StartDistillation(dom_distiller::DomDistillerService* service,
                          content::WebContents* contents) {
@@ -507,7 +508,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
           ISOLATED_WORLD_ID_CHROME_INTERNAL);
     }
 
-    distiller_delegate_ = std::make_unique<DomDistillerDelegate>(this);
+    distiller_delegate_ = std::make_unique<ReadabilityDistillerDelegate>(this);
   }
 
   // Enable accessibility for the top level render frame and all descendants.
@@ -1380,7 +1381,7 @@ void ReadAnythingUntrustedPageHandler::RequestReadabilityDistillation(
   // callback. Resetting replies (kIneligible, "", "") if distillation never
   // started.
   readability_callback_ = std::move(wrapped_callback);
-  if (!RequestDomDistillerDistillation(tab_->GetContents())) {
+  if (!MaybeStartReadabilityDistillation(tab_->GetContents())) {
     readability_callback_.Reset();
   }
 }
@@ -1395,8 +1396,8 @@ void ReadAnythingUntrustedPageHandler::ResetReadabilityState() {
   if (distiller_delegate_) {
     distiller_delegate_->CancelDistillation();
   }
-  dom_distiller_title_.reset();
-  dom_distiller_content_.reset();
+  readability_title_.reset();
+  readability_content_.reset();
   readability_distillation_tree_change_start_time_ = base::TimeTicks();
 }
 
@@ -1839,11 +1840,11 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
     // Now that the renderer is prepped, request distillation. If this fails
     // synchronously, the renderer will correctly fall back to Screen2x for the
     // *new* tree.
-    RequestDomDistillerDistillation(contents);
+    MaybeStartReadabilityDistillation(contents);
   }
 }
 
-bool ReadAnythingUntrustedPageHandler::RequestDomDistillerDistillation(
+bool ReadAnythingUntrustedPageHandler::MaybeStartReadabilityDistillation(
     content::WebContents* content) {
   if (!content || !features::IsReadAnythingWithReadabilityEnabled() ||
       features::IsReadAnythingReadAloudPhraseHighlightingEnabled() ||
@@ -1949,36 +1950,36 @@ void ReadAnythingUntrustedPageHandler::ProcessDistilledArticle(
         !is_pdf_with_frame_ &&
         !features::IsReadAnythingReadAloudPhraseHighlightingEnabled());
   if (article_proto && article_proto->pages_size() > 0) {
-    dom_distiller_title_ = article_proto->title();
+    readability_title_ = article_proto->title();
 
     std::string full_html;
     for (const auto& page : article_proto->pages()) {
       full_html.append(page.html());
     }
-    dom_distiller_content_ = full_html;
+    readability_content_ = full_html;
 
     // If distillation successfully produced content, update the distillation
     // state and notify the renderer.
-    if (dom_distiller_content()) {
+    if (readability_content()) {
       // `readability_callback_` Set only for renderer-requested distillations.
       if (readability_callback_) {
-        const std::string& content = dom_distiller_content().value();
+        const std::string& content = readability_content().value();
         std::move(readability_callback_)
             .Run(content.empty() ? read_anything::mojom::
                                        ReadabilityDistillationResult::kEmpty
                                  : read_anything::mojom::
                                        ReadabilityDistillationResult::kSuccess,
-                 dom_distiller_title().value_or(""), content);
+                 readability_title().value_or(""), content);
       }
       if (!features::IsReadAnythingDistillerRefactorEnabled()) {
         page_->OnReadabilityDistillationStateChanged(
             read_anything::mojom::ReadAnythingDistillationState::
                 kDistillationWithContent);
-        page_->UpdateContent(dom_distiller_title().value_or(""),
-                             dom_distiller_content().value());
+        page_->UpdateContent(readability_title().value_or(""),
+                             readability_content().value());
       }
       if (features::IsReadAnythingDistillationQualityEvaluationEnabled()) {
-        EvaluateDistillationQuality(dom_distiller_content().value());
+        EvaluateDistillationQuality(readability_content().value());
       }
       if (!readability_distillation_tree_change_start_time_.is_null()) {
         base::UmaHistogramMediumTimes(

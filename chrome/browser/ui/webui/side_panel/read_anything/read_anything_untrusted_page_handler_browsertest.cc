@@ -3017,7 +3017,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerTest,
     // Readability distillation block is (incorrectly) executed. The 5 expected
     // calls are: 2 calls from the initial `about:blank` setup + 3 calls during
     // the transient phase (kDistillationInProgress in OnActiveAXTreeIDChanged,
-    // the second kDistillationInProgress in RequestDomDistillerDistillation,
+    // the second kDistillationInProgress in MaybeStartReadabilityDistillation,
     // and finally kDistillationEmpty).
     EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(5);
   }
@@ -3048,9 +3048,9 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return handler_->dom_distiller_title().has_value(); }));
+      [&]() { return handler_->readability_title().has_value(); }));
   EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return handler_->dom_distiller_content().has_value(); }));
+      [&]() { return handler_->readability_content().has_value(); }));
 
   histogram_tester.ExpectTotalCount(
       "Accessibility.ReadAnything.TimeFromTreeChangedToDistillationComplete",
@@ -3270,7 +3270,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerTest,
 
   // Wait for the initial distillation triggered by navigation to complete.
   EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return handler_->dom_distiller_content().has_value(); }));
+      [&]() { return handler_->readability_content().has_value(); }));
 
   // Setup expectations for RequestReadabilityDistillation.
   base::RunLoop run_loop;
@@ -3310,7 +3310,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Wait for the initial distillation triggered by navigation to complete.
   EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return handler_->dom_distiller_content().has_value(); }));
+      [&]() { return handler_->readability_content().has_value(); }));
 
   // The distilled content still reaches the renderer through UpdateContent,
   // even though the request itself discards the callback.
@@ -3341,9 +3341,9 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/simple.html")));
   EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return handler_->dom_distiller_title().has_value(); }));
+      [&]() { return handler_->readability_title().has_value(); }));
   EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return handler_->dom_distiller_content().has_value(); }));
+      [&]() { return handler_->readability_content().has_value(); }));
 
   // Navigate to Google Docs where use_readability is false.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -3351,8 +3351,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerTest,
 
   // Verify that cached Readability state (title, content, and distillation
   // start time) was cleared.
-  EXPECT_FALSE(handler_->dom_distiller_title().has_value());
-  EXPECT_FALSE(handler_->dom_distiller_content().has_value());
+  EXPECT_FALSE(handler_->readability_title().has_value());
+  EXPECT_FALSE(handler_->readability_content().has_value());
   EXPECT_TRUE(
       handler_->readability_distillation_tree_change_start_time().is_null());
 }
@@ -3430,7 +3430,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerRefactorTest,
             read_anything::mojom::ReadabilityDistillationResult::kIneligible);
   EXPECT_TRUE(title.empty());
   EXPECT_TRUE(content.empty());
-  EXPECT_FALSE(handler_->dom_distiller_content().has_value());
+  EXPECT_FALSE(handler_->readability_content().has_value());
   page_.receiver_.FlushForTesting();
 
   contents->RemoveUserData(
@@ -3798,8 +3798,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerRefactorTest,
       ReadabilityDistillationReason::kTreeChanged, future.GetCallback());
   ASSERT_EQ(future.Get<0>(),
             read_anything::mojom::ReadabilityDistillationResult::kSuccess);
-  ASSERT_TRUE(handler_->dom_distiller_title().has_value());
-  ASSERT_TRUE(handler_->dom_distiller_content().has_value());
+  ASSERT_TRUE(handler_->readability_title().has_value());
+  ASSERT_TRUE(handler_->readability_content().has_value());
 
   // Navigate to Google Docs where use_readability is false.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -3807,8 +3807,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerRefactorTest,
 
   // Verify that cached Readability state (title, content, and distillation
   // start time) was cleared.
-  EXPECT_FALSE(handler_->dom_distiller_title().has_value());
-  EXPECT_FALSE(handler_->dom_distiller_content().has_value());
+  EXPECT_FALSE(handler_->readability_title().has_value());
+  EXPECT_FALSE(handler_->readability_content().has_value());
   EXPECT_TRUE(
       handler_->readability_distillation_tree_change_start_time().is_null());
 }
@@ -3857,8 +3857,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerAutomationTest,
   page_.receiver_.FlushForTesting();
 
   // Ensure that no distillation occurs.
-  EXPECT_FALSE(handler_->dom_distiller_title().has_value());
-  EXPECT_FALSE(handler_->dom_distiller_content().has_value());
+  EXPECT_FALSE(handler_->readability_title().has_value());
+  EXPECT_FALSE(handler_->readability_content().has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerRefactorTest,
@@ -3896,8 +3896,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerRefactorTest,
   page_.receiver_.FlushForTesting();
 
   // Ensure that no distillation occurs.
-  EXPECT_FALSE(handler_->dom_distiller_title().has_value());
-  EXPECT_FALSE(handler_->dom_distiller_content().has_value());
+  EXPECT_FALSE(handler_->readability_title().has_value());
+  EXPECT_FALSE(handler_->readability_content().has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
