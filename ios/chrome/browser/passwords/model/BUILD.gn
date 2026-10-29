@@ -65,8 +65,6 @@ source_set("model") {
     "password_store_observer_bridge.mm",
     "password_tab_helper.h",
     "password_tab_helper.mm",
-    "remote_actor_credential_sharing_delegate_bridge.h",
-    "remote_actor_credential_sharing_delegate_bridge.mm",
     "well_known_change_password_tab_helper.h",
     "well_known_change_password_tab_helper.mm",
   ]
@@ -93,7 +91,6 @@ source_set("model") {
     "//components/password_manager/core/browser/form_parsing",
     "//components/password_manager/core/browser/leak_detection",
     "//components/password_manager/core/browser/leak_detection:leak_detection_interface_headers",
-    "//components/password_manager/core/browser/remote_actor",
     "//components/password_manager/core/common",
     "//components/password_manager/ios",
     "//components/password_manager/ios:account_select_fill_data",
@@ -292,7 +289,6 @@ source_set("unit_tests") {
     "password_controller_unittest.mm",
     "password_native_keystroke_autologin_unittest.mm",
     "password_tab_helper_unittest.mm",
-    "remote_actor_credential_sharing_delegate_bridge_unittest.mm",
     "well_known_change_password_tab_helper_unittest.mm",
   ]
   deps = [
@@ -318,7 +314,6 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/leak_detection:leak_detection_interface_headers",
     "//components/password_manager/core/browser/leak_detection:test_support",
-    "//components/password_manager/core/browser/remote_actor",
     "//components/password_manager/core/common",
     "//components/password_manager/ios",
     "//components/password_manager/ios:features",
