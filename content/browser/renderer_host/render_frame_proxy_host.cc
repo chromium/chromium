@@ -554,11 +554,11 @@ void RenderFrameProxyHost::DisableAutoResize() {
   GetAssociatedRemoteFrame()->DisableAutoResize();
 }
 
-void RenderFrameProxyHost::DidUpdateVisualProperties(
-    const cc::RenderFrameMetadata& metadata) {
+void RenderFrameProxyHost::DidUpdateChildLocalSurfaceId(
+    const viz::LocalSurfaceId& local_surface_id) {
   if (!is_render_frame_proxy_live())
     return;
-  GetAssociatedRemoteFrame()->DidUpdateVisualProperties(metadata);
+  GetAssociatedRemoteFrame()->DidUpdateChildLocalSurfaceId(local_surface_id);
 }
 
 void RenderFrameProxyHost::ChildProcessGone() {

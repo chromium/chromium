@@ -661,11 +661,10 @@ bool SurfaceEmbedConnectorImpl::IsDisplayLocked() {
   return display_locked_;
 }
 
-void SurfaceEmbedConnectorImpl::DidUpdateVisualProperties(
-    const cc::RenderFrameMetadata& metadata) {
-  if (metadata.local_surface_id.has_value() &&
-      local_surface_id_ != *metadata.local_surface_id) {
-    delegate_->UpdateLocalSurfaceIdFromChild(*metadata.local_surface_id);
+void SurfaceEmbedConnectorImpl::DidUpdateChildLocalSurfaceId(
+    const viz::LocalSurfaceId& local_surface_id) {
+  if (local_surface_id_ != local_surface_id) {
+    delegate_->UpdateLocalSurfaceIdFromChild(local_surface_id);
   }
 }
 

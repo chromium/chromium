@@ -13,6 +13,7 @@
 #include "cc/input/touch_action.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "components/input/cursor_manager.h"
+#include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/pointer_lock_browsertest.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -456,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
   EXPECT_FALSE(connector->IsSubtreeThrottled());
   EXPECT_FALSE(connector->IsDisplayLocked());
 
-  connector->DidUpdateVisualProperties(cc::RenderFrameMetadata());  // void
+  connector->DidUpdateChildLocalSurfaceId(viz::LocalSurfaceId());   // void
   connector->SetVisibilityForChildViews(true);                      // void
 
   // Test updating local frame size separately.
@@ -747,7 +748,8 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
   // SurfaceEmbedConnectorImpl inherits from
   // FrameConnector so we can call
   // DidUpdateVisualProperties directly.
-  context.connector->DidUpdateVisualProperties(metadata);
+  context.connector->DidUpdateChildLocalSurfaceId(
+      metadata.local_surface_id.value());
 }
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,

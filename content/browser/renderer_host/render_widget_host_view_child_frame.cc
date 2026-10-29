@@ -1261,8 +1261,10 @@ bool RenderWidgetHostViewChildFrame::CanBecomeVisible() {
 
 void RenderWidgetHostViewChildFrame::OnDidUpdateVisualPropertiesComplete(
     const cc::RenderFrameMetadata& metadata) {
-  if (frame_connector_)
-    frame_connector_->DidUpdateVisualProperties(metadata);
+  if (frame_connector_ && metadata.local_surface_id.has_value()) {
+    frame_connector_->DidUpdateChildLocalSurfaceId(
+        metadata.local_surface_id.value());
+  }
   host()->SynchronizeVisualProperties();
 }
 

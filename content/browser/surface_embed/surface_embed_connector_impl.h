@@ -133,8 +133,8 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
   bool IsThrottled() override;
   bool IsSubtreeThrottled() override;
   bool IsDisplayLocked() override;
-  void DidUpdateVisualProperties(
-      const cc::RenderFrameMetadata& metadata) override;
+  void DidUpdateChildLocalSurfaceId(
+      const viz::LocalSurfaceId& local_surface_id) override;
   void SetVisibilityForChildViews(bool visible) override;
   void SetLocalFrameSize(const gfx::Size& local_frame_size) override;
   void SetRectInParentView(const gfx::Rect& rect_in_parent_view) override;

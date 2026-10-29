@@ -510,9 +510,10 @@ bool CrossProcessFrameConnector::IsHidden() {
   return visibility_ == blink::mojom::FrameVisibility::kNotRendered;
 }
 
-void CrossProcessFrameConnector::DidUpdateVisualProperties(
-    const cc::RenderFrameMetadata& metadata) {
-  frame_proxy_in_parent_renderer_->DidUpdateVisualProperties(metadata);
+void CrossProcessFrameConnector::DidUpdateChildLocalSurfaceId(
+    const viz::LocalSurfaceId& local_surface_id) {
+  frame_proxy_in_parent_renderer_->DidUpdateChildLocalSurfaceId(
+      local_surface_id);
 }
 
 bool CrossProcessFrameConnector::HasSize() {

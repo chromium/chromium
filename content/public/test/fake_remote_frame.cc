@@ -88,8 +88,8 @@ void FakeRemoteFrame::EnableAutoResize(const gfx::Size& min_size,
 
 void FakeRemoteFrame::DisableAutoResize() {}
 
-void FakeRemoteFrame::DidUpdateVisualProperties(
-    const cc::RenderFrameMetadata& metadata) {}
+void FakeRemoteFrame::DidUpdateChildLocalSurfaceId(
+    const viz::LocalSurfaceId& local_surface_id) {}
 
 void FakeRemoteFrame::SetFrameSinkId(const viz::FrameSinkId& frame_sink_id,
                                      bool allow_paint_holding) {}

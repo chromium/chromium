@@ -1062,10 +1062,9 @@ void RemoteFrame::ResendVisualPropertiesInternal(
   SynchronizeVisualProperties(/*propagate=*/true, allow_paint_holding);
 }
 
-void RemoteFrame::DidUpdateVisualProperties(
-    const cc::RenderFrameMetadata& metadata) {
-  if (!parent_local_surface_id_allocator_->UpdateFromChild(
-          metadata.local_surface_id.value_or(viz::LocalSurfaceId()))) {
+void RemoteFrame::DidUpdateChildLocalSurfaceId(
+    const viz::LocalSurfaceId& local_surface_id) {
+  if (!parent_local_surface_id_allocator_->UpdateFromChild(local_surface_id)) {
     return;
   }
 
