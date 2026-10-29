@@ -418,21 +418,18 @@ const guest_view::GuestViewHistogramValue WebViewGuest::HistogramValue =
 // static
 int WebViewGuest::GetOrGenerateRulesRegistryID(int embedder_process_id,
                                                int webview_instance_id) {
-  bool is_web_view = embedder_process_id && webview_instance_id;
-  if (!is_web_view) {
-    return rules_registry_ids::kDefaultRulesRegistryID;
+  content::ChildProcessId process_id(embedder_process_id);
+  if (process_id.is_null() || webview_instance_id <= 0) {
+    return rules_registry_ids::kInvalidRulesRegistryID;
   }
 
-  WebViewKey key = std::make_pair(content::ChildProcessId(embedder_process_id),
-                                  webview_instance_id);
+  WebViewKey key = std::make_pair(process_id, webview_instance_id);
   auto it = web_view_key_to_id_map.Get().find(key);
   if (it != web_view_key_to_id_map.Get().end()) {
     return it->second;
   }
 
-  auto* rph = RenderProcessHost::FromID(embedder_process_id);
-  int rules_registry_id = RulesRegistryService::Get(rph->GetBrowserContext())
-                              ->GetNextRulesRegistryID();
+  int rules_registry_id = RulesRegistryService::GetNextRulesRegistryID();
   web_view_key_to_id_map.Get()[key] = rules_registry_id;
   return rules_registry_id;
 }

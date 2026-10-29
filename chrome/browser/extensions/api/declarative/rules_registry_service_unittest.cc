@@ -10,10 +10,14 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/one_shot_event.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -21,6 +25,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/api/declarative/test_rules_registry.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_constants.h"
+#include "extensions/browser/api/web_request/extension_web_request_event_router.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/browser/rules_registry_ids.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
@@ -30,6 +36,10 @@
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/features/feature_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -128,6 +138,35 @@ TEST_F(RulesRegistryServiceTest, ContentRulesRegistryClearedOnShutdown) {
   EXPECT_FALSE(registry_service.content_rules_registry());
 }
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+TEST_F(RulesRegistryServiceTest, WebViewRulesRegistryIDsUniqueAcrossEmbedders) {
+  constexpr int kFirstEmbedderProcessId = 10001;
+  constexpr int kSecondEmbedderProcessId = 10002;
+  constexpr int kWebViewInstanceId = 1;
+
+  const int id1 = WebViewGuest::GetOrGenerateRulesRegistryID(
+      kFirstEmbedderProcessId, kWebViewInstanceId);
+  const int id2 = WebViewGuest::GetOrGenerateRulesRegistryID(
+      kSecondEmbedderProcessId, kWebViewInstanceId);
+
+  EXPECT_GT(id1, rules_registry_ids::kDefaultRulesRegistryID);
+  EXPECT_GT(id2, rules_registry_ids::kDefaultRulesRegistryID);
+  EXPECT_NE(id1, id2);
+  EXPECT_EQ(id1, WebViewGuest::GetOrGenerateRulesRegistryID(
+                     kFirstEmbedderProcessId, kWebViewInstanceId));
+  EXPECT_EQ(
+      rules_registry_ids::kInvalidRulesRegistryID,
+      WebViewGuest::GetOrGenerateRulesRegistryID(kFirstEmbedderProcessId,
+                                                 /*web_view_instance_id=*/0));
+  EXPECT_EQ(rules_registry_ids::kInvalidRulesRegistryID,
+            WebViewGuest::GetOrGenerateRulesRegistryID(
+                /*embedder_process_id=*/0, kWebViewInstanceId));
+  EXPECT_EQ(rules_registry_ids::kInvalidRulesRegistryID,
+            WebViewGuest::GetOrGenerateRulesRegistryID(
+                /*embedder_process_id=*/-1, kWebViewInstanceId));
+}
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
+
 #if !BUILDFLAG(IS_ANDROID)
 // This test relies on declarativeWebRequest, which is deprecated and will not
 // be supported on desktop Android. We can't just replace it with
@@ -175,7 +214,71 @@ TEST_F(RulesRegistryServiceTest, DefaultRulesRegistryRegistered) {
     const int kWebViewRulesRegistryID = 1;
     EXPECT_TRUE(registry_service.GetRulesRegistry(
         kWebViewRulesRegistryID, declarative_webrequest_constants::kOnRequest));
+
+    // Invalid rules registry IDs must never lazily create a registry.
+    EXPECT_FALSE(registry_service.GetRulesRegistry(
+        rules_registry_ids::kInvalidRulesRegistryID,
+        declarative_webrequest_constants::kOnRequest));
   }
+}
+
+TEST_F(RulesRegistryServiceTest, RemoveRulesRegistriesByID) {
+  TestingProfile profile;
+  static_cast<TestExtensionSystem*>(ExtensionSystem::Get(&profile))->SetReady();
+  RulesRegistryService registry_service(&profile);
+  WebRequestEventRouter* event_router = WebRequestEventRouter::Get(&profile);
+  ASSERT_TRUE(event_router);
+
+  const int registry_id = RulesRegistryService::GetNextRulesRegistryID();
+  scoped_refptr<RulesRegistry> registry = registry_service.GetRulesRegistry(
+      registry_id, declarative_webrequest_constants::kOnRequest);
+  ASSERT_TRUE(registry);
+  EXPECT_FALSE(registry->ready().is_signaled());
+  EXPECT_TRUE(registry_service.HasRulesRegistryForTesting(
+      registry_id, declarative_webrequest_constants::kOnRequest));
+  EXPECT_TRUE(
+      event_router->data_[WebRequestEventRouter::GetBrowserContextID(&profile)]
+          .rules_registries.contains(registry_id));
+
+  // Queue a readiness callback (mirroring `WebRequestEventRouter` blocking a
+  // request on `rules_registry->ready()`) and drop the local reference so only
+  // `RulesRegistryService` and `WebRequestEventRouter` own `registry`.
+  base::test::TestFuture<void> ready_future;
+  registry->ready().Post(FROM_HERE, ready_future.GetCallback());
+  registry.reset();
+
+  // Removing the unready registry before `ExtensionSystem::ready()` tasks run
+  // must unregister it from both `RulesRegistryService` and
+  // `WebRequestEventRouter`, cancel any pending `RulesCacheDelegate` readiness
+  // task, and still signal `ready()` so queued readiness callbacks run.
+  registry_service.RemoveRulesRegistriesByID(registry_id);
+  EXPECT_FALSE(registry_service.HasRulesRegistryForTesting(
+      registry_id, declarative_webrequest_constants::kOnRequest));
+  EXPECT_FALSE(
+      event_router->data_[WebRequestEventRouter::GetBrowserContextID(&profile)]
+          .rules_registries.contains(registry_id));
+
+  EXPECT_TRUE(ready_future.Wait());
+
+  // Also verify removing an already-ready registry succeeds without
+  // double-signaling `ready()` and clears `browser_context()`.
+  const int ready_registry_id = RulesRegistryService::GetNextRulesRegistryID();
+  scoped_refptr<RulesRegistry> ready_registry =
+      registry_service.GetRulesRegistry(
+          ready_registry_id, declarative_webrequest_constants::kOnRequest);
+  ASSERT_TRUE(ready_registry);
+  base::test::TestFuture<void> init_future;
+  ready_registry->ready().Post(FROM_HERE, init_future.GetCallback());
+  ASSERT_TRUE(init_future.Wait());
+  ASSERT_TRUE(ready_registry->ready().is_signaled());
+
+  registry_service.RemoveRulesRegistriesByID(ready_registry_id);
+  EXPECT_EQ(nullptr, ready_registry->browser_context());
+  EXPECT_FALSE(registry_service.HasRulesRegistryForTesting(
+      ready_registry_id, declarative_webrequest_constants::kOnRequest));
+  EXPECT_FALSE(
+      event_router->data_[WebRequestEventRouter::GetBrowserContextID(&profile)]
+          .rules_registries.contains(ready_registry_id));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

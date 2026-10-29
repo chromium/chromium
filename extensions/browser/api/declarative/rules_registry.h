@@ -112,6 +112,11 @@ class RulesRegistry : public base::RefCountedThreadSafe<RulesRegistry> {
   // shut down.
   void OnShutdown();
 
+  // Called when the registry service removes this registry before shutdown.
+  // Detaches it from the BrowserContext and signals `ready()` if not yet
+  // signaled so any callbacks queued on `ready()` still run.
+  void OnRemoved();
+
   // Called to notify the RulesRegistry that the extension availability has
   // changed, so that the registry can update which rules are active.
   void OnExtensionUnloaded(const Extension* extension);
@@ -122,10 +127,8 @@ class RulesRegistry : public base::RefCountedThreadSafe<RulesRegistry> {
   // Every ExtensionId counts as one entry, even if it contains no rules.
   size_t GetNumberOfUsedRuleIdentifiersForTesting() const;
 
-  // Returns the RulesCacheDelegate. This is used for testing.
-  RulesCacheDelegate* rules_cache_delegate_for_testing() const {
-    return cache_delegate_.get();
-  }
+  // Returns the RulesCacheDelegate associated with this registry, if any.
+  RulesCacheDelegate* cache_delegate() const { return cache_delegate_.get(); }
 
   // Returns the context where the rules registry lives.
   content::BrowserContext* browser_context() const { return browser_context_; }

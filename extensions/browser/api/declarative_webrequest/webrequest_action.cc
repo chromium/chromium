@@ -452,10 +452,11 @@ bool WebRequestAction::HasPermission(ApplyInfo* apply_info,
   if (!permission_helper)
     return true;
 
-  // The embedder can always access all hosts from within a <webview>.
-  // The same is not true of extensions.
-  if (request->is_web_view)
-    return true;
+  // The embedder can always access all hosts from within a <webview>, unlike
+  // extensions, as long as the rule does not cross the incognito boundary.
+  if (request->is_web_view) {
+    return !apply_info->crosses_incognito;
+  }
 
   WebRequestPermissions::HostPermissionsCheck permission_check =
       WebRequestPermissions::REQUIRE_ALL_URLS;

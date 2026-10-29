@@ -270,6 +270,13 @@ void RulesRegistry::OnShutdown() {
   browser_context_ = nullptr;
 }
 
+void RulesRegistry::OnRemoved() {
+  OnShutdown();
+  if (!ready_.is_signaled()) {
+    MarkReady();
+  }
+}
+
 void RulesRegistry::OnExtensionUnloaded(const Extension* extension) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::string error = RemoveAllRulesImpl(extension->id());
@@ -361,7 +368,9 @@ void RulesRegistry::ProcessChangedRules(const ExtensionId& extension_id) {
 
   std::vector<const api::events::Rule*> new_rules;
   GetRules(extension_id, &rules_, &new_rules);
-  cache_delegate_->UpdateRules(extension_id, RulesToValue(new_rules));
+  if (cache_delegate_) {
+    cache_delegate_->UpdateRules(extension_id, RulesToValue(new_rules));
+  }
 }
 
 void RulesRegistry::MaybeProcessChangedRules(const ExtensionId& extension_id) {

@@ -5252,9 +5252,9 @@ IN_PROC_BROWSER_TEST_P(WebViewChannelTest,
           .get();
 
   ASSERT_TRUE(registry);
-  ASSERT_TRUE(registry->rules_cache_delegate_for_testing());
+  ASSERT_TRUE(registry->cache_delegate());
   EXPECT_EQ(extensions::RulesCacheDelegate::Type::kEphemeral,
-            registry->rules_cache_delegate_for_testing()->type());
+            registry->cache_delegate()->type());
 }
 
 INSTANTIATE_TEST_SUITE_P(

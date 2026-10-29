@@ -3049,8 +3049,11 @@ WebRequestEventRouter::RawListeners WebRequestEventRouter::GetMatchingListeners(
       *browser_context, is_request_from_extension,
       /*crosses_incognito=*/false, &matching_listeners, extra_info_spec);
 
+  // <webview> event listeners are scoped to a single <webview> instance in a
+  // single BrowserContext and never span across regular and off-the-record
+  // contexts.
   content::BrowserContext* cross_browser_context =
-      GetCrossBrowserContext(browser_context);
+      request->is_web_view ? nullptr : GetCrossBrowserContext(browser_context);
   if (cross_browser_context) {
     auto& cross_context_data =
         data_[GetBrowserContextID(cross_browser_context)];
@@ -3082,7 +3085,8 @@ bool WebRequestEventRouter::ListenerMatchesRequest(
   }
 
   if (request.is_web_view) {
-    if (listener.id.render_process_id != request.web_view_embedder_process_id ||
+    if (crosses_incognito || request.web_view_instance_id <= 0 ||
+        listener.id.render_process_id != request.web_view_embedder_process_id ||
         listener.id.web_view_instance_id != request.web_view_instance_id) {
       return false;
     }
@@ -3391,6 +3395,15 @@ bool WebRequestEventRouter::ProcessDeclarativeRules(
   // extensions/browser/api/declarative_webrequest/request_stage.h.
   DCHECK(request_stage & kActiveStages);
 
+  // `<webview>` rules registries always have IDs > `kDefaultRulesRegistryID`
+  // (0). Ignore `<webview>` requests with non-positive IDs (such as
+  // `kInvalidRulesRegistryID` (-1) for unattached popup guests or guest worker
+  // requests) and ensure `0` can never match the default extension registry.
+  if (request->is_web_view && request->web_view_rules_registry_id <=
+                                  rules_registry_ids::kDefaultRulesRegistryID) {
+    return false;
+  }
+
   int rules_registry_id = request->is_web_view
                               ? request->web_view_rules_registry_id
                               : rules_registry_ids::kDefaultRulesRegistryID;
@@ -3409,11 +3422,14 @@ bool WebRequestEventRouter::ProcessDeclarativeRules(
     }
   }
 
-  // Rules of the current `browser_context` may apply but we need to check also
-  // whether there are applicable rules from extensions whose background page
-  // spans from regular to incognito mode.
+  // Rules of the current `browser_context` may apply, and for regular web
+  // requests we also need to check whether there are applicable rules from
+  // extensions whose background page spans from regular to incognito mode.
+  // <webview> rules registries are scoped to a single <webview> instance in a
+  // single BrowserContext and never span across contexts, so the cross-context
+  // registry is never relevant for <webview> requests.
   content::BrowserContext* cross_browser_context =
-      GetCrossBrowserContext(browser_context);
+      request->is_web_view ? nullptr : GetCrossBrowserContext(browser_context);
   if (cross_browser_context) {
     BrowserContextData& cross_context_data =
         data_[GetBrowserContextID(cross_browser_context)];

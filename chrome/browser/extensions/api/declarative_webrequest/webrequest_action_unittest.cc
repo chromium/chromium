@@ -26,9 +26,11 @@
 #include "extensions/browser/api/web_request/permission_helper.h"
 #include "extensions/browser/api/web_request/web_request_api_helpers.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_builder.h"
 #include "extensions/common/extensions_client.h"
 #include "net/http/http_response_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -586,6 +588,43 @@ TEST(WebRequestActionTest, GetName) {
     EXPECT_EQ(kExpectedNames[index], action->GetName());
     ++index;
   }
+}
+
+TEST_F(WebRequestActionWithThreadsTest, WebViewCrossesIncognitoPermission) {
+  // For <webview> requests, `WebRequestAction::HasPermission()` returns early
+  // before `CanExtensionAccessURL()`, allowing same-context requests and
+  // rejecting cross-incognito requests regardless of host permissions or
+  // incognito enablement.
+  scoped_refptr<const Extension> embedder =
+      ExtensionBuilder("WebView Embedder").Build();
+  ExtensionRegistry::Get(browser_context())->AddEnabled(embedder);
+  ExtensionPrefs::Get(browser_context())
+      ->SetIsIncognitoEnabled(embedder->id(), true);
+
+  std::unique_ptr<WebRequestActionSet> action_set(CreateSetOfActions(
+      "[{\"instanceType\": \"declarativeWebRequest.CancelRequest\"}]"));
+  ASSERT_TRUE(action_set);
+
+  auto apply_on_web_view_request = [&](bool crosses_incognito) {
+    EventResponseDeltas deltas;
+    std::set<std::string> ignored_tags;
+    WebRequestInfoInitParams params;
+    params.url = GURL("https://example.org/");
+    params.is_web_view = true;
+    params.web_view_instance_id = 1;
+    params.web_view_rules_registry_id = 1;
+    params.global_id.child_id = content::ChildProcessId(2);
+    WebRequestInfo request_info(std::move(params));
+    WebRequestData request_data(&request_info, ON_BEFORE_REQUEST);
+    WebRequestAction::ApplyInfo apply_info = {
+        PermissionHelper::Get(browser_context()), raw_ref(request_data),
+        crosses_incognito, &deltas, &ignored_tags};
+    action_set->Apply(embedder->id(), base::Time(), &apply_info);
+    return !deltas.empty();
+  };
+
+  EXPECT_TRUE(apply_on_web_view_request(/*crosses_incognito=*/false));
+  EXPECT_FALSE(apply_on_web_view_request(/*crosses_incognito=*/true));
 }
 
 }  // namespace extensions

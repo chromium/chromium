@@ -456,6 +456,9 @@ class WebRequestEventRouter : public KeyedService,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest, BrowserContextShutdown);
+  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest,
+                           WebViewRulesAndListenersIsolation);
+  FRIEND_TEST_ALL_PREFIXES(RulesRegistryServiceTest, RemoveRulesRegistriesByID);
 
   // Identifier for a `BrowserContext` to scope the lifetime for references.
   // `BrowserContextID` is derived from `BrowserContext*`, used in comparison

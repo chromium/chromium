@@ -5,13 +5,17 @@
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 
 #include <algorithm>
+#include <map>
 #include <memory>
+#include <set>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/observer_list.h"
+#include "base/types/id_type.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
@@ -21,6 +25,7 @@
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/rules_registry_ids.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
@@ -38,8 +43,16 @@ RulesRegistryService::RulesRegistryService(content::BrowserContext* context)
 
 RulesRegistryService::~RulesRegistryService() = default;
 
+// static
 int RulesRegistryService::GetNextRulesRegistryID() {
-  return ++current_rules_registry_id_;
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  using RulesRegistryId = base::IdType<
+      class RulesRegistryIdTag, int,
+      rules_registry_ids::kInvalidRulesRegistryID,
+      /*kFirstGeneratedId=*/1,
+      /*kExtraInvalidValues=*/rules_registry_ids::kDefaultRulesRegistryID>;
+  static RulesRegistryId::Generator generator;
+  return generator.GenerateNextId().GetUnsafeValue();
 }
 
 void RulesRegistryService::Shutdown() {
@@ -97,9 +110,10 @@ scoped_refptr<RulesRegistry> RulesRegistryService::GetRulesRegistry(
   }
 
   // We should have attempted creation of the default rule registries at
-  // construction.
+  // construction, and invalid registry IDs (e.g. `kInvalidRulesRegistryID`)
+  // must not lazily create registries.
   if (!browser_context_ ||
-      rules_registry_id == rules_registry_ids::kDefaultRulesRegistryID) {
+      rules_registry_id <= rules_registry_ids::kDefaultRulesRegistryID) {
     return nullptr;
   }
 
@@ -113,18 +127,42 @@ scoped_refptr<RulesRegistry> RulesRegistryService::GetRulesRegistry(
 }
 
 void RulesRegistryService::RemoveRulesRegistriesByID(int rules_registry_id) {
-  std::set<RulesRegistryKey> registries_to_delete;
-  for (auto& [key, rule_registry] : rule_registries_) {
-    if (key.rules_registry_id != rules_registry_id) {
+  std::vector<scoped_refptr<RulesRegistry>> removed_registries;
+  std::set<RulesCacheDelegate*> delegates_to_delete;
+  for (auto it = rule_registries_.begin(); it != rule_registries_.end();) {
+    if (it->first.rules_registry_id != rules_registry_id) {
+      ++it;
       continue;
     }
-    // Modifying a container while iterating over it can lead to badness. So we
-    // save the keys in another container and delete them in another loop.
-    registries_to_delete.insert(key);
+    if (RulesCacheDelegate* delegate = it->second->cache_delegate()) {
+      delegates_to_delete.insert(delegate);
+    }
+    removed_registries.push_back(std::move(it->second));
+    it = rule_registries_.erase(it);
   }
 
-  for (const auto& registry : registries_to_delete) {
-    rule_registries_.erase(registry);
+  if (!delegates_to_delete.empty()) {
+    std::erase_if(cache_delegates_,
+                  [&delegates_to_delete](
+                      const std::unique_ptr<RulesCacheDelegate>& delegate) {
+                    return delegates_to_delete.contains(delegate.get());
+                  });
+  }
+
+  if (browser_context_ && !removed_registries.empty()) {
+    if (auto* router = WebRequestEventRouter::Get(browser_context_)) {
+      router->RegisterRulesRegistry(browser_context_, rules_registry_id,
+                                    nullptr);
+    }
+  }
+
+  // Notify removed registries after unregistering them from
+  // `WebRequestEventRouter` above so any callbacks queued on
+  // `RulesRegistry::ready()` (such as
+  // `WebRequestEventRouter::OnRulesRegistryReady()` for an in-flight request)
+  // see the registry already unregistered when they run.
+  for (const auto& registry : removed_registries) {
+    registry->OnRemoved();
   }
 }
 

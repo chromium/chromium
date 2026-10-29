@@ -185,7 +185,6 @@ ExtensionFunction::ResponseAction RulesFunction::Run() {
   // never be called there anyways.
   rules_registry_ = RulesRegistryService::Get(browser_context())->
       GetRulesRegistry(rules_registry_id, event_name);
-  DCHECK(rules_registry_.get());
   // Raw access to this function is not available to extensions, therefore
   // there should never be a request for a nonexisting rules registry.
   EXTENSION_FUNCTION_VALIDATE(rules_registry_.get());
