@@ -13,8 +13,10 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_interactive_test_base.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_location_bar.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_onboarding_tooltip_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_permission_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
@@ -44,14 +46,19 @@
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_onboarding_bubble_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
+#include "chrome/browser/ui/views/permissions/chip/webui_permission_chip.h"
+#include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
@@ -73,6 +80,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/element_test_util.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -320,6 +328,181 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
         ASSERT_EQ(side_panel_web_contents1,
                   coordinator->GetActiveWebContents());
       }));
+}
+
+class ContextualTasksSidePanelPermissionDashboardInteractiveUiTest
+    : public ContextualTasksSidePanelCoordinatorInteractiveUiTest {
+ public:
+  ContextualTasksSidePanelPermissionDashboardInteractiveUiTest() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{kContextualTasks,
+                              kContextualTasksForceEntryPointEligibility,
+                              kContextualTasksEphemeralBrandedEntryPoint,
+                              kContextualTasksSidePanelRearchitecture},
+        /*disabled_features=*/{kContextualTasksSidePanelTabState});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksSidePanelPermissionDashboardInteractiveUiTest,
+    SwitchTabUpdatesPermissionDashboard) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kToolbarWebContentsId);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kPermissionDashboardHiddenEvent);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCameraIndicatorShownEvent);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kMicrophoneIndicatorShownEvent);
+
+  SetUpTasks();
+  EXPECT_CALL(mock_active_task_context_provider_observer_,
+              OnContextTabsChanged(testing::_))
+      .Times(AtLeast(1));
+
+  ContextualTasksSidePanelCoordinator* coordinator = GetCoordinator();
+  ContextualTasksLocationBar* location_bar =
+      coordinator->permission_controller()->GetLocationBarForTesting();
+  ASSERT_NE(nullptr, location_bar);
+
+  PermissionDashboardController* dashboard_controller =
+      location_bar->GetPermissionDashboardController();
+  ASSERT_NE(nullptr, dashboard_controller);
+  dashboard_controller->DoNotCollapseForTesting();
+
+  WebUIPermissionChip* indicator_chip =
+      location_bar->permission_dashboard()->indicator_chip();
+  ASSERT_NE(nullptr, indicator_chip);
+
+  const DeepQuery kPathToPermissionDashboard = {
+      "contextual-tasks-toolbar-app",
+      "#toolbar",
+      "permission-dashboard",
+  };
+  const DeepQuery kPathToIndicatorChip = {
+      "contextual-tasks-toolbar-app",
+      "#toolbar",
+      "permission-dashboard",
+      "#indicator-chip",
+  };
+
+  StateChange permission_dashboard_hidden;
+  permission_dashboard_hidden.type = StateChange::Type::kExistsAndConditionTrue;
+  permission_dashboard_hidden.event = kPermissionDashboardHiddenEvent;
+  permission_dashboard_hidden.where = kPathToPermissionDashboard;
+  permission_dashboard_hidden.test_function = "el => el.hidden";
+
+  StateChange camera_indicator_shown;
+  camera_indicator_shown.type = StateChange::Type::kExistsAndConditionTrue;
+  camera_indicator_shown.event = kCameraIndicatorShownEvent;
+  camera_indicator_shown.where = kPathToIndicatorChip;
+  camera_indicator_shown.test_function = content::JsReplace(
+      "el => el.hasAttribute('visible') && "
+      "el.shadowRoot.querySelector('#chip').title === $1",
+      l10n_util::GetStringUTF8(IDS_CAMERA_ACCESSED));
+
+  StateChange microphone_indicator_shown;
+  microphone_indicator_shown.type = StateChange::Type::kExistsAndConditionTrue;
+  microphone_indicator_shown.event = kMicrophoneIndicatorShownEvent;
+  microphone_indicator_shown.where = kPathToIndicatorChip;
+  microphone_indicator_shown.test_function = content::JsReplace(
+      "el => el.hasAttribute('visible') && "
+      "el.shadowRoot.querySelector('#chip').title === $1",
+      l10n_util::GetStringUTF8(IDS_MICROPHONE_ACCESSED));
+
+  content::WebContents* side_panel_web_contents1 = nullptr;
+  content::WebContents* side_panel_web_contents2 = nullptr;
+
+  RunTestSequence(
+      // Open side panel on Tab 0 (associated with Task 1).
+      Do([&]() {
+        coordinator->Show(
+            false, omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "SidePanelToolbarWebView",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->toolbar_web_view();
+                       }),
+      InstrumentNonTabWebView(kToolbarWebContentsId, "SidePanelToolbarWebView"),
+      WaitForStateChange(kToolbarWebContentsId, permission_dashboard_hidden),
+      Check([&]() {
+        side_panel_web_contents1 = coordinator->GetActiveWebContents();
+        return side_panel_web_contents1 != nullptr &&
+               content_settings::PageSpecificContentSettings::GetForFrame(
+                   side_panel_web_contents1->GetPrimaryMainFrame()) != nullptr;
+      }),
+      CheckResult(
+          [&]() {
+            return location_bar->GetWebContents() == side_panel_web_contents1;
+          },
+          true),
+      CheckResult([&]() { return indicator_chip->GetVisible(); }, false),
+
+      // Trigger camera access on Task 1's side panel `WebContents`.
+      Do([&]() {
+        content_settings::PageSpecificContentSettings::GetForFrame(
+            side_panel_web_contents1->GetPrimaryMainFrame())
+            ->OnMediaStreamPermissionSet(
+                GURL("https://www.google.com"),
+                {content_settings::PageSpecificContentSettings::
+                     kCameraAccessed});
+      }),
+      WaitForStateChange(kToolbarWebContentsId, camera_indicator_shown),
+      CheckResult([&]() { return indicator_chip->GetVisible(); }, true),
+      CheckResult([&]() { return indicator_chip->GetTextForTesting(); },
+                  l10n_util::GetStringUTF16(IDS_CAMERA_IN_USE)),
+
+      // Switch to Tab 1 (associated with Task 2, which has no active media
+      // permissions). Verify the permission dashboard updates to reflect
+      // Tab 1's contextual task `WebContents` and hides the indicator chip.
+      SelectTab(kTabStripElementId, 1),
+      WaitForStateChange(kToolbarWebContentsId, permission_dashboard_hidden),
+      Check([&]() {
+        side_panel_web_contents2 = coordinator->GetActiveWebContents();
+        return side_panel_web_contents2 != nullptr &&
+               side_panel_web_contents2 != side_panel_web_contents1 &&
+               content_settings::PageSpecificContentSettings::GetForFrame(
+                   side_panel_web_contents2->GetPrimaryMainFrame()) != nullptr;
+      }),
+      CheckResult(
+          [&]() {
+            return location_bar->GetWebContents() == side_panel_web_contents2;
+          },
+          true),
+      CheckResult([&]() { return indicator_chip->GetVisible(); }, false),
+
+      // Trigger microphone access on Task 2's side panel `WebContents`. Verify
+      // the permission dashboard displays the microphone indicator for Tab 1.
+      Do([&]() {
+        content_settings::PageSpecificContentSettings::GetForFrame(
+            side_panel_web_contents2->GetPrimaryMainFrame())
+            ->OnMediaStreamPermissionSet(
+                GURL("https://www.google.com"),
+                {content_settings::PageSpecificContentSettings::
+                     kMicrophoneAccessed});
+      }),
+      WaitForStateChange(kToolbarWebContentsId, microphone_indicator_shown),
+      CheckResult([&]() { return indicator_chip->GetVisible(); }, true),
+      CheckResult([&]() { return indicator_chip->GetTextForTesting(); },
+                  l10n_util::GetStringUTF16(IDS_MICROPHONE_IN_USE)),
+
+      // Switch back to Tab 0 (Task 1). Verify the permission dashboard
+      // switches back to showing Task 1's camera indicator.
+      SelectTab(kTabStripElementId, 0),
+      WaitForStateChange(kToolbarWebContentsId, camera_indicator_shown),
+      CheckResult(
+          [&]() {
+            return coordinator->GetActiveWebContents() ==
+                   side_panel_web_contents1;
+          },
+          true),
+      CheckResult(
+          [&]() {
+            return location_bar->GetWebContents() == side_panel_web_contents1;
+          },
+          true),
+      CheckResult([&]() { return indicator_chip->GetVisible(); }, true),
+      CheckResult([&]() { return indicator_chip->GetTextForTesting(); },
+                  l10n_util::GetStringUTF16(IDS_CAMERA_IN_USE)));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
