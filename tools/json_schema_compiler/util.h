@@ -157,7 +157,7 @@ void AddItemToList(const T& from, base::ListValue& out) {
 // implemented for |T|.
 template <class T>
 base::ListValue CreateValueFromArray(const std::vector<T>& from) {
-  base::ListValue list;
+  base::ListValue list = base::ListValue::with_capacity(from.size());
   for (const T& item : from) {
     AddItemToList(item, list);
   }
