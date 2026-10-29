@@ -20,7 +20,7 @@
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildEnterpriseProxyService(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildEnterpriseProxyService(ProfileIOS& profile) {
   if (!enterprise_net::IsDynamicRouteFetchingEnabled()) {
     return nullptr;
   }
@@ -28,15 +28,15 @@ std::unique_ptr<KeyedService> BuildEnterpriseProxyService(ProfileIOS* profile) {
       EnterpriseNetworkAuthServiceFactoryIOS::GetForProfile(profile);
   CHECK(network_auth_service);
   return std::make_unique<enterprise_net::EnterpriseProxyService>(
-      profile->GetPrefs(), network_auth_service,
-      base::ReturnValueRepeating(profile->GetSharedURLLoaderFactory()),
+      profile.GetPrefs(), network_auth_service,
+      base::ReturnValueRepeating(profile.GetSharedURLLoaderFactory()),
       enterprise::ProfileIdServiceFactoryIOS::GetForProfile(profile));
 }
 
 }  // namespace
 
 // static
-EnterpriseProxyServiceFactoryIOS::TestingFactory
+EnterpriseProxyServiceFactoryIOS::TestingFactoryByRef
 EnterpriseProxyServiceFactoryIOS::GetDefaultFactory() {
   return base::BindOnce(&BuildEnterpriseProxyService);
 }
@@ -54,6 +54,6 @@ EnterpriseProxyServiceFactoryIOS::EnterpriseProxyServiceFactoryIOS(PassKey key)
 
 std::unique_ptr<KeyedService>
 EnterpriseProxyServiceFactoryIOS::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildEnterpriseProxyService(profile);
 }
