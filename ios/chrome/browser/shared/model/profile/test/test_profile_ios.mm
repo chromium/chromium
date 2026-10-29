@@ -330,11 +330,6 @@ TestProfileIOS::GetSharedURLLoaderFactory() {
              : BrowserState::GetSharedURLLoaderFactory();
 }
 
-void TestProfileIOS::SetSharedURLLoaderFactory(
-    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
-  test_shared_url_loader_factory_ = std::move(shared_url_loader_factory);
-}
-
 TestProfileIOS::Builder::Builder() = default;
 
 TestProfileIOS::Builder::Builder(Builder&&) = default;

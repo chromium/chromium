@@ -148,10 +148,6 @@ class TestProfileIOS final : public ProfileIOS {
   // for TestProfileIOS initialized with a custom pref service.
   sync_preferences::TestingPrefServiceSyncable* GetTestingPrefService();
 
-  // Sets a SharedURLLoaderFactory for test.
-  void SetSharedURLLoaderFactory(
-      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
-
   // Helper class that allows for parameterizing the building
   // of TestProfileIOS.
   class Builder {
@@ -279,7 +275,7 @@ class TestProfileIOS final : public ProfileIOS {
   std::unique_ptr<ProfilePolicyConnector> policy_connector_;
 
   // A SharedURLLoaderFactory for test.
-  scoped_refptr<network::SharedURLLoaderFactory>
+  const scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
 
   // The incognito ProfileIOS instance that is associated with this
