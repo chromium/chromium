@@ -55,7 +55,8 @@ class InitialWebUIWindowMetricsManager {
   InitialWebUIMetricsDispatcher* GetMetricsDispatcher();
 
   // Sets the window creation info. This should be called immediately after the
-  // `Browser` object is created.
+  // `Browser` object is created, with `creation_time` sampled prior to calling
+  // `CreateBrowserWindow()` so synchronous window construction is included.
   void SetWindowCreationInfo(waap::NewWindowCreationSource source,
                              base::TimeTicks creation_time);
 

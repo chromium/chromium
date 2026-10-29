@@ -64,9 +64,9 @@ source_set("window_metrics_manager") {
     "initial_webui_window_metrics_manager.cc",
     "initial_webui_window_metrics_manager.h",
   ]
+  public_deps = [ ":waap_utils" ]
   deps = [
     ":waap",
-    ":waap_utils",
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",

@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
@@ -45,6 +46,8 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
+#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
+#include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/navigation_capturing_process.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_navigation_handle_user_data.h"
@@ -145,6 +148,27 @@ bool WindowCanOpenTabs(const NavigateParams& params) {
          params.browser->tab_strip_model()->empty();
 }
 
+// Creates a new normal Browser window for |profile| if allowed, and records
+// its creation source as `waap::NewWindowCreationSource::kNavigation`.
+BrowserWindowInterface* CreateNormalBrowserForNavigation(
+    Profile* profile,
+    bool user_gesture,
+    bool should_trigger_session_restore) {
+  if (GetBrowserWindowCreationStatusForProfile(*profile) !=
+      BrowserWindowInterface::CreationStatus::kOk) {
+    return nullptr;
+  }
+  BrowserWindowCreateParams params(profile, user_gesture);
+  params.should_trigger_session_restore = should_trigger_session_restore;
+  base::TimeTicks now = base::TimeTicks::Now();
+  BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
+  if (auto* manager = InitialWebUIWindowMetricsManager::From(browser)) {
+    manager->SetWindowCreationInfo(waap::NewWindowCreationSource::kNavigation,
+                                   now);
+  }
+  return browser;
+}
+
 // Finds an existing Browser compatible with |profile|, making a new one if no
 // such Browser is located.
 BrowserWindowInterface* GetOrCreateBrowser(
@@ -153,14 +177,9 @@ BrowserWindowInterface* GetOrCreateBrowser(
     bool should_trigger_session_restore) {
   BrowserWindowInterface* browser =
       ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser();
-
-  if (!browser && GetBrowserWindowCreationStatusForProfile(*profile) ==
-                      BrowserWindowInterface::CreationStatus::kOk) {
-    BrowserWindowCreateParams params(profile, user_gesture);
-    params.should_trigger_session_restore = should_trigger_session_restore;
-    browser = CreateBrowserWindow(std::move(params));
-  }
-  return browser;
+  return browser ? browser
+                 : CreateNormalBrowserForNavigation(
+                       profile, user_gesture, should_trigger_session_restore);
 }
 
 bool IncognitoModeForced(const Profile* profile) {
@@ -459,18 +478,11 @@ std::tuple<BrowserWindowInterface*, int> GetBrowserAndTabForDisposition(
           should_trigger_session_restore;
       return {CreateBrowserWindow(std::move(browser_params)), -1};
     }
-    case WindowOpenDisposition::kNewWindow: {
+    case WindowOpenDisposition::kNewWindow:
       // Make a new normal browser window.
-      BrowserWindowInterface* browser = nullptr;
-      if (GetBrowserWindowCreationStatusForProfile(*profile) ==
-          BrowserWindowInterface::CreationStatus::kOk) {
-        BrowserWindowCreateParams browser_params(profile, params.user_gesture);
-        browser_params.should_trigger_session_restore =
-            should_trigger_session_restore;
-        browser = CreateBrowserWindow(std::move(browser_params));
-      }
-      return {browser, -1};
-    }
+      return {CreateNormalBrowserForNavigation(profile, params.user_gesture,
+                                               should_trigger_session_restore),
+              -1};
     case WindowOpenDisposition::kOffTheRecord:
       // Make or find an incognito window.
       return {GetOrCreateBrowser(

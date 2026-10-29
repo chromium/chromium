@@ -18,6 +18,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/to_string.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "base/types/optional_util.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,6 +29,8 @@
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
+#include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/navigation_handle_user_data_forwarder.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
@@ -127,6 +130,18 @@ content::RenderFrameHost* GetOpener(const NavigateParams& nav_params) {
   return nullptr;
 }
 
+BrowserWindowInterface* CreateNormalBrowserWindow(Profile* profile,
+                                                  bool user_gesture) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  BrowserWindowInterface* browser =
+      CreateBrowserWindow(BrowserWindowCreateParams(profile, user_gesture));
+  if (auto* manager = InitialWebUIWindowMetricsManager::From(browser)) {
+    manager->SetWindowCreationInfo(waap::NewWindowCreationSource::kNavigation,
+                                   now);
+  }
+  return browser;
+}
+
 BrowserWindowInterface* CreateWebAppWindowFromNavigationParams(
     const webapps::AppId& app_id,
     const NavigateParams& navigate_params) {
@@ -223,8 +238,8 @@ void ReparentWebContentsToTabbedBrowser(
   BrowserWindowInterface* target_browser_window =
       (disposition == WindowOpenDisposition::kNewWindow ||
        !existing_browser_window)
-          ? CreateBrowserWindow(BrowserWindowCreateParams(
-                source_browser->GetProfile(), /*from_user_gesture=*/true))
+          ? CreateNormalBrowserWindow(source_browser->GetProfile(),
+                                      /*user_gesture=*/true)
           : existing_browser_window;
 
   ReparentWebContentsIntoBrowserImpl(
@@ -760,8 +775,8 @@ NavigationCapturingProcess::GetInitialNavigationParamsOverride(
     if (disposition_ == WindowOpenDisposition::kNewWindow) {
       BrowserWindowInterface* app_host_window;
       if (app_display_mode == DisplayMode::kBrowser) {
-        app_host_window = CreateBrowserWindow(
-            BrowserWindowCreateParams(&*profile_, params.user_gesture));
+        app_host_window =
+            CreateNormalBrowserWindow(&*profile_, params.user_gesture);
       } else {
         if (is_target_iwa_with_https_url) {
           LaunchIsolatedWebAppInNewWindow(provider, app_id, params.url);
@@ -810,8 +825,8 @@ NavigationCapturingProcess::GetInitialNavigationParamsOverride(
                        FindNormalBrowser(*profile_)) {
           app_host_window = normal_browser;
         } else {
-          app_host_window = CreateBrowserWindow(
-              BrowserWindowCreateParams(&*profile_, params.user_gesture));
+          app_host_window =
+              CreateNormalBrowserWindow(&*profile_, params.user_gesture);
         }
       } else {
         if (is_target_iwa_with_https_url) {
@@ -879,8 +894,8 @@ NavigationCapturingProcess::GetInitialNavigationParamsOverride(
       if (client_mode_and_browser->browser) {
         host_window = client_mode_and_browser->browser;
       } else {
-        host_window = CreateBrowserWindow(
-            BrowserWindowCreateParams(&*profile_, params.user_gesture));
+        host_window =
+            CreateNormalBrowserWindow(&*profile_, params.user_gesture);
       }
       break;
     case blink::mojom::DisplayMode::kMinimalUi:

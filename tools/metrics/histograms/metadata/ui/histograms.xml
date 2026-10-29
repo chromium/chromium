@@ -66,13 +66,20 @@ chromium-metrics-reviews@google.com.
                Guest mode). As with other sources, the first window of the
                browser process is recorded under InitialWebUI.Startup instead"/>
   <variant name=".MoveTabsToNewWindow"
-      summary="Triggered by moving tab(s) to a new window (e.g. via tab
-               context menu)"/>
+      summary="Triggered by moving tab(s) or a tab group to a new window
+               (e.g. via tab or tab group context menu)"/>
+  <variant name=".Navigation"
+      summary="Triggered by a navigation in Navigate() or web app navigation
+               capturing that creates a new window (e.g. opening a link in a
+               new window or incognito window, Shift+Enter in the omnibox,
+               navigating when no tabbed browser window exists for the
+               profile, or capturing/reparenting a web app navigation into a
+               new tabbed browser window)"/>
   <variant name=".NewEmptyWindow"
-      summary="Triggered by opening a new window that usually starts with a
-               single New Tab Page (e.g. keyboard shortcut, app menu, macOS
-               Dock click, or a feature such as Glic or background mode
-               opening a window when the profile has none)"/>
+      summary="Triggered by opening a new empty window (e.g. keyboard
+               shortcut, app menu, macOS Dock click, or a feature such as
+               Glic, background mode, or ScopedTabbedBrowserDisplayer opening
+               a window when the profile has none)"/>
   <variant name=".SessionRestore" summary="Triggered by session restore"/>
   <variant name=".SessionRestoreFallback"
       summary="Triggered by session restore opening a fallback window when

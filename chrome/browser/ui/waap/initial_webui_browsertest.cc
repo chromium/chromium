@@ -737,6 +737,20 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIWindowCreationSourceBrowserTest,
             waap::NewWindowCreationSource::kSessionRestoreFallback);
 }
 
+IN_PROC_BROWSER_TEST_F(InitialWebUIWindowCreationSourceBrowserTest,
+                       Navigation) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::kNewWindow,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER |
+          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  BrowserWindowInterface* const new_browser =
+      ui_test_utils::GetBrowserNotInSet({browser()});
+  ASSERT_TRUE(new_browser);
+  EXPECT_EQ(GetCreationSource(new_browser),
+            waap::NewWindowCreationSource::kNavigation);
+}
+
 // TODO(crbug.com/490810407): Verify that `NavigationTimeline` UKM is recorded.
 // `NavigationRequest::GetNavigationTimelineUkmBuilder()` uses a low sampling
 // rate such that it is unlikely to be recorded during a test. Adding browser

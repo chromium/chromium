@@ -533,6 +533,8 @@ if (!is_android) {
       ":browser_window_header",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/browser_window:create_browser_window",
+      "//chrome/browser/ui/waap:waap_utils",
+      "//chrome/browser/ui/waap:window_metrics_manager",
     ]
   }
 

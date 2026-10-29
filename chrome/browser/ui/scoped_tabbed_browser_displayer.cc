@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 
+#include "base/time/time.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
+#include "chrome/browser/ui/waap/waap_utils.h"
 
 namespace chrome {
 
@@ -16,8 +19,13 @@ ScopedTabbedBrowserDisplayer::ScopedTabbedBrowserDisplayer(Profile* profile) {
       ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser();
   if (!browser_ && GetBrowserWindowCreationStatusForProfile(*profile) ==
                        BrowserWindowInterface::CreationStatus::kOk) {
-    BrowserWindowCreateParams params(profile, /*from_user_gesture=*/true);
-    browser_ = CreateBrowserWindow(std::move(params));
+    base::TimeTicks now = base::TimeTicks::Now();
+    browser_ = CreateBrowserWindow(
+        BrowserWindowCreateParams(profile, /*from_user_gesture=*/true));
+    if (auto* manager = InitialWebUIWindowMetricsManager::From(browser_)) {
+      manager->SetWindowCreationInfo(
+          waap::NewWindowCreationSource::kNewEmptyWindow, now);
+    }
   }
 }
 
