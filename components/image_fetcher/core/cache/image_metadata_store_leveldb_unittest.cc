@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/image_fetcher/core/cache/image_store_types.h"
 #include "components/image_fetcher/core/cache/proto/cached_image_metadata.pb.h"
 #include "components/leveldb_proto/testing/fake_db.h"
@@ -19,8 +20,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using leveldb_proto::test::FakeDB;
-using testing::Mock;
 using testing::_;
+using testing::Mock;
 
 namespace image_fetcher {
 
@@ -181,6 +182,17 @@ TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest, SaveBeforeInit) {
   EXPECT_TRUE(metadata_store()->IsInitialized());
 
   ASSERT_FALSE(IsDataPresent(kImageKey));
+}
+
+TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest,
+       FailedInitializationIsNotInitialized) {
+  CreateDatabase();
+  base::test::TestFuture<void> initialized;
+  metadata_store()->Initialize(initialized.GetCallback());
+  db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kError);
+
+  ASSERT_TRUE(initialized.IsReady());
+  EXPECT_FALSE(metadata_store()->IsInitialized());
 }
 
 TEST_F(CachedImageFetcherImageMetadataStoreLevelDBTest, Save) {

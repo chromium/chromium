@@ -55,8 +55,8 @@ class ImageCache : public base::RefCounted<ImageCache> {
                  ExpirationInterval expiration_interval);
 
   // Loads the image data for the `url` and passes it to `callback`. If there's
-  // no image in the cache, then an empty string is returned. If `read_only`
-  // is true, then the cache metadata won't be updated.
+  // no image in the cache or initialization failed, an empty string is
+  // returned. If `read_only` is true, then the cache metadata won't be updated.
   void LoadImage(bool read_only, std::string url, ImageDataCallback callback);
 
   // Deletes the image data for the `url`.
@@ -71,10 +71,8 @@ class ImageCache : public base::RefCounted<ImageCache> {
   void QueueOrStartRequest(base::OnceClosure request);
   // Start initializing the stores if it hasn't been started already.
   void MaybeStartInitialization();
-  // Returns true iff both the stores have been initialized.
-  bool AreAllDependenciesInitialized() const;
-  // Receives callbacks when stores are initialized.
-  void OnDependencyInitialized();
+  // Runs after both stores have finished initializing, including failures.
+  void OnDependenciesInitialized();
 
   // Saves the `image_data` for `url`.
   void SaveImageImpl(const std::string& url,
@@ -114,7 +112,11 @@ class ImageCache : public base::RefCounted<ImageCache> {
   void ReconcileDataKeys(std::vector<std::string> md_keys,
                          std::vector<std::string> data_keys);
 
-  bool initialization_attempted_;
+  bool initialization_attempted_ = false;
+  // Set after both initialization callbacks run, even if a store failed.
+  bool initialization_finished_ = false;
+  // Set once initialization finishes; true only if both stores succeeded.
+  bool cache_available_ = false;
   std::vector<base::OnceClosure> queued_requests_;
 
   std::unique_ptr<ImageDataStore> data_store_;

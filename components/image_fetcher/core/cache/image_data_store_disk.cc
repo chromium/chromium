@@ -31,7 +31,6 @@ const FilePath::CharType kPathPostfix[] =
     FILE_PATH_LITERAL("image_data_storage");
 
 InitializationStatus InitializeImpl(FilePath storage_path) {
-  // TODO(wylieb): Report errors if they occur.
   File::Error error;
   // This will check if the directory exists first.
   if (base::CreateDirectoryAndGetError(storage_path, &error)) {

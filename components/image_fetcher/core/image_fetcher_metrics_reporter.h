@@ -16,6 +16,7 @@ namespace image_fetcher {
 // as ImageFetcherEvent. New values should be added at the end and things
 // should not be renumbered.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.image_fetcher
+// LINT.IfChange(ImageFetcherEvent)
 enum class ImageFetcherEvent {
   kImageRequest = 0,
   kCacheHit = 1,
@@ -30,8 +31,11 @@ enum class ImageFetcherEvent {
   kImageQueuedForTranscodingDecoded = 10,
   kImageQueuedForTranscodingStoredBack = 11,
   kLoadImageMetadata = 12,
-  kMaxValue = kLoadImageMetadata,
+  kCacheDataStoreInitializationFailed = 13,
+  kCacheMetadataStoreInitializationFailed = 14,
+  kMaxValue = kCacheMetadataStoreInitializationFailed,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ImageFetcherEvent)
 
 class ImageFetcherMetricsReporter {
  public:

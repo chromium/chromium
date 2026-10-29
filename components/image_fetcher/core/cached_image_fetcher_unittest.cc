@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -18,6 +19,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/image_fetcher/core/cache/image_cache.h"
 #include "components/image_fetcher/core/cache/image_data_store_disk.h"
 #include "components/image_fetcher/core/cache/image_metadata_store_leveldb.h"
@@ -26,6 +28,7 @@
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/image_fetcher/core/image_fetcher_metrics_reporter.h"
 #include "components/image_fetcher/core/image_fetcher_types.h"
+#include "components/image_fetcher/core/request_metadata.h"
 #include "components/leveldb_proto/testing/fake_db.h"
 #include "components/prefs/testing_pref_service.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -37,8 +40,8 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
-using testing::_;
 using leveldb_proto::test::FakeDB;
+using testing::_;
 
 namespace image_fetcher {
 
@@ -127,8 +130,10 @@ class CachedImageFetcherTest : public testing::Test {
   network::TestURLLoaderFactory* test_url_loader_factory() {
     return &test_url_loader_factory_;
   }
+  TestingPrefServiceSimple* prefs() { return &test_prefs_; }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
   FakeDB<CachedImageMetadataProto>* db() { return db_; }
+  ImageFetcher* network_image_fetcher() { return image_fetcher_.get(); }
 
   MOCK_METHOD(void, OnImageLoaded, (bool, std::string), ());
 
@@ -160,6 +165,50 @@ MATCHER(NonEmptyImage, "") {
 
 MATCHER(NonEmptyString, "") {
   return !arg.empty();
+}
+
+TEST_F(CachedImageFetcherTest, FailedCacheInitializationFallsBackToNetwork) {
+  base::ScopedTempDir cache_dir;
+  ASSERT_TRUE(cache_dir.CreateUniqueTempDir());
+  // A regular file where the disk store needs a directory prevents the cache
+  // from initializing successfully.
+  ASSERT_TRUE(
+      base::WriteFile(cache_dir.GetPath().AppendASCII("image_data_storage"),
+                      "not a directory"));
+  base::SimpleTestClock clock;
+  std::map<std::string, CachedImageMetadataProto> entries;
+  auto database = std::make_unique<FakeDB<CachedImageMetadataProto>>(&entries);
+  auto* database_ptr = database.get();
+  auto metadata_store =
+      std::make_unique<ImageMetadataStoreLevelDB>(std::move(database), &clock);
+  auto data_store = std::make_unique<ImageDataStoreDisk>(
+      cache_dir.GetPath(), base::SequencedTaskRunner::GetCurrentDefault());
+  auto* data_store_ptr = data_store.get();
+  auto cache = base::MakeRefCounted<ImageCache>(
+      std::move(data_store), std::move(metadata_store), prefs(), &clock,
+      base::SequencedTaskRunner::GetCurrentDefault());
+  CachedImageFetcher fetcher(network_image_fetcher(), cache,
+                             /*read_only=*/false);
+
+  const GURL image_url("http://gstatic.img.com/cache-init-failure.jpg");
+  test_url_loader_factory()->AddResponse(image_url.spec(), kImageData);
+  base::test::TestFuture<std::string, RequestMetadata> data_result;
+  base::test::TestFuture<gfx::Image, RequestMetadata> image_result;
+  fetcher.FetchImageAndData(
+      image_url,
+      data_result.GetCallback<const std::string&, const RequestMetadata&>(),
+      image_result.GetCallback<const gfx::Image&, const RequestMetadata&>(),
+      ImageFetcherParams(TRAFFIC_ANNOTATION_FOR_TESTS, kUmaClientName));
+  database_ptr->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+
+  ASSERT_TRUE(data_result.Wait());
+  ASSERT_FALSE(data_store_ptr->IsInitialized());
+  EXPECT_EQ(kImageData, data_result.Get<0>());
+  ASSERT_TRUE(image_result.Wait());
+  EXPECT_FALSE(image_result.Get<0>().IsEmpty());
+  EXPECT_TRUE(entries.empty());
+  histogram_tester().ExpectBucketCount(kImageFetcherEventHistogramName,
+                                       ImageFetcherEvent::kCacheMiss, 1);
 }
 
 TEST_F(CachedImageFetcherTest, FetchImageFromCache) {

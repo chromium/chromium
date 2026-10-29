@@ -5792,6 +5792,8 @@ shown properly on the user-facing crash UI.
   <int value="3" label="Caption"/>
 </enum>
 
+<!-- LINT.IfChange(ImageFetcherEvent) -->
+
 <enum name="ImageFetcherEvent">
   <int value="0" label="Request for an image"/>
   <int value="1" label="Cache hit"/>
@@ -5807,7 +5809,11 @@ shown properly on the user-facing crash UI.
   <int value="11"
       label="Image queued for transcoding was stored back to cache."/>
   <int value="12" label="Load image metadata"/>
+  <int value="13" label="Cache data store initialization failed"/>
+  <int value="14" label="Cache metadata store initialization failed"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/image_fetcher/core/image_fetcher_metrics_reporter.h:ImageFetcherEvent) -->
 
 <enum name="IMEAssistiveAction">
   <int value="0" label="GENERIC_ACTION"/>

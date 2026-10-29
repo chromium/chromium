@@ -98,8 +98,7 @@ void ImageMetadataStoreLevelDB::Initialize(base::OnceClosure callback) {
 }
 
 bool ImageMetadataStoreLevelDB::IsInitialized() {
-  return initialization_status_ == InitializationStatus::INITIALIZED ||
-         initialization_status_ == InitializationStatus::INIT_FAILURE;
+  return initialization_status_ == InitializationStatus::INITIALIZED;
 }
 
 void ImageMetadataStoreLevelDB::LoadImageMetadata(
