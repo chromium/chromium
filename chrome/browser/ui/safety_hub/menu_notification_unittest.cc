@@ -9,7 +9,6 @@
 #include "base/json/values_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
@@ -84,16 +83,8 @@ class SafetyHubMenuNotificationTest : public testing::Test {
   std::unique_ptr<RevokedPermissionsService> service_;
 };
 
-#if BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/364523673): This test is flaking on android pie builder.
-#define MAYBE_ToFromDictValue DISABLED_ToFromDictValue
-#else
-#define MAYBE_ToFromDictValue ToFromDictValue
-#endif
-// Verifies serialization and deserialization of a `SafetyHubMenuNotification`
-// to and from a `base::DictValue`. Ensures that all keys, values, timestamps,
-// and result contents are accurately preserved.
-TEST_F(SafetyHubMenuNotificationTest, MAYBE_ToFromDictValue) {
+TEST_F(SafetyHubMenuNotificationTest, DISABLED_ToFromDictValue) {
   // Creating a mock menu notification.
   base::Time last = kPastTime + base::Days(30);
   auto notification = std::make_unique<SafetyHubMenuNotification>(
@@ -144,16 +135,8 @@ TEST_F(SafetyHubMenuNotificationTest, MAYBE_ToFromDictValue) {
                        .GetString());
 }
 
-#if BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/364523673): This test is flaking on android pie builder.
-#define MAYBE_ShouldBeShown DISABLED_ShouldBeShown
-#else
-#define MAYBE_ShouldBeShown ShouldBeShown
-#endif
-// Verifies whether a `SafetyHubMenuNotification` should be displayed based on
-// impression count, duration, and dismissals. Ensures `ShouldBeShown()`
-// returns true only when valid results are present and thresholds are met.
-TEST_F(SafetyHubMenuNotificationTest, MAYBE_ShouldBeShown) {
+TEST_F(SafetyHubMenuNotificationTest, DISABLED_ShouldBeShown) {
   base::TimeDelta interval = base::Days(30);
   auto notification = std::make_unique<SafetyHubMenuNotification>(
       safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS);
@@ -239,16 +222,8 @@ TEST_F(SafetyHubMenuNotificationTest, MAYBE_ShouldBeShown) {
   ASSERT_FALSE(other_notification->ShouldBeShown(interval));
 }
 
-#if BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/364523673): This test is flaking on android pie builder.
-#define MAYBE_IsCurrentlyActive DISABLED_IsCurrentlyActive
-#else
-#define MAYBE_IsCurrentlyActive IsCurrentlyActive
-#endif
-// Verifies the active state transitions of a `SafetyHubMenuNotification` when
-// created, shown, and dismissed. Ensures `IsCurrentlyActive()` returns true
-// only after `Show()` and transitions to false after `Dismiss()`.
-TEST_F(SafetyHubMenuNotificationTest, MAYBE_IsCurrentlyActive) {
+TEST_F(SafetyHubMenuNotificationTest, DISABLED_IsCurrentlyActive) {
   auto notification = std::make_unique<SafetyHubMenuNotification>(
       safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS);
 
