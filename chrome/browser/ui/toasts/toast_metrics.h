@@ -18,7 +18,10 @@ enum class ToastAlertLevel {
   kActionable = 1,
   kMaxValue = kActionable
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/toasts/enums.xml:ToastAlertLevel)
+// LINT.ThenChange(
+//     //chrome/browser/resources/settings/a11y_page/a11y_page.ts:ToastAlertLevel,
+//     //tools/metrics/histograms/metadata/toasts/enums.xml:ToastAlertLevel
+// )
 }  // namespace toasts
 
 void RecordToastTriggeredToShow(ToastId toast_id);

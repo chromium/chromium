@@ -213,6 +213,28 @@ suite('A11yPage', () => {
     assertTrue(isVisible(axAnnotationsSection));
   });
 
+  test('toast metrics bounds check', async () => {
+    const toastToggle = a11yPage.$.toastToggle;
+
+    assertEquals(0, metrics.count('Toast.FrequencyPrefChanged'));
+    assertEquals(
+        0,
+        metrics.count(
+            'Toast.FrequencyPrefChanged', ToastAlertLevel.ACTIONABLE));
+
+    toastToggle.click();
+    await microtasksFinished();
+    assertEquals(
+        ToastAlertLevel.ACTIONABLE,
+        prefService.getPref('settings.toast.alert_level').value);
+    assertEquals(1, metrics.count('Toast.FrequencyPrefChanged'));
+    assertEquals(
+        1,
+        metrics.count(
+            'Toast.FrequencyPrefChanged', ToastAlertLevel.ACTIONABLE));
+
+    assertTrue(ToastAlertLevel.COUNT > ToastAlertLevel.ACTIONABLE);
+  });
   test('toast toggle mapping from enum', async () => {
     const toastToggle = a11yPage.$.toastToggle;
 

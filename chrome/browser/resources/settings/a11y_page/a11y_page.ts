@@ -54,12 +54,14 @@ import {getHtml} from './a11y_page.html.js';
  * Must be kept in sync with the C++ enum of the same name in
  * chrome/browser/ui/toasts/toast_metrics.h.
  */
+// LINT.IfChange(ToastAlertLevel)
 export enum ToastAlertLevel {
   ALL = 0,
   ACTIONABLE = 1,
   // Must be last.
-  COUNT = 1,
+  COUNT = 2,
 }
+// LINT.ThenChange(//chrome/browser/ui/toasts/toast_metrics.h:ToastAlertLevel)
 
 // <if expr="not is_chromeos">
 /**
