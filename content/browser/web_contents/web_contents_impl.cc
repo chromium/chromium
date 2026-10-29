@@ -5875,6 +5875,14 @@ FrameTree* WebContentsImpl::CreateNewWindow(
         new_contents_impl->GetPrimaryMainFrame()->browsing_context_state());
   }
 
+  // Creating and showing the new window's view, and AddNewContents(), can run
+  // a nested message loop (e.g. UpdateLegacyWin() on Windows) in which the
+  // opener's tab or frame is closed. If so, stop creating the window; the
+  // caller already handles the opener frame being gone. See
+  // crbug.com/574739217.
+  base::WeakPtr<WebContentsImpl> weak_this = weak_factory_.GetWeakPtr();
+  base::WeakPtr<RenderFrameHostImpl> weak_opener = opener->GetWeakPtr();
+
   // Save the window for later if we're not suppressing the opener (since it
   // will be shown immediately).
   if (!params.opener_suppressed) {
@@ -5885,11 +5893,17 @@ FrameTree* WebContentsImpl::CreateNewWindow(
       // newly created object and give it one of its own member variables.
       RenderWidgetHostViewBase* widget_view = new_view->CreateViewForWidget(
           new_contents_impl->GetRenderViewHost()->GetWidget());
+      if (!weak_this || !weak_opener) {
+        return nullptr;
+      }
       view_->SetOverscrollControllerEnabled(CanOverscrollContent());
       if (!renderer_started_hidden) {
         // RenderWidgets for frames always initialize as hidden. If the renderer
         // created this window as visible, then we show it here.
         widget_view->ShowWithVisibility(PageVisibilityState::kVisible);
+        if (!weak_this || !weak_opener) {
+          return nullptr;
+        }
       }
     }
     // Save the created window associated with the route so we can show it
@@ -5930,14 +5944,13 @@ FrameTree* WebContentsImpl::CreateNewWindow(
   bool was_blocked = false;
   base::WeakPtr<WebContentsImpl> weak_new_contents =
       new_contents_impl->weak_factory_.GetWeakPtr();
-  base::WeakPtr<WebContentsImpl> weak_this = weak_factory_.GetWeakPtr();
   WebContentsImpl* contents_to_load = new_contents_impl;
   if (delegate_) {
     WebContents* web_contents_navigated = delegate_->AddNewContents(
         this, std::move(new_contents), params.target_url, params.disposition,
         *params.features, has_user_gesture, &was_blocked);
 
-    if (!weak_this) {
+    if (!weak_this || !weak_opener) {
       // `this` may be deleted after AddNewContents() due to a nested message
       // loop (e.g. the window hosting the opener is closed). See
       // crbug.com/527676561.
