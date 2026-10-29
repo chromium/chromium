@@ -6,6 +6,7 @@ group("unit_tests") {
   testonly = true
 
   deps = [
+    "//components/browser_actuator/colocation:unit_tests",
     "//components/browser_actuator/internal:unit_tests",
     "//components/browser_actuator/public/transport:unit_tests",
 

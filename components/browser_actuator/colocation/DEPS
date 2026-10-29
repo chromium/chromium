@@ -1,0 +1,13 @@
+include_rules = [
+  "+components/network_time",
+  # The proof proto is wrapped in a google.protobuf.Any at the C++ layer
+  # rather than importing any.proto, so the WKT header is included directly.
+  "+google/protobuf/any.pb.h",
+]
+
+specific_include_rules = {
+  ".*_unittest\\.cc": [
+    "+components/prefs/testing_pref_service.h",
+    "+crypto",
+  ],
+}

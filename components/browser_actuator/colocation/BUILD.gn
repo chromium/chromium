@@ -1,0 +1,42 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("colocation") {
+  sources = [
+    "colocation_proof_builder.cc",
+    "colocation_proof_builder.h",
+    "colocation_time_source.cc",
+    "colocation_time_source.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    "//components/browser_actuator/colocation/proto",
+    "//components/network_time",
+    "//third_party/protobuf:any_proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "colocation_proof_builder_unittest.cc",
+    "colocation_time_source_unittest.cc",
+  ]
+
+  deps = [
+    ":colocation",
+    "//base",
+    "//base/test:test_support",
+    "//components/browser_actuator/colocation/proto",
+    "//components/network_time",
+    "//components/prefs:test_support",
+    "//crypto",
+    "//services/network/public/cpp",
+    "//testing/gtest",
+    "//third_party/protobuf:any_proto",
+  ]
+}
