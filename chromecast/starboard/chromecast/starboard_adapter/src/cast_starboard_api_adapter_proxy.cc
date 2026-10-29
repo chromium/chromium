@@ -13,8 +13,8 @@ namespace chromecast {
 // Existing callers throughout the Cast codebase call
 // CastStarboardApiAdapter::GetInstance() expecting a version-agnostic
 // interface. This proxy routes those calls directly to StarboardAdapterLoader,
-// which dynamically probes and loads the correct versioned adapter library
-// (libcast_starboard_adapter.so.V) at runtime.
+// which dynamically probes the partner Starboard library and initializes the
+// in-process CastStarboardApiAdapterImpl for the detected Starboard version.
 // static
 CastStarboardApiAdapter* CastStarboardApiAdapter::GetInstance() {
   auto* adapter = StarboardAdapterLoader::GetInstance()->GetAdapter();

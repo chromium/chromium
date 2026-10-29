@@ -15,8 +15,9 @@ class StarboardApiWrapper;
 }  // namespace media
 
 // StarboardAdapterLoader is responsible for dynamically loading the Starboard
-// partner library (libcast_starboard_api.so) and the matching Chromecast
-// adapter library (libcast_starboard_adapter.so.V) at runtime.
+// partner library (libcast_starboard_api.so*) at runtime, validating required
+// C ABI entry points, and configuring the in-process CastStarboardApiAdapter
+// and StarboardApiWrapper for the detected Starboard version.
 class __attribute__((visibility("default"))) StarboardAdapterLoader {
  public:
   // Abstraction interface for dynamic library loading operations (dlopen,

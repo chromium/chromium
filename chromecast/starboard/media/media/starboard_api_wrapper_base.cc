@@ -22,8 +22,18 @@
 
 namespace chromecast {
 namespace media {
+namespace SB_WRAPPER_NAMESPACE {
 
 namespace {
+
+// Version-scoped wrapper struct so std::vector instantiations in WriteSample()
+// are mangled under chromecast::media::sb14 vs chromecast::media::sb15 rather
+// than the global SbPlayerSampleInfo C struct name.
+struct VersionedSampleInfo {
+  SbPlayerSampleInfo sample;
+};
+static_assert(sizeof(VersionedSampleInfo) == sizeof(SbPlayerSampleInfo));
+static_assert(alignof(VersionedSampleInfo) == alignof(SbPlayerSampleInfo));
 
 // Ensure that our internal starboard structs use arrays of the same size as the
 // real starboard structs. Later in this code we'll just copy the entire array
@@ -262,7 +272,12 @@ void* StarboardApiWrapperBase::CreatePlayer(
   SbPlayerCreationParam sb_creation_param =
       ToSbPlayerCreationParam(*creation_param);
 
-  return SbPlayerCreate(
+  auto create_fn =
+      ResolveStarboardSymbol<decltype(&SbPlayerCreate)>("SbPlayerCreate");
+  if (!create_fn) {
+    return nullptr;
+  }
+  return create_fn(
       window, &sb_creation_param, &DeallocateSample, &OnDecoderStatus,
       &OnPlayerStatus, &OnPlayerError,
       /*context=*/
@@ -277,27 +292,40 @@ void StarboardApiWrapperBase::SetPlayerBounds(void* player,
                                               int y,
                                               int width,
                                               int height) {
-  SbPlayerSetBounds(static_cast<SbPlayer>(player), z_index, x, y, width,
-                    height);
+  if (auto set_bounds_fn = ResolveStarboardSymbol<decltype(&SbPlayerSetBounds)>(
+          "SbPlayerSetBounds")) {
+    set_bounds_fn(static_cast<SbPlayer>(player), z_index, x, y, width, height);
+  }
 }
 
 void StarboardApiWrapperBase::WriteEndOfStream(void* player,
                                                StarboardMediaType type) {
-  SbPlayerWriteEndOfStream(static_cast<SbPlayer>(player),
-                           static_cast<SbMediaType>(type));
+  if (auto eos_fn = ResolveStarboardSymbol<decltype(&SbPlayerWriteEndOfStream)>(
+          "SbPlayerWriteEndOfStream")) {
+    eos_fn(static_cast<SbPlayer>(player), static_cast<SbMediaType>(type));
+  }
 }
 
 void StarboardApiWrapperBase::SetVolume(void* player, double volume) {
-  SbPlayerSetVolume(static_cast<SbPlayer>(player), volume);
+  if (auto set_vol_fn = ResolveStarboardSymbol<decltype(&SbPlayerSetVolume)>(
+          "SbPlayerSetVolume")) {
+    set_vol_fn(static_cast<SbPlayer>(player), volume);
+  }
 }
 
 bool StarboardApiWrapperBase::SetPlaybackRate(void* player,
                                               double playback_rate) {
-  return SbPlayerSetPlaybackRate(static_cast<SbPlayer>(player), playback_rate);
+  auto set_rate_fn = ResolveStarboardSymbol<decltype(&SbPlayerSetPlaybackRate)>(
+      "SbPlayerSetPlaybackRate");
+  return set_rate_fn ? set_rate_fn(static_cast<SbPlayer>(player), playback_rate)
+                     : false;
 }
 
 void StarboardApiWrapperBase::DestroyPlayer(void* player) {
-  SbPlayerDestroy(static_cast<SbPlayer>(player));
+  if (auto destroy_fn = ResolveStarboardSymbol<decltype(&SbPlayerDestroy)>(
+          "SbPlayerDestroy")) {
+    destroy_fn(static_cast<SbPlayer>(player));
+  }
 }
 
 void* StarboardApiWrapperBase::CreateDrmSystem(
@@ -305,7 +333,12 @@ void* StarboardApiWrapperBase::CreateDrmSystem(
     const StarboardDrmSystemCallbackHandler* callback_handler) {
   CHROMECAST_TIMING_TRACKER;
   LOG(INFO) << "Creating SbDrmSystem";
-  return SbDrmCreateSystem(
+  auto create_drm_fn =
+      ResolveStarboardSymbol<decltype(&SbDrmCreateSystem)>("SbDrmCreateSystem");
+  if (!create_drm_fn) {
+    return kSbDrmSystemInvalid;
+  }
+  return create_drm_fn(
       key_system,
       /*context=*/
       static_cast<void*>(
@@ -321,9 +354,12 @@ void StarboardApiWrapperBase::DrmGenerateSessionUpdateRequest(
     const void* initialization_data,
     int initialization_data_size) {
   CHROMECAST_TIMING_TRACKER;
-  SbDrmGenerateSessionUpdateRequest(static_cast<SbDrmSystem>(drm_system),
-                                    ticket, type, initialization_data,
-                                    initialization_data_size);
+  if (auto gen_fn =
+          ResolveStarboardSymbol<decltype(&SbDrmGenerateSessionUpdateRequest)>(
+              "SbDrmGenerateSessionUpdateRequest")) {
+    gen_fn(static_cast<SbDrmSystem>(drm_system), ticket, type,
+           initialization_data, initialization_data_size);
+  }
 }
 
 void StarboardApiWrapperBase::DrmUpdateSession(void* drm_system,
@@ -333,16 +369,21 @@ void StarboardApiWrapperBase::DrmUpdateSession(void* drm_system,
                                                const void* session_id,
                                                int session_id_size) {
   CHROMECAST_TIMING_TRACKER;
-  SbDrmUpdateSession(static_cast<SbDrmSystem>(drm_system), ticket, key,
-                     key_size, session_id, session_id_size);
+  if (auto update_fn = ResolveStarboardSymbol<decltype(&SbDrmUpdateSession)>(
+          "SbDrmUpdateSession")) {
+    update_fn(static_cast<SbDrmSystem>(drm_system), ticket, key, key_size,
+              session_id, session_id_size);
+  }
 }
 
 void StarboardApiWrapperBase::DrmCloseSession(void* drm_system,
                                               const void* session_id,
                                               int session_id_size) {
   CHROMECAST_TIMING_TRACKER;
-  SbDrmCloseSession(static_cast<SbDrmSystem>(drm_system), session_id,
-                    session_id_size);
+  if (auto close_fn = ResolveStarboardSymbol<decltype(&SbDrmCloseSession)>(
+          "SbDrmCloseSession")) {
+    close_fn(static_cast<SbDrmSystem>(drm_system), session_id, session_id_size);
+  }
 }
 
 void StarboardApiWrapperBase::DrmUpdateServerCertificate(
@@ -351,21 +392,32 @@ void StarboardApiWrapperBase::DrmUpdateServerCertificate(
     const void* certificate,
     int certificate_size) {
   CHROMECAST_TIMING_TRACKER;
-  SbDrmUpdateServerCertificate(static_cast<SbDrmSystem>(drm_system), ticket,
-                               certificate, certificate_size);
+  if (auto cert_fn =
+          ResolveStarboardSymbol<decltype(&SbDrmUpdateServerCertificate)>(
+              "SbDrmUpdateServerCertificate")) {
+    cert_fn(static_cast<SbDrmSystem>(drm_system), ticket, certificate,
+            certificate_size);
+  }
 }
 
 bool StarboardApiWrapperBase::DrmIsServerCertificateUpdatable(
     void* drm_system) {
   CHROMECAST_TIMING_TRACKER;
-  return SbDrmIsServerCertificateUpdatable(
-      static_cast<SbDrmSystem>(drm_system));
+  auto updatable_fn =
+      ResolveStarboardSymbol<decltype(&SbDrmIsServerCertificateUpdatable)>(
+          "SbDrmIsServerCertificateUpdatable");
+  return updatable_fn ? updatable_fn(static_cast<SbDrmSystem>(drm_system))
+                      : false;
 }
 
 void StarboardApiWrapperBase::DrmDestroySystem(void* drm_system) {
   CHROMECAST_TIMING_TRACKER;
   LOG(INFO) << "Destroying SbDrmSystem";
-  SbDrmDestroySystem(static_cast<SbDrmSystem>(drm_system));
+  if (auto destroy_drm_fn =
+          ResolveStarboardSymbol<decltype(&SbDrmDestroySystem)>(
+              "SbDrmDestroySystem")) {
+    destroy_drm_fn(static_cast<SbDrmSystem>(drm_system));
+  }
 }
 
 SbPlayerSampleInfo StarboardApiWrapperBase::ToSbPlayerSampleInfo(
@@ -446,25 +498,34 @@ void StarboardApiWrapperBase::WriteSample(
     void* player,
     StarboardMediaType type,
     base::span<const StarboardSampleInfo> sample_infos) {
-  std::vector<SbPlayerSampleInfo> samples;
+  std::vector<VersionedSampleInfo> samples;
+  samples.reserve(sample_infos.size());
   std::vector<std::vector<SbPlayerSampleSideData>> side_data;
   SbDrmSampleInfo drm_info;
   std::vector<SbDrmSubSampleMapping> subsample_mappings;
   for (const StarboardSampleInfo& sample_info : sample_infos) {
     side_data.push_back({});
-    samples.push_back(ToSbPlayerSampleInfo(sample_info, side_data.back(),
-                                           drm_info, subsample_mappings));
+    samples.push_back({ToSbPlayerSampleInfo(sample_info, side_data.back(),
+                                            drm_info, subsample_mappings)});
   }
   CallWriteSamples(static_cast<SbPlayer>(player),
-                   static_cast<SbMediaType>(type), samples);
+                   static_cast<SbMediaType>(type),
+                   samples.empty() ? nullptr : &samples.front().sample,
+                   static_cast<int>(samples.size()));
 }
 
 StarboardMediaSupportType StarboardApiWrapperBase::CanPlayMimeAndKeySystem(
     const char* mime,
     const char* key_system) {
-  return static_cast<StarboardMediaSupportType>(
-      SbMediaCanPlayMimeAndKeySystem(mime, key_system));
+  auto can_play_fn =
+      ResolveStarboardSymbol<decltype(&SbMediaCanPlayMimeAndKeySystem)>(
+          "SbMediaCanPlayMimeAndKeySystem");
+  if (!can_play_fn) {
+    return kStarboardMediaSupportTypeMaybe;
+  }
+  return static_cast<StarboardMediaSupportType>(can_play_fn(mime, key_system));
 }
 
+}  // namespace SB_WRAPPER_NAMESPACE
 }  // namespace media
 }  // namespace chromecast

@@ -47,26 +47,15 @@ source_set("starboard_adapter_static") {
 if (starboard_graphics_is_shared) {
   shared_library("starboard_adapter") {
     public_deps = [ ":starboard_adapter_static" ]
-    if (!remove_starboard_headers) {
-      public_deps += [ "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api" ]
-    }
   }
 } else {
   source_set("starboard_adapter") {
     public_deps = [ ":starboard_adapter_static" ]
-    if (!remove_starboard_headers) {
-      public_deps += [ "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api" ]
-    }
   }
 }
 
 if (!remove_starboard_headers) {
-  # Used only by unit tests that directly exercise CastStarboardApiAdapterImpl
-  # (e.g. cast_starboard_api_adapter_test and starboard_event_source_test).
-  # Production targets must use the versioned starboard_adapter_library shared
-  # libraries so that SB_API_VERSION is compiled per Starboard ABI version.
   source_set("starboard_adapter_impl") {
-    testonly = true
     sources = [
       "src/cast_starboard_api_adapter_impl.cc",
       "src/cast_starboard_api_adapter_impl.h",
@@ -76,18 +65,22 @@ if (!remove_starboard_headers) {
       "//base",
       "//chromecast/common:timing_tracker",
       "//chromecast/starboard/chromecast/starboard_cast_api",
-      "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api",
     ]
     defines = [ "SB_IS_EVERGREEN" ]
   }
 
   test("cast_starboard_api_adapter_test") {
     sources = [ "src/cast_starboard_api_adapter_test.cc" ]
+    defines = [ "SB_IS_EVERGREEN" ]
     deps = [
       ":starboard_adapter_impl",
+      ":starboard_adapter_public",
+      "//base",
       "//base/test:run_all_unittests",
       "//base/test:test_support",
+      "//chromecast/common:timing_tracker",
       "//chromecast/starboard/chromecast/starboard_cast_api",
+      "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api",
       "//testing/gmock",
       "//testing/gtest",
     ]

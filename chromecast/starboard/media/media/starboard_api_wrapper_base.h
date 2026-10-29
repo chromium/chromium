@@ -5,6 +5,7 @@
 #ifndef CHROMECAST_STARBOARD_MEDIA_MEDIA_STARBOARD_API_WRAPPER_BASE_H_
 #define CHROMECAST_STARBOARD_MEDIA_MEDIA_STARBOARD_API_WRAPPER_BASE_H_
 
+#include <dlfcn.h>
 #include <starboard/media.h>
 #include <starboard/player.h>
 
@@ -13,12 +14,33 @@
 #include "base/containers/span.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
 
+#if SB_API_VERSION >= 15
+#define SB_WRAPPER_NAMESPACE sb15
+#else
+#define SB_WRAPPER_NAMESPACE sb14
+#endif
+
 namespace chromecast {
 namespace media {
+namespace SB_WRAPPER_NAMESPACE {
+
+template <typename Fn>
+Fn ResolveStarboardSymbol(const char* name) {
+  return reinterpret_cast<Fn>(dlsym(RTLD_DEFAULT, name));
+}
 
 // Implements the functions of StarboardApiWrapper that are common across
 // different starboard versions. This is still an abstract class, as it does not
 // implement all of StarboardApiWrapper's functions.
+//
+// Scoped inside SB_WRAPPER_NAMESPACE (sb14 vs sb15) so that both the SB14 and
+// SB15+ wrapper translation units can be linked directly into the single
+// core_runtime binary without C++ ODR collisions on version-dependent Starboard
+// structs (e.g. SbPlayerCreationParam).
+//
+// Note: Only a single Starboard partner library (libcast_starboard_api.so) and
+// a single wrapper instance (sb14 or sb15) is loaded/instantiated per device
+// run at startup based on runtime version detection.
 class StarboardApiWrapperBase : public StarboardApiWrapper {
  public:
   StarboardApiWrapperBase();
@@ -99,15 +121,16 @@ class StarboardApiWrapperBase : public StarboardApiWrapper {
 
   // Calls the relevant starboard version's function to write samples (e.g.
   // SbPlayerWriteSamples or SbPlayerWriteSample2).
-  virtual void CallWriteSamples(
-      SbPlayer player,
-      SbMediaType sample_type,
-      base::span<const SbPlayerSampleInfo> sample_infos) = 0;
+  virtual void CallWriteSamples(SbPlayer player,
+                                SbMediaType sample_type,
+                                const SbPlayerSampleInfo* sample_infos,
+                                int sample_infos_count) = 0;
 
   // Tracks whether |EnsureInitialized| was called.
   bool initialized_ = false;
 };
 
+}  // namespace SB_WRAPPER_NAMESPACE
 }  // namespace media
 }  // namespace chromecast
 

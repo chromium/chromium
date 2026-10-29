@@ -2,13 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+assert(is_linux, "Starboard is only supported on Linux")
+
 import("//build/buildflag_header.gni")
 import("//chromecast/starboard/starboard.gni")
-import("//chromecast/starboard/starboard_adapter.gni")
-if (!remove_starboard_headers) {
-  import(
-      "//chromecast/starboard/third_party/starboard/sabi/base_configuration.gni")
-}
 import("//testing/test.gni")
 
 buildflag_header("starboard_buildflags") {
@@ -18,7 +15,6 @@ buildflag_header("starboard_buildflags") {
 
 source_set("starboard_adapter_loader") {
   sources = [
-    "starboard_adapter_factory.h",
     "starboard_adapter_loader.cc",
     "starboard_adapter_loader.h",
   ]
@@ -29,7 +25,12 @@ source_set("starboard_adapter_loader") {
     "//chromecast/starboard/media/media:starboard_api_wrapper_headers",
   ]
   if (!remove_starboard_headers) {
-    data_deps = [ ":starboard_adapters" ]
+    deps += [
+      "//chromecast/starboard/chromecast/starboard_adapter:starboard_adapter_impl",
+      "//chromecast/starboard/media/media:starboard_api_wrapper_impl_14",
+      "//chromecast/starboard/media/media:starboard_api_wrapper_impl_15",
+    ]
+    data_deps = [ "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api" ]
   }
 }
 
@@ -38,51 +39,27 @@ test("starboard_adapter_loader_unittests") {
   deps = [
     ":starboard_adapter_loader",
     ":starboard_buildflags",
+    "//base",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
+    "//chromecast/starboard/chromecast/starboard_adapter:starboard_adapter_public",
     "//chromecast/starboard/chromecast/starboard_adapter:starboard_adapter_static",
+    "//chromecast/starboard/media/media:starboard_api_wrapper_headers",
     "//testing/gmock",
     "//testing/gtest",
   ]
   if (!remove_starboard_headers) {
+    deps += [ "//chromecast/starboard/chromecast/starboard_adapter:starboard_adapter_impl" ]
     data_deps = [
       ":starboard_adapters",
-
-      # The loader dlopens the partner library by bare soname before it can
-      # load any adapter, so the stub has to be staged next to the test. The
-      # versioned adapter libraries compile cast_starboard_api_dummy.cc into
-      # themselves rather than depending on this target, so :starboard_adapters
-      # does not pull it in.
       "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api",
     ]
   }
 }
 
 if (!remove_starboard_headers) {
-  starboard_adapter_library("starboard_adapter_14") {
-    version = 14
-  }
-
-  starboard_adapter_library("starboard_adapter_15") {
-    version = 15
-  }
-
-  starboard_adapter_library("starboard_adapter_16") {
-    version = 16
-  }
-
-  starboard_adapter_library("starboard_adapter_17") {
-    version = 17
-  }
-
   group("starboard_adapters") {
-    deps = [
-      ":starboard_adapter_14",
-      ":starboard_adapter_15",
-      ":starboard_adapter_16",
-      ":starboard_adapter_17",
-      "//chromecast/starboard/graphics:GL_starboard",
-    ]
+    deps = [ "//chromecast/starboard/graphics:GL_starboard" ]
   }
 } else {
   group("starboard_adapters") {

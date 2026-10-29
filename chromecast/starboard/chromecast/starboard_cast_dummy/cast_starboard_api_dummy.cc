@@ -46,7 +46,8 @@ CHROMECAST_EXPORT_WEAK void SbSystemRequestStop(int error_level) {
     cb(&event);
   }
 }
-#else
+#endif  // SB_API_VERSION >= 15
+
 CHROMECAST_EXPORT_WEAK int CastStarboardApiInitialize(int argc,
                                                       char** argv,
                                                       void (*callback)(void*)) {
@@ -68,7 +69,6 @@ CHROMECAST_EXPORT_WEAK void CastStarboardApiFinalize() {
     cb(&event);
   }
 }
-#endif
 
 CHROMECAST_EXPORT_WEAK int StarboardMain(int argc, char** argv) {
   return 0;
@@ -197,4 +197,20 @@ CHROMECAST_EXPORT_WEAK SbMediaSupportType
 SbMediaCanPlayMimeAndKeySystem(const char* mime, const char* key_system) {
   return kSbMediaSupportTypeMaybe;
 }
+
+#if SB_API_VERSION == 15
+CHROMECAST_EXPORT_WEAK void* SbMemoryAllocate(size_t size) {
+  return nullptr;
+}
+#elif SB_API_VERSION == 16
+CHROMECAST_EXPORT_WEAK bool SbCPUFeaturesGet(void* features) {
+  return false;
+}
+#endif
+
+#if SB_API_VERSION <= 17
+CHROMECAST_EXPORT_WEAK bool SbThreadGetPriority(int* priority) {
+  return false;
+}
+#endif
 }

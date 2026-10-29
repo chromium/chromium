@@ -57,6 +57,7 @@ if (!remove_starboard_headers) {
       "//base/test:run_all_unittests",
       "//base/test:test_support",
       "//chromecast/starboard/chromecast/starboard_adapter:starboard_adapter_impl",
+      "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api_dummy",
       "//testing/gmock",
       "//testing/gtest",
       "//ui/base",

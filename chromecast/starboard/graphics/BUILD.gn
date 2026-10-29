@@ -40,17 +40,14 @@ source_set("graphics") {
   deps = [
     "//base",
     "//chromecast/public",
+    "//chromecast/starboard:starboard_adapter_loader",
     "//chromecast/starboard:starboard_buildflags",
     "//chromecast/starboard/chromecast/starboard_adapter",
   ]
   data_deps = [ ":GL_starboard" ]
   if (!remove_starboard_headers) {
     configs += [ "//chromecast/starboard/third_party/starboard/sabi" ]
-    deps += [
-      "//chromecast/starboard:starboard_adapter_loader",
-      "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api",
-      "//chromecast/starboard/third_party/starboard/public",
-    ]
+    deps += [ "//chromecast/starboard/third_party/starboard/public" ]
   }
 }
 

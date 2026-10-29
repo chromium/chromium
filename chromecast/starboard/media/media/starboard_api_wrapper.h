@@ -505,6 +505,11 @@ class StarboardApiWrapper {
 // starboard 14 version that calls the starboard 14 APIs, etc.
 std::unique_ptr<StarboardApiWrapper> GetStarboardApiWrapper();
 
+// Creates a StarboardApiWrapper compiled against the Starboard 14 or
+// Starboard 15+ C struct ABI.
+std::unique_ptr<StarboardApiWrapper> CreateStarboardApiWrapper14();
+std::unique_ptr<StarboardApiWrapper> CreateStarboardApiWrapper15();
+
 }  // namespace media
 }  // namespace chromecast
 

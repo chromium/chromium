@@ -5,6 +5,7 @@
 #ifndef CHROMECAST_STARBOARD_CHROMECAST_STARBOARD_ADAPTER_SRC_CAST_STARBOARD_API_ADAPTER_IMPL_H_
 #define CHROMECAST_STARBOARD_CHROMECAST_STARBOARD_ADAPTER_SRC_CAST_STARBOARD_API_ADAPTER_IMPL_H_
 
+#include <atomic>
 #include <unordered_map>
 
 #include "base/synchronization/lock.h"
@@ -32,6 +33,15 @@ class CastStarboardApiAdapterImpl : public CastStarboardApiAdapter {
   // Never invoked: the singleton is intentionally leaked (see Release()). It is
   // only declared because the base class destructor is virtual.
   ~CastStarboardApiAdapterImpl() override;
+
+  // Sets the active Starboard API version deduced at runtime by
+  // StarboardAdapterLoader. Must be set before EnsureInitialized() /
+  // Subscribe() is called.
+  void SetSbApiVersion(int version);
+  int sb_api_version() const;
+
+  // Resets the immortal singleton state between unit tests.
+  void ResetForTesting() LOCKS_EXCLUDED(lock_);
 
   void SbEventHandleInternal(const SbEvent* event);
 
@@ -64,6 +74,9 @@ class CastStarboardApiAdapterImpl : public CastStarboardApiAdapter {
   void* SbWindowGetPlatformHandle(SbWindow window) override;
   const void* GetExtension(const char* name) override;
 
+  // Defaults to Starboard 14 until SetSbApiVersion() is called at runtime by
+  // StarboardAdapterLoader::Load().
+  std::atomic<int> sb_api_version_{14};
   base::WaitableEvent starboard_started_;
   base::WaitableEvent starboard_stopped_;
 
