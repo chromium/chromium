@@ -1363,7 +1363,8 @@ void WebViewImpl::DidUpdateBrowserControls() {
     ResizeViewportAnchor::ResizeScope resize_scope(*resize_viewport_anchor_);
 
     visual_viewport.SetBrowserControlsAdjustment(
-        GetBrowserControls().UnreportedSizeAdjustment());
+        GetBrowserControls().UnreportedSizeAdjustment() +
+        GetBrowserControls().UnreportedBottomSizeAdjustment());
   }
 }
 

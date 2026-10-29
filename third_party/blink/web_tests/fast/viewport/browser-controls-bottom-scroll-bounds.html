@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bottom browser controls extend only the transient scroll bounds</title>
+<title>Bottom browser controls extend the visible viewport and scroll bounds</title>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <style>
@@ -40,8 +40,9 @@ promise_test(async () => {
   await new Promise(requestAnimationFrame);
   await new Promise(requestAnimationFrame);
 
-  assert_equals(visualViewport.height, visibleHeight,
-                "hiding bottom controls must not change visualViewport.height");
+  assert_equals(visualViewport.height,
+                visibleHeight + bottomControlsHeight / pageScale,
+                "hiding bottom controls must increase visualViewport.height");
   assert_equals(visualViewport.offsetTop, shownMaximum,
                 "hiding bottom controls must not move the visual viewport");
 

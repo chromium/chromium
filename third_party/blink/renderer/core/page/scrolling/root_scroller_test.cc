@@ -678,9 +678,7 @@ TEST_F(RootScrollerTest, TopControlsAdjustmentAppliedToRootScroller) {
   ASSERT_EQ(0, GetBrowserControls().TopShownRatio());
   ASSERT_EQ(0, GetBrowserControls().BottomShownRatio());
 
-  // TODO(crbug.com/1364851): This should be 1000 - 500, but the main thread's
-  // maximum scroll offset does not account for the hidden bottom bar.
-  EXPECT_EQ(1000 - 450, container_scroller->MaximumScrollOffset().y());
+  EXPECT_EQ(1000 - 500, container_scroller->MaximumScrollOffset().y());
 
   widget->DispatchThroughCcInputHandler(GenerateTouchGestureEvent(
       WebInputEvent::Type::kGestureScrollUpdate, 0, -3000));
@@ -696,11 +694,9 @@ TEST_F(RootScrollerTest, TopControlsAdjustmentAppliedToRootScroller) {
   layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false,
                                     base::OnceClosure());
 
-  GetWebView()->ResizeWithBrowserControls(gfx::Size(400, 450), 50, 50, false);
+  GetWebView()->ResizeWithBrowserControls(gfx::Size(400, 500), 50, 50, false);
 
-  // TODO(crbug.com/1364851): This should be 1000 - 500, but the main thread's
-  // maximum scroll offset does not account for the hidden bottom bar.
-  EXPECT_EQ(1000 - 450, container_scroller->MaximumScrollOffset().y());
+  EXPECT_EQ(1000 - 500, container_scroller->MaximumScrollOffset().y());
 }
 
 TEST_F(RootScrollerTest, RotationAnchoring) {
@@ -2909,7 +2905,7 @@ class RootScrollerHitTest : public ImplicitRootScrollerSimTest {
     // the root scroller's LayoutBox since inert top controls won't resize the
     // ICB but, since we expaned the clip, we should still be able to hit the
     // target.
-    gfx::Point point(200, 445);
+    gfx::Point point(200, 495);
     gfx::Size tap_area(20, 20);
     WebHitTestResult result = HitTestResultForTap(&WebView(), point, tap_area);
 
@@ -2942,7 +2938,7 @@ class RootScrollerHitTest : public ImplicitRootScrollerSimTest {
     scrollable_area->DidCompositorScroll(gfx::PointF(0, 100000),
                                          cc::ScrollSourceType::kNone);
 
-    WebView().ResizeWithBrowserControls(gfx::Size(400, 450), 50, 50, false);
+    WebView().ResizeWithBrowserControls(gfx::Size(400, 500), 50, 50, false);
 
     Compositor().BeginFrame();
   }

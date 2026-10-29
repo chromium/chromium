@@ -1990,8 +1990,6 @@ TEST_F(BrowserControlsTest, MAYBE(TopControlsSizeAdjustment)) {
 }
 
 // Test the size adjustment sent to the viewport when bottom controls exist.
-// There should never be an adjustment since the bottom controls do not change
-// the content offset.
 TEST_F(BrowserControlsTest, MAYBE(BottomControlsSizeAdjustment)) {
   WebViewImpl* web_view = Initialize();
   web_view->ResizeWithBrowserControls(web_view->MainFrameViewWidget()->Size(),

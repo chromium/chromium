@@ -1397,8 +1397,8 @@ TEST_P(VisualViewportTest, TestBrowserControlsAdjustmentWithScale) {
             frame_view.LayoutViewport()->GetScrollOffset());
 }
 
-// Tests that bottom browser controls extend the transient scroll bounds like
-// the compositor does, without affecting the visible rect.
+// Tests that bottom browser controls adjust both the visible rect and
+// transient scroll bounds to match the compositor.
 TEST_P(VisualViewportTest, TestBottomBrowserControlsAdjustmentWithScale) {
   InitializeWithAndroidSettings();
   WebView()->ResizeWithBrowserControls(gfx::Size(500, 450), 0, 20, true);
@@ -1424,16 +1424,78 @@ TEST_P(VisualViewportTest, TestBottomBrowserControlsAdjustmentWithScale) {
   visual_viewport.Move(ScrollOffset(10000, 10000));
   EXPECT_EQ(ScrollOffset(750, 675), visual_viewport.GetScrollOffset());
 
-  // Simulate hiding the bottom controls. The visible rect must not change,
-  // but the 20px given back must extend the scroll bounds: the maximum
+  // Simulate hiding the bottom controls. The visible height grows by
+  // 20 / scale = 10, and the scroll bounds also expand: the maximum
   // offset grows by 20 / min_scale - 20 / scale = 40 - 10 = 30.
   WebView()->MainFrameViewWidget()->ApplyViewportChangesForTesting(
       {gfx::Vector2dF(), gfx::Vector2dF(), 1, false, 0, -1,
        cc::BrowserControlsState::kBoth});
-  EXPECT_EQ(gfx::SizeF(250, 225), visual_viewport.VisibleRect().size());
+  EXPECT_EQ(gfx::SizeF(250, 235), visual_viewport.VisibleRect().size());
 
   visual_viewport.Move(ScrollOffset(10000, 10000));
   EXPECT_EQ(ScrollOffset(750, 705), visual_viewport.GetScrollOffset());
+}
+
+TEST_P(VisualViewportTest,
+       TestBottomBrowserControlsAdjustmentWithMinHeightAndResize) {
+  constexpr float kControlsHeight = 40;
+  constexpr float kControlsMinHeight = 10;
+
+  InitializeWithAndroidSettings();
+
+  cc::BrowserControlsParams controls;
+  controls.bottom_controls_height = kControlsHeight;
+  controls.bottom_controls_min_height = kControlsMinHeight;
+  controls.browser_controls_shrink_blink_size = true;
+  WebView()->ResizeWithBrowserControls(gfx::Size(500, 400), gfx::Size(500, 400),
+                                       controls);
+  UpdateAllLifecyclePhases();
+  WebView()->GetBrowserControls().SetShownRatio(0, 1);
+
+  RegisterMockedHttpURLLoad("content-width-1000.html");
+  NavigateTo(base_url_ + "content-width-1000.html");
+  UpdateAllLifecyclePhases();
+
+  VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
+  LocalFrameView& frame_view = *WebView()->MainFrameImpl()->GetFrameView();
+  auto* layout_viewport = frame_view.LayoutViewport();
+
+  visual_viewport.SetScale(2);
+  ASSERT_EQ(gfx::Size(1000, 800), frame_view.Size());
+  EXPECT_EQ(gfx::SizeF(250, 200), visual_viewport.VisibleRect().size());
+  EXPECT_EQ(ScrollOffset(750, 600), visual_viewport.MaximumScrollOffset());
+
+  // Hide the controls down to their minimum height without a browser resize.
+  WebView()->GetBrowserControls().SetShownRatio(
+      0, kControlsMinHeight / kControlsHeight);
+
+  // The revealed 30px add 15 CSS px to the visible height and 60 CSS px
+  // to the layout viewport bounds at minimum scale 0.5.
+  EXPECT_EQ(gfx::SizeF(250, 215), visual_viewport.VisibleRect().size());
+  EXPECT_EQ(ScrollOffset(750, 645), visual_viewport.MaximumScrollOffset());
+
+  visual_viewport.Move(ScrollOffset(10000, 10000));
+  layout_viewport->ScrollBy(ScrollOffset(10000, 10000),
+                            mojom::blink::ScrollType::kUser);
+  EXPECT_EQ(ScrollOffset(750, 645), visual_viewport.GetScrollOffset());
+
+  const ScrollOffset offset_before_resize =
+      visual_viewport.GetScrollOffset() + layout_viewport->GetScrollOffset();
+
+  // Confirm the revealed area. The remaining 10px of controls are already
+  // excluded from the new viewport size.
+  controls.browser_controls_shrink_blink_size = false;
+  WebView()->ResizeWithBrowserControls(gfx::Size(500, 430), gfx::Size(500, 430),
+                                       controls);
+  UpdateAllLifecyclePhases();
+
+  EXPECT_EQ(gfx::Size(500, 430), visual_viewport.Size());
+  EXPECT_EQ(gfx::Size(1000, 860), frame_view.Size());
+  EXPECT_EQ(gfx::SizeF(250, 215), visual_viewport.VisibleRect().size());
+  EXPECT_EQ(ScrollOffset(750, 645), visual_viewport.MaximumScrollOffset());
+  EXPECT_EQ(ScrollOffset(750, 645), visual_viewport.GetScrollOffset());
+  EXPECT_EQ(offset_before_resize, visual_viewport.GetScrollOffset() +
+                                      layout_viewport->GetScrollOffset());
 }
 
 // Tests that a scroll all the way to the bottom of the page, while hiding the
