@@ -88,7 +88,7 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
       base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
           callback) override;
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  void GetPreferredAccountForFRESignin(
+  void GetPreferredAccountForSigninAsync(
       base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
           callback) override;
 #endif
@@ -238,7 +238,7 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
       identity_manager_observation_{this};
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  // Requests originating from `GetPreferredAccountForSigninWhenReady()` that
+  // Requests originating from `GetPreferredAccountForSigninAsync()` that
   // wait for the preferred account computation to complete.
   std::vector<base::OnceCallback<void(std::optional<AccountPreviewPreference>)>>
       pending_preferred_account_requests_;

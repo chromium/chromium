@@ -454,7 +454,7 @@ enum class SigninScreenState {
       base::BindOnce(^{
         [weakSelf stopWaitingForPreferredAccount];
       }));
-  _accountPreviewDataService->GetPreferredAccountForFRESignin(
+  _accountPreviewDataService->GetPreferredAccountForSigninAsync(
       _preferredAccountCallback.callback());
 }
 

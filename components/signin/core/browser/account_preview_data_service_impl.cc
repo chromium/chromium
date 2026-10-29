@@ -325,7 +325,7 @@ void AccountPreviewDataServiceImpl::GetPreviewPreferenceForAccount(
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-void AccountPreviewDataServiceImpl::GetPreferredAccountForFRESignin(
+void AccountPreviewDataServiceImpl::GetPreferredAccountForSigninAsync(
     base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
         callback) {
   if (!base::FeatureList::IsEnabled(

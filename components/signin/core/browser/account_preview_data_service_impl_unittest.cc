@@ -1147,7 +1147,7 @@ TEST_F(AccountPreviewDataServiceTest,
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 TEST_F(AccountPreviewDataServiceTest,
-       GetPreferredAccountForFRESigninRunsImmediatelyIfAlreadyComputed) {
+       GetPreferredAccountForSigninAsyncRunsImmediatelyIfAlreadyComputed) {
   base::test::ScopedFeatureList feature_list{
       switches::kEnableAccountPreviewPreferredAccountFRE};
   MockSuccessfulFetch(&test_url_loader_factory_);
@@ -1161,7 +1161,7 @@ TEST_F(AccountPreviewDataServiceTest,
   // synchronously without triggering a new fetch.
   base::HistogramTester histograms;
   base::test::TestFuture<std::optional<AccountPreviewPreference>> future;
-  service_->GetPreferredAccountForFRESignin(future.GetCallback());
+  service_->GetPreferredAccountForSigninAsync(future.GetCallback());
   ASSERT_TRUE(future.IsReady());
   EXPECT_THAT(future.Get(),
               testing::Optional(testing::Field(
@@ -1170,7 +1170,7 @@ TEST_F(AccountPreviewDataServiceTest,
 }
 
 TEST_F(AccountPreviewDataServiceTest,
-       GetPreferredAccountForFRESigninWaitsForOngoingComputation) {
+       GetPreferredAccountForSigninAsyncWaitsForOngoingComputation) {
   base::test::ScopedFeatureList feature_list{
       switches::kEnableAccountPreviewPreferredAccountFRE};
 
@@ -1182,7 +1182,7 @@ TEST_F(AccountPreviewDataServiceTest,
 
   base::HistogramTester histograms;
   base::test::TestFuture<std::optional<AccountPreviewPreference>> future;
-  service_->GetPreferredAccountForFRESignin(future.GetCallback());
+  service_->GetPreferredAccountForSigninAsync(future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
   MockSuccessfulFetch(&test_url_loader_factory_);
@@ -1203,7 +1203,7 @@ TEST_F(AccountPreviewDataServiceTest,
 }
 
 TEST_F(AccountPreviewDataServiceTest,
-       GetPreferredAccountForFRESigninForcesFetchWhenNotComputed) {
+       GetPreferredAccountForSigninAsyncForcesFetchWhenNotComputed) {
   base::test::ScopedFeatureList feature_list{
       switches::kEnableAccountPreviewPreferredAccountFRE};
 
@@ -1222,7 +1222,7 @@ TEST_F(AccountPreviewDataServiceTest,
   base::HistogramTester histograms;
   MockSuccessfulFetch(&test_url_loader_factory_);
   base::test::TestFuture<std::optional<AccountPreviewPreference>> future;
-  service_->GetPreferredAccountForFRESignin(future.GetCallback());
+  service_->GetPreferredAccountForSigninAsync(future.GetCallback());
   EXPECT_THAT(future.Get(),
               testing::Optional(testing::Field(
                   &AccountPreviewPreference::gaia_id, account.GetGaiaId())));
@@ -1239,7 +1239,7 @@ TEST_F(AccountPreviewDataServiceTest,
 }
 
 TEST_F(AccountPreviewDataServiceTest,
-       GetPreferredAccountForFRESigninRunsWithNulloptIfSigninDisallowed) {
+       GetPreferredAccountForSigninAsyncRunsWithNulloptIfSigninDisallowed) {
   base::test::ScopedFeatureList feature_list{
       switches::kEnableAccountPreviewPreferredAccountFRE};
   network_delay_helper_->SetNetworkCallsDelayed(true);
@@ -1247,13 +1247,13 @@ TEST_F(AccountPreviewDataServiceTest,
                                                  ConsentLevel::kSignin);
   std::optional<AccountPreviewPreference> reentrant_result;
   bool callback_ran = false;
-  service_->GetPreferredAccountForFRESignin(base::BindLambdaForTesting(
+  service_->GetPreferredAccountForSigninAsync(base::BindLambdaForTesting(
       [&](std::optional<AccountPreviewPreference> pref) {
         callback_ran = true;
         EXPECT_EQ(std::nullopt, pref);
         // Re-entrant call during cleanup must not be stranded on a stale
         // barrier.
-        service_->GetPreferredAccountForFRESignin(base::BindLambdaForTesting(
+        service_->GetPreferredAccountForSigninAsync(base::BindLambdaForTesting(
             [&](std::optional<AccountPreviewPreference> nested_pref) {
               reentrant_result = std::move(nested_pref);
             }));
@@ -1266,14 +1266,14 @@ TEST_F(AccountPreviewDataServiceTest,
 }
 
 TEST_F(AccountPreviewDataServiceTest,
-       GetPreferredAccountForFRESigninRunsWithNulloptOnShutdown) {
+       GetPreferredAccountForSigninAsyncRunsWithNulloptOnShutdown) {
   base::test::ScopedFeatureList feature_list{
       switches::kEnableAccountPreviewPreferredAccountFRE};
   network_delay_helper_->SetNetworkCallsDelayed(true);
   identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
                                                  ConsentLevel::kSignin);
   base::test::TestFuture<std::optional<AccountPreviewPreference>> future;
-  service_->GetPreferredAccountForFRESignin(future.GetCallback());
+  service_->GetPreferredAccountForSigninAsync(future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
   service_->OnIdentityManagerShutdown(identity_test_env_.identity_manager());
@@ -1282,7 +1282,7 @@ TEST_F(AccountPreviewDataServiceTest,
 }
 
 TEST_F(AccountPreviewDataServiceTest,
-       GetPreferredAccountForFRESigninRunsWithNulloptIfFeatureDisabled) {
+       GetPreferredAccountForSigninAsyncRunsWithNulloptIfFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{switches::kEnableAccountPreviewPreferredAccount},
@@ -1293,13 +1293,13 @@ TEST_F(AccountPreviewDataServiceTest,
   prefs_.SetDict(prefs::kAccountPreviewPreference, std::move(dict));
 
   base::test::TestFuture<std::optional<AccountPreviewPreference>> future;
-  service_->GetPreferredAccountForFRESignin(future.GetCallback());
+  service_->GetPreferredAccountForSigninAsync(future.GetCallback());
   ASSERT_TRUE(future.IsReady());
   EXPECT_EQ(std::nullopt, future.Get());
 }
 
 TEST_F(AccountPreviewDataServiceTest,
-       GetPreferredAccountForFRESigninWaitsForTokensLoadedOnStartup) {
+       GetPreferredAccountForSigninAsyncWaitsForTokensLoadedOnStartup) {
   base::test::ScopedFeatureList feature_list{
       switches::kEnableAccountPreviewPreferredAccountFRE};
 
@@ -1311,7 +1311,7 @@ TEST_F(AccountPreviewDataServiceTest,
       identity_test_env_.MakeAccountAvailable("user@gmail.com");
   identity_test_env_.ResetToAccountsNotYetLoadedFromDiskState();
   // Set last update pref to now so the periodic timer does not fire on startup,
-  // verifying that GetPreferredAccountForFRESignin defers its own fetch.
+  // verifying that `GetPreferredAccountForSigninAsync()` defers its own fetch.
   prefs_.SetTime(prefs::kAccountPreviewDataLastUpdatePref, base::Time::Now());
 
   auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
@@ -1326,7 +1326,7 @@ TEST_F(AccountPreviewDataServiceTest,
 
   base::HistogramTester histograms;
   base::test::TestFuture<std::optional<AccountPreviewPreference>> future;
-  service_->GetPreferredAccountForFRESignin(future.GetCallback());
+  service_->GetPreferredAccountForSigninAsync(future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
   MockSuccessfulFetch(&test_url_loader_factory_);
@@ -1342,8 +1342,9 @@ TEST_F(AccountPreviewDataServiceTest,
       1);
 }
 
-TEST_F(AccountPreviewDataServiceTest,
-       GetPreferredAccountForFRESigninResolvesWithNulloptWhenNoAccountsLoaded) {
+TEST_F(
+    AccountPreviewDataServiceTest,
+    GetPreferredAccountForSigninAsyncResolvesWithNulloptWhenNoAccountsLoaded) {
   base::test::ScopedFeatureList feature_list{
       switches::kEnableAccountPreviewPreferredAccountFRE};
 
@@ -1362,7 +1363,7 @@ TEST_F(AccountPreviewDataServiceTest,
       version_info::Channel::UNKNOWN, &profile_metrics_service_);
 
   base::test::TestFuture<std::optional<AccountPreviewPreference>> future;
-  service_->GetPreferredAccountForFRESignin(future.GetCallback());
+  service_->GetPreferredAccountForSigninAsync(future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
   identity_test_env_.ReloadAccountsFromDisk();
@@ -1381,7 +1382,7 @@ TEST_F(AccountPreviewDataServiceTest,
   AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
       "user@gmail.com", ConsentLevel::kSignin);
   base::test::TestFuture<std::optional<AccountPreviewPreference>> future;
-  service_->GetPreferredAccountForFRESignin(future.GetCallback());
+  service_->GetPreferredAccountForSigninAsync(future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
   MockSuccessfulFetch(&test_url_loader_factory_);

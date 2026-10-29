@@ -104,10 +104,10 @@ class AccountPreviewDataService : public KeyedService {
           callback) = 0;
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  // Asynchronous version of `GetPreferredAccountForSignin()` for the First Run
-  // Experience (FRE), which returns the stored preferred account immediately if
-  // available, or triggers a fetch and waits for the preferred account
-  // computation to complete.
+  // Asynchronous version of `GetPreferredAccountForSignin()`, which returns the
+  // stored preferred account immediately if available, or triggers a fetch and
+  // waits for the preferred account computation to complete.
+  //
   // Note: This method is currently FRE-specific (for metrics and feature flag
   // gating), but is ready to be easily reused for other callers if needed.
   //
@@ -122,7 +122,7 @@ class AccountPreviewDataService : public KeyedService {
   // `callback` is run with `std::nullopt` if
   // `kEnableAccountPreviewPreferredAccountFRE` is disabled, if sign-in is
   // disallowed, or when the service shuts down.
-  virtual void GetPreferredAccountForFRESignin(
+  virtual void GetPreferredAccountForSigninAsync(
       base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
           callback) = 0;
 #endif
