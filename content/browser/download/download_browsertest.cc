@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -1175,11 +1176,8 @@ class DownloadContentTest : public ContentBrowserTest {
     EXPECT_EQ(1u, observer->NumDownloadsSeenInState(expected_terminal_state));
   }
 
-  // Checks that |path| is has |file_size| bytes, and matches the |value|
-  // string.
-  bool VerifyFile(const base::FilePath& path,
-                  const std::string& value,
-                  const int64_t file_size) {
+  // Checks that file at |path| exists and has the exact contents of |value|.
+  bool VerifyFile(const base::FilePath& path, std::string_view value) {
     std::string file_contents;
 
     {
@@ -1190,25 +1188,15 @@ class DownloadContentTest : public ContentBrowserTest {
         return false;  // Couldn't read the file.
       }
     }
-
-    // Note: we don't handle really large files (more than size_t can hold)
-    // so we will fail in that case.
-    size_t expected_size = static_cast<size_t>(file_size);
-
     // Check the size.
-    EXPECT_EQ(expected_size, file_contents.size());
-    if (expected_size != file_contents.size()) {
+    EXPECT_EQ(value.size(), file_contents.size());
+    if (value.size() != file_contents.size()) {
       return false;
     }
 
     // Check the contents.
     EXPECT_EQ(value, file_contents);
-    if (UNSAFE_TODO(
-            memcmp(file_contents.c_str(), value.c_str(), expected_size)) != 0) {
-      return false;
-    }
-
-    return true;
+    return file_contents == value;
   }
 
   // Start a download and return the item.
@@ -1637,7 +1625,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, MultiDownload) {
   size_t file_size1 = SlowDownloadHttpResponse::kFirstResponsePartSize +
                       SlowDownloadHttpResponse::kSecondResponsePartSize;
   std::string expected_contents(file_size1, '*');
-  ASSERT_TRUE(VerifyFile(file1, expected_contents, file_size1));
+  ASSERT_TRUE(VerifyFile(file1, expected_contents));
 
   base::FilePath file2(download2->GetTargetFilePath());
   ASSERT_TRUE(base::ContentsEqual(
@@ -5174,8 +5162,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, SaveImageAt) {
     ASSERT_TRUE(ReadFileToString(GetTestFilePath("media", "blackwhite.png"),
                                  &expected_content));
   }
-  ASSERT_TRUE(VerifyFile(downloads[0]->GetFullPath(), expected_content,
-                         expected_content.size()));
+  ASSERT_TRUE(VerifyFile(downloads[0]->GetFullPath(), expected_content));
 }
 
 // Test fixture for forcing MHTML download.
@@ -5622,7 +5609,8 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, SVGAnchorDownloadAttribute) {
 
   EXPECT_EQ(FILE_PATH_LITERAL("svg-suggested-filename.txt"),
             downloads[0]->GetTargetFilePath().BaseName().value());
-  VerifyFile(downloads[0]->GetFullPath(), "SVG download test content", 25);
+  ASSERT_TRUE(
+      VerifyFile(downloads[0]->GetFullPath(), "SVG download test content"));
 
   DownloadManagerForShell(shell())->Shutdown();
 }
@@ -5647,7 +5635,8 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, MathMLAnchorDownloadAttribute) {
 
   EXPECT_EQ(FILE_PATH_LITERAL("mathml-suggested-filename.txt"),
             downloads[0]->GetTargetFilePath().BaseName().value());
-  VerifyFile(downloads[0]->GetFullPath(), "MathML download test content", 28);
+  ASSERT_TRUE(
+      VerifyFile(downloads[0]->GetFullPath(), "MathML download test content"));
 
   DownloadManagerForShell(shell())->Shutdown();
 }
