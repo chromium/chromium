@@ -1,0 +1,48 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for //tools/crates/run_icu4x_datagen.py (//tools/crates/icu4x_datagen).
+#
+# By default, every ICU4X data marker is mapped to its corresponding ICU4C data
+# tree in //third_party/icu/filters/<platform>.json (`locales_tree`, `curr_tree`,
+# `lang_tree`, `region_tree`, `unit_tree`, `zone_tree`, `coll_tree`, or `singleton`).
+# Run `python3 tools/crates/run_icu4x_datagen.py list-markers` to inspect the
+# default mapping for all registered ICU4X markers (around 340 markers total).
+
+[resource_filters]
+# Restrict `TransliteratorRulesV1` (`transliterator/rules/v1`) to transliterators
+# enabled in ICU4C `resourceFilters` (`translit`).
+filter_transliterators = true
+
+# Restrict `CurrencyDisplaynameV1`, `CurrencyExtendedDataV1`, and `CurrencySymbolsV1`
+# to the ~178 active currencies in ICU4C `resourceFilters` (`curr_tree`).
+filter_currencies = true
+
+# Restrict `LocaleNamesLanguage*V1` to UI + non-UI target languages in ICU4C
+# `resourceFilters` (`lang_tree`).
+filter_target_languages = true
+
+# Restrict `LocaleNamesVariant*V1` to target variants in ICU4C `resourceFilters`
+# (`lang_tree`: `POSIX`, `1996`, etc.).
+filter_target_variants = true
+
+# Restrict non-autonym locale trees (`locales_tree`, `lang_tree`) to UI locales
+# by excluding the non-UI Accept-Languages that have `-/*` + `+/Languages/<lang>`
+# rules in `//third_party/icu/filters/<platform>.json` (100 locales in
+# `common.json`; run `inspect-filters` to view per-platform counts), while
+# preserving `LocaleNamesLanguage*V1` autonyms (`lang/x/x`).
+abridge_non_ui_locales = true
+
+# Optional marker-pattern override rules (`[[rules]]`), evaluated in order
+# (first matching `pattern` glob wins). Useful as Chromium migrates individual
+# components off ICU4C filters or customizes marker locale coverage.
+#
+# Example:
+# [[rules]]
+# pattern = "datetime/*"
+# icu4c_category = "locales_tree"
+#
+# [[rules]]
+# pattern = "plurals/*"
+# locales = ["und", "en", "fr", "ja"]

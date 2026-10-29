@@ -17,8 +17,9 @@ use std::collections::{BTreeSet, HashSet};
 /// Note: `FilteredDataProvider` only handles attribute filtering (filtering
 /// `DataMarkerAttributes` keys within a locale's data, such as currency codes,
 /// target language/variant codes, transliterator IDs, and non-UI autonyms).
-/// Whole-locale filtering is handled by `resolve_default_marker_filter` when
-/// grouping markers into `ExportDriver` runs.
+/// Whole-locale filtering is handled by `resolve_marker_filter` /
+/// `resolve_default_marker_filter` when grouping markers into `ExportDriver`
+/// runs.
 pub(crate) struct FilteredDataProvider<P> {
     pub(super) inner: P,
     pub(super) allowed_transliterators: Option<HashSet<String>>,

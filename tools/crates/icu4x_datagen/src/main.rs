@@ -5,13 +5,16 @@
 //! Chromium ICU4X data generator tool (`//tools/crates/icu4x_datagen`).
 //!
 //! Generates per-platform baked ICU4X data in `//third_party/rust/icu4x_data`
-//! using upstream CLDR / ICU / Unicode RSCD / TZDB / segmenter LSTM tags and
-//! ICU4C filter files (`//third_party/icu/filters/*.json`).
+//! using upstream CLDR / ICU / Unicode RSCD / TZDB / segmenter LSTM tags,
+//! ICU4C filter files (`//third_party/icu/filters/*.json`), and standalone TOML
+//! marker-pattern configuration.
 
 extern crate alloc;
 
+mod config;
 mod filters;
 
+use crate::config::DatagenTomlConfig;
 use crate::filters::FilteredDataProvider;
 use anyhow::{Context, Result};
 use clap::{Parser, Subcommand, ValueEnum};
@@ -106,6 +109,11 @@ enum Commands {
         /// (`third_party/icu/filters`).
         #[arg(long, default_value = "third_party/icu/filters")]
         icu_filters_dir: PathBuf,
+
+        /// Path to the TOML configuration file for marker filter overrides
+        /// (ignored when `--unfiltered` is set).
+        #[arg(long, default_value = "tools/crates/icu4x_datagen/config.toml")]
+        config: PathBuf,
 
         /// Platforms to generate (defaults to all ICU4C filter platforms; must
         /// include `common`).
@@ -261,6 +269,7 @@ fn main() -> Result<()> {
         Commands::Generate {
             icu4x_data_dir,
             icu_filters_dir,
+            config,
             platforms,
             markers: marker_args,
             unfiltered,
@@ -288,6 +297,18 @@ fn main() -> Result<()> {
                     "--platforms must include `common`"
                 );
                 platforms
+            };
+
+            let toml_cfg: DatagenTomlConfig = if !unfiltered {
+                log::info!("Loading TOML configuration from {}", config.display());
+                let s = std::fs::read_to_string(&config)
+                    .with_context(|| format!("Failed to read {}", config.display()))?;
+                let cfg: DatagenTomlConfig = toml::from_str(&s)
+                    .with_context(|| format!("Failed to parse {}", config.display()))?;
+                cfg.validate(&all_registered_markers())?;
+                cfg
+            } else {
+                DatagenTomlConfig::default()
             };
 
             let selected_markers = select_markers_by_args(&marker_args)?;
@@ -341,6 +362,7 @@ fn main() -> Result<()> {
                     filters::export_platform_filtered(
                         *plat,
                         &icu_filters_dir,
+                        &toml_cfg,
                         provider.clone(),
                         fallbacker.clone(),
                         &selected_markers,

@@ -14,14 +14,26 @@ use std::path::Path;
 
 /// Logical ICU4C filter category for an ICU4X data marker.
 #[derive(
-    Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, strum::IntoStaticStr, strum::EnumIter,
+    Clone,
+    Copy,
+    Debug,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+    Deserialize,
+    strum::IntoStaticStr,
+    strum::EnumIter,
 )]
+#[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
-pub(super) enum Icu4cFilterCategory {
+pub(crate) enum Icu4cFilterCategory {
     /// Singleton marker (`is_singleton == true`), locale filter does not apply.
     Singleton,
     /// Segmenter dictionary / LSTM models (`segmenter/dictionary/*`,
     /// `segmenter/lstm/*`).
+    #[serde(rename = "brkitr_dictionaries")]
     #[strum(serialize = "brkitr_dictionaries")]
     SegmenterModels,
     /// `curr_tree` (`currency/*`).
@@ -58,7 +70,7 @@ impl Icu4cFilterCategory {
 
 /// Representation of a resolved locale filter for a category/group of markers.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) enum ResolvedLocaleFilter {
+pub(crate) enum ResolvedLocaleFilter {
     /// Singleton markers (`und` only).
     Singleton,
     /// Exclude all locales (0 locales exported; baked macro produces empty
@@ -72,7 +84,7 @@ pub(super) enum ResolvedLocaleFilter {
 }
 
 impl ResolvedLocaleFilter {
-    pub(super) fn to_locale_families(&self) -> Result<Vec<DataLocaleFamily>> {
+    pub(crate) fn to_locale_families(&self) -> Result<Vec<DataLocaleFamily>> {
         match self {
             Self::Singleton | Self::Exclude => Ok(vec![]),
             Self::Full => Ok(vec![DataLocaleFamily::FULL]),
@@ -241,14 +253,14 @@ struct RawResourceFilter {
 }
 
 #[derive(Debug, Clone)]
-pub(super) struct ParsedIcu4cFilterFile {
+pub(crate) struct ParsedIcu4cFilterFile {
     pub(super) platform: String,
     raw: RawFilterFile,
     pub(super) segmenter_models: Vec<String>,
 }
 
 impl ParsedIcu4cFilterFile {
-    pub(super) fn load(path: &Path) -> Result<Self> {
+    pub(crate) fn load(path: &Path) -> Result<Self> {
         let platform = path
             .file_stem()
             .and_then(|s| s.to_str())
@@ -612,7 +624,7 @@ impl ParsedIcu4cFilterFile {
         }
     }
 
-    pub(super) fn resolve_category(
+    pub(crate) fn resolve_category(
         &self,
         category: Icu4cFilterCategory,
         abridge_non_ui_locales: bool,

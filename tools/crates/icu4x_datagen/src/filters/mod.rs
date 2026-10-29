@@ -9,10 +9,11 @@
 mod icu4c;
 mod provider;
 
-use icu4c::{Icu4cFilterCategory, ParsedIcu4cFilterFile, ResolvedLocaleFilter};
+pub(crate) use icu4c::{Icu4cFilterCategory, ParsedIcu4cFilterFile, ResolvedLocaleFilter};
 pub(crate) use provider::FilteredDataProvider;
 use provider::NonClosingExporter;
 
+use crate::config::{resolve_marker_filter, DatagenTomlConfig};
 use crate::{marker_path_str, Icu4xPlatform, MarkerEntry};
 use anyhow::Result;
 use icu_locale_fallback::LocaleFallbacker;
@@ -20,7 +21,7 @@ use icu_provider::export::ExportableProvider;
 use icu_provider::prelude::*;
 use icu_provider_export::baked_exporter::BakedExporter;
 use icu_provider_export::prelude::*;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashSet};
 use std::path::{Path, PathBuf};
 
 /// Map an ICU4X `DataMarkerInfo` to its corresponding ICU4C `featureFilters` /
@@ -64,10 +65,12 @@ fn default_category_for_marker(info: DataMarkerInfo) -> Icu4cFilterCategory {
     }
 }
 
-/// Resolve the default ICU4C filter category for `info`.
-fn resolve_default_marker_filter(
+/// Resolve the default ICU4C filter category for `info` without TOML rule
+/// overrides.
+pub(crate) fn resolve_default_marker_filter(
     info: DataMarkerInfo,
     filter_file: &ParsedIcu4cFilterFile,
+    abridge_non_ui_locales: bool,
 ) -> Result<ResolvedLocaleFilter> {
     if info.is_singleton {
         return Ok(ResolvedLocaleFilter::Singleton);
@@ -80,8 +83,8 @@ fn resolve_default_marker_filter(
     // their single autonym (`id.marker_attributes == id.locale`), matching
     // `{"categories":["lang_tree"],"files":{"includelist":["ak"]},"rules":["-/*
     // ","+/Languages/ak"]}` in `common.json`.
-    let autonym_only = info.attributes_domain == "locale_names_language";
-    filter_file.resolve_category(cat, true, autonym_only)
+    let autonym_only = abridge_non_ui_locales && info.attributes_domain == "locale_names_language";
+    filter_file.resolve_category(cat, abridge_non_ui_locales, autonym_only)
 }
 
 /// Print `selected` markers grouped by their default ICU4C filter category.
@@ -137,10 +140,11 @@ pub(crate) fn inspect_filters(icu_filters_dir: &Path) -> Result<()> {
 }
 
 /// Export `selected_markers` for `plat` into `baked_exporter` using the
-/// platform's ICU4C filter file.
+/// platform's ICU4C filter file and `toml_cfg` overrides.
 pub(crate) fn export_platform_filtered<P>(
     plat: Icu4xPlatform,
     icu_filters_dir: &Path,
+    toml_cfg: &DatagenTomlConfig,
     provider: P,
     fallbacker: LocaleFallbacker,
     selected_markers: &[MarkerEntry],
@@ -151,21 +155,42 @@ where
 {
     let filter_path = icu_filters_dir.join(format!("{plat}.json"));
     let filter_file = ParsedIcu4cFilterFile::load(&filter_path)?;
+    let effective_abridge_non_ui = toml_cfg.resource_filters.abridge_non_ui_locales;
 
     let exportable = FilteredDataProvider {
         inner: provider,
-        allowed_transliterators: filter_file.allowed_transliterators(),
-        allowed_currencies: filter_file.allowed_currencies(),
-        allowed_target_languages: filter_file.allowed_target_languages(),
-        allowed_target_variants: filter_file.allowed_target_variants(),
-        abridged_non_ui_locales: filter_file
-            .abridged_non_ui_locales_for(Icu4cFilterCategory::LangTree),
+        allowed_transliterators: if toml_cfg.resource_filters.filter_transliterators {
+            filter_file.allowed_transliterators()
+        } else {
+            None
+        },
+        allowed_currencies: if toml_cfg.resource_filters.filter_currencies {
+            filter_file.allowed_currencies()
+        } else {
+            None
+        },
+        allowed_target_languages: if toml_cfg.resource_filters.filter_target_languages {
+            filter_file.allowed_target_languages()
+        } else {
+            None
+        },
+        allowed_target_variants: if toml_cfg.resource_filters.filter_target_variants {
+            filter_file.allowed_target_variants()
+        } else {
+            None
+        },
+        abridged_non_ui_locales: if effective_abridge_non_ui {
+            filter_file.abridged_non_ui_locales_for(Icu4cFilterCategory::LangTree)
+        } else {
+            HashSet::new()
+        },
     };
 
     // Group selected markers by their resolved locale filter
     let mut groups: BTreeMap<ResolvedLocaleFilter, Vec<DataMarkerInfo>> = BTreeMap::new();
     for m in selected_markers {
-        let resolved = resolve_default_marker_filter(m.info, &filter_file)?;
+        let resolved =
+            resolve_marker_filter(m.info, &filter_file, toml_cfg, effective_abridge_non_ui)?;
         groups.entry(resolved).or_default().push(m.info);
     }
 
