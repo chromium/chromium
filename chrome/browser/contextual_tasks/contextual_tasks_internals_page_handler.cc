@@ -36,10 +36,14 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/input_state_model.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/query_contextualizer.h"
+#include "components/lens/lens_overlay_invocation_source.h"
+#include "components/lens/lens_overlay_mime_type.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/common/input_state.h"
 #include "components/omnibox/common/omnibox_metrics_utils.h"
@@ -157,7 +161,8 @@ BuildUserDataDebugState(
     const contextual_tasks::ContextualTasksWebContentsUserData* user_data,
     const ContextualSearchWebContentsHelper* helper,
     contextual_tasks::ContextualTasksService* tasks_service,
-    SessionID session_tab_id) {
+    SessionID session_tab_id,
+    std::optional<contextual_tasks::ContextualTask>* out_resolved_task) {
   auto user_data_state =
       contextual_tasks_internals::mojom::UserDataDebugState::New();
   user_data_state->has_contextual_tasks_user_data = (user_data != nullptr);
@@ -172,9 +177,9 @@ BuildUserDataDebugState(
     }
   }
 
+  std::optional<contextual_tasks::ContextualTask> resolved_task;
   if (tasks_service && session_tab_id.is_valid()) {
-    std::optional<contextual_tasks::ContextualTask> resolved_task =
-        tasks_service->GetContextualTaskForTab(session_tab_id);
+    resolved_task = tasks_service->GetContextualTaskForTab(session_tab_id);
     if (resolved_task) {
       user_data_state->service_task_id_for_tab =
           resolved_task->GetTaskId().AsLowercaseString();
@@ -201,6 +206,10 @@ BuildUserDataDebugState(
             tasks_service->GetTabsAssociatedWithTask(*effective_task_id);
         for (SessionID tab_id : associated_tabs) {
           user_data_state->active_underline_tab_ids.push_back(tab_id.id());
+        }
+        if (!resolved_task && !associated_tabs.empty()) {
+          resolved_task =
+              tasks_service->GetContextualTaskForTab(associated_tabs.front());
         }
       }
     }
@@ -253,7 +262,326 @@ BuildUserDataDebugState(
     }
   }
 
+  if (out_resolved_task) {
+    *out_resolved_task = std::move(resolved_task);
+  }
   return user_data_state;
+}
+
+std::string InvocationSourceToString(
+    std::optional<lens::LensOverlayInvocationSource> source) {
+  if (!source.has_value()) {
+    return "None";
+  }
+  using Source = lens::LensOverlayInvocationSource;
+  switch (*source) {
+    case Source::kAppMenu:
+      return "kAppMenu";
+    case Source::kContentAreaContextMenuPage:
+      return "kContentAreaContextMenuPage";
+    case Source::kContentAreaContextMenuImage:
+      return "kContentAreaContextMenuImage";
+    case Source::kToolbar:
+      return "kToolbar";
+    case Source::kFindInPage:
+      return "kFindInPage";
+    case Source::kOmnibox:
+      return "kOmnibox";
+    case Source::kLVFShutterButton:
+      return "kLVFShutterButton";
+    case Source::kLVFGallery:
+      return "kLVFGallery";
+    case Source::kContextMenu:
+      return "kContextMenu";
+    case Source::kOmniboxPageAction:
+      return "kOmniboxPageAction";
+    case Source::kOmniboxContextualSuggestion:
+      return "kOmniboxContextualSuggestion";
+    case Source::kHomeworkActionChip:
+      return "kHomeworkActionChip";
+    case Source::kAIHub:
+      return "kAIHub";
+    case Source::kFREPromo:
+      return "kFREPromo";
+    case Source::kContentAreaContextMenuText:
+      return "kContentAreaContextMenuText";
+    case Source::kContentAreaContextMenuVideo:
+      return "kContentAreaContextMenuVideo";
+    case Source::kNtpContextualQuery:
+      return "kNtpContextualQuery";
+    case Source::kOmniboxContextualQuery:
+      return "kOmniboxContextualQuery";
+    case Source::kContextualTasksComposebox:
+      return "kContextualTasksComposebox";
+    case Source::kCobrowseToolbarButton:
+      return "kCobrowseToolbarButton";
+    case Source::kCobrowsePinnedToolbarButton:
+      return "kCobrowsePinnedToolbarButton";
+    case Source::kNtpActionChips:
+      return "kNtpActionChips";
+    case Source::kAppBarAimButton:
+      return "kAppBarAimButton";
+    case Source::kOmniboxEverywhereComposebox:
+      return "kOmniboxEverywhereComposebox";
+    case Source::kOmniboxPopupButton:
+      return "kOmniboxPopupButton";
+    case Source::kContextualCue:
+      return "kContextualCue";
+    case Source::kSelectionSuggestion:
+      return "kSelectionSuggestion";
+  }
+  NOTREACHED();
+}
+
+std::string MimeTypeToString(const contextual_search::FileInfo& file) {
+  std::string base_mime;
+  switch (file.mime_type) {
+    case lens::MimeType::kUnknown:
+      base_mime = "kUnknown";
+      break;
+    case lens::MimeType::kPdf:
+      base_mime = "kPdf";
+      break;
+    case lens::MimeType::kHtml:
+      base_mime = "kHtml";
+      break;
+    case lens::MimeType::kPlainText:
+      base_mime = "kPlainText";
+      break;
+    case lens::MimeType::kImage:
+      base_mime = "kImage";
+      break;
+    case lens::MimeType::kVideo:
+      base_mime = "kVideo";
+      break;
+    case lens::MimeType::kAudio:
+      base_mime = "kAudio";
+      break;
+    case lens::MimeType::kJson:
+      base_mime = "kJson";
+      break;
+    case lens::MimeType::kAnnotatedPageContent:
+      base_mime = "kAnnotatedPageContent";
+      break;
+  }
+  if (file.mime_type_string.has_value() && !file.mime_type_string->empty()) {
+    return base::StrCat({base_mime, " (", *file.mime_type_string, ")"});
+  }
+  return base_mime;
+}
+
+std::string UploadStatusToString(contextual_search::ContextUploadStatus s) {
+  using Status = contextual_search::ContextUploadStatus;
+  switch (s) {
+    case Status::kNotUploaded:
+      return "kNotUploaded";
+    case Status::kProcessing:
+      return "kProcessing";
+    case Status::kValidationFailed:
+      return "kValidationFailed";
+    case Status::kUploadStarted:
+      return "kUploadStarted";
+    case Status::kUploadSuccessful:
+      return "kUploadSuccessful";
+    case Status::kUploadFailed:
+      return "kUploadFailed";
+    case Status::kUploadExpired:
+      return "kUploadExpired";
+    case Status::kProcessingSuggestSignalsReady:
+      return "kProcessingSuggestSignalsReady";
+    case Status::kUploadReplaced:
+      return "kUploadReplaced";
+  }
+  NOTREACHED();
+}
+
+std::string UploadErrorTypeToString(
+    contextual_search::ContextUploadErrorType e) {
+  using Error = contextual_search::ContextUploadErrorType;
+  switch (e) {
+    case Error::kUnknown:
+      return "kUnknown";
+    case Error::kBrowserProcessingError:
+      return "kBrowserProcessingError";
+    case Error::kNetworkError:
+      return "kNetworkError";
+    case Error::kServerError:
+      return "kServerError";
+    case Error::kServerSizeLimitExceeded:
+      return "kServerSizeLimitExceeded";
+    case Error::kAborted:
+      return "kAborted";
+    case Error::kImageProcessingError:
+      return "kImageProcessingError";
+    case Error::kBrowserProcessingFileTooLargeError:
+      return "kBrowserProcessingFileTooLargeError";
+    case Error::kBrowserProcessingFileEmptyError:
+      return "kBrowserProcessingFileEmptyError";
+    case Error::kBrowserProcessingMaxFilesExceededError:
+      return "kBrowserProcessingMaxFilesExceededError";
+    case Error::kBrowserProcessingUnsupportedFileTypeError:
+      return "kBrowserProcessingUnsupportedFileTypeError";
+    case Error::kBrowserProcessingFileUploadNotAllowedError:
+      return "kBrowserProcessingFileUploadNotAllowedError";
+    case Error::kBrowserProcessingMaxImagesExceededError:
+      return "kBrowserProcessingMaxImagesExceededError";
+    case Error::kBrowserProcessingMaxPdfsExceededError:
+      return "kBrowserProcessingMaxPdfsExceededError";
+  }
+  NOTREACHED();
+}
+
+std::string ThreadTypeToString(contextual_tasks::ThreadType type) {
+  switch (type) {
+    case contextual_tasks::ThreadType::kUnknown:
+      return "kUnknown";
+    case contextual_tasks::ThreadType::kAiMode:
+      return "kAiMode";
+    case contextual_tasks::ThreadType::kGemini:
+      return "kGemini";
+  }
+  NOTREACHED();
+}
+
+std::string ResourceTypeToString(contextual_tasks::ResourceType type) {
+  switch (type) {
+    case contextual_tasks::ResourceType::kUnknown:
+      return "kUnknown";
+    case contextual_tasks::ResourceType::kWebpage:
+      return "kWebpage";
+    case contextual_tasks::ResourceType::kImage:
+      return "kImage";
+    case contextual_tasks::ResourceType::kPdf:
+      return "kPdf";
+  }
+  NOTREACHED();
+}
+
+contextual_tasks_internals::mojom::FileInfoDebugPtr BuildFileInfoDebug(
+    const contextual_search::FileInfo& file) {
+  auto entry = contextual_tasks_internals::mojom::FileInfoDebug::New();
+  if (!file.file_token.is_empty()) {
+    entry->file_token = file.file_token;
+  }
+  entry->file_name = file.file_name;
+  entry->file_size_bytes = file.file_size_bytes;
+  entry->mime_type = MimeTypeToString(file);
+  entry->upload_status = UploadStatusToString(file.upload_status);
+  entry->upload_error_type = UploadErrorTypeToString(file.upload_error_type);
+  entry->request_id = FormatRequestId(file.request_id);
+  entry->tab_session_id = file.tab_session_id.has_value()
+                              ? std::make_optional(file.tab_session_id->id())
+                              : std::nullopt;
+  entry->tab_url = file.tab_url;
+  entry->tab_title = file.tab_title.value_or(std::string());
+  entry->is_superceded = file.is_superceded;
+  entry->is_implicit_upload = file.is_implicit_upload;
+  return entry;
+}
+
+contextual_tasks_internals::mojom::SessionHandleDebugStatePtr
+BuildSessionHandleDebugState(
+    const contextual_search::ContextualSearchSessionHandle& session_handle,
+    base::optional_ref<const contextual_tasks::ContextualTask> resolved_task) {
+  auto session_handle_state =
+      contextual_tasks_internals::mojom::SessionHandleDebugState::New();
+  if (!session_handle.session_id().is_empty()) {
+    session_handle_state->session_id = session_handle.session_id();
+  }
+  session_handle_state->search_session_id = session_handle.search_session_id();
+  session_handle_state->current_url = session_handle.current_url();
+  session_handle_state->invocation_source =
+      InvocationSourceToString(session_handle.invocation_source());
+  session_handle_state->is_contextual_lens_session =
+      session_handle.is_contextual_lens_session();
+  session_handle_state->auth_user_index =
+      base::checked_cast<uint32_t>(session_handle.auth_user_index());
+  session_handle_state->has_submitted_context =
+      session_handle.has_submitted_context();
+  session_handle_state->smart_tab_sharing_active =
+      session_handle.smart_tab_sharing_active().value_or(false);
+  session_handle_state->smart_tab_sharing_toggled_since_last_turn =
+      session_handle.smart_tab_sharing_toggled_since_last_turn();
+  for (const auto& req_id : session_handle.sts_toggled_removed_contexts()) {
+    session_handle_state->sts_toggled_removed_context_ids.push_back(
+        FormatRequestId(req_id));
+  }
+
+  const contextual_search::TabContextState& tab_context =
+      session_handle.GetTabContextState();
+  for (const auto& tab : tab_context.attached) {
+    session_handle_state->attached_tabs.push_back(
+        BuildTabContextEntryDebug(tab));
+  }
+  for (const auto& tab : tab_context.restored) {
+    session_handle_state->restored_tabs.push_back(
+        BuildTabContextEntryDebug(tab));
+  }
+  for (const auto& [deselected_tab_id, url_and_title] :
+       tab_context.deselected) {
+    session_handle_state->deselected_tabs.push_back(
+        contextual_tasks_internals::mojom::DeselectedTabDebug::New(
+            deselected_tab_id.id(), url_and_title.second, url_and_title.first));
+  }
+
+  for (const auto& token : session_handle.GetUploadedContextTokens()) {
+    session_handle_state->uploaded_context_tokens.push_back(token);
+  }
+  for (const auto& token : session_handle.GetSubmittedContextTokens()) {
+    session_handle_state->submitted_context_tokens.push_back(token);
+  }
+  for (const auto& token : session_handle.GetActiveSubmittedContextTokens()) {
+    session_handle_state->active_submitted_context_tokens.push_back(token);
+  }
+  for (const auto& [persisted_tab_id, token_and_req_id] :
+       session_handle.GetPersistedTabs()) {
+    session_handle_state->persisted_tab_ids.push_back(persisted_tab_id.id());
+  }
+  for (SessionID delayed_tab_id : session_handle.GetPendingDelayedTabIds()) {
+    session_handle_state->pending_delayed_tab_ids.push_back(
+        delayed_tab_id.id());
+  }
+
+  for (const auto& file_info : session_handle.GetUploadedContextFileInfos()) {
+    session_handle_state->uploaded_files.push_back(
+        BuildFileInfoDebug(file_info));
+  }
+  for (const auto& file_info : session_handle.GetSubmittedContextFileInfos()) {
+    session_handle_state->submitted_files.push_back(
+        BuildFileInfoDebug(file_info));
+  }
+  for (const auto& turn : session_handle.previous_turns()) {
+    session_handle_state->previous_turns.push_back(turn.query);
+  }
+
+  if (resolved_task.has_value()) {
+    if (std::optional<contextual_tasks::Thread> thread =
+            resolved_task->GetThread()) {
+      session_handle_state->thread_type = ThreadTypeToString(thread->type);
+      session_handle_state->thread_server_id = thread->server_id;
+      session_handle_state->thread_title = thread->title;
+      session_handle_state->thread_conversation_turn_id =
+          thread->conversation_turn_id.value_or(std::string());
+    }
+    for (const auto& resource : resolved_task->GetUrlResources()) {
+      auto resource_debug =
+          contextual_tasks_internals::mojom::UrlResourceDebug::New();
+      resource_debug->url_id = resource.url_id.is_valid()
+                                   ? resource.url_id.AsLowercaseString()
+                                   : std::string();
+      resource_debug->url = resource.url;
+      resource_debug->tab_id = resource.tab_id.has_value()
+                                   ? std::make_optional(resource.tab_id->id())
+                                   : std::nullopt;
+      resource_debug->title = resource.title.value_or(std::string());
+      resource_debug->context_id = resource.context_id;
+      resource_debug->resource_type =
+          ResourceTypeToString(resource.resource_type);
+      session_handle_state->url_resources.push_back(std::move(resource_debug));
+    }
+  }
+
+  return session_handle_state;
 }
 
 }  // namespace
@@ -490,8 +818,13 @@ ContextualTasksInternalsPageHandler::BuildWebContentsDebugState(
       profile_ ? contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
                      profile_)
                : nullptr;
-  state->user_data_state =
-      BuildUserDataDebugState(user_data, helper, tasks_service, session_tab_id);
+  std::optional<contextual_tasks::ContextualTask> resolved_task;
+  state->user_data_state = BuildUserDataDebugState(
+      user_data, helper, tasks_service, session_tab_id, &resolved_task);
+  if (session_handle) {
+    state->session_handle_state =
+        BuildSessionHandleDebugState(*session_handle, resolved_task);
+  }
   return state;
 }
 

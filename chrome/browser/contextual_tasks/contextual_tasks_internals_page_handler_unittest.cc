@@ -14,6 +14,7 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_controller.h"
 #include "chrome/browser/tab_list/mock_tab_list_interface.h"
@@ -21,8 +22,15 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection_platform_delegate.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/input_state_model.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
+#include "components/contextual_tasks/public/contextual_task.h"
+#include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
+#include "components/contextual_tasks/public/query_contextualizer.h"
+#include "components/lens/lens_overlay_invocation_source.h"
+#include "components/lens/lens_overlay_mime_type.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
@@ -151,6 +159,176 @@ TEST_F(ContextualTasksInternalsPageHandlerTest,
   ASSERT_TRUE(ud.input_state);
   EXPECT_FALSE(ud.input_state->has_valid_config);
   EXPECT_FALSE(ud.input_state->is_smart_tab_sharing_active);
+}
+
+TEST_F(ContextualTasksInternalsPageHandlerTest,
+       BuildWebContentsDebugState_PopulatesSessionHandleState) {
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+
+  mock_handle->set_current_url(GURL("https://www.google.com/search?udm=50"));
+  mock_handle->set_invocation_source(
+      lens::LensOverlayInvocationSource::kCobrowseToolbarButton);
+  mock_handle->set_is_contextual_lens_session(true);
+  mock_handle->set_auth_user_index(2);
+  mock_handle->set_smart_tab_sharing_active(true);
+  mock_handle->set_smart_tab_sharing_toggled_since_last_turn(true);
+  ON_CALL(*mock_handle, search_session_id())
+      .WillByDefault(testing::Return("gsession_test_123"));
+
+  base::UnguessableToken delayed_token = mock_handle->AddPendingDelayedTab(
+      /*tab_id=*/105, GURL("https://chromium.org"), "Chromium");
+
+  contextual_search::TabInfo restored_tab;
+  restored_tab.tab_id = 109;
+  restored_tab.url = GURL("https://source.chromium.org");
+  restored_tab.title = "Chromium Code Search";
+  restored_tab.restored_from_aim = true;
+  mock_handle->SetRestoredTabs({restored_tab});
+
+  mock_handle->set_deselected_tabs_urls(
+      {{SessionID::FromSerializedValue(108),
+        {GURL("https://mail.google.com"), "Gmail"}}});
+
+  ThreadTurn turn;
+  turn.query = "Compare Chromium Mojo patterns";
+  mock_handle->AddThreadTurn(turn);
+
+  contextual_search::FileInfo uploaded_file;
+  uploaded_file.file_token = base::UnguessableToken::Create();
+  uploaded_file.file_name = "design_doc.pdf";
+  uploaded_file.file_size_bytes = 2048;
+  uploaded_file.mime_type = lens::MimeType::kPdf;
+  uploaded_file.mime_type_string = "application/pdf";
+  uploaded_file.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  ON_CALL(*mock_handle, GetUploadedContextFileInfos())
+      .WillByDefault(testing::Return(
+          std::vector<contextual_search::FileInfo>{uploaded_file}));
+
+  contextual_search::FileInfo submitted_file;
+  submitted_file.file_token = base::UnguessableToken::Create();
+  submitted_file.file_name = "screenshot.png";
+  submitted_file.file_size_bytes = 4096;
+  submitted_file.mime_type = lens::MimeType::kImage;
+  submitted_file.mime_type_string = "image/png";
+  submitted_file.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  ON_CALL(*mock_handle, GetSubmittedContextFileInfos())
+      .WillByDefault(testing::Return(
+          std::vector<contextual_search::FileInfo>{submitted_file}));
+
+  base::Uuid task_id =
+      base::Uuid::ParseLowercase("7f9c2b10-4d3a-4e8b-9a1c-0b2d4e6f8a90");
+  auto* mock_tasks_service =
+      static_cast<testing::NiceMock<MockContextualTasksService>*>(
+          ContextualTasksServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+              profile_.get(),
+              base::BindRepeating([](content::BrowserContext*)
+                                      -> std::unique_ptr<KeyedService> {
+                return std::make_unique<
+                    testing::NiceMock<MockContextualTasksService>>();
+              })));
+  ContextualTask resolved_task(task_id);
+  resolved_task.AddThread(
+      Thread(ThreadType::kAiMode, "srv_123", "Test Thread Title",
+             /*last_turn_time_unix_epoch_millis=*/1000, "turn_456"));
+  UrlResource resource(
+      base::Uuid::ParseLowercase("11111111-2222-3333-4444-555555555555"),
+      GURL("https://chromium.org/doc"));
+  resource.tab_id = SessionID::FromSerializedValue(105);
+  resource.title = "Chromium Doc";
+  resource.context_id = 98765;
+  resource.resource_type = ResourceType::kWebpage;
+  resolved_task.AddUrlResource(resource);
+  ON_CALL(*mock_tasks_service, GetTabsAssociatedWithTask(task_id))
+      .WillByDefault(testing::Return(
+          std::vector<SessionID>{SessionID::FromSerializedValue(105)}));
+  ON_CALL(*mock_tasks_service,
+          GetContextualTaskForTab(SessionID::FromSerializedValue(105)))
+      .WillByDefault(testing::Return(resolved_task));
+
+  ContextualTasksWebContentsUserData::CreateForWebContents(web_contents_);
+  ContextualTasksWebContentsUserData::FromWebContents(web_contents_)
+      ->set_pending_task_id(task_id);
+
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(task_id, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto debug_state = handler_->BuildWebContentsDebugState(
+      web_contents_, /*is_side_panel=*/true,
+      /*is_active_tab_in_window=*/false);
+  ASSERT_TRUE(debug_state);
+  ASSERT_TRUE(debug_state->session_handle_state);
+
+  const auto& session_handle_state = *debug_state->session_handle_state;
+  EXPECT_EQ(session_handle_state.search_session_id, "gsession_test_123");
+  EXPECT_EQ(session_handle_state.current_url,
+            GURL("https://www.google.com/search?udm=50"));
+  EXPECT_EQ(session_handle_state.invocation_source, "kCobrowseToolbarButton");
+  EXPECT_TRUE(session_handle_state.is_contextual_lens_session);
+  EXPECT_EQ(session_handle_state.auth_user_index, 2u);
+  EXPECT_TRUE(session_handle_state.smart_tab_sharing_active);
+  EXPECT_TRUE(session_handle_state.smart_tab_sharing_toggled_since_last_turn);
+
+  ASSERT_EQ(session_handle_state.attached_tabs.size(), 1u);
+  EXPECT_EQ(session_handle_state.attached_tabs[0]->tab_id, 105);
+  EXPECT_EQ(session_handle_state.attached_tabs[0]->title, "Chromium");
+  EXPECT_EQ(session_handle_state.attached_tabs[0]->context_token,
+            delayed_token);
+  EXPECT_TRUE(session_handle_state.attached_tabs[0]->pending_delayed_upload);
+
+  ASSERT_EQ(session_handle_state.restored_tabs.size(), 1u);
+  EXPECT_EQ(session_handle_state.restored_tabs[0]->tab_id, 109);
+  EXPECT_TRUE(session_handle_state.restored_tabs[0]->restored_from_aim);
+
+  ASSERT_EQ(session_handle_state.deselected_tabs.size(), 1u);
+  EXPECT_EQ(session_handle_state.deselected_tabs[0]->tab_id, 108);
+  EXPECT_EQ(session_handle_state.deselected_tabs[0]->title, "Gmail");
+  EXPECT_EQ(session_handle_state.deselected_tabs[0]->url,
+            GURL("https://mail.google.com/"));
+
+  ASSERT_EQ(session_handle_state.pending_delayed_tab_ids.size(), 1u);
+  EXPECT_EQ(session_handle_state.pending_delayed_tab_ids[0], 105);
+
+  ASSERT_EQ(session_handle_state.uploaded_files.size(), 1u);
+  EXPECT_EQ(session_handle_state.uploaded_files[0]->file_name,
+            "design_doc.pdf");
+  EXPECT_EQ(session_handle_state.uploaded_files[0]->file_size_bytes, 2048u);
+  EXPECT_EQ(session_handle_state.uploaded_files[0]->mime_type,
+            "kPdf (application/pdf)");
+  EXPECT_EQ(session_handle_state.uploaded_files[0]->upload_status,
+            "kUploadSuccessful");
+
+  ASSERT_EQ(session_handle_state.submitted_files.size(), 1u);
+  EXPECT_EQ(session_handle_state.submitted_files[0]->file_name,
+            "screenshot.png");
+  EXPECT_EQ(session_handle_state.submitted_files[0]->file_size_bytes, 4096u);
+  EXPECT_EQ(session_handle_state.submitted_files[0]->mime_type,
+            "kImage (image/png)");
+  EXPECT_EQ(session_handle_state.submitted_files[0]->upload_status,
+            "kUploadSuccessful");
+
+  ASSERT_EQ(session_handle_state.previous_turns.size(), 1u);
+  EXPECT_EQ(session_handle_state.previous_turns[0],
+            "Compare Chromium Mojo patterns");
+
+  EXPECT_EQ(session_handle_state.thread_type, "kAiMode");
+  EXPECT_EQ(session_handle_state.thread_server_id, "srv_123");
+  EXPECT_EQ(session_handle_state.thread_title, "Test Thread Title");
+  EXPECT_EQ(session_handle_state.thread_conversation_turn_id, "turn_456");
+
+  ASSERT_EQ(session_handle_state.url_resources.size(), 1u);
+  EXPECT_EQ(session_handle_state.url_resources[0]->url_id,
+            "11111111-2222-3333-4444-555555555555");
+  EXPECT_EQ(session_handle_state.url_resources[0]->url,
+            GURL("https://chromium.org/doc"));
+  EXPECT_EQ(session_handle_state.url_resources[0]->tab_id, 105);
+  EXPECT_EQ(session_handle_state.url_resources[0]->title, "Chromium Doc");
+  EXPECT_EQ(session_handle_state.url_resources[0]->context_id, 98765);
+  EXPECT_EQ(session_handle_state.url_resources[0]->resource_type, "kWebpage");
 }
 
 TEST_F(ContextualTasksInternalsPageHandlerTest,
