@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_receiver_sink_optimizer.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -17,6 +18,13 @@ RtcEncodedAudioReceiverSinkOptimizer::RtcEncodedAudioReceiverSinkOptimizer(
 UnderlyingSinkBase*
 RtcEncodedAudioReceiverSinkOptimizer::PerformInProcessOptimization(
     ScriptState* script_state) {
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  if (!context || context->IsContextDestroyed()) {
+    // Do not allocate a sink on a destroyed context or bind a persistent
+    // reference to it on the receiver.
+    return nullptr;
+  }
+
   auto* new_sink = MakeGarbageCollected<RTCEncodedAudioUnderlyingSink>(
       script_state, std::move(transformer_),
       /*detach_frame_data_on_write=*/false);
