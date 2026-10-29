@@ -13,6 +13,15 @@ const char kAlsoEmitSuccessLogs[] = "also-emit-success-logs";
 // in selected browser tests.
 const char kDevtoolsCodeCoverage[] = "devtools-code-coverage";
 
+// Makes browser tests create the omnibox popups' WebUI content as production
+// does, instead of only when it is needed. Used to compare test runtimes and as
+// a kill switch for the on-demand creation. Must be passed on the test launcher
+// command line: `InProcessBrowserTest` reads it in its constructor, so
+// appending it in `SetUpCommandLine()` has no effect. To change this for one
+// fixture, use `omnibox::SetCreatePopupWebUIOnDemandForTesting()` instead.
+const char kDisableOmniboxPopupOnDemandCreation[] =
+    "disable-omnibox-popup-on-demand-creation";
+
 // Show the mean value of histograms that native performance tests
 // are monitoring. Note that this is only applicable for PerformanceTest
 // subclasses.

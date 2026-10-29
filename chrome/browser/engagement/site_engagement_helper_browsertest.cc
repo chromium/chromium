@@ -11,9 +11,9 @@
 #include "base/run_loop.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_webui_creation.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/site_engagement/content/engagement_type.h"
@@ -110,13 +110,11 @@ class SiteEngagementHelperBrowserTest : public InProcessBrowserTest {
   base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
 
  private:
-  // The omnibox popup creates its WebUI contents after the browser window first
-  // presents a frame. Its navigation records site engagement, and it can land
-  // after `histogram_tester_` is created. Keep the popup from creating its
-  // contents at startup so that it doesn't add samples to the histograms
-  // checked below.
-  base::AutoReset<bool> ignore_omnibox_popup_window_presentation_ =
-      OmniboxPopupPresenterBase::IgnoreBrowserWindowPresentationForTesting();
+  // The omnibox popups' navigations record site engagement. Keep them from
+  // loading so that they don't add samples to the histograms checked below.
+  // The test never shows a popup.
+  base::AutoReset<bool> on_demand_creation_ =
+      omnibox::SetCreatePopupWebUIOnDemandForTesting(true);
   content::test::PrerenderTestHelper prerender_helper_;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_webui_creation.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -686,6 +688,14 @@ class LocationBarViewAddContextButtonBrowserTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  // The inline add-context button reads the AI Mode popup's page while the
+  // classic popup is shown, so it needs that page to exist before the AI Mode
+  // popup is shown. Browser tests otherwise create it only when shown (see
+  // `InProcessBrowserTest`).
+  // TODO(crbug.com/542347163): Remove the inline add-context button variant,
+  // which is not planned to launch, along with these tests and this override.
+  base::AutoReset<bool> create_popup_webui_on_demand_ =
+      omnibox::SetCreatePopupWebUIOnDemandForTesting(false);
 };
 
 // TODO(crbug.com/459561205): This test is flaky on Linux.

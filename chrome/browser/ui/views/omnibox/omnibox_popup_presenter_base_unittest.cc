@@ -4,11 +4,15 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 
+#include "base/auto_reset.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_webui_creation.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
@@ -17,6 +21,13 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
+
+namespace {
+
+// Stands in for a presenter's deferred creation feature.
+BASE_FEATURE(kTestDeferWebUIContentCreation, base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace
 
 class TestOmniboxPopupPresenter : public OmniboxPopupPresenterBase {
  public:
@@ -163,6 +174,13 @@ class OmniboxPopupPresenterBaseTest : public views::ViewsTestBase {
 
   int GetContentHeight(OmniboxPopupPresenterBase* presenter) {
     return presenter->content_height_;
+  }
+
+  using Strategy = OmniboxPopupPresenterBase::WebUIContentCreationStrategy;
+
+  static Strategy GetStrategy() {
+    return OmniboxPopupPresenterBase::GetWebUIContentCreationStrategy(
+        kTestDeferWebUIContentCreation);
   }
 
   // Runs the tasks posted to the current thread so far.
@@ -498,4 +516,27 @@ TEST_F(OmniboxPopupPresenterBaseTest, BrowserWindowPresentationPostsOneTask) {
   RunPostedTasks();
 
   EXPECT_EQ(presenter->create_count(), 1);
+}
+
+// Without deferral, content is created in the constructor.
+TEST_F(OmniboxPopupPresenterBaseTest, CreationStrategyIsEagerByDefault) {
+  EXPECT_EQ(GetStrategy(), Strategy::kEager);
+}
+
+// With the deferral feature, content is created after the window's first
+// presentation.
+TEST_F(OmniboxPopupPresenterBaseTest,
+       CreationStrategyIsAfterWindowPresentationWithDeferFeature) {
+  base::test::ScopedFeatureList features(kTestDeferWebUIContentCreation);
+  EXPECT_EQ(GetStrategy(), Strategy::kAfterWindowPresentation);
+}
+
+// On-demand creation, as browser tests set it up, takes precedence over the
+// deferral feature.
+TEST_F(OmniboxPopupPresenterBaseTest,
+       CreationStrategyIsOnDemandEvenWithDeferFeature) {
+  base::test::ScopedFeatureList features(kTestDeferWebUIContentCreation);
+  base::AutoReset<bool> on_demand =
+      omnibox::SetCreatePopupWebUIOnDemandForTesting(true);
+  EXPECT_EQ(GetStrategy(), Strategy::kOnDemand);
 }

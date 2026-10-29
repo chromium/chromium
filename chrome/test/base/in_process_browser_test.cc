@@ -36,6 +36,7 @@
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_webui_creation.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/ui/actor_task_unload_handler.h"
 #endif
@@ -81,6 +82,7 @@
 #include "chrome/test/base/chrome_test_path_utils.h"
 #include "chrome/test/base/chrome_test_suite.h"
 #include "chrome/test/base/test_launcher_utils.h"
+#include "chrome/test/base/test_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/feature_engagement/public/feature_list.h"
@@ -423,6 +425,17 @@ void InProcessBrowserTest::Initialize() {
 
   // Force all buttons not overflow to prevent test flakiness.
   ToolbarControllerUtil::SetPreventOverflowForTesting(true);
+
+  // The classic and AI Mode omnibox popups, which are built with each browser
+  // window, would otherwise add hidden WebContents and a renderer to every
+  // test, though most tests never show them. Create their content only when it
+  // is needed. Tests that depend on when it is created, or that need it to
+  // exist before the popup is shown, turn this off.
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableOmniboxPopupOnDemandCreation)) {
+    create_popup_webui_on_demand_.emplace(
+        omnibox::SetCreatePopupWebUIOnDemandForTesting(true));
+  }
 
   std::vector<base::test::FeatureRef> enabled_features;
   std::vector<base::test::FeatureRef> disabled_features;

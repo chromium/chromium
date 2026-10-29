@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/omnibox/omnibox_context_menu_controller.h"
 
+#include "base/auto_reset.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_webui_creation.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -191,6 +193,11 @@ class OmniboxContextMenuControllerBrowserTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  // These tests read the AI Mode popup's page, which production creates ahead
+  // of time but browser tests otherwise create only when it is shown (see
+  // `InProcessBrowserTest`).
+  base::AutoReset<bool> create_popup_webui_on_demand_ =
+      omnibox::SetCreatePopupWebUIOnDemandForTesting(false);
 };
 
 class OmniboxInlineTabsContextMenuBrowserTest : public InProcessBrowserTest {
@@ -483,6 +490,11 @@ class OmniboxContextMenuControllerPecBrowserTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  // These tests read the AI Mode popup's page, which production creates ahead
+  // of time but browser tests otherwise create only when it is shown (see
+  // `InProcessBrowserTest`).
+  base::AutoReset<bool> create_popup_webui_on_demand_ =
+      omnibox::SetCreatePopupWebUIOnDemandForTesting(false);
 };
 
 IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,

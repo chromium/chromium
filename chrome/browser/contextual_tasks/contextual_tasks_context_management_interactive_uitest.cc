@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/check_deref.h"
 #include "base/json/string_escape.h"
 #include "base/run_loop.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_webui_creation.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -1682,6 +1684,17 @@ class ContextualTasksOmniboxContextManagementInteractiveUiTest
         InSameContext(WaitForElementExists(kSidePanelWebContentsId,
                                            kComposeboxContainer)));
   }
+
+ private:
+  // TODO(crbug.com/542347163): These tests fail when the omnibox popups create
+  // their WebContents only when shown, which is the default in browser tests
+  // (see `InProcessBrowserTest`). Adding a tab from the classic popup's context
+  // menu creates the AI Mode popup's page then, and the tab context seems to be
+  // lost while that page loads. Either keep that context until the page is
+  // ready or create the page explicitly where it is needed, and remove this
+  // override.
+  base::AutoReset<bool> create_popup_webui_on_demand_ =
+      omnibox::SetCreatePopupWebUIOnDemandForTesting(false);
 };
 
 // Adding the current tab from the omnibox opens the side panel with

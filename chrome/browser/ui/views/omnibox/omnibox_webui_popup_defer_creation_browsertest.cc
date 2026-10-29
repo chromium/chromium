@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_webui_creation.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
@@ -25,15 +26,13 @@
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
-// Tests `omnibox::kOmniboxWebUIPopupDeferCreation`, which defers creating the
-// WebUI popup that shows omnibox suggestions until the browser window has
-// painted.
-class OmniboxWebUIPopupDeferCreationBrowserTest : public InProcessBrowserTest {
+// Tests when the WebUI popup that shows omnibox suggestions creates its
+// content.
+class OmniboxWebUIPopupCreationBrowserTest : public InProcessBrowserTest {
  public:
-  // Enables the WebUI suggestion popup and its deferred creation.
-  OmniboxWebUIPopupDeferCreationBrowserTest() {
-    feature_list_.InitWithFeatures({omnibox::internal::kWebUIOmniboxPopup,
-                                    omnibox::kOmniboxWebUIPopupDeferCreation},
+  // Enables the WebUI suggestion popup.
+  OmniboxWebUIPopupCreationBrowserTest() {
+    feature_list_.InitWithFeatures({omnibox::internal::kWebUIOmniboxPopup},
                                    {features::kWebUILocationBar});
   }
 
@@ -73,6 +72,24 @@ class OmniboxWebUIPopupDeferCreationBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Tests `omnibox::kOmniboxWebUIPopupDeferCreation`, which defers creating the
+// popup's content until the browser window has painted.
+class OmniboxWebUIPopupDeferCreationBrowserTest
+    : public OmniboxWebUIPopupCreationBrowserTest {
+ public:
+  OmniboxWebUIPopupDeferCreationBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        omnibox::kOmniboxWebUIPopupDeferCreation);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  // Follow the deferral feature rather than the on-demand creation that
+  // `InProcessBrowserTest` sets up.
+  base::AutoReset<bool> create_popup_webui_on_demand_ =
+      omnibox::SetCreatePopupWebUIOnDemandForTesting(false);
+};
+
 // The popup creates its content without user action once the browser window
 // has presented, and keeps it hidden until it opens.
 IN_PROC_BROWSER_TEST_F(OmniboxWebUIPopupDeferCreationBrowserTest,
@@ -86,18 +103,27 @@ IN_PROC_BROWSER_TEST_F(OmniboxWebUIPopupDeferCreationBrowserTest,
   EXPECT_TRUE(presenter()->GetWebUIContent());
 }
 
-// Keeps the deferred content absent by ignoring the browser window's
-// presentation, to test that opening the popup creates it.
-class OmniboxWebUIPopupDeferCreationPendingBrowserTest
-    : public OmniboxWebUIPopupDeferCreationBrowserTest {
+// Browser tests create the popup's content only when something needs it (see
+// `InProcessBrowserTest`). Tests that opening the popup creates it.
+class OmniboxWebUIPopupOnDemandCreationBrowserTest
+    : public OmniboxWebUIPopupCreationBrowserTest {
+ public:
+  // Enables deferred creation to show that on-demand creation takes precedence.
+  OmniboxWebUIPopupOnDemandCreationBrowserTest() {
+    defer_creation_feature_.InitAndEnableFeature(
+        omnibox::kOmniboxWebUIPopupDeferCreation);
+  }
+
  private:
-  base::AutoReset<bool> ignore_presentation_ =
-      OmniboxPopupPresenterBase::IgnoreBrowserWindowPresentationForTesting();
+  base::test::ScopedFeatureList defer_creation_feature_;
+  // Explicit, so that these tests don't depend on the browser test default.
+  base::AutoReset<bool> on_demand_creation_ =
+      omnibox::SetCreatePopupWebUIOnDemandForTesting(true);
 };
 
 // Typing before the content exists opens the popup, which creates the content
 // and its widget.
-IN_PROC_BROWSER_TEST_F(OmniboxWebUIPopupDeferCreationPendingBrowserTest,
+IN_PROC_BROWSER_TEST_F(OmniboxWebUIPopupOnDemandCreationBrowserTest,
                        CreatesContentWhenPopupOpens) {
   ASSERT_TRUE(presenter());
   EXPECT_FALSE(presenter()->GetWebUIContent());

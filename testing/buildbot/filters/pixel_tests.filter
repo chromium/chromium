@@ -103,7 +103,7 @@ NewTabPageTest.*
 NtpPromoVisualUiTest.*
 NtpRealboxUiScreenshotTest.*
 OfferNotificationBubbleViewPixelBrowserTest.*
-OmniboxAimWebUiInteractiveTest.QueryWithTabContext*
+OmniboxAimWebUiEagerPopupInteractiveTest.QueryWithTabContext*
 OrganizerPanelPixelTest.*
 OutdatedUpgradeBubbleTest.*
 PageActionPixelIconsHiddenTest.*

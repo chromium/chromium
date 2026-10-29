@@ -10,7 +10,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -30,6 +29,10 @@ class OmniboxPopupWebUIBaseContent;
 class OmniboxPopupPresenterDelegate;
 class RoundedOmniboxResultsFrame;
 class OmniboxController;
+
+namespace base {
+struct Feature;
+}  // namespace base
 
 namespace content {
 class WebContents;
@@ -62,6 +65,14 @@ class OmniboxPopupPresenterBase
       public SearchboxHandler::Delegate,
       public permissions::PermissionRequestManager::Observer {
  public:
+  // Why `GetOrCreateWebUIContent()` was called. Recorded in traces.
+  enum class CreationReason {
+    kEager,
+    kAfterWindowPresentation,
+    kShow,
+    kContextMenu,
+  };
+
   // An RAII-style helper that registers itself as a blocker upon creation and
   // unregisters itself when destroyed.
   class ScopedDeactivationBlocker : public OmniboxPopupDeactivationBlocker {
@@ -119,21 +130,18 @@ class OmniboxPopupPresenterBase
   OmniboxPopupWebUIBaseContent* GetWebUIContent();
   const OmniboxPopupWebUIBaseContent* GetWebUIContent() const;
 
-  // Creates the WebUI content with `CreateWebUIContent()` if it does not
-  // exist yet. Presenters that defer creating their content call this, or
-  // `Show()` and other callers that need the content call it.
-  void EnsureWebUIContentCreated();
+  // Returns the WebUI content, first creating it with `CreateWebUIContent()`
+  // if it does not exist yet. Creating the content creates a WebContents and
+  // starts its navigation, so call this only where the content is needed,
+  // e.g. to show the popup. Use `GetWebUIContent()` to read the content
+  // without creating it. Returns null only for unit-test presenters without
+  // WebUI content.
+  OmniboxPopupWebUIBaseContent* GetOrCreateWebUIContent(CreationReason reason);
 
   // Called when the browser window that hosts this popup presents a frame
-  // after `CreateWebUIContentAfterBrowserWindowPresentation()`. If the WebUI
-  // content does not exist yet, posts a task that creates it. Later calls do
-  // nothing.
+  // after `CreateWebUIContentAfterWindowPresentation()`. If the WebUI content
+  // does not exist yet, posts a task that creates it. Later calls do nothing.
   void OnBrowserWindowPresented();
-
-  // While the returned object is alive, `OnBrowserWindowPresented()` does
-  // nothing, so deferred content is created only when something needs it.
-  [[nodiscard]] static base::AutoReset<bool>
-  IgnoreBrowserWindowPresentationForTesting();
 
   // Returns the timeout if showing should be deferred until the WebUI has
   // painted a new frame, or std::nullopt if it should not be deferred.
@@ -204,6 +212,18 @@ class OmniboxPopupPresenterBase
   virtual bool ShouldReceiveFocus() const;
 
  protected:
+  // When the WebUI content is created ahead of time. With every strategy,
+  // `GetOrCreateWebUIContent()` creates the content immediately if it is
+  // needed sooner.
+  enum class WebUIContentCreationStrategy {
+    // In the constructor.
+    kEager,
+    // After the browser window presents its first frame.
+    kAfterWindowPresentation,
+    // Never ahead of time.
+    kOnDemand,
+  };
+
   inline static constexpr std::string_view kWebUIPopupMetricPrefix =
       "Omnibox.Popup.WebUI";
   inline static constexpr std::string_view kAimPopupMetricPrefix =
@@ -218,17 +238,22 @@ class OmniboxPopupPresenterBase
   void SetWebUIContent(
       std::unique_ptr<OmniboxPopupWebUIBaseContent> webui_content);
 
-  // Returns the WebUI content for `EnsureWebUIContentCreated()`. A presenter
-  // that defers creating its content overrides this and does not call
-  // `SetWebUIContent()` in its constructor. Returns null by default.
+  // Presenters that create their WebUI content lazily override this and call
+  // `ApplyWebUIContentCreationStrategy()` from their constructor. Returns null
+  // by default.
   virtual std::unique_ptr<OmniboxPopupWebUIBaseContent> CreateWebUIContent();
 
-  // Requests `OnBrowserWindowPresented()` for the next frame that the location
-  // bar's widget presents. A presenter that defers creating its content calls
-  // this from its constructor. The presenters are built with the browser
-  // window, before its first paint, so that frame is the window's first frame.
-  // A presenter built later gets the next frame.
-  void CreateWebUIContentAfterBrowserWindowPresentation();
+  // Returns the strategy for a presenter whose deferred creation is controlled
+  // by `defer_creation_feature`, taking
+  // `omnibox::ShouldCreatePopupWebUIOnDemand()` into account.
+  static WebUIContentCreationStrategy GetWebUIContentCreationStrategy(
+      const base::Feature& defer_creation_feature);
+
+  // Creates the WebUI content now, requests its creation after the browser
+  // window's first presentation, or does nothing, according to `strategy`.
+  // Called from the constructor of presenters that override
+  // `CreateWebUIContent()`.
+  void ApplyWebUIContentCreationStrategy(WebUIContentCreationStrategy strategy);
 
   void EnsureWidgetCreated();
 
@@ -305,6 +330,10 @@ class OmniboxPopupPresenterBase
   friend class OmniboxPopupViewWebUITest;
   friend class OmniboxWebUiInteractiveTest;
   friend class OmniboxPopupPresenterBaseTest;
+
+  // Requests content creation after the next frame the browser window
+  // presents. Used by `ApplyWebUIContentCreationStrategy()`.
+  void CreateWebUIContentAfterWindowPresentation();
 
   base::ScopedObservation<permissions::PermissionRequestManager,
                           permissions::PermissionRequestManager::Observer>
