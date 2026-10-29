@@ -844,11 +844,15 @@ void HttpResponseHeaders::ParseStatusLine(std::string_view line,
 size_t HttpResponseHeaders::FindHeader(size_t from,
                                        std::string_view search) const {
   for (size_t i = from; i < parsed_.size(); ++i) {
-    if (parsed_[i].is_continuation())
+    const ParsedHeader& parsed = parsed_[i];
+    if (parsed.is_continuation() ||
+        parsed.name_end - parsed.name_begin != search.size()) {
       continue;
-    auto name = header_name(parsed_[i]);
-    if (base::EqualsCaseInsensitiveASCII(search, name))
+    }
+    auto name = header_name(parsed);
+    if (base::EqualsCaseInsensitiveASCII(search, name)) {
       return i;
+    }
   }
 
   return std::string::npos;
