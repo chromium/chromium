@@ -105,6 +105,10 @@ source_set("core") {
     deps += [ "//components/download/public/common:public" ]
   }
 
+  if (enterprise_cdp_attribution) {
+    deps += [ "//net" ]
+  }
+
   if (enterprise_data_controls) {
     deps += [ "//components/enterprise/data_controls/core/browser" ]
   }

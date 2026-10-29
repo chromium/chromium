@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -17,11 +18,14 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
+#include "net/base/ip_address.h"
+#include "net/base/ip_endpoint.h"
 
 // TODO(crbug.com/575478024): Remove redundant `IS_MAC` / `IS_POSIX` platform
 // guards while `process_extractor.cc` is gated on `enterprise_cdp_attribution`
@@ -29,7 +33,9 @@
 // expanding beyond macOS.
 #if BUILDFLAG(IS_MAC)
 #include <libproc.h>
+#include <netinet/in.h>
 #include <sys/proc_info.h>
+#include <sys/socket.h>
 #include <sys/sysctl.h>
 #endif
 
@@ -169,7 +175,7 @@ std::optional<internal::RawProcessInfo> QueryOsProcessInfo(
 
 #if BUILDFLAG(IS_MAC)
   // TODO(crbug.com/575478024): Add Windows and Linux argv/process extraction
-  // support when enabling ENTERPRISE_CDP_ATTRIBUTION on other platforms.
+  // support when enabling `ENTERPRISE_CDP_ATTRIBUTION` on other platforms.
   if (info.parent_process_id <= 0) {
     proc_bsdinfo bsd_info = {};
     if (proc_pidinfo(pid, PROC_PIDTBSDINFO, 0, &bsd_info, sizeof(bsd_info)) ==
@@ -186,7 +192,7 @@ std::optional<internal::RawProcessInfo> QueryOsProcessInfo(
 
   int mib[3] = {CTL_KERN, KERN_PROCARGS2, static_cast<int>(pid)};
   size_t buf_size = internal::kMaxKernProcArgs2BufferSize;
-  std::vector<char> buffer(buf_size, 0);
+  std::vector<char> buffer(buf_size, '\0');
   if (sysctl(mib, 3, buffer.data(), &buf_size, nullptr, 0) == 0 &&
       buf_size > 0 && buf_size <= buffer.size()) {
     if (std::optional<internal::ParsedKernProcArgs2> parsed =
@@ -200,11 +206,101 @@ std::optional<internal::RawProcessInfo> QueryOsProcessInfo(
   }
 #endif
 
+  if (info.parent_process_id < 0) {
+    info.parent_process_id = base::kNullProcessId;
+  }
   if (!IsValidUserProcessId(info.parent_process_id) &&
       info.executable_path.empty() && info.argv.empty()) {
     return std::nullopt;
   }
   return info;
+}
+
+base::ProcessId ResolveWebSocketPeerPid(const net::IPEndPoint& peer_endpoint) {
+  const uint16_t peer_port = peer_endpoint.port();
+  if (peer_port == 0 || !peer_endpoint.address().IsLoopback()) {
+    return base::kNullProcessId;
+  }
+
+  // TODO(crbug.com/575478024): Add Windows and Linux TCP socket peer PID
+  // resolution when enabling `ENTERPRISE_CDP_ATTRIBUTION` on other platforms.
+  const base::ProcessId self_pid = base::GetCurrentProcId();
+  int pid_buf_bytes = proc_listpids(PROC_ALL_PIDS, 0, nullptr, 0);
+  if (pid_buf_bytes <= 0) {
+    return base::kNullProcessId;
+  }
+
+  std::vector<pid_t> pids(static_cast<size_t>(pid_buf_bytes) / sizeof(pid_t));
+  if (pids.empty()) {
+    return base::kNullProcessId;
+  }
+  pid_buf_bytes = proc_listpids(PROC_ALL_PIDS, 0, pids.data(),
+                                static_cast<int>(pids.size() * sizeof(pid_t)));
+  if (pid_buf_bytes <= 0) {
+    return base::kNullProcessId;
+  }
+
+  const size_t num_pids =
+      std::min(pids.size(), static_cast<size_t>(pid_buf_bytes) / sizeof(pid_t));
+  for (const pid_t candidate_pid : base::span(pids).first(num_pids)) {
+    if (candidate_pid <= 1 || candidate_pid == self_pid) {
+      continue;
+    }
+    int fd_buf_bytes =
+        proc_pidinfo(candidate_pid, PROC_PIDLISTFDS, 0, nullptr, 0);
+    if (fd_buf_bytes <= 0) {
+      continue;
+    }
+    std::vector<proc_fdinfo> fds(static_cast<size_t>(fd_buf_bytes) /
+                                 sizeof(proc_fdinfo));
+    if (fds.empty()) {
+      continue;
+    }
+    fd_buf_bytes =
+        proc_pidinfo(candidate_pid, PROC_PIDLISTFDS, 0, fds.data(),
+                     static_cast<int>(fds.size() * sizeof(proc_fdinfo)));
+    if (fd_buf_bytes <= 0) {
+      continue;
+    }
+    const size_t num_fds = std::min(
+        fds.size(), static_cast<size_t>(fd_buf_bytes) / sizeof(proc_fdinfo));
+    for (const proc_fdinfo& fd_info : base::span(fds).first(num_fds)) {
+      if (fd_info.proc_fdtype != PROX_FDTYPE_SOCKET) {
+        continue;
+      }
+      socket_fdinfo sock_info = {};
+      if (proc_pidfdinfo(candidate_pid, fd_info.proc_fd, PROC_PIDFDSOCKETINFO,
+                         &sock_info, sizeof(sock_info)) != sizeof(sock_info) ||
+          sock_info.psi.soi_kind != SOCKINFO_TCP ||
+          sock_info.psi.soi_proto.pri_tcp.tcpsi_state != TSI_S_ESTABLISHED) {
+        continue;
+      }
+      const in_sockinfo& in_info = sock_info.psi.soi_proto.pri_tcp.tcpsi_ini;
+      if (ntohs(in_info.insi_lport) != peer_port) {
+        continue;
+      }
+      net::IPAddress local_address;
+      net::IPAddress foreign_address;
+      if ((in_info.insi_vflag & INI_IPV4) != 0) {
+        local_address = net::IPAddress(
+            base::byte_span_from_ref(in_info.insi_laddr.ina_46.i46a_addr4));
+        foreign_address = net::IPAddress(
+            base::byte_span_from_ref(in_info.insi_faddr.ina_46.i46a_addr4));
+      } else if ((in_info.insi_vflag & INI_IPV6) != 0) {
+        local_address =
+            net::IPAddress(base::byte_span_from_ref(in_info.insi_laddr.ina_6));
+        foreign_address =
+            net::IPAddress(base::byte_span_from_ref(in_info.insi_faddr.ina_6));
+      } else {
+        continue;
+      }
+      if (local_address == peer_endpoint.address() &&
+          foreign_address.IsLoopback()) {
+        return candidate_pid;
+      }
+    }
+  }
+  return base::kNullProcessId;
 }
 
 ProcessTree ExtractProcessTreeWithProvider(
@@ -377,6 +473,11 @@ ProcessTree ExtractProcessTreeWithProviderForTesting(
   return ExtractProcessTreeWithProvider(start_pid, std::move(provider));
 }
 
+base::ProcessId ResolveWebSocketPeerPidForTesting(
+    const net::IPEndPoint& peer_endpoint) {
+  return ResolveWebSocketPeerPid(peer_endpoint);
+}
+
 }  // namespace internal
 
 ProcessTree ExtractProcessTreeFromPid(base::ProcessId start_pid) {
@@ -387,6 +488,26 @@ ProcessTree ExtractProcessTreeFromPid(base::ProcessId start_pid) {
                                                 base::BlockingType::MAY_BLOCK);
   return ExtractProcessTreeWithProvider(
       start_pid, base::BindRepeating(&QueryOsProcessInfo));
+}
+
+ProcessTree ExtractProcessTreeForPipe() {
+  const base::ProcessId parent_pid =
+      base::GetParentProcessId(base::GetCurrentProcessHandle());
+  return ExtractProcessTreeFromPid(parent_pid);
+}
+
+ProcessTree ExtractProcessTreeForWebSocket(
+    const net::IPEndPoint& peer_endpoint) {
+  base::ProcessId peer_pid = base::kNullProcessId;
+  {
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::MAY_BLOCK);
+    peer_pid = ResolveWebSocketPeerPid(peer_endpoint);
+  }
+  if (!IsValidUserProcessId(peer_pid)) {
+    return ProcessTree();
+  }
+  return ExtractProcessTreeFromPid(peer_pid);
 }
 
 }  // namespace enterprise_connectors

@@ -12,8 +12,12 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/process/process_handle.h"
+
+namespace net {
+class IPEndPoint;
+}  // namespace net
 
 namespace enterprise_connectors {
 
@@ -63,6 +67,21 @@ struct ProcessTree {
 // Callers must verify enterprise management eligibility on the UI sequence
 // before scheduling extraction.
 ProcessTree ExtractProcessTreeFromPid(base::ProcessId start_pid);
+
+// Extracts the process ancestry for a pipe-based remote debugging client,
+// starting from the browser's parent process (`base::GetParentProcessId()`).
+// This function may block on OS process queries and must be called on a
+// sequence that allows blocking. Callers must verify enterprise management
+// eligibility on the UI sequence before scheduling extraction.
+ProcessTree ExtractProcessTreeForPipe();
+
+// Extracts the process ancestry for a WebSocket remote debugging client
+// connected from `peer_endpoint`. Resolves the local peer PID (e.g. via
+// `libproc` on macOS). This function may block on OS process queries and must
+// be called on a sequence that allows blocking. Callers must verify enterprise
+// management eligibility on the UI sequence before scheduling extraction.
+ProcessTree ExtractProcessTreeForWebSocket(
+    const net::IPEndPoint& peer_endpoint);
 
 // -----------------------------------------------------------------------------
 // Internal / unit-testing types and helpers:
@@ -145,6 +164,12 @@ std::optional<ParsedKernProcArgs2> ParseKernProcArgs2Buffer(
 ProcessTree ExtractProcessTreeWithProviderForTesting(
     base::ProcessId start_pid,
     ProcessInfoProvider provider);
+
+// Test hook that resolves the local process ID owning the client TCP socket
+// connected from `peer_endpoint` (or `base::kNullProcessId` if `peer_endpoint`
+// is invalid, non-loopback, or cannot be resolved).
+base::ProcessId ResolveWebSocketPeerPidForTesting(
+    const net::IPEndPoint& peer_endpoint);
 
 }  // namespace internal
 

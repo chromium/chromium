@@ -15,9 +15,12 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/process/process_handle.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
+#include "net/base/ip_address.h"
+#include "net/base/ip_endpoint.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace enterprise_connectors {
@@ -30,7 +33,7 @@ std::vector<char> BuildKernProcArgs2Buffer(
     bool terminate_exec_path,
     size_t nul_padding_count,
     const std::vector<std::pair<std::string, bool>>& args) {
-  std::vector<char> buf(sizeof(int), 0);
+  std::vector<char> buf(sizeof(int), '\0');
   base::as_writable_bytes(base::span(buf).first<sizeof(int)>())
       .copy_from(base::byte_span_from_ref(argc));
 
@@ -372,6 +375,24 @@ TEST_F(ProcessExtractorTest, InvalidStartPidReturnsEmptyProcessTree) {
                   .empty());
   EXPECT_FALSE(provider_called);
   EXPECT_TRUE(ExtractProcessTreeFromPid(base::kNullProcessId).empty());
+  EXPECT_EQ(internal::ResolveWebSocketPeerPidForTesting(net::IPEndPoint()),
+            base::kNullProcessId);
+  EXPECT_EQ(internal::ResolveWebSocketPeerPidForTesting(
+                net::IPEndPoint(net::IPAddress(), 54321)),
+            base::kNullProcessId);
+  EXPECT_EQ(internal::ResolveWebSocketPeerPidForTesting(
+                net::IPEndPoint(net::IPAddress(192, 168, 1, 10), 54321)),
+            base::kNullProcessId);
+  EXPECT_TRUE(ExtractProcessTreeForWebSocket(net::IPEndPoint()).empty());
+  EXPECT_TRUE(
+      ExtractProcessTreeForWebSocket(net::IPEndPoint(net::IPAddress(), 54321))
+          .empty());
+  EXPECT_TRUE(ExtractProcessTreeForWebSocket(
+                  net::IPEndPoint(net::IPAddress(192, 168, 1, 10), 54321))
+                  .empty());
+  EXPECT_TRUE(ExtractProcessTreeForWebSocket(
+                  net::IPEndPoint(net::IPAddress(8, 8, 8, 8), 9222))
+                  .empty());
 }
 
 TEST_F(ProcessExtractorTest,
@@ -461,6 +482,16 @@ TEST_F(ProcessExtractorTest, LiveCurrentProcessAncestryExtraction) {
   EXPECT_EQ(tree.process_nodes[0].process_id, self_pid);
   EXPECT_FALSE(tree.process_nodes[0].executable_path.empty());
   EXPECT_TRUE(tree.process_nodes[0].script_path.empty());
+
+  if (tree.process_nodes[0].parent_process_id >
+      static_cast<base::ProcessId>(1)) {
+    ProcessTree pipe_tree = ExtractProcessTreeForPipe();
+    ASSERT_FALSE(pipe_tree.empty());
+    EXPECT_EQ(pipe_tree.process_nodes[0].process_id,
+              tree.process_nodes[0].parent_process_id);
+  }
+
+  EXPECT_TRUE(ExtractProcessTreeForWebSocket(net::IPEndPoint()).empty());
 #else
   EXPECT_TRUE(ExtractProcessTreeFromPid(self_pid).empty());
 #endif
