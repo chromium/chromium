@@ -210,21 +210,6 @@ TEST_F(StoreMetricsReporterTest, ReportMetricsPasswordManagerEnabledDefault) {
   histogram_tester.ExpectUniqueSample("PasswordManager.EnableState", 0, 1);
 }
 
-TEST_F(StoreMetricsReporterTest, ReportMetricsForAutoSignIn) {
-  base::HistogramTester histogram_tester;
-
-  EXPECT_CALL(settings_service(),
-              IsSettingEnabled(PasswordManagerSetting::kAutoSignIn))
-      .WillOnce(Return(true));
-
-  StoreMetricsReporter reporter(
-      /*profile_store=*/nullptr, /*account_store=*/nullptr, sync_service(),
-      &prefs_, /*password_reuse_manager=*/nullptr, &settings_service(),
-      /*done_callback=*/base::DoNothing());
-
-  histogram_tester.ExpectUniqueSample("PasswordManager.AutoSignin", 1, 1);
-}
-
 enum class EnableSettingManageState {
   kUser,
   kExtension,

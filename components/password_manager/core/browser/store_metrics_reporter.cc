@@ -769,9 +769,6 @@ StoreMetricsReporter::StoreMetricsReporter(
         CredentialsEnableServiceSettingToPasswordManagerEnableState(
             prefs_->FindPreference(
                 password_manager::prefs::kCredentialsEnableService)));
-    base::UmaHistogramBoolean(
-        base::StrCat({kPasswordManager, ".AutoSignin"}),
-        settings->IsSettingEnabled(PasswordManagerSetting::kAutoSignIn));
   }
 
   ReportBiometricAuthenticationBeforeFillingMetrics(prefs_);
