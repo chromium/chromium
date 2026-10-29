@@ -91,6 +91,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//net",
     "//net:test_support",
+    "//services/data_decoder/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx:test_support",

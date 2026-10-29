@@ -33,9 +33,14 @@ void ImageFetcherImpl::FetchImageAndData(
     ImageDataFetcherCallback image_data_callback,
     ImageFetcherCallback image_callback,
     ImageFetcherParams params) {
-  // Before starting to fetch the image. Look for a request in progress for
-  // `image_url`, and queue if appropriate.
-  auto it = pending_net_requests_.find(image_url);
+  const ImageRequestKey request_key{
+      .image_url = image_url,
+      .max_download_size = params.max_download_size(),
+      .frame_width = params.frame_size().width(),
+      .frame_height = params.frame_size().height(),
+      .data_decoder = params.data_decoder()};
+  // Share an in-flight request only when its download and decode options match.
+  auto it = pending_net_requests_.find(request_key);
   if (it == pending_net_requests_.end()) {
     ImageRequest request;
     request.id = image_url.spec();
@@ -45,13 +50,13 @@ void ImageFetcherImpl::FetchImageAndData(
     if (image_data_callback) {
       request.image_data_callbacks.push_back(std::move(image_data_callback));
     }
-    pending_net_requests_.emplace(image_url, std::move(request));
+    pending_net_requests_.emplace(request_key, std::move(request));
 
     image_data_fetcher_->SetImageDownloadLimit(params.max_download_size());
     image_data_fetcher_->FetchImageData(
         image_url,
         base::BindOnce(&ImageFetcherImpl::OnImageURLFetched,
-                       base::Unretained(this), image_url, params),
+                       weak_ptr_factory_.GetWeakPtr(), request_key, params),
         params);
   } else {
     ImageRequest* request = &it->second;
@@ -64,7 +69,7 @@ void ImageFetcherImpl::FetchImageAndData(
     // Call callback if data is already fetched, otherwise register it for
     // later.
     if (image_data_callback) {
-      if (!request->image_data.empty()) {
+      if (request->image_data_fetched) {
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(&ImageFetcherImpl::RunImageDataCallback,
@@ -78,52 +83,66 @@ void ImageFetcherImpl::FetchImageAndData(
   }
 }
 
-void ImageFetcherImpl::OnImageURLFetched(const GURL& image_url,
+void ImageFetcherImpl::OnImageURLFetched(const ImageRequestKey& request_key,
                                          ImageFetcherParams params,
                                          const std::string& image_data,
                                          const RequestMetadata& metadata) {
-  auto it = pending_net_requests_.find(image_url);
+  auto it = pending_net_requests_.find(request_key);
   CHECK(it != pending_net_requests_.end());
   ImageRequest* request = &it->second;
-  DCHECK(request->image_data.empty());
+  DCHECK(!request->image_data_fetched);
   DCHECK_EQ(RequestMetadata::RESPONSE_CODE_INVALID,
             request->request_metadata.http_response_code);
-  for (auto& callback : request->image_data_callbacks) {
+  request->image_data = image_data;
+  request->image_data_fetched = true;
+  request->request_metadata = metadata;
+
+  // Callbacks may enqueue more requests or destroy this fetcher. Publish the
+  // fetched data first and drain a separate list to avoid invalidating it.
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  auto data_callbacks = std::move(request->image_data_callbacks);
+  for (auto& callback : data_callbacks) {
     std::move(callback).Run(image_data, metadata);
+    if (!weak_this) {
+      return;
+    }
   }
-  request->image_data_callbacks.clear();
 
   if (image_data.empty() || request->image_callbacks.empty()) {
-    for (auto& callback : request->image_callbacks) {
-      std::move(callback).Run(gfx::Image(), metadata);
-    }
+    auto image_callbacks = std::move(request->image_callbacks);
     pending_net_requests_.erase(it);
+    for (auto& callback : image_callbacks) {
+      std::move(callback).Run(gfx::Image(), metadata);
+      if (!weak_this) {
+        return;
+      }
+    }
     return;
   }
-  request->image_data = image_data;
-  request->request_metadata = metadata;
-  image_decoder_->DecodeImage(
-      image_data, params.frame_size(), params.data_decoder(),
-      base::BindOnce(&ImageFetcherImpl::OnImageDecoded,
-                     weak_ptr_factory_.GetWeakPtr(), image_url, metadata));
+  image_decoder_->DecodeImage(image_data, params.frame_size(),
+                              params.data_decoder(),
+                              base::BindOnce(&ImageFetcherImpl::OnImageDecoded,
+                                             weak_this, request_key, metadata));
 }
 
-void ImageFetcherImpl::OnImageDecoded(const GURL& image_url,
+void ImageFetcherImpl::OnImageDecoded(const ImageRequestKey& request_key,
                                       const RequestMetadata& metadata,
                                       const gfx::Image& image) {
-  // Get request for the given image_url from the request queue.
-  auto image_iter = pending_net_requests_.find(image_url);
+  auto image_iter = pending_net_requests_.find(request_key);
   CHECK(image_iter != pending_net_requests_.end());
-  ImageRequest* request = &image_iter->second;
-
-  // Run all image callbacks.
-  for (auto& callback : request->image_callbacks) {
-    std::move(callback).Run(image, metadata);
-  }
-
-  // Erase the completed ImageRequest.
-  DCHECK(request->image_data_callbacks.empty());
+  // A callback may request the same image again. Remove this completed request
+  // before invoking user code so the new request cannot join a finished decode.
+  ImageRequest request = std::move(image_iter->second);
   pending_net_requests_.erase(image_iter);
+  DCHECK(request.image_data_callbacks.empty());
+
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  for (auto& callback : request.image_callbacks) {
+    std::move(callback).Run(image, metadata);
+    if (!weak_this) {
+      return;
+    }
+  }
 }
 
 void ImageFetcherImpl::RunImageDataCallback(

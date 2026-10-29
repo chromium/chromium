@@ -5,13 +5,17 @@
 #ifndef COMPONENTS_IMAGE_FETCHER_CORE_IMAGE_FETCHER_IMPL_H_
 #define COMPONENTS_IMAGE_FETCHER_CORE_IMAGE_FETCHER_IMPL_H_
 
+#include <compare>
+#include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/image_fetcher/core/image_data_fetcher.h"
 #include "components/image_fetcher/core/image_decoder.h"
@@ -50,6 +54,20 @@ class ImageFetcherImpl : public ImageFetcher {
   ImageDecoder* GetImageDecoder() override;
 
  private:
+  // Only requests with the same URL, download limit, frame size, and selected
+  // decoder can share a download and decoded result. The selected DataDecoder
+  // must outlive ImageDecoder, per DecodeImage's contract. Store size
+  // components separately because gfx::Size does not provide an ordering.
+  struct ImageRequestKey {
+    auto operator<=>(const ImageRequestKey&) const = default;
+
+    GURL image_url;
+    std::optional<int64_t> max_download_size;
+    int frame_width;
+    int frame_height;
+    raw_ptr<data_decoder::DataDecoder> data_decoder;
+  };
+
   // State related to an image fetch (id, pending callbacks).
   struct ImageRequest {
     ImageRequest();
@@ -65,24 +83,25 @@ class ImageFetcherImpl : public ImageFetcher {
     // These have the default value if the image data has not yet been fetched.
     RequestMetadata request_metadata;
     std::string image_data;
+    bool image_data_fetched = false;
     // Queue for pending callbacks, which may accumulate while the request is in
     // flight.
     std::vector<ImageFetcherCallback> image_callbacks;
     std::vector<ImageDataFetcherCallback> image_data_callbacks;
   };
 
-  using ImageRequestMap = std::map<GURL, ImageRequest>;
+  using ImageRequestMap = std::map<ImageRequestKey, ImageRequest>;
 
   // Processes image URL fetched events. This is the continuation method used
   // for creating callbacks that are passed to the ImageDataFetcher.
-  void OnImageURLFetched(const GURL& image_url,
+  void OnImageURLFetched(const ImageRequestKey& request_key,
                          ImageFetcherParams params,
                          const std::string& image_data,
                          const RequestMetadata& metadata);
 
   // Processes image decoded events. This is the continuation method used for
   // creating callbacks that are passed to the ImageDecoder.
-  void OnImageDecoded(const GURL& image_url,
+  void OnImageDecoded(const ImageRequestKey& request_key,
                       const RequestMetadata& metadata,
                       const gfx::Image& image);
 
@@ -97,8 +116,7 @@ class ImageFetcherImpl : public ImageFetcher {
 
   std::unique_ptr<ImageDataFetcher> image_data_fetcher_;
 
-  // Map from each image URL to the request information (associated website
-  // url, fetcher, pending callbacks).
+  // Pending requests grouped by compatible download and decode options.
   ImageRequestMap pending_net_requests_;
 
   base::WeakPtrFactory<ImageFetcherImpl> weak_ptr_factory_{this};
