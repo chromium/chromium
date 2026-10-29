@@ -758,17 +758,20 @@ ci.thin_tester(
                     shards = 15,
                 ),
             ),
-            "browser_tests": targets.mixin(
-                # crbug.com/1066161
-                # crbug.com/1459645
-                # crbug.com/1508286
-                # crbug.com/404871436
-                # crbug.com/524128527
-                # crbug.com/534835229
-                swarming = targets.swarming(
-                    shards = 90,
+            "browser_tests": [
+                targets.mixin(
+                    # crbug.com/1066161
+                    # crbug.com/1459645
+                    # crbug.com/1508286
+                    # crbug.com/404871436
+                    # crbug.com/524128527
+                    # crbug.com/534835229
+                    swarming = targets.swarming(
+                        shards = 90,
+                    ),
                 ),
-            ),
+                "no_ssd",
+            ],
             "content_browsertests": targets.mixin(
                 # crbug.com/1508286
                 # crbug.com/404871436
@@ -815,12 +818,15 @@ ci.thin_tester(
                     shards = 8,
                 ),
             ),
-            "telemetry_perf_unittests": targets.mixin(
-                args = [
-                    "--xvfb",
-                    "--jobs=1",
-                ],
-            ),
+            "telemetry_perf_unittests": [
+                targets.mixin(
+                    args = [
+                        "--xvfb",
+                        "--jobs=1",
+                    ],
+                ),
+                "no_ssd",
+            ],
             "unit_tests": targets.mixin(
                 # The suite runs signficantly slower on linux dbg, so increase shards.
                 swarming = targets.swarming(

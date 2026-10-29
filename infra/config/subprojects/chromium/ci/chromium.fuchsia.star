@@ -216,6 +216,7 @@ ci.builder(
         mixins = [
             "isolate_profile_data",
             "linux-jammy",
+            "no_ssd",
             targets.mixin(
                 swarming = targets.swarming(
                     dimensions = {
