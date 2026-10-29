@@ -73,6 +73,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Audible Tab"/>
   <int value="3" label="Video Capture"/>
   <int value="4" label="Audio Capture"/>
+  <int value="5" label="Recent System Wake"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/lifetime/scheduled_restart_manager.h:ScheduledRestartBlocker) -->

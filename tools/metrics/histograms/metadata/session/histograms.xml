@@ -396,10 +396,12 @@ chromium-metrics-reviews@google.com.
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Records unique blocker types (e.g. downloads, active audio/video capture)
-    encountered while an idle restart was scheduled. Recorded once per blocker
-    type upon schedule termination (either when the restart successfully
-    executes or when the schedule is canceled before execution).
+    Records unique blocker types (e.g. downloads, active audio/video capture, or
+    a recent system wake) encountered while an idle restart was scheduled.
+    Recorded once per blocker type upon schedule termination (either when the
+    restart successfully executes or when the schedule is canceled before
+    execution). Recent System Wake is recorded only when the post-wake deferral
+    held back a restart that the idle threshold alone would have allowed.
   </summary>
 </histogram>
 
