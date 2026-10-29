@@ -33,6 +33,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_auto_suggestion_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_thread_observer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_permission_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_restore_data.h"
@@ -1149,6 +1150,10 @@ void ContextualTasksSidePanelCoordinator::TransferWebContentsFromTab(
   if (permission_controller_) {
     permission_controller_->RegisterWebContents(web_contents.get());
   }
+  if (IsContextualTasksSidePanelRearchitectureEnabled()) {
+    ContextualTasksPanelThreadObserver::CreateForWebContents(
+        web_contents.get());
+  }
   auto it = task_id_to_web_contents_cache_.find(task_id);
   // WebContents transferred from a tab has already completed its initial paint
   // as a tab. Do not attach an FCP observer and mark FCP as already recorded
@@ -1241,6 +1246,10 @@ ContextualTasksSidePanelCoordinator::DetachWebContentsForTask(
         std::move(it->second->web_contents);
     MaybeDetachWebContents(web_contents.get());
     MaybeRemoveImplicitTabContext(web_contents.get());
+    // The tab's `ContextualTasksTabNavigationObserver` takes over syncing its
+    // task with its AI Mode thread.
+    web_contents->RemoveUserData(
+        ContextualTasksPanelThreadObserver::UserDataKey());
     // Reset the association with the BrowserWindow since the WebContents will
     // soon be associated with a tab.
     webui::SetBrowserWindowInterface(web_contents.get(),
@@ -1268,7 +1277,11 @@ void ContextualTasksSidePanelCoordinator::OnTaskChanged(
     content::WebContents* web_contents,
     base::Uuid new_task_id) {
   content::WebContents* target_web_contents = web_contents;
-  if (IsContextualTasksSidePanelRearchitectureEnabled()) {
+  // Post-rearchitecture, the panel's AI Mode `WebContents` itself may report
+  // the change (see `ContextualTasksPanelThreadObserver`), and it may not be
+  // the active one. Otherwise, update the active panel `WebContents`.
+  if (IsContextualTasksSidePanelRearchitectureEnabled() &&
+      (!web_contents || !GetWebContentsCacheItemForWebContents(web_contents))) {
     target_web_contents = GetActiveWebContents();
   }
 
@@ -1799,6 +1812,7 @@ void ContextualTasksSidePanelCoordinator::MaybeCreateCachedWebContents(
       UpdateContextualSearchWebContentsHelperForTask(
           contextual_search_service_, browser_window_,
           contextual_tasks_service_, this, web_contents, task_id);
+      ContextualTasksPanelThreadObserver::CreateForWebContents(web_contents);
       // Apply required side panel URL params before the initial load, as the
       // `WebContents` is not attached to a side panel yet.
       url = ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
@@ -2146,6 +2160,7 @@ void ContextualTasksSidePanelCoordinator::RebuildCachedWebContentsForTask(
     UpdateContextualSearchWebContentsHelperForTask(
         contextual_search_service_, browser_window_, contextual_tasks_service_,
         this, web_contents, task_id);
+    ContextualTasksPanelThreadObserver::CreateForWebContents(web_contents);
     // Load the task's saved page if it has one, e.g. from a reopened tab.
     if (std::optional<GURL> initial_url =
             ui_service->GetInitialUrlForTask(task_id)) {

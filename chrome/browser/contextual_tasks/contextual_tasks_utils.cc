@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/aim_message_poster.h"
@@ -48,6 +49,8 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_tasks/public/contextual_task.h"
+#include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/prefs.h"
 #include "components/contextual_tasks/public/utils.h"
@@ -56,8 +59,10 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/url_constants.h"
+#include "net/base/url_util.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "ui/base/device_form_factor.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/contextual_tasks/android/contextual_tasks_panel_host_android.h"
@@ -77,6 +82,29 @@ namespace contextual_tasks {
 bool IsContextualTasksUrl(const GURL& url) {
   return url.scheme() == content::kChromeUIScheme &&
          url.host() == chrome::kChromeUIContextualTasksHost;
+}
+
+std::optional<std::string> GetAiModeThreadId(const GURL& url) {
+  std::string thread_id;
+  if (!net::GetValueForKeyInQuery(url, "mtid", &thread_id) ||
+      thread_id.empty()) {
+    return std::nullopt;
+  }
+  return thread_id;
+}
+
+void UpdateAiModeThreadForTask(ContextualTasksService& service,
+                               const base::Uuid& task_id,
+                               const std::string& thread_id,
+                               const GURL& url) {
+  std::string query;
+  std::string mstk;
+  net::GetValueForKeyInQuery(url, "q", &query);
+  service.UpdateThreadForTask(
+      task_id, ThreadType::kAiMode, thread_id,
+      net::GetValueForKeyInQuery(url, "mstk", &mstk) ? std::make_optional(mstk)
+                                                     : std::nullopt,
+      query.empty() ? std::nullopt : std::make_optional(query));
 }
 
 std::unique_ptr<
