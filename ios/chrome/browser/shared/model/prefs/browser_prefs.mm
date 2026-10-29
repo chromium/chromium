@@ -236,6 +236,8 @@ inline constexpr char kSyncEncryptionBootstrapToken[] =
     "sync.encryption_bootstrap_token";
 inline constexpr char kSyncEncryptionBootstrapTokenPerAccountMigrationDone[] =
     "sync.encryption_bootstrap_token_per_account_migration_done";
+inline constexpr char kCustomLinksAiModeTileIndex[] =
+    "custom_links.ai_mode_tile_index";
 
 // Deprecated 10/2026.
 inline constexpr char kTailoredSecuritySyncFlowLastRunTime[] =
@@ -770,6 +772,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kIosLatestMostVisitedSites,
                              PrefRegistry::LOSSY_PREF);
 
+  registry->RegisterIntegerPref(prefs::kIosMostVisitedAiModeTileIndex, 0);
+
   registry->RegisterBooleanPref(prefs::kUserAgentWasChanged, false);
 
   registry->RegisterTimePref(prefs::kLastApplicationStorageMetricsLogTime,
@@ -942,6 +946,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       kTailoredSecuritySyncFlowLastUserInteractionState, 0);
   registry->RegisterTimePref(
       kTailoredSecuritySyncFlowObservedOutcomeUnsetTimestamp, base::Time());
+
+  // Deprecated 10/2026.
+  registry->RegisterIntegerPref(kCustomLinksAiModeTileIndex, 0);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1033,6 +1040,14 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   prefs->ClearPref(kTailoredSecuritySyncFlowLastRunTime);
   prefs->ClearPref(kTailoredSecuritySyncFlowLastUserInteractionState);
   prefs->ClearPref(kTailoredSecuritySyncFlowObservedOutcomeUnsetTimestamp);
+
+  if (prefs->FindPreference(prefs::kIosMostVisitedAiModeTileIndex)
+          ->IsDefaultValue() &&
+      !prefs->FindPreference(kCustomLinksAiModeTileIndex)->IsDefaultValue()) {
+    prefs->SetInteger(prefs::kIosMostVisitedAiModeTileIndex,
+                      prefs->GetInteger(kCustomLinksAiModeTileIndex));
+  }
+  prefs->ClearPref(kCustomLinksAiModeTileIndex);
 }
 
 void MigrateObsoleteUserDefault() {

@@ -83,6 +83,30 @@ TEST_F(BrowserPrefsTest, RenameSafetyCheckModuleEnabledProfilePref) {
             test_value);
 }
 
+// Tests renaming `kCustomLinksAiModeTileIndex` to
+// `prefs::kIosMostVisitedAiModeTileIndex`.
+TEST_F(BrowserPrefsTest, RenameCustomLinksAiModeTileIndexProfilePref) {
+  constexpr char kCustomLinksAiModeTileIndex[] =
+      "custom_links.ai_mode_tile_index";
+  const int test_value = 2;
+
+  profile_prefs()->SetInteger(kCustomLinksAiModeTileIndex, test_value);
+
+  ASSERT_EQ(profile_prefs()->GetInteger(kCustomLinksAiModeTileIndex),
+            test_value);
+  ASSERT_TRUE(profile_prefs()
+                  ->FindPreference(prefs::kIosMostVisitedAiModeTileIndex)
+                  ->IsDefaultValue());
+
+  MigrateObsoleteProfilePrefs(profile_prefs());
+
+  EXPECT_TRUE(profile_prefs()
+                  ->FindPreference(kCustomLinksAiModeTileIndex)
+                  ->IsDefaultValue());
+  EXPECT_EQ(profile_prefs()->GetInteger(prefs::kIosMostVisitedAiModeTileIndex),
+            test_value);
+}
+
 // [2] Local-state pref migrations and cleanup (triggered by
 // `MigrateObsoleteLocalStatePrefs()`).
 

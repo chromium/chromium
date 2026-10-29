@@ -29,6 +29,7 @@ namespace ntp_tiles {
 class MostVisitedSites;
 }  // namespace ntp_tiles
 
+class AIModeButtonServiceIOS;
 @class BrowserActionFactory;
 class ChromeAccountManagerService;
 @protocol ContentSuggestionsCommands;
@@ -90,6 +91,7 @@ class UrlLoadingBrowserAgent;
       accountManagerService:(ChromeAccountManagerService*)accountManagerService
           engagementTracker:(feature_engagement::Tracker*)engagementTracker
           layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
+        aiModeButtonService:(AIModeButtonServiceIOS*)aiModeButtonService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

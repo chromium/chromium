@@ -87,3 +87,5 @@ const NSDirectionalEdgeInsets kMostVisitedContainerInsets = {
     kContainerHorizontalInset};
 
 const CGFloat kMostVisitedTileIconSize = 56.0;
+
+const CGFloat kMostVisitedAimIconSize = 20.0;

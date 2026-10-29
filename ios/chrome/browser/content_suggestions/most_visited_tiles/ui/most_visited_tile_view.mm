@@ -35,9 +35,6 @@ namespace {
 // The width of a Most Visited Tile's favicon.
 constexpr CGFloat kMostVisitedFaviconWidth = 24.0;
 
-// The size of the AIM symbol and its container.
-constexpr CGFloat kAimIconSize = 20.0;
-
 }  // namespace
 
 @interface MostVisitedTileView ()
@@ -118,7 +115,6 @@ constexpr CGFloat kAimIconSize = 20.0;
 #pragma mark - Public
 
 - (void)configureAsAIMTile {
-  CHECK(IsAimEnabledInNtp());
   ntp_tiles::AimButtonRefactorArm arm = ntp_tiles::GetAimButtonRefactorArm();
   CHECK(arm == ntp_tiles::AimButtonRefactorArm::kAimAsMvt ||
         arm == ntp_tiles::AimButtonRefactorArm::kAimAsModule);
@@ -126,18 +122,32 @@ constexpr CGFloat kAimIconSize = 20.0;
   if (!_aimIconView) {
     _aimIconView = [[UIImageView alloc] init];
     _aimIconView.translatesAutoresizingMaskIntoConstraints = NO;
-    _aimIconView.image = MakeSymbolMonochrome(
-        SymbolWithPointSize(SymbolMagnifyingglassSpark, kAimIconSize));
-    _aimIconView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
+    _aimIconView.contentMode = UIViewContentModeScaleAspectFit;
+    AddSquareConstraints(_aimIconView, kMostVisitedAimIconSize);
     [self addSubview:_aimIconView];
     AddSameCenterConstraints(_aimIconView, self.imageContainerView);
   }
   _aimIconView.hidden = NO;
-  if (!self.titleLabel.text) {
-    self.titleLabel.text =
-        l10n_util::GetNSString(IDS_IOS_NTP_QUICK_ACTIONS_AIM);
+  if (self.configuration) {
+    MostVisitedItem* item = [self mostVisitedItem];
+    UIImage* icon = item.attributes.faviconImage;
+    _aimIconView.image = icon;
+  } else {
+    // TODO(crbug.com/574153738): Update the kAimAsModule arm to use the
+    // AIModeButtonServiceIOS to configure its AIM tile.
+    _aimIconView.image = MakeSymbolMonochrome(SymbolWithPointSize(
+        SymbolMagnifyingglassSpark, kMostVisitedAimIconSize));
   }
-  self.accessibilityLabel = self.titleLabel.text;
+
+  _aimIconView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
+  if (ntp_tiles::GetAimButtonRefactorArm() ==
+      ntp_tiles::AimButtonRefactorArm::kAimAsModule) {
+    if (!self.titleLabel.text) {
+      self.titleLabel.text =
+          l10n_util::GetNSString(IDS_IOS_NTP_QUICK_ACTIONS_AIM);
+    }
+    self.accessibilityLabel = self.titleLabel.text;
+  }
 }
 
 #pragma mark - ContentSuggestionsTileView
@@ -180,9 +190,13 @@ constexpr CGFloat kAimIconSize = 20.0;
                                                             fromView:self]
            : @[];
   if (item) {
-    _faviconView.hidden = NO;
-    _aimIconView.hidden = YES;
-    [_faviconView configureWithAttributes:item.attributes];
+    if (item.source == ntp_tiles::TileSource::AI_MODE) {
+      [self configureAsAIMTile];
+    } else {
+      _faviconView.hidden = NO;
+      _aimIconView.hidden = YES;
+      [_faviconView configureWithAttributes:item.attributes];
+    }
     if (!hasPreviousItem) {
       [self addInteraction:[[UIContextMenuInteraction alloc]
                                initWithDelegate:self]];
@@ -255,35 +269,39 @@ constexpr CGFloat kAimIconSize = 20.0;
       [self.traitCollection objectForNewTabPageTrait];
   // Favicon monogram will only be applied if defaultBackgroundColor is set.
   MostVisitedItem* configuration = [self mostVisitedItem];
-  if (configuration.attributes.defaultBackgroundColor) {
-    if (colorPalette) {
-      // If a color palette is available, apply its tint and background
-      // colors to the attributes while preserving the other attributes.
-      configuration.attributes = [FaviconAttributesWithPayload
-          attributesWithMonogram:configuration.attributes.monogramString
-                       textColor:colorPalette.secondaryCellColor
-                 backgroundColor:colorPalette.monogramColor
-          defaultBackgroundColor:configuration.attributes
-                                     .defaultBackgroundColor];
-    } else {
-      // If no color palette is available, fall back to default icon style
-      // colors.
-      std::unique_ptr<favicon_base::FallbackIconStyle> default_icon_style =
-          std::make_unique<favicon_base::FallbackIconStyle>();
+  if (configuration.source == ntp_tiles::TileSource::AI_MODE) {
+    _aimIconView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
+  } else {
+    if (configuration.attributes.defaultBackgroundColor) {
+      if (colorPalette) {
+        // If a color palette is available, apply its tint and background
+        // colors to the attributes while preserving the other attributes.
+        configuration.attributes = [FaviconAttributesWithPayload
+            attributesWithMonogram:configuration.attributes.monogramString
+                         textColor:colorPalette.secondaryCellColor
+                   backgroundColor:colorPalette.monogramColor
+            defaultBackgroundColor:configuration.attributes
+                                       .defaultBackgroundColor];
+      } else {
+        // If no color palette is available, fall back to default icon style
+        // colors.
+        std::unique_ptr<favicon_base::FallbackIconStyle> default_icon_style =
+            std::make_unique<favicon_base::FallbackIconStyle>();
 
-      configuration.attributes = [FaviconAttributesWithPayload
-          attributesWithMonogram:configuration.attributes.monogramString
-                       textColor:skia::UIColorFromSkColor(
-                                     default_icon_style->text_color)
-                 backgroundColor:skia::UIColorFromSkColor(
-                                     default_icon_style->background_color)
-          defaultBackgroundColor:default_icon_style->
-                                 is_default_background_color];
+        configuration.attributes = [FaviconAttributesWithPayload
+            attributesWithMonogram:configuration.attributes.monogramString
+                         textColor:skia::UIColorFromSkColor(
+                                       default_icon_style->text_color)
+                   backgroundColor:skia::UIColorFromSkColor(
+                                       default_icon_style->background_color)
+            defaultBackgroundColor:default_icon_style->
+                                   is_default_background_color];
+      }
     }
-  }
 
-  // Update the favicon view with the new attributes.
-  [self.faviconView configureWithAttributes:configuration.attributes];
+    // Update the favicon view with the new attributes.
+    [self.faviconView configureWithAttributes:configuration.attributes];
+  }
 
   if (colorPalette) {
     self.imageContainerView.backgroundColor = IsNewTabPageUICleanupEnabled()
