@@ -6,6 +6,8 @@ package org.chromium.chrome.test.util;
 
 import static org.hamcrest.Matchers.is;
 
+import static org.chromium.base.test.transit.Condition.whether;
+
 import android.app.Instrumentation;
 import android.text.TextUtils;
 
@@ -19,6 +21,7 @@ import org.chromium.base.TriState;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.transit.CallbackCondition;
 import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.SimpleConditions;
 import org.chromium.base.test.transit.Triggers;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.util.CallbackHelper;
@@ -293,13 +296,30 @@ public class ChromeTabUtils {
                         new PageHitTestDataCondition(() -> tab));
     }
 
-    /** Switch to the given TabIndex in the current tabModel. */
+    /**
+     * Switch to the given TabIndex in the current tabModel.
+     *
+     * @deprecated From a page Station, use {@code CtaPageStation#selectTabFast()} instead.
+     */
+    @Deprecated
     public static void switchTabInCurrentTabModel(
             final ChromeActivity activity, final int tabIndex) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModelUtils.setIndex(activity.getCurrentTabModel(), tabIndex);
-                });
+        // Selecting a tab before tabs are restored (e.g. after Activity recreation) does nothing.
+        TabModelSelector selector = activity.getTabModelSelector();
+        Triggers.noopTo()
+                .waitFor(
+                        SimpleConditions.uiThreadCondition(
+                                "Tab state initialized",
+                                () -> whether(selector.isTabStateInitialized())));
+        TabModel tabModel = ThreadUtils.runOnUiThreadBlocking(activity::getCurrentTabModel);
+        // Already selected, nothing to do.
+        if (ThreadUtils.runOnUiThreadBlocking(tabModel::index) == tabIndex) return;
+        TabSelectedCondition tabSelected =
+                new TabSelectedCondition(/* numTabsBeingSelected= */ 1, () -> tabModel);
+        Triggers.runOnUiThreadTo(() -> TabModelUtils.setIndex(tabModel, tabIndex))
+                .waitFor(tabSelected);
+        Tab expected = ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabAt(tabIndex));
+        Assert.assertEquals(expected, tabSelected.get());
     }
 
     /**
