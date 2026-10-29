@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabwindow;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 
 /** Factory for creating {@link TabWindowManager}. */
@@ -16,5 +17,11 @@ public class TabWindowManagerFactory {
             AsyncTabParamsManager asyncTabParamsManager,
             int maxSelectors) {
         return new TabWindowManagerImpl(selectorFactory, asyncTabParamsManager, maxSelectors);
+    }
+
+    public static void destroyForTesting(@Nullable TabWindowManager manager) {
+        if (manager instanceof TabWindowManagerImpl impl) {
+            impl.destroy();
+        }
     }
 }

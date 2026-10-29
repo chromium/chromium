@@ -18,6 +18,7 @@ import androidx.annotation.IntDef;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Token;
@@ -38,9 +39,9 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParams;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
+import org.chromium.chrome.browser.tabmodel.EmptyTabModel;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
-import org.chromium.chrome.browser.tabmodel.StubTabModel;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupVisualDataStore;
@@ -111,11 +112,13 @@ public class TabWindowManagerImpl implements TabWindowManager {
     private final TabModelSelectorFactory mSelectorFactory;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final int mMaxSelectors;
+    private final CallbackController mCallbackController = new CallbackController();
 
     private @Nullable TabModelSelector mArchivedTabModelSelector;
     private boolean mKeepAllTabModelsLoaded;
     private boolean mTabStateInitialized;
     private boolean mIsAllTabStateInitialized;
+    private boolean mIsDestroyed;
 
     TabWindowManagerImpl(
             TabModelSelectorFactory selectorFactory,
@@ -255,9 +258,9 @@ public class TabWindowManagerImpl implements TabWindowManager {
         if (!mHeadlessAssignments.containsKey(selector)) return false;
 
         Destroyable shutdown = mHeadlessAssignments.remove(selector);
-        assumeNonNull(shutdown).destroy();
         mWindowIdToSelectors.remove(windowId);
         mSelectorsToWindowId.remove(selector);
+        assumeNonNull(shutdown).destroy();
         return true;
     }
 
@@ -416,7 +419,9 @@ public class TabWindowManagerImpl implements TabWindowManager {
                         isActivityAtRequestedWindowIdInSameTask);
         if (!handled) return originallyAssignedWindowIdForNewActivity;
         @WindowId
-        int releasedWindowId = clearSelectorAndWindowIdAssignments(activityAtRequestedWindowId);
+        int releasedWindowId =
+                clearSelectorAndWindowIdAssignments(
+                        activityAtRequestedWindowId, /* keepHeadless= */ false);
         if (releasedWindowId == INVALID_WINDOW_ID) {
             // If the window id mapping is already cleared for |activityAtRequestedWindowId| by this
             // time, simply return the requested window id.
@@ -603,7 +608,8 @@ public class TabWindowManagerImpl implements TabWindowManager {
         if (archivedTabModelSelector != null) {
             mArchivedTabModelSelector = archivedTabModelSelector;
             TabModelUtils.runOnTabStateInitialized(
-                    this::maybeMarkAllModelStateInitialized, mArchivedTabModelSelector);
+                    mCallbackController.makeCancelable(this::maybeMarkAllModelStateInitialized),
+                    mArchivedTabModelSelector);
         } else {
             mArchivedTabModelSelector = null;
         }
@@ -646,30 +652,42 @@ public class TabWindowManagerImpl implements TabWindowManager {
         }
 
         TabModelUtils.runOnTabStateInitialized(
-                () -> {
-                    mTabStateInitialized = true;
-                    for (Observer observer : mObservers) {
-                        observer.onTabStateInitialized();
-                    }
-
-                    // TODO(https://crbug.com/420738506): Remove this post once the order is
-                    // flipped.
-                    PostTask.postTask(
-                            TaskTraits.UI_DEFAULT,
-                            () -> {
-                                for (TabModelSelector s : tabModelSelectorList) {
-                                    TabModel model = s.getModel(/* incognito= */ false);
-                                    if (!(model instanceof StubTabModel)) {
-                                        model.broadcastSessionRestoreComplete();
-                                        break;
-                                    }
-                                }
-                                unmapOrphanedTabGroups(profile, tabModelSelectorList);
-                                deleteOrphanedTabGroupData(tabModelSelectorList);
-                            });
-                    maybeMarkAllModelStateInitialized();
-                },
+                mCallbackController.makeCancelable(
+                        () -> onTabModelsInitialized(profile, tabModelSelectorList)),
                 tabModelSelectorList.toArray(new TabModelSelector[0]));
+    }
+
+    private void onTabModelsInitialized(
+            Profile profile, List<TabModelSelector> tabModelSelectorList) {
+        if (!mKeepAllTabModelsLoaded || mSelectorsToWindowId.isEmpty()) return;
+        mTabStateInitialized = true;
+        for (Observer observer : mObservers) {
+            observer.onTabStateInitialized();
+        }
+
+        // TODO(https://crbug.com/420738506): Remove this post once the order is flipped.
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                mCallbackController.makeCancelable(
+                        () -> completeTabModelsInitializedPostTask(profile, tabModelSelectorList)));
+        maybeMarkAllModelStateInitialized();
+    }
+
+    private void completeTabModelsInitializedPostTask(
+            Profile profile, List<TabModelSelector> tabModelSelectorList) {
+        if (profile.shutdownStarted()) return;
+        for (TabModelSelector s : tabModelSelectorList) {
+            if (!mSelectorsToWindowId.containsKey(s)) {
+                continue;
+            }
+            TabModel model = s.getModel(/* incognito= */ false);
+            if (!(model instanceof EmptyTabModel)) {
+                model.broadcastSessionRestoreComplete();
+                break;
+            }
+        }
+        unmapOrphanedTabGroups(profile, tabModelSelectorList);
+        deleteOrphanedTabGroupData(tabModelSelectorList);
     }
 
     @Override
@@ -682,10 +700,21 @@ public class TabWindowManagerImpl implements TabWindowManager {
         return mArchivedTabModelSelector;
     }
 
+    void destroy() {
+        if (mIsDestroyed) return;
+        mIsDestroyed = true;
+        mCallbackController.destroy();
+        ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
+        resetLoadedTabModelsState(/* clearArchivedSelector= */ true);
+        mActivityAssignments.clear();
+        mWindowIdToSelectors.clear();
+        mSelectorsToWindowId.clear();
+        mCustomTabsSelectors.clear();
+        mObservers.clear();
+    }
+
     private void maybeMarkAllModelStateInitialized() {
-        if (!mTabStateInitialized
-                || mArchivedTabModelSelector == null
-                || mIsAllTabStateInitialized) {
+        if (!mTabStateInitialized || isPossiblyAnArchivedTab() || mIsAllTabStateInitialized) {
             return;
         }
 
@@ -697,10 +726,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
 
     private void unmapOrphanedTabGroups(
             Profile profile, List<TabModelSelector> tabModelSelectorList) {
-        TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
-        if (tabGroupSyncService == null) return;
-
-        List<TabModel> tabModelList = new ArrayList<>();
+        if (profile.shutdownStarted()) return;
         for (TabModelSelector selector : tabModelSelectorList) {
             // This process is async and it's possible something was shut down during
             // the wait for all these tab models to init. In that case, just bail and
@@ -708,7 +734,12 @@ public class TabWindowManagerImpl implements TabWindowManager {
             if (!mSelectorsToWindowId.containsKey(selector)) {
                 return;
             }
+        }
+        TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
+        if (tabGroupSyncService == null) return;
 
+        List<TabModel> tabModelList = new ArrayList<>();
+        for (TabModelSelector selector : tabModelSelectorList) {
             tabModelList.add(selector.getModel(/* incognito= */ false));
         }
         TabGroupSyncUtils.unmapLocalIdsNotInTabModelList(tabGroupSyncService, tabModelList);
@@ -717,6 +748,9 @@ public class TabWindowManagerImpl implements TabWindowManager {
     private void deleteOrphanedTabGroupData(List<TabModelSelector> tabModelSelectors) {
         Set<String> tabGroupIdTokenStrings = new HashSet<>();
         for (TabModelSelector selector : tabModelSelectors) {
+            if (!mSelectorsToWindowId.containsKey(selector)) {
+                return;
+            }
             for (boolean isIncognito : List.of(false, true)) {
                 TabModel tabModel = selector.getModel(isIncognito);
                 for (Token tabGroupId : tabModel.getAllTabGroupIds()) {
@@ -754,19 +788,50 @@ public class TabWindowManagerImpl implements TabWindowManager {
 
     private void onActivityStateChange(Activity activity, @ActivityState int newState) {
         if (newState == ActivityState.DESTROYED) {
-            clearSelectorAndWindowIdAssignments(activity);
+            @WindowId
+            int windowId = clearSelectorAndWindowIdAssignments(activity, /* keepHeadless= */ true);
+            boolean everyActivityDestroyed = ApplicationStatus.isEveryActivityDestroyed();
             // TODO(dtrainor): Move TabModelSelector#destroy() calls here.
+            if ((windowId != INVALID_WINDOW_ID && mActivityAssignments.isEmpty())
+                    || everyActivityDestroyed) {
+                resetLoadedTabModelsState(/* clearArchivedSelector= */ everyActivityDestroyed);
+            }
         }
     }
 
-    private @WindowId int clearSelectorAndWindowIdAssignments(Activity activity) {
+    private void resetLoadedTabModelsState(boolean clearArchivedSelector) {
+        destroyAllHeadlessSelectors();
+        mKeepAllTabModelsLoaded = false;
+        mTabStateInitialized = false;
+        mIsAllTabStateInitialized = false;
+        if (clearArchivedSelector) {
+            mArchivedTabModelSelector = null;
+        }
+    }
+
+    private void destroyAllHeadlessSelectors() {
+        for (TabModelSelector selector : new ArrayList<>(mHeadlessAssignments.keySet())) {
+            Destroyable shutdown = mHeadlessAssignments.remove(selector);
+            @WindowId int windowId = getWindowIdForSelectorChecked(selector);
+            if (windowId != INVALID_WINDOW_ID && mWindowIdToSelectors.get(windowId) == selector) {
+                mWindowIdToSelectors.remove(windowId);
+            }
+            mSelectorsToWindowId.remove(selector);
+            if (shutdown != null) {
+                shutdown.destroy();
+            }
+        }
+    }
+
+    private @WindowId int clearSelectorAndWindowIdAssignments(
+            Activity activity, boolean keepHeadless) {
         if (!mActivityAssignments.containsKey(activity)) return INVALID_WINDOW_ID;
         TabModelSelector selector = mActivityAssignments.remove(activity);
         @WindowId int windowId = getWindowIdForSelectorChecked(selector);
         if (windowId >= 0) {
             mWindowIdToSelectors.remove(windowId);
             mSelectorsToWindowId.remove(selector);
-            if (mKeepAllTabModelsLoaded) {
+            if (keepHeadless && mKeepAllTabModelsLoaded) {
                 Profile profile = findActiveProfile();
                 if (profile != null) {
                     requestSelectorWithoutActivity(windowId, profile);

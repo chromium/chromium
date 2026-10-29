@@ -41,6 +41,7 @@ public class TabModelSelectorObserverTestRule extends SigninTestRule {
     private TabModelSelectorBase mSelector;
     private TabModelSelectorTestTabModel mNormalTabModel;
     private TabModelSelectorTestIncognitoTabModel mIncognitoTabModel;
+    private TabContentManager mTabContentManager;
 
     public TabModelSelectorBase getSelector() {
         return mSelector;
@@ -60,8 +61,12 @@ public class TabModelSelectorObserverTestRule extends SigninTestRule {
                 new Statement() {
                     @Override
                     public void evaluate() throws Throwable {
-                        setUp();
-                        base.evaluate();
+                        try {
+                            setUp();
+                            base.evaluate();
+                        } finally {
+                            tearDown();
+                        }
                     }
                 },
                 description);
@@ -72,6 +77,20 @@ public class TabModelSelectorObserverTestRule extends SigninTestRule {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     initialize();
+                });
+    }
+
+    private void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (mSelector != null) {
+                        mSelector.destroy();
+                        mSelector = null;
+                    }
+                    if (mTabContentManager != null) {
+                        mTabContentManager.destroy();
+                        mTabContentManager = null;
+                    }
                 });
     }
 
@@ -97,14 +116,14 @@ public class TabModelSelectorObserverTestRule extends SigninTestRule {
                 };
 
         TabModelOrderController orderController = new TabModelOrderControllerImpl(mSelector);
-        TabContentManager tabContentManager =
+        mTabContentManager =
                 new TabContentManager(
                         ApplicationProvider.getApplicationContext(),
                         null,
                         false,
                         mSelector::getTabById,
                         TabWindowManagerSingleton.getInstance());
-        tabContentManager.initWithNative();
+        mTabContentManager.initWithNative();
         NextTabPolicySupplier nextTabPolicySupplier = () -> NextTabPolicy.HIERARCHICAL;
         AsyncTabParamsManager asyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
 
@@ -151,7 +170,7 @@ public class TabModelSelectorObserverTestRule extends SigninTestRule {
                 new TabModelSelectorTestTabModel(
                         regularProfile,
                         orderController,
-                        tabContentManager,
+                        mTabContentManager,
                         nextTabPolicySupplier,
                         asyncTabParamsManager,
                         NO_RESTORE_TYPE,
@@ -167,7 +186,7 @@ public class TabModelSelectorObserverTestRule extends SigninTestRule {
                 new TabModelSelectorTestIncognitoTabModel(
                         regularProfile.getPrimaryOtrProfile(/* createIfNeeded= */ true),
                         orderController,
-                        tabContentManager,
+                        mTabContentManager,
                         nextTabPolicySupplier,
                         asyncTabParamsManager,
                         delegate,

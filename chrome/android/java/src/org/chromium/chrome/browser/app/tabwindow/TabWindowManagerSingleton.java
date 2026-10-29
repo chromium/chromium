@@ -21,6 +21,12 @@ public class TabWindowManagerSingleton {
     private static @Nullable TabWindowManager sInstance;
     private static @Nullable TabModelSelectorFactory sSelectorFactoryForTesting;
 
+    /** Returns the singleton instance if it has already been created, or null otherwise. */
+    public static @Nullable TabWindowManager getInstanceIfCreated() {
+        ThreadUtils.assertOnUiThread();
+        return sInstance;
+    }
+
     /** Returns the singleton instance of {@link TabWindowManager}. */
     public static TabWindowManager getInstance() {
         ThreadUtils.assertOnUiThread();
@@ -53,6 +59,9 @@ public class TabWindowManagerSingleton {
 
     public static void setTabWindowManagerForTesting(TabWindowManager manager) {
         ThreadUtils.assertOnUiThread();
+        if (sInstance != null && sInstance != manager) {
+            TabWindowManagerFactory.destroyForTesting(sInstance);
+        }
         sInstance = manager;
         ResettersForTesting.register(
                 () ->
@@ -62,7 +71,10 @@ public class TabWindowManagerSingleton {
 
     public static void resetTabModelSelectorFactoryForTesting() {
         ThreadUtils.assertOnUiThread();
-        sInstance = null;
+        if (sInstance != null) {
+            TabWindowManagerFactory.destroyForTesting(sInstance);
+            sInstance = null;
+        }
         sSelectorFactoryForTesting = null;
     }
 }

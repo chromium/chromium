@@ -167,7 +167,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
     private final RecordingTabCreatorManager mRecordingTabCreatorManager;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final ObserverList<Observer> mArchivedModelObservers = new ObserverList<>();
-    private final TabWindowManager mTabWindowManager;
 
     // Currently used to perform shadow operations for an alternative storage. Not always enabled.
     private final AccumulatingTabCreator mRegularShadowTabCreator = new AccumulatingTabCreator();
@@ -331,7 +330,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
                 };
         mRecordingTabCreatorManager = new RecordingTabCreatorManager(mArchivedTabCreatorManager);
         mAsyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
-        mTabWindowManager = TabWindowManagerSingleton.getInstance();
         // TODO(crbug.com/359875260): This is a temporary solution to get the
         // ArchivedTabModelSelector from within the tabmodel package.
         ArchivedTabModelSelectorHolder.setInstanceFn(
@@ -377,7 +375,10 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
         }
 
         // Null out TabWindowManager's reference so TabState isn't cleared.
-        mTabWindowManager.setArchivedTabModelSelector(null);
+        TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstanceIfCreated();
+        if (tabWindowManager != null) {
+            tabWindowManager.setArchivedTabModelSelector(/* archivedTabModelSelector= */ null);
+        }
 
         if (mHistoricalTabModelObserver != null) {
             mHistoricalTabModelObserver.destroy();
@@ -647,7 +648,8 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
                         mArchivedTabCreatorManager,
                         () -> NextTabPolicy.LOCATIONAL,
                         mAsyncTabParamsManager);
-        mTabWindowManager.setArchivedTabModelSelector(mTabModelSelector);
+        TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
+        tabWindowManager.setArchivedTabModelSelector(mTabModelSelector);
 
         mTabPersistencePolicy =
                 new TabbedModeTabPersistencePolicy(
@@ -671,7 +673,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
                         mTabPersistencePolicy,
                         mTabModelSelector,
                         mRecordingTabCreatorManager,
-                        mTabWindowManager,
+                        tabWindowManager,
                         ARCHIVED_WINDOW_TAG,
                         cipherFactory,
                         /* recordLegacyTabCountMetrics= */ false,
@@ -945,8 +947,13 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
     }
 
     public void setTabModelSelectorForTesting(TabModelSelectorBase tabModelSelector) {
+        TabModelSelectorBase previous = mTabModelSelector;
         mTabModelSelector = tabModelSelector;
         mTabStateInitializedSupplier.set(tabModelSelector.isTabStateInitialized());
+        if (previous != null && previous != tabModelSelector) {
+            ResettersForTesting.register(
+                    () -> ThreadUtils.runOnUiThreadBlocking(previous::destroy));
+        }
     }
 
     public int getLeaseCountForTesting() {
