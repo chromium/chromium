@@ -39,7 +39,7 @@ void FMAC(base::span<const float> src, float scale, base::span<float> dest) {
   if (src.empty()) {
     return;
   }
-  CHECK_LE(src.size(), dest.size());
+  CHECK_EQ(src.size(), dest.size());
   DCHECK(base::IsAligned(src.data(), kRequiredAlignment));
   DCHECK(base::IsAligned(dest.data(), kRequiredAlignment));
   static const auto fmac_func = [] {
@@ -62,7 +62,7 @@ void FMAC_C(base::span<const float> src, float scale, base::span<float> dest) {
   // Optimization: This check allows the compiler to skip the bounds checks on
   // assign. Removing this causes measurable performance regression in
   // VectorMathPerfTest.FMAC_unoptimized
-  CHECK_LE(src.size(), dest.size());
+  CHECK_EQ(src.size(), dest.size());
   for (size_t i = 0; i < src.size(); ++i) {
     dest[i] += src[i] * scale;
   }
@@ -74,7 +74,7 @@ void FMUL(base::span<const float> src, float scale, base::span<float> dest) {
   }
   // Optimization: This check potentially allows the compiler to skip the bounds
   // checks.
-  CHECK_LE(src.size(), dest.size());
+  CHECK_EQ(src.size(), dest.size());
   DCHECK(base::IsAligned(src.data(), kRequiredAlignment));
   DCHECK(base::IsAligned(dest.data(), kRequiredAlignment));
   static const auto fmul_func = [] {
@@ -97,7 +97,7 @@ void FMUL_C(base::span<const float> src, float scale, base::span<float> dest) {
   // Optimization: This check allows the compiler to skip the bounds checks on
   // assign. Removing this causes measurable performance regression in
   // VectorMathPerfTest.FMUL_unoptimized
-  CHECK_LE(src.size(), dest.size());
+  CHECK_EQ(src.size(), dest.size());
   for (size_t i = 0; i < src.size(); ++i) {
     dest[i] = src[i] * scale;
   }
@@ -107,7 +107,7 @@ void FCLAMP(base::span<const float> src, base::span<float> dest) {
   if (src.empty()) {
     return;
   }
-  CHECK_LE(src.size(), dest.size());
+  CHECK_EQ(src.size(), dest.size());
   CHECK(base::IsAligned(src.data(), kRequiredAlignment));
   CHECK(base::IsAligned(dest.data(), kRequiredAlignment));
   static const auto fclamp_func = [] {
@@ -129,7 +129,7 @@ void FCLAMP(base::span<const float> src, base::span<float> dest) {
 void FCLAMP_C(base::span<const float> src, base::span<float> dest) {
   // Optimization: This check potentially allows the compiler to skip the bounds
   // checks.
-  CHECK_LE(src.size(), dest.size());
+  CHECK_EQ(src.size(), dest.size());
   for (size_t i = 0; i < src.size(); ++i) {
     const float sample = src[i];
     const float temp = std::isnan(sample) ? kSilence : sample;
@@ -184,6 +184,7 @@ static constexpr size_t kAVXAlignment = 32;
 void FMUL_SSE(base::span<const float> src,
               float scale,
               base::span<float> dest) {
+  CHECK_EQ(src.size(), dest.size());
   const size_t rem = src.size() % 4;
   const size_t last_index = src.size() - rem;
   __m128 m_scale = _mm_set_ps1(scale);
@@ -200,6 +201,7 @@ void FMUL_SSE(base::span<const float> src,
 __attribute__((target("avx2"))) void FMUL_AVX2(base::span<const float> src,
                                                float scale,
                                                base::span<float> dest) {
+  CHECK_EQ(src.size(), dest.size());
   const size_t rem = src.size() % 8;
   const size_t last_index = src.size() - rem;
   __m256 m_scale = _mm256_set1_ps(scale);
@@ -242,6 +244,7 @@ __attribute__((target("avx2"))) void FMUL_AVX2(base::span<const float> src,
 void FMAC_SSE(base::span<const float> src,
               float scale,
               base::span<float> dest) {
+  CHECK_EQ(src.size(), dest.size());
   const size_t rem = src.size() % 4;
   const size_t last_index = src.size() - rem;
   __m128 m_scale = _mm_set_ps1(scale);
@@ -260,6 +263,7 @@ void FMAC_SSE(base::span<const float> src,
 __attribute__((target("avx2,fma"))) void FMAC_AVX2(base::span<const float> src,
                                                    float scale,
                                                    base::span<float> dest) {
+  CHECK_EQ(src.size(), dest.size());
   const size_t rem = src.size() % 8;
   const size_t last_index = src.size() - rem;
   __m256 m_scale = _mm256_set1_ps(scale);
@@ -303,6 +307,7 @@ __attribute__((target("avx2,fma"))) void FMAC_AVX2(base::span<const float> src,
   }
 }
 void FCLAMP_SSE(base::span<const float> src, base::span<float> dest) {
+  CHECK_EQ(src.size(), dest.size());
   const size_t rem = src.size() % 4;
   const size_t last_index = src.size() - rem;
   const __m128 m_min = _mm_set_ps1(kClampMin);
@@ -338,6 +343,7 @@ inline __attribute__((target("avx"))) __m256 SanitizeNan(const __m256 values) {
 
 __attribute__((target("avx"))) void FCLAMP_AVX(base::span<const float> src,
                                                base::span<float> dest) {
+  CHECK_EQ(src.size(), dest.size());
   const size_t rem = src.size() % 8;
   const size_t last_index = src.size() - rem;
   const __m256 m_max = _mm256_set1_ps(kClampMax);
@@ -544,6 +550,7 @@ EWMAAndMaxPower_AVX2(float initial_value,
 void FMAC_NEON(base::span<const float> src,
                float scale,
                base::span<float> dest) {
+  CHECK_EQ(src.size(), dest.size());
   const size_t rem = src.size() % 4;
   const size_t last_index = src.size() - rem;
   float32x4_t m_scale = vmovq_n_f32(scale);
@@ -561,6 +568,7 @@ void FMAC_NEON(base::span<const float> src,
 void FMUL_NEON(base::span<const float> src,
                float scale,
                base::span<float> dest) {
+  CHECK_EQ(src.size(), dest.size());
   const size_t rem = src.size() % 4;
   const size_t last_index = src.size() - rem;
   float32x4_t m_scale = vmovq_n_f32(scale);
@@ -575,6 +583,7 @@ void FMUL_NEON(base::span<const float> src,
 }
 
 void FCLAMP_NEON(base::span<const float> src, base::span<float> dest) {
+  CHECK_EQ(src.size(), dest.size());
   const size_t rem = src.size() % 4;
   const size_t last_index = src.size() - rem;
   const float32x4_t m_min = vmovq_n_f32(kClampMin);
