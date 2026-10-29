@@ -449,6 +449,7 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -4682,22 +4683,29 @@ ChromeContentBrowserClient::GetTtsControllerDelegate() {
 }
 #endif
 
-void ChromeContentBrowserClient::MaybeOverrideManifest(
+std::optional<blink::Manifest>
+ChromeContentBrowserClient::MaybeOverrideManifest(
     content::RenderFrameHost* render_frame_host,
-    blink::mojom::ManifestPtr& manifest) {
+    const blink::Manifest& manifest) {
+  std::optional<blink::Manifest> cros_overridden;
 #if BUILDFLAG(IS_CHROMEOS)
-  web_app::ChromeOsWebAppExperiments::MaybeOverrideManifest(render_frame_host,
-                                                            manifest);
+  cros_overridden = web_app::ChromeOsWebAppExperiments::MaybeOverrideManifest(
+      render_frame_host, manifest);
 #endif
 #if !BUILDFLAG(IS_ANDROID)
   Profile* profile =
       Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   if (provider) {
-    provider->policy_manager().MaybeOverrideManifest(render_frame_host,
-                                                     manifest);
+    if (std::optional<blink::Manifest> policy_overridden =
+            provider->policy_manager().MaybeOverrideManifest(
+                render_frame_host,
+                cros_overridden ? *cros_overridden : manifest)) {
+      return policy_overridden;
+    }
   }
 #endif
+  return cros_overridden;
 }
 
 content::TtsPlatform* ChromeContentBrowserClient::GetTtsPlatform() {

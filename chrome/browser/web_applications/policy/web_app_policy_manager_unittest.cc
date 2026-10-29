@@ -62,6 +62,8 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/manifest/manifest_invariants.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -367,6 +369,22 @@ class WebAppPolicyManagerTestBase : public WebAppTest {
         fake_provider().web_contents_manager());
   }
 
+  void SetCustomManifestNameForTesting(const GURL& url,
+                                       const std::string& name) {
+    policy_manager().custom_manifest_values_by_url_[url].SetName(name);
+  }
+
+  void SetCustomManifestIconForTesting(const GURL& url, const GURL& icon_url) {
+    policy_manager().custom_manifest_values_by_url_[url].SetIcon(icon_url);
+  }
+
+  void SetCustomManifestRawIconsForTesting(
+      const GURL& url,
+      std::vector<blink::Manifest::ImageResource> icons) {
+    policy_manager().custom_manifest_values_by_url_[url].icons =
+        std::move(icons);
+  }
+
   data_decoder::test::InProcessDataDecoder data_decoder_;
 
  private:
@@ -375,6 +393,57 @@ class WebAppPolicyManagerTestBase : public WebAppTest {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 #endif
 };
+
+TEST_F(WebAppPolicyManagerTestBase, MaybeOverrideManifestWithIcons) {
+  const GURL app_url("https://example.com/app/index.html");
+  SimulatePreviouslyInstalledApp(app_url,
+                                 ExternalInstallSource::kExternalPolicy);
+  NavigateAndCommit(app_url);
+
+  const GURL custom_icon_url("https://example.com/custom_icon.png");
+  SetCustomManifestNameForTesting(app_url, "Custom Name");
+  SetCustomManifestIconForTesting(app_url, custom_icon_url);
+
+  blink::Manifest manifest =
+      std::move(blink::Manifest::Builder(app_url).SetId(app_url))
+          .BuildChecked();
+  EXPECT_TRUE(manifest.icons().empty());
+
+  std::optional<blink::Manifest> overridden =
+      policy_manager().MaybeOverrideManifest(main_rfh(), manifest);
+
+  ASSERT_TRUE(overridden.has_value());
+  EXPECT_EQ(overridden->name(), u"Custom Name");
+  ASSERT_EQ(overridden->icons().size(), 1u);
+  EXPECT_EQ(overridden->icons()[0].src, custom_icon_url);
+}
+
+TEST_F(WebAppPolicyManagerTestBase,
+       MaybeOverrideManifestInvalidIconDropsOverrideAndLogsUma) {
+  const GURL app_url("https://example.com/app/index.html");
+  SimulatePreviouslyInstalledApp(app_url,
+                                 ExternalInstallSource::kExternalPolicy);
+  NavigateAndCommit(app_url);
+
+  blink::Manifest::ImageResource invalid_icon;
+  invalid_icon.src = GURL("chrome://invalid-icon");
+  invalid_icon.purpose.push_back(
+      blink::mojom::ManifestImageResource::Purpose::ANY);
+  SetCustomManifestRawIconsForTesting(app_url, {invalid_icon});
+
+  blink::Manifest manifest =
+      std::move(blink::Manifest::Builder(app_url).SetId(app_url))
+          .BuildChecked();
+
+  base::HistogramTester histogram_tester;
+  std::optional<blink::Manifest> overridden =
+      policy_manager().MaybeOverrideManifest(main_rfh(), manifest);
+
+  EXPECT_FALSE(overridden.has_value());
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.Manifest.InvariantViolation.PolicyOverride",
+      blink::ManifestInvariantError::kIconSrcInvalidScheme, 1);
+}
 
 class WebAppPolicyManagerTest : public WebAppPolicyManagerTestBase,
                                 public testing::WithParamInterface<bool> {

@@ -11,7 +11,6 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/cloud_upload/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -179,22 +178,26 @@ bool ChromeOsWebAppExperiments::ShouldLaunchForRedirectedNavigation(
   return IsExperimentEnabled(target_app_id);
 }
 
-void ChromeOsWebAppExperiments::MaybeOverrideManifest(
+std::optional<blink::Manifest> ChromeOsWebAppExperiments::MaybeOverrideManifest(
     content::RenderFrameHost* frame_host,
-    blink::mojom::ManifestPtr& manifest) {
-  const auto pwa_start_url_origin = url::Origin::Create(manifest->start_url);
+    const blink::Manifest& manifest) {
+  const auto pwa_start_url_origin = url::Origin::Create(manifest.start_url());
   std::string pwa_start_url_path =
-      manifest->start_url.GetWithoutFilename().GetPath();
+      manifest.start_url().GetWithoutFilename().GetPath();
 
   for (const auto* url_string : kMicrosoft365ManifestUrls) {
     GURL microsoft365_manifest_url = GURL(url_string);
 
     if (pwa_start_url_origin.IsSameOriginWith(microsoft365_manifest_url) &&
         pwa_start_url_path == microsoft365_manifest_url.GetPath()) {
-      manifest->id =
-          GURL(pwa_start_url_origin.GetURL().spec() + kMicrosoft365ManifestId);
+      GURL id(pwa_start_url_origin.GetURL().spec() + kMicrosoft365ManifestId);
+      blink::Manifest::Builder builder = manifest.ToBuilder();
+      builder.SetId(std::move(id));
+      builder.SetHasCustomId(true);
+      return std::move(builder).BuildChecked();
     }
   }
+  return std::nullopt;
 }
 
 void ChromeOsWebAppExperiments::SetAlwaysEnabledForTesting() {

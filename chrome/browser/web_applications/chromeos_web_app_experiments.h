@@ -72,8 +72,9 @@ class ChromeOsWebAppExperiments {
 
   // Override the manifest id with predefined query params if the start URL in
   // the manifest matches certain URLs controlled via a finch parameter.
-  static void MaybeOverrideManifest(content::RenderFrameHost* frame_host,
-                                    blink::mojom::ManifestPtr& manifest);
+  static std::optional<blink::Manifest> MaybeOverrideManifest(
+      content::RenderFrameHost* frame_host,
+      const blink::Manifest& manifest);
 
   static void SetAlwaysEnabledForTesting();
   static void SetScopeExtensionsForTesting(

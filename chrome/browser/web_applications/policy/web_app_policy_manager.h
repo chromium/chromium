@@ -34,6 +34,10 @@
 class PrefService;
 class Profile;
 
+namespace blink {
+class Manifest;
+}  // namespace blink
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
@@ -142,8 +146,9 @@ class WebAppPolicyManager {
   void SynchronizeOsWithPolicyDefinedFileHandlers();
 
   // Changes the manifest to conform to the WebAppInstallForceList policy.
-  void MaybeOverrideManifest(content::RenderFrameHost* frame_host,
-                             blink::mojom::ManifestPtr& manifest) const;
+  std::optional<blink::Manifest> MaybeOverrideManifest(
+      content::RenderFrameHost* frame_host,
+      const blink::Manifest& manifest) const;
 
   bool IsPreventCloseEnabled(const webapps::AppId& app_id) const;
 
@@ -194,8 +199,9 @@ class WebAppPolicyManager {
   void ApplyForceOSUnregistrationPolicySettings(
       base::OnceClosure policy_settings_applied_callback);
 
-  void OverrideManifest(const GURL& custom_values_key,
-                        blink::mojom::ManifestPtr& manifest) const;
+  std::optional<blink::Manifest> OverrideManifest(
+      const GURL& custom_values_key,
+      const blink::Manifest& manifest) const;
   RunOnOsLoginPolicy GetUrlRunOnOsLoginPolicyByManifestId(
       const std::string& manifest_id) const;
 

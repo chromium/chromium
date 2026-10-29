@@ -91,6 +91,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom.h"
@@ -873,6 +874,12 @@ TtsControllerDelegate* ContentBrowserClient::GetTtsControllerDelegate() {
   return nullptr;
 }
 #endif
+
+std::optional<blink::Manifest> ContentBrowserClient::MaybeOverrideManifest(
+    RenderFrameHost* render_frame_host,
+    const blink::Manifest& manifest) {
+  return std::nullopt;
+}
 
 TtsPlatform* ContentBrowserClient::GetTtsPlatform() {
   return nullptr;

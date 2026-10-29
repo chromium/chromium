@@ -599,13 +599,13 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsManifestOverrideBrowserTest,
                        DontOverrideManifestForNonMatchingUrl) {
   const GURL m365PWAUrl = GURL("https://www.example2.com/");
 
-  blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
-  manifest->id = m365PWAUrl;
-  manifest->start_url = m365PWAUrl;
+  blink::Manifest manifest =
+      std::move(blink::Manifest::Builder(m365PWAUrl).SetId(m365PWAUrl))
+          .BuildChecked();
 
-  ChromeOsWebAppExperiments::MaybeOverrideManifest(RenderFrameHost(), manifest);
-
-  EXPECT_EQ(m365PWAUrl, manifest->id);
+  EXPECT_FALSE(ChromeOsWebAppExperiments::MaybeOverrideManifest(
+                   RenderFrameHost(), manifest)
+                   .has_value());
 }
 
 // The manifest id should not be overridden if the start URL origin matches but
@@ -615,13 +615,14 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsManifestOverrideBrowserTest,
   const GURL m365PWAUrlWithPath =
       GURL("https://www.microsoft365.com/launch/word/");
 
-  blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
-  manifest->id = m365PWAUrlWithPath;
-  manifest->start_url = m365PWAUrlWithPath;
+  blink::Manifest manifest =
+      std::move(blink::Manifest::Builder(m365PWAUrlWithPath)
+                    .SetId(m365PWAUrlWithPath))
+          .BuildChecked();
 
-  ChromeOsWebAppExperiments::MaybeOverrideManifest(RenderFrameHost(), manifest);
-
-  EXPECT_EQ(m365PWAUrlWithPath, manifest->id);
+  EXPECT_FALSE(ChromeOsWebAppExperiments::MaybeOverrideManifest(
+                   RenderFrameHost(), manifest)
+                   .has_value());
 }
 
 // The manifest id should be overridden if the start URL matches a URL in the
@@ -631,14 +632,18 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsManifestOverrideBrowserTest,
   // Override manifest for plain Url.
   const GURL m365PWAUrl = GURL("https://www.microsoft365.com/");
 
-  blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
-  manifest->id = m365PWAUrl;
-  manifest->start_url = m365PWAUrl;
+  blink::Manifest manifest =
+      std::move(blink::Manifest::Builder(m365PWAUrl).SetId(m365PWAUrl))
+          .BuildChecked();
 
-  ChromeOsWebAppExperiments::MaybeOverrideManifest(RenderFrameHost(), manifest);
+  std::optional<blink::Manifest> overridden =
+      ChromeOsWebAppExperiments::MaybeOverrideManifest(RenderFrameHost(),
+                                                       manifest);
 
+  ASSERT_TRUE(overridden.has_value());
   EXPECT_EQ(GURL("https://www.microsoft365.com/?from=Homescreen"),
-            manifest->id);
+            overridden->id());
+  EXPECT_TRUE(overridden->has_custom_id());
 }
 
 // The manifest id should be overridden if the start URL matches a URL in the
@@ -647,14 +652,18 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsManifestOverrideBrowserTest,
                        OverrideManifestIdForMatchingUrlWithQueryParams) {
   const GURL m365PWAUrl = GURL("https://www.microsoft365.com/?auth=1");
 
-  blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
-  manifest->id = m365PWAUrl;
-  manifest->start_url = m365PWAUrl;
+  blink::Manifest manifest =
+      std::move(blink::Manifest::Builder(m365PWAUrl).SetId(m365PWAUrl))
+          .BuildChecked();
 
-  ChromeOsWebAppExperiments::MaybeOverrideManifest(RenderFrameHost(), manifest);
+  std::optional<blink::Manifest> overridden =
+      ChromeOsWebAppExperiments::MaybeOverrideManifest(RenderFrameHost(),
+                                                       manifest);
 
+  ASSERT_TRUE(overridden.has_value());
   EXPECT_EQ(GURL("https://www.microsoft365.com/?from=Homescreen"),
-            manifest->id);
+            overridden->id());
+  EXPECT_TRUE(overridden->has_custom_id());
 }
 
 // The manifest id should be overridden if the start URL matches a URL in the
@@ -663,14 +672,18 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsManifestOverrideBrowserTest,
                        OverrideManifestIdForMatchingUrlWithFileName) {
   const GURL m365PWAUrl = GURL("https://www.microsoft365.com/index.html");
 
-  blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
-  manifest->id = m365PWAUrl;
-  manifest->start_url = m365PWAUrl;
+  blink::Manifest manifest =
+      std::move(blink::Manifest::Builder(m365PWAUrl).SetId(m365PWAUrl))
+          .BuildChecked();
 
-  ChromeOsWebAppExperiments::MaybeOverrideManifest(RenderFrameHost(), manifest);
+  std::optional<blink::Manifest> overridden =
+      ChromeOsWebAppExperiments::MaybeOverrideManifest(RenderFrameHost(),
+                                                       manifest);
 
+  ASSERT_TRUE(overridden.has_value());
   EXPECT_EQ(GURL("https://www.microsoft365.com/?from=Homescreen"),
-            manifest->id);
+            overridden->id());
+  EXPECT_TRUE(overridden->has_custom_id());
 }
 
 // The manifest id should be overridden if the start URL matches a URL in the
@@ -679,14 +692,18 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsManifestOverrideBrowserTest,
                        OverrideManifestIdForMatchingUrlWithFragment) {
   const GURL m365PWAUrl = GURL("https://www.microsoft365.com/#test");
 
-  blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
-  manifest->id = m365PWAUrl;
-  manifest->start_url = m365PWAUrl;
+  blink::Manifest manifest =
+      std::move(blink::Manifest::Builder(m365PWAUrl).SetId(m365PWAUrl))
+          .BuildChecked();
 
-  ChromeOsWebAppExperiments::MaybeOverrideManifest(RenderFrameHost(), manifest);
+  std::optional<blink::Manifest> overridden =
+      ChromeOsWebAppExperiments::MaybeOverrideManifest(RenderFrameHost(),
+                                                       manifest);
 
+  ASSERT_TRUE(overridden.has_value());
   EXPECT_EQ(GURL("https://www.microsoft365.com/?from=Homescreen"),
-            manifest->id);
+            overridden->id());
+  EXPECT_TRUE(overridden->has_custom_id());
 }
 
 // The manifest id should be overridden if the start URL matches one of multiple
@@ -697,27 +714,33 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsManifestOverrideBrowserTest,
   const GURL m365PWAUrl2 = GURL("https://m365.cloud.microsoft/?test=a");
 
   {
-    blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
-    manifest->id = m365PWAUrl1;
-    manifest->start_url = m365PWAUrl1;
+    blink::Manifest manifest =
+        std::move(blink::Manifest::Builder(m365PWAUrl1).SetId(m365PWAUrl1))
+            .BuildChecked();
 
-    ChromeOsWebAppExperiments::MaybeOverrideManifest(RenderFrameHost(),
-                                                     manifest);
+    std::optional<blink::Manifest> overridden =
+        ChromeOsWebAppExperiments::MaybeOverrideManifest(RenderFrameHost(),
+                                                         manifest);
 
+    ASSERT_TRUE(overridden.has_value());
     EXPECT_EQ(GURL("https://www.microsoft365.com/?from=Homescreen"),
-              manifest->id);
+              overridden->id());
+    EXPECT_TRUE(overridden->has_custom_id());
   }
 
   {
-    blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
-    manifest->id = m365PWAUrl2;
-    manifest->start_url = m365PWAUrl2;
+    blink::Manifest manifest =
+        std::move(blink::Manifest::Builder(m365PWAUrl2).SetId(m365PWAUrl2))
+            .BuildChecked();
 
-    ChromeOsWebAppExperiments::MaybeOverrideManifest(RenderFrameHost(),
-                                                     manifest);
+    std::optional<blink::Manifest> overridden =
+        ChromeOsWebAppExperiments::MaybeOverrideManifest(RenderFrameHost(),
+                                                         manifest);
 
+    ASSERT_TRUE(overridden.has_value());
     EXPECT_EQ(GURL("https://m365.cloud.microsoft/?from=Homescreen"),
-              manifest->id);
+              overridden->id());
+    EXPECT_TRUE(overridden->has_custom_id());
   }
 }
 

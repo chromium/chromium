@@ -26,6 +26,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -757,31 +758,36 @@ void WebAppPolicyManager::RefreshPolicySettingsForTesting() {
   RefreshPolicySettings();
 }
 
-void WebAppPolicyManager::OverrideManifest(
+std::optional<blink::Manifest> WebAppPolicyManager::OverrideManifest(
     const GURL& custom_values_key,
-    blink::mojom::ManifestPtr& manifest) const {
+    const blink::Manifest& manifest) const {
   const CustomManifestValues& custom_values = CHECK_DEREF(
       base::FindOrNull(custom_manifest_values_by_url_, custom_values_key));
+  blink::Manifest::Builder builder = manifest.ToBuilder();
   if (custom_values.name) {
-    manifest->name = custom_values.name.value();
+    builder.SetName(custom_values.name.value());
   }
   if (custom_values.icons) {
-    manifest->icons = custom_values.icons.value();
+    builder.SetIcons(custom_values.icons.value());
   }
+  base::expected<blink::Manifest, blink::ManifestInvariantError> result =
+      std::move(builder).Build();
+  if (!result.has_value()) {
+    base::UmaHistogramEnumeration(
+        "WebApp.Manifest.InvariantViolation.PolicyOverride", result.error());
+    return std::nullopt;
+  }
+  return std::move(result).value();
 }
 
-void WebAppPolicyManager::MaybeOverrideManifest(
+std::optional<blink::Manifest> WebAppPolicyManager::MaybeOverrideManifest(
     content::RenderFrameHost* frame_host,
-    blink::mojom::ManifestPtr& manifest) const {
+    const blink::Manifest& manifest) const {
   // This doesn't override the manifest properly on a non primary page since it
   // checks the url from PreRedirectionURLObserver that works only on a primary
   // page.
   if (!frame_host->IsInPrimaryMainFrame()) {
-    return;
-  }
-
-  if (!manifest) {
-    return;
+    return std::nullopt;
   }
 
   // For policy-installed apps there are two ways for getting to the manifest:
@@ -789,24 +795,27 @@ void WebAppPolicyManager::MaybeOverrideManifest(
   // of an already installed app. Websites without a manifest will use the
   // policy-installed URL as start_url, so they are covered by the first case.
   // Second case first:
-  if (manifest->id.is_valid()) {
-    std::optional<webapps::ManifestId> manifest_id =
-        webapps::ManifestId::Create(manifest->id);
-    const webapps::AppId& app_id = GenerateAppIdFromManifestId(*manifest_id);
-    // List of policy-installed apps and their install URLs:
-    base::flat_map<webapps::AppId, base::flat_set<GURL>> policy_installed_apps =
-        provider_->registrar_unsafe().GetExternallyInstalledApps(
-            ExternalInstallSource::kExternalPolicy);
-    if (policy_installed_apps.contains(app_id)) {
-      CHECK_GT(policy_installed_apps[app_id].size(), 0UL,
-               base::NotFatalUntil::M162);
-      for (const GURL& policy_install_url : policy_installed_apps[app_id]) {
-        if (custom_manifest_values_by_url_.contains(policy_install_url)) {
-          OverrideManifest(policy_install_url, manifest);
+  const webapps::AppId& app_id =
+      GenerateAppIdFromManifestId(webapps::ManifestId(manifest.id()));
+  // List of policy-installed apps and their install URLs:
+  base::flat_map<webapps::AppId, base::flat_set<GURL>> policy_installed_apps =
+      provider_->registrar_unsafe().GetExternallyInstalledApps(
+          ExternalInstallSource::kExternalPolicy);
+  if (policy_installed_apps.contains(app_id)) {
+    CHECK_GT(policy_installed_apps[app_id].size(), 0UL,
+             base::NotFatalUntil::M162);
+    std::optional<blink::Manifest> current_manifest;
+    for (const GURL& policy_install_url : policy_installed_apps[app_id]) {
+      if (custom_manifest_values_by_url_.contains(policy_install_url)) {
+        std::optional<blink::Manifest> overridden =
+            OverrideManifest(policy_install_url,
+                             current_manifest ? *current_manifest : manifest);
+        if (overridden) {
+          current_manifest = std::move(overridden);
         }
       }
-      return;
     }
+    return current_manifest;
   }
 
   // And now the first case: assume we got here from the policy install URL.
@@ -816,12 +825,13 @@ void WebAppPolicyManager::MaybeOverrideManifest(
       webapps::PreRedirectionURLObserver::FromWebContents(
           content::WebContents::FromRenderFrameHost(frame_host));
   if (!pre_redirect) {
-    return;
+    return std::nullopt;
   }
   GURL install_url = pre_redirect->last_url();
   if (custom_manifest_values_by_url_.contains(install_url)) {
-    OverrideManifest(install_url, manifest);
+    return OverrideManifest(install_url, manifest);
   }
+  return std::nullopt;
 }
 
 // TODO(crbug.com/329823863): This method should be placed somewhere else, as it

@@ -76,6 +76,7 @@ class WindowFeatures;
 namespace web_pref {
 struct WebPreferences;
 }  // namespace web_pref
+class Manifest;
 class StorageKey;
 class URLLoaderThrottle;
 }  // namespace blink
@@ -533,8 +534,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 #if BUILDFLAG(IS_CHROMEOS)
   content::TtsControllerDelegate* GetTtsControllerDelegate() override;
 #endif
-  void MaybeOverrideManifest(content::RenderFrameHost* render_frame_host,
-                             blink::mojom::ManifestPtr& manifest) override;
+  std::optional<blink::Manifest> MaybeOverrideManifest(
+      content::RenderFrameHost* render_frame_host,
+      const blink::Manifest& manifest) override;
   content::TtsPlatform* GetTtsPlatform() override;
   void OverrideWebPreferences(content::WebContents* web_contents,
                               content::SiteInstance& main_frame_site,

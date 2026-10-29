@@ -192,18 +192,13 @@ ManifestManagerHost::ValidateAndMaybeOverrideManifest(
         blink::mojom::ManifestRequestResult::kUnexpectedFailure);
   }
 
-  // Temporary `blink::Manifest` <-> `blink::mojom::Manifest` conversion bridge
-  // while `ContentBrowserClient::MaybeOverrideManifest()` is migrated to take
-  // `const blink::Manifest&` and return `std::optional<blink::Manifest>` in the
-  // next CL (https://crbug.com/485890278).
-  blink::mojom::ManifestPtr mojom_manifest = blink::ManifestToMojom(*manifest);
-  GetContentClient()->browser()->MaybeOverrideManifest(
-      &page().GetMainDocument(), mojom_manifest);
-  base::expected<blink::Manifest, blink::ManifestInvariantError> overridden =
-      blink::ManifestFromMojom(*mojom_manifest);
-  CHECK(overridden.has_value());
-  CHECK(overridden->GetOrigin() == manifest->GetOrigin());
-  return *std::move(overridden);
+  if (std::optional<blink::Manifest> overridden =
+          GetContentClient()->browser()->MaybeOverrideManifest(
+              &page().GetMainDocument(), *manifest)) {
+    CHECK(overridden->GetOrigin() == manifest->GetOrigin());
+    return *std::move(overridden);
+  }
+  return *std::move(manifest);
 }
 
 void ManifestManagerHost::

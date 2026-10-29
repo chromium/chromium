@@ -69,7 +69,7 @@ To keep each CL small and independently reviewable:
   Traits, and Bridges**
 - [x] **Milestone 4: Switch `ManifestManagerHost` Internals to `blink::Manifest`
   and Contextual Checks `C1`–`C5`**
-- [ ] **Milestone 5: Migrate `ContentBrowserClient::MaybeOverrideManifest` and
+- [x] **Milestone 5: Migrate `ContentBrowserClient::MaybeOverrideManifest` and
   Embedder Overrides**
 - [ ] **Milestone 6: Migrate `RequestManifestDebugInfo` and DevTools
   `PageHandler`**

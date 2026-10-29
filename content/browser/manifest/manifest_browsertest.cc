@@ -18,6 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
@@ -33,6 +34,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -2363,6 +2365,65 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(blink::IsEmptyManifest(result));
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             "Manifest scope_extensions origin must not be opaque.");
+}
+
+class OverrideManifestContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  explicit OverrideManifestContentBrowserClient(
+      std::optional<blink::Manifest> override_manifest)
+      : override_manifest_(std::move(override_manifest)) {}
+
+  // ContentBrowserTestContentBrowserClient:
+  std::optional<blink::Manifest> MaybeOverrideManifest(
+      RenderFrameHost* render_frame_host,
+      const blink::Manifest& manifest) override {
+    return override_manifest_;
+  }
+
+ private:
+  std::optional<blink::Manifest> override_manifest_;
+};
+
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, MaybeOverrideManifest_Applied) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/sample-manifest.html");
+  blink::Manifest overridden =
+      std::move(
+          blink::Manifest::Builder(test_url).SetName(u"Overridden App Name"))
+          .BuildChecked();
+  OverrideManifestContentBrowserClient test_client(overridden);
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  GetManifestAndWait();
+  EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
+  EXPECT_EQ(manifest().name, u"Overridden App Name");
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
+                       MaybeOverrideManifest_CrossOriginCheckFails) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/sample-manifest.html");
+  blink::Manifest evil_manifest =
+      std::move(
+          blink::Manifest::Builder(GURL("https://evil.com/")).SetName(u"Evil"))
+          .BuildChecked();
+  OverrideManifestContentBrowserClient test_client(evil_manifest);
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
+      shell()->web_contents()->GetPrimaryPage());
+
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  auto good_manifest = blink::mojom::Manifest::New();
+  good_manifest->start_url = test_url;
+  good_manifest->id = test_url;
+  good_manifest->scope = embedded_test_server()->GetURL("/manifest/");
+
+  EXPECT_CHECK_DEATH(host->ValidateAndMaybeOverrideManifestForTesting(
+      blink::mojom::ManifestRequestResult::kSuccess, std::move(good_manifest)));
 }
 
 }  // namespace
