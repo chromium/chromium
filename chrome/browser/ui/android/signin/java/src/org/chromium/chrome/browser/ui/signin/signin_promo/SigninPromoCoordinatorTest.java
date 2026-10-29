@@ -61,12 +61,13 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -112,7 +113,7 @@ import java.util.List;
 
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@DoNotBatch(reason = "This test relies on native initialization")
+@Batch(Batch.PER_CLASS)
 public class SigninPromoCoordinatorTest {
     private static final List<Integer> sAccessPoints =
             List.of(
@@ -153,7 +154,7 @@ public class SigninPromoCoordinatorTest {
     }
 
     @Rule(order = 0)
-    public final SigninTestRule mSigninTestRule = new SigninTestRule();
+    public final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
 
     @Rule(order = 1)
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
@@ -228,17 +229,7 @@ public class SigninPromoCoordinatorTest {
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED);
         ChromeSharedPreferences.getInstance()
-                .removeKey(
-                        ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                                SigninPreferencesManager.SigninPromoAccessPointId.BOOKMARKS));
-        ChromeSharedPreferences.getInstance()
-                .removeKey(
-                        ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                                SigninPreferencesManager.SigninPromoAccessPointId.HISTORY_PAGE));
-        ChromeSharedPreferences.getInstance()
-                .removeKey(
-                        ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                                SigninPreferencesManager.SigninPromoAccessPointId.NTP));
+                .removeKeysWithPrefix(ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT);
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
         ChromeSharedPreferences.getInstance()
@@ -247,18 +238,26 @@ public class SigninPromoCoordinatorTest {
                 .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME);
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_HISTORY_PAGE_LAST_SHOWN_TIME);
+        NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
     }
 
     @Test
     @MediumTest
-    @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testPromoNotShownWhenAccountsNotAvailable(@SigninAccessPoint int accessPoint) {
+    @RequiresRestart(
+            "RefreshTokensLoadingState.IN_PROGRESS only occurs before initial native startup")
+    public void testPromoNotShownWhenAccountsNotAvailable() {
         try (var _ = mSigninTestRule.blockGetAccountsUpdate()) {
-            setUpSignInPromo(accessPoint);
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        assertFalse(mPromoCoordinator.canShowPromo());
-                    });
+            for (@SigninAccessPoint int accessPoint : sAccessPoints) {
+                setUpSignInPromo(accessPoint);
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            assertFalse(
+                                    "Promo should not show for accessPoint=" + accessPoint,
+                                    mPromoCoordinator.canShowPromo());
+                            mPromoCoordinator.destroy();
+                            mPromoCoordinator = null;
+                        });
+            }
         }
     }
 
