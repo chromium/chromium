@@ -305,10 +305,9 @@ void FaviconLoaderImpl::FetchFavicon(Request request) {
   }
 }
 
-void FaviconLoaderImpl::OnFaviconFetched(
-    CGFloat scale,
-    Request request,
-    const favicon_base::LargeIconResult& result) {
+void FaviconLoaderImpl::OnFaviconFetched(CGFloat scale,
+                                         Request request,
+                                         favicon_base::LargeIconResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // LargeIconResult is either a valid favicon (which can be the default
   // favicon) or fallback attributes.

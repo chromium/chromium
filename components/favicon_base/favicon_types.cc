@@ -38,7 +38,10 @@ LargeIconResult::LargeIconResult(
 
 LargeIconResult::~LargeIconResult() = default;
 
-LargeIconResult::LargeIconResult(LargeIconResult&& result) = default;
+LargeIconResult::LargeIconResult(LargeIconResult&& result) noexcept = default;
+
+LargeIconResult& LargeIconResult::operator=(LargeIconResult&& result) noexcept =
+    default;
 
 // --------------------------------------------------------
 // LargeIconImageResult
@@ -52,5 +55,11 @@ LargeIconImageResult::LargeIconImageResult(
     : fallback_icon_style(std::move(fallback_icon_style_in)) {}
 
 LargeIconImageResult::~LargeIconImageResult() = default;
+
+LargeIconImageResult::LargeIconImageResult(
+    LargeIconImageResult&& result) noexcept = default;
+
+LargeIconImageResult& LargeIconImageResult::operator=(
+    LargeIconImageResult&& result) noexcept = default;
 
 }  // namespace favicon_base

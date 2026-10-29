@@ -69,7 +69,7 @@ SkBitmap SupervisedUserFaviconRequestHandler::GetFaviconOrFallback() {
 }
 
 void SupervisedUserFaviconRequestHandler::OnGetFaviconFromCacheFinished(
-    const favicon_base::LargeIconResult& result) {
+    favicon_base::LargeIconResult result) {
   // Check if fetching the favicon from the cache was successful.
   const favicon_base::FaviconRawBitmapResult& bitmap_result = result.bitmap;
   if (bitmap_result.is_valid()) {

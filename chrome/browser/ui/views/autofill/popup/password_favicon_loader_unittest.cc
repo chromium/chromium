@@ -110,7 +110,7 @@ TEST_F(PasswordFaviconLoaderTest, LoadsImagesFromFaviconService) {
                 ui::ResourceBundle::GetSharedInstance().GetImageNamed(
                     IDR_DISABLE));
             ASSERT_TRUE(result.bitmap.is_valid());
-            std::move(result_callback).Run(result);
+            std::move(result_callback).Run(std::move(result));
           }));
 
   base::MockOnceCallback<void(const gfx::Image&)> on_success;
@@ -204,7 +204,7 @@ TEST_F(PasswordFaviconLoaderTest, ImagesFromFaviconServiceAreCached) {
         favicon_base::LargeIconResult result = GetFaviconResult(
             ui::ResourceBundle::GetSharedInstance().GetImageNamed(IDR_DISABLE));
         ASSERT_TRUE(result.bitmap.is_valid());
-        std::move(callback).Run(result);
+        std::move(callback).Run(std::move(result));
       }));
   EXPECT_CALL(
       on_success,

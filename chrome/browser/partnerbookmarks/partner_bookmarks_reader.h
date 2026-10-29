@@ -102,13 +102,12 @@ class PartnerBookmarksReader {
                                    bool from_server,
                                    int desired_favicon_size_px,
                                    FaviconFetchedCallback callback);
-  void OnGetFaviconFromCacheFinished(
-      const GURL& page_url,
-      FaviconFetchedCallback callback,
-      bool fallback_to_server,
-      bool from_server,
-      int desired_favicon_size_px,
-      const favicon_base::LargeIconResult& result);
+  void OnGetFaviconFromCacheFinished(const GURL& page_url,
+                                     FaviconFetchedCallback callback,
+                                     bool fallback_to_server,
+                                     bool from_server,
+                                     int desired_favicon_size_px,
+                                     favicon_base::LargeIconResult result);
   void OnGetFaviconFromServerFinished(
       const GURL& page_url,
       int desired_favicon_size_px,

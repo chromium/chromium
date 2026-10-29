@@ -61,7 +61,7 @@ class FaviconFetcher {
       bool continue_to_server,
       const base::android::ScopedJavaGlobalRef<jobject>& callback,
       FaviconDimensions faviconDimensions,
-      const favicon_base::LargeIconImageResult& image_result);
+      favicon_base::LargeIconImageResult image_result);
 
   // Helper method for returning the favicon to the caller.
   virtual void ExecuteFaviconCallback(

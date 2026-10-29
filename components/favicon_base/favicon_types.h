@@ -108,7 +108,8 @@ struct LargeIconResult {
 
   ~LargeIconResult();
 
-  LargeIconResult(LargeIconResult&& result);
+  LargeIconResult(LargeIconResult&& result) noexcept;
+  LargeIconResult& operator=(LargeIconResult&& result) noexcept;
 
   // The bitmap from the favicon database if the database has a sufficiently
   // large one.
@@ -131,6 +132,9 @@ struct LargeIconImageResult {
       std::unique_ptr<FallbackIconStyle> fallback_icon_style_in);
 
   ~LargeIconImageResult();
+
+  LargeIconImageResult(LargeIconImageResult&& result) noexcept;
+  LargeIconImageResult& operator=(LargeIconImageResult&& result) noexcept;
 
   // The image from the favicon database if the database has a sufficiently
   // large one.

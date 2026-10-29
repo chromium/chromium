@@ -113,7 +113,7 @@ void PasswordFaviconLoaderImpl::OnFaviconResponse(
     const GURL& domain_url,
     OnLoadSuccess on_success,
     OnLoadFail on_fail,
-    const favicon_base::LargeIconResult& result) {
+    favicon_base::LargeIconResult result) {
   if (result.bitmap.is_valid()) {
     gfx::Image image =
         gfx::Image::CreateFrom1xPNGBytes(result.bitmap.bitmap_data);

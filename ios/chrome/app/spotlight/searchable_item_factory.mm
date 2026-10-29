@@ -7,6 +7,7 @@
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import <string>
+#import <utility>
 
 #import "base/containers/span.h"
 #import "base/functional/bind.h"
@@ -171,8 +172,8 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
       URLToRefresh, kMinIconSize * [UIScreen mainScreen].scale,
       kIconSize * [UIScreen mainScreen].scale,
       base::BindOnce(
-          ^(const GURL& itemURL, const favicon_base::LargeIconResult& result) {
-            [weakSelf largeIconResult:result
+          ^(const GURL& itemURL, favicon_base::LargeIconResult result) {
+            [weakSelf largeIconResult:std::move(result)
                               itemURL:itemURL
                                 title:title
                    additionalKeywords:keywords
@@ -220,7 +221,7 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
 
 // Calls a completion handler after creating a searchable item with
 // url,title,keywords and a favicon.
-- (void)largeIconResult:(const favicon_base::LargeIconResult&)largeIconResult
+- (void)largeIconResult:(favicon_base::LargeIconResult)largeIconResult
                 itemURL:(const GURL&)itemURL
                   title:(NSString*)title
      additionalKeywords:(NSArray<NSString*>*)keywords

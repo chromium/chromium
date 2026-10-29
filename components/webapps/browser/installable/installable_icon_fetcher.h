@@ -58,7 +58,7 @@ class InstallableIconFetcher {
       const SkBitmap& bitmap);
 
   void FetchFavicon();
-  void OnFaviconFetched(const favicon_base::LargeIconResult& result);
+  void OnFaviconFetched(favicon_base::LargeIconResult result);
   void OnFaviconProcessingFailed(InstallableStatusCode code);
 
   void FetchFaviconFromCandidates();

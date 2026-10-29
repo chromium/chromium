@@ -64,7 +64,7 @@ class PasswordFaviconLoaderImpl : public PasswordFaviconLoader {
   void OnFaviconResponse(const GURL& domain_url,
                          OnLoadSuccess on_success,
                          OnLoadFail on_fail,
-                         const favicon_base::LargeIconResult& result);
+                         favicon_base::LargeIconResult result);
   void OnFaviconResponseFromImageFetcher(
       const GURL& domain_url,
       OnLoadSuccess on_success,

@@ -37,7 +37,7 @@ BASE_FEATURE(kDontCacheNullFavicons, base::FEATURE_ENABLED_BY_DEFAULT);
 namespace {
 
 void OnLargeIconAvailable(const JavaRef<jobject>& j_callback,
-                          const favicon_base::LargeIconResult& result) {
+                          favicon_base::LargeIconResult result) {
   // Convert the result to a Java Bitmap.
   ScopedJavaLocalRef<jobject> j_bitmap;
   if (result.bitmap.is_valid()) {

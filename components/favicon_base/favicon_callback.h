@@ -37,14 +37,13 @@ typedef base::OnceCallback<void(const std::vector<FaviconRawBitmapResult>&)>
 // will contain either the raw bitmap for a large icon or the style of the
 // fallback to use if a sufficiently large icon could not be found.
 // TODO(jkrcal): Rename LargeIcon* to LargeIconRawBitmap*.
-typedef base::OnceCallback<void(const LargeIconResult&)> LargeIconCallback;
+using LargeIconCallback = base::OnceCallback<void(LargeIconResult)>;
 
 // Callback for functions returning decoded data for a large icon.
 // |LargeIconImageResult| will contain either the decoded image of a large
 // icon or the style of the fallback to use if a sufficiently large icon could
 // not be found.
-typedef base::OnceCallback<void(const LargeIconImageResult&)>
-    LargeIconImageCallback;
+using LargeIconImageCallback = base::OnceCallback<void(LargeIconImageResult)>;
 
 typedef base::OnceCallback<void(GoogleFaviconServerRequestStatus)>
     GoogleFaviconServerCallback;

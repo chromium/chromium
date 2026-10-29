@@ -25,7 +25,7 @@ void OnLargeIconResultAndCache(
     const GURL& url,
     base::WeakPtr<LargeIconCache> cache,
     void (^favicon_block)(const favicon_base::LargeIconResult&),
-    const favicon_base::LargeIconResult& result) {
+    favicon_base::LargeIconResult result) {
   favicon_block(result);
 
   if (cache && (result.bitmap.is_valid() || result.fallback_icon_style)) {

@@ -214,7 +214,7 @@ void IconCacherImpl::StartFetchMostLikely(const GURL& page_url,
 
 void IconCacherImpl::OnGetLargeIconOrFallbackStyleFinished(
     const GURL& page_url,
-    const favicon_base::LargeIconResult& result) {
+    favicon_base::LargeIconResult result) {
   if (!HasResultDefaultBackgroundColor(result)) {
     // There is already an icon, there is nothing to do. (We should only fetch
     // for default "gray" tiles so that we never overwrite any favicon of any

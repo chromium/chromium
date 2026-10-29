@@ -63,8 +63,7 @@ class SupervisedUserFaviconRequestHandler {
   void FetchFaviconFromCache();
 
   // Callbacks for favicon fetches.
-  void OnGetFaviconFromCacheFinished(
-      const favicon_base::LargeIconResult& result);
+  void OnGetFaviconFromCacheFinished(favicon_base::LargeIconResult result);
   void OnGetFaviconFromGoogleServerFinished(
       favicon_base::GoogleFaviconServerRequestStatus status);
 

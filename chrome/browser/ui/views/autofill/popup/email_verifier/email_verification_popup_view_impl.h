@@ -84,7 +84,7 @@ class EmailVerificationPopupViewImpl : public EmailVerificationPopupView,
   void Show();
   void OnConfirm(const ui::Event& event);
   void OnCancel(const ui::Event& event);
-  void OnFaviconLoaded(const favicon_base::LargeIconResult& result);
+  void OnFaviconLoaded(favicon_base::LargeIconResult result);
 
   base::OnceCallback<void(bool)> callback_;
   views::InputEventActivationProtector input_protector_;

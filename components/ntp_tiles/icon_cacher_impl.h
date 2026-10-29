@@ -92,7 +92,7 @@ class IconCacherImpl : public IconCacher {
 
   void OnGetLargeIconOrFallbackStyleFinished(
       const GURL& page_url,
-      const favicon_base::LargeIconResult& result);
+      favicon_base::LargeIconResult result);
 
   void OnMostLikelyFaviconDownloaded(
       const GURL& request_url,

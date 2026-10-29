@@ -127,7 +127,7 @@ class LargeIconServiceImpl : public LargeIconService {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       favicon_base::LargeIconCallback callback,
       base::CancelableTaskTracker* tracker,
-      const favicon_base::LargeIconResult& icon_result);
+      favicon_base::LargeIconResult icon_result);
 
   // Called back when the requested icon is returned from the Google favicon
   // service. The request is done by

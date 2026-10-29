@@ -247,7 +247,7 @@ void PartnerBookmarksReader::OnGetFaviconFromCacheFinished(
     bool fallback_to_server,
     bool from_server,
     int desired_favicon_size_px,
-    const favicon_base::LargeIconResult& result) {
+    favicon_base::LargeIconResult result) {
   // |from_server| tells us if we fetched the image from the cache after we went
   // to server for it, so this successful cache retrieval should actually return
   // SUCCESS_FROM_SERVER.

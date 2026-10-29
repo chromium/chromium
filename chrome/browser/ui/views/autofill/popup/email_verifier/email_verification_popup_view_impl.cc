@@ -255,7 +255,7 @@ void EmailVerificationPopupViewImpl::OnCancel(const ui::Event& event) {
 }
 
 void EmailVerificationPopupViewImpl::OnFaviconLoaded(
-    const favicon_base::LargeIconResult& result) {
+    favicon_base::LargeIconResult result) {
   if (result.bitmap.is_valid() && icon_view_) {
     gfx::Image image =
         gfx::Image::CreateFrom1xPNGBytes(result.bitmap.bitmap_data);

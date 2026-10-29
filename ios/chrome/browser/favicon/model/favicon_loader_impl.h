@@ -61,7 +61,7 @@ class FaviconLoaderImpl final : public FaviconLoader {
   // Invoked when fetching the favicon from LargeIconService completes.
   void OnFaviconFetched(CGFloat scale,
                         Request request,
-                        const favicon_base::LargeIconResult& result);
+                        favicon_base::LargeIconResult result);
 
   // Invoked when callback to google servers completes.
   void OnGoogleServerFallbackCompleted(

@@ -307,7 +307,7 @@ void InstallableIconFetcher::FetchFavicon() {
 }
 
 void InstallableIconFetcher::OnFaviconFetched(
-    const favicon_base::LargeIconResult& result) {
+    favicon_base::LargeIconResult result) {
   if (!result.bitmap.is_valid()) {
     FetchFaviconFromCandidates();
     return;

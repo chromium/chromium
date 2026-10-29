@@ -15,8 +15,8 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/favicon/core/favicon_client.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
@@ -138,7 +138,6 @@ TEST_F(LargeIconServiceTest, ShouldGetFromGoogleServer) {
             FROM_HERE, base::BindOnce(std::move(callback), true));
       });
 
-  base::MockCallback<favicon_base::GoogleFaviconServerCallback> callback;
   EXPECT_CALL(*mock_image_fetcher_,
               FetchImageAndData_(kExpectedServerUrl, _, _, _))
       .WillOnce(
@@ -152,15 +151,15 @@ TEST_F(LargeIconServiceTest, ShouldGetFromGoogleServer) {
                 FROM_HERE, base::BindOnce(std::move(callback), true));
           });
 
+  base::test::TestFuture<favicon_base::GoogleFaviconServerRequestStatus> future;
   large_icon_service_
       .GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
           GURL(kDummyPageUrl),
           /*should_trim_page_url_path=*/false, TRAFFIC_ANNOTATION_FOR_TESTS,
-          callback.Get());
+          future.GetCallback());
 
-  EXPECT_CALL(callback,
-              Run(favicon_base::GoogleFaviconServerRequestStatus::SUCCESS));
-  task_environment_.RunUntilIdle();
+  EXPECT_EQ(favicon_base::GoogleFaviconServerRequestStatus::SUCCESS,
+            future.Get());
   histogram_tester_.ExpectUniqueSample(
       "Favicons.LargeIconService.DownloadedSize", 64,
       /*expected_bucket_count=*/1);
@@ -196,16 +195,15 @@ TEST_F(LargeIconServiceTest, ShouldGetFromGoogleServerWithOriginalUrl) {
                 FROM_HERE, base::BindOnce(std::move(callback), true));
           });
 
-  base::MockCallback<favicon_base::GoogleFaviconServerCallback> callback;
+  base::test::TestFuture<favicon_base::GoogleFaviconServerRequestStatus> future;
   large_icon_service_
       .GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
           GURL(kDummyPageUrl),
           /*should_trim_page_url_path=*/false, TRAFFIC_ANNOTATION_FOR_TESTS,
-          callback.Get());
+          future.GetCallback());
 
-  EXPECT_CALL(callback,
-              Run(favicon_base::GoogleFaviconServerRequestStatus::SUCCESS));
-  task_environment_.RunUntilIdle();
+  EXPECT_EQ(favicon_base::GoogleFaviconServerRequestStatus::SUCCESS,
+            future.Get());
 }
 
 TEST_F(LargeIconServiceTest, ShouldTrimQueryParametersForGoogleServer) {
@@ -245,17 +243,16 @@ TEST_F(LargeIconServiceTest, ShouldNotQueryGoogleServerIfInvalidScheme) {
 
   EXPECT_CALL(*mock_image_fetcher_, FetchImageAndData_).Times(0);
 
-  base::MockCallback<favicon_base::GoogleFaviconServerCallback> callback;
-
+  base::test::TestFuture<favicon_base::GoogleFaviconServerRequestStatus> future;
   large_icon_service_
       .GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
           GURL(kDummyFtpUrl),
           /*should_trim_page_url_path=*/false, TRAFFIC_ANNOTATION_FOR_TESTS,
-          callback.Get());
+          future.GetCallback());
 
-  EXPECT_CALL(callback, Run(favicon_base::GoogleFaviconServerRequestStatus::
-                                FAILURE_TARGET_URL_SKIPPED));
-  task_environment_.RunUntilIdle();
+  EXPECT_EQ(favicon_base::GoogleFaviconServerRequestStatus::
+                FAILURE_TARGET_URL_SKIPPED,
+            future.Get());
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   "Favicons.LargeIconService.DownloadedSize"),
               IsEmpty());
@@ -266,17 +263,16 @@ TEST_F(LargeIconServiceTest, ShouldNotQueryGoogleServerIfInvalidURL) {
 
   EXPECT_CALL(*mock_image_fetcher_, FetchImageAndData_).Times(0);
 
-  base::MockCallback<favicon_base::GoogleFaviconServerCallback> callback;
-
+  base::test::TestFuture<favicon_base::GoogleFaviconServerRequestStatus> future;
   large_icon_service_
       .GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
           GURL(kDummyInvalidUrl),
           /*should_trim_page_url_path=*/false, TRAFFIC_ANNOTATION_FOR_TESTS,
-          callback.Get());
+          future.GetCallback());
 
-  EXPECT_CALL(callback, Run(favicon_base::GoogleFaviconServerRequestStatus::
-                                FAILURE_TARGET_URL_INVALID));
-  task_environment_.RunUntilIdle();
+  EXPECT_EQ(favicon_base::GoogleFaviconServerRequestStatus::
+                FAILURE_TARGET_URL_INVALID,
+            future.Get());
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   "Favicons.LargeIconService.DownloadedSize"),
               IsEmpty());
@@ -297,22 +293,22 @@ TEST_F(LargeIconServiceTest, ShouldReportUnavailableIfFetchFromServerFails) {
       });
   EXPECT_CALL(mock_favicon_service_, SetOnDemandFavicons).Times(0);
 
-  base::MockCallback<favicon_base::GoogleFaviconServerCallback> callback;
   EXPECT_CALL(*mock_image_fetcher_,
               FetchImageAndData_(kExpectedServerUrl, _, _, _))
       .WillOnce(PostFetchReply(gfx::Image()));
   EXPECT_CALL(mock_favicon_service_,
               UnableToDownloadFavicon(kExpectedServerUrl));
 
+  base::test::TestFuture<favicon_base::GoogleFaviconServerRequestStatus> future;
   large_icon_service_
       .GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
           GURL(kDummyPageUrl),
           /*should_trim_page_url_path=*/false, TRAFFIC_ANNOTATION_FOR_TESTS,
-          callback.Get());
+          future.GetCallback());
 
-  EXPECT_CALL(callback, Run(favicon_base::GoogleFaviconServerRequestStatus::
-                                FAILURE_CONNECTION_ERROR));
-  task_environment_.RunUntilIdle();
+  EXPECT_EQ(
+      favicon_base::GoogleFaviconServerRequestStatus::FAILURE_CONNECTION_ERROR,
+      future.Get());
   // Verify that download failure gets recorded.
   histogram_tester_.ExpectUniqueSample(
       "Favicons.LargeIconService.DownloadedSize", 0,
@@ -331,16 +327,16 @@ TEST_F(LargeIconServiceTest, ShouldNotGetFromGoogleServerIfUnavailable) {
   EXPECT_CALL(*mock_image_fetcher_, FetchImageAndData_).Times(0);
   EXPECT_CALL(mock_favicon_service_, SetOnDemandFavicons).Times(0);
 
-  base::MockCallback<favicon_base::GoogleFaviconServerCallback> callback;
+  base::test::TestFuture<favicon_base::GoogleFaviconServerRequestStatus> future;
   large_icon_service_
       .GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
           GURL(kDummyPageUrl),
           /*should_trim_page_url_path=*/false, TRAFFIC_ANNOTATION_FOR_TESTS,
-          callback.Get());
+          future.GetCallback());
 
-  EXPECT_CALL(callback, Run(favicon_base::GoogleFaviconServerRequestStatus::
-                                FAILURE_HTTP_ERROR_CACHED));
-  task_environment_.RunUntilIdle();
+  EXPECT_EQ(
+      favicon_base::GoogleFaviconServerRequestStatus::FAILURE_HTTP_ERROR_CACHED,
+      future.Get());
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   "Favicons.LargeIconService.DownloadedSize"),
               IsEmpty());
@@ -359,16 +355,16 @@ TEST_F(LargeIconServiceTest, ShouldNotGetFromGoogleServerIfCannotSet) {
   EXPECT_CALL(*mock_image_fetcher_, FetchImageAndData_).Times(0);
   EXPECT_CALL(mock_favicon_service_, SetOnDemandFavicons).Times(0);
 
-  base::MockCallback<favicon_base::GoogleFaviconServerCallback> callback;
+  base::test::TestFuture<favicon_base::GoogleFaviconServerRequestStatus> future;
   large_icon_service_
       .GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
           GURL(kDummyPageUrl),
           /*should_trim_page_url_path=*/false, TRAFFIC_ANNOTATION_FOR_TESTS,
-          callback.Get());
+          future.GetCallback());
 
-  EXPECT_CALL(callback, Run(favicon_base::GoogleFaviconServerRequestStatus::
-                                FAILURE_ICON_EXISTS_IN_DB));
-  task_environment_.RunUntilIdle();
+  EXPECT_EQ(
+      favicon_base::GoogleFaviconServerRequestStatus::FAILURE_ICON_EXISTS_IN_DB,
+      future.Get());
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   "Favicons.LargeIconService.DownloadedSize"),
               IsEmpty());
@@ -458,41 +454,30 @@ class LargeIconServiceGetterTest : public LargeIconServiceTest,
       int desired_size_in_pixel) {
     // Switch over testing two analogous functions based on the bool param.
     if (GetParam()) {
+      base::test::TestFuture<favicon_base::LargeIconResult> future;
       large_icon_service_.GetLargeIconRawBitmapOrFallbackStyleForPageUrl(
           page_url, min_source_size_in_pixel, desired_size_in_pixel,
-          base::BindRepeating(
-              &LargeIconServiceGetterTest::RawBitmapResultCallback,
-              base::Unretained(this)),
-          &cancelable_task_tracker_);
+          future.GetCallback(), &cancelable_task_tracker_);
+      const favicon_base::LargeIconResult& result = future.Get();
+      if (result.bitmap.is_valid()) {
+        returned_bitmap_size_ = result.bitmap.pixel_size;
+      }
+      if (result.fallback_icon_style) {
+        returned_fallback_style_ = *result.fallback_icon_style;
+      }
     } else {
+      base::test::TestFuture<favicon_base::LargeIconImageResult> future;
       large_icon_service_.GetLargeIconImageOrFallbackStyleForPageUrl(
           page_url, min_source_size_in_pixel, desired_size_in_pixel,
-          base::BindRepeating(&LargeIconServiceGetterTest::ImageResultCallback,
-                              base::Unretained(this)),
-          &cancelable_task_tracker_);
-    }
-    task_environment_.RunUntilIdle();
-  }
-
-  void RawBitmapResultCallback(const favicon_base::LargeIconResult& result) {
-    if (result.bitmap.is_valid()) {
-      returned_bitmap_size_ = result.bitmap.pixel_size;
-    }
-    StoreFallbackStyle(result.fallback_icon_style.get());
-  }
-
-  void ImageResultCallback(const favicon_base::LargeIconImageResult& result) {
-    if (!result.image.IsEmpty()) {
-      returned_bitmap_size_ = result.image.ToImageSkia()->size();
-      ASSERT_TRUE(result.icon_url.is_valid());
-    }
-    StoreFallbackStyle(result.fallback_icon_style.get());
-  }
-
-  void StoreFallbackStyle(
-      const favicon_base::FallbackIconStyle* fallback_style) {
-    if (fallback_style) {
-      returned_fallback_style_ = *fallback_style;
+          future.GetCallback(), &cancelable_task_tracker_);
+      const favicon_base::LargeIconImageResult& result = future.Get();
+      if (!result.image.IsEmpty()) {
+        returned_bitmap_size_ = result.image.ToImageSkia()->size();
+        ASSERT_TRUE(result.icon_url.is_valid());
+      }
+      if (result.fallback_icon_style) {
+        returned_fallback_style_ = *result.fallback_icon_style;
+      }
     }
   }
 
@@ -533,18 +518,16 @@ TEST_P(LargeIconServiceGetterTest,
   EXPECT_CALL(mock_favicon_service_, CanSetOnDemandFavicons).Times(0);
   EXPECT_CALL(*mock_image_fetcher_, FetchImageAndData_).Times(0);
 
+  base::test::TestFuture<favicon_base::LargeIconResult> future;
   large_icon_service_.GetLargeIconFromCacheFallbackToGoogleServer(
       GURL(kDummyPageUrl),
       /*min_source_size=*/LargeIconService::StandardIconSize::k16x16,
       std::nullopt, LargeIconService::NoBigEnoughIconBehavior::kReturnEmpty,
       /*should_trim_page_url_path=*/false, TRAFFIC_ANNOTATION_FOR_TESTS,
-      base::BindRepeating(&LargeIconServiceGetterTest::RawBitmapResultCallback,
-                          base::Unretained(this)),
-      &cancelable_task_tracker_);
-  task_environment_.RunUntilIdle();
+      future.GetCallback(), &cancelable_task_tracker_);
 
-  EXPECT_EQ(gfx::Size(16, 16), returned_bitmap_size_);
-  EXPECT_EQ(std::nullopt, returned_fallback_style_);
+  EXPECT_EQ(gfx::Size(16, 16), future.Get().bitmap.pixel_size);
+  EXPECT_EQ(nullptr, future.Get().fallback_icon_style);
 }
 
 // Test that `GetLargeIconFromCacheFallbackToGoogleServer()` resizes the locally
@@ -564,19 +547,17 @@ TEST_P(LargeIconServiceGetterTest,
   EXPECT_CALL(mock_favicon_service_, CanSetOnDemandFavicons).Times(0);
   EXPECT_CALL(*mock_image_fetcher_, FetchImageAndData_).Times(0);
 
+  base::test::TestFuture<favicon_base::LargeIconResult> future;
   large_icon_service_.GetLargeIconFromCacheFallbackToGoogleServer(
       GURL(kDummyPageUrl),
       /*min_source_size=*/LargeIconService::StandardIconSize::k16x16,
       /*size_to_resize_to=*/LargeIconService::StandardIconSize::k16x16,
       LargeIconService::NoBigEnoughIconBehavior::kReturnEmpty,
       /*should_trim_page_url_path=*/false, TRAFFIC_ANNOTATION_FOR_TESTS,
-      base::BindRepeating(&LargeIconServiceGetterTest::RawBitmapResultCallback,
-                          base::Unretained(this)),
-      &cancelable_task_tracker_);
-  task_environment_.RunUntilIdle();
+      future.GetCallback(), &cancelable_task_tracker_);
 
-  EXPECT_EQ(gfx::Size(16, 16), returned_bitmap_size_);
-  EXPECT_EQ(std::nullopt, returned_fallback_style_);
+  EXPECT_EQ(gfx::Size(16, 16), future.Get().bitmap.pixel_size);
+  EXPECT_EQ(nullptr, future.Get().fallback_icon_style);
 }
 
 // Test that `GetLargeIconFromCacheFallbackToGoogleServer()` doesn't query the
@@ -602,19 +583,17 @@ TEST_P(LargeIconServiceGetterTest,
 
   // Request the icon of size exactly 32x32. The database 16x16 icon should not
   // be returned because `NoBigEnoughIconBehavior::kReturnEmpty` is used.
+  base::test::TestFuture<favicon_base::LargeIconResult> future;
   large_icon_service_.GetLargeIconFromCacheFallbackToGoogleServer(
       GURL(kDummyPageUrl),
       /*min_source_size=*/LargeIconService::StandardIconSize::k32x32,
       /*size_to_resize_to=*/LargeIconService::StandardIconSize::k32x32,
       LargeIconService::NoBigEnoughIconBehavior::kReturnEmpty,
       /*should_trim_page_url_path=*/false, TRAFFIC_ANNOTATION_FOR_TESTS,
-      base::BindRepeating(&LargeIconServiceGetterTest::RawBitmapResultCallback,
-                          base::Unretained(this)),
-      &cancelable_task_tracker_);
-  task_environment_.RunUntilIdle();
+      future.GetCallback(), &cancelable_task_tracker_);
 
-  EXPECT_EQ(std::nullopt, returned_bitmap_size_);
-  EXPECT_EQ(std::nullopt, returned_fallback_style_);
+  EXPECT_FALSE(future.Get().bitmap.is_valid());
+  EXPECT_EQ(nullptr, future.Get().fallback_icon_style);
 }
 
 // Test that `GetLargeIconFromCacheFallbackToGoogleServer()` queries the Google
@@ -651,19 +630,17 @@ TEST_P(LargeIconServiceGetterTest,
 
   // Request the icon of size exactly 32x32 for the domain, which has no icons
   // stored locally.
+  base::test::TestFuture<favicon_base::LargeIconResult> future;
   large_icon_service_.GetLargeIconFromCacheFallbackToGoogleServer(
       GURL(kDummyPageUrl),
       /*min_source_size=*/LargeIconService::StandardIconSize::k32x32,
       /*size_to_resize_to=*/LargeIconService::StandardIconSize::k32x32,
       LargeIconService::NoBigEnoughIconBehavior::kReturnBitmap,
       /*should_trim_page_url_path=*/false, TRAFFIC_ANNOTATION_FOR_TESTS,
-      base::BindRepeating(&LargeIconServiceGetterTest::RawBitmapResultCallback,
-                          base::Unretained(this)),
-      &cancelable_task_tracker_);
-  task_environment_.RunUntilIdle();
+      future.GetCallback(), &cancelable_task_tracker_);
 
-  EXPECT_EQ(gfx::Size(32, 32), returned_bitmap_size_);
-  EXPECT_EQ(std::nullopt, returned_fallback_style_);
+  EXPECT_EQ(gfx::Size(32, 32), future.Get().bitmap.pixel_size);
+  EXPECT_EQ(nullptr, future.Get().fallback_icon_style);
 }
 
 // Test that GetLargeIconFromCacheFallbackToGoogleServer() doesn't crash if the
@@ -704,19 +681,17 @@ TEST_P(LargeIconServiceGetterTest, CancelableTaskTrackerDestroyedEarly) {
 
   // Request the icon of size exactly 32x32 for the domain, which has no icons
   // stored locally.
+  base::test::TestFuture<favicon_base::LargeIconResult> future;
   large_icon_service_.GetLargeIconFromCacheFallbackToGoogleServer(
       GURL(kDummyPageUrl),
       /*min_source_size=*/LargeIconService::StandardIconSize::k32x32,
       /*size_to_resize_to=*/LargeIconService::StandardIconSize::k32x32,
       LargeIconService::NoBigEnoughIconBehavior::kReturnBitmap,
       /*should_trim_page_url_path=*/false, TRAFFIC_ANNOTATION_FOR_TESTS,
-      base::BindRepeating(&LargeIconServiceGetterTest::RawBitmapResultCallback,
-                          base::Unretained(this)),
-      test_specific_cancelable_task_tracker.get());
+      future.GetCallback(), test_specific_cancelable_task_tracker.get());
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(std::nullopt, returned_bitmap_size_);
-  EXPECT_EQ(std::nullopt, returned_fallback_style_);
+  EXPECT_FALSE(future.IsReady());
 }
 
 TEST_P(LargeIconServiceGetterTest, SameSize) {
@@ -819,17 +794,15 @@ TEST_P(LargeIconServiceGetterTest, IconTooSmallStillWantBitmap) {
 
   InjectMockDatabaseResult(GURL(kDummyPageUrl),
                            CreateTestBitmapResult(16, 16, kTestColor));
+  base::test::TestFuture<favicon_base::LargeIconResult> future;
   large_icon_service_.GetLargeIconRawBitmapForPageUrl(
       GURL(kDummyPageUrl), 24, std::nullopt,
       LargeIconService::NoBigEnoughIconBehavior::kReturnBitmap,
       LargeIconService::NonSquareIconBehavior::kReturnBitmap,
-      base::BindRepeating(&LargeIconServiceGetterTest::RawBitmapResultCallback,
-                          base::Unretained(this)),
-      &cancelable_task_tracker_);
-  task_environment_.RunUntilIdle();
+      future.GetCallback(), &cancelable_task_tracker_);
 
-  EXPECT_EQ(gfx::Size(16, 16), returned_bitmap_size_);
-  EXPECT_EQ(std::nullopt, returned_fallback_style_);
+  EXPECT_EQ(gfx::Size(16, 16), future.Get().bitmap.pixel_size);
+  EXPECT_EQ(nullptr, future.Get().fallback_icon_style);
 }
 
 TEST_P(LargeIconServiceGetterTest,
@@ -842,19 +815,15 @@ TEST_P(LargeIconServiceGetterTest,
 
   InjectMockDatabaseResult(GURL(kDummyPageUrl),
                            CreateTestBitmapResult(24, 32, kTestColor));
-  base::RunLoop run_loop;
+  base::test::TestFuture<favicon_base::LargeIconResult> future;
   large_icon_service_.GetLargeIconRawBitmapForPageUrl(
       GURL(kDummyPageUrl), 24, std::nullopt,
       LargeIconService::NoBigEnoughIconBehavior::kReturnBitmap,
       LargeIconService::NonSquareIconBehavior::kReturnBitmap,
-      base::BindOnce(&LargeIconServiceGetterTest::RawBitmapResultCallback,
-                     base::Unretained(this))
-          .Then(run_loop.QuitClosure()),
-      &cancelable_task_tracker_);
-  run_loop.Run();
+      future.GetCallback(), &cancelable_task_tracker_);
 
-  EXPECT_EQ(gfx::Size(24, 32), returned_bitmap_size_);
-  EXPECT_EQ(std::nullopt, returned_fallback_style_);
+  EXPECT_EQ(gfx::Size(24, 32), future.Get().bitmap.pixel_size);
+  EXPECT_EQ(nullptr, future.Get().fallback_icon_style);
 }
 
 TEST_P(LargeIconServiceGetterTest,
@@ -867,19 +836,15 @@ TEST_P(LargeIconServiceGetterTest,
 
   InjectMockDatabaseResult(GURL(kDummyPageUrl),
                            CreateTestBitmapResult(24, 32, kTestColor));
-  base::RunLoop run_loop;
+  base::test::TestFuture<favicon_base::LargeIconResult> future;
   large_icon_service_.GetLargeIconRawBitmapForPageUrl(
       GURL(kDummyPageUrl), 24, std::nullopt,
       LargeIconService::NoBigEnoughIconBehavior::kReturnBitmap,
-      LargeIconService::NonSquareIconBehavior::kSkip,
-      base::BindOnce(&LargeIconServiceGetterTest::RawBitmapResultCallback,
-                     base::Unretained(this))
-          .Then(run_loop.QuitClosure()),
+      LargeIconService::NonSquareIconBehavior::kSkip, future.GetCallback(),
       &cancelable_task_tracker_);
-  run_loop.Run();
 
-  EXPECT_EQ(std::nullopt, returned_bitmap_size_);
-  EXPECT_EQ(std::nullopt, returned_fallback_style_);
+  EXPECT_FALSE(future.Get().bitmap.is_valid());
+  EXPECT_EQ(nullptr, future.Get().fallback_icon_style);
 }
 
 TEST_P(LargeIconServiceGetterTest,
@@ -893,19 +858,15 @@ TEST_P(LargeIconServiceGetterTest,
   // The height is less than the minimum size, even though the width is not.
   InjectMockDatabaseResult(GURL(kDummyPageUrl),
                            CreateTestBitmapResult(32, 16, kTestColor));
-  base::RunLoop run_loop;
+  base::test::TestFuture<favicon_base::LargeIconResult> future;
   large_icon_service_.GetLargeIconRawBitmapForPageUrl(
       GURL(kDummyPageUrl), 24, std::nullopt,
       LargeIconService::NoBigEnoughIconBehavior::kReturnEmpty,
       LargeIconService::NonSquareIconBehavior::kReturnBitmap,
-      base::BindOnce(&LargeIconServiceGetterTest::RawBitmapResultCallback,
-                     base::Unretained(this))
-          .Then(run_loop.QuitClosure()),
-      &cancelable_task_tracker_);
-  run_loop.Run();
+      future.GetCallback(), &cancelable_task_tracker_);
 
-  EXPECT_EQ(std::nullopt, returned_bitmap_size_);
-  EXPECT_EQ(std::nullopt, returned_fallback_style_);
+  EXPECT_FALSE(future.Get().bitmap.is_valid());
+  EXPECT_EQ(nullptr, future.Get().fallback_icon_style);
 }
 
 TEST_P(LargeIconServiceGetterTest, IconTooSmallDontWantAnything) {
@@ -917,17 +878,15 @@ TEST_P(LargeIconServiceGetterTest, IconTooSmallDontWantAnything) {
 
   InjectMockDatabaseResult(GURL(kDummyPageUrl),
                            CreateTestBitmapResult(16, 16, kTestColor));
+  base::test::TestFuture<favicon_base::LargeIconResult> future;
   large_icon_service_.GetLargeIconRawBitmapForPageUrl(
       GURL(kDummyPageUrl), 24, std::nullopt,
       LargeIconService::NoBigEnoughIconBehavior::kReturnEmpty,
-      LargeIconService::NonSquareIconBehavior::kSkip,
-      base::BindRepeating(&LargeIconServiceGetterTest::RawBitmapResultCallback,
-                          base::Unretained(this)),
+      LargeIconService::NonSquareIconBehavior::kSkip, future.GetCallback(),
       &cancelable_task_tracker_);
-  task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(std::nullopt, returned_bitmap_size_);
-  EXPECT_EQ(std::nullopt, returned_fallback_style_);
+  EXPECT_FALSE(future.Get().bitmap.is_valid());
+  EXPECT_EQ(nullptr, future.Get().fallback_icon_style);
 }
 
 // Every test will appear with suffix /0 (param false) and /1 (param true), e.g.

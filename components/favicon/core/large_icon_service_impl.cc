@@ -383,12 +383,12 @@ void LargeIconServiceImpl::OnIconFetchedFromCache(
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     favicon_base::LargeIconCallback callback,
     base::CancelableTaskTracker* tracker,
-    const favicon_base::LargeIconResult& icon_result) {
+    favicon_base::LargeIconResult icon_result) {
   if (icon_result.bitmap.is_valid() ||
       (no_big_enough_icon_behavior ==
            NoBigEnoughIconBehavior::kReturnFallbackColor &&
        icon_result.fallback_icon_style)) {
-    std::move(callback).Run(icon_result);
+    std::move(callback).Run(std::move(icon_result));
     return;
   }
   if (no_big_enough_icon_behavior == NoBigEnoughIconBehavior::kReturnEmpty &&
