@@ -5,7 +5,9 @@
 #include "components/trusted_vault/trusted_vault_connection_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/base64url.h"
@@ -295,15 +297,15 @@ class TrustedVaultConnectionImplTest
       const std::set<SecurityDomainId>& security_domain_filter,
       const std::set<trusted_vault_pb::SecurityDomainMember_MemberType>&
           recovery_factor_filter,
-      const std::optional<std::string>& next_page_token,
+      std::optional<std::string_view> next_page_token,
       net::HttpStatusCode response_http_code,
       const std::string& response_body) {
     // Allow request to reach |test_url_loader_factory_|.
     base::RunLoop().RunUntilIdle();
 
     GURL request_url = GetFullListSecurityDomainMembersURLForTesting(
-        next_page_token, kTestURL, security_domain_filter,
-        recovery_factor_filter);
+        kTestURL, security_domain_filter, recovery_factor_filter,
+        next_page_token, /*force_strong_read=*/false);
 
     return test_url_loader_factory_.SimulateResponseForPendingRequest(
         request_url.spec(), response_body, response_http_code);

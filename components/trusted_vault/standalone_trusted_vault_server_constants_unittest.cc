@@ -52,11 +52,24 @@ TEST(StandaloneTrustedVaultServerConstantsTest,
   EXPECT_THAT(
       GetListSecurityDomainMembersURL(
           kTestUrl, {SecurityDomainId::kChromeSync},
-          {trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_PHYSICAL_DEVICE})
+          {trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_PHYSICAL_DEVICE},
+          /*next_page_token=*/std::nullopt,
+          /*force_strong_read=*/false)
           .spec(),
       Eq("https://example.com/v1/users/me/members/?view=3"
          "&include_security_domains=users%2Fme%2Fsecuritydomains%2Fchromesync"
          "&include_member_types=1"));
+  EXPECT_THAT(
+      GetListSecurityDomainMembersURL(
+          kTestUrl, {SecurityDomainId::kChromeSync},
+          {trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_PHYSICAL_DEVICE},
+          /*next_page_token=*/"token123",
+          /*force_strong_read=*/false)
+          .spec(),
+      Eq("https://example.com/v1/users/me/members/?view=3"
+         "&include_security_domains=users%2Fme%2Fsecuritydomains%2Fchromesync"
+         "&include_member_types=1"
+         "&page_token=token123"));
 }
 
 TEST(StandaloneTrustedVaultServerConstantsTest,
@@ -64,15 +77,53 @@ TEST(StandaloneTrustedVaultServerConstantsTest,
   const GURL kTestUrl("https://example.com/v1/");
   EXPECT_THAT(
       GetFullListSecurityDomainMembersURLForTesting(
-          /*next_page_token=*/"token123", kTestUrl,
-          {SecurityDomainId::kChromeSync},
-          {trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_PHYSICAL_DEVICE})
+          kTestUrl, {SecurityDomainId::kChromeSync},
+          {trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_PHYSICAL_DEVICE},
+          /*next_page_token=*/"token123",
+          /*force_strong_read=*/false)
           .spec(),
       Eq("https://example.com/v1/users/me/members/?view=3"
          "&include_security_domains=users%2Fme%2Fsecuritydomains%2Fchromesync"
          "&include_member_types=1"
          "&page_token=token123"
          "&alt=proto"));
+}
+
+TEST(StandaloneTrustedVaultServerConstantsTest,
+     ShouldGetListSecurityDomainMembersURLWithForceStrongRead) {
+  const GURL kTestUrl("https://example.com/v1/");
+  EXPECT_THAT(
+      GetListSecurityDomainMembersURL(kTestUrl, {SecurityDomainId::kChromeSync},
+                                      /*member_filter=*/{},
+                                      /*next_page_token=*/std::nullopt,
+                                      /*force_strong_read=*/false)
+          .spec(),
+      Eq("https://example.com/v1/users/me/members/?view=3"
+         "&include_security_domains=users%2Fme%2Fsecuritydomains%"
+         "2Fchromesync"));
+  EXPECT_THAT(
+      GetListSecurityDomainMembersURL(kTestUrl, {SecurityDomainId::kChromeSync},
+                                      /*member_filter=*/{},
+                                      /*next_page_token=*/std::nullopt,
+                                      /*force_strong_read=*/true)
+          .spec(),
+      Eq("https://example.com/v1/users/me/members/?view=3"
+         "&request_header.force_master_read=true"
+         "&include_security_domains=users%2Fme%2Fsecuritydomains%"
+         "2Fchromesync"));
+  EXPECT_THAT(
+      GetListSecurityDomainMembersURL(
+          kTestUrl, {SecurityDomainId::kChromeSync},
+          {trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_PHYSICAL_DEVICE},
+          /*next_page_token=*/"token123",
+          /*force_strong_read=*/true)
+          .spec(),
+      Eq("https://example.com/v1/users/me/members/?view=3"
+         "&request_header.force_master_read=true"
+         "&include_security_domains=users%2Fme%2Fsecuritydomains%"
+         "2Fchromesync"
+         "&include_member_types=1"
+         "&page_token=token123"));
 }
 
 TEST(StandaloneTrustedVaultServerConstantsTest,

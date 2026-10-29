@@ -22,10 +22,20 @@ GURL GetListSecurityDomainMembersURL(
     const GURL& server_url,
     const std::set<SecurityDomainId>& security_domain_filter,
     const std::set<trusted_vault_pb::SecurityDomainMember_MemberType>&
-        member_filter) {
+        member_filter,
+    std::optional<std::string_view> next_page_token,
+    bool force_strong_read) {
   // View three is `SECURITY_DOMAIN_MEMBER_METADATA`.
   GURL request_url =
       GURL(server_url.spec() + kSecurityDomainMemberNamePrefix + "?view=3");
+
+  if (force_strong_read) {
+    // Requests a strong (consistent) read from the backend database to ensure
+    // the returned membership list is up-to-date, bypassing potential read
+    // replicas or stale caches.
+    request_url = net::AppendQueryParameter(
+        request_url, "request_header.force_master_read", "true");
+  }
 
   for (const auto& security_domain : security_domain_filter) {
     request_url =
@@ -35,6 +45,10 @@ GURL GetListSecurityDomainMembersURL(
   for (const auto& member_type : member_filter) {
     request_url = net::AppendQueryParameter(request_url, "include_member_types",
                                             base::NumberToString(member_type));
+  }
+  if (next_page_token) {
+    request_url =
+        net::AppendQueryParameter(request_url, "page_token", *next_page_token);
   }
 
   return request_url;
@@ -78,18 +92,17 @@ GURL GetRotateSharedKeyURL(const GURL& server_url,
 }
 
 GURL GetFullListSecurityDomainMembersURLForTesting(
-    const std::optional<std::string>& next_page_token,
     const GURL& server_url,
     const std::set<SecurityDomainId>& security_domain_filter,
     const std::set<trusted_vault_pb::SecurityDomainMember_MemberType>&
-        member_filter) {
-  GURL url = GetListSecurityDomainMembersURL(server_url, security_domain_filter,
-                                             member_filter);
-  if (next_page_token) {
-    url = net::AppendQueryParameter(url, "page_token", *next_page_token);
-  }
-  return net::AppendQueryParameter(url, kQueryParameterAlternateOutputKey,
-                                   kQueryParameterAlternateOutputProto);
+        member_filter,
+    std::optional<std::string_view> next_page_token,
+    bool force_strong_read) {
+  return net::AppendQueryParameter(
+      GetListSecurityDomainMembersURL(server_url, security_domain_filter,
+                                      member_filter, next_page_token,
+                                      force_strong_read),
+      kQueryParameterAlternateOutputKey, kQueryParameterAlternateOutputProto);
 }
 
 GURL GetFullJoinSecurityDomainsURLForTesting(const GURL& server_url,

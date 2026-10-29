@@ -6,7 +6,9 @@
 
 #include <algorithm>
 #include <optional>
+#include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <variant>
 
@@ -29,7 +31,6 @@
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_request.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
-#include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
@@ -356,7 +357,9 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
  public:
   DownloadAuthenticationFactorsRegistrationStateRequest(
       SecurityDomainId security_domain,
-      const GURL& request_url,
+      const GURL& trusted_vault_service_url,
+      std::set<trusted_vault_pb::SecurityDomainMember_MemberType>
+          recovery_factor_filter,
       const CoreAccountId& account_id,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<TrustedVaultAccessTokenFetcher> access_token_fetcher,
@@ -364,7 +367,8 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
           DownloadAuthenticationFactorsRegistrationStateCallback callback,
       base::RepeatingClosure keep_alive_callback)
       : security_domain_(security_domain),
-        base_url_(request_url),
+        trusted_vault_service_url_(trusted_vault_service_url),
+        recovery_factor_filter_(std::move(recovery_factor_filter)),
         account_id_(account_id),
         url_loader_factory_(std::move(url_loader_factory)),
         access_token_fetcher_(std::move(access_token_fetcher)),
@@ -372,16 +376,17 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
         keep_alive_callback_(std::move(keep_alive_callback)) {
     result_.state =
         DownloadAuthenticationFactorsRegistrationStateResult::State::kEmpty;
-    StartOrContinueRequest();
+    StartOrContinueRequest(/*next_page_token=*/std::nullopt);
   }
 
  private:
-  void StartOrContinueRequest(const std::string* next_page_token = nullptr) {
+  void StartOrContinueRequest(std::optional<std::string_view> next_page_token) {
     request_ = std::make_unique<TrustedVaultRequest>(
         account_id_, TrustedVaultRequest::HttpMethod::kGet,
-        next_page_token ? net::AppendQueryParameter(base_url_, "page_token",
-                                                    *next_page_token)
-                        : base_url_,
+        GetListSecurityDomainMembersURL(
+            trusted_vault_service_url_, {security_domain_},
+            recovery_factor_filter_, next_page_token,
+            /*force_strong_read=*/false),
         /*serialized_request_proto=*/std::nullopt,
         /*max_retry_duration=*/base::Seconds(0), url_loader_factory_,
         access_token_fetcher_->Clone(),
@@ -501,7 +506,7 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
     }
 
     if (!response.next_page_token().empty()) {
-      StartOrContinueRequest(&response.next_page_token());
+      StartOrContinueRequest(response.next_page_token());
       if (keep_alive_callback_) {
         keep_alive_callback_.Run();
       }
@@ -522,7 +527,9 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
   }
 
   const SecurityDomainId security_domain_;
-  const GURL base_url_;
+  const GURL trusted_vault_service_url_;
+  const std::set<trusted_vault_pb::SecurityDomainMember_MemberType>
+      recovery_factor_filter_;
   const CoreAccountId account_id_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const std::unique_ptr<TrustedVaultAccessTokenFetcher> access_token_fetcher_;
@@ -844,12 +851,10 @@ TrustedVaultConnectionImpl::DownloadAuthenticationFactorsRegistrationState(
         recovery_factor_filter,
     DownloadAuthenticationFactorsRegistrationStateCallback callback,
     base::RepeatingClosure keep_alive_callback) {
-  GURL request_url = GetListSecurityDomainMembersURL(
-      trusted_vault_service_url_, {security_domain}, recovery_factor_filter);
-
   return std::make_unique<
       DownloadAuthenticationFactorsRegistrationStateRequest>(
-      security_domain, request_url, account_info.account_id,
+      security_domain, trusted_vault_service_url_,
+      std::move(recovery_factor_filter), account_info.account_id,
       GetOrCreateURLLoaderFactory(), access_token_fetcher_->Clone(),
       std::move(callback), std::move(keep_alive_callback));
 }
