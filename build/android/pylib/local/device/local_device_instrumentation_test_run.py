@@ -148,6 +148,7 @@ _VALUE_WEBVIEW_REBASELINE_MODE = 'rebaseline'
 
 FEATURE_ANNOTATION = 'Feature'
 RENDER_TEST_FEATURE_ANNOTATION = 'RenderTest'
+UI_CAPTURE_FEATURE_ANNOTATION = 'UiCatalogue'
 
 _DEVICE_GOLD_DIR = 'skia_gold'
 # A map of Android product models to SDK ints. The keys can be found via `adb
@@ -1432,10 +1433,15 @@ class LocalDeviceInstrumentationTestRun(
         # that we only get screenshots created by that test. It has to be on
         # external storage since the default location doesn't allow file creation
         # from the instrumentation test app on Android L and M.
-        ui_capture_dir = device_temp_file.NamedDeviceTemporaryDirectory(
-            device.adb, dir=device.GetExternalStoragePath(), device_utils=device
-        )
-        extras[EXTRA_UI_CAPTURE_DIR] = ui_capture_dir.name
+        if _IsUiCaptureTest(test):
+            ui_capture_dir = device_temp_file.NamedDeviceTemporaryDirectory(
+                device.adb,
+                dir=device.GetExternalStoragePath(),
+                device_utils=device,
+            )
+            extras[EXTRA_UI_CAPTURE_DIR] = ui_capture_dir.name
+        else:
+            ui_capture_dir = contextlib.nullcontext()
 
         if self._env.trace_output:
             trace_device_file = device_temp_file.DeviceTempFile(
@@ -1656,6 +1662,8 @@ class LocalDeviceInstrumentationTestRun(
                         self._render_tests_device_output_dir = None
 
             def pull_ui_screen_captures():
+                if not _IsUiCaptureTest(test):
+                    return
                 screenshots = []
                 source_dir = ui_capture_dir.name
                 if self._env.force_main_user:
@@ -2556,6 +2564,17 @@ def _IsRenderTest(test):
         test = [test]
     return any(
         RENDER_TEST_FEATURE_ANNOTATION
+        in t['annotations'].get(FEATURE_ANNOTATION, {}).get('value', ())
+        for t in test
+    )
+
+
+def _IsUiCaptureTest(test):
+    """Determines if any test in the given list is a UiCatalogue test."""
+    if not isinstance(test, list):
+        test = [test]
+    return any(
+        UI_CAPTURE_FEATURE_ANNOTATION
         in t['annotations'].get(FEATURE_ANNOTATION, {}).get('value', ())
         for t in test
     )

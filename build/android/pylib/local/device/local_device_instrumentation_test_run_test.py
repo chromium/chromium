@@ -88,6 +88,33 @@ class LocalDeviceInstrumentationTestRunTest(unittest.TestCase):
             local_device_instrumentation_test_run._IsRenderTest(test)
         )
 
+    def testIsUiCaptureTest_matched(self):
+        annotations = {'Feature': {'value': ['UiCatalogue']}}
+        test = create_test(annotations, 'TestClass', 'testMethod')
+        self.assertTrue(
+            local_device_instrumentation_test_run._IsUiCaptureTest(test)
+        )
+
+    def testIsUiCaptureTest_noMatched(self):
+        annotations = {'Feature': {'value': ['OtherFeature']}}
+        test = create_test(annotations, 'TestClass', 'testMethod')
+        self.assertFalse(
+            local_device_instrumentation_test_run._IsUiCaptureTest(test)
+        )
+
+    def testIsUiCaptureTest_batchList(self):
+        annotations_without = {'Feature': {'value': ['OtherFeature']}}
+        test_without = create_test(
+            annotations_without, 'TestClass', 'testMethod1'
+        )
+        annotations_with = {'Feature': {'value': ['UiCatalogue']}}
+        test_with = create_test(annotations_with, 'TestClass', 'testMethod2')
+        self.assertTrue(
+            local_device_instrumentation_test_run._IsUiCaptureTest(
+                [test_without, test_with]
+            )
+        )
+
     def testReplaceUncommonChars(self):
         original = 'abc#edf'
         self.assertEqual(
@@ -240,6 +267,108 @@ class LocalDeviceInstrumentationTestRunTest(unittest.TestCase):
         )
         # Must not raise.
         self._obj._ResetLeftoverCtsMockIme(device)
+
+    def _SetUpRunTestMocks(self, test):
+        self._ti = mock.MagicMock()
+        self._obj._test_instance = self._ti
+        self._ti.GenerateTestResults.return_value = [
+            base_test_result.BaseTestResult(
+                f"{test['class']}#{test['method']}",
+                base_test_result.ResultType.PASS,
+            )
+        ]
+        self._ti.store_tombstones = False
+        self._ti.coverage_directory = None
+        self._ti.apk_under_test = None
+        self._ti.enable_breakpad_dump = False
+        self._ti.wait_for_java_debugger = False
+        self._ti.webview_rebaseline_mode = False
+        self._ti.flags = []
+        self._ti.timeout_scale = 1
+        self._ti.test_package = 'com.example.test'
+        self._ti.junit4_runner_class = 'TestRunner'
+
+        device = mock.MagicMock()
+        device.product_cpu_abi = 'x86_64'
+        device.build_version_sdk = 34
+        device.GetExternalStoragePath.return_value = '/sdcard'
+        device.PathExists.return_value = True
+        device.ListDirectory.return_value = []
+        device.StartInstrumentation.return_value = (
+            0,
+            [
+                'INSTRUMENTATION_STATUS: class=com.example.MyTest\n',
+                'INSTRUMENTATION_STATUS: test=testFoo\n',
+                'INSTRUMENTATION_STATUS_CODE: 1\n',
+                'INSTRUMENTATION_STATUS: class=com.example.MyTest\n',
+                'INSTRUMENTATION_STATUS: test=testFoo\n',
+                'INSTRUMENTATION_STATUS_CODE: 0\n',
+                'INSTRUMENTATION_CODE: -1\n',
+            ],
+        )
+        return device
+
+    @mock.patch.object(
+        local_device_instrumentation_test_run.LocalDeviceInstrumentationTestRun,
+        '_ArchiveLogcat',
+        return_value=contextlib.nullcontext(mock.MagicMock()),
+    )
+    @mock.patch.object(
+        local_device_instrumentation_test_run,
+        'DismissCrashDialogs',
+        return_value=set(),
+    )
+    @mock.patch('devil.android.device_temp_file.NamedDeviceTemporaryDirectory')
+    def testRunTest_skipsUiCaptureDirWithoutUiCatalogueFeature(
+        self, mock_temp_dir, _mock_dismiss, _mock_logcat
+    ):
+        test = {
+            'class': 'com.example.MyTest',
+            'method': 'testFoo',
+            'annotations': {},
+        }
+        device = self._SetUpRunTestMocks(test)
+
+        self._obj._RunTest(device, test)
+
+        mock_temp_dir.assert_not_called()
+        extras = device.StartInstrumentation.call_args.kwargs['extras']
+        self.assertNotIn(
+            local_device_instrumentation_test_run.EXTRA_UI_CAPTURE_DIR, extras
+        )
+        device.ListDirectory.assert_not_called()
+
+    @mock.patch.object(
+        local_device_instrumentation_test_run.LocalDeviceInstrumentationTestRun,
+        '_ArchiveLogcat',
+        return_value=contextlib.nullcontext(mock.MagicMock()),
+    )
+    @mock.patch.object(
+        local_device_instrumentation_test_run,
+        'DismissCrashDialogs',
+        return_value=set(),
+    )
+    @mock.patch('devil.android.device_temp_file.NamedDeviceTemporaryDirectory')
+    def testRunTest_createsUiCaptureDirWithUiCatalogueFeature(
+        self, mock_temp_dir, _mock_dismiss, _mock_logcat
+    ):
+        mock_temp_dir.return_value.name = '/sdcard/tmp_ui_capture'
+        test = {
+            'class': 'com.example.MyTest',
+            'method': 'testFoo',
+            'annotations': {'Feature': {'value': ['UiCatalogue']}},
+        }
+        device = self._SetUpRunTestMocks(test)
+
+        self._obj._RunTest(device, test)
+
+        mock_temp_dir.assert_called_once()
+        extras = device.StartInstrumentation.call_args.kwargs['extras']
+        self.assertEqual(
+            '/sdcard/tmp_ui_capture',
+            extras[local_device_instrumentation_test_run.EXTRA_UI_CAPTURE_DIR],
+        )
+        device.ListDirectory.assert_called_once()
 
     def test_CleanDownloads_q(self):
         self._env.force_main_user = False

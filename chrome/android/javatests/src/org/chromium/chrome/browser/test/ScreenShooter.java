@@ -50,7 +50,7 @@ import java.util.Map;
  * as {@code screenshot_dir/shot_name random.json}.
  *
  * <p>{@code screenshot_dir} comes from the instrumentation test command line, which is set by the
- * test runners
+ * test runners for tests annotated with {@code @Feature({"UiCatalogue"})}.
  *
  * <p>{@code shot_name} is the argument to {@code shoot()} {@code random} is a random value to make
  * the filenames unique.
@@ -183,6 +183,10 @@ public class ScreenShooter extends TestWatcher {
      */
     public void shoot(String shotName, @Tags String... tags) {
         assertNotNull("ScreenShooter rule initialized", mTestClassName);
+        assertNotNull(
+                "Screenshot dir not set. Tests using ScreenShooter must be annotated with"
+                        + " @Feature({\"UiCatalogue\"}).",
+                mBaseDir);
         Map<String, String> filters = new HashMap<>();
         setFilterValue(filters, TEST_CLASS_FILTER, mTestClassName);
         setFilterValue(filters, TEST_METHOD_FILTER, mTestMethodName);
