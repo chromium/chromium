@@ -99,6 +99,24 @@ enum class ContextUploadErrorType {
 //   //tools/metrics/histograms/metadata/omnibox/enums.xml:ContextUploadErrorType
 // )
 
+// LINT.IfChange(ContextualTasksRemovedContextReason)
+// Reasons why an active tab or context was removed from a session or
+// composebox. Recorded in the `ContextualTasks.RemovedContext.Reason`
+// histogram.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ContextualTasksRemovedContextReason {
+  kUserDeselected = 0,
+  kBrowserTabClosed = 1,
+  kBrowserTabNavigated = 2,
+  kSmartTabSharingDisabled = 3,
+  kMaxValue = kSmartTabSharingDisabled,
+};
+// LINT.ThenChange(
+//   //tools/metrics/histograms/metadata/contextual_tasks/enums.xml:ContextualTasksRemovedContextReason
+// )
+
 // Struct containing file information for a file upload.
 struct FileInfo {
   // TODO(crbug.com/497396516): after fixing the issue, remove this macro.

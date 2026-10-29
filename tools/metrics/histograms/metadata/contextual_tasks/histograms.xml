@@ -641,6 +641,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.RemovedContext.CountPerQuery" units="count"
+    expires_after="2027-03-07">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded upon query submission (in TakeRemovedContexts when constructing a
+    ClientToAimRequest or search URL). Records the number of unique previously
+    submitted tab contexts removed since the last query turn and sent to the
+    server in the query request's removed_contexts list (including 0 when no
+    contexts were removed).
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.RemovedContext.Reason"
+    enum="ContextualTasksRemovedContextReason" expires_after="2027-03-07">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded upon query submission once for each unique removed tab context sent
+    to the server in removed_contexts, indicating the reason the persisted tab
+    context was removed (user deselected, browser tab closed, browser tab
+    navigated, or Smart Tab Sharing disabled).
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.RemovedContext.RemainingTabsCount"
+    units="count" expires_after="2027-03-07">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded upon every query submission (in MarkQuerySubmitted, after
+    TakeRemovedContexts prunes removed tabs and ClearFiles promotes newly
+    submitted tabs). Records the total number of persisted tabs attached to the
+    session for that turn.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.Session.Completed" enum="Boolean"
     expires_after="2027-03-07">
   <owner>sophiechang@chromium.org</owner>

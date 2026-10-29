@@ -11,6 +11,11 @@
 #include "components/contextual_search/contextual_search_session_handle.h"
 
 class Profile;
+class SessionID;
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 namespace url_deduplication {
 class URLDeduplicationHelper;
@@ -25,6 +30,7 @@ class ChromeContextualSearchSessionTabValidator
   ~ChromeContextualSearchSessionTabValidator() override;
 
   // contextual_search::ContextualSearchSessionHandle::TabValidator:
+  bool IsTabOpen(SessionID tab_session_id) const override;
   bool IsTabValidAndPointingToUrl(
       const contextual_search::FileInfo& file_info) override;
   bool AreUrlsEquivalent(const GURL& url1,
@@ -33,6 +39,8 @@ class ChromeContextualSearchSessionTabValidator
                          const std::string& title2) override;
 
  private:
+  const tabs::TabInterface* GetOpenTab(SessionID tab_session_id) const;
+
   raw_ptr<Profile> profile_;
   std::unique_ptr<url_deduplication::URLDeduplicationHelper>
       deduplication_helper_;

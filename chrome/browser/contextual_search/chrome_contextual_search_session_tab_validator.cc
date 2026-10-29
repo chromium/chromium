@@ -21,32 +21,18 @@ ChromeContextualSearchSessionTabValidator::
 ChromeContextualSearchSessionTabValidator::
     ~ChromeContextualSearchSessionTabValidator() = default;
 
+bool ChromeContextualSearchSessionTabValidator::IsTabOpen(
+    SessionID tab_session_id) const {
+  return GetOpenTab(tab_session_id) != nullptr;
+}
+
 bool ChromeContextualSearchSessionTabValidator::IsTabValidAndPointingToUrl(
     const contextual_search::FileInfo& file_info) {
   if (!file_info.tab_session_id.has_value() || !file_info.tab_url.has_value()) {
     return false;
   }
-  SessionID target_session_id = *file_info.tab_session_id;
-
-  // Use the shared tab handle factory to find the tab.
-  int32_t handle_val =
-      tabs::SessionMappedTabHandleFactory::GetInstance().GetHandleForSessionId(
-          target_session_id.id());
-  if (handle_val == tabs::TabHandle::NullValue) {
-    return false;  // Tab closed or not tracked.
-  }
-
-  tabs::TabHandle handle(handle_val);
-  tabs::TabInterface* tab = handle.Get();
+  const tabs::TabInterface* tab = GetOpenTab(*file_info.tab_session_id);
   if (!tab) {
-    return false;  // Tab destroyed.
-  }
-
-  // Tab handles are sequential integers and thus guessable. Since the
-  // WebUI/renderer could potentially pass a guessed handle value, we must
-  // verify that the resolved tab belongs to the profile associated with this
-  // session to prevent cross-profile information leakage.
-  if (tab->GetProfile() != profile_) {
     return false;
   }
 
@@ -56,6 +42,37 @@ bool ChromeContextualSearchSessionTabValidator::IsTabValidAndPointingToUrl(
       *file_info.tab_url, file_info.tab_title.value_or(""));
 
   return current_key == expected_key;
+}
+
+const tabs::TabInterface* ChromeContextualSearchSessionTabValidator::GetOpenTab(
+    SessionID tab_session_id) const {
+  if (!tab_session_id.is_valid()) {
+    return nullptr;
+  }
+
+  // Use the shared tab handle factory to find the tab.
+  int32_t handle_val =
+      tabs::SessionMappedTabHandleFactory::GetInstance().GetHandleForSessionId(
+          tab_session_id.id());
+  if (handle_val == tabs::TabHandle::NullValue) {
+    return nullptr;  // Tab closed or not tracked.
+  }
+
+  tabs::TabHandle handle(handle_val);
+  const tabs::TabInterface* tab = handle.Get();
+  if (!tab) {
+    return nullptr;  // Tab destroyed.
+  }
+
+  // Tab handles are sequential integers and thus guessable. Since the
+  // WebUI/renderer could potentially pass a guessed handle value, we must
+  // verify that the resolved tab belongs to the profile associated with this
+  // session to prevent cross-profile information leakage.
+  if (tab->GetProfile() != profile_) {
+    return nullptr;
+  }
+
+  return tab;
 }
 
 bool ChromeContextualSearchSessionTabValidator::AreUrlsEquivalent(

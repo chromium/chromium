@@ -58,6 +58,7 @@ TEST_F(ChromeContextualSearchSessionTabValidatorTest, TabClosed) {
   file_info.tab_url = GURL("https://example.com");
 
   // Tab with session id 1 is not registered in the factory.
+  EXPECT_FALSE(validator_->IsTabOpen(*file_info.tab_session_id));
   EXPECT_FALSE(validator_->IsTabValidAndPointingToUrl(file_info));
 }
 
@@ -76,6 +77,7 @@ TEST_F(ChromeContextualSearchSessionTabValidatorTest, ProfileMismatch) {
   file_info.tab_session_id = session_id;
   file_info.tab_url = GURL("https://example.com");
 
+  EXPECT_FALSE(validator_->IsTabOpen(session_id));
   EXPECT_FALSE(validator_->IsTabValidAndPointingToUrl(file_info));
 }
 
@@ -96,6 +98,7 @@ TEST_F(ChromeContextualSearchSessionTabValidatorTest, ValidTabAndUrlMatch) {
   file_info.tab_url = GURL("https://example.com");
   file_info.tab_title = "Example";
 
+  EXPECT_TRUE(validator_->IsTabOpen(session_id));
   EXPECT_TRUE(validator_->IsTabValidAndPointingToUrl(file_info));
 }
 
@@ -116,6 +119,7 @@ TEST_F(ChromeContextualSearchSessionTabValidatorTest, UrlMismatch) {
   file_info.tab_url = GURL("https://different.com"); // Mismatch
   file_info.tab_title = "Example";
 
+  EXPECT_TRUE(validator_->IsTabOpen(session_id));
   EXPECT_FALSE(validator_->IsTabValidAndPointingToUrl(file_info));
 }
 
