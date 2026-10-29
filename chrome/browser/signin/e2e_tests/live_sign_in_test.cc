@@ -420,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CreateSignedInProfile) {
   // Open the profile picker.
   ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
       ProfilePicker::EntryPoint::kProfileMenuAddNewProfile));
-  profiles::testing::WaitForPickerLoadStop(
+  profiles::testing::WaitForPickerUrl(
       GURL("chrome://profile-picker/new-profile"));
 
   // Simulate a click on the signin button.
@@ -452,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CreateSignedInProfile) {
       HistorySyncOptinUI::AppendHistorySyncOptinQueryParams(
           GURL(chrome::kChromeUIHistorySyncOptinURL),
           HistorySyncOptinLaunchContext::kWindow);
-  profiles::testing::WaitForPickerLoadStop(history_sync_optin_url);
+  profiles::testing::WaitForPickerUrl(history_sync_optin_url);
 
   EXPECT_TRUE(base::test::RunUntil([picker_contents]() {
     return content::EvalJs(picker_contents,
