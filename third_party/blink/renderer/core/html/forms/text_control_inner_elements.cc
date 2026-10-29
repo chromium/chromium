@@ -307,7 +307,8 @@ void PasswordRevealButtonElement::DefaultEventHandler(Event& event) {
   if (event.type() == event_type_names::kClick && IsA<MouseEvent>(event)) {
     bool shouldRevealPassword = !input->ShouldRevealPassword();
 
-    input->SetShouldRevealPassword(shouldRevealPassword);
+    input->SetShouldRevealPassword(shouldRevealPassword,
+                                   PasswordVisibilityAnnouncement::kAnnounce);
     input->UpdateView();
 
     event.SetDefaultHandled();

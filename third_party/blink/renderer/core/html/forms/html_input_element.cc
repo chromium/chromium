@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_aria_notification_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_focus_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_selection_mode.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -2500,9 +2501,12 @@ bool HTMLInputElement::ShouldDrawCapsLockIndicator() const {
   return input_type_view_->ShouldDrawCapsLockIndicator();
 }
 
-void HTMLInputElement::SetShouldRevealPassword(bool value) {
-  if (!!should_reveal_password_ == value)
+void HTMLInputElement::SetShouldRevealPassword(
+    bool value,
+    PasswordVisibilityAnnouncement announcement) {
+  if (!!should_reveal_password_ == value) {
     return;
+  }
   should_reveal_password_ = value;
   if (HTMLElement* inner_editor = InnerEditorElement()) {
     // Update -webkit-text-security style.
@@ -2510,6 +2514,21 @@ void HTMLInputElement::SetShouldRevealPassword(bool value) {
         kLocalStyleChange,
         StyleChangeReasonForTracing::Create(style_change_reason::kControl));
   }
+  if (announcement == PasswordVisibilityAnnouncement::kAnnounce) {
+    AnnouncePasswordVisibility();
+  }
+}
+
+void HTMLInputElement::AnnouncePasswordVisibility() {
+  if (!RuntimeEnabledFeatures::AriaNotifyEnabled(GetExecutionContext())) {
+    return;
+  }
+  // Native password visibility announcements intentionally respect the
+  // document's aria-notify permissions policy.
+  ariaNotify(GetLocale().QueryString(ShouldRevealPassword()
+                                         ? IDS_FORM_PASSWORD_SHOWN
+                                         : IDS_FORM_PASSWORD_HIDDEN),
+             AriaNotificationOptions::Create());
 }
 
 void HTMLInputElement::DispatchSimulatedEnter() {

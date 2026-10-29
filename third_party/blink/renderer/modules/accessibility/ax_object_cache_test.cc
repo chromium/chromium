@@ -12,10 +12,14 @@
 #include "base/auto_reset.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/public/web/web_ax_object.h"
+#include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_keyboard_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_callback.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -24,13 +28,19 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
+#include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 #include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -39,14 +49,18 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_test_utils.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
+#include "third_party/blink/renderer/modules/accessibility/aria_notification.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_relation_cache.h"
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -59,6 +73,174 @@
 #endif
 
 namespace blink {
+
+namespace {
+
+class PasswordRevealLocalePlatformSupport : public TestingPlatformSupport {
+ public:
+  WebString QueryLocalizedString(int resource_id) override {
+    switch (resource_id) {
+      case IDS_FORM_PASSWORD_SHOWN:
+        return WebString("Password shown");
+      case IDS_FORM_PASSWORD_HIDDEN:
+        return WebString("Password hidden");
+      default:
+        return TestingPlatformSupport::QueryLocalizedString(resource_id);
+    }
+  }
+};
+
+}  // namespace
+
+TEST_F(AccessibilityTest, PasswordRevealAnnouncesVisibility) {
+  ScopedTestingPlatformSupport<PasswordRevealLocalePlatformSupport>
+      platform_support;
+  ScopedAriaNotifyForTest scoped_aria_notify(true);
+  ScopedPasswordRevealForTest scoped_password_reveal(true);
+  GetFocusController().SetActive(true);
+  GetFocusController().SetFocused(true);
+  SetBodyInnerHTML("<input id=password type=password style='width: 300px'>");
+
+  auto* input = To<HTMLInputElement>(GetElementById("password"));
+  input->Focus();
+  GetDocument().execCommand("insertText", false, "a", ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* button = input->UserAgentShadowRoot()->getElementById(
+      shadow_element_names::kIdPasswordRevealButton);
+  ASSERT_TRUE(button);
+  AXObject* ax_input = GetAXObjectByElementId("password");
+  ASSERT_TRUE(ax_input);
+  AXObjectCacheImpl& cache = GetAXObjectCache();
+
+  auto expect_notification = [&](const String& expected) {
+    AriaNotifications notifications = cache.RetrieveAriaNotifications(ax_input);
+    ASSERT_EQ(1u, notifications.Size());
+    EXPECT_EQ(expected, notifications.begin()->Announcement());
+  };
+  auto press_alt_f8 = [&]() {
+    KeyboardEventInit* init = KeyboardEventInit::Create();
+    init->setKey("F8");
+    init->setAltKey(true);
+    auto* event =
+        MakeGarbageCollected<KeyboardEvent>(event_type_names::kKeydown, init);
+    input->DispatchEvent(*event);
+  };
+
+  press_alt_f8();
+  EXPECT_TRUE(input->ShouldRevealPassword());
+  expect_notification("Password shown");
+  press_alt_f8();
+  EXPECT_FALSE(input->ShouldRevealPassword());
+  expect_notification("Password hidden");
+
+  button->DispatchSimulatedClick(nullptr);
+  EXPECT_TRUE(input->ShouldRevealPassword());
+  expect_notification("Password shown");
+  button->DispatchSimulatedClick(nullptr);
+  EXPECT_FALSE(input->ShouldRevealPassword());
+  expect_notification("Password hidden");
+
+  input->SetShouldRevealPassword(false,
+                                 PasswordVisibilityAnnouncement::kAnnounce);
+  EXPECT_EQ(0u, cache.RetrieveAriaNotifications(ax_input).Size());
+
+  input->SetShouldRevealPassword(true,
+                                 PasswordVisibilityAnnouncement::kAnnounce);
+  expect_notification("Password shown");
+  input->SetShouldRevealPassword(true,
+                                 PasswordVisibilityAnnouncement::kAnnounce);
+  EXPECT_EQ(0u, cache.RetrieveAriaNotifications(ax_input).Size());
+
+  input->SetShouldRevealPassword(false,
+                                 PasswordVisibilityAnnouncement::kAnnounce);
+  expect_notification("Password hidden");
+  input->SetShouldRevealPassword(false,
+                                 PasswordVisibilityAnnouncement::kAnnounce);
+  EXPECT_EQ(0u, cache.RetrieveAriaNotifications(ax_input).Size());
+
+  input->SetShouldRevealPassword(true,
+                                 PasswordVisibilityAnnouncement::kAnnounce);
+  expect_notification("Password shown");
+  ASSERT_EQ(input, GetDocument().FocusedElement());
+  input->blur();
+  EXPECT_FALSE(input->ShouldRevealPassword());
+  EXPECT_EQ(0u, cache.RetrieveAriaNotifications(ax_input).Size());
+
+  input->SetShouldRevealPassword(true,
+                                 PasswordVisibilityAnnouncement::kAnnounce);
+  ASSERT_TRUE(input->ShouldRevealPassword());
+  expect_notification("Password shown");
+  input->setValueForBinding("updated password", ASSERT_NO_EXCEPTION);
+  EXPECT_EQ("updated password", input->Value());
+  EXPECT_FALSE(input->ShouldRevealPassword());
+  EXPECT_EQ(0u, cache.RetrieveAriaNotifications(ax_input).Size());
+}
+
+TEST_F(AccessibilityTest, PasswordRevealDoesNotAnnounceProgrammaticChanges) {
+  ScopedTestingPlatformSupport<PasswordRevealLocalePlatformSupport>
+      platform_support;
+  ScopedAriaNotifyForTest scoped_aria_notify(true);
+  ScopedPasswordRevealForTest scoped_password_reveal(true);
+  SetBodyInnerHTML(
+      "<input id=password type=password>"
+      "<input id=confirmation type=password>");
+
+  auto* password = To<HTMLInputElement>(GetElementById("password"));
+  auto* confirmation = To<HTMLInputElement>(GetElementById("confirmation"));
+  AXObject* ax_password = GetAXObjectByElementId("password");
+  AXObject* ax_confirmation = GetAXObjectByElementId("confirmation");
+  ASSERT_TRUE(ax_password);
+  ASSERT_TRUE(ax_confirmation);
+  AXObjectCacheImpl& cache = GetAXObjectCache();
+
+  for (bool reveal : {true, false}) {
+    WebInputElement(password).SetShouldRevealPassword(reveal);
+    WebInputElement(confirmation).SetShouldRevealPassword(reveal);
+    EXPECT_EQ(reveal, password->ShouldRevealPassword());
+    EXPECT_EQ(reveal, confirmation->ShouldRevealPassword());
+    EXPECT_EQ(0u, cache.RetrieveAriaNotifications(ax_password).Size());
+    EXPECT_EQ(0u, cache.RetrieveAriaNotifications(ax_confirmation).Size());
+  }
+}
+
+TEST_F(AccessibilityTest, PasswordRevealRespectsPermissionsPolicy) {
+  ScopedTestingPlatformSupport<PasswordRevealLocalePlatformSupport>
+      platform_support;
+  ScopedAriaNotifyForTest scoped_aria_notify(true);
+  ScopedPasswordRevealForTest scoped_password_reveal(true);
+  GetFocusController().SetActive(true);
+  GetFocusController().SetFocused(true);
+  SetBodyInnerHTML("<input id=password type=password style='width: 300px'>");
+
+  ExecutionContext* context = GetDocument().GetExecutionContext();
+  network::ParsedPermissionsPolicy policy;
+  DisallowFeature(network::mojom::PermissionsPolicyFeature::kAriaNotify,
+                  policy);
+  context->GetSecurityContext().SetPermissionsPolicy(
+      network::PermissionsPolicy::CreateFromParsedPolicy(
+          policy, context->GetSecurityOrigin()->ToUrlOrigin()));
+  ASSERT_FALSE(context->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kAriaNotify));
+
+  auto* input = To<HTMLInputElement>(GetElementById("password"));
+  input->Focus();
+  GetDocument().execCommand("insertText", false, "a", ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* button = input->UserAgentShadowRoot()->getElementById(
+      shadow_element_names::kIdPasswordRevealButton);
+  ASSERT_TRUE(button);
+  AXObject* ax_input = GetAXObjectByElementId("password");
+  ASSERT_TRUE(ax_input);
+  AXObjectCacheImpl& cache = GetAXObjectCache();
+
+  for (bool reveal : {true, false}) {
+    button->DispatchSimulatedClick(nullptr);
+    EXPECT_EQ(reveal, input->ShouldRevealPassword());
+    EXPECT_EQ(0u, cache.RetrieveAriaNotifications(ax_input).Size());
+  }
+}
 
 // TODO(nektar): Break test up into multiple tests.
 TEST_F(AccessibilityTest, IsARIAWidget) {

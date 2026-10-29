@@ -3314,7 +3314,8 @@ void Internals::setShouldRevealPassword(Element* element,
     return;
   }
 
-  return html_input_element->SetShouldRevealPassword(reveal);
+  return html_input_element->SetShouldRevealPassword(
+      reveal, PasswordVisibilityAnnouncement::kSilent);
 }
 
 namespace {

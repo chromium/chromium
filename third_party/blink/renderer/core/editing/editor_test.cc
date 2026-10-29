@@ -68,7 +68,8 @@ TEST_F(EditorTest, copyGeneratedPassword) {
   Editor& editor = GetDocument().GetFrame()->GetEditor();
   EXPECT_FALSE(editor.CanCopy());
 
-  element.SetShouldRevealPassword(true);
+  element.SetShouldRevealPassword(true,
+                                  PasswordVisibilityAnnouncement::kSilent);
   EXPECT_TRUE(editor.CanCopy());
 }
 

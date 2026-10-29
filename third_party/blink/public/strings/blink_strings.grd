@@ -251,6 +251,12 @@ below:
       <message name="IDS_FORM_INPUT_ALT" desc="Alt text for &lt;input&gt; elements with no alt, title, or value">
         Submit
       </message>
+      <message name="IDS_FORM_PASSWORD_SHOWN" desc="Announcement spoken by assistive technology after a user reveals the value of a password input.">
+        Password shown
+      </message>
+      <message name="IDS_FORM_PASSWORD_HIDDEN" desc="Announcement spoken by assistive technology after a user hides the value of a password input.">
+        Password hidden
+      </message>
       <message name="IDS_FORM_RESET_LABEL" desc="default label for Reset buttons in forms on webpages">
         Reset
       </message>

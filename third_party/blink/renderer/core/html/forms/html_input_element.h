@@ -56,6 +56,11 @@ class ScriptObject;
 class UIEvent;
 struct DateTimeChooserParameters;
 
+enum class PasswordVisibilityAnnouncement {
+  kSilent,
+  kAnnounce,
+};
+
 class CORE_EXPORT HTMLInputElement
     : public TextControlElement,
       public LazyActiveScriptWrappable<HTMLInputElement> {
@@ -359,7 +364,8 @@ class CORE_EXPORT HTMLInputElement
 
   void CapsLockStateMayHaveChanged();
   bool ShouldDrawCapsLockIndicator() const;
-  void SetShouldRevealPassword(bool value);
+  void SetShouldRevealPassword(bool value,
+                               PasswordVisibilityAnnouncement announcement);
   bool ShouldRevealPassword() const { return should_reveal_password_; }
 
   void DispatchSimulatedEnter();
@@ -530,6 +536,8 @@ class CORE_EXPORT HTMLInputElement
   void UpdateType(const AtomicString&);
 
   void UpdateHasBeenPasswordField(const AtomicString& new_type_name);
+
+  void AnnouncePasswordVisibility();
 
   void SubtreeHasChanged() final;
 
