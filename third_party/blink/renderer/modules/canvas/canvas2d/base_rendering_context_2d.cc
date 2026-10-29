@@ -504,42 +504,70 @@ void BaseRenderingContext2D::OnContextDestroyed() {
   canvas_image_provider_ = nullptr;
 }
 
-CanvasImageProvider*
-BaseRenderingContext2D::GetOrCreateSWCanvasImageProvider() {
-  if (canvas_image_provider_) {
-    return canvas_image_provider_.get();
+CanvasImageProvider* BaseRenderingContext2D::GetOrCreateCanvasImageProvider() {
+  const bool is_accelerated =
+      shared_image_provider_ && shared_image_provider_->IsAccelerated();
+  std::unique_ptr<CanvasImageProvider>& image_provider =
+      is_accelerated ? shared_image_provider_->canvas_image_provider_
+                     : canvas_image_provider_;
+  if (image_provider) {
+    return image_provider.get();
   }
+
+  const viz::SharedImageFormat format =
+      is_accelerated ? shared_image_provider_->GetSharedImageFormat()
+                     : color_params_.GetSharedImageFormat();
 
   cc::ImageDecodeCache* cache_f16 = nullptr;
-  if (color_params_.GetSharedImageFormat() ==
-      viz::SinglePlaneFormat::kRGBA_F16) {
-    cache_f16 = &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
-  }
+  cc::ImageDecodeCache* cache_rgba8 = nullptr;
+  if (is_accelerated) {
+    // Callsites are responsible for checking that the context is valid before
+    // invoking this method.
+    CHECK(shared_image_provider_->context_provider_wrapper_);
 
-  cc::ImageDecodeCache* cache_rgba8 =
-      &Image::SharedCCDecodeCache(kN32_SkColorType);
+    // Create an ImageDecodeCache for half float images only if the canvas is
+    // using half float back storage.
+    if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+      cache_f16 = shared_image_provider_->context_provider_wrapper_
+                      ->ContextProvider()
+                      .ImageDecodeCache(kRGBA_F16_SkColorType);
+    }
 
-  if (!context_provider_wrapper_) {
-    context_provider_wrapper_ = SharedGpuContext::ContextProviderWrapper();
-    if (context_provider_wrapper_) {
-      context_provider_wrapper_->AddObserver(this);
+    cache_rgba8 = shared_image_provider_->context_provider_wrapper_
+                      ->ContextProvider()
+                      .ImageDecodeCache(kN32_SkColorType);
+  } else {
+    if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+      cache_f16 = &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
+    }
+
+    cache_rgba8 = &Image::SharedCCDecodeCache(kN32_SkColorType);
+
+    if (!context_provider_wrapper_) {
+      context_provider_wrapper_ = SharedGpuContext::ContextProviderWrapper();
+      if (context_provider_wrapper_) {
+        context_provider_wrapper_->AddObserver(this);
+      }
     }
   }
-  canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
-      cache_rgba8, cache_f16, color_params_.GetGfxColorSpace(),
-      color_params_.GetSharedImageFormat(),
-      cc::PlaybackImageProvider::RasterMode::kSoftware,
-      context_provider_wrapper_);
 
-  return canvas_image_provider_.get();
+  image_provider = std::make_unique<CanvasImageProvider>(
+      cache_rgba8, cache_f16, color_params_.GetGfxColorSpace(), format,
+      is_accelerated ? cc::PlaybackImageProvider::RasterMode::kGpu
+                     : cc::PlaybackImageProvider::RasterMode::kSoftware,
+      is_accelerated ? shared_image_provider_->context_provider_wrapper_
+                     : context_provider_wrapper_);
+
+  return image_provider.get();
 }
 
 void BaseRenderingContext2D::ApplyAnimatedImageFrameIndexesForId(
     SkCanvas* canvas,
     uint32_t id) {
   if (shared_image_provider_ && shared_image_provider_->IsAccelerated()) {
-    shared_image_provider_->SetAnimatedImageFrameIndexes(
-        GetAnimatedImageFrameIndexMap(id));
+    CHECK(shared_image_provider_->canvas_image_provider_);
+    shared_image_provider_->canvas_image_provider_
+        ->SetAnimatedImageFrameIndexes(GetAnimatedImageFrameIndexMap(id));
     return;
   }
   CHECK(canvas_image_provider_);
@@ -556,8 +584,7 @@ void BaseRenderingContext2D::RasterRecordToSharedImage(
 
     const bool needs_clear = !shared_image_provider_->is_cleared_;
     shared_image_provider_->is_cleared_ = true;
-    auto* image_provider =
-        shared_image_provider_->GetOrCreateCanvasImageProvider();
+    auto* image_provider = GetOrCreateCanvasImageProvider();
     cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback =
         blink::BindRepeating(
             &BaseRenderingContext2D::ApplyAnimatedImageFrameIndexesForId,
@@ -584,7 +611,7 @@ void BaseRenderingContext2D::RasterRecordToSoftwareSurface(
     shared_image_provider_->WillDrawUnaccelerated();
   }
   cc::SkiaPaintCanvas skia_canvas(surface_->getCanvas(),
-                                  GetOrCreateSWCanvasImageProvider());
+                                  GetOrCreateCanvasImageProvider());
   cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback =
       blink::BindRepeating(
           &BaseRenderingContext2D::ApplyAnimatedImageFrameIndexesForId,

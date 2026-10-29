@@ -151,8 +151,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   bool IsValid() const;
   scoped_refptr<StaticBitmapImage> Snapshot();
 
-  void SetAnimatedImageFrameIndexes(
-      scoped_refptr<const cc::AnimatedImageFrameIndexMap>);
   // Notifies before any unaccelerated drawing will be done on the resource used
   // by this provider.
   void WillDrawUnaccelerated();
@@ -208,7 +206,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   bool ShouldReplaceTargetBuffer(
       PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
 
-  CanvasImageProvider* GetOrCreateCanvasImageProvider();
   void EnsureResourceReadyForDraw();
 
   base::WeakPtr<Canvas2DResourceProvider> CreateWeakPtr();

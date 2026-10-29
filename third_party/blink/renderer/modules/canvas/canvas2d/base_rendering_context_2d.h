@@ -412,7 +412,7 @@ class MODULES_EXPORT BaseRenderingContext2D
   // ElementImage drawn into the canvas via drawElementImage()).
   scoped_refptr<const cc::AnimatedImageFrameIndexMap>
   GetAnimatedImageFrameIndexMap(uint32_t id) const;
-  CanvasImageProvider* GetOrCreateSWCanvasImageProvider();
+  CanvasImageProvider* GetOrCreateCanvasImageProvider();
 
   Canvas2DColorParams color_params_;
   std::unique_ptr<Canvas2DResourceProvider> shared_image_provider_;

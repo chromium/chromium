@@ -409,38 +409,6 @@ scoped_refptr<StaticBitmapImage> Canvas2DResourceProvider::Snapshot() {
   return cached_snapshot_;
 }
 
-CanvasImageProvider*
-Canvas2DResourceProvider::GetOrCreateCanvasImageProvider() {
-  CHECK(is_accelerated_);
-
-  if (canvas_image_provider_) {
-    return canvas_image_provider_.get();
-  }
-
-  // Callsites are responsible for checking this before invoking this
-  // method.
-  CHECK(context_provider_wrapper_);
-
-  // Create an ImageDecodeCache for half float images only if the canvas is
-  // using half float back storage.
-  cc::ImageDecodeCache* cache_f16 = nullptr;
-  if (GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16) {
-    cache_f16 = context_provider_wrapper_->ContextProvider().ImageDecodeCache(
-        kRGBA_F16_SkColorType);
-  }
-
-  cc::ImageDecodeCache* cache_rgba8 =
-      context_provider_wrapper_->ContextProvider().ImageDecodeCache(
-          kN32_SkColorType);
-
-  canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
-      cache_rgba8, cache_f16, image_pool_->GetImageInfo().color_space,
-      GetSharedImageFormat(), cc::PlaybackImageProvider::RasterMode::kGpu,
-      context_provider_wrapper_);
-
-  return canvas_image_provider_.get();
-}
-
 void Canvas2DResourceProvider::OnFlushForImage(
     cc::PaintImage::ContentId content_id) {
   if (cached_snapshot_ &&
@@ -558,13 +526,6 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
 
 void Canvas2DResourceProvider::RecordingCleared() {
   must_preserve_content_on_copy_on_write_ = false;
-}
-
-void Canvas2DResourceProvider::SetAnimatedImageFrameIndexes(
-    scoped_refptr<const cc::AnimatedImageFrameIndexMap> map) {
-  CHECK(is_accelerated_);
-  CHECK(canvas_image_provider_);
-  canvas_image_provider_->SetAnimatedImageFrameIndexes(map);
 }
 
 Canvas2DResourceProvider::Canvas2DResourceProvider(
