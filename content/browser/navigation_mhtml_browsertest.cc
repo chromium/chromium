@@ -6,6 +6,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -23,6 +24,7 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/download_utils.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -30,6 +32,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/did_commit_navigation_interceptor.h"
@@ -44,7 +47,9 @@
 #include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_response_headers.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "url/gurl.h"
@@ -1259,6 +1264,141 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest,
                     ->child_at(0)
                     ->current_frame_host()
                     ->IsErrorDocument());
+  }
+}
+
+namespace {
+
+// Responds to a request with a 200 response whose URLResponseHead::mime_type
+// is set verbatim to `mime_type`. Unlike URLLoaderInterceptor::WriteResponse(),
+// this does not derive the MIME type from HttpResponseHeaders (which lowercases
+// it). This mimics embedder loaders, such as WebView's handling of
+// shouldInterceptRequest(), that pass app-supplied MIME types through as-is.
+void WriteResponseWithRawMimeType(const std::string& mime_type,
+                                  const std::string& body,
+                                  network::mojom::URLLoaderClient* client) {
+  auto head = network::mojom::URLResponseHead::New();
+  head->headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  head->mime_type = mime_type;
+
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  CHECK_EQ(MOJO_RESULT_OK,
+           mojo::CreateDataPipe(body.size(), producer_handle, consumer_handle));
+  CHECK_EQ(MOJO_RESULT_OK,
+           producer_handle->WriteAllData(base::as_byte_span(body)));
+
+  client->OnReceiveResponse(std::move(head), std::move(consumer_handle),
+                            std::nullopt);
+  client->OnComplete(network::URLLoaderCompletionStatus(net::OK));
+}
+
+// Runs with the kCaseInsensitiveMhtmlMustDownload kill switch disabled.
+class NavigationMhtmlCaseSensitiveMustDownloadBrowserTest
+    : public NavigationMhtmlBrowserTest {
+ public:
+  NavigationMhtmlCaseSensitiveMustDownloadBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kCaseInsensitiveMhtmlMustDownload);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+}  // namespace
+
+// With the kill switch disabled, download_utils::MustDownload() only forces
+// lowercase MHTML MIME types over HTTP to be downloaded.
+IN_PROC_BROWSER_TEST_F(NavigationMhtmlCaseSensitiveMustDownloadBrowserTest,
+                       MustDownloadIsCaseSensitive) {
+  const GURL http_url("http://example.com/a.mhtml");
+  auto headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+
+  for (const char* mime_type : {"multipart/related", "message/rfc822"}) {
+    SCOPED_TRACE(mime_type);
+    EXPECT_TRUE(
+        download_utils::MustDownload(web_contents()->GetBrowserContext(),
+                                     http_url, headers.get(), mime_type));
+  }
+  for (const char* mime_type : {"Multipart/Related", "Message/RFC822"}) {
+    SCOPED_TRACE(mime_type);
+    EXPECT_FALSE(
+        download_utils::MustDownload(web_contents()->GetBrowserContext(),
+                                     http_url, headers.get(), mime_type));
+  }
+}
+
+// With the kill switch disabled, a mixed-case MHTML response over HTTP is
+// rendered rather than downloaded, but NavigationRequest must still treat it
+// as MHTML and apply the MHTML sandbox and an opaque origin to both the main
+// frame and subframes, without making network requests for subframes.
+IN_PROC_BROWSER_TEST_F(NavigationMhtmlCaseSensitiveMustDownloadBrowserTest,
+                       MixedCaseMimeTypeOverHttpIsSandboxed) {
+  auto default_mhtml_sandbox =
+      ~network::mojom::WebSandboxFlags::kPopups &
+      ~network::mojom::WebSandboxFlags::kPropagatesToAuxiliaryBrowsingContexts;
+  if (base::FeatureList::IsEnabled(blink::features::kMHTML_Improvements)) {
+    default_mhtml_sandbox &= ~network::mojom::WebSandboxFlags::kScripts;
+  }
+
+  const GURL iframe_url("http://victim.example/subframe.html");
+
+  for (const char* mime_type : {"Multipart/Related", "Message/RFC822"}) {
+    SCOPED_TRACE(mime_type);
+    MhtmlArchive mhtml_archive;
+    mhtml_archive.AddHtmlDocument(
+        GURL("http://example.com"),
+        base::StringPrintf("<iframe src=\"%s\"></iframe>",
+                           iframe_url.spec().c_str()));
+    mhtml_archive.AddHtmlDocument(iframe_url, "<iframe></iframe>");
+    const GURL mhtml_file_url = mhtml_archive.Write("index.mhtml");
+    std::string archive_body;
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      base::FilePath archive_path;
+      ASSERT_TRUE(net::FileURLToFilePath(mhtml_file_url, &archive_path));
+      ASSERT_TRUE(base::ReadFileToString(archive_path, &archive_body));
+    }
+
+    const GURL http_url("http://example.com/archive");
+    bool saw_iframe_network_request = false;
+    URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+        [&](URLLoaderInterceptor::RequestParams* params) {
+          if (params->url_request.url == iframe_url) {
+            saw_iframe_network_request = true;
+            return false;
+          }
+          if (params->url_request.url != http_url) {
+            return false;
+          }
+          WriteResponseWithRawMimeType(mime_type, archive_body,
+                                       params->client.get());
+          return true;
+        }));
+
+    NavigationHandleObserver iframe_navigation(web_contents(), iframe_url);
+    EXPECT_TRUE(NavigateToURL(shell(), http_url));
+
+    RenderFrameHostImpl* main_document = main_frame_host();
+    EXPECT_EQ(http_url, main_document->GetLastCommittedURL());
+    EXPECT_TRUE(main_document->is_mhtml_document());
+    EXPECT_TRUE(main_document->GetLastCommittedOrigin().opaque());
+    EXPECT_EQ(default_mhtml_sandbox, main_document->active_sandbox_flags());
+
+    ASSERT_EQ(1u, main_document->child_count());
+    RenderFrameHostImpl* sub_document =
+        main_document->child_at(0)->current_frame_host();
+    EXPECT_TRUE(sub_document->is_mhtml_document());
+    EXPECT_TRUE(sub_document->GetLastCommittedOrigin().opaque());
+    EXPECT_EQ(default_mhtml_sandbox, sub_document->active_sandbox_flags());
+    EXPECT_EQ(iframe_url, sub_document->GetLastCommittedURL());
+    EXPECT_TRUE(iframe_navigation.has_committed());
+    EXPECT_FALSE(iframe_navigation.is_error());
+    EXPECT_FALSE(saw_iframe_network_request);
+    EXPECT_EQ(1u, sub_document->child_count());
   }
 }
 
