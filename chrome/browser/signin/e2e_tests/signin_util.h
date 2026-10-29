@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "chrome/browser/signin/e2e_tests/sign_in_test_observer.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/test_accounts.h"
@@ -57,6 +58,8 @@ class SignInFunctions {
   void SignInFromWeb(const TestAccountSigninCredentials& test_account,
                      int previously_signed_in_accounts);
 
+  // If `complete_signin_operation` is true, signs into Gaia as well and waits
+  // for the primary account to be set.
   void SignInFromSettings(const TestAccountSigninCredentials& test_account,
                           int previously_signed_in_accounts,
                           bool complete_signin_operation = true);
@@ -66,9 +69,11 @@ class SignInFunctions {
       int previously_signed_in_accounts,
       SyncChoice sync_choice);
 
-  void SignInFromCurrentPage(content::WebContents* web_contents,
-                             const TestAccountSigninCredentials& test_account,
-                             int previously_signed_in_accounts);
+  void SignInFromCurrentPage(
+      content::WebContents* web_contents,
+      const TestAccountSigninCredentials& test_account,
+      int previously_signed_in_accounts,
+      PrimaryAccountWait primary_account_wait = PrimaryAccountWait::kNotWait);
 
   void SignOutFromWeb();
 
