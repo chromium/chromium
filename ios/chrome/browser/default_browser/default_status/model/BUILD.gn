@@ -11,8 +11,6 @@ source_set("model") {
   sources = [
     "default_status_helper.h",
     "default_status_helper.mm",
-    "default_status_helper_metrics.h",
-    "default_status_helper_metrics.mm",
     "default_status_helper_types.h",
   ]
   deps = [
@@ -27,14 +25,12 @@ source_set("model") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "default_status_helper_metrics_unittest.mm",
-    "default_status_helper_unittest.mm",
-  ]
+  sources = [ "default_status_helper_unittest.mm" ]
   deps = [
     ":model",
     "//base/test:test_support",
     "//components/prefs:test_support",
+    "//ios/chrome/browser/default_browser/model:test_support",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/shared/model/utils:test_support",
     "//ios/chrome/browser/shared/public/features",

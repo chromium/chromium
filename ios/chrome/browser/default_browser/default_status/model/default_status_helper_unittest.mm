@@ -17,6 +17,8 @@
 #import "base/time/time_override.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/default_browser/default_status/model/default_status_helper_types.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_test_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -87,6 +89,7 @@ class DefaultStatusHelperTest : public PlatformTest {
  public:
   DefaultStatusHelperTest() {
     now_override_ = base::Time();
+    ClearDefaultBrowserPromoData();
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{kRunDefaultStatusCheck},
         /*disabled_features=*/{});
@@ -94,7 +97,10 @@ class DefaultStatusHelperTest : public PlatformTest {
     ForceFirstRunRecency(100);
   }
 
-  ~DefaultStatusHelperTest() override { now_override_ = base::Time(); }
+  ~DefaultStatusHelperTest() override {
+    ClearDefaultBrowserPromoData();
+    now_override_ = base::Time();
+  }
 
   static base::Time NowOverride() { return now_override_; }
 
@@ -732,6 +738,82 @@ API_AVAILABLE(ios(18.4)) {
       /*cohort_override=*/4);
   histogram_tester.ExpectUniqueSample(
       "IOS.DefaultStatusAPI.IsDefaultBrowser.Cohort4", false, 1);
+}
+
+// Tests that `TriggerDefaultStatusCheckForTesting` records the expected
+// `DefaultStatusHeuristicAssessment` across all 8 lookback windows (`1, 3, 7,
+// 14, 21, 28, 35, 42` days) as `lastHTTPURLOpenTime` ages.
+TEST_F(DefaultStatusHelperTest, HeuristicAssessmentsAcrossLookbackWindows)
+API_AVAILABLE(ios(18.4)) {
+  if (!@available(iOS 18.4, *)) {
+    return;
+  }
+
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &DefaultStatusHelperTest::NowOverride, nullptr, nullptr);
+  SetNowFromUTCString("2025-05-15");
+
+  static constexpr int kWindows[] = {1, 3, 7, 14, 21, 28, 35, 42};
+  static constexpr base::TimeDelta kTimesSinceOpen[] = {
+      base::Days(1) - base::Minutes(10),
+      base::Days(3) - base::Minutes(10),
+      base::Days(7) - base::Minutes(10),
+      base::Days(14) - base::Minutes(10),
+      base::Days(21) - base::Minutes(10),
+      base::Days(28) - base::Minutes(10),
+      base::Days(35) - base::Minutes(10),
+      base::Days(42) - base::Minutes(10),
+      base::Days(45),
+  };
+
+  for (base::TimeDelta time_since_open : kTimesSinceOpen) {
+    SCOPED_TRACE(base::StringPrintf("minutes_since_open=%d",
+                                    time_since_open.InMinutes()));
+    SetObjectIntoStorageForKey(
+        kLastHTTPURLOpenTime, (base::Time::Now() - time_since_open).ToNSDate());
+
+    // System reports Chrome IS default: expired windows are `kFalseNegative`,
+    // active windows are `kTruePositive`.
+    {
+      TestingPrefServiceSimple call_prefs;
+      RegisterDefaultStatusPrefs(call_prefs.registry());
+      base::HistogramTester histogram_tester;
+      TriggerDefaultStatusCheckForTesting(
+          &call_prefs,
+          SucceedingSystemCall(UIApplicationCategoryDefaultStatusIsDefault),
+          /*cohort_override=*/1);
+      for (int window : kWindows) {
+        const bool expired = base::Days(window) <= time_since_open;
+        histogram_tester.ExpectUniqueSample(
+            base::StringPrintf("IOS.DefaultStatusAPI.HeuristicAssessment%d",
+                               window),
+            expired ? DefaultStatusHeuristicAssessment::kFalseNegative
+                    : DefaultStatusHeuristicAssessment::kTruePositive,
+            1);
+      }
+    }
+
+    // System reports Chrome is NOT default: expired windows are
+    // `kTrueNegative`, active windows are `kFalsePositive`.
+    {
+      TestingPrefServiceSimple call_prefs;
+      RegisterDefaultStatusPrefs(call_prefs.registry());
+      base::HistogramTester histogram_tester;
+      TriggerDefaultStatusCheckForTesting(
+          &call_prefs,
+          SucceedingSystemCall(UIApplicationCategoryDefaultStatusNotDefault),
+          /*cohort_override=*/1);
+      for (int window : kWindows) {
+        const bool expired = base::Days(window) <= time_since_open;
+        histogram_tester.ExpectUniqueSample(
+            base::StringPrintf("IOS.DefaultStatusAPI.HeuristicAssessment%d",
+                               window),
+            expired ? DefaultStatusHeuristicAssessment::kTrueNegative
+                    : DefaultStatusHeuristicAssessment::kFalsePositive,
+            1);
+      }
+    }
+  }
 }
 
 }  // namespace default_status

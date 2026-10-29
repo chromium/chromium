@@ -14,17 +14,21 @@
 #import "base/check_is_test.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/rand_util.h"
+#import "base/strings/stringprintf.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/default_browser/default_status/model/default_status_helper_metrics.h"
 #import "ios/chrome/browser/default_browser/default_status/model/default_status_helper_types.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
 namespace default_status {
+
+namespace {
 
 // The cohorts are monthly, aligned with the Gregorian calendar. The logic in
 // this file should work for any cohort count between 1 and 12. Anything higher
@@ -36,10 +40,8 @@ namespace default_status {
 // there is a variant for each cohort.
 //
 // LINT.IfChange(kCohortCount)
-const int kCohortCount = 4;
+constexpr int kCohortCount = 4;
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/histograms.xml:CohortNumber)
-
-namespace {
 
 // The minimum time required since completing the first run experience to be
 // assigned to a cohort.
@@ -64,6 +66,77 @@ constexpr std::string_view kDefaultStatusAPINextRetry =
 // type `DefaultStatusAPIResult` and defaults to
 // `DefaultStatusAPIResult::kUnknown`.
 constexpr std::string_view kDefaultStatusAPIResult = "DefaultStatusAPIResult";
+
+// Compares the system default status and the heuristic default status.
+DefaultStatusHeuristicAssessment AssessHeuristic(bool system_is_default,
+                                                 bool heuristic_is_default) {
+  if (heuristic_is_default) {
+    return system_is_default ? DefaultStatusHeuristicAssessment::kTruePositive
+                             : DefaultStatusHeuristicAssessment::kFalsePositive;
+  }
+  return system_is_default ? DefaultStatusHeuristicAssessment::kFalseNegative
+                           : DefaultStatusHeuristicAssessment::kTrueNegative;
+}
+
+// Records the number of days left in the system call cooldown period.
+void RecordCooldownErrorDaysLeft(int days_left) {
+  base::UmaHistogramCounts1000("IOS.DefaultStatusAPI.CooldownError.DaysLeft",
+                               days_left);
+}
+
+// Records how many days have passed since the last successful default status
+// API call.
+void RecordDaysSinceLastSuccessfulCall(int days) {
+  base::UmaHistogramCounts1000(
+      "IOS.DefaultStatusAPI.DaysSinceLastSuccessfulCall", days);
+}
+
+// Records the outcome type (error or success) of the default status API call.
+void RecordDefaultStatusAPIOutcomeType(
+    DefaultStatusAPIOutcomeType outcome_type) {
+  base::UmaHistogramEnumeration("IOS.DefaultStatusAPI.OutcomeType",
+                                outcome_type);
+}
+
+// Records the result of a successful default status API call to cohort
+// histograms.
+void RecordDefaultStatusAPIResult(bool is_default,
+                                  int cohort_number,
+                                  bool is_within_cohort_window) {
+  DUMP_WILL_BE_CHECK(cohort_number >= 1 && cohort_number <= kCohortCount);
+
+  base::UmaHistogramBoolean("IOS.DefaultStatusAPI.IsDefaultBrowser",
+                            is_default);
+
+  base::UmaHistogramBoolean(
+      base::StringPrintf("IOS.DefaultStatusAPI.IsDefaultBrowser.Cohort%d",
+                         cohort_number),
+      is_default);
+  if (is_within_cohort_window) {
+    base::UmaHistogramBoolean(
+        "IOS.DefaultStatusAPI.IsDefaultBrowser.StrictCohorts", is_default);
+  }
+}
+
+// Records the default status retention since the last successful default status
+// API call.
+void RecordDefaultStatusRetention(DefaultStatusRetention retention) {
+  base::UmaHistogramEnumeration("IOS.DefaultStatusAPI.DefaultStatusRetention",
+                                retention);
+}
+
+// Records the difference between `is_default_in_system_api` and Chrome's
+// heuristics across lookback windows.
+void RecordHeuristicAssessments(bool is_default_in_system_api) {
+  static constexpr int kLookbackWindowsInDays[] = {1, 3, 7, 14, 21, 28, 35, 42};
+  for (int days : kLookbackWindowsInDays) {
+    DefaultStatusHeuristicAssessment assessment = AssessHeuristic(
+        is_default_in_system_api, IsChromeLikelyDefaultBrowserXDays(days));
+    base::UmaHistogramEnumeration(
+        base::StringPrintf("IOS.DefaultStatusAPI.HeuristicAssessment%d", days),
+        assessment);
+  }
+}
 
 // Queries the real `UIApplication` default status API.
 UIApplicationCategoryDefaultStatus QuerySystemDefaultStatus(NSError** error)

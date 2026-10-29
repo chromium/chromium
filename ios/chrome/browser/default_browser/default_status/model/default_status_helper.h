@@ -29,10 +29,6 @@ class PrefService;
 //      relevant metrics and prefs are recorded.
 namespace default_status {
 
-// The number of cohorts clients are split into to spread out calls to the
-// default status API.
-extern const int kCohortCount;
-
 // Registers the prefs associated with the default status helper in `registry`.
 void RegisterDefaultStatusPrefs(PrefRegistrySimple* registry);
 
