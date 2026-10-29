@@ -5206,6 +5206,9 @@ You can restart anytime.
       <message name="IDS_IOS_MAGIC_STACK_TIP_SHOW_ME_HOW" desc="Button label to show the tutorial for a Magic Stack tip.">
         Show Me How
       </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_TIPS_NOTIFICATION_DESCIPTION" desc="The description of the Tips Notification tip for the Magic Stack.">
+        Get notified about security updates, custom themes, and more.
+      </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_TUTORIAL_TITLE" desc="The title of the full-screen tutorial for a Magic Stack tip.">
         How do I use this feature?
       </message>

@@ -216,8 +216,7 @@ std::optional<Symbol> GetBadgeSymbolConfigForTip(TipIdentifier tip,
     case TipIdentifier::kNTPCustomization:
       return GetNSString(IDS_IOS_MAGIC_STACK_TIP_NTP_THEME_TITLE);
     case TipIdentifier::kTipsNotifications:
-      // TODO(crbug.com/566958827): Add the correct strings once finalized.
-      return @"Get Chrome Tips";
+      return GetNSString(IDS_IOS_MAGIC_STACK_TIP_TIPS_NOTIFICATION_TITLE);
   }
 }
 
@@ -244,8 +243,7 @@ std::optional<Symbol> GetBadgeSymbolConfigForTip(TipIdentifier tip,
     case TipIdentifier::kNTPTheme:
       return GetNSString(IDS_IOS_MAGIC_STACK_TIP_NTP_THEME_DESCRIPTION);
     case TipIdentifier::kTipsNotifications:
-      // TODO(crbug.com/566958827): Add the correct strings once finalized.
-      return @"Get notified about security updates, custom themes, and more.";
+      return GetNSString(IDS_IOS_MAGIC_STACK_TIP_TIPS_NOTIFICATION_DESCIPTION);
     case TipIdentifier::kNTPCustomization:
       return GetNSString(IDS_IOS_MAGIC_STACK_TIP_NTP_CUSTOMIZATION_DESCRIPTION);
   }

@@ -760,6 +760,9 @@ Things to consider:
       <message name="IDS_IOS_MAGIC_STACK_TIP_SET_UP_COMPLETION_DESCRIPTION" desc="The description of the Set Up List completion for the Magic Stack.">
         Check back here for more useful tips to get the most out of Chromium.
       </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_TIPS_NOTIFICATION_TITLE" desc="The title of the Tips Notification tip for the Magic Stack.">
+        Get Chromium Tips
+      </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_TITLE" desc="The name of the Chrome Tips Magic Stack.">
         Chromium Tips
       </message>
