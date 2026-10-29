@@ -19,6 +19,7 @@ source_set("lib") {
   deps = [
     "//android_webview/browser",
     "//android_webview/browser/gfx",
+    "//android_webview/browser/metrics",
     "//android_webview/common",
     "//android_webview/gpu",
     "//android_webview/js_sandbox/service:js_sandbox",

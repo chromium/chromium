@@ -375,6 +375,10 @@ void BuildHandlerArgs(CrashReporterClient* crash_reporter_client,
   }
 
   (*process_annotations)["plat"] = std::string("Android");
+  for (auto& [key, value] :
+       crash_reporter_client->GetExtraProcessAnnotations()) {
+    (*process_annotations)[key] = std::move(value);
+  }
 }
 
 bool ShouldHandleCrashAndUpdateArguments(bool write_minidump_to_database,

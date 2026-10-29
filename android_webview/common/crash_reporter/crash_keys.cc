@@ -16,7 +16,11 @@ const char kAppProcessName[] = "app-process-name";
 
 const char kAndroidSdkInt[] = "android-sdk-int";
 
+const char kBrowserProcessBitness[] = "browser-process-bitness";
+
 const char kContextLossReason[] = "context-loss-reason";
+
+const char kPrimaryCpuAbiBitness[] = "primary-cpu-abi-bitness";
 
 const char kSupportLibraryWebkitVersion[] = "androidx-webkit-version";
 
@@ -28,7 +32,9 @@ const char* const kWebViewCrashKeyAllowList[] = {
     kAppPackageVersionCode,
     kAppProcessName,
     kAndroidSdkInt,
+    kBrowserProcessBitness,
     kContextLossReason,
+    kPrimaryCpuAbiBitness,
     kSupportLibraryWebkitVersion,
     kSkippedDataDirLock,
 

@@ -6,6 +6,9 @@
 
 #include <stdint.h>
 
+#include <map>
+#include <string>
+
 #include "android_webview/common/aw_descriptors.h"
 #include "android_webview/common/aw_paths.h"
 #include "android_webview/common/aw_switches.h"
@@ -22,6 +25,7 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
+#include "build/build_config.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/crash/core/common/crash_key.h"
@@ -104,6 +108,26 @@ class AwCrashReporterClient : public crash_reporter::CrashReporterClient {
 
   bool ShouldWriteMinidumpToLog() override { return true; }
 
+  std::map<std::string, std::string> GetExtraProcessAnnotations() override {
+    // This method is only called in the browser process but annotations are
+    // used to set crash keys for the browser process and for child processes
+    // (such as the renderer). Therefore, ARCH_CPU_64_BITS can be used to
+    // correctly identify whether the browser is 64 bit.
+    std::map<std::string, std::string> annotations;
+    annotations[crash_keys::kBrowserProcessBitness] =
+#if defined(ARCH_CPU_64_BITS)
+        "64 bit";
+#else
+        "32 bit";
+#endif
+    annotations[crash_keys::kPrimaryCpuAbiBitness] = primary_cpu_abi_bitness_;
+    return annotations;
+  }
+
+  void set_primary_cpu_abi_bitness(std::string bitness) {
+    primary_cpu_abi_bitness_ = std::move(bitness);
+  }
+
   bool JavaExceptionFilter(
       const base::android::JavaRef<jthrowable>& java_exception) {
     return Java_AwCrashReporterClient_stackTraceContainsWebViewCode(
@@ -114,11 +138,18 @@ class AwCrashReporterClient : public crash_reporter::CrashReporterClient {
     static base::NoDestructor<AwCrashReporterClient> crash_reporter_client;
     return crash_reporter_client.get();
   }
+
+ private:
+  std::string primary_cpu_abi_bitness_ = "Unknown";
 };
 
 bool g_enabled;
 
 }  // namespace
+
+void SetPrimaryCpuAbiBitness(std::string bitness) {
+  AwCrashReporterClient::Get()->set_primary_cpu_abi_bitness(std::move(bitness));
+}
 
 void EnableCrashReporter(const std::string& process_type) {
   if (g_enabled) {

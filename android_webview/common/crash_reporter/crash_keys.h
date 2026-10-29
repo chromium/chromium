@@ -23,8 +23,12 @@ extern const char kAppProcessName[];
 
 extern const char kAndroidSdkInt[];
 
+extern const char kBrowserProcessBitness[];
+
 // `gpu::error::ContextLostReason` for context loss on draw functor context.
 extern const char kContextLossReason[];
+
+extern const char kPrimaryCpuAbiBitness[];
 
 extern const char kSupportLibraryWebkitVersion[];
 

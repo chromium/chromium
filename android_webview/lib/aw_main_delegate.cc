@@ -14,6 +14,7 @@
 #include "android_webview/browser/gfx/browser_view_renderer.h"
 #include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
+#include "android_webview/browser/metrics/system_state_util.h"
 #include "android_webview/common/aw_descriptors.h"
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_paths.h"
@@ -279,6 +280,21 @@ void AwMainDelegate::PreSandboxStartup() {
 
   if (process_type == switches::kRendererProcess) {
     InitResourceBundleRendererSide();
+  }
+
+  if (is_browser_process) {
+    // Must run before EnableCrashReporter is called.
+    switch (GetPrimaryCpuAbiBitness()) {
+      case PrimaryCpuAbiBitness::kUnknown:
+        SetPrimaryCpuAbiBitness("Unknown");
+        break;
+      case PrimaryCpuAbiBitness::k32bit:
+        SetPrimaryCpuAbiBitness("32 bit");
+        break;
+      case PrimaryCpuAbiBitness::k64bit:
+        SetPrimaryCpuAbiBitness("64 bit");
+        break;
+    }
   }
 
   EnableCrashReporter(process_type);

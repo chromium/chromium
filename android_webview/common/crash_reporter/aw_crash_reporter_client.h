@@ -9,6 +9,8 @@
 
 namespace android_webview {
 
+void SetPrimaryCpuAbiBitness(std::string bitness);
+
 void EnableCrashReporter(const std::string& process_type);
 
 bool CrashReporterEnabled();
