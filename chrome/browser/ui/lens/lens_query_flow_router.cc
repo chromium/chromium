@@ -941,8 +941,7 @@ void LensQueryFlowRouter::OpenContextualTasksPanel(
   // update its UI state.
   lens_overlay_controller()->NotifyResultsPanelOpened();
 
-  if (is_contextual_text_query &&
-      lens_overlay_controller()->IsOverlayShowing()) {
+  if (is_contextual_text_query && !lens_search_controller_->IsOff()) {
     // Wait until the URL generation concludes and the panel is successfully
     // opened to avoid interrupting the flow by closing Lens too early. Close
     // the overlay by posting a task to avoid destroying the searchbox handler

@@ -1025,6 +1025,40 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensInteractionBrowserTest,
       base::test::RunUntil([&]() { return !inner_contents->IsLoading(); }));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksLensInteractionBrowserTest,
+    OmniboxContextualSuggestionClosesSessionAndAllowsComposeboxOverlay) {
+  WaitForPaint();
+
+  auto* controller = GetLensSearchController();
+  ASSERT_TRUE(controller);
+  ASSERT_TRUE(controller->IsOff());
+
+  // Issue a headless contextual text query via Omnibox contextual suggestion
+  // (which starts a Lens session without showing the overlay).
+  controller->IssueContextualSearchRequest(
+      lens::LensOverlayInvocationSource::kOmniboxContextualSuggestion,
+      GURL("https://www.google.com/search?q=test+query"),
+      omnibox::AutocompleteMatchType::kSearchSuggest,
+      /*is_zero_prefix_suggestion=*/true,
+      /*grant_session_permission=*/true);
+  EXPECT_FALSE(controller->IsOff());
+  EXPECT_FALSE(controller->lens_overlay_controller()->IsOverlayShowing());
+
+  // Wait for the side panel to open and the posted CloseLensSync task to reset
+  // the controller back to kOff.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsContextualTasksSidePanelOpen(); }));
+  ASSERT_TRUE(base::test::RunUntil([&]() { return controller->IsOff(); }));
+
+  // Clicking the Lens icon in the Contextual Tasks composebox should now
+  // open the Lens Overlay.
+  controller->OpenLensOverlay(
+      lens::LensOverlayInvocationSource::kContextualTasksComposebox);
+  WaitForOverlayToOpen(controller);
+  EXPECT_TRUE(controller->IsShowingUI());
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SubsequentRegionSelectionLoadsNewResult \
   DISABLED_SubsequentRegionSelectionLoadsNewResult
