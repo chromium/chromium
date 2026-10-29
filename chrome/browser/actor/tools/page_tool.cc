@@ -544,16 +544,23 @@ PageTool::ComputeObservedTargetAndValidateFrame(
 
   // Perform validation for coordinate based target only.
   if (std::holds_alternative<gfx::Point>(request_->GetTarget())) {
+    // TODO(b/503778449): Re-examine checking for actionable mode here once the
+    // observation handoff between Glic and Actor is fixed.
+    const bool has_actionable_observation =
+        last_observation &&
+        last_observation->mode() ==
+            optimization_guide::proto::
+                ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS;
     // TODO(b/445210509): To enforce TOCTOU for coordinate actuation we must
     // ensure every action has a prior observation.  This is not always the case
     // for the first action.
     if (base::FeatureList::IsEnabled(features::kGlicActorToctouValidation) &&
-        !last_observation) {
+        !has_actionable_observation) {
       return base::unexpected(MakeResult(
           mojom::ActionResultCode::kFrameLocationChangedSinceObservation,
           /*requires_page_stabilization=*/false,
-          "No prior observation available for TOCTOU validation"));
-    } else if (last_observation &&
+          "No prior actionable observation available for TOCTOU validation"));
+    } else if (has_actionable_observation &&
                !ValidateTargetFrameCandidate(request_->GetTarget(), frame,
                                              *web_contents,
                                              observed_target_node_info)) {
