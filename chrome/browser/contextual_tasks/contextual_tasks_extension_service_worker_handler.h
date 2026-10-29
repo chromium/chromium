@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_EXTENSION_SERVICE_WORKER_HANDLER_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_EXTENSION_SERVICE_WORKER_HANDLER_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -23,6 +24,10 @@ class Profile;
 namespace content {
 class RenderFrameHost;
 }  // namespace content
+
+namespace extensions {
+class ServiceWorkerKeepalive;
+}  // namespace extensions
 
 namespace contextual_tasks {
 
@@ -63,6 +68,8 @@ class ContextualTasksExtensionServiceWorkerHandler
   void RemoveLensCrop() override;
 
  private:
+  void AcquireServiceWorkerKeepalive();
+  void OnMojoPipeDisconnected();
   content::RenderFrameHost* GetValidatedMainFrameForDocumentId(
       const std::string& document_id) const;
   void DispatchSearchMessage(const std::string& document_id,
@@ -72,6 +79,8 @@ class ContextualTasksExtensionServiceWorkerHandler
   mojo::Receiver<mojom::ExtensionPageHandlerFactory> factory_receiver_{this};
   mojo::Receiver<mojom::ExtensionPageHandler> handler_receiver_{this};
   mojo::Remote<mojom::ExtensionPage> page_;
+  std::vector<std::unique_ptr<extensions::ServiceWorkerKeepalive>>
+      service_worker_keepalives_;
   base::WeakPtrFactory<ContextualTasksExtensionServiceWorkerHandler>
       weak_ptr_factory_{this};
 };
