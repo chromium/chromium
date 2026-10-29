@@ -4323,6 +4323,7 @@ TEST_F(ContextualTasksUiServiceTest,
 
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
+  service_for_nav_->SetSidePanelWebContentsForTesting(web_contents.get());
   content::WebContentsTester::For(web_contents.get())
       ->NavigateAndCommit(GURL("chrome://contextual-tasks"));
   content::WebContentsTester::For(web_contents.get())
@@ -4360,6 +4361,7 @@ TEST_F(ContextualTasksUiServiceTest,
 
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
+  service_for_nav_->SetSidePanelWebContentsForTesting(web_contents.get());
   content::WebContentsTester::For(web_contents.get())
       ->NavigateAndCommit(GURL("chrome://contextual-tasks"));
   content::WebContentsTester::For(web_contents.get())
@@ -4391,6 +4393,7 @@ TEST_F(ContextualTasksUiServiceTest,
 
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
+  service_for_nav_->SetSidePanelWebContentsForTesting(web_contents.get());
   content::WebContentsTester::For(web_contents.get())
       ->NavigateAndCommit(GURL("https://example.com"));
   content::WebContentsTester::For(web_contents.get())
@@ -4416,8 +4419,10 @@ TEST_F(ContextualTasksUiServiceTest,
 TEST_F(ContextualTasksUiServiceTest,
        HandleNavigation_BackButtonExpandsSidePanel) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      kContextualTasksBackButtonExpandsSidePanel);
+  scoped_feature_list.InitWithFeatures(
+      {contextual_tasks::kContextualTasks,
+       kContextualTasksBackButtonExpandsSidePanel},
+      {});
 
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
@@ -4520,8 +4525,10 @@ TEST_F(ContextualTasksUiServiceTest,
 TEST_F(ContextualTasksUiServiceTest,
        HandleNavigation_BackButtonExpandsSidePanel_SidePanelContentsDestroyed) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      kContextualTasksBackButtonExpandsSidePanel);
+  scoped_feature_list.InitWithFeatures(
+      {contextual_tasks::kContextualTasks,
+       kContextualTasksBackButtonExpandsSidePanel},
+      {});
 
   tabs::TabModel::PreventFeatureInitializationForTesting prevent_feature_init;
 
@@ -5078,6 +5085,111 @@ TEST_F(ContextualTasksUiServiceTest,
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
   service_for_nav_->GetFakeEligibilityManager()->SetIsEligible(false);
+
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(webui_url, false), web_contents.get(),
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
+      /*is_same_site_or_from_ui=*/true, /*is_mobile_ua=*/false, std::nullopt,
+      std::nullopt, blink::mojom::WindowFeatures()));
+
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_EQ(web_contents->GetController().GetPendingEntry(), nullptr);
+}
+
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_WebUI_DisabledContextualTasks_SidePanelEnabled_Redirects_WhenNotInSidePanel) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {contextual_tasks::kContextualTasksSidePanel},
+      {contextual_tasks::kContextualTasks});
+  GURL webui_url(chrome::kChromeUIContextualTasksURL);
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
+      .WillRepeatedly(Return(true));
+  service_for_nav_->GetFakeEligibilityManager()->SetIsEligible(true);
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(false);
+
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(webui_url, false), web_contents.get(),
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
+      /*is_same_site_or_from_ui=*/true, /*is_mobile_ua=*/false, std::nullopt,
+      std::nullopt, blink::mojom::WindowFeatures()));
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    content::NavigationEntry* entry =
+        web_contents->GetController().GetPendingEntry();
+    return entry && entry->GetURL().host() == "www.google.com";
+  }));
+}
+
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_WebUI_DisabledContextualTasks_SidePanelEnabled_NoRedirect_WhenInSidePanel) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {contextual_tasks::kContextualTasksSidePanel},
+      {contextual_tasks::kContextualTasks});
+  GURL webui_url(chrome::kChromeUIContextualTasksURL);
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
+      .WillRepeatedly(Return(true));
+  service_for_nav_->GetFakeEligibilityManager()->SetIsEligible(true);
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(webui_url, false), web_contents.get(),
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
+      /*is_same_site_or_from_ui=*/true, /*is_mobile_ua=*/false, std::nullopt,
+      std::nullopt, blink::mojom::WindowFeatures()));
+}
+
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_WebUI_ContextualTasksEnabled_NoRedirect_WhenNotInSidePanel) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      contextual_tasks::kContextualTasks);
+  GURL webui_url(chrome::kChromeUIContextualTasksURL);
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
+      .WillRepeatedly(Return(true));
+  service_for_nav_->GetFakeEligibilityManager()->SetIsEligible(true);
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(false);
+
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(webui_url, false), web_contents.get(),
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
+      /*is_same_site_or_from_ui=*/true, /*is_mobile_ua=*/false, std::nullopt,
+      std::nullopt, blink::mojom::WindowFeatures()));
+}
+
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_WebUI_RearchitectureEnabled_NoRedirect_WhenNotInSidePanel) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {contextual_tasks::kContextualTasksRearchitecture,
+       contextual_tasks::kContextualTasksSidePanel},
+      {contextual_tasks::kContextualTasks});
+  GURL webui_url(chrome::kChromeUIContextualTasksURL);
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(false);
 
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(webui_url, false), web_contents.get(),

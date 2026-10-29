@@ -3695,6 +3695,63 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTest,
                   WaitForStateChange(kPrimaryTab, composebox_focused));
 }
 
+class ContextualTasksSidePanelOnlyInteractiveUiTest
+    : public ContextualTasksInteractiveUiTestBase {
+ public:
+  void SetUpFeatureList() override {
+    std::vector<base::test::FeatureRefAndParams> enabled;
+    for (const auto& f : GetDefaultEnabledFeatures()) {
+      if (&f.feature.get() != &kContextualTasks) {
+        enabled.push_back(f);
+      }
+    }
+    enabled.push_back({kContextualTasksSidePanel, {}});
+    auto disabled = GetDefaultDisabledFeatures();
+    disabled.push_back(kContextualTasks);
+    feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
+  }
+
+  void SetUpOnMainThread() override {
+    ContextualTasksInteractiveTestBase::SetUpOnMainThread();
+    ON_CALL(*GetMockAimEligibilityService(browser()->GetProfile()),
+            IsCobrowseEligible())
+        .WillByDefault(testing::Return(false));
+  }
+};
+
+// This tests the following CUJ:
+//  (1) User types chrome://contextual-tasks into the Omnibox in a standalone
+//      tab and presses Enter when ContextualTasks is disabled and only the
+//      side panel UI is enabled.
+//  (2) The tab redirects to the AIM page URL rather than hosting the WebUI.
+//  (3) The standalone Contextual Tasks WebUI app is not present in the tab.
+IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelOnlyInteractiveUiTest,
+                       StandaloneTabDirectNavigationRedirectsToAim) {
+  // TODO(crbug.com/533072196): Clean up this test once the pre-rearchitecture
+  // logic is cleaned up.
+  const GURL expected_aim_url(contextual_tasks::GetContextualTasksAiPageUrl());
+
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0), SelectTab(kTabStripElementId, 0),
+
+      // (1) Navigate the tab to the WebUI URL.
+      Do([this]() {
+        browser()
+            ->tab_strip_model()
+            ->GetActiveWebContents()
+            ->GetController()
+            .LoadURL(GURL(chrome::kChromeUIContextualTasksURL),
+                     content::Referrer(), ui::PAGE_TRANSITION_TYPED,
+                     std::string());
+      }),
+
+      // (2) The tab redirects and commits the AIM page rather than WebUI.
+      WaitForWebContentsNavigation(kPrimaryTab, expected_aim_url),
+
+      // (3) The standalone Contextual Tasks WebUI is not present in the tab.
+      EnsureNotPresent(kPrimaryTab, {"contextual-tasks-app"}));
+}
+
 // CUJ covered by this test:
 // 1) Opens Contextual Tasks in a tab.
 // 2) Call window.open from the Contextual Tasks <webview>.
