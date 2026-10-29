@@ -54,7 +54,8 @@ class ReaderModeTest : public PlatformTest {
   void WaitForPageLoadDelayAndRunUntilIdle();
 
   // Waits for Reader mode content availability.
-  bool WaitForAvailableReaderModeContentInWebState(web::WebState* web_state);
+  [[nodiscard]] bool WaitForAvailableReaderModeContentInWebState(
+      web::WebState* web_state);
 
   web::WebTaskEnvironment* task_environment() { return &task_environment_; }
 

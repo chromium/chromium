@@ -64,15 +64,18 @@ class ReaderModeBrowserAgentTest : public ReaderModeTest {
     InsertWebState();
     GetWebStateList()->ActivateWebStateAt(0);
 
+    bool success;
     EnableReaderMode(GetWebStateList()->GetWebStateAt(1),
                      ReaderModeAccessPoint::kContextualChip);
-    WaitForAvailableReaderModeContentInWebState(
+    success = WaitForAvailableReaderModeContentInWebState(
         GetWebStateList()->GetWebStateAt(1));
+    DCHECK(success);
 
     EnableReaderMode(GetWebStateList()->GetWebStateAt(3),
                      ReaderModeAccessPoint::kContextualChip);
-    WaitForAvailableReaderModeContentInWebState(
+    success = WaitForAvailableReaderModeContentInWebState(
         GetWebStateList()->GetWebStateAt(3));
+    DCHECK(success);
   }
 
   void TearDown() override { GetReaderModeBrowserAgent()->SetDelegate(nil); }
@@ -105,8 +108,9 @@ class ReaderModeBrowserAgentTest : public ReaderModeTest {
   // Activates a web state that expects Reader mode to be displayed.
   void ActivateWebStateWithReaderModeAt(int index) {
     GetWebStateList()->ActivateWebStateAt(index);
-    WaitForAvailableReaderModeContentInWebState(
+    bool success = WaitForAvailableReaderModeContentInWebState(
         GetWebStateList()->GetWebStateAt(index));
+    DCHECK(success);
   }
 
  protected:
@@ -184,7 +188,7 @@ TEST_F(ReaderModeBrowserAgentTest, ChangingReaderModeStatus) {
   OCMExpect([contextual_panel_entrypoint_handler_
       cancelContextualPanelEntrypointLoudMoment]);
   EnableReaderMode(GetActiveWebState(), ReaderModeAccessPoint::kContextualChip);
-  WaitForAvailableReaderModeContentInWebState(GetActiveWebState());
+  EXPECT_TRUE(WaitForAvailableReaderModeContentInWebState(GetActiveWebState()));
   EXPECT_OCMOCK_VERIFY(delegate_);
   EXPECT_OCMOCK_VERIFY(fake_reader_mode_chip_handler_);
   EXPECT_OCMOCK_VERIFY(contextual_panel_entrypoint_handler_);
@@ -238,7 +242,7 @@ TEST_F(ReaderModeBrowserAgentTest, ObserverBridgeNotifications) {
   OCMExpect([observer_mock readerModeBrowserAgent:GetReaderModeBrowserAgent()
                                didShowModeContent:YES]);
   EnableReaderMode(GetActiveWebState(), ReaderModeAccessPoint::kContextualChip);
-  WaitForAvailableReaderModeContentInWebState(GetActiveWebState());
+  EXPECT_TRUE(WaitForAvailableReaderModeContentInWebState(GetActiveWebState()));
   EXPECT_OCMOCK_VERIFY(observer_mock);
 
   OCMExpect([observer_mock readerModeBrowserAgent:GetReaderModeBrowserAgent()
