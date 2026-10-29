@@ -244,6 +244,8 @@ TEST_F(SharedImagePoolTest, ReconfigurePool) {
   ASSERT_TRUE(image);
   EXPECT_EQ(image->GetSharedImage()->size(), new_info.size);
   EXPECT_EQ(image->GetSharedImage()->format(), new_info.format);
+  EXPECT_EQ(image->GetSharedImage()->alpha_type(), new_info.alpha_type);
+  EXPECT_EQ(image->GetSharedImage()->is_software(), new_info.is_software);
 
   // Attempt to reconfigure with the same ImageInfo, which should be a no-op.
   pool->Reconfigure(new_info);

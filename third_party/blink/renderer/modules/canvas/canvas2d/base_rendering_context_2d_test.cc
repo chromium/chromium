@@ -438,7 +438,6 @@ class BaseRenderingContext2DSharedImageTest : public testing::Test {
 
   void EnsureResourceRecycled(
       scoped_refptr<ExportedCanvasResource>&& resource) {
-    auto transferable_resource = resource->PrepareTransferableResource();
     resource.reset();
   }
 
