@@ -46,6 +46,15 @@ bool FrameView::CanThrottleRenderingForPropagation() const {
 
 bool FrameView::DisplayLockedInParentFrame() {
   Frame& frame = GetFrame();
+  // If the parent frame is display locked, then this frame does not get
+  // lifecycle updates either, regardless of whether the owner element has a
+  // layout object (e.g. if it is display:none).
+  if (Frame* parent_frame = frame.Tree().Parent()) {
+    if (FrameView* parent_view = parent_frame->View();
+        parent_view && parent_view->IsDisplayLocked()) {
+      return true;
+    }
+  }
   LayoutEmbeddedContent* owner = frame.OwnerLayoutObject();
   if (!owner)
     return false;

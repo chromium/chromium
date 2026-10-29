@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_transition_element.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
@@ -2614,6 +2615,83 @@ TEST_P(ViewTransitionTest, ContentVisibilityHiddenOnNewlyCreatedGroup) {
       kPseudoIdViewTransitionNew, AtomicString("b"));
   ASSERT_TRUE(new_b);
   EXPECT_TRUE(new_b->GetLayoutObject());
+}
+
+// When a transition is skipped during the rendering lifecycle, other captured
+// transitions waiting on it must not run their update callbacks from inside
+// the lifecycle, since script could then dirty the DOM after style and layout
+// are clean.
+TEST_P(ViewTransitionTest,
+       UpdateCallbackDoesNotRunDuringLifecycleWhenOtherTransitionSkipped) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      .scope { width: 100px; height: 50px; contain: layout; }
+      .scope div { width: 10px; height: 10px; }
+    </style>
+    <div id="a" class="scope">
+      <div style="view-transition-name: a1"></div>
+    </div>
+    <div id="b" class="scope">
+      <div style="view-transition-name: b1"></div>
+    </div>
+  )HTML");
+
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  struct CallbackData {
+    bool ran = false;
+    bool ran_during_lifecycle = false;
+  };
+  CallbackData data;
+
+  auto record_lambda = [](const v8::FunctionCallbackInfo<v8::Value>& info) {
+    auto* data =
+        static_cast<CallbackData*>(info.DataV2().As<v8::External>()->Value(
+            gin::kViewTransitionTestDataTag));
+    data->ran = true;
+    data->ran_during_lifecycle = ScriptForbiddenScope::WillBeScriptForbidden();
+  };
+  auto record_callback =
+      v8::Function::New(script_state->GetContext(), record_lambda,
+                        v8::External::New(script_state->GetIsolate(), &data,
+                                          gin::kViewTransitionTestDataTag))
+          .ToLocalChecked();
+  auto noop_callback =
+      v8::Function::New(script_state->GetContext(),
+                        [](const v8::FunctionCallbackInfo<v8::Value>&) {})
+          .ToLocalChecked();
+
+  Element* a = GetDocument().getElementById(AtomicString("a"));
+  Element* b = GetDocument().getElementById(AtomicString("b"));
+
+  auto* transition_b = ScopedViewTransition::startViewTransition(
+      script_state, *b, V8ViewTransitionCallback::Create(record_callback),
+      ASSERT_NO_EXCEPTION);
+  auto* transition_a = ScopedViewTransition::startViewTransition(
+      script_state, *a, V8ViewTransitionCallback::Create(noop_callback),
+      ASSERT_NO_EXCEPTION);
+
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_EQ(GetState(transition_a), State::kCapturing);
+  ASSERT_EQ(GetState(transition_b), State::kCapturing);
+
+  // Commit only `b`'s capture. `b` is now ready to run its callback, but waits
+  // for `a`, which is still capturing.
+  transition_b->GetViewTransitionForTest()->WillCommitCompositorFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(GetState(transition_b), State::kCapturing);
+  EXPECT_FALSE(data.ran);
+
+  // Make `a` skip during the next lifecycle update, since its scope no longer
+  // has a layout box.
+  a->SetInlineStyleProperty(CSSPropertyID::kDisplay, "none");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(GetState(transition_a), State::kAborted);
+
+  test::RunPendingTasks();
+  EXPECT_TRUE(data.ran);
+  EXPECT_FALSE(data.ran_during_lifecycle);
 }
 
 }  // namespace blink

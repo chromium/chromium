@@ -3214,6 +3214,97 @@ TEST_F(IntersectionObserverTest, DirtySlotAssignmentInThrottledFrame) {
   EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
 }
 
+// A frame whose ancestor frame is display locked does not get lifecycle
+// updates, even if it is itself not display locked (e.g. because its own owner
+// element is display:none) and requires an intersection update. Computing
+// intersections in it must not force slot assignment recalculation during
+// post-lifecycle steps.
+TEST_F(IntersectionObserverTest,
+       DirtySlotAssignmentInFrameWithDisplayLockedAncestorFrame) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest middle_resource("https://example.com/middle.html", "text/html");
+  SimRequest inner_resource("https://example.com/inner.html", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <div id="lock">
+      <iframe id="middle" src="middle.html"></iframe>
+    </div>
+  )HTML");
+  middle_resource.Complete(R"HTML(
+    <iframe id="inner" src="inner.html"></iframe>
+  )HTML");
+  inner_resource.Complete(R"HTML(
+    <div id="host">
+      <template shadowrootmode="open">
+        <slot></slot>
+      </template>
+      <div id="target">Hello, world!</div>
+      <div id="wrap">
+        <div style="overflow: scroll; width: 50px; height: 50px">
+          <div style="anchor-name: --a; width: 10px; height: 10px"></div>
+          <div style="position: absolute; position-anchor: --a"></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  auto* middle_frame = To<WebLocalFrameImpl>(MainFrame().FirstChild());
+  ASSERT_TRUE(middle_frame);
+  auto* inner_frame = To<WebLocalFrameImpl>(middle_frame->FirstChild());
+  ASSERT_TRUE(inner_frame);
+  LocalFrameView* middle_view = middle_frame->GetFrame()->View();
+  Document* inner_document = inner_frame->GetFrame()->GetDocument();
+  LocalFrameView* inner_view = inner_document->View();
+  Element* target = inner_document->getElementById(AtomicString("target"));
+  ASSERT_TRUE(target);
+  EXPECT_TRUE(target->GetLayoutObject());
+
+  // Display lock the middle frame, and remove the inner frame's owner box so
+  // that the display lock is not propagated through the owner's layout object.
+  middle_frame->GetFrame()
+      ->GetDocument()
+      ->getElementById(AtomicString("inner"))
+      ->SetInlineStyleProperty(CSSPropertyID::kDisplay, "none");
+  GetDocument()
+      .getElementById(AtomicString("lock"))
+      ->SetInlineStyleProperty(CSSPropertyID::kContentVisibility, "hidden");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_TRUE(middle_view->IsDisplayLocked());
+  EXPECT_TRUE(inner_view->CanThrottleRendering());
+
+  Element* host = inner_document->getElementById(AtomicString("host"));
+  ASSERT_TRUE(host);
+  ShadowRoot* shadow_root = host->OpenShadowRoot();
+  ASSERT_TRUE(shadow_root);
+  EXPECT_FALSE(shadow_root->NeedsSlotAssignmentRecalc());
+
+  // Dirty slot assignment and observe a target, which requires an intersection
+  // update in the inner frame.
+  Element* wrap = inner_document->getElementById(AtomicString("wrap"));
+  ASSERT_TRUE(wrap);
+  wrap->setAttribute(html_names::kSlotAttr, AtomicString("x"));
+  EXPECT_TRUE(shadow_root->NeedsSlotAssignmentRecalc());
+
+  TestIntersectionObserverDelegate* observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(*inner_document);
+  IntersectionObserver* observer = MakeGarbageCollected<IntersectionObserver>(
+      *observer_delegate, std::nullopt,
+      IntersectionObserver::Params{.root = inner_document, .thresholds = {0}});
+  observer->observe(target);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_TRUE(middle_view->IsDisplayLocked());
+  EXPECT_TRUE(shadow_root->NeedsSlotAssignmentRecalc());
+  EXPECT_EQ(observer_delegate->CallCount(), 1);
+  EXPECT_EQ(observer_delegate->EntryCount(), 1);
+  EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
+}
+
 TEST_F(IntersectionObserverTest, RootMarginPercentOverflow) {
   IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
   observer_init->setRootMargin("3e9%");
