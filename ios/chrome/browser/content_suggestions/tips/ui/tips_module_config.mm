@@ -177,6 +177,7 @@ std::optional<Symbol> GetBadgeSymbolConfigForTip(TipIdentifier tip,
   // LINT.IfChange(Copy)
   config.productImageData = self.productImageData;
   config.audience = self.audience;
+  config.consumer = self.consumer;
   // LINT.ThenChange(tips_module_config.h:Copy)
   return config;
 }

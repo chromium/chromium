@@ -363,7 +363,8 @@ class MagicStackRankingModelTest : public PlatformTest {
                           imageFetcher:
                               std::make_unique<image_fetcher::ImageDataFetcher>(
                                   GetProfile()->GetSharedURLLoaderFactory())
-        backgroundCustomizationService:nullptr];
+        backgroundCustomizationService:nullptr
+                 localStatePrefService:GetLocalState()];
 
     _priceTrackingPromoMediator = [[PriceTrackingPromoMediator alloc]
         initWithShoppingService:commerce::ShoppingServiceFactory::GetForProfile(

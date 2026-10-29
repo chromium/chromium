@@ -14,6 +14,7 @@
 #import "components/commerce/core/mock_shopping_service.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/ntp_tiles/pref_names.h"
+#import "components/prefs/scoped_user_pref_update.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
@@ -25,7 +26,9 @@
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -65,7 +68,9 @@ class TipsMagicStackMediatorTest : public PlatformTest {
                                   profile_->GetSharedURLLoaderFactory())
         backgroundCustomizationService:
             HomeBackgroundCustomizationServiceFactory::GetForProfile(
-                profile_.get())];
+                profile_.get())
+                 localStatePrefService:GetApplicationContext()
+                                           ->GetLocalState()];
   }
 
   void TearDown() override {
@@ -229,6 +234,59 @@ TEST_F(TipsMagicStackMediatorTest, ForwardsDidToggleTipsNotificationsSwitch) {
       logMagicStackEngagementForType:ContentSuggestionsModuleType::kTips]);
   OCMExpect([audience didToggleTipsNotificationsSwitch:YES]);
   [(id<TipsModuleAudience>)mediator_ didToggleTipsNotificationsSwitch:YES];
+  EXPECT_OCMOCK_VERIFY(delegate);
+  EXPECT_OCMOCK_VERIFY(audience);
+}
+
+// Tests that changes to `kAppLevelPushNotificationPermissions` in local state
+// synchronize `config.switchOn` and notify the consumer.
+TEST_F(TipsMagicStackMediatorTest,
+       SyncsTipsNotificationsSwitchWithLocalStatePref) {
+  [mediator_ reconfigureWithTipIdentifier:TipIdentifier::kTipsNotifications];
+  EXPECT_FALSE(mediator_.config.switchOn);
+  id consumer = OCMStrictProtocolMock(@protocol(TipsModuleConsumer));
+  mediator_.config.consumer = consumer;
+  OCMExpect([consumer setSwitchOn:YES animated:YES]);
+  {
+    ScopedDictPrefUpdate update(GetApplicationContext()->GetLocalState(),
+                                prefs::kAppLevelPushNotificationPermissions);
+    update->Set(kTipsNotificationKey, true);
+  }
+  EXPECT_TRUE(mediator_.config.switchOn);
+  EXPECT_OCMOCK_VERIFY(consumer);
+  OCMExpect([consumer setSwitchOn:NO animated:YES]);
+  {
+    ScopedDictPrefUpdate update(GetApplicationContext()->GetLocalState(),
+                                prefs::kAppLevelPushNotificationPermissions);
+    update->Set(kTipsNotificationKey, false);
+  }
+  EXPECT_FALSE(mediator_.config.switchOn);
+  EXPECT_OCMOCK_VERIFY(consumer);
+}
+
+// Tests that reveting the Tips Notifications switch after a toggle updates
+// `config.switchOn` and notifies the consumer.
+TEST_F(TipsMagicStackMediatorTest,
+       RevertsTipsNotificationsSwitchWhenOptInCanceledOrDenied) {
+  [mediator_ reconfigureWithTipIdentifier:TipIdentifier::kTipsNotifications];
+  EXPECT_FALSE(mediator_.config.switchOn);
+  id consumer = OCMStrictProtocolMock(@protocol(TipsModuleConsumer));
+  mediator_.config.consumer = consumer;
+  id delegate =
+      OCMStrictProtocolMock(@protocol(TipsMagicStackMediatorDelegate));
+  mediator_.delegate = delegate;
+  id audience = OCMStrictProtocolMock(
+      @protocol(ContentSuggestionsViewControllerAudience));
+  mediator_.presentationAudience = audience;
+  OCMExpect([delegate
+      logMagicStackEngagementForType:ContentSuggestionsModuleType::kTips]);
+  OCMExpect([audience didToggleTipsNotificationsSwitch:YES]);
+  [(id<TipsModuleAudience>)mediator_ didToggleTipsNotificationsSwitch:YES];
+  EXPECT_TRUE(mediator_.config.switchOn);
+  OCMExpect([consumer setSwitchOn:NO animated:YES]);
+  [mediator_ setTipsNotificationsSwitchEnabled:NO];
+  EXPECT_FALSE(mediator_.config.switchOn);
+  EXPECT_OCMOCK_VERIFY(consumer);
   EXPECT_OCMOCK_VERIFY(delegate);
   EXPECT_OCMOCK_VERIFY(audience);
 }

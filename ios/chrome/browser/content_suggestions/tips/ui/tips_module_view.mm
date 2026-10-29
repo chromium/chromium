@@ -26,17 +26,21 @@ NSString* const kTipsModuleViewID = @"kTipsModuleViewID";
 
 }  // namespace
 
+@interface TipsModuleView () <TipsModuleConsumer>
+@end
+
 @implementation TipsModuleView {
   // The current configuration of the Tips module.
   TipsModuleConfig* _config;
 
   // The root view of the Tips module.
-  UIView* _contentView;
+  IconDetailView* _contentView;
 }
 
 - (instancetype)initWithConfig:(TipsModuleConfig*)config {
   if ((self = [super init])) {
     _config = config;
+    _config.consumer = self;
   }
   return self;
 }
@@ -47,6 +51,12 @@ NSString* const kTipsModuleViewID = @"kTipsModuleViewID";
   [super willMoveToSuperview:newSuperview];
 
   [self createSubviews];
+}
+
+#pragma mark - TipsModuleConsumer
+
+- (void)setSwitchOn:(BOOL)switchOn animated:(BOOL)animated {
+  [_contentView setSwitchOn:switchOn animated:animated];
 }
 
 #pragma mark - Private methods

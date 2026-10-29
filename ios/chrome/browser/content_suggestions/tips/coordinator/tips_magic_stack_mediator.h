@@ -57,6 +57,7 @@ enum class TipIdentifier;
                               imageFetcher
     backgroundCustomizationService:
         (HomeBackgroundCustomizationService*)backgroundCustomizationService
+             localStatePrefService:(PrefService*)localStatePrefService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -77,6 +78,10 @@ enum class TipIdentifier;
 // Commits any pending in-place interaction (such as a selected NTP theme
 // swatch) and removes the module from the Magic Stack.
 - (void)completeInPlaceInteractionIfNeeded;
+
+// Updates the inline switch state for the Tips Notifications module if the
+// state changed.
+- (void)setTipsNotificationsSwitchEnabled:(BOOL)enabled;
 
 @end
 

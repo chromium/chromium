@@ -242,6 +242,8 @@ UIView* BadgeIconInContainer(UIImageView* icon,
   UITapGestureRecognizer* _tapGestureRecognizer;
   // The container view for the image, if one exists.
   UIView* _imageContainerView;
+  // The trailing toggle switch when `_config.showSwitch` is enabled.
+  UISwitch* _toggleSwitch;
 }
 
 - (instancetype)initWithConfig:(IconDetailViewConfig*)config {
@@ -288,6 +290,13 @@ UIView* BadgeIconInContainer(UIImageView* icon,
                                 : kGrey100Color];
   }
   _config.ntpBackgroundColorPalette = colorPalette;
+}
+
+#pragma mark - Public
+
+- (void)setSwitchOn:(BOOL)switchOn animated:(BOOL)animated {
+  _config.switchOn = switchOn;
+  [_toggleSwitch setOn:switchOn animated:animated];
 }
 
 #pragma mark - Private
@@ -439,17 +448,18 @@ UIView* BadgeIconInContainer(UIImageView* icon,
     // Disable container-level accessibility aggregation so VoiceOver can focus
     // the text labels and the interactive `UISwitch` as separate elements.
     self.isAccessibilityElement = NO;
-    UISwitch* toggleSwitch = [[UISwitch alloc] init];
-    [toggleSwitch setContentHuggingPriority:UILayoutPriorityDefaultHigh
-                                    forAxis:UILayoutConstraintAxisHorizontal];
-    [toggleSwitch
+    _toggleSwitch = [[UISwitch alloc] init];
+    _toggleSwitch.on = _config.switchOn;
+    [_toggleSwitch setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                                     forAxis:UILayoutConstraintAxisHorizontal];
+    [_toggleSwitch
         setContentCompressionResistancePriority:UILayoutPriorityRequired
                                         forAxis:
                                             UILayoutConstraintAxisHorizontal];
-    [toggleSwitch addTarget:self
-                     action:@selector(switchValueChanged:)
-           forControlEvents:UIControlEventValueChanged];
-    [arrangedSubviews addObject:toggleSwitch];
+    [_toggleSwitch addTarget:self
+                      action:@selector(switchValueChanged:)
+            forControlEvents:UIControlEventValueChanged];
+    [arrangedSubviews addObject:_toggleSwitch];
   } else if (!isHeroLayout) {
     // For compact layout, display a chevron at the end of the item.
     UIImageView* chevron = [[UIImageView alloc]

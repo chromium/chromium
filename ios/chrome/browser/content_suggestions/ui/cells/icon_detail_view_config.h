@@ -73,6 +73,8 @@ enum class IconViewSourceType;
 // Switch properties.
 // Whether a trailing toggle switch should be displayed.
 @property(nonatomic, assign) BOOL showSwitch;
+// Whether the trailing toggle switch is in the "on" state.
+@property(nonatomic, assign) BOOL switchOn;
 
 // Background image properties.
 // The image used to create the background image for the icon. If valid, this

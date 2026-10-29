@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/theme_utils.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -84,6 +85,12 @@ using segmentation_platform::TipIdentifier;
   // selected theme.
   raw_ptr<HomeBackgroundCustomizationService> _backgroundCustomizationService;
 
+  // The local state Pref service.
+  raw_ptr<PrefService> _localStatePrefService;
+
+  // Registrar for local state Pref changes notifications.
+  PrefChangeRegistrar _localStatePrefChangeRegistrar;
+
   // The preset background themes and their thumbnail images displayed in the
   // actionable NTP theme tip.
   std::vector<NtpCustomBackgroundWithImage> _presetBackgrounds;
@@ -105,7 +112,8 @@ using segmentation_platform::TipIdentifier;
                           (std::unique_ptr<image_fetcher::ImageDataFetcher>)
                               imageFetcher
     backgroundCustomizationService:
-        (HomeBackgroundCustomizationService*)backgroundCustomizationService {
+        (HomeBackgroundCustomizationService*)backgroundCustomizationService
+             localStatePrefService:(PrefService*)localStatePrefService {
   self = [super init];
 
   if (self) {
@@ -113,10 +121,16 @@ using segmentation_platform::TipIdentifier;
     CHECK(shoppingService);
     CHECK(bookmarkModel);
     CHECK(imageFetcher);
+    CHECK(localStatePrefService);
 
     _profilePrefService = profilePrefService;
+    _localStatePrefService = localStatePrefService;
+
     _config = [[TipsModuleConfig alloc] initWithTipIdentifier:identifier];
     _config.audience = self;
+    if (identifier == TipIdentifier::kTipsNotifications) {
+      _config.switchOn = [self isTipsNotificationEnabled];
+    }
     _shoppingService = shoppingService;
     _bookmarkModel = bookmarkModel;
     _imageFetcher = std::move(imageFetcher);
@@ -126,6 +140,7 @@ using segmentation_platform::TipIdentifier;
       _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
 
       _profilePrefChangeRegistrar.Init(profilePrefService);
+      _localStatePrefChangeRegistrar.Init(localStatePrefService);
 
       _prefObserverBridge->ObserveChangesForPreference(
           ntp_tiles::prefs::kTipsHomeModuleEnabled,
@@ -134,6 +149,9 @@ using segmentation_platform::TipIdentifier;
           prefs::kIosRecentlyUsedBackgrounds, &_profilePrefChangeRegistrar);
       _prefObserverBridge->ObserveChangesForPreference(
           prefs::kIosUserUploadedBackground, &_profilePrefChangeRegistrar);
+      _prefObserverBridge->ObserveChangesForPreference(
+          prefs::kAppLevelPushNotificationPermissions,
+          &_localStatePrefChangeRegistrar);
     }
   }
 
@@ -143,8 +161,10 @@ using segmentation_platform::TipIdentifier;
 - (void)disconnect {
   // Stop observing prefs before StoreCurrentTheme() mutates background prefs.
   _profilePrefChangeRegistrar.RemoveAll();
+  _localStatePrefChangeRegistrar.RemoveAll();
   _prefObserverBridge.reset();
   _profilePrefService = nil;
+  _localStatePrefService = nullptr;
 
   if (_hasUncommittedInlineTheme && _backgroundCustomizationService) {
     _hasUncommittedInlineTheme = NO;
@@ -163,6 +183,10 @@ using segmentation_platform::TipIdentifier;
   // even when an actionable config is displayed.
   _config = [[TipsModuleConfig alloc] initWithTipIdentifier:identifier];
   _config.audience = self;
+
+  if (identifier == TipIdentifier::kTipsNotifications) {
+    _config.switchOn = [self isTipsNotificationEnabled];
+  }
 
   // Reset `_actionableConfig` so `activeConfig` falls back to `_config` when
   // reconfigured with an informational tip.
@@ -201,6 +225,15 @@ using segmentation_platform::TipIdentifier;
   [self removeModuleWithCompletion:nil];
 }
 
+- (void)setTipsNotificationsSwitchEnabled:(BOOL)enabled {
+  if (_config.identifier != TipIdentifier::kTipsNotifications ||
+      _config.switchOn == enabled) {
+    return;
+  }
+  _config.switchOn = enabled;
+  [_config.consumer setSwitchOn:enabled animated:YES];
+}
+
 - (MagicStackModule*)activeConfig {
   return _actionableConfig ? _actionableConfig : _config;
 }
@@ -228,6 +261,8 @@ using segmentation_platform::TipIdentifier;
         [weakSelf.presentationAudience didSaveNTPThemeBackgroundPhoto];
       }];
     }
+  } else if (preferenceName == prefs::kAppLevelPushNotificationPermissions) {
+    [self setTipsNotificationsSwitchEnabled:[self isTipsNotificationEnabled]];
   }
 }
 
@@ -277,6 +312,9 @@ using segmentation_platform::TipIdentifier;
 }
 
 - (void)didToggleTipsNotificationsSwitch:(BOOL)enabled {
+  // Record the new UI state without reconfiguring so the active `UISwitch`
+  // completes its native animation uninterrupted.
+  _config.switchOn = enabled;
   [self.delegate logMagicStackEngagementForType:self.activeConfig.type];
   [self.presentationAudience didToggleTipsNotificationsSwitch:enabled];
 }
@@ -412,6 +450,15 @@ using segmentation_platform::TipIdentifier;
   }
   _actionableConfig.backgroundImages = backgroundImages;
   [self.delegate tipsMagicStackMediatorDidReconfigureItem];
+}
+
+// Returns YES if app-level Tips push notifications are enabled in local state.
+- (BOOL)isTipsNotificationEnabled {
+  CHECK(_localStatePrefService);
+  return _localStatePrefService
+      ->GetDict(prefs::kAppLevelPushNotificationPermissions)
+      .FindBool(kTipsNotificationKey)
+      .value_or(false);
 }
 
 @end

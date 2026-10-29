@@ -16,6 +16,12 @@ namespace segmentation_platform {
 enum class TipIdentifier;
 }  // namespace segmentation_platform
 
+// Consumer protocol for `TipsModuleConfig` UI state updates.
+@protocol TipsModuleConsumer <NSObject>
+// Updates the inline switch state to `switchOn`.
+- (void)setSwitchOn:(BOOL)switchOn animated:(BOOL)animated;
+@end
+
 // Helper class to contain the current Tips module state.
 @interface TipsModuleConfig : IconDetailViewConfig <IconDetailViewTapDelegate>
 
@@ -30,6 +36,9 @@ enum class TipIdentifier;
 
 // The object that should handle user events.
 @property(nonatomic, weak) id<TipsModuleAudience> audience;
+
+// Consumer that receives dynamic UI state updates for this module.
+@property(nonatomic, weak) id<TipsModuleConsumer> consumer;
 
 // Initializes a `TipsModuleConfig` with `identifier`.
 - (instancetype)initWithTipIdentifier:

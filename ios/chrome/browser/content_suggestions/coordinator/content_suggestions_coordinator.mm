@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_coordinator.h"
 
+#import <algorithm>
 #import <optional>
 #import <string_view>
 #import <vector>
@@ -471,7 +472,9 @@ using segmentation_platform::TipIdentifier;
                                            image_fetcher::ImageDataFetcher>(
                                            profile->GetSharedURLLoaderFactory())
         backgroundCustomizationService:
-            HomeBackgroundCustomizationServiceFactory::GetForProfile(profile)];
+            HomeBackgroundCustomizationServiceFactory::GetForProfile(profile)
+                 localStatePrefService:GetApplicationContext()
+                                           ->GetLocalState()];
     _tipsMediator.presentationAudience = self;
     [moduleMediators addObject:_tipsMediator];
 
@@ -1451,6 +1454,11 @@ using segmentation_platform::TipIdentifier;
   CHECK_EQ(_notificationsOptInAlertCoordinator, alertCoordinator);
   std::vector<PushNotificationClientId> clientIDs =
       alertCoordinator.clientIds.value();
+  if (std::ranges::contains(clientIDs, PushNotificationClientId::kTips)) {
+    [_tipsMediator
+        setTipsNotificationsSwitchEnabled:
+            (result == NotificationsOptInAlertResult::kPermissionGranted)];
+  }
   if (result != NotificationsOptInAlertResult::kOpenedSettings) {
     [_notificationsOptInAlertCoordinator stop];
     _notificationsOptInAlertCoordinator = nil;

@@ -43,6 +43,9 @@
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 
+// Updates the trailing `UISwitch` state if one is displayed.
+- (void)setSwitchOn:(BOOL)switchOn animated:(BOOL)animated;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CELLS_ICON_DETAIL_VIEW_H_
