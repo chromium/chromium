@@ -9268,8 +9268,10 @@ void RenderFrameHostImpl::SetVirtualKeyboardMode(
 #if BUILDFLAG(IS_ANDROID)
 void RenderFrameHostImpl::UpdateUserGestureCarryoverInfo() {
   // This should not occur for prerenders but may occur for pages in
-  // the BackForwardCache depending on timing.
-  if (!IsActive()) {
+  // the BackForwardCache depending on timing. It should also only occur
+  // when transient user activation is known to be available (as compromised
+  // renderers could otherwise use this mechanism to spoof a gesture).
+  if (!IsActive() || !HasTransientUserActivation()) {
     return;
   }
   delegate_->UpdateUserGestureCarryoverInfo();

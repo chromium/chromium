@@ -1447,6 +1447,9 @@ class MockWebContentsDelegate : public WebContentsDelegate {
   MOCK_METHOD(void,
               OnTextCopiedToClipboard,
               (RenderFrameHost*, std::u16string));
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(void, UpdateUserGestureCarryoverInfo, (WebContents*), (override));
+#endif
 };
 
 }  // namespace
@@ -2224,5 +2227,39 @@ TEST_F(RenderFrameHostImplTest,
   EXPECT_NE(initiator_policies, policies);
   EXPECT_EQ(kDefaultPolicies, policies);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(RenderFrameHostImplTest,
+       UpdateUserGestureCarryoverInfoWithoutActivation) {
+  MockWebContentsDelegate delegate;
+  contents()->SetDelegate(&delegate);
+
+  TestRenderFrameHost* rfh = contents()->GetPrimaryMainFrame();
+  EXPECT_FALSE(rfh->HasTransientUserActivation());
+  EXPECT_CALL(delegate, UpdateUserGestureCarryoverInfo(contents())).Times(0);
+
+  static_cast<mojom::FrameHost*>(rfh)->UpdateUserGestureCarryoverInfo();
+
+  EXPECT_EQ(0, rfh->GetProcess()->bad_msg_count());
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+  contents()->SetDelegate(nullptr);
+}
+
+TEST_F(RenderFrameHostImplTest, UpdateUserGestureCarryoverInfoWithActivation) {
+  MockWebContentsDelegate delegate;
+  contents()->SetDelegate(&delegate);
+
+  TestRenderFrameHost* rfh = contents()->GetPrimaryMainFrame();
+  rfh->SimulateUserActivation();
+  EXPECT_TRUE(rfh->HasTransientUserActivation());
+  EXPECT_CALL(delegate, UpdateUserGestureCarryoverInfo(contents())).Times(1);
+
+  static_cast<mojom::FrameHost*>(rfh)->UpdateUserGestureCarryoverInfo();
+
+  EXPECT_EQ(0, rfh->GetProcess()->bad_msg_count());
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+  contents()->SetDelegate(nullptr);
+}
+#endif
 
 }  // namespace content
