@@ -12,8 +12,13 @@ namespace blink {
 
 namespace {
 
-bool CanReuseImageContent(const ImageResourceContent& image_content) {
+bool CanReuseImageContent(const ImageResourceContent& image_content,
+                          FetchParameters& params) {
   if (image_content.ErrorOccurred()) {
+    return false;
+  }
+  if (params.GetCrossOriginAttributeValue() != kCrossOriginAttributeNotSet &&
+      !image_content.IsCorsSameOrigin()) {
     return false;
   }
   return true;
@@ -31,7 +36,7 @@ ImageResourceContent* StyleImageCache::CacheImageContent(
   auto& image_content =
       fetched_image_map_.insert(url_without_fragment.GetString(), nullptr)
           .stored_value->value;
-  if (!image_content || !CanReuseImageContent(*image_content)) {
+  if (!image_content || !CanReuseImageContent(*image_content, params)) {
     image_content = ImageResourceContent::Fetch(params, fetcher);
   }
   return image_content.Get();
