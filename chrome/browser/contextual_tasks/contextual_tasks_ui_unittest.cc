@@ -5071,6 +5071,9 @@ TEST_F(ContextualTasksUiTest, ProfileIndicator_LoadTimeDataPopulated) {
       signed_out_dict.FindString("profileAvatarUrl");
   ASSERT_TRUE(avatar_url);
   EXPECT_EQ(*avatar_url, "");
+  // TODO(crbug.com/578985445): Check the dedicated string once it replaces
+  // IDS_MANAGE_PASSWORDS_LINK.
+  EXPECT_TRUE(signed_out_dict.FindString("googleAccount"));
 
   // Web signed-in (Chrome signed-out) test.
   AccountInfo account_info =

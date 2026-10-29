@@ -12,6 +12,8 @@ import './account_menu.js';
 import './favicon_group.js';
 import './sources_menu.js';
 import './overflow_menu.js';
+import './profile_tooltip.js';
+// clang-format off
 // <if expr="not is_android">
 import '/shared/permission_dashboard.js';
 
@@ -20,6 +22,7 @@ import type {LhsChipIdentifier, PermissionDashboardState} from '/shared/toolbar_
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 
 import type {InitialState} from './contextual_tasks_toolbar.mojom-webui.js';
+
 // </if>
 
 import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
@@ -31,10 +34,12 @@ import type {AccountMenuElement} from './account_menu.js';
 import type {ContextInfo} from './contextual_tasks_toolbar.mojom-webui.js';
 import {ToolbarBrowserProxyImpl} from './contextual_tasks_toolbar_browser_proxy.js';
 import type {OverflowMenuElement} from './overflow_menu.js';
+import type {ProfileTooltipElement} from './profile_tooltip.js';
 import type {SourcesMenuElement} from './sources_menu.js';
 import {getCss} from './top_toolbar.css.js';
 import {getHtml} from './top_toolbar.html.js';
 import {recordAction} from './utils.js';
+// clang-format on
 
 export interface TopToolbarElement {
   $: {
@@ -270,6 +275,7 @@ export class TopToolbarElement extends TopToolbarElementBase {
     this.$.accountMenu.getIfExists()?.close();
     this.$.overflowMenu.getIfExists()?.close();
     this.$.sourcesMenu.getIfExists()?.close();
+    this.getProfileTooltip_()?.hide();
   }
 
   // <if expr="not is_android">
@@ -358,6 +364,7 @@ export class TopToolbarElement extends TopToolbarElementBase {
   }
 
   protected onProfileIndicatorClick_(e: Event) {
+    this.getProfileTooltip_()?.hide();
     this.$.accountMenu.get().showAt(e.currentTarget as HTMLElement);
   }
 
@@ -388,6 +395,19 @@ export class TopToolbarElement extends TopToolbarElementBase {
     // pointerType (e.g., 'mouse', 'touch', 'pen').
     this.toolbarBrowserProxy_.handler.showPageInfoBubble(
         e instanceof PointerEvent && e.pointerType !== '');
+  }
+
+  protected onProfileIndicatorPointerenter_(e: PointerEvent) {
+    this.getProfileTooltip_()?.scheduleShow(e.currentTarget as HTMLElement);
+  }
+
+  protected onProfileIndicatorPointerleave_() {
+    this.getProfileTooltip_()?.scheduleHide();
+  }
+
+  private getProfileTooltip_(): ProfileTooltipElement|null {
+    return this.shadowRoot.querySelector<ProfileTooltipElement>(
+        '#profileTooltip');
   }
 }
 

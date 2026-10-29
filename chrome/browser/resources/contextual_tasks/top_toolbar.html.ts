@@ -84,7 +84,9 @@ export function getHtml(this: TopToolbarElement) {
       <cr-button id="profileIndicator" class="profile-indicator"
           aria-label="$i18n{accountMenuButtonAccessibleName}"
           aria-haspopup="menu"
-          @click="${this.onProfileIndicatorClick_}">
+          @click="${this.onProfileIndicatorClick_}"
+          @pointerenter="${this.onProfileIndicatorPointerenter_}"
+          @pointerleave="${this.onProfileIndicatorPointerleave_}">
         <img class="profile-avatar-img"
             src="${this.profileAvatarUrl}"
             alt="">
@@ -111,6 +113,11 @@ export function getHtml(this: TopToolbarElement) {
         .email="${this.accountEmail}">
     </contextual-tasks-account-menu>`}">
   </cr-lazy-render-lit>
+  ${this.isSidePanelRearchitectureEnabled_ && this.profileAvatarUrl ? html`
+    <contextual-tasks-profile-tooltip id="profileTooltip"
+        .fullName="${this.accountFullName}" .email="${this.accountEmail}">
+    </contextual-tasks-profile-tooltip>
+  ` : ''}
   <cr-lazy-render-lit id="sourcesMenu" .template="${() => html`
     <contextual-tasks-sources-menu .contextInfos="${this.contextInfos}">
     </contextual-tasks-sources-menu>`}">

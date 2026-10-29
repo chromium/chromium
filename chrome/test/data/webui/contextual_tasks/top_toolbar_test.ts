@@ -8,12 +8,14 @@ import 'chrome://contextual-tasks/sources_menu.js';
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import {ToolbarBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_toolbar_browser_proxy.js';
 import type {ContextualTasksFaviconGroupElement} from 'chrome://contextual-tasks/favicon_group.js';
+import type {ProfileTooltipElement} from 'chrome://contextual-tasks/profile_tooltip.js';
 import type {TopToolbarElement} from 'chrome://contextual-tasks/top_toolbar.js';
 import type {UnboundedDialog} from 'chrome://contextual-tasks/utils.js';
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertHTMLElement} from './contextual_tasks_test_utils.js';
@@ -1476,6 +1478,83 @@ suite('TopToolbarTest', () => {
       signOutButton.click();
       await toolbarProxy.handler.whenCalled('openLogOutFlow');
       assertFalse(accountMenu.$.menu.open);
+    });
+
+    test('opens profile tooltip on hover', async () => {
+      topToolbar.profileAvatarUrl = 'data:image/png;base64,fakeImageData';
+      topToolbar.accountFullName = 'Jane Doe';
+      topToolbar.accountEmail = 'janedoe@gmail.com';
+      await microtasksFinished();
+
+      const profileIndicator =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#profileIndicator');
+      assertTrue(!!profileIndicator);
+
+      const tooltip =
+          topToolbar.shadowRoot.querySelector<ProfileTooltipElement>(
+              '#profileTooltip');
+      assertTrue(!!tooltip);
+      assertEquals('Jane Doe', tooltip.fullName);
+      assertEquals('janedoe@gmail.com', tooltip.email);
+      assertFalse(tooltip.isOpen);
+
+      const mockTimer = new MockTimer();
+      mockTimer.install();
+      profileIndicator.dispatchEvent(new PointerEvent('pointerenter'));
+      mockTimer.tick(500);
+      assertTrue(tooltip.isOpen);
+
+      profileIndicator.dispatchEvent(new PointerEvent('pointerleave'));
+      mockTimer.tick(100);
+      mockTimer.uninstall();
+      await microtasksFinished();
+      assertFalse(tooltip.isOpen);
+    });
+
+    test('closes profile tooltip when the side panel loses focus', async () => {
+      topToolbar.profileAvatarUrl = 'data:image/png;base64,fakeImageData';
+      topToolbar.accountFullName = 'Jane Doe';
+      topToolbar.accountEmail = 'janedoe@gmail.com';
+      await microtasksFinished();
+
+      const profileIndicator =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#profileIndicator');
+      assertTrue(!!profileIndicator);
+      const tooltip =
+          topToolbar.shadowRoot.querySelector<ProfileTooltipElement>(
+              '#profileTooltip');
+      assertTrue(!!tooltip);
+
+      const mockTimer = new MockTimer();
+      mockTimer.install();
+      profileIndicator.dispatchEvent(new PointerEvent('pointerenter'));
+      mockTimer.tick(500);
+      mockTimer.uninstall();
+      await microtasksFinished();
+      assertTrue(tooltip.isOpen);
+
+      window.dispatchEvent(new Event('blur'));
+      await microtasksFinished();
+      assertFalse(tooltip.isOpen);
+    });
+
+    test('clicking the profile indicator hides the tooltip', async () => {
+      topToolbar.profileAvatarUrl = 'data:image/png;base64,fakeImageData';
+      await microtasksFinished();
+
+      const profileIndicator =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#profileIndicator');
+      assertTrue(!!profileIndicator);
+      const tooltip =
+          topToolbar.shadowRoot.querySelector<ProfileTooltipElement>(
+              '#profileTooltip');
+      assertTrue(!!tooltip);
+      await tooltip.show(profileIndicator);
+      assertTrue(tooltip.isOpen);
+
+      profileIndicator.click();
+      await microtasksFinished();
+      assertFalse(tooltip.isOpen);
     });
   });
 });
