@@ -161,10 +161,14 @@ template("cast_shared_library") {
 # referenced below are declared in BUILDCONFIG.gn.
 set_defaults("cast_executable") {
   configs = default_executable_configs
+  configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
+  configs += [ "//build/config/compiler:thinlto_optimize_max" ]
 }
 
 set_defaults("cast_shared_library") {
   configs = default_shared_library_configs
+  configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
+  configs += [ "//build/config/compiler:thinlto_optimize_max" ]
   if (is_android) {
     configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
   }

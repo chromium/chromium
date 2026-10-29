@@ -853,6 +853,8 @@ config("compiler") {
         # TODO(crbug.com/40219076): Investigate if we can get the > 6% perf win
         # of import_instr_limit 30 with a binary size hit smaller than ~2 MiB.
         import_instr_limit = 5
+      } else if (is_castos && optimize_for_size) {
+        import_instr_limit = 0
       }
 
       ldflags += [ "-Wl,-mllvm,-import-instr-limit=$import_instr_limit" ]
@@ -1318,7 +1320,11 @@ config("thinlto_optimize_default") {
 config("thinlto_optimize_max") {
   if (!is_debug && use_thin_lto && is_a_target_toolchain) {
     if (thin_lto_enable_optimizations) {
-      lto_opt_level = 2
+      if (is_castos && optimize_for_size) {
+        lto_opt_level = 1
+      } else {
+        lto_opt_level = 2
+      }
     } else {
       lto_opt_level = 0
     }
