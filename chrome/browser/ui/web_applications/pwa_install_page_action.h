@@ -10,10 +10,10 @@
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_observer.h"
-#include "chrome/browser/ui/web_applications/pwa_install_page_action.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace page_actions {
 class PageActionController;
@@ -40,6 +40,8 @@ class PwaInstallPageActionController
       public page_actions::PageActionObserver,
       public page_actions::RecordIgnoreDelegate {
  public:
+  DECLARE_USER_DATA(PwaInstallPageActionController);
+
   PwaInstallPageActionController(
       tabs::TabInterface& tab_interface,
       page_actions::PageActionController& page_action_controller);
@@ -49,6 +51,8 @@ class PwaInstallPageActionController
       delete;
   PwaInstallPageActionController& operator=(
       const PwaInstallPageActionController&) = delete;
+
+  static PwaInstallPageActionController* From(tabs::TabInterface* tab);
 
   // Sets that the callback (i.e. the action) is being executed.
   void SetIsExecuting(bool is_executing) { this->is_executing_ = is_executing; }
@@ -82,9 +86,6 @@ class PwaInstallPageActionController
  private:
   // Handles all the logic related to showing and hiding the page action.
   void UpdateVisibility();
-
-  // Returns the controller of all page actions.
-  page_actions::PageActionController& GetPageActionController();
 
   // Requests PageActionController to show this Page Action
   void Show(content::WebContents* web_contents, bool showChip);
@@ -131,6 +132,9 @@ class PwaInstallPageActionController
 
   base::CallbackListSubscription will_discard_contents_subscription_;
   base::CallbackListSubscription will_deactivate_subscription_;
+
+  ui::ScopedUnownedUserData<PwaInstallPageActionController>
+      scoped_unowned_user_data_;
 
   base::WeakPtrFactory<PwaInstallPageActionController> weak_ptr_factory_{this};
 };

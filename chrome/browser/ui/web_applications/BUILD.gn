@@ -29,7 +29,10 @@ source_set("web_applications") {
 
   if (toolkit_views) {
     sources += [ "pwa_install_page_action.h" ]
-    public_deps += [ "//chrome/browser/ui/views/page_action" ]
+    public_deps += [
+      "//chrome/browser/ui/views/page_action",
+      "//ui/base/unowned_user_data",
+    ]
   }
 
   if (enable_extensions) {

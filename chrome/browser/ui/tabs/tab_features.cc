@@ -552,8 +552,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   if (page_action_controller_->ActionExists(kActionInstallPwa)) {
     pwa_install_page_action_controller_ =
-        std::make_unique<PwaInstallPageActionController>(
-            tab, *page_action_controller_);
+        GetUserDataFactory().CreateInstance<PwaInstallPageActionController>(
+            tab, tab, *page_action_controller_);
   }
 
   if (page_action_controller_->ActionExists(kActionCommercePriceInsights)) {

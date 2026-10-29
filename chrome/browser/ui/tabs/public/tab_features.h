@@ -485,10 +485,6 @@ class TabFeatures {
   }
 #endif
 
-  PwaInstallPageActionController* pwa_install_page_action_controller() {
-    return pwa_install_page_action_controller_.get();
-  }
-
   RecordReplayPageActionController* record_replay_page_action_controller() {
     return record_replay_page_action_controller_.get();
   }

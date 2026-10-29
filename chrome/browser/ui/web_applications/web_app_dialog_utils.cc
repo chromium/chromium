@@ -18,7 +18,6 @@
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/web_apps/progress_delay.h"
@@ -442,9 +441,8 @@ void ShowPwaInstallDialog(BrowserWindowInterface* bwi) {
   CHECK(web_contents);
 
   PwaInstallPageActionController* const pwa_install_controller =
-      bwi->GetActiveTabInterface()
-          ->GetTabFeatures()
-          ->pwa_install_page_action_controller();
+      PwaInstallPageActionController::From(bwi->GetActiveTabInterface());
+  CHECK(pwa_install_controller);
   pwa_install_controller->SetIsExecuting(true);
 
   // Close PWA install IPH if it is showing.

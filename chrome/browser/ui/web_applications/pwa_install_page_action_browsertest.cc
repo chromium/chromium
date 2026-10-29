@@ -43,7 +43,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -846,10 +845,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, PwaIntallIphIgnored) {
 IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
                        OnCloseDoesntRecordIgnoreIfExecuting) {
   PwaInstallPageActionController* pwa_install_controller =
-      browser()
-          ->GetActiveTabInterface()
-          ->GetTabFeatures()
-          ->pwa_install_page_action_controller();
+      PwaInstallPageActionController::From(browser()->GetActiveTabInterface());
   pwa_install_controller->SetIsExecuting(true);
 
   MockRecordIgnoreDelegate record_ignore;
@@ -861,10 +857,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
 IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
                        OnCloseRecordsIgnoreIfNotExecuting) {
   PwaInstallPageActionController* pwa_install_controller =
-      browser()
-          ->GetActiveTabInterface()
-          ->GetTabFeatures()
-          ->pwa_install_page_action_controller();
+      PwaInstallPageActionController::From(browser()->GetActiveTabInterface());
   ASSERT_FALSE(pwa_install_controller->GetIsExecuting());
 
   MockRecordIgnoreDelegate record_ignore;
