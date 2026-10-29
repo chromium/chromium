@@ -1018,8 +1018,7 @@ blink::mojom::AutoplayPolicy DetermineWebContentsAutoplayPolicy(
     blink::mojom::AutoplayPolicy current_policy) {
   using PolicyStatus = AutoplayPolicyStatusObserver::PolicyStatus;
 
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  Profile* profile = GetProfileForWebPreferences(web_contents);
   PrefService* prefs = profile->GetPrefs();
 
   AutoplayPolicyStatusObserver* observer =
