@@ -196,7 +196,7 @@ void Etc1ThumbnailHelper::Decompress(
   DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
   base::ThreadPool::PostTask(
       FROM_HERE,
-      {base::TaskPriority::BEST_EFFORT,
+      {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&DecompressTask,
                      base::BindPostTask(default_task_runner_,

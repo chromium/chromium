@@ -49,6 +49,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
@@ -67,6 +68,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.DoubleConsumer;
 
 /** Unit tests for {@link ShrinkExpandHubLayoutAnimatorProvider}. */
@@ -546,6 +548,67 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         verifyFinalState(animatorProvider, /* wasForcedToFinish= */ false);
+    }
+
+    @Test
+    public void testExpandFallbackAnimationDueToLateThumbnail() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("GridTabSwitcher.FramePerSecond.Expand")
+                        .expectNoRecords("GridTabSwitcher.MaxFrameInterval.Expand")
+                        .expectNoRecords("Android.GridTabSwitcher.Animation.TotalDuration.Expand")
+                        .expectNoRecords(
+                                "Android.GridTabSwitcher.Animation.FirstFrameLatency.Expand")
+                        .build();
+        HubLayoutAnimatorProvider animatorProvider =
+                ShrinkExpandHubLayoutAnimationFactory.createExpandTabAnimatorProvider(
+                        mHubContainerView,
+                        mAnimationDataSupplier,
+                        Color.BLUE,
+                        HUB_LAYOUT_SHRINK_EXPAND_DURATION_MS,
+                        mOnAlphaChange,
+                        /* isIncognito= */ false);
+        assertEquals(HubLayoutAnimationType.EXPAND_TAB, animatorProvider.getPlannedAnimationType());
+        Callback<Bitmap> thumbnailCallback = animatorProvider.getThumbnailCallback();
+        assertNotNull(thumbnailCallback);
+
+        Size thumbnailSize = new Size(20, 85);
+        Rect initialRect = new Rect(50, 10, 70, 95);
+        Rect finalRect = new Rect(0, 0, WIDTH, HEIGHT);
+        ShrinkExpandAnimationData data =
+                ShrinkExpandAnimationData.createHubShrinkExpandAnimationData(
+                        initialRect,
+                        finalRect,
+                        /* initialTopCornerRadius= */ 30,
+                        /* initialBottomCornerRadius= */ 40,
+                        /* finalTopCornerRadius= */ 0,
+                        /* finalBottomCornerRadius= */ 0,
+                        thumbnailSize,
+                        /* isTopToolbar= */ true,
+                        /* useFallbackAnimation= */ false,
+                        /* bottomMargin= */ 0);
+
+        HubLayoutAnimationRunner runner =
+                HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
+
+        setUpFadeListener(/* initialAlpha= */ 1f, /* finalAlpha= */ 0f);
+        runner.addListener(mListener);
+        runner.runWithWaitForAnimatorTimeout(HUB_LAYOUT_TIMEOUT_MS);
+
+        mAnimationDataSupplier.set(data);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertNull(getImageView(animatorProvider).getBitmap());
+
+        ShadowLooper.idleMainLooper(HUB_LAYOUT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        assertEquals(HubLayoutAnimationType.FADE_OUT, runner.getAnimationType());
+        assertNull(getImageView(animatorProvider));
+
+        thumbnailCallback.onResult(mBitmap);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        assertEquals(HubLayoutAnimationType.FADE_OUT, runner.getAnimationType());
+        verifyFinalState(animatorProvider, /* wasForcedToFinish= */ false);
+        watcher.assertExpected();
     }
 
     @Test
