@@ -30,7 +30,7 @@ namespace syncer {
 // protected with a particular encryption key.
 //
 // The implementation consists of a keybag representing all known keys and a
-// default encryption key, which is present in the keybag whenever the keybag is
+// primary encryption key, which is present in the keybag whenever the keybag is
 // non-empty (though it may be temporarily invalidated while pending keys are
 // awaiting decryption).
 class CryptographerImpl : public Cryptographer {
@@ -45,9 +45,9 @@ class CryptographerImpl : public Cryptographer {
   // Returns null in case of error (see IsLocalProtoValid()).
   static std::unique_ptr<CryptographerImpl> FromLocalProto(
       const sync_pb::CryptographerData& proto,
-      bool default_encryption_key_invalidated);
+      bool primary_encryption_key_invalidated);
 
-  // Returns true if `proto` is a valid CryptographerData (e.g. default key not
+  // Returns true if `proto` is a valid CryptographerData (e.g. primary key not
   // present in keybag).
   static bool IsLocalProtoValid(const sync_pb::CryptographerData& proto);
 
@@ -59,32 +59,32 @@ class CryptographerImpl : public Cryptographer {
   // Serializes the full cryptographer state for local persistence.
   sync_pb::CryptographerData ToLocalProto() const;
 
-  // Exports the current keybag, encrypted with the default key, for exposure
+  // Exports the current keybag, encrypted with the primary key, for exposure
   // to the Sync protocol.
   sync_pb::EncryptedData ExportEncryptedKeyBag() const;
 
   // Creates and registers a new key after deriving Nigori keys, and sets it as
-  // the default encryption key (which causes `CanEncrypt()` to return true and
-  // re-enables the default key if it was previously invalidated). Guaranteed to
+  // the primary encryption key (which causes `CanEncrypt()` to return true and
+  // re-enables the primary key if it was previously invalidated). Guaranteed to
   // succeed and return a non-empty key name. Note that deriving an
-  // already-known key simply selects that key as the default encryption key.
-  std::string RotateDefaultKeyByDerivation(
+  // already-known key simply selects that key as the primary encryption key.
+  std::string RotatePrimaryKeyByDerivation(
       const std::string& passphrase,
       const KeyDerivationParams& derivation_params);
 
   // Updates the cryptographer with keys from a remotely received `new_key_bag`
-  // and selects `new_default_key_name` as the new default encryption key (which
-  // causes `CanEncrypt()` to return true and re-enables the default key if it
-  // was previously invalidated). `new_default_key_name` must not be empty and
+  // and selects `new_primary_key_name` as the new primary encryption key (which
+  // causes `CanEncrypt()` to return true and re-enables the primary key if it
+  // was previously invalidated). `new_primary_key_name` must not be empty and
   // must be present in `new_key_bag`.
   //
-  // If `enforce_key_continuity` is true and a previous default encryption key
+  // If `enforce_key_continuity` is true and a previous primary encryption key
   // existed (even if invalidated), `new_key_bag` must also contain that
-  // previous default key; otherwise this method leaves `*this` unchanged and
+  // previous primary key; otherwise this method leaves `*this` unchanged and
   // returns false.
   [[nodiscard]] bool TryFollowRemoteKeyRotation(
       const NigoriKeyBag& new_key_bag,
-      const std::string& new_default_key_name,
+      const std::string& new_primary_key_name,
       bool enforce_key_continuity);
 
   // Drops any pre-existing key pairs and adds all keys from `keys`.
@@ -95,12 +95,12 @@ class CryptographerImpl : public Cryptographer {
   void SetCrossUserSharingKeyPair(CrossUserSharingPublicPrivateKeyPair key_pair,
                                   uint32_t version);
 
-  // Invalidates the default encryption key, which causes CanEncrypt() to return
-  // false. The default key name is still kept in memory.
-  void InvalidateDefaultEncryptionKey();
+  // Invalidates the primary encryption key, which causes CanEncrypt() to return
+  // false. The primary key name is still kept in memory.
+  void InvalidatePrimaryEncryptionKey();
 
   // Reverts the cryptographer to an empty one, i.e. what would be returned by
-  // CreateEmpty(). The default key is also cleared.
+  // CreateEmpty(). The primary key is also cleared.
   // The set of known encryption keys shouldn't decrease in general, since this
   // may lead to data becoming undecryptable. This method can be called a) if
   // sync is disabled, or b) if sync finds an error that can be solved by
@@ -122,12 +122,12 @@ class CryptographerImpl : public Cryptographer {
   const CrossUserSharingPublicPrivateKeyPair& GetCrossUserSharingKeyPair(
       uint32_t version) const;
 
-  // Sets or changes the version of the default cross user sharing key.
-  void SelectDefaultCrossUserSharingKey(const uint32_t version);
+  // Sets or changes the version of the primary cross user sharing key.
+  void SelectPrimaryCrossUserSharingKey(const uint32_t version);
 
-  // Returns a proto representation of the default encryption key. `*this` must
-  // have a default encryption key set, as reflected by CanEncrypt().
-  sync_pb::NigoriKey ExportDefaultKey() const;
+  // Returns a proto representation of the primary encryption key. `*this` must
+  // have a primary encryption key set, as reflected by CanEncrypt().
+  sync_pb::NigoriKey ExportPrimaryKey() const;
 
   std::unique_ptr<CryptographerImpl> Clone() const;
 
@@ -136,7 +136,7 @@ class CryptographerImpl : public Cryptographer {
   // Cryptographer overrides.
   bool CanEncrypt() const override;
   bool CanDecrypt(const sync_pb::EncryptedData& encrypted) const override;
-  std::string GetDefaultEncryptionKeyName() const override;
+  std::string GetPrimaryEncryptionKeyName() const override;
   bool EncryptString(const std::string& decrypted,
                      sync_pb::EncryptedData* encrypted) const override;
   bool DecryptToString(const sync_pb::EncryptedData& encrypted,
@@ -152,34 +152,34 @@ class CryptographerImpl : public Cryptographer {
  private:
   CryptographerImpl(
       NigoriKeyBag key_bag,
-      std::string default_encryption_key_name,
-      bool default_encryption_key_invalidated,
+      std::string primary_encryption_key_name,
+      bool primary_encryption_key_invalidated,
       CrossUserSharingKeys cross_user_sharing_keys,
-      std::optional<uint32_t> default_cross_user_sharing_key_version);
+      std::optional<uint32_t> primary_cross_user_sharing_key_version);
 
   // Adds all keys from `key_bag` that weren't previously known.
-  // Does NOT set or change the default encryption key.
+  // Does NOT set or change the primary encryption key.
   void EmplaceKeysFrom(const NigoriKeyBag& key_bag);
 
-  // Sets or changes the default encryption key, which causes CanEncrypt() to
+  // Sets or changes the primary encryption key, which causes CanEncrypt() to
   // return true. `key_name` must not be empty and must represent a known key.
-  // If the default key was previously invalidated, this re-enables it.
-  void SelectDefaultEncryptionKey(const std::string& key_name);
+  // If the primary key was previously invalidated, this re-enables it.
+  void SelectPrimaryEncryptionKey(const std::string& key_name);
 
   // The actual keys we know about.
   NigoriKeyBag key_bag_;
 
-  // The key name associated with the default encryption key. Empty iff
+  // The key name associated with the primary encryption key. Empty iff
   // `key_bag_` is empty; otherwise must correspond to a key within `key_bag_`.
-  std::string default_encryption_key_name_;
+  std::string primary_encryption_key_name_;
 
-  // Whether the default encryption key is invalidated (e.g. during pending
+  // Whether the primary encryption key is invalidated (e.g. during pending
   // decryption).
-  bool default_encryption_key_invalidated_ = false;
+  bool primary_encryption_key_invalidated_ = false;
 
-  // The version of the default cross user sharing key to be used for
+  // The version of the primary cross user sharing key to be used for
   // encryption.
-  std::optional<uint32_t> default_cross_user_sharing_key_version_;
+  std::optional<uint32_t> primary_cross_user_sharing_key_version_;
 
   // Cross user sharing keys we know about.
   CrossUserSharingKeys cross_user_sharing_keys_;

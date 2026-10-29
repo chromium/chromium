@@ -167,7 +167,7 @@ class DataTypeWorker : public UpdateHandler,
   // construction. Note that updates are always decrypted if possible,
   // regardless of this method.
   // b) The worker can only commit or push updates once the cryptographer has
-  // selected a default key to encrypt data (Cryptographer::CanEncrypt()). That
+  // selected a primary key to encrypt data (Cryptographer::CanEncrypt()). That
   // used key will be listed in DataTypeState.
   // This is a no-op if encryption was already enabled on construction or by
   // a previous call to this method.
@@ -260,7 +260,7 @@ class DataTypeWorker : public UpdateHandler,
   // If `encryption_enabled_` is false, sets the encryption key name in
   // `data_type_state_` to the empty string. This should usually be a no-op.
   // If `encryption_enabled_` is true *and* the cryptographer has selected a
-  // (non-empty) default key, sets the value to that default key.
+  // (non-empty) primary key, sets the value to that primary key.
   // Returns whether the `data_type_state_` key name changed.
   bool UpdateTypeEncryptionKeyName();
 

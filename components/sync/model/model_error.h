@@ -127,8 +127,8 @@ class ModelError {
     kNigoriInvalidPassphraseTransition = 104,
     kNigoriInvalidSpecifics = 105,
     kNigoriMissingKeystoreKeysDuringInitialSync = 106,
-    kNigoriMissingLastDefaultKeyInKeybag = 107,
-    kNigoriMissingNewDefaultKeyInKeybag = 108,
+    kNigoriMissingLastPrimaryKeyInKeybag = 107,
+    kNigoriMissingNewPrimaryKeyInKeybag = 108,
     // kPlusAddressAddOrUpdateProfileFailed = 121, // Deprecated.
     // kPlusAddressClearProfilesFailed = 122, // Deprecated.
     // kPlusAddressDatabaseInitFailed = 123, // Deprecated.
@@ -138,7 +138,8 @@ class ModelError {
     // kPlusAddressTransactionBeginFailedOnDisableSync = 127, // Deprecated.
     // kPlusAddressTransactionBeginFailedOnIncrementalSync = 128, // Deprecated.
     // kPlusAddressTransactionCommitFailedOnDisableSync = 129, // Deprecated.
-    // kPlusAddressTransactionCommitFailedOnIncrementalSync = 130, // Deprecated.
+    // kPlusAddressTransactionCommitFailedOnIncrementalSync = 130, //
+    // Deprecated.
     // kPowerBookmarkDatabaseCommitFailed = 131,  // Deprecated.
     // kPowerBookmarkDatabaseInitFailed = 132,  // Deprecated.
     // kPowerBookmarkFailedToBeginTransaction = 133,  // Deprecated.

@@ -47,7 +47,7 @@ void InitNewOrFixCorruptedKeyPair(
   CrossUserSharingPublicPrivateKeyPair key_pair(
       cross_user_sharing_key_pair.GetRawPrivateKey());
   state.cryptographer->SetCrossUserSharingKeyPair(std::move(key_pair), version);
-  state.cryptographer->SelectDefaultCrossUserSharingKey(version);
+  state.cryptographer->SelectPrimaryCrossUserSharingKey(version);
 }
 
 class CustomPassphraseSetter : public PendingLocalNigoriCommit {
@@ -85,7 +85,7 @@ class CustomPassphraseSetter : public PendingLocalNigoriCommit {
         break;
     }
 
-    state.cryptographer->RotateDefaultKeyByDerivation(passphrase_,
+    state.cryptographer->RotatePrimaryKeyByDerivation(passphrase_,
                                                       key_derivation_params_);
     state.pending_keystore_decryptor_token.reset();
     state.passphrase_type = NigoriSpecifics::CUSTOM_PASSPHRASE;
@@ -108,7 +108,7 @@ class CustomPassphraseSetter : public PendingLocalNigoriCommit {
                                               /*encrypt_everything=*/true);
     CustomPassphraseBootstrapToken token =
         CustomPassphraseBootstrapToken::FromProto(
-            state.cryptographer->ExportDefaultKey());
+            state.cryptographer->ExportPrimaryKey());
     observer_list.NotifyPassphraseAccepted(token);
   }
 
@@ -167,7 +167,6 @@ class KeystoreInitializer : public PendingLocalNigoriCommit {
   std::optional<CrossUserSharingPublicPrivateKeyPair>
       cross_user_sharing_public_private_key_pair_;
 };
-
 
 class CrossUserSharingPublicPrivateKeyInitializer
     : public PendingLocalNigoriCommit {
@@ -284,7 +283,6 @@ std::unique_ptr<PendingLocalNigoriCommit>
 PendingLocalNigoriCommit::ForKeystoreInitialization() {
   return std::make_unique<KeystoreInitializer>();
 }
-
 
 // static
 std::unique_ptr<PendingLocalNigoriCommit>

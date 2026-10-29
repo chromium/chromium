@@ -20,7 +20,7 @@ namespace syncer {
 class KeyDerivationParams;
 class Nigori;
 
-// A set of Nigori keys, aka keybag. Note that there is no notion of default
+// A set of Nigori keys, aka keybag. Note that there is no notion of primary
 // key.
 class NigoriKeyBag {
  public:

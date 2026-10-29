@@ -99,7 +99,7 @@ sync_pb::NigoriSpecifics BuildKeystoreNigoriSpecifics(
                                      specifics.mutable_encryption_keybag()));
 
   std::string serialized_keystore_decryptor =
-      cryptographer->ExportDefaultKey().SerializeAsString();
+      cryptographer->ExportPrimaryKey().SerializeAsString();
 
   std::unique_ptr<CryptographerImpl> keystore_cryptographer =
       CryptographerImpl::FromSingleKeyForTesting(
@@ -145,7 +145,7 @@ sync_pb::NigoriSpecifics BuildTrustedVaultNigoriSpecifics(
   std::unique_ptr<syncer::CryptographerImpl> cryptographer =
       syncer::CryptographerImpl::CreateEmpty();
   for (const std::vector<uint8_t>& trusted_vault_key : trusted_vault_keys) {
-    cryptographer->RotateDefaultKeyByDerivation(
+    cryptographer->RotatePrimaryKeyByDerivation(
         base::Base64Encode(trusted_vault_key),
         syncer::KeyDerivationParams::CreateForPbkdf2());
   }
@@ -193,10 +193,10 @@ sync_pb::NigoriSpecifics BuildCustomPassphraseNigoriSpecifics(
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::CreateEmpty();
   if (old_key_params) {
-    cryptographer->RotateDefaultKeyByDerivation(
+    cryptographer->RotatePrimaryKeyByDerivation(
         old_key_params->password, old_key_params->derivation_params);
   }
-  cryptographer->RotateDefaultKeyByDerivation(
+  cryptographer->RotatePrimaryKeyByDerivation(
       passphrase_key_params.password, passphrase_key_params.derivation_params);
   *nigori.mutable_encryption_keybag() = cryptographer->ExportEncryptedKeyBag();
 

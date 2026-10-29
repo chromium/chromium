@@ -60,8 +60,8 @@ struct NigoriState {
 
   // Pending keys represent a remote update that contained a keybag that cannot
   // be decrypted (e.g. user needs to enter a custom passphrase). If pending
-  // keys are present, `*cryptographer` does not have a default encryption key
-  // set and instead the should-be default encryption key is determined by the
+  // keys are present, `*cryptographer` does not have a primary encryption key
+  // set and instead the should-be primary encryption key is determined by the
   // key in `pending_keys_`.
   std::optional<sync_pb::EncryptedData> pending_keys;
 

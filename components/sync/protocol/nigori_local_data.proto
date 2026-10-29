@@ -33,10 +33,10 @@ message CryptographerData {
   // Contains all known Nigori keys.
   optional LocalNigoriKeyBag key_bag = 1;
 
-  // Default key is the key, that should be used for encryption. Can be empty
+  // Primary key is the key that should be used for encryption. Can be empty
   // in case we have pending keys (waiting for explicit passphrase, or client
   // didn't received keystore keys).
-  optional string default_key_name = 2;
+  optional string primary_key_name = 2;
 
   // Contains cross user sharing related keys.
   optional CrossUserSharingKeys cross_user_sharing_keys = 3;

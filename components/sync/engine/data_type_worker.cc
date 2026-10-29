@@ -436,7 +436,7 @@ void DataTypeWorker::EnableEncryption() {
 
   encryption_enabled_ = true;
   // UpdateTypeEncryptionKeyName() might return false if the cryptographer does
-  // not have a default key yet.
+  // not have a primary key yet.
   if (UpdateTypeEncryptionKeyName()) {
     // Push the new key name to the processor.
     SendPendingUpdatesToProcessorIfReady();
@@ -963,7 +963,7 @@ std::unique_ptr<CommitContribution> DataTypeWorker::GetContribution(
   DCHECK(!AlwaysEncryptedUserTypes().Has(type_) || encryption_enabled_);
   DCHECK(!encryption_enabled_ ||
          (data_type_state_.encryption_key_name() ==
-          cryptographer_->GetDefaultEncryptionKeyName()));
+          cryptographer_->GetPrimaryEncryptionKeyName()));
 
   return std::make_unique<CommitContributionImpl>(
       type_, data_type_state_.type_context(), std::move(response),
@@ -1042,17 +1042,17 @@ bool DataTypeWorker::UpdateTypeEncryptionKeyName() {
   }
 
   if (!cryptographer_->CanEncrypt()) {
-    // There's no selected default key. Let's wait for one to be selected before
+    // There's no selected primary key. Let's wait for one to be selected before
     // updating.
     return false;
   }
 
-  std::string default_key_name = cryptographer_->GetDefaultEncryptionKeyName();
-  DCHECK(!default_key_name.empty());
+  std::string primary_key_name = cryptographer_->GetPrimaryEncryptionKeyName();
+  DCHECK(!primary_key_name.empty());
   DVLOG(1) << DataTypeToDebugString(type_) << ": Updating encryption key "
            << data_type_state_.encryption_key_name() << " -> "
-           << default_key_name;
-  data_type_state_.set_encryption_key_name(default_key_name);
+           << primary_key_name;
+  data_type_state_.set_encryption_key_name(primary_key_name);
   return true;
 }
 

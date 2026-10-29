@@ -94,7 +94,7 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
 
   // Builds NigoriKeyBag, which contains keys acceptable for decryption of
   // `encryption_keybag` from remote NigoriSpecifics. Its content depends on
-  // current passphrase type and available keys: it contains current default
+  // current passphrase type and available keys: it contains current primary
   // encryption key, for KEYSTORE_PASSPHRASE it additionally contains key
   // obtained from `keystore_decryptor_token` and all keystore keys.
   NigoriKeyBag BuildDecryptionKeyBagForRemoteKeybag() const;
@@ -103,7 +103,7 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   // `state_.pending_keys` (which must be set).
   //
   // If decryption is possible, the newly decrypted keys are put in the
-  // `state_.cryptographer`'s keybag and the default key is updated. In that
+  // `state_.cryptographer`'s keybag and the primary key is updated. In that
   // case pending keys are cleared.
   //
   // If `key_bag` is not capable of decrypting pending keys,
@@ -128,7 +128,6 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   // Attempts to decrypt pending keys with `key_bag`. If successful, updates the
   // cryptographer and stores local data.
   void SetExplicitPassphraseDecryptionKeyBag(const NigoriKeyBag& key_bag);
-
 
   // Serializes state of the bridge and sync metadata into the proto.
   sync_pb::NigoriLocalData SerializeAsNigoriLocalData() const;

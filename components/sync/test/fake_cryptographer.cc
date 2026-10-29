@@ -21,11 +21,11 @@ constexpr char kSeparator[] = "@@";
 }  // namespace
 
 // static
-std::unique_ptr<FakeCryptographer> FakeCryptographer::FromSingleDefaultKey(
+std::unique_ptr<FakeCryptographer> FakeCryptographer::FromSinglePrimaryKey(
     const std::string& key_name) {
   auto cryptographer = std::make_unique<FakeCryptographer>();
   cryptographer->AddEncryptionKey(key_name);
-  cryptographer->SelectDefaultEncryptionKey(key_name);
+  cryptographer->SelectPrimaryEncryptionKey(key_name);
   return cryptographer;
 }
 
@@ -38,18 +38,18 @@ void FakeCryptographer::AddEncryptionKey(const std::string& key_name) {
   known_key_names_.insert(key_name);
 }
 
-void FakeCryptographer::SelectDefaultEncryptionKey(
+void FakeCryptographer::SelectPrimaryEncryptionKey(
     const std::string& key_name) {
   DCHECK(known_key_names_.contains(key_name));
-  default_key_name_ = key_name;
+  primary_key_name_ = key_name;
 }
 
-void FakeCryptographer::InvalidateDefaultEncryptionKey() {
-  default_key_name_.clear();
+void FakeCryptographer::InvalidatePrimaryEncryptionKey() {
+  primary_key_name_.clear();
 }
 
 bool FakeCryptographer::CanEncrypt() const {
-  return !default_key_name_.empty();
+  return !primary_key_name_.empty();
 }
 
 bool FakeCryptographer::CanDecrypt(
@@ -57,18 +57,18 @@ bool FakeCryptographer::CanDecrypt(
   return known_key_names_.contains(encrypted.key_name());
 }
 
-std::string FakeCryptographer::GetDefaultEncryptionKeyName() const {
-  return default_key_name_;
+std::string FakeCryptographer::GetPrimaryEncryptionKeyName() const {
+  return primary_key_name_;
 }
 
 bool FakeCryptographer::EncryptString(const std::string& decrypted,
                                       sync_pb::EncryptedData* encrypted) const {
-  if (default_key_name_.empty()) {
+  if (primary_key_name_.empty()) {
     return false;
   }
-  *encrypted->mutable_key_name() = default_key_name_;
+  *encrypted->mutable_key_name() = primary_key_name_;
   *encrypted->mutable_blob() =
-      base::StrCat({default_key_name_, kSeparator, decrypted});
+      base::StrCat({primary_key_name_, kSeparator, decrypted});
   return true;
 }
 

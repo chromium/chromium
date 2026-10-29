@@ -37,7 +37,7 @@ TEST(NigoriStateTest, ShouldConvertCustomPassphraseStateToSpecifics) {
       KeyDerivationParams::CreateForPbkdf2();
 
   const std::string key_name =
-      state.cryptographer->RotateDefaultKeyByDerivation(
+      state.cryptographer->RotatePrimaryKeyByDerivation(
           kKey, KeyDerivationParams::CreateForPbkdf2());
   ASSERT_THAT(key_name, Ne(""));
 
@@ -55,13 +55,13 @@ TEST(NigoriStateTest, ShouldConvertCustomPassphraseStateToSpecifics) {
 
 TEST(NigoriStateTest, ShouldConvertKeystoreStateToSpecifics) {
   // Note that in practice having a NigoriState with two keystore keys and yet
-  // a default encryption key that is neither of them is not realistic. However,
+  // a primary encryption key that is neither of them is not realistic. However,
   // it serves this test well to verify that a) which key is used to encrypt the
   // keybag and b) which key is used to encrypt the keystore decryptor token.
   const base::Time now = base::Time::Now();
   const std::string kKeystoreKey1 = "keystorekey1";
   const std::string kKeystoreKey2 = "keystorekey2";
-  const std::string kDefaultEncryptionKey = "defaultkey";
+  const std::string kPrimaryEncryptionKey = "primarykey";
 
   NigoriState state;
   state.keystore_keys_cryptographer =
@@ -70,25 +70,25 @@ TEST(NigoriStateTest, ShouldConvertKeystoreStateToSpecifics) {
   state.passphrase_type = NigoriSpecifics::KEYSTORE_PASSPHRASE;
   state.keystore_migration_time = now;
   state.cryptographer = CryptographerImpl::CreateEmpty();
-  state.cryptographer->RotateDefaultKeyByDerivation(
+  state.cryptographer->RotatePrimaryKeyByDerivation(
       kKeystoreKey1, KeyDerivationParams::CreateForPbkdf2());
   const std::string last_keystore_key_name =
-      state.cryptographer->RotateDefaultKeyByDerivation(
+      state.cryptographer->RotatePrimaryKeyByDerivation(
           kKeystoreKey2, KeyDerivationParams::CreateForPbkdf2());
-  const std::string default_encryption_key_name =
-      state.cryptographer->RotateDefaultKeyByDerivation(
-          kDefaultEncryptionKey, KeyDerivationParams::CreateForPbkdf2());
+  const std::string primary_encryption_key_name =
+      state.cryptographer->RotatePrimaryKeyByDerivation(
+          kPrimaryEncryptionKey, KeyDerivationParams::CreateForPbkdf2());
 
   ASSERT_THAT(last_keystore_key_name, Ne(""));
-  ASSERT_THAT(default_encryption_key_name, Ne(""));
-  ASSERT_THAT(default_encryption_key_name, Ne(last_keystore_key_name));
+  ASSERT_THAT(primary_encryption_key_name, Ne(""));
+  ASSERT_THAT(primary_encryption_key_name, Ne(last_keystore_key_name));
 
   NigoriSpecifics specifics = state.ToSpecificsProto();
   EXPECT_THAT(specifics.passphrase_type(),
               NigoriSpecifics::KEYSTORE_PASSPHRASE);
   EXPECT_TRUE(specifics.keybag_is_frozen());
   EXPECT_THAT(specifics.encryption_keybag().key_name(),
-              Eq(default_encryption_key_name));
+              Eq(primary_encryption_key_name));
   EXPECT_TRUE(specifics.has_keystore_decryptor_token());
   EXPECT_THAT(specifics.keystore_decryptor_token().key_name(),
               Eq(last_keystore_key_name));
@@ -98,12 +98,12 @@ TEST(NigoriStateTest, ShouldConvertKeystoreStateToSpecifics) {
 }
 
 TEST(NigoriStateTest, ShouldConvertPublicKeyStateToSpecifics) {
-  const std::string kDefaultEncryptionKey = "defaultkey";
+  const std::string kPrimaryEncryptionKey = "primarykey";
   NigoriState state;
-  const std::string default_encryption_key_name =
-      state.cryptographer->RotateDefaultKeyByDerivation(
-          kDefaultEncryptionKey, KeyDerivationParams::CreateForPbkdf2());
-  ASSERT_THAT(default_encryption_key_name, Ne(""));
+  const std::string primary_encryption_key_name =
+      state.cryptographer->RotatePrimaryKeyByDerivation(
+          kPrimaryEncryptionKey, KeyDerivationParams::CreateForPbkdf2());
+  ASSERT_THAT(primary_encryption_key_name, Ne(""));
   const std::vector<uint8_t> key(32, 0xDE);
   state.cross_user_sharing_public_key =
       CrossUserSharingPublicKey::CreateByImport(key);
@@ -117,14 +117,14 @@ TEST(NigoriStateTest, ShouldConvertPublicKeyStateToSpecifics) {
 }
 
 TEST(NigoriStateTest, ShouldContainPublicKeyInLocalProto) {
-  const std::string kDefaultEncryptionKey = "defaultkey";
+  const std::string kPrimaryEncryptionKey = "primarykey";
   const uint32_t kKeyPairVersion = 1;
 
   NigoriState state;
-  const std::string default_encryption_key_name =
-      state.cryptographer->RotateDefaultKeyByDerivation(
-          kDefaultEncryptionKey, KeyDerivationParams::CreateForPbkdf2());
-  ASSERT_THAT(default_encryption_key_name, Ne(""));
+  const std::string primary_encryption_key_name =
+      state.cryptographer->RotatePrimaryKeyByDerivation(
+          kPrimaryEncryptionKey, KeyDerivationParams::CreateForPbkdf2());
+  ASSERT_THAT(primary_encryption_key_name, Ne(""));
   state.cryptographer->SetCrossUserSharingKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(),
       kKeyPairVersion);
@@ -216,7 +216,7 @@ TEST(NigoriStateTest,
 TEST(NigoriStateTest, ShouldReturnNeedsGenerateCrossUserSharingKeyPair) {
   NigoriState state;
   const std::string key_name =
-      state.cryptographer->RotateDefaultKeyByDerivation(
+      state.cryptographer->RotatePrimaryKeyByDerivation(
           "key1", KeyDerivationParams::CreateForPbkdf2());
   ASSERT_THAT(key_name, Ne(""));
 
@@ -248,7 +248,7 @@ TEST(NigoriStateTest,
      ShouldReturnNeedsGenerateCrossUserSharingKeyPairWhenInvalid) {
   NigoriState state;
   const std::string key_name =
-      state.cryptographer->RotateDefaultKeyByDerivation(
+      state.cryptographer->RotatePrimaryKeyByDerivation(
           "key1", KeyDerivationParams::CreateForPbkdf2());
   ASSERT_THAT(key_name, Ne(""));
 

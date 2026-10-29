@@ -15,7 +15,7 @@ class CrossUserSharingPrivateKey;
 
 namespace syncer {
 
-// A set of Public-private key pairs. Note that there is no notion of default
+// A set of Public-private key pairs. Note that there is no notion of primary
 // key.
 class CrossUserSharingKeys {
  public:
@@ -55,7 +55,8 @@ class CrossUserSharingKeys {
   CrossUserSharingKeys();
 
   // Public-private key-pairs we know about, mapped by version.
-  absl::flat_hash_map<uint32_t, CrossUserSharingPublicPrivateKeyPair> key_pairs_map_;
+  absl::flat_hash_map<uint32_t, CrossUserSharingPublicPrivateKeyPair>
+      key_pairs_map_;
 };
 
 }  // namespace syncer

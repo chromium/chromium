@@ -25,7 +25,7 @@ namespace syncer {
 // the string identifier used when adding the key.
 class FakeCryptographer : public Cryptographer {
  public:
-  static std::unique_ptr<FakeCryptographer> FromSingleDefaultKey(
+  static std::unique_ptr<FakeCryptographer> FromSinglePrimaryKey(
       const std::string& key_name);
 
   FakeCryptographer();
@@ -38,16 +38,16 @@ class FakeCryptographer : public Cryptographer {
   // be empty.
   void AddEncryptionKey(const std::string& key_name);
   // `key_name` must have been previously added. Once this is called, `key_name`
-  // will be the return value of GetDefaultEncryptionKeyName();
-  void SelectDefaultEncryptionKey(const std::string& key_name);
-  void InvalidateDefaultEncryptionKey();
+  // will be the return value of GetPrimaryEncryptionKeyName();
+  void SelectPrimaryEncryptionKey(const std::string& key_name);
+  void InvalidatePrimaryEncryptionKey();
 
   std::array<uint8_t, 32> GetCrossUserSharingRawPublicKey() const;
 
   // Cryptographer implementation.
   bool CanEncrypt() const override;
   bool CanDecrypt(const sync_pb::EncryptedData& encrypted) const override;
-  std::string GetDefaultEncryptionKeyName() const override;
+  std::string GetPrimaryEncryptionKeyName() const override;
   bool EncryptString(const std::string& decrypted,
                      sync_pb::EncryptedData* encrypted) const override;
   bool DecryptToString(const sync_pb::EncryptedData& encrypted,
@@ -62,8 +62,8 @@ class FakeCryptographer : public Cryptographer {
 
  private:
   std::set<std::string> known_key_names_;
-  // The state with no default key is encoded with an empty string.
-  std::string default_key_name_;
+  // The state with no primary key is encoded with an empty string.
+  std::string primary_key_name_;
   CrossUserSharingPublicPrivateKeyPair cross_user_sharing_key_pair_ =
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
 };

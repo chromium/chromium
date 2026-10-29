@@ -215,7 +215,7 @@ bool UpdatePassphraseType(NigoriSpecifics::PassphraseType new_type,
 }
 
 // Determines whether a newly decrypted remote keybag must contain the
-// previously known default encryption key (if any).
+// previously known primary encryption key (if any).
 //
 // Note that `new_passphrase_type` is the *latest* passphrase type (already
 // updated in `UpdateLocalState()` when `pending_keys` arrived, prior to
@@ -498,7 +498,7 @@ void NigoriSyncBridgeImpl::SetExplicitPassphraseDecryptionKeyBag(
       state_.cryptographer.get(), state_.pending_keys.has_value());
   CustomPassphraseBootstrapToken token =
       CustomPassphraseBootstrapToken::FromProto(
-          state_.cryptographer->ExportDefaultKey());
+          state_.cryptographer->ExportPrimaryKey());
   observer_list_.NotifyPassphraseAccepted(token);
 }
 
@@ -725,7 +725,7 @@ std::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
   // upon SetExplicitPassphraseDecryptionKey() or equivalent depending on the
   // passphrase type.
   state_.pending_keys = specifics.encryption_keybag();
-  state_.cryptographer->InvalidateDefaultEncryptionKey();
+  state_.cryptographer->InvalidatePrimaryEncryptionKey();
 
   if (specifics.has_cross_user_sharing_public_key()) {
     // Remote update wins over local state.
@@ -805,7 +805,7 @@ NigoriKeyBag NigoriSyncBridgeImpl::BuildDecryptionKeyBagForRemoteKeybag()
 
   if (state_.cryptographer->CanEncrypt()) {
     decryption_key_bag.AddKeyFromProto(
-        state_.cryptographer->ExportDefaultKey());
+        state_.cryptographer->ExportPrimaryKey());
   }
 
   return decryption_key_bag;
@@ -814,7 +814,7 @@ NigoriKeyBag NigoriSyncBridgeImpl::BuildDecryptionKeyBagForRemoteKeybag()
 std::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
     const NigoriKeyBag& key_bag) {
   DCHECK(state_.pending_keys.has_value());
-  DCHECK(state_.cryptographer->GetDefaultEncryptionKeyName().empty());
+  DCHECK(state_.cryptographer->GetPrimaryEncryptionKeyName().empty());
 
   std::string decrypted_pending_keys_str;
   if (!key_bag.Decrypt(*state_.pending_keys, &decrypted_pending_keys_str)) {
@@ -826,27 +826,27 @@ std::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
     return std::nullopt;
   }
 
-  const std::string new_default_key_name = state_.pending_keys->key_name();
-  DCHECK(key_bag.HasKey(new_default_key_name));
+  const std::string new_primary_key_name = state_.pending_keys->key_name();
+  DCHECK(key_bag.HasKey(new_primary_key_name));
 
   NigoriKeyBag new_key_bag = NigoriKeyBag::CreateEmpty();
   for (const sync_pb::NigoriKey& key : decrypted_pending_keys.key()) {
     new_key_bag.AddKeyFromProto(key);
   }
 
-  if (!new_key_bag.HasKey(new_default_key_name)) {
+  if (!new_key_bag.HasKey(new_primary_key_name)) {
     // Protocol violation.
     return ModelError(FROM_HERE,
-                      ModelError::Type::kNigoriMissingNewDefaultKeyInKeybag);
+                      ModelError::Type::kNigoriMissingNewPrimaryKeyInKeybag);
   }
 
   if (!state_.cryptographer->TryFollowRemoteKeyRotation(
-          new_key_bag, new_default_key_name,
+          new_key_bag, new_primary_key_name,
           /*enforce_key_continuity=*/
           ShouldEnforceKeyContinuity(state_.passphrase_type))) {
     // Protocol violation.
     return ModelError(FROM_HERE,
-                      ModelError::Type::kNigoriMissingLastDefaultKeyInKeybag);
+                      ModelError::Type::kNigoriMissingLastPrimaryKeyInKeybag);
   }
 
   CrossUserSharingKeys new_cross_user_sharing_keys =
@@ -873,7 +873,7 @@ std::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
     // a new key pair because it wasn't aware of the previous key pair.
     state_.cryptographer->ReplaceCrossUserSharingKeys(
         std::move(new_cross_user_sharing_keys));
-    state_.cryptographer->SelectDefaultCrossUserSharingKey(
+    state_.cryptographer->SelectPrimaryCrossUserSharingKey(
         state_.cross_user_sharing_key_pair_version.value());
   }
 
@@ -1015,7 +1015,6 @@ sync_pb::NigoriLocalData NigoriSyncBridgeImpl::SerializeAsNigoriLocalData()
 
   return output;
 }
-
 
 void NigoriSyncBridgeImpl::QueuePendingLocalCommit(
     std::unique_ptr<PendingLocalNigoriCommit> local_commit) {

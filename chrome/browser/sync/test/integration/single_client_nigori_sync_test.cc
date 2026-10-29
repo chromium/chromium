@@ -550,8 +550,8 @@ IN_PROC_BROWSER_TEST_P(
                   .Wait());
 }
 
-// Tests that client can decrypt passwords, encrypted with default key, while
-// Nigori node is in backward-compatible keystore mode (i.e. default key isn't
+// Tests that client can decrypt passwords, encrypted with primary key, while
+// Nigori node is in backward-compatible keystore mode (i.e. primary key isn't
 // a keystore key, but keystore decryptor token contains this key and encrypted
 // with a keystore key).
 IN_PROC_BROWSER_TEST_P(SingleClientNigoriSyncTest,
@@ -561,19 +561,19 @@ IN_PROC_BROWSER_TEST_P(SingleClientNigoriSyncTest,
   ASSERT_THAT(keystore_keys, SizeIs(1));
   const KeyParamsForTesting kKeystoreKeyParams =
       KeystoreKeyParamsForTesting(keystore_keys.back());
-  const KeyParamsForTesting kDefaultKeyParams =
+  const KeyParamsForTesting kPrimaryKeyParams =
       Pbkdf2PassphraseKeyParamsForTesting("password");
   SetNigoriInFakeServer(
       BuildKeystoreNigoriSpecifics(
-          /*keybag_keys_params=*/{kDefaultKeyParams, kKeystoreKeyParams},
-          /*keystore_decryptor_params*/ {kDefaultKeyParams},
+          /*keybag_keys_params=*/{kPrimaryKeyParams, kKeystoreKeyParams},
+          /*keystore_decryptor_params*/ {kPrimaryKeyParams},
           /*keystore_key_params=*/kKeystoreKeyParams),
       GetFakeServer());
   const password_manager::PasswordForm password_form =
       passwords_helper::CreateTestPasswordForm(0, GetPasswordStoreType());
   passwords_helper::InjectEncryptedServerPassword(
-      password_form, kDefaultKeyParams.password,
-      kDefaultKeyParams.derivation_params, GetFakeServer());
+      password_form, kPrimaryKeyParams.password,
+      kPrimaryKeyParams.derivation_params, GetFakeServer());
   ASSERT_TRUE(SetupSync());
   EXPECT_TRUE(WaitForPasswordForms({password_form}));
 }
@@ -595,20 +595,20 @@ IN_PROC_BROWSER_TEST_P(
   corrupted_keystore_key.push_back(42u);
   const KeyParamsForTesting kKeystoreKeyParams =
       KeystoreKeyParamsForTesting(corrupted_keystore_key);
-  const KeyParamsForTesting kDefaultKeyParams =
+  const KeyParamsForTesting kPrimaryKeyParams =
       Pbkdf2PassphraseKeyParamsForTesting("password");
   SetNigoriInFakeServer(
       BuildKeystoreNigoriSpecifics(
-          /*keybag_keys_params=*/{kDefaultKeyParams, kKeystoreKeyParams},
-          /*keystore_decryptor_params*/ {kDefaultKeyParams},
+          /*keybag_keys_params=*/{kPrimaryKeyParams, kKeystoreKeyParams},
+          /*keystore_decryptor_params*/ {kPrimaryKeyParams},
           /*keystore_key_params=*/kKeystoreKeyParams),
       GetFakeServer());
 
   const password_manager::PasswordForm password_form =
       passwords_helper::CreateTestPasswordForm(0, GetPasswordStoreType());
   passwords_helper::InjectEncryptedServerPassword(
-      password_form, kDefaultKeyParams.password,
-      kDefaultKeyParams.derivation_params, GetFakeServer());
+      password_form, kPrimaryKeyParams.password,
+      kPrimaryKeyParams.derivation_params, GetFakeServer());
   ASSERT_TRUE(SetupSync(NO_WAITING));
 
   EXPECT_TRUE(PassphraseRequiredChecker(GetSyncService(0)).Wait());

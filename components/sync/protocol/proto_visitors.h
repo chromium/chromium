@@ -955,7 +955,7 @@ VISIT_PROTO_FIELDS(const sync_pb::ReplacedNavigation& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::CryptographerData& proto) {
   VISIT(key_bag);
-  VISIT(default_key_name);
+  VISIT(primary_key_name);
   VISIT(cross_user_sharing_keys);
 }
 
@@ -2452,8 +2452,7 @@ VISIT_PROTO_FIELDS(const sync_pb::JourneySpecifics::HistoryEntry& proto) {
   VISIT(visit_timestamp_windows_epoch_micros);
 }
 
-VISIT_PROTO_FIELDS(
-    const sync_pb::JourneySpecifics::ContinuationQuery& proto) {
+VISIT_PROTO_FIELDS(const sync_pb::JourneySpecifics::ContinuationQuery& proto) {
   VISIT(title);
   VISIT(prompt);
 }

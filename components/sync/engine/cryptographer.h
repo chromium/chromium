@@ -32,7 +32,7 @@ class Cryptographer {
   virtual ~Cryptographer();
 
   // Returns whether this cryptographer is ready to encrypt data, using
-  // EncryptString(). This usually means that a default encryption key is
+  // EncryptString(). This usually means that a primary encryption key is
   // available and there are no pending keys.
   virtual bool CanEncrypt() const = 0;
 
@@ -43,7 +43,7 @@ class Cryptographer {
   virtual bool CanDecrypt(const sync_pb::EncryptedData& encrypted) const = 0;
 
   // Returns a name that uniquely identifies the key used for encryption.
-  virtual std::string GetDefaultEncryptionKeyName() const = 0;
+  virtual std::string GetPrimaryEncryptionKeyName() const = 0;
 
   // Encrypted `decrypted` into `*encrypted`. `encrypted` must not be null.
   // Returns false in case of error, which most notably includes the case

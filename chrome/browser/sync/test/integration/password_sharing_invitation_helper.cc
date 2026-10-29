@@ -27,7 +27,7 @@ constexpr char kSenderEmail[] = "sender@gmail.com";
 constexpr char kSenderDisplayName[] = "Sender Name";
 constexpr char kSenderProfileImageUrl[] = "http://sender.url/image";
 
-constexpr int kDefaultKeyVersion = 0;
+constexpr int kPrimaryKeyVersion = 0;
 
 sync_pb::CrossUserSharingPublicKey PublicKeyToProto(
     const syncer::CrossUserSharingPublicKey& public_key) {
@@ -35,7 +35,7 @@ sync_pb::CrossUserSharingPublicKey PublicKeyToProto(
   auto raw_public_key = public_key.GetRawPublicKey();
   proto.set_x25519_public_key(
       std::string(raw_public_key.begin(), raw_public_key.end()));
-  proto.set_version(kDefaultKeyVersion);
+  proto.set_version(kPrimaryKeyVersion);
   return proto;
 }
 
@@ -47,8 +47,8 @@ std::unique_ptr<syncer::CryptographerImpl> InitializeCryptographer(
   // Clone `key_pair` since the cryptographer requires it to be moved.
   cryptographer->SetCrossUserSharingKeyPair(
       syncer::CrossUserSharingPublicPrivateKeyPair(key_pair.GetRawPrivateKey()),
-      kDefaultKeyVersion);
-  cryptographer->SelectDefaultCrossUserSharingKey(kDefaultKeyVersion);
+      kPrimaryKeyVersion);
+  cryptographer->SelectPrimaryCrossUserSharingKey(kPrimaryKeyVersion);
 
   return cryptographer;
 }
@@ -86,7 +86,7 @@ sync_pb::PasswordSharingInvitationData DecryptInvitationData(
       recipient_cryptographer->AuthDecryptForCrossUserSharing(
           base::as_byte_span(encrypted_data),
           base::as_byte_span(sender_public_key.x25519_public_key()),
-          kDefaultKeyVersion);
+          kPrimaryKeyVersion);
   CHECK(decrypted_data);
 
   sync_pb::PasswordSharingInvitationData invitation_data;

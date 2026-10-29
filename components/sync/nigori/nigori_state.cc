@@ -135,7 +135,7 @@ NigoriState NigoriState::CreateFromLocalProto(
 
   state.cryptographer = CryptographerImpl::FromLocalProto(
       proto.cryptographer_data(),
-      /*default_encryption_key_invalidated=*/proto.has_pending_keys());
+      /*primary_encryption_key_invalidated=*/proto.has_pending_keys());
   CHECK(state.cryptographer);
 
   if (proto.has_pending_keys()) {
@@ -172,7 +172,7 @@ NigoriState NigoriState::CreateFromLocalProto(
     if (state.cross_user_sharing_public_key) {
       state.cross_user_sharing_key_pair_version =
           proto.cross_user_sharing_public_key().version();
-      state.cryptographer->SelectDefaultCrossUserSharingKey(
+      state.cryptographer->SelectPrimaryCrossUserSharingKey(
           proto.cross_user_sharing_public_key().version());
     }
   }
@@ -271,14 +271,14 @@ sync_pb::NigoriSpecifics NigoriState::ToSpecificsProto() const {
           *pending_keystore_decryptor_token;
     } else if (!pending_keys.has_value()) {
       // Absence of `pending_keys` is required to backfill
-      // `keystore_decryptor_token`, because otherwise the default encryption
-      // key in `cryptographer` is invalidated and `ExportDefaultKey()` cannot
+      // `keystore_decryptor_token`, because otherwise the primary encryption
+      // key in `cryptographer` is invalidated and `ExportPrimaryKey()` cannot
       // be called.
       // TODO(crbug.com/40868132): ensure correct error handling, e.g. in case
       // of empty `keystore_keys_cryptographer` or crypto errors (should be
       // impossible, but code doesn't yet guarantee that).
       keystore_keys_cryptographer->EncryptKeystoreDecryptorToken(
-          cryptographer->ExportDefaultKey(),
+          cryptographer->ExportPrimaryKey(),
           specifics.mutable_keystore_decryptor_token());
     }
   }
@@ -323,7 +323,6 @@ NigoriState NigoriState::Clone() const {
       cross_user_sharing_key_pair_version;
   return result;
 }
-
 
 DataTypeSet NigoriState::GetEncryptedTypes() const {
   if (!encrypt_everything) {
