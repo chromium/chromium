@@ -122,6 +122,7 @@ class PrefHashStoreImpl::PrefHashStoreTransactionImpl
   void ClearAuthenticators(const std::string& path) override;
   bool IsSuperHmacValid() const override;
   bool StampSuperHmac() override;
+  void RecordSuperEncryptedHashResult() const override;
 
   void StoreEncryptedHash(const std::string& path,
                           const base::Value* value) override;
@@ -173,6 +174,10 @@ class PrefHashStoreImpl::PrefHashStoreTransactionImpl
   bool super_encrypted_hash_valid_ = false;
   bool super_encrypted_hash_dirty_ = false;
   bool super_encrypted_hash_mismatch_ = false;
+  // The result of verifying the super encrypted hash at the start of this
+  // transaction. Only set if the store uses a super encrypted hash and an
+  // encryptor was provided.
+  std::optional<SuperEncryptedHashResult> super_encrypted_hash_result_;
 };
 
 PrefHashStoreImpl::PrefHashStoreImpl(const std::string& seed,
@@ -320,45 +325,40 @@ PrefHashStoreImpl::PrefHashStoreTransactionImpl::PrefHashStoreTransactionImpl(
 
   // Load and validate the new Super Encrypted Hash if enabled and the
   // encryptor is available. The flag controls verification.
-  std::string super_encrypted_hash;
   // `use_super_encrypted_hash_` controls the loading/verification of the
-  // Super Encrypted Hash here. It is disabled for the unprotected store.
-  if (outer_->use_super_encrypted_hash_ &&
-      contents_->SupportsSuperAuthenticator()) {
-    super_encrypted_hash = contents_->GetSuperEncryptedHash();
+  // Super Encrypted Hash here. It is disabled for the unprotected store, and
+  // stores such as the Windows registry do not support super authenticators.
+  const bool super_encrypted_hash_enabled =
+      outer_->use_super_encrypted_hash_ &&
+      contents_->SupportsSuperAuthenticator();
+  if (!super_encrypted_hash_enabled || !encryptor_) {
+    return;
   }
-  if (!super_encrypted_hash.empty() && encryptor_) {
-    const base::DictValue* contents = contents_->GetContents();
-    if (contents) {
-      base::DictValue filtered_dict;
-      // Filter out legacy HMACs to compute the hash over encrypted hashes only.
-      FilterEncryptedHashesRecursive(*contents, filtered_dict);
-      base::Value filtered_value(std::move(filtered_dict));
-      if (outer_->pref_hash_calculator_.ValidateEncryptedHash(
-              "", &filtered_value, super_encrypted_hash, encryptor_.get()) ==
-          ValidationResult::VALID_ENCRYPTED) {
-        super_encrypted_hash_valid_ = true;
-      } else {
-        super_encrypted_hash_mismatch_ = true;
-      }
+
+  const std::string super_encrypted_hash = contents_->GetSuperEncryptedHash();
+  if (super_encrypted_hash.empty()) {
+    super_encrypted_hash_result_ = SuperEncryptedHashResult::kMissing;
+    return;
+  }
+
+  const base::DictValue* contents = contents_->GetContents();
+  if (contents) {
+    base::DictValue filtered_dict;
+    // Filter out legacy HMACs to compute the hash over encrypted hashes only.
+    FilterEncryptedHashesRecursive(*contents, filtered_dict);
+    base::Value filtered_value(std::move(filtered_dict));
+    if (outer_->pref_hash_calculator_.ValidateEncryptedHash(
+            "", &filtered_value, super_encrypted_hash, encryptor_.get()) ==
+        ValidationResult::VALID_ENCRYPTED) {
+      super_encrypted_hash_valid_ = true;
+    } else {
+      super_encrypted_hash_mismatch_ = true;
     }
   }
 
-  if (encryptor_) {
-    if (super_encrypted_hash.empty()) {
-      base::UmaHistogramEnumeration(
-          "Settings.TrackedPreferenceSuperEncryptedHashResult",
-          SuperEncryptedHashResult::kMissing);
-    } else if (super_encrypted_hash_valid_) {
-      base::UmaHistogramEnumeration(
-          "Settings.TrackedPreferenceSuperEncryptedHashResult",
-          SuperEncryptedHashResult::kMatch);
-    } else {
-      base::UmaHistogramEnumeration(
-          "Settings.TrackedPreferenceSuperEncryptedHashResult",
-          SuperEncryptedHashResult::kMismatch);
-    }
-  }
+  super_encrypted_hash_result_ = super_encrypted_hash_valid_
+                                     ? SuperEncryptedHashResult::kMatch
+                                     : SuperEncryptedHashResult::kMismatch;
 }
 
 PrefHashStoreImpl::PrefHashStoreTransactionImpl::
@@ -368,7 +368,8 @@ PrefHashStoreImpl::PrefHashStoreTransactionImpl::
   }
 
   bool need_super_hmac = super_hmac_dirty_ && outer_->use_super_hmac_;
-  bool need_super_encrypted_hash = super_encrypted_hash_dirty_ && encryptor_;
+  bool need_super_encrypted_hash = super_encrypted_hash_dirty_ && encryptor_ &&
+                                   outer_->use_super_encrypted_hash_;
 
   if (need_super_hmac || need_super_encrypted_hash) {
     // Get the dictionary of hashes (or NULL if it doesn't exist).
@@ -950,4 +951,14 @@ bool PrefHashStoreImpl::PrefHashStoreTransactionImpl::StampSuperHmac() {
   super_hmac_dirty_ = true;
   super_hmac_valid_ = true;
   return true;
+}
+
+void PrefHashStoreImpl::PrefHashStoreTransactionImpl::
+    RecordSuperEncryptedHashResult() const {
+  if (!super_encrypted_hash_result_.has_value()) {
+    return;
+  }
+  base::UmaHistogramEnumeration(
+      "Settings.TrackedPreferenceSuperEncryptedHashResult2",
+      *super_encrypted_hash_result_);
 }

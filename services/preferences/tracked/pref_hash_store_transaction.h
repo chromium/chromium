@@ -88,6 +88,12 @@ class PrefHashStoreTransaction {
   // Returns true if this results in a change to the store contents.
   virtual bool StampSuperHmac() = 0;
 
+  // Records the result of verifying the super encrypted hash at the beginning
+  // of this transaction to UMA. This is a no-op if the store does not use a
+  // super encrypted hash or if no encryptor was provided at transaction start.
+  // Intended to be called once per store load.
+  virtual void RecordSuperEncryptedHashResult() const = 0;
+
   // Removes the encrypted hash for the authenticator path `path`.
   virtual void ClearEncryptedHash(const std::string& path) = 0;
 

@@ -1410,13 +1410,16 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="Settings.TrackedPreferenceSuperEncryptedHashResult"
+<histogram name="Settings.TrackedPreferenceSuperEncryptedHashResult2"
     enum="SuperEncryptedHashResult" expires_after="2027-04-01">
   <owner>zackhan@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    The result of verifying the file-level SuperEncryptedHash during preference
-    load.
+    The result of verifying the file-level SuperEncryptedHash of the protected
+    (Secure Preferences) pref store. Emitted once per profile load, when the OS
+    encryptor becomes available and the deferred validation runs. Not emitted
+    for pref stores that do not use a SuperEncryptedHash (e.g. the unprotected
+    Preferences file or the Windows registry).
   </summary>
 </histogram>
 

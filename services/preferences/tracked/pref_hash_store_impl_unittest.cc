@@ -31,6 +31,8 @@ using ValueState =
 
 constexpr char kSuperAuthenticatorCalculatedHistogram[] =
     "Settings.TrackedPreferences.SuperAuthenticatorCalculated";
+constexpr char kSuperEncryptedHashResultHistogram[] =
+    "Settings.TrackedPreferenceSuperEncryptedHashResult2";
 
 // Helper to get derived key for encrypted hashes; this is a replicate of the
 // function in the .cc file.
@@ -919,6 +921,9 @@ class PrefHashStoreImplSuperEncryptedHashTest
     split_value.Set("key", "new split value");
     std::vector<std::string> invalid_keys;
     auto transaction = BeginTransaction(/*with_encryptor=*/true);
+    // Beginning a transaction alone must not emit the histogram.
+    histogram_tester.ExpectTotalCount(kSuperEncryptedHashResultHistogram, 0);
+    transaction->RecordSuperEncryptedHashResult();
     EXPECT_TRUE(transaction->IsSuperHmacValid());
     EXPECT_EQ(expected_state, transaction->CheckValue("new.pref", &value));
     EXPECT_EQ(expected_state, transaction->CheckSplitValue(
@@ -927,9 +932,8 @@ class PrefHashStoreImplSuperEncryptedHashTest
     const int expected_sample =
         expected_state == ValueState::TRUSTED_UNKNOWN_VALUE ? kMatch
                                                             : kMismatch;
-    histogram_tester.ExpectUniqueSample(
-        "Settings.TrackedPreferenceSuperEncryptedHashResult", expected_sample,
-        1);
+    histogram_tester.ExpectUniqueSample(kSuperEncryptedHashResultHistogram,
+                                        expected_sample, 1);
   }
 
  private:
@@ -972,6 +976,62 @@ TEST_P(PrefHashStoreImplSuperEncryptedHashTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          PrefHashStoreImplSuperEncryptedHashTest,
                          testing::Bool());
+
+TEST_F(PrefHashStoreImplEncryptedTest, SuperEncryptedHashResultMissing) {
+  constexpr int kMissing = 2;
+  base::HistogramTester histogram_tester;
+  auto transaction = BeginTransaction(/*with_encryptor=*/true);
+  transaction->RecordSuperEncryptedHashResult();
+  histogram_tester.ExpectUniqueSample(kSuperEncryptedHashResultHistogram,
+                                      kMissing, 1);
+}
+
+TEST_F(PrefHashStoreImplEncryptedTest,
+       SuperEncryptedHashResultNotRecordedWithoutEncryptor) {
+  base::HistogramTester histogram_tester;
+  auto transaction = BeginTransaction(/*with_encryptor=*/false);
+  transaction->RecordSuperEncryptedHashResult();
+  histogram_tester.ExpectTotalCount(kSuperEncryptedHashResultHistogram, 0);
+}
+
+// The unprotected store does not use a super encrypted hash, so it should
+// neither record the verification result nor write a super encrypted hash.
+TEST_F(PrefHashStoreImplEncryptedTest,
+       SuperEncryptedHashDisabledWithEncryptor) {
+  base::HistogramTester histogram_tester;
+  base::Value value("test_value");
+  PrefHashStoreImpl unprotected_store(kSeed, /*use_super_hmac=*/false,
+                                      /*use_super_encrypted_hash=*/false);
+  {
+    auto transaction = unprotected_store.BeginTransaction(&dictionary_contents_,
+                                                          test_encryptor_);
+    transaction->RecordSuperEncryptedHashResult();
+    transaction->StoreHmac("test.pref", &value);
+    transaction->StoreEncryptedHash("test.pref", &value);
+  }
+  {
+    // A subsequent transaction should not record anything either.
+    auto transaction = unprotected_store.BeginTransaction(&dictionary_contents_,
+                                                          test_encryptor_);
+    transaction->RecordSuperEncryptedHashResult();
+  }
+
+  histogram_tester.ExpectTotalCount(kSuperEncryptedHashResultHistogram, 0);
+  EXPECT_TRUE(dictionary_contents_.GetSuperHmac().empty());
+  EXPECT_TRUE(dictionary_contents_.GetSuperEncryptedHash().empty());
+}
+
+// Stores that do not support super authenticators (e.g. the Windows registry)
+// should never record the verification result.
+TEST_F(PrefHashStoreImplEncryptedTest,
+       SuperEncryptedHashResultNotRecordedWhenUnsupported) {
+  base::HistogramTester histogram_tester;
+  base::DictValue storage;
+  NonSuperMacDictionaryHashStoreContents contents(storage);
+  auto transaction = hash_store_.BeginTransaction(&contents, test_encryptor_);
+  transaction->RecordSuperEncryptedHashResult();
+  histogram_tester.ExpectTotalCount(kSuperEncryptedHashResultHistogram, 0);
+}
 
 TEST_F(PrefHashStoreImplEncryptedTest, SuperEncryptedHashOnly) {
   base::Value value("test_value");

@@ -321,6 +321,7 @@ class MockPrefHashStore : public PrefHashStore {
     void ClearEncryptedHash(const std::string& path) override;
     bool IsSuperHmacValid() const override;
     bool StampSuperHmac() override;
+    void RecordSuperEncryptedHashResult() const override {}
     void StoreEncryptedHash(const std::string& path,
                             const base::Value* value) override {
       outer_->store_encrypted_hash_called_ = true;

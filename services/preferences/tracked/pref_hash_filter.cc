@@ -442,6 +442,10 @@ void PrefHashFilter::DeferredEncryptorRevalidation(
   DictionaryHashStoreContents dictionary_contents(pref_store_contents_at_load);
   std::unique_ptr<PrefHashStoreTransaction> transaction(
       pref_hash_store_->BeginTransaction(&dictionary_contents, encryptor_));
+  // This is the first transaction after load that has access to the encryptor,
+  // so record the result of verifying the super encrypted hash here (once per
+  // load) rather than on every transaction.
+  transaction->RecordSuperEncryptedHashResult();
 
   // Schedule a write to disk by updating a tracked preference. This is done to
   // ensure the newly computed encrypted hashes are flushed to the pref store.
