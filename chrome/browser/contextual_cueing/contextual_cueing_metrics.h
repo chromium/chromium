@@ -73,7 +73,8 @@ void RecordCueingInteractionToPrivateInsights(
     const std::vector<tabs::TabHandle>& tabs_to_show,
     const std::vector<optimization_guide::proto::Tab>& background_tabs,
     ContextualCueingInteraction interaction_type,
-    const std::string& cuj);
+    const std::string& cuj,
+    base::TimeDelta shown_duration);
 
 namespace internal {
 
@@ -87,7 +88,8 @@ private_insights::events::ContextualCueLogEvent CreateContextualCueLogEvent(
     tabs::TabInterface* active_tab,
     const std::vector<tabs::TabHandle>& tabs_to_show,
     const std::vector<optimization_guide::proto::Tab>& background_tabs,
-    const std::string& cuj);
+    const std::string& cuj,
+    base::TimeDelta shown_duration = base::TimeDelta());
 
 }  // namespace internal
 

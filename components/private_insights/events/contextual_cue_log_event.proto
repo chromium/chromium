@@ -59,4 +59,8 @@ message ContextualCueLogEvent {
   CoarseSystemProfile system_profile = 4;
   EventType event_type = 5;
   int64 event_timestamp_ms = 6;
+
+  // Duration in milliseconds for which the cue was shown before the user
+  // interacted with it (e.g. CLICKED, DISMISSED). Always 0 for SHOWN events.
+  int64 shown_duration_ms = 7;
 }

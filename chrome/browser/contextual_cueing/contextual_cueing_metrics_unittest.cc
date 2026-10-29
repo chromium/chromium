@@ -153,6 +153,29 @@ TEST(ContextualCueingMetricsTest, CreateEvent_ContextualSearchSurface) {
 
   EXPECT_EQ("ContextualSearch", event.cue_details().promoted_feature());
   EXPECT_EQ("search query", event.cue_details().prompt());
+  EXPECT_EQ(0, event.shown_duration_ms());
+}
+
+TEST(ContextualCueingMetricsTest, CreateEvent_WithShownDuration) {
+  auto clicked_event = internal::CreateContextualCueLogEvent(
+      private_insights::events::ContextualCueLogEvent::CLICKED, "test_cue_id",
+      CueTargetType::kGlic, {}, /*active_tab=*/nullptr,
+      /*tabs_to_show=*/{}, /*background_tabs=*/{}, /*cuj=*/"SHOPPING",
+      /*shown_duration=*/base::Milliseconds(1500));
+
+  EXPECT_EQ(private_insights::events::ContextualCueLogEvent::CLICKED,
+            clicked_event.event_type());
+  EXPECT_EQ(1500, clicked_event.shown_duration_ms());
+
+  auto dismissed_event = internal::CreateContextualCueLogEvent(
+      private_insights::events::ContextualCueLogEvent::DISMISSED, "test_cue_id",
+      CueTargetType::kGlic, {}, /*active_tab=*/nullptr,
+      /*tabs_to_show=*/{}, /*background_tabs=*/{}, /*cuj=*/"SHOPPING",
+      /*shown_duration=*/base::Milliseconds(4200));
+
+  EXPECT_EQ(private_insights::events::ContextualCueLogEvent::DISMISSED,
+            dismissed_event.event_type());
+  EXPECT_EQ(4200, dismissed_event.shown_duration_ms());
 }
 
 TEST(ContextualCueingMetricsTest, RecordCueShownMetrics_Pdf) {

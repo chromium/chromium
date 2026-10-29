@@ -984,10 +984,15 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, ShowCueAndClick) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   // Expect Shown event
-  EXPECT_CALL(*GetMockPrivateInsightsService(),
-              LogContextualCueEvent(testing::Property(
-                  &private_insights::events::ContextualCueLogEvent::event_type,
-                  private_insights::events::ContextualCueLogEvent::SHOWN)))
+  EXPECT_CALL(
+      *GetMockPrivateInsightsService(),
+      LogContextualCueEvent(testing::AllOf(
+          testing::Property(
+              &private_insights::events::ContextualCueLogEvent::event_type,
+              private_insights::events::ContextualCueLogEvent::SHOWN),
+          testing::Property(&private_insights::events::ContextualCueLogEvent::
+                                shown_duration_ms,
+                            testing::Eq(0)))))
       .Times(1);
 
   SeedExecutionResult(MakeCompleteResponse());
@@ -1011,6 +1016,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, ShowCueAndClick) {
           testing::Property(
               &private_insights::events::ContextualCueLogEvent::event_type,
               private_insights::events::ContextualCueLogEvent::CLICKED),
+          testing::Property(&private_insights::events::ContextualCueLogEvent::
+                                shown_duration_ms,
+                            testing::Gt(0)),
           testing::Property(
               &private_insights::events::ContextualCueLogEvent::cue_context,
               testing::ResultOf(
@@ -1140,10 +1148,15 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   // Expect Shown event.
-  EXPECT_CALL(*GetMockPrivateInsightsService(),
-              LogContextualCueEvent(testing::Property(
-                  &private_insights::events::ContextualCueLogEvent::event_type,
-                  private_insights::events::ContextualCueLogEvent::SHOWN)))
+  EXPECT_CALL(
+      *GetMockPrivateInsightsService(),
+      LogContextualCueEvent(testing::AllOf(
+          testing::Property(
+              &private_insights::events::ContextualCueLogEvent::event_type,
+              private_insights::events::ContextualCueLogEvent::SHOWN),
+          testing::Property(&private_insights::events::ContextualCueLogEvent::
+                                shown_duration_ms,
+                            testing::Eq(0)))))
       .Times(1);
 
   SeedExecutionResult(MakeCompleteResponse());
@@ -1172,6 +1185,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
           testing::Property(
               &private_insights::events::ContextualCueLogEvent::event_type,
               private_insights::events::ContextualCueLogEvent::CLICKED),
+          testing::Property(&private_insights::events::ContextualCueLogEvent::
+                                shown_duration_ms,
+                            testing::Gt(0)),
           testing::Property(
               &private_insights::events::ContextualCueLogEvent::cue_context,
               testing::ResultOf(
@@ -2485,6 +2501,17 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
+  EXPECT_CALL(
+      *GetMockPrivateInsightsService(),
+      LogContextualCueEvent(testing::AllOf(
+          testing::Property(
+              &private_insights::events::ContextualCueLogEvent::event_type,
+              private_insights::events::ContextualCueLogEvent::SHOWN),
+          testing::Property(&private_insights::events::ContextualCueLogEvent::
+                                shown_duration_ms,
+                            testing::Eq(0)))))
+      .Times(1);
+
   auto response = MakeCompleteResponse();
   response.mutable_contextual_cues(0)->set_suggested_cuj("test_cuj_string");
   SeedExecutionResult(response);
@@ -2493,6 +2520,17 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 
   optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester, "ContextualCueing.V2.Decision", 1);
+
+  EXPECT_CALL(
+      *GetMockPrivateInsightsService(),
+      LogContextualCueEvent(testing::AllOf(
+          testing::Property(
+              &private_insights::events::ContextualCueLogEvent::event_type,
+              private_insights::events::ContextualCueLogEvent::DISMISSED),
+          testing::Property(&private_insights::events::ContextualCueLogEvent::
+                                shown_duration_ms,
+                            testing::Ge(0)))))
+      .Times(1);
 
   // Directly call OnCueInteraction to simulate the Menu Delegate
   auto* cue = &response.contextual_cues(0);

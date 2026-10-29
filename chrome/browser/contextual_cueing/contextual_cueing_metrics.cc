@@ -82,12 +82,14 @@ private_insights::events::ContextualCueLogEvent CreateContextualCueLogEvent(
     tabs::TabInterface* active_tab,
     const std::vector<tabs::TabHandle>& tabs_to_show,
     const std::vector<optimization_guide::proto::Tab>& background_tabs,
-    const std::string& cuj) {
+    const std::string& cuj,
+    base::TimeDelta shown_duration) {
   private_insights::events::ContextualCueLogEvent event;
   event.set_cue_id(cue_id);
   event.set_event_type(event_type);
   event.set_event_timestamp_ms(
       base::Time::Now().InMillisecondsSinceUnixEpoch());
+  event.set_shown_duration_ms(shown_duration.InMilliseconds());
 
   PopulateSystemProfile(event.mutable_system_profile());
 
@@ -246,7 +248,8 @@ void RecordCueingInteractionToPrivateInsights(
     const std::vector<tabs::TabHandle>& tabs_to_show,
     const std::vector<optimization_guide::proto::Tab>& background_tabs,
     ContextualCueingInteraction interaction_type,
-    const std::string& cuj) {
+    const std::string& cuj,
+    base::TimeDelta shown_duration) {
   if (!kEnablePrivateInsightsLogging.Get()) {
     return;
   }
@@ -275,7 +278,7 @@ void RecordCueingInteractionToPrivateInsights(
 
   auto event = internal::CreateContextualCueLogEvent(
       event_type, cue_id, cue_type, cue, active_tab, tabs_to_show,
-      background_tabs, cuj);
+      background_tabs, cuj, shown_duration);
 
   private_insights_service->LogContextualCueEvent(std::move(event));
 }

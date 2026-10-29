@@ -1451,7 +1451,7 @@ void ContextualCueingController::OnCueInteraction(
 
   RecordCueingInteractionToPrivateInsights(
       tab_->GetProfile(), cue_id, cue_type, cue, tab_, tabs_to_show,
-      background_tabs, interaction_type, cuj);
+      background_tabs, interaction_type, cuj, shown_duration);
 
   if (interaction_type == ContextualCueingInteraction::kCueDismissed) {
     CueTarget* target = GetTarget(cue_type);
