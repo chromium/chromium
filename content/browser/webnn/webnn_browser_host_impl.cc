@@ -290,6 +290,9 @@ void WebNNBrowserHostImpl::OnEpsResolvedForCompilerContext(
                  << target_device.ToSwitchValue() << "].";
       return;
     }
+    VLOG(1) << "[WebNN] Launched Compiler process for ["
+            << target_device.ToSwitchValue()
+            << "] (library: " << ep_library_path << ").";
 
     compiler_remote.set_disconnect_handler(
         base::BindOnce(&WebNNBrowserHostImpl::OnDisconnected,

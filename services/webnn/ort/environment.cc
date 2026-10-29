@@ -812,8 +812,9 @@ Environment::InitializeForCompilerProcess(const base::FilePath& ep_library_path,
   }
   // Ensure that the target device is registered in the environment.
   if (!env_result.value()->FindRegisteredEpDevice(target_device)) {
-    return base::unexpected(base::StrCat(
-        {"Target device not registered: ", target_device.ToSwitchValue()}));
+    return base::unexpected(
+        base::StrCat({"Target device not registered: [",
+                      target_device.ToSwitchValue(), "]."}));
   }
   // Warm up the target device for the compiler process to ensure that the
   // libraries required for offline compilation are preloaded.
@@ -1107,8 +1108,9 @@ std::optional<EpDeviceInfo> Environment::SelectEpDeviceForCompiler(
     }
   }
 
-  VLOG(1) << "[WebNN] Selected EP device for compiler: "
-          << selected_device_info.ToSwitchValue();
+  VLOG(1) << "[WebNN] Selected [" << selected_device_info.ToSwitchValue()
+          << "] for the Compiler process (requested: "
+          << DeviceTypeToString(OrtToWebnnDeviceType(device_type)) << ").";
 
   return selected_device_info;
 }

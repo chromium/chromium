@@ -834,14 +834,17 @@ void WebNNContextProviderImpl::OnCompilerContextRequested(
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 
   if (!success) {
-    VLOG(1) << "[WebNN] Compiler context unavailable. Falling back to another "
-               "backend.";
+    LOG(WARNING) << "[WebNN] Compiler context unavailable on ["
+                 << target_device.ToSwitchValue()
+                 << "]. Falling back to LiteRT.";
     FallbackToTFLite(std::move(scoped_trace), std::move(options),
                      std::move(gpu_task_scheduler), std::move(task_runner),
                      std::move(callback), is_incognito,
                      std::move(memory_tracker), sequence_id, command_buffer_id);
     return;
   }
+  VLOG(1) << "[WebNN] Compiler context ready on ["
+          << target_device.ToSwitchValue() << "].";
 
   scoped_trace.AddStep("ort::DispatchContextImplOrt::Create");
 
