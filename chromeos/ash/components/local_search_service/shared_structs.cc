@@ -27,7 +27,9 @@ Content& local_search_service::Content::operator=(const Content& other) =
 Content& local_search_service::Content::operator=(Content&& other) = default;
 local_search_service::Content::~Content() = default;
 
-Data::Data(std::string id, std::vector<Content> contents, std::string locale)
+Data::Data(std::string id,
+           std::vector<Content> contents,
+           std::optional<base::i18n::LanguageTag> locale)
     : id(std::move(id)),
       contents(std::move(contents)),
       locale(std::move(locale)) {}

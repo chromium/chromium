@@ -12,7 +12,8 @@
 #include "base/containers/extend.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/i18n/rtl.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
@@ -31,10 +32,10 @@ using ExtractedContent =
     std::vector<std::pair<std::string, std::vector<Token>>>;
 
 std::vector<Token> ExtractDocumentTokens(const Data& data) {
-  // Use input locale unless it's empty. In this case we will use system
+  // Use input locale unless it's unset. In this case we will use system
   // default locale.
-  const std::string locale =
-      data.locale.empty() ? base::i18n::GetConfiguredLocale() : data.locale;
+  const base::i18n::LanguageTag locale =
+      data.locale.value_or(base::i18n::GetDefaultIcuLocale());
   std::vector<Token> document_tokens;
   for (const Content& content : data.contents) {
     DCHECK_GE(content.weight, 0);
@@ -61,7 +62,7 @@ std::unordered_set<std::u16string> GetTokenizedQuery(
   // TODO(jiameng): actual input query may not be the same as default locale.
   // Need another way to determine actual language of the query.
   const TokenizedString::Mode mode =
-      IsNonLatinLocale(base::i18n::GetConfiguredLocale())
+      IsNonLatinLocale(base::i18n::GetDefaultIcuLocale())
           ? TokenizedString::Mode::kCamelCase
           : TokenizedString::Mode::kWords;
 

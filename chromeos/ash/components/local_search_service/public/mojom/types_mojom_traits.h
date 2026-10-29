@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_LOCAL_SEARCH_SERVICE_PUBLIC_MOJOM_TYPES_MOJOM_TRAITS_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "chromeos/ash/components/local_search_service/public/mojom/local_search_service.mojom-shared.h"
@@ -64,8 +65,9 @@ struct StructTraits<ash::local_search_service::mojom::DataDataView,
     return d.contents;
   }
 
-  static const std::string& locale(const ash::local_search_service::Data& d) {
-    return d.locale;
+  // An unset locale is sent as an empty string.
+  static std::string_view locale(const ash::local_search_service::Data& d) {
+    return d.locale ? d.locale->tag_string() : std::string_view();
   }
 
   static bool Read(ash::local_search_service::mojom::DataDataView data,

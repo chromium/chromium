@@ -9,6 +9,8 @@
 #include "ash/public/cpp/network_config_service.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
 #include "base/system/sys_info.h"
 #include "base/uuid.h"
@@ -44,7 +46,7 @@ PhoneHubStructuredMetricsLogger::PhoneHubStructuredMetricsLogger(
     : bluetooth_stack_(floss::features::IsFlossEnabled()
                            ? BluetoothStack::kFloss
                            : BluetoothStack::kBlueZ),
-      chromebook_locale_(base::i18n::GetConfiguredLocale()),
+      chromebook_locale_(base::i18n::GetDefaultIcuLocale()),
       pref_service_(pref_service) {
   ash::GetNetworkConfigService(
       cros_network_config_.BindNewPipeAndPassReceiver());
@@ -400,7 +402,7 @@ void PhoneHubStructuredMetricsLogger::UploadDeviceInfo() {
   metric.SetConnectionMedium(static_cast<int>(medium_));
   metric.SetChromebookBluetoothStack(static_cast<int>(bluetooth_stack_));
   metric.SetDevicesNetworkState(static_cast<int>(network_state_));
-  metric.SetChromebookLocale(chromebook_locale_);
+  metric.SetChromebookLocale(std::string(chromebook_locale_.tag_string()));
   metric.SetChromebookPseudonymousId(
       pref_service_->GetString(prefs::kChromebookPseudonymousId));
 

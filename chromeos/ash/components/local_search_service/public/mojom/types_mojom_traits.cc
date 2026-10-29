@@ -4,6 +4,9 @@
 
 #include "chromeos/ash/components/local_search_service/public/mojom/types_mojom_traits.h"
 
+#include <string_view>
+
+#include "base/i18n/tag_converters.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 
@@ -98,12 +101,16 @@ bool StructTraits<ash::local_search_service::mojom::DataDataView,
          ash::local_search_service::Data* out) {
   std::string id;
   std::vector<ash::local_search_service::Content> contents;
-  std::string locale;
+  std::string_view locale;
   if (!data.ReadId(&id) || !data.ReadContents(&contents) ||
       !data.ReadLocale(&locale))
     return false;
 
-  *out = ash::local_search_service::Data(id, contents, locale);
+  // An empty or malformed locale is mapped to an unset locale (i.e. the system
+  // locale will be used) instead of failing deserialization, because clients
+  // may forward arbitrary locale strings, e.g. from the Help App.
+  *out = ash::local_search_service::Data(
+      id, contents, base::i18n::GetLanguageTagFromString(locale));
   return true;
 }
 

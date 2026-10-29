@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/local_search_service/public/mojom/types_mojom_traits.h"
+
+#include <optional>
+
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/local_search_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -45,7 +49,7 @@ TEST(LocalSearchMojomTraitsTest, DataTraits) {
 
   {
     // Non-empty locale.
-    Data input("id", contents, "en");
+    Data input("id", contents, base::i18n::GetKnownLanguageTag("en"));
     Data output;
 
     ASSERT_TRUE(
@@ -58,6 +62,27 @@ TEST(LocalSearchMojomTraitsTest, DataTraits) {
     EXPECT_EQ(input.contents[1].content, output.contents[1].content);
     EXPECT_EQ(input.contents[1].weight, output.contents[1].weight);
     EXPECT_EQ(input.locale, output.locale);
+  }
+
+  {
+    // Non-canonical locale string is normalized.
+    mojom::DataPtr input = mojom::Data::New("id", contents, "en_us");
+    Data output;
+
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<mojom::Data>(input, output));
+    EXPECT_EQ(output.locale, base::i18n::GetKnownLanguageTag("en-US"));
+  }
+
+  {
+    // Malformed locale string is treated as an unset locale.
+    mojom::DataPtr input = mojom::Data::New("id", contents, "invalid---tag");
+    Data output;
+
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<mojom::Data>(input, output));
+    EXPECT_EQ(input->id, output.id);
+    EXPECT_EQ(output.locale, std::nullopt);
   }
 }
 

@@ -8,6 +8,7 @@
 
 #include "ash/webui/help_app_ui/search/search_metadata.h"
 #include "base/functional/bind.h"
+#include "base/i18n/tag_converters.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 
@@ -31,8 +32,11 @@ std::vector<local_search_service::Data> ConceptVectorToDataVector(
       ++tag_num;
     }
 
-    data_list.emplace_back(search_concept->id, std::move(content_list),
-                           search_concept->tag_locale);
+    // TODO(crbug.com/542711615): Make `SearchConcept::tag_locale` a
+    // mojo_base.mojom.LanguageTag so that it doesn't need to be parsed here.
+    data_list.emplace_back(
+        search_concept->id, std::move(content_list),
+        base::i18n::GetLanguageTagFromString(search_concept->tag_locale));
   }
   return data_list;
 }

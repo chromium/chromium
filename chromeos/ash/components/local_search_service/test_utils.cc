@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace ash::local_search_service {
@@ -34,7 +35,7 @@ std::vector<Data> CreateTestData(
     // running a test.
     // TODO(jiameng): allow locale to be passed in if there's a need to use
     // non-en data in tests.
-    data.locale = "en";
+    data.locale = base::i18n::GetKnownLanguageTag("en");
     std::vector<Content>& contents = data.contents;
     for (const auto& content_with_id : item.second) {
       const Content content(content_with_id.first,
@@ -58,7 +59,7 @@ std::vector<Data> CreateTestData(
     // running a test.
     // TODO(jiameng): allow locale to be passed in if there's a need to use
     // non-en data in tests.
-    data.locale = "en";
+    data.locale = base::i18n::GetKnownLanguageTag("en");
     std::vector<Content>& contents = data.contents;
     for (const auto& weighted_content_with_id : item.second) {
       const Content content(

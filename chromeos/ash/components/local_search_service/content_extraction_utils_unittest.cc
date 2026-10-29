@@ -4,6 +4,10 @@
 
 #include "chromeos/ash/components/local_search_service/content_extraction_utils.h"
 
+#include <optional>
+
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/local_search_service/shared_structs.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -11,6 +15,8 @@
 namespace ash::local_search_service {
 
 namespace {
+
+using ::base::i18n::GetKnownLanguageTag;
 
 constexpr double kDefaultWeight = 1.0;
 
@@ -20,8 +26,8 @@ TEST(ContentExtractionUtilsTest, ConsolidateTokenTest) {
   {
     const std::u16string text(
         u"Check duplicate. Duplicate is ##$%^&##$%##$^##$ bad");
-    const auto tokens = ConsolidateToken(
-        ExtractContent("3rd test", text, kDefaultWeight, "en"));
+    const auto tokens = ConsolidateToken(ExtractContent(
+        "3rd test", text, kDefaultWeight, GetKnownLanguageTag("en")));
     EXPECT_EQ(tokens.size(), 3u);
 
     bool found = false;
@@ -78,8 +84,8 @@ TEST(ContentExtractionUtilsTest, ExtractContentTest) {
     const std::u16string text(
         u"Normal... English!!! paragraph: email@gmail.com. Here is a link: "
         u"https://google.com, ip=8.8.8.8");
-    const auto tokens =
-        ExtractContent("first test", text, kDefaultWeight / 2, "en");
+    const auto tokens = ExtractContent("first test", text, kDefaultWeight / 2,
+                                       GetKnownLanguageTag("en"));
     EXPECT_EQ(tokens.size(), 7u);
 
     EXPECT_EQ(tokens[1].content, u"english");
@@ -90,7 +96,8 @@ TEST(ContentExtractionUtilsTest, ExtractContentTest) {
   }
   {
     const std::u16string text(u"##$%#^你好!!!");
-    const auto tokens = ExtractContent("2nd test", text, kDefaultWeight, "zh");
+    const auto tokens = ExtractContent("2nd test", text, kDefaultWeight,
+                                       GetKnownLanguageTag("zh"));
     EXPECT_EQ(tokens.size(), 1u);
 
     EXPECT_EQ(tokens[0].content, u"你好");
@@ -101,14 +108,29 @@ TEST(ContentExtractionUtilsTest, ExtractContentTest) {
   }
 }
 
+TEST(ContentExtractionUtilsTest, NonLatinLocaleTest) {
+  EXPECT_TRUE(IsNonLatinLocale(GetKnownLanguageTag("zh")));
+  EXPECT_TRUE(IsNonLatinLocale(GetKnownLanguageTag("zh-TW")));
+  EXPECT_TRUE(IsNonLatinLocale(GetKnownLanguageTag("he")));
+
+  // The legacy "iw" code is canonicalized to "he".
+  const std::optional<base::i18n::LanguageTag> legacy_hebrew =
+      base::i18n::GetLanguageTagFromString("iw");
+  ASSERT_TRUE(legacy_hebrew);
+  EXPECT_TRUE(IsNonLatinLocale(*legacy_hebrew));
+
+  EXPECT_FALSE(IsNonLatinLocale(GetKnownLanguageTag("en-US")));
+  EXPECT_FALSE(IsNonLatinLocale(GetKnownLanguageTag("vi")));
+}
+
 TEST(ContentExtractionUtilsTest, StopwordTest) {
   // Non English.
-  EXPECT_FALSE(IsStopword(u"was", "vn"));
+  EXPECT_FALSE(IsStopword(u"was", GetKnownLanguageTag("vi")));
 
   // English.
-  EXPECT_TRUE(IsStopword(u"i", "en-US"));
-  EXPECT_TRUE(IsStopword(u"my", "en"));
-  EXPECT_FALSE(IsStopword(u"stopword", "en"));
+  EXPECT_TRUE(IsStopword(u"i", GetKnownLanguageTag("en-US")));
+  EXPECT_TRUE(IsStopword(u"my", GetKnownLanguageTag("en")));
+  EXPECT_FALSE(IsStopword(u"stopword", GetKnownLanguageTag("en")));
 }
 
 TEST(ContentExtractionUtilsTest, NormalizerTest) {

@@ -7,8 +7,11 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
+
+#include "base/i18n/language_tag.h"
 
 namespace ash::local_search_service {
 
@@ -66,8 +69,10 @@ struct Data {
   // Locale of the data. This is currently used by inverted index only.
   // If unset, we will use system configured locale.
   // TODO(jiameng): apply locale-dependent tokenization to linear map.
-  std::string locale;
-  Data(std::string id, std::vector<Content> contents, std::string locale = "");
+  std::optional<base::i18n::LanguageTag> locale;
+  Data(std::string id,
+       std::vector<Content> contents,
+       std::optional<base::i18n::LanguageTag> locale = std::nullopt);
   Data();
   Data(const Data& data);
   Data(Data&& data);

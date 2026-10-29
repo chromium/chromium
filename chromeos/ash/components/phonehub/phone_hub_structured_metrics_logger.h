@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/gtest_prod_util.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
@@ -121,7 +122,7 @@ class PhoneHubStructuredMetricsLogger
   // Chromebook information
   BluetoothStack bluetooth_stack_;
   NetworkState network_state_ = NetworkState::kUnknown;
-  std::string chromebook_locale_;
+  base::i18n::LanguageTag chromebook_locale_;
 
   std::string phone_hub_session_id_;
   Medium medium_ = Medium::kBluetooth;

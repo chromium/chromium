@@ -30,6 +30,7 @@ source_set("local_search_service") {
 
   deps = [
     "//base:i18n",
+    "//base/i18n:language_tag",
     "//cc",
     "//chromeos/ash/components/local_search_service/public/mojom",
     "//chromeos/ash/components/string_matching",
@@ -69,6 +70,7 @@ source_set("test_support") {
 
   deps = [
     ":local_search_service",
+    "//base/i18n:language_tag",
     "//testing/gtest",
   ]
 }
@@ -92,6 +94,7 @@ source_set("unit_tests") {
     ":local_search_service",
     ":local_search_service_provider",
     ":test_support",
+    "//base/i18n:language_tag",
     "//base/test:test_support",
     "//chromeos/ash/components/local_search_service/public/cpp",
     "//chromeos/ash/components/local_search_service/public/cpp:local_search_service_provider",
