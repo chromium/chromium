@@ -18313,6 +18313,26 @@
             ]
         }
     ],
+    "V8CodeCacheSourceHashSha256": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261029",
+                    "enable_features": [
+                        "V8Flag_code_cache_source_hash_sha256"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8DateTimePatternGeneratorCacheEviction": [
         {
             "platforms": [
