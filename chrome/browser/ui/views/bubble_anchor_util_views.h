@@ -43,8 +43,19 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(
     BrowserWindowInterface* browser,
     Anchor = Anchor::kLocationBar);
 
-// Returns the anchor configuration for the permission bubble.
+// Returns the anchor configuration for the permission bubble. `web_contents`
+// must not be null.
 AnchorConfiguration GetPermissionPromptBubbleAnchorConfiguration(
+    content::WebContents* web_contents);
+
+// Returns the rect, in screen coordinates, to anchor a permission bubble for
+// `web_contents` to when `GetPermissionPromptBubbleAnchorConfiguration()`
+// returns a null anchor. `web_contents` must not be null. If `web_contents`
+// has an overridden location bar (e.g. the Contextual Tasks side panel) or
+// isn't hosted in a browser window, the rect is at the top of `web_contents`
+// itself. Otherwise this returns `GetPageInfoAnchorRect()` for the window
+// hosting `web_contents`.
+gfx::Rect GetPermissionPromptBubbleAnchorRect(
     content::WebContents* web_contents);
 
 // Returns the anchor configuration for bubbles that are aligned to the app menu

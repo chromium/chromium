@@ -4,18 +4,24 @@
 
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 
+#include <optional>
+
+#include "base/check.h"
 #include "base/feature_list.h"
+#include "base/i18n/rtl.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/bubble_anchor_util.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/location_bar/location_bar_override_data.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/payments/payment_handler_web_flow_view_controller.h"
+#include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
@@ -23,7 +29,10 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/payments/core/features.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_highlighter.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
@@ -31,6 +40,60 @@
 // browser window (BrowserView).
 
 namespace bubble_anchor_util {
+
+namespace {
+
+// Returns the permission prompt anchor for a `WebContents` whose location bar
+// is overridden via `LocationBarOverrideData` (e.g. the Contextual Tasks side
+// panel). Only `location_bar` is consulted; this never falls back to the
+// hosting window's omnibox, since anchoring there would attribute the prompt
+// to the wrong surface. `location_bar` is null if it was destroyed before the
+// `WebContents`.
+AnchorConfiguration GetOverrideAnchorConfiguration(LocationBar* location_bar) {
+  if (!location_bar || !location_bar->IsDrawn()) {
+    return {};
+  }
+
+  ChipController* chip_controller = location_bar->GetChipController();
+  if (chip_controller && chip_controller->IsPermissionPromptChipVisible()) {
+    if (std::optional<AnchorConfiguration> chip_anchor =
+            location_bar->GetChipAnchor()) {
+      return *chip_anchor;
+    }
+  }
+
+  // Don't highlight by element ID here: IDs such as `kLocationIconElementId`
+  // would resolve to the hosting window's omnibox, not the override surface.
+  if (ui::TrackedElement* element = location_bar->GetAnchorOrNull()) {
+    return {views::BubbleAnchor(element), std::nullopt,
+            views::BubbleBorder::TOP_LEFT};
+  }
+
+  return {};
+}
+
+// Returns the window hosting `web_contents`: the tab's window, or for a non-tab
+// WebUI (e.g. the omnibox popup or the Contextual Tasks side panel) the window
+// it is embedded in.
+BrowserWindowInterface* GetBrowserForWebContents(
+    content::WebContents* web_contents) {
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  return tab ? tab->GetBrowserWindowInterface()
+             : webui::GetBrowserWindowInterface(web_contents);
+}
+
+// Returns a zero-size rect, in screen coordinates, at the top edge of
+// `web_contents`, inset from its leading edge like `GetPageInfoAnchorRect()`
+// is from the window's.
+gfx::Rect GetContentsTopLeadingRect(content::WebContents* web_contents) {
+  const gfx::Rect bounds = web_contents->GetContainerBounds();
+  const int x = base::i18n::IsRTL() ? bounds.right() - kNoToolbarLeftOffset
+                                    : bounds.x() + kNoToolbarLeftOffset;
+  return gfx::Rect(x, bounds.y(), 0, 0);
+}
+
+}  // namespace
 
 AnchorConfiguration GetPageInfoAnchorConfiguration(
     BrowserWindowInterface* browser,
@@ -120,26 +183,31 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(
 
 AnchorConfiguration GetPermissionPromptBubbleAnchorConfiguration(
     content::WebContents* web_contents) {
-  tabs::TabInterface* tab =
-      tabs::TabInterface::MaybeGetFromContents(web_contents);
-  BrowserWindowInterface* browser =
-      tab ? tab->GetBrowserWindowInterface()
-          : webui::GetBrowserWindowInterface(web_contents);
+  CHECK(web_contents);
+
+  // A `WebContents` with an overridden location bar is hosted outside the
+  // window's tab strip, so its prompts must anchor to that location bar only.
+  // `webui::GetBrowserWindowInterface()` below would otherwise resolve to the
+  // containing window and anchor to its omnibox.
+  if (auto* override_data =
+          location_bar::LocationBarOverrideData::FromWebContents(
+              web_contents)) {
+    return GetOverrideAnchorConfiguration(override_data->GetLocationBar());
+  }
+
+  BrowserWindowInterface* browser = GetBrowserForWebContents(web_contents);
   if (browser) {
-    LocationBar* location_bar =
-        location_bar::GetLocationBarForWebContents(web_contents);
+    // Overridden location bars are handled above, so use the window's own
+    // location bar. This includes non-tab WebUIs embedded in the window (e.g.
+    // the omnibox popup), for which `GetLocationBarForWebContents()` returns
+    // null.
+    BrowserWindow* window = BrowserWindow::FromBrowser(browser);
+    LocationBar* location_bar = window ? window->GetLocationBar() : nullptr;
     ChipController* chip_controller =
         location_bar ? location_bar->GetChipController() : nullptr;
     if (chip_controller && chip_controller->IsPermissionPromptChipVisible()) {
       if (auto chip_anchor = location_bar->GetChipAnchor()) {
         return *chip_anchor;
-      }
-    }
-    if (location_bar && location_bar->IsDrawn() &&
-        location_bar::LocationBarOverrideData::FromWebContents(web_contents)) {
-      if (ui::TrackedElement* element = location_bar->GetAnchorOrNull()) {
-        return {views::BubbleAnchor(element), std::nullopt,
-                views::BubbleBorder::TOP_LEFT};
       }
     }
     // TODO(crbug.com/565828687): Clean up location bar anchor resolution so
@@ -177,6 +245,27 @@ AnchorConfiguration GetPermissionPromptBubbleAnchorConfiguration(
   }
 
   return {};
+}
+
+gfx::Rect GetPermissionPromptBubbleAnchorRect(
+    content::WebContents* web_contents) {
+  CHECK(web_contents);
+
+  // As in `GetPermissionPromptBubbleAnchorConfiguration()`, never position a
+  // prompt for an overridden location bar relative to the hosting window's
+  // toolbar.
+  if (location_bar::LocationBarOverrideData::FromWebContents(web_contents)) {
+    return GetContentsTopLeadingRect(web_contents);
+  }
+
+  // `GetPageInfoAnchorRect()` requires a browser window. A `WebContents` that
+  // isn't hosted in one (e.g. Omnibox Everywhere while the profile has no
+  // browser window) is positioned relative to its own bounds instead.
+  BrowserWindowInterface* browser = GetBrowserForWebContents(web_contents);
+  if (!browser) {
+    return GetContentsTopLeadingRect(web_contents);
+  }
+  return GetPageInfoAnchorRect(browser);
 }
 
 AnchorConfiguration GetAppMenuAnchorConfiguration(

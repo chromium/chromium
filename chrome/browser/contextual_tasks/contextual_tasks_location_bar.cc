@@ -112,19 +112,31 @@ ContextualTasksLocationBar::GetChipAnchor() {
   PermissionChipInterface* request_chip =
       permission_dashboard_->GetRequestChip();
   if (request_chip && request_chip->GetVisible()) {
+    // `WebUIPermissionChip::GetAnchor()` falls back to the browser window's
+    // contents view when neither the chip nor the toolbar is tracked yet. That
+    // isn't on this surface, so only accept anchors tracked in this toolbar's
+    // context. Without a context nothing can be tracked in it, so return early
+    // rather than letting the chip take that fallback.
+    const ui::ElementContext context = GetElementContext();
+    if (!context) {
+      return std::nullopt;
+    }
+    views::BubbleAnchor anchor = request_chip->GetAnchor();
+    ui::TrackedElement* element = anchor.GetIfElement();
+    if (!element || element->context() != context) {
+      return std::nullopt;
+    }
     bubble_anchor_util::AnchorConfiguration configuration{
-        request_chip->GetAnchor(), std::nullopt, views::BubbleBorder::TOP_LEFT};
+        anchor, std::nullopt, views::BubbleBorder::TOP_LEFT};
     // Highlight the request chip by ID, looked up in the toolbar WebUI's
     // element context. Without the context, the ID would be resolved in the
     // browser window's context and highlight the main toolbar's chip whenever
     // that one is showing. Unlike relying on the anchor, highlighting by ID
     // also re-applies the highlight if the WebUI re-registers the chip while
     // the bubble is open.
-    if (ui::ElementContext context = GetElementContext()) {
-      configuration.highlighted_element =
-          PermissionChipView::kPermissionRequestChipElementId;
-      configuration.highlighted_element_context = context;
-    }
+    configuration.highlighted_element =
+        PermissionChipView::kPermissionRequestChipElementId;
+    configuration.highlighted_element_context = context;
     return configuration;
   }
   return std::nullopt;

@@ -162,7 +162,8 @@ void PermissionPromptBaseView::AnchorToPageInfoOrChip() {
     }
   }
   if (configuration.anchor.IsNull()) {
-    SetAnchorRect(bubble_anchor_util::GetPageInfoAnchorRect(GetBrowser()));
+    SetAnchorRect(bubble_anchor_util::GetPermissionPromptBubbleAnchorRect(
+        web_contents()));
   }
   SetArrow(configuration.bubble_arrow);
 }
