@@ -33,10 +33,12 @@
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_content_browser_client.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
@@ -292,6 +294,40 @@ TEST_F(ClipboardHostImplTest, GetSequenceNumber) {
   absl::uint128 id4;
   mojo_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste, &id4);
   EXPECT_NE(id3, id4);
+}
+
+// Returns `browser_context` as the user BrowserContext of any frame.
+class UserBrowserContextBrowserClient : public TestContentBrowserClient {
+ public:
+  explicit UserBrowserContextBrowserClient(BrowserContext* browser_context)
+      : browser_context_(browser_context) {}
+
+  // ContentBrowserClient:
+  BrowserContext* GetUserBrowserContext(
+      RenderFrameHost& render_frame_host) override {
+    return browser_context_;
+  }
+
+ private:
+  raw_ptr<BrowserContext> browser_context_;
+};
+
+// Tests that a clipboard endpoint for a frame uses the user BrowserContext that
+// the embedder returns, and its off-the-record state, instead of the
+// BrowserContext of the frame.
+TEST_F(ClipboardHostImplTest, EndpointUsesUserBrowserContext) {
+  TestBrowserContext user_browser_context;
+  user_browser_context.set_is_off_the_record(true);
+  UserBrowserContextBrowserClient browser_client(&user_browser_context);
+  ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
+
+  RenderFrameHost& rfh = *web_contents()->GetPrimaryMainFrame();
+  ASSERT_FALSE(rfh.GetBrowserContext()->IsOffTheRecord());
+
+  ClipboardEndpoint endpoint = CreateClipboardEndpoint(rfh);
+  EXPECT_EQ(endpoint.browser_context(), &user_browser_context);
+  ASSERT_TRUE(endpoint.data_transfer_endpoint());
+  EXPECT_TRUE(endpoint.data_transfer_endpoint()->off_the_record());
 }
 
 TEST_F(ClipboardHostImplTest,

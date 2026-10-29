@@ -1585,6 +1585,11 @@ ContentBrowserClient::MaybeOverrideSourceURLForClipboardAccess(
   return std::nullopt;
 }
 
+BrowserContext* ContentBrowserClient::GetUserBrowserContext(
+    RenderFrameHost& render_frame_host) {
+  return render_frame_host.GetBrowserContext();
+}
+
 bool ContentBrowserClient::IsClipboardPasteAllowed(
     content::RenderFrameHost* render_frame_host) {
   return true;

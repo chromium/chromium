@@ -25,7 +25,9 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fake_frame_widget.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/drag_drop_client.h"
@@ -1210,6 +1212,73 @@ TEST_F(WebContentsViewAuraTest, StartDraggingBlockedByPolicy) {
   EXPECT_FALSE(view->drag_security_info_.did_initiate());
 
   SetBrowserClientForTesting(old_client);
+}
+
+// Returns an off-the-record BrowserContext as the user BrowserContext of any
+// frame.
+class OffTheRecordUserContentBrowserClient : public ContentBrowserClient {
+ public:
+  OffTheRecordUserContentBrowserClient() {
+    browser_context_.set_is_off_the_record(true);
+  }
+
+  // ContentBrowserClient:
+  BrowserContext* GetUserBrowserContext(
+      RenderFrameHost& render_frame_host) override {
+    return &browser_context_;
+  }
+
+ private:
+  TestBrowserContext browser_context_;
+};
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Tests that the source endpoint of a drag uses the off-the-record state of the
+// user BrowserContext, instead of that of the WebContents.
+TEST_F(WebContentsViewAuraTest, StartDraggingUsesUserBrowserContext) {
+  NavigateAndCommit(GURL("https://google.com/"));
+  FocusWebContentsOnMainFrame();
+
+  OffTheRecordUserContentBrowserClient browser_client;
+  ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
+
+  TestDragDropClient drag_drop_client;
+  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+
+  WebContentsViewAura* view = GetView();
+  view->drag_in_progress_ = true;
+
+  DropData drop_data;
+  drop_data.text.emplace(u"Hello World!");
+  UpdateLeftMouseState(view->GetContentNativeView(),
+                       ui::EventType::kMousePressed);
+  view->StartDragging(*main_rfh(), drop_data,
+                      blink::DragOperationsMask::kDragOperationNone,
+                      gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
+                      blink::mojom::DragEventSourceInfo());
+
+  ui::OSExchangeData* exchange_data = drag_drop_client.GetDragDropData();
+  ASSERT_TRUE(exchange_data);
+  ASSERT_TRUE(exchange_data->GetSource());
+  EXPECT_TRUE(exchange_data->GetSource()->off_the_record());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+// Tests that the destination endpoint of a drag uses the off-the-record state
+// of the user BrowserContext, instead of that of the WebContents.
+TEST_F(WebContentsViewAuraTest, DragUpdatedUsesUserBrowserContext) {
+  NavigateAndCommit(GURL("https://google.com/"));
+  FocusWebContentsOnMainFrame();
+
+  WebContentsViewAura* view = GetView();
+  auto data = std::make_unique<ui::OSExchangeData>();
+  ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,
+                            ui::DragDropTypes::DRAG_COPY);
+  EXPECT_TRUE(view->OnDragUpdated(event).data_endpoint.IsUrlType());
+
+  OffTheRecordUserContentBrowserClient browser_client;
+  ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
+  EXPECT_FALSE(view->OnDragUpdated(event).data_endpoint.IsUrlType());
 }
 
 TEST_F(WebContentsViewAuraTest,

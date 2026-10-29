@@ -2703,6 +2703,16 @@ class CONTENT_EXPORT ContentBrowserClient {
       RenderFrameHost* render_frame_host,
       const GURL& original_url);
 
+  // Returns the BrowserContext of the user that `render_frame_host` is shown
+  // for. Its policies and off-the-record state apply to user data in the frame,
+  // e.g. clipboard and drag-and-drop data. By default, this is the
+  // BrowserContext of `render_frame_host`. Chrome returns the user profile for
+  // a Top Chrome WebUI in TopChromeWebUIProfile, which is shared by the windows
+  // of all profiles. Storage and processes still use the BrowserContext of the
+  // frame.
+  virtual BrowserContext* GetUserBrowserContext(
+      RenderFrameHost& render_frame_host);
+
   // Check whether paste is allowed. To paste, an implementation may require
   // a `render_frame_host` to have user activation or various permissions.
   // Primary checks should be done in the renderer, to allow for errors to

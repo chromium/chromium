@@ -2351,6 +2351,34 @@ TEST_F(ChromeContentBrowserClientTest,
   EXPECT_EQ(blink::mojom::AutoplayPolicy::kNoUserGestureRequired,
             web_prefs.autoplay_policy);
 }
+
+// Tests that the user BrowserContext of a WebContents in the Top Chrome WebUI
+// profile is the user profile set for it.
+TEST_F(ChromeContentBrowserClientTest,
+       TopChromeWebUIProfileUserBrowserContext) {
+  webui::ScopedTopChromeWebUIProfileForTesting scoped_profile;
+  Profile* top_chrome_webui_profile = webui::GetTopChromeWebUIProfile();
+  ASSERT_TRUE(top_chrome_webui_profile);
+
+  content::TestWebContentsFactory web_contents_factory;
+  content::WebContents* web_contents =
+      web_contents_factory.CreateWebContents(top_chrome_webui_profile);
+  content::RenderFrameHost& rfh = *web_contents->GetPrimaryMainFrame();
+  ChromeContentBrowserClient client;
+
+  // Without a user profile, the BrowserContext of the frame is used.
+  EXPECT_EQ(top_chrome_webui_profile, client.GetUserBrowserContext(rfh));
+
+  // With a user profile, the user profile is used.
+  webui::SetUserProfile(web_contents, profile());
+  EXPECT_EQ(profile(), client.GetUserBrowserContext(rfh));
+
+  // A frame in another profile uses its own BrowserContext.
+  content::WebContents* other_web_contents =
+      web_contents_factory.CreateWebContents(profile());
+  EXPECT_EQ(profile(), client.GetUserBrowserContext(
+                           *other_web_contents->GetPrimaryMainFrame()));
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 class WillComputeSiteForNavigationTest : public ChromeContentBrowserClientTest {

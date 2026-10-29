@@ -955,6 +955,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::RenderFrameHost* render_frame_host,
       const GURL& original_url) override;
 
+  content::BrowserContext* GetUserBrowserContext(
+      content::RenderFrameHost& render_frame_host) override;
+
   void IsClipboardPasteAllowedByPolicy(
       const content::ClipboardEndpoint& source,
       const content::ClipboardEndpoint& destination,

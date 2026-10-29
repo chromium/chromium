@@ -8243,6 +8243,20 @@ ChromeContentBrowserClient::MaybeOverrideSourceURLForClipboardAccess(
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 }
 
+content::BrowserContext* ChromeContentBrowserClient::GetUserBrowserContext(
+    content::RenderFrameHost& render_frame_host) {
+#if !BUILDFLAG(IS_ANDROID)
+  // When the WebContents of a Top Chrome WebUI is in TopChromeWebUIProfile,
+  // which is shared by the windows of all profiles, return its user profile.
+  // Otherwise, this is the profile of the WebContents.
+  if (Profile* user_profile = webui::GetUserProfile(
+          content::WebContents::FromRenderFrameHost(&render_frame_host))) {
+    return user_profile;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+  return render_frame_host.GetBrowserContext();
+}
+
 bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(render_frame_host);

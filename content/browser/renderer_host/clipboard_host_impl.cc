@@ -93,7 +93,8 @@ class FrameClipboardContext : public ClipboardHostImpl::Context {
   bool CanWrite() override { return true; }
 
   BrowserContext* GetBrowserContext() override {
-    return render_frame_host_->GetBrowserContext();
+    return GetContentClient()->browser()->GetUserBrowserContext(
+        *render_frame_host_);
   }
   StoragePartitionImpl* GetStoragePartition() override {
     return static_cast<StoragePartitionImpl*>(
