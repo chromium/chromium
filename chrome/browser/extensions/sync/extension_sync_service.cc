@@ -339,7 +339,8 @@ ExtensionSyncData ExtensionSyncService::CreateSyncData(
     NOTREACHED() << "Blocklisted extensions should not be getting synced.";
   }
 
-  bool incognito_enabled = extensions::util::IsIncognitoEnabled(id, profile_);
+  bool incognito_enabled =
+      extensions::util::IsIncognitoEnabledForSync(id, profile_);
   bool remote_install = extension_prefs->HasDisableReason(
       id, extensions::disable_reason::DISABLE_REMOTE_INSTALL);
   std::optional<bool> withhold_permissions;
@@ -688,7 +689,7 @@ void ExtensionSyncService::ApplySyncData(
   }
 
   // Update the incognito flag.
-  extensions::util::SetIsIncognitoEnabled(
+  extensions::util::SetIsIncognitoEnabledForSync(
       id, profile_, extension_sync_data.incognito_enabled());
   extension = nullptr;  // No longer safe to use.
 

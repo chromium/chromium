@@ -2084,6 +2084,7 @@ source_set("unit_tests") {
     "//components/bookmarks/test",
     "//components/browser_sync:switches",
     "//components/enterprise/isolated_mode",
+    "//components/enterprise/isolated_mode:test_support",
     "//components/gcm_driver:test_support",
     "//components/no_state_prefetch/browser",
     "//components/os_crypt/browser:test_support",

@@ -143,6 +143,96 @@ bool IsPolicyInstalled(const ExtensionId& extension_id,
   return Manifest::IsPolicyLocation(extension->location());
 }
 #endif
+
+void SetIsIncognitoEnabledImpl(const ExtensionId& extension_id,
+                               content::BrowserContext* context,
+                               bool enabled,
+                               bool isolated_mode) {
+  ExtensionRegistry* registry = ExtensionRegistry::Get(context);
+  const Extension* extension =
+      registry->GetExtensionById(extension_id, ExtensionRegistry::EVERYTHING);
+
+  if (extension) {
+    if (!util::CanBeIncognitoEnabled(extension)) {
+      return;
+    }
+
+    // TODO(crbug.com/356905053): Enable handling component extensions on
+    // desktop android.
+#if !BUILDFLAG(IS_ANDROID)
+    // TODO(treib,kalman): Should this be Manifest::IsComponentLocation(..)?
+    // (which also checks for kExternalComponent).
+    if (extension->location() == mojom::ManifestLocation::kComponent) {
+      // This shouldn't be called for component extensions unless it is called
+      // by sync, for syncable component extensions.
+      // See http://crbug.com/40716400 and associated CLs for the sordid
+      // history.
+      bool syncable = sync_helper::IsSyncableComponentExtension(extension);
+#if BUILDFLAG(IS_CHROMEOS)
+      // For some users, the file manager app somehow ended up being synced even
+      // though it's supposed to be unsyncable; see crbug.com/40452071. If the
+      // bad data ever gets cleaned up, this hack should be removed.
+      syncable = syncable || extension->id() == file_manager::kFileManagerAppId;
+#endif
+      CHECK(syncable, base::NotFatalUntil::M161);
+      CHECK(!isolated_mode);
+
+      // If we are here, make sure the we aren't trying to change the value.
+      CHECK_EQ(enabled, IsIncognitoEnabledForSync(extension_id, context),
+               base::NotFatalUntil::M161);
+      return;
+    }
+#endif  // !BUILDFLAG(IS_ANDROID)
+  }
+
+  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(context);
+#if BUILDFLAG(IS_CHROMEOS)
+  // Admin installed extensions should not be restartable, so we will apply the
+  // change when Chrome restarts.
+  if (IsPolicyInstalled(extension_id, context)) {
+    // TODO(crbug.com/573504328): Add isolated mode support.
+    extension_prefs->SetIsIncognitoEnabledDelayed(extension_id, enabled);
+    return;
+  }
+#endif
+  // Broadcast unloaded and loaded events to update browser state. Only bother
+  // if the value changed and the extension is actually enabled, since there is
+  // no UI otherwise.
+  const bool old_enabled =
+      isolated_mode ? extension_prefs->IsIsolatedModeEnabled(extension_id)
+                    : extension_prefs->IsIncognitoEnabled(extension_id);
+  if (enabled == old_enabled) {
+    return;
+  }
+
+  if (isolated_mode) {
+    extension_prefs->SetIsIsolatedModeEnabled(extension_id, enabled);
+  } else {
+    extension_prefs->SetIsIncognitoEnabled(extension_id, enabled);
+  }
+
+  // If the updated setting is not for the currently active mode
+  // (which can happen during sync), skip reloading the extension.
+  if (isolated_mode !=
+      ExtensionsBrowserClient::Get()->IsolatedModeReplacesIncognito(context)) {
+    return;
+  }
+
+  std::string id = ReloadExtensionIfEnabled(extension_id, context);
+
+  // Isolated mode pref is not syncable so we skip sync.
+  if (isolated_mode) {
+    return;
+  }
+
+  // Reloading the extension invalidates the |extension| pointer.
+  extension = registry->GetExtensionById(id, ExtensionRegistry::EVERYTHING);
+  if (extension) {
+    Profile* profile = Profile::FromBrowserContext(context);
+    ExtensionSyncService::Get(profile)->SyncExtensionChangeIfNeeded(*extension);
+  }
+}
+
 }  // namespace
 
 bool HasIsolatedStorage(const ExtensionId& extension_id,
@@ -188,78 +278,17 @@ bool IsExtensionForceInstalled(const std::string& extension_id,
 void SetIsIncognitoEnabled(const std::string& extension_id,
                            content::BrowserContext* context,
                            bool enabled) {
-  ExtensionRegistry* registry = ExtensionRegistry::Get(context);
-  const Extension* extension =
-      registry->GetExtensionById(extension_id, ExtensionRegistry::EVERYTHING);
+  SetIsIncognitoEnabledImpl(
+      extension_id, context, enabled,
+      /*isolated_mode=*/
+      ExtensionsBrowserClient::Get()->IsolatedModeReplacesIncognito(context));
+}
 
-  if (extension) {
-    if (!util::CanBeIncognitoEnabled(extension)) {
-      return;
-    }
-
-    // TODO(crbug.com/356905053): Enable handling component extensions on
-    // desktop android.
-#if !BUILDFLAG(IS_ANDROID)
-    // TODO(treib,kalman): Should this be Manifest::IsComponentLocation(..)?
-    // (which also checks for kExternalComponent).
-    if (extension->location() == mojom::ManifestLocation::kComponent) {
-      // This shouldn't be called for component extensions unless it is called
-      // by sync, for syncable component extensions.
-      // See http://crbug.com/40716400 and associated CLs for the sordid
-      // history.
-      bool syncable = sync_helper::IsSyncableComponentExtension(extension);
-#if BUILDFLAG(IS_CHROMEOS)
-      // For some users, the file manager app somehow ended up being synced even
-      // though it's supposed to be unsyncable; see crbug.com/40452071. If the
-      // bad data ever gets cleaned up, this hack should be removed.
-      syncable = syncable || extension->id() == file_manager::kFileManagerAppId;
-#endif
-      CHECK(syncable, base::NotFatalUntil::M161);
-
-      // If we are here, make sure the we aren't trying to change the value.
-      CHECK_EQ(enabled, IsIncognitoEnabled(extension_id, context),
-               base::NotFatalUntil::M161);
-      return;
-    }
-#endif  // !BUILDFLAG(IS_ANDROID)
-  }
-
-  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(context);
-#if BUILDFLAG(IS_CHROMEOS)
-  // Admin installed extensions should not be restartable, so we will apply the
-  // change when Chrome restarts.
-  if (IsPolicyInstalled(extension_id, context)) {
-    // TODO(crbug.com/573504328): Add isolated mode support.
-    extension_prefs->SetIsIncognitoEnabledDelayed(extension_id, enabled);
-    return;
-  }
-#endif
-  // Broadcast unloaded and loaded events to update browser state. Only bother
-  // if the value changed and the extension is actually enabled, since there is
-  // no UI otherwise.
-  const bool isolated_mode =
-      ExtensionsBrowserClient::Get()->IsolatedModeReplacesIncognito(context);
-  bool old_enabled = isolated_mode
-                         ? extension_prefs->IsIsolatedModeEnabled(extension_id)
-                         : extension_prefs->IsIncognitoEnabled(extension_id);
-  if (enabled == old_enabled) {
-    return;
-  }
-
-  if (isolated_mode) {
-    extension_prefs->SetIsIsolatedModeEnabled(extension_id, enabled);
-  } else {
-    extension_prefs->SetIsIncognitoEnabled(extension_id, enabled);
-  }
-
-  std::string id = ReloadExtensionIfEnabled(extension_id, context);
-
-  // Reloading the extension invalidates the |extension| pointer.
-  extension = registry->GetExtensionById(id, ExtensionRegistry::EVERYTHING);
-  if (extension) {
-    Profile* profile = Profile::FromBrowserContext(context);
-    ExtensionSyncService::Get(profile)->SyncExtensionChangeIfNeeded(*extension);
-  }
+void SetIsIncognitoEnabledForSync(const ExtensionId& extension_id,
+                                  content::BrowserContext* context,
+                                  bool enabled) {
+  SetIsIncognitoEnabledImpl(extension_id, context, enabled,
+                            /*isolated_mode=*/false);
 }
 
 void SetAllowFileAccess(const std::string& extension_id,

@@ -64,6 +64,14 @@ void SetIsIncognitoEnabled(const std::string& extension_id,
                            content::BrowserContext* context,
                            bool enabled);
 
+// Sets the incognito setting for `extension_id`. Unlike
+// `SetIsIncognitoEnabled`, this always modifies the incognito setting even when
+// Enterprise Isolated Mode replaces incognito (and skips reloading the
+// extension when Isolated Mode is active).
+void SetIsIncognitoEnabledForSync(const ExtensionId& extension_id,
+                                  content::BrowserContext* context,
+                                  bool enabled);
+
 // Sets whether `extension_id` can inject scripts into pages with file URLs.
 // Reloads the extension if it's enabled since this permission is applied at
 // loading time only. Note than an ExtensionService must exist.

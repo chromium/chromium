@@ -42,6 +42,7 @@
 #include "chrome/common/extensions/sync_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/features.h"
@@ -199,6 +200,21 @@ class ExtensionSyncServiceTest
     return AccountExtensionTracker::Get(profile())->GetAccountExtensionType(id);
   }
 };
+
+class ExtensionSyncServiceIsolatedModeTest
+    : public ExtensionSyncServiceTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool IsIsolatedMode() const { return GetParam(); }
+
+ private:
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_{IsIsolatedMode()};
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExtensionSyncServiceIsolatedModeTest,
+                         testing::Bool());
 
 TEST_F(ExtensionSyncServiceTest, DeferredSyncStartupPreInstalledComponent) {
   InitializeEmptyExtensionService();
@@ -791,7 +807,7 @@ TEST_F(ExtensionSyncServiceTest, GetSyncDataFilter) {
   ASSERT_EQ(list.size(), 0U);
 }
 
-TEST_F(ExtensionSyncServiceTest, GetSyncExtensionDataUserSettings) {
+TEST_P(ExtensionSyncServiceIsolatedModeTest, GetSyncExtensionDataUserSettings) {
   base::test::ScopedFeatureList feature_list(
       extensions_features::kExtensionInstallSiteAccessOptions);
   InitializeEmptyExtensionService();
@@ -841,7 +857,7 @@ TEST_F(ExtensionSyncServiceTest, GetSyncExtensionDataUserSettings) {
         ExtensionSyncData::CreateFromSyncData(list[0]);
     ASSERT_TRUE(data.get());
     EXPECT_FALSE(data->enabled());
-    EXPECT_TRUE(data->incognito_enabled());
+    EXPECT_EQ(data->incognito_enabled(), !IsIsolatedMode());
     EXPECT_TRUE(data->withhold_permissions().value());
   }
 
@@ -857,9 +873,26 @@ TEST_F(ExtensionSyncServiceTest, GetSyncExtensionDataUserSettings) {
         ExtensionSyncData::CreateFromSyncData(list[0]);
     ASSERT_TRUE(data.get());
     EXPECT_TRUE(data->enabled());
-    EXPECT_TRUE(data->incognito_enabled());
+    EXPECT_EQ(data->incognito_enabled(), !IsIsolatedMode());
     EXPECT_FALSE(data->withhold_permissions().value());
   }
+}
+
+TEST_P(ExtensionSyncServiceIsolatedModeTest,
+       SetIsIncognitoEnabledDoesNotSyncInIsolatedMode) {
+  InitializeEmptyExtensionService();
+  InstallCRX(data_dir().AppendASCII("good.crx"), INSTALL_NEW);
+  registrar()->DisableExtension(
+      kGoodCrx, {extensions::disable_reason::DISABLE_USER_ACTION});
+
+  auto processor = std::make_unique<syncer::FakeSyncChangeProcessor>();
+  syncer::FakeSyncChangeProcessor* raw_processor = processor.get();
+  extension_sync_service()->MergeDataAndStartSyncing(
+      syncer::EXTENSIONS, syncer::SyncDataList(), std::move(processor));
+  ASSERT_EQ(raw_processor->changes().size(), 1u);
+
+  extensions::util::SetIsIncognitoEnabled(kGoodCrx, profile(), true);
+  EXPECT_EQ(raw_processor->changes().size(), IsIsolatedMode() ? 1u : 2u);
 }
 
 TEST_F(ExtensionSyncServiceTest, SyncForUninstalledExternalExtension) {
@@ -1211,7 +1244,7 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataWrongType) {
   }
 }
 
-TEST_F(ExtensionSyncServiceTest, ProcessSyncDataSettings) {
+TEST_P(ExtensionSyncServiceIsolatedModeTest, ProcessSyncDataSettings) {
   InitializeEmptyExtensionService();
   extension_sync_service()->MergeDataAndStartSyncing(
       syncer::EXTENSIONS, syncer::SyncDataList(),
@@ -1220,6 +1253,8 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataSettings) {
   InstallCRX(data_dir().AppendASCII("good.crx"), INSTALL_NEW);
   EXPECT_TRUE(registrar()->IsExtensionEnabled(kGoodCrx));
   EXPECT_FALSE(extensions::util::IsIncognitoEnabled(kGoodCrx, profile()));
+  EXPECT_FALSE(
+      extensions::util::IsIncognitoEnabledForSync(kGoodCrx, profile()));
 
   sync_pb::EntitySpecifics specifics;
   sync_pb::ExtensionSpecifics* ext_specifics = specifics.mutable_extension();
@@ -1235,6 +1270,8 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataSettings) {
     extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
     EXPECT_FALSE(registrar()->IsExtensionEnabled(kGoodCrx));
     EXPECT_FALSE(extensions::util::IsIncognitoEnabled(kGoodCrx, profile()));
+    EXPECT_FALSE(
+        extensions::util::IsIncognitoEnabledForSync(kGoodCrx, profile()));
   }
 
   {
@@ -1246,7 +1283,10 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataSettings) {
 
     extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
     EXPECT_TRUE(registrar()->IsExtensionEnabled(kGoodCrx));
-    EXPECT_TRUE(extensions::util::IsIncognitoEnabled(kGoodCrx, profile()));
+    EXPECT_EQ(extensions::util::IsIncognitoEnabled(kGoodCrx, profile()),
+              !IsIsolatedMode());
+    EXPECT_TRUE(
+        extensions::util::IsIncognitoEnabledForSync(kGoodCrx, profile()));
   }
 
   {
@@ -1258,7 +1298,10 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataSettings) {
 
     extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
     EXPECT_FALSE(registrar()->IsExtensionEnabled(kGoodCrx));
-    EXPECT_TRUE(extensions::util::IsIncognitoEnabled(kGoodCrx, profile()));
+    EXPECT_EQ(extensions::util::IsIncognitoEnabled(kGoodCrx, profile()),
+              !IsIsolatedMode());
+    EXPECT_TRUE(
+        extensions::util::IsIncognitoEnabledForSync(kGoodCrx, profile()));
   }
 
   {
