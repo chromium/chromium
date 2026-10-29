@@ -65,11 +65,12 @@ settings-collapse-radio-button .settings-columned-section {
 
 :host-context([settings-refresh-2026]) {
   .settings-columned-section {
+    background-color: var(--color-settings-section-background);
     padding-bottom: 20px;
   }
 
   .settings-columned-section .column {
-    background-color: var(--color-settings-info-card-background);
+    background-color: var(--color-settings-columned-section-background);
     border-radius: var(--cr-card-border-radius);
     box-sizing: border-box;
     display: flex;

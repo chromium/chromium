@@ -43,10 +43,15 @@
     --cr-input-background-color: var(--cr-hover-background-color);
   }
 
+  cr-link-row {
+    --cr-link-row-start-icon-padding-end: 16px;
+  }
+
   .cr-row,
   cr-link-row,
   .settings-box,
-  settings-toggle-button {
+  settings-toggle-button,
+  settings-columned-section {
     --cr-actionable-row-background-color:
         var(--color-settings-section-background);
     --cr-section-vertical-padding: 16px;
