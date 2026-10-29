@@ -94,7 +94,6 @@
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/mock_translate_driver.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "components/version_info/channel.h"
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -133,10 +132,6 @@ class TestAutofillClientTemplate : public T {
   }
 
   const std::string& GetAppLocale() const override { return app_locale_; }
-
-  version_info::Channel GetChannel() const override {
-    return channel_for_testing_;
-  }
 
   bool IsOffTheRecord() const override { return is_off_the_record_; }
 
@@ -770,10 +765,6 @@ class TestAutofillClientTemplate : public T {
     app_locale_ = std::move(app_locale);
   }
 
-  void set_channel_for_testing(const version_info::Channel channel) {
-    channel_for_testing_ = channel;
-  }
-
   void set_is_off_the_record(bool is_off_the_record) {
     is_off_the_record_ = is_off_the_record;
   }
@@ -961,8 +952,6 @@ class TestAutofillClientTemplate : public T {
   bool format_for_large_keyboard_accessory_ = false;
 
   std::string app_locale_ = "en-US";
-
-  version_info::Channel channel_for_testing_ = version_info::Channel::UNKNOWN;
 
   bool is_off_the_record_ = false;
 

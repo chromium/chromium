@@ -1948,7 +1948,6 @@ static_library("test_support") {
     "//components/variations",
     "//components/variations:test_support",
     "//components/variations/net",
-    "//components/version_info",
     "//components/webdata/common",
     "//crypto",
     "//google_apis:test_support",
