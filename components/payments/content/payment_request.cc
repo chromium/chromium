@@ -567,6 +567,13 @@ void PaymentRequest::UpdateWith(mojom::PaymentDetailsPtr details) {
     return;
   }
 
+  bool is_resolving_promise_passed_into_show_method = !spec_->IsInitialized();
+  if (is_resolving_promise_passed_into_show_method && !details->error.empty()) {
+    log_.Error(errors::kInvalidState);
+    ResetAndDeleteThis();
+    return;
+  }
+
   if (state()->selected_app() && state()->IsPaymentAppInvoked() &&
       state()->selected_app()->IsWaitingForPaymentDetailsUpdate()) {
     state()->selected_app()->UpdateWith(
@@ -575,8 +582,6 @@ void PaymentRequest::UpdateWith(mojom::PaymentDetailsPtr details) {
             base::BindRepeating(&PaymentApp::IsValidForPaymentMethodIdentifier,
                                 state()->selected_app()->AsWeakPtr())));
   }
-
-  bool is_resolving_promise_passed_into_show_method = !spec_->IsInitialized();
 
   // spec_->UpdateWith() can synchronously trigger observers that destroy the
   // payment window's WebContents and delete `this`.

@@ -267,6 +267,78 @@ TEST_P(PaymentRequestValidationTest,
   EXPECT_FALSE(bad_message_observer.got_bad_message());
 }
 
+// Tests that updateWith() rejects and disconnects when a non-empty `error`
+// field is provided while resolving the promise passed into show().
+TEST_P(PaymentRequestValidationTest,
+       UpdateWithRejectsNonEmptyErrorForShowPromise) {
+  mojo::Remote<mojom::PaymentRequest> payment_request;
+  base::MakeSelfDeleting<PaymentRequest>(
+      CreateMockDelegate(), payment_request.BindNewPipeAndPassReceiver());
+
+  mojo::PendingRemote<mojom::PaymentRequestClient> client_remote;
+  auto dummy_receiver = client_remote.InitWithNewPipeAndPassReceiver();
+
+  std::vector<mojom::PaymentMethodDataPtr> method_data;
+  auto method = mojom::PaymentMethodData::New();
+  method->supported_method = "https://example.test/pay";
+  method->stringified_data = "{}";
+  method_data.push_back(std::move(method));
+
+  payment_request->Init(std::move(client_remote), std::move(method_data),
+                        CreateDummyDetails(), mojom::PaymentOptions::New());
+  payment_request->Show(/*wait_for_updated_details=*/true,
+                        /*had_user_activation=*/true);
+
+  auto updated_details = mojom::PaymentDetails::New();
+  updated_details->total = mojom::PaymentItem::New();
+  updated_details->total->label = "Total";
+  updated_details->total->amount = mojom::PaymentCurrencyAmount::New();
+  updated_details->total->amount->currency = "USD";
+  updated_details->total->amount->value = "2.00";
+  updated_details->error = "Cannot ship to this address";
+  payment_request->UpdateWith(std::move(updated_details));
+
+  payment_request.FlushForTesting();
+  EXPECT_FALSE(payment_request.is_connected());
+}
+
+// Tests that updateWith() allows a non-empty `error` field when updating
+// details after show() has already been initialized.
+TEST_P(PaymentRequestValidationTest, UpdateWithAllowsNonEmptyErrorAfterShow) {
+  mojo::Remote<mojom::PaymentRequest> payment_request;
+  base::MakeSelfDeleting<PaymentRequest>(
+      CreateMockDelegate(), payment_request.BindNewPipeAndPassReceiver());
+
+  mojo::PendingRemote<mojom::PaymentRequestClient> client_remote;
+  auto dummy_receiver = client_remote.InitWithNewPipeAndPassReceiver();
+
+  std::vector<mojom::PaymentMethodDataPtr> method_data;
+  auto method = mojom::PaymentMethodData::New();
+  method->supported_method = "https://example.test/pay";
+  method->stringified_data = "{}";
+  method_data.push_back(std::move(method));
+
+  auto options = mojom::PaymentOptions::New();
+  options->request_shipping = true;
+
+  payment_request->Init(std::move(client_remote), std::move(method_data),
+                        CreateDummyDetails(), std::move(options));
+  payment_request->Show(/*wait_for_updated_details=*/false,
+                        /*had_user_activation=*/true);
+
+  auto updated_details = mojom::PaymentDetails::New();
+  updated_details->total = mojom::PaymentItem::New();
+  updated_details->total->label = "Total";
+  updated_details->total->amount = mojom::PaymentCurrencyAmount::New();
+  updated_details->total->amount->currency = "USD";
+  updated_details->total->amount->value = "2.00";
+  updated_details->error = "Cannot ship to this address";
+  payment_request->UpdateWith(std::move(updated_details));
+
+  payment_request.FlushForTesting();
+  EXPECT_TRUE(payment_request.is_connected());
+}
+
 class MockObserverForTest : public PaymentRequest::ObserverForTest {
  public:
   MOCK_METHOD(void, OnErrorDisplayed, (), (override));
