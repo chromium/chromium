@@ -29,6 +29,7 @@
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
+#include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
@@ -702,7 +703,33 @@ scoped_refptr<StaticBitmapImage> CanvasNon2DResourceProvider::Snapshot(
   }
 
   if (!cached_snapshot_) {
-    cached_snapshot_ = resource_->Bitmap();
+    // The |release_callback| keeps a ref on this resource to ensure the backing
+    // shared image is kept alive until the lifetime of the image.
+    // Note that the code in CanvasResourceProvider::RecycleResource also uses
+    // the ref-count on the resource as a proxy for a read lock to allow
+    // recycling the resource once all refs have been released.
+    auto release_callback = base::BindOnce(
+        [](scoped_refptr<CanvasResourceSharedImage>&& resource,
+           const gpu::SyncToken& sync_token, bool lost_resource) {
+          CHECK(resource);
+
+          resource->WaitSyncToken(sync_token);
+          if (lost_resource) {
+            resource->NotifyResourceLost();
+          }
+
+          CanvasResource::DropRefOnOwningThread(std::move(resource));
+        },
+        resource_);
+
+    const auto& client_shared_image = resource_->GetSharedImage();
+
+    cached_snapshot_ =
+        AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
+            client_shared_image, resource_->sync_token(),
+            client_shared_image->alpha_type(), resource_->hdr_metadata_,
+            resource_->context_provider_wrapper_, resource_->owning_thread_ref_,
+            resource_->owning_thread_task_runner_, std::move(release_callback));
 
     // We'll record its content_id to be used by the FlushForImageListener.
     // This will be needed in EnsureResourceReadyForDraw(), but we are doing it
