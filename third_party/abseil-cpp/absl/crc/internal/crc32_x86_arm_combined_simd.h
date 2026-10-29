@@ -78,6 +78,17 @@
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace crc_internal {
+// Constants for switching between algorithms.
+// Chosen by comparing speed at different powers of 2.
+// Inputs shorter than kSmallCutoff are processed with a simple serial loop of
+// CRC32 instructions instead of dispatching to platform-specific SIMD code.
+constexpr size_t kSmallCutoff = 256;
+// Inputs shorter than kMediumCutoff may be split into multiple chunks and
+// processed in parallel (depending on the CPU we're running on) using
+// interleaved CRC32 instructions. Inputs larger than this are split into a
+// larger number of chunks and processed with interleaved CRC32 instructions and
+// PCLMULQDQ streams.
+constexpr size_t kMediumCutoff = 1024;
 
 #if defined(ABSL_CRC_INTERNAL_HAVE_ARM_SIMD)
 using V128 = uint64x2_t;

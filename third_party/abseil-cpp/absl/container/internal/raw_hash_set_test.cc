@@ -128,7 +128,7 @@ TEST(RawHashSetLayout, SmallCapacity) {
   {
     SCOPED_TRACE("capacity=1 no alignment after generation");
     constexpr size_t kSlotSize = 1;
-    RawHashSetLayout layout(1, kSlotSize, /*slot_align=*/1,
+    RawHashSetLayout layout(1, kSlotSize, /*slot_align_mask=*/0,
                             /*has_infoz=*/false, /*blocked_element_count=*/0);
     EXPECT_EQ(layout.control_offset(), NumGenerationBytes());
     EXPECT_EQ(layout.slot_offset(), NumGenerationBytes());
@@ -138,7 +138,7 @@ TEST(RawHashSetLayout, SmallCapacity) {
     SCOPED_TRACE("capacity=1 with alignment after generation");
     constexpr size_t kSlotSize = 8;
     constexpr size_t kAlignment = 4;
-    RawHashSetLayout layout(1, kSlotSize, kAlignment,
+    RawHashSetLayout layout(1, kSlotSize, /*slot_align_mask=*/kAlignment - 1,
                             /*has_infoz=*/false, /*blocked_element_count=*/0);
     EXPECT_EQ(layout.control_offset(),
               NumGenerationBytes() == 0 ? 0 : kAlignment);
@@ -152,11 +152,13 @@ TEST(RawHashSetLayout, CreateForSmallNonSooGrowth) {
     for (size_t slot_align : {1u, 2u, 4u, 8u, 16u}) {
       for (size_t slot_size : {slot_align, slot_align * 2, slot_align * 3}) {
         for (bool has_infoz : {false, true}) {
-          RawHashSetLayout expected(NextCapacity(size), slot_size, slot_align,
+          RawHashSetLayout expected(NextCapacity(size), slot_size,
+                                    /*slot_align_mask=*/slot_align - 1,
                                     has_infoz, /*blocked_element_count=*/0);
           RawHashSetLayout actual =
               RawHashSetLayout::CreateForSmallNonSooGrowth(
-                  size, slot_size, slot_align, has_infoz);
+                  size, slot_size, /*slot_align_mask=*/slot_align - 1,
+                  has_infoz);
           EXPECT_EQ(actual.control_offset(), expected.control_offset());
           EXPECT_EQ(actual.generation_offset(), expected.generation_offset());
           EXPECT_EQ(actual.slot_offset(), expected.slot_offset());
@@ -178,7 +180,8 @@ void VerifyMiddleSizeTableLayout(size_t capacity, size_t slot_size,
                << " padding: " << padding);
   ASSERT_GT(capacity, 1);
   ASSERT_LE(capacity, GrowthInfoLowerBound::kMaxGrowthLeftLowerBound);
-  RawHashSetLayout layout(capacity, slot_size, slot_align, has_infoz,
+  RawHashSetLayout layout(capacity, slot_size,
+                          /*slot_align_mask=*/slot_align - 1, has_infoz,
                           blocked_element_count);
   EXPECT_EQ(layout.control_offset(), padding + NumGenerationBytes());
   size_t expected_slot_offset =
@@ -214,7 +217,7 @@ TEST(RawHashSetLayout, MiddleSize) {
 TEST(RawHashSetLayout, SmallWithInfoZ) {
   {
     SCOPED_TRACE("capacity=1 no alignment after generation");
-    RawHashSetLayout layout(1, /*slot_size=*/1, /*slot_align=*/1,
+    RawHashSetLayout layout(1, /*slot_size=*/1, /*slot_align_mask=*/0,
                             /*has_infoz=*/true, /*blocked_element_count=*/0);
     EXPECT_EQ(layout.control_offset(),
               // growth_info is always 8 bytes for sampled tables.
@@ -227,7 +230,7 @@ TEST(RawHashSetLayout, SmallWithInfoZ) {
     constexpr size_t kAlignment = 8;
     constexpr size_t kCapacity = 3;
     RawHashSetLayout layout(kCapacity, /*slot_size=*/kSlotSize,
-                            /*slot_align=*/kAlignment,
+                            /*slot_align_mask=*/kAlignment - 1,
                             /*has_infoz=*/true, /*blocked_element_count=*/0);
     size_t padding = NumGenerationBytes() == 0 ? 1 : 0;
     padding += sizeof(HashtablezInfoHandle) == 4 ? 0 : 4;
@@ -253,7 +256,8 @@ void VerifyLargeTableLayout(size_t capacity, size_t slot_size,
                << " slot_align: " << slot_align << " has_infoz: " << has_infoz
                << " blocked_element_count: " << blocked_element_count);
   ASSERT_GT(capacity, GrowthInfoLowerBound::kMaxGrowthLeftLowerBound);
-  RawHashSetLayout layout(capacity, slot_size, slot_align, has_infoz,
+  RawHashSetLayout layout(capacity, slot_size,
+                          /*slot_align_mask=*/slot_align - 1, has_infoz,
                           blocked_element_count);
   size_t padding = NumGenerationBytes() == 0 ? 1 : 0;
   EXPECT_EQ(layout.control_offset(),
@@ -1346,6 +1350,12 @@ using NonMemcpyableSooIntCustomAllocTable =
 TEST(Table, EmptyFunctorOptimization) {
   static_assert(std::is_empty_v<std::equal_to<absl::string_view>>);
   static_assert(std::is_empty_v<std::allocator<int>>);
+#if defined(_MSC_VER) && _MSC_VER < 1929
+  // ABSL_ATTRIBUTE_NO_UNIQUE_ADDRESS expands to nothing for MSVC compatibility
+  // versions below 19.29 (e.g. clang with `-fms-compatibility-version=19.25`),
+  // so empty functors still take space.
+  GTEST_SKIP() << "ABSL_ATTRIBUTE_NO_UNIQUE_ADDRESS is a no-op.";
+#endif
 
   struct MockTable {
     uint64_t size;
@@ -2068,7 +2078,7 @@ TYPED_TEST(SooTest, ClearBug) {
   }
   ASSERT_EQ(capacity, t.capacity());
   intptr_t original = reinterpret_cast<intptr_t>(&*t.find(2));
-  t.clear();
+  t.erase(t.begin(), t.end());
   ASSERT_EQ(capacity, t.capacity());
   for (size_t i = 0; i < max_size; ++i) {
     t.insert(i);

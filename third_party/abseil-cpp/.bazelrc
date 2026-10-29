@@ -38,13 +38,19 @@ build:linux --per_file_copt=external/.*@-w
 build:linux --host_per_file_copt=external/.*@-w
 
 # Configure our Windows MSVC and ClangCL setup.
-common:windows-msvc --enable_runfiles
-build:windows-msvc --cxxopt=/std:c++17 --host_cxxopt=/std:c++17
-build:windows-msvc --copt=/WX
-build:windows-msvc --per_file_copt=external/.*@/w
-build:windows-msvc --host_per_file_copt=external/.*@/w
+common:windows-base --enable_runfiles
+build:windows-base --cxxopt=/std:c++17 --host_cxxopt=/std:c++17
+build:windows-base --copt=/WX
+build:windows-base --per_file_copt=external/.*@/w,/O1
+build:windows-base --host_per_file_copt=external/.*@/w,/O1
 
-build:windows-clangcl --config=windows-msvc
+common:windows-msvc --config=windows-base
+test:ci-windows-msvc --config=windows-msvc
+
+# Avoid building benchmarks in MSVC, as an optimization for our slowest builds.
+test:ci-windows-msvc --build_tests_only
+
+common:windows-clangcl --config=windows-base
 build:windows-clangcl --compiler=clang-cl
 build:windows-clangcl --copt=-Wno-microsoft-cast
 build:windows-clangcl --extra_execution_platforms=//:x64_windows-clang-cl
@@ -92,6 +98,8 @@ build:remote-cache --remote_download_minimal
 build:remote-cache --remote_download_regex=.*symbolize_test\.pdb$
 # Retry up for up to 15 minutes under heavy load (exponential backoff).
 build:remote-cache --remote_retries=20 --remote_retry_max_delay=60s
+# Use more parallel jobs for remote cache lookups and tests.
+build:remote-cache --jobs=HOST_CPUS*4
 
 build:remote-base --define=EXECUTOR=remote
 build:remote-base --remote_timeout=1200 --bes_timeout=600s

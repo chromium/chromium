@@ -813,7 +813,6 @@ cc_library(
     deps = [
         ":common",
         ":common_policy_traits",
-        ":compressed_tuple",
         ":container_memory",
         ":hash_function_defaults",
         ":hash_policy_traits",

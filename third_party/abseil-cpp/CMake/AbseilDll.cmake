@@ -519,6 +519,7 @@ set(ABSL_INTERNAL_TEST_DLL_FILES
   "status/internal/status_matchers.h"
   "strings/cordz_test_helpers.h"
   "strings/cord_test_helpers.h"
+  "time/mock_clock.h"
 )
 
 if(DEFINED CMAKE_CXX_STANDARD AND CMAKE_CXX_STANDARD_REQUIRED)

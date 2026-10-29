@@ -40,12 +40,15 @@
 //   push_back()
 //   emplace_back()
 //   pop_front()
+//   pop_back()
 //   front()
 //   back()
 //   swap()
 //   clear()
 //   begin(), end()
 //   cbegin(), cend()
+//   rbegin(), rend()
+//   crbegin(), crend()
 //
 // === ADVANCED USAGE
 //
@@ -156,12 +159,26 @@ class chunked_queue {
         *this = iterator_common(block->next());
     }
 
-    void IncrBy(size_t n) {
-      while (n > static_cast<size_t>(block->limit() - ptr)) {
-        n -= static_cast<size_t>(block->limit() - ptr);
-        *this = iterator_common(block->next());
+    void Decr() {
+      // If we are at the start of this block, make ptr point to the last
+      // element of the previous block. Unlike Incr(), which can advance one
+      // past the last block to form end(), Decr() cannot move before the first
+      // block (begin()), so a previous block must exist.
+      if (ptr == block->start()) {
+        ABSL_ASSERT(block->prev() != nullptr);
+        block = block->prev();
+        ptr = block->limit();
       }
-      ptr += n;
+      --ptr;
+    }
+
+    void DecrBy(size_t n) {
+      while (n > static_cast<size_t>(ptr - block->start())) {
+        n -= static_cast<size_t>(ptr - block->start());
+        block = block->prev();
+        ptr = block->limit();
+      }
+      ptr -= n;
     }
 
     Block* block = nullptr;
@@ -172,7 +189,7 @@ class chunked_queue {
   template <typename CT>
   class basic_iterator : public iterator_common {
    public:
-    using iterator_category = std::forward_iterator_tag;
+    using iterator_category = std::bidirectional_iterator_tag;
     using value_type = typename AllocatorTraits::value_type;
     using difference_type = typename AllocatorTraits::difference_type;
     using pointer = std::conditional_t<std::is_const_v<CT>,
@@ -200,6 +217,15 @@ class chunked_queue {
       ++*this;
       return t;
     }
+    basic_iterator& operator--() {
+      this->Decr();
+      return *this;
+    }
+    basic_iterator operator--(int) {
+      basic_iterator t = *this;
+      --*this;
+      return t;
+    }
 
    private:
     explicit basic_iterator(Block* b) : iterator_common(b) {}
@@ -216,6 +242,8 @@ class chunked_queue {
   using const_reference = const value_type&;
   using iterator = basic_iterator<T>;
   using const_iterator = basic_iterator<const T>;
+  using reverse_iterator = std::reverse_iterator<iterator>;
+  using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
   // Constructs an empty queue.
   chunked_queue() : chunked_queue(allocator_type()) {}
@@ -352,41 +380,15 @@ class chunked_queue {
                 base_internal::IsAtLeastInputIterator<Iter>::value>>
   void assign(Iter first, Iter last) {
     auto out = begin();
-    Block* prev_block = nullptr;
 
     // Overwrite existing elements.
-    for (; out != end() && first != last; ++first) {
-      // Track the previous block so we can correctly update tail_ if we stop
-      // exactly at a block boundary.
-      if (out.ptr + 1 == out.block->limit()) {
-        prev_block = out.block;
-      }
+    for (; out != end() && first != last; ++out, ++first) {
       *out = *first;
-      ++out;
     }
 
-    // If we stopped exactly at the start of a block (meaning the previous block
-    // was full), we must ensure tail_ points to the end of the previous block,
-    // not the start of the current (now empty and to be deleted) block.
-    // This maintains the invariant required by back() which assumes tail_
-    // never points to the start of a block (unless it's the only block).
-    if (!empty() && out.block != nullptr && out.ptr == out.block->start() &&
-        prev_block != nullptr) {
-      // Delete the current block and all subsequent blocks.
-      //
-      // NOTE: Calling EraseAllFrom on an iterator that points to the limit of
-      // the previous block will not delete any element from the previous block.
-      iterator prev_block_end(prev_block);
-      prev_block_end.ptr = prev_block->limit();
-      EraseAllFrom(prev_block_end);
-
-      // Update tail_ to point to the end of the previous block.
-      tail_ = prev_block_end;
-      prev_block->set_next(nullptr);
-    } else {
-      // Standard erase from the current position to the end.
-      EraseAllFrom(out);
-    }
+    // Erase any remaining existing elements from the current position to the
+    // end.
+    EraseAllFrom(out);
 
     // Append any remaining new elements.
     for (; first != last; ++first) {
@@ -443,6 +445,11 @@ class chunked_queue {
   // REQUIRES: !empty()
   void pop_front();
 
+  // Removes the last element of the container.
+  // Invalidates iterators to the removed element and `end()`.
+  // REQUIRES: !empty()
+  void pop_back();
+
   // Returns a reference to the first element in the container.
   // REQUIRES: !empty()
   T& front() {
@@ -497,6 +504,23 @@ class chunked_queue {
 
   const_iterator cbegin() const { return head_; }
   const_iterator cend() const { return tail_; }
+
+  reverse_iterator rbegin() { return reverse_iterator(end()); }
+  reverse_iterator rend() { return reverse_iterator(begin()); }
+
+  const_reverse_iterator rbegin() const {
+    return const_reverse_iterator(end());
+  }
+  const_reverse_iterator rend() const {
+    return const_reverse_iterator(begin());
+  }
+
+  const_reverse_iterator crbegin() const {
+    return const_reverse_iterator(cend());
+  }
+  const_reverse_iterator crend() const {
+    return const_reverse_iterator(cbegin());
+  }
 
   // Returns the allocator associated with the container.
   allocator_type get_allocator() const { return alloc_and_size_.allocator(); }
@@ -664,8 +688,8 @@ void chunked_queue<T, BLo, BHi, Allocator>::resize(size_t new_size) {
     return;
   }
   ABSL_ASSERT(new_size < size());
-  auto new_end = begin();
-  new_end.IncrBy(new_size);
+  auto new_end = end();
+  new_end.DecrBy(size() - new_size);
   ABSL_ASSERT(new_end != end());
   EraseAllFrom(new_end);
 }
@@ -724,6 +748,7 @@ T& chunked_queue<T, BLo, BHi, Allocator>::emplace_front(A&&... args) {
     tail_.ptr = b->limit();
   } else if (b != head_.block) {
     b->set_next(head_.block);
+    head_.block->set_prev(b);
   }
   head_.block = b;
   head_.ptr = storage;
@@ -741,6 +766,7 @@ inline void chunked_queue<T, BLo, BHi, Allocator>::AddTailBlock() {
   } else {
     ABSL_ASSERT(tail_.block);
     tail_.block->set_next(b);
+    b->set_prev(tail_.block);
   }
   tail_ = iterator(b);
 }
@@ -757,6 +783,15 @@ template <typename T, size_t BLo, size_t BHi, typename Allocator>
 inline void chunked_queue<T, BLo, BHi, Allocator>::EraseAllFrom(iterator i) {
   if (!i.block) {
     return;
+  }
+  // If `i` points to the start of a non-head block, all elements in `i.block`
+  // are being erased. Repoint `i` to the end of the previous block so that
+  // `i.block` is also deleted below and `tail_` points to `prev->limit()`
+  // rather than the start of an empty block (preserving the invariant required
+  // by `back()`, `pop_back()`, and `Incr()`).
+  if (i.ptr == i.block->start() && i.block->prev() != nullptr) {
+    i.block = i.block->prev();
+    i.ptr = i.block->limit();
   }
   ABSL_ASSERT(i.ptr);
   ABSL_ASSERT(i.block->limit());
@@ -802,7 +837,39 @@ inline void chunked_queue<T, BLo, BHi, Allocator>::pop_front() {
   if (head_.ptr == head_.block->limit()) {
     Block* n = head_.block->next();
     Block::Delete(head_.block, &alloc_and_size_.allocator());
+    n->set_prev(nullptr);
     head_ = iterator(n);
+  }
+}
+
+template <typename T, size_t BLo, size_t BHi, typename Allocator>
+inline void chunked_queue<T, BLo, BHi, Allocator>::pop_back() {
+  absl::base_internal::HardeningAssertNonEmpty(*this);
+  ABSL_ASSERT(tail_.block);
+  ABSL_ASSERT(tail_.ptr > tail_.block->start());
+
+  // Since tail_.ptr points just past the last element, repoint it to the last
+  // element (past the second-to-last one), and delete it.
+  --tail_.ptr;
+  AllocatorTraits::destroy(alloc_and_size_.allocator(), tail_.ptr);
+  --alloc_and_size_.size;
+
+  if (empty()) {
+    // Reset head and tail to the start of the (only) block.
+    ABSL_ASSERT(head_.block == tail_.block);
+    head_.ptr = tail_.ptr = head_.block->start();
+    return;
+  }
+
+  // If we deleted the only element from the last block, repoint the tail_ to
+  // the second-to-last block.
+  if (tail_.ptr == tail_.block->start()) {
+    Block* prev = tail_.block->prev();
+    ABSL_ASSERT(prev != nullptr);
+    Block::Delete(tail_.block, &alloc_and_size_.allocator());
+    prev->set_next(nullptr);
+    tail_.block = prev;
+    tail_.ptr = prev->limit();
   }
 }
 

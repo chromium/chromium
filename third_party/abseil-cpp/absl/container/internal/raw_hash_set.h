@@ -213,7 +213,6 @@
 #include "absl/base/prefetch.h"
 #include "absl/container/internal/common.h"  // IWYU pragma: export // for node_handle
 #include "absl/container/internal/common_policy_traits.h"
-#include "absl/container/internal/compressed_tuple.h"
 #include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/hash_function_defaults.h"
 #include "absl/container/internal/hash_policy_traits.h"
@@ -803,12 +802,8 @@ class GrowthInfoLowerBound {
 class HashtableInlineData {
   // The number of bits in the seed. It is big enough to ensure
   // non-determinism of iteration order. We store the seed inside a uint64_t
-  // together with size and other metadata. The seed occupies the entire second
-  // byte of `data_` so that on the critical path of lookups it can be loaded
-  // with a single byte load and passed to the hash function without any
-  // masking. When absl::Hash is inlined, it can have lower latency knowing that
-  // the high bits of the seed are zero.
-  static constexpr size_t kSeedBitCount = 8;
+  // together with size and other metadata.
+  static constexpr size_t kSeedBitCount = 5;
 
  public:
   static constexpr size_t kGrowthInfoLowerBoundBitCount = 8;
@@ -816,6 +811,11 @@ class HashtableInlineData {
   static constexpr size_t kMaxBlockedElementCount =
       (uint64_t{1} << kBlockedElementBitCount) - 1;
   static constexpr size_t kCapacityBitCount = 6;
+  static constexpr size_t kHasInfozShift = kCapacityBitCount;
+  // We have one unused bit so that the seed is within a single byte of `data_`.
+  // This allows `gbswap_64` in `absl::Hash` to simplify to a single shift.
+  static constexpr size_t kSeedShift =
+      kHasInfozShift + /*has_infoz*/ 1 + /*unused*/ 1;
   static constexpr size_t kSizeBitCount =
       64 -
       (kBlockedElementBitCount + kSeedBitCount + kGrowthInfoLowerBoundBitCount +
@@ -830,12 +830,8 @@ class HashtableInlineData {
               (has_tried_sampling ? kSooHasTriedSamplingMask : 0)) {}
 
   HashtableCapacity capacity() const {
-    // Reading the capacity via a single byte load (rather than a wide load of
-    // `data_` followed by masking) allows the compiler to also use a single
-    // byte load for the seed on the critical path of lookups. The high bits of
-    // the byte are not part of the capacity.
     return HashtableCapacity::FromRawData(
-        static_cast<uint8_t>(read_byte(kCapacityByteIndex) & kCapacityMask));
+        static_cast<uint8_t>(data_ & kCapacityMask));
   }
   bool is_small() const { return capacity().is_small(); }
 
@@ -857,6 +853,12 @@ class HashtableInlineData {
   void decrement_size() { data_ -= kSizeOneNoMetadata; }
   // Returns true if the table is empty.
   bool empty() const { return data_ < kSizeOneNoMetadata; }
+  // Returns true if a small table (capacity <= 1) is empty.
+  bool empty_when_small() const {
+    ABSL_SWISSTABLE_ASSERT(is_small());
+    ABSL_SWISSTABLE_ASSERT(size() <= 1);
+    return (data_ & kSizeOneNoMetadata) == 0;
+  }
 
   // Returns true if an empty SOO table has already queried should_sample_soo().
   bool soo_has_tried_sampling() const {
@@ -872,12 +874,7 @@ class HashtableInlineData {
         (data_ & kMetadataMask) | (static_cast<uint64_t>(size) << kSizeShift);
   }
 
-  PerTableSeed seed() const {
-    // The seed is stored in exactly one byte, so we read it with a single byte
-    // load. This lets the compiler feed it directly into the hash function
-    // without a masking instruction on the critical path of lookups.
-    return PerTableSeed(read_byte(kSeedByteIndex));
-  }
+  PerTableSeed seed() const { return PerTableSeed(data_ & kSeedMask); }
 
   void generate_new_seed() { set_seed(NextHashTableSeed()); }
 
@@ -885,7 +882,7 @@ class HashtableInlineData {
   // hashes use the same seed and can e.g. identify stuck bits accurately.
   void set_sampled_seed() { set_seed(kSampledSeed); }
 
-  bool is_sampled_seed() const { return seed().seed() == kSampledSeed; }
+  bool is_sampled_seed() const { return seed().seed() == kSeedMask; }
 
   // Returns true if the table has infoz.
   bool has_infoz() const {
@@ -965,28 +962,24 @@ class HashtableInlineData {
 
  private:
   // Bit layout of `data_` from MSB to LSB:
-  // (37 bits)      : size
+  // (40 bits)      : size
   // (8 bits)       : growth_info_lower_bound
   // (3 bits)       : blocked_element_count
-  // (8 bits)       : seed (the whole second byte)
+  // (5 bits)       : seed
   // (1 bit)        : unused
   // (1 bit)        : has_infoz
   // (6 bits)       : capacity (the low 6 bits of the first byte)
-  // Note: for size to overflow would require ~2^40 bytes of RAM, which is
-  // impractical. The seed and the capacity are deliberately byte-aligned and
-  // accessed with byte loads: this lets lookups avoid a wide load plus masking
-  // on the critical path. We don't split these components of `data_` into
-  // separate bit field elements because we get worse generated code that way
-  // (the compiler loads the whole word and extracts the fields).
+  // Note: for size to overflow would require ~2^43 bytes of RAM, which is
+  // impractical. We don't split these components of `data_` into separate bit
+  // field elements because we get worse generated code that way.
+  // TODO(ezb): if we have 41 bits for size, then on ARM, we will be able to use
+  // a single instruction for size increase/decrease.
 
   static constexpr size_t kSizeShift = 64 - kSizeBitCount;
   static constexpr uint64_t kSizeOneNoMetadata = uint64_t{1} << kSizeShift;
   static constexpr uint64_t kMetadataMask = kSizeOneNoMetadata - 1;
   static constexpr uint64_t kCapacityMask = (1 << kCapacityBitCount) - 1;
-  static constexpr size_t kHasInfozShift = kCapacityBitCount;
   static constexpr uint64_t kHasInfozMask = uint64_t{1} << kHasInfozShift;
-  static constexpr size_t kSeedShift =
-      kHasInfozShift + /*has_infoz*/ 1 + /*unused*/ 1;
   static constexpr uint64_t kSeedMask = ((uint64_t{1} << kSeedBitCount) - 1)
                                         << kSeedShift;
   static constexpr uint64_t kBlockedElementsShift = kSeedShift + kSeedBitCount;
@@ -1009,34 +1002,10 @@ class HashtableInlineData {
   // hashes use the same seed and can e.g. identify stuck bits accurately.
   static constexpr uint8_t kSampledSeed = (1 << kSeedBitCount) - 1;
 
-  // Indices of the bytes of `data_` that hold the capacity and the seed.
+  // Keep the seed within the second byte of `data_` so that `gbswap_64` on
+  // `data_ & kSeedMask` in `absl::Hash` simplifies to a single shift.
   static_assert(kSeedShift == 8);
-  static_assert(kSeedBitCount == 8);
-#ifdef ABSL_IS_LITTLE_ENDIAN
-  static constexpr size_t kCapacityByteIndex = 0;
-  static constexpr size_t kSeedByteIndex = 1;
-#else
-  static constexpr size_t kCapacityByteIndex = 7;
-  static constexpr size_t kSeedByteIndex = 6;
-#endif
-
-  // Returns the `index`-th byte of `data_`. Accessing the storage through
-  // `unsigned char` is always allowed by the aliasing rules. Note: on x86, the
-  // reason we read the data this way rather than using bit manipulations as
-  // with other fields is that it results in better generated code (we get
-  // movzbl to read the seed this way). On other architectures (such as
-  // AArch64), byte loads prevent load-pair (ldp) of `inline_data_` with
-  // `control_` and introduce narrow loads after 64-bit stores to `data_`, so we
-  // use bit shifts on the wide word instead.
-  uint8_t read_byte(size_t index) const {
-#if defined(__x86_64__) || defined(_M_X64) || defined(__i386__) || \
-    defined(_M_IX86)
-    return reinterpret_cast<const unsigned char*>(&data_)[index];
-#else
-    return static_cast<uint8_t>(little_endian::FromHost64(data_) >>
-                                (8 * index));
-#endif
-  }
+  static_assert(kSeedShift + kSeedBitCount <= 16);
 
   // Returns the bits of `data_` that encode `capacity`.
   static uint64_t CapacityBits(HashtableCapacity capacity) {
@@ -1250,17 +1219,26 @@ constexpr size_t AlignUpTo(size_t offset, size_t align) {
   return (offset + align - 1) & (~align + 1);
 }
 
+// Same as `AlignUpTo(offset, align_mask + 1)`. `align_mask` must be one less
+// than a power of two. Taking the mask avoids negating the alignment (and with
+// BMI1 the computation is just `add` + `andn`).
+constexpr size_t AlignUpToMask(size_t offset, size_t align_mask) {
+  return (offset + align_mask) & ~align_mask;
+}
+
 // Helper class for computing offsets and allocation size of hash set fields.
 class RawHashSetLayout {
  public:
+  // `slot_align_mask` is `alignof(slot_type) - 1`.
   explicit RawHashSetLayout(size_t capacity, size_t slot_size,
-                            size_t slot_align, bool has_infoz,
+                            size_t slot_align_mask, bool has_infoz,
                             size_t blocked_element_count)
       : control_offset_(MetadataBeforeControlSize(has_infoz, capacity)),
         generation_offset_(control_offset_ - NumGenerationBytes()),
         slot_offset_(control_offset_ + NumControlBytes(capacity)) {
     ABSL_SWISSTABLE_ASSERT(IsValidCapacity(capacity));
-    size_t aligned_slot_offset = AlignUpTo(slot_offset_, slot_align);
+    size_t aligned_slot_offset =
+        AlignUpToMask(slot_offset_, slot_align_mask);
     size_t slot_array_padding = aligned_slot_offset - slot_offset_;
     slot_offset_ = aligned_slot_offset;
     ABSL_SWISSTABLE_ASSERT(
@@ -1277,7 +1255,7 @@ class RawHashSetLayout {
   // 0 -> 1 (`size == 0`) or 1 -> 3 (`size == 1`).
   static RawHashSetLayout CreateForSmallNonSooGrowth(size_t size,
                                                      size_t slot_size,
-                                                     size_t slot_align,
+                                                     size_t slot_align_mask,
                                                      bool has_infoz);
 
   // Returns precomputed offset from the start of the backing allocation of
@@ -1415,16 +1393,18 @@ class CommonFields : public CommonFieldsGenerationInfo {
 
   void set_control(ctrl_t* c) { heap_or_soo_.control().set(c); }
 
-  // Note: we can't use slots() because Qt defines "slots" as a macro.
   // Returns pointer to the slots of a table with explicit capacity that must be
   // equal to the actual capacity of the table.
   // Table must be large.
-  void* slot_array(size_t capacity) const {
-    ABSL_SWISSTABLE_ASSERT(capacity == this->capacity());
+  // Note: we can't use `slots()` because Qt defines `slots` as a macro.
+  // Note: we take `ctrl` as a parameter so that raw_hash_set can benefit from
+  // the separate storage assumption.
+  void* slot_array(ctrl_t* ctrl, size_t capacity) const {
+    ABSL_SWISSTABLE_ASSERT(ctrl == this->control());
     ABSL_ASSUME(capacity > kMaxSmallCapacity);
-    ctrl_t* ctrl = control();
     return ctrl + NumControlBytesForLargeTable(capacity);
   }
+  void* slot_array(size_t cap) const { return slot_array(control(), cap); }
   // Returns pointer to the single slot of a table with capacity 1.
   void* single_non_soo_slot() const {
     ABSL_SWISSTABLE_ASSERT(capacity() == 1);
@@ -1456,6 +1436,7 @@ class CommonFields : public CommonFieldsGenerationInfo {
     inline_data_.decrement_size();
   }
   bool empty() const { return inline_data_.empty(); }
+  bool empty_when_small() const { return inline_data_.empty_when_small(); }
   void set_soo_has_tried_sampling() {
     inline_data_.set_soo_has_tried_sampling();
   }
@@ -1603,7 +1584,8 @@ class CommonFields : public CommonFieldsGenerationInfo {
 
   // The size of the backing array allocation.
   size_t alloc_size(size_t slot_size, size_t slot_align) const {
-    return RawHashSetLayout(capacity(), slot_size, slot_align, has_infoz(),
+    return RawHashSetLayout(capacity(), slot_size,
+                            /*slot_align_mask=*/slot_align - 1, has_infoz(),
                             blocked_element_count())
         .alloc_size();
   }
@@ -1963,18 +1945,14 @@ constexpr size_t kProbedElementIndexSentinel = ~size_t{};
 // Implementation detail of transfer_unprobed_elements_to_next_capacity_fn.
 // Tries to find the new index for an element with `hash` for growth to the next
 // capacity.
-// Returns kProbedElementIndexSentinel if full probing is required.
+// Returns kProbedElementIndexSentinel if element was probed in the table before
+// growth.
 //
 // If element is located in the first probing group in the table before growth,
 // returns one of two positions: `old_index` or `old_index + old_capacity + 1`.
-//
-// Otherwise, we will try to insert it into the first probe group of the new
-// table. We only attempt to do so if the first probe group is already
-// initialized.
 template <typename = void>
 inline size_t TryFindNewIndexWithoutProbing(size_t hash, size_t old_index,
                                             size_t old_capacity,
-                                            ctrl_t* new_ctrl,
                                             size_t new_capacity) {
   size_t h1 = H1(hash);
   // The first probe group starts with h1 & capacity.
@@ -1986,23 +1964,6 @@ inline size_t TryFindNewIndexWithoutProbing(size_t hash, size_t old_index,
     size_t new_index = (h1 + index_diff) & new_capacity;
     ABSL_ASSUME(new_index != kProbedElementIndexSentinel);
     return new_index;
-  }
-  ABSL_SWISSTABLE_ASSERT(((old_index - h1) & old_capacity) >= Group::kWidth);
-  // Try to insert element into the first probe group.
-  // new_ctrl is not yet fully initialized so we can't use regular search via
-  // find_first_non_full.
-
-  // We can search in the first probe group only if it is located in already
-  // initialized part of the table.
-  if (ABSL_PREDICT_FALSE((h1 & old_capacity) >= old_index)) {
-    return kProbedElementIndexSentinel;
-  }
-  size_t offset = h1 & new_capacity;
-  Group new_g(new_ctrl + offset);
-  if (auto mask = new_g.MaskNonFull(); ABSL_PREDICT_TRUE(mask)) {
-    size_t result = offset + mask.LowestBitSet();
-    ABSL_ASSUME(result != kProbedElementIndexSentinel);
-    return result;
   }
   return kProbedElementIndexSentinel;
 }
@@ -2058,15 +2019,20 @@ inline constexpr DeallocBackingArrayFn kStandardDeallocBackingArrayFn =
 // type-erased functions that want to do small amounts of type-specific
 // work.
 struct PolicyFunctions {
+  // 8  bytes
   uint32_t key_size;
   uint32_t value_size;
+
+  // 8  bytes
   uint32_t slot_size;
-  uint16_t slot_align;
+  // `alignof(slot_type) - 1`. Storing the mask instead of the alignment lets
+  // `AlignUpToMask` compute `(offset + mask) & ~mask` without negation.
+  uint16_t slot_align_mask;
   bool soo_enabled;
   bool is_hashtablez_enabled;
-
-  // Returns the pointer to the hash function stored in the set.
-  void* (*hash_fn)(CommonFields& common);
+  // 8  bytes
+  uint32_t hasher_offset;
+  uint32_t alloc_offset;
 
   // Returns the hash of the pointed-to slot.
   HashSlotFn hash_slot;
@@ -2074,9 +2040,6 @@ struct PolicyFunctions {
   // Transfers the contents of `count` slots from src_slot to dst_slot.
   // We use ability to transfer several slots in single group table growth.
   void (*transfer_n)(void* set, void* dst_slot, void* src_slot, size_t count);
-
-  // Returns the pointer to the CharAlloc stored in the set.
-  void* (*get_char_alloc)(CommonFields& common);
 
   // Allocates n bytes for the backing store for common.
   void* (*alloc)(void* alloc, size_t n);
@@ -2103,6 +2066,16 @@ struct PolicyFunctions {
   uint8_t soo_capacity() const {
     return static_cast<uint8_t>(soo_enabled ? SooCapacity() : 0);
   }
+
+  // Returns the pointer to the hash function stored in the set.
+  const void* hash_fn(const CommonFields& common) const {
+    return reinterpret_cast<const char*>(&common) + hasher_offset;
+  }
+
+  // Returns the pointer to the CharAlloc stored in the set.
+  void* get_char_alloc(CommonFields& common) const {
+    return reinterpret_cast<char*>(&common) + alloc_offset;
+  }
 };
 
 using DestroySlotFn = void (*)(void* set, void* slot);
@@ -2114,7 +2087,8 @@ using DestroySlotFn = void (*)(void* set, void* slot);
 // functions, so we do not want to include non-destructor related fields.
 struct DtorPolicy {
   uint32_t slot_size;
-  uint16_t slot_align;
+  // `alignof(slot_type) - 1`. See `PolicyFunctions::slot_align_mask`.
+  uint16_t slot_align_mask;
   DestroySlotFn destroy_slot;
 
   template <uint32_t kSlotSize, uint16_t kSlotAlign>
@@ -2133,15 +2107,17 @@ struct DtorPolicy {
   // to minimize the name length of static variables.
   template <uint32_t kSlotSize, uint16_t kSlotAlign>
   static const DtorPolicy& R() {
-    static constexpr DtorPolicy p = {kSlotSize, kSlotAlign,
-                                     /*destroy_slot=*/nullptr};
+    static constexpr DtorPolicy p = {
+        kSlotSize,
+        /*slot_align_mask=*/static_cast<uint16_t>(kSlotAlign - 1),
+        /*destroy_slot=*/nullptr};
     return p;
   }
   template <typename SetType>
   static const DtorPolicy& R() {
     static constexpr DtorPolicy p = {
         sizeof(typename SetType::slot_type),
-        alignof(typename SetType::slot_type),
+        /*slot_align_mask=*/alignof(typename SetType::slot_type) - 1,
         SetType::get_destroy_slot_fn(),
     };
     return p;
@@ -2277,17 +2253,16 @@ void ResizeAllocatedTableWithSeedChange(CommonFields& common,
                                         const PolicyFunctions& policy,
                                         size_t new_capacity);
 
-// ClearBackingArray clears the backing array, either modifying it in place,
-// or creating a new one based on the value of "reuse".
-// REQUIRES: c.capacity > MaxSmallCapacity().
+// Clears the backing array, either modifying it in place, or creating a new one
+// based on the value of "reuse". REQUIRES: c.capacity > MaxSmallCapacity().
 void ClearBackingArray(CommonFields& c, const PolicyFunctions& policy,
                        void* alloc, bool reuse);
 
 // Destroys all full slots in the backing array.
 // REQUIRES: !is_small(c.capacity()).
 // REQUIRES: destroy_slot != nullptr.
-void DestroySlots(CommonFields& c, size_t slot_size,
-                  DestroySlotFn destroy_slot);
+ABSL_ATTRIBUTE_NOINLINE void DestroySlots(CommonFields& c, size_t slot_size,
+                                          DestroySlotFn destroy_slot);
 
 // Deallocates the backing array and unregister infoz if necessary.
 // REQUIRES: c.capacity > raw_hash_set::DefaultCapacity().
@@ -2342,11 +2317,6 @@ ABSL_ATTRIBUTE_NOINLINE void TransferNRelocatable(void*, void* dst, void* src,
   memcpy(dst, src, SizeOfSlot * count);
 }
 
-// Returns a pointer to `common`. This is used to implement type erased
-// raw_hash_set::get_hash_ref_fn and raw_hash_set::get_alloc_ref_fn for the
-// empty class cases.
-void* GetRefForEmptyClass(CommonFields& common);
-
 // Given the hash of a value not currently in the table and the first group with
 // an empty slot in the probe sequence, finds a viable slot to insert it at.
 //
@@ -2385,94 +2355,21 @@ struct InstantiateRawHashSet {
       TypeList<Policy, Hash, Eq, Alloc>>::type;
 };
 
-template <class T>
-using HasTrivialCopyAndMove =
-    std::bool_constant<std::is_trivially_copy_constructible_v<T> &&
-                       std::is_trivially_move_constructible_v<T>>;
-
-// In principle, being trivially copy- and move-constructible is sufficient
-// (though not necessary) for proving copy and move equivalence. However, we
-// can't even test that for all types, because not all types are complete at the
-// point of evaluation of this trait. Therefore, we restrict this trait to a
-// subset of common types that we know to be complete at the point of evaluation
-// of this trait.
-template <class T>
-inline constexpr bool kIsMoveSameAsCopy = HasTrivialCopyAndMove<
-    std::conditional_t<(!std::is_class_v<T> && !std::is_union_v<T>) ||
-                           std::is_same_v<T, std::type_index> ||
-                           std::is_same_v<T, absl::string_view>,
-                       T, void>>::value;
-
-template <class T, class Traits>
-inline constexpr bool kIsMoveSameAsCopy<std::basic_string_view<T, Traits>> =
-    std::is_trivially_copy_constructible_v<std::basic_string_view<T, Traits>>;
-
-template <class T, size_t N>
-inline constexpr bool kIsMoveSameAsCopy<std::array<T, N>> =
-    kIsMoveSameAsCopy<T>;
-
-template <class T>
-inline constexpr bool kIsMoveSameAsCopy<std::optional<T>> =
-    kIsMoveSameAsCopy<T>;
-
-template <class T1, class T2>
-inline constexpr bool kIsMoveSameAsCopy<std::pair<T1, T2>> =
-    kIsMoveSameAsCopy<T1> && kIsMoveSameAsCopy<T2>;
-
-template <class... T>
-inline constexpr bool kIsMoveSameAsCopy<std::tuple<T...>> =
-    (true && ... && kIsMoveSameAsCopy<T>);
-
-template <class... T>
-inline constexpr bool kIsMoveSameAsCopy<std::variant<T...>> =
-    (true && ... && kIsMoveSameAsCopy<T>);
-
-template <class T, class Alloc = std::allocator<T>>
-using IsAllocMoveSameAsCopy =
-    std::bool_constant<kIsMoveSameAsCopy<std::conditional_t<
-        std::is_same_v<std::allocator<T>, typename std::allocator_traits<
-                                              Alloc>::template rebind_alloc<T>>,
-        T, void>>>;
-
-template <class T>
-using ShouldStructurallyPreferPassByValue = std::bool_constant<
-    // Check if size is a power of 2, to ensure cheap calls.
-    absl::has_single_bit(sizeof(T)) &&
-    // Check if copying 1-2 registers is enough. We don't want (for example) 32
-    // one-byte values to move around, since that sometimes results in poor
-    // codegen.
-    alignof(T) * 2 >= sizeof(T) &&
-    sizeof(T) <= sizeof(std::pair<void*, size_t>)>;
-
-template <class T>
-using ShouldSemanticallyPreferPassByValue =
-    std::bool_constant<std::is_trivially_move_constructible_v<T> &&
-                       std::is_trivially_destructible_v<T>>;
-
-// Checks the given type to see if it is a good candidate for accepting by value
-// instead of by rvalue-reference. This includes both a semantic constraint
-// (to ensure correctness), as well as a structural constraint (to ensure
-// performance).
-template <class T>
-using ShouldPreferPassByValue =
-    std::bool_constant<ShouldSemanticallyPreferPassByValue<T>::value &&
-                       ShouldStructurallyPreferPassByValue<std::conditional_t<
-                           std::is_void_v<T>, char, T>>::value>;
-
 // This is a 'struct' instead of 'using' in order to avoid eager evaluation for
 // callers that may be passing incomplete types.
 template <class T>
-struct AddConstRefIfExpensive
-    : std::conditional<ShouldPreferPassByValue<T>::value, T, const T&> {
+struct AddConstRefIfExpensiveToMove
+    : std::conditional_t<
+          type_traits_internal::ShouldPreferPassByValueOverRRef<T>::value,
+          type_identity<T>, std::add_lvalue_reference<std::add_const_t<T>>> {
   static_assert(std::is_same_v<remove_cvref_t<T>, T>,
                 "passed types must be unqualified");
 };
 
 template <class T, class Alloc = std::allocator<T>>
-using PreferredParamType =
-    typename std::conditional_t<IsAllocMoveSameAsCopy<T, Alloc>::value,
-                                AddConstRefIfExpensive<T>,
-                                std::add_rvalue_reference<T>>::type;
+using PreferredMoveParamType = typename std::conditional_t<
+    type_traits_internal::IsAllocMoveSameAsCopy<T, Alloc>::value,
+    AddConstRefIfExpensiveToMove<T>, std::add_rvalue_reference<T>>::type;
 
 // A SwissTable.
 //
@@ -2563,10 +2460,10 @@ class raw_hash_set {
   // For non-default hashers the seed is xor'ed with the hash value rather than
   // being used as a seed for the hash function. Because we require random
   // iteration order for small tables, the seed must have entropy in its low
-  // bits. The seed is loaded as a single byte from the inline data, so it
-  // already has low bits entropy and no shift is needed.
-  // TODO(ezb): get rid of kSeedShift.
-  constexpr static size_t kSeedShift = 0;
+  // bits. For default absl::Hash, the pre-shifted `data_ & kSeedMask` value can
+  // be passed directly without a right shift.
+  constexpr static size_t kSeedShift =
+      kIsAbslHash ? 0 : HashtableInlineData::kSeedShift;
 
   constexpr static bool SooEnabled() {
     return PolicyTraits::soo_enabled() &&
@@ -2593,18 +2490,15 @@ class raw_hash_set {
     return SizeToCapacity(MaxValidSize());
   }
 
-  // Whether `size` fits in the SOO capacity of this table.
-  bool fits_in_soo(size_t size) const {
-    return SooEnabled() && size <= SooCapacity();
-  }
   // Whether this table is in SOO mode or non-SOO mode.
   bool is_soo() const {
-    HashtableCapacity cap = maybe_invalid_capacity();
-    return cap.IsValid() && fits_in_soo(cap.capacity());
+    static_assert(SooCapacity() == kMaxSmallCapacity);
+    return SooEnabled() && maybe_invalid_capacity().is_small();
   }
-  bool is_full_soo() const { return is_soo() && !empty(); }
+  bool is_full_soo() const { return is_soo() && !empty_when_small(); }
 
   bool is_small() const { return common().is_small(); }
+  bool empty_when_small() const { return common().empty_when_small(); }
 
   // Give an early error when key_type is not hashable/eq.
   auto KeyTypeCanBeHashed(const Hash& h, const key_type& k) -> decltype(h(k));
@@ -2627,6 +2521,8 @@ class raw_hash_set {
       typename std::allocator_traits<Alloc>::template rebind_alloc<char>;
   using SlotAllocTraits = typename std::allocator_traits<
       allocator_type>::template rebind_traits<slot_type>;
+  constexpr static bool kIsDefaultAlloc =
+      std::is_same_v<CharAlloc, std::allocator<char>>;
 
   static_assert(std::is_lvalue_reference_v<reference>,
                 "Policy::element() must return a reference");
@@ -2641,9 +2537,9 @@ class raw_hash_set {
   // Bit-fields cannot be moved, and types with trivial copy and move
   // constructors should also not be moved.
   template <class T>
-  using EnableElementMoveFrom =
-      std::bool_constant<std::is_pointer_v<T*> &&
-                         !IsAllocMoveSameAsCopy<T, Alloc>::value>;
+  using EnableElementMoveFrom = std::bool_constant<
+      std::is_pointer_v<T*> &&
+      !type_traits_internal::IsAllocMoveSameAsCopy<T, Alloc>::value>;
 
   // RequiresNotInit is a workaround for gcc prior to 7.1.
   // See https://godbolt.org/g/Y4xsUh.
@@ -2833,13 +2729,16 @@ class raw_hash_set {
   raw_hash_set() noexcept(
       std::is_nothrow_default_constructible_v<hasher> &&
       std::is_nothrow_default_constructible_v<key_equal> &&
-      std::is_nothrow_default_constructible_v<allocator_type>) {}
+      std::is_nothrow_default_constructible_v<allocator_type>)
+      : hash_(), eq_(), alloc_() {}
 
   explicit raw_hash_set(size_t reservation_size, const hasher& hash = hasher(),
                         const key_equal& eq = key_equal(),
                         const allocator_type& alloc = allocator_type())
-      : settings_(CommonFields::CreateDefault<SooEnabled()>(), hash, eq,
-                  alloc) {
+      : common_(CommonFields::CreateDefault<SooEnabled()>()),
+        hash_(hash),
+        eq_(eq),
+        alloc_(alloc) {
     if (reservation_size > DefaultCapacity()) {
       ReserveTableToFitNewSize(common(), GetPolicyFunctions(),
                                reservation_size);
@@ -2985,11 +2884,13 @@ class raw_hash_set {
          // `that` must be left valid. If Hash is std::function<Key>, moving it
          // would create a nullptr functor that cannot be called.
          // Note: we avoid using exchange for better generated code.
-        settings_(PolicyTraits::transfer_uses_memcpy() || !that.is_full_soo()
-                      ? std::move(that.common())
-                      : CommonFields{full_soo_tag_t{},
-                                     that.common().soo_has_tried_sampling()},
-                  that.hash_ref(), that.eq_ref(), that.char_alloc_ref()) {
+        common_(PolicyTraits::transfer_uses_memcpy() || !that.is_full_soo()
+                    ? std::move(that.common())
+                    : CommonFields{full_soo_tag_t{},
+                                   that.common().soo_has_tried_sampling()}),
+        hash_(that.hash_ref()),
+        eq_(that.eq_ref()),
+        alloc_(that.char_alloc_ref()) {
     if constexpr (SooEnabled() && !PolicyTraits::transfer_uses_memcpy()) {
       if (that.is_full_soo()) {
         transfer(soo_slot(), that.soo_slot());
@@ -3001,8 +2902,10 @@ class raw_hash_set {
   }
 
   raw_hash_set(raw_hash_set&& that, const allocator_type& a)
-      : settings_(CommonFields::CreateDefault<SooEnabled()>(), that.hash_ref(),
-                  that.eq_ref(), a) {
+      : common_(CommonFields::CreateDefault<SooEnabled()>()),
+        hash_(that.hash_ref()),
+        eq_(that.eq_ref()),
+        alloc_(a) {
     if (CharAlloc(a) == that.char_alloc_ref()) {
       swap_common(that);
       common().annotate_for_bug_detection_on_move(that.common(),
@@ -3159,8 +3062,8 @@ class raw_hash_set {
   //
   //   flat_hash_map<std::string, int> s;
   //   s.insert({"abc", 42});
-  std::pair<iterator, bool> insert(PreferredParamType<init_type, Alloc> value)
-      ABSL_ATTRIBUTE_LIFETIME_BOUND
+  std::pair<iterator, bool> insert(PreferredMoveParamType<init_type, Alloc>
+                                       value) ABSL_ATTRIBUTE_LIFETIME_BOUND
 #if ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
     requires(!IsLifetimeBoundAssignmentFrom<init_type>::value)
 #endif
@@ -3168,8 +3071,9 @@ class raw_hash_set {
     return emplace(std::move(value));
   }
 #if ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
-  std::pair<iterator, bool> insert(PreferredParamType<init_type, Alloc> value
-                                       ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY_THIS)
+  std::pair<iterator, bool> insert(
+      PreferredMoveParamType<init_type, Alloc> value
+          ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY_THIS)
       ABSL_ATTRIBUTE_LIFETIME_BOUND
     requires(IsLifetimeBoundAssignmentFrom<init_type>::value)
   {
@@ -3203,7 +3107,8 @@ class raw_hash_set {
     return insert(value).first;
   }
 
-  iterator insert(const_iterator, PreferredParamType<init_type, Alloc> value)
+  iterator insert(const_iterator,
+                  PreferredMoveParamType<init_type, Alloc> value)
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return insert(std::move(value)).first;
   }
@@ -3420,7 +3325,7 @@ class raw_hash_set {
     };
 
     if (src.is_small()) {
-      if (src.empty()) return;
+      if (src.empty_when_small()) return;
       if (insert_slot(src.single_slot()))
         src.erase_meta_only_small();
       return;
@@ -3491,7 +3396,7 @@ class raw_hash_set {
   //   s.count("abc");
   template <class K = key_type>
   size_t count(const key_arg<K>& key) const {
-    return find(key) == end() ? 0 : 1;
+    return contains(key) ? 1 : 0;
   }
 
   // Issues CPU prefetch instructions for the memory needed to find or insert
@@ -3524,7 +3429,6 @@ class raw_hash_set {
   iterator find(const key_arg<K>& key) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     AssertOnFind(key);
     if (is_small()) return find_small(key);
-    prefetch_heap_block();
     return find_large<FindLargeKey<key_arg<K>>>(key);
   }
 
@@ -3662,17 +3566,17 @@ class raw_hash_set {
   };
 
   template <typename... Args>
-  void construct(slot_type* slot, Args&&... args) {
+  void construct(slot_type* __restrict slot, Args&&... args) {
     ReentranceGuard guard(common());
     allocator_type alloc(char_alloc_ref());
     PolicyTraits::construct(&alloc, slot, std::forward<Args>(args)...);
   }
-  void destroy(slot_type* slot) {
+  void destroy(slot_type* __restrict slot) {
     ReentranceGuard guard(common());
     allocator_type alloc(char_alloc_ref());
     PolicyTraits::destroy(&alloc, slot);
   }
-  void transfer(slot_type* to, slot_type* from) {
+  void transfer(slot_type* __restrict to, slot_type* __restrict from) {
     ReentranceGuard guard(common());
     allocator_type alloc(char_alloc_ref());
     PolicyTraits::transfer(&alloc, to, from);
@@ -3682,15 +3586,18 @@ class raw_hash_set {
   // SOO functionality.
   template <class K>
   ABSL_ATTRIBUTE_ALWAYS_INLINE iterator find_small(const K& key) {
-    return empty() || !equal_to(key, single_slot()) ? end() : single_iterator();
+    return empty_when_small() || !equal_to(key, single_slot())
+               ? end()
+               : single_iterator();
   }
 
   template <class K>
   iterator find_large(absl::type_identity_t<K> key) {
     static_assert(std::is_same_v<K, FindLargeKey<K>>);
+    prefetch_heap_block();
+    const size_t hash = hash_of(key);
     const size_t cap = common().capacity();
     ABSL_ASSUME(cap > kMaxSmallCapacity);
-    const size_t hash = hash_of(key);
     auto seq = probe(ProbeCapacity{cap}, hash);
     const h2_t h2 = H2(hash);
     ctrl_t* ctrl = control();
@@ -3753,12 +3660,11 @@ class raw_hash_set {
       return;
     }
     constexpr bool kIsStandardBackingArrayAlignment =
-        std::is_same_v<CharAlloc, std::allocator<char>> &&
-        BackingArrayAlignment(alignof(slot_type)) ==
-            kStandardBackingArrayAlignment;
+        kIsDefaultAlloc && BackingArrayAlignment(alignof(slot_type)) ==
+                               kStandardBackingArrayAlignment;
     if constexpr (SooEnabled()) {
-      if (is_small() &&
-          (PolicyTraits::template destroy_is_trivial<Alloc>() || empty())) {
+      if (is_small() && (PolicyTraits::template destroy_is_trivial<Alloc>() ||
+                         empty_when_small())) {
         return;
       }
     } else {
@@ -3920,7 +3826,7 @@ class raw_hash_set {
   find_or_prepare_insert_soo(const K& key) {
     bool force_sampling;
     slot_type* slot = single_slot();
-    if (empty()) {
+    if (empty_when_small()) {
       if (!should_sample_soo()) {
         common().set_full_soo();
         return {slot, true};
@@ -3950,7 +3856,7 @@ class raw_hash_set {
     if constexpr (SooEnabled()) {
       return find_or_prepare_insert_soo(key);
     }
-    if (!empty()) {
+    if (!empty_when_small()) {
       if (equal_to(key, single_slot())) {
         return {single_slot(), false};
       }
@@ -3967,8 +3873,8 @@ class raw_hash_set {
       absl::type_identity_t<K> key) {
     static_assert(std::is_same_v<K, FindLargeKey<K>>);
     prefetch_heap_block();
-    const size_t cap = capacity();
     const size_t hash = hash_of(key);
+    const size_t cap = capacity();
     auto seq = probe(ProbeCapacity{cap}, hash);
     const h2_t h2 = H2(hash);
     const ctrl_t* ctrl = control();
@@ -4041,10 +3947,9 @@ class raw_hash_set {
         std::is_same_v<key_equal, std::equal_to<key_type>>;
     if constexpr (kIsDebug && !kIsStringAbslHashEq && !kIsScalarAbslHashEq) {
       if (empty()) return;
-      AssertHashEqConsistentImpl(
-          common(), get_hash_ref_fn(common()), get_hash_slot_fn(),
-          sizeof(slot_type), SooEnabled(), hash_of(key), &key,
-          &equal_to_key_fn<K>);
+      AssertHashEqConsistentImpl(common(), &hash_ref(), get_hash_slot_fn(),
+                                 sizeof(slot_type), SooEnabled(), hash_of(key),
+                                 &key, &equal_to_key_fn<K>);
     }
   }
 
@@ -4054,8 +3959,6 @@ class raw_hash_set {
   template <class K>
   std::pair<slot_type*, bool> find_or_prepare_insert(const K& key) {
     AssertOnFind(key);
-    // TODO(ezb): add ABSL_SWISSTABLE_ASSUME_SEPARATE_STORAGE that the returned
-    // slot doesn't alias `this` for non-SOO tables with default allocators.
     return is_small() ? find_or_prepare_insert_small(key)
                       : find_or_prepare_insert_large<FindLargeKey<K>>(key);
   }
@@ -4084,6 +3987,19 @@ class raw_hash_set {
   // It is non-iterable, meaning that std::next(it) always points to end().
   iterator non_iterable_iterator_at_slot(slot_type* slot)
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    if constexpr (!SooEnabled() && kIsDefaultAlloc) {
+      // Assume that `slot` doesn't alias `this`. Example benefit: when a caller
+      // mutates an element via an iterator/reference returned by insert() or
+      // operator[], the compiler can prove that the store to the slot does not
+      // clobber CommonFields metadata (size, capacity, etc.) for subsequent
+      // operations on the same container.
+      // Example of benefitting user code:
+      //   m[k1] = v;
+      //   m[k2] = v;
+      // With this assumption, when the first lookup hits, the second lookup
+      // avoids reloading capacity after storing to `m[k1]`.
+      ABSL_SWISSTABLE_ASSUME_SEPARATE_STORAGE(slot, this);
+    }
     return {InsertIteratorControl(), slot, common().generation_ptr()};
   }
   iterator iterator_at(size_t i) ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -4104,20 +4020,20 @@ class raw_hash_set {
 
   // For string-like keys, we convert to string_view when calling find*_large()
   // operations to (a) avoid repeatedly (i) branching on SSO or (ii) calling
-  // strlen(), (b) share code between the string-like types, (c) avoid
-  // materializing string_view on the stack just to pass a reference to it. Note
-  // that we don't pass FindLargeKey to find*_small() to avoid unnecessarily
-  // constructing string_view for small empty tables. Note: we use
-  // type_identity_t and static_asserts to ensure that the key type in
-  // find*_large is FindLargeKey. (type_identity_t ensures that the template
-  // argument is not deduced and must be specified explicitly.)
-  // TODO(ezb): extend this to other types (e.g. small trivial types).
+  // strlen(), (b) share code between the string-like types. Note that we don't
+  // pass FindLargeKey to find*_small() to avoid unnecessarily constructing
+  // string_view for small empty tables. Note: we use type_identity_t and
+  // static_asserts to ensure that the key type in find*_large is FindLargeKey.
+  // (type_identity_t ensures that the template argument is not deduced and must
+  // be specified explicitly.)
   template <class K>
-  using FindLargeKey = std::conditional_t<
-      std::is_same_v<hasher, absl::container_internal::StringHash> &&
-          std::is_same_v<key_equal, absl::container_internal::StringEq> &&
-          std::is_convertible_v<const K&, absl::string_view>,
-      const absl::string_view, const K&>;
+  using FindLargeKey =
+      type_traits_internal::AddConstRefIfExpensiveToCopy<std::conditional_t<
+          std::is_same_v<hasher, absl::container_internal::StringHash> &&
+              std::is_same_v<key_equal, absl::container_internal::StringEq> &&
+              std::is_convertible_v<const absl::remove_cvref_t<K>&,
+                                    absl::string_view>,
+          absl::string_view, absl::remove_cvref_t<K>>>;
 
   // Prefetch the heap-allocated memory region to resolve potential TLB and
   // cache misses. This is intended to overlap with execution of calculating the
@@ -4129,8 +4045,8 @@ class raw_hash_set {
 #endif
   }
 
-  CommonFields& common() { return settings_.template get<0>(); }
-  const CommonFields& common() const { return settings_.template get<0>(); }
+  CommonFields& common() { return common_; }
+  const CommonFields& common() const { return common_; }
 
   // For use when the capacity is potentially invalid we return
   // HashtableCapacity directly.
@@ -4140,7 +4056,7 @@ class raw_hash_set {
   ctrl_t* control() const {
     ABSL_SWISSTABLE_ASSERT(!is_soo());
     ctrl_t* ctrl = common().control();
-    if constexpr (std::is_same_v<CharAlloc, std::allocator<char>>) {
+    if constexpr (kIsDefaultAlloc) {
       // Assume that the control bytes don't alias `this`. Example benefit: when
       // a caller mutates an element via an iterator returned by find(), the
       // compiler can now prove that the store to the slot does not clobber
@@ -4151,15 +4067,18 @@ class raw_hash_set {
       // With this assumption, the second lookup avoids reloading capacity.
       // Note: for custom allocators, `this` may be part of the same allocation
       // as the control bytes so we cannot make this assumption.
-      // TODO(ezb): we could move this assumption into CommonFields::control()
+      // Note: we could move this assumption into CommonFields::control()
       // if we template the type-erased functions on whether the allocator is
-      // default or not.
+      // default or not, but it adds a lot of complexity, and we can avoid
+      // reloads in raw_hash_set.cc functions in other ways.
       ABSL_SWISSTABLE_ASSUME_SEPARATE_STORAGE(ctrl, this);
     }
     return ctrl;
   }
   slot_type* slot_array(size_t capacity) const {
-    return static_cast<slot_type*>(common().slot_array(capacity));
+    // Note: we don't use common().slot_array(capacity) here because it misses
+    // the separate storage assumption in raw_hash_set::control().
+    return static_cast<slot_type*>(common().slot_array(control(), capacity));
   }
   slot_type* soo_slot() {
     ABSL_SWISSTABLE_ASSERT(is_soo());
@@ -4172,8 +4091,8 @@ class raw_hash_set {
   }
   slot_type* single_slot() {
     ABSL_SWISSTABLE_ASSERT(is_small());
-    // Note: we don't use common().single_non_soo_slot() here because
-    // control() is more efficient (due to separate storage assume).
+    // Note: we don't use common().single_non_soo_slot() here because it misses
+    // the separate storage assumption in raw_hash_set::control().
     return SooEnabled() ? soo_slot() : to_slot(control());
   }
   const slot_type* single_slot() const {
@@ -4197,31 +4116,41 @@ class raw_hash_set {
     return common().infoz();
   }
 
-  hasher& hash_ref() { return settings_.template get<1>(); }
-  const hasher& hash_ref() const { return settings_.template get<1>(); }
-  key_equal& eq_ref() { return settings_.template get<2>(); }
-  const key_equal& eq_ref() const { return settings_.template get<2>(); }
-  CharAlloc& char_alloc_ref() { return settings_.template get<3>(); }
-  const CharAlloc& char_alloc_ref() const {
-    return settings_.template get<3>();
-  }
+  hasher& hash_ref() { return hash_; }
+  const hasher& hash_ref() const { return hash_; }
+  key_equal& eq_ref() { return eq_; }
+  const key_equal& eq_ref() const { return eq_; }
+  CharAlloc& char_alloc_ref() { return alloc_; }
+  const CharAlloc& char_alloc_ref() const { return alloc_; }
 
-  static void* get_char_alloc_ref_fn(CommonFields& common) {
-    auto* h = reinterpret_cast<raw_hash_set*>(&common);
-    return &h->char_alloc_ref();
+  // Offsets of `hash_` and `alloc_` relative to `common_`. They are stored in
+  // `PolicyFunctions` so that type erased functions can access the hasher and
+  // the allocator given only a `CommonFields&`.
+  // `offsetof` on a non-standard-layout type (e.g. when `hasher` is
+  // not standard-layout) is conditionally-supported, but all the compilers we
+  // care about support it for direct non-static data members. Hence, we
+  // suppress the corresponding warning.
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Winvalid-offsetof"
+#endif
+  static constexpr size_t HasherOffset() {
+    return offsetof(raw_hash_set, hash_) - offsetof(raw_hash_set, common_);
   }
-  static void* get_hash_ref_fn(CommonFields& common) {
-    auto* h = reinterpret_cast<raw_hash_set*>(&common);
-    // TODO(b/397453582): Remove support for const hasher.
-    return const_cast<std::remove_const_t<hasher>*>(&h->hash_ref());
+  static constexpr size_t AllocOffset() {
+    return offsetof(raw_hash_set, alloc_) - offsetof(raw_hash_set, common_);
   }
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
+
   static constexpr HashSlotFn get_hash_slot_fn() {
     return PolicyTraits::template get_hash_slot_fn<hasher, kIsAbslHash,
                                                    kSeedShift>();
   }
 
-  static void transfer_n_slots_fn(void* set, void* dst, void* src,
-                                  size_t count) {
+  static void transfer_n_slots_fn(void* set, void* __restrict dst,
+                                  void* __restrict src, size_t count) {
     auto* src_slot = to_slot(src);
     auto* dst_slot = to_slot(dst);
 
@@ -4239,7 +4168,7 @@ class raw_hash_set {
         PolicyTraits::element(static_cast<slot_type*>(const_cast<void*>(src))));
   }
 
-  static void destroy_slot_fn_impl(void* set, void* slot) {
+  static void destroy_slot_fn_impl(void* set, void* __restrict slot) {
     auto* h = static_cast<raw_hash_set*>(set);
     h->destroy(to_slot(slot));
   }
@@ -4253,8 +4182,8 @@ class raw_hash_set {
   // by GetKey + Hash for memcpyable types.
   // TODO(b/382423690): Try to type erase for big slots: sizeof(slot_type) > 16.
   static void transfer_unprobed_elements_to_next_capacity_fn(
-      CommonFields& common, const ctrl_t* old_ctrl, void* probed_storage,
-      void* old_slots, size_t old_capacity,
+      CommonFields& __restrict common, const ctrl_t* old_ctrl,
+      void* probed_storage, void* __restrict old_slots, size_t old_capacity,
       void (*encode_probed_element)(void* probed_storage, size_t hash,
                                     size_t source_offset)) {
     ABSL_ASSUME(old_capacity + 1 >= Group::kWidth);
@@ -4284,7 +4213,7 @@ class raw_hash_set {
         // only one new bit of h1.
         size_t hash = set->hash_of(old_slot);
         size_t new_index = TryFindNewIndexWithoutProbing(
-            hash, old_index, old_capacity, new_ctrl, new_capacity);
+            hash, old_index, old_capacity, new_capacity);
         // Note that encode_probed_element is allowed to use old_ctrl buffer
         // till and included the old_index.
         if (ABSL_PREDICT_FALSE(new_index == kProbedElementIndexSentinel)) {
@@ -4332,37 +4261,45 @@ class raw_hash_set {
                   size_t{(std::numeric_limits<uint32_t>::max)()});
     static_assert(sizeof(value_type) <=
                   size_t{(std::numeric_limits<uint32_t>::max)()});
+    static_assert(HasherOffset() <=
+                  size_t{(std::numeric_limits<uint32_t>::max)()});
+    static_assert(AllocOffset() <=
+                  size_t{(std::numeric_limits<uint32_t>::max)()});
     static constexpr size_t kBackingArrayAlignment =
         BackingArrayAlignment(alignof(slot_type));
     static constexpr PolicyFunctions value = {
         static_cast<uint32_t>(sizeof(key_type)),
         static_cast<uint32_t>(sizeof(value_type)),
         static_cast<uint32_t>(sizeof(slot_type)),
-        static_cast<uint16_t>(alignof(slot_type)), SooEnabled(),
+        /*slot_align_mask=*/static_cast<uint16_t>(alignof(slot_type) - 1),
+        SooEnabled(),
         HashtablezForTableEnabled(),
-        // TODO(b/328722020): try to type erase
-        // for standard layout and alignof(Hash) <= alignof(CommonFields).
-        std::is_empty_v<hasher> ? &GetRefForEmptyClass
-                                : &raw_hash_set::get_hash_ref_fn,
+        static_cast<uint32_t>(HasherOffset()),
+        static_cast<uint32_t>(AllocOffset()),
         get_hash_slot_fn(),
         PolicyTraits::transfer_uses_memcpy()
             ? TransferNRelocatable<sizeof(slot_type)>
             : &raw_hash_set::transfer_n_slots_fn,
-        std::is_empty_v<Alloc> ? &GetRefForEmptyClass
-                               : &raw_hash_set::get_char_alloc_ref_fn,
         &AllocateBackingArray<kBackingArrayAlignment, CharAlloc>,
         get_dealloc_backing_array_fn(),
         &raw_hash_set::transfer_unprobed_elements_to_next_capacity_fn};
     return value;
   }
 
-  // Bundle together CommonFields plus other objects which might be empty.
-  // CompressedTuple will ensure that sizeof is not affected by any of the
-  // empty fields that occur after CommonFields.
-  absl::container_internal::CompressedTuple<CommonFields, hasher, key_equal,
-                                            CharAlloc>
-      settings_{CommonFields::CreateDefault<SooEnabled()>(), hasher{},
-                key_equal{}, CharAlloc{}};
+  // `common_` must be the first member: type erased functions cast
+  // `CommonFields*` to `raw_hash_set*`.
+  CommonFields common_ = CommonFields::CreateDefault<SooEnabled()>();
+  // ABSL_ATTRIBUTE_NO_UNIQUE_ADDRESS ensures that sizeof is not affected by any
+  // of the fields below if they are empty.
+  //
+  // Note: these members must not have default member initializers and must be
+  // initialized in the constructor mem-initializer lists instead. MSVC
+  // miscompiles `[[msvc::no_unique_address]]` members with default member
+  // initializers and overwrites bytes of the overlapping `common_`:
+  // https://developercommunity.visualstudio.com/t/miscompilation-with-msvcno-unique-address-and-defa/1699750
+  ABSL_ATTRIBUTE_NO_UNIQUE_ADDRESS hasher hash_;
+  ABSL_ATTRIBUTE_NO_UNIQUE_ADDRESS key_equal eq_;
+  ABSL_ATTRIBUTE_NO_UNIQUE_ADDRESS CharAlloc alloc_;
 };
 
 // Friend access for free functions in raw_hash_set.h.
@@ -4546,7 +4483,6 @@ extern template void Destruct</*kSooEnabled=*/false>(CommonFields& c,
 extern template size_t TryFindNewIndexWithoutProbing(size_t hash,
                                                      size_t old_index,
                                                      size_t old_capacity,
-                                                     ctrl_t* new_ctrl,
                                                      size_t new_capacity);
 extern template void AssertIsFull(const ctrl_t* const& ctrl, const void* slot,
                                   GenerationType generation,

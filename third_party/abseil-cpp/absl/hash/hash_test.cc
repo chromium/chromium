@@ -1502,4 +1502,22 @@ TYPED_TEST(TransparentPoisonedHashTest, PoisonHash) {
 #endif
 }
 
+struct RecursiveHashableType {
+  template <typename H>
+  friend H AbslHashValue(H h, const RecursiveHashableType& v) {
+    return H::combine(std::move(h), v.children);
+  }
+  friend bool operator==(const RecursiveHashableType& a,
+                         const RecursiveHashableType& b) {
+    return a.children == b.children;
+  }
+  absl::flat_hash_set<RecursiveHashableType> children;
+};
+
+TEST(HashTest, IncompleteRecursiveTypeInFlatHashSet) {
+  RecursiveHashableType root;
+  root.children.emplace();
+  EXPECT_EQ(absl::HashOf(root), absl::HashOf(root));
+}
+
 }  // namespace

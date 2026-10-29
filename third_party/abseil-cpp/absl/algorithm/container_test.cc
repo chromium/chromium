@@ -371,6 +371,12 @@ TEST_F(NonMutatingTest, LowerBound) {
   EXPECT_EQ(3, *i);
 }
 
+TEST_F(NonMutatingTest, LowerBoundTemporarySpan) {
+  int* i = absl::c_lower_bound(absl::MakeSpan(vector_), 3);
+  EXPECT_EQ(2, std::distance(vector_.data(), i));
+  EXPECT_EQ(3, *i);
+}
+
 TEST_F(NonMutatingTest, LowerBoundWithPredicate) {
   std::vector<int> v(vector_);
   std::sort(v.begin(), v.end(), std::greater<int>());
@@ -379,10 +385,24 @@ TEST_F(NonMutatingTest, LowerBoundWithPredicate) {
   EXPECT_EQ(3, *i);
 }
 
+TEST_F(NonMutatingTest, LowerBoundTemporarySpanWithPredicate) {
+  std::vector<int> v(vector_);
+  std::sort(v.begin(), v.end(), std::greater<int>());
+  int* i = absl::c_lower_bound(absl::MakeSpan(v), 3, std::greater<int>());
+  EXPECT_TRUE(i == v.data());
+  EXPECT_EQ(3, *i);
+}
+
 TEST_F(NonMutatingTest, UpperBound) {
   std::list<int>::iterator i = absl::c_upper_bound(sequence_, 1);
   ASSERT_TRUE(i != sequence_.end());
   EXPECT_EQ(1, std::distance(sequence_.begin(), i));
+  EXPECT_EQ(2, *i);
+}
+
+TEST_F(NonMutatingTest, UpperBoundTemporarySpan) {
+  int* i = absl::c_upper_bound(absl::MakeSpan(vector_), 1);
+  EXPECT_EQ(1, std::distance(vector_.data(), i));
   EXPECT_EQ(2, *i);
 }
 
@@ -394,11 +414,25 @@ TEST_F(NonMutatingTest, UpperBoundWithPredicate) {
   EXPECT_TRUE(i == v.end());
 }
 
+TEST_F(NonMutatingTest, UpperBoundTemporarySpanWithPredicate) {
+  std::vector<int> v(vector_);
+  std::sort(v.begin(), v.end(), std::greater<int>());
+  int* i = absl::c_upper_bound(absl::MakeSpan(v), 1, std::greater<int>());
+  EXPECT_EQ(3, i - v.data());
+  EXPECT_TRUE(i == v.data() + v.size());
+}
+
 TEST_F(NonMutatingTest, EqualRange) {
   std::pair<std::list<int>::iterator, std::list<int>::iterator> p =
       absl::c_equal_range(sequence_, 2);
   EXPECT_EQ(1, std::distance(sequence_.begin(), p.first));
   EXPECT_EQ(2, std::distance(sequence_.begin(), p.second));
+}
+
+TEST_F(NonMutatingTest, EqualRangeTemporarySpan) {
+  std::pair<int*, int*> p = absl::c_equal_range(absl::MakeSpan(vector_), 2);
+  EXPECT_EQ(1, std::distance(vector_.data(), p.first));
+  EXPECT_EQ(2, std::distance(vector_.data(), p.second));
 }
 
 TEST_F(NonMutatingTest, EqualRangeArray) {
@@ -414,6 +448,15 @@ TEST_F(NonMutatingTest, EqualRangeWithPredicate) {
       absl::c_equal_range(v, 2, std::greater<int>());
   EXPECT_EQ(1, std::distance(v.begin(), p.first));
   EXPECT_EQ(2, std::distance(v.begin(), p.second));
+}
+
+TEST_F(NonMutatingTest, EqualRangeTemporarySpanWithPredicate) {
+  std::vector<int> v(vector_);
+  std::sort(v.begin(), v.end(), std::greater<int>());
+  std::pair<int*, int*> p =
+      absl::c_equal_range(absl::MakeSpan(v), 2, std::greater<int>());
+  EXPECT_EQ(1, std::distance(v.data(), p.first));
+  EXPECT_EQ(2, std::distance(v.data(), p.second));
 }
 
 TEST_F(NonMutatingTest, BinarySearch) {
@@ -435,10 +478,22 @@ TEST_F(NonMutatingTest, MinElement) {
   EXPECT_EQ(*i, 1);
 }
 
+TEST_F(NonMutatingTest, MinElementTemporarySpan) {
+  int* i = absl::c_min_element(absl::MakeSpan(vector_));
+  ASSERT_TRUE(i != vector_.data() + vector_.size());
+  EXPECT_EQ(*i, 1);
+}
+
 TEST_F(NonMutatingTest, MinElementWithPredicate) {
   std::list<int>::iterator i =
       absl::c_min_element(sequence_, std::greater<int>());
   ASSERT_TRUE(i != sequence_.end());
+  EXPECT_EQ(*i, 3);
+}
+
+TEST_F(NonMutatingTest, MinElementTemporarySpanWithPredicate) {
+  int* i = absl::c_min_element(absl::MakeSpan(vector_), std::greater<int>());
+  ASSERT_TRUE(i != vector_.data() + vector_.size());
   EXPECT_EQ(*i, 3);
 }
 
@@ -448,10 +503,22 @@ TEST_F(NonMutatingTest, MaxElement) {
   EXPECT_EQ(*i, 3);
 }
 
+TEST_F(NonMutatingTest, MaxElementTemporarySpan) {
+  int* i = absl::c_max_element(absl::MakeSpan(vector_));
+  ASSERT_TRUE(i != vector_.data() + vector_.size());
+  EXPECT_EQ(*i, 3);
+}
+
 TEST_F(NonMutatingTest, MaxElementWithPredicate) {
   std::list<int>::iterator i =
       absl::c_max_element(sequence_, std::greater<int>());
   ASSERT_TRUE(i != sequence_.end());
+  EXPECT_EQ(*i, 1);
+}
+
+TEST_F(NonMutatingTest, MaxElementTemporarySpanWithPredicate) {
+  int* i = absl::c_max_element(absl::MakeSpan(vector_), std::greater<int>());
+  ASSERT_TRUE(i != vector_.data() + vector_.size());
   EXPECT_EQ(*i, 1);
 }
 
@@ -1533,6 +1600,15 @@ TEST(MutatingTest, PartialSort) {
   EXPECT_THAT(absl::MakeSpan(sequence.data(), 2), ElementsAre(42, 5));
 }
 
+TEST(MutatingTest, PartialSortTemporarySpan) {
+  std::vector<int> sequence{5, 3, 42, 0};
+  absl::c_partial_sort(absl::MakeSpan(sequence), sequence.data() + 2);
+  EXPECT_THAT(absl::MakeSpan(sequence).first(2), ElementsAre(0, 3));
+  absl::c_partial_sort(absl::MakeSpan(sequence), sequence.data() + 2,
+                       std::greater<int>());
+  EXPECT_THAT(absl::MakeSpan(sequence).first(2), ElementsAre(42, 5));
+}
+
 TEST(MutatingTest, PartialSortCopy) {
   const std::vector<int> initial = {5, 3, 42, 0};
   std::vector<int> actual(2);
@@ -1661,6 +1737,23 @@ TEST(HeapOperationsTest, WithComparator) {
   absl::c_make_heap(heap, greater());
   absl::c_sort_heap(heap, greater());
   EXPECT_THAT(heap, ElementsAre(3, 2, 1, 0));
+  EXPECT_FALSE(absl::c_is_heap(heap, greater()));
+}
+
+TEST(HeapOperationsTest, SortHeapTemporarySpan) {
+  std::vector<int> heap = {1, 2, 3, 4};
+  absl::c_make_heap(heap);
+  absl::c_sort_heap(absl::MakeSpan(heap));
+  EXPECT_THAT(heap, ElementsAre(1, 2, 3, 4));
+  EXPECT_FALSE(absl::c_is_heap(heap));
+}
+
+TEST(HeapOperationsTest, SortHeapTemporarySpanWithComparator) {
+  using greater = std::greater<int>;
+  std::vector<int> heap = {4, 3, 2, 1};
+  absl::c_make_heap(heap, greater());
+  absl::c_sort_heap(absl::MakeSpan(heap), greater());
+  EXPECT_THAT(heap, ElementsAre(4, 3, 2, 1));
   EXPECT_FALSE(absl::c_is_heap(heap, greater()));
 }
 

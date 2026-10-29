@@ -23,7 +23,7 @@ platform(
     exec_properties = {
         "OSArch": "amd64",
         "cache-silo-key": "n2-highcpu-2-2026-10-14",
-        "container-image": "docker://gcr.io/google.com/absl-177019/oss-linux-latest@sha256:9f7f104e4857e3528e8bf5f14968183f5a0e786ca9ef63601eae4e4136f011d6",
+        "container-image": "docker://gcr.io/google.com/absl-177019/oss-linux-latest@sha256:84505366948db3ea97c71d0aa384a920e73f6994bb4194d7f80ee77979fd9d58",
         "dockerRunAsRoot": "true",
     },
 )
@@ -37,7 +37,7 @@ platform(
     exec_properties = {
         "OSArch": "amd64",
         "cache-silo-key": "n2-highcpu-2-2026-10-14",
-        "container-image": "docker://gcr.io/google.com/absl-177019/oss-linux-floor@sha256:60898eb3b0dbcf85cd60e346f103fbf3169d966d391dcb2362b243d528b1183b",
+        "container-image": "docker://gcr.io/google.com/absl-177019/oss-linux-floor@sha256:a25e596d10b907c8896768196a6e5c8007bac93abb1677ed1fcc186d28afc032",
         "dockerRunAsRoot": "true",
     },
 )
@@ -51,7 +51,7 @@ platform(
     exec_properties = {
         "OSArch": "arm64",
         "cache-silo-key": "t2a-standard-4-2026-10-14",
-        "container-image": "docker://gcr.io/google.com/absl-177019/oss-linux-latest@sha256:9f7f104e4857e3528e8bf5f14968183f5a0e786ca9ef63601eae4e4136f011d6",
+        "container-image": "docker://gcr.io/google.com/absl-177019/oss-linux-latest@sha256:84505366948db3ea97c71d0aa384a920e73f6994bb4194d7f80ee77979fd9d58",
         "dockerRunAsRoot": "true",
     },
 )

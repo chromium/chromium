@@ -815,7 +815,6 @@ absl_cc_library(
     absl::base
     absl::bits
     absl::common_policy_traits
-    absl::compressed_tuple
     absl::config
     absl::container_common
     absl::container_memory

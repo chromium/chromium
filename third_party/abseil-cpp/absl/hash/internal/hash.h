@@ -1164,12 +1164,14 @@ ABSL_ATTRIBUTE_ALWAYS_INLINE inline uint64_t CombineRawImpl(uint64_t state,
 // Slow dispatch path for calls to CombineContiguousImpl with a size argument
 // larger than inlined size. Has the same effect as calling
 // CombineContiguousImpl() repeatedly with the chunk stride size.
-uint64_t CombineLargeContiguousImplOn32BitLengthGt8(uint64_t state,
-                                                    const unsigned char* first,
-                                                    size_t len);
-uint64_t CombineLargeContiguousImplOn64BitLengthGt32(uint64_t state,
-                                                     const unsigned char* first,
-                                                     size_t len);
+ABSL_ATTRIBUTE_PURE_FUNCTION uint64_t
+CombineLargeContiguousImplOn32BitLengthGt8(uint64_t state,
+                                           const unsigned char* first,
+                                           size_t len);
+ABSL_ATTRIBUTE_PURE_FUNCTION uint64_t
+CombineLargeContiguousImplOn64BitLengthGt32(uint64_t state,
+                                            const unsigned char* first,
+                                            size_t len);
 
 ABSL_ATTRIBUTE_ALWAYS_INLINE inline uint64_t CombineSmallContiguousImpl(
     uint64_t state, const unsigned char* first, size_t len) {
@@ -1257,8 +1259,22 @@ inline uint64_t CombineContiguousImpl(
   // reading the memory. Fused instructions also reduce register pressure
   // allowing surrounding code to be more efficient when this code is inlined.
   if (len > 8) {
+#if ABSL_HAVE_BUILTIN(__builtin_constant_p)
+    // CRC32 only uses the low 32 bits of its first argument. When `state` has
+    // known zero upper 32 bits in SwissTable's per-table seed,
+    // `static_cast<uint32_t>(crcs.second)` is a compile-time constant 0;
+    // folding it avoids shifting `state` and breaks the false dependency from
+    // loading the seed to the second CRC32 stream without adding a
+    // zero-extension when `crcs.second` is not a compile-time constant.
+    const uint64_t second_init =
+        __builtin_constant_p(static_cast<uint32_t>(crcs.second))
+            ? static_cast<uint32_t>(crcs.second)
+            : crcs.second;
+#else
+    const uint64_t second_init = crcs.second;
+#endif
     crcs = {ABSL_HASH_INTERNAL_CRC32_U64(crcs.first, Read8(first)),
-            ABSL_HASH_INTERNAL_CRC32_U64(crcs.second, Read8(first + len - 8))};
+            ABSL_HASH_INTERNAL_CRC32_U64(second_init, Read8(first + len - 8))};
     if (len > 16) {
       // We compute the second round of dependent CRC32 operations.
       crcs = {ABSL_HASH_INTERNAL_CRC32_U64(crcs.first, Read8(first + len - 16)),
@@ -1376,9 +1392,14 @@ struct HashSelect {
     }
   };
 
+  template <typename T>
   struct HashValueProbe {
-    template <typename H, typename T>
-    static H Invoke(H state, const T& value) {
+    // The std::conditional_t<false, H, T> test is to enable SFINAE by making T
+    // be a dependent type.
+    template <typename H>
+    static H Invoke(H state, type_traits_internal::AddConstRefIfExpensiveToCopy<
+                                 std::conditional_t<false, H, T>>
+                                 value) {
       return AbslHashValue(std::move(state), value);
     }
   };
@@ -1411,7 +1432,7 @@ struct HashSelect {
     } else if constexpr (std::is_same_v<State,
                                         typename AbslHashValueResultOrVoid<
                                             State, const T&>::type>) {
-      return HashValueProbe();
+      return HashValueProbe<T>();
 #if ABSL_HASH_INTERNAL_SUPPORT_LEGACY_HASH_
     } else if constexpr (std::is_convertible_v<
                              InvokeResultOrVoid<
