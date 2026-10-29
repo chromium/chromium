@@ -199,6 +199,12 @@ void TabStripComboButton::ShowEverythingMenu() {
     return;
   }
 
+  // NOTE: While this menu is showing, a click elsewhere (e.g. on the adjacent
+  // tab search button) only dismisses the menu on Mac and Linux; a second click
+  // is needed to activate the clicked control. This is intended and matches
+  // every other views::MenuRunner menu: MenuController consumes the dismissing
+  // click, and only Windows re-posts it to the view underneath (see
+  // MenuController::RepostEventAndCancel).
   everything_menu_ = std::make_unique<tab_groups::STGEverythingMenu>(
       everything_menu_controller_, browser_,
       tab_groups::STGEverythingMenu::MenuContext::kVerticalTabStrip);
