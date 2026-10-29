@@ -27,7 +27,6 @@ static_library("extensions") {
 
   deps = [
     "//chrome/browser:browser_process",
-    "//chrome/browser/ash/profiles",
     "//chrome/browser/extensions",
     "//chromeos/ash/components/browser_context_helper",
     "//components/prefs",

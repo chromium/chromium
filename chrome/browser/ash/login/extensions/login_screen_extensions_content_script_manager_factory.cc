@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/login/extensions/login_screen_extensions_content_script_manager_factory.h"
 
 #include "chrome/browser/ash/login/extensions/login_screen_extensions_content_script_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "extensions/browser/extension_registry_factory.h"
 
 namespace ash {
@@ -50,7 +50,7 @@ std::unique_ptr<KeyedService> LoginScreenExtensionsContentScriptManagerFactory::
   Profile* profile = Profile::FromBrowserContext(context);
   if (!profile)
     return nullptr;
-  if (!ProfileHelper::IsSigninProfile(profile)) {
+  if (!ash::IsSigninBrowserContext(profile)) {
     // The manager should only be created for the sign-in profile.
     return nullptr;
   }

@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/browser/profiles/profile.h"
@@ -213,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenExtensionsLifetimeManagerTest, LockScreen) {
   // Ensure that the lock profile exits.
   base::test::TestFuture<Profile*> profile_future;
   g_browser_process->profile_manager()->CreateProfileAsync(
-      ash::ProfileHelper::GetLockScreenProfileDir(),
+      ash::BrowserContextHelper::Get()->GetLockScreenBrowserContextPath(),
       profile_future.GetCallback());
   ASSERT_TRUE(profile_future.Get()) << "Lock profile wasn't created";
 
