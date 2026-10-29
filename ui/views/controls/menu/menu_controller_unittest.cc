@@ -31,6 +31,7 @@
 #include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/ime/input_method.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-shared.h"
@@ -41,6 +42,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
@@ -59,6 +61,7 @@
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/menu_test_utils.h"
@@ -4771,6 +4774,99 @@ TEST_F(MenuControllerTest, DragFromMenuItemToButtonDefaultDoesNotActivate) {
                               ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                               ui::EF_LEFT_MOUSE_BUTTON));
   EXPECT_EQ(0, button1_clicks);
+}
+
+TEST_F(MenuControllerTest, MenuHostedTextfieldOwnerWidgetDestruction) {
+  std::unique_ptr<Widget> active_owner =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* const owner_textfield =
+      active_owner->SetContentsView(std::make_unique<Textfield>());
+  active_owner->Show();
+  owner_textfield->RequestFocus();
+  ASSERT_TRUE(owner_textfield->HasFocus());
+  ASSERT_EQ(owner_textfield,
+            active_owner->GetInputMethod()->GetTextInputClient());
+
+  CreateMenu({.show = false});
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+  MenuItemView* const first_item = submenu->GetMenuItemAt(0);
+  first_item->SetTitle(std::u16string());
+  auto* const textfield =
+      first_item->AddChildView(std::make_unique<Textfield>());
+  textfield->GetViewAccessibility().SetName(u"Search");
+  auto* const sibling_button = first_item->AddChildView(
+      std::make_unique<LabelButton>(Button::PressedCallback(), u"Action"));
+  sibling_button->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+
+  menu_controller()->Run(active_owner.get(), /*button_controller=*/nullptr,
+                         menu_item(), gfx::Rect(), MenuAnchorPosition::kTopLeft,
+                         ui::mojom::MenuSourceType::kNone);
+
+  // Focusing a Textfield inside an open MenuHost succeeds without activating
+  // the MenuHost widget and attaches the Textfield to the owner's InputMethod.
+  textfield->RequestFocus();
+  EXPECT_TRUE(textfield->HasFocus());
+  EXPECT_FALSE(submenu->GetWidget()->IsActive());
+  EXPECT_EQ(textfield,
+            submenu->GetWidget()->GetInputMethod()->GetTextInputClient());
+  EXPECT_EQ(textfield, active_owner->GetInputMethod()->GetTextInputClient());
+
+  // Hiding the focused Textfield in an inactive MenuHost clears focus without
+  // advancing FocusManager focus to sibling_button, and re-attaches the owner
+  // widget's focused Textfield to the shared InputMethod.
+  textfield->SetVisible(false);
+  EXPECT_FALSE(textfield->HasFocus());
+  EXPECT_FALSE(sibling_button->HasFocus());
+  EXPECT_EQ(owner_textfield,
+            active_owner->GetInputMethod()->GetTextInputClient());
+
+  textfield->SetVisible(true);
+  textfield->RequestFocus();
+  ASSERT_TRUE(textfield->HasFocus());
+  ASSERT_EQ(textfield, active_owner->GetInputMethod()->GetTextInputClient());
+
+  // Destroying the owner widget while the menu-hosted textfield is focused
+  // cleanly clears focus and exits the menu without UAF.
+  active_owner.reset();
+  EXPECT_FALSE(textfield->HasFocus());
+}
+
+TEST_F(MenuControllerTest, MenuHostedTextfieldYieldsToOwnerFocusChange) {
+  std::unique_ptr<Widget> owner =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* const contents = owner->SetContentsView(std::make_unique<View>());
+  auto* const owner_textfield =
+      contents->AddChildView(std::make_unique<Textfield>());
+  auto* const other_owner_textfield =
+      contents->AddChildView(std::make_unique<Textfield>());
+  owner->Show();
+  owner_textfield->RequestFocus();
+  ASSERT_TRUE(owner_textfield->HasFocus());
+
+  CreateMenu({.show = false});
+  auto* const textfield =
+      menu_item()->GetSubmenu()->GetMenuItemAt(0)->AddChildView(
+          std::make_unique<Textfield>());
+  textfield->GetViewAccessibility().SetName(u"Search");
+  menu_controller()->Run(owner.get(), /*button_controller=*/nullptr,
+                         menu_item(), gfx::Rect(), MenuAnchorPosition::kTopLeft,
+                         ui::mojom::MenuSourceType::kNone);
+  ui::InputMethod* const input_method = owner->GetInputMethod();
+
+  // Moving the owner's focus takes the shared InputMethod back from the menu.
+  textfield->RequestFocus();
+  ASSERT_EQ(textfield, input_method->GetTextInputClient());
+  other_owner_textfield->RequestFocus();
+  EXPECT_FALSE(textfield->HasFocus());
+  EXPECT_TRUE(other_owner_textfield->HasFocus());
+  EXPECT_EQ(other_owner_textfield, input_method->GetTextInputClient());
+
+  // Clearing the owner's focus leaves no menu client on the InputMethod.
+  textfield->RequestFocus();
+  ASSERT_EQ(textfield, input_method->GetTextInputClient());
+  owner->GetFocusManager()->ClearFocus();
+  EXPECT_FALSE(textfield->HasFocus());
+  EXPECT_FALSE(input_method->GetTextInputClient());
 }
 
 }  // namespace views

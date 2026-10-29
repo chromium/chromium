@@ -17,6 +17,8 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/ime/input_method.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/compositor.h"
 #include "ui/events/gestures/gesture_recognizer.h"
@@ -29,6 +31,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/round_rect_painter.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/native_widget_private.h"
@@ -117,6 +120,27 @@ void TransferGesture(ui::GestureRecognizer* gesture_recognizer,
 
 }  // namespace internal
 
+// Clears MenuHost focus whenever the owner changes its own focus: the owner's
+// next focused view attaches its own TextInputClient, and owner destruction
+// clears the owner's focus before WidgetObserver::OnWidgetDestroying(), at
+// which point a menu client must no longer hold the shared InputMethod.
+class MenuHost::OwnerFocusChangeListener : public FocusChangeListener {
+ public:
+  OwnerFocusChangeListener(MenuHost* host, FocusManager* owner_focus_manager)
+      : host_(host) {
+    observation_.Observe(owner_focus_manager);
+  }
+
+  // FocusChangeListener:
+  void OnWillChangeFocus(View* focused_before, View* focused_now) override {
+    host_->ClearFocusForOwner();
+  }
+
+ private:
+  const raw_ptr<MenuHost> host_;
+  base::ScopedObservation<FocusManager, FocusChangeListener> observation_{this};
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 // MenuHost, public:
 
@@ -194,6 +218,14 @@ void MenuHost::InitMenuHost(const InitParams& init_params) {
   DCHECK(!GetOwner());
   if (init_params.parent) {
     owner_observation_.Observe(init_params.parent);
+    if (FocusManager* owner_focus_manager =
+            init_params.parent->GetFocusManager()) {
+      owner_focus_change_listener_ =
+          std::make_unique<OwnerFocusChangeListener>(this, owner_focus_manager);
+    }
+  }
+  if (FocusManager* focus_manager = GetFocusManager()) {
+    focus_manager_observation_.Observe(focus_manager);
   }
   native_view_for_gestures_ = init_params.native_view_for_gestures;
   SetContentsView(init_params.contents_view);
@@ -250,6 +282,9 @@ void MenuHost::ShowMenuHost(bool do_capture) {
 }
 
 void MenuHost::HideMenuHost() {
+  if (FocusManager* focus_manager = GetFocusManager()) {
+    focus_manager->ClearFocus();
+  }
   if (destroying_ && !IsVisible()) {
     return;
   }
@@ -391,6 +426,18 @@ Widget* MenuHost::GetPrimaryWindowWidget() {
                     : Widget::GetPrimaryWindowWidget();
 }
 
+bool MenuHost::CanFocusViewsWithoutActivation() const {
+  // An unparented MenuHost is activatable and takes focus the normal way.
+  return !CanActivate();
+}
+
+ui::InputMethod* MenuHost::GetInputMethod() {
+  if (Widget* owner = GetOwner()) {
+    return owner->GetInputMethod();
+  }
+  return Widget::GetInputMethod();
+}
+
 gfx::Insets MenuHost::GetCustomInsetsInDIP() const {
 #if BUILDFLAG(IS_OZONE)
   if (submenu_) {
@@ -402,8 +449,47 @@ gfx::Insets MenuHost::GetCustomInsetsInDIP() const {
 
 void MenuHost::OnWidgetDestroying(Widget* widget) {
   DCHECK_EQ(GetOwner(), widget);
+  ClearFocusForOwner();
+  owner_focus_change_listener_.reset();
   owner_observation_.Reset();
   native_view_for_gestures_ = gfx::NativeView();
+}
+
+void MenuHost::OnWillChangeFocus(View* focused_before, View* focused_now) {
+  if (focused_before || !focused_now || !GetOwner()) {
+    return;
+  }
+  // A view focused here may take over the owner's InputMethod; remember the
+  // owner's client so it can be restored when focus leaves this MenuHost.
+  ui::InputMethod* input_method = GetOwner()->GetInputMethod();
+  ui::TextInputClient* client =
+      input_method ? input_method->GetTextInputClient() : nullptr;
+  owner_text_input_client_ = client ? client->AsWeakPtr() : nullptr;
+}
+
+void MenuHost::OnDidChangeFocus(View* focused_before, View* focused_now) {
+  if (focused_now) {
+    return;
+  }
+  base::WeakPtr<ui::TextInputClient> client =
+      std::exchange(owner_text_input_client_, nullptr);
+  if (!client || !GetOwner()) {
+    return;
+  }
+  // Only restore into an empty slot, so a client attached by the owner or
+  // another widget sharing the InputMethod is never displaced.
+  if (ui::InputMethod* input_method = GetOwner()->GetInputMethod();
+      input_method && !input_method->GetTextInputClient()) {
+    input_method->SetFocusedTextInputClient(client.get());
+  }
+}
+
+void MenuHost::ClearFocusForOwner() {
+  owner_text_input_client_ = nullptr;
+  if (FocusManager* focus_manager = GetFocusManager();
+      focus_manager && focus_manager->GetFocusedView()) {
+    focus_manager->ClearFocus();
+  }
 }
 
 Widget* MenuHost::GetOwner() {

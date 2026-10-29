@@ -1185,6 +1185,10 @@ bool Widget::ShouldViewsStyleFollowWidgetActivation() const {
   return CanActivate();
 }
 
+bool Widget::CanFocusViewsWithoutActivation() const {
+  return false;
+}
+
 void Widget::SetZOrderLevel(ui::ZOrderLevel order) {
   if (native_widget_) {
     native_widget_->SetZOrderLevel(order);

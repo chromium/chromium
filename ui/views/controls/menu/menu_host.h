@@ -9,9 +9,11 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "ui/base/owned_window_anchor.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -19,6 +21,10 @@ namespace gfx {
 class Insets;
 class Rect;
 }  // namespace gfx
+
+namespace ui {
+class TextInputClient;
+}  // namespace ui
 
 namespace views {
 
@@ -42,7 +48,9 @@ class PreMenuEventDispatchHandler;
 // `MenuHost`. Alternatively, the OS may destroy the widget. In this case
 // `MenuHost` invokes `MenuHostDestroyed` on the `SubmenuView` and the
 // `SubmenuView` then drops references to the `MenuHost`.
-class MenuHost : public Widget, public WidgetObserver {
+class MenuHost : public Widget,
+                 public WidgetObserver,
+                 public FocusChangeListener {
  public:
   struct InitParams {
     raw_ptr<Widget> parent = nullptr;
@@ -97,6 +105,9 @@ class MenuHost : public Widget, public WidgetObserver {
  private:
   friend class MenuControllerTest;
 
+  // Listens to the owner widget's FocusManager.
+  class OwnerFocusChangeListener;
+
   // Widget:
   internal::RootView* CreateRootView() override;
   void OnMouseCaptureLost() override;
@@ -105,15 +116,35 @@ class MenuHost : public Widget, public WidgetObserver {
   void OnDragDropWillStart() override;
   void OnDragDropCompleted() override;
   Widget* GetPrimaryWindowWidget() override;
+  bool CanFocusViewsWithoutActivation() const override;
+  // Shares the owner widget's InputMethod so views focused inside the
+  // non-activating MenuHost receive text input routed through the active owner
+  // window.
+  ui::InputMethod* GetInputMethod() override;
   gfx::Insets GetCustomInsetsInDIP() const override;
 
   // WidgetObserver:
   void OnWidgetDestroying(Widget* widget) override;
 
+  // FocusChangeListener (this widget's FocusManager):
+  void OnWillChangeFocus(View* focused_before, View* focused_now) override;
+  void OnDidChangeFocus(View* focused_before, View* focused_now) override;
+
+  // Clears focus without restoring the owner's TextInputClient. Called when the
+  // owner changes its own focus or is destroyed.
+  void ClearFocusForOwner();
+
   // Returns the parent of the MenuHost widget.
   Widget* GetOwner();
 
   base::ScopedObservation<Widget, WidgetObserver> owner_observation_{this};
+  base::ScopedObservation<FocusManager, FocusChangeListener>
+      focus_manager_observation_{this};
+  std::unique_ptr<OwnerFocusChangeListener> owner_focus_change_listener_;
+
+  // The owner InputMethod's client when focus entered this MenuHost; restored
+  // when focus leaves.
+  base::WeakPtr<ui::TextInputClient> owner_text_input_client_;
 
   gfx::NativeView native_view_for_gestures_ = gfx::NativeView();
 

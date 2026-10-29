@@ -194,6 +194,9 @@ void FocusManager::AdvanceFocus(bool reverse) {
 }
 
 void FocusManager::ClearNativeFocus() {
+  if (widget_->CanFocusViewsWithoutActivation()) {
+    return;
+  }
   // Keep the top root window focused so we get keyboard events.
   widget_->ClearNativeFocus();
 }
@@ -343,7 +346,8 @@ void FocusManager::SetFocusedViewWithReason(View* view,
   // If activation fails |view| will be focused the next time the widget is
   // made active. Platforms may opt out of activating for a given request, in
   // which case |view| is focused immediately without activating the widget.
-  if (view && !widget_->IsActive()) {
+  if (view && !widget_->IsActive() &&
+      !widget_->CanFocusViewsWithoutActivation()) {
     const internal::NativeWidgetPrivate* native_widget =
         widget_->native_widget_private();
     if (!native_widget || native_widget->ShouldActivateOnFocusRequest()) {
@@ -411,6 +415,12 @@ void FocusManager::AdvanceFocusIfNecessary() {
   // If widget is inactive, there is no focused view to check. The stored view
   // will also be checked for focusability when it is being restored.
   if (!widget_->IsActive()) {
+    // Widgets that focus views without activation (e.g. MenuHost) hold a live
+    // focused view while inactive; clear it rather than advance to a sibling.
+    if (widget_->CanFocusViewsWithoutActivation() && focused_view_ &&
+        !IsFocusableInCurrentMode(focused_view_)) {
+      ClearFocus();
+    }
     return;
   }
 

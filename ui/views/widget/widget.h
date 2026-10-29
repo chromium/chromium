@@ -986,6 +986,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // default implementation simply calls CanActivate().
   virtual bool ShouldViewsStyleFollowWidgetActivation() const;
 
+  // Returns true if views hosted by this widget may hold FocusManager focus
+  // while native/OS window activation and focus remain on the owner window.
+  // False by default.
+  virtual bool CanFocusViewsWithoutActivation() const;
+
   // Sets the z-order of the widget. This only applies to top-level widgets.
   void SetZOrderLevel(ui::ZOrderLevel order);
 
@@ -1120,7 +1125,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   const FocusManager* GetFocusManager() const;
 
   // Returns the ui::InputMethod for this widget.
-  ui::InputMethod* GetInputMethod();
+  virtual ui::InputMethod* GetInputMethod();
 
   // Returns the SublevelManager for this widget.
   SublevelManager* GetSublevelManager();
