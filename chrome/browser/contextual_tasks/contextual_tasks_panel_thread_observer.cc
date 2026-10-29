@@ -125,19 +125,24 @@ void ContextualTasksPanelThreadObserver::OnZeroState() {
   if (!has_turn_) {
     return;
   }
+  MoveToNewTask();
+}
+
+std::optional<base::Uuid> ContextualTasksPanelThreadObserver::MoveToNewTask() {
   content::WebContents* contents = web_contents();
   ContextualTasksService* service =
       ContextualTasksServiceFactory::GetForProfile(
           Profile::FromBrowserContext(contents->GetBrowserContext()));
   std::optional<base::Uuid> current_task_id = GetCurrentTaskId();
   if (!service || !current_task_id) {
-    return;
+    return std::nullopt;
   }
   thread_id_.reset();
   const GURL old_thread_url = std::exchange(last_thread_url_, GURL());
   has_turn_ = false;
-  ChangeTask(*current_task_id, service->CreateTask().GetTaskId(),
-             old_thread_url);
+  const base::Uuid new_task_id = service->CreateTask().GetTaskId();
+  ChangeTask(*current_task_id, new_task_id, old_thread_url);
+  return new_task_id;
 }
 
 std::optional<base::Uuid>

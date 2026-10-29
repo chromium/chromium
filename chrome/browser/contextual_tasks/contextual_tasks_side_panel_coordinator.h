@@ -13,11 +13,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "components/sessions/core/session_id.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/buildflags/buildflags.h"
@@ -26,7 +28,6 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "base/scoped_observation.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_reopen_suppressor.h"
 #include "ui/native_theme/native_theme_observer.h"
@@ -84,6 +85,7 @@ class ContextualTasksSidePanelCoordinator
     : public ContextualTasksPanelController,
       public ContextualTasksPanelHost::Observer,
       public TabListInterfaceObserver,
+      public signin::IdentityManager::Observer,
       content::WebContentsObserver
 #if !BUILDFLAG(IS_ANDROID)
     ,
@@ -259,6 +261,13 @@ class ContextualTasksSidePanelCoordinator
   void OnTabRemoved(TabListInterface& tab_list,
                     tabs::TabInterface* tab,
                     TabRemovedReason removed_reason) override;
+
+  // signin::IdentityManager::Observer:
+  void OnAccountsInCookieUpdated(
+      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+      const GoogleServiceAuthError& error) override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
 #if !BUILDFLAG(IS_ANDROID)
   // ThemeServiceObserver:
@@ -525,6 +534,18 @@ class ContextualTasksSidePanelCoordinator
   void OnSeeExtensionsClicked();
   std::unique_ptr<ContextualTasksExtensionsContainer> extensions_container_;
 #endif
+
+  // Moves cached side panel `WebContents` to new tasks in zero state after the
+  // user signs out of Google on the web, so they no longer show or restore
+  // content from the signed-out account.
+  void ResetWebContentsToZeroStateAfterWebSignOut();
+
+  // Whether the user was signed in to at least one Google account on the web
+  // the last time the cookie jar was observed.
+  bool is_signed_in_to_web_ = false;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
 #if !BUILDFLAG(IS_ANDROID)
   // Refreshes cached side panel `WebContents` when the profile's effective dark

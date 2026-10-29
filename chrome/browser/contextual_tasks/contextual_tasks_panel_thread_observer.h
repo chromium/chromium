@@ -54,6 +54,11 @@ class ContextualTasksPanelThreadObserver
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
+  // Moves the panel, along with the tabs associated with its current task, to
+  // a new task, so the previous thread stays with the previous task. Returns
+  // the new task, or `std::nullopt` if the panel has no task.
+  std::optional<base::Uuid> MoveToNewTask();
+
  private:
   friend class content::WebContentsUserData<ContextualTasksPanelThreadObserver>;
 
