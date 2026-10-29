@@ -8,18 +8,15 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.view.Window;
 
-import org.jni_zero.JNINamespace;
-import org.jni_zero.NativeMethods;
-
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.contextual_tasks.ContextualTasksBridge;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.content_public.browser.BackForwardTransitionAnimationManager;
 import org.chromium.ui.UiUtils;
 
 /** A set of helper functions related to gesture navigation. */
-@JNINamespace("gesturenav")
 @NullMarked
 public class GestureNavigationUtils {
 
@@ -33,7 +30,9 @@ public class GestureNavigationUtils {
      * @return True if the transition should be enabled for this tab when navigating..
      */
     public static boolean allowTransition(Tab tab, boolean forward) {
-        if (!shouldAnimateBackForwardTransitions()) return false;
+        if (!BackForwardTransitionAnimationManager.shouldAnimateBackForwardTransitions()) {
+            return false;
+        }
         // TODO(crbug.com/527549133): Temporary fix for Android desktop when side panel is open.
         // We still need to fix back gesture navigation on full AIM page.
         if (ContextualTasksBridge.isPanelOpen(tab)) return false;
@@ -64,26 +63,5 @@ public class GestureNavigationUtils {
     public static void setGestureNavigationModeForTesting(boolean isGestureMode) {
         sGestureNavigationModeForTesting = isGestureMode;
         ResettersForTesting.register(() -> sGestureNavigationModeForTesting = null);
-    }
-
-    /**
-     * @return Whether the back forward transitions are enabled.
-     */
-    public static boolean shouldAnimateBackForwardTransitions() {
-        return GestureNavigationUtilsJni.get().shouldAnimateBackForwardTransitions();
-    }
-
-    public static void setMinRequiredPhysicalRamMbForTesting(int mb) {
-        Runnable resetAfterTesting =
-                GestureNavigationUtilsJni.get()
-                        .setMinRequiredPhysicalRamMbForTesting(mb); // IN-TEST
-        ResettersForTesting.register(resetAfterTesting);
-    }
-
-    @NativeMethods
-    public interface Natives {
-        boolean shouldAnimateBackForwardTransitions();
-
-        Runnable setMinRequiredPhysicalRamMbForTesting(int mb); // IN-TEST
     }
 }

@@ -3,19 +3,19 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.gesturenav;
 
-import org.jni_zero.JNINamespace;
-import org.jni_zero.NativeMethods;
-
 import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.content_public.browser.BackForwardTransitionAnimationManager;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
 
 /**
  * A handler to trigger seamless navigation / predictive back animation when a back gesture is
  * performed on a navigable tab page.
  */
-@JNINamespace("gesturenav")
 @NullMarked
 public class TabOnBackGestureHandler implements UserData {
     private static final Class<TabOnBackGestureHandler> USER_DATA_KEY =
@@ -31,10 +31,15 @@ public class TabOnBackGestureHandler implements UserData {
         return tab.getUserDataHost().setUserData(USER_DATA_KEY, new TabOnBackGestureHandler(tab));
     }
 
-    private long mNativePtr;
+    private final Tab mTab;
+    private boolean mDestroyed;
+    private boolean mIsGestureMode;
+    private @BackGestureEventSwipeEdge int mStartedEdge;
+    private @Nullable WebContents mGesturedWebContents;
+    private @Nullable BackForwardTransitionAnimationManager mGestureManager;
 
     private TabOnBackGestureHandler(Tab tab) {
-        mNativePtr = TabOnBackGestureHandlerJni.get().init(tab);
+        mTab = tab;
     }
 
     public void onBackStarted(
@@ -42,9 +47,21 @@ public class TabOnBackGestureHandler implements UserData {
             @BackGestureEventSwipeEdge int edge,
             boolean forward,
             boolean isGestureMode) {
-        if (mNativePtr == 0) return;
-        TabOnBackGestureHandlerJni.get()
-                .onBackStarted(mNativePtr, progress, edge, forward, isGestureMode);
+        if (mDestroyed) return;
+        if (mGestureManager != null) onBackCancelled(isGestureMode);
+
+        WebContents webContents = mTab.getWebContents();
+        assert webContents != null && !webContents.isDestroyed();
+        if (webContents == null || webContents.isDestroyed()) return;
+        var manager = webContents.getBackForwardTransitionAnimationManager();
+        assert manager != null;
+        if (manager == null) return;
+
+        mIsGestureMode = isGestureMode;
+        mStartedEdge = edge;
+        mGesturedWebContents = webContents;
+        mGestureManager = manager;
+        manager.onGestureStarted(progress, edge, forward, isGestureMode);
     }
 
     /**
@@ -58,58 +75,63 @@ public class TabOnBackGestureHandler implements UserData {
             @BackGestureEventSwipeEdge int edge,
             boolean forward,
             boolean isGestureMode) {
-        if (mNativePtr == 0) return false;
-        return TabOnBackGestureHandlerJni.get()
-                .onBackProgressed(mNativePtr, progress, edge, forward, isGestureMode);
+        var manager = mGestureManager;
+        if (mDestroyed || manager == null || mStartedEdge != edge || !isCurrentGesture()) {
+            // Do not cancel another owner's gesture or restart from an unchecked direction.
+            // Return control to the caller so that it can handle navigation. crbug.com/530682179.
+            return false;
+        }
+        manager.onGestureProgressed(progress, isGestureMode);
+        return true;
     }
 
     public void onBackCancelled(boolean isGestureMode) {
-        if (mNativePtr == 0) return;
-        TabOnBackGestureHandlerJni.get().onBackCancelled(mNativePtr, isGestureMode);
+        finishGesture(/* invoke= */ false, isGestureMode);
     }
 
     public void onBackInvoked(boolean isGestureMode) {
-        if (mNativePtr == 0) return;
-        TabOnBackGestureHandlerJni.get().onBackInvoked(mNativePtr, isGestureMode);
+        finishGesture(/* invoke= */ true, isGestureMode);
     }
 
-    public static boolean shouldAnimateNavigationTransition(
-            boolean forward, @BackGestureEventSwipeEdge int edge) {
-        return TabOnBackGestureHandlerJni.get().shouldAnimateNavigationTransition(forward, edge);
+    private boolean isCurrentGesture() {
+        var webContents = mGesturedWebContents;
+        return webContents != null
+                && !webContents.isDestroyed()
+                && mTab.getWebContents() == webContents
+                && webContents.getBackForwardTransitionAnimationManager() == mGestureManager;
     }
 
-    @Override
-    public void destroy() {
-        if (mNativePtr != 0) {
-            TabOnBackGestureHandlerJni.get().destroy(mNativePtr);
-            mNativePtr = 0;
+    private void finishGesture(boolean invoke, boolean isGestureMode) {
+        var manager = mGestureManager;
+        boolean isCurrentGesture = isCurrentGesture();
+        mGestureManager = null;
+        mGesturedWebContents = null;
+        if (mDestroyed || manager == null || !isCurrentGesture) return;
+        // Never send a terminal event to a WebContents that did not receive the start event.
+        if (invoke) {
+            manager.onGestureInvoked(isGestureMode);
+        } else {
+            manager.onGestureCancelled(isGestureMode);
         }
     }
 
-    @NativeMethods
-    public interface Natives {
-        long init(Tab tab);
-
-        void onBackStarted(
-                long nativeTabOnBackGestureHandler,
-                float progress,
-                int edge,
-                boolean forward,
-                boolean isGestureMode);
-
-        boolean onBackProgressed(
-                long nativeTabOnBackGestureHandler,
-                float progress,
-                int edge,
-                boolean forward,
-                boolean isGestureMode);
-
-        void onBackCancelled(long nativeTabOnBackGestureHandler, boolean isGestureMode);
-
-        void onBackInvoked(long nativeTabOnBackGestureHandler, boolean isGestureMode);
-
-        boolean shouldAnimateNavigationTransition(boolean forward, int edge);
-
-        void destroy(long nativeTabOnBackGestureHandler);
+    /**
+     * Releases this Tab's gesture when its UserDataHost is destroyed. The Tab may release its
+     * WebContents for reuse instead of destroying it, so native manager destruction cannot replace
+     * this cleanup. Callers may also retain this handler after the Tab is destroyed.
+     */
+    @Override
+    public void destroy() {
+        if (mDestroyed) return;
+        var manager = mGestureManager;
+        // A detached compositor has already aborted the animation. Avoid cancelling it then.
+        if (manager != null
+                && isCurrentGesture()
+                && manager.getCurrentAnimationStage() != AnimationStage.NONE) {
+            onBackCancelled(mIsGestureMode);
+        }
+        mGestureManager = null;
+        mGesturedWebContents = null;
+        mDestroyed = true;
     }
 }

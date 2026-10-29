@@ -1796,6 +1796,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/gesturenav/GestureUserEducationIphControllerUnitTest.java",
       "src/org/chromium/chrome/browser/gesturenav/HistoryNavigationCoordinatorUnitTest.java",
       "src/org/chromium/chrome/browser/gesturenav/NativePageBitmapCapturerUnitTest.java",
+      "src/org/chromium/chrome/browser/gesturenav/TabOnBackGestureHandlerUnitTest.java",
       "src/org/chromium/chrome/browser/gsa/GSAUtilsUnitTest.java",
       "src/org/chromium/chrome/browser/incognito/IncognitoTabbedSnapshotControllerTest.java",
       "src/org/chromium/chrome/browser/incognito/IncognitoWindowNightModeStateProviderUnitTest.java",

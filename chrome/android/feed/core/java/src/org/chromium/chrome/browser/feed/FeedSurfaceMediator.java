@@ -34,7 +34,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.FeedSurfaceProvider.RestoringState;
 import org.chromium.chrome.browser.feed.Stream.ContentChangedListener;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -50,6 +49,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
+import org.chromium.content_public.browser.BackForwardTransitionAnimationManager;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayList;
@@ -892,7 +892,8 @@ public class FeedSurfaceMediator
                                 listener.onScrolled(dx, dy);
                             }
                             // Null if the stream has not been binded yet.
-                            if (GestureNavigationUtils.shouldAnimateBackForwardTransitions()
+                            if (BackForwardTransitionAnimationManager
+                                            .shouldAnimateBackForwardTransitions()
                                     && mCoordinator.getHybridListRenderer() != null
                                     && mCoordinator.getHybridListRenderer().getListLayoutHelper()
                                             != null

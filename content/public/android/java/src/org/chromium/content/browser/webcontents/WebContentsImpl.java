@@ -52,6 +52,7 @@ import org.chromium.content.browser.framehost.RenderFrameHostDelegate;
 import org.chromium.content.browser.framehost.RenderFrameHostImpl;
 import org.chromium.content.browser.input.ImeAdapterImpl;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
+import org.chromium.content_public.browser.BackForwardTransitionAnimationManager;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
@@ -68,7 +69,6 @@ import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsInternals;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.BrowserControlsOffsetTagDefinitions;
 import org.chromium.ui.OverscrollRefreshHandler;
@@ -1255,17 +1255,11 @@ public class WebContentsImpl
     }
 
     @Override
-    public void onContentForNavigationEntryShown() {
-        checkNotDestroyed();
-        WebContentsImplJni.get().onContentForNavigationEntryShown(mNativeWebContentsAndroid);
-    }
-
-    @Override
-    @AnimationStage
-    public int getCurrentBackForwardTransitionStage() {
+    public @Nullable BackForwardTransitionAnimationManager
+            getBackForwardTransitionAnimationManager() {
         checkNotDestroyed();
         return WebContentsImplJni.get()
-                .getCurrentBackForwardTransitionStage(mNativeWebContentsAndroid);
+                .getBackForwardTransitionAnimationManager(mNativeWebContentsAndroid);
     }
 
     @Override
@@ -1554,10 +1548,9 @@ public class WebContentsImpl
 
         boolean needToFireBeforeUnload(long nativeWebContentsAndroid);
 
-        void onContentForNavigationEntryShown(long nativeWebContentsAndroid);
-
-        @AnimationStage
-        int getCurrentBackForwardTransitionStage(long nativeWebContentsAndroid);
+        @JniType("content::BackForwardTransitionAnimationManagerAndroid*")
+        @Nullable BackForwardTransitionAnimationManager getBackForwardTransitionAnimationManager(
+                long nativeWebContentsAndroid);
 
         void setLongPressLinkSelectText(long nativeWebContentsAndroid, boolean enabled);
 

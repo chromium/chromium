@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "content/browser/navigation_transitions/back_forward_transition_animator.h"
 #include "content/public/browser/back_forward_transition_animation_manager.h"
@@ -46,7 +47,21 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
       const BackForwardTransitionAnimationManagerAndroid&) = delete;
   ~BackForwardTransitionAnimationManagerAndroid() override;
 
-  // `NavigationTransitionAnimationManager`:
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject(JNIEnv* env);
+
+  // JNI adapters preserve gesture-mode crash diagnostics and validate Android
+  // input before calling the native interface, which is also used by C++
+  // callers.
+  void OnGestureStarted(JNIEnv* env,
+                        float progress,
+                        ui::BackGestureEventSwipeEdge edge,
+                        bool forward,
+                        bool is_gesture_mode);
+  void OnGestureProgressed(JNIEnv* env, float progress, bool is_gesture_mode);
+  void OnGestureCancelled(JNIEnv* env, bool is_gesture_mode);
+  void OnGestureInvoked(JNIEnv* env, bool is_gesture_mode);
+
+  // `BackForwardTransitionAnimationManager`:
   void OnGestureStarted(const ui::BackGestureEvent& gesture,
                         ui::BackGestureEventSwipeEdge edge,
                         NavigationDirection navigation_direction) override;
@@ -144,6 +159,10 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   // Destroys the animator. Must only be called when there is a valid animator.
   void DestroyAnimator();
 
+  // Keeps the lazily created Java peer alive for this manager's lifetime.
+  // The peer's native pointer is invalidated when this manager is destroyed.
+  base::android::ScopedJavaGlobalRef<jobject> java_object_;
+
   // The owning `WebContentsViewAndroid`. Guaranteed to outlive `this`.
   const raw_ptr<WebContentsViewAndroid> web_contents_view_android_;
 
@@ -174,5 +193,14 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
 };
 
 }  // namespace content
+
+namespace jni_zero {
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType(
+    JNIEnv* env,
+    content::BackForwardTransitionAnimationManagerAndroid* manager) {
+  return manager ? manager->GetJavaObject(env) : nullptr;
+}
+}  // namespace jni_zero
 
 #endif  // CONTENT_BROWSER_NAVIGATION_TRANSITIONS_BACK_FORWARD_TRANSITION_ANIMATION_MANAGER_ANDROID_H_

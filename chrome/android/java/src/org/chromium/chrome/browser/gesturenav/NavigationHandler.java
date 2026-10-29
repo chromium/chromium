@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
+import org.chromium.content_public.browser.BackForwardTransitionAnimationManager;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.OverscrollActivationStatus;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
@@ -197,7 +198,7 @@ class NavigationHandler implements TouchEventObserver {
 
     void setTab(@Nullable Tab tab) {
         if (mTab != null) mTab.removeObserver(mTabObserver);
-        if (GestureNavigationUtils.shouldAnimateBackForwardTransitions()) {
+        if (BackForwardTransitionAnimationManager.shouldAnimateBackForwardTransitions()) {
             onGestureEnd(OverscrollActivationStatus.RESET);
         } else {
             // No mTabOnBackGestureHandler to cancel here: it is only created under
@@ -360,7 +361,7 @@ class NavigationHandler implements TouchEventObserver {
             if (willUpdateTabHistory(forward)) {
                 assert mTab != null;
                 if (GestureNavigationUtils.allowTransition(mTab, forward)) {
-                    if (TabOnBackGestureHandler.shouldAnimateNavigationTransition(
+                    if (BackForwardTransitionAnimationManager.shouldAnimateNavigationTransition(
                             forward, initiatingEdge)) {
                         // Always force to show the top control at the start of the gesture.
                         TabBrowserControlsConstraintsHelper.update(
@@ -474,7 +475,7 @@ class NavigationHandler implements TouchEventObserver {
     void reset() {
         mDownWidth = 0;
         mDownHeight = 0;
-        if (GestureNavigationUtils.shouldAnimateBackForwardTransitions()) {
+        if (BackForwardTransitionAnimationManager.shouldAnimateBackForwardTransitions()) {
             onGestureEnd(OverscrollActivationStatus.RESET);
         } else {
             // See setTab() for why there is no mTabOnBackGestureHandler to cancel on

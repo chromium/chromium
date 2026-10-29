@@ -2073,7 +2073,10 @@ class TabImpl implements Tab, TabInternal {
         assumeNonNull(webContents);
         View view = getView();
         assumeNonNull(view);
-        switch (webContents.getCurrentBackForwardTransitionStage()) {
+        var animationManager = webContents.getBackForwardTransitionAnimationManager();
+        // This notification originates from an existing transition animation manager.
+        assert animationManager != null;
+        switch (animationManager.getCurrentAnimationStage()) {
             case AnimationStage.NONE:
                 // Native animator is destroy before animation is done.
                 // Non-null nativePageSmoothTransitionDelegate means the page is transiting to
@@ -2114,7 +2117,11 @@ class TabImpl implements Tab, TabInternal {
                                         || currentWebContents.isDestroyed()) {
                                     return;
                                 }
-                                currentWebContents.onContentForNavigationEntryShown();
+                                var currentManager =
+                                        currentWebContents
+                                                .getBackForwardTransitionAnimationManager();
+                                assert currentManager != null;
+                                currentManager.onContentForNavigationEntryShown();
                                 notifyContentChanged();
                             });
                     mNativePageSmoothTransitionDelegate = null;
@@ -2125,7 +2132,10 @@ class TabImpl implements Tab, TabInternal {
                         view.post(
                                 () -> {
                                     if (isDestroyed() || webContents.isDestroyed()) return;
-                                    webContents.onContentForNavigationEntryShown();
+                                    var currentManager =
+                                            webContents.getBackForwardTransitionAnimationManager();
+                                    assert currentManager != null;
+                                    currentManager.onContentForNavigationEntryShown();
                                 });
                     }
                 }
@@ -3394,7 +3404,8 @@ class TabImpl implements Tab, TabInternal {
     @Override
     public boolean isDisplayingBackForwardAnimation() {
         if (getWebContents() == null) return false;
-        return getWebContents().getCurrentBackForwardTransitionStage() != AnimationStage.NONE;
+        var manager = getWebContents().getBackForwardTransitionAnimationManager();
+        return manager != null && manager.getCurrentAnimationStage() != AnimationStage.NONE;
     }
 
     /**

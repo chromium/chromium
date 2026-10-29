@@ -61,6 +61,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
+import org.chromium.content_public.browser.test.util.BackForwardTransitionAnimationManagerTestUtils;
 import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
@@ -201,7 +202,7 @@ public class NavigationTransitionsTest {
         mScreenshotCaptureTestHelper.setNavScreenshotCallbackForTesting(mScreenshotCallback);
         mViewportTestUtils = new ViewportTestUtils(mActivityTestRule);
         mViewportTestUtils.setUpForBrowserControls();
-        GestureNavigationUtils.setMinRequiredPhysicalRamMbForTesting(0);
+        BackForwardTransitionAnimationManagerTestUtils.setMinRequiredPhysicalRamMbForTesting(0);
     }
 
     @After
@@ -345,7 +346,9 @@ public class NavigationTransitionsTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     boolean hasTransition =
-                            getWebContents().getCurrentBackForwardTransitionStage()
+                            getWebContents()
+                                            .getBackForwardTransitionAnimationManager()
+                                            .getCurrentAnimationStage()
                                     != AnimationStage.NONE;
                     Criteria.checkThat(hasTransition, Matchers.is(false));
                 },
@@ -615,7 +618,9 @@ public class NavigationTransitionsTest {
                                     // Since in 3-button mode the gesture sequence is two seconds,
                                     // the top control must have started to show during the two
                                     // seconds.
-                                    if (getWebContents().getCurrentBackForwardTransitionStage()
+                                    if (getWebContents()
+                                                    .getBackForwardTransitionAnimationManager()
+                                                    .getCurrentAnimationStage()
                                             == AnimationStage.OTHER) {
                                         topControlOffsetDuringGesture.set(topOffset);
                                     }
@@ -906,18 +911,24 @@ public class NavigationTransitionsTest {
         Assert.assertEquals(
                 "Back forward transition not invoked yet",
                 AnimationStage.OTHER,
-                tab.getWebContents().getCurrentBackForwardTransitionStage());
+                tab.getWebContents()
+                        .getBackForwardTransitionAnimationManager()
+                        .getCurrentAnimationStage());
 
         release.run();
         CriteriaHelper.pollInstrumentationThread(
                 () ->
                         AnimationStage.INVOKE_ANIMATION
-                                == tab.getWebContents().getCurrentBackForwardTransitionStage(),
+                                == tab.getWebContents()
+                                        .getBackForwardTransitionAnimationManager()
+                                        .getCurrentAnimationStage(),
                 "invoking animation should be started");
         CriteriaHelper.pollInstrumentationThread(
                 () ->
                         AnimationStage.NONE
-                                == tab.getWebContents().getCurrentBackForwardTransitionStage(),
+                                == tab.getWebContents()
+                                        .getBackForwardTransitionAnimationManager()
+                                        .getCurrentAnimationStage(),
                 "should wait for animation to be finished");
         CriteriaHelper.pollInstrumentationThread(
                 () ->
@@ -987,8 +998,8 @@ public class NavigationTransitionsTest {
         Assume.assumeTrue(mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON);
         String url = mTestServer.getURL("/chrome/test/data/android/blue.html");
         mActivityTestRule.loadUrl(url);
-        // OnBackStarted() CHECKs that the window has a live compositor, which is only guaranteed once
-        // the web contents view is ready to be copied.
+        // Starting a gesture requires a live compositor. Wait until the
+        // WebContents view is ready to be copied.
         WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
         NavigationHandler handler = navigationHandler();
 
@@ -1045,8 +1056,8 @@ public class NavigationTransitionsTest {
         String second = mTestServer.getURL("/chrome/test/data/android/green.html");
         mActivityTestRule.loadUrl(first);
         mActivityTestRule.loadUrl(second);
-        // OnBackStarted() CHECKs that the window has a live compositor, which is only guaranteed once
-        // the web contents view is ready to be copied.
+        // Starting a gesture requires a live compositor. Wait until the
+        // WebContents view is ready to be copied.
         WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
         NavigationHandler handler = navigationHandler();
 
@@ -1099,8 +1110,8 @@ public class NavigationTransitionsTest {
         String second = mTestServer.getURL("/chrome/test/data/android/green.html");
         mActivityTestRule.loadUrl(first);
         mActivityTestRule.loadUrl(second);
-        // OnBackStarted() CHECKs that the window has a live compositor, which is only guaranteed once
-        // the web contents view is ready to be copied.
+        // Starting a gesture requires a live compositor. Wait until the
+        // WebContents view is ready to be copied.
         WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
         NavigationHandler handler = navigationHandler();
 
@@ -1153,8 +1164,8 @@ public class NavigationTransitionsTest {
         String second = mTestServer.getURL("/chrome/test/data/android/green.html");
         mActivityTestRule.loadUrl(first);
         mActivityTestRule.loadUrl(second);
-        // OnBackStarted() CHECKs that the window has a live compositor, which is only guaranteed once
-        // the web contents view is ready to be copied.
+        // Starting a gesture requires a live compositor. Wait until the
+        // WebContents view is ready to be copied.
         WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
         NavigationHandler handler = navigationHandler();
 

@@ -4,6 +4,9 @@
 
 package org.chromium.content.browser.webcontents;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,17 +31,23 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content.browser.ChildProcessLauncherHelperImpl;
+import org.chromium.content.browser.navigation_transitions.BackForwardTransitionAnimationManagerImpl;
+import org.chromium.content.browser.navigation_transitions.BackForwardTransitionAnimationManagerImplJni;
+import org.chromium.content_public.browser.BackForwardTransitionAnimationManager;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.WebContentsStatics;
+import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
+import org.chromium.content_public.browser.test.util.BackForwardTransitionAnimationManagerTestUtils;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_shell.Shell;
 import org.chromium.content_shell_apk.ChildProcessLauncherTestUtils;
 import org.chromium.content_shell_apk.ContentShellActivity;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
+import org.chromium.ui.base.BackGestureEventSwipeEdge;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -84,9 +93,59 @@ public class WebContentsTest {
                 isWebContentsDestroyed(webContents));
     }
 
+    @Test
+    @SmallTest
+    public void testNativeDestructionInvalidatesRetainedAnimationManager() {
+        mActivityTestRule.launchContentShellWithUrl(TEST_URL_1);
+        mActivityTestRule.waitForActiveShellToBeDoneLoading();
+        WebContents webContents = mActivityTestRule.getWebContents();
+        BackForwardTransitionAnimationManager manager =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            BackForwardTransitionAnimationManagerTestUtils
+                                    .setMinRequiredPhysicalRamMbForTesting(0);
+                            var peer = webContents.getBackForwardTransitionAnimationManager();
+                            Assert.assertNotNull(peer);
+                            Assert.assertSame(
+                                    peer, webContents.getBackForwardTransitionAnimationManager());
+                            Assert.assertEquals(
+                                    AnimationStage.NONE, peer.getCurrentAnimationStage());
+                            return peer;
+                        });
+
+        // Creating another shell destroys the original WebContents and its native manager.
+        mActivityTestRule.loadNewShell(TEST_URL_1);
+        WebContents replacement = mActivityTestRule.getWebContents();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertTrue(webContents.isDestroyed());
+                    var replacementManager = replacement.getBackForwardTransitionAnimationManager();
+                    Assert.assertNotNull(replacementManager);
+                    Assert.assertNotSame(manager, replacementManager);
+                    Assert.assertEquals(
+                            AnimationStage.NONE, replacementManager.getCurrentAnimationStage());
+
+                    // Mock after real native destruction so a stale pointer fails
+                    // verification without accessing freed native memory.
+                    var nativeMock = mock(BackForwardTransitionAnimationManagerImpl.Natives.class);
+                    BackForwardTransitionAnimationManagerImplJni.setInstanceForTesting(nativeMock);
+                    try {
+                        manager.onGestureStarted(0.2f, BackGestureEventSwipeEdge.LEFT, false, true);
+                        manager.onGestureProgressed(0.5f, true);
+                        manager.onGestureCancelled(true);
+                        manager.onGestureInvoked(true);
+                        manager.onContentForNavigationEntryShown();
+                        Assert.assertEquals(
+                                AnimationStage.NONE, manager.getCurrentAnimationStage());
+                        verifyNoInteractions(nativeMock);
+                    } finally {
+                        BackForwardTransitionAnimationManagerImplJni.setInstanceForTesting(null);
+                    }
+                });
+    }
+
     /**
      * Check that it is possible to serialize and deserialize a WebContents object through Parcels.
-     *
      */
     @Test
     @SmallTest

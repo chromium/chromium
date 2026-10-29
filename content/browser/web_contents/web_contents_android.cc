@@ -25,6 +25,7 @@
 #include "cc/input/android/offset_tag_android.h"
 #include "content/browser/android/java/gin_java_bridge_dispatcher_host.h"
 #include "content/browser/media/media_web_contents_observer.h"
+#include "content/browser/navigation_transitions/back_forward_transition_animation_manager_android.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/renderer_host/view_transition_opt_in_state.h"
@@ -32,7 +33,6 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
 #include "content/common/frame.mojom.h"
-#include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/message_port_provider.h"
@@ -913,20 +913,13 @@ bool WebContentsAndroid::NeedToFireBeforeUnload(JNIEnv* env) {
   return web_contents_->NeedToFireBeforeUnload();
 }
 
-void WebContentsAndroid::OnContentForNavigationEntryShown(JNIEnv* env) {
-  if (auto* animation =
-          web_contents_->GetBackForwardTransitionAnimationManager()) {
-    animation->OnContentForNavigationEntryShown();
-  }
-}
-
-int32_t WebContentsAndroid::GetCurrentBackForwardTransitionStage(JNIEnv* env) {
-  auto stage = BackForwardTransitionAnimationManager::AnimationStage::kNone;
-  if (auto* animation =
-          web_contents_->GetBackForwardTransitionAnimationManager()) {
-    stage = animation->GetCurrentAnimationStage();
-  }
-  return static_cast<int32_t>(stage);
+BackForwardTransitionAnimationManagerAndroid*
+WebContentsAndroid::GetBackForwardTransitionAnimationManager() {
+  // On Android, only WebContentsViewAndroid creates a manager, which is a
+  // BackForwardTransitionAnimationManagerAndroid. WebContentsViewChildFrame
+  // returns nullptr.
+  return static_cast<BackForwardTransitionAnimationManagerAndroid*>(
+      web_contents_->GetBackForwardTransitionAnimationManager());
 }
 
 void WebContentsAndroid::SetLongPressLinkSelectText(JNIEnv* env, bool enabled) {

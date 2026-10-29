@@ -54,6 +54,7 @@ android_library("content_java_test_support") {
     "javatests/src/org/chromium/content_public/browser/test/mock/MockPage.java",
     "javatests/src/org/chromium/content_public/browser/test/mock/MockRenderFrameHost.java",
     "javatests/src/org/chromium/content_public/browser/test/mock/MockWebContents.java",
+    "javatests/src/org/chromium/content_public/browser/test/util/BackForwardTransitionAnimationManagerTestUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/BackgroundSyncNetworkUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/ChildProcessUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/ClickUtils.java",

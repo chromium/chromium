@@ -732,8 +732,6 @@ if (is_android) {
       "//chrome/browser/finds/android",
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/flags:flags_android_impl",
-      "//chrome/browser/gesturenav/android:gesturenav",
-      "//chrome/browser/gesturenav/android:impl",
       "//chrome/browser/glic/android",
       "//chrome/browser/glic/android:jni_headers",
       "//chrome/browser/glic/browser_ui:impl",

@@ -55,6 +55,7 @@ import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.test.util.BackForwardTransitionAnimationManagerTestUtils;
 import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -135,7 +136,7 @@ public class ScreenshotCaptureTest {
         mSuggestionsDeps.getFactory().mostVisitedSites = mostVisitedSites;
         mScreenshotCaptureTestHelper = new ScreenshotCaptureTestHelper();
         mHomepageTestRule.useChromeNtpForTest();
-        GestureNavigationUtils.setMinRequiredPhysicalRamMbForTesting(0);
+        BackForwardTransitionAnimationManagerTestUtils.setMinRequiredPhysicalRamMbForTesting(0);
     }
 
     @After
@@ -337,7 +338,8 @@ public class ScreenshotCaptureTest {
                             try {
                                 mRenderTestRule.compareForResult(
                                         bitmap,
-                                        "navigate_back_to_ntp_from_normal_page_without_top_controls");
+                                        "navigate_back_to_ntp_from_normal_page"
+                                                + "_without_top_controls");
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }

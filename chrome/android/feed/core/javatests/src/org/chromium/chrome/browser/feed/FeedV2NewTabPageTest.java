@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.feed.v2.FeedV2TestHelper;
 import org.chromium.chrome.browser.feed.v2.TestFeedServer;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NtpSmoothTransitionDelegate;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -65,6 +64,7 @@ import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.util.BackForwardTransitionAnimationManagerTestUtils;
 import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
@@ -134,7 +134,7 @@ public class FeedV2NewTabPageTest {
         FakeMostVisitedSites mostVisitedSites = new FakeMostVisitedSites();
         mostVisitedSites.setTileSuggestions(mSiteSuggestions);
         mSuggestionsDeps.getFactory().mostVisitedSites = mostVisitedSites;
-        GestureNavigationUtils.setMinRequiredPhysicalRamMbForTesting(0);
+        BackForwardTransitionAnimationManagerTestUtils.setMinRequiredPhysicalRamMbForTesting(0);
     }
 
     @After

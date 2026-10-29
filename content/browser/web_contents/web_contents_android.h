@@ -19,7 +19,6 @@
 #include "content/browser/renderer_host/navigation_controller_android.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 #include "ui/android/browser_controls_offset_tag_definitions.h"
 
@@ -31,6 +30,7 @@ struct AXTreeUpdate;
 
 namespace content {
 
+class BackForwardTransitionAnimationManagerAndroid;
 class WebContents;
 class WebContentsImpl;
 
@@ -240,8 +240,8 @@ class CONTENT_EXPORT WebContentsAndroid {
   void AddDestructionObserver(DestructionObserver* observer);
   void RemoveDestructionObserver(DestructionObserver* observer);
 
-  void OnContentForNavigationEntryShown(JNIEnv* env);
-  int32_t GetCurrentBackForwardTransitionStage(JNIEnv* env);
+  BackForwardTransitionAnimationManagerAndroid*
+  GetBackForwardTransitionAnimationManager();
 
   void CaptureContentAsBitmapForTesting(
       JNIEnv* env,

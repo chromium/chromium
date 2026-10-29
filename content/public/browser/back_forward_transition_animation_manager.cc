@@ -4,7 +4,6 @@
 
 #include "content/public/browser/back_forward_transition_animation_manager.h"
 
-#include "base/auto_reset.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -12,7 +11,6 @@
 #include "ui/gfx/animation/animation.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 #include "ui/base/l10n/l10n_util_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -24,17 +22,6 @@ bool BackForwardTransitionAnimationManager::
   return content::GetContentClient()
       ->browser()
       ->ShouldAnimateBackForwardTransitions();
-}
-
-// static
-base::AutoReset<int>
-BackForwardTransitionAnimationManager::SetMinRequiredPhysicalRamMbForTesting(
-    int mb) {
-#if BUILDFLAG(IS_ANDROID)
-  return NavigationTransitionConfig::SetMinRequiredPhysicalRamMbForTesting(mb);
-#else
-  return base::AutoReset<int>(nullptr, 0);
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // static

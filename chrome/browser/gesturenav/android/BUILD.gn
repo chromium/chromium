@@ -3,10 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
-import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
-  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/gesturenav/HardwareDraw.java",
     "java/src/org/chromium/chrome/browser/gesturenav/NativePageBitmapCapturer.java",
@@ -21,7 +19,6 @@ android_library("java") {
     "//components/embedder_support/android:web_contents_delegate_java",
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:url_java",
   ]
@@ -48,36 +45,6 @@ android_library("javatests") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//ui/android:ui_no_recycler_view_java",
-  ]
-}
-
-generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/gesturenav/TabOnBackGestureHandler.java" ]
-}
-
-source_set("gesturenav") {
-  sources = [ "tab_on_back_gesture_handler.h" ]
-  public_deps = [
-    "//base",
-    "//chrome/browser/android:tabs_public",
-    "//ui/events",
-  ]
-}
-
-source_set("impl") {
-  sources = [
-    "gesture_navigation_utils.cc",
-    "tab_on_back_gesture_handler.cc",
-  ]
-  deps = [
-    ":gesturenav",
-    ":jni_headers",
-    "//chrome/android:jni_headers",
-    "//content/public/browser",
-    "//content/public/common",
-    "//third_party/blink/public/common",
-    "//ui/android",
-    "//ui/gfx/geometry",
   ]
 }
 

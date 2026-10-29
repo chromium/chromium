@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.UserData;
 import org.chromium.blink_public.input.SelectionGranularity;
+import org.chromium.content_public.browser.BackForwardTransitionAnimationManager;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.ImageDownloadCallback;
 import org.chromium.content_public.browser.JavaScriptCallback;
@@ -29,7 +30,6 @@ import org.chromium.content_public.browser.ViewEventSink;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
 import org.chromium.ui.BrowserControlsOffsetTagDefinitions;
 import org.chromium.ui.OverscrollRefreshHandler;
 import org.chromium.ui.base.EventForwarder;
@@ -386,11 +386,9 @@ public class MockWebContents implements WebContents, WebContentsObserver.Observa
     }
 
     @Override
-    public void onContentForNavigationEntryShown() {}
-
-    @Override
-    public int getCurrentBackForwardTransitionStage() {
-        return AnimationStage.NONE;
+    public @Nullable BackForwardTransitionAnimationManager
+            getBackForwardTransitionAnimationManager() {
+        return null;
     }
 
     @Override

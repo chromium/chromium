@@ -40,6 +40,8 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
+import org.chromium.content.browser.navigation_transitions.BackForwardTransitionAnimationManagerImpl;
+import org.chromium.content.browser.navigation_transitions.BackForwardTransitionAnimationManagerImplJni;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.insets.InsetObserver;
@@ -65,14 +67,14 @@ public class HistoryNavigationCoordinatorUnitTest {
     @Mock private InsetObserver mInsetObserver;
     @Mock private BackActionDelegate mBackActionDelegate;
     @Mock private Tab mTab;
-    @Mock private GestureNavigationUtils.Natives mGestureNavigationUtilsJni;
+    @Mock private BackForwardTransitionAnimationManagerImpl.Natives mAnimationManagerJni;
     @Mock private SideUiStateProvider mSideUiStateProvider;
 
     @Captor private ArgumentCaptor<FullscreenManager.Observer> mFullscreenObserverCaptor;
 
     @Before
     public void setup() {
-        GestureNavigationUtilsJni.setInstanceForTesting(mGestureNavigationUtilsJni);
+        BackForwardTransitionAnimationManagerImplJni.setInstanceForTesting(mAnimationManagerJni);
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
 
