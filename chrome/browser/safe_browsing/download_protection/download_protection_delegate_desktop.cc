@@ -131,7 +131,7 @@ net::NetworkTrafficAnnotationTag DownloadProtectionDelegateDesktop::
               "the download is not allowlisted, and its file extension is "
               "supported by download protection service (e.g. executables, "
               "archives). Please refer to https://cs.chromium.org/chromium/src/"
-              "chrome/browser/resources/safe_browsing/"
+              "components/safe_browsing/content/resources/download_file_types/"
               "download_file_types.asciipb for the complete list of supported "
               "files."
             data:

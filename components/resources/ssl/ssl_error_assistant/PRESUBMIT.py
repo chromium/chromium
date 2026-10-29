@@ -4,12 +4,13 @@
 
 """Presubmit checks for ssl_error_assistant.asciipb.
 
-This is taken from chrome/browser/resources/safe_browsing/PRESUBMIT.py.
+This is taken from
+components/safe_browsing/content/resources/download_file_types/PRESUBMIT.py.
 """
 
 
 # TODO(meacer): Refactor and reuse shared code with
-#               chrome/browser/resources/safe_browsing/PRESUBMIT.py
+# components/safe_browsing/content/resources/download_file_types/PRESUBMIT.py
 def CheckVersionUpdatedInSSLErrorAssistantProto(input_api, output_api):
     # Don't report errors for "git cl presubmit --all/--files"
     if input_api.no_diffs:

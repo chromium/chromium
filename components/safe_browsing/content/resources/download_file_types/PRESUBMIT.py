@@ -63,8 +63,9 @@ def CheckVersionUpdatedInDownloadFileTypeList(input_api, output_api):
     results.append(
         output_api.PresubmitPromptWarning(
             'Please make sure you have read https://chromium.googlesource.com'
-            + '/chromium/src/+/HEAD/chrome/browser/resources/safe_browsing/'
-            + 'README.md before editing the download_file_types config files.'
+            + '/chromium/src/+/HEAD/components/safe_browsing/content/resources/'
+            + 'download_file_types/README.md before editing the '
+            + 'download_file_types config files.'
         )
     )
 
