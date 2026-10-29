@@ -184,8 +184,8 @@ OptimizationGuideGlobalState::OptimizationGuideGlobalState(
 OptimizationGuideGlobalState::OptimizationGuideGlobalState() {
 
 #if BUILDFLAG(IS_ANDROID)
-  on_device_capability_ = std::make_unique<ModelBrokerAndroid>(
-      *g_browser_process->local_state(), model_provider());
+  on_device_capability_ =
+      std::make_unique<ModelBrokerAndroid>(*g_browser_process->local_state());
 #else   // !BUILDFLAG(IS_ANDROID)
   // Create a stub capability that can't do anything.
   on_device_capability_ = std::make_unique<OnDeviceCapability>();

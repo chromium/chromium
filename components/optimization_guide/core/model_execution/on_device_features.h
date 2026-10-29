@@ -11,7 +11,6 @@
 #include "base/component_export.h"
 #include "base/containers/enum_set.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 
 namespace optimization_guide {
@@ -27,11 +26,6 @@ std::string_view GetVariantName(mojom::OnDeviceFeature feature);
 // Returns which ModelExecutionFeature is used for this feature key.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 proto::ModelExecutionFeature ToModelExecutionFeatureProto(
-    mojom::OnDeviceFeature feature);
-
-// Returns the opt target to use for on-device configuration for `feature`.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-proto::OptimizationTarget GetOptimizationTargetForFeature(
     mojom::OnDeviceFeature feature);
 
 // Returns which feature key is associated with this ModelExecutionFeature, or

@@ -4,7 +4,6 @@
 
 #include "components/optimization_guide/core/model_execution/test/fake_model_broker_android.h"
 
-#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/optimization_guide/core/model_execution/test/fake_android_manifest_asset.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -48,19 +47,12 @@ FakeModelBrokerAndroid::BindAndPassRemote() {
 }
 
 void FakeModelBrokerAndroid::InstallBaseModel() {
-  java_helper_.TriggerDownloaderOnAvailable(
-      options_.metadata.base_model_name(),
-      options_.metadata.base_model_version());
+  java_helper_.TriggerDownloaderOnAvailable(options_.base_model_spec.name,
+                                            options_.base_model_spec.version);
 }
 
 void FakeModelBrokerAndroid::UnInstallBaseModel() {
   java_helper_.UnInstallModel();
-}
-
-void FakeModelBrokerAndroid::UpdateModelAdaptation(
-    const FakeAdaptationAsset& asset) {
-  UpdateTarget(GetOptimizationTargetForFeature(asset.feature()),
-               asset.model_info());
 }
 
 void FakeModelBrokerAndroid::UpdateManifest(
@@ -70,14 +62,9 @@ void FakeModelBrokerAndroid::UpdateManifest(
 
 ModelBrokerAndroid& FakeModelBrokerAndroid::EnsureBroker() {
   if (!broker_) {
-    broker_.emplace(local_state_, model_provider_);
+    broker_.emplace(local_state_);
   }
   return *broker_;
-}
-
-void FakeModelBrokerAndroid::UpdateTarget(proto::OptimizationTarget target,
-                                          const ModelInfo& model_info) {
-  model_provider_.UpdateModelImmediatelyForTesting(target, model_info);
 }
 
 }  // namespace optimization_guide

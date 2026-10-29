@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/token.h"
 #include "base/types/expected.h"
-#include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/model_execution/android/android_manifest.h"
 #include "components/optimization_guide/core/model_execution/model_broker_impl.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
@@ -46,8 +45,7 @@ class ModelBrokerAndroid final : public OnDeviceCapability,
  public:
   class SolutionFactory;
 
-  explicit ModelBrokerAndroid(PrefService& local_state,
-                              OptimizationGuideModelProvider& model_provider);
+  explicit ModelBrokerAndroid(PrefService& local_state);
   ~ModelBrokerAndroid() override;
 
   // OnDeviceCapability:
@@ -113,8 +111,6 @@ class ModelBrokerAndroid final : public OnDeviceCapability,
   void OnDownloadProgressUpdated(int64_t downloaded_bytes, int64_t total_bytes);
 
   const raw_ref<PrefService> local_state_;
-
-  raw_ref<OptimizationGuideModelProvider> model_provider_;
 
   // Tracks which assets have been used recently.
   UsageTracker usage_tracker_;

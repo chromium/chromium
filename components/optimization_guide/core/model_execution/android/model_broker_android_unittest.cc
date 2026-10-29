@@ -14,11 +14,9 @@
 #include "components/optimization_guide/core/model_execution/android/android_manifest.h"
 #include "components/optimization_guide/core/model_execution/configs/summarize_solution_config.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_download_progress_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/optimization_guide/core/model_execution/test/fake_android_manifest_asset.h"
-#include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_broker_android.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/model_execution/test/mock_download_progress_observer.h"
@@ -35,19 +33,23 @@ namespace optimization_guide {
 
 namespace {
 
+using BaseModelSpec = on_device_model::ModelDownloaderAndroid::BaseModelSpec;
 using ModelStatus = on_device_model::ModelDownloaderAndroid::ModelStatus;
-
-proto::OnDeviceBaseModelMetadata MatchingMetadata(
-    const OnDeviceBaseModelSpec& spec) {
-  return CreateOnDeviceBaseModelMetadata(spec.model_name, spec.model_version,
-                                         {spec.selected_performance_hint});
-}
 
 proto::OnDeviceModelExecutionFeatureConfig UnsafeFeatureConfig(
     mojom::OnDeviceFeature feature) {
   proto::OnDeviceModelExecutionFeatureConfig cfg = SimpleTestFeatureConfig();
   cfg.set_feature(ToModelExecutionFeatureProto(feature));
   return cfg;
+}
+
+std::unique_ptr<FakeAndroidManifestAsset> MakeFeatureManifestAsset(
+    mojom::OnDeviceFeature feature) {
+  proto::SolutionConfig config;
+  *config.mutable_feature() = UnsafeFeatureConfig(feature);
+  auto asset = std::make_unique<FakeAndroidManifestAsset>();
+  asset->AddSolutionConfig(ToUseCaseName(feature), std::move(config));
+  return asset;
 }
 
 std::unique_ptr<FakeAndroidManifestAsset> MakeSummarizerManifestAsset(
@@ -108,11 +110,13 @@ class ModelBrokerAndroidTest : public testing::Test {
   ~ModelBrokerAndroidTest() override = default;
 
   void InstallTestFeatureConfig() {
-    fake_broker_.UpdateModelAdaptation(test_asset_);
+    fake_broker_.UpdateManifest(
+        MakeFeatureManifestAsset(mojom::OnDeviceFeature::kTest));
   }
 
   void InstallScamDetectionFeatureConfig() {
-    fake_broker_.UpdateModelAdaptation(scam_detection_asset_);
+    fake_broker_.UpdateManifest(
+        MakeFeatureManifestAsset(mojom::OnDeviceFeature::kScamDetection));
   }
 
   std::unique_ptr<OnDeviceSession> DownloadModelAndCreateSession(
@@ -124,26 +128,18 @@ class ModelBrokerAndroidTest : public testing::Test {
       return client.GetSubscriber(feature).unavailable_reason() ==
              mojom::ModelUnavailableReason::kPendingAssets;
     });
-    fake_broker_.java_helper().TriggerDownloaderOnAvailable(
-        spec_.model_name, spec_.model_version);
+    fake_broker_.java_helper().TriggerDownloaderOnAvailable(spec_.name,
+                                                            spec_.version);
     return future.Take();
   }
 
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  OnDeviceBaseModelSpec spec_{.model_name = "Test", .model_version = "0.0.1"};
+  BaseModelSpec spec_{.name = "Test", .version = "0.0.1"};
   FakeModelBrokerAndroid fake_broker_{{
-      .metadata = MatchingMetadata(spec_),
+      .base_model_spec = spec_,
       .preinstall_base_model = false,
-  }};
-  FakeAdaptationAsset test_asset_{{
-      .config = UnsafeFeatureConfig(mojom::OnDeviceFeature::kTest),
-      .metadata = MatchingMetadata(spec_),
-  }};
-  FakeAdaptationAsset scam_detection_asset_{{
-      .config = UnsafeFeatureConfig(mojom::OnDeviceFeature::kScamDetection),
-      .metadata = MatchingMetadata(spec_),
   }};
 };
 
@@ -229,14 +225,13 @@ TEST_F(ModelBrokerAndroidTest, ExecuteModel) {
       model_execution_info->on_device_model_execution_info()
           .model_versions()
           .on_device_model_service_version();
-  EXPECT_EQ(on_device_model_service_version.model_adaptation_version(),
-            test_asset_.version());
+  EXPECT_EQ(on_device_model_service_version.model_adaptation_version(), 0);
   EXPECT_EQ(on_device_model_service_version.on_device_base_model_metadata()
                 .base_model_name(),
-            spec_.model_name);
+            spec_.name);
   EXPECT_EQ(on_device_model_service_version.on_device_base_model_metadata()
                 .base_model_version(),
-            spec_.model_version);
+            spec_.version);
 }
 
 // Verify that ExecuteModel succeeds after the model is disconnected.
@@ -395,26 +390,6 @@ TEST_F(ModelBrokerAndroidTest, BuiltinConfigProvidesExpectedTokenLimits) {
             kAndroidMaxOutputTokens);
 }
 
-TEST_F(ModelBrokerAndroidTest, ManifestConfigDoesNotWaitForAdaptation) {
-  ModelBrokerClient client(fake_broker_.BindAndPassRemote(), nullptr);
-  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
-  client.CreateSession(mojom::OnDeviceFeature::kSummarize,
-                       SessionConfigParams{}, future.GetCallback());
-
-  fake_broker_.java_helper().TriggerDownloaderOnAvailable(spec_.model_name,
-                                                          spec_.model_version);
-  const auto target =
-      GetOptimizationTargetForFeature(mojom::OnDeviceFeature::kSummarize);
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return fake_broker_.model_provider()
-        .GetRegistrationMetadata(target)
-        .has_value();
-  }));
-
-  EXPECT_TRUE(future.Wait());
-  EXPECT_TRUE(future.Get());
-}
-
 TEST_F(ModelBrokerAndroidTest, ComponentConfigAppliesBeforeFirstUse) {
   // Storing a config before first use should not start AICore status checks.
   fake_broker_.java_helper().settings().SetDefaultStatusCheckResult(
@@ -435,8 +410,8 @@ TEST_F(ModelBrokerAndroidTest, ComponentConfigAppliesBeforeFirstUse) {
                .unavailable_reason() ==
            mojom::ModelUnavailableReason::kPendingUsage;
   }));
-  fake_broker_.java_helper().TriggerDownloaderOnAvailable(spec_.model_name,
-                                                          spec_.model_version);
+  fake_broker_.java_helper().TriggerDownloaderOnAvailable(spec_.name,
+                                                          spec_.version);
   auto session = future.Take();
   ASSERT_TRUE(session);
   EXPECT_EQ(session->GetTokenLimits().max_execute_tokens, 1234u);
@@ -462,48 +437,6 @@ TEST_F(ModelBrokerAndroidTest, FailedManifestLoadPreservesCurrentSolution) {
   EXPECT_EQ(subscriber.client()->GetWeakPtr().get(), original_client.get());
   EXPECT_EQ(subscriber.client()->token_limits().max_execute_tokens,
             kAndroidMaxExecuteTokens);
-}
-
-TEST_F(ModelBrokerAndroidTest,
-       ManifestReplacementPreservesAdaptationBackedSession) {
-  // Scam Detection gets its config from an adaptation, not the manifest.
-  // Replacing the manifest must preserve its client and allow the same session
-  // to execute again using the original adaptation.
-  InstallScamDetectionFeatureConfig();
-  ModelBrokerClient client(fake_broker_.BindAndPassRemote(), nullptr);
-  auto session = DownloadModelAndCreateSession(
-      client, mojom::OnDeviceFeature::kScamDetection);
-  ASSERT_TRUE(session);
-  auto& subscriber =
-      client.GetSubscriber(mojom::OnDeviceFeature::kScamDetection);
-  auto original_client = subscriber.client()->GetWeakPtr();
-  ASSERT_TRUE(original_client);
-
-  proto::ExampleForTestingRequest request;
-  request.set_string_value("legacy response");
-  ResponseHolder initial_response;
-  session->ExecuteModel(request, initial_response.GetStreamingCallback());
-  ASSERT_TRUE(initial_response.GetFinalStatus());
-  EXPECT_EQ(initial_response.value(), "legacy response");
-
-  fake_broker_.UpdateManifest(MakeSummarizerManifestAsset(1234));
-
-  // Unlike manifest-backed sessions, the existing adaptation-backed session
-  // can start another execution after the snapshot is replaced.
-  ResponseHolder response;
-  session->ExecuteModel(request, response.GetStreamingCallback());
-  ASSERT_TRUE(response.GetFinalStatus());
-  EXPECT_EQ(response.value(), "legacy response");
-  ASSERT_TRUE(original_client);
-  ASSERT_TRUE(subscriber.client().has_value());
-  EXPECT_EQ(subscriber.client()->GetWeakPtr().get(), original_client.get());
-  ASSERT_TRUE(response.model_execution_info());
-  EXPECT_EQ(response.model_execution_info()
-                ->on_device_model_execution_info()
-                .model_versions()
-                .on_device_model_service_version()
-                .model_adaptation_version(),
-            scam_detection_asset_.version());
 }
 
 TEST_F(ModelBrokerAndroidTest, ComponentConfigReplacesBuiltinForNewSessions) {
@@ -676,8 +609,8 @@ TEST_F(ModelBrokerAndroidStatusCheckTest, ModelStatusDownloadable) {
 
 // Verify that when model status is kApiNotAvailable (e.g., Chrome-branded
 // builds without MLKit), the flow continues as if the check passed. The
-// subscriber should reach kPendingAssets since the model adaptation may still
-// need to be downloaded.
+// subscriber should reach kPendingAssets since the base model may still need
+// to be downloaded.
 TEST_F(ModelBrokerAndroidStatusCheckTest, ModelStatusApiNotAvailable) {
   fake_broker_.java_helper().settings().SetDefaultStatusCheckResult(
       ModelStatus::kApiNotAvailable);
@@ -740,8 +673,8 @@ TEST_F(ModelBrokerAndroidStatusCheckTest,
   // path can start the metadata request that retrieves the model spec.
   auto& subscriber = client.GetSubscriber(mojom::OnDeviceFeature::kSummarize);
 
-  fake_broker_.java_helper().TriggerDownloaderOnAvailable(spec_.model_name,
-                                                          spec_.model_version);
+  fake_broker_.java_helper().TriggerDownloaderOnAvailable(spec_.name,
+                                                          spec_.version);
 
   // The returned BaseModelSpec makes the summarize solution available.
   EXPECT_TRUE(base::test::RunUntil(

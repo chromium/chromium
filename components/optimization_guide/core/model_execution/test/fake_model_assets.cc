@@ -9,11 +9,8 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
-#include "components/optimization_guide/core/model_execution/on_device_features.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_names.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
-#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
 #include "third_party/dawn/include/dawn/dawn_proc.h"
@@ -102,21 +99,8 @@ base::DictValue FakeBaseModelAsset::Manifest() const {
                                         supported_performance_hints_.Clone()));
 }
 
-proto::OnDeviceBaseModelMetadata FakeBaseModelAsset::DefaultSpec() {
-  proto::OnDeviceBaseModelMetadata result;
-  result.set_base_model_version("0.0.1");
-  result.set_base_model_name("Test");
-  result.add_supported_performance_hints(
-      proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY);
-  result.add_supported_performance_hints(
-      proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE);
-  result.add_supported_performance_hints(
-      proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU);
-  return result;
-}
-
-FakeAdaptationAsset::FakeAdaptationAsset(FakeAdaptationAsset::Content&& content)
-    : feature_(*ToOnDeviceFeature(content.config.feature())) {
+FakeAdaptationAsset::FakeAdaptationAsset(
+    FakeAdaptationAsset::Content&& content) {
   CHECK(temp_dir_.CreateUniqueTempDir());
   base::FilePath config_path =
       temp_dir_.GetPath().Append(kOnDeviceModelExecutionConfigFile);
@@ -125,20 +109,12 @@ FakeAdaptationAsset::FakeAdaptationAsset(FakeAdaptationAsset::Content&& content)
     *config.add_feature_configs() = content.config;
     CHECK(base::WriteFile(config_path, config.SerializeAsString()));
   }
-  std::vector<base::FilePath> additional_files = {config_path};
   if (content.weight) {
     base::FilePath weights_path =
         temp_dir_.GetPath().Append(kOnDeviceModelAdaptationWeightsFile);
     CHECK(base::WriteFile(weights_path,
                           base::NumberToString(content.weight.value())));
-    additional_files.push_back(weights_path);
   }
-  model_info_ = {
-      .model_file_path = base::FilePath::FromUTF8Unsafe(kTestAbsoluteFilePath),
-      .additional_files = std::move(additional_files),
-      .version = version(),
-      .model_metadata = AnyWrapProto(content.metadata),
-  };
 }
 FakeAdaptationAsset::~FakeAdaptationAsset() = default;
 

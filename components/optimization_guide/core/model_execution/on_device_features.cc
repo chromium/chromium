@@ -38,43 +38,6 @@ std::string_view GetVariantName(mojom::OnDeviceFeature feature) {
   }
 }
 
-
-// To enable on-device execution for a feature, update this to return a
-// non-null target.
-proto::OptimizationTarget GetOptimizationTargetForFeature(
-    mojom::OnDeviceFeature feature) {
-  switch (feature) {
-    case mojom::OnDeviceFeature::kCompose:
-      return proto::OPTIMIZATION_TARGET_COMPOSE;
-    case mojom::OnDeviceFeature::kTest:
-      return proto::OPTIMIZATION_TARGET_MODEL_VALIDATION;
-    case mojom::OnDeviceFeature::kPromptApi:
-      return proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PROMPT_API;
-    case mojom::OnDeviceFeature::kSummarize:
-      return proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_SUMMARIZE;
-    case mojom::OnDeviceFeature::kHistorySearch:
-      return proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_HISTORY_SEARCH;
-    case mojom::OnDeviceFeature::kHistoryQueryIntent:
-      return proto::
-          OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_HISTORY_QUERY_INTENT;
-    case mojom::OnDeviceFeature::kScamDetection:
-      return proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_SCAM_DETECTION;
-    case mojom::OnDeviceFeature::kPermissionsAi:
-      return proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PERMISSIONS_AI;
-    case mojom::OnDeviceFeature::kWritingAssistanceApi:
-      return proto::
-          OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API;
-    case mojom::OnDeviceFeature::kProofreaderApi:
-      return proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PROOFREADER_API;
-    case mojom::OnDeviceFeature::kOnDeviceSpeechRecognition:
-      return proto::
-          OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION;
-    case mojom::OnDeviceFeature::kSpeechRecognitionSmallExpertModel:
-      return proto::
-          OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION_TINY_GEMMA;
-  }
-}
-
 proto::ModelExecutionFeature ToModelExecutionFeatureProto(
     mojom::OnDeviceFeature feature) {
   switch (feature) {

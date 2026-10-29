@@ -126,21 +126,22 @@ classDiagram
 
 # Android Broker
 
-The android implementation uses AICore as the Service, and as the AssetProvider.
-It downloads additional assets from optimization_guide::ModelProvider. The main
-class is ModelBrokerAndroid, which is analogous to ManifestBrokerState. Chrome
-will download and own feature configs that match the models found in AICore.
+The android implementation uses AICore as the Service and model AssetProvider.
+The main class is `ModelBrokerAndroid`, which is analogous to
+`ManifestBrokerState`. Chrome owns feature solution configs via
+`AndroidManifest` (from built-in defaults or component updates) for the models
+found in AICore.
 
 Android:
 
 ```mermaid
 classDiagram
     OnDeviceCapability <|-- ModelBrokerAndroid
+    ModelBrokerAndroid *-- AndroidManifest
     ModelBrokerAndroid *-- UsageTracker
     ModelBrokerAndroid *-- ModelBrokerImpl
     ModelBrokerAndroid *-- SolutionFactory
     SolutionFactory *-- ModelDownloaderAndroid
-    SolutionFactory *-- AdaptationLoaderMap
 ```
 
 # Client

@@ -349,7 +349,6 @@ source_set("ondevice") {
     deps += [
       ":core_util",
       ":on_device_model_execution_proto_generator",
-      ":prediction",
       "//components/component_updater",
       "//components/prefs",
       "//components/update_client",
@@ -367,8 +366,6 @@ source_set("ondevice") {
         "model_execution/android/android_manifest.h",
         "model_execution/android/model_broker_android.cc",
         "model_execution/android/model_broker_android.h",
-        "model_execution/on_device_model_adaptation_loader.cc",
-        "model_execution/on_device_model_adaptation_loader.h",
       ]
       deps += [
         "//build:branding_buildflags",
@@ -656,10 +653,8 @@ if (build_with_model_execution) {
     public_deps = [ "//components/optimization_guide/core/model_execution/configs:substitution_builders" ]
     deps = [
       ":core_util",
-      ":delivery_test_support",
       ":features",
       ":ondevice",
-      ":prediction",
       "//base",
       "//base/test:test_support",
       "//components/component_updater:test_support",
