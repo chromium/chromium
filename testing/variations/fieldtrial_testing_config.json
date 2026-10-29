@@ -5286,10 +5286,15 @@
             ],
             "experiments": [
                 {
-                    "name": "PinningEphemeral_20260915",
+                    "//0": "Arm 1: Colorful Super G Variant (Launch candidate)",
+                    "//1": "Arm 2 (Gray Super G) sets ContextualTasksUnifyPinButtonLogo: gray-super-g",
+                    "//2": "Arm 3 (Gray Spark Loop) sets ContextualTasksUnifyPinButtonLogo: spark",
+                    "name": "ColorfulSuperG_20261029",
                     "params": {
                         "ContextualTasksEntryPoint": "toolbar-ephemeral-branded",
                         "ContextualTasksEphemeralButtonAutoDismissTimeMinutes": "120",
+                        "ContextualTasksEphemeralButtonContextMenuCloseSidePanel": "true",
+                        "ContextualTasksPinnedButtonActiveIndicatorCircleHighlight": "true",
                         "ContextualTasksUnifyPinButtonLogo": "super-g",
                         "EnableCircularEphemeralButtonNextToBatterySaver": "true",
                         "overflow-items": "all-without-new-thread"
@@ -5299,14 +5304,17 @@
                         "ContextualTasksEphemeralBrandedEntryPoint",
                         "ContextualTasksEphemeralButtonAutoDismiss",
                         "ContextualTasksEphemeralButtonContextMenu",
+                        "ContextualTasksPinnedButtonActiveIndicator",
                         "ContextualTasksPinningV2",
+                        "ContextualTasksSidePanelDefaultRight",
                         "ContextualTasksUnifyPinButtonLogos",
+                        "ContextualTasksUpdatedEntryPoints",
                         "EnableContextualTasksPinButtonInToolbar",
-                        "EnableContextualTasksPinButtonOnSrp",
-                        "EphemeralPinningVisibleWhenPermanentlyPinned"
+                        "EnableContextualTasksPinButtonOnSrp"
                     ],
                     "disable_features": [
-                        "ContextualTasksHideMenuOnAiPage"
+                        "ContextualTasksHideMenuOnAiPage",
+                        "EphemeralPinningVisibleWhenPermanentlyPinned"
                     ]
                 }
             ]

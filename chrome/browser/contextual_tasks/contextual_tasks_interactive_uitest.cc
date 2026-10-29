@@ -4230,6 +4230,11 @@ class ContextualTasksSeparateViewportRequestIdsInteractiveUiTest
     auto disabled = GetDefaultDisabledFeatures();
     enabled.push_back(
         {lens::features::kLensUseSeparateRequestIdForViewportImages, {}});
+    // `kContextualTasksUpdatedEntryPoints` makes `kAppMenu` a region-only
+    // invocation source, preventing page context from being uploaded and
+    // preventing separate viewport and webpage request IDs from being
+    // generated in `LensOverlayRegionSearchHandoff`.
+    disabled.push_back(kContextualTasksUpdatedEntryPoints);
     feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
   }
 };
