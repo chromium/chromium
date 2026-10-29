@@ -15,8 +15,11 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewBinder;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.function.Supplier;
 
 /** Properties associated with the basic suggestion view. */
 @NullMarked
@@ -27,8 +30,8 @@ public class SuggestionViewViewBinder extends BaseSuggestionViewBinder<TwoLineSu
     @Override
     protected void bindContent(
             PropertyModel model, TwoLineSuggestionView view, PropertyKey propertyKey) {
-        if (propertyKey == SuggestionViewProperties.CONTENT_DESCRIPTION) {
-            view.setContentDescription(model.get(SuggestionViewProperties.CONTENT_DESCRIPTION));
+        if (propertyKey == SuggestionViewProperties.CONTENT_DESCRIPTION_SUPPLIER) {
+            view.setContentDescription(resolveContentDescription(model));
         } else if (propertyKey == SuggestionViewProperties.IS_SEARCH_SUGGESTION) {
             // https://crbug.com/40084252: ensure URLs are always composed LTR and that their
             // components are not re-ordered.
@@ -85,6 +88,21 @@ public class SuggestionViewViewBinder extends BaseSuggestionViewBinder<TwoLineSu
             return;
         }
         tv.setText(text);
+    }
+
+    /**
+     * Returns the content description for the suggestion, or {@code null} when it is not needed.
+     *
+     * <p>Content descriptions are only ever read by accessibility services, and formatting them is
+     * comparatively expensive, so the supplier is resolved only while such a service is running.
+     * Suggestion rows are rebuilt on every keystroke, so a service enabled mid-session picks up
+     * descriptions on the next suggestion update.
+     */
+    private static @Nullable String resolveContentDescription(PropertyModel model) {
+        Supplier<String> supplier =
+                model.get(SuggestionViewProperties.CONTENT_DESCRIPTION_SUPPLIER);
+        if (supplier == null || !AccessibilityState.isAccessibilityManagerEnabled()) return null;
+        return supplier.get();
     }
 
     private void updateMaxLines(TextView tv, boolean allowWrapAround) {

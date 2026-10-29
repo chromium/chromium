@@ -84,7 +84,9 @@ public class TabGroupSuggestionProcessor extends BaseSuggestionViewProcessor {
         applyHighlightToMatchRegions(descriptionText, suggestion.getDescriptionClassifications());
         applyTextColor(descriptionText, resourceProvider.getSuggestionUrlTextColor());
         model.set(SuggestionViewProperties.TEXT_LINE_2_TEXT, descriptionText);
-        model.set(SuggestionViewProperties.CONTENT_DESCRIPTION, getContentDescription(suggestion));
+        model.set(
+                SuggestionViewProperties.CONTENT_DESCRIPTION_SUPPLIER,
+                () -> getContentDescription(suggestion));
     }
 
     private SuggestionSpannable getTitleSpannable(AutocompleteMatch suggestion) {

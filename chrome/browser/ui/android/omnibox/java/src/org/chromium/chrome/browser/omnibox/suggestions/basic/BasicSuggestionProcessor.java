@@ -9,6 +9,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.text.BidiFormatter;
 
@@ -274,30 +275,23 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         int totalInGroup = model.get(SuggestionCommonProperties.TOTAL_IN_GROUP);
 
         if (totalInGroup > 0) {
-            String announcement;
-            String suggestionKindStr = mContext.getString(getSuggestionKindString(suggestion));
-            if (textLine2 != null && !TextUtils.isEmpty(textLine2.toString())) {
-                announcement =
-                        mUiContext.resourceProvider.getString(
-                                R.string.acc_omnibox_suggestion_in_group_with_type_and_description,
-                                textLine1.toString(),
-                                textLine2.toString(),
-                                suggestionKindStr,
-                                String.valueOf(indexInGroup),
-                                String.valueOf(totalInGroup),
-                                header != null ? header : "");
-
-            } else {
-                announcement =
-                        mUiContext.resourceProvider.getString(
-                                R.string.acc_omnibox_suggestion_in_group_with_type,
-                                textLine1.toString(),
-                                suggestionKindStr,
-                                String.valueOf(indexInGroup),
-                                String.valueOf(totalInGroup),
-                                header != null ? header : "");
-            }
-            model.set(SuggestionViewProperties.CONTENT_DESCRIPTION, announcement);
+            // Formatting the announcement is the single most expensive part of building this
+            // model and is only ever consumed by accessibility services. Capture the cheap
+            // ingredients and defer the formatting until the binder actually needs the string.
+            // Local copies are needed because textLine1/textLine2 are reassigned above.
+            SuggestionSpannable line1 = textLine1;
+            SuggestionSpannable line2 = textLine2;
+            @OmniboxSuggestionKind int suggestionKind = suggestion.getSuggestionKind();
+            model.set(
+                    SuggestionViewProperties.CONTENT_DESCRIPTION_SUPPLIER,
+                    () ->
+                            buildContentDescription(
+                                    line1,
+                                    line2,
+                                    suggestionKind,
+                                    indexInGroup,
+                                    totalInGroup,
+                                    header));
         }
 
         if (!isSearchSuggestion
@@ -309,8 +303,51 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         setRemoveOrRefineAction(model, input, suggestion, position);
     }
 
-    private int getSuggestionKindString(AutocompleteMatch suggestion) {
-        switch (suggestion.getSuggestionKind()) {
+    /**
+     * Formats the accessibility announcement for a suggestion row.
+     *
+     * <p>This is intentionally invoked lazily (see {@link
+     * SuggestionViewProperties#CONTENT_DESCRIPTION_SUPPLIER}) because it is comparatively expensive
+     * and only needed when an accessibility service inspects the row.
+     *
+     * @param textLine1 The primary text of the suggestion.
+     * @param textLine2 The secondary text of the suggestion, if any.
+     * @param suggestionKind The {@link OmniboxSuggestionKind} of the suggestion.
+     * @param indexInGroup 1-based index of the suggestion within its group.
+     * @param totalInGroup Total number of suggestions within the group.
+     * @param header The group header title, if any.
+     * @return The formatted announcement.
+     */
+    private String buildContentDescription(
+            SuggestionSpannable textLine1,
+            @Nullable SuggestionSpannable textLine2,
+            @OmniboxSuggestionKind int suggestionKind,
+            int indexInGroup,
+            int totalInGroup,
+            @Nullable String header) {
+        String suggestionKindStr = mContext.getString(getSuggestionKindString(suggestionKind));
+        if (textLine2 != null && !TextUtils.isEmpty(textLine2)) {
+            return mUiContext.resourceProvider.getString(
+                    R.string.acc_omnibox_suggestion_in_group_with_type_and_description,
+                    textLine1.toString(),
+                    textLine2.toString(),
+                    suggestionKindStr,
+                    String.valueOf(indexInGroup),
+                    String.valueOf(totalInGroup),
+                    header != null ? header : "");
+        } else {
+            return mUiContext.resourceProvider.getString(
+                    R.string.acc_omnibox_suggestion_in_group_with_type,
+                    textLine1.toString(),
+                    suggestionKindStr,
+                    String.valueOf(indexInGroup),
+                    String.valueOf(totalInGroup),
+                    header != null ? header : "");
+        }
+    }
+
+    private @StringRes int getSuggestionKindString(@OmniboxSuggestionKind int suggestionKind) {
+        switch (suggestionKind) {
             case OmniboxSuggestionKind.CONVERSATION:
                 return R.string.acc_omnibox_suggestion_type_conversation;
             case OmniboxSuggestionKind.SEARCH:

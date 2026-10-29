@@ -152,6 +152,8 @@ public class TabGroupSuggestionProcessorUnitTest {
                         TITLE,
                         "Red",
                         DESCRIPTION);
-        assertEquals(targetString, mModel.get(SuggestionViewProperties.CONTENT_DESCRIPTION));
+        assertEquals(
+                targetString,
+                mModel.get(SuggestionViewProperties.CONTENT_DESCRIPTION_SUPPLIER).get());
     }
 }

@@ -685,7 +685,8 @@ public class BasicSuggestionProcessorUnitTest {
                 "Google, Technology corporation. Search. 2 of 5 in the group Trending"
                         + " Searches.";
         assertEquals(
-                expectedAnnouncement, mModel.get(SuggestionViewProperties.CONTENT_DESCRIPTION));
+                expectedAnnouncement,
+                mModel.get(SuggestionViewProperties.CONTENT_DESCRIPTION_SUPPLIER).get());
     }
 
     @Test
@@ -709,7 +710,36 @@ public class BasicSuggestionProcessorUnitTest {
         String expectedAnnouncement =
                 "Gemini, AI Mode. Conversation. 3 of 4 in the group AI Suggestions.";
         assertEquals(
-                expectedAnnouncement, mModel.get(SuggestionViewProperties.CONTENT_DESCRIPTION));
+                expectedAnnouncement,
+                mModel.get(SuggestionViewProperties.CONTENT_DESCRIPTION_SUPPLIER).get());
+    }
+
+    @Test
+    public void accessibilityAnnouncements_noDescription() {
+        mProcessor.onNativeInitialized();
+        mSuggestion =
+                createSuggestionBuilder(OmniboxSuggestionType.SEARCH_SUGGEST, "Google")
+                        .setIsSearch(true)
+                        .setDescription("")
+                        .build();
+        mModel = mProcessor.createModel();
+        mModel.set(SuggestionCommonProperties.HEADER_TITLE, "Trending Searches");
+        mModel.set(SuggestionCommonProperties.INDEX_IN_GROUP, 0);
+        mModel.set(SuggestionCommonProperties.TOTAL_IN_GROUP, 3);
+
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+
+        assertEquals(
+                "Google. Search. 1 of 3 in the group Trending Searches.",
+                mModel.get(SuggestionViewProperties.CONTENT_DESCRIPTION_SUPPLIER).get());
+    }
+
+    @Test
+    public void accessibilityAnnouncements_notSetWithoutGroup() {
+        mProcessor.onNativeInitialized();
+        createSearchSuggestion(OmniboxSuggestionType.SEARCH_SUGGEST, "Google");
+        assertEquals(0, mModel.get(SuggestionCommonProperties.TOTAL_IN_GROUP));
+        assertNull(mModel.get(SuggestionViewProperties.CONTENT_DESCRIPTION_SUPPLIER));
     }
 
     @Test

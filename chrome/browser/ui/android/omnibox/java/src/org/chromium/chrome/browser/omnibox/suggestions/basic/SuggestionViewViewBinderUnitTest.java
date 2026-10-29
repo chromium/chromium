@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.basic;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
 import android.content.Context;
@@ -31,8 +32,11 @@ import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.function.Supplier;
 
 /**
  * Tests for {@link SuggestionViewViewBinder}.
@@ -42,6 +46,20 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SuggestionViewViewBinderUnitTest {
+    private static final String ANNOUNCEMENT = "Google. Search. 1 of 3 in the group Trending.";
+
+    /** Fake supplier that records how many times the binder resolved it. */
+    private static class CountingSupplier implements Supplier<String> {
+        int mCallCount;
+
+        @Override
+        public String get() {
+            mCallCount++;
+            return ANNOUNCEMENT;
+        }
+    }
+
+    private final CountingSupplier mContentDescriptionSupplier = new CountingSupplier();
     private PropertyModel mModel;
     private TwoLineSuggestionView mView;
 
@@ -175,5 +193,58 @@ public class SuggestionViewViewBinderUnitTest {
         SuggestionViewViewBinder.setTextIfChanged(tv, bound);
         assertNotSame(shown, tv.getText());
         assertEquals(1, ((Spanned) tv.getText()).getSpans(0, 5, StyleSpan.class).length);
+    }
+
+    /** The binder checks AccessibilityManager state, which the fake delegate derives from this. */
+    private static void setAccessibilityServiceEnabled(boolean enabled) {
+        AccessibilityStateTestHelper.setIsAnyAccessibilityServiceEnabledForTesting(enabled);
+    }
+
+    @Test
+    public void contentDescription_notResolvedWhenAccessibilityDisabled() {
+        setAccessibilityServiceEnabled(false);
+
+        mModel.set(
+                SuggestionViewProperties.CONTENT_DESCRIPTION_SUPPLIER, mContentDescriptionSupplier);
+
+        assertEquals(0, mContentDescriptionSupplier.mCallCount);
+        assertNull(mView.getContentDescription());
+    }
+
+    @Test
+    public void contentDescription_resolvedWhenAccessibilityEnabled() {
+        setAccessibilityServiceEnabled(true);
+
+        mModel.set(
+                SuggestionViewProperties.CONTENT_DESCRIPTION_SUPPLIER, mContentDescriptionSupplier);
+
+        assertEquals(1, mContentDescriptionSupplier.mCallCount);
+        assertEquals(ANNOUNCEMENT, mView.getContentDescription());
+    }
+
+    @Test
+    public void contentDescription_clearedWhenSupplierRemoved() {
+        setAccessibilityServiceEnabled(true);
+        mModel.set(
+                SuggestionViewProperties.CONTENT_DESCRIPTION_SUPPLIER, mContentDescriptionSupplier);
+        assertEquals(ANNOUNCEMENT, mView.getContentDescription());
+
+        mModel.set(SuggestionViewProperties.CONTENT_DESCRIPTION_SUPPLIER, null);
+
+        assertNull(mView.getContentDescription());
+    }
+
+    @Test
+    public void contentDescription_staleValueClearedWhenAccessibilityDisabled() {
+        // Simulates a recycled row that was last bound while an accessibility service was running.
+        setAccessibilityServiceEnabled(true);
+        mModel.set(
+                SuggestionViewProperties.CONTENT_DESCRIPTION_SUPPLIER, mContentDescriptionSupplier);
+        assertEquals(ANNOUNCEMENT, mView.getContentDescription());
+
+        setAccessibilityServiceEnabled(false);
+        mModel.set(SuggestionViewProperties.CONTENT_DESCRIPTION_SUPPLIER, () -> "unused");
+
+        assertNull(mView.getContentDescription());
     }
 }
