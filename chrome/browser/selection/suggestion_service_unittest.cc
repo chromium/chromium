@@ -914,36 +914,51 @@ TEST_F(SuggestionServiceMetricsTest, RecordsUmaMetricsOnSuccess) {
   ON_CALL(mock_tab(), GetContents()).WillByDefault(Return(web_contents()));
   base::HistogramTester histogram_tester;
   EmitMetrics();
-  histogram_tester.ExpectTotalCount(
-      "SmartSelection.Suggestions.Latency.EndToEnd", 1);
-  histogram_tester.ExpectTotalCount(
-      "SmartSelection.Suggestions.Latency.ClientPrep", 1);
-  histogram_tester.ExpectTotalCount(
-      "SmartSelection.Suggestions.Latency.ClientMesRpc", 1);
-  histogram_tester.ExpectTotalCount(
-      "SmartSelection.Suggestions.Latency.MesTotal", 1);
-  histogram_tester.ExpectTotalCount(
-      "SmartSelection.Suggestions.Latency.Transmission", 1);
-  histogram_tester.ExpectTotalCount(
-      "SmartSelection.Suggestions.Latency.ModelRun", 1);
-  histogram_tester.ExpectTotalCount(
-      "SmartSelection.Suggestions.Latency.MesOverhead", 1);
-  histogram_tester.ExpectTotalCount(
-      "SmartSelection.Suggestions.Latency.MesImagePrep", 1);
-  histogram_tester.ExpectTotalCount(
-      "SmartSelection.Suggestions.Latency.MesOtherOverhead", 1);
-  histogram_tester.ExpectTotalCount(
-      "SmartSelection.Suggestions.Latency.ModelContentProc", 1);
-  histogram_tester.ExpectTotalCount(
-      "SmartSelection.Suggestions.Latency.ModelPrefillQueueWait", 1);
-  histogram_tester.ExpectTotalCount(
-      "SmartSelection.Suggestions.Latency.ModelPrefill", 1);
-  histogram_tester.ExpectTotalCount(
-      "SmartSelection.Suggestions.Latency.ModelDecodeQueueWait", 1);
-  histogram_tester.ExpectTotalCount(
-      "SmartSelection.Suggestions.Latency.ModelDecode", 1);
-  histogram_tester.ExpectTotalCount(
-      "SmartSelection.Suggestions.Latency.ModelOther", 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "SmartSelection.Suggestions.Latency.EndToEnd",
+      base::Milliseconds(300 + 950), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "SmartSelection.Suggestions.Latency.ClientPrep", base::Milliseconds(300),
+      1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "SmartSelection.Suggestions.Latency.ClientMesRpc",
+      base::Milliseconds(950), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "SmartSelection.Suggestions.Latency.MesTotal", base::Milliseconds(800),
+      1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "SmartSelection.Suggestions.Latency.Transmission",
+      base::Milliseconds(950 - 800), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "SmartSelection.Suggestions.Latency.ModelRun", base::Milliseconds(500),
+      1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "SmartSelection.Suggestions.Latency.MesOverhead",
+      base::Milliseconds(800 - 500), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "SmartSelection.Suggestions.Latency.MesImagePrep", base::Milliseconds(50),
+      1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "SmartSelection.Suggestions.Latency.MesOtherOverhead",
+      base::Milliseconds(300 - 50), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "SmartSelection.Suggestions.Latency.ModelContentProc",
+      base::Milliseconds(100), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "SmartSelection.Suggestions.Latency.ModelPrefillQueueWait",
+      base::Milliseconds(30), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "SmartSelection.Suggestions.Latency.ModelPrefill",
+      base::Milliseconds(120), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "SmartSelection.Suggestions.Latency.ModelDecodeQueueWait",
+      base::Milliseconds(20), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "SmartSelection.Suggestions.Latency.ModelDecode", base::Milliseconds(200),
+      1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "SmartSelection.Suggestions.Latency.ModelOther",
+      base::Milliseconds(500 - 100 - 30 - 120 - 20 - 200), 1);
   histogram_tester.ExpectUniqueSample(
       "SmartSelection.Suggestions.Response.SuggestionCount", 1, 1);
 }
