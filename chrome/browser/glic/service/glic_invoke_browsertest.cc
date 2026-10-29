@@ -2340,7 +2340,10 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
 }
 
 // `kFail` rejects the invocation rather than disrupting live mode.
-IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, LiveModeFailRejectsInvocation) {
+// TODO(b/573171097): Re-enable once OpenLiveModeFloatyForActiveTab waits for
+// the opening invocation to complete before recording Glic.InvokeResult2.
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
+                       DISABLED_LiveModeFailRejectsInvocation) {
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance,
                        OpenLiveModeFloatyForActiveTab());
