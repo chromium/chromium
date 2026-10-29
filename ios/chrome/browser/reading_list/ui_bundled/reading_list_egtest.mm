@@ -159,12 +159,13 @@ void AssertToolbarButtonVisibleWithID(NSString* button_id) {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Taps the `button_id` toolbar button.
+// Taps the `button_id` toolbar button once it is sufficiently visible, as it
+// may still be animating into place.
 void TapToolbarButtonWithID(NSString* button_id) {
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(button_id),
-                                          grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
+  id<GREYMatcher> button_matcher = grey_allOf(grey_accessibilityID(button_id),
+                                              grey_sufficientlyVisible(), nil);
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:button_matcher];
+  [[EarlGrey selectElementWithMatcher:button_matcher] performAction:grey_tap()];
 }
 
 
