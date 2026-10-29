@@ -5,13 +5,14 @@
 import 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 
 import type {OmniboxFullAppElement} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('FullAppTest', function() {
   let app: OmniboxFullAppElement;
 
   setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('omnibox-full-app');
     document.body.appendChild(app);
   });
@@ -59,5 +60,44 @@ suite('FullAppTest', function() {
     input.remove();
     button.remove();
     focusableDiv.remove();
+  });
+
+  test('AdjustsSizeOnVoicePermissionChanged', async function() {
+    await microtasksFinished();
+    const searchbox = app.shadowRoot.querySelector('omnibox-popup-searchbox')!;
+    assertTrue(!!searchbox);
+
+    // Simulate permission prompt opening with non-zero dimensions.
+    searchbox.fire('voice-permission-changed', {
+      isOpened: true,
+      height: 220,
+      width: 250,
+    });
+    await microtasksFinished();
+
+    assertTrue(searchbox.classList.contains('permission-prompt-showing'));
+    assertEquals(
+        '220px',
+        searchbox.style.getPropertyValue('--cr_composebox_minimum_height'));
+    assertEquals(
+        '250px',
+        searchbox.style.getPropertyValue('--cr_composebox_minimum_width'));
+    assertEquals('220px', window.getComputedStyle(searchbox).minHeight);
+    assertEquals('250px', window.getComputedStyle(searchbox).minWidth);
+    assertEquals(220, Math.round(searchbox.getBoundingClientRect().height));
+
+    // Simulate permission prompt closing.
+    searchbox.fire('voice-permission-changed', {
+      isOpened: false,
+      height: 0,
+      width: 0,
+    });
+    await microtasksFinished();
+
+    assertFalse(searchbox.classList.contains('permission-prompt-showing'));
+    assertEquals(
+        '', searchbox.style.getPropertyValue('--cr_composebox_minimum_height'));
+    assertEquals(
+        '', searchbox.style.getPropertyValue('--cr_composebox_minimum_width'));
   });
 });

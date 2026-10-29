@@ -457,3 +457,12 @@ omnibox-popup-contextual-entrypoint {
 :host-context([webui-rounded-icons]) #debugButton {
   -webkit-mask-image: url(//resources/cr_components/searchbox/icons/dino_cr23.svg);
 }
+
+/* Only set min height/width if it exists;
+ * otherwise use existing min height/width.
+ */
+:host(.permission-prompt-showing),
+:host(.permission-prompt-showing) #inputWrapper {
+  min-height: var(--cr_composebox_minimum_height, var(--cr-searchbox-height));
+  min-width: var(--cr_composebox_minimum_width);
+}
