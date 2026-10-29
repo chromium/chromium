@@ -195,6 +195,10 @@ class WebUIToolbarUI : public TopChromeWebUIController,
   contextual_search::ContextualSearchSessionHandle*
   GetOrCreateContextualSessionHandle();
 
+  // Returns the profile of the window of the toolbar. See
+  // webui::GetUserProfile().
+  Profile* GetUserProfile() const;
+
   bool is_initialized_ = false;
   raw_ptr<OmniboxController> omnibox_controller_ = nullptr;
 

@@ -97,11 +97,15 @@ class PrewarmHelper {
  public:
   // Configures the WebContents used for the initial WebUI (e.g. page load
   // metrics, background color, zoom gestures, and color provider source).
+  // `profile` is the profile of the window showing `web_contents`. When
+  // `web_contents` is in TopChromeWebUIProfile, `profile` is first set as its
+  // user profile.
   static void ConfigureWebUIContents(content::WebContents* web_contents,
                                      Profile* profile);
 
-  // Prewarms the WebUI toolbar WebContents for the given profile.
-  // Creates the WebContents and configures it using ConfigureWebUIContents.
+  // Prewarms the WebUI toolbar WebContents for a window of `profile`.
+  // Creates the WebContents and configures it for `profile` using
+  // ConfigureWebUIContents.
   // If `pre_navigate` is true, starts loading the toolbar URL; otherwise, only
   // initializes the renderer process.
   static std::unique_ptr<content::WebContents> PrewarmWebUIContents(

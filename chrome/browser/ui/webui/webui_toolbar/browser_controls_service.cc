@@ -16,8 +16,10 @@
 #include "base/types/expected_macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_service.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/events/event_constants.h"
@@ -251,8 +253,8 @@ BrowserControlsService::ReconstructAndValidateInteractionTime(
 void BrowserControlsService::MaybeRecordInteractionToReloadMetric(
     base::TimeTicks interaction_ticks,
     mojom::ReloadInputType input_type) const {
-  auto* profile =
-      Profile::FromBrowserContext(toolbar_rfh_->GetBrowserContext());
+  auto* profile = webui::GetUserProfile(
+      content::WebContents::FromRenderFrameHost(toolbar_rfh_));
   auto* metrics_service = WaapUIMetricsService::Get(profile);
   CHECK(metrics_service);
   std::optional<WaapUIMetricsRecorder::ReloadButtonInputType> target_input_type;

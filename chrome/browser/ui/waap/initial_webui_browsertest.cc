@@ -41,12 +41,15 @@
 #include "chrome/browser/ui/waap/initial_webui_profile_service_factory.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/toolbar_state_fetcher_impl.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_test_utils.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/common/webui_url_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -57,6 +60,7 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/mapping/metrics_mapping_features.h"
 #include "components/metrics/mapping/metrics_name_mapping.pb.h"
+#include "components/prefs/pref_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/ukm/gmock_matchers.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -79,6 +83,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/window_open_disposition.h"
@@ -1255,6 +1260,74 @@ IN_PROC_BROWSER_TEST_F(InitialWebUISameStartupPopupBrowserTest,
       "InitialWebUI.Startup.BrowserWindow.ShowRequestedToFirstPaint", 1);
 }
 
+namespace {
+
+// Returns the WebUI toolbar WebContents of `browser` once it has loaded.
+content::WebContents* GetLoadedToolbarWebContents(
+    BrowserWindowInterface* browser) {
+  auto* toolbar_button_provider = ToolbarButtonProvider::From(browser);
+  if (!toolbar_button_provider ||
+      !toolbar_button_provider->GetWebUIToolbarViewForTesting()) {
+    return nullptr;
+  }
+  content::WebContents* web_contents =
+      toolbar_button_provider->GetWebUIToolbarViewForTesting()->web_contents();
+  if (web_contents) {
+    EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+  }
+  return web_contents;
+}
+
+}  // namespace
+
+class InitialWebUISharedRendererBrowserTest
+    : public InitialWebUIBrowserTestBase {
+ public:
+  InitialWebUISharedRendererBrowserTest()
+      : InitialWebUIBrowserTestBase(
+            {{features::kTopChromeWebUISharedRenderer, {}}}) {}
+};
+
+// Verifies that the WebUI toolbar of each window is created in
+// TopChromeWebUIProfile, with the profile of the window as its user profile.
+IN_PROC_BROWSER_TEST_F(InitialWebUISharedRendererBrowserTest,
+                       ToolbarIsInTopChromeWebUIProfile) {
+  Profile* top_chrome_webui_profile = webui::GetTopChromeWebUIProfile();
+  ASSERT_TRUE(top_chrome_webui_profile);
+
+  content::WebContents* toolbar = GetLoadedToolbarWebContents(browser());
+  ASSERT_TRUE(toolbar);
+  EXPECT_EQ(top_chrome_webui_profile, toolbar->GetBrowserContext());
+  EXPECT_EQ(browser()->GetProfile(), webui::GetUserProfile(toolbar));
+  ASSERT_TRUE(toolbar->GetWebUI());
+  EXPECT_TRUE(toolbar->GetWebUI()->GetController()->GetAs<WebUIToolbarUI>());
+
+  // The toolbar of an incognito window is in the same TopChromeWebUIProfile.
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
+  content::WebContents* incognito_toolbar =
+      GetLoadedToolbarWebContents(incognito_browser);
+  ASSERT_TRUE(incognito_toolbar);
+  EXPECT_EQ(top_chrome_webui_profile, incognito_toolbar->GetBrowserContext());
+  EXPECT_EQ(incognito_browser->GetProfile(),
+            webui::GetUserProfile(incognito_toolbar));
+  // The toolbars share a renderer process.
+  EXPECT_EQ(toolbar->GetPrimaryMainFrame()->GetProcess(),
+            incognito_toolbar->GetPrimaryMainFrame()->GetProcess());
+}
+
+// Verifies that the renderer preferences of the WebUI toolbar follow the prefs
+// of its user profile.
+IN_PROC_BROWSER_TEST_F(InitialWebUISharedRendererBrowserTest,
+                       ToolbarRendererPreferencesFollowUserProfilePrefs) {
+  content::WebContents* toolbar = GetLoadedToolbarWebContents(browser());
+  ASSERT_TRUE(toolbar);
+  ASSERT_FALSE(toolbar->GetMutableRendererPrefs()->enable_do_not_track);
+
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kEnableDoNotTrack,
+                                                  true);
+  EXPECT_TRUE(toolbar->GetMutableRendererPrefs()->enable_do_not_track);
+}
+
 // Profile creation and destruction without a full ChromeOS user session is not
 // supported on ChromeOS (Ash).
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -1356,6 +1429,44 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIProfilePrewarmOmniboxBrowserTest,
   EXPECT_TRUE(webui->is_initialized());
   EXPECT_EQ(webview->GetOmniboxController(),
             webui->omnibox_controller_for_testing());
+}
+
+class InitialWebUISharedRendererProfilePrewarmingBrowserTest
+    : public InitialWebUIBrowserTestBase {
+ public:
+  InitialWebUISharedRendererProfilePrewarmingBrowserTest()
+      : InitialWebUIBrowserTestBase(
+            {{features::kTopChromeWebUISharedRenderer, {}},
+             {features::kWebUIReloadButton,
+              {{"WebUIReloadButtonPrewarmWebUI", "true"},
+               {"WebUIReloadButtonProfilePrewarming", "true"}}}}) {}
+};
+
+// Verifies that a new profile doesn't prewarm a toolbar WebContents with
+// TopChromeWebUISharedRenderer, and that the toolbar of its first window is
+// created in TopChromeWebUIProfile instead, in the same renderer process as
+// the toolbar of the other profile.
+IN_PROC_BROWSER_TEST_F(InitialWebUISharedRendererProfilePrewarmingBrowserTest,
+                       ProfilePrewarmingIsSkipped) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath new_path =
+      profile_manager->user_data_dir().Append(FILE_PATH_LITERAL("Secondary"));
+  Profile& secondary_profile =
+      profiles::testing::CreateProfileSync(profile_manager, new_path);
+
+  EXPECT_FALSE(
+      InitialWebUIProfileServiceFactory::GetForProfile(&secondary_profile));
+
+  BrowserWindowInterface* new_browser = CreateBrowser(&secondary_profile);
+  content::WebContents* toolbar = GetLoadedToolbarWebContents(new_browser);
+  ASSERT_TRUE(toolbar);
+  EXPECT_EQ(webui::GetTopChromeWebUIProfile(), toolbar->GetBrowserContext());
+  EXPECT_EQ(&secondary_profile, webui::GetUserProfile(toolbar));
+
+  content::WebContents* first_toolbar = GetLoadedToolbarWebContents(browser());
+  ASSERT_TRUE(first_toolbar);
+  EXPECT_EQ(first_toolbar->GetPrimaryMainFrame()->GetProcess(),
+            toolbar->GetPrimaryMainFrame()->GetProcess());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

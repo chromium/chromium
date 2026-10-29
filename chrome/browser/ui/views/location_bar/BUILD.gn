@@ -347,6 +347,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/content_settings",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/views/page_info",
+    "//chrome/browser/ui/webui/top_chrome",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/user_education:impl",

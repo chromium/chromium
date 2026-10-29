@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_chip.h"
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
 #include "content/public/test/browser_task_environment.h"
@@ -105,6 +106,9 @@ class WebUILocationBarTest : public testing::Test {
 
   content::BrowserTaskEnvironment browser_threads_;
   TestingProfile profile_;
+  // For WebUIToolbarWebView, which creates its WebContents in it with
+  // features::kTopChromeWebUISharedRenderer.
+  webui::ScopedTopChromeWebUIProfileForTesting scoped_top_chrome_webui_profile_;
   testing::NiceMock<MockBrowserWindowInterface> mock_browser_;
   ui::UnownedUserDataHost user_data_host_;
   std::unique_ptr<TestLocationBarModel> location_bar_model_;

@@ -521,7 +521,7 @@ void WebUIToolbarUI::WebUIRenderFrameCreated(content::RenderFrameHost* rfh) {
   // instead of in the WebUIDataSource, which is shared by the toolbars in the
   // same BrowserContext. With features::kTopChromeWebUISharedRenderer, those
   // toolbars can be for windows of different profiles.
-  Profile* user_profile = webui::GetUserProfile(web_ui()->GetWebContents());
+  Profile* user_profile = GetUserProfile();
   values.Set(kIsProfileEligibleForGlic,
              glic::GlicEnabling::IsProfileEligible(user_profile));
   values.Set(kCanShowAvatarForProfile,
@@ -551,8 +551,8 @@ void WebUIToolbarUI::DidFinishNavigation(
 void WebUIToolbarUI::PopulateLocalResourceLoaderConfig(
     blink::mojom::LocalResourceLoaderConfig* config,
     const url::Origin& requesting_origin) {
-  auto* theme_colors_manager = ThemeColorsSourceManagerFactory::GetForProfile(
-      Profile::FromWebUI(web_ui()));
+  auto* theme_colors_manager =
+      ThemeColorsSourceManagerFactory::GetForProfile(GetUserProfile());
   CHECK(theme_colors_manager);
   theme_colors_manager->PopulateLocalResourceLoaderConfig(
       config, requesting_origin, web_ui()->GetWebContents());
@@ -598,16 +598,22 @@ void WebUIToolbarUI::CreatePageHandler(
   omnibox_handler_ = std::make_unique<WebuiOmniboxHandler>(
       std::move(receiver), std::move(page),
       metrics_reporter_service->metrics_reporter(), omnibox_controller_,
-      Profile::FromWebUI(web_ui()), web_ui()->GetWebContents(),
+      GetUserProfile(), web_ui()->GetWebContents(),
       base::BindRepeating(&WebUIToolbarUI::GetOrCreateContextualSessionHandle,
                           base::Unretained(this)));
+}
+
+Profile* WebUIToolbarUI::GetUserProfile() const {
+  Profile* user_profile = webui::GetUserProfile(web_ui()->GetWebContents());
+  CHECK(user_profile);
+  return user_profile;
 }
 
 contextual_search::ContextualSearchSessionHandle*
 WebUIToolbarUI::GetOrCreateContextualSessionHandle() {
   if (!session_handle_) {
-    auto* service = ContextualSearchServiceFactory::GetForProfile(
-        Profile::FromWebUI(web_ui()));
+    Profile* profile = GetUserProfile();
+    auto* service = ContextualSearchServiceFactory::GetForProfile(profile);
     if (service) {
       // TODO(http://crbug.com/529689765): This is based on what webui_browser
       // does, and that in turn has a bunch of TODOs on its own.
@@ -615,8 +621,7 @@ WebUIToolbarUI::GetOrCreateContextualSessionHandle() {
           omnibox::CreateQueryControllerConfigParams(),
           contextual_search::ContextualSearchSource::kOmnibox,
           lens::LensOverlayInvocationSource::kOmniboxContextualQuery);
-      session_handle_->CheckSearchContentSharingSettings(
-          Profile::FromWebUI(web_ui())->GetPrefs());
+      session_handle_->CheckSearchContentSharingSettings(profile->GetPrefs());
     }
   }
   return session_handle_.get();

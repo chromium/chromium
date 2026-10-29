@@ -63,6 +63,7 @@
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/browser/ui/waap/initial_webui_metrics_dispatcher.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/browser_controls_adapter_impl.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/toolbar_state_fetcher_impl.h"
@@ -415,7 +416,7 @@ WebUIToolbarWebView::WebUIToolbarWebView(
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   auto web_view = std::make_unique<WebUIToolbarInternalWebView>(
-      browser->GetProfile(), this);
+      &webui::GetProfileForTopChromeWebUIContents(browser->GetProfile()), this);
   std::unique_ptr<content::WebContents> pre_created_contents;
 
   if (auto* manager = InitialWebUIManager::From(browser)) {

@@ -332,6 +332,7 @@ source_set("impl") {
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/flags",
+    "//chrome/browser/ui/webui/top_chrome",
     "//chrome/browser/ui/webui/webui_toolbar",
     "//chrome/browser/ui/webui/webui_toolbar:impl",
     "//chrome/browser/ui/webui/webui_toolbar/adapters:impl",
