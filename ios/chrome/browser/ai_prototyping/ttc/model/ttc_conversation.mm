@@ -21,6 +21,7 @@
 #import "base/strings/strcat.h"
 #import "base/strings/string_util.h"
 #import "base/strings/stringprintf.h"
+#import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_controller.h"
@@ -356,7 +357,15 @@ void TtcConversation::OnToolCall(const ttc::ToolRequest& tool_request,
                                  ttc::ToolResponseCallback response_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LogToolCallReceived(tool_request.name);
-  // Tool call dispatch will be wired in a subsequent CL.
+  if (delegate_) {
+    delegate_->OnToolCall(tool_request, std::move(response_callback));
+    return;
+  }
+  if (response_callback) {
+    std::move(response_callback)
+        .Run(ttc::ToolResponse::Error(
+            actor::mojom::ActionResultCode::kExecutorDestroyed));
+  }
 }
 
 void TtcConversation::OnJournalEvent(

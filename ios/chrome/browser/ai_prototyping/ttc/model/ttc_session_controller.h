@@ -14,6 +14,7 @@
 #import "base/scoped_observation.h"
 #import "base/sequence_checker.h"
 #import "components/ttc/app/public/error_codes.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_actuation_handler.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_page_context_monitor.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
@@ -21,12 +22,11 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_voice_focused_web_state_tracker.h"
 
 class BrowserList;
+class TTCJournal;
 
 namespace ttc {
 class TtcBackend;
 }  // namespace ttc
-
-class TTCJournal;
 
 namespace web {
 class WebState;
@@ -53,18 +53,24 @@ class TtcSessionController : public TtcConversation::Delegate,
   web::WebState* GetVoiceFocusedWebState() const;
 
   // Constructs a session controller injecting a custom `conversation`
-  // coordinator and optional `voice_focused_web_state_tracker`. When
-  // `voice_focused_web_state_tracker` is `nullptr` (e.g., in unit tests),
-  // page context tracking is disabled.
-  explicit TtcSessionController(std::unique_ptr<TtcConversation> conversation,
-                                std::unique_ptr<TtcVoiceFocusedWebStateTracker>
-                                    voice_focused_web_state_tracker = nullptr);
+  // coordinator, optional `voice_focused_web_state_tracker`, and optional
+  // `actuation_handler`. When `voice_focused_web_state_tracker` is `nullptr`
+  // (e.g., in unit tests), page context tracking is disabled. When
+  // `actuation_handler` is `nullptr`, tool execution is disabled and incoming
+  // tool calls fail with `kExecutorDestroyed`.
+  explicit TtcSessionController(
+      std::unique_ptr<TtcConversation> conversation,
+      std::unique_ptr<TtcVoiceFocusedWebStateTracker>
+          voice_focused_web_state_tracker = nullptr,
+      std::unique_ptr<TtcActuationHandler> actuation_handler = nullptr);
 
   // Constructs a session controller creating a `TtcConversation` with
   // `backend`, optionally monitoring the active `WebState` of `browser_list`
-  // (or none if `nullptr`).
-  explicit TtcSessionController(std::unique_ptr<ttc::TtcBackend> backend,
-                                BrowserList* browser_list = nullptr);
+  // (or none if `nullptr`), and optional `actuation_handler`.
+  explicit TtcSessionController(
+      std::unique_ptr<ttc::TtcBackend> backend,
+      BrowserList* browser_list = nullptr,
+      std::unique_ptr<TtcActuationHandler> actuation_handler = nullptr);
 
   // Constructs a session controller using a default `TtcConversation`.
   TtcSessionController();
@@ -101,6 +107,8 @@ class TtcSessionController : public TtcConversation::Delegate,
   void OnConversationClosed() override;
   void OnAudioEnergyUpdated(float energy) override;
   void OnConversationError(ttc::ErrorCode error) override;
+  void OnToolCall(const ttc::ToolRequest& tool_request,
+                  ttc::ToolResponseCallback tool_response_callback) override;
 
   // `TtcVoiceFocusedWebStateTracker::Observer` implementation:
   void OnVoiceFocusedWebStateChanged(web::WebState* web_state) override;
@@ -139,6 +147,9 @@ class TtcSessionController : public TtcConversation::Delegate,
 
   // Underlying conversation coordinator owned by this session controller.
   std::unique_ptr<TtcConversation> conversation_;
+
+  // Handler bridging incoming tool calls to `ActorService`.
+  std::unique_ptr<TtcActuationHandler> actuation_handler_;
 
   // Tracker following the active `WebState` across the profile's regular
   // `Browser`s. May be `nullptr` in unit tests constructed without a

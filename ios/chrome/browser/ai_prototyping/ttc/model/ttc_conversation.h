@@ -54,6 +54,12 @@ class TtcConversation : public ttc::TtcBackend::Observer {
 
     // Invoked when the conversation encounters an audio or transport error.
     virtual void OnConversationError(ttc::ErrorCode error) = 0;
+
+    // Invoked when the backend requests execution of `tool_request`, passing
+    // `tool_response_callback` for the execution result.
+    virtual void OnToolCall(
+        const ttc::ToolRequest& tool_request,
+        ttc::ToolResponseCallback tool_response_callback) = 0;
   };
 
   // Convenience constructor using a default `TTCAudioSessionController` and

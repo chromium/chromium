@@ -14,12 +14,15 @@
 
 #import "base/containers/span.h"
 #import "base/memory/raw_ptr.h"
+#import "base/test/test_future.h"
+#import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/ttc/app/public/error_codes.h"
 #import "components/ttc/app/test_utils.h"
 #import "components/ttc/app/ttc_backend.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_controller.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_tool_definitions.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -114,6 +117,9 @@ class FakeTtcConversationDelegate : public TtcConversation::Delegate {
   std::optional<ttc::ErrorCode> last_error() const { return last_error_; }
   bool did_initialize() const { return did_initialize_; }
   bool did_close() const { return did_close_; }
+  const std::optional<ttc::ToolRequest>& last_tool_request() const {
+    return last_tool_request_;
+  }
 
   // `TtcConversation::Delegate` implementation:
   void OnConversationInitialized() override { did_initialize_ = true; }
@@ -122,12 +128,21 @@ class FakeTtcConversationDelegate : public TtcConversation::Delegate {
   void OnConversationError(ttc::ErrorCode error) override {
     last_error_ = error;
   }
+  void OnToolCall(const ttc::ToolRequest& tool_request,
+                  ttc::ToolResponseCallback tool_response_callback) override {
+    last_tool_request_ =
+        ttc::ToolRequest{tool_request.name, tool_request.arguments.Clone()};
+    if (tool_response_callback) {
+      std::move(tool_response_callback).Run(ttc::ToolResponse::Success());
+    }
+  }
 
  private:
   float last_energy_ = -1.0f;
   std::optional<ttc::ErrorCode> last_error_;
   bool did_initialize_ = false;
   bool did_close_ = false;
+  std::optional<ttc::ToolRequest> last_tool_request_;
 };
 
 }  // namespace
@@ -345,8 +360,42 @@ TEST_F(TtcConversationTest, TestSendToolSetUpdateForwardsToBackend) {
   ttc::ToolDefinition tool;
   tool.name = "open_url";
   tools.push_back(std::move(tool));
+
   EXPECT_CALL(*mock_backend_, SendToolSetUpdate(Not(IsEmpty()))).Times(1);
   conversation_->SendToolSetUpdate(tools);
+}
+
+// Tests that incoming tool calls from the backend are forwarded to the
+// conversation delegate.
+TEST_F(TtcConversationTest, TestBackendToolCallForwardsToDelegate) {
+  conversation_->Start();
+  ASSERT_TRUE(mock_backend_->observer());
+  base::test::TestFuture<ttc::ToolResponse> future;
+  ttc::ToolRequest request{ttc::kToolGoBack, base::DictValue()};
+
+  mock_backend_->observer()->OnToolCall(request, future.GetCallback());
+
+  ASSERT_TRUE(delegate_.last_tool_request().has_value());
+  EXPECT_EQ(delegate_.last_tool_request()->name, ttc::kToolGoBack);
+  EXPECT_TRUE(future.Get().Ok());
+}
+
+// Tests that incoming tool calls fail with `kExecutorDestroyed` when no
+// conversation delegate is attached.
+TEST_F(TtcConversationTest,
+       TestBackendToolCallWithoutDelegateFailsWithExecutorDestroyed) {
+  conversation_->set_delegate(nullptr);
+  conversation_->Start();
+  ASSERT_TRUE(mock_backend_->observer());
+  base::test::TestFuture<ttc::ToolResponse> future;
+  ttc::ToolRequest request{ttc::kToolGoBack, base::DictValue()};
+
+  mock_backend_->observer()->OnToolCall(request, future.GetCallback());
+
+  const ttc::ToolResponse& response = future.Get();
+  ASSERT_FALSE(response.Ok());
+  EXPECT_EQ(response.error().code,
+            actor::mojom::ActionResultCode::kExecutorDestroyed);
 }
 
 // Tests that backend closure forwards to conversation delegate.

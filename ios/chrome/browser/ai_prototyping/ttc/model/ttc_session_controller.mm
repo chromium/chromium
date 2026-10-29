@@ -18,6 +18,7 @@
 #import "base/sequence_checker.h"
 #import "base/strings/to_string.h"
 #import "base/task/sequenced_task_runner.h"
+#import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/ttc/app/public/error_codes.h"
 #import "components/ttc/app/ttc_backend.h"
@@ -26,6 +27,7 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
@@ -101,6 +103,23 @@ void TtcSessionController::OnConversationError(ttc::ErrorCode error) {
   }
 }
 
+void TtcSessionController::OnToolCall(
+    const ttc::ToolRequest& tool_request,
+    ttc::ToolResponseCallback tool_response_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (lifecycle_ == TTCSessionLifecycle::kFinished || !actuation_handler_) {
+    if (tool_response_callback) {
+      std::move(tool_response_callback)
+          .Run(ttc::ToolResponse::Error(
+              actor::mojom::ActionResultCode::kExecutorDestroyed));
+    }
+    return;
+  }
+
+  actuation_handler_->ProcessToolCall(tool_request, GetVoiceFocusedWebState(),
+                                      std::move(tool_response_callback));
+}
+
 #pragma mark - TtcVoiceFocusedWebStateTracker::Observer
 
 void TtcSessionController::OnVoiceFocusedWebStateChanged(
@@ -159,8 +178,10 @@ void TtcSessionController::OnPageContextFetched(
 TtcSessionController::TtcSessionController(
     std::unique_ptr<TtcConversation> conversation,
     std::unique_ptr<TtcVoiceFocusedWebStateTracker>
-        voice_focused_web_state_tracker)
+        voice_focused_web_state_tracker,
+    std::unique_ptr<TtcActuationHandler> actuation_handler)
     : conversation_(std::move(conversation)),
+      actuation_handler_(std::move(actuation_handler)),
       voice_focused_web_state_tracker_(
           std::move(voice_focused_web_state_tracker)) {
   CHECK(conversation_);
@@ -170,14 +191,16 @@ TtcSessionController::TtcSessionController(
 
 TtcSessionController::TtcSessionController(
     std::unique_ptr<ttc::TtcBackend> backend,
-    BrowserList* browser_list)
+    BrowserList* browser_list,
+    std::unique_ptr<TtcActuationHandler> actuation_handler)
     : TtcSessionController(
           std::make_unique<TtcConversation>(
               [[TTCAudioSessionController alloc] init],
               std::move(backend)),
           browser_list
               ? std::make_unique<TtcVoiceFocusedWebStateTracker>(browser_list)
-              : nullptr) {}
+              : nullptr,
+          std::move(actuation_handler)) {}
 
 TtcSessionController::TtcSessionController()
     : TtcSessionController(std::make_unique<TtcConversation>()) {}
@@ -198,6 +221,9 @@ void TtcSessionController::set_journal(TTCJournal* journal) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   journal_ = journal ? journal->GetWeakPtr() : nullptr;
   conversation_->set_journal(journal);
+  if (actuation_handler_) {
+    actuation_handler_->set_journal(journal);
+  }
 }
 
 web::WebState* TtcSessionController::GetVoiceFocusedWebState() const {
@@ -233,12 +259,19 @@ void TtcSessionController::StopSession() {
     voice_focused_web_state_tracker_.reset();
   }
   conversation_->Stop();
+  if (actuation_handler_) {
+    actuation_handler_->StopTask(actor::ActorTaskStoppedReason::kStoppedByUser);
+  }
   SetLifecycle(TTCSessionLifecycle::kFinished);
 }
 
 void TtcSessionController::Disconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   StopSession();
+  if (actuation_handler_) {
+    actuation_handler_->Disconnect();
+    actuation_handler_.reset();
+  }
   weak_ptr_factory_.InvalidateWeakPtrs();
   conversation_->Disconnect();
   RemoveBackgroundObserver();

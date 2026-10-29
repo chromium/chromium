@@ -10,17 +10,29 @@
 #import <string>
 #import <utility>
 
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/test/run_until.h"
+#import "base/test/scoped_feature_list.h"
+#import "base/test/test_future.h"
 #import "base/types/expected.h"
+#import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/ttc/app/public/error_codes.h"
 #import "components/ttc/app/test_utils.h"
 #import "components/ttc/app/ttc_backend.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_controller.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_actuation_handler.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_tool_definitions.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_page_context_monitor.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_voice_focused_web_state_tracker.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
+#import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -28,6 +40,8 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -185,6 +199,26 @@ class TtcSessionControllerTest : public PlatformTest {
     apc->mutable_main_frame_data()->set_title(title);
     controller.page_context_monitor_->OnPageContextExtracted(
         url, base::ok(std::move(page_context)));
+  }
+
+  // Configures `browser` with Actor and URL-loading browser agents and inserts
+  // an active fake `WebState` with a completing navigation manager for tool
+  // actuation tests.
+  void ConfigureBrowserWithActiveNavigableTab(TestBrowser& browser,
+                                              ProfileIOS* profile) {
+    ActorBrowserAgent::CreateForBrowser(&browser);
+    UrlLoadingNotifierBrowserAgent::CreateForBrowser(&browser);
+    UrlLoadingBrowserAgent::CreateForBrowser(&browser);
+
+    auto fake_web_state = std::make_unique<web::FakeWebState>(
+        web::WebStateID::FromSerializedValue(123));
+    fake_web_state->SetBrowserState(profile);
+    fake_web_state->SetNavigationManager(
+        std::make_unique<actor::CompletingFakeNavigationManager>(
+            fake_web_state.get()));
+    browser.GetWebStateList()->InsertWebState(
+        std::move(fake_web_state),
+        WebStateList::InsertionParams::AtIndex(0).Activate());
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -686,6 +720,136 @@ TEST_F(TtcSessionControllerTest,
   controller.Disconnect();
   EXPECT_EQ(controller.GetVoiceFocusedWebState(), nullptr);
   browser_list->RemoveBrowser(&browser);
+}
+
+// Tests that `OnToolCall` fails with `kExecutorDestroyed` when no
+// `TtcActuationHandler` is configured.
+TEST_F(TtcSessionControllerTest,
+       TestOnToolCallWithoutActuationHandlerFailsWithExecutorDestroyed) {
+  TtcSessionController controller;
+  controller.StartSession();
+  base::test::TestFuture<ttc::ToolResponse> future;
+  ttc::ToolRequest request{ttc::kToolGoBack, base::DictValue()};
+
+  controller.OnToolCall(request, future.GetCallback());
+
+  const ttc::ToolResponse& response = future.Get();
+  ASSERT_FALSE(response.Ok());
+  EXPECT_EQ(response.error().code,
+            actor::mojom::ActionResultCode::kExecutorDestroyed);
+  controller.Disconnect();
+}
+
+// Tests that `OnToolCall` fails with `kExecutorDestroyed` after the session
+// has finished.
+TEST_F(TtcSessionControllerTest,
+       TestOnToolCallAfterStopSessionFailsWithExecutorDestroyed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorTools);
+  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
+  actor::ActorService* actor_service =
+      actor::ActorServiceFactory::GetForProfile(profile.get());
+  ASSERT_TRUE(actor_service);
+  FakeTTCSessionAudioController* fake_audio =
+      [[FakeTTCSessionAudioController alloc] init];
+  auto conversation = std::make_unique<TtcConversation>(fake_audio, nullptr);
+  auto actuation_handler = std::make_unique<TtcActuationHandler>(actor_service);
+  TtcSessionController controller(std::move(conversation),
+                                  /*voice_focused_web_state_tracker=*/nullptr,
+                                  std::move(actuation_handler));
+  controller.StartSession();
+  controller.StopSession();
+  base::test::TestFuture<ttc::ToolResponse> future;
+  ttc::ToolRequest request{ttc::kToolGoBack, base::DictValue()};
+
+  controller.OnToolCall(request, future.GetCallback());
+
+  const ttc::ToolResponse& response = future.Get();
+  ASSERT_FALSE(response.Ok());
+  EXPECT_EQ(response.error().code,
+            actor::mojom::ActionResultCode::kExecutorDestroyed);
+  controller.Disconnect();
+}
+
+// Tests that `OnToolCall` forwards the tracked active `WebState` to
+// `TtcActuationHandler`, lazily creates an `ActorTask`, and executes the tool.
+TEST_F(TtcSessionControllerTest, TestOnToolCallExecutesToolOnActiveWebState) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorTools);
+  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
+  actor::ActorService* actor_service =
+      actor::ActorServiceFactory::GetForProfile(profile.get());
+  ASSERT_TRUE(actor_service);
+  SceneState* scene_state = [[SceneState alloc] init];
+  scene_state.activationLevel = SceneActivationLevelForegroundActive;
+  auto browser = std::make_unique<TestBrowser>(profile.get(), scene_state);
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile.get());
+  browser_list->AddBrowser(browser.get());
+  base::ScopedClosureRunner remove_browser(
+      base::BindOnce(&BrowserList::RemoveBrowser,
+                     base::Unretained(browser_list), browser.get()));
+  ConfigureBrowserWithActiveNavigableTab(*browser, profile.get());
+  FakeTTCSessionAudioController* fake_audio =
+      [[FakeTTCSessionAudioController alloc] init];
+  auto conversation = std::make_unique<TtcConversation>(fake_audio, nullptr);
+  auto actuation_handler = std::make_unique<TtcActuationHandler>(actor_service);
+  TtcSessionController controller(
+      std::move(conversation),
+      std::make_unique<TtcVoiceFocusedWebStateTracker>(browser_list),
+      std::move(actuation_handler));
+  controller.StartSession();
+  base::test::TestFuture<ttc::ToolResponse> future;
+  base::DictValue args;
+  args.Set("url", "https://example.com");
+  ttc::ToolRequest request{ttc::kToolOpenUrl, std::move(args)};
+
+  controller.OnToolCall(request, future.GetCallback());
+
+  EXPECT_TRUE(future.Get().Ok());
+  EXPECT_TRUE(actor_service->GetActiveTaskState().has_value());
+  controller.Disconnect();
+}
+
+// Tests that `StopSession` stops any active `ActorTask` created during the
+// session.
+TEST_F(TtcSessionControllerTest, TestStopSessionStopsActiveActorTask) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorTools);
+  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
+  actor::ActorService* actor_service =
+      actor::ActorServiceFactory::GetForProfile(profile.get());
+  ASSERT_TRUE(actor_service);
+  SceneState* scene_state = [[SceneState alloc] init];
+  scene_state.activationLevel = SceneActivationLevelForegroundActive;
+  auto browser = std::make_unique<TestBrowser>(profile.get(), scene_state);
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile.get());
+  browser_list->AddBrowser(browser.get());
+  base::ScopedClosureRunner remove_browser(
+      base::BindOnce(&BrowserList::RemoveBrowser,
+                     base::Unretained(browser_list), browser.get()));
+  ConfigureBrowserWithActiveNavigableTab(*browser, profile.get());
+  FakeTTCSessionAudioController* fake_audio =
+      [[FakeTTCSessionAudioController alloc] init];
+  auto conversation = std::make_unique<TtcConversation>(fake_audio, nullptr);
+  auto actuation_handler = std::make_unique<TtcActuationHandler>(actor_service);
+  TtcSessionController controller(
+      std::move(conversation),
+      std::make_unique<TtcVoiceFocusedWebStateTracker>(browser_list),
+      std::move(actuation_handler));
+  controller.StartSession();
+  base::test::TestFuture<ttc::ToolResponse> future;
+  base::DictValue args;
+  args.Set("url", "https://example.com");
+  ttc::ToolRequest request{ttc::kToolOpenUrl, std::move(args)};
+  controller.OnToolCall(request, future.GetCallback());
+  ASSERT_TRUE(future.Get().Ok());
+  ASSERT_TRUE(actor_service->GetActiveTaskState().has_value());
+
+  controller.StopSession();
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !actor_service->GetActiveTaskState().has_value(); }));
+  controller.Disconnect();
 }
 
 }  // namespace
