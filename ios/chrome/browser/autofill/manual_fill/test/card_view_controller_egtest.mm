@@ -684,7 +684,7 @@ void DismissPaymentBottomSheet() {
 // outside the popover on iPad.
 - (void)testIPadTappingOutsidePopOverDismissCreditCardController {
   if (![ChromeEarlGrey isIPadIdiom]) {
-    return;
+    EARL_GREY_TEST_SKIPPED(@"Test is not applicable for iPhone.");
   }
   [AutofillAppInterface saveLocalCreditCard];
 
@@ -711,16 +711,14 @@ void DismissPaymentBottomSheet() {
 
 // Tests that the credit card View Controller is dismissed when tapping the
 // keyboard.
-// TODO(crbug.com/40250530): reenable this flaky test.
-- (void)DISABLED_testTappingKeyboardDismissCreditCardControllerPopOver {
+- (void)testTappingKeyboardDismissCreditCardControllerPopOver {
   if (![ChromeEarlGrey isIPadIdiom]) {
-    return;
+    EARL_GREY_TEST_SKIPPED(@"Test is not applicable for iPhone.");
   }
   [AutofillAppInterface saveLocalCreditCard];
 
   // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementName)];
+  [self focusCCNameField];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
