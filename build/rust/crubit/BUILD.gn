@@ -116,12 +116,12 @@ if (enable_rust_api_from_cpp) {
 
     # Other C++ standard library types to cover (in dependency order):
     # TODO(crbug.com/40226863): std::shared_ptr.
-    # TODO(crbug.com/40226863): std::string_view (+lossy_utf8, slice_ptr).
-    # TODO(crbug.com/40226863): std::string (needs std::string_view).
+    # TODO(crbug.com/40226863): std::string.
     # TODO(crbug.com/40226863): Other headers from Crubit's `headers.bzl`.
     public_headers = [
       "${libcxx_prefix}/include/memory",
       "${libcxx_prefix}/include/optional",
+      "${libcxx_prefix}/include/string_view",
       "${libcxx_prefix}/include/vector",
 
       # Helpers used by `allocator.rs` (e.g. `cpp_new` and `cpp_delete`).
@@ -137,19 +137,26 @@ if (enable_rust_api_from_cpp) {
     # (otherwise the generated C++ code may refer to types like
     # `std::input_iterator_tag` without including their public header).
     internal_headers = [
+      "${libcxx_prefix}/include/__fwd/string_view.h",
       "${libcxx_prefix}/include/__memory/unique_ptr.h",
       "${libcxx_prefix}/include/__optional/optional.h",
       "${libcxx_prefix}/include/__vector/vector.h",
     ]
 
-    # Hand-written Rust types (e.g. `cc_std::std::optional<T>`) that
-    # Crubit-generated code expects in the `std` module.
+    # Hand-written Rust code from Crubit (e.g. `cc_std::std::optional<T>`),
+    # placed at the module paths that the code (and Crubit-generated code)
+    # expects.
+    extra_rust_sources = [
+      "${crubit_src_dir}/support/cc_std_impl/lossy_utf8.rs",
+      "${crubit_src_dir}/support/cc_std_impl/slice_ptr.rs",
+    ]
     extra_rust_source_groups = [
       {
         sources = [
           "${crubit_src_dir}/support/cc_std_impl/allocator.rs",
           "${crubit_src_dir}/support/cc_std_impl/non_null.rs",
           "${crubit_src_dir}/support/cc_std_impl/optional.rs",
+          "${crubit_src_dir}/support/cc_std_impl/string_view.rs",
           "${crubit_src_dir}/support/cc_std_impl/unique_ptr.rs",
           "${crubit_src_dir}/support/cc_std_impl/vector.rs",
           "${crubit_src_dir}/support/cc_std_impl/vector_partial_eq.rs",

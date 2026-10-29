@@ -5,8 +5,11 @@
 #ifndef BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_STD_STD_TYPES_H_
 #define BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_STD_STD_TYPES_H_
 
+#include <stddef.h>
+
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 inline std::optional<int> AddOneIfPresent(std::optional<int> x) {
@@ -42,6 +45,18 @@ inline int SumVector(std::vector<int> v) {
     sum += x;
   }
   return sum;
+}
+
+inline size_t GetStringViewLength(std::string_view s) {
+  return s.size();
+}
+
+// The result points into the same buffer as `s`.
+inline std::string_view RemoveFirstChar(std::string_view s) {
+  if (!s.empty()) {
+    s.remove_prefix(1);
+  }
+  return s;
 }
 
 #endif  // BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_STD_STD_TYPES_H_

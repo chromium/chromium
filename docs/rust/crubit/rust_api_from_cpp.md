@@ -208,12 +208,15 @@ enabling additional lifetime-related warnings in Chromium's C++ targets.
 ## C++ standard library types
 
 Some C++ standard library types (e.g. `std::optional<T>`, `std::unique_ptr<T>`,
-and `std::vector<T>`) are represented in the generated bindings by
-layout-compatible Rust types from the `cpp_std` crate.  To name these types,
-Rust code should depend on `//build/rust/crubit:cpp_std` and write e.g.
-`cpp_std::vector<T>`.
+`std::vector<T>`, and `std::string_view`) are represented in the generated
+bindings by layout-compatible Rust types from the `cpp_std` crate.  To name
+these types, Rust code should depend on `//build/rust/crubit:cpp_std` and write
+e.g. `cpp_std::vector<T>`.
 See `build/rust/tests/test_rust_api_from_cpp/std/std_types.h` and
 `build/rust/tests/test_rust_api_from_cpp/std/unittests.rs`.
+
+`std::string_view` is represented as `cpp_std::string_view<'a>` (see the
+"References and lifetimes" section above).
 
 ## Adding hand-written Rust code to the bindings
 

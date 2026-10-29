@@ -85,3 +85,15 @@ fn test_vector() {
     // Memory allocated by Rust can be freed by C++.
     assert_eq!(SumVector(vector::from(vec![5, 6, 7])), 18);
 }
+
+#[gtest(RustApiFromCppStd, StringView)]
+fn test_string_view() {
+    use ::cpp_std::string_view;
+    use ::std_types::{GetStringViewLength, RemoveFirstChar};
+
+    // `std::string_view` uses a layout-compatible type from `cpp_std`.
+    let s = String::from("abc");
+    assert_eq!(GetStringViewLength(s.as_str().into()), 3);
+    let result: string_view<'_> = RemoveFirstChar(s.as_str().into());
+    assert_eq!(result, *"bc");
+}
