@@ -18,16 +18,6 @@ found in the LICENSE file.
             android:paddingHorizontal="@dimen/autofill_bottom_sheet_padding_horizontal"
             android:paddingVertical="@dimen/autofill_bottom_sheet_spacing_extra_small">
 
-            <!-- Google Pay logo -->
-            <ImageView
-                android:id="@+id/gpay_icon"
-                android:importantForAccessibility="no"
-                android:layout_gravity="center_horizontal"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:minHeight="@dimen/autofill_bottom_sheet_logo_min_height"
-                android:src="@drawable/google_pay" />
-
             <!-- Virtual card enrollment illustration image -->
             <ImageView
                 android:importantForAccessibility="no"

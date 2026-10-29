@@ -146,7 +146,6 @@ import java.util.List;
                                         VirtualCardEnrollmentLinkType
                                                 .VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK,
                                         /* linkOpener= */ this))
-                        .with(AutofillVcnEnrollBottomSheetProperties.IS_GPAY_LOGO_VISIBLE, false)
                         .with(
                                 AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON,
                                 ChromeFeatureList.isEnabled(

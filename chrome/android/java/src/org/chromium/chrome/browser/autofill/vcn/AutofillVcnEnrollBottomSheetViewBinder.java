@@ -53,11 +53,6 @@ import java.util.function.Function;
                     getDescriptionSpan(
                             model.get(AutofillVcnEnrollBottomSheetProperties.DESCRIPTION)));
             view.mVirtualCardDescription.setMovementMethod(LinkMovementMethod.getInstance());
-        } else if (AutofillVcnEnrollBottomSheetProperties.IS_GPAY_LOGO_VISIBLE == propertyKey) {
-            view.mGpayIcon.setVisibility(
-                    model.get(AutofillVcnEnrollBottomSheetProperties.IS_GPAY_LOGO_VISIBLE)
-                            ? View.VISIBLE
-                            : View.GONE);
         } else if (AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON == propertyKey
                 || AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON_FETCH_CALLBACK
                         == propertyKey) {

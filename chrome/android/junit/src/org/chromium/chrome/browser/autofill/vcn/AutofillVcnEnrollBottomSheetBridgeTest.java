@@ -314,20 +314,6 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
     }
 
     @Test
-    public void testInitialModelValues_GPayLogoVisibility() {
-        when(mWebContents.isDestroyed()).thenReturn(false);
-        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
-
-        requestShowContent(mWebContents);
-
-        // The GPay logo should be hidden.
-        assertFalse(
-                mBridge.getCoordinatorForTesting()
-                        .getPropertyModelForTesting()
-                        .get(AutofillVcnEnrollBottomSheetProperties.IS_GPAY_LOGO_VISIBLE));
-    }
-
-    @Test
     public void testCannotAcceptWithoutShowing() {
         mBridge.onAccept();
 
