@@ -11,22 +11,25 @@
 
 class UrlLoadingBrowserAgent;
 
-@class CommandDispatcher;
+@protocol GeminiCommands;
+@protocol SceneCommands;
 
 // The handler for opening links for Gemini.
 @interface GeminiLinkOpeningHandler : NSObject <BWGLinkOpeningDelegate>
 
-// Initialize the handler with a URL loading browser agent.
-// In order to prevent a crash, we pass the 'CommandDispatcher' directly instead
-// of a command handler. This is because command handlers fail the protocol
-// conformance test at startup time, which is when this initializer get called.
+// The handler used to dispatch `GeminiCommands`.
+@property(nonatomic, weak) id<GeminiCommands> geminiHandler;
+
+// The handler used to dispatch `SceneCommands`.
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
+
+// Initializes the handler with a `UrlLoadingBrowserAgent`.
 - (instancetype)initWithURLLoader:(UrlLoadingBrowserAgent*)URLLoadingAgent
-                       dispatcher:(CommandDispatcher*)dispatcher
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// Disconnects the handler from the UrlLoadingBrowserAgent and dispatcher.
-// Must be called before the Browser is destroyed.
+// Disconnects the handler from the `UrlLoadingBrowserAgent` and command
+// handlers. Must be called before the `Browser` is destroyed.
 - (void)disconnect;
 
 @end

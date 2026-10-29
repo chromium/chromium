@@ -4,12 +4,14 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_link_opening_handler.h"
 
+#import <memory>
+
+#import "base/memory/raw_ptr.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -42,29 +44,25 @@ class GeminiLinkOpeningHandlerTest : public PlatformTest {
     url_loader_ = FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
         UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
 
-    // Create a mock dispatcher and associate it with mock command handlers.
-    mock_dispatcher_ = OCMClassMock([CommandDispatcher class]);
     mock_scene_commands_handler_ = OCMProtocolMock(@protocol(SceneCommands));
-    OCMStub(
-        [mock_dispatcher_ strictCallableForProtocol:@protocol(SceneCommands)])
-        .andReturn(mock_scene_commands_handler_);
     mock_gemini_commands_handler_ = OCMProtocolMock(@protocol(GeminiCommands));
-    OCMStub(
-        [mock_dispatcher_ strictCallableForProtocol:@protocol(GeminiCommands)])
-        .andReturn(mock_gemini_commands_handler_);
 
     // Initialize the link opening handler with the fake loader and mock
-    // dispatcher.
+    // command handlers.
     link_opening_handler_ =
-        [[GeminiLinkOpeningHandler alloc] initWithURLLoader:url_loader_
-                                                 dispatcher:mock_dispatcher_];
+        [[GeminiLinkOpeningHandler alloc] initWithURLLoader:url_loader_];
+    link_opening_handler_.sceneHandler = mock_scene_commands_handler_;
+    link_opening_handler_.geminiHandler = mock_gemini_commands_handler_;
+  }
+
+  ~GeminiLinkOpeningHandlerTest() override {
+    [link_opening_handler_ disconnect];
   }
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
-  raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
-  id mock_dispatcher_;
+  raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_ = nullptr;
   id mock_scene_commands_handler_;
   id mock_gemini_commands_handler_;
   base::UserActionTester user_action_tester_;
@@ -236,4 +234,28 @@ TEST_F(GeminiLinkOpeningHandlerTest,
       openImmersiveLearningCardURLInWebModal:[NSURL URLWithString:@(kTestURL)]];
 
   EXPECT_TRUE(url_loader_->last_params.web_params.url.is_empty());
+}
+
+// Tests that calling `disconnect` clears handlers and prevents subsequent URL
+// loads, command dispatches, and user action recordings.
+TEST_F(GeminiLinkOpeningHandlerTest, TestDisconnect) {
+  [link_opening_handler_ disconnect];
+
+  [[mock_scene_commands_handler_ reject]
+      closePresentedViewsAndOpenURL:[OCMArg any]];
+  [[mock_gemini_commands_handler_ reject] minimizeGeminiIfInvoked];
+  [[[mock_gemini_commands_handler_ reject] ignoringNonObjectArgs]
+      showGeminiWebModalForURL:GURL()];
+
+  [link_opening_handler_ openURLInNewTab:@(kTestURL)];
+  [link_opening_handler_ closePresentedViewsAndOpenURLInNewTab:@(kTestURL)];
+  [link_opening_handler_
+      openImmersiveLearningCardURLInWebModal:[NSURL URLWithString:@(kTestURL)]];
+
+  EXPECT_TRUE(url_loader_->last_params.web_params.url.is_empty());
+  EXPECT_EQ(0, user_action_tester_.GetActionCount("MobileGeminiURLOpened"));
+  EXPECT_EQ(0, user_action_tester_.GetActionCount(
+                   "MobileGeminiImmersiveLearningCardWebModalOpened"));
+  [mock_scene_commands_handler_ verify];
+  [mock_gemini_commands_handler_ verify];
 }

@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_link_opening_handler.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -19,27 +19,25 @@
 @implementation GeminiLinkOpeningHandler {
   // The URL loading agent for opening URLs.
   raw_ptr<UrlLoadingBrowserAgent> _URLLoadingAgent;
-
-  // The command dispatcher to dispatch commands.
-  CommandDispatcher* _dispatcher;
 }
 
-#pragma mark - BWGLinkOpeningDelegate
-
-- (instancetype)initWithURLLoader:(UrlLoadingBrowserAgent*)URLLoadingAgent
-                       dispatcher:(CommandDispatcher*)dispatcher {
-  self = [super self];
+- (instancetype)initWithURLLoader:(UrlLoadingBrowserAgent*)URLLoadingAgent {
+  self = [super init];
   if (self) {
     _URLLoadingAgent = URLLoadingAgent;
-    _dispatcher = dispatcher;
   }
   return self;
 }
 
+#pragma mark - Public
+
 - (void)disconnect {
   _URLLoadingAgent = nullptr;
-  _dispatcher = nil;
+  _geminiHandler = nil;
+  _sceneHandler = nil;
 }
+
+#pragma mark - BWGLinkOpeningDelegate
 
 - (void)openURLInNewTab:(NSString*)URL {
   [self openURL:URL closePresentedViews:NO];
@@ -56,17 +54,20 @@
   }
 
   GURL gurl = net::GURLWithNSURL(URL);
-  if (!gurl.is_valid()) {
+  if (!gurl.is_valid() || !_geminiHandler) {
+    // `_geminiHandler` is nil after `-disconnect` is called.
     return;
   }
 
   RecordURLOpened();
   RecordGeminiImmersiveLearningCardWebModalOpened();
-  id<GeminiCommands> geminiHandler =
-      HandlerForProtocol(_dispatcher, GeminiCommands);
-  [geminiHandler showGeminiWebModalForURL:gurl];
+  [_geminiHandler showGeminiWebModalForURL:gurl];
 }
 
+#pragma mark - Private
+
+// Opens `URL` in a new tab, optionally closing presented views first, and
+// minimizes Gemini if invoked.
 - (void)openURL:(NSString*)URL closePresentedViews:(BOOL)closePresentedViews {
   GURL gurl = GURL(base::SysNSStringToUTF8(URL));
   if (!gurl.is_valid()) {
@@ -74,13 +75,16 @@
   }
 
   if (closePresentedViews) {
-    id<SceneCommands> sceneCommandsHandler =
-        HandlerForProtocol(_dispatcher, SceneCommands);
+    if (!_sceneHandler) {
+      // `_sceneHandler` is nil after `-disconnect` is called.
+      return;
+    }
     OpenNewTabCommand* command =
         [OpenNewTabCommand commandWithURLFromChrome:gurl];
-    [sceneCommandsHandler closePresentedViewsAndOpenURL:command];
+    [_sceneHandler closePresentedViewsAndOpenURL:command];
   } else {
     if (!_URLLoadingAgent) {
+      // `_URLLoadingAgent` is null after `-disconnect` is called.
       return;
     }
     UrlLoadParams params = UrlLoadParams::InNewTab(gurl);
@@ -90,9 +94,7 @@
 
   RecordURLOpened();
 
-  id<GeminiCommands> geminiHandler =
-      HandlerForProtocol(_dispatcher, GeminiCommands);
-  [geminiHandler minimizeGeminiIfInvoked];
+  [_geminiHandler minimizeGeminiIfInvoked];
 }
 
 @end

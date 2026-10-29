@@ -85,6 +85,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -397,9 +398,15 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
     }
   }
 
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
   link_opening_handler_ = [[GeminiLinkOpeningHandler alloc]
-      initWithURLLoader:UrlLoadingBrowserAgent::FromBrowser(browser_)
-             dispatcher:browser_->GetCommandDispatcher()];
+      initWithURLLoader:UrlLoadingBrowserAgent::FromBrowser(browser_)];
+  // Use `static_cast` instead of `HandlerForProtocol` because command handlers
+  // have not started dispatching yet when the browser agent is created.
+  link_opening_handler_.geminiHandler =
+      static_cast<id<GeminiCommands>>(dispatcher);
+  link_opening_handler_.sceneHandler =
+      static_cast<id<SceneCommands>>(dispatcher);
   ConfigureGemini();
 
   if (IsIOSGeminiBottomSheetMigrationEnabled()) {
