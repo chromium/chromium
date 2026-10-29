@@ -3358,6 +3358,9 @@ executable("containers_memory_benchmark") {
 }
 
 test("base_perftests") {
+  configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
+  configs += [ "//build/config/compiler:thinlto_optimize_max" ]
+
   sources = [
     "base64_perftest.cc",
     "byte_conversions_perftest.cc",
@@ -3425,6 +3428,9 @@ test("base_perftests") {
 }
 
 test("partition_alloc_perftests") {
+  configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
+  configs += [ "//build/config/compiler:thinlto_optimize_max" ]
+
   deps = [
     "//base/allocator/partition_allocator/src/partition_alloc:perftests",
     "//testing/gtest:gtest_main",
