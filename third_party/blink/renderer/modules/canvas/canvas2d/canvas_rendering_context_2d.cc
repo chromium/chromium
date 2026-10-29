@@ -1119,9 +1119,7 @@ void CanvasRenderingContext2D::CreateBacking() {
     CreateSoftwareSurface();
   }
   if (HasBacking()) {
-    ConfigureRecorder(
-        canvas()->Size(),
-        GetSharedImageProvider() && GetSharedImageProvider()->IsGraphite());
+    ConfigureRecorder(canvas()->Size(), IsGraphite());
   }
 }
 

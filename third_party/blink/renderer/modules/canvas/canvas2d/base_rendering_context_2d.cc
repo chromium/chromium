@@ -44,6 +44,8 @@
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/config/gpu_feature_info.h"
+#include "gpu/config/gpu_feature_type.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/features.h"
@@ -743,6 +745,14 @@ void BaseRenderingContext2D::ConfigureRecorder(const gfx::Size& size,
 
 void BaseRenderingContext2D::ResetRecorder() {
   recorder_.reset();
+}
+
+bool BaseRenderingContext2D::IsGraphite() const {
+  return shared_image_provider_ && context_provider_wrapper_ &&
+         context_provider_wrapper_->ContextProvider()
+                 .GetGpuFeatureInfo()
+                 .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
+             gpu::kGpuFeatureStatusEnabled;
 }
 
 void BaseRenderingContext2D::UpdateRecordingLimits(bool is_graphite) {

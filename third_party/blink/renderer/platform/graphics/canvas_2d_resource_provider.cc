@@ -40,8 +40,6 @@
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
-#include "gpu/config/gpu_feature_info.h"
-#include "gpu/config/gpu_feature_type.h"
 #include "skia/buildflags.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -236,14 +234,6 @@ void Canvas2DResourceProvider::WillDrawUnaccelerated() {
     return;
   }
   EnsureWriteAccess();
-}
-
-bool Canvas2DResourceProvider::IsGraphite() const {
-  return context_provider_wrapper_ &&
-         context_provider_wrapper_->ContextProvider()
-                 .GetGpuFeatureInfo()
-                 .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
-             gpu::kGpuFeatureStatusEnabled;
 }
 
 bool Canvas2DResourceProvider::WritePixels(const SkImageInfo& orig_info,

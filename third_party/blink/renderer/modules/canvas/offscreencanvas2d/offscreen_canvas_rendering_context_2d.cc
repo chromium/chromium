@@ -257,8 +257,7 @@ bool OffscreenCanvasRenderingContext2D::InitializeBacking() {
   }
 
   if (HasBacking()) {
-    ConfigureRecorder(host->Size(), GetSharedImageProvider() &&
-                                        GetSharedImageProvider()->IsGraphite());
+    ConfigureRecorder(host->Size(), IsGraphite());
   } else {
     ResetRecorder();
   }

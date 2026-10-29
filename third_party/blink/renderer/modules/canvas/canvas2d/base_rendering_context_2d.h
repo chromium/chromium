@@ -318,6 +318,7 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   void ConfigureRecorder(const gfx::Size& size, bool is_graphite);
   void ResetRecorder();
+  bool IsGraphite() const;
 
   explicit BaseRenderingContext2D(
       CanvasRenderingContextHost* canvas,

@@ -161,7 +161,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   void SetResourceRecyclingEnabled(bool value);
 
   gpu::raster::RasterInterface* RasterInterface() const;
-  bool IsGraphite() const;
   void RecordingCleared();
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd);
 
