@@ -80,6 +80,7 @@
 #include "ui/views/test/test_platform_native_widget.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
@@ -103,8 +104,14 @@
 
 #include "base/files/file_util.h"
 #include "base/win/scoped_propvariant.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_event_handler_aura.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/events/event.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/event_utils.h"
+#include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/widget/desktop_aura/desktop_drag_drop_client_win.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/win/hwnd_util.h"
 #endif
@@ -1726,6 +1733,146 @@ TEST_F(OmniboxEverywhereUIManagerTest,
       ui_manager->widget_delegate()->ShouldDescendIntoChildForEventHandling(
           gfx::NativeView(), gfx::Point(200, 40)));
 }
+
+#if BUILDFLAG(IS_WIN)
+// While a left press is held on a draggable region but has not yet crossed the
+// window-drag threshold (so no move loop is running), renderer-initiated data
+// drags must be suppressed so a compromised renderer underneath the widget
+// cannot latch onto the held button (b/576129731). The suppression must end as
+// soon as the press ends, and must never outlive the widget.
+TEST_F(OmniboxEverywhereUIManagerTest,
+       PreThresholdDragHoldSuppressesRendererDataDrags) {
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+  ASSERT_TRUE(ui_manager->widget_delegate()->GetContentsView());
+  // Use the manager's own handler, which outlives individual widgets.
+  OmniboxEverywhereEventHandlerAura* handler =
+      ui_manager->event_handler_for_testing();
+  ASSERT_TRUE(handler);
+
+  std::vector<blink::mojom::DraggableRegionPtr> regions;
+  auto drag_region = blink::mojom::DraggableRegion::New();
+  drag_region->bounds = gfx::Rect(0, 0, 800, 600);
+  drag_region->draggable = true;
+  regions.push_back(std::move(drag_region));
+  auto no_drag_region = blink::mojom::DraggableRegion::New();
+  no_drag_region->bounds = gfx::Rect(100, 30, 400, 50);
+  no_drag_region->draggable = false;
+  regions.push_back(std::move(no_drag_region));
+  ui_manager->DraggableRegionsChanged(regions, nullptr);
+
+  const gfx::Point kDraggable(10, 10);
+  const gfx::Point kNonDraggable(200, 40);
+
+  // The events have no target, so the handler reads their locations in root
+  // view coordinates.
+  auto to_root = [&](const gfx::Point& point_in_contents) {
+    gfx::Point point = point_in_contents;
+    views::View::ConvertPointToTarget(
+        ui_manager->widget_delegate()->GetContentsView(),
+        ui_manager->widget()->GetRootView(), &point);
+    return point;
+  };
+  // Sends a mouse event directly to the handler and returns whether the
+  // handler consumed it.
+  auto send = [&](ui::EventType type, const gfx::Point& point_in_contents,
+                  int flags, int changed_flags) {
+    const gfx::Point location = to_root(point_in_contents);
+    ui::MouseEvent event(type, location, location, ui::EventTimeForNow(), flags,
+                         changed_flags);
+    handler->OnMouseEvent(&event);
+    return event.handled();
+  };
+  auto press = [&](const gfx::Point& point_in_contents) {
+    return send(ui::EventType::kMousePressed, point_in_contents,
+                ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  };
+  auto release = [&] {
+    send(ui::EventType::kMouseReleased, kDraggable, ui::EF_LEFT_MOUSE_BUTTON,
+         ui::EF_LEFT_MOUSE_BUTTON);
+  };
+  auto is_suppressed = [] {
+    return views::DesktopDragDropClientWin::
+        IsDragInProgressOrSuppressedForTesting();
+  };
+
+  EXPECT_FALSE(is_suppressed());
+
+  // A press on a draggable region suppresses data drags, without consuming the
+  // press, while it is held below the drag threshold and until it is released.
+  EXPECT_FALSE(press(kDraggable));
+  EXPECT_TRUE(is_suppressed());
+  send(ui::EventType::kMouseDragged, kDraggable + gfx::Vector2d(1, 0),
+       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_NONE);
+  EXPECT_TRUE(is_suppressed());
+  release();
+  EXPECT_FALSE(is_suppressed());
+
+  // Losing capture mid-hold ends the hold.
+  press(kDraggable);
+  EXPECT_TRUE(is_suppressed());
+  send(ui::EventType::kMouseCaptureChanged, kDraggable, ui::EF_NONE,
+       ui::EF_NONE);
+  EXPECT_FALSE(is_suppressed());
+
+  // A second press replaces, rather than stacks, the previous suppression.
+  press(kDraggable);
+  press(kDraggable);
+  EXPECT_TRUE(is_suppressed());
+  release();
+  EXPECT_FALSE(is_suppressed());
+
+  // Presses on non-draggable regions, or with buttons other than the left
+  // button alone, never suppress data drags.
+  press(kNonDraggable);
+  EXPECT_FALSE(is_suppressed());
+  send(ui::EventType::kMousePressed, kDraggable, ui::EF_RIGHT_MOUSE_BUTTON,
+       ui::EF_RIGHT_MOUSE_BUTTON);
+  EXPECT_FALSE(is_suppressed());
+
+  // Events that can arrive while the button is still held, such as the mouse
+  // wheel, keep the hold. A mouse move is only sent with no button down, so it
+  // means the release was missed and ends the hold.
+  press(kDraggable);
+  {
+    const gfx::Point location = to_root(kDraggable);
+    ui::MouseWheelEvent wheel(gfx::Vector2d(0, 120), location, location,
+                              ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                              ui::EF_NONE);
+    handler->OnMouseEvent(&wheel);
+  }
+  EXPECT_TRUE(is_suppressed());
+  send(ui::EventType::kMouseMoved, kDraggable, ui::EF_NONE, ui::EF_NONE);
+  EXPECT_FALSE(is_suppressed());
+
+  // Demoting keeps the widget visible and attached, so the release still
+  // reaches the handler. The hold must last until then, since the button is
+  // still down.
+  press(kDraggable);
+  ui_manager->Demote();
+  ASSERT_TRUE(ui_manager->is_demoted());
+  EXPECT_TRUE(is_suppressed());
+  release();
+  EXPECT_FALSE(is_suppressed());
+
+  // Hiding the widget ends the hold, since the handler may never see the
+  // release once the widget is hidden.
+  press(kDraggable);
+  EXPECT_TRUE(is_suppressed());
+  ui_manager->Close();
+  EXPECT_FALSE(is_suppressed());
+
+  // Destroying the widget ends the hold too, since the handler is detached
+  // from the widget first.
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+  press(kDraggable);
+  EXPECT_TRUE(is_suppressed());
+  ui_manager->Shutdown();
+  EXPECT_FALSE(is_suppressed());
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(OmniboxEverywhereUIManagerTest,
        NonDraggableRegionTakesPrecedenceOverSubsequentDraggableRegion) {

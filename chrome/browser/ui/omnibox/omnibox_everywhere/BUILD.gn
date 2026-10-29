@@ -205,6 +205,7 @@ if (is_mac || is_win) {
       "//ui/color",
       "//ui/color:color_provider_key",
       "//ui/display:test_support",
+      "//ui/events",
       "//ui/events:test_support",
       "//ui/native_theme",
       "//ui/native_theme:test_support",

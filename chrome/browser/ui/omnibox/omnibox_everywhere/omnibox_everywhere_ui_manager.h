@@ -332,6 +332,11 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
     is_context_menu_open_ = open;
   }
   bool is_dragging_for_testing() const { return is_dragging_; }
+#if defined(USE_AURA)
+  OmniboxEverywhereEventHandlerAura* event_handler_for_testing() {
+    return event_handler_.get();
+  }
+#endif
   bool is_demoted() const { return is_demoted_; }
   void OnContextMenuClosedForTesting() { OnContextMenuClosed(); }
   const ui::SimpleMenuModel* context_menu_model_for_testing() const {

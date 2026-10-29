@@ -812,6 +812,11 @@ void OmniboxEverywhereUIManager::Close() {
                 /*is_activity=*/false)));
       }
     }
+#if defined(USE_AURA)
+    // Aura does not deliver events to hidden windows, so the handler may never
+    // see the release or capture loss that ends a pending drag hold.
+    event_handler_->ResetDragState();
+#endif
     widget_->Hide();
   }
   ReleaseKeepAlives();
@@ -884,6 +889,9 @@ void OmniboxEverywhereUIManager::DestroyWidget() {
     if (auto* native_view = widget_->GetNativeView()) {
       native_view->RemovePreTargetHandler(event_handler_.get());
     }
+    // The handler outlives the widget and, once detached, can no longer see
+    // the release or capture loss that ends a pending drag hold.
+    event_handler_->ResetDragState();
 #endif
     if (auto* contents_view = widget_delegate_->GetContentsView()) {
       if (auto* web_view = views::AsViewClass<views::WebView>(contents_view)) {

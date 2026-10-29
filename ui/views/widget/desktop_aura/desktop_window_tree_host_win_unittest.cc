@@ -15,6 +15,8 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -30,12 +32,17 @@
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/ax_system_caret_win.h"
 #include "ui/aura/client/cursor_client.h"
+#include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura/window_tree_host_observer.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -44,6 +51,7 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/views_features.h"
+#include "ui/views/widget/desktop_aura/desktop_drag_drop_client_win.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -599,6 +607,72 @@ TEST_F(DesktopWindowTreeHostWinTest, IsInNativeMoveResizeLoopOnEnterSizeMove) {
 
   ::SendMessage(hwnd, WM_EXITSIZEMOVE, 0, 0);
   EXPECT_FALSE(host->IsInNativeMoveResizeLoop());
+}
+
+namespace {
+
+bool IsDataDragSuppressed() {
+  return DesktopDragDropClientWin::IsDragInProgressOrSuppressedForTesting();
+}
+
+}  // namespace
+
+// A renderer-initiated data drag must be rejected, without ever reaching
+// ::DoDragDrop, while a ScopedSuppressForWindowMove() scope is alive (e.g.
+// while the user holds the mouse on a draggable region that has not yet crossed
+// the window-drag threshold).
+TEST_F(DesktopWindowTreeHostWinTest, RejectDragDuringWindowMoveSuppression) {
+  Widget widget;
+  widget.Init(CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                           Widget::InitParams::TYPE_WINDOW));
+  widget.Show();
+
+  aura::Window* root_window = widget.GetNativeWindow()->GetRootWindow();
+  aura::client::DragDropClient* client =
+      aura::client::GetDragDropClient(root_window);
+  ASSERT_TRUE(client);
+
+  bool drag_started = false;
+  DesktopDragDropClientWin::SetOnDragStartedCallbackForTesting(
+      base::BindLambdaForTesting([&] { drag_started = true; }));
+
+  EXPECT_FALSE(IsDataDragSuppressed());
+  {
+    auto suppression = DesktopDragDropClientWin::ScopedSuppressForWindowMove();
+    EXPECT_TRUE(IsDataDragSuppressed());
+
+    auto data = std::make_unique<ui::OSExchangeData>();
+    data->SetString(u"payload");
+    EXPECT_EQ(ui::mojom::DragOperation::kNone,
+              client->StartDragAndDrop(
+                  std::move(data), root_window, widget.GetNativeWindow(),
+                  gfx::Point(10, 10), ui::DragDropTypes::DRAG_COPY,
+                  ui::mojom::DragEventSource::kMouse));
+    EXPECT_FALSE(drag_started);
+    EXPECT_FALSE(client->IsDragDropInProgress());
+  }
+  EXPECT_FALSE(IsDataDragSuppressed());
+
+  DesktopDragDropClientWin::SetOnDragStartedCallbackForTesting(
+      base::RepeatingClosure());
+}
+
+// Overlapping suppression scopes (e.g. a click-hold and a move loop) may be
+// released in any order. Drags must stay suppressed until all scopes are gone,
+// and must not remain suppressed afterwards.
+TEST_F(DesktopWindowTreeHostWinTest, OverlappingWindowMoveSuppression) {
+  EXPECT_FALSE(IsDataDragSuppressed());
+
+  auto first = DesktopDragDropClientWin::ScopedSuppressForWindowMove();
+  auto second = DesktopDragDropClientWin::ScopedSuppressForWindowMove();
+  EXPECT_TRUE(IsDataDragSuppressed());
+
+  // Release the outer scope first.
+  first.RunAndReset();
+  EXPECT_TRUE(IsDataDragSuppressed());
+
+  second.RunAndReset();
+  EXPECT_FALSE(IsDataDragSuppressed());
 }
 
 namespace {
