@@ -226,7 +226,7 @@ bool LayoutInline::ComputeInitialShouldCreateBoxFragment() const {
     return true;
   }
 
-  const ComputedStyle& first_line_style = FirstLineStyleRef();
+  const ComputedStyle& first_line_style = FirstLineStyle();
   if (&style != &first_line_style &&
       ComputeInitialShouldCreateBoxFragment(first_line_style)) [[unlikely]] {
     return true;

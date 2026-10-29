@@ -1370,7 +1370,7 @@ TEST_F(LayoutObjectSimTest, FirstLineBackgroundImage) {
 
   auto* target = GetElementById("target");
   auto* target_object = target->GetLayoutObject();
-  auto* image_resource_content = target_object->FirstLineStyleRef()
+  auto* image_resource_content = target_object->FirstLineStyle()
                                      .BackgroundLayers()
                                      .GetImage()
                                      ->CachedImage();
@@ -1485,7 +1485,7 @@ TEST_F(LayoutObjectSimTest, FirstLineBackgroundImageDirtyStyleCrash) {
 
   auto* target = GetElementById("target");
   auto* target_object = target->GetLayoutObject();
-  auto* image_resource_content = target_object->FirstLineStyleRef()
+  auto* image_resource_content = target_object->FirstLineStyle()
                                      .BackgroundLayers()
                                      .GetImage()
                                      ->CachedImage();

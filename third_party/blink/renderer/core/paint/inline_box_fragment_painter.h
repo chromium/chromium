@@ -246,7 +246,7 @@ class LineBoxFragmentPainter : public InlineBoxFragmentPainterBase {
             // direction, and its paint properties may have been changed.
             // TODO(kojii): Reconsider |line_fragment.Style()|.
             layout_block_flow.Style(),
-            layout_block_flow.FirstLineStyleRef(),
+            layout_block_flow.FirstLineStyle(),
             /* inline_context */ nullptr),
         block_fragment_(block_fragment) {
     DCHECK(line_box_fragment.IsLineBox());

@@ -364,7 +364,7 @@ bool LayoutBlock::HasLineIfEmpty() const {
     if (IsRootEditableElement(*GetNode()))
       return true;
   }
-  return FirstLineStyleRef().HasLineIfEmpty();
+  return FirstLineStyle().HasLineIfEmpty();
 }
 
 const LayoutBlock* LayoutBlock::FirstLineStyleParentBlock() const {

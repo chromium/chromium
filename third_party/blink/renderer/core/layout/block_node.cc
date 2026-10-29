@@ -1227,7 +1227,7 @@ LayoutUnit BlockNode::EmptyLineBlockSize(
   // Only return a line-height for the first fragment.
   if (IsBreakInside(incoming_break_token))
     return LayoutUnit();
-  return box_->FirstLineStyleRef().ComputedLineHeightAsFixed();
+  return box_->FirstLineStyle().ComputedLineHeightAsFixed();
 }
 
 String BlockNode::ToString() const {

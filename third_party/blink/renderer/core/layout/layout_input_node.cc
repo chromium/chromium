@@ -197,7 +197,7 @@ PhysicalSize LayoutInputNode::InitialContainingBlockSize() const {
 }
 
 const ComputedStyle& LayoutInputNode::FirstLineStyle() const {
-  return box_->FirstLineStyleRef();
+  return box_->FirstLineStyle();
 }
 
 String LayoutInputNode::ToString() const {

@@ -737,7 +737,7 @@ const LayoutObject& TextPainter::SvgTextPaintState::TextDecorationObject()
   const LayoutObject* result = InlineText().Parent();
   while (result) {
     if (style_variant_ == StyleVariant::kFirstLine) {
-      if (result->FirstLineStyleRef().GetTextDecorationLine() !=
+      if (result->FirstLineStyle().GetTextDecorationLine() !=
           TextDecorationLine::kNone) {
         break;
       }

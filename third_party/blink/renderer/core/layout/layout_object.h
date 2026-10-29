@@ -2568,7 +2568,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   /* The following methods are inlined in layout_object_inlines.h */
   // If first line style is requested and there is no applicable first line
   // style, the functions will return the style of this object.
-  inline const ComputedStyle& FirstLineStyleRef() const;
+  inline const ComputedStyle& FirstLineStyle() const;
   inline const ComputedStyle& Style(bool first_line) const;
 
   const ComputedStyle& EffectiveStyle(StyleVariant style_variant) const {

@@ -235,7 +235,7 @@ void ElementInnerTextCollector::ProcessLayoutText(
   // LayoutText::PlainText() gives the rendered text after the application
   // of white-space processing and text-transform rules
   const ComputedStyle& block_style = layout_text.Style();
-  const ComputedStyle& first_line_style = layout_text.FirstLineStyleRef();
+  const ComputedStyle& first_line_style = layout_text.FirstLineStyle();
 
   // first_line_offset is the first character of the text that is not part of
   // ::first_line

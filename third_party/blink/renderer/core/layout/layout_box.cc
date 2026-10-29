@@ -252,7 +252,7 @@ LayoutUnit TextAreaIntrinsicBlockSize(const HTMLTextAreaElement& textarea,
     return box;
   })();
 
-  return target_box.FirstLineStyleRef().ComputedLineHeightAsFixed() *
+  return target_box.FirstLineStyle().ComputedLineHeightAsFixed() *
              textarea.rows() +
          scrollbar_thickness;
 }
@@ -265,7 +265,7 @@ LayoutUnit TextFieldIntrinsicBlockSize(const HTMLInputElement& input,
   const LayoutBox& target_box = (inner_editor && inner_editor->GetLayoutBox())
                                     ? *inner_editor->GetLayoutBox()
                                     : box;
-  return target_box.FirstLineStyleRef().ComputedLineHeightAsFixed();
+  return target_box.FirstLineStyle().ComputedLineHeightAsFixed();
 }
 
 LayoutUnit FileUploadControlIntrinsicInlineSize(const HTMLInputElement& input,

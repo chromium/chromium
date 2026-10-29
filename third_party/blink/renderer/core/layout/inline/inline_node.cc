@@ -1793,7 +1793,7 @@ void InlineNode::ShapeTextForFirstLineIfNeeded(InlineNodeData* data) const {
 
   // Check if :first-line rules make any differences in the style.
   const ComputedStyle& block_style = layout_object->Style();
-  const ComputedStyle& first_line_style = layout_object->FirstLineStyleRef();
+  const ComputedStyle& first_line_style = layout_object->FirstLineStyle();
   if (block_style == first_line_style)
     return;
 

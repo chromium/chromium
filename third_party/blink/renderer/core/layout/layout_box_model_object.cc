@@ -883,7 +883,7 @@ LogicalRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
   // However, as soon as some content is entered, the line boxes will be
   // constructed and this kludge is not called any more. So only the caret size
   // of an empty :first-line'd block is wrong. I think we can live with that.
-  const ComputedStyle& current_style = FirstLineStyleRef();
+  const ComputedStyle& current_style = FirstLineStyle();
 
   enum CaretAlignment { kAlignLeft, kAlignRight, kAlignCenter };
 

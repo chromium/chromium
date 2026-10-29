@@ -1809,7 +1809,7 @@ void LayoutObject::ClearIntrinsicLogicalWidthsDirty() {
 bool LayoutObject::IsFontFallbackValid() const {
   NOT_DESTROYED();
   return Style().GetFont()->IsFallbackValid() &&
-         FirstLineStyleRef().GetFont()->IsFallbackValid();
+         FirstLineStyle().GetFont()->IsFallbackValid();
 }
 
 void LayoutObject::InvalidateSubtreeLayoutForFontUpdates() {
@@ -3115,7 +3115,7 @@ const ComputedStyle& LayoutObject::SlowEffectiveStyle(
     case StyleVariant::kStandard:
       return Style();
     case StyleVariant::kFirstLine:
-      return IsAtomicInline() ? Style() : FirstLineStyleRef();
+      return IsAtomicInline() ? Style() : FirstLineStyle();
     case StyleVariant::kStandardEllipsis:
       // The ellipsis is styled according to the line style.
       // https://www.w3.org/TR/css-overflow-3/#ellipsing-details
@@ -3136,9 +3136,9 @@ const ComputedStyle& LayoutObject::SlowEffectiveStyle(
     case StyleVariant::kFirstLineEllipsis:
       DCHECK(IsInline());
       if (const LayoutObject* block = ContainingBlock()) {
-        return block->FirstLineStyleRef();
+        return block->FirstLineStyle();
       }
-      return FirstLineStyleRef();
+      return FirstLineStyle();
   }
   NOTREACHED();
 }
