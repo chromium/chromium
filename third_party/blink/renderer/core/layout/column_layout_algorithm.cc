@@ -484,7 +484,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutInternal() {
     if (GetConstraintSpace().HasBlockFragmentation()) {
       const wtf_size_t first_unprocessed_row_gap_index =
           first_unprocessed_row_gap_index_ +
-          (gap_geometry ? gap_geometry->MulticolPaintableMainGapCount() : 0u) +
+          (gap_geometry ? gap_geometry->PaintableGapCount(kForRows) : 0u) +
           suppressed_row_gap_count_;
       if (auto* existing_data = container_builder_.GetBreakTokenData()) {
         To<MulticolBreakTokenData>(existing_data)

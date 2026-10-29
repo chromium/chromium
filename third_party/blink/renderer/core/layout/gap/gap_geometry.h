@@ -207,8 +207,7 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
            block_gap_size_ == other.block_gap_size_ &&
            main_gaps_ == other.main_gaps_ && cross_gaps_ == other.cross_gaps_ &&
            grid_lanes_empty_openings_ == other.grid_lanes_empty_openings_ &&
-           multicol_spanner_main_gap_count_ ==
-               other.multicol_spanner_main_gap_count_ &&
+           spanner_main_gap_count_ == other.spanner_main_gap_count_ &&
            flex_cross_gap_sizes_ == other.flex_cross_gap_sizes_ &&
            fragmented_flex_cross_gap_decoration_indices_ ==
                other.fragmented_flex_cross_gap_decoration_indices_ &&
@@ -292,9 +291,9 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
 
   MainGap& AddMainGap(LayoutUnit offset,
                       SpannerMainGapType type = SpannerMainGapType::kNone) {
-    if (container_type_ == ContainerType::kMultiColumn &&
-        type != SpannerMainGapType::kNone) {
-      ++multicol_spanner_main_gap_count_;
+    if (type != SpannerMainGapType::kNone) {
+      CHECK_EQ(container_type_, ContainerType::kMultiColumn);
+      ++spanner_main_gap_count_;
     }
     main_gaps_.emplace_back(offset, type);
     return main_gaps_.back();
@@ -313,10 +312,9 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
 
   void RemoveLastMainGap() {
     CHECK(!main_gaps_.empty());
-    if (container_type_ == ContainerType::kMultiColumn &&
-        main_gaps_.back().IsSpannerMainGap()) {
-      CHECK_GT(multicol_spanner_main_gap_count_, 0u);
-      --multicol_spanner_main_gap_count_;
+    if (main_gaps_.back().IsSpannerMainGap()) {
+      CHECK_GT(spanner_main_gap_count_, 0u);
+      --spanner_main_gap_count_;
     }
     main_gaps_.pop_back();
   }
@@ -357,9 +355,24 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
                                   wtf_size_t gap_index,
                                   Vector<GapIntersection>& intersections) const;
 
-  // Returns the number of multicol main gaps eligible for painting. Spanner
-  // main gaps are skipped because they do not consume decoration values.
-  wtf_size_t MulticolPaintableMainGapCount() const;
+  // Returns whether the gap at `gap_index` in `direction` can be painted.
+  // `gap_index` is an index into this fragment's gaps. Spanner main gaps
+  // cannot be painted. They are only used to generate the intersections of
+  // `CrossGap`s.
+  bool IsPaintableGap(GridTrackSizingDirection direction,
+                      wtf_size_t gap_index) const;
+
+  // Returns the number of gaps in `direction` in this fragment that can be
+  // painted. Spanner main gaps are not included because they do not consume
+  // decoration values.
+  wtf_size_t PaintableGapCount(GridTrackSizingDirection direction) const;
+
+  // Returns the total gap slot count that layout stored for the gaps in
+  // `direction`, or `std::nullopt` if layout did not store one. Only
+  // fragmented flex `CrossGap`s with stored decoration value indices store
+  // this count.
+  std::optional<wtf_size_t> StoredGapSlotCount(
+      GridTrackSizingDirection direction) const;
 
   // Per-line main axis gap sizes for flex containers. This is needed because
   // different lines in a flex container can have different effective gap sizes
@@ -389,15 +402,6 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
         decoration_value_index);
     CHECK_EQ(fragmented_flex_cross_gap_decoration_indices_.size(),
              cross_gaps_.size());
-  }
-
-  bool HasFragmentedFlexCrossGapDecorationIndices() const {
-    return !fragmented_flex_cross_gap_decoration_indices_.empty();
-  }
-
-  wtf_size_t FragmentedFlexCrossGapCount() const {
-    CHECK(!fragmented_flex_cross_gap_decoration_indices_.empty());
-    return fragmented_flex_cross_gap_count_;
   }
 
   // A lane boundary separates adjacent non-collapsed tracks. Maps a lane
@@ -623,9 +627,6 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
 
   blink::String ToString(bool verbose = false) const;
 
-  bool IsMultiColSpanner(wtf_size_t gap_index,
-                         GridTrackSizingDirection direction = kForRows) const;
-
   // `is_cap_intersection` indicates whether the intersection is a cap (at a
   // container edge or a dangling interior endpoint with no visible crossing
   // decoration; https://github.com/w3c/csswg-drafts/issues/13697).
@@ -673,8 +674,7 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
             other.fragmented_flex_cross_gap_decoration_indices_),
         fragmented_flex_cross_gap_count_(
             other.fragmented_flex_cross_gap_count_),
-        multicol_spanner_main_gap_count_(
-            CountMulticolSpannerMainGaps(container_type_, main_gaps_)),
+        spanner_main_gap_count_(CountSpannerMainGaps(main_gaps_)),
         gap_placement_reversal_(other.gap_placement_reversal_),
         content_inline_start_(other.content_inline_start_),
         content_inline_end_(other.content_inline_end_),
@@ -683,13 +683,29 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
         main_direction_(other.main_direction_) {}
 
  private:
-  static wtf_size_t CountMulticolSpannerMainGaps(ContainerType container_type,
-                                                 const MainGaps& main_gaps);
+  static wtf_size_t CountSpannerMainGaps(const MainGaps& main_gaps);
 
-  // Returns whether a multicol cross-gap intersection is adjacent to a
-  // synthetic main gap that represents a spanner boundary.
-  bool IsMulticolSpannerBoundaryIntersection(wtf_size_t intersection_index,
-                                             bool is_main_gap) const;
+  // Returns whether a cross-gap intersection is adjacent to a synthetic main
+  // gap that represents a spanner boundary.
+  bool IsSpannerBoundaryIntersection(wtf_size_t intersection_index,
+                                     bool is_main_gap) const;
+
+  // Returns the size of the crossing gutter at `intersection`, on the gap at
+  // `gap_index` in `track_direction`. For flex main gaps, this is the
+  // effective gap size of the flex line on the side of `intersection`.
+  // Otherwise, it is the uniform gutter size.
+  LayoutUnit CrossingGapSizeAt(GridTrackSizingDirection track_direction,
+                               wtf_size_t gap_index,
+                               const GapIntersection& intersection) const;
+
+  bool HasFragmentedFlexCrossGapDecorationIndices() const {
+    return !fragmented_flex_cross_gap_decoration_indices_.empty();
+  }
+
+  wtf_size_t FragmentedFlexCrossGapCount() const {
+    CHECK(!fragmented_flex_cross_gap_decoration_indices_.empty());
+    return fragmented_flex_cross_gap_count_;
+  }
 
   // Returns the saved value index for a fragmented flex `CrossGap`.
   wtf_size_t FragmentedFlexCrossGapDecorationValueIndexAt(
@@ -842,9 +858,9 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   Vector<wtf_size_t> fragmented_flex_cross_gap_decoration_indices_;
   wtf_size_t fragmented_flex_cross_gap_count_ = 0;
 
-  // Number of multicol main gaps created for spanner boundaries. These gaps
-  // are not painted and do not consume decoration values.
-  wtf_size_t multicol_spanner_main_gap_count_ = 0;
+  // Number of main gaps created for spanner boundaries. Only multicol creates
+  // these gaps. They are not painted and do not consume decoration values.
+  wtf_size_t spanner_main_gap_count_ = 0;
 
   // Describes how gap placement order differs from geometric paint order.
   // See `SetGapPlacementReversal`.

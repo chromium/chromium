@@ -236,19 +236,35 @@ bool GapGeometry::HasRowGapFragmentation(
   return false;
 }
 
-wtf_size_t GapGeometry::MulticolPaintableMainGapCount() const {
-  CHECK_EQ(container_type_, ContainerType::kMultiColumn);
-  CHECK_LE(multicol_spanner_main_gap_count_, main_gaps_.size());
-  return main_gaps_.size() - multicol_spanner_main_gap_count_;
+bool GapGeometry::IsPaintableGap(GridTrackSizingDirection direction,
+                                 wtf_size_t gap_index) const {
+  // Only multicol main gaps created by spanners can be synthetic spanner
+  // boundaries. Cross gaps can always be painted.
+  return !IsMainDirection(direction) ||
+         !main_gaps_[gap_index].IsSpannerMainGap();
 }
 
-wtf_size_t GapGeometry::CountMulticolSpannerMainGaps(
-    ContainerType container_type,
-    const MainGaps& main_gaps) {
-  if (container_type != ContainerType::kMultiColumn) {
-    return 0;
+wtf_size_t GapGeometry::PaintableGapCount(
+    GridTrackSizingDirection direction) const {
+  // Cross gaps are never synthetic spanner boundaries. Only multicol main gaps
+  // can be, and those do not consume decoration values.
+  if (!IsMainDirection(direction)) {
+    return cross_gaps_.size();
   }
+  CHECK_LE(spanner_main_gap_count_, main_gaps_.size());
+  return main_gaps_.size() - spanner_main_gap_count_;
+}
 
+std::optional<wtf_size_t> GapGeometry::StoredGapSlotCount(
+    GridTrackSizingDirection direction) const {
+  if (IsMainDirection(direction) ||
+      !HasFragmentedFlexCrossGapDecorationIndices()) {
+    return std::nullopt;
+  }
+  return FragmentedFlexCrossGapCount();
+}
+
+wtf_size_t GapGeometry::CountSpannerMainGaps(const MainGaps& main_gaps) {
   wtf_size_t count = 0;
   for (const MainGap& main_gap : main_gaps) {
     if (main_gap.IsSpannerMainGap()) {
@@ -287,9 +303,9 @@ GapGeometry::DecorationValueAssignmentForGap(
   // remains in geometric paint order. Use the entry keyed by
   // `fragment_relative_gap_index` because fragmentation can change the gap's
   // fragment-relative geometric index.
-  if (!IsMainDirection(track_direction) &&
-      HasFragmentedFlexCrossGapDecorationIndices()) {
-    CHECK_EQ(gap_slot_count, FragmentedFlexCrossGapCount());
+  if (const std::optional<wtf_size_t> stored_gap_slot_count =
+          StoredGapSlotCount(track_direction)) {
+    CHECK_EQ(gap_slot_count, *stored_gap_slot_count);
     return {FragmentedFlexCrossGapDecorationValueIndexAt(
                 fragment_relative_gap_index),
             gap_slot_count};
@@ -467,16 +483,6 @@ String GapGeometry::ToString(bool verbose) const {
   }
   builder << "] ";
   return builder.ReleaseString();
-}
-
-bool GapGeometry::IsMultiColSpanner(wtf_size_t gap_index,
-                                    GridTrackSizingDirection direction) const {
-  if (GetContainerType() == ContainerType::kMultiColumn &&
-      IsMainDirection(direction)) {
-    return main_gaps_[gap_index].IsSpannerMainGap();
-  }
-
-  return false;
 }
 
 LayoutUnit GapGeometry::ComputeInsetEnd(
@@ -1152,11 +1158,12 @@ bool GapGeometry::IsIntersectionAtContainerEdge(
   return false;
 }
 
-bool GapGeometry::IsMulticolSpannerBoundaryIntersection(
-    wtf_size_t intersection_index,
-    bool is_main_gap) const {
-  if (GetContainerType() != ContainerType::kMultiColumn || is_main_gap ||
-      intersection_index == 0 || intersection_index > main_gaps_.size()) {
+bool GapGeometry::IsSpannerBoundaryIntersection(wtf_size_t intersection_index,
+                                                bool is_main_gap) const {
+  // Junction intersection `i` of a multicol `CrossGap` corresponds to main gap
+  // `i - 1`. Only multicol has spanner main gaps.
+  if (spanner_main_gap_count_ == 0 || is_main_gap || intersection_index == 0 ||
+      intersection_index > main_gaps_.size()) {
     return false;
   }
 
@@ -1174,8 +1181,7 @@ bool GapGeometry::IsCapIntersection(
   return IsIntersectionAtContainerEdge(gap_index, intersection_index,
                                        intersections.size(), is_main_gap,
                                        intersections) ||
-         IsMulticolSpannerBoundaryIntersection(intersection_index,
-                                               is_main_gap) ||
+         IsSpannerBoundaryIntersection(intersection_index, is_main_gap) ||
          !CSSGapDecorationUtils::HasCrossGapSegment(
              cross_direction, gap_index, intersection_index, rule_visibility,
              cross_rule_visibility, *this, intersections);
@@ -1247,6 +1253,11 @@ LayoutUnit GapGeometry::GetMaxInsetWidth(
   CHECK(open_intersection.IsOverlapWindowOpen());
   CHECK(close_intersection.IsOverlapWindowClose());
 
+  // TODO(javiercon): Use one formula for flex and grid-lanes. The flex formula
+  // halves each width, and `LayoutUnit` division truncates, so it can truncate
+  // twice. Halving the sum of the widths truncates only once, but the sum must
+  // not saturate.
+
   // Grid lanes' gutters have a uniform width.
   if (GetContainerType() == ContainerType::kGridLanes) {
     return close_intersection.GetOffset() - open_intersection.GetOffset() +
@@ -1255,12 +1266,10 @@ LayoutUnit GapGeometry::GetMaxInsetWidth(
                                         intersections);
   }
 
-  // Get the per-line gap size for each intersection based on which side
-  // of the main gap it originates from.
-  const LayoutUnit open_gap_width = GetFlexCrossGapSize(
-      open_intersection.IsAboveMainGap() ? gap_index : gap_index + 1);
-  const LayoutUnit close_gap_width = GetFlexCrossGapSize(
-      close_intersection.IsAboveMainGap() ? gap_index : gap_index + 1);
+  const LayoutUnit open_gap_width =
+      CrossingGapSizeAt(track_direction, gap_index, open_intersection);
+  const LayoutUnit close_gap_width =
+      CrossingGapSizeAt(track_direction, gap_index, close_intersection);
 
   return close_intersection.GetOffset() + (close_gap_width / 2) -
          (open_intersection.GetOffset() - (open_gap_width / 2));
@@ -1275,24 +1284,27 @@ LayoutUnit GapGeometry::GetCrossWidthForIntersection(
   if (IsIntersectionAtContainerEdge(gap_index, intersection_index,
                                     intersections.size(), is_main_gap,
                                     intersections) ||
-      IsMulticolSpannerBoundaryIntersection(intersection_index, is_main_gap)) {
+      IsSpannerBoundaryIntersection(intersection_index, is_main_gap)) {
     return LayoutUnit();
   }
 
-  const LayoutUnit cross_gutter_width =
-      track_direction == kForRows ? GetInlineGapSize() : GetBlockGapSize();
+  return CrossingGapSizeAt(track_direction, gap_index,
+                           intersections[intersection_index]);
+}
 
-  // For grid, multicol and flex cross gaps, cross width is always the cross
-  // gutter width.
-  if (GetContainerType() != ContainerType::kFlex ||
-      !IsMainDirection(track_direction)) {
-    return cross_gutter_width;
+LayoutUnit GapGeometry::CrossingGapSizeAt(
+    GridTrackSizingDirection track_direction,
+    wtf_size_t gap_index,
+    const GapIntersection& intersection) const {
+  // Flex lines can have different effective gap sizes because of content
+  // distribution. Use the size of the line on the side of `intersection`.
+  if (GetContainerType() == ContainerType::kFlex &&
+      IsMainDirection(track_direction)) {
+    return GetFlexCrossGapSize(intersection.IsAboveMainGap() ? gap_index
+                                                             : gap_index + 1);
   }
 
-  // For flex main intersections, return the per-line cross gap size.
-  return GetFlexCrossGapSize(intersections[intersection_index].IsAboveMainGap()
-                                 ? gap_index
-                                 : gap_index + 1);
+  return track_direction == kForRows ? GetInlineGapSize() : GetBlockGapSize();
 }
 
 GapSegmentState GapGeometry::GetIntersectionGapSegmentState(
