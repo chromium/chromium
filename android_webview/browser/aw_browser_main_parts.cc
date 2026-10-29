@@ -252,11 +252,8 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
 
   std::string trial_name, group_name;
-  if (const auto* heap_profiler_controller =
-          heap_profiling::HeapProfilerController::GetInstance();
-      heap_profiler_controller &&
-      heap_profiler_controller->GetSyntheticFieldTrial(trial_name,
-                                                       group_name)) {
+  if (heap_profiling::HeapProfilerController::GetSyntheticFieldTrial(
+          trial_name, group_name)) {
     AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
         metrics, trial_name, group_name,
         variations::SyntheticTrialAnnotationMode::kCurrentLog);

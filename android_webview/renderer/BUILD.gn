@@ -34,6 +34,7 @@ source_set("renderer") {
     "//components/cdm/renderer",
     "//components/content_capture/common",
     "//components/content_capture/renderer",
+    "//components/heap_profiling/in_process",
     "//components/js_injection/renderer",
     "//components/metrics:call_stack_profile_builder",
     "//components/metrics/public/mojom:call_stack_mojo_bindings",

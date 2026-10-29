@@ -136,10 +136,10 @@ double GetChannelProbability(version_info::Channel channel) {
 
 // Returns true iff heap profiles should be collected for this process, along
 // with a name for a synthetic field trial group based on the decision or
-// nullopt if no group applies.
-std::pair<bool, std::optional<std::string>> DecideIfCollectionIsEnabled(
-    version_info::Channel channel,
-    ProcessType process_type) {
+// nullptr if no group applies.
+using CollectionDecision = std::pair<bool, const char*>;
+CollectionDecision ComputeCollectionDecision(version_info::Channel channel,
+                                             ProcessType process_type) {
   // Check the feature before the process type so that users are assigned to
   // groups in the browser process.
   if (process_type != ProcessType::kBrowser) {
@@ -147,17 +147,17 @@ std::pair<bool, std::optional<std::string>> DecideIfCollectionIsEnabled(
     // AppendCommandLineSwitchForChildProcess() to pass on the decision.
     const bool is_enabled = base::CommandLine::ForCurrentProcess()->HasSwitch(
         switches::kSubprocessHeapProfiling);
-    return {is_enabled, std::nullopt};
+    return {is_enabled, nullptr};
   }
 
   // Never profile during benchmarking.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kEnableBenchmarking)) {
-    return {false, std::nullopt};
+    return {false, nullptr};
   }
 
   if (!base::FeatureList::IsEnabled(kHeapProfilerReporting)) {
-    return {false, std::nullopt};
+    return {false, nullptr};
   }
 
   // Randomly determine whether profiling is enabled.
@@ -172,6 +172,12 @@ std::pair<bool, std::optional<std::string>> DecideIfCollectionIsEnabled(
   }
   return {false, "Default"};
 }
+
+// The result of ComputeCollectionDecision() for this process. Cached so that
+// the random roll happens only once, even if the decision is checked before a
+// HeapProfilerController is created. Reset when the HeapProfilerController is
+// destroyed so that each unit test makes a fresh decision.
+std::optional<CollectionDecision> g_collection_decision;
 
 // Logs statistics about the sampling profiler.
 void LogProfilerStats(std::optional<ProcessType> process_type,
@@ -253,6 +259,27 @@ HeapProfilerController* HeapProfilerController::GetInstance() {
   return g_instance;
 }
 
+// static
+bool HeapProfilerController::DecideIfCollectionIsEnabled(
+    version_info::Channel channel,
+    ProcessType process_type) {
+  if (!g_collection_decision.has_value()) {
+    g_collection_decision = ComputeCollectionDecision(channel, process_type);
+    // Only supported processes are assigned a patterned histogram.
+    if (HasProcessHistogramName(process_type)) {
+      constexpr char kEnabledHistogramName[] =
+          "HeapProfiling.InProcess.Enabled";
+      base::UmaHistogramBoolean(
+          ProcessHistogramName(kEnabledHistogramName, process_type),
+          g_collection_decision->first);
+      // Also summarize over all supported process types.
+      base::UmaHistogramBoolean(kEnabledHistogramName,
+                                g_collection_decision->first);
+    }
+  }
+  return g_collection_decision->first;
+}
+
 HeapProfilerController::HeapProfilerController(version_info::Channel channel,
                                                ProcessType process_type)
     : process_type_(process_type),
@@ -264,8 +291,7 @@ HeapProfilerController::HeapProfilerController(version_info::Channel channel,
   CHECK(!g_instance);
   g_instance = this;
 
-  std::tie(profiling_enabled_, synthetic_field_trial_group_) =
-      DecideIfCollectionIsEnabled(channel, process_type);
+  profiling_enabled_ = DecideIfCollectionIsEnabled(channel, process_type);
 
   // Before starting the profiler, record the ReentryGuard's TLS slot to a crash
   // key to debug reentry into the profiler.
@@ -284,6 +310,7 @@ HeapProfilerController::~HeapProfilerController() {
   stopped_->data.Set();
   CHECK_EQ(g_instance, this);
   g_instance = nullptr;
+  g_collection_decision.reset();
 
   if (profiling_session_) {
     base::SamplingHeapProfiler::Get()->Stop(*profiling_session_);
@@ -302,15 +329,6 @@ HeapProfilerController::~HeapProfilerController() {
 
 bool HeapProfilerController::StartIfEnabled() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Only supported processes are assigned a patterned histogram.
-  if (HasProcessHistogramName(process_type_)) {
-    constexpr char kEnabledHistogramName[] = "HeapProfiling.InProcess.Enabled";
-    base::UmaHistogramBoolean(
-        ProcessHistogramName(kEnabledHistogramName, process_type_),
-        profiling_enabled_);
-    // Also summarize over all supported process types.
-    base::UmaHistogramBoolean(kEnabledHistogramName, profiling_enabled_);
-  }
   if (!profiling_enabled_) {
     return false;
   }
@@ -356,16 +374,20 @@ bool HeapProfilerController::StartIfEnabled() {
   return true;
 }
 
-bool HeapProfilerController::GetSyntheticFieldTrial(
-    std::string& trial_name,
-    std::string& group_name) const {
-  CHECK_EQ(process_type_, ProcessType::kBrowser);
-  if (!synthetic_field_trial_group_.has_value()) {
+// static
+bool HeapProfilerController::GetSyntheticFieldTrial(std::string& trial_name,
+                                                    std::string& group_name) {
+  if (!g_collection_decision.has_value() || !g_collection_decision->second) {
     return false;
   }
   trial_name = "SyntheticHeapProfilingConfiguration";
-  group_name = synthetic_field_trial_group_.value();
+  group_name = g_collection_decision->second;
   return true;
+}
+
+// static
+void HeapProfilerController::ResetCollectionDecisionForTesting() {
+  g_collection_decision.reset();
 }
 
 void HeapProfilerController::SuppressRandomnessForTesting() {

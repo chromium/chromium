@@ -27,6 +27,7 @@
 #include "components/android_system_error_page/error_page_populator.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/cdm/renderer/key_system_support_update.h"
+#include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/js_injection/renderer/js_communication.h"
 #include "components/metrics/call_stacks/call_stack_profile_builder.h"
 #include "components/metrics/public/mojom/call_stack_profile_collector.mojom.h"
@@ -100,8 +101,10 @@ void AwContentRendererClient::RenderThreadStarted() {
 #endif
 
   // Set up the profile collector pipe that the renderer process uses to send
-  // profiles to the browser_process.
-  if (base::FeatureList::IsEnabled(features::kWebViewMemoryProfilingClient)) {
+  // profiles to the browser_process. A HeapProfilerController only exists if
+  // heap profiling is enabled for this process.
+  if (base::FeatureList::IsEnabled(features::kWebViewMemoryProfilingClient) &&
+      heap_profiling::HeapProfilerController::GetInstance()) {
     mojo::PendingRemote<metrics::mojom::CallStackProfileCollector> collector;
     thread->BindHostReceiver(collector.InitWithNewPipeAndPassReceiver());
     metrics::CallStackProfileBuilder::SetParentProfileCollectorForChildProcess(

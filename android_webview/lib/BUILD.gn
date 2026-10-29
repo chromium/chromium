@@ -29,6 +29,7 @@ source_set("lib") {
     "//components/crash/core/common",
     "//components/embedder_support",
     "//components/gwp_asan/common:crash_keys",
+    "//components/heap_profiling/in_process",
     "//components/memory_system",
     "//components/metrics",
     "//components/metrics:call_stack_profile_builder",

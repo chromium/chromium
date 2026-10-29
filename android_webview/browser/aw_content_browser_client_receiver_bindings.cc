@@ -11,6 +11,7 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"
 #include "components/content_capture/browser/onscreen_content_provider.h"
+#include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/metrics/call_stacks/call_stack_profile_collector.h"
 #include "components/network_hints/browser/simple_network_hints_handler_impl.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
@@ -228,7 +229,10 @@ void AwContentBrowserClient::ExposeInterfacesToRenderer(
   registry->AddInterface<mojom::RenderMessageFilter>(base::BindRepeating(
       &CreateRenderMessageFilter, render_process_host->GetDeprecatedID()));
 
-  if (base::FeatureList::IsEnabled(features::kWebViewMemoryProfilingClient)) {
+  // Only expose the collector if heap profiling is enabled in this browser
+  // process, since otherwise no renderer will send profiles.
+  if (base::FeatureList::IsEnabled(features::kWebViewMemoryProfilingClient) &&
+      heap_profiling::HeapProfilerController::GetInstance()) {
     registry->AddInterface<metrics::mojom::CallStackProfileCollector>(
         base::BindRepeating(&metrics::CallStackProfileCollector::Create));
   }

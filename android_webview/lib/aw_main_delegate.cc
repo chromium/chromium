@@ -55,6 +55,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/embedder_support/switches.h"
+#include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/memory_system/initializer.h"
 #include "components/memory_system/parameters.h"
 #include "components/metrics/call_stacks/call_stack_profile_builder.h"
@@ -439,9 +440,6 @@ void AwMainDelegate::InitializeMemorySystem(const bool is_browser_process) {
     sampling_profiler::ProfilerProcessType profiler_process_type;
     if (is_browser_process) {
       profiler_process_type = sampling_profiler::ProfilerProcessType::kBrowser;
-      metrics::CallStackProfileBuilder::SetBrowserProcessReceiverCallback(
-          base::BindRepeating(
-              &metrics::CallStackProfileMetricsProvider::ReceiveProfile));
     } else if (process_type == switches::kRendererProcess) {
       // TODO(crbug.com/40150046): If webview ever supports extensions, exclude
       // extension renderers.
@@ -455,7 +453,18 @@ void AwMainDelegate::InitializeMemorySystem(const bool is_browser_process) {
     } else {
       profiler_process_type = sampling_profiler::ProfilerProcessType::kUnknown;
     }
-    initializer.SetProfilingClientParameters(channel, profiler_process_type);
+    // Only set up heap profiling if this process is selected for
+    // profiling, to avoid its startup cost in the vast majority of sessions
+    // that are not.
+    if (heap_profiling::HeapProfilerController::DecideIfCollectionIsEnabled(
+            channel, profiler_process_type)) {
+      if (is_browser_process) {
+        metrics::CallStackProfileBuilder::SetBrowserProcessReceiverCallback(
+            base::BindRepeating(
+                &metrics::CallStackProfileMetricsProvider::ReceiveProfile));
+      }
+      initializer.SetProfilingClientParameters(channel, profiler_process_type);
+    }
   }
   initializer.Initialize(memory_system_);
 

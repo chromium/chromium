@@ -38,6 +38,17 @@ class HeapProfilerController {
   // Returns the HeapProfilerController for this process or null if none exists.
   static HeapProfilerController* GetInstance();
 
+  // Returns true iff heap profiles should be collected for this process.
+  // `channel` is used to determine the probability that this client will be
+  // opted in to profiling. `process_type` is the current process. The decision
+  // is made once per process and cached, so embedders can call this before
+  // creating a HeapProfilerController to avoid creating one unnecessarily.
+  // Records the HeapProfiling.InProcess.Enabled histogram when the decision is
+  // made.
+  static bool DecideIfCollectionIsEnabled(
+      version_info::Channel channel,
+      sampling_profiler::ProfilerProcessType process_type);
+
   // Checks if heap profiling should be enabled for this process. If so, starts
   // sampling heap allocations immediately but does not schedule snapshots of
   // the samples until StartIfEnabled() is called. `channel` is used to
@@ -56,8 +67,8 @@ class HeapProfilerController {
   // this returns true, snapshots can be scheduled by calling StartIfEnabled().
   bool IsEnabled() const { return profiling_enabled_; }
 
-  // Starts periodic heap snapshot collection. Does nothing except record a
-  // metric if heap profiling is disabled.
+  // Starts periodic heap snapshot collection. Does nothing if heap profiling is
+  // disabled.
   // Returns true if heap profiling is enabled and was successfully started,
   // false otherwise.
   bool StartIfEnabled();
@@ -66,8 +77,13 @@ class HeapProfilerController {
   // should be registered, returns true and writes the field trial details to
   // `trial_name` and `group_name`. Otherwise, returns false and does not modify
   // `trial_name` and `group_name`. Must only be called in the browser process.
-  bool GetSyntheticFieldTrial(std::string& trial_name,
-                              std::string& group_name) const;
+  // This is static so that the trial can be registered even if no
+  // HeapProfilerController was created for this process.
+  static bool GetSyntheticFieldTrial(std::string& trial_name,
+                                     std::string& group_name);
+
+  // Clears the decision cached by DecideIfCollectionIsEnabled().
+  static void ResetCollectionDecisionForTesting();
 
   // Uses the exact parameter values for the sampling interval and time between
   // samples, instead of a distribution around those values. This must be called
@@ -210,9 +226,6 @@ class HeapProfilerController {
   const ProcessType process_type_;
   bool profiling_enabled_;
   base::ByteSize expected_sampling_rate_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Group name for the synthetic field trial, or nullopt for none.
-  std::optional<std::string> synthetic_field_trial_group_;
 
   // Stores the time the HeapProfilerController was created, which will be close
   // to the process creation time. This is used instead of
