@@ -21,7 +21,6 @@ namespace {
 class LocalInputMonitorImpl : public LocalInputMonitor {
  public:
   LocalInputMonitorImpl(
-      scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
 
@@ -53,14 +52,17 @@ class LocalInputMonitorImpl : public LocalInputMonitor {
 };
 
 LocalInputMonitorImpl::LocalInputMonitorImpl(
-    scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
-    : caller_task_runner_(caller_task_runner),
-      input_task_runner_(input_task_runner),
-      ui_task_runner_(ui_task_runner) {}
+    : input_task_runner_(std::move(input_task_runner)),
+      ui_task_runner_(std::move(ui_task_runner)) {}
 
 LocalInputMonitorImpl::~LocalInputMonitorImpl() {
+  if (!monitoring_) {
+    return;
+  }
+
+  DCHECK(caller_task_runner_);
   // LocalInputMonitor sub-classes expect to be torn down on the caller thread.
   if (!caller_task_runner_->BelongsToCurrentThread()) {
     if (hotkey_input_monitor_) {
@@ -82,6 +84,7 @@ LocalInputMonitorImpl::~LocalInputMonitorImpl() {
 void LocalInputMonitorImpl::StartMonitoringForClientSession(
     base::WeakPtr<ClientSessionControl> client_session_control) {
   DCHECK(!monitoring_);
+  caller_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 
   hotkey_input_monitor_ = LocalHotkeyInputMonitor::Create(
       caller_task_runner_, input_task_runner_, ui_task_runner_,
@@ -115,6 +118,7 @@ void LocalInputMonitorImpl::StartMonitoring(
   DCHECK(!monitoring_);
   DCHECK(on_error);
   DCHECK(on_pointer_input || on_keyboard_input);
+  caller_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 
   if (on_pointer_input) {
     pointer_input_monitor_ = LocalPointerInputMonitor::Create(
@@ -143,11 +147,10 @@ void LocalInputMonitorImpl::OnMonitoringStarted() {
 }  // namespace
 
 std::unique_ptr<LocalInputMonitor> LocalInputMonitor::Create(
-    scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner) {
-  return std::make_unique<LocalInputMonitorImpl>(
-      caller_task_runner, input_task_runner, ui_task_runner);
+  return std::make_unique<LocalInputMonitorImpl>(std::move(input_task_runner),
+                                                 std::move(ui_task_runner));
 }
 
 }  // namespace remoting

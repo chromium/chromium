@@ -52,7 +52,7 @@ class LocalInputMonitorChromeOsTest : public testing::Test {
     }
 
     auto task_runner = task_environment_.GetMainThreadTaskRunner();
-    monitor_ = LocalInputMonitor::Create(task_runner, task_runner, task_runner);
+    monitor_ = LocalInputMonitor::Create(task_runner, task_runner);
     monitor_->StartMonitoringForClientSession(
         client_session_control_factory_.GetWeakPtr());
     FlushTaskRunner();

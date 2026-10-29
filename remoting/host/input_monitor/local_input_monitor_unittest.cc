@@ -8,8 +8,10 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/host_mock_objects.h"
@@ -78,7 +80,7 @@ TEST_F(LocalInputMonitorTest, BasicWithClientSession) {
 
   {
     std::unique_ptr<LocalInputMonitor> local_input_monitor =
-        LocalInputMonitor::Create(task_runner_, task_runner_, task_runner_);
+        LocalInputMonitor::Create(task_runner_, task_runner_);
     local_input_monitor->StartMonitoringForClientSession(
         client_session_control_factory_.GetWeakPtr());
   }
@@ -95,10 +97,72 @@ TEST_F(LocalInputMonitorTest, BasicWithCallbacks) {
 
   {
     std::unique_ptr<LocalInputMonitor> local_input_monitor =
-        LocalInputMonitor::Create(task_runner_, task_runner_, task_runner_);
+        LocalInputMonitor::Create(task_runner_, task_runner_);
     local_input_monitor->StartMonitoring(base::DoNothing(), base::DoNothing(),
                                          base::DoNothing());
   }
+
+  task_runner_->PostTask(FROM_HERE, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+}
+
+TEST_F(LocalInputMonitorTest, DestroyWithoutStarting) {
+  std::unique_ptr<LocalInputMonitor> local_input_monitor =
+      LocalInputMonitor::Create(task_runner_, task_runner_);
+  local_input_monitor.reset();
+
+  task_runner_->PostTask(FROM_HERE, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+}
+
+TEST_F(LocalInputMonitorTest, CreateAndStartOnDifferentThread) {
+  base::Thread other_thread("LocalInputMonitorOtherThread");
+  ASSERT_TRUE(other_thread.Start());
+
+  std::unique_ptr<LocalInputMonitor> local_input_monitor =
+      LocalInputMonitor::Create(task_runner_, task_runner_);
+
+  base::RunLoop run_loop;
+  other_thread.task_runner()->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(
+          [](std::unique_ptr<LocalInputMonitor> monitor) {
+            monitor->StartMonitoring(base::DoNothing(), base::DoNothing(),
+                                     base::DoNothing());
+            monitor.reset();
+          },
+          std::move(local_input_monitor)),
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  task_runner_->PostTask(FROM_HERE, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+}
+
+TEST_F(LocalInputMonitorTest, StartAndDestroyOnDifferentThread) {
+  base::Thread other_thread("LocalInputMonitorOtherThread");
+  ASSERT_TRUE(other_thread.Start());
+
+  std::unique_ptr<LocalInputMonitor> local_input_monitor =
+      LocalInputMonitor::Create(task_runner_, task_runner_);
+
+  base::RunLoop run_loop;
+  other_thread.task_runner()->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(
+          [](LocalInputMonitor* monitor) {
+            monitor->StartMonitoring(base::DoNothing(), base::DoNothing(),
+                                     base::DoNothing());
+          },
+          local_input_monitor.get()),
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Destroy `local_input_monitor` on the main thread while `other_thread` is
+  // still running, exercising the `DeleteSoon` path in
+  // `~LocalInputMonitorImpl`.
+  local_input_monitor.reset();
+  other_thread.FlushForTesting();
 
   task_runner_->PostTask(FROM_HERE, task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();

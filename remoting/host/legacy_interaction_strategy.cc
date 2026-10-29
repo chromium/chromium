@@ -207,8 +207,7 @@ std::unique_ptr<LocalInputMonitor>
 LegacyInteractionStrategy::CreateLocalInputMonitor() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  return LocalInputMonitor::Create(caller_task_runner_, input_task_runner_,
-                                   ui_task_runner_);
+  return LocalInputMonitor::Create(input_task_runner_, ui_task_runner_);
 }
 
 std::unique_ptr<CurtainMode> LegacyInteractionStrategy::CreateCurtainMode(
