@@ -15,7 +15,7 @@
 #include "base/strings/string_util.h"
 #include "ui/color/color_id.h"
 
-namespace ui::internal {
+namespace ui::color_internal {
 
 struct ColorIdEntry {
   ColorId id;
@@ -40,8 +40,8 @@ struct CssColorIdTable {
       return std::string_view();
     }
     const size_t index = static_cast<size_t>(color_id - kStartId);
-    return std::string_view(data.data())
-        .substr(offsets[index], offsets[index + 1] - offsets[index]);
+    return std::string_view(data).substr(offsets[index],
+                                         offsets[index + 1] - offsets[index]);
   }
 };
 
@@ -127,6 +127,6 @@ consteval const auto& MakeCssColorIdTable() {
   return CssColorIdTableHolder<EntriesFn>::kTable;
 }
 
-}  // namespace ui::internal
+}  // namespace ui::color_internal
 
 #endif  // UI_COLOR_COLOR_PROVIDER_UTILS_INTERNAL_H_

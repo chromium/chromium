@@ -194,13 +194,14 @@ std::string ColorIdName(ColorId color_id) {
 }
 
 std::string_view ColorIdToCSSColorId(ColorId color_id) {
-  constexpr const auto& kColorIdToCssTable = internal::MakeCssColorIdTable<[] {
+  constexpr const auto& kColorIdToCssTable =
+      color_internal::MakeCssColorIdTable<[] {
 #include "ui/color/color_id_map_macros.inc"  // NOLINT(build/include)
-    return std::to_array<internal::ColorIdEntry>({COLOR_IDS});
+        return std::to_array<color_internal::ColorIdEntry>({COLOR_IDS});
 // Note that this second include is not redundant. The second inclusion of the
 // .inc file serves to undefine the macros the first inclusion defined.
 #include "ui/color/color_id_map_macros.inc"  // NOLINT(build/include)
-  }>();
+      }>();
 
   if (std::string_view css_name = kColorIdToCssTable.Lookup(color_id);
       !css_name.empty()) {

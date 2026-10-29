@@ -25,13 +25,14 @@ std::string ChromeColorIdName(ui::ColorId color_id) {
 }
 
 // Converts a ChromeColorId to its CSS variable name format "--color-..." with
-// zero runtime allocations. Uses a compile-time `ui::internal::CssColorIdTable`
-// in `.rodata` for O(1) offset lookup.
+// zero runtime allocations. Uses a compile-time
+// `ui::color_internal::CssColorIdTable` in `.rodata` for O(1) offset lookup.
 std::string_view ChromeColorIdToCSSColorId(ui::ColorId color_id) {
   constexpr const auto& kChromeColorIdToCssTable =
-      ui::internal::MakeCssColorIdTable<[] {
+      ui::color_internal::MakeCssColorIdTable<[] {
 #include "ui/color/color_id_map_macros.inc"  // NOLINT(build/include)
-        return std::to_array<ui::internal::ColorIdEntry>({CHROME_COLOR_IDS});
+        return std::to_array<ui::color_internal::ColorIdEntry>(
+            {CHROME_COLOR_IDS});
 // Note that this second include is not redundant. The second inclusion of the
 // .inc file serves to undefine the macros the first inclusion defined.
 #include "ui/color/color_id_map_macros.inc"  // NOLINT(build/include)

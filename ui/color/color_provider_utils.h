@@ -41,7 +41,7 @@ std::string COMPONENT_EXPORT(COLOR) ColorIdName(ColorId color_id);
 // Converts a `ColorId` to its CSS variable name format (e.g.
 // "--color-primary-background") with zero runtime heap allocations.
 //
-// The mapping is backed by a compile-time `internal::CssColorIdTable` in
+// The mapping is backed by a compile-time `color_internal::CssColorIdTable` in
 // `.rodata`, providing an O(1) offset lookup that yields a persistent
 // `std::string_view`. Falls back to embedder callbacks (such as
 // `ChromeColorProviderUtils`) if the ID is not found in the core table.
