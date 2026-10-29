@@ -620,6 +620,21 @@ class FullWebUIOmniboxInteractiveTestBase
     })")));
   }
 
+  // Clicks `element` inside a popup WebView (`kPopupWebView` or
+  // `kAimPopupWebView`) with a real mouse click.
+  //
+  // Readiness is determined by the popup itself rather than by a first-paint
+  // signal: the popup presenter shows the widget only once the renderer's
+  // visual state is ready, and callers wait for `element` to render before
+  // clicking. The mouse is moved directly to the center of `element`.
+  auto ClickPopupElement(const ui::ElementIdentifier& contents_id,
+                         const DeepQuery& element) {
+    return InSameContextAs(
+        contents_id,
+        MoveMouseTo(contents_id, DeepQueryToRelativePosition(element)),
+        ClickMouse());
+  }
+
   auto ClearWebUIText() {
     return Steps(InAnyContext(ExecuteJsAt(kPopupWebView, kWebUIInput,
                                           R"(el => {
@@ -1642,11 +1657,6 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, ActiveUnfocusedDraft) {
 // the most recently typed text. All within a single tab.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        RetypeAfterUnfocusedDraftNavigatesToLatestQuery) {
-  if (IsWebUIToolbarEnabled()) {
-    GTEST_SKIP() << "TODO(b/571988849): With the WebUI toolbar, "
-                    "MoveMouseTo's WaitForWebContentsPainted on the popup "
-                    "times out.";
-  }
   RunTestSequence(
       // Open Tab 1 and focus Omnibox to open WebUI popup.
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
@@ -1664,10 +1674,7 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
       WaitForVisibleOmniboxUnfocused(),
       // Click back into the visible-but-unfocused WebUI input to refocus it.
-      InAnyContext(MoveMouseTo(kPopupWebView, kWebUIInput)),
-      InSameContextAs(OmniboxPopupPresenter::kRoundedResultsFrame,
-                      ClickMouse()),
-      WaitForOmniboxFocus(true),
+      ClickPopupElement(kPopupWebView, kWebUIInput), WaitForOmniboxFocus(true),
       // Type a new query and verify the results dropdown shows again.
       InputWebUIText("hello"),
       WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
@@ -3234,9 +3241,7 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
         }, {once: true});
       })")),
       WaitForPopupToStopForwardingMouseEvents(),
-      InAnyContext(MoveMouseTo(kPopupWebView, kWebUIInput)),
-      InSameContextAs(OmniboxPopupPresenter::kRoundedResultsFrame,
-                      ClickMouse()),
+      ClickPopupElement(kPopupWebView, kWebUIInput),
       WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
                            "(el) => el.dataset.mouseUpHandled === 'true'"),
       // The click shows the full URL and places the caret, without querying
@@ -5461,19 +5466,6 @@ class FullWebUIOmniboxAimInteractiveTestBase
         InAnyContext(WaitForAimSubmitEnabled(kAimPopupWebView)));
   }
 
-  // Clicks `element` inside a popup WebView (`kPopupWebView` or
-  // `kAimPopupWebView`) with a real mouse click.
-  //
-  // Readiness is determined by the popup itself rather than by a first-paint
-  // signal: the popup presenter shows the widget only once the renderer's
-  // visual state is ready, and callers wait for `element` to render before
-  // clicking. The mouse is moved directly to the center of `element`.
-  auto ClickPopupElement(const ui::ElementIdentifier& contents_id,
-                         const DeepQuery& element) {
-    return Steps(MoveMouseTo(contents_id, DeepQueryToRelativePosition(element)),
-                 ClickMouse());
-  }
-
   auto OpenAimPopup() {
     return Steps(
         SetAimEligibleResponse(),
@@ -5567,9 +5559,8 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
   RunTestSequence(
       OpenAimPopup(),
       InAnyContext(WaitForElementToRender(kAimPopupWebView, kCancelIcon)),
-      InSameContext(ClickPopupElement(kAimPopupWebView, kCancelIcon)),
-      WaitForAimPopupHidden(), WaitForWebUIInputValue(kOriginalUrl),
-      WaitForOmniboxFocus(true),
+      ClickPopupElement(kAimPopupWebView, kCancelIcon), WaitForAimPopupHidden(),
+      WaitForWebUIInputValue(kOriginalUrl), WaitForOmniboxFocus(true),
       // TODO(b/564894332): When a URL is restored to the Omnibox, the cursor
       // should be at the end of the text (kQuery.length(), kQuery.length()),
       // not the beginning.
