@@ -12,7 +12,6 @@
 #import "base/check.h"
 #import "base/command_line.h"
 #import "base/feature_list.h"
-#import "base/ios/ios_util.h"
 #import "base/ios/ns_error_util.h"
 #import "base/memory/ref_counted_memory.h"
 #import "base/metrics/histogram_functions.h"
@@ -575,11 +574,8 @@ UIView* ChromeWebClient::GetWindowedContainer() {
 }
 
 bool ChromeWebClient::EnableFullscreenAPI() const {
-  // Only use the Fullscreen API on iOS 16.4+, which fixes serious crashes in
-  // earlier versions. Also, only enable on iPad to match expectations of the
-  // iOS web ecosystem.
-  return base::ios::IsRunningOnOrLater(16, 4, 0) &&
-         ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
+  // Only enable on iPad to match expectations of the iOS web ecosystem.
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
 }
 
 bool ChromeWebClient::EnableLongPressUIContextMenu() const {
