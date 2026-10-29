@@ -29,7 +29,9 @@
 #include "ui/webui/webui_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/webui/theme_source.h"  // nogncheck
+#include "chrome/browser/ui/webui/favicon_source.h"  // nogncheck
+#include "chrome/browser/ui/webui/theme_source.h"    // nogncheck
+#include "components/favicon_base/favicon_url_parser.h"
 #endif
 
 bool OmniboxInternalsUIConfig::SupportsInProcessResourceLoadingV2() const {
@@ -65,6 +67,9 @@ OmniboxInternalsUI::OmniboxInternalsUI(content::WebUI* web_ui)
 
 #if !BUILDFLAG(IS_ANDROID)
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
+  content::URLDataSource::Add(
+      profile, std::make_unique<FaviconSource>(
+                   profile, chrome::FaviconUrlFormat::kFavicon2));
 #endif
 
   // Expose version information to client because it is useful in output.
