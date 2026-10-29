@@ -518,6 +518,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // Kill switch for crbug.com/556250086.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFontAccessCheckFrameIsActive);
 
+// When enabled, counts decoded font data in FontResource::DecodedSize(), so
+// fonts use more of the MemoryCache strong reference budget.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFontResourceDecodedMemoryAccounting);
+
 // Block partial responses (206, 416) for requests without a Range header.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBlockPartialResponseWithoutRange);
 

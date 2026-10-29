@@ -28,6 +28,7 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -346,6 +347,10 @@ const FontCustomPlatformData* FontResource::GetCustomFontData() {
       observer->FontResourceDataWillBeCleared();
     }
     ClearData();
+    if (base::FeatureList::IsEnabled(
+            features::kFontResourceDecodedMemoryAccounting)) {
+      SetDecodedSize(font_data_->DataSize());
+    }
   }
   return font_data_;
 }

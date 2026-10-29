@@ -750,6 +750,9 @@ BASE_FEATURE(kFlushGpuChannelOnLayerTreeViewRelease,
 
 BASE_FEATURE(kFontAccessCheckFrameIsActive, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFontResourceDecodedMemoryAccounting,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kBlockPartialResponseWithoutRange,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/loader/resource/mock_font_resource_client.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
+#include "third_party/blink/renderer/platform/fonts/font_custom_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/ift/ift_patcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/background_code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
@@ -376,6 +377,45 @@ TEST_F(FontResourceStrongReferenceTest, FollowCacheControl) {
 
   ASSERT_FALSE(
       MemoryCache::Get()->HasStrongReferenceForTesting(resource_no_store));
+}
+
+// With kFontResourceDecodedMemoryAccounting on, a decoded font reports the
+// decoded data as its decoded size, and MemoryCache::size() grows by that
+// amount.
+TEST_F(FontResourceTest, MemoryAccountingAfterDecode) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kFontResourceDecodedMemoryAccounting);
+  auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
+  MockFetchContext* context = MakeGarbageCollected<MockFetchContext>();
+  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(
+      ResourceFetcherInit(properties->MakeDetachable(), context,
+                          base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+                          base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+                          MakeGarbageCollected<TestLoaderFactory>(),
+                          MakeGarbageCollected<MockContextLifecycleNotifier>(),
+                          nullptr /* back_forward_cache_loader_helper */));
+
+  KURL url("http://127.0.0.1:8000/font.woff2");
+  url_test_helpers::RegisterMockedURLLoad(url,
+                                          test::CoreTestDataPath("Ahem.woff2"));
+  FetchParameters fetch_params =
+      FetchParameters::CreateForTest(ResourceRequest(url));
+  FontResource* resource = FontResource::Fetch(fetch_params, fetcher, nullptr);
+  fetcher->StartLoad(resource);
+  url_test_helpers::ServeAsynchronousRequests();
+  ASSERT_TRUE(MemoryCache::Get()->Contains(resource));
+
+  const size_t encoded_size = resource->EncodedSize();
+  const size_t cache_size = MemoryCache::Get()->size();
+  ASSERT_GT(encoded_size, 0u);
+  EXPECT_EQ(resource->DecodedSize(), 0u);
+
+  const FontCustomPlatformData* font_data = resource->GetCustomFontData();
+  ASSERT_TRUE(font_data);
+  ASSERT_GT(font_data->DataSize(), 0u);
+  EXPECT_EQ(resource->DecodedSize(), font_data->DataSize());
+  EXPECT_EQ(resource->EncodedSize(), encoded_size);
+  EXPECT_EQ(MemoryCache::Get()->size(), cache_size + font_data->DataSize());
 }
 
 namespace {

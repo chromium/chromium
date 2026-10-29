@@ -77,6 +77,8 @@ class CORE_EXPORT FontResource final : public Resource {
 
   String OtsParsingMessage() const { return ots_parsing_message_; }
 
+  // Decodes the font on the first call, then releases the encoded data and
+  // reports the decoded size to MemoryCache. Returns null on decode failure.
   const FontCustomPlatformData* GetCustomFontData();
   std::unique_ptr<IftPatcher> TakeIftPatcher();
 
