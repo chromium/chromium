@@ -423,4 +423,58 @@ TEST_F(ScriptedAnimationControllerTest, SortsAnimationEventsByCompositeOrder) {
   EXPECT_EQ(2, observer.Order()[1]);
 }
 
+TEST_F(ScriptedAnimationControllerTest, EnqueueEventsDuringDispatchFilter) {
+  TaskOrderObserver observer;
+
+  GetDocument().addEventListener(
+      AtomicString("first"),
+      MakeGarbageCollected<RunTaskEventListener>(observer.CreateTask(1)));
+  GetDocument().addEventListener(
+      AtomicString("second"),
+      MakeGarbageCollected<RunTaskEventListener>(observer.CreateTask(2)));
+  GetDocument().addEventListener(
+      AtomicString("enqueued_in_filter"),
+      MakeGarbageCollected<RunTaskEventListener>(observer.CreateTask(3)));
+
+  Event* first_event = Event::Create(AtomicString("first"));
+  first_event->SetTarget(&GetDocument());
+  Controller().EnqueueEvent(first_event);
+
+  Event* second_event = Event::Create(AtomicString("second"));
+  second_event->SetTarget(&GetDocument());
+  Controller().EnqueueEvent(second_event);
+
+  // Dispatch only "first" events, while the filter callback enqueues enough
+  // additional events to force `event_queue_` to reallocate its backing buffer.
+  bool filter_ran = false;
+  bool did_dispatch = Controller().DispatchEvents(BindRepeating(
+      [](ScriptedAnimationController* controller, Document* document,
+         bool* filter_ran, Event* event) {
+        if (!*filter_ran) {
+          *filter_ran = true;
+          for (int i = 0; i < 16; ++i) {
+            Event* extra = Event::Create(AtomicString("enqueued_in_filter"));
+            extra->SetTarget(document);
+            controller->EnqueueEvent(extra);
+          }
+        }
+        return event->type() == AtomicString("first");
+      },
+      WrapPersistent(&Controller()), WrapPersistent(&GetDocument()),
+      blink::subtle::UnretainedException(&filter_ran)));
+
+  EXPECT_TRUE(did_dispatch);
+  ASSERT_EQ(1u, observer.Order().size());
+  EXPECT_EQ(1, observer.Order()[0]);
+
+  // Now dispatch all remaining events ("second" followed by the 16 events
+  // enqueued during the filter).
+  EXPECT_TRUE(Controller().DispatchEvents());
+  ASSERT_EQ(18u, observer.Order().size());
+  EXPECT_EQ(2, observer.Order()[1]);
+  for (wtf_size_t i = 2; i < 18; ++i) {
+    EXPECT_EQ(3, observer.Order()[i]);
+  }
+}
+
 }  // namespace blink
