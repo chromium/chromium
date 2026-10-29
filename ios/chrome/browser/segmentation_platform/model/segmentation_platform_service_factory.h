@@ -36,12 +36,12 @@ class SegmentationPlatformServiceFactory final
 
   // Returns the default factory used to build SegmentationPlatformService. Can
   // be registered with AddTestingFactory to use real instances during testing.
-  static TestingFactory GetDefaultFactory();
+  static TestingFactoryByRef GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
   void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) final;
 };
 

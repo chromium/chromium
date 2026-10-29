@@ -63,22 +63,20 @@
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildSegmentationPlatformServiceWithLabels(
+ProfileIOS& SetupProfileForSegmentationPlatformService(
     std::optional<std::vector<std::string>> labels,
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   if (labels.has_value()) {
     base::ListValue labels_list;
     for (const std::string& label : *labels) {
       labels_list.Append(label);
     }
-    profile->GetPrefs()->SetDict(
+    profile.GetPrefs()->SetDict(
         "segmentation_platform.device_switcher_util",
         base::DictValue().Set(
             "result", base::DictValue().Set("labels", std::move(labels_list))));
   }
-  return segmentation_platform::SegmentationPlatformServiceFactory::
-      GetDefaultFactory()
-          .Run(profile);
+  return profile;
 }
 
 // Unit tests for `DefaultBrowserScreenCoordinator`.
@@ -155,8 +153,10 @@ class DefaultBrowserScreenCoordinatorTest : public PlatformTest {
     builder.AddTestingFactory(
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetInstance(),
-        base::BindOnce(&BuildSegmentationPlatformServiceWithLabels,
-                       std::move(labels)));
+        base::BindOnce(&SetupProfileForSegmentationPlatformService,
+                       std::move(labels))
+            .Then(segmentation_platform::SegmentationPlatformServiceFactory::
+                      GetDefaultFactory()));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     browser_ = std::make_unique<TestBrowser>(profile_);
     navigation_controller_ = [[UINavigationController alloc] init];

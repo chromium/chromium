@@ -415,8 +415,8 @@ class MagicStackRankingModelTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  ProfileIOS* SetUpEnvironment(ProfileIOS* profile) {
-    segmentation_test_utils_->SetupForProfile(profile);
+  ProfileIOS& SetUpEnvironment(ProfileIOS& profile) {
+    segmentation_test_utils_->SetupForProfile(&profile);
     return profile;
   }
 

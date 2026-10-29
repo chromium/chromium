@@ -106,26 +106,27 @@ ShoppingService* GetShoppingService(base::WeakPtr<ProfileIOS> weak_profile) {
 }
 
 std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
-    ProfileIOS* profile) {
-  DCHECK(!profile->IsOffTheRecord());
+    ProfileIOS& profile) {
+  DCHECK(!profile.IsOffTheRecord());
   if (!base::FeatureList::IsEnabled(features::kSegmentationPlatformFeature)) {
     return nullptr;
   }
 
-  const base::FilePath profile_path = profile->GetStatePath();
+  const base::FilePath profile_path = profile.GetStatePath();
   auto* optimization_guide =
       OptimizationGuideServiceFactory::GetForProfile(profile);
 
-  auto* protodb_provider = profile->GetProtoDatabaseProvider();
+  auto* protodb_provider = profile.GetProtoDatabaseProvider();
   if (!protodb_provider) {
     return nullptr;
   }
   sync_sessions::SessionSyncService* session_sync_service =
       SessionSyncServiceFactory::GetForProfile(profile);
   auto tab_fetcher = std::make_unique<TabFetcher>(session_sync_service);
+  PrefService* const profile_prefs = profile.GetPrefs();
 
   auto params = std::make_unique<SegmentationPlatformServiceImpl::InitParams>();
-  params->profile_id = profile->GetProfileName();
+  params->profile_id = profile.GetProfileName();
   params->history_service = ios::HistoryServiceFactory::GetForProfile(profile);
   params->task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
@@ -135,17 +136,17 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
   params->clock = base::DefaultClock::GetInstance();
 
   params->ukm_data_manager =
-      UkmDatabaseClientHolder::GetClientInstance(profile).GetUkmDataManager();
-  params->profile_prefs = profile->GetPrefs();
+      UkmDatabaseClientHolder::GetClientInstance(&profile).GetUkmDataManager();
+  params->profile_prefs = profile_prefs;
 
   if (experimental_flags::ShouldResetMagicStackTipsState()) {
     home_modules::HomeModulesCardRegistryIOS::ClearTipsPrefs(
-        profile->GetPrefs(), GetApplicationContext()->GetLocalState());
+        profile_prefs, GetApplicationContext()->GetLocalState());
   }
 
   auto home_modules_card_registry =
       home_modules::HomeModulesCardRegistry::Create(
-          profile->GetPrefs(), GetApplicationContext()->GetLocalState());
+          profile_prefs, GetApplicationContext()->GetLocalState());
   params->configs =
       GetSegmentationPlatformConfig(home_modules_card_registry.get());
   params->model_provider = std::make_unique<ModelProviderFactoryImpl>(
@@ -162,7 +163,7 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
 
   // Set up Shopping Service input delegate.
   auto shopping_service_callback =
-      base::BindRepeating(&GetShoppingService, profile->AsWeakPtr());
+      base::BindRepeating(&GetShoppingService, profile.AsWeakPtr());
 
   params->input_delegate_holder->SetDelegate(
       proto::CustomInput::FILL_FROM_SHOPPING_SERVICE,
@@ -198,7 +199,7 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
                            service.get(),
                            DeviceInfoSyncServiceFactory::GetForProfile(profile)
                                ->GetDeviceInfoTracker(),
-                           profile->GetPrefs(), field_trial_register));
+                           profile_prefs, field_trial_register));
   service->SetUserData(
       kSegmentationTabRankDispatcherUserDataKey,
       std::make_unique<TabRankDispatcher>(service.get(), session_sync_service,
@@ -249,14 +250,14 @@ SegmentationPlatformServiceFactory::GetHomeCardRegistryForProfile(
 }
 
 // static
-SegmentationPlatformServiceFactory::TestingFactory
+SegmentationPlatformServiceFactory::TestingFactoryByRef
 SegmentationPlatformServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildSegmentationPlatformService);
 }
 
 std::unique_ptr<KeyedService>
 SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildSegmentationPlatformService(profile);
 }
 

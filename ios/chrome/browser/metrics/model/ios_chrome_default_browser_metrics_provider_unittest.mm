@@ -51,22 +51,20 @@ constexpr const char* kDefaultBrowserHistograms[] = {
 constexpr char kDeviceSwitcherUserSegmentPrefKey[] =
     "segmentation_platform.device_switcher_util";
 
-std::unique_ptr<KeyedService> BuildSegmentationPlatformServiceWithLabels(
+ProfileIOS& SetupProfileForSegmentationPlatformService(
     std::vector<std::string> labels,
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   if (!labels.empty()) {
     base::ListValue labels_list;
     for (const std::string& label : labels) {
       labels_list.Append(label);
     }
-    profile->GetPrefs()->SetDict(
+    profile.GetPrefs()->SetDict(
         kDeviceSwitcherUserSegmentPrefKey,
         base::DictValue().Set(
             "result", base::DictValue().Set("labels", std::move(labels_list))));
   }
-  return segmentation_platform::SegmentationPlatformServiceFactory::
-      GetDefaultFactory()
-          .Run(profile);
+  return profile;
 }
 
 }  // namespace
@@ -96,8 +94,10 @@ class IOSChromeDefaultBrowserMetricsProviderTest : public PlatformTest {
     builder.AddTestingFactory(
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetInstance(),
-        base::BindOnce(&BuildSegmentationPlatformServiceWithLabels,
-                       std::move(device_switcher_labels)));
+        base::BindOnce(&SetupProfileForSegmentationPlatformService,
+                       std::move(device_switcher_labels))
+            .Then(segmentation_platform::SegmentationPlatformServiceFactory::
+                      GetDefaultFactory()));
     return profile_manager_.AddProfileWithBuilder(std::move(builder));
   }
 

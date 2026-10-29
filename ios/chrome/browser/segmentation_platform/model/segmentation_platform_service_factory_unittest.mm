@@ -291,10 +291,10 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
     ProfileData(ProfileData&) = delete;
 
     // Setup environment required to create the SegmentationPlatformService.
-    ProfileIOS* SetUpEnvironment(ProfileIOS* setup_profile) {
-      setup_profile->GetPrefs()->SetString(kSegmentationClientResultPrefs,
-                                           result_pref);
-      test_utils->SetupForProfile(setup_profile);
+    ProfileIOS& SetUpEnvironment(ProfileIOS& setup_profile) {
+      setup_profile.GetPrefs()->SetString(kSegmentationClientResultPrefs,
+                                          result_pref);
+      test_utils->SetupForProfile(&setup_profile);
       return setup_profile;
     }
 
