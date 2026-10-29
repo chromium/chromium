@@ -1097,6 +1097,11 @@
     "owners": [ "luchenpeng@google.com", "battre@google.com", "fleimgruber@google.com" ],
     "expiry_milestone": 165
   },
+  {
+    "name": "autofill-custom-form-control-scripts-dir",
+    "owners": [ "luchenpeng@google.com", "battre@google.com", "fleimgruber@google.com" ],
+    "expiry_milestone": 165
+  },
   { "name": "autofill-disable-bnpl-country-check-for-testing",
     "owners": [ "vinnypersky@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 155

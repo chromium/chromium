@@ -8119,6 +8119,8 @@ from previous Chrome versions.
       label="JourneysOnDeviceClusteringContentClustering:enabled"/>
   <int value="-2049843624"
       label="TrustedWebActivityContactsDelegation:disabled"/>
+  <int value="-2049260649"
+      label="autofill-custom-form-control-scripts-dir:enabled"/>
   <int value="-2048927838" label="AutoplayWhitelistSettings:enabled"/>
   <int value="-2048873628" label="UseToastManager:enabled"/>
   <int value="-2048829250" label="LanguagePacksInOobe:disabled"/>
@@ -15879,6 +15881,8 @@ from previous Chrome versions.
   <int value="266787297" label="CreateShortcutIgnoresManifest:disabled"/>
   <int value="266793022"
       label="SourceSpecificMulticastInDirectSockets:disabled"/>
+  <int value="267091614"
+      label="autofill-custom-form-control-scripts-dir:disabled"/>
   <int value="267252476" label="WebXRDepthPerformance:disabled"/>
   <int value="267313220" label="ScreenSaverPreview:disabled"/>
   <int value="267332914" label="AvoidUnnecessaryBeforeUnloadCheck:disabled"/>

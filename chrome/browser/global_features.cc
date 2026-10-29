@@ -36,12 +36,17 @@
 #include "ui/base/ui_base_features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "chrome/browser/background/glic/glic_background_mode_manager.h"
 #include "chrome/browser/child_module/child_module_manager.h"
 #include "chrome/browser/child_module/features.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_drag_api/desktop_tab_drag_impl/tab_drag_session_desktop_injector.h"
+#include "components/autofill/content/browser/integrators/custom_form_controls/custom_form_control_script_index.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_switches.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -275,6 +280,22 @@ void GlobalFeatures::Init() {
 
 void GlobalFeatures::PreMainMessageLoopRun() {
 #if !BUILDFLAG(IS_ANDROID)
+  // Custom form control scripts are only supported on desktop. For now, they
+  // only come from a local directory given by
+  // `--autofill-custom-form-control-scripts-dir` (also settable in
+  // chrome://flags), so there is no index without one.
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillCustomFormControlScripts)) {
+    const base::FilePath directory =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+            autofill::switches::kAutofillCustomFormControlScriptsDir);
+    if (!directory.empty()) {
+      custom_form_control_script_index_ =
+          std::make_unique<autofill::CustomFormControlScriptIndex>();
+      custom_form_control_script_index_->InitializeFromDirectory(directory);
+    }
+  }
+
   if (base::FeatureList::IsEnabled(child_module::features::kDynamicPatching)) {
     child_module_manager_ = std::make_unique<child_module::ChildModuleManager>(
         *g_browser_process->local_state());

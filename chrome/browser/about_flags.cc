@@ -14375,6 +14375,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillCustomFormControlScripts)},
 
+    {"autofill-custom-form-control-scripts-dir",
+     flag_descriptions::kAutofillCustomFormControlScriptsDirName,
+     flag_descriptions::kAutofillCustomFormControlScriptsDirDescription,
+     kOsDesktop,
+     STRING_VALUE_TYPE(autofill::switches::kAutofillCustomFormControlScriptsDir,
+                       "")},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

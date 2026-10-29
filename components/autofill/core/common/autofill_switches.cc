@@ -14,6 +14,12 @@ namespace switches {
 // of the API that are not linked to the Chrome baked key yet.
 const char kAutofillAPIKey[] = "autofill-api-key";
 
+// Directory with an `index.json` file and the custom form control scripts it
+// references. Only used if `features::kAutofillCustomFormControlScripts` is
+// enabled.
+const char kAutofillCustomFormControlScriptsDir[] =
+    "autofill-custom-form-control-scripts-dir";
+
 // Override the default autofill server URL with "scheme://host[:port]/prefix/".
 const char kAutofillServerURL[] = "autofill-server-url";
 

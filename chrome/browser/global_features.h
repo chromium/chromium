@@ -23,6 +23,12 @@ class BrowserInfoBarManager;
 
 class GlobalBrowserCollection;
 
+#if !BUILDFLAG(IS_ANDROID)
+namespace autofill {
+class CustomFormControlScriptIndex;
+}  // namespace autofill
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 namespace system_permission_settings {
 class PlatformHandle;
 }  // namespace system_permission_settings
@@ -228,6 +234,15 @@ class GlobalFeatures {
     return global_browser_collection_.get();
   }
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Null unless `autofill::features::kAutofillCustomFormControlScripts` is
+  // enabled and `--autofill-custom-form-control-scripts-dir` is set. Desktop
+  // only.
+  autofill::CustomFormControlScriptIndex* custom_form_control_script_index() {
+    return custom_form_control_script_index_.get();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   static ui::UserDataFactoryWithOwner<BrowserProcess>&
   GetUserDataFactoryForTesting();
 
@@ -304,6 +319,11 @@ class GlobalFeatures {
   // std::unique_ptr<FooFeature> foo_feature_;
 
   std::unique_ptr<GlobalBrowserCollection> global_browser_collection_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<autofill::CustomFormControlScriptIndex>
+      custom_form_control_script_index_;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   std::unique_ptr<system_permission_settings::PlatformHandle>
       system_permissions_platform_handle_;

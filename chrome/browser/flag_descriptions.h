@@ -911,6 +911,13 @@ inline constexpr char kAutofillCustomFormControlScriptsDescription[] =
     "custom form controls, such as select-like widgets that aren't <select> "
     "elements.";
 
+inline constexpr char kAutofillCustomFormControlScriptsDirName[] =
+    "Autofill custom form control scripts directory";
+inline constexpr char kAutofillCustomFormControlScriptsDirDescription[] =
+    "Absolute path of a local directory with an index.json file and the "
+    "custom form control scripts it references. Only used if "
+    "#autofill-custom-form-control-scripts is enabled.";
+
 inline constexpr char kAutofillDisableBnplCountryCheckForTestingName[] =
     "Disable the country check for BNPL testing";
 inline constexpr char kAutofillDisableBnplCountryCheckForTestingDescription[] =
