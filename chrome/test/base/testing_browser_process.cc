@@ -696,8 +696,12 @@ os_crypt_async::OSCryptAsync* TestingBrowserProcess::os_crypt_async() {
 void TestingBrowserProcess::set_additional_os_crypt_async_provider_for_test(
     size_t precedence,
     std::unique_ptr<os_crypt_async::KeyProvider> provider) {
-  // Not implemented.
-  NOTREACHED();
+  std::vector<std::pair<os_crypt_async::OSCryptAsync::Precedence,
+                        std::unique_ptr<os_crypt_async::KeyProvider>>>
+      providers;
+  providers.emplace_back(precedence, std::move(provider));
+  os_crypt_async_ =
+      std::make_unique<os_crypt_async::OSCryptAsync>(std::move(providers));
 }
 
 BuildState* TestingBrowserProcess::GetBuildState() {
@@ -768,6 +772,7 @@ void TestingBrowserProcess::MaybeStartTearDown() {
   }
   is_torn_down_ = true;
 
+  os_crypt_async_.reset();
   network_time_tracker_.reset();
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
   notification_ui_manager_.reset();

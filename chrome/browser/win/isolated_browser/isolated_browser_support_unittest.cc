@@ -37,6 +37,7 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_com_initializer.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_provider_win.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_win.h"
 #include "chrome/browser/os_crypt/test_support.h"
@@ -50,6 +51,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/prefs/mock_pref_change_callback.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/testing_pref_service.h"
@@ -484,6 +486,144 @@ TEST_P(IsolatedBrowserSupportSystemTestWithFailures, InjectFailures) {
 
 INSTANTIATE_TEST_SUITE_P(,
                          IsolatedBrowserSupportSystemTestWithFailures,
+                         ::testing::Bool());
+
+class IsolatedBrowserSupportConcurrentOSCryptTest
+    : public IsolatedBrowserSupportSystemTest,
+      public ::testing::WithParamInterface<bool> {};
+
+TEST_P(IsolatedBrowserSupportConcurrentOSCryptTest,
+       DisableWaitsForOSCryptAsyncInit) {
+  const bool key_already_stored = GetParam();
+  install_static::ScopedInstallDetails details(/*system_level=*/true);
+
+  // Force key encryption to PROTECTION_PATH_VALIDATION_WITH_ISOLATION.
+  base::test::ScopedFeatureList encrypt_to_isolate{
+      os_crypt_async::features::kEncryptWithIsolatedState};
+
+  ::testing::StrictMock<MockAppBoundEncryptionOverrides> mock_app_bound;
+  ScopedOverridesForTesting overrides(mock_app_bound);
+
+  ON_CALL(mock_app_bound, EncryptAppBoundString).WillByDefault(Encrypt);
+  ON_CALL(mock_app_bound, DecryptAppBoundString)
+      .WillByDefault([](auto&&... args) {
+        return Decrypt(std::forward<decltype(args)>(args)...,
+                       /*inject_reencrypt_failures=*/false);
+      });
+  ON_CALL(mock_app_bound, GetAppBoundEncryptionSupportLevel)
+      .WillByDefault(::testing::Return(os_crypt::SupportLevel::kSupported));
+
+  if (key_already_stored) {
+    // Store an initial unisolated key in prefs.
+    EXPECT_CALL(mock_app_bound, GetAppBoundEncryptionSupportLevel).Times(1);
+    EXPECT_CALL(mock_app_bound, EncryptAppBoundString).Times(1);
+    os_crypt_async::AppBoundEncryptionProviderWin initial_provider(
+        &prefs_,
+        /*force_protection_level=*/ProtectionLevel::PROTECTION_PATH_VALIDATION);
+    base::test::TestFuture<
+        const std::string&,
+        base::expected<os_crypt_async::Encryptor::Key,
+                       os_crypt_async::KeyProvider::KeyError>>
+        future;
+    initial_provider.GetKey(future.GetCallback());
+    auto [_, key] = future.Take();
+    ASSERT_TRUE(key.has_value());
+    ASSERT_THAT(GetProtectionLevelFromPrefs(&prefs_),
+                testing::Optional(ProtectionLevel::PROTECTION_PATH_VALIDATION));
+    ::testing::Mock::VerifyAndClearExpectations(&mock_app_bound);
+  }
+
+  // Enable isolation.
+  {
+    base::test::TestFuture<base::expected<IsolationState, HRESULT>> future;
+    SetIsolationState(IsolationState::kProcessIsolation, &prefs_,
+                      future.GetCallback());
+    ASSERT_THAT(future.Take(),
+                base::test::ValueIs(IsolationState::kProcessIsolation));
+    ASSERT_TRUE(IsIsolationEnabled());
+  }
+
+  // Construct an OSCryptAsync with the normal AppBoundEncryptionProviderWin.
+  EXPECT_CALL(mock_app_bound, GetAppBoundEncryptionSupportLevel).Times(2);
+  if (key_already_stored) {
+    // First call is from the normal provider in OSCryptAsync upgrading the key
+    // to PROTECTION_PATH_VALIDATION_WITH_ISOLATION; second call is from
+    // SetIsolationState downgrading it back to PROTECTION_PATH_VALIDATION.
+    ::testing::InSequence seq;
+    EXPECT_CALL(mock_app_bound,
+                DecryptAppBoundString(
+                    ::testing::_, ::testing::_,
+                    ProtectionLevel::PROTECTION_PATH_VALIDATION_WITH_ISOLATION,
+                    ::testing::_, ::testing::_, ::testing::_))
+        .WillOnce([](const std::string& ciphertext, std::string& plaintext,
+                     ProtectionLevel protection_level,
+                     std::optional<std::string>& new_ciphertext,
+                     DWORD& last_error,
+                     elevation_service::EncryptFlags* flags) {
+          elevation_service::EncryptFlags upgrade_flags{.force_reencrypt =
+                                                            true};
+          return Decrypt(ciphertext, plaintext, protection_level,
+                         new_ciphertext, last_error, &upgrade_flags,
+                         /*inject_reencrypt_failures=*/false);
+        });
+    // The test `Encrypt` implementation stores the data in plaintext with the
+    // first byte indicating the `ProtectionLevel` (see `Encrypt` above), so
+    // `StartsWith` verifies that the downgrade call is decrypting the key after
+    // it was upgraded to `PROTECTION_PATH_VALIDATION_WITH_ISOLATION`.
+    EXPECT_CALL(
+        mock_app_bound,
+        DecryptAppBoundString(
+            ::testing::StartsWith(std::string(
+                1, ProtectionLevel::PROTECTION_PATH_VALIDATION_WITH_ISOLATION)),
+            ::testing::_, ProtectionLevel::PROTECTION_PATH_VALIDATION,
+            ::testing::_, ::testing::_, ::testing::_));
+  } else {
+    // First call is EncryptAppBoundString from the normal provider generating a
+    // new isolated key; second call is DecryptAppBoundString from
+    // SetIsolationState downgrading that newly generated key.
+    ::testing::InSequence seq;
+    EXPECT_CALL(mock_app_bound,
+                EncryptAppBoundString(
+                    ProtectionLevel::PROTECTION_PATH_VALIDATION_WITH_ISOLATION,
+                    ::testing::_, ::testing::_, ::testing::_, ::testing::_));
+    // As above, the first byte of the test ciphertext indicates the
+    // `ProtectionLevel` of the stored key being downgraded.
+    EXPECT_CALL(
+        mock_app_bound,
+        DecryptAppBoundString(
+            ::testing::StartsWith(std::string(
+                1, ProtectionLevel::PROTECTION_PATH_VALIDATION_WITH_ISOLATION)),
+            ::testing::_, ProtectionLevel::PROTECTION_PATH_VALIDATION,
+            ::testing::_, ::testing::_, ::testing::_));
+  }
+
+  g_browser_process->set_additional_os_crypt_async_provider_for_test(
+      /*precedence=*/15u,
+      std::make_unique<os_crypt_async::AppBoundEncryptionProviderWin>(
+          &prefs_, /*force_protection_level=*/std::nullopt));
+
+  // Kick off async initialization of OSCryptAsync and immediately call
+  // SetIsolationState(kIsolationDisabled) while initialization is in flight.
+  base::test::TestFuture<scoped_refptr<os_crypt_async::Encryptor>>
+      encryptor_future;
+  g_browser_process->os_crypt_async()->GetInstance(
+      encryptor_future.GetCallback());
+
+  base::test::TestFuture<base::expected<IsolationState, HRESULT>>
+      disable_future;
+  SetIsolationState(IsolationState::kIsolationDisabled, &prefs_,
+                    disable_future.GetCallback());
+
+  EXPECT_THAT(disable_future.Take(),
+              base::test::ValueIs(IsolationState::kIsolationDisabled));
+  EXPECT_TRUE(encryptor_future.IsReady());
+  EXPECT_FALSE(IsIsolationEnabled());
+  EXPECT_THAT(GetProtectionLevelFromPrefs(&prefs_),
+              testing::Optional(ProtectionLevel::PROTECTION_PATH_VALIDATION));
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         IsolatedBrowserSupportConcurrentOSCryptTest,
                          ::testing::Bool());
 
 class IsolatedBrowserSupportLaunchTest : public ::testing::Test {

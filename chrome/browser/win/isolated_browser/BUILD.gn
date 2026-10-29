@@ -12,13 +12,16 @@ source_set("isolated_browser_support") {
 
   deps = [
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser/os_crypt",
     "//chrome/common:constants",
     "//chrome/elevation_service:public_headers",
     "//chrome/install_static:install_static_util",
     "//chrome/installer/util:isolation_support",
     "//components/keep_alive_registry",
+    "//components/os_crypt/async/browser",
     "//components/os_crypt/browser:key_provider_interface",
+    "//components/prefs",
     "//content/public/browser",
   ]
 }
@@ -70,6 +73,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/crash/core/common:crash_key",
     "//components/keep_alive_registry",
+    "//components/os_crypt/async/browser",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/variations",

@@ -29,6 +29,7 @@
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/security_descriptor.h"
 #include "base/win/sid.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_provider_win.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
@@ -40,6 +41,8 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/os_crypt/async/browser/key_provider.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace chrome {
@@ -454,46 +457,67 @@ void SetIsolationState(
                                         KeepAliveRestartOption::DISABLED);
 
   // Switching from isolated to non-isolated requires re-encrypting the
-  // app-bound key into a non-isolated state.
+  // app-bound key into a non-isolated state. Wait for the browser's
+  // OSCryptAsync instance to finish initializing first so that the normal
+  // AppBoundEncryptionProviderWin has completed any in-flight key generation or
+  // re-encryption before downgrading the stored key.
   if (IsIsolationEnabled() && state == IsolationState::kIsolationDisabled) {
-    // Force downgrade to PROTECTION_PATH_VALIDATION, which is not bound to the
-    // isolation state of the browser.
-    auto provider = std::make_unique<
-        os_crypt_async::AppBoundEncryptionProviderWin>(
-        local_state,
-        /*force_protection_level=*/ProtectionLevel::PROTECTION_PATH_VALIDATION);
+    g_browser_process->os_crypt_async()->GetInstance(base::BindOnce(
+        [](PrefService* local_state, IsolationState state,
+           base::OnceCallback<void(base::expected<IsolationState, HRESULT>)>
+               completed,
+           std::unique_ptr<ScopedKeepAlive> keep_alive,
+           scoped_refptr<os_crypt_async::Encryptor> encryptor) {
+          // Force downgrade to PROTECTION_PATH_VALIDATION, which is not bound
+          // to the isolation state of the browser.
+          auto provider =
+              std::make_unique<os_crypt_async::AppBoundEncryptionProviderWin>(
+                  local_state,
+                  /*force_protection_level=*/ProtectionLevel::
+                      PROTECTION_PATH_VALIDATION);
 
-    // Obtaining the key triggers re-encryption of the stored encrypted key. If
-    // there is no previously encrypted key, then there's nothing to do - it
-    // will be stored encrypted correctly after restart.
-    if (provider->IsKeyStored()) {
-      auto* raw_provider = provider.get();
-      // Bind `provider`, `completed`, and `keep_alive` so they remain alive
-      // during key retrieval and registry persistence. `keep_alive` stays
-      // on the stack frame of the callback or `CompleteRegistryPersistence`
-      // until after `completed` is called, ensuring keep-alive continuity.
-      raw_provider->GetKey(base::BindOnce(
-          [](std::unique_ptr<os_crypt_async::AppBoundEncryptionProviderWin>
-                 provider,
-             base::OnceCallback<void(base::expected<IsolationState, HRESULT>)>
-                 completed,
-             IsolationState state, std::unique_ptr<ScopedKeepAlive> keep_alive,
-             const std::string& tag,
-             base::expected<os_crypt_async::Encryptor::Key,
-                            os_crypt_async::KeyProvider::KeyError> result) {
-            if (!result.has_value()) {
-              if (completed) {
-                std::move(completed).Run(base::unexpected(E_FAIL));
-              }
-              return;
-            }
-            CompleteRegistryPersistence(state, std::move(completed),
-                                        std::move(keep_alive));
-          },
-          std::move(provider), std::move(completed), state,
-          std::move(keep_alive)));
-      return;
-    }
+          // Obtaining the key triggers re-encryption of the stored encrypted
+          // key. If there is no previously encrypted key, then there's nothing
+          // to do - it will be stored encrypted correctly after restart.
+          if (provider->IsKeyStored()) {
+            auto* raw_provider = provider.get();
+            // Bind `provider`, `completed`, and `keep_alive` so they remain
+            // alive during key retrieval and registry persistence. `keep_alive`
+            // stays on the stack frame of the callback or
+            // `CompleteRegistryPersistence` until after `completed` is called,
+            // ensuring keep-alive continuity.
+            raw_provider->GetKey(base::BindOnce(
+                [](std::unique_ptr<
+                       os_crypt_async::AppBoundEncryptionProviderWin> provider,
+                   base::OnceCallback<void(
+                       base::expected<IsolationState, HRESULT>)> completed,
+                   IsolationState state,
+                   std::unique_ptr<ScopedKeepAlive> keep_alive,
+                   const std::string& tag,
+                   base::expected<os_crypt_async::Encryptor::Key,
+                                  os_crypt_async::KeyProvider::KeyError>
+                       result) {
+                  if (!result.has_value()) {
+                    if (completed) {
+                      std::move(completed).Run(base::unexpected(E_FAIL));
+                    }
+                    return;
+                  }
+                  CompleteRegistryPersistence(state, std::move(completed),
+                                              std::move(keep_alive));
+                },
+                std::move(provider), std::move(completed), state,
+                std::move(keep_alive)));
+            return;
+          }
+
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE,
+              base::BindOnce(&CompleteRegistryPersistence, state,
+                             std::move(completed), std::move(keep_alive)));
+        },
+        local_state, state, std::move(completed), std::move(keep_alive)));
+    return;
   }
 
   // Post persistence to the UI task runner, passing `keep_alive` so it remains

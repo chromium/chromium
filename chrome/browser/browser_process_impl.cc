@@ -558,18 +558,6 @@ void BrowserProcessImpl::Init() {
       user_value->GetIfBool().value_or(false) != chrome::IsIsolationEnabled()) {
     local_state()->ClearPref(prefs::kProcessIsolationEnabled);
   }
-
-  // After potentially clearing the untrusted user value, if the effective value
-  // of the pref (which now comes from policies, or a trusted user value, or
-  // default) differs from the actual state, queue a state update.
-  if (local_state()->GetBoolean(prefs::kProcessIsolationEnabled) !=
-      chrome::IsIsolationEnabled()) {
-    UpdateProcessIsolationState();
-  }
-  pref_change_registrar_.Add(
-      prefs::kProcessIsolationEnabled,
-      base::BindRepeating(&BrowserProcessImpl::UpdateProcessIsolationState,
-                          base::Unretained(this)));
 #endif  // BUILDFLAG(IS_WIN)
 
   CHECK(!webrtc_event_log_manager_, base::NotFatalUntil::M162);
@@ -1728,6 +1716,23 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
                                 base::TimeTicks::Now() - start_time);
       },
       base::TimeTicks::Now()));
+
+#if BUILDFLAG(IS_WIN)
+  // After potentially clearing the untrusted user value in Init(), if the
+  // effective value of the pref (which now comes from policies, or a trusted
+  // user value, or default) differs from the actual state, queue a state
+  // update. This must happen after `os_crypt_async_` is created so
+  // `SetIsolationState` can wait for `os_crypt_async_` initialization before
+  // re-encrypting the key.
+  if (local_state()->GetBoolean(prefs::kProcessIsolationEnabled) !=
+      chrome::IsIsolationEnabled()) {
+    UpdateProcessIsolationState();
+  }
+  pref_change_registrar_.Add(
+      prefs::kProcessIsolationEnabled,
+      base::BindRepeating(&BrowserProcessImpl::UpdateProcessIsolationState,
+                          base::Unretained(this)));
+#endif  // BUILDFLAG(IS_WIN)
 
   // browser_policy_connector() is created very early because local_state()
   // needs policy to be initialized with the managed preference values.
