@@ -7,13 +7,14 @@
 #include <Foundation/Foundation.h>
 
 #include <algorithm>
+#include <array>
+#include <string_view>
 
 #include "base/apple/foundation_util.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -60,19 +61,26 @@ constexpr auto kFixedRequestHeaders =
 // Splits both the pattern and the path into segments separated with |/|.
 // Compares corresponding segments. Wildcard |*| matches one whole segment.
 bool MatchOktaSSOUrlPattern(std::string_view path) {
-  static const base::NoDestructor<std::vector<std::string>> pattern_segments(
-      base::SplitString(kOktaSsoURLPattern, "/", base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY));
+  static constexpr auto kPatternSegments = []() consteval {
+    auto split = [] {
+      return base::SplitStringPiece(kOktaSsoURLPattern, "/",
+                                    base::TRIM_WHITESPACE,
+                                    base::SPLIT_WANT_NONEMPTY);
+    };
+    std::array<std::string_view, split().size()> result;
+    std::ranges::copy(split(), result.begin());
+    return result;
+  }();
   const std::vector<std::string_view> path_segments = base::SplitStringPiece(
       path, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  if (path_segments.size() != pattern_segments->size()) {
+  if (path_segments.size() != kPatternSegments.size()) {
     return false;
   }
 
   for (size_t i = 0; i < path_segments.size(); ++i) {
-    if (pattern_segments->at(i) != kWildcardSegment &&
-        path_segments.at(i) != pattern_segments->at(i)) {
+    if (kPatternSegments[i] != kWildcardSegment &&
+        path_segments[i] != kPatternSegments[i]) {
       return false;
     }
   }
