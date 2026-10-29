@@ -89,6 +89,78 @@
 }
 
 :host {
+  --color-searchbox-answer-icon-background: var(
+      --color-omnibox-answer-icon-g-m3-background);
+  --color-searchbox-answer-icon-foreground: var(
+      --color-omnibox-answer-icon-g-m3-foreground);
+  --color-searchbox-background: var(--color-sys-surface);
+  --color-searchbox-border: var(--color-sys-neutral-outline);
+  --color-searchbox-dropdown-divider: var(--color-sys-divider);
+  --color-searchbox-foreground: var(--color-sys-on-surface);
+  --color-searchbox-lens-voice-icon-background: var(
+      --color-omnibox-results-icon);
+  --color-searchbox-placeholder: var(--color-sys-on-surface-subtle);
+  --color-searchbox-results-action-chip: var(
+      --color-omnibox-results-button-border);
+  --color-searchbox-results-action-chip-focus-outline: var(
+      --color-omnibox-results-focus-indicator);
+  --color-searchbox-results-action-chip-icon: var(
+      --color-omnibox-results-button-icon);
+  --color-searchbox-results-action-chip-icon-selected: var(
+      --color-omnibox-results-button-icon-selected);
+  --color-searchbox-results-background: var(--color-sys-surface);
+  --color-searchbox-results-background-hovered: var(
+      --color-omnibox-results-background-hover-overlay,
+      var(--color-omnibox-results-background-hovered));
+  --color-searchbox-results-background-selected: var(
+      --color-omnibox-results-background-selected);
+  --color-searchbox-results-button-hover: var(
+      --color-omnibox-results-button-ink-drop-row-hovered);
+  --color-searchbox-results-button-selected-hover: var(
+      --color-omnibox-results-button-ink-drop-row-selected);
+  --color-searchbox-results-dim-selected: var(
+      --color-omnibox-results-text-dimmed-selected);
+  --color-searchbox-results-focus-indicator: var(
+      --color-omnibox-results-focus-indicator);
+  --color-searchbox-results-foreground: var(--color-sys-on-surface);
+  --color-searchbox-results-foreground-dimmed: var(
+      --color-sys-on-surface-subtle);
+  --color-searchbox-results-foreground-selected: var(
+      --color-omnibox-results-text-selected);
+  --color-searchbox-results-icon: var(--color-omnibox-results-icon);
+  --color-searchbox-results-icon-container-background: unset;
+  --color-searchbox-results-icon-focused-outline: var(
+      --color-omnibox-results-focus-indicator);
+  --color-searchbox-results-icon-selected: var(
+      --color-omnibox-results-icon-selected);
+  --color-searchbox-results-starter-pack-icon: var(
+      --color-omnibox-results-starter-pack-icon);
+  --color-searchbox-results-typed-prefix: var(--color-sys-on-surface);
+  --color-searchbox-results-url: var(--color-omnibox-results-url);
+  --color-searchbox-results-url-selected: var(
+      --color-omnibox-results-url-selected);
+  --color-searchbox-search-icon-background: var(--color-omnibox-results-icon);
+  --color-searchbox-selection-background: var(
+      --color-omnibox-selection-background);
+  --color-searchbox-selection-foreground: var(
+      --color-omnibox-selection-foreground);
+  --cr-searchbox-match-icon-container-background-fallback: var(
+      --color-omnibox-results-background-hovered);
+
+  --color-composebox-context-entrypoint-background: var(
+      --color-sys-surface-container-high);
+  --color-composebox-context-entrypoint-hover-background: var(
+      --color-sys-state-hover-on-subtle);
+  --color-composebox-context-entrypoint-text: var(--color-sys-on-surface);
+  --color-composebox-context-entrypoint-text-disabled: var(
+      --color-omnibox-foreground-disabled);
+  --color-composebox-file-chip-text: var(--color-sys-on-surface);
+  --composebox-context-menu-entrypoint-button-color: var(
+      --color-sys-on-surface);
+
+  --color-new-tab-page-realbox-next-icon-hover: var(
+      --color-omnibox-action-icon-hover,
+      var(--color-sys-state-hover-on-subtle));
   --omnibox-everywhere-top-actions-top: 16px;
 }
 
@@ -106,8 +178,8 @@
   --cr-menu-border-radius: 16px;
   --cr-menu-shadow: var(--cr-elevation-3);
   --cr-menu-background-color: var(
-      --color-composebox-background,
-      var(--search-background-color));
+      --color-sys-surface-container-high,
+      var(--color-sys-surface));
   --cr-primary-text-color: var(--color-composebox-file-chip-text);
   --cr-hover-background-color: var(
       --color-composebox-context-entrypoint-hover-background);
@@ -198,8 +270,7 @@ help-bubble {
 #context::part(entrypoint-button),
 #contextEntrypoint::part(entrypoint-button) {
   --cr-composebox-entrypoint-background-color: var(
-      --color-omnibox-composebox-context-entrypoint-background,
-      var(--color-sys-state-hover-on-subtle, rgba(0, 0, 0, 0.06)));
+      --color-composebox-context-entrypoint-background);
   --cr-composebox-entrypoint-border-radius: 100px;
   --cr-composebox-entrypoint-height: 32px;
   --cr-composebox-entrypoint-width: 40px;

@@ -8,6 +8,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  --color-searchbox-background: var(--color-sys-surface);
   --loomnibox-content-width: 680px;
   --most-visited-container-inset: 0px;
   --most-visited-tile-count: 7;
@@ -65,9 +66,10 @@ omnibox-everywhere-composebox {
   --cr-searchbox-icon-top-position: 0;
   --cr-searchbox-min-width: 100%;
 
-  --color-composebox-type-ahead: #5f6368;
-  --color-composebox-type-ahead-chip: rgba(26, 115, 232, 0.1);
-  --color-composebox-font-light: #1f1f1f;
+  --color-composebox-background: var(--color-sys-surface);
+  --color-composebox-type-ahead: var(--color-sys-on-surface-subtle);
+  --color-composebox-type-ahead-chip: var(--color-sys-surface-container-high);
+  --color-composebox-font-light: var(--color-sys-on-surface);
   --color-searchbox-placeholder: var(--color-composebox-type-ahead);
   display: block;
 }
@@ -106,15 +108,20 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
 }
 
 #voiceSearchDialog {
-  --color-composebox-submit-button-background: var(
-      --color-new-tab-page-composebox-submit-button-background, #1a73e8);
-  --color-composebox-submit-button-icon: white;
+  --color-composebox-cancel-button-light: var(--color-sys-on-surface-subtle);
+  --color-composebox-font-light: var(--color-sys-on-surface);
+  --color-composebox-link: var(--color-sys-primary);
+  --color-composebox-submit-button-background: var(--color-sys-primary);
+  --color-composebox-submit-button-icon: var(--color-sys-on-primary);
+  --color-composebox-voice-search-font: var(--color-sys-on-surface);
+  --color-search-animated-glow-background: var(--color-sys-surface);
+  --cr-composebox-background-color: var(--color-sys-surface);
   --cr-composebox-submit-border-radius: 100px;
   --cr-composebox-submit-height: 36px;
   --cr-composebox-submit-icon-offset: 0;
   --cr-composebox-submit-icon-size: 24px;
   --cr-composebox-submit-width: 48px;
-  background: var(--color-composebox-background, #fff);
+  background: var(--color-sys-surface);
   border: none;
   border-radius: 16px;
   bottom: auto;
@@ -156,6 +163,8 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
 }
 
 #voiceSearch::part(voice-stop-button) {
+  --cr-icon-button-fill-color: var(--color-sys-on-surface);
+  background-color: var(--color-sys-neutral-container);
   position: relative;
 }
 
@@ -207,6 +216,7 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
 
 cr-most-visited {
   -webkit-app-region: drag;
+  --add-shortcut-foreground-color: var(--color-sys-on-surface);
   --most-visited-focus-shadow: 0 0 0 2px var(--color-sys-primary, #1a73e8);
   /* Total inner width:
    * var(--loomnibox-content-width) - 32px (16px * 2 padding) - 4px (2px * 2
@@ -221,6 +231,7 @@ cr-most-visited {
   --most-visited-icon-size: 48px;
   --most-visited-managed-icon-left: 44px;
   --most-visited-managed-icon-top: 32px;
+  --most-visited-text-color: var(--color-sys-on-surface);
   --most-visited-tile-size: 68px;
   --tile-background-color: var(--color-sys-surface-variant);
   --tile-hover-color: var(--color-sys-state-hover-on-subtle);

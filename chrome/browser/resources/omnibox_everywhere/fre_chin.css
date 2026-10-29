@@ -13,29 +13,17 @@
    * composebox. */
   border-inline: 2px solid transparent;
   box-sizing: border-box;
-  color-scheme: light;
   display: block;
   font-family: 'Google Sans Text', 'Google Sans',
       var(--cr-primary-font-family, Roboto, sans-serif);
   user-select: none;
   -webkit-app-region: drag;
   -webkit-font-smoothing: antialiased;
-
-  /* TODO(crbug.com/550425049): Support dark mode tokens */
-  --color-sys-on-primary-container: #041e49;
-  --color-sys-on-surface: #1f1f1f;
-  --color-sys-on-surface-subtle: #474747;
-  --color-sys-primary: #0b57d0;
-  --color-sys-primary-container: #d3e3fd;
-  --color-sys-state-hover-on-subtle: rgba(0, 0, 0, 0.06);
-  --color-sys-surface: #fff;
-  --color-sys-surface-container: #f0f4f9;
-  --color-sys-surface-container-highest: #dde3ea;
 }
 
 .chin-container {
   align-items: center;
-  background-color: var(--color-sys-surface-container);
+  background-color: var(--color-sys-surface);
   border-radius: 12px;
   box-shadow: var(--cr-elevation-3, 0 1px 3px 0 rgba(0, 0, 0, 0.15),
       0 4px 8px 3px rgba(0, 0, 0, 0.15));
@@ -87,7 +75,7 @@
 
 .dropdown-trigger {
   align-items: center;
-  background-color: var(--color-sys-surface);
+  background-color: var(--color-sys-surface-container-high);
   border: none;
   border-radius: 8px;
   box-sizing: border-box;
@@ -129,7 +117,7 @@
 
 .hotkey-container {
   align-items: center;
-  background-color: var(--color-sys-surface);
+  background-color: var(--color-sys-surface-container-high);
   border-radius: 8px;
   box-sizing: border-box;
   display: flex;

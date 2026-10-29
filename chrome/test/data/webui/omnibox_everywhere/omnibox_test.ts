@@ -4013,4 +4013,107 @@ suite('OmniboxEverywhereContextMenuTest', () => {
               profileRect.left}) for dir=${inputWritingDirection}`);
     }
   });
+
+  test(
+      'resolves dark mode tokens across omnibox, most visited, and composebox',
+      async () => {
+        const rootStyle = document.documentElement.style;
+        const darkTokens: Array<[string, string]> = [
+          ['--color-sys-surface', 'rgb(31, 31, 31)'],
+          ['--color-sys-on-surface', 'rgb(227, 227, 227)'],
+          ['--color-sys-on-surface-subtle', 'rgb(196, 199, 197)'],
+          ['--color-sys-neutral-outline', 'rgb(68, 71, 70)'],
+          ['--color-sys-surface-container-high', 'rgb(42, 42, 42)'],
+          ['--color-sys-divider', 'rgb(68, 71, 70)'],
+        ];
+        darkTokens.forEach(([k, v]) => rootStyle.setProperty(k, v));
+
+        try {
+          const omnibox =
+              app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+          assertTrue(!!omnibox);
+          // Even when `[is-dark]` is set, searchbox tokens must not be
+          // clobbered by hardcoded light-mode colors.
+          omnibox.setAttribute('is-dark', '');
+          await microtasksFinished();
+
+          assertEquals(
+              'rgb(31, 31, 31)',
+              window.getComputedStyle(omnibox.$.inputWrapper).backgroundColor);
+          assertEquals(
+              'rgb(227, 227, 227)',
+              window.getComputedStyle(omnibox.$.input.inputElement).color);
+
+          const omniboxStyle = window.getComputedStyle(omnibox);
+          assertEquals(
+              'rgb(31, 31, 31)',
+              omniboxStyle.getPropertyValue('--color-searchbox-background')
+                  .trim());
+          assertEquals(
+              'rgb(68, 71, 70)',
+              omniboxStyle.getPropertyValue('--color-searchbox-border').trim());
+
+          const profileIcon = omnibox.shadowRoot.querySelector<HTMLElement>(
+              'omnibox-everywhere-profile-icon')!;
+          assertTrue(!!profileIcon);
+          assertEquals(
+              'rgb(31, 31, 31)',
+              window.getComputedStyle(profileIcon)
+                  .getPropertyValue('--profile-icon-background')
+                  .trim());
+
+          const mvtContainer = app.shadowRoot.querySelector<HTMLElement>(
+              '#mostVisitedContainer')!;
+          assertTrue(!!mvtContainer);
+          assertEquals(
+              'rgb(31, 31, 31)',
+              window.getComputedStyle(mvtContainer).backgroundColor);
+
+          const mvt =
+              app.shadowRoot.querySelector<HTMLElement>('cr-most-visited')!;
+          assertTrue(!!mvt);
+          const mvtStyle = window.getComputedStyle(mvt);
+          assertEquals(
+              'rgb(227, 227, 227)',
+              mvtStyle.getPropertyValue('--most-visited-text-color').trim());
+          assertEquals(
+              'rgb(227, 227, 227)',
+              mvtStyle.getPropertyValue('--add-shortcut-foreground-color')
+                  .trim());
+
+          testEverywhereProxy.page.openComposebox({
+            tool: ToolMode.kUnspecified,
+            model: ModelMode.kUnspecified,
+            tab: null,
+            fileToken: null,
+            fileInfo: null,
+            isPendingScreenshot: false,
+          });
+          await microtasksFinished();
+
+          const composebox =
+              app.shadowRoot.querySelector('omnibox-everywhere-composebox')!;
+          assertTrue(!!composebox);
+          const composeboxStyle = window.getComputedStyle(composebox);
+          for (const prop of [
+                   '--color-composebox-background',
+                   '--cr-composebox-background-color',
+                   '--color-search-animated-glow-background',
+               ]) {
+            assertEquals(
+                'rgb(31, 31, 31)',
+                composeboxStyle.getPropertyValue(prop).trim());
+          }
+          assertEquals(
+              'rgb(68, 71, 70)',
+              composeboxStyle.getPropertyValue('--color-composebox-border')
+                  .trim());
+          assertEquals(
+              'rgb(227, 227, 227)',
+              composeboxStyle.getPropertyValue('--color-composebox-font')
+                  .trim());
+        } finally {
+          darkTokens.forEach(([k]) => rootStyle.removeProperty(k));
+        }
+      });
 });

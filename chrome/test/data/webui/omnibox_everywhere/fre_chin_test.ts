@@ -215,4 +215,28 @@ suite('FreChinTest', () => {
         await freChin.updateComplete;
         assertFalse(freChin.hasAttribute('small-loomnibox'));
       });
+
+  test('resolves dark mode surface and text tokens', async () => {
+    const rootStyle = document.documentElement.style;
+    const darkTokens: Array<[string, string]> = [
+      ['--color-sys-surface', 'rgb(31, 31, 31)'],
+      ['--color-sys-surface-container-high', 'rgb(42, 42, 42)'],
+      ['--color-sys-on-surface', 'rgb(227, 227, 227)'],
+    ];
+    darkTokens.forEach(([k, v]) => rootStyle.setProperty(k, v));
+
+    try {
+      const q = (sel: string) =>
+          window.getComputedStyle(freChin.shadowRoot.querySelector(sel)!);
+      assertEquals('rgb(31, 31, 31)', q('.chin-container').backgroundColor);
+      assertEquals('rgb(42, 42, 42)', q('.dropdown-trigger').backgroundColor);
+      assertEquals('rgb(227, 227, 227)', q('.to-search-label').color);
+
+      freChin.mode = FreChinMode.SHORTCUT_REMINDER;
+      await freChin.updateComplete;
+      assertEquals('rgb(42, 42, 42)', q('.hotkey-container').backgroundColor);
+    } finally {
+      darkTokens.forEach(([k]) => rootStyle.removeProperty(k));
+    }
+  });
 });

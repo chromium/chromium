@@ -40,22 +40,59 @@
   --cr-composebox-match-icon-container-padding-inline-start: 16px;
   --cr-searchbox-match-text-padding-inline-start: 8px;
   --text-input-max-height: 190px;
+  --color-composebox-aim-chip-hover-background: var(
+      --color-omnibox-action-icon-hover);
+  --color-composebox-aim-chip-hover-text: var(--color-sys-on-surface);
+  --color-composebox-background: var(--color-sys-surface);
+  --color-composebox-border: var(--color-searchbox-border);
+  --color-composebox-cancel-button-light: var(--color-sys-on-surface-subtle);
+  --color-composebox-document-chip-icon: var(--color-sys-on-surface-subtle);
+  --color-composebox-file-carousel-divider: var(--color-sys-divider);
+  --color-composebox-file-carousel-remove-button: var(
+      --color-omnibox-results-button-ink-drop-row-hovered);
+  --color-composebox-file-carousel-remove-gradient-start: var(
+      --color-sys-surface-container-high);
+  --color-composebox-file-carousel-remove-gradient-end: color-mix(
+      in srgb,
+      var(--color-composebox-file-carousel-remove-gradient-start),
+      transparent 100%);
+  --color-composebox-file-carousel-url: var(--color-sys-on-surface-subtle);
+  --color-composebox-file-chip-background: var(
+      --color-sys-surface-container-high);
+  --color-composebox-file-chip-favicon-background: var(
+      --color-omnibox-composebox-favicon-background);
+  --color-composebox-file-chip-spinner: var(
+      --color-omnibox-composebox-primary-action);
+  --color-composebox-file-image-overlay: var(
+      --color-omnibox-composebox-file-thumbnail-overlay);
+  --color-composebox-file-image-overlay-icon-color: var(
+      --color-omnibox-composebox-file-thumbnail-overlay-icon);
   --color-composebox-type-ahead: var(
       --color-searchbox-placeholder,
-      var(--color-omnibox-foreground-disabled, #5f6368));
-  --color-composebox-type-ahead-chip: var(
-      --color-omnibox-composebox-chip-background,
-      rgba(26, 115, 232, 0.1));
-  --color-composebox-font-light: var(
-      --color-searchbox-foreground,
-      var(--color-omnibox-text, #1f1f1f));
+      var(--color-sys-on-surface-subtle));
+  --color-composebox-type-ahead-chip: var(--color-sys-surface-container-high);
+  --color-composebox-font-light: var(--color-sys-on-surface);
   --color-composebox-font: var(--color-composebox-font-light);
   --color-composebox-input-icon: var(--color-composebox-type-ahead);
+  --color-composebox-pdf-chip-icon: var(--color-sys-on-surface-subtle);
+  --color-search-animated-glow-background: var(--color-sys-surface);
   --color-searchbox-results-foreground: var(--color-composebox-font-light);
   --color-searchbox-results-icon: var(--color-composebox-input-icon);
-  --color-composebox-submit-button-background: var(
-      --color-omnibox-composebox-submit-button-background,
-      #1a73e8);
+  --color-composebox-submit-button-background: var(--color-sys-primary);
+  --color-composebox-submit-button-energy: var(
+      --color-omnibox-composebox-submit-button-energy);
+  --color-composebox-submit-button-hover: var(
+      --color-omnibox-action-icon-hover);
+  --color-composebox-submit-button-icon: var(--color-sys-on-primary);
+  --color-composebox-tool-chip-background: var(
+      --color-omnibox-action-icon-hover);
+  --color-composebox-upload-button: var(--omnibox-results-chip-background);
+  --color-composebox-voice-button-hover-background: var(
+      --color-omnibox-action-icon-hover);
+  --color-composebox-voice-search-font: var(--color-sys-on-surface);
+  --color-file-chip-remove-button-fill: var(--color-sys-on-surface-subtle);
+  --cr-composebox-input-placeholder-color: var(--color-sys-on-surface-subtle);
+  --cr-composebox-voice-icon-fill-color: var(--color-sys-on-surface-subtle);
   --cr-composebox-submit-border-radius: 100px;
   --cr-composebox-submit-height: 32px;
   --cr-composebox-submit-icon-offset: 0;

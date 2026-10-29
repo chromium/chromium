@@ -25,7 +25,10 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
 #include "chrome/browser/search_engines/ai_mode_button_service_factory.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_region_select_overlay.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
@@ -57,12 +60,18 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/themes.mojom.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/menus/simple_menu_model.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_runner_handler.h"
 #include "ui/views/test/menu_runner_test_api.h"
@@ -4073,6 +4082,119 @@ TEST_F(OmniboxEverywhereUIManagerTest, LensPromoLifecycleInEphemeralMode) {
   // Re-invoking LB attempts to show the promo again as a fresh invocation.
   ui_manager->ShowForProfile(&profile_, GetContext());
   EXPECT_EQ(2, test_service->maybe_show_lens_promo_count());
+
+  ui_manager->Shutdown();
+}
+
+// Verifies that the Omnibox Everywhere widget is not hardcoded to kLight and
+// reflects both OS PreferredColorScheme (when BrowserColorScheme is kSystem)
+// and Chrome's explicit BrowserColorScheme (kLight / kDark).
+TEST_F(OmniboxEverywhereUIManagerTest,
+       WidgetRespectsBrowserColorSchemeAndOSTheme) {
+  ui::MockOsSettingsProvider os_settings;
+  os_settings.SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
+  auto* theme_service = ThemeServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(theme_service);
+  theme_service->UseDefaultTheme();
+  theme_service->SetBrowserColorScheme(
+      ThemeService::BrowserColorScheme::kSystem);
+
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+
+  EXPECT_FALSE(widget->color_mode_override().has_value());
+  EXPECT_EQ(ui::ColorProviderKey::ColorMode::kLight, widget->GetColorMode());
+  const SkColor light_bg =
+      widget->GetColorProvider()->GetColor(kColorOmniboxResultsBackground);
+
+  os_settings.SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
+  EXPECT_EQ(ui::ColorProviderKey::ColorMode::kDark, widget->GetColorMode());
+  const SkColor dark_bg =
+      widget->GetColorProvider()->GetColor(kColorOmniboxResultsBackground);
+  EXPECT_NE(light_bg, dark_bg);
+
+  theme_service->SetBrowserColorScheme(
+      ThemeService::BrowserColorScheme::kLight);
+  EXPECT_EQ(ui::ColorProviderKey::ColorMode::kLight, widget->GetColorMode());
+  EXPECT_EQ(light_bg, widget->GetColorProvider()->GetColor(
+                          kColorOmniboxResultsBackground));
+
+  os_settings.SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
+  theme_service->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kDark);
+  EXPECT_EQ(ui::ColorProviderKey::ColorMode::kDark, widget->GetColorMode());
+  EXPECT_EQ(dark_bg, widget->GetColorProvider()->GetColor(
+                         kColorOmniboxResultsBackground));
+
+  ui_manager->Shutdown();
+}
+
+// Verifies that the Omnibox Everywhere widget ignores Chrome browser color
+// themes and OS accent color tinting (always using the unthemed GM3 baseline
+// palette), while updating its Light/Dark mode when switching profiles.
+TEST_F(OmniboxEverywhereUIManagerTest,
+       WidgetRespectsChromeThemeAndProfileSwitch) {
+  ui::MockOsSettingsProvider os_settings;
+  os_settings.SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
+  auto* theme_service = ThemeServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(theme_service);
+  theme_service->UseDefaultTheme();
+  theme_service->SetBrowserColorScheme(
+      ThemeService::BrowserColorScheme::kLight);
+
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+
+  const SkColor baseline_surface =
+      widget->GetColorProvider()->GetColor(ui::kColorSysSurface);
+  const SkColor baseline_omnibox_bg =
+      widget->GetColorProvider()->GetColor(kColorOmniboxResultsBackground);
+  auto expect_unthemed_baseline = [](views::Widget* w) {
+    const ui::ColorProviderKey key = w->GetColorProviderKeyForTesting();
+    EXPECT_EQ(ui::ColorProviderKey::UserColorSource::kBaseline,
+              key.user_color_source);
+    EXPECT_FALSE(key.user_color.has_value());
+    EXPECT_FALSE(key.scheme_variant.has_value());
+    EXPECT_EQ(nullptr, key.custom_theme.get());
+  };
+
+  theme_service->SetUserColorAndBrowserColorVariant(
+      SK_ColorBLUE, ui::mojom::BrowserColorVariant::kTonalSpot);
+  os_settings.SetAccentColor(SK_ColorGREEN);
+  expect_unthemed_baseline(widget);
+  EXPECT_EQ(baseline_surface,
+            widget->GetColorProvider()->GetColor(ui::kColorSysSurface));
+  EXPECT_EQ(baseline_omnibox_bg, widget->GetColorProvider()->GetColor(
+                                     kColorOmniboxResultsBackground));
+
+  theme_service->BuildAutogeneratedThemeFromColor(SK_ColorRED);
+  expect_unthemed_baseline(widget);
+  EXPECT_EQ(baseline_surface,
+            widget->GetColorProvider()->GetColor(ui::kColorSysSurface));
+
+  TestingProfile profile_2;
+  auto* theme_service_2 = ThemeServiceFactory::GetForProfile(&profile_2);
+  ASSERT_TRUE(theme_service_2);
+  theme_service_2->SetBrowserColorScheme(
+      ThemeService::BrowserColorScheme::kDark);
+  theme_service_2->SetUserColorAndBrowserColorVariant(
+      SK_ColorMAGENTA, ui::mojom::BrowserColorVariant::kVibrant);
+
+  ui_manager->ShowForProfile(&profile_2, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+  EXPECT_EQ(ui::ColorProviderKey::ColorMode::kDark,
+            ui_manager->widget()->GetColorMode());
+  expect_unthemed_baseline(ui_manager->widget());
+  EXPECT_NE(
+      baseline_surface,
+      ui_manager->widget()->GetColorProvider()->GetColor(ui::kColorSysSurface));
 
   ui_manager->Shutdown();
 }

@@ -11,6 +11,7 @@ import '//resources/cr_components/composebox/composebox_voice_search.js';
 import '//resources/cr_components/most_visited/most_visited.js';
 import '//resources/cr_components/search/animated_glow.js';
 
+import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {ComposeboxState} from '//resources/cr_components/composebox/common.js';
 import type {ComposeboxVoiceSearchElement, VoicePermissionPromptState} from '//resources/cr_components/composebox/composebox_voice_search.js';
 import {browserProxyFactory} from '//resources/cr_components/most_visited/most_visited.mojom-webui.js';
@@ -192,8 +193,14 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
   private wasJustActivated_ = false;
   private activationTimeoutId_: number|null = null;
 
+  constructor() {
+    super();
+    ColorChangeUpdater.forDocument().start();
+  }
+
   override connectedCallback() {
     super.connectedCallback();
+    ColorChangeUpdater.forDocument().refreshColorsCss();
     this.isActive_ = !this.isPersistentMode_ || document.hasFocus();
     this.eventTracker_.add(window, 'focus', this.onWindowFocus_.bind(this));
     this.eventTracker_.add(window, 'blur', this.onWindowBlur_.bind(this));
