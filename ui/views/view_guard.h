@@ -5,10 +5,16 @@
 #ifndef UI_VIEWS_VIEW_GUARD_H_
 #define UI_VIEWS_VIEW_GUARD_H_
 
+#include <optional>
+
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/views_export.h"
+
+namespace base {
+enum class NotFatalUntil;
+}
 
 namespace views {
 
@@ -19,13 +25,16 @@ namespace views {
 // circumstance should actually allow it.
 //
 // Similar to `ViewTracker` except that instead of setting the internal
-// reference to null on destruction, this class CHECK()s.
+// reference to null on destruction, this class NOTREACHED()s.
 //
 // Similar to raw_ref and raw_ptr in that they guard against UAFs with process
 // death, but ViewGuard provides immediate protection against unexpected
 // destruction even in deeply-nested calls - there's literally no time to
 // dereference an invalid pointer since the protected object is valid all the
-// way up until the CHECK().
+// way up until the NOTREACHED().
+//
+// You can specify a NotFatalUntil parameter, in which case up until that
+// milestone the code will dump rather than check.
 //
 // Example:
 // ```
@@ -40,7 +49,9 @@ namespace views {
 // ```
 class VIEWS_EXPORT ViewGuard : public ViewObserver {
  public:
-  explicit ViewGuard(View& View);
+  explicit ViewGuard(
+      View& View,
+      std::optional<base::NotFatalUntil> not_fatal_until = std::nullopt);
   ViewGuard(const ViewGuard& other);
   ViewGuard& operator=(const ViewGuard& other) = delete;
   ~ViewGuard() override;
@@ -50,6 +61,7 @@ class VIEWS_EXPORT ViewGuard : public ViewObserver {
   void OnViewIsDeleting(View* view) override;
 
   const raw_ref<View> view_;
+  const std::optional<base::NotFatalUntil> not_fatal_until_;
   base::ScopedObservation<View, ViewObserver> observation_{this};
 };
 

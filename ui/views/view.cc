@@ -30,6 +30,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/scoped_observation.h"
@@ -95,6 +96,7 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/property_effects.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_guard.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/view_utils.h"
@@ -357,6 +359,10 @@ void View::ReorderChildView(View* view, size_t index) {
   DCHECK_EQ(view->parent_, this);
   const auto i = std::ranges::find(children_, view);
   DCHECK(i != children_.end());
+
+  // Should never destroy a view or its child when reordering child views.
+  ViewGuard this_guard(*this, base::NotFatalUntil::M165);
+  ViewGuard child_guard(*view, base::NotFatalUntil::M165);
 
   // If |view| is already at the desired position, there's nothing to do.
   const auto pos =
@@ -3287,6 +3293,10 @@ void View::AddChildViewAtImpl(View* view, size_t index) {
     return;
   }
 
+  // Should never destroy a view or its child when adding to the hierarchy.
+  ViewGuard this_guard(*this, base::NotFatalUntil::M165);
+  ViewGuard child_guard(*view, base::NotFatalUntil::M165);
+
   // Remove |view| from its parent, if any.
   Widget* old_widget = view->GetWidget();
   ui::NativeTheme* old_theme = old_widget ? view->GetNativeTheme() : nullptr;
@@ -3406,6 +3416,12 @@ void View::DoRemoveChildView(View* view,
   }
 
   std::unique_ptr<View> view_to_be_deleted;
+
+  // Should never destroy a view or its child when removing from the
+  // hierarchy, at least until `view_to_be_deleted` is released.
+  ViewGuard this_guard(*this, base::NotFatalUntil::M165);
+  ViewGuard child_guard(*view, base::NotFatalUntil::M165);
+
   view->RemoveFromFocusList();
 
   UnregisterChildrenForVisibleBoundsNotification(view);
