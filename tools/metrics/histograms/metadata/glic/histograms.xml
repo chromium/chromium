@@ -351,6 +351,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Android.ExternalTriggerIntent.DispatchResult"
+    enum="ExternalTriggerDispatchResult" expires_after="2027-10-26">
+<!-- Allowed unsplittable: Recorded before provider resolution in Android intent dispatch. -->
+
+  <owner>meiliang@google.com</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the outcome of an external triggering intent received by Chrome on
+    Android to start a Glic task. Recorded when the LaunchIntentDispatcher
+    processes the Glic EXTERNAL_TRIGGERING intent.
+  </summary>
+</histogram>
+
 <histogram name="Glic.AnimatedEffect.ShaderEmpty" enum="Boolean"
     expires_after="2027-04-18">
   <owner>iwells@chromium.org</owner>

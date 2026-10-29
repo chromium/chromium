@@ -40,6 +40,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/public/browser/render_widget_host_view.h:CopyFromSurfaceError) -->
 
+<enum name="ExternalTriggerDispatchResult">
+  <int value="0" label="STARTED_BACKGROUND_SERVICE"/>
+  <int value="1" label="OPENED_FOREGROUND_TAB"/>
+  <int value="2" label="ROUTED_TASK_INTERRUPT"/>
+  <int value="3" label="REJECTED_NOT_GOOGLE_SIGNED"/>
+  <int value="4" label="REJECTED_GLIC_DISABLED_FOR_PROFILE"/>
+  <int value="5" label="TASK_INTERRUPT_TASK_NOT_FOUND"/>
+  <int value="6" label="TASK_INTERRUPT_INTENT_CREATION_FAILED"/>
+</enum>
+
 <!-- LINT.IfChange(GeicCloseAuthTabResult) -->
 
 <enum name="GeicCloseAuthTabResult">
