@@ -16,6 +16,8 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -58,7 +60,10 @@ import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgrou
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.util.List;
 
 /** Unit tests for {@link NtpSyncedThemeManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -79,6 +84,7 @@ public class NtpSyncedThemeManagerUnitTest {
     private static final String TEST_HASH = "hash";
 
     private NtpSyncedThemeManager mNtpSyncedThemeManager;
+    private NtpCustomizationConfigManager mConfigManagerSpy;
     private Context mContext;
 
     @Before
@@ -90,6 +96,8 @@ public class NtpSyncedThemeManagerUnitTest {
         CrossDeviceThemeTracker.setInstanceForTesting(mCrossDeviceThemeTrackerNatives);
         when(mNatives.init(any(), any())).thenReturn(mNativeNtpSyncedThemeBridge);
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
+        mConfigManagerSpy = spy(new NtpCustomizationConfigManager());
+        NtpCustomizationConfigManager.setInstanceForTesting(mConfigManagerSpy);
     }
 
     @After
@@ -310,9 +318,6 @@ public class NtpSyncedThemeManagerUnitTest {
      */
     private NtpBackgroundDataThemeCollection applySyncedStaticThemeCollection(
             @Nullable Integer syncedColor, Bitmap bitmap) {
-        NtpCustomizationConfigManager configManagerSpy =
-                Mockito.spy(NtpCustomizationConfigManager.getInstance());
-        NtpCustomizationConfigManager.setInstanceForTesting(configManagerSpy);
         NtpSyncedThemeBridge bridge = initSyncedThemeManagerAndGetBridge();
 
         CustomBackgroundInfo syncedInfo =
@@ -332,7 +337,7 @@ public class NtpSyncedThemeManagerUnitTest {
 
         ArgumentCaptor<NtpBackgroundDataThemeCollection> themeCollectionCaptor =
                 ArgumentCaptor.forClass(NtpBackgroundDataThemeCollection.class);
-        verify(configManagerSpy)
+        verify(mConfigManagerSpy)
                 .onSyncedThemeCollectionImageChanged(eq(mContext), themeCollectionCaptor.capture());
         NtpBackgroundDataThemeCollection themeCollectionData = themeCollectionCaptor.getValue();
         assertNotNull(themeCollectionData);
@@ -418,7 +423,7 @@ public class NtpSyncedThemeManagerUnitTest {
         ArgumentCaptor<NtpBackgroundDataThemeCollection> dataCaptor =
                 ArgumentCaptor.forClass(NtpBackgroundDataThemeCollection.class);
         verify(mDownloadCallback).onResult(dataCaptor.capture());
-        assertFalse(mNtpSyncedThemeManager.isImageDownloading());
+        assertFalse(mNtpSyncedThemeManager.isContinuousSyncedImageDownloading());
         assertNotNull(dataCaptor.getValue());
         assertEquals(bitmap, dataCaptor.getValue().getBitmap());
     }
@@ -430,7 +435,7 @@ public class NtpSyncedThemeManagerUnitTest {
         mBitmapCallbackCaptor.getValue().onResult(null);
 
         verify(mDownloadCallback).onResult(isNull());
-        assertFalse(mNtpSyncedThemeManager.isImageDownloading());
+        assertFalse(mNtpSyncedThemeManager.isContinuousSyncedImageDownloading());
     }
 
     @Test
@@ -450,7 +455,7 @@ public class NtpSyncedThemeManagerUnitTest {
         mBitmapCallbackCaptor.getValue().onResult(bitmap);
 
         verify(mDownloadCallback, never()).onResult(any());
-        assertFalse(mNtpSyncedThemeManager.isImageDownloading());
+        assertFalse(mNtpSyncedThemeManager.isContinuousSyncedImageDownloading());
     }
 
     @Test
@@ -460,47 +465,35 @@ public class NtpSyncedThemeManagerUnitTest {
         mBitmapCallbackCaptor.getValue().onResult(null);
 
         verify(mDownloadCallback, never()).onResult(any());
-        assertFalse(mNtpSyncedThemeManager.isImageDownloading());
+        assertFalse(mNtpSyncedThemeManager.isContinuousSyncedImageDownloading());
     }
 
-    private void setupDailyRefreshImageFetching() {
+    /** Starts pre-fetching the next daily refresh image and returns the bridge. */
+    private NtpSyncedThemeBridge setupDailyRefreshImageFetching() {
         NtpSyncedThemeBridge bridge = initSyncedThemeManagerAndGetBridge();
-
-        CustomBackgroundInfo dailyInfo =
-                new CustomBackgroundInfo(
-                        JUnitTestGURLs.URL_2,
-                        TEST_COLLECTION_ID,
-                        /* isUploadedImage= */ false,
-                        /* isDailyRefreshEnabled= */ true);
-        when(mNatives.getCustomBackgroundInfo(any()))
-                .thenReturn(new SyncedBackgroundInfo(dailyInfo, /* primaryColor= */ null));
+        stubNativeBackground(JUnitTestGURLs.URL_2, /* isDailyRefreshEnabled= */ true);
 
         bridge.onThemeCollectionUpdated(/* isImageFromSync= */ false);
 
-        assertFalse(mNtpSyncedThemeManager.isImageDownloading());
+        assertFalse(mNtpSyncedThemeManager.isContinuousSyncedImageDownloading());
 
         verify(mImageFetcher).fetchImage(any(), mBitmapCallbackCaptor.capture());
+        return bridge;
     }
 
-    private void setupImageDownloading() {
+    /** Starts downloading a synced image with mDownloadCallback waiting, and returns the bridge. */
+    private NtpSyncedThemeBridge setupImageDownloading() {
         NtpSyncedThemeBridge bridge = initSyncedThemeManagerAndGetBridge();
-
-        CustomBackgroundInfo syncedInfo =
-                new CustomBackgroundInfo(
-                        JUnitTestGURLs.URL_1,
-                        TEST_COLLECTION_ID,
-                        /* isUploadedImage= */ false,
-                        /* isDailyRefreshEnabled= */ false);
-        when(mNatives.getCustomBackgroundInfo(any()))
-                .thenReturn(new SyncedBackgroundInfo(syncedInfo, /* primaryColor= */ null));
+        stubNativeBackground(JUnitTestGURLs.URL_1, /* isDailyRefreshEnabled= */ false);
 
         bridge.onThemeCollectionUpdated(/* isImageFromSync= */ true);
 
-        assertTrue(mNtpSyncedThemeManager.isImageDownloading());
+        assertTrue(mNtpSyncedThemeManager.isContinuousSyncedImageDownloading());
 
         mNtpSyncedThemeManager.addOneShotCompletionCallback(mDownloadCallback);
 
         verify(mImageFetcher).fetchImage(any(), mBitmapCallbackCaptor.capture());
+        return bridge;
     }
 
     @Test
@@ -608,6 +601,196 @@ public class NtpSyncedThemeManagerUnitTest {
         bridge.onThemeCollectionUpdated(/* isImageFromSync= */ true);
 
         verify(mImageFetcher, never()).fetchImage(any(), any());
-        assertFalse(mNtpSyncedThemeManager.isImageDownloading());
+        assertFalse(mNtpSyncedThemeManager.isContinuousSyncedImageDownloading());
+    }
+
+    // Tests for the in-flight download tracking.
+
+    @Test
+    public void testSyncDownload_supersededByLocalCommit() {
+        verifySyncDownloadSuperseded(
+                bridge -> mNtpSyncedThemeManager.onThemeCommitted(/* data= */ null));
+    }
+
+    @Test
+    public void testSyncDownload_supersededBySyncedChromeColor() {
+        verifySyncDownloadSuperseded(
+                bridge -> bridge.onChromeColorSynced(NtpThemeColorId.NTP_COLORS_BLUE));
+
+        verify(mConfigManagerSpy).onSyncedChromeColorChanged(eq(mContext), any());
+    }
+
+    @Test
+    public void testSyncDownload_supersededBySyncedDefaultTheme() {
+        verifySyncDownloadSuperseded(NtpSyncedThemeBridge::onDefaultThemeSynced);
+
+        verify(mConfigManagerSpy).onSyncedDefaultThemeReset(mContext);
+    }
+
+    @Test
+    public void testSyncDownload_supersededBySyncedDailyRefresh() {
+        verifySyncDownloadSuperseded(
+                bridge -> {
+                    stubNativeBackground(JUnitTestGURLs.URL_2, /* isDailyRefreshEnabled= */ true);
+                    bridge.onThemeCollectionUpdated(/* isImageFromSync= */ true);
+                });
+
+        // The synced daily refresh isn't downloaded, so only the first download was started.
+        verify(mImageFetcher).fetchImage(any(), any());
+    }
+
+    @Test
+    public void testSyncDownload_supersededByDestroy() {
+        verifySyncDownloadSuperseded(bridge -> mNtpSyncedThemeManager.destroy());
+    }
+
+    @Test
+    public void testSyncDownload_supersededByNewerSync() {
+        NtpSyncedThemeBridge bridge = setupImageDownloading();
+
+        // A second synced theme arrives while the first one is downloading, even sharing the same
+        // image URL.
+        CustomBackgroundInfo newerInfo =
+                stubNativeBackground(JUnitTestGURLs.URL_1, /* isDailyRefreshEnabled= */ false);
+        bridge.onThemeCollectionUpdated(/* isImageFromSync= */ true);
+
+        verify(mDownloadCallback).onResult(isNull());
+        assertTrue(mNtpSyncedThemeManager.isContinuousSyncedImageDownloading());
+        verify(mImageFetcher, times(2)).fetchImage(any(), mBitmapCallbackCaptor.capture());
+        // The captor already holds the first callback from setupImageDownloading().
+        List<Callback<Bitmap>> callbacks = mBitmapCallbackCaptor.getAllValues();
+        Callback<Bitmap> firstCallback = callbacks.get(callbacks.size() - 2);
+        Callback<Bitmap> secondCallback = callbacks.get(callbacks.size() - 1);
+
+        // The first result is dropped despite matching the URL, and the second one is applied.
+        completeDownload(firstCallback);
+        verify(mConfigManagerSpy, never()).onSyncedThemeCollectionImageChanged(any(), any());
+        assertTrue(mNtpSyncedThemeManager.isContinuousSyncedImageDownloading());
+
+        completeDownload(secondCallback);
+        ArgumentCaptor<NtpBackgroundDataThemeCollection> dataCaptor =
+                ArgumentCaptor.forClass(NtpBackgroundDataThemeCollection.class);
+        verify(mConfigManagerSpy)
+                .onSyncedThemeCollectionImageChanged(eq(mContext), dataCaptor.capture());
+        assertEquals(newerInfo, dataCaptor.getValue().getCustomBackgroundInfo());
+        assertFalse(mNtpSyncedThemeManager.isContinuousSyncedImageDownloading());
+    }
+
+    @Test
+    public void testDailyRefreshPrefetch_supersededByLocalCommit() {
+        setDailyRefreshThemeCollectionToSharedPreference();
+        setupDailyRefreshImageFetching();
+
+        // The user selects a theme locally while the next image is downloading. There is no synced
+        // download to notify about.
+        mNtpSyncedThemeManager.onThemeCommitted(/* data= */ null);
+        verify(mDownloadCallback, never()).onResult(any());
+
+        // The SharedPreferences still describe the daily refresh collection in this test, so only
+        // the invalidation prevents the stale image from being saved.
+        completeDownload(mBitmapCallbackCaptor.getValue());
+        assertNull(NtpCustomizationUtils.getDailyRefreshCustomBackgroundInfoFromSharedPreference());
+        assertFalse(NtpCustomizationUtils.createDailyRefreshBackgroundImageFile().exists());
+    }
+
+    @Test
+    public void testDailyRefreshPrefetch_supersededBySyncOfSameUrl() {
+        // The next daily refresh image is downloading when another device selects that very image
+        // as a static theme, so both downloads share the URL.
+        setDailyRefreshThemeCollectionToSharedPreference();
+        NtpSyncedThemeBridge bridge = setupDailyRefreshImageFetching();
+        CustomBackgroundInfo syncedInfo =
+                stubNativeBackground(JUnitTestGURLs.URL_2, /* isDailyRefreshEnabled= */ false);
+        bridge.onThemeCollectionUpdated(/* isImageFromSync= */ true);
+        mNtpSyncedThemeManager.addOneShotCompletionCallback(mDownloadCallback);
+        assertTrue(mNtpSyncedThemeManager.isContinuousSyncedImageDownloading());
+        verify(mImageFetcher, times(2)).fetchImage(any(), mBitmapCallbackCaptor.capture());
+        List<Callback<Bitmap>> callbacks = mBitmapCallbackCaptor.getAllValues();
+        Callback<Bitmap> prefetchCallback = callbacks.get(callbacks.size() - 2);
+        Callback<Bitmap> syncCallback = callbacks.get(callbacks.size() - 1);
+
+        // The pre-fetched image is dropped and must not be mistaken for the sync download.
+        completeDownload(prefetchCallback);
+        assertNull(NtpCustomizationUtils.getDailyRefreshCustomBackgroundInfoFromSharedPreference());
+        assertTrue(mNtpSyncedThemeManager.isContinuousSyncedImageDownloading());
+        verify(mDownloadCallback, never()).onResult(any());
+
+        // The synced image is applied.
+        completeDownload(syncCallback);
+        ArgumentCaptor<NtpBackgroundDataThemeCollection> dataCaptor =
+                ArgumentCaptor.forClass(NtpBackgroundDataThemeCollection.class);
+        verify(mConfigManagerSpy)
+                .onSyncedThemeCollectionImageChanged(eq(mContext), dataCaptor.capture());
+        assertEquals(syncedInfo, dataCaptor.getValue().getCustomBackgroundInfo());
+        verify(mDownloadCallback).onResult(dataCaptor.getValue());
+        assertFalse(mNtpSyncedThemeManager.isContinuousSyncedImageDownloading());
+    }
+
+    @Test
+    public void testDailyRefreshPrefetch_ignoredDuringSyncDownload() {
+        NtpSyncedThemeBridge bridge = setupImageDownloading();
+
+        // The next image pre-fetched for the local daily refresh arrives while the synced image is
+        // still downloading. The synced image is the newer choice, so the pre-fetch is ignored.
+        stubNativeBackground(JUnitTestGURLs.URL_2, /* isDailyRefreshEnabled= */ true);
+        bridge.onThemeCollectionUpdated(/* isImageFromSync= */ false);
+
+        verify(mImageFetcher).fetchImage(any(), any());
+        assertTrue(mNtpSyncedThemeManager.isContinuousSyncedImageDownloading());
+
+        // The synced image is still applied.
+        completeDownload(mBitmapCallbackCaptor.getValue());
+        verify(mConfigManagerSpy).onSyncedThemeCollectionImageChanged(eq(mContext), any());
+        verify(mDownloadCallback).onResult(any());
+        assertFalse(mNtpSyncedThemeManager.isContinuousSyncedImageDownloading());
+    }
+
+    /**
+     * Starts a synced image download with {@link #mDownloadCallback} waiting, lets {@code
+     * supersede} supersede it, and checks that the callback was notified with null and that the
+     * stale result is dropped when it arrives.
+     */
+    private void verifySyncDownloadSuperseded(Callback<NtpSyncedThemeBridge> supersede) {
+        NtpSyncedThemeBridge bridge = setupImageDownloading();
+
+        supersede.onResult(bridge);
+
+        verify(mDownloadCallback).onResult(isNull());
+        assertFalse(mNtpSyncedThemeManager.isContinuousSyncedImageDownloading());
+
+        Mockito.<Object>clearInvocations(mDownloadCallback);
+        completeDownload(mBitmapCallbackCaptor.getValue());
+        verify(mConfigManagerSpy, never()).onSyncedThemeCollectionImageChanged(any(), any());
+        verify(mDownloadCallback, never()).onResult(any());
+    }
+
+    /** Makes native report the given image of {@link #TEST_COLLECTION_ID} as the background. */
+    private CustomBackgroundInfo stubNativeBackground(GURL url, boolean isDailyRefreshEnabled) {
+        CustomBackgroundInfo info =
+                new CustomBackgroundInfo(
+                        url,
+                        TEST_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        isDailyRefreshEnabled);
+        when(mNatives.getCustomBackgroundInfo(any()))
+                .thenReturn(new SyncedBackgroundInfo(info, /* primaryColor= */ null));
+        return info;
+    }
+
+    /** Persists {@link #TEST_COLLECTION_ID} with daily refresh as the background. */
+    private static void setDailyRefreshThemeCollectionToSharedPreference() {
+        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(THEME_COLLECTION);
+        NtpCustomizationUtils.setCustomBackgroundInfoToSharedPreference(
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_1,
+                        TEST_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ true));
+    }
+
+    /** Completes the given image download and runs the tasks it posts. */
+    private static void completeDownload(Callback<Bitmap> callback) {
+        callback.onResult(Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888));
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 }
