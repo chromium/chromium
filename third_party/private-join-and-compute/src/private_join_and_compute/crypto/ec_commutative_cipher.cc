@@ -19,12 +19,12 @@
 #include <string>
 #include <utility>
 
+#include "absl/status/status.h"
+#include "absl/status/statusor.h"
 #include "absl/strings/string_view.h"
 #include "private_join_and_compute/crypto/big_num.h"
 #include "private_join_and_compute/crypto/ec_group.h"
 #include "private_join_and_compute/crypto/elgamal.h"
-#include "absl/status/status.h"
-#include "absl/status/statusor.h"
 
 namespace private_join_and_compute {
 
@@ -35,8 +35,7 @@ constexpr absl::string_view kEcCommutativeCipherDst = "ECCommutativeCipher";
 // Invert private scalar using Fermat's Little Theorem to avoid side-channel
 // attacks. This avoids the caveat of ModInverseBlinded, namely that the
 // underlying BN_mod_inverse_blinded is not available on all platforms.
-BigNum InvertPrivateScalar(const BigNum& scalar,
-                           const ECGroup& ec_group,
+BigNum InvertPrivateScalar(const BigNum& scalar, const ECGroup& ec_group,
                            Context& context) {
   const BigNum& order = ec_group.GetOrder();
   return scalar.ModExp(order.Sub(context.Two()), order);
@@ -45,8 +44,7 @@ BigNum InvertPrivateScalar(const BigNum& scalar,
 }  // namespace
 
 ECCommutativeCipher::ECCommutativeCipher(std::unique_ptr<Context> context,
-                                         ECGroup group,
-                                         BigNum private_key,
+                                         ECGroup group, BigNum private_key,
                                          HashType hash_type)
     : context_(std::move(context)),
       group_(std::move(group)),
@@ -81,8 +79,7 @@ ECCommutativeCipher::CreateWithNewKey(int curve_id, HashType hash_type) {
 }
 
 absl::StatusOr<std::unique_ptr<ECCommutativeCipher>>
-ECCommutativeCipher::CreateFromKey(int curve_id,
-                                   absl::string_view key_bytes,
+ECCommutativeCipher::CreateFromKey(int curve_id, absl::string_view key_bytes,
                                    HashType hash_type) {
   std::unique_ptr<Context> context(new Context);
   absl::StatusOr<ECGroup> group = ECGroup::Create(curve_id, context.get());

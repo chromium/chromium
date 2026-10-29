@@ -23,10 +23,10 @@
 #include <string>
 
 #include "absl/base/attributes.h"
+#include "absl/status/statusor.h"
 #include "absl/strings/string_view.h"
 #include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
 #include "private_join_and_compute/crypto/openssl.inc"
-#include "absl/status/statusor.h"
 
 namespace private_join_and_compute {
 
@@ -35,7 +35,7 @@ namespace private_join_and_compute {
 // Makes use of a BN_CTX structure that holds temporary BIGNUMs needed for
 // arithmetic operations as dynamic memory allocation to create BIGNUMs is
 // expensive.
-class PRIVATE_COMPUTE_EXPORT BigNum {
+class ABSL_MUST_USE_RESULT PRIVATE_COMPUTE_EXPORT BigNum {
  public:
   // Deletes a BIGNUM.
   class BnDeleter {

@@ -20,13 +20,13 @@
 #include <string>
 #include <utility>
 
+#include "absl/status/statusor.h"
 #include "absl/strings/string_view.h"
 #include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
 #include "private_join_and_compute/crypto/big_num.h"
 #include "private_join_and_compute/crypto/context.h"
 #include "private_join_and_compute/crypto/ec_group.h"
 #include "private_join_and_compute/crypto/ec_point.h"
-#include "absl/status/statusor.h"
 
 namespace private_join_and_compute {
 
@@ -83,8 +83,7 @@ namespace private_join_and_compute {
 //
 // Example: To re-encrypt a message that has already been encrypted using a
 // std::unique_ptr<CommutativeElGamal> ElGamal key:
-//    absl::StatusOr<std::pair<string, string>>
-//    double_encrypted_string =
+//    absl::StatusOr<std::pair<string, string>> double_encrypted_string =
 //        cipher->ReEncryptElGamalCiphertext(elgamal_ciphertext);
 
 class PRIVATE_COMPUTE_EXPORT ECCommutativeCipher {
@@ -113,8 +112,8 @@ class PRIVATE_COMPUTE_EXPORT ECCommutativeCipher {
   // be refreshed.
   // Returns INVALID_ARGUMENT status instead if the curve_id is not valid
   // or INTERNAL status when crypto operations are not successful.
-  static absl::StatusOr<std::unique_ptr<ECCommutativeCipher>>
-  CreateWithNewKey(int curve_id, HashType hash_type);
+  static absl::StatusOr<std::unique_ptr<ECCommutativeCipher>> CreateWithNewKey(
+      int curve_id, HashType hash_type);
 
   // Creates an ECCommutativeCipher object with the given private key.
   // A new key should be created for each session and all values should be
@@ -124,21 +123,17 @@ class PRIVATE_COMPUTE_EXPORT ECCommutativeCipher {
   // Returns INVALID_ARGUMENT status instead if the private_key is not valid for
   // the given curve or the curve_id is not valid.
   // Returns INTERNAL status when crypto operations are not successful.
-  static absl::StatusOr<
-      std::unique_ptr<ECCommutativeCipher>>
-  CreateFromKey(int curve_id, absl::string_view key_bytes, HashType hash_type);
+  static absl::StatusOr<std::unique_ptr<ECCommutativeCipher>> CreateFromKey(
+      int curve_id, absl::string_view key_bytes, HashType hash_type);
 
   // Creates an ECCommutativeCipher object with a new private key generated from
   // the given seed and index.  This will deterministically generate a key and
   // this should not be re-used across multiple sessions.  The seed should be a
   // cryptographically strong random string of at least 16 bytes.
   // Returns INTERNAL status when crypto operations are not successful.
-  static absl::StatusOr<
-      std::unique_ptr<ECCommutativeCipher>>
-  CreateWithKeyFromSeed(int curve_id,
-                        absl::string_view seed_bytes,
-                        absl::string_view tag_bytes,
-                        HashType hash_type);
+  static absl::StatusOr<std::unique_ptr<ECCommutativeCipher>>
+  CreateWithKeyFromSeed(int curve_id, absl::string_view seed_bytes,
+                        absl::string_view tag_bytes, HashType hash_type);
 
   // Encrypts a string with the private key to a point on the elliptic curve.
   //
@@ -151,8 +146,7 @@ class PRIVATE_COMPUTE_EXPORT ECCommutativeCipher {
   // Returns an INVALID_ARGUMENT error code if an error occurs.
   //
   // This method is not threadsafe.
-  absl::StatusOr<std::string> Encrypt(
-      absl::string_view plaintext);
+  absl::StatusOr<std::string> Encrypt(absl::string_view plaintext);
 
   // Encrypts an encoded point with the private key.
   //
@@ -165,8 +159,7 @@ class PRIVATE_COMPUTE_EXPORT ECCommutativeCipher {
   // hashed to the curve.
   //
   // This method is not threadsafe.
-  absl::StatusOr<std::string> ReEncrypt(
-      absl::string_view ciphertext);
+  absl::StatusOr<std::string> ReEncrypt(absl::string_view ciphertext);
 
   // Encrypts an ElGamal ciphertext with the private key.
   //
@@ -195,8 +188,7 @@ class PRIVATE_COMPUTE_EXPORT ECCommutativeCipher {
   // hashing to the curve.
   //
   // This method is not threadsafe.
-  absl::StatusOr<std::string> Decrypt(
-      absl::string_view ciphertext);
+  absl::StatusOr<std::string> Decrypt(absl::string_view ciphertext);
 
   // Hashes a string to a point on the elliptic curve using the
   // "try-and-increment" method.
@@ -208,8 +200,7 @@ class PRIVATE_COMPUTE_EXPORT ECCommutativeCipher {
   // Returns an INVALID_ARGUMENT error code if an error occurs.
   //
   // This method is not threadsafe.
-  absl::StatusOr<std::string> HashToTheCurve(
-      absl::string_view plaintext);
+  absl::StatusOr<std::string> HashToTheCurve(absl::string_view plaintext);
 
   // Returns the private key bytes so the key can be stored and reused.
   std::string GetPrivateKeyBytes() const;
@@ -224,8 +215,7 @@ class PRIVATE_COMPUTE_EXPORT ECCommutativeCipher {
   absl::StatusOr<ECPoint> Encrypt(const ECPoint& point);
 
   // Hashes a string to a point on the elliptic curve.
-  absl::StatusOr<ECPoint> HashToTheCurveInternal(
-      absl::string_view plaintext);
+  absl::StatusOr<ECPoint> HashToTheCurveInternal(absl::string_view plaintext);
 
   // Context used for storing temporary values to be reused across openssl
   // function calls for better performance.

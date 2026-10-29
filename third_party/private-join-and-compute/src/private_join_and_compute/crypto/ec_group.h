@@ -18,15 +18,14 @@
 
 #include <cstddef>
 #include <memory>
-#include <string>
 
+#include "absl/status/status.h"
+#include "absl/status/statusor.h"
 #include "absl/strings/string_view.h"
 #include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
 #include "private_join_and_compute/crypto/big_num.h"
 #include "private_join_and_compute/crypto/context.h"
 #include "private_join_and_compute/crypto/openssl.inc"
-#include "absl/status/status.h"
-#include "absl/status/statusor.h"
 
 namespace private_join_and_compute {
 
@@ -55,7 +54,8 @@ class PRIVATE_COMPUTE_EXPORT ECGroup {
   BigNum GeneratePrivateKey() const;
 
   // Verifies that the random key is a valid number in the range (0, order).
-  // Returns absl::Status::OK if the key is valid, otherwise returns INVALID_ARGUMENT.
+  // Returns absl::Status::OK if the key is valid, otherwise returns
+  // INVALID_ARGUMENT.
   absl::Status CheckPrivateKey(const BigNum& priv_key) const;
 
   // Hashes m to a point on the elliptic curve y^2 = x^3 + ax + b over a
@@ -66,22 +66,25 @@ class PRIVATE_COMPUTE_EXPORT ECGroup {
   // Security: The number of operations required to hash a string depends on the
   // string, which could lead to a timing attack.
   // Security: This function is only secure for curves of prime order.
-  absl::StatusOr<ECPoint> GetPointByHashingToCurveSha256(absl::string_view m) const;
-  absl::StatusOr<ECPoint> GetPointByHashingToCurveSha384(absl::string_view m) const;
-  absl::StatusOr<ECPoint> GetPointByHashingToCurveSha512(absl::string_view m) const;
-  absl::StatusOr<ECPoint> GetPointByHashingToCurveSswuRo(absl::string_view m,
-                                                   absl::string_view dst) const;
+  absl::StatusOr<ECPoint> GetPointByHashingToCurveSha256(
+      absl::string_view m) const;
+  absl::StatusOr<ECPoint> GetPointByHashingToCurveSha384(
+      absl::string_view m) const;
+  absl::StatusOr<ECPoint> GetPointByHashingToCurveSha512(
+      absl::string_view m) const;
+  absl::StatusOr<ECPoint> GetPointByHashingToCurveSswuRo(
+      absl::string_view m, absl::string_view dst) const;
 
   // Pad the given message until it is a valid point on the curve. Padding is
   // achieved by left-shifting m by padding_bits_count bits, and appending
   // successive integers till a curve point is found.
   absl::StatusOr<ECPoint> GetPointByPaddingX(const BigNum& m,
-                                       size_t padding_bit_count) const;
+                                             size_t padding_bit_count) const;
 
   // Recover the original message from a point that was derived by message
   // padding using GetPointByPaddingX.
-  absl::StatusOr<BigNum> RecoverXFromPaddedPoint(const ECPoint& point,
-                                           size_t padding_bit_count) const;
+  absl::StatusOr<BigNum> RecoverXFromPaddedPoint(
+      const ECPoint& point, size_t padding_bit_count) const;
 
   // Returns y^2 for the given x. The returned value is computed as x^3 + ax + b
   // mod p, where a and b are the parameters of the curve.
@@ -155,7 +158,8 @@ class PRIVATE_COMPUTE_EXPORT ECGroup {
   // Constant used to evaluate if a number is a quadratic residue.
   BigNum p_minus_one_over_two_;
 
-  absl::StatusOr<ECPoint> GetPointByHashingToCurveInternal(const BigNum& x) const;
+  absl::StatusOr<ECPoint> GetPointByHashingToCurveInternal(
+      const BigNum& x) const;
 };
 
 }  // namespace private_join_and_compute

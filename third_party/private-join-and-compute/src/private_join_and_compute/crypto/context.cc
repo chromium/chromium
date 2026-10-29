@@ -21,7 +21,6 @@
 
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
-#include "third_party/private-join-and-compute/chromium_patch.h"
 
 namespace private_join_and_compute {
 
@@ -91,8 +90,7 @@ std::string Context::Sha512String(absl::string_view bytes) {
   return std::string(reinterpret_cast<char*>(hash), md_len);
 }
 
-BigNum Context::RandomOracle(absl::string_view x,
-                             const BigNum& max_value,
+BigNum Context::RandomOracle(absl::string_view x, const BigNum& max_value,
                              RandomOracleHashType hash_type) {
   int hash_output_length = 256;
   if (hash_type == SHA512) {
@@ -140,8 +138,7 @@ BigNum Context::RandomOracleSha256(absl::string_view x,
   return RandomOracle(x, max_value, SHA256);
 }
 
-BigNum Context::PRF(absl::string_view key,
-                    absl::string_view data,
+BigNum Context::PRF(absl::string_view key, absl::string_view data,
                     const BigNum& max_value) {
   CHECK_GE(key.size() * 8, std::size_t(80));
   CHECK_LE(max_value.BitLength(), 512)

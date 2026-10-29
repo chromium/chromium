@@ -20,18 +20,20 @@
 #include <utility>
 #include <vector>
 
+#include "third_party/private-join-and-compute/chromium_patch.h"
 #include "absl/memory/memory.h"
+#include "absl/status/status.h"
+#include "absl/status/statusor.h"
 #include "private_join_and_compute/crypto/big_num.h"
 #include "private_join_and_compute/crypto/ec_group.h"
 #include "private_join_and_compute/crypto/ec_point.h"
-#include "absl/status/status.h"
-#include "absl/status/statusor.h"
 
 namespace private_join_and_compute {
 
 namespace elgamal {
 
-absl::StatusOr<std::pair<std::unique_ptr<PublicKey>, std::unique_ptr<PrivateKey>>>
+absl::StatusOr<
+    std::pair<std::unique_ptr<PublicKey>, std::unique_ptr<PrivateKey>>>
 GenerateKeyPair(const ECGroup& ec_group) {
   absl::StatusOr<ECPoint> g = ec_group.GetFixedGenerator();
   if (!g.ok()) {
@@ -76,8 +78,9 @@ absl::StatusOr<std::unique_ptr<PublicKey>> GeneratePublicKeyFromShares(
   return absl::WrapUnique(new PublicKey({*std::move(g), *std::move(y)}));
 }
 
-absl::StatusOr<elgamal::Ciphertext> Mul(const elgamal::Ciphertext& ciphertext1,
-                                  const elgamal::Ciphertext& ciphertext2) {
+absl::StatusOr<elgamal::Ciphertext> Mul(
+    const elgamal::Ciphertext& ciphertext1,
+    const elgamal::Ciphertext& ciphertext2) {
   absl::StatusOr<ECPoint> u = ciphertext1.u.Add(ciphertext2.u);
   if (!u.ok()) {
     return u.status();
@@ -90,7 +93,7 @@ absl::StatusOr<elgamal::Ciphertext> Mul(const elgamal::Ciphertext& ciphertext1,
 }
 
 absl::StatusOr<elgamal::Ciphertext> Exp(const elgamal::Ciphertext& ciphertext,
-                                  const BigNum& scalar) {
+                                        const BigNum& scalar) {
   absl::StatusOr<ECPoint> u = ciphertext.u.Mul(scalar);
   if (!u.ok()) {
     return u.status();

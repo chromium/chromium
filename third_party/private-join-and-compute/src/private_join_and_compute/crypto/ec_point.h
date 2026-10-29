@@ -20,13 +20,14 @@
 #include <string>
 #include <utility>
 
+#include "absl/status/statusor.h"
 #include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
 #include "private_join_and_compute/crypto/big_num.h"
 #include "private_join_and_compute/crypto/openssl.inc"
-#include "absl/status/statusor.h"
 
 namespace private_join_and_compute {
 
+class BigNum;
 class ECGroup;
 
 // Wrapper class for openssl EC_POINT.

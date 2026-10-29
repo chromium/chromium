@@ -21,11 +21,11 @@
 #include <memory>
 #include <string>
 
-#include "absl/strings/string_view.h"
-#include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
 #include "third_party/private-join-and-compute/chromium_patch.h"
+#include "absl/strings/string_view.h"
 #include "private_join_and_compute/crypto/big_num.h"
 #include "private_join_and_compute/crypto/openssl.inc"
+#include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
 
 #define CRYPTO_CHECK(expr) CHECK(expr) << OpenSSLErrorString();
 
@@ -129,8 +129,7 @@ class PRIVATE_COMPUTE_EXPORT Context {
   //  key is less than 80 bits.
   //
   //  This function is susceptible to timing attacks.
-  BigNum PRF(absl::string_view key,
-             absl::string_view data,
+  BigNum PRF(absl::string_view key, absl::string_view data,
              const BigNum& max_value);
 
   // Creates a safe prime BigNum with the given bit-length.
@@ -181,8 +180,7 @@ class PRIVATE_COMPUTE_EXPORT Context {
   };
 
   // If hash_type is invalid, this function will default to using SHA256.
-  virtual BigNum RandomOracle(absl::string_view x,
-                              const BigNum& max_value,
+  virtual BigNum RandomOracle(absl::string_view x, const BigNum& max_value,
                               RandomOracleHashType hash_type);
 };
 

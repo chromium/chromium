@@ -40,9 +40,10 @@
 #include <utility>
 #include <vector>
 
+#include "absl/status/statusor.h"
+#include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
 #include "private_join_and_compute/crypto/ec_group.h"
 #include "private_join_and_compute/crypto/ec_point.h"
-#include "absl/status/statusor.h"
 
 namespace private_join_and_compute {
 
@@ -69,7 +70,8 @@ struct PrivateKey {
 };
 
 // Generates a new ElGamal public-private key pair.
-absl::StatusOr<std::pair<std::unique_ptr<PublicKey>, std::unique_ptr<PrivateKey>>>
+absl::StatusOr<
+    std::pair<std::unique_ptr<PublicKey>, std::unique_ptr<PrivateKey>>>
 GenerateKeyPair(const ECGroup& ec_group);
 
 // Joins the public key shares in a public key. The shares should be nonempty.
@@ -79,12 +81,12 @@ absl::StatusOr<std::unique_ptr<PublicKey>> GeneratePublicKeyFromShares(
 // Homomorphically multiply two ciphertexts.
 // (Note: this corresponds to addition in the EC group.)
 absl::StatusOr<elgamal::Ciphertext> Mul(const elgamal::Ciphertext& ciphertext1,
-                                  const elgamal::Ciphertext& ciphertext2);
+                                        const elgamal::Ciphertext& ciphertext2);
 
 // Homomorphically exponentiate a ciphertext by a scalar.
 // (Note: this corresponds to multiplication in the EC group.)
 absl::StatusOr<elgamal::Ciphertext> Exp(const elgamal::Ciphertext& ciphertext,
-                                  const BigNum& scalar);
+                                        const BigNum& scalar);
 
 // Returns a ciphertext encrypting the point at infinity, using fixed randomness
 // "0". This is a multiplicative identity for ElGamal ciphertexts.

@@ -15,20 +15,19 @@
 
 #include "private_join_and_compute/crypto/ec_group.h"
 
-#include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <utility>
 
+#include "absl/status/status.h"
+#include "absl/status/statusor.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
 #include "private_join_and_compute/crypto/big_num.h"
 #include "private_join_and_compute/crypto/context.h"
 #include "private_join_and_compute/crypto/ec_point.h"
 #include "private_join_and_compute/crypto/openssl.inc"
-#include "absl/status/status.h"
-#include "absl/status/statusor.h"
 
 namespace private_join_and_compute {
 
@@ -84,7 +83,7 @@ absl::StatusOr<BigNum> CreateCofactor(const EC_GROUP* group, Context* context) {
 // Returns the parameters that define the curve. For more information, see
 // https://en.wikipedia.org/wiki/Elliptic-curve_cryptography#Domain_parameters.
 absl::StatusOr<ECGroup::CurveParams> CreateCurveParams(const EC_GROUP* group,
-                                                 Context* context) {
+                                                       Context* context) {
   BIGNUM* bn1 = BN_new();
   BIGNUM* bn2 = BN_new();
   BIGNUM* bn3 = BN_new();
@@ -216,8 +215,7 @@ absl::StatusOr<ECPoint> ECGroup::GetPointByHashingToCurveSha512(
 }
 
 absl::StatusOr<ECPoint> ECGroup::GetPointByHashingToCurveSswuRo(
-    absl::string_view m,
-    absl::string_view dst) const {
+    absl::string_view m, absl::string_view dst) const {
   absl::StatusOr<ECPoint> out = GetPointAtInfinity();
   if (!out.ok()) {
     return out.status();
@@ -238,13 +236,14 @@ absl::StatusOr<ECPoint> ECGroup::GetPointByHashingToCurveSswuRo(
       return absl::InternalError(OpenSSLErrorString());
     }
   } else {
-    return absl::InvalidArgumentError("Curve does not support HashToCurveSswuRo.");
+    return absl::InvalidArgumentError(
+        "Curve does not support HashToCurveSswuRo.");
   }
   return out;
 }
 
-absl::StatusOr<ECPoint> ECGroup::GetPointByPaddingX(const BigNum& m,
-                                              size_t padding_bit_count) const {
+absl::StatusOr<ECPoint> ECGroup::GetPointByPaddingX(
+    const BigNum& m, size_t padding_bit_count) const {
   BigNum x_padded = m.Lshift(padding_bit_count);
   BigNum x_max =
       x_padded + context_->CreateBigNum(pow(2, padding_bit_count) - 1);
@@ -263,8 +262,7 @@ absl::StatusOr<ECPoint> ECGroup::GetPointByPaddingX(const BigNum& m,
 }
 
 absl::StatusOr<BigNum> ECGroup::RecoverXFromPaddedPoint(
-    const ECPoint& point,
-    size_t padding_bit_count) const {
+    const ECPoint& point, size_t padding_bit_count) const {
   auto affine_coordinates = point.GetAffineCoordinates();
   if (!affine_coordinates.ok()) {
     return absl::InvalidArgumentError(
@@ -320,7 +318,7 @@ absl::StatusOr<ECPoint> ECGroup::GetRandomGenerator() const {
 }
 
 absl::StatusOr<ECPoint> ECGroup::CreateECPoint(const BigNum& x,
-                                         const BigNum& y) const {
+                                               const BigNum& y) const {
   ECPoint point = ECPoint(group_.get(), context_->GetBnCtx(), x, y);
   if (!IsValid(point)) {
     return absl::InvalidArgumentError(
@@ -332,7 +330,8 @@ absl::StatusOr<ECPoint> ECGroup::CreateECPoint(const BigNum& x,
 absl::StatusOr<ECPoint> ECGroup::CreateECPoint(absl::string_view bytes) const {
   auto raw_ec_point_ptr = EC_POINT_new(group_.get());
   if (raw_ec_point_ptr == nullptr) {
-    return absl::InternalError("ECGroup::CreateECPoint: Failed to create point.");
+    return absl::InternalError(
+        "ECGroup::CreateECPoint: Failed to create point.");
   }
   ECPoint::ECPointPtr point(raw_ec_point_ptr);
   if (EC_POINT_oct2point(group_.get(), point.get(),

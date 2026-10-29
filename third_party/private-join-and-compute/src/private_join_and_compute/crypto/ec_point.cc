@@ -19,13 +19,12 @@
 #include <utility>
 #include <vector>
 
+#include "absl/status/status.h"
+#include "absl/status/statusor.h"
 #include "absl/strings/str_cat.h"
-#include "third_party/private-join-and-compute/chromium_patch.h"
 #include "private_join_and_compute/crypto/big_num.h"
 #include "private_join_and_compute/crypto/context.h"
 #include "private_join_and_compute/crypto/openssl.inc"
-#include "absl/status/status.h"
-#include "absl/status/statusor.h"
 
 namespace private_join_and_compute {
 
