@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -317,7 +318,7 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
   // Returns the widget init params needed to create the `item_widget_`.
   views::Widget::InitParams CreateOverviewItemWidgetParams(
       aura::Window* parent_window,
-      const std::string& widget_name,
+      std::string_view widget_name,
       bool accept_events) const;
 
   // Creates the `shadow_` and stacks the shadow layer to be at the bottom after

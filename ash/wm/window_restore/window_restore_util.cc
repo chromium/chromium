@@ -236,7 +236,7 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
   return window_info;
 }
 
-bool IsBrowserAppId(const std::string& id) {
+bool IsBrowserAppId(std::string_view id) {
   return id == app_constants::kChromeAppId;
 }
 

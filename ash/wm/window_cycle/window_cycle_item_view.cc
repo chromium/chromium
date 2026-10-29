@@ -276,10 +276,10 @@ void GroupContainerCycleView::OnChildFocusChanged() {
   GetViewAccessibility().SetIsIgnored(false);
 }
 
-void GroupContainerCycleView::UpdateAccessibleName(const std::string& name) {
+void GroupContainerCycleView::UpdateAccessibleName(std::string_view name) {
   if (name.empty()) {
     GetViewAccessibility().SetName(
-        std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+        std::string_view(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   } else {
     GetViewAccessibility().SetName(name);
   }

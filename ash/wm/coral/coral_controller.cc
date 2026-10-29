@@ -54,7 +54,7 @@ constexpr int kMaxGroupsToGenerate = 2;
 constexpr size_t kMaxItemsInRequest = 100;
 constexpr base::TimeDelta kRequestCoralServiceTimeout = base::Seconds(10);
 
-aura::Window* FindAppWindowOnActiveDesk(const std::string& app_id) {
+aura::Window* FindAppWindowOnActiveDesk(std::string_view app_id) {
   for (const auto& window :
        Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk)) {
     // Skip invalid windows.

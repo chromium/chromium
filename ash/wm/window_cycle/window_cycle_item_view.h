@@ -5,6 +5,8 @@
 #ifndef ASH_WM_WINDOW_CYCLE_WINDOW_CYCLE_ITEM_VIEW_H_
 #define ASH_WM_WINDOW_CYCLE_WINDOW_CYCLE_ITEM_VIEW_H_
 
+#include <string_view>
+
 #include "ash/ash_export.h"
 #include "ash/wm/layer_tree_synchronizer.h"
 #include "ash/wm/window_mini_view.h"
@@ -90,7 +92,7 @@ class ASH_EXPORT GroupContainerCycleView : public WindowMiniViewBase {
 
  private:
   void OnChildFocusChanged();
-  void UpdateAccessibleName(const std::string& name);
+  void UpdateAccessibleName(std::string_view name);
   void OnAXNameChanged(ax::mojom::StringAttribute attribute,
                        const std::optional<std::string>& name);
   void OnAccessibleIgnoredStateChanged(ax::mojom::State state,

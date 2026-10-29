@@ -72,7 +72,7 @@ std::unique_ptr<::app_restore::WindowInfo> BuildWindowInfo(
     std::optional<int> activation_index,
     const std::vector<raw_ptr<aura::Window, VectorExperimental>>& mru_windows);
 
-bool IsBrowserAppId(const std::string& id);
+bool IsBrowserAppId(std::string_view id);
 
 // Fetches the favicon for `page_url` for the active user session and returns
 // it, standardized, via `callback`. Runs `callback` with an empty image if
