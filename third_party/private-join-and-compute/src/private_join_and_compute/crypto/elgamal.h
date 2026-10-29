@@ -42,7 +42,7 @@
 
 #include "private_join_and_compute/crypto/ec_group.h"
 #include "private_join_and_compute/crypto/ec_point.h"
-#include "private_join_and_compute/util/status.inc"
+#include "absl/status/statusor.h"
 
 namespace private_join_and_compute {
 
@@ -69,30 +69,30 @@ struct PrivateKey {
 };
 
 // Generates a new ElGamal public-private key pair.
-StatusOr<std::pair<std::unique_ptr<PublicKey>, std::unique_ptr<PrivateKey>>>
+absl::StatusOr<std::pair<std::unique_ptr<PublicKey>, std::unique_ptr<PrivateKey>>>
 GenerateKeyPair(const ECGroup& ec_group);
 
 // Joins the public key shares in a public key. The shares should be nonempty.
-StatusOr<std::unique_ptr<PublicKey>> GeneratePublicKeyFromShares(
+absl::StatusOr<std::unique_ptr<PublicKey>> GeneratePublicKeyFromShares(
     const std::vector<std::unique_ptr<elgamal::PublicKey>>& shares);
 
 // Homomorphically multiply two ciphertexts.
 // (Note: this corresponds to addition in the EC group.)
-StatusOr<elgamal::Ciphertext> Mul(const elgamal::Ciphertext& ciphertext1,
+absl::StatusOr<elgamal::Ciphertext> Mul(const elgamal::Ciphertext& ciphertext1,
                                   const elgamal::Ciphertext& ciphertext2);
 
 // Homomorphically exponentiate a ciphertext by a scalar.
 // (Note: this corresponds to multiplication in the EC group.)
-StatusOr<elgamal::Ciphertext> Exp(const elgamal::Ciphertext& ciphertext,
+absl::StatusOr<elgamal::Ciphertext> Exp(const elgamal::Ciphertext& ciphertext,
                                   const BigNum& scalar);
 
 // Returns a ciphertext encrypting the point at infinity, using fixed randomness
 // "0". This is a multiplicative identity for ElGamal ciphertexts.
-StatusOr<Ciphertext> GetZero(const ECGroup* group);
+absl::StatusOr<Ciphertext> GetZero(const ECGroup* group);
 
 // A convenience function that creates a copy of this ciphertext with the same
 // randomness and underlying message.
-StatusOr<Ciphertext> CloneCiphertext(const Ciphertext& ciphertext);
+absl::StatusOr<Ciphertext> CloneCiphertext(const Ciphertext& ciphertext);
 
 // Checks if the given ciphertext is an encryption of the point of infinity
 // using randomness "0".
@@ -115,11 +115,11 @@ class PRIVATE_COMPUTE_EXPORT ElGamalEncrypter {
   ~ElGamalEncrypter() = default;
 
   // Encrypts a message m, that has already been mapped onto the curve.
-  StatusOr<elgamal::Ciphertext> Encrypt(const ECPoint& message) const;
+  absl::StatusOr<elgamal::Ciphertext> Encrypt(const ECPoint& message) const;
 
   // Re-randomizes a ciphertext. After the re-randomization, the new ciphertext
   // is an encryption of the same message as before.
-  StatusOr<elgamal::Ciphertext> ReRandomize(
+  absl::StatusOr<elgamal::Ciphertext> ReRandomize(
       const elgamal::Ciphertext& elgamal_ciphertext) const;
 
   // Returns a pointer to the owned ElGamal public key
@@ -145,12 +145,12 @@ class PRIVATE_COMPUTE_EXPORT ElGamalDecrypter {
   ~ElGamalDecrypter() = default;
 
   // Decrypts a given ElGamal ciphertext.
-  StatusOr<ECPoint> Decrypt(const elgamal::Ciphertext& ciphertext) const;
+  absl::StatusOr<ECPoint> Decrypt(const elgamal::Ciphertext& ciphertext) const;
 
   // Partially decrypts a given ElGamal ciphertext with a share of the secret
   // key. The caller should rerandomize the ciphertext using the remaining
   // partial public keys.
-  StatusOr<elgamal::Ciphertext> PartialDecrypt(
+  absl::StatusOr<elgamal::Ciphertext> PartialDecrypt(
       const elgamal::Ciphertext& ciphertext) const;
 
   // Returns a pointer to the owned ElGamal private key

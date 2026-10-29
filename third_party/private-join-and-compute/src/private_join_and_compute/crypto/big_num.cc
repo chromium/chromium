@@ -25,7 +25,8 @@
 #include "third_party/private-join-and-compute/chromium_patch.h"
 #include "private_join_and_compute/crypto/context.h"
 #include "private_join_and_compute/crypto/openssl.inc"
-#include "private_join_and_compute/util/status.inc"
+#include "absl/status/status.h"
+#include "absl/status/statusor.h"
 
 namespace private_join_and_compute {
 
@@ -105,10 +106,10 @@ std::string BigNum::ToBytes() const {
   return bytes;
 }
 
-StatusOr<uint64_t> BigNum::ToIntValue() const {
+absl::StatusOr<uint64_t> BigNum::ToIntValue() const {
   uint64_t val;
   if (!BN_get_u64(bn_.get(), &val)) {
-    return InvalidArgumentError("BigNum has more than 64 bits.");
+    return absl::InvalidArgumentError("BigNum has more than 64 bits.");
   }
   return val;
 }
@@ -248,10 +249,10 @@ BigNum BigNum::ModSqr(const BigNum& m) const {
   return r;
 }
 
-StatusOr<BigNum> BigNum::ModInverse(const BigNum& m) const {
+absl::StatusOr<BigNum> BigNum::ModInverse(const BigNum& m) const {
   BigNum r(bn_ctx_);
   if (nullptr == BN_mod_inverse(r.bn_.get(), bn_.get(), m.bn_.get(), bn_ctx_)) {
-    return InvalidArgumentError(
+    return absl::InvalidArgumentError(
         absl::StrCat("BigNum::ModInverse failed: ", OpenSSLErrorString()));
   }
   return r;

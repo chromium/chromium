@@ -24,7 +24,8 @@
 #include "private_join_and_compute/crypto/big_num.h"
 #include "private_join_and_compute/crypto/context.h"
 #include "private_join_and_compute/crypto/openssl.inc"
-#include "private_join_and_compute/util/status.inc"
+#include "absl/status/status.h"
+#include "absl/status/statusor.h"
 
 namespace private_join_and_compute {
 
@@ -46,90 +47,90 @@ ECPoint::ECPoint(const EC_GROUP* group, BN_CTX* bn_ctx, ECPointPtr point)
   point_ = std::move(point);
 }
 
-StatusOr<std::string> ECPoint::ToBytesCompressed() const {
+absl::StatusOr<std::string> ECPoint::ToBytesCompressed() const {
   int length = EC_POINT_point2oct(
       group_, point_.get(), POINT_CONVERSION_COMPRESSED, nullptr, 0, bn_ctx_);
   std::vector<unsigned char> bytes(length);
   if (0 == EC_POINT_point2oct(group_, point_.get(), POINT_CONVERSION_COMPRESSED,
                               bytes.data(), length, bn_ctx_)) {
-    return InternalError(
+    return absl::InternalError(
         absl::StrCat("EC_POINT_point2oct failed:", OpenSSLErrorString()));
   }
   return std::string(reinterpret_cast<char*>(bytes.data()), bytes.size());
 }
 
-StatusOr<std::string> ECPoint::ToBytesUnCompressed() const {
+absl::StatusOr<std::string> ECPoint::ToBytesUnCompressed() const {
   int length = EC_POINT_point2oct(
       group_, point_.get(), POINT_CONVERSION_UNCOMPRESSED, nullptr, 0, bn_ctx_);
   std::vector<unsigned char> bytes(length);
   if (0 == EC_POINT_point2oct(group_, point_.get(),
                               POINT_CONVERSION_UNCOMPRESSED, bytes.data(),
                               length, bn_ctx_)) {
-    return InternalError(
+    return absl::InternalError(
         absl::StrCat("EC_POINT_point2oct failed:", OpenSSLErrorString()));
   }
   return std::string(reinterpret_cast<char*>(bytes.data()), bytes.size());
 }
 
-StatusOr<std::pair<BigNum::BignumPtr, BigNum::BignumPtr>>
+absl::StatusOr<std::pair<BigNum::BignumPtr, BigNum::BignumPtr>>
 ECPoint::GetAffineCoordinates() const {
   BIGNUM* bn_x = BN_new();
   BIGNUM* bn_y = BN_new();
   if (bn_x == nullptr || bn_y == nullptr) {
-    return InternalError(
+    return absl::InternalError(
         absl::StrCat("ECPoint::GetAffineCoordinates - Could not create BIGNUM.",
                      OpenSSLErrorString()));
   }
   if (0 == EC_POINT_get_affine_coordinates(group_, point_.get(), bn_x, bn_y,
                                            bn_ctx_)) {
-    return InternalError(absl::StrCat(
+    return absl::InternalError(absl::StrCat(
         "EC_POINT_get_affine_coordinates_GFp failed:", OpenSSLErrorString()));
   }
   return std::make_pair(BigNum::BignumPtr(bn_x), BigNum::BignumPtr(bn_y));
 }
 
-StatusOr<ECPoint> ECPoint::Mul(const BigNum& scalar) const {
+absl::StatusOr<ECPoint> ECPoint::Mul(const BigNum& scalar) const {
   ECPoint r = ECPoint(group_, bn_ctx_);
   if (1 != EC_POINT_mul(group_, r.point_.get(), nullptr, point_.get(),
                         scalar.GetConstBignumPtr(), bn_ctx_)) {
-    return InternalError(
+    return absl::InternalError(
         absl::StrCat("EC_POINT_mul failed:", OpenSSLErrorString()));
   }
   return std::move(r);
 }
 
-StatusOr<ECPoint> ECPoint::Add(const ECPoint& point) const {
+absl::StatusOr<ECPoint> ECPoint::Add(const ECPoint& point) const {
   ECPoint r = ECPoint(group_, bn_ctx_);
   if (1 != EC_POINT_add(group_, r.point_.get(), point_.get(),
                         point.point_.get(), bn_ctx_)) {
-    return InternalError(
+    return absl::InternalError(
         absl::StrCat("EC_POINT_add failed:", OpenSSLErrorString()));
   }
   return std::move(r);
 }
 
-StatusOr<ECPoint> ECPoint::Clone() const {
+absl::StatusOr<ECPoint> ECPoint::Clone() const {
   ECPoint r = ECPoint(group_, bn_ctx_);
   if (1 != EC_POINT_copy(r.point_.get(), point_.get())) {
-    return InternalError(
+    return absl::InternalError(
         absl::StrCat("EC_POINT_copy failed:", OpenSSLErrorString()));
   }
   return std::move(r);
 }
 
-StatusOr<ECPoint> ECPoint::Inverse() const {
+absl::StatusOr<ECPoint> ECPoint::Inverse() const {
   // Create a copy of this.
-  StatusOr<ECPoint> inv = ECPoint(group_, bn_ctx_);
+  absl::StatusOr<ECPoint> inv = ECPoint(group_, bn_ctx_);
   if (!inv.ok()) {
     return inv.status();
   }
   if (1 != EC_POINT_copy(inv->point_.get(), point_.get())) {
-    return InternalError(
+    return absl::InternalError(
         absl::StrCat("EC_POINT_copy failed:", OpenSSLErrorString()));
   }
   // Invert the copy in-place.
   if (1 != EC_POINT_invert(group_, inv->point_.get(), bn_ctx_)) {
-    return InternalError(
+    return absl::InternalError(
         absl::StrCat("EC_POINT_invert failed:", OpenSSLErrorString()));
   }
   return inv;

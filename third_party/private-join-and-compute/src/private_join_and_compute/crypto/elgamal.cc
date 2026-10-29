@@ -24,20 +24,21 @@
 #include "private_join_and_compute/crypto/big_num.h"
 #include "private_join_and_compute/crypto/ec_group.h"
 #include "private_join_and_compute/crypto/ec_point.h"
-#include "private_join_and_compute/util/status.inc"
+#include "absl/status/status.h"
+#include "absl/status/statusor.h"
 
 namespace private_join_and_compute {
 
 namespace elgamal {
 
-StatusOr<std::pair<std::unique_ptr<PublicKey>, std::unique_ptr<PrivateKey>>>
+absl::StatusOr<std::pair<std::unique_ptr<PublicKey>, std::unique_ptr<PrivateKey>>>
 GenerateKeyPair(const ECGroup& ec_group) {
-  StatusOr<ECPoint> g = ec_group.GetFixedGenerator();
+  absl::StatusOr<ECPoint> g = ec_group.GetFixedGenerator();
   if (!g.ok()) {
     return g.status();
   }
   BigNum x = ec_group.GeneratePrivateKey();
-  StatusOr<ECPoint> y = g->Mul(x);
+  absl::StatusOr<ECPoint> y = g->Mul(x);
   if (!y.ok()) {
     return y.status();
   }
@@ -49,17 +50,17 @@ GenerateKeyPair(const ECGroup& ec_group) {
   return {{std::move(public_key), std::move(private_key)}};
 }
 
-StatusOr<std::unique_ptr<PublicKey>> GeneratePublicKeyFromShares(
+absl::StatusOr<std::unique_ptr<PublicKey>> GeneratePublicKeyFromShares(
     const std::vector<std::unique_ptr<elgamal::PublicKey>>& shares) {
   if (shares.empty()) {
-    return InvalidArgumentError(
+    return absl::InvalidArgumentError(
         "ElGamal::GeneratePublicKeyFromShares() : empty shares provided");
   }
-  StatusOr<ECPoint> g = (*shares.begin())->g.Clone();
+  absl::StatusOr<ECPoint> g = (*shares.begin())->g.Clone();
   if (!g.ok()) {
     return g.status();
   }
-  StatusOr<ECPoint> y = (*shares.begin())->y.Clone();
+  absl::StatusOr<ECPoint> y = (*shares.begin())->y.Clone();
   if (!y.ok()) {
     return y.status();
   }
@@ -75,50 +76,50 @@ StatusOr<std::unique_ptr<PublicKey>> GeneratePublicKeyFromShares(
   return absl::WrapUnique(new PublicKey({*std::move(g), *std::move(y)}));
 }
 
-StatusOr<elgamal::Ciphertext> Mul(const elgamal::Ciphertext& ciphertext1,
+absl::StatusOr<elgamal::Ciphertext> Mul(const elgamal::Ciphertext& ciphertext1,
                                   const elgamal::Ciphertext& ciphertext2) {
-  StatusOr<ECPoint> u = ciphertext1.u.Add(ciphertext2.u);
+  absl::StatusOr<ECPoint> u = ciphertext1.u.Add(ciphertext2.u);
   if (!u.ok()) {
     return u.status();
   }
-  StatusOr<ECPoint> e = ciphertext1.e.Add(ciphertext2.e);
+  absl::StatusOr<ECPoint> e = ciphertext1.e.Add(ciphertext2.e);
   if (!e.ok()) {
     return e.status();
   }
   return {{*std::move(u), *std::move(e)}};
 }
 
-StatusOr<elgamal::Ciphertext> Exp(const elgamal::Ciphertext& ciphertext,
+absl::StatusOr<elgamal::Ciphertext> Exp(const elgamal::Ciphertext& ciphertext,
                                   const BigNum& scalar) {
-  StatusOr<ECPoint> u = ciphertext.u.Mul(scalar);
+  absl::StatusOr<ECPoint> u = ciphertext.u.Mul(scalar);
   if (!u.ok()) {
     return u.status();
   }
-  StatusOr<ECPoint> e = ciphertext.e.Mul(scalar);
+  absl::StatusOr<ECPoint> e = ciphertext.e.Mul(scalar);
   if (!e.ok()) {
     return e.status();
   }
   return {{*std::move(u), *std::move(e)}};
 }
 
-StatusOr<Ciphertext> GetZero(const ECGroup* group) {
-  StatusOr<ECPoint> u = group->GetPointAtInfinity();
+absl::StatusOr<Ciphertext> GetZero(const ECGroup* group) {
+  absl::StatusOr<ECPoint> u = group->GetPointAtInfinity();
   if (!u.ok()) {
     return u.status();
   }
-  StatusOr<ECPoint> e = group->GetPointAtInfinity();
+  absl::StatusOr<ECPoint> e = group->GetPointAtInfinity();
   if (!e.ok()) {
     return e.status();
   }
   return {{*std::move(u), *std::move(e)}};
 }
 
-StatusOr<Ciphertext> CloneCiphertext(const Ciphertext& ciphertext) {
-  StatusOr<ECPoint> clone_u = ciphertext.u.Clone();
+absl::StatusOr<Ciphertext> CloneCiphertext(const Ciphertext& ciphertext) {
+  absl::StatusOr<ECPoint> clone_u = ciphertext.u.Clone();
   if (!clone_u.ok()) {
     return clone_u.status();
   }
-  StatusOr<ECPoint> clone_e = ciphertext.e.Clone();
+  absl::StatusOr<ECPoint> clone_e = ciphertext.e.Clone();
   if (!clone_e.ok()) {
     return clone_e.status();
   }
@@ -141,42 +142,42 @@ ElGamalEncrypter::ElGamalEncrypter(
     : ec_group_(ec_group), public_key_(std::move(elgamal_public_key)) {}
 
 // Encrypts a message m, that has already been mapped onto the curve.
-StatusOr<elgamal::Ciphertext> ElGamalEncrypter::Encrypt(
+absl::StatusOr<elgamal::Ciphertext> ElGamalEncrypter::Encrypt(
     const ECPoint& message) const {
   BigNum r = ec_group_->GeneratePrivateKey();  // generate a random exponent
   // u = g^r , e = m * y^r .
-  StatusOr<ECPoint> u = public_key_->g.Mul(r);
+  absl::StatusOr<ECPoint> u = public_key_->g.Mul(r);
   if (!u.ok()) {
     return u.status();
   }
-  StatusOr<ECPoint> y_to_r = public_key_->y.Mul(r);
+  absl::StatusOr<ECPoint> y_to_r = public_key_->y.Mul(r);
   if (!y_to_r.ok()) {
     return y_to_r.status();
   }
-  StatusOr<ECPoint> e = message.Add(*y_to_r);
+  absl::StatusOr<ECPoint> e = message.Add(*y_to_r);
   if (!e.ok()) {
     return e.status();
   }
   return {{*std::move(u), *std::move(e)}};
 }
 
-StatusOr<elgamal::Ciphertext> ElGamalEncrypter::ReRandomize(
+absl::StatusOr<elgamal::Ciphertext> ElGamalEncrypter::ReRandomize(
     const elgamal::Ciphertext& elgamal_ciphertext) const {
   BigNum r = ec_group_->GeneratePrivateKey();  // generate a random exponent
   // u = old_u * g^r , e = old_e * y^r .
-  StatusOr<ECPoint> g_to_r = public_key_->g.Mul(r);
+  absl::StatusOr<ECPoint> g_to_r = public_key_->g.Mul(r);
   if (!g_to_r.ok()) {
     return g_to_r.status();
   }
-  StatusOr<ECPoint> u = elgamal_ciphertext.u.Add(*g_to_r);
+  absl::StatusOr<ECPoint> u = elgamal_ciphertext.u.Add(*g_to_r);
   if (!u.ok()) {
     return u.status();
   }
-  StatusOr<ECPoint> y_to_r = public_key_->y.Mul(r);
+  absl::StatusOr<ECPoint> y_to_r = public_key_->y.Mul(r);
   if (!y_to_r.ok()) {
     return y_to_r.status();
   }
-  StatusOr<ECPoint> e = elgamal_ciphertext.e.Add(*y_to_r);
+  absl::StatusOr<ECPoint> e = elgamal_ciphertext.e.Add(*y_to_r);
   if (!e.ok()) {
     return e.status();
   }
@@ -191,30 +192,30 @@ ElGamalDecrypter::ElGamalDecrypter(
     std::unique_ptr<elgamal::PrivateKey> elgamal_private_key)
     : private_key_(std::move(elgamal_private_key)) {}
 
-StatusOr<ECPoint> ElGamalDecrypter::Decrypt(
+absl::StatusOr<ECPoint> ElGamalDecrypter::Decrypt(
     const elgamal::Ciphertext& ciphertext) const {
-  StatusOr<ECPoint> u_to_x = ciphertext.u.Mul(private_key_->x);
+  absl::StatusOr<ECPoint> u_to_x = ciphertext.u.Mul(private_key_->x);
   if (!u_to_x.ok()) {
     return u_to_x.status();
   }
-  StatusOr<ECPoint> u_to_x_inverse = u_to_x->Inverse();
+  absl::StatusOr<ECPoint> u_to_x_inverse = u_to_x->Inverse();
   if (!u_to_x_inverse.ok()) {
     return u_to_x_inverse.status();
   }
-  StatusOr<ECPoint> message = ciphertext.e.Add(*u_to_x_inverse);
+  absl::StatusOr<ECPoint> message = ciphertext.e.Add(*u_to_x_inverse);
   if (!message.ok()) {
     return message.status();
   }
   return {*std::move(message)};
 }
 
-StatusOr<elgamal::Ciphertext> ElGamalDecrypter::PartialDecrypt(
+absl::StatusOr<elgamal::Ciphertext> ElGamalDecrypter::PartialDecrypt(
     const elgamal::Ciphertext& ciphertext) const {
-  StatusOr<ECPoint> clone_u = ciphertext.u.Clone();
+  absl::StatusOr<ECPoint> clone_u = ciphertext.u.Clone();
   if (!clone_u.ok()) {
     return clone_u.status();
   }
-  StatusOr<ECPoint> dec_e = ElGamalDecrypter::Decrypt(ciphertext);
+  absl::StatusOr<ECPoint> dec_e = ElGamalDecrypter::Decrypt(ciphertext);
   if (!dec_e.ok()) {
     return dec_e.status();
   }
