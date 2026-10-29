@@ -487,13 +487,6 @@ template CORE_EXPORT Vector<double> KeyframeEffectModelBase::GetComputedOffsets(
 template CORE_EXPORT Vector<double> KeyframeEffectModelBase::GetComputedOffsets(
     const HeapVector<Member<StringKeyframe>>& keyframes);
 
-bool KeyframeEffectModelBase::IsTransformRelatedEffect() const {
-  return Affects(PropertyHandle(GetCSSPropertyTransform())) ||
-         Affects(PropertyHandle(GetCSSPropertyRotate())) ||
-         Affects(PropertyHandle(GetCSSPropertyScale())) ||
-         Affects(PropertyHandle(GetCSSPropertyTranslate()));
-}
-
 bool KeyframeEffectModelBase::SetLogicalPropertyResolutionContext(
     WritingDirectionMode writing_direction) {
   bool changed = false;

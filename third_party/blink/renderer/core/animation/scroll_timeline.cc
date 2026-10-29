@@ -342,31 +342,6 @@ ScrollAxis ScrollTimeline::GetAxis() const {
   return axis_;
 }
 
-std::optional<double> ScrollTimeline::GetMaximumScrollPosition() const {
-  std::optional<PhysicalDirection> direction = GetResolvedScrollDirection();
-  LayoutBox* scroll_container =
-      direction ? ScrollContainer(ToPhysicalAxis(*direction)) : nullptr;
-  if (!scroll_container) {
-    return std::nullopt;
-  }
-
-  std::optional<ScrollOffsets> scroll_offsets = GetResolvedScrollOffsets();
-  if (!scroll_offsets) {
-    return std::nullopt;
-  }
-
-  PaintLayerScrollableArea* scrollable_area =
-      scroll_container->GetScrollableArea();
-  if (!scrollable_area) {
-    return std::nullopt;
-  }
-  ScrollOffset scroll_dimensions = scrollable_area->MaximumScrollOffset() -
-                                   scrollable_area->MinimumScrollOffset();
-  return ToPhysicalAxis(*direction) == PhysicalAxis::kHorizontal
-             ? scroll_dimensions.x()
-             : scroll_dimensions.y();
-}
-
 std::optional<double> ScrollTimeline::GetCurrentScrollPosition() const {
   std::optional<PhysicalDirection> direction = GetResolvedScrollDirection();
   LayoutBox* scroll_container =

@@ -3283,21 +3283,6 @@ void Animation::RestartAnimationOnCompositor(CompositorPendingReason reason) {
   SetCompositorPending(reason);
 }
 
-bool Animation::CompositorPendingCancelOrEffectChange() const {
-  if (!compositor_state_) {
-    return false;
-  }
-  if (compositor_state_->pending_action == CompositorAction::kCancel) {
-    return true;
-  }
-
-  if (compositor_state_->effect_changed) {
-    return true;
-  }
-
-  return false;
-}
-
 void Animation::CancelIncompatibleAnimationsOnCompositor() {
   VERIFY_PAINT_CLEAN_LOG_ONCE()
   if (auto* keyframe_effect = DynamicTo<KeyframeEffect>(content_.Get()))

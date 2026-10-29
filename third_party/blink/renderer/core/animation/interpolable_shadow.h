@@ -46,8 +46,6 @@ class InterpolableShadow : public InterpolableValue {
   // Helpers for CSSListInterpolationFunctions.
   static PairwiseInterpolationValue MaybeMergeSingles(InterpolableValue* start,
                                                       InterpolableValue* end);
-  static bool CompatibleForCompositing(const InterpolableValue*,
-                                       const InterpolableValue*);
   static void Composite(UnderlyingValue&,
                         double underlying_fraction,
                         const InterpolableValue&,

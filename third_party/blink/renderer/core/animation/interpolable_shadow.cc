@@ -131,13 +131,6 @@ PairwiseInterpolationValue InterpolableShadow::MaybeMergeSingles(
   return PairwiseInterpolationValue(start, end);
 }
 
-//  static
-bool InterpolableShadow::CompatibleForCompositing(const InterpolableValue* from,
-                                                  const InterpolableValue* to) {
-  return To<InterpolableShadow>(from)->shadow_style_ ==
-         To<InterpolableShadow>(to)->shadow_style_;
-}
-
 // static
 void InterpolableShadow::Composite(UnderlyingValue& underlying_value,
                                    double underlying_fraction,

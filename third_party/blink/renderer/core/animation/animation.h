@@ -435,8 +435,6 @@ class CORE_EXPORT Animation : public EventTarget,
     return compositor_state_ &&
            compositor_state_->pending_action == CompositorAction::kCancel;
   }
-  bool CompositorPendingCancelOrEffectChange() const;
-
   // Methods for handling removal and persistence of animations.
   bool IsReplaceable();
   void RemoveReplacedAnimation();
@@ -569,9 +567,6 @@ class CORE_EXPORT Animation : public EventTarget,
                                  std::optional<AnimationTimeDelta>& time,
                                  String variable_name,
                                  ExceptionState& exception_state);
-
-  void BeginUpdatingState();
-  void EndUpdatingState();
 
   void CheckCanStartAnimationOnCompositorInternal();
   void CreateCompositorAnimation(std::optional<int> replaced_cc_animation_id);

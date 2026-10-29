@@ -38,7 +38,6 @@ class CORE_EXPORT InterpolableValue
 
   virtual bool IsDouble() const { return false; }
   virtual bool IsNumber() const { return false; }
-  virtual bool IsBool() const { return false; }
   virtual bool IsColor() const { return false; }
   virtual bool IsStyleColor() const { return false; }
   virtual bool IsScrollbarColor() const { return false; }
