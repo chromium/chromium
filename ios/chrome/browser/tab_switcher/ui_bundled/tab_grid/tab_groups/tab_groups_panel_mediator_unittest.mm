@@ -176,8 +176,8 @@ class TabGroupsPanelMediatorTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<TestProfileIOS> profile_;
+  std::unique_ptr<TestBrowser> browser_;
   raw_ptr<BrowserList> browser_list_;
   FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;

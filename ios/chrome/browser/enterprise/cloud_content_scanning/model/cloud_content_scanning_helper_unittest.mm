@@ -139,10 +139,10 @@ class CloudContentScanningHelperTest : public PlatformTest {
 
   void TearDown() override {
     web_state_ = nullptr;
-    profile_ = nullptr;
     mock_snackbar_handler_ = nullptr;
     fake_commands_handler_ = nullptr;
     browser_.reset();
+    profile_.reset();
   }
 
   // Creates a RequestHandlerResult with the FinalContentAnalysisRsult, which
@@ -172,8 +172,8 @@ class CloudContentScanningHelperTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   policy::FakeBrowserDMTokenStorage fake_browser_dm_token_storage_;
-  std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<TestProfileIOS> profile_;
+  std::unique_ptr<TestBrowser> browser_;
   raw_ptr<web::FakeWebState> web_state_;
   FakeEnterpriseCommandsHandler* fake_commands_handler_;
   id mock_snackbar_handler_;

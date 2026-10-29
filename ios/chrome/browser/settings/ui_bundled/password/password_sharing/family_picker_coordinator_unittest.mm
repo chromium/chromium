@@ -41,8 +41,8 @@ NSArray<RecipientInfoForIOSDisplay*>* CreateRecipients(int amount) {
 class FamilyPickerCoordinatorTest : public PlatformTest {
  protected:
   void SetUp() override {
-    browser_ =
-        std::make_unique<TestBrowser>(TestProfileIOS::Builder().Build().get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     view_controller_ = [[FamilyPickerViewController alloc]
         initWithStyle:UITableViewStylePlain];
 
@@ -67,6 +67,7 @@ class FamilyPickerCoordinatorTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   FamilyPickerCoordinator* coordinator_;
   FamilyPickerViewController* view_controller_;

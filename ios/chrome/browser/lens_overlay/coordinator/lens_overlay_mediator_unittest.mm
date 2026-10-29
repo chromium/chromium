@@ -288,9 +288,9 @@ class LensOverlayMediatorTest : public PlatformTest {
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<feature_engagement::Tracker> tracker_;
   FakeLensWebProviderImpl* fake_web_provider_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<LensOmniboxClient> lens_omnibox_client_;
   std::unique_ptr<TestBrowser> browser_;
-  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 /// Tests that the omnibox and toolbar are updated on omnibox focus.

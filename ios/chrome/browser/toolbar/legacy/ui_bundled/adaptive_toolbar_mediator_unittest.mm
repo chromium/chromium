@@ -204,6 +204,7 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
   void SetUpActiveWebState() { web_state_list_->ActivateWebStateAt(0); }
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<TestProfileIOS> profile_;
   TestAdaptiveToolbarMediator* mediator_;
   std::unique_ptr<TestBrowser> test_browser_;
   raw_ptr<web::FakeWebState, DanglingUntriaged> web_state_;
@@ -217,7 +218,6 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
   id mock_browser_coordinator_commands_handler_;
   id mock_qr_scanner_commands_handler_;
   id mock_gemini_handler_;
-  std::unique_ptr<TestProfileIOS> profile_;
   collaboration::messaging::MockMessagingBackendService messaging_backend_;
 
  private:

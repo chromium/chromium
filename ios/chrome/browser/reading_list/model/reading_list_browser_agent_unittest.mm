@@ -53,6 +53,8 @@ class ReadingListBrowserAgentUnitTest : public PlatformTest {
   }
 
   void TearDown() override {
+    reading_list_browser_agent_ = nullptr;
+    browser_.reset();
     profile_.reset();
     TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
     local_state_.reset();

@@ -72,6 +72,9 @@ class PopupMenuHelpCoordinatorTest : public PlatformTest {
 
   void TearDown() override {
     ClearDefaultBrowserPromoData();
+    [popup_menu_help_coordinator_ stop];
+    popup_menu_help_coordinator_ = nil;
+    browser_.reset();
     tracker_ = nullptr;
     profile_.reset();
     TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);

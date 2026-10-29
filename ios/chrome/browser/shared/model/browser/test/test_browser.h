@@ -7,7 +7,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
-#import "base/memory/raw_ptr.h"
+#import "base/memory/raw_ref.h"
 #import "base/memory/weak_ptr.h"
 #import "base/observer_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -61,8 +61,7 @@ class TestBrowser final : public Browser {
 
  private:
   const Type type_;
-  // This value is not nullptr.
-  raw_ptr<ProfileIOS, DanglingUntriaged> profile_;
+  const raw_ref<ProfileIOS> profile_;
   __weak SceneState* scene_state_ = nil;
   std::unique_ptr<WebStateListDelegate> web_state_list_delegate_;
   std::unique_ptr<WebStateList> web_state_list_;

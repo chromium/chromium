@@ -23,8 +23,8 @@
 class FamilyPromoCoordinatorTest : public PlatformTest {
  protected:
   void SetUp() override {
-    browser_ =
-        std::make_unique<TestBrowser>(TestProfileIOS::Builder().Build().get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     mock_scene_handler_ = OCMStrictProtocolMock(@protocol(SceneCommands));
     [browser_->GetCommandDispatcher()
@@ -45,6 +45,7 @@ class FamilyPromoCoordinatorTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
 
   id mock_scene_handler_;

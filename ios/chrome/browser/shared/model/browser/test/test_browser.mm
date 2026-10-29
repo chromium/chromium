@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 
+#import "base/check_deref.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
@@ -19,12 +20,11 @@ TestBrowser::TestBrowser(
     std::unique_ptr<WebStateListDelegate> web_state_list_delegate,
     Type type)
     : type_(type),
-      profile_(profile),
+      profile_(CHECK_DEREF(profile)),
       scene_state_(scene_state),
       web_state_list_delegate_(std::move(web_state_list_delegate)),
       command_dispatcher_([[CommandDispatcher alloc] init]),
       browser_layout_state_([[BrowserLayoutState alloc] init]) {
-  DCHECK(profile_);
   DCHECK(web_state_list_delegate_);
   web_state_list_ =
       std::make_unique<WebStateList>(web_state_list_delegate_.get());
@@ -69,7 +69,7 @@ Browser::Type TestBrowser::type() const {
 }
 
 ProfileIOS* TestBrowser::GetProfile() {
-  return profile_;
+  return &profile_.get();
 }
 
 WebStateList* TestBrowser::GetWebStateList() {
@@ -115,7 +115,7 @@ Browser* TestBrowser::GetInactiveBrowser() {
 Browser* TestBrowser::CreateInactiveBrowser() {
   CHECK_EQ(type_, Type::kRegular);
   inactive_browser_ = std::make_unique<TestBrowser>(
-      profile_, scene_state_, std::make_unique<FakeWebStateListDelegate>(),
+      GetProfile(), scene_state_, std::make_unique<FakeWebStateListDelegate>(),
       Type::kInactive);
   SnapshotBrowserAgent::CreateForBrowser(inactive_browser_.get());
   SnapshotBrowserAgent::FromBrowser(inactive_browser_.get())
