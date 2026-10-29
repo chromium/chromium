@@ -106,7 +106,11 @@ void GotFilesSourcesOfCopy(
 // Converts DataTransferEndpoint object to DlpFileDestination.
 DlpFileDestination DTEndpointToFileDestination(
     const ui::DataTransferEndpoint* endpoint) {
-  CHECK(endpoint, base::NotFatalUntil::M161);
+  // `endpoint` is null when pasting or dropping into an off-the-record
+  // (Incognito) window, or when no destination endpoint is provided.
+  if (!endpoint) {
+    return DlpFileDestination(data_controls::Component::kUnknownComponent);
+  }
 
   switch (endpoint->type()) {
     case ui::EndpointType::kUrl:

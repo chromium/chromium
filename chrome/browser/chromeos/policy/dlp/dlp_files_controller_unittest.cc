@@ -581,6 +581,46 @@ TEST_F(DlpFilesControllerTest, CheckIfPasteOrDropIsAllowed) {
   EXPECT_FALSE(request.has_io_task_id());
 }
 
+TEST_F(DlpFilesControllerTest, CheckIfPasteOrDropIsAllowed_NullEndpoint) {
+  ASSERT_TRUE(mount_points_->RegisterFileSystem(
+      "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+      my_files_dir_));
+
+  base::FilePath file_path1 = my_files_dir_.AppendASCII(kFilePath1);
+  ASSERT_TRUE(CreateDummyFile(file_path1));
+
+  // Set CheckFilesTransfer response to restrict the local file.
+  ::dlp::CheckFilesTransferResponse check_files_transfer_response;
+  check_files_transfer_response.add_files_paths(file_path1.value());
+  ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
+  chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
+      check_files_transfer_response);
+
+  EXPECT_CALL(*files_controller_,
+              ShowDlpBlockedFiles(/*task_id=*/{std::nullopt},
+                                  std::vector<base::FilePath>{file_path1},
+                                  dlp::FileAction::kCopy));
+  EXPECT_CALL(*files_controller_, IsInLocalFileSystem)
+      .WillOnce(testing::Return(true));
+
+  base::test::TestFuture<bool> future;
+  ASSERT_TRUE(files_controller_);
+  files_controller_->CheckIfPasteOrDropIsAllowed(
+      {file_path1}, /*data_dst=*/nullptr, future.GetCallback());
+  EXPECT_FALSE(future.Take());
+
+  ::dlp::CheckFilesTransferRequest request =
+      chromeos::DlpClient::Get()
+          ->GetTestInterface()
+          ->GetLastCheckFilesTransferRequest();
+  ASSERT_EQ(request.files_paths().size(), 1);
+  EXPECT_EQ(request.files_paths()[0], file_path1.value());
+  EXPECT_EQ(::dlp::DlpComponent::UNKNOWN_COMPONENT,
+            request.destination_component());
+  EXPECT_EQ(::dlp::FileAction::COPY, request.file_action());
+  EXPECT_FALSE(request.has_io_task_id());
+}
+
 TEST_F(DlpFilesControllerTest,
        CheckIfPasteOrDropIsAllowed_NoFileSystemContext) {
   ASSERT_TRUE(mount_points_->RegisterFileSystem(

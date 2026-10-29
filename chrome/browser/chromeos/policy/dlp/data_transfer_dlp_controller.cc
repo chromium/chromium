@@ -310,7 +310,7 @@ void DataTransferDlpController::PasteIfAllowed(
                                                           : std::nullopt;
 
   if (std::holds_alternative<std::vector<base::FilePath>>(pasted_content) &&
-      !IsFilesApp(destination) && destination.has_value()) {
+      !IsFilesApp(destination)) {
     auto pasted_files =
         std::move(std::get<std::vector<base::FilePath>>(pasted_content));
     auto* files_controller = dlp_rules_manager_->GetDlpFilesController();
@@ -348,12 +348,12 @@ void DataTransferDlpController::DropIfAllowed(
                                                           : std::nullopt;
 
   if (filenames.has_value() && !filenames->empty() &&
-      !IsFilesApp(destination) && destination.has_value()) {
+      !IsFilesApp(destination)) {
     auto* files_controller = dlp_rules_manager_->GetDlpFilesController();
     if (files_controller) {
-      CHECK(destination.has_value());
       files_controller->CheckIfPasteOrDropIsAllowed(
-          GetFilePathsFromFileInfos(filenames.value()), &destination.value(),
+          GetFilePathsFromFileInfos(filenames.value()),
+          base::OptionalToPtr(destination),
           base::BindOnce(
               [](base::WeakPtr<DataTransferDlpController> controller,
                  std::optional<ui::DataTransferEndpoint> source,
