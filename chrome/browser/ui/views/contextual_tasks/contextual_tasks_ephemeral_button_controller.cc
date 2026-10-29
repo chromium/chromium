@@ -350,6 +350,11 @@ void ContextualTasksEphemeralButtonController::OnSidePanelAlignmentChanged() {
 }
 
 bool ContextualTasksEphemeralButtonController::ShouldShowEphemeralButton() {
+  Profile* const profile = browser_window_interface_->GetProfile();
+  if (!profile || profile->IsOffTheRecord()) {
+    return false;
+  }
+
   // TabInterface can be null on browser shutdown.
   tabs::TabInterface* const tab_interface =
       browser_window_interface_->GetActiveTabInterface();

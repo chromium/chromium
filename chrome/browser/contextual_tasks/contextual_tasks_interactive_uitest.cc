@@ -4722,45 +4722,61 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksEphemeralToolbarInteractiveUiTest,
       // WebUI hides in response, so do not wait for a JS round trip.
       ClickElement(kSidePanelId, kCloseButton, ExecuteJsMode::kFireAndForget),
 
-      // (4) The side panel closes and the ephemeral button appears.
+      // (4) The side panel closes. In Incognito, the ephemeral button does not
+      // appear and the active tab is disassociated from the task.
       WaitForHide(kContextualTasksSidePanelWebViewElementId),
       UninstrumentWebContents(kSidePanelId,
                               /*fail_if_not_instrumented=*/false),
-      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
-      Check([&]() { return GetTaskIdForActiveTab() == task_id_before_close; },
-            "Active tab stays associated with the task after closing"),
+      GetParam() == UserVariation::kIncognito
+          ? Steps(EnsureNotPresent(
+                      kContextualTasksEphemeralToolbarButtonElementId),
+                  Check([&]() { return !GetTaskIdForActiveTab().has_value(); },
+                        "Active tab is disassociated from the task after "
+                        "closing in Incognito"))
+          : Steps(
+                WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+                Check(
+                    [&]() {
+                      return GetTaskIdForActiveTab() == task_id_before_close;
+                    },
+                    "Active tab stays associated with the task after closing"),
 
-      // (5) Click the ephemeral toolbar button.
-      PressButton(kContextualTasksEphemeralToolbarButtonElementId),
+                // (5) Click the ephemeral toolbar button.
+                PressButton(kContextualTasksEphemeralToolbarButtonElementId),
 
-      // (6) The side panel reopens and restores the same task and contents.
-      WaitForShow(kContextualTasksSidePanelWebViewElementId),
-      Check(
-          [&]() {
-            return ContextualTasksPanelController::From(browser())
-                ->IsPanelOpenForContextualTask();
-          },
-          "Side panel is open for the contextual task"),
-      Check([&]() { return GetTaskIdForActiveTab() == task_id_before_close; },
-            "Reopened side panel restores the same task"),
-      Check(
-          [&]() {
-            return side_panel_contents_before_close &&
-                   side_panel_contents_before_close.get() ==
-                       GetActiveSidePanelWebContents();
-          },
-          "Reopened side panel restores the same WebContents"),
-      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
-                       "EphemeralReopenedSidePanelContents",
-                       [](ContextualTasksWebView* web_view) -> views::View* {
-                         return web_view->content_web_view();
-                       }),
-      InstrumentNonTabWebView(kReopenedSidePanelId,
-                              "EphemeralReopenedSidePanelContents"),
-      WaitForElementVisible(kReopenedSidePanelId, kCloseButton),
+                // (6) The side panel reopens and restores the same task and
+                // contents.
+                WaitForShow(kContextualTasksSidePanelWebViewElementId),
+                Check(
+                    [&]() {
+                      return ContextualTasksPanelController::From(browser())
+                          ->IsPanelOpenForContextualTask();
+                    },
+                    "Side panel is open for the contextual task"),
+                Check(
+                    [&]() {
+                      return GetTaskIdForActiveTab() == task_id_before_close;
+                    },
+                    "Reopened side panel restores the same task"),
+                Check(
+                    [&]() {
+                      return side_panel_contents_before_close &&
+                             side_panel_contents_before_close.get() ==
+                                 GetActiveSidePanelWebContents();
+                    },
+                    "Reopened side panel restores the same WebContents"),
+                NameViewRelative(
+                    kContextualTasksSidePanelWebViewElementId,
+                    "EphemeralReopenedSidePanelContents",
+                    [](ContextualTasksWebView* web_view) -> views::View* {
+                      return web_view->content_web_view();
+                    }),
+                InstrumentNonTabWebView(kReopenedSidePanelId,
+                                        "EphemeralReopenedSidePanelContents"),
+                WaitForElementVisible(kReopenedSidePanelId, kCloseButton),
 
-      // (7) The ephemeral button hides while the side panel is open.
-      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId));
+                // (7) The ephemeral button hides while the side panel is open.
+                WaitForHide(kContextualTasksEphemeralToolbarButtonElementId)));
 }
 
 INSTANTIATE_TEST_SUITE_P(

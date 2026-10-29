@@ -958,7 +958,11 @@ IN_PROC_BROWSER_TEST_P(
         controller->Close();
       }),
       WaitForContextualPanelAndLensToClose(),
-      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId));
+      GetParam() == contextual_tasks::UserVariation::kIncognito
+          ? Steps(EnsureNotPresent(
+                kContextualTasksEphemeralToolbarButtonElementId))
+          : Steps(
+                WaitForShow(kContextualTasksEphemeralToolbarButtonElementId)));
 }
 
 INSTANTIATE_TEST_SUITE_P(
