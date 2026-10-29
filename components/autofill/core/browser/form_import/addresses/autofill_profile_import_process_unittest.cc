@@ -674,6 +674,50 @@ TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile) {
               testing::UnorderedElementsAre(updated_profile));
 }
 
+// Tests that merging an observed profile with a country and contact details
+// into a country-less stored profile requires user confirmation when the
+// visible-type sets differ (e.g. empty country vs. AT). Stored profiles with a
+// country already set reject merges with conflicting countries, so differing
+// visible-type sets during import only arise when `ADDRESS_HOME_COUNTRY` is
+// empty (such as legacy country-less or `kAccountNameEmail` profiles).
+TEST_F(
+    AutofillProfileImportProcessTest,
+    MergeIntoCountrylessProfileRequiresConfirmation_DifferentVisibleTypeSets) {
+  AutofillProfile existing_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
+  test::SetProfileInfo(&existing_profile, test::SetProfileInfoOptionsBuilder()
+                                              .with_first_name("Max")
+                                              .with_last_name("Mustermann")
+                                              .with_address1("Hauptstrasse 5")
+                                              .with_zipcode("1010")
+                                              .with_city("Wien")
+                                              .Build());
+  address_data_manager().AddProfile(existing_profile);
+
+  AutofillProfile observed_at_profile(AddressCountryCode("AT"));
+  test::SetProfileInfo(&observed_at_profile,
+                       test::SetProfileInfoOptionsBuilder()
+                           .with_first_name("Max")
+                           .with_last_name("Mustermann")
+                           .with_address1("Hauptstrasse 5")
+                           .with_zipcode("1010")
+                           .with_city("Wien")
+                           .with_country("AT")
+                           .with_email("attacker@evil.example")
+                           .with_phone("+43 660 1234567")
+                           .with_company("Evil GmbH")
+                           .Build());
+  ASSERT_NE(existing_profile.GetUserVisibleTypes(),
+            observed_at_profile.GetUserVisibleTypes());
+
+  ProfileImportProcess at_import = CreateProfileImportProcess(
+      observed_at_profile, /*allow_only_silent_updates=*/false);
+  EXPECT_EQ(at_import.import_type(),
+            AutofillProfileImportType::kConfirmableMerge);
+  EXPECT_TRUE(at_import.requires_user_prompt());
+  EXPECT_TRUE(at_import.silently_updated_profiles().empty());
+}
+
 // Tests the scenario in which an observed profile can be merged with an
 // existing profile for which updates are blocked.
 TEST_F(AutofillProfileImportProcessTest, BlockedMerge) {
