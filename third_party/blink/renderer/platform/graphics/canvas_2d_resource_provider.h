@@ -108,17 +108,16 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   constexpr static base::TimeDelta kUnusedResourceExpirationTime =
       base::Seconds(5);
 
-  static std::unique_ptr<Canvas2DResourceProvider> CreateWithClear(
+  Canvas2DResourceProvider(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
       const gfx::HDRMetadata& hdr_metadata,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      RasterMode raster_mode,
+      bool is_accelerated,
       gpu::SharedImageUsageSet shared_image_usage_flags,
       base::OnceClosure context_lost_callback = {});
-
   Canvas2DResourceProvider(
       gfx::Size size,
       viz::SharedImageFormat format,
@@ -172,17 +171,14 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   void RecordingCleared();
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd);
 
- private:
-  Canvas2DResourceProvider(gfx::Size,
-                           viz::SharedImageFormat,
-                           SkAlphaType,
-                           const gfx::ColorSpace&,
-                           const gfx::HDRMetadata&,
-                           base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-                           bool is_accelerated,
-                           gpu::SharedImageUsageSet shared_image_usage_flags,
-                           base::OnceClosure context_lost_callback = {});
+  CanvasResourceSharedImage* resource() {
+    return static_cast<CanvasResourceSharedImage*>(resource_.get());
+  }
+  const CanvasResourceSharedImage* resource() const {
+    return static_cast<const CanvasResourceSharedImage*>(resource_.get());
+  }
 
+ private:
   void ClearUnusedResources();
   bool IsGpuContextLost() const;
   gfx::Size Size() const { return image_pool_->GetImageInfo().size; }
@@ -222,13 +218,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   // The maximum number of in-flight resources waiting to be used for
   // recycling.
   static constexpr int kMaxRecycledCanvasResources = 3;
-
-  CanvasResourceSharedImage* resource() {
-    return static_cast<CanvasResourceSharedImage*>(resource_.get());
-  }
-  const CanvasResourceSharedImage* resource() const {
-    return static_cast<const CanvasResourceSharedImage*>(resource_.get());
-  }
 
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   // If this instance is single-buffered or |resource_recycling_enabled_| is
