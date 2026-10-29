@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/system/system_monitor.h"
 #include "base/win/wrapped_window_proc.h"
@@ -79,13 +80,13 @@ class SystemMessageWindowWin::DeviceNotifications {
     for (size_t i = 0; i < notifications_.size(); ++i) {
       if (notifications_[i]) {
         UnregisterDeviceNotification(notifications_[i]);
-        notifications_[i] = NULL;
+        notifications_[i] = nullptr;
       }
     }
   }
 
  private:
-  std::vector<HDEVNOTIFY> notifications_;
+  std::vector<base::RawPtrIfPtrT<HDEVNOTIFY>> notifications_;
 };
 
 SystemMessageWindowWin::SystemMessageWindowWin() {
