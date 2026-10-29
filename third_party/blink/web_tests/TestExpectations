@@ -2598,6 +2598,9 @@ crbug.com/579037499 external/wpt/html/document-isolation-policy/dedicated-worker
 crbug.com/579037499 [ Mac13 ] external/wpt/html/document-isolation-policy/back-forward-cache.tentative.https.html [ Pass Timeout ]
 crbug.com/579037499 [ Mac14 ] external/wpt/html/document-isolation-policy/back-forward-cache.tentative.https.html [ Pass Timeout ]
 crbug.com/579037499 [ Mac15 ] external/wpt/html/document-isolation-policy/back-forward-cache.tentative.https.html [ Pass Timeout ]
+crbug.com/579037499 [ Mac13 ] external/wpt/html/document-isolation-policy/navigate-across-policies.tentative.https.html [ Pass Timeout ]
+crbug.com/579037499 [ Mac14 ] external/wpt/html/document-isolation-policy/navigate-across-policies.tentative.https.html [ Pass Timeout ]
+crbug.com/579037499 [ Mac15 ] external/wpt/html/document-isolation-policy/navigate-across-policies.tentative.https.html [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
 external/wpt/html/browsers/history/the-location-interface/location-replace-cross-site.html [ Failure ]
