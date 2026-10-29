@@ -18,6 +18,8 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/mock_log.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/fileapi/chrome_content_provider_url_util.h"
@@ -68,6 +70,22 @@ constexpr int64_t kTestFileSize = 55;
 constexpr char kTestFileLastModified[] = "Fri, 25 Apr 2014 01:47:53";
 constexpr char kExtensionId[] = "abc";
 constexpr char kFileSystemId[] = "test-filesystem";
+
+constexpr char kLsbReleaseTestImage[] =
+    "CHROMEOS_RELEASE_TRACK=testimage-channel\n";
+constexpr char kLsbReleaseNonTestImage[] =
+    "CHROMEOS_RELEASE_TRACK=stable-channel\n";
+constexpr int kUnknownTaskId = 9999;
+constexpr char kUnknownTaskIdLogMessage[] =
+    "Can't find a SelectFileDialog for task ID : ";
+
+mojom::FileSelectorEventPtr CreateFileSelectorEvent(int task_id) {
+  auto event = mojom::FileSelectorEvent::New();
+  event->type = mojom::FileSelectorEventType::CLICK_OK;
+  event->creator_task_id = task_id;
+  event->click_target = mojom::FileSelectorElement::New();
+  return event;
+}
 
 }  // namespace
 
@@ -771,6 +789,113 @@ TEST_F(ArcFileSystemBridgeTest, OpenFileToReadOnArcVmRequiresSharedPath) {
   }
 
   system_mount_points->RevokeFileSystem(kSmbFsTestMountName);
+}
+
+TEST_F(ArcFileSystemBridgeTest, OnFileSelectorEventRejectedOnNonTestImage) {
+  base::test::ScopedChromeOSVersionInfo version(kLsbReleaseNonTestImage,
+                                                base::Time());
+  base::test::MockLog log;
+  EXPECT_CALL(log, Log(::logging::LOGGING_ERROR, testing::_, testing::_,
+                       testing::_, testing::_))
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(
+      log,
+      Log(::logging::LOGGING_ERROR, testing::_, testing::_, testing::_,
+          testing::HasSubstr(
+              "OnFileSelectorEvent is only allowed under test conditions")))
+      .WillOnce(testing::Return(false));
+  EXPECT_CALL(log,
+              Log(::logging::LOGGING_ERROR, testing::_, testing::_, testing::_,
+                  testing::HasSubstr(kUnknownTaskIdLogMessage)))
+      .Times(0);
+
+  log.StartCapturingLogs();
+  base::test::TestFuture<void> future;
+  arc_file_system_bridge_->OnFileSelectorEvent(
+      CreateFileSelectorEvent(kUnknownTaskId), future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  log.StopCapturingLogs();
+}
+
+TEST_F(ArcFileSystemBridgeTest, OnFileSelectorEventForwardedOnTestImage) {
+  base::test::ScopedChromeOSVersionInfo version(kLsbReleaseTestImage,
+                                                base::Time());
+  base::test::MockLog log;
+  EXPECT_CALL(log, Log(::logging::LOGGING_ERROR, testing::_, testing::_,
+                       testing::_, testing::_))
+      .WillRepeatedly(testing::Return(false));
+  // Forwarding reaches ArcSelectFilesHandlersManager, which logs an error for
+  // the unknown task ID and still invokes the callback.
+  EXPECT_CALL(log,
+              Log(::logging::LOGGING_ERROR, testing::_, testing::_, testing::_,
+                  testing::HasSubstr(kUnknownTaskIdLogMessage)))
+      .WillOnce(testing::Return(false));
+
+  log.StartCapturingLogs();
+  base::test::TestFuture<void> future;
+  arc_file_system_bridge_->OnFileSelectorEvent(
+      CreateFileSelectorEvent(kUnknownTaskId), future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  log.StopCapturingLogs();
+}
+
+TEST_F(ArcFileSystemBridgeTest, GetFileSelectorElementsRejectedOnNonTestImage) {
+  base::test::ScopedChromeOSVersionInfo version(kLsbReleaseNonTestImage,
+                                                base::Time());
+  base::test::MockLog log;
+  EXPECT_CALL(log, Log(::logging::LOGGING_ERROR, testing::_, testing::_,
+                       testing::_, testing::_))
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(
+      log,
+      Log(::logging::LOGGING_ERROR, testing::_, testing::_, testing::_,
+          testing::HasSubstr(
+              "GetFileSelectorElements is only allowed under test conditions")))
+      .WillOnce(testing::Return(false));
+  EXPECT_CALL(log,
+              Log(::logging::LOGGING_ERROR, testing::_, testing::_, testing::_,
+                  testing::HasSubstr(kUnknownTaskIdLogMessage)))
+      .Times(0);
+
+  auto request = mojom::GetFileSelectorElementsRequest::New();
+  request->creator_task_id = kUnknownTaskId;
+
+  log.StartCapturingLogs();
+  base::test::TestFuture<mojom::FileSelectorElementsPtr> future;
+  arc_file_system_bridge_->GetFileSelectorElements(std::move(request),
+                                                   future.GetCallback());
+  mojom::FileSelectorElementsPtr elements = future.Take();
+  log.StopCapturingLogs();
+
+  ASSERT_TRUE(elements);
+  EXPECT_TRUE(elements->directory_elements.empty());
+  EXPECT_TRUE(elements->file_elements.empty());
+  EXPECT_FALSE(elements->search_query.has_value());
+}
+
+TEST_F(ArcFileSystemBridgeTest, GetFileSelectorElementsForwardedOnTestImage) {
+  base::test::ScopedChromeOSVersionInfo version(kLsbReleaseTestImage,
+                                                base::Time());
+  base::test::MockLog log;
+  EXPECT_CALL(log, Log(::logging::LOGGING_ERROR, testing::_, testing::_,
+                       testing::_, testing::_))
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(log,
+              Log(::logging::LOGGING_ERROR, testing::_, testing::_, testing::_,
+                  testing::HasSubstr(kUnknownTaskIdLogMessage)))
+      .WillOnce(testing::Return(false));
+
+  auto request = mojom::GetFileSelectorElementsRequest::New();
+  request->creator_task_id = kUnknownTaskId;
+
+  log.StartCapturingLogs();
+  base::test::TestFuture<mojom::FileSelectorElementsPtr> future;
+  arc_file_system_bridge_->GetFileSelectorElements(std::move(request),
+                                                   future.GetCallback());
+  mojom::FileSelectorElementsPtr elements = future.Take();
+  log.StopCapturingLogs();
+
+  ASSERT_TRUE(elements);
 }
 
 }  // namespace arc

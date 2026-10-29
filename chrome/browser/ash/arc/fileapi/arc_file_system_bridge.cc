@@ -401,7 +401,11 @@ void ArcFileSystemBridge::SelectFiles(mojom::SelectFilesRequestPtr request,
 void ArcFileSystemBridge::OnFileSelectorEvent(
     mojom::FileSelectorEventPtr event,
     ArcFileSystemBridge::OnFileSelectorEventCallback callback) {
-  std::string track;
+  if (!IsTestImageBuild()) {
+    LOG(ERROR) << "OnFileSelectorEvent is only allowed under test conditions";
+    std::move(callback).Run();
+    return;
+  }
   select_files_handlers_manager_->OnFileSelectorEvent(std::move(event),
                                                       std::move(callback));
 }
