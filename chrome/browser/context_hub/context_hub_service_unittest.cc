@@ -4,12 +4,22 @@
 
 #include "chrome/browser/context_hub/context_hub_service.h"
 
+#include <cstdint>
 #include <optional>
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
 
+#include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/power_monitor_test.h"
@@ -21,9 +31,11 @@
 #include "chrome/browser/context_hub/auto_todos/auto_todo_entry.h"
 #include "chrome/browser/context_hub/auto_todos/in_memory_auto_todos_store.h"
 #include "chrome/browser/context_hub/features.h"
+#include "chrome/browser/context_hub/memory_bank/database_memory_bank.h"
 #include "chrome/browser/context_hub/memory_bank/in_memory_memory_bank.h"
 #include "chrome/browser/context_hub/prefs.h"
 #include "chrome/browser/context_hub/storage/context_hub_backend.h"
+#include "chrome/browser/context_hub/storage/context_hub_backend_impl.h"
 #include "chrome/browser/context_hub/tab_group_store/in_memory_tab_group_store.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
@@ -34,6 +46,8 @@
 #include "components/optimization_guide/proto/features/context_hub.pb.h"
 #include "components/page_content_annotations/content/mock_page_content_services.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
+#include "components/passage_embeddings/core/passage_embeddings_test_util.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "components/personal_context/core/context_memory_error.h"
 #include "components/personal_context/core/mock_personal_context_service.h"
 #include "components/personal_context/proto/features/auto_todos.pb.h"
@@ -137,6 +151,8 @@ class ContextHubServiceTest : public testing::Test {
                  &mock_remote_model_executor_,
                  &fake_tab_group_sync_service_,
                  &mock_page_content_extraction_service_,
+                 /*embedder=*/nullptr,
+                 /*embedder_metadata_provider=*/nullptr,
                  std::make_unique<InMemoryMemoryBank>(),
                  std::make_unique<InMemoryTabGroupStore>(),
                  /*context_hub_backend=*/nullptr,
@@ -272,6 +288,7 @@ class ContextHubServiceTest : public testing::Test {
         &profile_, identity_test_environment_.identity_manager(),
         &mock_personal_context_service_, &mock_remote_model_executor_,
         &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+        /*embedder=*/nullptr, /*embedder_metadata_provider=*/nullptr,
         std::make_unique<InMemoryMemoryBank>(),
         std::make_unique<InMemoryTabGroupStore>(),
         /*context_hub_backend=*/nullptr,
@@ -1815,6 +1832,265 @@ TEST_F(ContextHubServiceTest,
   EXPECT_EQ(entries[0].url, example_url);
   EXPECT_FALSE(entries[0].selected_text.has_value());
 }
+
+// Exercises memory bank embeddings with the database backend and a test
+// embedder that embeds every passage asynchronously.
+class ContextHubServiceEmbeddingsTest : public ContextHubServiceTest {
+ protected:
+  class TestContextHubBackend : public ContextHubBackendImpl {
+   public:
+    using StoreEmbeddingsCallback =
+        base::RepeatingCallback<void(int64_t, size_t)>;
+
+    TestContextHubBackend(const base::FilePath& db_path,
+                          StoreEmbeddingsCallback on_store_embeddings,
+                          base::OnceClosure on_initial_backfill_complete,
+                          bool fail_set_embeddings_version)
+        : ContextHubBackendImpl(db_path),
+          on_store_embeddings_(std::move(on_store_embeddings)),
+          on_initial_backfill_complete_(
+              std::move(on_initial_backfill_complete)),
+          fail_set_embeddings_version_(fail_set_embeddings_version) {}
+
+    void AddOrUpdateMemoryBankEmbeddings(
+        int64_t entry_id,
+        std::vector<passage_embeddings::Embedding> embeddings,
+        OperationCompleteCallback callback) override {
+      on_store_embeddings_.Run(entry_id, embeddings.size());
+      ContextHubBackendImpl::AddOrUpdateMemoryBankEmbeddings(
+          entry_id, std::move(embeddings), std::move(callback));
+    }
+
+    void SetMemoryBankEmbeddingsVersion(
+        int64_t version,
+        OperationCompleteCallback callback) override {
+      if (fail_set_embeddings_version_) {
+        std::move(callback).Run(false);
+        return;
+      }
+      ContextHubBackendImpl::SetMemoryBankEmbeddingsVersion(
+          version, std::move(callback));
+    }
+
+    void GetMemoryBankEntryIdsWithoutEmbeddings(
+        GetIdsCallback callback) override {
+      if (on_initial_backfill_complete_) {
+        callback =
+            std::move(callback).Then(std::move(on_initial_backfill_complete_));
+      }
+      ContextHubBackendImpl::GetMemoryBankEntryIdsWithoutEmbeddings(
+          std::move(callback));
+    }
+
+   private:
+    StoreEmbeddingsCallback on_store_embeddings_;
+    base::OnceClosure on_initial_backfill_complete_;
+    const bool fail_set_embeddings_version_;
+  };
+
+  // Embeds passages asynchronously like `TestEmbedder`, unless a test uses
+  // `HoldJob()` to finish the job later with `CompleteHeldJob()`.
+  class MockEmbedder : public passage_embeddings::TestEmbedder {
+   public:
+    MockEmbedder() {
+      ON_CALL(*this, ComputePassagesEmbeddings)
+          .WillByDefault([this](auto priority, auto passages, auto callback) {
+            return TestEmbedder::ComputePassagesEmbeddings(
+                priority, std::move(passages), std::move(callback));
+          });
+    }
+
+    MOCK_METHOD(Job,
+                ComputePassagesEmbeddings,
+                (passage_embeddings::PassagePriority priority,
+                 std::vector<std::string> passages,
+                 ComputePassagesEmbeddingsCallback callback),
+                (override));
+
+    // Returns an action that holds the job until `CompleteHeldJob()`.
+    auto HoldJob() {
+      return [this](auto priority, auto passages, auto callback) {
+        held_callback_ = std::move(callback);
+        return Job(GetWeakPtr(), kHeldJobId);
+      };
+    }
+
+    void CompleteHeldJob(passage_embeddings::ComputeEmbeddingsStatus status) {
+      std::move(held_callback_).Run({}, {}, kHeldJobId, status);
+    }
+
+   private:
+    static constexpr uint64_t kHeldJobId = 1000;
+    ComputePassagesEmbeddingsCallback held_callback_;
+  };
+
+  // Creates `database_service_`, which stores memory bank entries in a database
+  // under `profile_`. Embeddings are only computed once embedder metadata is
+  // provided (`with_embedder_metadata` or `EmbedderMetadataUpdated`).
+  void CreateDatabaseService(bool with_embedder_metadata = true) {
+    base::test::TestFuture<void> initial_backfill_future;
+    auto backend = std::make_unique<TestContextHubBackend>(
+        profile_.GetPath().Append(FILE_PATH_LITERAL("ContextHub.db")),
+        store_embeddings_future_.GetRepeatingCallback(),
+        initial_backfill_future.GetCallback(), fail_set_embeddings_version_);
+    auto memory_bank = std::make_unique<DatabaseMemoryBank>(*backend);
+    database_service_ = std::make_unique<ContextHubService>(
+        &profile_, identity_test_environment_.identity_manager(),
+        &mock_personal_context_service_, &mock_remote_model_executor_,
+        &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+        &mock_embedder_,
+        with_embedder_metadata ? &embedder_metadata_provider_ : nullptr,
+        std::move(memory_bank), std::make_unique<InMemoryTabGroupStore>(),
+        std::move(backend), /*auto_todos_store=*/nullptr);
+    if (with_embedder_metadata && !fail_set_embeddings_version_) {
+      // Wait for the backfill started by the initial metadata to finish, so
+      // entries saved by the test are embedded only by their own save-time job.
+      EXPECT_TRUE(initial_backfill_future.Wait());
+    }
+  }
+
+  // Saves `entry` and returns its ID.
+  int64_t SaveEntry(
+      MemoryBankEntry entry,
+      base::WeakPtr<content::WebContents> web_contents = nullptr) {
+    base::test::TestFuture<bool> save_future;
+    database_service_->SaveMemoryBankEntry(
+        std::move(entry), save_future.GetCallback(), std::move(web_contents));
+    EXPECT_TRUE(save_future.Get());
+    return ++last_entry_id_;
+  }
+
+  passage_embeddings::TestEmbedderMetadataProvider embedder_metadata_provider_;
+  testing::NiceMock<MockEmbedder> mock_embedder_;
+  bool fail_set_embeddings_version_ = false;
+  int64_t last_entry_id_ = 0;
+  // Receives the entry ID and embedding count of each store request.
+  base::test::TestFuture<int64_t, size_t> store_embeddings_future_;
+  // Destroyed before `mock_embedder_`, which must outlive its jobs.
+  std::unique_ptr<ContextHubService> database_service_;
+};
+
+TEST_F(ContextHubServiceEmbeddingsTest,
+       SaveTextSelection_StoresEmbeddingPerPassage) {
+  CreateDatabaseService();
+
+  // Short selection with title: 1 text passage + title + title with URL.
+  const int64_t short_id = SaveEntry(MemoryBankEntry(
+      MemoryBankType::kTextSelection, GURL("https://example.com/1"), "Title",
+      "The highlighted text"));
+  EXPECT_EQ(std::make_tuple(short_id, size_t{3}),
+            store_embeddings_future_.Take());
+
+  // 250-word selection with title: 3 text passages (up to 100 words each,
+  // keeping the short trailing chunk) + title + title with URL.
+  const int64_t long_id = SaveEntry(MemoryBankEntry(
+      MemoryBankType::kTextSelection, GURL("https://example.com/2"), "Title",
+      base::JoinString(std::vector<std::string>(250, "word"), " ")));
+  EXPECT_EQ(std::make_tuple(long_id, size_t{5}),
+            store_embeddings_future_.Take());
+
+  // Selection without title: only the text passage.
+  const int64_t untitled_id = SaveEntry(
+      MemoryBankEntry(MemoryBankType::kTextSelection,
+                      GURL("https://example.com/3"), "", "Untitled text"));
+  EXPECT_EQ(std::make_tuple(untitled_id, size_t{1}),
+            store_embeddings_future_.Take());
+}
+
+TEST_F(ContextHubServiceEmbeddingsTest, SaveTab_StoresEmbeddingPerPassage) {
+  CreateDatabaseService();
+  const GURL example_url("https://example.com");
+  std::unique_ptr<content::WebContents> web_contents =
+      CreateEligibleTab(example_url);
+  // 250 words of page content split into 3 passages of at most 100 words each.
+  page_content_annotations::ExtractedPageContentResult extracted_result(
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>(FakeApc(
+          "Title",
+          base::JoinString(std::vector<std::string>(250, "word"), " "))),
+      base::Time::Now(), /*is_eligible_for_server_upload=*/true,
+      /*screenshot_data=*/{});
+  EXPECT_CALL(mock_page_content_extraction_service_,
+              GetExtractedPageContentAndEligibilityForPageAsync(
+                  testing::Ref(web_contents->GetPrimaryPage()), _, true))
+      .WillOnce(RunOnceCallback<1>(std::move(extracted_result)));
+
+  const int64_t id =
+      SaveEntry(MemoryBankEntry(MemoryBankType::kTab, example_url, "Title"),
+                web_contents->GetWeakPtr());
+
+  // Three page content passages, plus the title and the title with the URL.
+  EXPECT_EQ(std::make_tuple(id, size_t{5}), store_embeddings_future_.Take());
+}
+
+TEST_F(ContextHubServiceEmbeddingsTest,
+       EmbedderMetadataUpdated_BackfillsAndRecomputesOnNewVersion) {
+  // Save an entry before the embeddings model metadata is available.
+  CreateDatabaseService(/*with_embedder_metadata=*/false);
+  const int64_t id = SaveEntry(MemoryBankEntry(
+      MemoryBankType::kTextSelection, GURL("https://example.com"), "Title",
+      "The highlighted text"));
+  EXPECT_FALSE(store_embeddings_future_.IsReady());
+
+  // Receiving valid metadata backfills the missing embeddings.
+  database_service_->EmbedderMetadataUpdated(
+      passage_embeddings::EmbedderMetadata(
+          passage_embeddings::kEmbeddingsModelVersion, 3));
+  ASSERT_EQ(std::make_tuple(id, size_t{3}), store_embeddings_future_.Take());
+
+  // Updating to a new model version wipes previous embeddings and recomputes
+  // them.
+  database_service_->EmbedderMetadataUpdated(
+      passage_embeddings::EmbedderMetadata(
+          passage_embeddings::kEmbeddingsModelVersion + 1, 3));
+  EXPECT_EQ(std::make_tuple(id, size_t{3}), store_embeddings_future_.Take());
+}
+
+TEST_F(ContextHubServiceEmbeddingsTest,
+       EmbedderMetadataUpdated_VersionNotRecorded_DoesNotComputeEmbeddings) {
+  fail_set_embeddings_version_ = true;
+  CreateDatabaseService();
+  EXPECT_CALL(mock_embedder_, ComputePassagesEmbeddings).Times(0);
+
+  SaveEntry(MemoryBankEntry(MemoryBankType::kTextSelection,
+                            GURL("https://example.com"), "Title",
+                            "The highlighted text"));
+}
+
+TEST_F(ContextHubServiceEmbeddingsTest,
+       EmbeddingFailure_DoesNotStoreEmbeddings) {
+  CreateDatabaseService();
+  EXPECT_CALL(mock_embedder_, ComputePassagesEmbeddings)
+      .WillOnce(mock_embedder_.HoldJob());
+
+  SaveEntry(MemoryBankEntry(MemoryBankType::kTextSelection,
+                            GURL("https://example.com"), "Title",
+                            "The highlighted text"));
+  mock_embedder_.CompleteHeldJob(
+      passage_embeddings::ComputeEmbeddingsStatus::kExecutionFailure);
+
+  EXPECT_FALSE(store_embeddings_future_.IsReady());
+}
+
+TEST_F(ContextHubServiceEmbeddingsTest,
+       DeleteEntries_DropsInFlightEmbeddingJob) {
+  CreateDatabaseService();
+  EXPECT_CALL(mock_embedder_, ComputePassagesEmbeddings)
+      .WillOnce(mock_embedder_.HoldJob());
+  const int64_t id = SaveEntry(MemoryBankEntry(
+      MemoryBankType::kTextSelection, GURL("https://example.com"), "Title",
+      "The highlighted text"));
+
+  base::test::TestFuture<bool> delete_future;
+  const std::vector<int64_t> ids_to_delete = {id};
+  database_service_->DeleteEntries(ids_to_delete, delete_future.GetCallback());
+  ASSERT_TRUE(delete_future.Get());
+
+  mock_embedder_.CompleteHeldJob(
+      passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
+
+  EXPECT_FALSE(store_embeddings_future_.IsReady());
+}
 #endif
 
 TEST_F(ContextHubServiceTest,
@@ -2194,6 +2470,7 @@ TEST_F(ContextHubServiceTest, ReplaceTabGroups_NullStore) {
       &profile_, identity_test_environment_.identity_manager(),
       &mock_personal_context_service_, &mock_remote_model_executor_,
       &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      /*embedder=*/nullptr, /*embedder_metadata_provider=*/nullptr,
       std::make_unique<InMemoryMemoryBank>(),
       /*tab_group_store=*/nullptr,
       /*context_hub_backend=*/nullptr,
@@ -2238,6 +2515,7 @@ TEST_F(ContextHubServiceTest, ChatHistory_LRUEviction) {
       &profile_, identity_test_environment_.identity_manager(),
       &mock_personal_context_service_, &mock_remote_model_executor_,
       &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      /*embedder=*/nullptr, /*embedder_metadata_provider=*/nullptr,
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
@@ -3246,6 +3524,7 @@ TEST_F(ContextHubServiceTest, TabGroupStore_Null) {
       &profile_, identity_test_environment_.identity_manager(),
       &mock_personal_context_service_, &mock_remote_model_executor_,
       &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      /*embedder=*/nullptr, /*embedder_metadata_provider=*/nullptr,
       std::make_unique<InMemoryMemoryBank>(),
       /*tab_group_store=*/nullptr,
       /*context_hub_backend=*/nullptr,
@@ -3347,6 +3626,7 @@ TEST_F(ContextHubServiceTest, AutoTodos_TriggersOnStartupWhenTokensLoaded) {
       &profile_, identity_test_environment_.identity_manager(),
       &mock_personal_context_service, &mock_remote_model_executor_,
       &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      /*embedder=*/nullptr, /*embedder_metadata_provider=*/nullptr,
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
@@ -3366,6 +3646,7 @@ TEST_F(ContextHubServiceTest,
       &profile_, identity_test_environment_.identity_manager(),
       &mock_personal_context_service, &mock_remote_model_executor_,
       &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      /*embedder=*/nullptr, /*embedder_metadata_provider=*/nullptr,
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
@@ -3384,6 +3665,7 @@ TEST_F(ContextHubServiceTest, AutoTodos_TriggersWhenPrimaryAccountSignedIn) {
       &profile_, identity_test_environment_.identity_manager(),
       &mock_personal_context_service, &mock_remote_model_executor_,
       &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      /*embedder=*/nullptr, /*embedder_metadata_provider=*/nullptr,
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
@@ -3416,6 +3698,7 @@ TEST_F(ContextHubServiceTest, AutoTodos_TriggersWhenRefreshTokensLoaded) {
       &profile_, identity_test_environment_.identity_manager(),
       &mock_personal_context_service, &mock_remote_model_executor_,
       &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      /*embedder=*/nullptr, /*embedder_metadata_provider=*/nullptr,
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
@@ -3444,6 +3727,7 @@ TEST_F(ContextHubServiceTest, AutoTodos_DoesNotRunWhenFeatureDisabled) {
       &profile_, identity_test_environment_.identity_manager(),
       &mock_personal_context_service, &mock_remote_model_executor_,
       &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      /*embedder=*/nullptr, /*embedder_metadata_provider=*/nullptr,
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
@@ -3472,6 +3756,7 @@ TEST_F(ContextHubServiceTest,
       &profile_, identity_test_environment_.identity_manager(),
       &mock_personal_context_service, &mock_remote_model_executor_,
       &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      /*embedder=*/nullptr, /*embedder_metadata_provider=*/nullptr,
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
@@ -3510,6 +3795,7 @@ TEST_F(ContextHubServiceTest, AutoTodos_ManualGenerationResetsPeriodicTimer) {
       &profile_, identity_test_environment_.identity_manager(),
       &mock_personal_context_service, &mock_remote_model_executor_,
       &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      /*embedder=*/nullptr, /*embedder_metadata_provider=*/nullptr,
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
@@ -3573,6 +3859,7 @@ TEST_F(ContextHubServiceTest,
       &profile_, identity_test_environment_.identity_manager(),
       &mock_personal_context_service, &mock_remote_model_executor_,
       &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      /*embedder=*/nullptr, /*embedder_metadata_provider=*/nullptr,
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
@@ -3623,6 +3910,7 @@ TEST_F(ContextHubServiceTest,
       &profile_, identity_test_environment_.identity_manager(),
       &mock_personal_context_service, &mock_remote_model_executor_,
       &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      /*embedder=*/nullptr, /*embedder_metadata_provider=*/nullptr,
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
@@ -3699,6 +3987,7 @@ TEST_F(ContextHubServiceTest,
       &profile_, identity_test_environment_.identity_manager(),
       &mock_personal_context_service, &mock_remote_model_executor_,
       &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      /*embedder=*/nullptr, /*embedder_metadata_provider=*/nullptr,
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
@@ -3723,6 +4012,7 @@ TEST_F(ContextHubServiceTest, PendingMemoryBankEntryLifecycle) {
       &profile_, identity_test_environment_.identity_manager(),
       &mock_personal_context_service_, &mock_remote_model_executor_,
       &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      /*embedder=*/nullptr, /*embedder_metadata_provider=*/nullptr,
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
@@ -3771,6 +4061,7 @@ TEST_F(ContextHubServiceTest,
       &profile_, identity_test_environment_.identity_manager(),
       &mock_personal_context_service_, &mock_remote_model_executor_,
       &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      /*embedder=*/nullptr, /*embedder_metadata_provider=*/nullptr,
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,

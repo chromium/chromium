@@ -56,6 +56,7 @@ source_set("context_hub") {
     "//components/optimization_guide/core",
     "//components/page_content_annotations/content",
     "//components/page_content_annotations/core",
+    "//components/passage_embeddings/core",
     "//components/personal_context/core",
     "//components/personal_context/proto:personal_context_proto",
     "//components/signin/public/identity_manager",
@@ -73,6 +74,7 @@ source_set("context_hub") {
 
   deps = [
     "//chrome/browser/contextual_tasks",
+    "//chrome/browser/passage_embeddings",
     "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//chrome/browser/tab_group_sync",
@@ -109,6 +111,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/core:test_support",
     "//components/page_content_annotations/content",
     "//components/page_content_annotations/content:test_support",
+    "//components/passage_embeddings/core:test_support",
     "//components/personal_context/core:test_support",
     "//components/saved_tab_groups/test_support",
     "//components/signin/public/identity_manager:test_support",

@@ -22,6 +22,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -49,6 +50,8 @@
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "components/page_content_annotations/core/simple_page_content_verbalization.h"
+#include "components/passage_embeddings/core/passage_embeddings_features.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/proto/features/auto_todos.pb.h"
 #include "components/personal_context/proto/features/smart_search.pb.h"
@@ -269,6 +272,42 @@ const net::BackoffEntry::Policy* GetFirstPartyAutoTodosBackoffPolicy() {
   return &policy;
 }
 
+// Returns the passages to embed for `entry`, mirroring the candidates that
+// `page_content_annotations::GenerateEmbeddingsCandidates()` creates for pages:
+// the text split into passages, followed by the title and the title with the
+// URL. Tab entries hold the extracted page content. Text selections are split
+// the same way so long selections fit the model input, but without a minimum
+// passage length so short selections are kept.
+std::vector<std::string> GetPassagesForMemoryBankEntry(
+    const MemoryBankEntry& entry) {
+  switch (entry.type) {
+    case MemoryBankType::kTab:
+    case MemoryBankType::kTextSelection: {
+      std::vector<std::string> passages;
+      if (entry.selected_text && !entry.selected_text->empty()) {
+        passages = page_content_annotations::CreatePassagesFromText(
+            *entry.selected_text,
+            passage_embeddings::kMaxWordsPerAggregatePassage.Get(),
+            entry.type == MemoryBankType::kTab
+                ? passage_embeddings::kMinWordsPerPassage.Get()
+                : 0,
+            passage_embeddings::kMaxPassagesPerPage.Get());
+      }
+      if (!entry.tab_title.empty()) {
+        passages.push_back(entry.tab_title);
+        if (entry.url.is_valid()) {
+          passages.push_back(
+              base::StrCat({entry.tab_title, " - ", entry.url.spec()}));
+        }
+      }
+      return passages;
+    }
+    case MemoryBankType::kImage:
+      return {};
+  }
+  return {};
+}
+
 }  // namespace
 
 ContextHubService::ContextHubService(
@@ -280,6 +319,8 @@ ContextHubService::ContextHubService(
     tab_groups::TabGroupSyncService* tab_group_sync_service,
     page_content_annotations::PageContentExtractionService*
         page_content_extraction_service,
+    passage_embeddings::Embedder* embedder,
+    passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
     std::unique_ptr<MemoryBank> memory_bank,
     std::unique_ptr<TabGroupStore> tab_group_store,
     std::unique_ptr<ContextHubBackend> context_hub_backend,
@@ -292,6 +333,7 @@ ContextHubService::ContextHubService(
       tab_group_sync_service_(CHECK_DEREF(tab_group_sync_service)),
       page_content_extraction_service_(
           CHECK_DEREF(page_content_extraction_service)),
+      embedder_(embedder),
       tab_group_chat_history_cache_(
           features::kMaxTabGroupChatHistoryTurns.Get()),
       memory_bank_chat_history_cache_(
@@ -326,6 +368,11 @@ ContextHubService::ContextHubService(
         std::make_unique<BrowserTabStripTracker>(this, this);
     browser_tab_strip_tracker_->Init();
 #endif
+  }
+  // Embeddings are only stored in the database backend. Observe last since the
+  // provider may notify synchronously, which starts the embeddings backfill.
+  if (embedder_ && embedder_metadata_provider && context_hub_backend_) {
+    embedder_metadata_observation_.Observe(embedder_metadata_provider);
   }
 }
 
@@ -478,6 +525,7 @@ void ContextHubService::OnAutoTodosChanged(
 }
 
 void ContextHubService::OnMemoryBankEntryAdded(const MemoryBankEntry& entry) {
+  ComputeMemoryBankEmbeddings(entry);
   observers_.Notify(&Observer::OnMemoryBankEntryAdded, entry);
 }
 
@@ -493,6 +541,95 @@ void ContextHubService::OnMemoryBankEntryUpdated(
 void ContextHubService::OnMemoryBankEntriesDeleted(
     const std::vector<int64_t>& ids) {
   observers_.Notify(&Observer::OnMemoryBankEntriesDeleted, ids);
+}
+
+void ContextHubService::EmbedderMetadataUpdated(
+    passage_embeddings::EmbedderMetadata metadata) {
+  if (!metadata.IsValid() ||
+      embedder_metadata_.model_version == metadata.model_version) {
+    return;
+  }
+  embedder_metadata_ = metadata;
+  // Embeddings computed by a different model are not comparable, so drop any
+  // in-flight jobs from a previous model version and let the backend wipe
+  // stored embeddings before recomputing them below.
+  memory_bank_embedding_jobs_.clear();
+  context_hub_backend_->SetMemoryBankEmbeddingsVersion(
+      embedder_metadata_.model_version,
+      base::BindOnce(&ContextHubService::OnMemoryBankEmbeddingsVersionSet,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void ContextHubService::OnMemoryBankEmbeddingsVersionSet(bool success) {
+  if (!success) {
+    // Stored embeddings may still come from a previous model, so stop computing
+    // new ones rather than mixing models. A later metadata update retries.
+    embedder_metadata_ = passage_embeddings::EmbedderMetadata(0, 0);
+    memory_bank_embedding_jobs_.clear();
+    return;
+  }
+  context_hub_backend_->GetMemoryBankEntryIdsWithoutEmbeddings(base::BindOnce(
+      &ContextHubService::OnMemoryBankEntryIdsWithoutEmbeddingsFetched,
+      weak_factory_.GetWeakPtr()));
+}
+
+void ContextHubService::OnMemoryBankEntryIdsWithoutEmbeddingsFetched(
+    std::vector<int64_t> ids) {
+  if (ids.empty()) {
+    return;
+  }
+  context_hub_backend_->GetMemoryBankEntriesByIds(
+      ids, base::BindOnce(
+               &ContextHubService::OnMemoryBankEntriesFetchedForEmbeddings,
+               weak_factory_.GetWeakPtr()));
+}
+
+void ContextHubService::OnMemoryBankEntriesFetchedForEmbeddings(
+    std::vector<MemoryBankEntry> entries) {
+  for (const MemoryBankEntry& entry : entries) {
+    ComputeMemoryBankEmbeddings(entry);
+  }
+}
+
+void ContextHubService::ComputeMemoryBankEmbeddings(
+    const MemoryBankEntry& entry) {
+  if (!embedder_ || !context_hub_backend_ || !embedder_metadata_.IsValid()) {
+    return;
+  }
+  std::vector<std::string> passages = GetPassagesForMemoryBankEntry(entry);
+  if (passages.empty()) {
+    return;
+  }
+  // Saved entries are not time critical, so yield to user-initiated work such
+  // as search queries.
+  memory_bank_embedding_jobs_.insert_or_assign(
+      entry.id,
+      embedder_->ComputePassagesEmbeddings(
+          passage_embeddings::PassagePriority::kPassive, std::move(passages),
+          base::BindOnce(&ContextHubService::OnMemoryBankEmbeddingsComputed,
+                         weak_factory_.GetWeakPtr(), entry.id)));
+}
+
+void ContextHubService::OnMemoryBankEmbeddingsComputed(
+    int64_t entry_id,
+    std::vector<std::string> passages,
+    std::vector<passage_embeddings::Embedding> embeddings,
+    uint64_t job_id,
+    passage_embeddings::ComputeEmbeddingsStatus status) {
+  // Ignore jobs that were superseded by a newer job for the same entry, dropped
+  // because the entry was deleted, or computed by a previous model version
+  // (`EmbedderMetadataUpdated()` clears all in-flight jobs). The latter keeps
+  // stale embeddings from being stored after the embeddings version changes.
+  auto it = memory_bank_embedding_jobs_.find(entry_id);
+  if (it == memory_bank_embedding_jobs_.end() || it->second.id() != job_id) {
+    return;
+  }
+  memory_bank_embedding_jobs_.erase(it);
+  if (status != passage_embeddings::ComputeEmbeddingsStatus::kSuccess) {
+    return;
+  }
+  context_hub_backend_->AddOrUpdateMemoryBankEmbeddings(
+      entry_id, std::move(embeddings), base::DoNothing());
 }
 
 void ContextHubService::GenerateFirstPartyAutoTodos(
@@ -1219,6 +1356,11 @@ void ContextHubService::UpdateMemoryBankEntryAnnotations(
 void ContextHubService::DeleteEntries(
     base::span<const int64_t> ids,
     MemoryBank::OperationCompleteCallback callback) {
+  // Drop in-flight embedding jobs first so a late result cannot store
+  // embeddings for an entry that no longer exists.
+  for (int64_t id : ids) {
+    memory_bank_embedding_jobs_.erase(id);
+  }
   memory_bank_->DeleteEntries(ids, std::move(callback));
 }
 

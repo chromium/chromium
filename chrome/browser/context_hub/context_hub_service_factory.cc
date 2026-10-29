@@ -21,6 +21,8 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
+#include "chrome/browser/passage_embeddings/chrome_passage_embeddings_service_controller.h"
+#include "chrome/browser/passage_embeddings/passage_embedder_model_observer_factory.h"
 #include "chrome/browser/personal_context/personal_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -29,6 +31,8 @@
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
+#include "components/passage_embeddings/core/passage_embeddings_service_controller.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync_tab_context/tab_context_sync_service.h"
@@ -67,6 +71,8 @@ ContextHubServiceFactory::ContextHubServiceFactory()
   DependsOn(tab_groups::TabGroupSyncServiceFactory::GetInstance());
   DependsOn(page_content_annotations::PageContentExtractionServiceFactory::
                 GetInstance());
+  DependsOn(
+      passage_embeddings::PassageEmbedderModelObserverFactory::GetInstance());
   DependsOn(TabContextSyncServiceFactory::GetInstance());
 }
 
@@ -161,10 +167,25 @@ ContextHubServiceFactory::BuildServiceInstanceForBrowserContext(
         base::DoNothing());
   }
 
+  // Embeddings are only stored in the database backend. The model observer is
+  // what downloads the embeddings model, so without it there is no model to
+  // run and the embedder is left unset.
+  passage_embeddings::Embedder* embedder = nullptr;
+  passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider =
+      nullptr;
+  if (backend &&
+      passage_embeddings::PassageEmbedderModelObserverFactory::GetForProfile(
+          profile)) {
+    passage_embeddings::PassageEmbeddingsServiceController* controller =
+        passage_embeddings::GetChromePassageEmbeddingsServiceController();
+    embedder = controller->GetEmbedder();
+    embedder_metadata_provider = controller;
+  }
+
   return std::make_unique<context_hub::ContextHubService>(
       profile, identity_manager, personal_context_service,
       optimization_guide_service, tab_group_sync_service,
-      page_content_extraction_service, std::move(memory_bank),
-      std::move(tab_group_store), std::move(backend),
+      page_content_extraction_service, embedder, embedder_metadata_provider,
+      std::move(memory_bank), std::move(tab_group_store), std::move(backend),
       std::move(auto_todos_store));
 }
