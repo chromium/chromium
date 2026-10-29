@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/base_paths.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/metrics/field_trial_params.h"
@@ -171,6 +172,7 @@ class ChromeCompaneroHost::Backend : public mojom::ChromeCompanero {
   // Returns true if initialization succeeded.
   bool is_valid() const { return library_.is_valid(); }
 
+  DISABLE_CFI_DLSYM
   std::optional<std::string> GetHeaderNameFromLib() {
     if (!is_valid()) {
       return std::nullopt;
@@ -185,6 +187,7 @@ class ChromeCompaneroHost::Backend : public mojom::ChromeCompanero {
     return std::string(name_buffer, written);
   }
 
+  DISABLE_CFI_DLSYM
   std::optional<std::string> GetHeaderValueFromLib(
       std::string_view seed,
       std::string_view api_key,
