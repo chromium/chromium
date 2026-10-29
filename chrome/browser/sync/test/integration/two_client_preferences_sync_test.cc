@@ -41,8 +41,7 @@ class TwoClientPreferencesSyncTest
   TwoClientPreferencesSyncTest() : SyncTest(TWO_CLIENT) {
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
       scoped_feature_list_.InitWithFeatures(
-          {syncer::kReplaceSyncPromosWithSignInPromos,
-           switches::kEnablePreferencesAccountStorage,
+          {switches::kEnablePreferencesAccountStorage,
            syncer::kSeparateLocalAndAccountSearchEngines},
           {});
     }

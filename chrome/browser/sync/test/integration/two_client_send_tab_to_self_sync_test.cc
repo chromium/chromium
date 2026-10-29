@@ -45,12 +45,7 @@ class TwoClientSendTabToSelfSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  TwoClientSendTabToSelfSyncTest() : SyncTest(TWO_CLIENT) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-  }
+  TwoClientSendTabToSelfSyncTest() : SyncTest(TWO_CLIENT) {}
 
   TwoClientSendTabToSelfSyncTest(const TwoClientSendTabToSelfSyncTest&) =
       delete;
@@ -62,9 +57,6 @@ class TwoClientSendTabToSelfSyncTest
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
     return GetParam();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,

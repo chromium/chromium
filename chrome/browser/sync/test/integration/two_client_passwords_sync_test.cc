@@ -11,7 +11,6 @@
 #include "base/location.h"
 #include "base/rand_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
@@ -59,12 +58,7 @@ class TwoClientPasswordsSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  TwoClientPasswordsSyncTest() : SyncTest(TWO_CLIENT) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-  }
+  TwoClientPasswordsSyncTest() : SyncTest(TWO_CLIENT) {}
 
   ~TwoClientPasswordsSyncTest() override = default;
 
@@ -84,9 +78,6 @@ class TwoClientPasswordsSyncTest
     return passwords_helper::GetPasswordStoreInterface(index,
                                                        GetPasswordStoreType());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

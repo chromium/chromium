@@ -45,12 +45,7 @@ class TwoClientSessionsSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  TwoClientSessionsSyncTest() : SyncTest(TWO_CLIENT) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-  }
+  TwoClientSessionsSyncTest() : SyncTest(TWO_CLIENT) {}
 
   TwoClientSessionsSyncTest(const TwoClientSessionsSyncTest&) = delete;
   TwoClientSessionsSyncTest& operator=(const TwoClientSessionsSyncTest&) =
@@ -83,9 +78,6 @@ class TwoClientSessionsSyncTest
     // test setup and teardown.
     return GURL(chrome::kChromeUIVersionURL);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,

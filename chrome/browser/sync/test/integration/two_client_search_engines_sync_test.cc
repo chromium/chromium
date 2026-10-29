@@ -34,10 +34,8 @@ class TwoClientSearchEnginesSyncTest
  public:
   TwoClientSearchEnginesSyncTest() : SyncTest(TWO_CLIENT) {
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
-                                syncer::kSeparateLocalAndAccountSearchEngines},
-          /*disabled_features=*/{});
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kSeparateLocalAndAccountSearchEngines);
     }
   }
   ~TwoClientSearchEnginesSyncTest() override = default;
