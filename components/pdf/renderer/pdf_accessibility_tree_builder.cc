@@ -40,6 +40,19 @@ bool IsAsciiWhitespace(uint32_t char_code) {
          base::IsAsciiWhitespace(static_cast<char>(char_code));
 }
 
+// Returns the starting character index for each of `text_runs`.
+std::vector<uint32_t> GetTextRunStartIndices(
+    const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs) {
+  std::vector<uint32_t> start_indices;
+  start_indices.reserve(text_runs.size());
+  uint32_t current_index = 0;
+  for (const auto& run : text_runs) {
+    start_indices.push_back(current_index);
+    current_index += run.len;
+  }
+  return start_indices;
+}
+
 // Holds sanitized text and corresponding character offsets for a text run.
 struct ProcessedTextRun {
   std::string chars_utf8;
@@ -181,6 +194,7 @@ PdfAccessibilityTreeBuilder::PdfAccessibilityTreeBuilder(
     std::map<int32_t, PdfAccessibilityTree::AnnotationInfo>*
         node_id_to_annotation_info)
     : mark_headings_using_heuristic_(mark_headings_using_heuristic),
+      text_run_start_indices_(GetTextRunStartIndices(text_runs)),
       text_runs_(text_runs),
       chars_(chars),
       links_(page_objects.links),
@@ -207,15 +221,6 @@ PdfAccessibilityTreeBuilder::PdfAccessibilityTreeBuilder(
   page_node_->relative_bounds.bounds = gfx::RectF(page_info.bounds);
   root_node_->relative_bounds.bounds.Union(page_node_->relative_bounds.bounds);
   root_node_->child_ids.push_back(page_node_->id);
-
-  if (!text_runs.empty()) {
-    text_run_start_indices_.reserve(text_runs.size());
-    text_run_start_indices_.push_back(0);
-    for (size_t i = 0; i < text_runs.size() - 1; ++i) {
-      text_run_start_indices_.push_back(text_run_start_indices_[i] +
-                                        text_runs[i].len);
-    }
-  }
 }
 
 PdfAccessibilityTreeBuilder::~PdfAccessibilityTreeBuilder() = default;

@@ -133,7 +133,7 @@ class PdfAccessibilityTreeBuilder {
   void NameHeadingsFromContents();
 
   const bool mark_headings_using_heuristic_;
-  std::vector<uint32_t> text_run_start_indices_;
+  const std::vector<uint32_t> text_run_start_indices_;
   const raw_ref<const std::vector<chrome_pdf::AccessibilityTextRunInfo>>
       text_runs_;
   const raw_ref<const std::vector<chrome_pdf::AccessibilityCharInfo>> chars_;
