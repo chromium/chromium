@@ -145,11 +145,9 @@ declare_args() {
   # Enable usage of Symphonia demuxer within the media library. Until it is
   # fully functional, only enabled in non-official Linux and Mac builds so that
   # it gets compile and test coverage without shipping in Chrome.
-  # Requires media_use_ffmpeg since it reads via BlockingUrlProtocol.
-  # TODO(crbug.com/550619039): enable in official builds once functional, and
-  # drop the media_use_ffmpeg requirement when FFmpeg is deprecated.
-  media_use_symphonia_demuxer = media_use_symphonia && media_use_ffmpeg &&
-                                !is_official_build && (is_linux || is_mac)
+  # TODO(crbug.com/550619039): enable in official builds once functional.
+  media_use_symphonia_demuxer =
+      media_use_symphonia && !is_official_build && (is_linux || is_mac)
 
   # If overriding this to false, possibly via its component values,
   # `enable_libaom` should likely also be overriddent to false.

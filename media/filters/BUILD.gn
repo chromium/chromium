@@ -191,6 +191,10 @@ source_set("filters") {
   }
 
   if (media_use_symphonia_demuxer) {
+    sources += [
+      "symphonia_data_source_bridge.cc",
+      "symphonia_data_source_bridge.h",
+    ]
     deps += [ ":symphonia_demuxer_bridge" ]
   }
 
@@ -476,6 +480,7 @@ source_set("unit_tests") {
     deps += [ ":rust_unittests" ]
   }
   if (media_use_symphonia_demuxer) {
+    sources += [ "symphonia_data_source_bridge_unittest.cc" ]
     deps += [ ":symphonia_demuxer_bridge_unittests" ]
   }
 
