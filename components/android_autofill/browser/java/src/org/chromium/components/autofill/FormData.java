@@ -126,8 +126,8 @@ public class FormData {
                     }
                     child.setAutofillType(View.AUTOFILL_TYPE_LIST);
                     child.setAutofillOptions(
-                            getSelectAutofillOptions(field, includeSelectOptionValues));
-                    int i = findIndex(field.mOptionValues, field.getValue());
+                            getSelectAutofillOptions(field.mOptions, includeSelectOptionValues));
+                    int i = findOptionIndex(field.mOptions, field.getValue());
                     if (i != -1) {
                         child.setAutofillValue(AutofillValue.forList(i));
                     }
@@ -142,7 +142,8 @@ public class FormData {
                         builder.addAttribute("maxlength", String.valueOf(field.mMaxLength));
                     }
                     if (field.getControlType() == FormFieldData.ControlType.DATALIST) {
-                        child.setAutofillOptions(field.mDatalistValues);
+                        child.setAutofillOptions(
+                                getDatalistAutofillOptions(field.mDatalistOptions));
                     }
                     break;
                 default:
@@ -160,26 +161,31 @@ public class FormData {
     // AutofillValue.forList(int) returns an index into that array, so option texts and option
     // values are concatenated into a single array of length 2N.
     private static String[] getSelectAutofillOptions(
-            FormFieldData field, boolean includeSelectOptionValues) {
-        assert field.mOptionContents.length == field.mOptionValues.length;
-        if (!includeSelectOptionValues) {
-            return field.mOptionContents;
+            List<SelectOption> selectOptions, boolean includeSelectOptionValues) {
+        int numOptions = selectOptions.size();
+        String[] options = new String[includeSelectOptionValues ? numOptions * 2 : numOptions];
+        for (int i = 0; i < numOptions; i++) {
+            SelectOption option = selectOptions.get(i);
+            options[i] = option.getText();
+            if (includeSelectOptionValues) {
+                options[numOptions + i] = option.getValue();
+            }
         }
-        String[] options = new String[field.mOptionContents.length + field.mOptionValues.length];
-        System.arraycopy(field.mOptionContents, 0, options, 0, field.mOptionContents.length);
-        System.arraycopy(
-                field.mOptionValues,
-                0,
-                options,
-                field.mOptionContents.length,
-                field.mOptionValues.length);
         return options;
     }
 
-    static int findIndex(String[] values, String value) {
-        if (values != null && value != null) {
-            for (int i = 0; i < values.length; i++) {
-                if (value.equals(values[i])) return i;
+    private static String[] getDatalistAutofillOptions(List<SelectOption> datalistOptions) {
+        String[] options = new String[datalistOptions.size()];
+        for (int i = 0; i < datalistOptions.size(); i++) {
+            options[i] = datalistOptions.get(i).getValue();
+        }
+        return options;
+    }
+
+    static int findOptionIndex(List<SelectOption> options, @Nullable String value) {
+        if (value != null) {
+            for (int i = 0; i < options.size(); i++) {
+                if (value.equals(options.get(i).getValue())) return i;
             }
         }
         return -1;

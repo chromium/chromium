@@ -12,12 +12,14 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 
 /** The wrap class of native autofill::FormFieldDataAndroid. */
 @JNINamespace("autofill")
@@ -45,13 +47,11 @@ public class FormFieldData {
     public final String mPlaceholder;
     public final String mType;
     public final String mId;
-    public final String[] mOptionValues;
-    public final String[] mOptionContents;
+    public final List<SelectOption> mOptions;
     public final @ControlType int mControlType;
     public final int mMaxLength;
     public final String mHeuristicType;
-    public final String[] mDatalistValues;
-    public final String[] mDatalistLabels;
+    public final List<SelectOption> mDatalistOptions;
     public final String mOrigin;
 
     // The bounds in the viewport's coordinates
@@ -83,8 +83,7 @@ public class FormFieldData {
             String placeholder,
             String type,
             String id,
-            String[] optionValues,
-            String[] optionContents,
+            List<SelectOption> options,
             int maxLength,
             String heuristicType,
             String serverType,
@@ -94,8 +93,7 @@ public class FormFieldData {
             float top,
             float right,
             float bottom,
-            String[] datalistValues,
-            String[] datalistLabels,
+            List<SelectOption> datalistOptions,
             boolean focusable,
             boolean visible,
             boolean isAutofilled,
@@ -108,14 +106,12 @@ public class FormFieldData {
         mPlaceholder = placeholder;
         mType = type;
         mId = id;
-        mOptionValues = optionValues;
-        mOptionContents = optionContents;
-        mDatalistLabels = datalistLabels;
-        mDatalistValues = datalistValues;
+        mOptions = options;
+        mDatalistOptions = datalistOptions;
         mOrigin = origin;
-        if (mOptionValues != null && mOptionValues.length != 0) {
+        if (!mOptions.isEmpty()) {
             mControlType = ControlType.LIST;
-        } else if (mDatalistValues != null && mDatalistValues.length != 0) {
+        } else if (!mDatalistOptions.isEmpty()) {
             mControlType = ControlType.DATALIST;
         } else {
             mControlType = ControlType.TEXT;
@@ -249,8 +245,7 @@ public class FormFieldData {
             String placeholder,
             String type,
             String id,
-            String[] optionValues,
-            String[] optionContents,
+            @JniType("std::vector<autofill::SelectOption>") List<SelectOption> options,
             int maxLength,
             String heuristicType,
             String serverType,
@@ -260,8 +255,7 @@ public class FormFieldData {
             float top,
             float right,
             float bottom,
-            String[] datalistValues,
-            String[] datalistLabels,
+            @JniType("std::vector<autofill::SelectOption>") List<SelectOption> datalistOptions,
             boolean focusable,
             boolean visible,
             boolean isAutofilled,
@@ -275,8 +269,7 @@ public class FormFieldData {
                 placeholder,
                 type,
                 id,
-                optionValues,
-                optionContents,
+                options,
                 maxLength,
                 heuristicType,
                 serverType,
@@ -286,8 +279,7 @@ public class FormFieldData {
                 top,
                 right,
                 bottom,
-                datalistValues,
-                datalistLabels,
+                datalistOptions,
                 focusable,
                 visible,
                 isAutofilled,

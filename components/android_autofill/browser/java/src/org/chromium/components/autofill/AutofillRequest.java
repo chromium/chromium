@@ -87,10 +87,10 @@ public class AutofillRequest {
                                             .isEnabled();
                         }
                         int j = value.getListValue();
-                        int numOptions = field.mOptionValues.length;
+                        int numOptions = field.mOptions.size();
                         int maxOptions = includeSelectOptionValues ? numOptions * 2 : numOptions;
                         if (j < 0 || j >= maxOptions) continue;
-                        field.setAutofillValue(field.mOptionValues[j % numOptions]);
+                        field.setAutofillValue(field.mOptions.get(j % numOptions).getValue());
                         break;
                     case FormFieldData.ControlType.TOGGLE:
                         break;
@@ -128,7 +128,7 @@ public class AutofillRequest {
         if (field == null) return null;
         switch (field.getControlType()) {
             case FormFieldData.ControlType.LIST:
-                int i = FormData.findIndex(field.mOptionValues, field.getValue());
+                int i = FormData.findOptionIndex(field.mOptions, field.getValue());
                 if (i == -1) return null;
                 return AutofillValue.forList(i);
             case FormFieldData.ControlType.TOGGLE:

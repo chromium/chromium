@@ -45,14 +45,18 @@ public class AutofillRequestTest {
     private static FormFieldDataBuilder createDatalistFieldBuilder() {
         FormFieldDataBuilder builder = new FormFieldDataBuilder();
         builder.mValue = "current value";
-        builder.mDatalistValues = new String[] {"entry1", "entry2"};
+        builder.mDatalistOptions =
+                Arrays.asList(
+                        new SelectOption("entry1", "label1"), new SelectOption("entry2", "label2"));
         return builder;
     }
 
     private static FormFieldDataBuilder createListFieldBuilder() {
         FormFieldDataBuilder builder = new FormFieldDataBuilder();
-        builder.mOptionValues = new String[] {"value1", "value2"};
-        builder.mOptionContents = new String[] {"content1", "content2"};
+        builder.mOptions =
+                Arrays.asList(
+                        new SelectOption("value1", "content1"),
+                        new SelectOption("value2", "content2"));
         builder.mValue = "value2";
         return builder;
     }
@@ -166,9 +170,11 @@ public class AutofillRequestTest {
         // Datalists also have text type.
         assertEquals(View.AUTOFILL_TYPE_TEXT, child.getAutofillType());
         assertEquals(AutofillValue.forText(fieldBuilder.mValue), child.getAutofillValue());
-        assertEquals(fieldBuilder.mDatalistValues.length, child.getAutofillOptions().length);
-        assertEquals(fieldBuilder.mDatalistValues[0], child.getAutofillOptions()[0]);
-        assertEquals(fieldBuilder.mDatalistValues[1], child.getAutofillOptions()[1]);
+        assertEquals(fieldBuilder.mDatalistOptions.size(), child.getAutofillOptions().length);
+        assertEquals(
+                fieldBuilder.mDatalistOptions.get(0).getValue(), child.getAutofillOptions()[0]);
+        assertEquals(
+                fieldBuilder.mDatalistOptions.get(1).getValue(), child.getAutofillOptions()[1]);
     }
 
     @Test
@@ -265,7 +271,7 @@ public class AutofillRequestTest {
         // The underlying FormFieldData object is updated.
         assertEquals("value1", request.getField((short) 0).getValue());
 
-        // Matching an appended option value index (N..2N-1) maps back to mOptionValues[j % N].
+        // Matching an appended option value index (N..2N-1) maps back to mOptions.get(j % N).
         valuesToFill.put(child.getId(), AutofillValue.forList(3));
         assertTrue(request.autofill(valuesToFill));
         assertEquals("value2", request.getField((short) 0).getValue());
@@ -294,7 +300,7 @@ public class AutofillRequestTest {
         assertTrue(request.autofill(valuesToFill));
         assertEquals("value1", request.getField((short) 0).getValue());
 
-        // Indices >= mOptionValues.length are ignored when the feature is disabled.
+        // Indices >= mOptions.size() are ignored when the feature is disabled.
         valuesToFill.put(child.getId(), AutofillValue.forList(2));
         assertFalse(request.autofill(valuesToFill));
         assertEquals("value1", request.getField((short) 0).getValue());

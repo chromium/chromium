@@ -49,6 +49,7 @@ android_library("java") {
     "java/src/org/chromium/components/autofill/FormData.java",
     "java/src/org/chromium/components/autofill/FormFieldData.java",
     "java/src/org/chromium/components/autofill/PrefillRequest.java",
+    "java/src/org/chromium/components/autofill/SelectOption.java",
     "java/src/org/chromium/components/autofill/SparseArrayWithWorkaround.java",
     "java/src/org/chromium/components/autofill_public/ViewType.java",
   ]
@@ -59,6 +60,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/components/autofill/AutofillProvider.java",
     "java/src/org/chromium/components/autofill/FormData.java",
     "java/src/org/chromium/components/autofill/FormFieldData.java",
+    "java/src/org/chromium/components/autofill/SelectOption.java",
   ]
 }
 
@@ -113,6 +115,7 @@ static_library("android") {
     "form_field_data_android_bridge.h",
     "form_field_data_android_bridge_impl.cc",
     "form_field_data_android_bridge_impl.h",
+    "select_option_android.h",
   ]
   public_deps = [ ":browser" ]
   deps = [

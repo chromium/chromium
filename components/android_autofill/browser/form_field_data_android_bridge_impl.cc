@@ -11,8 +11,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/containers/span.h"
-#include "base/containers/to_vector.h"
+#include "components/android_autofill/browser/select_option_android.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -62,11 +61,6 @@ FormFieldDataAndroidBridgeImpl::GetOrCreateJavaPeer(
     return obj;
   }
 
-  auto ProjectOptions = [env](base::span<const SelectOption> options,
-                              const auto& projection) {
-    return ToJavaArrayOfStrings(env, base::ToVector(options, projection));
-  };
-
   ScopedJavaLocalRef<jobject> obj = Java_FormFieldData_createFormFieldData(
       env, ConvertUTF16ToJavaString(env, field.name()),
       ConvertUTF16ToJavaString(env, field.label()),
@@ -76,10 +70,8 @@ FormFieldDataAndroidBridgeImpl::GetOrCreateJavaPeer(
       ConvertUTF16ToJavaString(env, field.placeholder()),
       ConvertUTF8ToJavaString(
           env, FormControlTypeToString(field.form_control_type())),
-      ConvertUTF16ToJavaString(env, field.id_attribute()),
-      /*optionValues=*/ProjectOptions(field.options(), &SelectOption::value),
-      /*optionContents=*/
-      ProjectOptions(field.options(), &SelectOption::text), field.max_length(),
+      ConvertUTF16ToJavaString(env, field.id_attribute()), field.options(),
+      field.max_length(),
       /*heuristicType=*/field_types.heuristic_type == UNKNOWN_TYPE
           ? nullptr
           : ConvertUTF8ToJavaString(
@@ -89,13 +81,8 @@ FormFieldDataAndroidBridgeImpl::GetOrCreateJavaPeer(
       ConvertUTF8ToJavaString(env, field_types.overall_type),
       ToJavaArrayOfPredictionStrings(env, field_types.server_predictions),
       field.bounds().x(), field.bounds().y(), field.bounds().right(),
-      field.bounds().bottom(),
-      /*datalistValues=*/
-      ProjectOptions(field.datalist_options(), &SelectOption::value),
-      /*datalistLabels=*/
-      ProjectOptions(field.datalist_options(), &SelectOption::text),
-      field.is_focusable(), field.is_visible(),
-      field.is_autofilled_according_to_renderer(),
+      field.bounds().bottom(), field.datalist_options(), field.is_focusable(),
+      field.is_visible(), field.is_autofilled_according_to_renderer(),
       ConvertUTF8ToJavaString(env, field.origin().Serialize()));
   java_ref_ = JavaObjectWeakGlobalRef(env, obj);
   return obj;

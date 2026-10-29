@@ -6,6 +6,9 @@ package org.chromium.components.autofill;
 
 import android.graphics.RectF;
 
+import java.util.Collections;
+import java.util.List;
+
 /** Helper class to simplify {@link FormFieldData} creation. */
 public class FormFieldDataBuilder {
     String mName;
@@ -16,16 +19,14 @@ public class FormFieldDataBuilder {
     String mPlaceholder;
     String mType;
     String mId;
-    String[] mOptionValues;
-    String[] mOptionContents;
+    List<SelectOption> mOptions = Collections.emptyList();
     int mMaxLength;
     String mHeuristicType;
     String mServerType;
     String mOverallType;
     String[] mServerPredictions;
     RectF mBounds = new RectF();
-    String[] mDatalistValues;
-    String[] mDatalistLabels;
+    List<SelectOption> mDatalistOptions = Collections.emptyList();
     boolean mFocusable;
     boolean mVisible;
     boolean mIsAutofilled;
@@ -43,8 +44,7 @@ public class FormFieldDataBuilder {
                         mPlaceholder,
                         mType,
                         mId,
-                        mOptionValues,
-                        mOptionContents,
+                        mOptions != null ? mOptions : Collections.emptyList(),
                         mMaxLength,
                         mHeuristicType,
                         mServerType,
@@ -54,8 +54,7 @@ public class FormFieldDataBuilder {
                         mBounds.top,
                         mBounds.right,
                         mBounds.bottom,
-                        mDatalistValues,
-                        mDatalistLabels,
+                        mDatalistOptions != null ? mDatalistOptions : Collections.emptyList(),
                         mFocusable,
                         mVisible,
                         mIsAutofilled,
