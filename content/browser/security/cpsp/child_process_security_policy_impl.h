@@ -313,6 +313,11 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // citadel checks which require UI thread data structures.
   bool CanCommitNewOrigin(ChildProcessId child_id, const url::Origin& origin);
 
+  // Helper for CanCommitNewOrigin() and CanCommitURL().
+  bool CanCommitMaybeOpaqueNewOrigin(ChildProcessId child_id,
+                                     const GURL& url,
+                                     bool url_is_precursor_of_opaque_origin);
+
   // Determines if the combination of origin, url and web_exposed_isolation_info
   // bundled in `url_info` are safe to commit to the process associated with
   // `child_id`.
@@ -1259,11 +1264,6 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                                    ProcessLock& out_expected_process_lock,
                                    std::string& out_failure_reason)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-
-  // Helper for CanCommitNewOrigin and CanCommitURL.
-  bool CanCommitMaybeOpaqueNewOrigin(ChildProcessId child_id,
-                                     const GURL& url,
-                                     bool url_is_precursor_of_opaque_origin);
 
   // Helper for public CanAccessOrigin overloads.
   bool CanAccessMaybeOpaqueOrigin(ChildProcessId child_id,

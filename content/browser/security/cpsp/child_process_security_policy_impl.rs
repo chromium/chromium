@@ -5,6 +5,7 @@
 chromium::import! {
     "//base:file_path";
     "//content/browser:browser_id_types";
+    "//content/common:common_id_types";
     "//storage/common:storage_common_rust";
     "//url:url_rust";
 }
@@ -70,6 +71,9 @@ mod ffi {
         type IsolatedOriginSource = super::IsolatedOriginSource;
 
         #[namespace = "content"]
+        type ChildProcessId = super::common_id_types::ChildProcessId;
+
+        #[namespace = "content"]
         #[Self = "IsolatedOriginUtil"]
         #[cxx_name = "IsValidIsolatedOrigin"]
         fn is_valid_isolated_origin(origin: &Origin) -> bool;
@@ -104,6 +108,17 @@ mod ffi {
         #[namespace = "content::rust::child_process_security_policy"]
         #[cxx_name = "CreateOriginWithDefaultPortIfNecessary"]
         fn create_origin_with_default_port_if_necessary(origin: &Origin) -> UniquePtr<Origin>;
+
+        // TODO(crbug.com/522872468): Call from `can_commit_url` once ported to
+        // Rust.
+        #[allow(dead_code)]
+        #[namespace = "content::rust::child_process_security_policy"]
+        #[cxx_name = "CanCommitMaybeOpaqueNewOrigin"]
+        fn can_commit_maybe_opaque_new_origin(
+            child_id: ChildProcessId,
+            url: &GURL,
+            url_is_precursor_of_opaque_origin: bool,
+        ) -> bool;
 
         // TODO(crbug.com/522872468): Call from `can_commit_url` once ported to
         // Rust.
