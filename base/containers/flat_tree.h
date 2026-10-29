@@ -534,9 +534,41 @@ class flat_tree {
     return {position, false};
   }
 
+  // Custom in-place merge and stable sort to avoid the large binary size
+  // overhead of std::stable_sort and std::inplace_merge.
+  void inplace_merge(iterator first, iterator mid, iterator last) {
+    auto left_len = std::distance(first, mid);
+    if (left_len == 0 || mid == last) {
+      return;
+    }
+    if (left_len == 1) {
+      std::rotate(first, mid,
+                  std::lower_bound(mid, last, GetKeyFromValue()(*first),
+                                   KeyValueCompare(comp_)));
+      return;
+    }
+    iterator first_cut = std::next(first, left_len / 2);
+    iterator second_cut = std::lower_bound(
+        mid, last, GetKeyFromValue()(*first_cut), KeyValueCompare(comp_));
+    iterator new_mid = std::rotate(first_cut, mid, second_cut);
+    inplace_merge(first, first_cut, new_mid);
+    inplace_merge(new_mid, second_cut, last);
+  }
+
+  void stable_sort(iterator first, iterator last) {
+    auto len = std::distance(first, last);
+    if (len <= 1) {
+      return;
+    }
+    iterator mid = std::next(first, len / 2);
+    stable_sort(first, mid);
+    stable_sort(mid, last);
+    inplace_merge(first, mid, last);
+  }
+
   void sort_and_unique(iterator first, iterator last) {
     // Preserve stability for the unique code below.
-    std::stable_sort(first, last, value_comp());
+    stable_sort(first, last);
 
     // lhs is already <= rhs due to sort, therefore !(lhs < rhs) <=> lhs == rhs.
     auto equal_comp = std::not_fn(value_comp());
@@ -866,8 +898,7 @@ constexpr void flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::insert(
   // the just inserted elements and merge them with the rest, inserting them at
   // the previously found spot.
   sort_and_unique(prior_end(), end());
-  std::inplace_merge(std::next(begin(), pos_first_new), prior_end(), end(),
-                     value_comp());
+  inplace_merge(std::next(begin(), pos_first_new), prior_end(), end());
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>

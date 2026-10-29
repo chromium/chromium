@@ -251,6 +251,22 @@ TEST(FlatTree, Stability) {
   cont.insert(Pair(3, 2));
 
   EXPECT_TRUE(AllOfSecondsAreZero()) << "insert should be stable";
+
+  // Range insert should preserve existing elements and keep the first
+  // occurrence among newly inserted duplicate keys.
+  Pair range[] = {{6, 0}, {4, 0}, {2, 3}, {6, 1}, {5, 0},
+                  {0, 3}, {4, 1}, {5, 1}, {1, 3}};
+  auto span = base::span(range);
+  cont.insert(span.begin(), span.end());
+  EXPECT_THAT(cont, ElementsAre(Pair(0, 0), Pair(1, 0), Pair(2, 0), Pair(3, 0),
+                                Pair(4, 0), Pair(5, 0), Pair(6, 0)));
+
+  // Constructor stability when first occurrences of duplicate keys are in
+  // reverse order across merge partitions.
+  Tree reversed_cont(
+      {{3, 0}, {2, 0}, {3, 1}, {1, 0}, {2, 1}, {0, 0}, {1, 1}, {0, 1}, {0, 2}});
+  EXPECT_THAT(reversed_cont,
+              ElementsAre(Pair(0, 0), Pair(1, 0), Pair(2, 0), Pair(3, 0)));
 }
 
 // ----------------------------------------------------------------------------

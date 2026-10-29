@@ -49,6 +49,7 @@ should use Google naming. Be sure to use the base namespace.
         library tree containers and so they are strictly better in terms of
         runtime memory overhead. When populating a write-once `base::flat_map`
         or `base::flat_set`, prefer constructing it in bulk from a `std::vector`
+        (and passing `base::sorted_unique` when already sorted and deduplicated)
         rather than inserting elements one-by-one in a loop (which both incurs
         O(n^2) shifts and inlines vector reallocation and shifting code).
     2.  If the map is always very small, then `base::flat_map` and
@@ -88,9 +89,9 @@ While `absl::flat_hash_map`, `absl::flat_hash_set`, `base::flat_map`, and
 compared to `std::map` and `std::set`, they often generate significantly more
 machine code (`.text`):
 
-*   `std::map` and `std::set` manipulate out-of-line node pointers, which
-    compiles to small code that deduplicates well across types via linker
-    Identical Code Folding (ICF).
+*   `std::map` and `std::set` manipulate out-of-line node pointers, using
+    type-erased tree-rebalancing helpers and compiling to small code that
+    deduplicates well across types via linker Identical Code Folding (ICF).
 *   Each unique `absl::flat_hash_map` or `absl::flat_hash_set` specialization
     instantiates type-specific SwissTable probing, insertion, erasure, and
     rehashing templates (often ~1–2 KB on ARM32 `-Os` and ~3–6 KB on ARM64
