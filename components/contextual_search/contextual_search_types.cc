@@ -33,6 +33,7 @@ FileInfo& FileInfo::operator=(const FileInfo& other) {
   tab_title = other.tab_title;
   tab_session_id = other.tab_session_id;
   request_id = other.request_id;
+  viewport_request_id = other.viewport_request_id;
   response_bodies = other.response_bodies;
   is_superceded = other.is_superceded;
   is_implicit_upload = other.is_implicit_upload;
