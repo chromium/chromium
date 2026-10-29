@@ -27,6 +27,7 @@ source_set("glic") {
     "experimental_triggering/glic_experimental_triggering_transport_handler.h",
     "experimental_triggering/glic_experimental_triggering_types.h",
     "gemini_act_on_web_settings_policy_handler.h",
+    "gemini_spark_settings_policy_handler.h",
     "glic_hotkey.h",
     "glic_marketing_page_tab_helper.h",
     "glic_metrics.h",
@@ -172,7 +173,6 @@ source_set("glic") {
     # TODO(b/470059315): Make these work on Android, or move them to the
     # desktop-only section.
     sources += [
-      "gemini_spark_settings_policy_handler.h",
       "glic_selection_observer.h",
       "host/context/glic_focused_tab_manager.h",
       "public/widget/glic_side_panel_coordinator_impl.h",
@@ -401,6 +401,7 @@ source_set("impl") {
     "experimental_triggering/glic_experimental_triggering_metrics.cc",
     "experimental_triggering/glic_experimental_triggering_transport_handler.cc",
     "gemini_act_on_web_settings_policy_handler.cc",
+    "gemini_spark_settings_policy_handler.cc",
     "glic_fre_store_impl.cc",
     "glic_fre_store_impl.h",
     "glic_hotkey.cc",
@@ -679,7 +680,6 @@ source_set("impl") {
       "experimental_opt_in/glic_experimental_opt_in_dialog_view.cc",
       "experimental_opt_in/glic_experimental_opt_in_dialog_view.h",
       "experimental_opt_in/glic_experimental_opt_in_ui_host_desktop.cc",
-      "gemini_spark_settings_policy_handler.cc",
       "glic_selection_observer.cc",
       "glic_settings_util_desktop.cc",
       "host/context/favicon_impl/glic_tab_favicon_adapter_desktop.cc",
