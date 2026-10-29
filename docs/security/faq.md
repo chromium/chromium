@@ -242,7 +242,7 @@ chrome://safe-browsing before starting the download.
 ### What about dangerous file types not listed in the file type policy?
 
 The [file type
-policy](https://source.chromium.org/chromium/chromium/src/+/main:components/safe_browsing/content/resources/download_file_types.asciipb?q=download_file_types.asciipb%20-f:%2Fgen%2F&ss=chromium)
+policy](https://source.chromium.org/chromium/chromium/src/+/main:components/safe_browsing/content/resources/download_file_types/download_file_types.asciipb?q=download_file_types.asciipb%20-f:%2Fgen%2F&ss=chromium)
 controls some details of which security checks to enable for a given file
 extension. Most importantly, it controls whether we contact Safe Browsing about
 a download, and whether we show a warning for all downloads of that file type.

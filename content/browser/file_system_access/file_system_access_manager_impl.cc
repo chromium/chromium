@@ -2597,7 +2597,7 @@ bool FileSystemAccessManagerImpl::IsSafePathComponent(
   }
 
   // Extensions with `safe_browsing::DownloadFileType::DANGEROUS` type, per
-  // components/safe_browsing/content/resources/download_file_types.asciipb,
+  // components/safe_browsing/content/resources/download_file_types/download_file_types.asciipb,
   // are considered unsafe, with an exception of ".local" extensions.
   if (extension_lower != FILE_PATH_LITERAL("local") && permission_context_ &&
       permission_context_->IsFileTypeDangerous(component)) {

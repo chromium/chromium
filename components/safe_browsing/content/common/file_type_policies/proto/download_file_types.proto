@@ -8,8 +8,9 @@ option optimize_for = LITE_RUNTIME;
 
 package safe_browsing;
 
-// See //components/safe_browsing/content/resources/README.md for guidelines
-// on how to set fields in this file.
+// See
+// //components/safe_browsing/content/resources/download_file_types/README.md
+// for guidelines on how to set fields in this file.
 
 // Next id: 7
 message DownloadFileType {

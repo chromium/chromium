@@ -106,9 +106,7 @@ grit("components_resources") {
   }
 
   if (safe_browsing_mode > 0) {
-    deps += [
-      "//components/safe_browsing/content/resources:make_file_types_protobuf",
-    ]
+    deps += [ "//components/safe_browsing/content/resources/download_file_types:make_file_types_protobuf" ]
   }
 
   if (is_android && safe_browsing_mode == 2) {
