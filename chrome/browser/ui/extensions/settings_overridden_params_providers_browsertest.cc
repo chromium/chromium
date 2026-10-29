@@ -30,6 +30,11 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/enterprise/isolated_mode/prefs.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
@@ -42,6 +47,7 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/test_extension_dir.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -760,6 +766,90 @@ INSTANTIATE_TEST_SUITE_P(
           {std::get<0>(info.param) ? "ExplicitChoice" : "KeepOrBack", "_",
            std::get<1>(info.param) ? "IsolatedMode" : "Incognito"});
     });
+
+// Tests for when an extension makes itself the default search engine, but
+// enterprise policy also configures the default search engine. Mandatory policy
+// takes precedence, so the extension isn't actually controlling search.
+class SearchOverriddenParamsProvidersPolicyBrowserTest
+    : public SearchOverriddenParamsProvidersBrowserTest {
+ protected:
+  void SetUpInProcessBrowserTestFixture() override {
+    SearchOverriddenParamsProvidersBrowserTest::
+        SetUpInProcessBrowserTestFixture();
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+  }
+
+  // Sets the mandatory DefaultSearchProviderEnabled policy to `enabled`, along
+  // with a search URL if `enabled` is true.
+  void SetDefaultSearchProviderPolicy(bool enabled) {
+    policy::PolicyMap policies;
+    policies.Set(policy::key::kDefaultSearchProviderEnabled,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(enabled), nullptr);
+    if (enabled) {
+      policies.Set(policy::key::kDefaultSearchProviderSearchURL,
+                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                   policy::POLICY_SOURCE_CLOUD,
+                   base::Value("https://policy.example/?q={searchTerms}"),
+                   nullptr);
+    }
+    policy_provider_.UpdateChromePolicy(policies);
+  }
+
+ private:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+};
+
+// Tests that null params are returned (indicating no dialog should be shown)
+// when the default search engine is set by policy.
+IN_PROC_BROWSER_TEST_P(SearchOverriddenParamsProvidersPolicyBrowserTest,
+                       DefaultSearchSetByPolicy) {
+  SetDefaultSearchProviderPolicy(/*enabled=*/true);
+
+  // The extension is still reported as overriding search...
+  const extensions::Extension* extension = AddExtensionControllingSearch();
+  ASSERT_TRUE(extension);
+
+  // ...but the default search engine comes from policy.
+  TemplateURLService* const template_url_service = GetTemplateURLService();
+  EXPECT_FALSE(template_url_service->IsExtensionControlledDefaultSearch());
+  const TemplateURL* default_search =
+      template_url_service->GetDefaultSearchProvider();
+  ASSERT_TRUE(default_search);
+  EXPECT_TRUE(default_search->CreatedByDefaultSearchProviderPolicy());
+
+  EXPECT_EQ(std::nullopt, GetSearchOverriddenParamsSync(web_contents()));
+}
+
+// Tests that null params are returned (indicating no dialog should be shown)
+// when the default search engine is disabled by policy.
+IN_PROC_BROWSER_TEST_P(SearchOverriddenParamsProvidersPolicyBrowserTest,
+                       DefaultSearchDisabledByPolicy) {
+  SetDefaultSearchProviderPolicy(/*enabled=*/false);
+
+  // The extension is still reported as overriding search...
+  const extensions::Extension* extension = AddExtensionControllingSearch();
+  ASSERT_TRUE(extension);
+
+  // ...but there is no default search engine.
+  TemplateURLService* const template_url_service = GetTemplateURLService();
+  EXPECT_FALSE(template_url_service->IsExtensionControlledDefaultSearch());
+  EXPECT_FALSE(template_url_service->GetDefaultSearchProvider());
+
+  EXPECT_EQ(std::nullopt, GetSearchOverriddenParamsSync(web_contents()));
+}
+
+// Param true means Explicit Choice dialog.
+INSTANTIATE_TEST_SUITE_P(All,
+                         SearchOverriddenParamsProvidersPolicyBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "ExplicitChoice" : "KeepOrBack";
+                         });
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
