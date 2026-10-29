@@ -2,10 +2,9 @@ Use base CHECK macros instead of absl/log/check.h
 
 Chromium bans absl/log:check because its CHECK macros conflict with
 base's (third_party/abseil-cpp/BUILD.gn). The files include
-base/check_op.h instead. base CHECK_GE does not compare signed with
-unsigned values, so compare the key size with a size_t.
+base/check_op.h instead.
 
-Chromium commits 85145d1e68b27 and 83c559e0cf152.
+Chromium commit 85145d1e68b27.
 
 diff --git a/src/private_join_and_compute/crypto/big_num.cc b/src/private_join_and_compute/crypto/big_num.cc
 index effe22a8755c8..539c15ee108e5 100644
@@ -20,19 +19,6 @@ index effe22a8755c8..539c15ee108e5 100644
  #include "absl/status/status.h"
  #include "absl/status/statusor.h"
  #include "absl/strings/str_cat.h"
-diff --git a/src/private_join_and_compute/crypto/context.cc b/src/private_join_and_compute/crypto/context.cc
-index a3898bdca78b7..cb37c6daa6caa 100644
---- a/src/private_join_and_compute/crypto/context.cc
-+++ b/src/private_join_and_compute/crypto/context.cc
-@@ -142,7 +142,7 @@ BigNum Context::RandomOracleSha256(absl::string_view x,
- 
- BigNum Context::PRF(absl::string_view key, absl::string_view data,
-                     const BigNum& max_value) {
--  CHECK_GE(key.size() * 8, 80);
-+  CHECK_GE(key.size() * 8, std::size_t(80));
-   CHECK_LE(max_value.BitLength(), 512)
-       << "The requested output length is not supported. The maximum "
-          "supported output length is 512. The requested output length is "
 diff --git a/src/private_join_and_compute/crypto/context.h b/src/private_join_and_compute/crypto/context.h
 index 432cd29878211..a7e239e8399cf 100644
 --- a/src/private_join_and_compute/crypto/context.h

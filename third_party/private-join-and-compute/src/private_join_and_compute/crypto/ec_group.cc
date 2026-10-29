@@ -242,6 +242,34 @@ absl::StatusOr<ECPoint> ECGroup::GetPointByHashingToCurveSswuRo(
   return out;
 }
 
+absl::StatusOr<ECPoint> ECGroup::GetPointByHashingToCurveSswuNu(
+    absl::string_view m, absl::string_view dst) const {
+  absl::StatusOr<ECPoint> out = GetPointAtInfinity();
+  if (!out.ok()) {
+    return out.status();
+  }
+  int curve_id = GetCurveId();
+  if (curve_id == NID_X9_62_prime256v1) {
+    if (EC_encode_to_curve_p256_xmd_sha256_sswu(
+            group_.get(), out->point_.get(),
+            reinterpret_cast<const uint8_t*>(dst.data()), dst.length(),
+            reinterpret_cast<const uint8_t*>(m.data()), m.length()) != 1) {
+      return absl::InternalError(OpenSSLErrorString());
+    }
+  } else if (curve_id == NID_secp384r1) {
+    if (EC_encode_to_curve_p384_xmd_sha384_sswu(
+            group_.get(), out->point_.get(),
+            reinterpret_cast<const uint8_t*>(dst.data()), dst.length(),
+            reinterpret_cast<const uint8_t*>(m.data()), m.length()) != 1) {
+      return absl::InternalError(OpenSSLErrorString());
+    }
+  } else {
+    return absl::InvalidArgumentError(
+        "Curve does not support HashToCurveSswuNu.");
+  }
+  return out;
+}
+
 absl::StatusOr<ECPoint> ECGroup::GetPointByPaddingX(
     const BigNum& m, size_t padding_bit_count) const {
   BigNum x_padded = m.Lshift(padding_bit_count);

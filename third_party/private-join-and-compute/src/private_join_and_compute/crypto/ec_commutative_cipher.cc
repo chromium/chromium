@@ -64,7 +64,7 @@ bool ECCommutativeCipher::ValidateHashType(int hash_type) {
 
 absl::StatusOr<std::unique_ptr<ECCommutativeCipher>>
 ECCommutativeCipher::CreateWithNewKey(int curve_id, HashType hash_type) {
-  std::unique_ptr<Context> context(new Context);
+  std::unique_ptr<Context> context = std::make_unique<Context>();
   absl::StatusOr<ECGroup> group = ECGroup::Create(curve_id, context.get());
   if (!group.ok()) {
     return group.status();
@@ -81,7 +81,7 @@ ECCommutativeCipher::CreateWithNewKey(int curve_id, HashType hash_type) {
 absl::StatusOr<std::unique_ptr<ECCommutativeCipher>>
 ECCommutativeCipher::CreateFromKey(int curve_id, absl::string_view key_bytes,
                                    HashType hash_type) {
-  std::unique_ptr<Context> context(new Context);
+  std::unique_ptr<Context> context = std::make_unique<Context>();
   absl::StatusOr<ECGroup> group = ECGroup::Create(curve_id, context.get());
   if (!group.ok()) {
     return group.status();
@@ -104,7 +104,7 @@ ECCommutativeCipher::CreateWithKeyFromSeed(int curve_id,
                                            absl::string_view seed_bytes,
                                            absl::string_view tag_bytes,
                                            HashType hash_type) {
-  std::unique_ptr<Context> context(new Context);
+  std::unique_ptr<Context> context = std::make_unique<Context>();
   absl::StatusOr<ECGroup> group = ECGroup::Create(curve_id, context.get());
   if (!group.ok()) {
     return group.status();

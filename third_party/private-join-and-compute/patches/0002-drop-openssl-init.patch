@@ -8,18 +8,18 @@ files for an empty function.
 Chromium commits 85145d1e68b27 and 83c559e0cf152.
 
 diff --git a/src/private_join_and_compute/crypto/context.cc b/src/private_join_and_compute/crypto/context.cc
-index cb37c6daa6caa..845e190deb70c 100644
+index 4dd22eb3039a0..51a8651db3825 100644
 --- a/src/private_join_and_compute/crypto/context.cc
 +++ b/src/private_join_and_compute/crypto/context.cc
-@@ -21,7 +21,6 @@
- 
+@@ -22,7 +22,6 @@
  #include "absl/strings/str_cat.h"
  #include "absl/strings/string_view.h"
+ #include "private_join_and_compute/crypto/openssl.inc"
 -#include "private_join_and_compute/crypto/openssl_init.h"
  
  namespace private_join_and_compute {
  
-@@ -38,7 +37,6 @@ Context::Context()
+@@ -39,7 +38,6 @@ Context::Context()
        one_bn_(CreateBigNum(1)),
        two_bn_(CreateBigNum(2)),
        three_bn_(CreateBigNum(3)) {

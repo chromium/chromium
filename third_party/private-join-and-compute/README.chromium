@@ -2,7 +2,7 @@ Name: Private Join and Compute subset
 Short Name: private-join-and-compute
 URL: https://github.com/google/private-join-and-compute
 Version: N/A
-Revision: 08df854f9fa14304fb4f19df48c7b6bc31f140d3
+Revision: 950c5e4c88d7effe85147beb7856152f7c53394b
 Date: 2025-02-14
 Update Mechanism: Manual
 License: Apache-2.0

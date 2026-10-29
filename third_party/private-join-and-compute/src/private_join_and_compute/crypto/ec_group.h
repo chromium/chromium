@@ -74,6 +74,11 @@ class PRIVATE_COMPUTE_EXPORT ECGroup {
       absl::string_view m) const;
   absl::StatusOr<ECPoint> GetPointByHashingToCurveSswuRo(
       absl::string_view m, absl::string_view dst) const;
+  // This is a non-uniform encoding from strings to points on the curve. If a
+  // uniform distribution is required, use GetPointByHashingToCurveSswuRo
+  // instead.
+  absl::StatusOr<ECPoint> GetPointByHashingToCurveSswuNu(
+      absl::string_view m, absl::string_view dst) const;
 
   // Pad the given message until it is a valid point on the curve. Padding is
   // achieved by left-shifting m by padding_bits_count bits, and appending
