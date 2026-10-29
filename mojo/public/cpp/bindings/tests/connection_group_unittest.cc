@@ -11,7 +11,6 @@
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/tests/bindings_test_base.h"
 #include "mojo/public/cpp/bindings/tests/connection_group_unittest.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,8 +28,6 @@ class ConnectionGroupTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
 };
-
-using ConnectionGroupBindingsTest = BindingsTestBase;
 
 class TestInterfaceImpl : public mojom::TestInterface {
  public:
@@ -68,7 +65,7 @@ class TestInterfaceImpl : public mojom::TestInterface {
   base::OnceClosure wait_for_disconnect_closure_;
 };
 
-TEST_P(ConnectionGroupBindingsTest, RefCounting) {
+TEST_F(ConnectionGroupTest, RefCounting) {
   ConnectionGroupRef ref = ConnectionGroup::Create(base::DoNothing(), nullptr);
   auto group = ref.GetGroupForTesting();
 
@@ -98,7 +95,7 @@ TEST_P(ConnectionGroupBindingsTest, RefCounting) {
   EXPECT_EQ(0u, group->GetNumRefsForTesting());
 }
 
-TEST_P(ConnectionGroupBindingsTest, PassedEndpointsInheritFromReceiver) {
+TEST_F(ConnectionGroupTest, PassedEndpointsInheritFromReceiver) {
   Remote<mojom::TestInterface> remote;
   auto pending_receiver = remote.BindNewPipeAndPassReceiver();
 
@@ -197,8 +194,6 @@ TEST_F(ConnectionGroupTest, NotifyOnDecrementToZeroMultipleTimes) {
   loop.emplace();
   loop->Run();
 }
-
-INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(ConnectionGroupBindingsTest);
 
 }  // namespace connection_group_unittest
 }  // namespace test

@@ -299,7 +299,7 @@ TEST(FeatureTest, ScopedFeatures) {
 
 //// Tests that enabled features allow normal behavior. ////
 
-TEST_P(FeatureBindingsTest, DefaultAllowed) {
+TEST_F(FeatureBindingsTest, DefaultAllowed) {
   // Validate that allowed interfaces on `DefaultAllowed` can be called.
   bool error = false;
   SetErrorHandler(base::BindLambdaForTesting([&] { error = true; }));
@@ -314,7 +314,7 @@ TEST_P(FeatureBindingsTest, DefaultAllowed) {
   EXPECT_FALSE(error);
 }
 
-TEST_P(FeatureBindingsTest, OtherAllowed) {
+TEST_F(FeatureBindingsTest, OtherAllowed) {
   // Validate that allowed interfaces on `OtherAllowed` can be called. This
   // interface imports its features from another file.
   bool error = false;
@@ -330,7 +330,7 @@ TEST_P(FeatureBindingsTest, OtherAllowed) {
   EXPECT_FALSE(error);
 }
 
-TEST_P(FeatureBindingsTest, FeaturesOnMethodsAllowed) {
+TEST_F(FeatureBindingsTest, FeaturesOnMethodsAllowed) {
   // Validate that allowed interfaces on `FeaturesOnMethods` can be called.
   bool error = false;
   SetErrorHandler(base::BindLambdaForTesting([&] { error = true; }));
@@ -351,10 +351,7 @@ TEST_P(FeatureBindingsTest, FeaturesOnMethodsAllowed) {
   EXPECT_FALSE(error);
 }
 
-TEST_P(FeatureBindingsTest, FeaturesOnReceiverDenied) {
-  if (GetParam() == mojo::BindingsTestSerializationMode::kNeverSerialize) {
-    return;
-  }
+TEST_F(FeatureBindingsTest, FeaturesOnReceiverDenied) {
   // Validate that disabled methods on `FeaturesOnMethods` cannot be called.
   bool called = false;
   bool called_disconnect = false;
@@ -384,7 +381,7 @@ TEST_P(FeatureBindingsTest, FeaturesOnReceiverDenied) {
   EXPECT_TRUE(called_disconnect);
 }
 
-TEST_P(FeatureBindingsTest, PassesInterfacesAllowed) {
+TEST_F(FeatureBindingsTest, PassesInterfacesAllowed) {
   // Validate that feature-protected interfaces can be passed over mojo methods.
   bool error = false;
   SetErrorHandler(base::BindLambdaForTesting([&] { error = true; }));
@@ -435,7 +432,7 @@ TEST_P(FeatureBindingsTest, PassesInterfacesAllowed) {
   }
 }
 
-TEST_P(FeatureBindingsTest, SetsAllowed) {
+TEST_F(FeatureBindingsTest, SetsAllowed) {
   // Features intervene at the set.Add() stage so validate that these work.
   Remote<mojom::DefaultAllowed> remote_a;
   Remote<mojom::DefaultAllowed> remote_b;
@@ -461,7 +458,7 @@ TEST_P(FeatureBindingsTest, SetsAllowed) {
   remote_set.Add(std::move(pending_remote_d));
 }
 
-TEST_P(FeatureBindingsTest, ServiceFactory) {
+TEST_F(FeatureBindingsTest, ServiceFactory) {
   // Service factory quietly skips Adding disabled helpers.
   ServiceFactory services;
   MessagePipe pipe_allowed;
@@ -489,7 +486,7 @@ TEST_P(FeatureBindingsTest, ServiceFactory) {
 
 //// mojo::(Associated)?Remote<> ////
 
-TEST_P(FeatureBindingsTest, InertPendingRemoteWontInit) {
+TEST_F(FeatureBindingsTest, InertPendingRemoteWontInit) {
   // Inert pipes still cannot be initialized.
   PendingRemote<mojom::DefaultDenied> pending_remote;
   EXPECT_FALSE(pending_remote);
@@ -499,7 +496,7 @@ TEST_P(FeatureBindingsTest, InertPendingRemoteWontInit) {
   EXPECT_FALSE(pending_remote);
 }
 
-TEST_P(FeatureBindingsTest, InertPendingReceiverWontInit) {
+TEST_F(FeatureBindingsTest, InertPendingReceiverWontInit) {
   PendingReceiver<mojom::DefaultDenied> pending_receiver;
   EXPECT_FALSE(pending_receiver);
   PendingRemote<mojom::DefaultDenied> pending_remote =
@@ -508,7 +505,7 @@ TEST_P(FeatureBindingsTest, InertPendingReceiverWontInit) {
   EXPECT_FALSE(pending_remote);
 }
 
-TEST_P(FeatureBindingsTest, InertPendingAssociatedRemoteWontInit) {
+TEST_F(FeatureBindingsTest, InertPendingAssociatedRemoteWontInit) {
   // Inert pipes still cannot be initialized.
   PendingAssociatedRemote<mojom::DefaultDenied> pending_remote;
   EXPECT_FALSE(pending_remote);
@@ -518,7 +515,7 @@ TEST_P(FeatureBindingsTest, InertPendingAssociatedRemoteWontInit) {
   EXPECT_FALSE(pending_remote);
 }
 
-TEST_P(FeatureBindingsTest, InertPendingAssociatedReceiverWontInit) {
+TEST_F(FeatureBindingsTest, InertPendingAssociatedReceiverWontInit) {
   PendingAssociatedReceiver<mojom::DefaultDenied> pending_receiver;
   EXPECT_FALSE(pending_receiver);
   PendingAssociatedRemote<mojom::DefaultDenied> pending_remote =
@@ -527,7 +524,7 @@ TEST_P(FeatureBindingsTest, InertPendingAssociatedReceiverWontInit) {
   EXPECT_FALSE(pending_remote);
 }
 
-TEST_P(FeatureBindingsTest, RemoteWontBindNewPipe) {
+TEST_F(FeatureBindingsTest, RemoteWontBindNewPipe) {
   Remote<mojom::DefaultDenied> remote;
   EXPECT_FALSE(remote);
   PendingReceiver<mojom::DefaultDenied> pending_receiver =
@@ -535,7 +532,7 @@ TEST_P(FeatureBindingsTest, RemoteWontBindNewPipe) {
   EXPECT_FALSE(pending_receiver);
 }
 
-TEST_P(FeatureBindingsTest, RemoteWontBindPendingRemote) {
+TEST_F(FeatureBindingsTest, RemoteWontBindPendingRemote) {
   MessagePipe pipe;
   PendingRemote<mojom::DefaultDenied> pending_remote(std::move(pipe.handle0),
                                                      0);
@@ -545,7 +542,7 @@ TEST_P(FeatureBindingsTest, RemoteWontBindPendingRemote) {
   EXPECT_FALSE(remote);
 }
 
-TEST_P(FeatureBindingsTest, AssociatedRemoteWontBind) {
+TEST_F(FeatureBindingsTest, AssociatedRemoteWontBind) {
   PendingAssociatedRemote<mojom::DefaultDenied> pa_remote;
   PendingAssociatedReceiver<mojom::DefaultDenied> pa_receiver;
   {
@@ -560,7 +557,7 @@ TEST_P(FeatureBindingsTest, AssociatedRemoteWontBind) {
   EXPECT_FALSE(a_remote);
 }
 
-TEST_P(FeatureBindingsTest, AssociatedRemoteWontBindNewEndpoint) {
+TEST_F(FeatureBindingsTest, AssociatedRemoteWontBindNewEndpoint) {
   AssociatedRemote<mojom::DefaultDenied> a_remote;
   PendingAssociatedReceiver<mojom::DefaultDenied> pa_receiver =
       a_remote.BindNewEndpointAndPassReceiver();
@@ -568,7 +565,7 @@ TEST_P(FeatureBindingsTest, AssociatedRemoteWontBindNewEndpoint) {
   EXPECT_FALSE(pa_receiver);
 }
 
-TEST_P(FeatureBindingsTest, AssociatedRemoteWontBindDedicated) {
+TEST_F(FeatureBindingsTest, AssociatedRemoteWontBindDedicated) {
   AssociatedRemote<mojom::DefaultDenied> a_remote;
   PendingAssociatedReceiver<mojom::DefaultDenied> pa_receiver =
       a_remote.BindNewEndpointAndPassDedicatedReceiver();
@@ -578,14 +575,14 @@ TEST_P(FeatureBindingsTest, AssociatedRemoteWontBindDedicated) {
 
 //// mojo::(Associated)?Receiver<> ////
 
-TEST_P(FeatureBindingsTest, ReceiverWontBindNewPipe) {
+TEST_F(FeatureBindingsTest, ReceiverWontBindNewPipe) {
   DefaultDeniedImpl impl;
   PendingRemote<mojom::DefaultDenied> pending_remote =
       impl.receiver().BindNewPipeAndPassRemote();
   EXPECT_FALSE(pending_remote);
 }
 
-TEST_P(FeatureBindingsTest, ReceiverWontBindPendingReceiver) {
+TEST_F(FeatureBindingsTest, ReceiverWontBindPendingReceiver) {
   MessagePipe pipe;
   PendingReceiver<mojom::DefaultDenied> pending_receiver(
       std::move(pipe.handle0));
@@ -594,7 +591,7 @@ TEST_P(FeatureBindingsTest, ReceiverWontBindPendingReceiver) {
   EXPECT_FALSE(impl.receiver().is_bound());
 }
 
-TEST_P(FeatureBindingsTest, AssociatedReceiverWontBind) {
+TEST_F(FeatureBindingsTest, AssociatedReceiverWontBind) {
   PendingAssociatedRemote<mojom::DefaultDenied> pa_remote;
   PendingAssociatedReceiver<mojom::DefaultDenied> pa_receiver =
       pa_remote.InitWithNewEndpointAndPassReceiver();
@@ -604,7 +601,7 @@ TEST_P(FeatureBindingsTest, AssociatedReceiverWontBind) {
   EXPECT_FALSE(a_receiver.is_bound());
 }
 
-TEST_P(FeatureBindingsTest, AssociatedReceiverWontBindNewEndpoint) {
+TEST_F(FeatureBindingsTest, AssociatedReceiverWontBindNewEndpoint) {
   DefaultDeniedSelfOwnedImpl impl;
   AssociatedReceiver<mojom::DefaultDenied> a_receiver(&impl);
   auto a_remote = a_receiver.BindNewEndpointAndPassRemote(nullptr);
@@ -612,7 +609,7 @@ TEST_P(FeatureBindingsTest, AssociatedReceiverWontBindNewEndpoint) {
   EXPECT_FALSE(a_remote);
 }
 
-TEST_P(FeatureBindingsTest, AssociatedReceiverWontBindDedicated) {
+TEST_F(FeatureBindingsTest, AssociatedReceiverWontBindDedicated) {
   DefaultDeniedSelfOwnedImpl impl;
   AssociatedReceiver<mojom::DefaultDenied> a_receiver(&impl);
   auto a_remote = a_receiver.BindNewEndpointAndPassDedicatedRemote();
@@ -625,7 +622,7 @@ TEST_P(FeatureBindingsTest, AssociatedReceiverWontBindDedicated) {
 // receivers.
 ////
 
-TEST_P(FeatureBindingsTest, SelfOwnedReceiver) {
+TEST_F(FeatureBindingsTest, SelfOwnedReceiver) {
   MessagePipe pipe;
   PendingReceiver<mojom::DefaultDenied> pending_receiver(
       std::move(pipe.handle0));
@@ -635,7 +632,7 @@ TEST_P(FeatureBindingsTest, SelfOwnedReceiver) {
   EXPECT_FALSE(weak_ref);
 }
 
-TEST_P(FeatureBindingsTest, SelfOwnedAssociatedReceiver) {
+TEST_F(FeatureBindingsTest, SelfOwnedAssociatedReceiver) {
   PendingAssociatedRemote<mojom::DefaultDenied> pa_remote;
   PendingAssociatedReceiver<mojom::DefaultDenied> pa_receiver =
       pa_remote.InitWithNewEndpointAndPassReceiver();
@@ -648,7 +645,7 @@ TEST_P(FeatureBindingsTest, SelfOwnedAssociatedReceiver) {
 ////
 //  mojo::Shared* bail out appropriately.
 ////
-TEST_P(FeatureBindingsTest, SharedRemoteWontBindNewPipe) {
+TEST_F(FeatureBindingsTest, SharedRemoteWontBindNewPipe) {
   SharedRemote<mojom::DefaultDenied> s_remote;
   EXPECT_FALSE(s_remote);
   PendingReceiver<mojom::DefaultDenied> p_receiver =
@@ -657,7 +654,7 @@ TEST_P(FeatureBindingsTest, SharedRemoteWontBindNewPipe) {
   EXPECT_FALSE(p_receiver);
 }
 
-TEST_P(FeatureBindingsTest, SharedRemoteWontBind) {
+TEST_F(FeatureBindingsTest, SharedRemoteWontBind) {
   PendingRemote<mojom::DefaultDenied> pa_remote;
   PendingReceiver<mojom::DefaultDenied> pa_receiver;
   {
@@ -672,7 +669,7 @@ TEST_P(FeatureBindingsTest, SharedRemoteWontBind) {
   EXPECT_FALSE(s_remote);
 }
 
-TEST_P(FeatureBindingsTest, SharedAssociatedRemoteWontBindNewEndpoint) {
+TEST_F(FeatureBindingsTest, SharedAssociatedRemoteWontBindNewEndpoint) {
   SharedAssociatedRemote<mojom::DefaultDenied> sa_remote;
   EXPECT_FALSE(sa_remote);
   PendingAssociatedReceiver<mojom::DefaultDenied> pa_receiver =
@@ -681,7 +678,7 @@ TEST_P(FeatureBindingsTest, SharedAssociatedRemoteWontBindNewEndpoint) {
   EXPECT_FALSE(pa_receiver);
 }
 
-TEST_P(FeatureBindingsTest, SharedAssociatedRemoteWontBind) {
+TEST_F(FeatureBindingsTest, SharedAssociatedRemoteWontBind) {
   PendingAssociatedRemote<mojom::DefaultDenied> pa_remote;
   PendingAssociatedReceiver<mojom::DefaultDenied> pa_receiver;
   {
@@ -699,7 +696,7 @@ TEST_P(FeatureBindingsTest, SharedAssociatedRemoteWontBind) {
 ////
 //  Generic*Receiver As<disabled> won't "cast" but allowed interfaces can.
 ////
-TEST_P(FeatureBindingsTest, GenericPendingReceivers) {
+TEST_F(FeatureBindingsTest, GenericPendingReceivers) {
   MessagePipe pipe_a;
   ScopedInterfaceEndpointHandle end_a;
   ScopedInterfaceEndpointHandle end_b;
@@ -731,10 +728,7 @@ TEST_P(FeatureBindingsTest, GenericPendingReceivers) {
 // remotes and receivers are treated as being empty.
 ////
 
-TEST_P(FeatureBindingsTest, PassesOptionalInterfacesRemoteDenied) {
-  if (GetParam() == BindingsTestSerializationMode::kNeverSerialize) {
-    return;
-  }
+TEST_F(FeatureBindingsTest, PassesOptionalInterfacesRemoteDenied) {
   Remote<mojom::PassesInterfaces> remote;
   PassesInterfacesImpl impl(remote.BindNewPipeAndPassReceiver());
 
@@ -761,10 +755,7 @@ TEST_P(FeatureBindingsTest, PassesOptionalInterfacesRemoteDenied) {
   ASSERT_TRUE(called_empty);
 }
 
-TEST_P(FeatureBindingsTest, PassesOptionalInterfacesReceiverDenied) {
-  if (GetParam() == mojo::BindingsTestSerializationMode::kNeverSerialize) {
-    return;
-  }
+TEST_F(FeatureBindingsTest, PassesOptionalInterfacesReceiverDenied) {
   Remote<mojom::PassesInterfaces> remote;
   PassesInterfacesImpl impl(remote.BindNewPipeAndPassReceiver());
 
@@ -797,7 +788,7 @@ TEST_P(FeatureBindingsTest, PassesOptionalInterfacesReceiverDenied) {
 // headers are correctly imported in the main interface's files.
 ////
 
-TEST_P(FeatureBindingsTest, RemoteWontBindNewPipeImported) {
+TEST_F(FeatureBindingsTest, RemoteWontBindNewPipeImported) {
   // Interface is runtime disabled - so cannot bind.
   Remote<mojom::OtherDenied> remote;
   PendingReceiver<mojom::OtherDenied> pending_receiver =
@@ -805,7 +796,7 @@ TEST_P(FeatureBindingsTest, RemoteWontBindNewPipeImported) {
   EXPECT_FALSE(pending_receiver);
 }
 
-TEST_P(FeatureBindingsTest, ReceiverWontBindPendingReceiverImported) {
+TEST_F(FeatureBindingsTest, ReceiverWontBindPendingReceiverImported) {
   // Interface is runtime disabled - so cannot bind.
   MessagePipe pipe;
   PendingReceiver<mojom::OtherDenied> pending_receiver(std::move(pipe.handle0));
@@ -816,7 +807,7 @@ TEST_P(FeatureBindingsTest, ReceiverWontBindPendingReceiverImported) {
 // Validate that the various Sets return nullopt if a disabled interface is
 // provided.
 
-TEST_P(FeatureBindingsTest, ReceiverSetDenied) {
+TEST_F(FeatureBindingsTest, ReceiverSetDenied) {
   MessagePipe pipe_a;
   PendingReceiver<mojom::DefaultDenied> pending_receiver_a(
       std::move(pipe_a.handle0));
@@ -827,7 +818,7 @@ TEST_P(FeatureBindingsTest, ReceiverSetDenied) {
             std::nullopt);
 }
 
-TEST_P(FeatureBindingsTest, RemoteSetDenied) {
+TEST_F(FeatureBindingsTest, RemoteSetDenied) {
   PendingRemote<mojom::DefaultDenied> pending_remote;
   auto pending_receiver = pending_remote.InitWithNewPipeAndPassReceiver();
 
@@ -844,7 +835,7 @@ TEST_P(FeatureBindingsTest, RemoteSetDenied) {
 #if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 using FeatureBindingsDeathTest = FeatureBindingsTest;
 
-TEST_P(FeatureBindingsDeathTest, MethodsOnRemoteDenied) {
+TEST_F(FeatureBindingsDeathTest, MethodsOnRemoteDenied) {
   // Validate that disabled methods on `FeaturesOnMethods` cannot be called.
   bool called = false;
   Remote<mojom::FeaturesOnMethods> remote;
@@ -855,7 +846,7 @@ TEST_P(FeatureBindingsDeathTest, MethodsOnRemoteDenied) {
   EXPECT_FALSE(called);
 }
 
-TEST_P(FeatureBindingsDeathTest, MethodsOnRemoteDeniedSync) {
+TEST_F(FeatureBindingsDeathTest, MethodsOnRemoteDeniedSync) {
   // Validate that disabled sync methods on remotes cannot be called.
   int result = 0;
   Remote<mojom::FeaturesOnMethods> remote;
@@ -864,7 +855,7 @@ TEST_P(FeatureBindingsDeathTest, MethodsOnRemoteDeniedSync) {
   EXPECT_EQ(result, 0);
 }
 
-TEST_P(FeatureBindingsDeathTest, MethodsOnAssociatedRemoteDenied) {
+TEST_F(FeatureBindingsDeathTest, MethodsOnAssociatedRemoteDenied) {
   bool called = false;
   // Validate that disabled methods on associated remotes cannot be called.
   AssociatedRemote<mojom::FeaturesOnMethods> remote;
@@ -875,19 +866,6 @@ TEST_P(FeatureBindingsDeathTest, MethodsOnAssociatedRemoteDenied) {
   EXPECT_FALSE(called);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    FeatureBindingsDeathTest,
-    testing::Values(mojo::BindingsTestSerializationMode::kNeverSerialize));
-
 #endif  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    FeatureBindingsTest,
-    testing::Values(
-        mojo::BindingsTestSerializationMode::kSerializeBeforeSend,
-        mojo::BindingsTestSerializationMode::kSerializeBeforeDispatch,
-        mojo::BindingsTestSerializationMode::kNeverSerialize));
 
 }  // namespace mojo::test::feature_unittest

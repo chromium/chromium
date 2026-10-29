@@ -49,7 +49,7 @@ class NativeStructTest : public BindingsTestBase,
   Receiver<test::NativeTypeTester> receiver_;
 };
 
-TEST_P(NativeStructTest, NativeStruct) {
+TEST_F(NativeStructTest, NativeStruct) {
   test::TestNativeStruct s("hello world", 5, 42);
   base::RunLoop loop;
   remote()->PassNativeStruct(
@@ -65,7 +65,7 @@ TEST_P(NativeStructTest, NativeStruct) {
   loop.Run();
 }
 
-TEST_P(NativeStructTest, NativeStructWithAttachments) {
+TEST_F(NativeStructTest, NativeStructWithAttachments) {
   mojo::MessagePipe pipe;
   const std::string kTestMessage = "hey hi";
   test::TestNativeStructWithAttachments s(kTestMessage,
@@ -94,7 +94,5 @@ TEST_P(NativeStructTest, NativeStructWithAttachments) {
           kTestMessage, std::move(pipe.handle1), &loop));
   loop.Run();
 }
-
-INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(NativeStructTest);
 
 }  // namespace mojo

@@ -74,7 +74,7 @@ class TraitInterfaceImpl : public mojom::TestResultInterfaceWithTrait {
 
 using ResultResponseTest = BindingsTestBase;
 
-TEST_P(ResultResponseTest, TestResult) {
+TEST_F(ResultResponseTest, TestResult) {
   mojo::Remote<mojom::TestResultInterface> remote;
   InterfaceImpl impl(remote.BindNewPipeAndPassReceiver());
 
@@ -87,7 +87,7 @@ TEST_P(ResultResponseTest, TestResult) {
   loop.Run();
 }
 
-TEST_P(ResultResponseTest, TestFailure) {
+TEST_F(ResultResponseTest, TestFailure) {
   mojo::Remote<mojom::TestResultInterface> remote;
   InterfaceImpl impl(remote.BindNewPipeAndPassReceiver());
 
@@ -101,7 +101,7 @@ TEST_P(ResultResponseTest, TestFailure) {
   loop.Run();
 }
 
-TEST_P(ResultResponseTest, TestSuccessTrait) {
+TEST_F(ResultResponseTest, TestSuccessTrait) {
   mojo::Remote<mojom::TestResultInterfaceWithTrait> remote;
   TraitInterfaceImpl impl(remote.BindNewPipeAndPassReceiver());
 
@@ -114,7 +114,7 @@ TEST_P(ResultResponseTest, TestSuccessTrait) {
   loop.Run();
 }
 
-TEST_P(ResultResponseTest, TestFailureTrait) {
+TEST_F(ResultResponseTest, TestFailureTrait) {
   mojo::Remote<mojom::TestResultInterfaceWithTrait> remote;
   TraitInterfaceImpl impl(remote.BindNewPipeAndPassReceiver());
 
@@ -128,7 +128,7 @@ TEST_P(ResultResponseTest, TestFailureTrait) {
   loop.Run();
 }
 
-TEST_P(ResultResponseTest, TestSyncMethodResult) {
+TEST_F(ResultResponseTest, TestSyncMethodResult) {
   mojo::Remote<mojom::TestResultInterface> remote;
   InterfaceImpl impl(remote.BindNewPipeAndPassReceiver());
 
@@ -139,7 +139,7 @@ TEST_P(ResultResponseTest, TestSyncMethodResult) {
   ASSERT_EQ(1, result.value());
 }
 
-TEST_P(ResultResponseTest, TestSyncMethodFailure) {
+TEST_F(ResultResponseTest, TestSyncMethodFailure) {
   mojo::Remote<mojom::TestResultInterface> remote;
   InterfaceImpl impl(remote.BindNewPipeAndPassReceiver());
 
@@ -149,8 +149,6 @@ TEST_P(ResultResponseTest, TestSyncMethodFailure) {
   ASSERT_TRUE(success);
   ASSERT_EQ("fail", result.error());
 }
-
-INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(ResultResponseTest);
 
 }  // namespace
 }  // namespace mojo::test

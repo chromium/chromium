@@ -190,7 +190,7 @@ class FlushAsyncTest : public BindingsTestBase {
       base::MakeRefCounted<KeyValueStoreImpl>()};
 };
 
-TEST_P(FlushAsyncTest, WaitForMultipleFlushes) {
+TEST_F(FlushAsyncTest, WaitForMultipleFlushes) {
   const std::string kKey1 = "bar";
   const std::string kKey2 = "foo";
   const std::string kValue1 = "42";
@@ -219,7 +219,7 @@ TEST_P(FlushAsyncTest, WaitForMultipleFlushes) {
   EXPECT_EQ(kValue2, snapshot[kKey2]);
 }
 
-TEST_P(FlushAsyncTest, MultipleFlushesInSequence) {
+TEST_F(FlushAsyncTest, MultipleFlushesInSequence) {
   const std::string kKey1 = "foo";
   const std::string kKey2 = "bar";
   const std::string kKey3 = "baz";
@@ -252,7 +252,7 @@ TEST_P(FlushAsyncTest, MultipleFlushesInSequence) {
   EXPECT_EQ(kValue1, snapshot[kKey1]);
 }
 
-TEST_P(FlushAsyncTest, DroppedFlusherCompletesPendingFlush) {
+TEST_F(FlushAsyncTest, DroppedFlusherCompletesPendingFlush) {
   const std::string kKey = "foo";
   const std::string kValue = "bar";
   Remote<mojom::Writer> writer = MakeWriter();
@@ -293,7 +293,7 @@ class PingerImpl : public mojom::Pinger {
   Receiver<mojom::Pinger> receiver_;
 };
 
-TEST_P(FlushAsyncTest, PausedInterfaceDoesNotAutoResumeOnFlush) {
+TEST_F(FlushAsyncTest, PausedInterfaceDoesNotAutoResumeOnFlush) {
   // Verifies that if a receiver is implicitly paused via a remote call to
   // |PauseReceiverUntilFlushCompletes()|, but also explicitly paused by its
   // owner calling |Pause()|, it does not auto-resume when the flush completes.
@@ -337,7 +337,7 @@ TEST_P(FlushAsyncTest, PausedInterfaceDoesNotAutoResumeOnFlush) {
   EXPECT_TRUE(got_reply);
 }
 
-TEST_P(FlushAsyncTest, ResumeDoesNotInterruptWaitingOnFlush) {
+TEST_F(FlushAsyncTest, ResumeDoesNotInterruptWaitingOnFlush) {
   // Verifies that an explicit |Resume()| does not actually resume message
   // processing if the endpoint is still waiting on an asynchronous flush
   // operation.
@@ -400,7 +400,7 @@ class KeyValueStoreClientImpl : public mojom::KeyValueStoreClient {
   base::RepeatingClosure snapshot_taken_callback_;
 };
 
-TEST_P(FlushAsyncTest, PauseRemote) {
+TEST_F(FlushAsyncTest, PauseRemote) {
   // Smoke test to exercise the async flushing APIs on a Receiver to pause
   // callback dispatch on its corresponding Remote. |GetSnapshot()| replies are
   // strictly ordered against corresponding calls to |OnSnapshotTaken()| on the
@@ -447,8 +447,6 @@ TEST_P(FlushAsyncTest, PauseRemote) {
       }));
   loop.Run();
 }
-
-INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(FlushAsyncTest);
 
 }  // namespace flush_async_unittest
 }  // namespace test

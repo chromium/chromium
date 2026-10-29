@@ -61,7 +61,7 @@ class TestInterfaceImpl : public mojom::TestInterface {
 
 using SupportsUrgentAttributeTest = BindingsTestBase;
 
-TEST_P(SupportsUrgentAttributeTest, TestAttribute) {
+TEST_F(SupportsUrgentAttributeTest, TestAttribute) {
   TestInterfaceImpl impl;
   Remote<mojom::TestInterface> remote;
   Receiver<mojom::TestInterface> receiver(&impl,
@@ -107,7 +107,5 @@ TEST_P(SupportsUrgentAttributeTest, TestAttribute) {
 
   unowned_filter = nullptr;
 }
-
-INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(SupportsUrgentAttributeTest);
 
 }  // namespace mojo::test::supports_urgent_attribute_unittest

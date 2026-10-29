@@ -385,35 +385,9 @@ DEFINE_TEST_CLIENT_WITH_PIPE(InterfacePassingClient,
   return RunInterfacePassingClient(h);
 }
 
-enum class InProcessMessageMode {
-  kSerialized,
-  kUnserialized,
-};
-
-template <class TestBase>
-class InProcessPerfTest
-    : public TestBase,
-      public testing::WithParamInterface<InProcessMessageMode> {
- public:
-  InProcessPerfTest() {
-    switch (GetParam()) {
-      case InProcessMessageMode::kSerialized:
-        mojo::Connector::OverrideDefaultSerializationBehaviorForTesting(
-            mojo::Connector::OutgoingSerializationMode::kEager,
-            mojo::Connector::IncomingSerializationMode::kDispatchAsIs);
-        break;
-      case InProcessMessageMode::kUnserialized:
-        mojo::Connector::OverrideDefaultSerializationBehaviorForTesting(
-            mojo::Connector::OutgoingSerializationMode::kLazy,
-            mojo::Connector::IncomingSerializationMode::kDispatchAsIs);
-        break;
-    }
-  }
-};
-
-using MojoInProcessInterfacePerfTest = InProcessPerfTest<MojoInterfacePerfTest>;
-using MojoInProcessInterfacePassingPerfTest =
-    InProcessPerfTest<MojoInterfacePassingPerfTest>;
+class MojoInProcessInterfacePerfTest : public MojoInterfacePerfTest {};
+class MojoInProcessInterfacePassingPerfTest
+    : public MojoInterfacePassingPerfTest {};
 
 DEFINE_TEST_CLIENT_WITH_PIPE(PingPongClient, MojoInterfacePerfTest, h) {
   base::test::SingleThreadTaskEnvironment task_environment;
@@ -459,7 +433,7 @@ TEST_F(MojoInterfacePassingPerfTest, MultiprocessAssociatedInterfacePassing) {
 }
 
 // A single process version of the above test.
-TEST_P(MojoInProcessInterfacePerfTest, MultiThreadPingPong) {
+TEST_F(MojoInProcessInterfacePerfTest, MultiThreadPingPong) {
   MojoHandle server_handle, client_handle;
   CreateMessagePipe(&server_handle, &client_handle);
 
@@ -473,7 +447,7 @@ TEST_P(MojoInProcessInterfacePerfTest, MultiThreadPingPong) {
   RunPingPongServer(server_handle, "SingleProcess");
 }
 
-TEST_P(MojoInProcessInterfacePerfTest, SingleThreadPingPong) {
+TEST_F(MojoInProcessInterfacePerfTest, SingleThreadPingPong) {
   MojoHandle server_handle, client_handle;
   CreateMessagePipe(&server_handle, &client_handle);
 
@@ -486,12 +460,7 @@ TEST_P(MojoInProcessInterfacePerfTest, SingleThreadPingPong) {
   RunPingPongServer(server_handle, "SingleProcess");
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         MojoInProcessInterfacePerfTest,
-                         testing::Values(InProcessMessageMode::kSerialized,
-                                         InProcessMessageMode::kUnserialized));
-
-TEST_P(MojoInProcessInterfacePassingPerfTest, MultiThreadInterfacePassing) {
+TEST_F(MojoInProcessInterfacePassingPerfTest, MultiThreadInterfacePassing) {
   MojoHandle server_handle, client_handle;
   CreateMessagePipe(&server_handle, &client_handle);
 
@@ -508,7 +477,7 @@ TEST_P(MojoInProcessInterfacePassingPerfTest, MultiThreadInterfacePassing) {
                             false /* associated */);
 }
 
-TEST_P(MojoInProcessInterfacePassingPerfTest,
+TEST_F(MojoInProcessInterfacePassingPerfTest,
        MultiThreadAssociatedInterfacePassing) {
   MojoHandle server_handle, client_handle;
   CreateMessagePipe(&server_handle, &client_handle);
@@ -526,7 +495,7 @@ TEST_P(MojoInProcessInterfacePassingPerfTest,
                             true /* associated */);
 }
 
-TEST_P(MojoInProcessInterfacePassingPerfTest, SingleThreadInterfacePassing) {
+TEST_F(MojoInProcessInterfacePassingPerfTest, SingleThreadInterfacePassing) {
   MojoHandle server_handle, client_handle;
   CreateMessagePipe(&server_handle, &client_handle);
 
@@ -543,7 +512,7 @@ TEST_P(MojoInProcessInterfacePassingPerfTest, SingleThreadInterfacePassing) {
                             false /* associated */);
 }
 
-TEST_P(MojoInProcessInterfacePassingPerfTest,
+TEST_F(MojoInProcessInterfacePassingPerfTest,
        SingleThreadAssociatedInterfacePassing) {
   MojoHandle server_handle, client_handle;
   CreateMessagePipe(&server_handle, &client_handle);
@@ -560,11 +529,6 @@ TEST_P(MojoInProcessInterfacePassingPerfTest,
   RunInterfacePassingServer(server_handle, "SingleProcess",
                             true /* associated */);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         MojoInProcessInterfacePassingPerfTest,
-                         testing::Values(InProcessMessageMode::kSerialized,
-                                         InProcessMessageMode::kUnserialized));
 
 class CallbackPerfTest : public testing::Test {
  public:

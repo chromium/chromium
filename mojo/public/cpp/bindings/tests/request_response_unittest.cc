@@ -55,7 +55,7 @@ class ProviderImpl : public sample::Provider {
 
 using RequestResponseTest = BindingsTestBase;
 
-TEST_P(RequestResponseTest, EchoString) {
+TEST_F(RequestResponseTest, EchoString) {
   Remote<sample::Provider> provider;
   ProviderImpl provider_impl(provider.BindNewPipeAndPassReceiver());
 
@@ -69,7 +69,7 @@ TEST_P(RequestResponseTest, EchoString) {
   run_loop.Run();
 }
 
-TEST_P(RequestResponseTest, EchoStrings) {
+TEST_F(RequestResponseTest, EchoStrings) {
   Remote<sample::Provider> provider;
   ProviderImpl provider_impl(provider.BindNewPipeAndPassReceiver());
 
@@ -88,7 +88,7 @@ TEST_P(RequestResponseTest, EchoStrings) {
   run_loop.Run();
 }
 
-TEST_P(RequestResponseTest, EchoMessagePipeHandle) {
+TEST_F(RequestResponseTest, EchoMessagePipeHandle) {
   Remote<sample::Provider> provider;
   ProviderImpl provider_impl(provider.BindNewPipeAndPassReceiver());
 
@@ -108,7 +108,7 @@ TEST_P(RequestResponseTest, EchoMessagePipeHandle) {
   run_loop.Run();
 }
 
-TEST_P(RequestResponseTest, EchoEnum) {
+TEST_F(RequestResponseTest, EchoEnum) {
   Remote<sample::Provider> provider;
   ProviderImpl provider_impl(provider.BindNewPipeAndPassReceiver());
 
@@ -120,8 +120,6 @@ TEST_P(RequestResponseTest, EchoEnum) {
                      }));
   run_loop.Run();
 }
-
-INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(RequestResponseTest);
 
 }  // namespace
 }  // namespace test

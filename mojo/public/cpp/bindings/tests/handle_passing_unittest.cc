@@ -200,7 +200,7 @@ void DoStuff2(bool* got_response,
   std::move(closure).Run();
 }
 
-TEST_P(HandlePassingTest, Basic) {
+TEST_F(HandlePassingTest, Basic) {
   Remote<sample::Factory> factory;
   SampleFactoryImpl factory_impl(factory.BindNewPipeAndPassReceiver());
 
@@ -235,7 +235,7 @@ TEST_P(HandlePassingTest, Basic) {
   EXPECT_EQ(1, ImportedInterfaceImpl::do_something_count() - count_before);
 }
 
-TEST_P(HandlePassingTest, PassInvalid) {
+TEST_F(HandlePassingTest, PassInvalid) {
   Remote<sample::Factory> factory;
   SampleFactoryImpl factory_impl(factory.BindNewPipeAndPassReceiver());
 
@@ -257,7 +257,7 @@ TEST_P(HandlePassingTest, PassInvalid) {
 }
 
 // Verifies DataPipeConsumer can be passed and read from.
-TEST_P(HandlePassingTest, DataPipe) {
+TEST_F(HandlePassingTest, DataPipe) {
   Remote<sample::Factory> factory;
   SampleFactoryImpl factory_impl(factory.BindNewPipeAndPassReceiver());
 
@@ -293,7 +293,7 @@ TEST_P(HandlePassingTest, DataPipe) {
   EXPECT_EQ(expected_text_reply, got_text_reply);
 }
 
-TEST_P(HandlePassingTest, CreateNamedObject) {
+TEST_F(HandlePassingTest, CreateNamedObject) {
   Remote<sample::Factory> factory;
   SampleFactoryImpl factory_impl(factory.BindNewPipeAndPassReceiver());
 
@@ -325,8 +325,6 @@ TEST_P(HandlePassingTest, CreateNamedObject) {
   EXPECT_EQ(std::string("object1"), name1);
   EXPECT_EQ(std::string("object2"), name2);
 }
-
-INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(HandlePassingTest);
 
 }  // namespace
 }  // namespace test

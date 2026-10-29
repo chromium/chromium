@@ -219,7 +219,7 @@ class RemoteTest : public BindingsTestBase {
   void PumpMessages() { base::RunLoop().RunUntilIdle(); }
 };
 
-TEST_P(RemoteTest, IsBound) {
+TEST_F(RemoteTest, IsBound) {
   Remote<math::Calculator> calc;
   EXPECT_FALSE(calc);
   MathCalculatorImpl calc_impl(calc.BindNewPipeAndPassReceiver());
@@ -266,15 +266,15 @@ class EndToEndRemoteTest : public RemoteTest {
   std::unique_ptr<MathCalculatorImpl> calc_impl_;
 };
 
-TEST_P(EndToEndRemoteTest, EndToEnd) {
+TEST_F(EndToEndRemoteTest, EndToEnd) {
   RunTest(base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
-TEST_P(EndToEndRemoteTest, EndToEndOnSequence) {
+TEST_F(EndToEndRemoteTest, EndToEndOnSequence) {
   RunTest(base::ThreadPool::CreateSequencedTaskRunner({}));
 }
 
-TEST_P(RemoteTest, Movable) {
+TEST_F(RemoteTest, Movable) {
   Remote<math::Calculator> a;
   Remote<math::Calculator> b;
   MathCalculatorImpl calc_impl(b.BindNewPipeAndPassReceiver());
@@ -288,7 +288,7 @@ TEST_P(RemoteTest, Movable) {
   EXPECT_TRUE(!b);
 }
 
-TEST_P(RemoteTest, Resettable) {
+TEST_F(RemoteTest, Resettable) {
   Remote<math::Calculator> a;
 
   EXPECT_FALSE(a);
@@ -310,7 +310,7 @@ TEST_P(RemoteTest, Resettable) {
   Wait(pipe.handle1.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED);
 }
 
-TEST_P(RemoteTest, InvalidPendingRemotes) {
+TEST_F(RemoteTest, InvalidPendingRemotes) {
   PendingRemote<math::Calculator> invalid_remote;
   EXPECT_FALSE(invalid_remote);
 
@@ -320,7 +320,7 @@ TEST_P(RemoteTest, InvalidPendingRemotes) {
   EXPECT_FALSE(null_remote);
 }
 
-TEST_P(RemoteTest, IsConnected) {
+TEST_F(RemoteTest, IsConnected) {
   PendingRemote<math::Calculator> remote;
   MathCalculatorImpl calc_impl(remote.InitWithNewPipeAndPassReceiver());
 
@@ -349,7 +349,7 @@ TEST_P(RemoteTest, IsConnected) {
   EXPECT_FALSE(calculator_ui.is_connected());
 }
 
-TEST_P(RemoteTest, DisconnectCallback) {
+TEST_F(RemoteTest, DisconnectCallback) {
   PendingRemote<math::Calculator> remote;
   MathCalculatorImpl calc_impl(remote.InitWithNewPipeAndPassReceiver());
 
@@ -386,7 +386,7 @@ TEST_P(RemoteTest, DisconnectCallback) {
   EXPECT_FALSE(connected);
 }
 
-TEST_P(RemoteTest, DestroyRemoteOnMethodResponse) {
+TEST_F(RemoteTest, DestroyRemoteOnMethodResponse) {
   PendingRemote<math::Calculator> remote;
   MathCalculatorImpl calc_impl(remote.InitWithNewPipeAndPassReceiver());
 
@@ -401,7 +401,7 @@ TEST_P(RemoteTest, DestroyRemoteOnMethodResponse) {
   EXPECT_EQ(0, SelfDestructingMathCalculatorUI::num_instances());
 }
 
-TEST_P(RemoteTest, NestedDestroyRemoteOnMethodResponse) {
+TEST_F(RemoteTest, NestedDestroyRemoteOnMethodResponse) {
   PendingRemote<math::Calculator> remote;
   MathCalculatorImpl calc_impl(remote.InitWithNewPipeAndPassReceiver());
 
@@ -416,7 +416,7 @@ TEST_P(RemoteTest, NestedDestroyRemoteOnMethodResponse) {
   EXPECT_EQ(0, SelfDestructingMathCalculatorUI::num_instances());
 }
 
-TEST_P(RemoteTest, ReentrantWaitForIncomingCall) {
+TEST_F(RemoteTest, ReentrantWaitForIncomingCall) {
   Remote<sample::Service> remote;
   ReentrantServiceImpl impl(remote.BindNewPipeAndPassReceiver());
 
@@ -432,7 +432,7 @@ TEST_P(RemoteTest, ReentrantWaitForIncomingCall) {
   EXPECT_EQ(2, impl.max_call_depth());
 }
 
-TEST_P(RemoteTest, QueryVersion) {
+TEST_F(RemoteTest, QueryVersion) {
   IntegerAccessorImpl impl;
   Remote<sample::IntegerAccessor> remote;
   Receiver<sample::IntegerAccessor> receiver(
@@ -450,7 +450,7 @@ TEST_P(RemoteTest, QueryVersion) {
   EXPECT_EQ(3u, remote.version());
 }
 
-TEST_P(RemoteTest, RequireVersion) {
+TEST_F(RemoteTest, RequireVersion) {
   IntegerAccessorImpl impl;
   Remote<sample::IntegerAccessor> remote;
   Receiver<sample::IntegerAccessor> receiver(
@@ -681,7 +681,7 @@ class AImpl : public A {
   BImpl b_;
 };
 
-TEST_P(RemoteTest, Scoping) {
+TEST_F(RemoteTest, Scoping) {
   Remote<A> a;
   base::RunLoop run_loop;
   AImpl a_impl(a.BindNewPipeAndPassReceiver(), run_loop.QuitClosure());
@@ -717,7 +717,7 @@ class PingTestImpl : public sample::PingTest {
 };
 
 // Tests that FuseProxy does what it's supposed to do.
-TEST_P(RemoteTest, Fusion) {
+TEST_F(RemoteTest, Fusion) {
   PendingRemote<sample::PingTest> pending_remote;
   PingTestImpl impl(pending_remote.InitWithNewPipeAndPassReceiver());
 
@@ -737,7 +737,7 @@ TEST_P(RemoteTest, Fusion) {
   EXPECT_TRUE(called);
 }
 
-TEST_P(RemoteTest, MessageFilter) {
+TEST_F(RemoteTest, MessageFilter) {
   PendingRemote<sample::PingTest> pending_remote;
   PingTestImpl impl(pending_remote.InitWithNewPipeAndPassReceiver());
   Remote<sample::PingTest> remote(std::move(pending_remote));
@@ -771,7 +771,7 @@ void Fail() {
   FAIL() << "Unexpected connection error";
 }
 
-TEST_P(RemoteTest, FlushForTesting) {
+TEST_F(RemoteTest, FlushForTesting) {
   PendingRemote<math::Calculator> remote;
   MathCalculatorImpl calc_impl(remote.InitWithNewPipeAndPassReceiver());
 
@@ -788,7 +788,7 @@ TEST_P(RemoteTest, FlushForTesting) {
   EXPECT_EQ(10.0, calculator_ui.GetOutput());
 }
 
-TEST_P(RemoteTest, FlushAsyncForTesting) {
+TEST_F(RemoteTest, FlushAsyncForTesting) {
   PendingRemote<math::Calculator> remote;
   MathCalculatorImpl calc_impl(remote.InitWithNewPipeAndPassReceiver());
 
@@ -809,7 +809,7 @@ TEST_P(RemoteTest, FlushAsyncForTesting) {
   EXPECT_EQ(10.0, calculator_ui.GetOutput());
 }
 
-TEST_P(RemoteTest, FlushForTestingWithClosedPeer) {
+TEST_F(RemoteTest, FlushForTestingWithClosedPeer) {
   Remote<math::Calculator> calc;
   std::ignore = calc.BindNewPipeAndPassReceiver();
   bool called = false;
@@ -820,7 +820,7 @@ TEST_P(RemoteTest, FlushForTestingWithClosedPeer) {
   calc.FlushForTesting();
 }
 
-TEST_P(RemoteTest, FlushAsyncForTestingWithClosedPeer) {
+TEST_F(RemoteTest, FlushAsyncForTestingWithClosedPeer) {
   Remote<math::Calculator> calc;
   std::ignore = calc.BindNewPipeAndPassReceiver();
   bool called = false;
@@ -836,7 +836,7 @@ TEST_P(RemoteTest, FlushAsyncForTestingWithClosedPeer) {
   run_loop2.Run();
 }
 
-TEST_P(RemoteTest, DisconnectWithReason) {
+TEST_F(RemoteTest, DisconnectWithReason) {
   Remote<math::Calculator> calc;
   MathCalculatorImpl calc_impl(calc.BindNewPipeAndPassReceiver());
 
@@ -853,7 +853,7 @@ TEST_P(RemoteTest, DisconnectWithReason) {
   run_loop.Run();
 }
 
-TEST_P(RemoteTest, PendingReceiverResetWithReason) {
+TEST_F(RemoteTest, PendingReceiverResetWithReason) {
   Remote<math::Calculator> calc;
   auto pending_receiver = calc.BindNewPipeAndPassReceiver();
 
@@ -870,7 +870,7 @@ TEST_P(RemoteTest, PendingReceiverResetWithReason) {
   run_loop.Run();
 }
 
-TEST_P(RemoteTest, PendingReceiverResetWithReasonAfterDisconnect) {
+TEST_F(RemoteTest, PendingReceiverResetWithReasonAfterDisconnect) {
   Remote<math::Calculator> calc;
   auto pending_receiver = calc.BindNewPipeAndPassReceiver();
 
@@ -880,7 +880,7 @@ TEST_P(RemoteTest, PendingReceiverResetWithReasonAfterDisconnect) {
   pending_receiver.ResetWithReason(0u, "not-used");
 }
 
-TEST_P(RemoteTest, CallbackIsPassedRemote) {
+TEST_F(RemoteTest, CallbackIsPassedRemote) {
   Remote<sample::PingTest> remote;
   auto pending_receiver = remote.BindNewPipeAndPassReceiver();
 
@@ -899,7 +899,7 @@ TEST_P(RemoteTest, CallbackIsPassedRemote) {
   run_loop.Run();
 }
 
-TEST_P(RemoteTest, DisconnectHandlerOwnsRemote) {
+TEST_F(RemoteTest, DisconnectHandlerOwnsRemote) {
   Remote<sample::PingTest>* remote = new Remote<sample::PingTest>;
   auto pending_receiver = remote->BindNewPipeAndPassReceiver();
 
@@ -920,7 +920,7 @@ TEST_P(RemoteTest, DisconnectHandlerOwnsRemote) {
   run_loop.Run();
 }
 
-TEST_P(RemoteTest, SharedRemote) {
+TEST_F(RemoteTest, SharedRemote) {
   PendingRemote<math::Calculator> pending_remote;
   MathCalculatorImpl calc_impl(pending_remote.InitWithNewPipeAndPassReceiver());
   SharedRemote<math::Calculator> shared_remote(std::move(pending_remote));
@@ -945,7 +945,7 @@ TEST_P(RemoteTest, SharedRemote) {
   run_loop.Run();
 }
 
-TEST_P(RemoteTest, SharedRemoteWithTaskRunner) {
+TEST_F(RemoteTest, SharedRemoteWithTaskRunner) {
   const scoped_refptr<base::SequencedTaskRunner> other_thread_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner({});
 
@@ -1054,7 +1054,7 @@ class SequenceCheckerClientImpl : public mojom::SequenceCheckerClient {
   AssociatedReceiverSet<mojom::SequenceCheckerClient> receivers_;
 };
 
-TEST_P(RemoteTest, SharedRemotePassAssociatedEndpointsEarly) {
+TEST_F(RemoteTest, SharedRemotePassAssociatedEndpointsEarly) {
   // Verifies that we can start passing associated endpoints over a SharedRemote
   // as soon as it's constructed, even if it's still scheduled to bind on a
   // background thread.
@@ -1101,7 +1101,7 @@ TEST_P(RemoteTest, SharedRemotePassAssociatedEndpointsEarly) {
   EXPECT_EQ(4, next_expected_value);
 }
 
-TEST_P(RemoteTest, SharedRemoteEarlySyncCall) {
+TEST_F(RemoteTest, SharedRemoteEarlySyncCall) {
   // Verifies that sync calls made immediately after SharedRemote setup (with
   // off-thread binding) do not deadlock.
   const scoped_refptr<base::SequencedTaskRunner> other_thread_task_runner =
@@ -1123,7 +1123,7 @@ TEST_P(RemoteTest, SharedRemoteEarlySyncCall) {
   EXPECT_EQ(0, next_expected_value);
 }
 
-TEST_P(RemoteTest, SharedRemoteSyncCallWithPendingEventOnSameThread) {
+TEST_F(RemoteTest, SharedRemoteSyncCallWithPendingEventOnSameThread) {
   // Verifies that a sync reply on a SharedRemote is properly handled even if
   // there's an another event (in this case, an async message to an associated
   // interface) ahead of it in the underlying router's task queue.
@@ -1150,7 +1150,7 @@ TEST_P(RemoteTest, SharedRemoteSyncCallWithPendingEventOnSameThread) {
 }
 
 // Flaky on all platforms. https://crbug.com/1224768
-TEST_P(RemoteTest,
+TEST_F(RemoteTest,
        DISABLED_DisconnectDuringOffThreadSyncWaitWithUnprocessedTasks) {
   // Regression test for https://crbug.com/1223628.
   //
@@ -1202,7 +1202,7 @@ TEST_P(RemoteTest,
   EXPECT_FALSE(associated_remote->Quit());
 }
 
-TEST_P(RemoteTest, SharedRemoteDisconnectCallback) {
+TEST_F(RemoteTest, SharedRemoteDisconnectCallback) {
   PendingRemote<math::Calculator> remote;
   MathCalculatorImpl calc_impl(remote.InitWithNewPipeAndPassReceiver());
 
@@ -1253,7 +1253,7 @@ class SharedRemoteSyncTestImpl : public mojom::SharedRemoteSyncTest {
   }
 };
 
-TEST_P(RemoteTest, SharedRemoteSyncOnlyBlocksCallingSequence) {
+TEST_F(RemoteTest, SharedRemoteSyncOnlyBlocksCallingSequence) {
   // Verifies that a sync call on a SharedRemote only blocks the calling
   // sequence, not the sequence to which the underlying Remote is bound.
   // See https://crbug.com/1016022.
@@ -1288,7 +1288,7 @@ TEST_P(RemoteTest, SharedRemoteSyncOnlyBlocksCallingSequence) {
   task_environment()->RunUntilIdle();
 }
 
-TEST_P(RemoteTest, SharedRemoteSyncCallsFromOffBoundConstructionSequence) {
+TEST_F(RemoteTest, SharedRemoteSyncCallsFromOffBoundConstructionSequence) {
   // Regression test for https://crbug.com/1102921. Verifies that when
   // bound to its construction sequence, a SharedRemote doesn't try blocking
   // that sequence when a sync call is made from another sequence.
@@ -1323,7 +1323,7 @@ TEST_P(RemoteTest, SharedRemoteSyncCallsFromOffBoundConstructionSequence) {
   base::internal::ResetThreadRestrictionsForTesting();
 }
 
-TEST_P(RemoteTest, SharedRemoteSyncCallsFromBoundNonConstructionSequence) {
+TEST_F(RemoteTest, SharedRemoteSyncCallsFromBoundNonConstructionSequence) {
   // Regression test for https://crbug.com/1102921. Verifies that when
   // bound to some sequence other than that which constructed it, a SharedRemote
   // properly blocks when making sync calls from the bound sequence.
@@ -1352,7 +1352,7 @@ TEST_P(RemoteTest, SharedRemoteSyncCallsFromBoundNonConstructionSequence) {
   loop.Run();
 }
 
-TEST_P(RemoteTest, RemoteSet) {
+TEST_F(RemoteTest, RemoteSet) {
   std::vector<std::optional<MathCalculatorImpl>> impls(4);
 
   PendingRemote<math::Calculator> remote0;
@@ -1515,7 +1515,7 @@ class LargeMessageTestImpl : public mojom::LargeMessageTest {
 };
 
 // TODO(crbug.com/40226674): Flaky on Linux/ASAN, Mac, and Fuchsia bots.
-TEST_P(RemoteTest, DISABLED_SendVeryLargeMessages) {
+TEST_F(RemoteTest, DISABLED_SendVeryLargeMessages) {
   Remote<mojom::LargeMessageTest> remote;
   LargeMessageTestImpl impl(remote.BindNewPipeAndPassReceiver());
 
@@ -1531,22 +1531,15 @@ TEST_P(RemoteTest, DISABLED_SendVeryLargeMessages) {
   uint64_t data_size = 0;
   ASSERT_TRUE(remote->ProcessData(lots_of_data, &data_size));
   EXPECT_EQ(kBigDataSize, data_size);
-
-  if (GetParam() == BindingsTestSerializationMode::kNeverSerialize) {
-    // If the message is never serialized, there won't be a crash report even
-    // without the [UnlimitedSize] attribute.
-    EXPECT_FALSE(did_dump_without_crashing);
-  } else {
-    EXPECT_TRUE(did_dump_without_crashing);
-  }
+  EXPECT_TRUE(did_dump_without_crashing);
 
   did_dump_without_crashing = false;
   data_size = 0;
   ASSERT_TRUE(remote->ProcessLotsOfData(lots_of_data, &data_size));
   EXPECT_EQ(kBigDataSize, data_size);
 
-  // Serialized or not, this message won't generate a crash report because it's
-  // explicitly marked with [UnlimitedSize].
+  // This message won't generate a crash report because it's explicitly marked
+  // with [UnlimitedSize].
   EXPECT_FALSE(did_dump_without_crashing);
 
   // [UnlimitedSize] also allows replies to be large.
@@ -1558,9 +1551,6 @@ TEST_P(RemoteTest, DISABLED_SendVeryLargeMessages) {
 
   base::debug::SetDumpWithoutCrashingFunction(nullptr);
 }
-
-INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(RemoteTest);
-INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(EndToEndRemoteTest);
 
 }  // namespace
 }  // namespace remote_unittest

@@ -140,7 +140,7 @@ class PingImpl : public PingService {
   base::RepeatingClosure ping_handler_;
 };
 
-TEST_P(ReceiverSetTest, ReceiverSetContext) {
+TEST_F(ReceiverSetTest, ReceiverSetContext) {
   PingImpl impl;
 
   ReceiverSet<PingService, int> receivers;
@@ -181,7 +181,7 @@ TEST_P(ReceiverSetTest, ReceiverSetContext) {
   EXPECT_TRUE(receivers.empty());
 }
 
-TEST_P(ReceiverSetTest, ReceiverSetMutableContext) {
+TEST_F(ReceiverSetTest, ReceiverSetMutableContext) {
   PingImpl impl;
 
   ReceiverSet<PingService, int> receivers;
@@ -204,7 +204,7 @@ TEST_P(ReceiverSetTest, ReceiverSetMutableContext) {
   }
 }
 
-TEST_P(ReceiverSetTest, ReceiverSetGetContext) {
+TEST_F(ReceiverSetTest, ReceiverSetGetContext) {
   PingImpl impl;
 
   ReceiverSet<PingService, int> receivers;
@@ -219,7 +219,7 @@ TEST_P(ReceiverSetTest, ReceiverSetGetContext) {
   EXPECT_EQ(nullptr, receivers.GetContext(receiver_b + 1));
 }
 
-TEST_P(ReceiverSetTest, ReceiverSetGetAllContexts) {
+TEST_F(ReceiverSetTest, ReceiverSetGetAllContexts) {
   PingImpl impl;
 
   ReceiverSet<PingService, int> receivers;
@@ -235,7 +235,7 @@ TEST_P(ReceiverSetTest, ReceiverSetGetAllContexts) {
   EXPECT_EQ(2, *contexts[receiver_b]);
 }
 
-TEST_P(ReceiverSetTest, ReceiverSetDispatchReceiver) {
+TEST_F(ReceiverSetTest, ReceiverSetDispatchReceiver) {
   PingImpl impl;
 
   ReceiverSet<PingService, int> receivers;
@@ -278,7 +278,7 @@ TEST_P(ReceiverSetTest, ReceiverSetDispatchReceiver) {
   EXPECT_TRUE(receivers.empty());
 }
 
-TEST_P(ReceiverSetTest, ReceiverSetConnectionErrorWithReason) {
+TEST_F(ReceiverSetTest, ReceiverSetConnectionErrorWithReason) {
   PingImpl impl;
   Remote<PingService> remote;
   ReceiverSet<PingService> receivers;
@@ -295,7 +295,7 @@ TEST_P(ReceiverSetTest, ReceiverSetConnectionErrorWithReason) {
   remote.ResetWithReason(1024u, "bye");
 }
 
-TEST_P(ReceiverSetTest, ReceiverSetReportBadMessage) {
+TEST_F(ReceiverSetTest, ReceiverSetReportBadMessage) {
   PingImpl impl;
 
   std::string last_received_error;
@@ -332,7 +332,7 @@ TEST_P(ReceiverSetTest, ReceiverSetReportBadMessage) {
   SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
-TEST_P(ReceiverSetTest, ReceiverSetGetBadMessageCallback) {
+TEST_F(ReceiverSetTest, ReceiverSetGetBadMessageCallback) {
   PingImpl impl;
 
   std::string last_received_error;
@@ -382,7 +382,7 @@ TEST_P(ReceiverSetTest, ReceiverSetGetBadMessageCallback) {
   SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
-TEST_P(ReceiverSetTest, ReceiverSetGetBadMessageCallbackOutlivesReceiverSet) {
+TEST_F(ReceiverSetTest, ReceiverSetGetBadMessageCallbackOutlivesReceiverSet) {
   PingImpl impl;
 
   std::string last_received_error;
@@ -452,7 +452,7 @@ class PingProviderImpl : public AssociatedPingProvider, public PingService {
   base::RepeatingClosure new_ping_handler_;
 };
 
-TEST_P(ReceiverSetTest, AssociatedReceiverSetContext) {
+TEST_F(ReceiverSetTest, AssociatedReceiverSetContext) {
   Remote<AssociatedPingProvider> provider;
   PingProviderImpl impl;
   Receiver<AssociatedPingProvider> receiver(
@@ -509,7 +509,7 @@ TEST_P(ReceiverSetTest, AssociatedReceiverSetContext) {
   EXPECT_TRUE(impl.ping_receivers().empty());
 }
 
-TEST_P(ReceiverSetTest, PrimaryInterfaceReceiverSetContext) {
+TEST_F(ReceiverSetTest, PrimaryInterfaceReceiverSetContext) {
   Remote<AssociatedPingProvider> provider_a, provider_b;
   PingProviderImpl impl;
   ReceiverSet<AssociatedPingProvider, int> receivers;
@@ -554,7 +554,7 @@ TEST_P(ReceiverSetTest, PrimaryInterfaceReceiverSetContext) {
   EXPECT_TRUE(receivers.empty());
 }
 
-TEST_P(ReceiverSetTest, PrimaryInterfaceReceiverSetDispatchReceiver) {
+TEST_F(ReceiverSetTest, PrimaryInterfaceReceiverSetDispatchReceiver) {
   Remote<AssociatedPingProvider> provider_a, provider_b;
   PingProviderImpl impl;
   ReceiverSet<AssociatedPingProvider, int> receivers;
@@ -601,7 +601,7 @@ TEST_P(ReceiverSetTest, PrimaryInterfaceReceiverSetDispatchReceiver) {
   EXPECT_TRUE(receivers.empty());
 }
 
-TEST_P(ReceiverSetTest, AssociatedReceiverSetConnectionErrorWithReason) {
+TEST_F(ReceiverSetTest, AssociatedReceiverSetConnectionErrorWithReason) {
   Remote<AssociatedPingProvider> remote_primary;
   PingProviderImpl primary_impl;
   Receiver<AssociatedPingProvider> primary_receiver(
@@ -635,7 +635,7 @@ class PingInstanceCounter : public PingService {
 };
 int PingInstanceCounter::instance_count = 0;
 
-TEST_P(ReceiverSetTest, UniqueReceiverSetDestruction) {
+TEST_F(ReceiverSetTest, UniqueReceiverSetDestruction) {
   Remote<PingService> ping_a, ping_b;
   auto receivers = std::make_unique<UniqueReceiverSet<PingService>>();
 
@@ -651,7 +651,7 @@ TEST_P(ReceiverSetTest, UniqueReceiverSetDestruction) {
   EXPECT_EQ(0, PingInstanceCounter::instance_count);
 }
 
-TEST_P(ReceiverSetTest, UniqueReceiverSetDisconnect) {
+TEST_F(ReceiverSetTest, UniqueReceiverSetDisconnect) {
   Remote<PingService> ping_a, ping_b;
   UniqueReceiverSet<PingService> receivers;
   receivers.Add(std::make_unique<PingInstanceCounter>(),
@@ -669,7 +669,7 @@ TEST_P(ReceiverSetTest, UniqueReceiverSetDisconnect) {
   EXPECT_EQ(0, PingInstanceCounter::instance_count);
 }
 
-TEST_P(ReceiverSetTest, UniqueReceiverSetRemoveEntry) {
+TEST_F(ReceiverSetTest, UniqueReceiverSetRemoveEntry) {
   Remote<PingService> ping_a, ping_b;
   UniqueReceiverSet<PingService> receivers;
   ReceiverId receiver_id_a =
@@ -686,8 +686,6 @@ TEST_P(ReceiverSetTest, UniqueReceiverSetRemoveEntry) {
   EXPECT_TRUE(receivers.Remove(receiver_id_b));
   EXPECT_EQ(0, PingInstanceCounter::instance_count);
 }
-
-INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(ReceiverSetTest);
 
 }  // namespace
 }  // namespace test

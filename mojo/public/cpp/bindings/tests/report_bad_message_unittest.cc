@@ -95,7 +95,7 @@ class ReportBadMessageTest : public BindingsTestBase {
   base::OnceClosure error_handler_;
 };
 
-TEST_P(ReportBadMessageTest, Request) {
+TEST_F(ReportBadMessageTest, Request) {
   // Verify that basic immediate error reporting works.
   bool error = false;
   SetErrorHandler(base::BindLambdaForTesting([&] { error = true; }));
@@ -103,7 +103,7 @@ TEST_P(ReportBadMessageTest, Request) {
   EXPECT_TRUE(error);
 }
 
-TEST_P(ReportBadMessageTest, RequestAsync) {
+TEST_F(ReportBadMessageTest, RequestAsync) {
   bool error = false;
   SetErrorHandler(base::BindLambdaForTesting([&] { error = true; }));
 
@@ -120,7 +120,7 @@ TEST_P(ReportBadMessageTest, RequestAsync) {
   EXPECT_TRUE(error);
 }
 
-TEST_P(ReportBadMessageTest, Response) {
+TEST_F(ReportBadMessageTest, Response) {
   bool error = false;
   SetErrorHandler(base::BindLambdaForTesting([&] { error = true; }));
 
@@ -136,7 +136,7 @@ TEST_P(ReportBadMessageTest, Response) {
   EXPECT_TRUE(error);
 }
 
-TEST_P(ReportBadMessageTest, ResponseAsync) {
+TEST_F(ReportBadMessageTest, ResponseAsync) {
   bool error = false;
   SetErrorHandler(base::BindLambdaForTesting([&] { error = true; }));
 
@@ -157,8 +157,6 @@ TEST_P(ReportBadMessageTest, ResponseAsync) {
       .Run("this message is bad and should feel bad");
   EXPECT_TRUE(error);
 }
-
-INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(ReportBadMessageTest);
 
 }  // namespace
 }  // namespace test

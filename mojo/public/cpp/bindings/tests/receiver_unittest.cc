@@ -74,7 +74,7 @@ class ServiceImpl : public sample::Service {
 
 using ReceiverTest = BindingsTestBase;
 
-TEST_P(ReceiverTest, Reset) {
+TEST_F(ReceiverTest, Reset) {
   bool called = false;
   Remote<sample::Service> remote;
 
@@ -95,7 +95,7 @@ TEST_P(ReceiverTest, Reset) {
 }
 
 // Tests that destroying a mojo::Binding closes the bound message pipe handle.
-TEST_P(ReceiverTest, DestroyClosesMessagePipe) {
+TEST_F(ReceiverTest, DestroyClosesMessagePipe) {
   bool encountered_error = false;
   ServiceImpl impl;
   Remote<sample::Service> remote;
@@ -135,7 +135,7 @@ TEST_P(ReceiverTest, DestroyClosesMessagePipe) {
 
 // Tests that the binding's connection error handler gets called when the other
 // end is closed.
-TEST_P(ReceiverTest, Disconnect) {
+TEST_F(ReceiverTest, Disconnect) {
   bool called = false;
   {
     ServiceImpl impl;
@@ -159,7 +159,7 @@ TEST_P(ReceiverTest, Disconnect) {
 
 // Tests that calling Close doesn't result in the connection error handler being
 // called.
-TEST_P(ReceiverTest, ResetDoesntCallDisconnectHandler) {
+TEST_F(ReceiverTest, ResetDoesntCallDisconnectHandler) {
   ServiceImpl impl;
   Remote<sample::Service> remote;
   Receiver<sample::Service> receiver(&impl,
@@ -203,7 +203,7 @@ class ServiceImplWithReceiver : public ServiceImpl {
 };
 
 // Tests that the receiver may be deleted in its disconnect handler.
-TEST_P(ReceiverTest, SelfDeleteOnDisconnect) {
+TEST_F(ReceiverTest, SelfDeleteOnDisconnect) {
   bool was_deleted = false;
   Remote<sample::Service> remote;
   base::RunLoop run_loop;
@@ -217,7 +217,7 @@ TEST_P(ReceiverTest, SelfDeleteOnDisconnect) {
 }
 
 // Tests that explicitly calling Unbind followed by rebinding works.
-TEST_P(ReceiverTest, Unbind) {
+TEST_F(ReceiverTest, Unbind) {
   ServiceImpl impl;
   Remote<sample::Service> remote;
   Receiver<sample::Service> receiver(&impl,
@@ -281,7 +281,7 @@ class IntegerAccessorImpl : public sample::IntegerAccessor {
   void SetInteger(int64_t data, sample::Enum type) override {}
 };
 
-TEST_P(ReceiverTest, PauseResume) {
+TEST_F(ReceiverTest, PauseResume) {
   bool called = false;
   base::RunLoop run_loop;
   Remote<sample::Service> remote;
@@ -307,7 +307,7 @@ TEST_P(ReceiverTest, PauseResume) {
 }
 
 // Verifies the disconnect handler is not run while a receiver is paused.
-TEST_P(ReceiverTest, ErrorHandleNotRunWhilePaused) {
+TEST_F(ReceiverTest, ErrorHandleNotRunWhilePaused) {
   bool called = false;
   base::RunLoop run_loop;
   Remote<sample::Service> remote;
@@ -388,7 +388,7 @@ class CallbackFilter : public MessageFilter {
 
 // Verifies that message filters are notified in the order they were added and
 // are always notified before a message is dispatched.
-TEST_P(ReceiverTest, MessageFilter) {
+TEST_F(ReceiverTest, MessageFilter) {
   Remote<test::PingService> remote;
   PingServiceImpl impl;
   Receiver<test::PingService> receiver(&impl,
@@ -422,7 +422,7 @@ void Fail() {
   FAIL() << "Unexpected connection error";
 }
 
-TEST_P(ReceiverTest, FlushForTesting) {
+TEST_F(ReceiverTest, FlushForTesting) {
   bool called = false;
   Remote<sample::Service> remote;
   ServiceImpl impl;
@@ -442,7 +442,7 @@ TEST_P(ReceiverTest, FlushForTesting) {
   EXPECT_TRUE(called);
 }
 
-TEST_P(ReceiverTest, FlushForTestingWithClosedPeer) {
+TEST_F(ReceiverTest, FlushForTestingWithClosedPeer) {
   bool called = false;
   Remote<sample::Service> remote;
   ServiceImpl impl;
@@ -458,7 +458,7 @@ TEST_P(ReceiverTest, FlushForTestingWithClosedPeer) {
   receiver.FlushForTesting();
 }
 
-TEST_P(ReceiverTest, DisconnectWithReason) {
+TEST_F(ReceiverTest, DisconnectWithReason) {
   Remote<sample::Service> remote;
   ServiceImpl impl;
   Receiver<sample::Service> receiver(&impl,
@@ -476,7 +476,7 @@ TEST_P(ReceiverTest, DisconnectWithReason) {
   run_loop.Run();
 }
 
-TEST_P(ReceiverTest, PendingRemoteResetWithReason) {
+TEST_F(ReceiverTest, PendingRemoteResetWithReason) {
   ServiceImpl impl;
   Receiver<sample::Service> receiver(&impl);
   PendingRemote<sample::Service> pending_remote =
@@ -505,7 +505,7 @@ struct WeakPtrImplRefTraits {
 template <typename T>
 using WeakReceiver = Receiver<T, WeakPtrImplRefTraits<T>>;
 
-TEST_P(ReceiverTest, CustomImplPointerType) {
+TEST_F(ReceiverTest, CustomImplPointerType) {
   PingServiceImpl impl;
   base::WeakPtrFactory<test::PingService> weak_factory(&impl);
 
@@ -534,7 +534,7 @@ TEST_P(ReceiverTest, CustomImplPointerType) {
   }
 }
 
-TEST_P(ReceiverTest, ReportBadMessage) {
+TEST_F(ReceiverTest, ReportBadMessage) {
   bool called = false;
   Remote<test::PingService> remote;
   auto pending_receiver = remote.BindNewPipeAndPassReceiver();
@@ -561,7 +561,7 @@ TEST_P(ReceiverTest, ReportBadMessage) {
   SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
-TEST_P(ReceiverTest, GetBadMessageCallback) {
+TEST_F(ReceiverTest, GetBadMessageCallback) {
   Remote<test::PingService> remote;
   base::RunLoop run_loop;
   PingServiceImpl impl;
@@ -588,7 +588,7 @@ TEST_P(ReceiverTest, GetBadMessageCallback) {
   SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
-TEST_P(ReceiverTest, InvalidPendingReceivers) {
+TEST_F(ReceiverTest, InvalidPendingReceivers) {
   PendingReceiver<sample::Service> uninitialized_pending;
   EXPECT_FALSE(uninitialized_pending);
 
@@ -598,7 +598,7 @@ TEST_P(ReceiverTest, InvalidPendingReceivers) {
   EXPECT_FALSE(null_pending);
 }
 
-TEST_P(ReceiverTest, GenericPendingReceiver) {
+TEST_F(ReceiverTest, GenericPendingReceiver) {
   Remote<sample::Service> remote;
   GenericPendingReceiver receiver;
   EXPECT_FALSE(receiver.is_valid());
@@ -617,7 +617,7 @@ TEST_P(ReceiverTest, GenericPendingReceiver) {
   EXPECT_FALSE(receiver.is_valid());
 }
 
-TEST_P(ReceiverTest, GenericPendingAssociatedReceiver) {
+TEST_F(ReceiverTest, GenericPendingAssociatedReceiver) {
   AssociatedRemote<sample::Service> remote;
   GenericPendingAssociatedReceiver receiver;
   EXPECT_FALSE(receiver.is_valid());
@@ -655,7 +655,7 @@ class RebindTestImpl : public mojom::RebindTestInterface {
   raw_ptr<base::WaitableEvent> event_;
 };
 
-TEST_P(ReceiverTest, RebindWithScheduledSyncMessage) {
+TEST_F(ReceiverTest, RebindWithScheduledSyncMessage) {
   base::WaitableEvent event{base::WaitableEvent::ResetPolicy::MANUAL,
                             base::WaitableEvent::InitialState::NOT_SIGNALED};
   RebindTestImpl impl{&event};
@@ -785,7 +785,7 @@ class TestGenericBinderImpl : public mojom::TestGenericBinder {
 
 using ReceiverSerializationTest = ReceiverTest;
 
-TEST_P(ReceiverSerializationTest, NullGenericPendingReceiver) {
+TEST_F(ReceiverSerializationTest, NullGenericPendingReceiver) {
   Remote<mojom::TestGenericBinder> remote;
   GenericPendingReceiver receiver;
   TestGenericBinderImpl binder(remote.BindNewPipeAndPassReceiver());
@@ -836,7 +836,7 @@ TEST_P(ReceiverSerializationTest, NullGenericPendingReceiver) {
   EXPECT_FALSE(binder.connected());
 }
 
-TEST_P(ReceiverSerializationTest, NullGenericPendingAssociatedReceiver) {
+TEST_F(ReceiverSerializationTest, NullGenericPendingAssociatedReceiver) {
   Remote<mojom::TestGenericBinder> remote;
   GenericPendingAssociatedReceiver receiver;
   TestGenericBinderImpl binder(remote.BindNewPipeAndPassReceiver());
@@ -890,7 +890,7 @@ TEST_P(ReceiverSerializationTest, NullGenericPendingAssociatedReceiver) {
 
 using SelfOwnedReceiverTest = BindingsTestBase;
 
-TEST_P(SelfOwnedReceiverTest, CloseDestroysImplAndPipe) {
+TEST_F(SelfOwnedReceiverTest, CloseDestroysImplAndPipe) {
   base::RunLoop run_loop;
   bool disconnected = false;
   bool was_deleted = false;
@@ -924,7 +924,7 @@ TEST_P(SelfOwnedReceiverTest, CloseDestroysImplAndPipe) {
   ASSERT_TRUE(was_deleted);
 }
 
-TEST_P(SelfOwnedReceiverTest, DisconnectDestroysImplAndPipe) {
+TEST_F(SelfOwnedReceiverTest, DisconnectDestroysImplAndPipe) {
   Remote<sample::Service> remote;
   bool was_deleted = false;
   base::RunLoop run_loop;
@@ -1032,15 +1032,6 @@ TEST_F(MultiprocessReceiverTest, MultiprocessReceiver) {
   });
 }
 #endif  // BUILDFLAG(USE_BLINK)
-
-INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(ReceiverTest);
-INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(SelfOwnedReceiverTest);
-
-// These tests only make sense for serialized messages.
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ReceiverSerializationTest,
-    testing::Values(mojo::BindingsTestSerializationMode::kSerializeBeforeSend));
 
 }  // namespace receiver_unittest
 }  // namespace test

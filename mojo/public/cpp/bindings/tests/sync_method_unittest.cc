@@ -264,9 +264,7 @@ class RemoteWrapper {
 // The type parameter for SyncMethodCommonTests and
 // SyncMethodOnSequenceCommonTests for varying the Interface and whether to use
 // Remote or SharedRemote.
-template <typename InterfaceT,
-          bool use_shared_remote,
-          BindingsTestSerializationMode serialization_mode>
+template <typename InterfaceT, bool use_shared_remote>
 struct TestParams {
   using Interface = InterfaceT;
   static const bool kIsSharedRemoteTest = use_shared_remote;
@@ -279,9 +277,6 @@ struct TestParams {
       return RemoteWrapper<Interface>(Remote<Interface>(std::move(remote)));
     }
   }
-
-  static const BindingsTestSerializationMode kSerializationMode =
-      serialization_mode;
 };
 
 template <typename Interface>
@@ -340,10 +335,6 @@ class SyncMethodCommonTest : public SyncMethodTest {
  public:
   SyncMethodCommonTest() = default;
   ~SyncMethodCommonTest() override = default;
-
-  void SetUp() override {
-    BindingsTestBase::SetupSerializationBehavior(TypeParam::kSerializationMode);
-  }
 };
 
 class SyncMethodAssociatedTest : public SyncMethodTest {
@@ -455,7 +446,6 @@ template <typename TypeParam>
 class SyncMethodOnSequenceCommonTest : public SequencedTaskRunnerTestBase {
  public:
   void SetUp() override {
-    BindingsTestBase::SetupSerializationBehavior(TypeParam::kSerializationMode);
     impl_ = std::make_unique<ImplTypeFor<typename TypeParam::Interface>>(
         remote_.BindNewPipeAndPassReceiver());
   }
@@ -479,41 +469,11 @@ void RunTestOnSequencedTaskRunner(
 // TestSync (without associated interfaces) and TestSyncPrimary (with associated
 // interfaces) exercise MultiplexRouter with different configurations.
 // Each test is run once with a Remote and once with a SharedRemote to ensure
-// that they behave the same with respect to sync calls. Finally, all such
-// combinations are tested in different message serialization modes.
-using InterfaceTypes = testing::Types<
-    TestParams<TestSync,
-               true,
-               BindingsTestSerializationMode::kSerializeBeforeSend>,
-    TestParams<TestSync,
-               false,
-               BindingsTestSerializationMode::kSerializeBeforeSend>,
-    TestParams<TestSyncPrimary,
-               true,
-               BindingsTestSerializationMode::kSerializeBeforeSend>,
-    TestParams<TestSyncPrimary,
-               false,
-               BindingsTestSerializationMode::kSerializeBeforeSend>,
-    TestParams<TestSync,
-               true,
-               BindingsTestSerializationMode::kSerializeBeforeDispatch>,
-    TestParams<TestSync,
-               false,
-               BindingsTestSerializationMode::kSerializeBeforeDispatch>,
-    TestParams<TestSyncPrimary,
-               true,
-               BindingsTestSerializationMode::kSerializeBeforeDispatch>,
-    TestParams<TestSyncPrimary,
-               false,
-               BindingsTestSerializationMode::kSerializeBeforeDispatch>,
-    TestParams<TestSync, true, BindingsTestSerializationMode::kNeverSerialize>,
-    TestParams<TestSync, false, BindingsTestSerializationMode::kNeverSerialize>,
-    TestParams<TestSyncPrimary,
-               true,
-               BindingsTestSerializationMode::kNeverSerialize>,
-    TestParams<TestSyncPrimary,
-               false,
-               BindingsTestSerializationMode::kNeverSerialize>>;
+// that they behave the same with respect to sync calls.
+using InterfaceTypes = testing::Types<TestParams<TestSync, true>,
+                                      TestParams<TestSync, false>,
+                                      TestParams<TestSyncPrimary, true>,
+                                      TestParams<TestSyncPrimary, false>>;
 
 TYPED_TEST_SUITE(SyncMethodCommonTest, InterfaceTypes);
 TYPED_TEST_SUITE(SequencedTaskRunnerTestLauncher, InterfaceTypes);
@@ -1534,7 +1494,7 @@ class SyncInterruptTest : public BindingsTestBase {
   base::RunLoop shared_receiver_quit_loop_;
 };
 
-TEST_P(SyncInterruptTest, AsyncCannotInterruptSync) {
+TEST_F(SyncInterruptTest, AsyncCannotInterruptSync) {
   // Verifies that async messages will not dispatch on a thread while that
   // thread is waiting for any sync reply.
   InitPonger(mojom::PongSendMode::kAsync);
@@ -1546,7 +1506,7 @@ TEST_P(SyncInterruptTest, AsyncCannotInterruptSync) {
   EXPECT_EQ(0, same_pipe_ponger().num_sync_pongs());
 }
 
-TEST_P(SyncInterruptTest, SyncCanInterruptSync) {
+TEST_F(SyncInterruptTest, SyncCanInterruptSync) {
   // Verifies that incoming sync messages can normally interrupt a sync wait on
   // the same thread, even when received on a different pipe.
   InitPonger(mojom::PongSendMode::kSyncBlockReply);
@@ -1558,7 +1518,7 @@ TEST_P(SyncInterruptTest, SyncCanInterruptSync) {
   EXPECT_EQ(1, same_pipe_ponger().num_sync_pongs());
 }
 
-TEST_P(SyncInterruptTest, NothingCanInterruptSyncNoInterrupt) {
+TEST_F(SyncInterruptTest, NothingCanInterruptSyncNoInterrupt) {
   // Verifies that no incoming messages can interrupt a [NoInterrupt] sync wait
   // except for the exact reply we're waiting on.
 
@@ -1604,7 +1564,7 @@ TEST_P(SyncInterruptTest, NothingCanInterruptSyncNoInterrupt) {
   EXPECT_TRUE(got_first_async_reply);
 }
 
-TEST_P(SyncInterruptTest, SharedRemoteNoInterrupt) {
+TEST_F(SyncInterruptTest, SharedRemoteNoInterrupt) {
   // Verifies that [NoInterrupt] behavior also works as expected when doing a
   // sync call through a SharedRemote. A key difference between this case and
   // Remote case is that with a SharedRemote caller, the only possible
@@ -1621,7 +1581,7 @@ TEST_P(SyncInterruptTest, SharedRemoteNoInterrupt) {
   EXPECT_EQ(0, same_pipe_ponger().num_sync_pongs());
 }
 
-TEST_P(SyncInterruptTest, SharedAssociatedRemoteNoInterrupt) {
+TEST_F(SyncInterruptTest, SharedAssociatedRemoteNoInterrupt) {
   // Verifies that [NoInterrupt] behavior also works as expected when doing a
   // sync call through a SharedAssociatedRemote. Expectations are identical to
   // the SharedRemote case in the test above.
@@ -1668,7 +1628,7 @@ class DisableSyncInterruptTest : public BindingsTestBase {
   }
 };
 
-TEST_P(DisableSyncInterruptTest, NoInterruptWhenDisabled) {
+TEST_F(DisableSyncInterruptTest, NoInterruptWhenDisabled) {
   PendingRemote<mojom::SyncService> interrupter;
   SyncService service(interrupter.InitWithNewPipeAndPassReceiver());
 
@@ -1712,7 +1672,7 @@ TEST_P(DisableSyncInterruptTest, NoInterruptWhenDisabled) {
   background_service_thread.Stop();
 }
 
-TEST_P(DisableSyncInterruptTest, SharedRemoteNoInterruptWhenDisabled) {
+TEST_F(DisableSyncInterruptTest, SharedRemoteNoInterruptWhenDisabled) {
   PendingRemote<mojom::SyncService> interrupter;
   SyncService service(interrupter.InitWithNewPipeAndPassReceiver());
 
@@ -1770,9 +1730,6 @@ TEST_P(DisableSyncInterruptTest, SharedRemoteNoInterruptWhenDisabled) {
   background_service_thread.Stop();
   background_client_thread.Stop();
 }
-
-INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(SyncInterruptTest);
-INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(DisableSyncInterruptTest);
 
 class OneSyncImpl;
 
