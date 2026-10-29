@@ -83,6 +83,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/new_tab_page_resources.h"
 #include "chrome/grit/new_tab_page_resources_map.h"
+#include "chrome/grit/new_tab_shared_resources.h"
+#include "chrome/grit/new_tab_shared_resources_map.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -150,11 +152,6 @@
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo_handler.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(OPTIMIZE_WEBUI)
-#include "chrome/grit/new_tab_shared_resources.h"
-#include "chrome/grit/new_tab_shared_resources_map.h"
-#endif  // !BUILDFLAG(OPTIMIZE_WEBUI)
 
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ui/webui/new_tab_page/foo/foo_handler.h"
@@ -963,9 +960,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   }
 #endif
 
-#if !BUILDFLAG(OPTIMIZE_WEBUI)
   source->AddResourcePaths(kNewTabSharedResources);
-#endif  // BUILDFLAG(OPTIMIZE_WEBUI)
 
   // Allow embedding of iframes for the doodle and
   // chrome-untrusted://new-tab-page for other external content and resources.
