@@ -485,6 +485,7 @@ void HTMLTextAreaElement::SubtreeHasChanged() {
     GetDocument().GetPage()->GetChromeClient().DidClearValueInTextField(*this);
   }
   GetDocument().GetPage()->GetChromeClient().DidChangeValueInTextField(*this);
+  GetDocument().DidHaveFormEdit();
 }
 
 void HTMLTextAreaElement::HandleBeforeTextInsertedEvent(

@@ -776,6 +776,15 @@ interface LocalFrameHost {
   // whenever XSLT is disabled by default (other than for origin trials and
   // enterprise policy).
   SuppressXSLTDeprecationBanner();
+
+  // Sent when the document in the frame records a user edit in a form text
+  // control (e.g., <input> text field or <textarea>) for the first time.
+  DidHaveFormEdit();
+
+  // Sent when the document in the frame records a user edit (including form
+  // text controls and non-form editable elements such as contenteditable) for
+  // the first time.
+  DidHaveUserEdit();
 };
 
 // Implemented in Browser, this interface defines frame-specific methods

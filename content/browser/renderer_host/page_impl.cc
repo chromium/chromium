@@ -25,6 +25,7 @@
 #include "content/public/browser/peak_gpu_memory_tracker_factory.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/common/content_client.h"
+#include "net/base/schemeful_site.h"
 #include "services/viz/public/mojom/compositing/offset_tag.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/loader_constants.h"
@@ -33,6 +34,28 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace content {
+
+namespace {
+
+PageImpl::UserEditScope GetEditScope(
+    const std::set<url::Origin>& edited_origins,
+    const url::Origin& origin) {
+  if (edited_origins.empty()) {
+    return PageImpl::UserEditScope::kNoEdit;
+  }
+  if (edited_origins.contains(origin)) {
+    return PageImpl::UserEditScope::kSameOrigin;
+  }
+  net::SchemefulSite site(origin);
+  for (const url::Origin& edited_origin : edited_origins) {
+    if (net::SchemefulSite(edited_origin) == site) {
+      return PageImpl::UserEditScope::kSameSite;
+    }
+  }
+  return PageImpl::UserEditScope::kCrossSite;
+}
+
+}  // namespace
 
 PageImpl::PageImpl(RenderFrameHostImpl& rfh, PageDelegate& delegate)
     : main_document_(rfh), delegate_(delegate) {
@@ -396,6 +419,24 @@ void PageImpl::SetLastCommitParams(
 mojom::DidCommitProvisionalLoadParamsPtr PageImpl::TakeLastCommitParams() {
   CHECK(GetMainDocument().IsOutermostMainFrame());
   return std::move(last_commit_params_);
+}
+
+void PageImpl::DidHaveFormEdit(const url::Origin& origin) {
+  origins_with_form_edits_.insert(origin);
+}
+
+void PageImpl::DidHaveUserEdit(const url::Origin& origin) {
+  origins_with_user_edits_.insert(origin);
+}
+
+PageImpl::UserEditScope PageImpl::GetFormEditScope(
+    const url::Origin& origin) const {
+  return GetEditScope(origins_with_form_edits_, origin);
+}
+
+PageImpl::UserEditScope PageImpl::GetUserEditScope(
+    const url::Origin& origin) const {
+  return GetEditScope(origins_with_user_edits_, origin);
 }
 
 }  // namespace content

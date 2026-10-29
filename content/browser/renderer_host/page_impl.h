@@ -32,6 +32,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/android/page_proxy.h"
@@ -273,6 +274,30 @@ class CONTENT_EXPORT PageImpl : public Page {
     return std::move(sandbox_origin_token_for_popup_);
   }
 
+  // Scope of user edits recorded in the page relative to a given origin.
+  enum class UserEditScope {
+    kNoEdit,
+    kSameOrigin,
+    kSameSite,
+    kCrossSite,
+  };
+
+  // Records that a document with `origin` in this page has had a form edit or a
+  // user edit. A form edit (`DidHaveFormEdit`) is recorded when the user
+  // modifies the value of a form text control (e.g., `<input>` text fields or
+  // `<textarea>`). A user edit (`DidHaveUserEdit`) is more general and is
+  // recorded whenever an editing command is applied in the document, which
+  // includes both form text controls and non-form editable elements (such as
+  // `contenteditable` elements or `designMode` documents). Edits triggered by
+  // `document.execCommand()` are excluded from both.
+  void DidHaveFormEdit(const url::Origin& origin);
+  void DidHaveUserEdit(const url::Origin& origin);
+
+  // Returns the scope of form edits or user edits in this page relative to
+  // `origin`.
+  UserEditScope GetFormEditScope(const url::Origin& origin) const;
+  UserEditScope GetUserEditScope(const url::Origin& origin) const;
+
  private:
   void DidActivateAllRenderViewsForPrerendering(
       base::OnceCallback<void(base::TimeTicks)> completion_callback);
@@ -423,6 +448,11 @@ class CONTENT_EXPORT PageImpl : public Page {
   // frame is sandboxed. Consumed (reset to nullptr) by
   // `TakeSandboxOriginTokenForPopup()` when building the reply.
   std::unique_ptr<base::UnguessableToken> sandbox_origin_token_for_popup_;
+
+  // Origins of documents in this page that have recorded a form edit or a user
+  // edit.
+  std::set<url::Origin> origins_with_form_edits_;
+  std::set<url::Origin> origins_with_user_edits_;
 
 #if BUILDFLAG(IS_ANDROID)
   // For each C++ Page, there is a Java counterpart. It is the JNI bridge in

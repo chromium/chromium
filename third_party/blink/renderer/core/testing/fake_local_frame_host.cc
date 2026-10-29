@@ -287,4 +287,8 @@ void FakeLocalFrameHost::NotifyDocumentInteractive() {}
 
 void FakeLocalFrameHost::SuppressXSLTDeprecationBanner() {}
 
+void FakeLocalFrameHost::DidHaveFormEdit() {}
+
+void FakeLocalFrameHost::DidHaveUserEdit() {}
+
 }  // namespace blink

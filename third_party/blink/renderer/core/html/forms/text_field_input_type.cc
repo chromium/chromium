@@ -807,6 +807,8 @@ void TextFieldInputType::DidSetValueByUserEdit() {
     }
     chrome_client->DidChangeValueInTextField(GetElement());
   }
+  GetElement().GetDocument().DidHaveFormEdit();
+
   if (GetElement().IsBaseAppearanceCombobox()) {
     // TODO(https://crbug.com/453705243): Make IsBaseAppearanceCombobox return
     // the datalist element since i am always using the datalist afterwards and

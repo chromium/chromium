@@ -10532,6 +10532,30 @@ void Document::RemoveOverscrollCommandInvoker(Element& invoker) {
   }
 }
 
+void Document::DidHaveFormEdit() {
+  // Value changes caused by `document.execCommand` calls should not be
+  // interpreted as a user edit. See https://crbug.com/764760.
+  if (had_form_edit_ || IsRunningExecCommand()) {
+    return;
+  }
+  had_form_edit_ = true;
+  if (GetFrame()) {
+    GetFrame()->GetLocalFrameHostRemote().DidHaveFormEdit();
+  }
+}
+
+void Document::DidHaveUserEdit() {
+  // Value changes caused by `document.execCommand` calls should not be
+  // interpreted as a user edit. See https://crbug.com/764760.
+  if (had_user_edit_ || IsRunningExecCommand()) {
+    return;
+  }
+  had_user_edit_ = true;
+  if (GetFrame()) {
+    GetFrame()->GetLocalFrameHostRemote().DidHaveUserEdit();
+  }
+}
+
 template class CORE_TEMPLATE_EXPORT Supplement<Document>;
 
 }  // namespace blink

@@ -6874,6 +6874,32 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="6050" label="DeviceBoundSessionRegistrationObserver"/>
   <int value="6051" label="V8BigInt"/>
   <int value="6052" label="XMLDocumentParserLibxml2"/>
+  <int value="6053" label="BeforeUnloadShowedDialogWithUserEdit"/>
+  <int value="6054" label="BeforeUnloadShowedDialogWithoutUserEdit"/>
+  <int value="6055" label="BeforeUnloadDialogBlockedUnloadWithUserEdit"/>
+  <int value="6056" label="BeforeUnloadDialogBlockedUnloadWithoutUserEdit"/>
+  <int value="6057" label="BeforeUnloadShowedDialogWithSameOriginUserEdit"/>
+  <int value="6058" label="BeforeUnloadShowedDialogWithSameSiteUserEdit"/>
+  <int value="6059" label="BeforeUnloadShowedDialogWithCrossSiteUserEdit"/>
+  <int value="6060"
+      label="BeforeUnloadDialogBlockedUnloadWithSameOriginUserEdit"/>
+  <int value="6061"
+      label="BeforeUnloadDialogBlockedUnloadWithSameSiteUserEdit"/>
+  <int value="6062"
+      label="BeforeUnloadDialogBlockedUnloadWithCrossSiteUserEdit"/>
+  <int value="6063" label="BeforeUnloadShowedDialogWithFormEdit"/>
+  <int value="6064" label="BeforeUnloadShowedDialogWithoutFormEdit"/>
+  <int value="6065" label="BeforeUnloadDialogBlockedUnloadWithFormEdit"/>
+  <int value="6066" label="BeforeUnloadDialogBlockedUnloadWithoutFormEdit"/>
+  <int value="6067" label="BeforeUnloadShowedDialogWithSameOriginFormEdit"/>
+  <int value="6068" label="BeforeUnloadShowedDialogWithSameSiteFormEdit"/>
+  <int value="6069" label="BeforeUnloadShowedDialogWithCrossSiteFormEdit"/>
+  <int value="6070"
+      label="BeforeUnloadDialogBlockedUnloadWithSameOriginFormEdit"/>
+  <int value="6071"
+      label="BeforeUnloadDialogBlockedUnloadWithSameSiteFormEdit"/>
+  <int value="6072"
+      label="BeforeUnloadDialogBlockedUnloadWithCrossSiteFormEdit"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

@@ -2520,6 +2520,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient>
           client,
       const gfx::Rect& bounds) override;
+  void DidHaveFormEdit() override;
+  void DidHaveUserEdit() override;
   enum class UnboundedElementAuth {
     kDenied,
     kAllowedOpenWeb,
@@ -4237,6 +4239,23 @@ class CONTENT_EXPORT RenderFrameHostImpl
           receiver);
 
   void LogWebFeatureForCurrentPage(blink::mojom::WebFeature feature);
+
+  enum class BeforeUnloadDialogEvent {
+    // Recorded whenever a beforeunload dialog is shown to the user, regardless
+    // of whether the user chooses to proceed or stay on the page.
+    kShown,
+    // Recorded when the user cancels the beforeunload dialog to stay on the
+    // page, blocking the unload.
+    kBlockedUnload,
+  };
+
+  // Records UseCounters for whether a form edit or general user edit has
+  // occurred in the page when a beforeunload dialog is shown or when it blocks
+  // unload.
+  void RecordBeforeUnloadUserEditMetrics(
+      PageImpl::UserEditScope form_edit_scope,
+      PageImpl::UserEditScope user_edit_scope,
+      BeforeUnloadDialogEvent event);
 
   // This runs when the storage_key check fails
   // in `BlobURLStoreImpl::ResolveAsURLLoaderFactory` and increments the use

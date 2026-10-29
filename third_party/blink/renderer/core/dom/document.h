@@ -2398,6 +2398,13 @@ class CORE_EXPORT Document : public ContainerNode,
   void UpdateActiveState(bool is_active, bool update_active_chain, Element*);
   void UpdateHoverState(Element*);
 
+  // Called when the user edits a form text control (`DidHaveFormEdit`) or any
+  // editable element in the document (`DidHaveUserEdit`). Notifies the browser
+  // process on the first edit of each kind in this document, ignoring edits
+  // triggered by `document.execCommand()`.
+  void DidHaveFormEdit();
+  void DidHaveUserEdit();
+
  protected:
   void ClearXMLVersion() { xml_version_ = String(); }
 
@@ -3348,6 +3355,9 @@ class CORE_EXPORT Document : public ContainerNode,
 
   bool responsive_embedded_sizing_ = false;
   bool text_scale_meta_tag_present_ = false;
+
+  bool had_form_edit_ = false;
+  bool had_user_edit_ = false;
 
   // `overscroll_command_targets_` is a set of elements that are currently the
   // targets of command invokers that have `command=toggle-overscroll`.

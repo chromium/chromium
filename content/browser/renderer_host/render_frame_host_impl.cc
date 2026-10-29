@@ -7852,13 +7852,29 @@ void RenderFrameHostImpl::RunBeforeUnloadConfirm(
     }
   }
 
+  PageImpl::UserEditScope form_edit_scope =
+      GetPage().GetFormEditScope(GetLastCommittedOrigin());
+  PageImpl::UserEditScope user_edit_scope =
+      GetPage().GetUserEditScope(GetLastCommittedOrigin());
+  RecordBeforeUnloadUserEditMetrics(form_edit_scope, user_edit_scope,
+                                    BeforeUnloadDialogEvent::kShown);
+
   auto ipc_callback_wrapper = base::BindOnce(
-      [](RunBeforeUnloadConfirmCallback response_callback, bool success,
+      [](base::WeakPtr<RenderFrameHostImpl> rfh,
+         PageImpl::UserEditScope form_edit_scope,
+         PageImpl::UserEditScope user_edit_scope,
+         RunBeforeUnloadConfirmCallback response_callback, bool success,
          const std::u16string& response) {
+        if (!success && rfh) {
+          rfh->RecordBeforeUnloadUserEditMetrics(
+              form_edit_scope, user_edit_scope,
+              BeforeUnloadDialogEvent::kBlockedUnload);
+        }
         // The response string is unused but we use a generic mechanism for
         // closing the javascript dialog that returns two arguments.
         std::move(response_callback).Run(success);
       },
+      weak_ptr_factory_.GetWeakPtr(), form_edit_scope, user_edit_scope,
       std::move(ipc_response_callback));
   auto dialog_closed_callback = base::BindOnce(
       &RenderFrameHostImpl::JavaScriptDialogClosed,
@@ -9175,6 +9191,14 @@ void RenderFrameHostImpl::NotifyDocumentInteractive() {
 
 void RenderFrameHostImpl::SuppressXSLTDeprecationBanner() {
   GetContentClient()->browser()->SuppressXSLTDeprecationBanner(this);
+}
+
+void RenderFrameHostImpl::DidHaveFormEdit() {
+  GetPage().DidHaveFormEdit(GetLastCommittedOrigin());
+}
+
+void RenderFrameHostImpl::DidHaveUserEdit() {
+  GetPage().DidHaveUserEdit(GetLastCommittedOrigin());
 }
 
 void RenderFrameHostImpl::RegisterProtocolHandler(const std::string& scheme,
@@ -13905,6 +13929,110 @@ void RenderFrameHostImpl::CreateBroadcastChannelProvider(
 void RenderFrameHostImpl::LogWebFeatureForCurrentPage(
     blink::mojom::WebFeature feature) {
   GetContentClient()->browser()->LogWebFeatureForCurrentPage(this, feature);
+}
+
+void RenderFrameHostImpl::RecordBeforeUnloadUserEditMetrics(
+    PageImpl::UserEditScope form_edit_scope,
+    PageImpl::UserEditScope user_edit_scope,
+    BeforeUnloadDialogEvent event) {
+  const bool blocked_unload = event == BeforeUnloadDialogEvent::kBlockedUnload;
+  switch (form_edit_scope) {
+    case PageImpl::UserEditScope::kNoEdit:
+      LogWebFeatureForCurrentPage(
+          blocked_unload ? blink::mojom::WebFeature::
+                               kBeforeUnloadDialogBlockedUnloadWithoutFormEdit
+                         : blink::mojom::WebFeature::
+                               kBeforeUnloadShowedDialogWithoutFormEdit);
+      break;
+    case PageImpl::UserEditScope::kSameOrigin:
+      LogWebFeatureForCurrentPage(
+          blocked_unload ? blink::mojom::WebFeature::
+                               kBeforeUnloadDialogBlockedUnloadWithFormEdit
+                         : blink::mojom::WebFeature::
+                               kBeforeUnloadShowedDialogWithFormEdit);
+      LogWebFeatureForCurrentPage(
+          blocked_unload
+              ? blink::mojom::WebFeature::
+                    kBeforeUnloadDialogBlockedUnloadWithSameOriginFormEdit
+              : blink::mojom::WebFeature::
+                    kBeforeUnloadShowedDialogWithSameOriginFormEdit);
+      break;
+    case PageImpl::UserEditScope::kSameSite:
+      LogWebFeatureForCurrentPage(
+          blocked_unload ? blink::mojom::WebFeature::
+                               kBeforeUnloadDialogBlockedUnloadWithFormEdit
+                         : blink::mojom::WebFeature::
+                               kBeforeUnloadShowedDialogWithFormEdit);
+      LogWebFeatureForCurrentPage(
+          blocked_unload
+              ? blink::mojom::WebFeature::
+                    kBeforeUnloadDialogBlockedUnloadWithSameSiteFormEdit
+              : blink::mojom::WebFeature::
+                    kBeforeUnloadShowedDialogWithSameSiteFormEdit);
+      break;
+    case PageImpl::UserEditScope::kCrossSite:
+      LogWebFeatureForCurrentPage(
+          blocked_unload ? blink::mojom::WebFeature::
+                               kBeforeUnloadDialogBlockedUnloadWithFormEdit
+                         : blink::mojom::WebFeature::
+                               kBeforeUnloadShowedDialogWithFormEdit);
+      LogWebFeatureForCurrentPage(
+          blocked_unload
+              ? blink::mojom::WebFeature::
+                    kBeforeUnloadDialogBlockedUnloadWithCrossSiteFormEdit
+              : blink::mojom::WebFeature::
+                    kBeforeUnloadShowedDialogWithCrossSiteFormEdit);
+      break;
+  }
+
+  switch (user_edit_scope) {
+    case PageImpl::UserEditScope::kNoEdit:
+      LogWebFeatureForCurrentPage(
+          blocked_unload ? blink::mojom::WebFeature::
+                               kBeforeUnloadDialogBlockedUnloadWithoutUserEdit
+                         : blink::mojom::WebFeature::
+                               kBeforeUnloadShowedDialogWithoutUserEdit);
+      break;
+    case PageImpl::UserEditScope::kSameOrigin:
+      LogWebFeatureForCurrentPage(
+          blocked_unload ? blink::mojom::WebFeature::
+                               kBeforeUnloadDialogBlockedUnloadWithUserEdit
+                         : blink::mojom::WebFeature::
+                               kBeforeUnloadShowedDialogWithUserEdit);
+      LogWebFeatureForCurrentPage(
+          blocked_unload
+              ? blink::mojom::WebFeature::
+                    kBeforeUnloadDialogBlockedUnloadWithSameOriginUserEdit
+              : blink::mojom::WebFeature::
+                    kBeforeUnloadShowedDialogWithSameOriginUserEdit);
+      break;
+    case PageImpl::UserEditScope::kSameSite:
+      LogWebFeatureForCurrentPage(
+          blocked_unload ? blink::mojom::WebFeature::
+                               kBeforeUnloadDialogBlockedUnloadWithUserEdit
+                         : blink::mojom::WebFeature::
+                               kBeforeUnloadShowedDialogWithUserEdit);
+      LogWebFeatureForCurrentPage(
+          blocked_unload
+              ? blink::mojom::WebFeature::
+                    kBeforeUnloadDialogBlockedUnloadWithSameSiteUserEdit
+              : blink::mojom::WebFeature::
+                    kBeforeUnloadShowedDialogWithSameSiteUserEdit);
+      break;
+    case PageImpl::UserEditScope::kCrossSite:
+      LogWebFeatureForCurrentPage(
+          blocked_unload ? blink::mojom::WebFeature::
+                               kBeforeUnloadDialogBlockedUnloadWithUserEdit
+                         : blink::mojom::WebFeature::
+                               kBeforeUnloadShowedDialogWithUserEdit);
+      LogWebFeatureForCurrentPage(
+          blocked_unload
+              ? blink::mojom::WebFeature::
+                    kBeforeUnloadDialogBlockedUnloadWithCrossSiteUserEdit
+              : blink::mojom::WebFeature::
+                    kBeforeUnloadShowedDialogWithCrossSiteUserEdit);
+      break;
+  }
 }
 
 void RenderFrameHostImpl::ReportBlockingCrossPartitionBlobURL(
