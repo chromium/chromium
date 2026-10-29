@@ -350,4 +350,57 @@ TEST_F(DialActivityManagerTest, StopAppMaliciousLocationHeader) {
   EXPECT_TRUE(manager_.GetRoutes().empty());
 }
 
+TEST_F(DialActivityManagerTest, StopAppErrorCallbackAfterManagerDestroyed) {
+  auto manager = std::make_unique<TestDialActivityManager>(
+      &app_discovery_service_, &loader_factory_);
+  auto activity =
+      DialActivity::From(presentation_id_, sink_, source_id_, origin_);
+  ASSERT_TRUE(activity);
+  manager->AddActivity(*activity);
+
+  CustomDialLaunchMessageBody message(true, std::nullopt);
+  manager->SetExpectedRequest(activity->launch_info.app_launch_url, "POST",
+                              "foo");
+  manager->LaunchApp(activity->route.media_route_id(), message,
+                     base::BindOnce(&DialActivityManagerTest::OnAppLaunchResult,
+                                    base::Unretained(this)));
+  loader_factory_.AddResponse(activity->launch_info.app_launch_url,
+                              network::mojom::URLResponseHead::New(), "",
+                              network::URLLoaderCompletionStatus());
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*this, OnAppLaunchResult(true)).WillOnce([&run_loop]() {
+      run_loop.Quit();
+    });
+    run_loop.Run();
+  }
+
+  GURL app_instance_url(activity->launch_info.app_launch_url.spec() + "/run");
+  manager->SetExpectedRequest(app_instance_url, "DELETE", std::nullopt);
+  manager->StopApp(activity->route.media_route_id(),
+                   base::BindOnce(&DialActivityManagerTest::OnStopAppResult,
+                                  base::Unretained(this)));
+  loader_factory_.AddResponse(
+      app_instance_url, network::mojom::URLResponseHead::New(), "",
+      network::URLLoaderCompletionStatus(net::HTTP_SERVICE_UNAVAILABLE));
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(app_discovery_service_, DoFetchDialAppInfo(_, _))
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
+    run_loop.Run();
+  }
+  ASSERT_TRUE(app_discovery_service_.HasPendingCallback());
+
+  // Destroy the manager while the app-info request is still in flight.
+  EXPECT_CALL(*this, OnStopAppResult(_, _)).Times(0);
+  manager.reset();
+
+  // Invoking the pending callback after the manager is destroyed is a no-op.
+  app_discovery_service_.PassCallback().Run(
+      sink_.sink().id(), "YouTube",
+      DialAppInfoResult(
+          CreateParsedDialAppInfoPtr("YouTube", DialAppState::kStopped),
+          DialAppInfoResultCode::kOk));
+}
+
 }  // namespace media_router

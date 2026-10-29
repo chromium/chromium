@@ -356,7 +356,7 @@ void DialActivityManager::OnStopError(const MediaRoute::Id& route_id,
       record_it->second->activity.sink,
       record_it->second->activity.launch_info.app_name,
       base::BindOnce(&DialActivityManager::OnInfoFetchedAfterStopError,
-                     base::Unretained(this), route_id, message));
+                     weak_ptr_factory_.GetWeakPtr(), route_id, message));
 }
 
 void DialActivityManager::OnInfoFetchedAfterStopError(
@@ -365,6 +365,7 @@ void DialActivityManager::OnInfoFetchedAfterStopError(
     const MediaSink::Id& sink_id,
     const std::string& app_name,
     DialAppInfoResult result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto record_it = records_.find(route_id);
   if (record_it == records_.end()) {
     return;
