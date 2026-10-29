@@ -24,6 +24,7 @@
 namespace ttc {
 
 class Conversation;
+class DebugSink;
 
 // Client for establishing and maintaining a bidirectional streaming session
 // with the Model Execution Service (MES) for TTC using RemoteModelExecutor.
@@ -34,8 +35,9 @@ class TtcMesClient
  public:
   using Observer = TtcBackend::Observer;
 
-  explicit TtcMesClient(
-      optimization_guide::RemoteModelExecutor* model_executor);
+  // `debug_sink` is optional and must outlive this object.
+  explicit TtcMesClient(optimization_guide::RemoteModelExecutor* model_executor,
+                        DebugSink* debug_sink = nullptr);
   ~TtcMesClient() override;
 
   TtcMesClient(const TtcMesClient&) = delete;
@@ -84,12 +86,21 @@ class TtcMesClient
   void SendFrame(const optimization_guide::proto::TtcClientFrame& frame);
   void LogClientFrame(const optimization_guide::proto::TtcClientFrame& frame);
   void LogServerFrame(const optimization_guide::proto::TtcServerFrame& frame);
+  // Records a server response that couldn't be used, in the journal and the
+  // debug sink.
+  void RecordServerResponseError(std::string_view journal_event,
+                                 std::string_view error);
+  void ReportClientFrameToDebugSink(
+      const optimization_guide::proto::TtcClientFrame& frame);
+  void ReportServerFrameToDebugSink(
+      const optimization_guide::proto::TtcServerFrame& frame);
   void Log(std::string_view event_name,
            std::vector<actor::mojom::JournalDetailsPtr> details,
            SessionJournal::Track track);
 
   raw_ptr<optimization_guide::RemoteModelExecutor> model_executor_ = nullptr;
   raw_ptr<Conversation> conversation_ = nullptr;
+  raw_ptr<DebugSink> debug_sink_ = nullptr;
   // Set by Connect(); null until then.
   raw_ptr<Observer> observer_ = nullptr;
 

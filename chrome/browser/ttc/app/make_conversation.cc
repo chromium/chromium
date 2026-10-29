@@ -26,7 +26,8 @@ std::unique_ptr<Conversation> MakeConversationImpl(
   return std::make_unique<ConversationImpl>(
       std::make_unique<TtcMesClient>(
           OptimizationGuideKeyedServiceFactory::GetForProfile(
-              session_controller.GetProfile())),
+              session_controller.GetProfile()),
+          session_controller.GetDebugSink()),
       std::move(audio_controller), session_controller);
 }
 

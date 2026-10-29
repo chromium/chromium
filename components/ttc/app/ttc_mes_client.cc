@@ -7,7 +7,9 @@
 #include <stdint.h>
 
 #include <optional>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/containers/span.h"
@@ -24,6 +26,7 @@
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/ttc/app/public/conversation.h"
+#include "components/ttc/app/public/debug_sink.h"
 #include "components/ttc/app/public/server_journal_event.h"
 #include "components/ttc/features.h"
 
@@ -149,8 +152,9 @@ ServerJournalEvent ToServerJournalEvent(
 }  // namespace
 
 TtcMesClient::TtcMesClient(
-    optimization_guide::RemoteModelExecutor* model_executor)
-    : model_executor_(model_executor) {}
+    optimization_guide::RemoteModelExecutor* model_executor,
+    DebugSink* debug_sink)
+    : model_executor_(model_executor), debug_sink_(debug_sink) {}
 
 TtcMesClient::~TtcMesClient() {
   Close();
@@ -215,6 +219,9 @@ void TtcMesClient::OnConnectionStateChanged(
   is_transport_connected_ =
       (state == optimization_guide::RemoteModelExecutionSession::
                     ConnectionState::kConnected);
+  if (debug_sink_) {
+    debug_sink_->OnTransportStateChanged(is_transport_connected_);
+  }
   if (state == optimization_guide::RemoteModelExecutionSession::
                    ConnectionState::kDisconnected) {
     observer_->OnBackendClosed();
@@ -224,17 +231,21 @@ void TtcMesClient::OnConnectionStateChanged(
 void TtcMesClient::OnStreamingResult(
     optimization_guide::OptimizationGuideModelStreamingResult result) {
   if (!result.response.has_value()) {
-    Log("ModelExecutionError",
-        actor::JournalDetailsBuilder()
-            .AddError(base::ToString(result.response.error().error()))
-            .Build(),
-        SessionJournal::Track::kMesClientRecv);
+    RecordServerResponseError(
+        "ModelExecutionError",
+        base::StrCat({"execution error ",
+                      base::ToString(result.response.error().error())}));
     observer_->OnBackendError(ErrorCode::kInternalBackendError);
     return;
   }
 
   optimization_guide::proto::TtcServerFrame server_frame;
   if (!server_frame.ParseFromString(result.response->value())) {
+    RecordServerResponseError(
+        "UnparsableServerFrame",
+        base::StrCat({"unparsable server frame of ",
+                      base::ToString(result.response->value().size()),
+                      " bytes"}));
     return;
   }
 
@@ -250,6 +261,7 @@ void TtcMesClient::OnSetupTimeout() {
 void TtcMesClient::HandleServerFrame(
     const optimization_guide::proto::TtcServerFrame& frame) {
   LogServerFrame(frame);
+  ReportServerFrameToDebugSink(frame);
 
   if (frame.has_session_status()) {
     setup_timer_.Stop();
@@ -268,12 +280,21 @@ void TtcMesClient::HandleServerFrame(
       if (raw_bytes.size() % sizeof(int16_t) != 0) {
         // TODO(bokan): We should probably show an error and close down the
         // session here.
-        VLOG(1) << "Discarding malformed audio chunk of " << raw_bytes.size()
-                << " bytes; not a whole number of PCM16 samples";
+        RecordServerResponseError(
+            "MalformedAudioChunk",
+            base::StrCat({"malformed audio chunk of ",
+                          base::ToString(raw_bytes.size()),
+                          " bytes; not a whole number of PCM16 samples"}));
       } else {
-        observer_->OnAudioOutput(
-            base::subtle::reinterpret_span<const int16_t>(raw_bytes),
-            content.audio_output().sequence_number());
+        auto samples = base::subtle::reinterpret_span<const int16_t>(raw_bytes);
+        if (debug_sink_) {
+          debug_sink_->OnServerFrame(DebugSink::AudioOutput{
+              .sequence_number = content.audio_output().sequence_number(),
+              .pcm = std::vector<int16_t>(samples.begin(), samples.end()),
+          });
+        }
+        observer_->OnAudioOutput(samples,
+                                 content.audio_output().sequence_number());
       }
     }
 
@@ -348,6 +369,7 @@ void TtcMesClient::HandleToolCall(
     return;
   }
   ToolRequest tool_request;
+  tool_request.call_id = tool_call.call_id();
   tool_request.name = tool_call.name();
   if (!tool_call.arguments_json().empty()) {
     std::optional<base::DictValue> args_dict = base::JSONReader::ReadDict(
@@ -433,10 +455,158 @@ void TtcMesClient::ReportPlaybackStatus(int64_t last_played_sequence_number) {
 void TtcMesClient::SendFrame(
     const optimization_guide::proto::TtcClientFrame& frame) {
   if (!session_) {
+    // E.g. a tool can finish after Close(), when the session ends while the
+    // tool is running.
+    if (debug_sink_) {
+      debug_sink_->OnFrameDropped();
+    }
     return;
   }
   LogClientFrame(frame);
+  ReportClientFrameToDebugSink(frame);
   session_->Send(frame);
+}
+
+void TtcMesClient::RecordServerResponseError(std::string_view journal_event,
+                                             std::string_view error) {
+  Log(journal_event, actor::JournalDetailsBuilder().AddError(error).Build(),
+      SessionJournal::Track::kMesClientRecv);
+  if (debug_sink_) {
+    debug_sink_->OnServerFrame(DebugSink::ServerError{
+        .code = std::string(journal_event),
+        .message = std::string(error),
+    });
+  }
+}
+
+void TtcMesClient::ReportClientFrameToDebugSink(
+    const optimization_guide::proto::TtcClientFrame& frame) {
+  if (!debug_sink_) {
+    return;
+  }
+  using Frame = optimization_guide::proto::TtcClientFrame;
+  switch (frame.frame_case()) {
+    case Frame::kSetupRequest:
+      debug_sink_->OnClientFrame(DebugSink::SetupRequest());
+      break;
+    case Frame::kAudioInput: {
+      // SendAudioChunk() fills the frame from whole PCM16 samples.
+      base::span<const uint8_t> bytes =
+          base::as_byte_span(frame.audio_input().audio_data());
+      std::vector<int16_t> pcm(bytes.size() / sizeof(int16_t));
+      base::as_writable_byte_span(pcm).copy_from(bytes);
+      debug_sink_->OnClientFrame(DebugSink::AudioInput{.pcm = std::move(pcm)});
+      break;
+    }
+    case Frame::kTextInput:
+      debug_sink_->OnClientFrame(
+          DebugSink::TextInput{.text = frame.text_input().text_query()});
+      break;
+    case Frame::kContextUpdate: {
+      const auto& ctx = frame.context_update();
+      debug_sink_->OnClientFrame(DebugSink::ContextUpdate{
+          .url = ctx.active_tab().url(),
+          .content_bytes = ctx.annotated_page_content().ByteSizeLong(),
+      });
+      break;
+    }
+    case Frame::kToolsetUpdate: {
+      DebugSink::ToolsetUpdate update;
+      for (const auto& tool : frame.toolset_update().active_tools()) {
+        update.tool_names.push_back(tool.name());
+      }
+      debug_sink_->OnClientFrame(std::move(update));
+      break;
+    }
+    case Frame::kToolResponse:
+      debug_sink_->OnClientFrame(DebugSink::ToolCallResponse{
+          .call_id = frame.tool_response().call_id(),
+          .response_json = frame.tool_response().response_json(),
+      });
+      break;
+    case Frame::kPlaybackStatus:
+      debug_sink_->OnClientFrame(DebugSink::PlaybackStatus{
+          .last_played_sequence_number =
+              frame.playback_status().last_played_sequence_number(),
+      });
+      break;
+    case Frame::kCloseRequest:
+      debug_sink_->OnClientFrame(
+          DebugSink::CloseRequest{.reason = frame.close_request().reason()});
+      break;
+    case Frame::FRAME_NOT_SET:
+      break;
+  }
+}
+
+void TtcMesClient::ReportServerFrameToDebugSink(
+    const optimization_guide::proto::TtcServerFrame& frame) {
+  if (!debug_sink_) {
+    return;
+  }
+  using Frame = optimization_guide::proto::TtcServerFrame;
+  switch (frame.frame_case()) {
+    case Frame::kSessionStatus: {
+      const auto& status = frame.session_status();
+      debug_sink_->OnServerFrame(DebugSink::SessionStatus{
+          .server_session_id = status.server_session_id(),
+          .state = EnumToString(status.state(),
+                                &optimization_guide::proto::
+                                    SessionStatusResponse_SessionState_Name),
+          .diagnostic = status.diagnostic_error_detail(),
+      });
+      break;
+    }
+    case Frame::kServerContent: {
+      // Audio is reported by HandleServerFrame(), once it is known to be
+      // well-formed.
+      const auto& content = frame.server_content();
+      if (!content.input_transcription().empty()) {
+        debug_sink_->OnServerFrame(DebugSink::Transcript{
+            .is_input = true, .text = content.input_transcription()});
+      }
+      if (!content.output_transcription().empty()) {
+        debug_sink_->OnServerFrame(DebugSink::Transcript{
+            .is_input = false, .text = content.output_transcription()});
+      }
+      break;
+    }
+    case Frame::kInterrupted:
+      debug_sink_->OnServerFrame(DebugSink::Interrupted());
+      break;
+    case Frame::kTurnComplete:
+      debug_sink_->OnServerFrame(DebugSink::TurnComplete());
+      break;
+    case Frame::kToolCall: {
+      const auto& tool_call = frame.tool_call();
+      debug_sink_->OnServerFrame(DebugSink::ToolCall{
+          .call_id = tool_call.call_id(),
+          .name = tool_call.name(),
+          .arguments_json = tool_call.arguments_json(),
+      });
+      break;
+    }
+    case Frame::kServerError:
+      debug_sink_->OnServerFrame(DebugSink::ServerError{
+          .code = EnumToString(frame.server_error().error_code(),
+                               &optimization_guide::proto::
+                                   ServerErrorNotification_ErrorCode_Name),
+          .message = frame.server_error().error_message(),
+      });
+      break;
+    case Frame::kGoAway:
+      debug_sink_->OnServerFrame(
+          DebugSink::GoAway{.time_left_ms = frame.go_away().time_left_ms()});
+      break;
+    case Frame::kJournalEvent:
+      debug_sink_->OnServerFrame(ToServerJournalEvent(frame.journal_event()));
+      break;
+    case Frame::FRAME_NOT_SET:
+      // Also how a frame type this client doesn't know arrives: as an unknown
+      // field.
+      debug_sink_->OnServerFrame(DebugSink::UnknownFrame());
+      break;
+  }
 }
 
 void TtcMesClient::LogClientFrame(
