@@ -72,11 +72,14 @@ TEST_F(DigitalIdentityLowRiskOriginsTest,
        IsLowRiskOrigin_KnownOriginsEmpty_LowFrictionUrlIsTrue) {
   GURL url("https://example_low_friction.com");
   NavigateAndCommit(url);
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              CanApplyOptimization(url,
-                                   optimization_guide::proto::OptimizationType::
-                                       DIGITAL_CREDENTIALS_LOW_FRICTION,
-                                   /*optimization_metadata=*/nullptr))
+  EXPECT_CALL(
+      *mock_optimization_guide_keyed_service_,
+      CanApplyOptimization(
+          url,
+          optimization_guide::proto::OptimizationType::
+              DIGITAL_CREDENTIALS_LOW_FRICTION,
+          /*optimization_metadata=*/
+          static_cast<optimization_guide::OptimizationMetadata*>(nullptr)))
       .WillOnce(testing::Return(
           optimization_guide::OptimizationGuideDecision::kTrue));
 
@@ -89,11 +92,14 @@ TEST_F(DigitalIdentityLowRiskOriginsTest,
 TEST_F(DigitalIdentityLowRiskOriginsTest,
        IsLowRiskOrigin_KnownOriginsEmpty_LowFrictionUrlIsFalse) {
   NavigateAndCommit(GURL("https://example_not_low_friction.com"));
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              CanApplyOptimization(GURL("https://example_not_low_friction.com"),
-                                   optimization_guide::proto::OptimizationType::
-                                       DIGITAL_CREDENTIALS_LOW_FRICTION,
-                                   /*optimization_metadata=*/nullptr))
+  EXPECT_CALL(
+      *mock_optimization_guide_keyed_service_,
+      CanApplyOptimization(
+          GURL("https://example_not_low_friction.com"),
+          optimization_guide::proto::OptimizationType::
+              DIGITAL_CREDENTIALS_LOW_FRICTION,
+          /*optimization_metadata=*/
+          static_cast<optimization_guide::OptimizationMetadata*>(nullptr)))
       .WillOnce(testing::Return(
           optimization_guide::OptimizationGuideDecision::kFalse));
 
@@ -128,11 +134,14 @@ TEST_F(DigitalIdentityLowRiskOriginsTest,
   content::RenderFrameHost* otr_rfh = otr_web_contents->GetPrimaryMainFrame();
 
   // Set expectation on the OTR profile's mock.
-  EXPECT_CALL(*otr_mock_service,
-              CanApplyOptimization(url,
-                                   optimization_guide::proto::OptimizationType::
-                                       DIGITAL_CREDENTIALS_LOW_FRICTION,
-                                   /*optimization_metadata=*/nullptr))
+  EXPECT_CALL(
+      *otr_mock_service,
+      CanApplyOptimization(
+          url,
+          optimization_guide::proto::OptimizationType::
+              DIGITAL_CREDENTIALS_LOW_FRICTION,
+          /*optimization_metadata=*/
+          static_cast<optimization_guide::OptimizationMetadata*>(nullptr)))
       .WillOnce(testing::Return(
           optimization_guide::OptimizationGuideDecision::kTrue));
 

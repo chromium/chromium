@@ -32,6 +32,7 @@
 #include "url/gurl.h"
 
 using base::test::EqualsProto;
+using optimization_guide::OptimizationMetadata;
 using optimization_guide::ModelBasedCapabilityKey::kWalletablePassExtraction;
 using optimization_guide::OptimizationGuideDecision::kFalse;
 using optimization_guide::OptimizationGuideDecision::kTrue;
@@ -262,10 +263,10 @@ TEST_F(WalletablePassIngestionControllerTest,
 TEST_F(WalletablePassIngestionControllerTest,
        GetPassCategoryForURL_LoyaltyCardAllowlistedUrl) {
   GURL https_url("https://example.com");
-  EXPECT_CALL(
-      mock_decider(),
-      CanApplyOptimization(
-          https_url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST, nullptr))
+  EXPECT_CALL(mock_decider(),
+              CanApplyOptimization(https_url,
+                                   WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST,
+                                   static_cast<OptimizationMetadata*>(nullptr)))
       .WillOnce(Return(kTrue));
 
   EXPECT_EQ(test_api(controller()).GetPassCategoryForURL(https_url),
@@ -275,15 +276,15 @@ TEST_F(WalletablePassIngestionControllerTest,
 TEST_F(WalletablePassIngestionControllerTest,
        GetPassCategoryForURL_BoardingPassAllowlistedUrl) {
   GURL https_url("https://example.com");
-  EXPECT_CALL(
-      mock_decider(),
-      CanApplyOptimization(
-          https_url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST, nullptr))
+  EXPECT_CALL(mock_decider(),
+              CanApplyOptimization(https_url,
+                                   WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST,
+                                   static_cast<OptimizationMetadata*>(nullptr)))
       .WillOnce(Return(kFalse));
   EXPECT_CALL(mock_decider(),
               CanApplyOptimization(
                   https_url, WALLETABLE_PASS_DETECTION_BOARDING_PASS_ALLOWLIST,
-                  nullptr))
+                  static_cast<OptimizationMetadata*>(nullptr)))
       .WillOnce(Return(kTrue));
 
   EXPECT_EQ(test_api(controller()).GetPassCategoryForURL(https_url),
@@ -293,20 +294,20 @@ TEST_F(WalletablePassIngestionControllerTest,
 TEST_F(WalletablePassIngestionControllerTest,
        GetPassCategoryForURL_EventPassAllowlistedUrl) {
   GURL https_url("https://example.com");
-  EXPECT_CALL(
-      mock_decider(),
-      CanApplyOptimization(
-          https_url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST, nullptr))
+  EXPECT_CALL(mock_decider(),
+              CanApplyOptimization(https_url,
+                                   WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST,
+                                   static_cast<OptimizationMetadata*>(nullptr)))
       .WillOnce(Return(kFalse));
   EXPECT_CALL(mock_decider(),
               CanApplyOptimization(
                   https_url, WALLETABLE_PASS_DETECTION_BOARDING_PASS_ALLOWLIST,
-                  nullptr))
+                  static_cast<OptimizationMetadata*>(nullptr)))
       .WillOnce(Return(kFalse));
-  EXPECT_CALL(
-      mock_decider(),
-      CanApplyOptimization(
-          https_url, WALLETABLE_PASS_DETECTION_EVENT_PASS_ALLOWLIST, nullptr))
+  EXPECT_CALL(mock_decider(),
+              CanApplyOptimization(
+                  https_url, WALLETABLE_PASS_DETECTION_EVENT_PASS_ALLOWLIST,
+                  static_cast<OptimizationMetadata*>(nullptr)))
       .WillOnce(Return(kTrue));
 
   EXPECT_EQ(test_api(controller()).GetPassCategoryForURL(https_url),
@@ -316,25 +317,25 @@ TEST_F(WalletablePassIngestionControllerTest,
 TEST_F(WalletablePassIngestionControllerTest,
        GetPassCategoryForURL_TransitTicketAllowlistedUrl) {
   GURL https_url("https://example.com");
-  EXPECT_CALL(
-      mock_decider(),
-      CanApplyOptimization(
-          https_url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST, nullptr))
+  EXPECT_CALL(mock_decider(),
+              CanApplyOptimization(https_url,
+                                   WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST,
+                                   static_cast<OptimizationMetadata*>(nullptr)))
       .WillOnce(Return(kFalse));
   EXPECT_CALL(mock_decider(),
               CanApplyOptimization(
                   https_url, WALLETABLE_PASS_DETECTION_BOARDING_PASS_ALLOWLIST,
-                  nullptr))
+                  static_cast<OptimizationMetadata*>(nullptr)))
       .WillOnce(Return(kFalse));
-  EXPECT_CALL(
-      mock_decider(),
-      CanApplyOptimization(
-          https_url, WALLETABLE_PASS_DETECTION_EVENT_PASS_ALLOWLIST, nullptr))
+  EXPECT_CALL(mock_decider(),
+              CanApplyOptimization(
+                  https_url, WALLETABLE_PASS_DETECTION_EVENT_PASS_ALLOWLIST,
+                  static_cast<OptimizationMetadata*>(nullptr)))
       .WillOnce(Return(kFalse));
   EXPECT_CALL(mock_decider(),
               CanApplyOptimization(
                   https_url, WALLETABLE_PASS_DETECTION_TRANSIT_TICKET_ALLOWLIST,
-                  nullptr))
+                  static_cast<OptimizationMetadata*>(nullptr)))
       .WillOnce(Return(kTrue));
 
   EXPECT_EQ(test_api(controller()).GetPassCategoryForURL(https_url),
@@ -344,25 +345,25 @@ TEST_F(WalletablePassIngestionControllerTest,
 TEST_F(WalletablePassIngestionControllerTest,
        GetPassCategoryForURL_NotAllowlistedUrl) {
   GURL http_url("http://example.com");
-  EXPECT_CALL(
-      mock_decider(),
-      CanApplyOptimization(
-          http_url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST, nullptr))
+  EXPECT_CALL(mock_decider(),
+              CanApplyOptimization(http_url,
+                                   WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST,
+                                   static_cast<OptimizationMetadata*>(nullptr)))
       .WillOnce(Return(kFalse));
-  EXPECT_CALL(
-      mock_decider(),
-      CanApplyOptimization(
-          http_url, WALLETABLE_PASS_DETECTION_BOARDING_PASS_ALLOWLIST, nullptr))
+  EXPECT_CALL(mock_decider(),
+              CanApplyOptimization(
+                  http_url, WALLETABLE_PASS_DETECTION_BOARDING_PASS_ALLOWLIST,
+                  static_cast<OptimizationMetadata*>(nullptr)))
       .WillOnce(Return(kFalse));
-  EXPECT_CALL(
-      mock_decider(),
-      CanApplyOptimization(
-          http_url, WALLETABLE_PASS_DETECTION_EVENT_PASS_ALLOWLIST, nullptr))
+  EXPECT_CALL(mock_decider(),
+              CanApplyOptimization(
+                  http_url, WALLETABLE_PASS_DETECTION_EVENT_PASS_ALLOWLIST,
+                  static_cast<OptimizationMetadata*>(nullptr)))
       .WillOnce(Return(kFalse));
   EXPECT_CALL(mock_decider(),
               CanApplyOptimization(
                   http_url, WALLETABLE_PASS_DETECTION_TRANSIT_TICKET_ALLOWLIST,
-                  nullptr))
+                  static_cast<OptimizationMetadata*>(nullptr)))
       .WillOnce(Return(kFalse));
 
   EXPECT_EQ(test_api(controller()).GetPassCategoryForURL(http_url),
@@ -397,9 +398,10 @@ TEST_F(WalletablePassIngestionControllerTest,
   test_identity_environment().MakePrimaryAccountAvailable(
       "test@gmail.com", signin::ConsentLevel::kSignin);
   GURL url("https://example.com");
-  EXPECT_CALL(mock_decider(),
-              CanApplyOptimization(
-                  url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST, nullptr))
+  EXPECT_CALL(
+      mock_decider(),
+      CanApplyOptimization(url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST,
+                           static_cast<OptimizationMetadata*>(nullptr)))
       .WillOnce(Return(kTrue));
 
   // Expect ShowWalletablePassConsentBubble to be called.
@@ -441,9 +443,10 @@ TEST_F(WalletablePassIngestionControllerTest,
   test_identity_environment().MakePrimaryAccountAvailable(
       "test@gmail.com", signin::ConsentLevel::kSignin);
   GURL url("https://example.com");
-  EXPECT_CALL(mock_decider(),
-              CanApplyOptimization(
-                  url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST, nullptr))
+  EXPECT_CALL(
+      mock_decider(),
+      CanApplyOptimization(url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST,
+                           static_cast<OptimizationMetadata*>(nullptr)))
       .WillOnce(Return(kTrue));
 
   // Set OptIn status to true.
@@ -479,23 +482,25 @@ TEST_F(WalletablePassIngestionControllerTest,
   test_identity_environment().MakePrimaryAccountAvailable(
       "test@gmail.com", signin::ConsentLevel::kSignin);
   GURL url("https://example.com");
-  EXPECT_CALL(mock_decider(),
-              CanApplyOptimization(
-                  url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST, nullptr))
-      .WillOnce(Return(kFalse));
   EXPECT_CALL(
       mock_decider(),
-      CanApplyOptimization(
-          url, WALLETABLE_PASS_DETECTION_BOARDING_PASS_ALLOWLIST, nullptr))
+      CanApplyOptimization(url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST,
+                           static_cast<OptimizationMetadata*>(nullptr)))
       .WillOnce(Return(kFalse));
   EXPECT_CALL(mock_decider(),
               CanApplyOptimization(
-                  url, WALLETABLE_PASS_DETECTION_EVENT_PASS_ALLOWLIST, nullptr))
+                  url, WALLETABLE_PASS_DETECTION_BOARDING_PASS_ALLOWLIST,
+                  static_cast<OptimizationMetadata*>(nullptr)))
       .WillOnce(Return(kFalse));
   EXPECT_CALL(
       mock_decider(),
-      CanApplyOptimization(
-          url, WALLETABLE_PASS_DETECTION_TRANSIT_TICKET_ALLOWLIST, nullptr))
+      CanApplyOptimization(url, WALLETABLE_PASS_DETECTION_EVENT_PASS_ALLOWLIST,
+                           static_cast<OptimizationMetadata*>(nullptr)))
+      .WillOnce(Return(kFalse));
+  EXPECT_CALL(mock_decider(),
+              CanApplyOptimization(
+                  url, WALLETABLE_PASS_DETECTION_TRANSIT_TICKET_ALLOWLIST,
+                  static_cast<OptimizationMetadata*>(nullptr)))
       .WillOnce(Return(kFalse));
 
   EXPECT_CALL(*controller(), GetAnnotatedPageContent).Times(0);
@@ -534,9 +539,10 @@ TEST_F(WalletablePassIngestionControllerTest,
   test_identity_environment().MakePrimaryAccountAvailable(
       "test@gmail.com", signin::ConsentLevel::kSignin);
   GURL url("https://example.com");
-  EXPECT_CALL(mock_decider(),
-              CanApplyOptimization(
-                  url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST, nullptr))
+  EXPECT_CALL(
+      mock_decider(),
+      CanApplyOptimization(url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST,
+                           static_cast<OptimizationMetadata*>(nullptr)))
       .WillOnce(Return(kTrue));
 
   // Expect ShowWalletablePassConsentBubble to be called.
