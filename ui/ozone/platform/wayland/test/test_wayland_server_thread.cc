@@ -148,6 +148,9 @@ bool TestWaylandServerThread::Start() {
   if (!xdg_activation_v1_.Initialize(display_.get())) {
     return false;
   }
+  if (!xdg_exporter_v2_.Initialize(display_.get())) {
+    return false;
+  }
   if (!xdg_toplevel_icon_manager_v1_.Initialize(display_.get())) {
     return false;
   }

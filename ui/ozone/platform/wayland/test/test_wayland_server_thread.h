@@ -20,6 +20,7 @@
 #include "ui/ozone/platform/wayland/test/global_object.h"
 #include "ui/ozone/platform/wayland/test/mock_wp_presentation.h"
 #include "ui/ozone/platform/wayland/test/mock_xdg_activation_v1.h"
+#include "ui/ozone/platform/wayland/test/mock_xdg_foreign_v2.h"
 #include "ui/ozone/platform/wayland/test/mock_xdg_shell.h"
 #include "ui/ozone/platform/wayland/test/mock_xdg_toplevel_icon.h"
 #include "ui/ozone/platform/wayland/test/mock_zwp_linux_dmabuf.h"
@@ -157,6 +158,8 @@ class TestWaylandServerThread : public base::Thread,
 
   MockXdgActivationV1* xdg_activation_v1() { return &xdg_activation_v1_; }
 
+  MockXdgExporterV2* xdg_exporter_v2() { return &xdg_exporter_v2_; }
+
   MockXdgToplevelIconManagerV1* xdg_toplevel_icon_manager_v1() {
     return &xdg_toplevel_icon_manager_v1_;
   }
@@ -223,6 +226,7 @@ class TestWaylandServerThread : public base::Thread,
   MockWpPresentation wp_presentation_;
   TestWpPointerGestures wp_pointer_gestures_;
   MockXdgActivationV1 xdg_activation_v1_;
+  MockXdgExporterV2 xdg_exporter_v2_;
   MockXdgToplevelIconManagerV1 xdg_toplevel_icon_manager_v1_;
   TestWpColorManager wp_color_manager_;
   std::unique_ptr<TestSelectionDeviceManager> primary_selection_device_manager_;

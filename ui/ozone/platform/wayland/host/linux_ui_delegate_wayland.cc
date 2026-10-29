@@ -47,7 +47,7 @@ void LinuxUiDelegateWayland::ExportWindowHandle(
   DCHECK_EQ(toplevel_parent->type(), PlatformWindowType::kWindow);
 
   foreign->ExportSurfaceToForeign(
-      toplevel_parent,
+      toplevel_parent->AsWaylandToplevelWindow(),
       base::BindOnce(&LinuxUiDelegateWayland::OnHandleForward,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -55,6 +55,12 @@ void LinuxUiDelegateWayland::ExportWindowHandle(
 void LinuxUiDelegateWayland::OnHandleForward(
     base::OnceCallback<void(std::string)> callback,
     const std::string& handle) {
+  // An empty handle means export failed; return it as-is instead of a
+  // "wayland:" prefix with no handle.
+  if (handle.empty()) {
+    std::move(callback).Run(std::string());
+    return;
+  }
   std::move(callback).Run("wayland:" + handle);
 }
 

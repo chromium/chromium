@@ -15,6 +15,7 @@
 namespace ui {
 
 class WaylandConnection;
+class WaylandToplevelWindow;
 
 // A wrapper for xdg foreign objects. Exports surfaces that have xdg_surface
 // roles and asynchronously returns handles for them. Only xdg_surface surfaces
@@ -45,8 +46,9 @@ class XdgForeignWrapper : public wl::GlobalObjectRegistrar<XdgForeignWrapper>,
 
   // Exports |window|'s wl_surface and asynchronously returns a handle for that
   // via the |cb|. Please note that wl_surface that has xdg_surface role can be
-  // exported.
-  void ExportSurfaceToForeign(WaylandWindow* window, OnHandleExported cb);
+  // exported. Runs |cb| with an empty handle if |window| is not visible.
+  void ExportSurfaceToForeign(WaylandToplevelWindow* window,
+                              OnHandleExported cb);
 
  private:
   explicit XdgForeignWrapper(WaylandConnection* connection);

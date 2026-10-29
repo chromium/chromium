@@ -12,8 +12,8 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
-#include "ui/platform_window/platform_window_init_properties.h"
 
 namespace ui {
 
@@ -228,9 +228,15 @@ XdgForeignWrapper::XdgForeignWrapper(WaylandConnection* connection) {
 
 XdgForeignWrapper::~XdgForeignWrapper() = default;
 
-void XdgForeignWrapper::ExportSurfaceToForeign(WaylandWindow* window,
+void XdgForeignWrapper::ExportSurfaceToForeign(WaylandToplevelWindow* window,
                                                OnHandleExported cb) {
-  DCHECK_EQ(window->type(), PlatformWindowType::kWindow);
+  // The xdg_toplevel role only exists while the window is visible; exporting
+  // a surface without it is a protocol error that closes the connection.
+  if (!window->IsVisible()) {
+    std::move(cb).Run(std::string());
+    return;
+  }
+
   auto* surface = window->root_surface()->surface();
   impl_->ExportSurfaceToForeign(surface, std::move(cb));
 }
