@@ -12,15 +12,20 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_proto_loader.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/token.h"
+#include "base/trace_event/named_trigger.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "net/base/network_change_notifier.h"
+#include "services/tracing/public/cpp/trace_startup_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -54,11 +59,32 @@ class TestBackgroundTracingHelper
         .RemoveEnabledStateObserverForTesting(this);
   }
 
+  MOCK_METHOD(void,
+              OnScenarioActive,
+              (const std::string& scenario_name),
+              (override));
+  MOCK_METHOD(void,
+              OnScenarioIdle,
+              (const std::string& scenario_name),
+              (override));
+  void OnTraceStarted() override { wait_for_trace_started_.Quit(); }
   void OnTraceSaved() override { wait_for_trace_saved_.Quit(); }
 
+  void ExpectOnScenarioActive(const std::string& scenario_name) {
+    EXPECT_CALL(*this, OnScenarioActive(scenario_name)).Times(1);
+  }
+  void ExpectOnScenarioIdle(const std::string& scenario_name) {
+    EXPECT_CALL(*this, OnScenarioIdle(scenario_name))
+        .WillOnce(
+            base::test::RunOnceClosure(wait_for_scenario_idle_.QuitClosure()));
+  }
+  void WaitForScenarioIdle() { wait_for_scenario_idle_.Run(); }
+  void WaitForTraceStarted() { wait_for_trace_started_.Run(); }
   void WaitForTraceSaved() { wait_for_trace_saved_.Run(); }
 
  private:
+  base::RunLoop wait_for_scenario_idle_;
+  base::RunLoop wait_for_trace_started_;
   base::RunLoop wait_for_trace_saved_;
 };
 
@@ -91,6 +117,7 @@ class TestBackgroundTracingManager : public BackgroundTracingManager {
               (bool is_local_scenario, base::TimeTicks scenario_start_time),
               (override));
   MOCK_METHOD(bool, ShouldSaveUnuploadedTrace, (), (override));
+  MOCK_METHOD(bool, GetBackgroundStartupTracingEnabled, (), (const, override));
   MOCK_METHOD(std::string,
               RecordSerializedSystemProfileMetrics,
               (),
@@ -107,21 +134,25 @@ class TestBackgroundTracingManager : public BackgroundTracingManager {
 class BackgroundTracingManagerTest : public testing::Test {
  public:
   BackgroundTracingManagerTest() {
+    CHECK(traces_dir_.CreateUniqueTempDir());
     background_tracing_manager_ =
-        std::make_unique<TestBackgroundTracingManager>();
+        std::make_unique<TestBackgroundTracingManager>(traces_dir_.GetPath());
+    ON_CALL(*background_tracing_manager_, IsRecordingAllowed(_, _))
+        .WillByDefault(testing::Return(true));
     ON_CALL(*background_tracing_manager_, ShouldSaveUnuploadedTrace())
         .WillByDefault(testing::Return(true));
     ON_CALL(*background_tracing_manager_,
             RecordSerializedSystemProfileMetrics())
         .WillByDefault(testing::Return(""));
   }
-  ~BackgroundTracingManagerTest() override {
-    background_tracing_manager_.reset();
-  }
 
  protected:
+  base::ScopedTempDir traces_dir_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  TraceStartupConfig startup_config_;
+  base::test::TracingEnvironment tracing_environment_{
+      base::SingleThreadTaskRunner::GetCurrentDefault()};
   std::unique_ptr<TestBackgroundTracingManager> background_tracing_manager_;
 };
 
@@ -292,6 +323,43 @@ TEST_F(BackgroundTracingManagerTest, UploadScenarioQuotaReset) {
         kDummyTrace, "test_scenario", "test_rule", base::Token::CreateRandom());
     background_tracing_helper.WaitForTraceSaved();
   }
+  EXPECT_TRUE(background_tracing_manager_->HasTraceToUpload());
+}
+
+TEST_F(BackgroundTracingManagerTest, SetupStartupTracing) {
+  EXPECT_CALL(*background_tracing_manager_,
+              GetBackgroundStartupTracingEnabled())
+      .WillOnce(testing::Return(false));
+
+  perfetto::protos::gen::ChromeFieldTracingConfig config;
+  EXPECT_TRUE(background_tracing_manager_->InitializeFieldScenarios(
+      config, BackgroundTracingManager::ANONYMIZE_DATA, false, 0));
+
+  EXPECT_FALSE(base::trace_event::EmitNamedTrigger(
+      base::trace_event::kStartupTracingTriggerName));
+}
+
+TEST_F(BackgroundTracingManagerTest, RunStartupTracing) {
+  TestBackgroundTracingHelper background_tracing_helper;
+
+  EXPECT_CALL(*background_tracing_manager_,
+              GetBackgroundStartupTracingEnabled())
+      .WillOnce(testing::Return(true));
+
+  perfetto::protos::gen::ChromeFieldTracingConfig config;
+  EXPECT_TRUE(background_tracing_manager_->InitializeFieldScenarios(
+      config, BackgroundTracingManager::ANONYMIZE_DATA, false, 0));
+
+  background_tracing_helper.ExpectOnScenarioActive("Startup");
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger(
+      base::trace_event::kStartupTracingTriggerName));
+
+  background_tracing_helper.WaitForTraceStarted();
+
+  background_tracing_helper.ExpectOnScenarioIdle("Startup");
+  background_tracing_helper.WaitForScenarioIdle();
+
+  background_tracing_helper.WaitForTraceSaved();
   EXPECT_TRUE(background_tracing_manager_->HasTraceToUpload());
 }
 

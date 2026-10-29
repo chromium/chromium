@@ -25,6 +25,10 @@
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/protos/perfetto/config/track_event/track_event_config.gen.h"
 
+#if BUILDFLAG(USE_BLINK)
+#include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
+#endif
+
 namespace tracing {
 
 namespace {
@@ -327,13 +331,14 @@ TracingScenario::CreateTracingSession() {
   // should support it (see OnSetupTrigger()). Otherwise this is a configuration
   // error.
   DCHECK(!use_system_backend_ || tracing::SystemBackgroundTracingEnabled());
-#if BUILDFLAG(USE_BLINK)
-  auto backend_type =
-      (use_system_backend_ && tracing::SystemBackgroundTracingEnabled())
-          ? perfetto::BackendType::kSystemBackend
-          : perfetto::BackendType::kCustomBackend;
-#else
   auto backend_type = perfetto::BackendType::kInProcessBackend;
+#if BUILDFLAG(USE_BLINK)
+  if (PerfettoTracedProcess::HasInstance()) {
+    backend_type =
+        (use_system_backend_ && tracing::SystemBackgroundTracingEnabled())
+            ? perfetto::BackendType::kSystemBackend
+            : perfetto::BackendType::kCustomBackend;
+  }
 #endif
   return perfetto::Tracing::NewTrace(backend_type);
 }

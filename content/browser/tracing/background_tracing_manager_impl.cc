@@ -25,15 +25,6 @@ namespace {
 
 BackgroundTracingManagerImpl* g_background_tracing_manager_impl = nullptr;
 
-class PreferenceManagerImpl
-    : public BackgroundTracingManagerImpl::PreferenceManager {
-  bool GetBackgroundStartupTracingEnabled() const override {
-    return tracing::TraceStartupConfig::GetInstance().IsEnabled() &&
-           tracing::TraceStartupConfig::GetInstance().GetSessionOwner() ==
-               tracing::TraceStartupConfig::SessionOwner::kBackgroundTracing;
-  }
-};
-
 }  // namespace
 
 // static
@@ -64,7 +55,6 @@ BackgroundTracingManagerImpl::BackgroundTracingManagerImpl(
   CHECK(delegate_);
   g_background_tracing_manager_impl = this;
   TracingAgentObserverManager::SetInstance(this);
-  preferences_ = std::make_unique<PreferenceManagerImpl>();
   state_manager_ = delegate_->CreateStateManager();
 }
 
@@ -97,12 +87,9 @@ BackgroundTracingManagerImpl::GetLocalTracesDirectory() {
 }
 
 bool BackgroundTracingManagerImpl::GetBackgroundStartupTracingEnabled() const {
-  return preferences_->GetBackgroundStartupTracingEnabled();
-}
-
-void BackgroundTracingManagerImpl::SetPreferenceManagerForTesting(
-    std::unique_ptr<PreferenceManager> preferences) {
-  preferences_ = std::move(preferences);
+  return tracing::TraceStartupConfig::GetInstance().IsEnabled() &&
+         tracing::TraceStartupConfig::GetInstance().GetSessionOwner() ==
+             tracing::TraceStartupConfig::SessionOwner::kBackgroundTracing;
 }
 
 std::vector<traces_internals::mojom::ScenarioPtr>

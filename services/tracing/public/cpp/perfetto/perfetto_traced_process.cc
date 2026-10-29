@@ -197,6 +197,11 @@ PerfettoTracedProcess& PerfettoTracedProcess::Get() {
   return *g_instance;
 }
 
+// static
+bool PerfettoTracedProcess::HasInstance() {
+  return g_instance != nullptr;
+}
+
 PerfettoTracedProcess::PerfettoTracedProcess(bool will_trace_thread_restart)
     : tracing_backend_(std::make_unique<PerfettoTracingBackend>()),
       trace_process_thread_(

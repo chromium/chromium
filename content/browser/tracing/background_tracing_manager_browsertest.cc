@@ -65,25 +65,10 @@
 #include "third_party/zlib/google/compression_utils.h"
 #include "third_party/zlib/zlib.h"
 
-#if BUILDFLAG(IS_OZONE)
-#include "ui/ozone/public/ozone_platform.h"
-#endif
-
 namespace content {
 namespace {
 
 using testing::_;
-
-class TestStartupPreferenceManagerImpl
-    : public BackgroundTracingManagerImpl::PreferenceManager {
- public:
-  void SetBackgroundStartupTracingEnabled(bool enabled) { enabled_ = enabled; }
-
-  bool GetBackgroundStartupTracingEnabled() const override { return enabled_; }
-
- private:
-  bool enabled_ = false;
-};
 
 // A helper class that observes background tracing states transition, receives
 // uploaded trace and allows synchronisation with tests. The class adds itself
@@ -905,65 +890,6 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   }
 
   EXPECT_TRUE(found_match);
-}
-
-IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
-                       SetupStartupTracing) {
-  std::unique_ptr<TestStartupPreferenceManagerImpl> preferences_moved(
-      new TestStartupPreferenceManagerImpl);
-  TestStartupPreferenceManagerImpl* preferences = preferences_moved.get();
-  BackgroundTracingManagerImpl::GetInstance().SetPreferenceManagerForTesting(
-      std::move(preferences_moved));
-  preferences->SetBackgroundStartupTracingEnabled(false);
-
-  perfetto::protos::gen::ChromeFieldTracingConfig config;
-  EXPECT_TRUE(
-      tracing::BackgroundTracingManager::GetInstance().InitializeFieldScenarios(
-          config, tracing::BackgroundTracingManager::ANONYMIZE_DATA, false, 0));
-
-  EXPECT_FALSE(base::trace_event::EmitNamedTrigger(
-      base::trace_event::kStartupTracingTriggerName));
-}
-
-// TODO(crbug.com/40267734): Re-enable this test once fixed.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
-#define MAYBE_RunStartupTracing DISABLED_RunStartupTracing
-#else
-#define MAYBE_RunStartupTracing RunStartupTracing
-#endif
-IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
-                       MAYBE_RunStartupTracing) {
-#if BUILDFLAG(IS_OZONE)
-  // TODO(crbug.com/40267734): Flaky on Linux Wayland.
-  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
-    GTEST_SKIP() << "Flaky on Linux Wayland (crbug.com/40267734)";
-  }
-#endif
-  TestBackgroundTracingHelper background_tracing_helper;
-
-  std::unique_ptr<TestStartupPreferenceManagerImpl> preferences_moved(
-      new TestStartupPreferenceManagerImpl);
-  TestStartupPreferenceManagerImpl* preferences = preferences_moved.get();
-  BackgroundTracingManagerImpl::GetInstance().SetPreferenceManagerForTesting(
-      std::move(preferences_moved));
-  preferences->SetBackgroundStartupTracingEnabled(true);
-
-  perfetto::protos::gen::ChromeFieldTracingConfig config;
-  EXPECT_TRUE(
-      tracing::BackgroundTracingManager::GetInstance().InitializeFieldScenarios(
-          config, tracing::BackgroundTracingManager::ANONYMIZE_DATA, false, 0));
-
-  background_tracing_helper.ExpectOnScenarioActive("Startup");
-  EXPECT_TRUE(base::trace_event::EmitNamedTrigger(
-      base::trace_event::kStartupTracingTriggerName));
-
-  background_tracing_helper.WaitForTraceStarted();
-
-  background_tracing_helper.ExpectOnScenarioIdle("Startup");
-  background_tracing_helper.WaitForScenarioIdle();
-
-  background_tracing_helper.WaitForTraceReceived();
-  EXPECT_TRUE(background_tracing_helper.trace_received());
 }
 
 namespace {

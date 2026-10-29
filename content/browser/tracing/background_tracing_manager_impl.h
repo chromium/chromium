@@ -35,14 +35,6 @@ class BackgroundTracingManagerImpl
     : public tracing::BackgroundTracingManager,
       public tracing::TracingAgentObserverManager {
  public:
-  // Delegate to store and read application preferences for startup tracing, to
-  // isolate the feature for testing.
-  class PreferenceManager {
-   public:
-    virtual bool GetBackgroundStartupTracingEnabled() const = 0;
-    virtual ~PreferenceManager() = default;
-  };
-
   CONTENT_EXPORT static BackgroundTracingManagerImpl& GetInstance();
 
   CONTENT_EXPORT explicit BackgroundTracingManagerImpl(
@@ -83,10 +75,6 @@ class BackgroundTracingManagerImpl
 
   TracingDelegate* delegate() const { return delegate_.get(); }
 
-  // For tests
-  CONTENT_EXPORT void SetPreferenceManagerForTesting(
-      std::unique_ptr<PreferenceManager> preferences);
-
   void GenerateMetadataProto(
       perfetto::protos::pbzero::ChromeMetadataPacket* metadata,
       bool privacy_filtering_enabled);
@@ -101,7 +89,6 @@ class BackgroundTracingManagerImpl
 
   std::unique_ptr<TracingDelegate> delegate_;
   std::unique_ptr<tracing::BackgroundTracingStateManager> state_manager_;
-  std::unique_ptr<PreferenceManager> preferences_;
 
   std::set<raw_ptr<tracing::mojom::BackgroundTracingAgent, SetExperimental>>
       agents_;

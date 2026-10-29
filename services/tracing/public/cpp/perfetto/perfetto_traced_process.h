@@ -163,6 +163,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess
 
   // Returns the process-wide instance of the PerfettoTracedProcess.
   static PerfettoTracedProcess& Get();
+  static bool HasInstance();
 
   PerfettoTracedProcess(const PerfettoTracedProcess&) = delete;
   PerfettoTracedProcess& operator=(const PerfettoTracedProcess&) = delete;
