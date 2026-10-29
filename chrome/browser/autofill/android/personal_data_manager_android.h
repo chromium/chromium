@@ -53,12 +53,18 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // These functions act on "web profiles" aka "LOCAL_PROFILE" profiles.
   // -------------------------
 
-  // Returns the GUIDs of all profiles.
-  std::vector<std::string> GetProfileGUIDsForSettings();
+  // Returns all profiles with their distinguishing labels populated. The labels
+  // never contain the full name and include at least 2 fields. See
+  // AddressDataManager::GetProfilesForSettings for ordering details.
+  std::vector<base::android::ScopedJavaLocalRef<jobject>>
+  GetProfilesForSettings(JNIEnv* env);
 
-  // Returns the GUIDs of the profiles to suggest to the user. See
-  // PersonalDataManager::GetProfilesToSuggest for more details.
-  std::vector<std::string> GetProfileGUIDsToSuggest();
+  // Returns the profiles to suggest to the user with their distinguishing
+  // labels populated. The labels never contain the name, the email address, or
+  // phone numbers. See AddressDataManager::GetProfilesToSuggest for ordering
+  // and filtering details.
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> GetProfilesToSuggest(
+      JNIEnv* env);
 
   // Returns the profile with the specified `guid`, or NULL if there is no
   // profile with the specified `guid`. Both web and auxiliary profiles may
@@ -83,21 +89,9 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   std::string SetProfileToLocal(const base::android::JavaRef<jobject>& jprofile,
                                 const std::string& guid);
 
-  // Gets the labels for all known profiles. These labels are useful for
-  // distinguishing the profiles from one another.
-  //
-  // The labels never contain the full name and include at least 2 fields.
-  std::vector<std::u16string> GetProfileLabelsForSettings();
-
   // Gets the summary of the profile which will be displayed in the editor.
   // This is currently used only for Home & Work profiles.
   std::u16string GetProfileDescriptionForEditor(const std::string& guid);
-
-  // Gets the labels for the profiles to suggest to the user. These labels are
-  // useful for distinguishing the profiles from one another.
-  //
-  // The labels never contain the name, the email address, or phone numbers.
-  std::vector<std::u16string> GetProfileLabelsToSuggest();
 
   // Returns the shipping label of the given profile for PaymentRequest. This
   // label does not contain the full name or the email address but will include
@@ -260,9 +254,12 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
  private:
   ~PersonalDataManagerAndroid() override;
 
-  // Returns the GUIDs of the `profiles` passed as parameter.
-  std::vector<std::string> GetProfileGUIDs(
-      const std::vector<const AutofillProfile*>& profiles);
+  // Returns the Java AutofillProfiles with their labels for the `profiles`
+  // passed as parameter.
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> GetProfiles(
+      JNIEnv* env,
+      bool address_only,
+      base::span<const AutofillProfile* const> profiles);
 
   // Returns the GUIDs of the `credit_cards` passed as parameter.
   std::vector<std::string> GetCreditCardGUIDs(
@@ -277,7 +274,7 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // address are also omitted, but all other fields are included in the label.
   std::vector<std::u16string> GetProfileLabels(
       bool address_only,
-      std::vector<const AutofillProfile*> profiles);
+      base::span<const AutofillProfile* const> profiles);
 
   // Shared method used when creating Java PaymentInstrument.
   static std::vector<int32_t> GetPaymentRailsFromPaymentInstrument(

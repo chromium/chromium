@@ -348,7 +348,8 @@ public class AutofillProfile {
         mGUID = guid;
     }
 
-    public void setLabel(String label) {
+    @CalledByNative
+    public void setLabel(@JniType("std::u16string") String label) {
         mLabel = label;
     }
 
