@@ -69,11 +69,6 @@ class ContextualTasksWebContentsUserData
           ContextUploadStatusObserver,
       public ContextualTasksService::Observer {
  public:
-  enum class InjectedInputType {
-    kContextLibrary,
-    kLensChip,
-  };
-
   struct ExtensionFrameInfo {
     ExtensionFrameInfo();
     ExtensionFrameInfo(const ExtensionFrameInfo&);
@@ -156,9 +151,6 @@ class ContextualTasksWebContentsUserData
   // back to the primary bound extension iframe.
   void PostSearchMessage(const lens::ClientToSearchMessage& message);
 
-  void SendInjectChromeInput(InjectedInputType type, bool is_active);
-  void SendMountContextLibrary();
-  void UpdateContextLibraryInputState();
   void OnTabContextUploadStarted(const base::UnguessableToken& context_token);
   void OnTabContextRemoved(const base::UnguessableToken& context_token);
 
@@ -252,6 +244,10 @@ class ContextualTasksWebContentsUserData
       std::optional<base::UnguessableToken> overlay_token);
 
  private:
+  enum class InjectedInputType {
+    kContextLibrary,
+    kLensChip,
+  };
   enum class ContextState {
     kNone,
     kUploading,
@@ -262,9 +258,17 @@ class ContextualTasksWebContentsUserData
   explicit ContextualTasksWebContentsUserData(content::WebContents* contents);
   friend class content::WebContentsUserData<ContextualTasksWebContentsUserData>;
 
+  void SendInjectChromeInput(InjectedInputType type, bool is_active);
+  void SendMountContextLibrary();
+  void UpdateContextLibraryInputState();
   void SubscribeToInputStateModel(
       base::WeakPtr<contextual_search::InputStateModel> model);
   void OnInputStateChanged(const omnibox::InputState& state);
+  void OnSessionChanged(
+      contextual_search::ContextualSearchSessionHandle* session_handle);
+  bool MaybeRefreshTabContextSubscription(
+      contextual_search::ContextualSearchSessionHandle* session_handle);
+  void OnTabContextUpdated(const contextual_search::TabContextState& state);
   void ObserveContextController(
       contextual_search::ContextualSearchContextController* controller);
   ContextState ComputeContextState();
@@ -317,6 +321,10 @@ class ContextualTasksWebContentsUserData
   base::WeakPtr<contextual_search::InputStateModel> last_active_model_;
   base::WeakPtr<contextual_search::InputStateModel> subscribed_model_;
   base::CallbackListSubscription input_state_subscription_;
+  base::CallbackListSubscription session_changed_subscription_;
+  base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
+      subscribed_session_handle_;
+  base::CallbackListSubscription tab_context_subscription_;
   base::WeakPtr<contextual_search::ContextualSearchContextController>
       observed_controller_;
 

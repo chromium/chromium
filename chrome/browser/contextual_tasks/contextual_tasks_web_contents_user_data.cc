@@ -294,6 +294,14 @@ ContextualTasksWebContentsUserData::ContextualTasksWebContentsUserData(
           Profile::FromBrowserContext(contents->GetBrowserContext()))) {
     contextual_tasks_service_observation_.Observe(service);
   }
+  auto* helper =
+      ContextualSearchWebContentsHelper::GetOrCreateForWebContents(contents);
+  // Safe to use base::Unretained(this) because `session_changed_subscription_`
+  // is owned by `this` and unsubscribes on destruction.
+  session_changed_subscription_ = helper->RegisterSessionChangedCallback(
+      base::BindRepeating(&ContextualTasksWebContentsUserData::OnSessionChanged,
+                          base::Unretained(this)));
+  MaybeRefreshTabContextSubscription(helper->session_handle());
 }
 
 ContextualTasksWebContentsUserData::~ContextualTasksWebContentsUserData() {
@@ -313,6 +321,7 @@ void ContextualTasksWebContentsUserData::set_input_state_model(
     last_active_model_ = input_state_model->AsWeakPtr();
     input_state_models_[handle->session_id()] = std::move(input_state_model);
     SubscribeToInputStateModel(last_active_model_);
+    MaybeRefreshTabContextSubscription(handle);
   }
 }
 
@@ -369,6 +378,7 @@ ContextualTasksWebContentsUserData::GetOrCreateInputStateModel(
     }
     if (is_web_contents_session) {
       SubscribeToInputStateModel(it->second->AsWeakPtr());
+      MaybeRefreshTabContextSubscription(&session_handle);
     }
     return it->second->AsWeakPtr();
   }
@@ -391,6 +401,7 @@ ContextualTasksWebContentsUserData::GetOrCreateInputStateModel(
   input_state_models_[session_handle.session_id()] = std::move(model);
   if (is_web_contents_session) {
     SubscribeToInputStateModel(model_weak);
+    MaybeRefreshTabContextSubscription(&session_handle);
   }
   return model_weak;
 }
@@ -439,6 +450,7 @@ void ContextualTasksWebContentsUserData::SetTaskId(
   // Moves to `task_id`'s session. An untasked session and its tabs are adopted
   // by `task_id` (see `GetSessionForTask()`), so do not reset its tabs. The new
   // session will adopt these unassigned tabs.
+  OnSessionChanged(GetOrCreateContextualSessionHandle());
   GetOrCreateInputStateModel();
 }
 
@@ -555,6 +567,7 @@ void ContextualTasksWebContentsUserData::OnDocumentConnected(
   page_state.connected_document_id = doc_id;
   page_state.service_worker_post_message_cb = std::move(post_message_cb);
   page_state.is_handshake_complete = false;
+  GetOrCreateContextualSessionHandle();
 }
 
 bool ContextualTasksWebContentsUserData::IsServiceWorkerPortConnected() const {
@@ -779,12 +792,11 @@ void ContextualTasksWebContentsUserData::UpdateContextLibraryInputState() {
 }
 
 bool ContextualTasksWebContentsUserData::HasContextLibraryTabs() {
-  auto* session_handle = GetOrCreateContextualSessionHandle();
-  if (!session_handle) {
+  if (!subscribed_session_handle_) {
     return false;
   }
   // Attached tabs include both unsubmitted and submitted (persisted) tabs.
-  const auto& tab_context = session_handle->GetTabContextState();
+  const auto& tab_context = subscribed_session_handle_->GetTabContextState();
   return !tab_context.attached.empty() || !tab_context.restored.empty();
 }
 
@@ -957,11 +969,21 @@ void ContextualTasksWebContentsUserData::OnSubmitQueryContextualized(
   if (lens_added_context) {
     *on_submit_response->add_added_contexts() = std::move(*lens_added_context);
   }
-  if (auto* session_handle = GetOrCreateContextualSessionHandle()) {
+  auto* session_handle = GetOrCreateContextualSessionHandle();
+  if (session_handle) {
     AppendTabContextsToOnSubmitQueryResponse(&response_message, session_handle,
                                              overlay_token);
   }
   PostSearchMessage(response_message);
+
+  if (session_handle) {
+    // The page owns the query text, so no query length metrics are recorded
+    // here. This moves the uploaded tabs into the session's persisted tabs so
+    // they are tracked across turns and are not re-added on the next
+    // submission.
+    session_handle->MarkQuerySubmitted(/*file_tokens=*/{},
+                                       /*query_text_length=*/std::nullopt);
+  }
 
   // Submission moved the uploaded tabs into the session's persisted tabs, so
   // the context library chip state may have changed.
@@ -1164,6 +1186,39 @@ void ContextualTasksWebContentsUserData::OnInputStateChanged(
   }
 }
 
+void ContextualTasksWebContentsUserData::OnSessionChanged(
+    contextual_search::ContextualSearchSessionHandle* session_handle) {
+  if (MaybeRefreshTabContextSubscription(session_handle)) {
+    UpdateContextLibraryInputState();
+  }
+}
+
+bool ContextualTasksWebContentsUserData::MaybeRefreshTabContextSubscription(
+    contextual_search::ContextualSearchSessionHandle* session_handle) {
+  if (subscribed_session_handle_.get() == session_handle &&
+      !subscribed_session_handle_.WasInvalidated()) {
+    return false;
+  }
+  if (!session_handle) {
+    subscribed_session_handle_ = nullptr;
+    tab_context_subscription_ = {};
+    return true;
+  }
+  subscribed_session_handle_ = session_handle->AsWeakPtr();
+  // Safe to use base::Unretained(this) because `tab_context_subscription_` is
+  // owned by `this` and unsubscribes on destruction.
+  tab_context_subscription_ =
+      session_handle->SubscribeTabContext(base::BindRepeating(
+          &ContextualTasksWebContentsUserData::OnTabContextUpdated,
+          base::Unretained(this)));
+  return true;
+}
+
+void ContextualTasksWebContentsUserData::OnTabContextUpdated(
+    const contextual_search::TabContextState& /*state*/) {
+  UpdateContextLibraryInputState();
+}
+
 void ContextualTasksWebContentsUserData::ObserveContextController(
     contextual_search::ContextualSearchContextController* controller) {
   if (observed_controller_.get() == controller) {
@@ -1233,8 +1288,7 @@ void ContextualTasksWebContentsUserData::UpdateContextState(bool force_send) {
 
 std::vector<lens::AddedContext>
 ContextualTasksWebContentsUserData::ComputeSuggestInputContexts() {
-  auto* session_handle = GetOrCreateContextualSessionHandle();
-  if (!session_handle) {
+  if (!subscribed_session_handle_) {
     return {};
   }
 
@@ -1246,7 +1300,8 @@ ContextualTasksWebContentsUserData::ComputeSuggestInputContexts() {
   const std::optional<base::UnguessableToken> overlay_token =
       GetLensOverlayToken();
   std::vector<lens::AddedContext> contexts;
-  for (const auto& file_info : session_handle->GetUploadedContextFileInfos()) {
+  for (const auto& file_info :
+       subscribed_session_handle_->GetUploadedContextFileInfos()) {
     if (!file_info.request_id.has_value()) {
       continue;
     }
@@ -1270,7 +1325,8 @@ ContextualTasksWebContentsUserData::ComputeSuggestInputContexts() {
     }
 
     lens::AddedContext added;
-    added.set_search_session_id(session_handle->search_session_id());
+    added.set_search_session_id(
+        subscribed_session_handle_->search_session_id());
     *added.mutable_request_id() = *file_info.request_id;
     if (file_info.input_data && file_info.input_data->upload_type.has_value()) {
       added.set_contextual_input_upload_type(
@@ -1403,12 +1459,13 @@ void ContextualTasksWebContentsUserData::CloseLensAsync(
 
 std::vector<contextual_search::TabInfo>
 ContextualTasksWebContentsUserData::GetSelectedTabs() {
-  auto* session_handle = GetOrCreateContextualSessionHandle();
-  if (!session_handle) {
+  if (!subscribed_session_handle_) {
     return {};
   }
-  const auto& attached_tabs = session_handle->GetTabContextState().attached;
-  const auto uploaded_tokens = session_handle->GetUploadedContextTokens();
+  const auto& attached_tabs =
+      subscribed_session_handle_->GetTabContextState().attached;
+  const auto uploaded_tokens =
+      subscribed_session_handle_->GetUploadedContextTokens();
   std::vector<contextual_search::TabInfo> selected_tabs;
   std::ranges::copy_if(attached_tabs, std::back_inserter(selected_tabs),
                        [&](const contextual_search::TabInfo& tab) {
@@ -1890,13 +1947,6 @@ void ContextualTasksWebContentsUserData::
   base::UmaHistogramCounts100(
       "ContextualTasks.TabCoins.AttachedCountAtSubmission.Implicit",
       implicit_tab_count);
-
-  // The page owns the query text, so no query length metrics are recorded
-  // here. This moves the uploaded tabs into the session's persisted tabs so
-  // they are tracked across turns and are not re-added on the next
-  // submission.
-  session_handle->MarkQuerySubmitted(/*file_tokens=*/{},
-                                     /*query_text_length=*/std::nullopt);
 }
 
 std::optional<lens::AddedContext>

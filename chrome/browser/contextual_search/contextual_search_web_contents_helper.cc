@@ -19,9 +19,19 @@ ContextualSearchWebContentsHelper::TakeInputStateModel() {
   return std::move(input_state_model_);
 }
 
+base::CallbackListSubscription
+ContextualSearchWebContentsHelper::RegisterSessionChangedCallback(
+    SessionChangedCallbackList::CallbackType cb) {
+  return session_changed_callbacks_.Add(std::move(cb));
+}
+
 std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
 ContextualSearchWebContentsHelper::TakeSessionHandle() {
-  return std::move(session_handle_);
+  auto handle = std::move(session_handle_);
+  if (handle) {
+    session_changed_callbacks_.Notify(nullptr);
+  }
+  return handle;
 }
 
 const std::vector<int32_t>&
