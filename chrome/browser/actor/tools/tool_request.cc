@@ -78,6 +78,14 @@ ToolRequest::GetObservationPageStabilityConfig() const {
   return ObservationDelayController::PageStabilityConfig();
 }
 
+bool ToolRequest::ShouldSkipObservationDelay() const {
+  return skip_observation_delay_;
+}
+
+void ToolRequest::SetSkipObservationDelay(bool skip_observation_delay) {
+  skip_observation_delay_ = skip_observation_delay;
+}
+
 bool ToolRequest::RequiresOpeningWebContents() const {
   return false;
 }

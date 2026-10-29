@@ -1016,6 +1016,11 @@ void ToolController::PerformAction(std::unique_ptr<actor::ToolRequest> action,
       actor::ActorKeyedService::Get(GetProfile());
   CHECK(actor_service);
 
+  // TTC currently doesn't record and send an observation for the page after
+  // acting, so there's no need to wait for the page to settle before responding
+  // to the model.
+  action->SetSkipObservationDelay(true);
+
   std::vector<std::unique_ptr<actor::ToolRequest>> actions;
   actions.push_back(std::move(action));
 
