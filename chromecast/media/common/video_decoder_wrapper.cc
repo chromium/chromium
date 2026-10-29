@@ -44,7 +44,7 @@ class VideoDecoderWrapper::RevokedVideoDecoder
 VideoDecoderWrapper::VideoDecoderWrapper(
     MediaPipelineBackend::VideoDecoder* decoder)
     : decoder_(decoder) {
-  DCHECK(decoder_);
+  CHECK(decoder_, base::NotFatalUntil::M163);
 }
 
 VideoDecoderWrapper::VideoDecoderWrapper() {

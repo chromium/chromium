@@ -156,8 +156,8 @@ ActiveMediaPipelineBackendWrapper::ActiveMediaPipelineBackendWrapper(
       audio_stream_type_(params.audio_type),
       content_type_(params.content_type),
       playing_(false) {
-  DCHECK(backend_);
-  DCHECK(backend_manager_);
+  CHECK(backend_, base::NotFatalUntil::M163);
+  CHECK(backend_manager_, base::NotFatalUntil::M163);
 }
 
 ActiveMediaPipelineBackendWrapper::~ActiveMediaPipelineBackendWrapper() {
@@ -196,7 +196,7 @@ void ActiveMediaPipelineBackendWrapper::LogicalResume() {
 
 std::unique_ptr<AudioDecoderWrapper>
 ActiveMediaPipelineBackendWrapper::CreateAudioDecoderWrapper() {
-  DCHECK(!audio_decoder_ptr_);
+  CHECK(!audio_decoder_ptr_, base::NotFatalUntil::M163);
 
   if (!backend_manager_->IncrementDecoderCount(
           IsSfx() ? DecoderType::SFX_DECODER : DecoderType::AUDIO_DECODER))
@@ -223,7 +223,7 @@ ActiveMediaPipelineBackendWrapper::CreateAudioDecoderWrapper() {
 
 std::unique_ptr<VideoDecoderWrapper>
 ActiveMediaPipelineBackendWrapper::CreateVideoDecoderWrapper() {
-  DCHECK(!video_decoder_created_);
+  CHECK(!video_decoder_created_, base::NotFatalUntil::M163);
   backend_manager_->BackendUseVideoDecoder(wrapping_backend_);
 
   if (!backend_manager_->IncrementDecoderCount(DecoderType::VIDEO_DECODER))
@@ -331,7 +331,7 @@ void MediaPipelineBackendWrapper::Revoke() {
 
 CmaBackend::AudioDecoder* MediaPipelineBackendWrapper::CreateAudioDecoder() {
   LOG(INFO) << "Beginning creation of AudioDecoder...";
-  DCHECK(!audio_decoder_);
+  CHECK(!audio_decoder_, base::NotFatalUntil::M163);
   audio_decoder_ = backend_->CreateAudioDecoderWrapper();
   LOG(INFO) << "Completed creation of AudioDecoder!";
   return audio_decoder_.get();
@@ -339,7 +339,7 @@ CmaBackend::AudioDecoder* MediaPipelineBackendWrapper::CreateAudioDecoder() {
 
 CmaBackend::VideoDecoder* MediaPipelineBackendWrapper::CreateVideoDecoder() {
   LOG(INFO) << "Beginning creation of VideoDecoder...";
-  DCHECK(!video_decoder_);
+  CHECK(!video_decoder_, base::NotFatalUntil::M163);
   video_decoder_ = backend_->CreateVideoDecoderWrapper();
   LOG(INFO) << "VideoDecoder creation of AudioDecoder!";
   return video_decoder_.get();

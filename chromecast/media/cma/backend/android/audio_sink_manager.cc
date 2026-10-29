@@ -37,7 +37,7 @@ AudioSinkManager::AudioSinkManager() {}
 AudioSinkManager::~AudioSinkManager() {}
 
 void AudioSinkManager::Add(AudioSinkAndroid* sink) {
-  DCHECK(sink);
+  CHECK(sink, base::NotFatalUntil::M163);
 
   LOG(INFO) << __func__ << " sink(" << sink << "): id=" << sink->device_id()
             << " primary=" << sink->primary()
@@ -49,7 +49,7 @@ void AudioSinkManager::Add(AudioSinkAndroid* sink) {
 }
 
 void AudioSinkManager::Remove(AudioSinkAndroid* sink) {
-  DCHECK(sink);
+  CHECK(sink, base::NotFatalUntil::M163);
 
   LOG(INFO) << __func__ << " sink(" << sink << "): id=" << sink->device_id()
             << " type=" << sink->content_type();

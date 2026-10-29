@@ -230,9 +230,9 @@ ProxyCallTranslator::ProxyCallTranslator(
       client_(client),
       push_buffer_handler_(client_task_runner, push_buffer_client),
       weak_factory_(this) {
-  DCHECK(decoder_channel_.get());
-  DCHECK(client_task_runner_);
-  DCHECK(client_);
+  CHECK(decoder_channel_.get(), base::NotFatalUntil::M163);
+  CHECK(client_task_runner_, base::NotFatalUntil::M163);
+  CHECK(client_, base::NotFatalUntil::M163);
 }
 
 ProxyCallTranslator::~ProxyCallTranslator() = default;

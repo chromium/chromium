@@ -30,14 +30,14 @@ VideoDecoderNull::VideoDecoderNull()
 VideoDecoderNull::~VideoDecoderNull() {}
 
 void VideoDecoderNull::SetDelegate(Delegate* delegate) {
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M163);
   delegate_ = delegate;
 }
 
 MediaPipelineBackend::BufferStatus VideoDecoderNull::PushBuffer(
     CastDecoderBuffer* buffer) {
-  DCHECK(delegate_);
-  DCHECK(buffer);
+  CHECK(delegate_, base::NotFatalUntil::M163);
+  CHECK(buffer, base::NotFatalUntil::M163);
   if (buffer->end_of_stream()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&VideoDecoderNull::OnEndOfStream,
@@ -61,7 +61,7 @@ bool VideoDecoderNull::Initialize() {
 }
 
 void VideoDecoderNull::SetObserver(VideoDecoderForMixer::Observer* observer) {
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M163);
   observer_ = observer;
 }
 

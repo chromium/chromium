@@ -62,9 +62,9 @@ BufferIdManager::BufferIdManager(CmaBackend::AudioDecoder* audio_decoder,
       client_(client),
       audio_decoder_(audio_decoder),
       weak_factory_(this) {
-  DCHECK(clock_);
-  DCHECK(client_);
-  DCHECK(audio_decoder_);
+  CHECK(clock_, base::NotFatalUntil::M163);
+  CHECK(client_, base::NotFatalUntil::M163);
+  CHECK(audio_decoder_, base::NotFatalUntil::M163);
 }
 
 BufferIdManager::BufferIdManager(CmaBackend::AudioDecoder* audio_decoder,
@@ -126,7 +126,7 @@ BufferIdManager::UpdateAndGetCurrentlyProcessingBufferInfo() {
   // remain.
   const int64_t delay_timestamp = rendering_delay.timestamp_microseconds;
   const int64_t delay_in_microseconds = rendering_delay.delay_microseconds;
-  DCHECK_GE(delay_in_microseconds, 0);
+  CHECK_GE(delay_in_microseconds, 0, base::NotFatalUntil::M163);
 
   // When no buffers have played out yet, store the currently playing buffer's
   // info.
@@ -142,20 +142,22 @@ BufferIdManager::UpdateAndGetCurrentlyProcessingBufferInfo() {
          !buffer_infos_.empty();
        buffer_infos_.pop()) {
     const BufferInfo& queue_front = buffer_infos_.front();
-    DCHECK_GE(queue_front.id, 0);
-    DCHECK_GE(queue_front.pts_timestamp_micros, 0);
+    CHECK_GE(queue_front.id, 0, base::NotFatalUntil::M163);
+    CHECK_GE(queue_front.pts_timestamp_micros, 0, base::NotFatalUntil::M163);
 
     // Update |pending_playback_time_in_microseconds_|.
     BufferPlayoutInfo& most_recently_played_buffer =
         most_recently_played_buffer_.value();
-    DCHECK_GE(most_recently_played_buffer.id, 0);
-    DCHECK_GE(most_recently_played_buffer.pts_timestamp_micros, 0);
-    DCHECK_GE(most_recently_played_buffer.expected_playout_timestamp_micros, 0);
+    CHECK_GE(most_recently_played_buffer.id, 0, base::NotFatalUntil::M163);
+    CHECK_GE(most_recently_played_buffer.pts_timestamp_micros, 0,
+             base::NotFatalUntil::M163);
+    CHECK_GE(most_recently_played_buffer.expected_playout_timestamp_micros, 0,
+             base::NotFatalUntil::M163);
 
     int64_t change_in_playback_time =
         queue_front.pts_timestamp_micros -
         most_recently_played_buffer.pts_timestamp_micros;
-    DCHECK_GE(change_in_playback_time, 0);
+    CHECK_GE(change_in_playback_time, 0, base::NotFatalUntil::M163);
     pending_playback_time_in_microseconds_ -= change_in_playback_time;
 
     // Update |most_recently_played_buffer_|.

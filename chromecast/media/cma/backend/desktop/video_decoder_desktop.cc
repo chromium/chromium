@@ -14,33 +14,33 @@ VideoDecoderDesktop::VideoDecoderDesktop() {}
 VideoDecoderDesktop::~VideoDecoderDesktop() {}
 
 void VideoDecoderDesktop::Start(base::TimeDelta start_pts) {
-  DCHECK(!sink_);
+  CHECK(!sink_, base::NotFatalUntil::M163);
   sink_ = std::make_unique<MediaSinkDesktop>(delegate_, start_pts);
 }
 
 void VideoDecoderDesktop::Stop() {
-  DCHECK(sink_);
+  CHECK(sink_, base::NotFatalUntil::M163);
   sink_.reset();
 }
 
 void VideoDecoderDesktop::SetPlaybackRate(float rate) {
-  DCHECK(sink_);
+  CHECK(sink_, base::NotFatalUntil::M163);
   sink_->SetPlaybackRate(rate);
 }
 
 base::TimeDelta VideoDecoderDesktop::GetCurrentPts() {
-  DCHECK(sink_);
+  CHECK(sink_, base::NotFatalUntil::M163);
   return sink_->GetCurrentPts();
 }
 
 void VideoDecoderDesktop::SetDelegate(Delegate* delegate) {
-  DCHECK(!sink_);
+  CHECK(!sink_, base::NotFatalUntil::M163);
   delegate_ = delegate;
 }
 
 MediaPipelineBackend::BufferStatus VideoDecoderDesktop::PushBuffer(
     CastDecoderBuffer* buffer) {
-  DCHECK(sink_);
+  CHECK(sink_, base::NotFatalUntil::M163);
   return sink_->PushBuffer(buffer);
 }
 

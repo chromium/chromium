@@ -19,7 +19,7 @@ namespace media {
 CmaBackendFactoryImpl::CmaBackendFactoryImpl(
     MediaPipelineBackendManager* media_pipeline_backend_manager)
     : media_pipeline_backend_manager_(media_pipeline_backend_manager) {
-  DCHECK(media_pipeline_backend_manager_);
+  CHECK(media_pipeline_backend_manager_, base::NotFatalUntil::M163);
 }
 
 CmaBackendFactoryImpl::~CmaBackendFactoryImpl() = default;

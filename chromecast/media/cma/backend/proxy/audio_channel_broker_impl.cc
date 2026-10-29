@@ -19,10 +19,10 @@ constexpr int64_t kMsDelayBetweenPushBufferPollingChecks = 10;
 std::unique_ptr<cast::media::CastAudioChannelService::StubInterface>
 GetRemoteStub() {
   auto* endpoint_manager = CastRuntimeAudioChannelEndpointManager::Get();
-  DCHECK(endpoint_manager);
+  CHECK(endpoint_manager, base::NotFatalUntil::M163);
 
   std::string endpoint = endpoint_manager->GetAudioChannelEndpoint();
-  DCHECK(!endpoint.empty());
+  CHECK(!endpoint.empty(), base::NotFatalUntil::M163);
 
   auto channel =
       grpc::CreateChannel(endpoint, grpc::InsecureChannelCredentials());
@@ -54,8 +54,8 @@ AudioChannelBrokerImpl::LazyStubFactory::GetStub() {
 AudioChannelBrokerImpl::AudioChannelBrokerImpl(TaskRunner* task_runner,
                                                Handler* handler)
     : handler_(handler), task_runner_(task_runner), weak_factory_(this) {
-  DCHECK(task_runner_);
-  DCHECK(handler_);
+  CHECK(task_runner_, base::NotFatalUntil::M163);
+  CHECK(handler_, base::NotFatalUntil::M163);
 }
 
 AudioChannelBrokerImpl::~AudioChannelBrokerImpl() = default;
@@ -147,7 +147,7 @@ void AudioChannelBrokerImpl::TryPushBuffer() {
     if (request.has_value()) {
       auto request_call = std::make_unique<cast::media::PushBufferRequest>(
           std::move(request.value()));
-      DCHECK(request_call.get());
+      CHECK(request_call.get(), base::NotFatalUntil::M163);
 
       auto push_buffer_request = PushBufferCall::CreateRequest(
           this, &GrpcStub::async_interface::PushBuffer,

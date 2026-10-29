@@ -64,11 +64,13 @@ MediaPipelineBackendManager::MediaPipelineBackendManager(
       backend_wrapper_using_video_decoder_(nullptr),
       buffer_delegate_(nullptr),
       weak_factory_(this) {
-  DCHECK(media_task_runner_);
-  DCHECK_EQ(playing_audio_streams_count_.size(),
-            static_cast<size_t>(AudioContentType::kNumTypes));
-  DCHECK_EQ(playing_noneffects_audio_streams_count_.size(),
-            static_cast<size_t>(AudioContentType::kNumTypes));
+  CHECK(media_task_runner_, base::NotFatalUntil::M163);
+  CHECK_EQ(playing_audio_streams_count_.size(),
+           static_cast<size_t>(AudioContentType::kNumTypes),
+           base::NotFatalUntil::M163);
+  CHECK_EQ(playing_noneffects_audio_streams_count_.size(),
+           static_cast<size_t>(AudioContentType::kNumTypes),
+           base::NotFatalUntil::M163);
   for (int i = 0; i < NUM_DECODER_TYPES; ++i) {
     UNSAFE_TODO(decoder_count_[i]) = 0;
   }
@@ -77,12 +79,14 @@ MediaPipelineBackendManager::MediaPipelineBackendManager(
 }
 
 MediaPipelineBackendManager::~MediaPipelineBackendManager() {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  CHECK(media_task_runner_->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
 }
 
 std::unique_ptr<CmaBackend> MediaPipelineBackendManager::CreateBackend(
     const media::MediaPipelineDeviceParams& params) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  CHECK(media_task_runner_->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
   return std::make_unique<MediaPipelineBackendWrapper>(
       params, weak_factory_.GetWeakPtr(), media_resource_tracker_);
 }
@@ -94,7 +98,8 @@ MediaPipelineBackendManager::GetMediaTaskRunner() {
 
 void MediaPipelineBackendManager::BackendDestroyed(
     MediaPipelineBackendWrapper* backend_wrapper) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  CHECK(media_task_runner_->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
   if (backend_wrapper_using_video_decoder_ == backend_wrapper) {
     backend_wrapper_using_video_decoder_ = nullptr;
   }
@@ -102,8 +107,9 @@ void MediaPipelineBackendManager::BackendDestroyed(
 
 void MediaPipelineBackendManager::BackendUseVideoDecoder(
     MediaPipelineBackendWrapper* backend_wrapper) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
-  DCHECK(backend_wrapper);
+  CHECK(media_task_runner_->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
+  CHECK(backend_wrapper, base::NotFatalUntil::M163);
   if (backend_wrapper_using_video_decoder_ &&
       backend_wrapper_using_video_decoder_ != backend_wrapper) {
     LOG(INFO) << __func__ << " revoke old backend : "
@@ -114,8 +120,9 @@ void MediaPipelineBackendManager::BackendUseVideoDecoder(
 }
 
 bool MediaPipelineBackendManager::IncrementDecoderCount(DecoderType type) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
-  DCHECK(type < NUM_DECODER_TYPES);
+  CHECK(media_task_runner_->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
+  CHECK(type < NUM_DECODER_TYPES, base::NotFatalUntil::M163);
   const int limit =
       (type == VIDEO_DECODER) ? kVideoDecoderLimit : kAudioDecoderLimit;
   if (UNSAFE_TODO(decoder_count_[type]) >= limit) {
@@ -128,8 +135,9 @@ bool MediaPipelineBackendManager::IncrementDecoderCount(DecoderType type) {
 }
 
 void MediaPipelineBackendManager::DecrementDecoderCount(DecoderType type) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
-  DCHECK(type < NUM_DECODER_TYPES);
+  CHECK(media_task_runner_->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
+  CHECK(type < NUM_DECODER_TYPES, base::NotFatalUntil::M163);
   UNSAFE_TODO(DCHECK_GT(decoder_count_[type], 0));
 
   UNSAFE_TODO(decoder_count_[type])--;
@@ -139,7 +147,8 @@ void MediaPipelineBackendManager::UpdatePlayingAudioCount(
     bool sfx,
     const AudioContentType type,
     int change) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  CHECK(media_task_runner_->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
   DCHECK(change == -1 || change == 1) << "bad count change: " << change;
 
   bool had_playing_audio_streams = (TotalPlayingAudioStreamsCount() > 0);
@@ -147,11 +156,12 @@ void MediaPipelineBackendManager::UpdatePlayingAudioCount(
       (TotalPlayingNoneffectsAudioStreamsCount() > 0);
 
   playing_audio_streams_count_[type] += change;
-  DCHECK_GE(playing_audio_streams_count_[type], 0);
+  CHECK_GE(playing_audio_streams_count_[type], 0, base::NotFatalUntil::M163);
 
   if (!sfx) {
     playing_noneffects_audio_streams_count_[type] += change;
-    DCHECK_GE(playing_noneffects_audio_streams_count_[type], 0);
+    CHECK_GE(playing_noneffects_audio_streams_count_[type], 0,
+             base::NotFatalUntil::M163);
   }
 
   HandlePlayingAudioStreamsChange(had_playing_audio_streams,
@@ -163,7 +173,8 @@ void MediaPipelineBackendManager::UpdatePlayingAudioCount(
 void MediaPipelineBackendManager::HandlePlayingAudioStreamsChange(
     bool had_playing_audio_streams,
     bool had_playing_primary_streams) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  CHECK(media_task_runner_->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
   int new_playing_audio_streams = TotalPlayingAudioStreamsCount();
   if (new_playing_audio_streams == 0) {
     power_save_timer_.Start(FROM_HERE, kPowerSaveWaitTime, this,
@@ -207,7 +218,7 @@ int MediaPipelineBackendManager::TotalPlayingNoneffectsAudioStreamsCount() {
 }
 
 void MediaPipelineBackendManager::EnterPowerSaveMode() {
-  DCHECK_EQ(TotalPlayingAudioStreamsCount(), 0);
+  CHECK_EQ(TotalPlayingAudioStreamsCount(), 0, base::NotFatalUntil::M163);
   if (!VolumeControl::SetPowerSaveMode || !power_save_enabled_) {
     return;
   }
@@ -243,8 +254,8 @@ void MediaPipelineBackendManager::RemoveExtraPlayingStream(
 void MediaPipelineBackendManager::SetBufferDelegate(
     BufferDelegate* buffer_delegate) {
   MAKE_SURE_MEDIA_THREAD(SetBufferDelegate, buffer_delegate);
-  DCHECK(buffer_delegate);
-  DCHECK(!buffer_delegate_);
+  CHECK(buffer_delegate, base::NotFatalUntil::M163);
+  CHECK(!buffer_delegate_, base::NotFatalUntil::M163);
   buffer_delegate_ = buffer_delegate;
 }
 

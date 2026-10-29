@@ -34,9 +34,9 @@ PushBufferPendingHandler::PushBufferPendingHandler(
       client_(client),
       task_runner_(task_runner),
       weak_factory_(this) {
-  DCHECK(delegated_handler_.get());
-  DCHECK(client_);
-  DCHECK(task_runner_);
+  CHECK(delegated_handler_.get(), base::NotFatalUntil::M163);
+  CHECK(client_, base::NotFatalUntil::M163);
+  CHECK(task_runner_, base::NotFatalUntil::M163);
 }
 
 PushBufferPendingHandler::~PushBufferPendingHandler() = default;
@@ -58,7 +58,7 @@ CmaBackend::BufferStatus PushBufferPendingHandler::PushBuffer(
   const bool had_data = IsCallPending();
 
   if (request.has_buffer()) {
-    DCHECK(!has_push_buffer_queued_);
+    CHECK(!has_push_buffer_queued_, base::NotFatalUntil::M163);
     has_push_buffer_queued_ = true;
   }
 
@@ -103,7 +103,7 @@ void PushBufferPendingHandler::TryPushPendingData() {
       // If we removed the buffer containing data from a PushBuffer() call,
       // update the associated variable.
       if (pushed_data_.front().has_buffer()) {
-        DCHECK(has_push_buffer_queued_);
+        CHECK(has_push_buffer_queued_, base::NotFatalUntil::M163);
         has_push_buffer_queued_ = false;
       }
 

@@ -25,7 +25,7 @@ namespace {
 void ReadFileRunCallback(CastAudioJsonProvider::TuningChangedCallback callback,
                          const base::FilePath& path,
                          bool error) {
-  DCHECK(callback);
+  CHECK(callback, base::NotFatalUntil::M163);
 
   std::string contents;
   base::ReadFileToString(path, &contents);

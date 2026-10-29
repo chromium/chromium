@@ -77,7 +77,7 @@ CastRenderer::CastRenderer(
       video_geometry_setter_service_(nullptr),
       is_buffering_enabled_(is_buffering_enabled),
       weak_factory_(this) {
-  DCHECK(backend_factory_);
+  CHECK(backend_factory_, base::NotFatalUntil::M163);
   LOG(INFO) << __FUNCTION__ << ": " << this;
 
   if (video_resolution_policy_)
@@ -91,7 +91,7 @@ CastRenderer::CastRenderer(
 
 CastRenderer::~CastRenderer() {
   LOG(INFO) << __FUNCTION__ << ": " << this;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
 
   if (video_resolution_policy_)
     video_resolution_policy_->RemoveObserver(this);
@@ -106,14 +106,14 @@ void CastRenderer::Initialize(::media::MediaResource* media_resource,
                               ::media::RendererClient* client,
                               ::media::PipelineStatusCallback init_cb) {
   LOG(INFO) << __FUNCTION__ << ": " << this;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
 
   init_cb_ = std::move(init_cb);
 
   if (video_geometry_setter_service_) {
     video_geometry_setter_service_->GetVideoGeometryChangeSubscriber(
         video_geometry_change_subcriber_remote_.BindNewPipeAndPassReceiver());
-    DCHECK(video_geometry_change_subcriber_remote_);
+    CHECK(video_geometry_change_subcriber_remote_, base::NotFatalUntil::M163);
 
     video_geometry_change_subcriber_remote_->SubscribeToVideoGeometryChange(
         overlay_plane_id_,
@@ -128,8 +128,8 @@ void CastRenderer::Initialize(::media::MediaResource* media_resource,
 void CastRenderer::OnSubscribeToVideoGeometryChange(
     ::media::MediaResource* media_resource,
     ::media::RendererClient* client) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(!application_media_info_manager_remote_);
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
+  CHECK(!application_media_info_manager_remote_, base::NotFatalUntil::M163);
 
   // Retrieve application_media_info_manager_remote_ if it is available via
   // CastApplicationMediaInfoManager.
@@ -159,7 +159,7 @@ void CastRenderer::OnApplicationMediaInfoReceived(
     ::media::MediaResource* media_resource,
     ::media::RendererClient* client,
     ::media::mojom::CastApplicationMediaInfoPtr application_media_info) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
   LOG(INFO) << __FUNCTION__ << ": " << this
             << " session_id=" << application_media_info->application_session_id
             << ", mixer_audio_enabled="
@@ -297,8 +297,8 @@ void CastRenderer::OnVideoInitializationFinished(
 
 void CastRenderer::SetCdm(::media::CdmContext* cdm_context,
                           CdmAttachedCB cdm_attached_cb) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(cdm_context);
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
+  CHECK(cdm_context, base::NotFatalUntil::M163);
 
   auto* cast_cdm_context = static_cast<CastCdmContext*>(cdm_context);
 
@@ -317,14 +317,14 @@ void CastRenderer::SetLatencyHint(std::optional<base::TimeDelta> latency_hint) {
 }
 
 void CastRenderer::Flush(base::OnceClosure flush_cb) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(pipeline_);
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
+  CHECK(pipeline_, base::NotFatalUntil::M163);
   pipeline_->Flush(std::move(flush_cb));
 }
 
 void CastRenderer::StartPlayingFrom(base::TimeDelta time) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(pipeline_);
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
+  CHECK(pipeline_, base::NotFatalUntil::M163);
 
   eos_[STREAM_AUDIO] = !pipeline_->HasAudio();
   eos_[STREAM_VIDEO] = !pipeline_->HasVideo();
@@ -332,12 +332,12 @@ void CastRenderer::StartPlayingFrom(base::TimeDelta time) {
 }
 
 void CastRenderer::SetPlaybackRate(double playback_rate) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
   pipeline_->SetPlaybackRate(playback_rate);
 }
 
 void CastRenderer::SetVolume(float volume) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
   // If pipeline is not initialized, cache the volume and delay the volume set
   // until media pipeline is setup.
   if (!pipeline_) {
@@ -349,8 +349,8 @@ void CastRenderer::SetVolume(float volume) {
 }
 
 base::TimeDelta CastRenderer::GetMediaTime() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(pipeline_);
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
+  CHECK(pipeline_, base::NotFatalUntil::M163);
   return pipeline_->GetMediaTime();
 }
 
@@ -359,7 +359,7 @@ base::TimeDelta CastRenderer::GetMediaTime() {
 }
 
 void CastRenderer::OnVideoResolutionPolicyChanged() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
   if (!video_resolution_policy_)
     return;
 
@@ -422,14 +422,14 @@ void CastRenderer::OnVideoGeometryChange(const gfx::RectF& rect_f,
 }
 
 void CastRenderer::OnError(::media::PipelineStatus status) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
   if (client_) {
     client_->OnError(status);
   }
 }
 
 void CastRenderer::OnEnded(Stream stream) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
   UNSAFE_TODO(DCHECK(!eos_[stream]));
   UNSAFE_TODO(eos_[stream]) = true;
   LOG(INFO) << __FUNCTION__ << ": eos_audio=" << eos_[STREAM_AUDIO]
@@ -440,24 +440,24 @@ void CastRenderer::OnEnded(Stream stream) {
 
 void CastRenderer::OnStatisticsUpdate(
     const ::media::PipelineStatistics& stats) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
   client_->OnStatisticsUpdate(stats);
 }
 
 void CastRenderer::OnBufferingStateChange(
     ::media::BufferingState state,
     ::media::BufferingStateChangeReason reason) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
   client_->OnBufferingStateChange(state, reason);
 }
 
 void CastRenderer::OnWaiting(::media::WaitingReason reason) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
   client_->OnWaiting(reason);
 }
 
 void CastRenderer::OnVideoNaturalSizeChange(const gfx::Size& size) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
   client_->OnVideoNaturalSizeChange(size);
 
   video_res_ = size;
@@ -465,8 +465,8 @@ void CastRenderer::OnVideoNaturalSizeChange(const gfx::Size& size) {
 }
 
 void CastRenderer::OnVideoOpacityChange(bool opaque) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(opaque);
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
+  CHECK(opaque, base::NotFatalUntil::M163);
   client_->OnVideoOpacityChange(opaque);
 }
 

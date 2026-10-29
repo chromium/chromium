@@ -97,8 +97,9 @@ class VolumeControlInternal {
   void SetVolumeOnThread(media::VolumeChangeSource source,
                          AudioContentType type,
                          float level) {
-    DCHECK(thread_.task_runner()->BelongsToCurrentThread());
-    DCHECK(type != AudioContentType::kOther);
+    CHECK(thread_.task_runner()->BelongsToCurrentThread(),
+          base::NotFatalUntil::M163);
+    CHECK(type != AudioContentType::kOther, base::NotFatalUntil::M163);
 
     {
       base::AutoLock lock(volume_lock_);
@@ -119,8 +120,9 @@ class VolumeControlInternal {
   void SetMutedOnThread(media::VolumeChangeSource source,
                         AudioContentType type,
                         bool muted) {
-    DCHECK(thread_.task_runner()->BelongsToCurrentThread());
-    DCHECK(type != AudioContentType::kOther);
+    CHECK(thread_.task_runner()->BelongsToCurrentThread(),
+          base::NotFatalUntil::M163);
+    CHECK(type != AudioContentType::kOther, base::NotFatalUntil::M163);
 
     {
       base::AutoLock lock(volume_lock_);

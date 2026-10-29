@@ -19,7 +19,7 @@ MultizoneAudioDecoderProxyImpl::MultizoneAudioDecoderProxyImpl(
       decoder_mode_(CmaProxyHandler::AudioDecoderOperationMode::kMultiroomOnly),
       proxy_handler_(CmaProxyHandler::Create(params.task_runner, this, this)),
       buffer_id_manager_(this, this) {
-  DCHECK(proxy_handler_);
+  CHECK(proxy_handler_, base::NotFatalUntil::M163);
 }
 
 MultizoneAudioDecoderProxyImpl::MultizoneAudioDecoderProxyImpl(
@@ -82,8 +82,8 @@ int64_t MultizoneAudioDecoderProxyImpl::GetCurrentPts() const {
 CmaBackend::Decoder::BufferStatus MultizoneAudioDecoderProxyImpl::PushBuffer(
     scoped_refptr<DecoderBufferBase> buffer) {
   CheckCalledOnCorrectThread();
-  DCHECK(proxy_handler_);
-  DCHECK(buffer);
+  CHECK(proxy_handler_, base::NotFatalUntil::M163);
+  CHECK(buffer, base::NotFatalUntil::M163);
 
   if (pending_push_buffer_.get()) {
     return MultizoneAudioDecoderProxy::BufferStatus::kBufferFailed;
@@ -111,7 +111,7 @@ bool MultizoneAudioDecoderProxyImpl::SetConfig(const AudioConfig& config) {
 }
 
 void MultizoneAudioDecoderProxyImpl::GetStatistics(Statistics* statistics) {
-  DCHECK(statistics);
+  CHECK(statistics, base::NotFatalUntil::M163);
   CheckCalledOnCorrectThread();
   statistics->decoded_bytes = bytes_decoded_;
 }
@@ -141,12 +141,13 @@ void MultizoneAudioDecoderProxyImpl::OnAudioChannelPushBufferComplete(
     CmaBackend::BufferStatus status) {
   // Try to call PushBuffer on the downstream decoder.
   if (status != CmaBackend::BufferStatus::kBufferSuccess) {
-    DCHECK_NE(status, CmaBackend::BufferStatus::kBufferPending);
+    CHECK_NE(status, CmaBackend::BufferStatus::kBufferPending,
+             base::NotFatalUntil::M163);
     MultizoneAudioDecoderProxy::OnPushBufferComplete(status);
     return;
   }
 
-  DCHECK(pending_push_buffer_);
+  CHECK(pending_push_buffer_, base::NotFatalUntil::M163);
   const auto downstream_decoder_result =
       MultizoneAudioDecoderProxy::PushBuffer(std::move(pending_push_buffer_));
   pending_push_buffer_.reset();

@@ -46,14 +46,14 @@ AudioDecoderSoftwareWrapper::AudioDecoderSoftwareWrapper(
     : backend_decoder_(backend_decoder),
       delegate_(nullptr),
       decoder_error_(false) {
-  DCHECK(backend_decoder_);
+  CHECK(backend_decoder_, base::NotFatalUntil::M163);
   backend_decoder_->SetDelegate(this);
 }
 
 AudioDecoderSoftwareWrapper::~AudioDecoderSoftwareWrapper() {}
 
 void AudioDecoderSoftwareWrapper::SetDelegate(DecoderDelegate* delegate) {
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M163);
   delegate_ = delegate;
   if (decoder_error_) {
     delegate_->OnDecoderError();
@@ -62,7 +62,7 @@ void AudioDecoderSoftwareWrapper::SetDelegate(DecoderDelegate* delegate) {
 
 MediaPipelineBackend::BufferStatus AudioDecoderSoftwareWrapper::PushBuffer(
     CastDecoderBuffer* buffer) {
-  DCHECK(buffer);
+  CHECK(buffer, base::NotFatalUntil::M163);
   if (!software_decoder_)
     return backend_decoder_->PushBuffer(buffer);
 
@@ -75,12 +75,12 @@ MediaPipelineBackend::BufferStatus AudioDecoderSoftwareWrapper::PushBuffer(
 }
 
 void AudioDecoderSoftwareWrapper::GetStatistics(Statistics* statistics) {
-  DCHECK(statistics);
+  CHECK(statistics, base::NotFatalUntil::M163);
   return backend_decoder_->GetStatistics(statistics);
 }
 
 bool AudioDecoderSoftwareWrapper::SetConfig(const AudioConfig& config) {
-  DCHECK(IsValidConfig(config));
+  CHECK(IsValidConfig(config), base::NotFatalUntil::M163);
 
   if (backend_decoder_->SetConfig(config)) {
     LOG(INFO) << "Using backend decoder for " << config.codec;
@@ -150,7 +150,7 @@ void AudioDecoderSoftwareWrapper::OnDecodedBuffer(
     CastAudioDecoder::Status status,
     const media::AudioConfig& config,
     scoped_refptr<DecoderBufferBase> decoded) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M163);
   if (status != CastAudioDecoder::kDecodeOk) {
     delegate_->OnPushBufferComplete(MediaPipelineBackend::kBufferFailed);
     return;
@@ -176,24 +176,24 @@ void AudioDecoderSoftwareWrapper::OnDecodedBuffer(
 
 void AudioDecoderSoftwareWrapper::OnPushBufferComplete(
     MediaPipelineBackend::BufferStatus status) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M163);
   delegate_->OnPushBufferComplete(status);
 }
 
 void AudioDecoderSoftwareWrapper::OnEndOfStream() {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M163);
   delegate_->OnEndOfStream();
 }
 
 void AudioDecoderSoftwareWrapper::OnDecoderError() {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M163);
   delegate_->OnDecoderError();
 }
 
 void AudioDecoderSoftwareWrapper::OnKeyStatusChanged(const std::string& key_id,
                                                      CastKeyStatus key_status,
                                                      uint32_t system_code) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M163);
   delegate_->OnKeyStatusChanged(key_id, key_status, system_code);
 }
 

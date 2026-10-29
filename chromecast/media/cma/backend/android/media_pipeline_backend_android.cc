@@ -26,7 +26,7 @@ MediaPipelineBackendAndroid::~MediaPipelineBackendAndroid() {}
 MediaPipelineBackendAndroid::AudioDecoder*
 MediaPipelineBackendAndroid::CreateAudioDecoder() {
   LOG(INFO) << __func__ << ":";
-  DCHECK_EQ(kStateUninitialized, state_);
+  CHECK_EQ(kStateUninitialized, state_, base::NotFatalUntil::M163);
   if (audio_decoder_)
     return nullptr;
   audio_decoder_.reset(new AudioDecoderAndroid(
@@ -37,7 +37,7 @@ MediaPipelineBackendAndroid::CreateAudioDecoder() {
 MediaPipelineBackendAndroid::VideoDecoder*
 MediaPipelineBackendAndroid::CreateVideoDecoder() {
   LOG(INFO) << __func__ << ":";
-  DCHECK_EQ(kStateUninitialized, state_);
+  CHECK_EQ(kStateUninitialized, state_, base::NotFatalUntil::M163);
   if (video_decoder_)
     return nullptr;
   video_decoder_.reset(new VideoDecoderNull());
@@ -46,7 +46,7 @@ MediaPipelineBackendAndroid::CreateVideoDecoder() {
 
 bool MediaPipelineBackendAndroid::Initialize() {
   LOG(INFO) << __func__ << ":";
-  DCHECK_EQ(kStateUninitialized, state_);
+  CHECK_EQ(kStateUninitialized, state_, base::NotFatalUntil::M163);
   if (audio_decoder_)
     audio_decoder_->Initialize();
   state_ = kStateInitialized;
@@ -55,7 +55,7 @@ bool MediaPipelineBackendAndroid::Initialize() {
 
 bool MediaPipelineBackendAndroid::Start(int64_t start_pts) {
   LOG(INFO) << __func__ << ": start_pts=" << start_pts;
-  DCHECK_EQ(kStateInitialized, state_);
+  CHECK_EQ(kStateInitialized, state_, base::NotFatalUntil::M163);
   if (audio_decoder_ && !audio_decoder_->Start(start_pts))
     return false;
   state_ = kStatePlaying;
@@ -74,7 +74,7 @@ void MediaPipelineBackendAndroid::Stop() {
 
 bool MediaPipelineBackendAndroid::Pause() {
   LOG(INFO) << __func__ << ":";
-  DCHECK_EQ(kStatePlaying, state_);
+  CHECK_EQ(kStatePlaying, state_, base::NotFatalUntil::M163);
   if (audio_decoder_ && !audio_decoder_->Pause())
     return false;
   state_ = kStatePaused;
@@ -83,7 +83,7 @@ bool MediaPipelineBackendAndroid::Pause() {
 
 bool MediaPipelineBackendAndroid::Resume() {
   LOG(INFO) << __func__ << ":";
-  DCHECK_EQ(kStatePaused, state_);
+  CHECK_EQ(kStatePaused, state_, base::NotFatalUntil::M163);
   if (audio_decoder_ && !audio_decoder_->Resume())
     return false;
   state_ = kStatePlaying;

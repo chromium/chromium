@@ -91,28 +91,28 @@ AudioDecoderAndroid::AudioDecoderAndroid(MediaPipelineBackendAndroid* backend,
       weak_factory_(this) {
   LOG(INFO) << __func__ << ":";
   TRACE_FUNCTION_ENTRY0();
-  DCHECK(backend_);
-  DCHECK(task_runner_.get());
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(backend_, base::NotFatalUntil::M163);
+  CHECK(task_runner_.get(), base::NotFatalUntil::M163);
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
 }
 
 AudioDecoderAndroid::~AudioDecoderAndroid() {
   LOG(INFO) << __func__ << ":";
   TRACE_FUNCTION_ENTRY0();
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
 }
 
 void AudioDecoderAndroid::SetDelegate(
     MediaPipelineBackend::Decoder::Delegate* delegate) {
   LOG(INFO) << __func__ << ":";
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M163);
   delegate_ = delegate;
 }
 
 void AudioDecoderAndroid::Initialize() {
   LOG(INFO) << __func__ << ":";
   TRACE_FUNCTION_ENTRY0();
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M163);
   stats_ = Statistics();
   pending_buffer_complete_ = false;
   got_eos_ = false;
@@ -125,8 +125,9 @@ bool AudioDecoderAndroid::Start(int64_t start_pts) {
   LOG(INFO) << __func__ << ": start_pts=" << start_pts;
   TRACE_FUNCTION_ENTRY0();
   current_pts_ = start_pts;
-  DCHECK(IsValidConfig(config_));
-  DCHECK(IsValidChannelNumber(config_.channel_number));
+  CHECK(IsValidConfig(config_), base::NotFatalUntil::M163);
+  CHECK(IsValidChannelNumber(config_.channel_number),
+        base::NotFatalUntil::M163);
   if (!sink_.Create(this, config_.channel_number, config_.samples_per_second,
                     config_.audio_track_session_id, backend_->Primary(),
                     is_apk_audio_, config_.use_hw_av_sync, backend_->DeviceId(),
@@ -161,7 +162,7 @@ void AudioDecoderAndroid::Stop() {
 bool AudioDecoderAndroid::Pause() {
   LOG(INFO) << __func__ << ":";
   TRACE_FUNCTION_ENTRY0();
-  DCHECK(sink_);
+  CHECK(sink_, base::NotFatalUntil::M163);
   sink_->SetPaused(true);
   return true;
 }
@@ -169,7 +170,7 @@ bool AudioDecoderAndroid::Pause() {
 bool AudioDecoderAndroid::Resume() {
   LOG(INFO) << __func__ << ":";
   TRACE_FUNCTION_ENTRY0();
-  DCHECK(sink_);
+  CHECK(sink_, base::NotFatalUntil::M163);
   sink_->SetPaused(false);
   return true;
 }
@@ -186,7 +187,8 @@ bool AudioDecoderAndroid::SetPlaybackRate(float rate) {
   while (!rate_shifter_info_.empty()) {
     RateShifterInfo* rate_info = &rate_shifter_info_.back();
     int64_t possible_output_frames = rate_info->input_frames / rate_info->rate;
-    DCHECK_GE(possible_output_frames, rate_info->output_frames);
+    CHECK_GE(possible_output_frames, rate_info->output_frames,
+             base::NotFatalUntil::M163);
     if (rate_info->output_frames == possible_output_frames) {
       rate_shifter_info_.pop_back();
     } else {
@@ -208,11 +210,11 @@ AudioDecoderAndroid::BufferStatus AudioDecoderAndroid::PushBuffer(
              << " pts=" << buffer->timestamp();
   }
   TRACE_FUNCTION_ENTRY0();
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(buffer);
-  DCHECK(!got_eos_);
-  DCHECK(!sink_error_);
-  DCHECK(!pending_buffer_complete_);
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
+  CHECK(buffer, base::NotFatalUntil::M163);
+  CHECK(!got_eos_, base::NotFatalUntil::M163);
+  CHECK(!sink_error_, base::NotFatalUntil::M163);
+  CHECK(!pending_buffer_complete_, base::NotFatalUntil::M163);
 
   uint64_t input_bytes = buffer->end_of_stream() ? 0 : buffer->data_size();
   scoped_refptr<DecoderBufferBase> buffer_base(
@@ -224,7 +226,7 @@ AudioDecoderAndroid::BufferStatus AudioDecoderAndroid::PushBuffer(
   // If the buffer is already decoded, do not attempt to decode. Call
   // OnBufferDecoded asynchronously on the main thread.
   if (BypassDecoder()) {
-    DCHECK(!decoder_);
+    CHECK(!decoder_, base::NotFatalUntil::M163);
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&AudioDecoderAndroid::OnBufferDecoded,
                                   weak_factory_.GetWeakPtr(), input_bytes,
@@ -233,7 +235,7 @@ AudioDecoderAndroid::BufferStatus AudioDecoderAndroid::PushBuffer(
     return MediaPipelineBackendAndroid::kBufferPending;
   }
 
-  DCHECK(decoder_);
+  CHECK(decoder_, base::NotFatalUntil::M163);
   // Decode the buffer.
   decoder_->Decode(std::move(buffer_base),
                    base::BindOnce(&AudioDecoderAndroid::OnBufferDecoded,
@@ -242,14 +244,14 @@ AudioDecoderAndroid::BufferStatus AudioDecoderAndroid::PushBuffer(
 }
 
 void AudioDecoderAndroid::UpdateStatistics(Statistics delta) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
   stats_.decoded_bytes += delta.decoded_bytes;
 }
 
 void AudioDecoderAndroid::GetStatistics(Statistics* stats) {
   TRACE_FUNCTION_ENTRY0();
-  DCHECK(stats);
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(stats, base::NotFatalUntil::M163);
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
   *stats = stats_;
   LOG(INFO) << __func__ << ": decoded_bytes=" << stats->decoded_bytes;
 }
@@ -264,7 +266,7 @@ bool AudioDecoderAndroid::SetConfig(const AudioConfig& config) {
             << " is_encrypted=" << config.is_encrypted();
 
   TRACE_FUNCTION_ENTRY0();
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
   if (!IsValidConfig(config) || !IsValidChannelNumber(config.channel_number)) {
     LOG(ERROR) << "Invalid audio config passed to SetConfig";
     return false;
@@ -312,9 +314,10 @@ bool AudioDecoderAndroid::ResetSinkForNewConfig(const AudioConfig& config) {
 void AudioDecoderAndroid::CreateDecoder() {
   LOG(INFO) << __func__ << ":";
 
-  DCHECK(!decoder_);
-  DCHECK(IsValidConfig(config_));
-  DCHECK(IsValidChannelNumber(config_.channel_number));
+  CHECK(!decoder_, base::NotFatalUntil::M163);
+  CHECK(IsValidConfig(config_), base::NotFatalUntil::M163);
+  CHECK(IsValidChannelNumber(config_.channel_number),
+        base::NotFatalUntil::M163);
 
   // No need to create a decoder if the samples are already decoded.
   if (BypassDecoder()) {
@@ -354,7 +357,7 @@ void AudioDecoderAndroid::CreateRateShifter(const AudioConfig& config) {
 bool AudioDecoderAndroid::SetVolume(float multiplier) {
   LOG(INFO) << __func__ << ": multiplier=" << multiplier;
   TRACE_FUNCTION_ENTRY1(multiplier);
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
   volume_multiplier_ = multiplier;
   if (sink_)
     sink_->SetStreamVolumeMultiplier(volume_multiplier_);
@@ -408,10 +411,10 @@ void AudioDecoderAndroid::OnBufferDecoded(
     const AudioConfig& config,
     scoped_refptr<DecoderBufferBase> decoded) {
   TRACE_FUNCTION_ENTRY0();
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(!got_eos_);
-  DCHECK(!pending_buffer_complete_);
-  DCHECK(rate_shifter_);
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
+  CHECK(!got_eos_, base::NotFatalUntil::M163);
+  CHECK(!pending_buffer_complete_, base::NotFatalUntil::M163);
+  CHECK(rate_shifter_, base::NotFatalUntil::M163);
 
   if (decoded->end_of_stream()) {
     DVLOG(3) << __func__ << ": EOS";
@@ -473,14 +476,15 @@ void AudioDecoderAndroid::OnBufferDecoded(
     int64_t input_frames =
         decoded->data_size() / (config_.channel_number * sizeof(float));
 
-    DCHECK(!rate_shifter_info_.empty());
+    CHECK(!rate_shifter_info_.empty(), base::NotFatalUntil::M163);
 
     // If not AudioChannel::kAll, wipe all other channels for stereo sound.
     if (backend_->AudioChannel() != AudioChannel::kAll) {
       // There is an assumption hardcoded for playout_channel to be left
       // or right. Adding a check here in case this changes.
-      DCHECK(backend_->AudioChannel() == AudioChannel::kLeft ||
-             backend_->AudioChannel() == AudioChannel::kRight);
+      CHECK(backend_->AudioChannel() == AudioChannel::kLeft ||
+                backend_->AudioChannel() == AudioChannel::kRight,
+            base::NotFatalUntil::M163);
       const int playout_channel =
           backend_->AudioChannel() == AudioChannel::kLeft ? 0 : 1;
       for (int c = 0; c < config_.channel_number; ++c) {
@@ -501,10 +505,11 @@ void AudioDecoderAndroid::OnBufferDecoded(
     if (rate_info->rate == 1.0 && rate_shifter_->BufferedFrames() == 0 &&
         pending_output_frames_ == kNoPendingOutput &&
         rate_shifter_info_.size() == 1) {
-      DCHECK_EQ(rate_info->output_frames, rate_info->input_frames);
+      CHECK_EQ(rate_info->output_frames, rate_info->input_frames,
+               base::NotFatalUntil::M163);
       pending_output_frames_ = input_frames;
       if (got_eos_) {
-        DCHECK(!pushed_eos_);
+        CHECK(!pushed_eos_, base::NotFatalUntil::M163);
         pushed_eos_ = true;
       }
       sink_->WritePcm(std::move(decoded));
@@ -536,7 +541,7 @@ void AudioDecoderAndroid::OnBufferDecoded(
   }
 
   PushRateShifted();
-  DCHECK(!rate_shifter_info_.empty());
+  CHECK(!rate_shifter_info_.empty(), base::NotFatalUntil::M163);
   CheckBufferComplete();
 }
 
@@ -549,7 +554,7 @@ void AudioDecoderAndroid::CheckBufferComplete() {
   }
 
   bool rate_shifter_queue_full = rate_shifter_->IsQueueFull();
-  DCHECK(!rate_shifter_info_.empty());
+  CHECK(!rate_shifter_info_.empty(), base::NotFatalUntil::M163);
   if (rate_shifter_info_.front().rate == 1.0) {
     // If the current rate is 1.0, drain any data in the rate shifter before
     // calling PushBufferComplete, so that the next PushBuffer call can skip the
@@ -571,7 +576,7 @@ void AudioDecoderAndroid::PushRateShifted() {
            << " pending_output_frames_=" << pending_output_frames_
            << " got_eos_=" << got_eos_;
 
-  DCHECK(sink_);
+  CHECK(sink_, base::NotFatalUntil::M163);
 
   if (pushed_eos_ || pending_output_frames_ != kNoPendingOutput) {
     return;
@@ -586,15 +591,16 @@ void AudioDecoderAndroid::PushRateShifted() {
         kSilenceBufferFrames, base::TimeDelta()));
   }
 
-  DCHECK(!rate_shifter_info_.empty());
+  CHECK(!rate_shifter_info_.empty(), base::NotFatalUntil::M163);
   RateShifterInfo* rate_info = &rate_shifter_info_.front();
   int64_t possible_output_frames = rate_info->input_frames / rate_info->rate;
-  DCHECK_GE(possible_output_frames, rate_info->output_frames);
+  CHECK_GE(possible_output_frames, rate_info->output_frames,
+           base::NotFatalUntil::M163);
 
   int desired_output_frames = possible_output_frames - rate_info->output_frames;
   if (desired_output_frames == 0) {
     if (got_eos_) {
-      DCHECK(!pushed_eos_);
+      CHECK(!pushed_eos_, base::NotFatalUntil::M163);
       pending_output_frames_ = 0;
       pushed_eos_ = true;
 
@@ -623,7 +629,8 @@ void AudioDecoderAndroid::PushRateShifted() {
   }
 
   rate_info->output_frames += out_frames;
-  DCHECK_GE(possible_output_frames, rate_info->output_frames);
+  CHECK_GE(possible_output_frames, rate_info->output_frames,
+           base::NotFatalUntil::M163);
 
   int channel_data_size = out_frames * sizeof(float);
   scoped_refptr<DecoderBufferBase> output_buffer(
@@ -646,7 +653,7 @@ void AudioDecoderAndroid::PushRateShifted() {
     rate_info = &rate_shifter_info_.front();
     LOG(INFO) << "New playback rate in effect: " << rate_info->rate;
     rate_info->input_frames += remaining_input_frames;
-    DCHECK_EQ(0, rate_info->output_frames);
+    CHECK_EQ(0, rate_info->output_frames, base::NotFatalUntil::M163);
 
     // If new playback rate is 1.0, clear out 'extra' data in the rate shifter.
     // When doing rate shifting, the rate shifter queue holds data after it has
@@ -661,7 +668,7 @@ void AudioDecoderAndroid::PushRateShifted() {
             ::media::AudioBus::Create(config_.channel_number, extra_frames);
         int cleared_frames =
             rate_shifter_->FillBuffer(dropped.get(), 0, extra_frames, 1.0f);
-        DCHECK_EQ(extra_frames, cleared_frames);
+        CHECK_EQ(extra_frames, cleared_frames, base::NotFatalUntil::M163);
       }
       rate_info->input_frames = rate_shifter_->BufferedFrames();
     }
@@ -669,7 +676,7 @@ void AudioDecoderAndroid::PushRateShifted() {
 }
 
 bool AudioDecoderAndroid::BypassDecoder() const {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
   // The sink input requires planar float PCM data.
   return (config_.codec == kCodecPCM &&
           config_.sample_format == kSampleFormatPlanarF32);
@@ -679,8 +686,9 @@ void AudioDecoderAndroid::OnWritePcmCompletion(BufferStatus status) {
   DVLOG(3) << __func__ << ": status=" << status;
 
   TRACE_FUNCTION_ENTRY0();
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK_EQ(MediaPipelineBackendAndroid::kBufferSuccess, status);
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
+  CHECK_EQ(MediaPipelineBackendAndroid::kBufferSuccess, status,
+           base::NotFatalUntil::M163);
   pending_output_frames_ = kNoPendingOutput;
 
   task_runner_->PostTask(FROM_HERE,
@@ -693,7 +701,7 @@ void AudioDecoderAndroid::PushMorePcm() {
 
   PushRateShifted();
 
-  DCHECK(!rate_shifter_info_.empty());
+  CHECK(!rate_shifter_info_.empty(), base::NotFatalUntil::M163);
   CheckBufferComplete();
 
   if (pushed_eos_) {
@@ -704,7 +712,7 @@ void AudioDecoderAndroid::PushMorePcm() {
 
 void AudioDecoderAndroid::OnSinkError(SinkError error) {
   TRACE_FUNCTION_ENTRY0();
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
   if (error != SinkError::kInputIgnored)
     LOG(ERROR) << "Sink error occurred.";
   sink_error_ = true;

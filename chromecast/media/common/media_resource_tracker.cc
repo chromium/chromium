@@ -17,13 +17,15 @@ namespace media {
 
 MediaResourceTracker::ScopedUsage::ScopedUsage(MediaResourceTracker* tracker)
     : tracker_(tracker) {
-  DCHECK(tracker_);
-  DCHECK(tracker_->media_task_runner_->BelongsToCurrentThread());
+  CHECK(tracker_, base::NotFatalUntil::M163);
+  CHECK(tracker_->media_task_runner_->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
   tracker_->IncrementUsageCount();
 }
 
 MediaResourceTracker::ScopedUsage::~ScopedUsage() {
-  DCHECK(tracker_->media_task_runner_->BelongsToCurrentThread());
+  CHECK(tracker_->media_task_runner_->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
   tracker_->DecrementUsageCount();
 }
 
@@ -35,15 +37,15 @@ MediaResourceTracker::MediaResourceTracker(
       delete_on_finalize_(false),
       ui_task_runner_(std::move(ui_task_runner)),
       media_task_runner_(std::move(media_task_runner)) {
-  DCHECK(ui_task_runner_);
-  DCHECK(media_task_runner_);
-  DCHECK(ui_task_runner_->BelongsToCurrentThread());
+  CHECK(ui_task_runner_, base::NotFatalUntil::M163);
+  CHECK(media_task_runner_, base::NotFatalUntil::M163);
+  CHECK(ui_task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
 }
 
 MediaResourceTracker::~MediaResourceTracker() {}
 
 void MediaResourceTracker::InitializeMediaLib() {
-  DCHECK(ui_task_runner_->BelongsToCurrentThread());
+  CHECK(ui_task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
   media_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&MediaResourceTracker::CallInitializeOnMediaThread,
@@ -51,8 +53,8 @@ void MediaResourceTracker::InitializeMediaLib() {
 }
 
 void MediaResourceTracker::FinalizeMediaLib(base::OnceClosure completion_cb) {
-  DCHECK(ui_task_runner_->BelongsToCurrentThread());
-  DCHECK(!completion_cb.is_null());
+  CHECK(ui_task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
+  CHECK(!completion_cb.is_null(), base::NotFatalUntil::M163);
 
   media_task_runner_->PostTask(
       FROM_HERE,
@@ -61,7 +63,7 @@ void MediaResourceTracker::FinalizeMediaLib(base::OnceClosure completion_cb) {
 }
 
 void MediaResourceTracker::FinalizeAndDestroy() {
-  DCHECK(ui_task_runner_->BelongsToCurrentThread());
+  CHECK(ui_task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
 
   media_task_runner_->PostTask(
       FROM_HERE,
@@ -71,14 +73,16 @@ void MediaResourceTracker::FinalizeAndDestroy() {
 }
 
 void MediaResourceTracker::IncrementUsageCount() {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
-  DCHECK(media_lib_initialized_);
-  DCHECK(!finalize_completion_cb_);
+  CHECK(media_task_runner_->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
+  CHECK(media_lib_initialized_, base::NotFatalUntil::M163);
+  CHECK(!finalize_completion_cb_, base::NotFatalUntil::M163);
   media_use_count_++;
 }
 
 void MediaResourceTracker::DecrementUsageCount() {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  CHECK(media_task_runner_->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
   media_use_count_--;
 
   if (media_use_count_ == 0 &&
@@ -88,7 +92,8 @@ void MediaResourceTracker::DecrementUsageCount() {
 }
 
 void MediaResourceTracker::CallInitializeOnMediaThread() {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  CHECK(media_task_runner_->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
   if (media_lib_initialized_)
     return;
 
@@ -98,8 +103,9 @@ void MediaResourceTracker::CallInitializeOnMediaThread() {
 
 void MediaResourceTracker::MaybeCallFinalizeOnMediaThread(
     base::OnceClosure completion_cb) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
-  DCHECK(!finalize_completion_cb_);
+  CHECK(media_task_runner_->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
+  CHECK(!finalize_completion_cb_, base::NotFatalUntil::M163);
 
   finalize_completion_cb_ =
       base::BindPostTask(ui_task_runner_, std::move(completion_cb));
@@ -117,7 +123,8 @@ void MediaResourceTracker::MaybeCallFinalizeOnMediaThread(
 }
 
 void MediaResourceTracker::MaybeCallFinalizeOnMediaThreadAndDeleteSelf() {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  CHECK(media_task_runner_->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
 
   if (!media_lib_initialized_) {
     ui_task_runner_->DeleteSoon(FROM_HERE, this);
@@ -134,9 +141,10 @@ void MediaResourceTracker::MaybeCallFinalizeOnMediaThreadAndDeleteSelf() {
 }
 
 void MediaResourceTracker::CallFinalizeOnMediaThread() {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
-  DCHECK_EQ(media_use_count_, 0ul);
-  DCHECK(media_lib_initialized_);
+  CHECK(media_task_runner_->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
+  CHECK_EQ(media_use_count_, 0ul, base::NotFatalUntil::M163);
+  CHECK(media_lib_initialized_, base::NotFatalUntil::M163);
 
   DoFinalizeMediaLib();
   media_lib_initialized_ = false;

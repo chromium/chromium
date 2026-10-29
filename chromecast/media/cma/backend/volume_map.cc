@@ -35,7 +35,7 @@ VolumeMap::VolumeMap()
 
 VolumeMap::VolumeMap(std::unique_ptr<CastAudioJsonProvider> config_provider)
     : config_provider_(std::move(config_provider)) {
-  DCHECK(config_provider_);
+  CHECK(config_provider_, base::NotFatalUntil::M163);
   // base::Unretained is safe because VolumeMap outlives |config_provider_|.
   config_provider_->SetTuningChangedCallback(
       base::BindRepeating(&VolumeMap::LoadVolumeMap, base::Unretained(this)));

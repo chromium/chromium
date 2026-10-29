@@ -59,7 +59,7 @@ bool PushBufferQueue::PushBufferImpl(const PushBufferRequest& request) {
 
   // NOTE: This method is used instead of SerializeDelimitedToZeroCopyStream()
   // due to bugs in the method's implementation. See b/173477672.
-  DCHECK(producer_stream_.has_value());
+  CHECK(producer_stream_.has_value(), base::NotFatalUntil::M163);
   bool success = google::protobuf::util::SerializeDelimitedToOstream(
       request, &producer_stream_.value());
 
@@ -95,12 +95,12 @@ PushBufferQueue::GetBufferedData() {
 std::optional<PushBufferQueue::PushBufferRequest>
 PushBufferQueue::GetBufferedDataImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(consumer_sequence_checker_);
-  DCHECK(HasBufferedData());
+  CHECK(HasBufferedData(), base::NotFatalUntil::M163);
 
   bytes_read_during_current_read_ = 0;
   PushBufferRequest request;
 
-  DCHECK(protobuf_consumer_stream_.has_value());
+  CHECK(protobuf_consumer_stream_.has_value(), base::NotFatalUntil::M163);
   bool succeeded = google::protobuf::util::ParseDelimitedFromZeroCopyStream(
       &request, &protobuf_consumer_stream_.value(), nullptr /* clean_eof */);
 
@@ -148,7 +148,7 @@ int PushBufferQueue::GetAvailableyByteCount() const {
 
 PushBufferQueue::ProducerHandler::ProducerHandler(PushBufferQueue* queue)
     : queue_(queue) {
-  DCHECK(queue_);
+  CHECK(queue_, base::NotFatalUntil::M163);
 }
 
 PushBufferQueue::ProducerHandler::~ProducerHandler() = default;
@@ -158,12 +158,13 @@ int PushBufferQueue::ProducerHandler::overflow(int ch) {
   const size_t current_read_bytes =
       queue_->bytes_read_so_far_.load(std::memory_order_acquire);
   const int currently_written_bytes = UpdateBytesWritten();
-  DCHECK_GE(static_cast<size_t>(currently_written_bytes), current_read_bytes);
+  CHECK_GE(static_cast<size_t>(currently_written_bytes), current_read_bytes,
+           base::NotFatalUntil::M163);
 
   // Calculates the current size of the buffer.
   const size_t bytes_currently_used =
       currently_written_bytes - current_read_bytes;
-  DCHECK_LE(bytes_currently_used, kBufferSizeBytes);
+  CHECK_LE(bytes_currently_used, kBufferSizeBytes, base::NotFatalUntil::M163);
 
   // Calculates the number of bytes that should be included in the next write
   // window, which is the least of:
@@ -204,7 +205,7 @@ void PushBufferQueue::ProducerHandler::ApplyNewBytesWritten() {
 
 size_t PushBufferQueue::ProducerHandler::UpdateBytesWritten() {
   const int change_in_write_count = pptr() - pbase();
-  DCHECK_GE(change_in_write_count, 0);
+  CHECK_GE(change_in_write_count, 0, base::NotFatalUntil::M163);
   queue_->bytes_written_during_current_write_ += change_in_write_count;
   return queue_->bytes_written_so_far_.load(std::memory_order_relaxed) +
          queue_->bytes_written_during_current_write_;
@@ -212,7 +213,7 @@ size_t PushBufferQueue::ProducerHandler::UpdateBytesWritten() {
 
 PushBufferQueue::ConsumerHandler::ConsumerHandler(PushBufferQueue* queue)
     : queue_(queue) {
-  DCHECK(queue_);
+  CHECK(queue_, base::NotFatalUntil::M163);
 }
 
 PushBufferQueue::ConsumerHandler::~ConsumerHandler() = default;
@@ -222,7 +223,8 @@ int PushBufferQueue::ConsumerHandler::underflow() {
   const size_t currently_written_bytes =
       queue_->bytes_written_so_far_.load(std::memory_order_acquire);
   const size_t current_read_bytes = UpdateBytesRead();
-  DCHECK_GE(currently_written_bytes, current_read_bytes);
+  CHECK_GE(currently_written_bytes, current_read_bytes,
+           base::NotFatalUntil::M163);
 
   // Stop reading at either the end of the array or the current write index,
   // whichever is sooner. While there may be more data wrapped around after the
@@ -242,7 +244,8 @@ int PushBufferQueue::ConsumerHandler::underflow() {
   // return the current character per method contact. Because
   // std::char_traits<char>::eof() is a special return code, cast to a uint to
   // avoid all negative results (EOF is guaranteed to be negative by the stl).
-  DCHECK_LE(current_read_bytes + new_window_size, currently_written_bytes);
+  CHECK_LE(current_read_bytes + new_window_size, currently_written_bytes,
+           base::NotFatalUntil::M163);
   setg(&UNSAFE_TODO(queue_->buffer_[begin]),
        &UNSAFE_TODO(queue_->buffer_[begin]),
        &UNSAFE_TODO(queue_->buffer_[begin + new_window_size]));
@@ -266,7 +269,7 @@ void PushBufferQueue::ConsumerHandler::ApplyNewBytesRead() {
 
 size_t PushBufferQueue::ConsumerHandler::UpdateBytesRead() {
   const int change_in_read_count = GetReadOffset();
-  DCHECK_GE(change_in_read_count, 0);
+  CHECK_GE(change_in_read_count, 0, base::NotFatalUntil::M163);
   queue_->bytes_read_during_current_read_ += change_in_read_count;
   return queue_->bytes_read_so_far_.load(std::memory_order_relaxed) +
          queue_->bytes_read_during_current_read_;

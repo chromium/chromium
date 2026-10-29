@@ -14,7 +14,7 @@ namespace media {
 AudioDecoderPipelineNode::AudioDecoderPipelineNode(
     CmaBackend::AudioDecoder* delegated_decoder)
     : delegated_decoder_(delegated_decoder) {
-  DCHECK(delegated_decoder_);
+  CHECK(delegated_decoder_, base::NotFatalUntil::M163);
 }
 
 AudioDecoderPipelineNode::~AudioDecoderPipelineNode() = default;
@@ -81,7 +81,8 @@ bool AudioDecoderPipelineNode::RequiresDecryption() {
 
 void AudioDecoderPipelineNode::SetOwnedDecoder(
     std::unique_ptr<AudioDecoderPipelineNode> delegated_decoder) {
-  DCHECK_EQ(delegated_decoder.get(), delegated_decoder_);
+  CHECK_EQ(delegated_decoder.get(), delegated_decoder_,
+           base::NotFatalUntil::M163);
 
   owned_delegated_decoder_ = std::move(delegated_decoder);
 }
@@ -89,21 +90,21 @@ void AudioDecoderPipelineNode::SetOwnedDecoder(
 void AudioDecoderPipelineNode::OnPushBufferComplete(
     CmaBackend::Decoder::BufferStatus status) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(delegated_decoder_delegate_);
+  CHECK(delegated_decoder_delegate_, base::NotFatalUntil::M163);
 
   delegated_decoder_delegate_->OnPushBufferComplete(status);
 }
 
 void AudioDecoderPipelineNode::OnEndOfStream() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(delegated_decoder_delegate_);
+  CHECK(delegated_decoder_delegate_, base::NotFatalUntil::M163);
 
   delegated_decoder_delegate_->OnEndOfStream();
 }
 
 void AudioDecoderPipelineNode::OnDecoderError() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(delegated_decoder_delegate_);
+  CHECK(delegated_decoder_delegate_, base::NotFatalUntil::M163);
 
   delegated_decoder_delegate_->OnDecoderError();
 }
@@ -112,7 +113,7 @@ void AudioDecoderPipelineNode::OnKeyStatusChanged(const std::string& key_id,
                                                   CastKeyStatus key_status,
                                                   uint32_t system_code) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(delegated_decoder_delegate_);
+  CHECK(delegated_decoder_delegate_, base::NotFatalUntil::M163);
 
   delegated_decoder_delegate_->OnKeyStatusChanged(key_id, key_status,
                                                   system_code);
@@ -120,7 +121,7 @@ void AudioDecoderPipelineNode::OnKeyStatusChanged(const std::string& key_id,
 
 void AudioDecoderPipelineNode::OnVideoResolutionChanged(const Size& size) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(delegated_decoder_delegate_);
+  CHECK(delegated_decoder_delegate_, base::NotFatalUntil::M163);
 
   delegated_decoder_delegate_->OnVideoResolutionChanged(size);
 }

@@ -29,15 +29,15 @@ CmaBackendProxy::CmaBackendProxy(
     std::unique_ptr<CmaBackend> delegated_pipeline)
     : delegated_pipeline_(std::move(delegated_pipeline)),
       audio_decoder_factory_(std::move(audio_decoder_factory)) {
-  DCHECK(delegated_pipeline_);
-  DCHECK(audio_decoder_factory_);
+  CHECK(delegated_pipeline_, base::NotFatalUntil::M163);
+  CHECK(audio_decoder_factory_, base::NotFatalUntil::M163);
 }
 
 CmaBackendProxy::~CmaBackendProxy() = default;
 
 CmaBackend::AudioDecoder* CmaBackendProxy::CreateAudioDecoder() {
-  DCHECK(!audio_decoder_);
-  DCHECK(audio_decoder_factory_);
+  CHECK(!audio_decoder_, base::NotFatalUntil::M163);
+  CHECK(audio_decoder_factory_, base::NotFatalUntil::M163);
   audio_decoder_ = std::move(audio_decoder_factory_).Run();
   return audio_decoder_.get();
 }

@@ -21,7 +21,7 @@ MediaSinkDesktop::MediaSinkDesktop(
       playback_rate_(1.0f),
       last_frame_pts_(start_pts),
       received_eos_(false) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M163);
   time_interpolator_.SetPlaybackRate(playback_rate_);
   time_interpolator_.SetBounds(start_pts, start_pts, tick_clock_.NowTicks());
   time_interpolator_.StartInterpolating();
@@ -30,7 +30,7 @@ MediaSinkDesktop::MediaSinkDesktop(
 MediaSinkDesktop::~MediaSinkDesktop() {}
 
 void MediaSinkDesktop::SetPlaybackRate(float rate) {
-  DCHECK_GE(rate, 0.0f);
+  CHECK_GE(rate, 0.0f, base::NotFatalUntil::M163);
   playback_rate_ = rate;
   time_interpolator_.SetPlaybackRate(playback_rate_);
 
@@ -73,8 +73,8 @@ MediaPipelineBackend::BufferStatus MediaSinkDesktop::PushBuffer(
 }
 
 void MediaSinkDesktop::ScheduleEndOfStreamTask() {
-  DCHECK(received_eos_);
-  DCHECK(eos_task_.IsCancelled());
+  CHECK(received_eos_, base::NotFatalUntil::M163);
+  CHECK(eos_task_.IsCancelled(), base::NotFatalUntil::M163);
 
   // Do not schedule if playback is paused.
   if (playback_rate_ == 0.0f)

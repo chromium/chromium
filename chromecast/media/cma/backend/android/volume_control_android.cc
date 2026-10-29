@@ -49,7 +49,7 @@ VolumeControlAndroid::VolumeControlAndroid()
       initialize_complete_event_(
           base::WaitableEvent::ResetPolicy::MANUAL,
           base::WaitableEvent::InitialState::NOT_SIGNALED) {
-  DCHECK(j_volume_control_.is_null());
+  CHECK(j_volume_control_.is_null(), base::NotFatalUntil::M163);
   j_volume_control_.Reset(Java_VolumeControl_createVolumeControl(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this)));
 
@@ -164,7 +164,8 @@ float VolumeControlAndroid::VolumeToDbFS(AudioContentType type, float volume) {
 }
 
 void VolumeControlAndroid::InitializeOnThread() {
-  DCHECK(thread_.task_runner()->BelongsToCurrentThread());
+  CHECK(thread_.task_runner()->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
 
   for (auto type :
        {AudioContentType::kMedia, AudioContentType::kAlarm,
@@ -196,7 +197,8 @@ void VolumeControlAndroid::SetVolumeOnThread(VolumeChangeSource source,
                                              float level,
                                              bool from_android) {
   // Note: |level| is in the |type| volume table domain.
-  DCHECK(thread_.task_runner()->BelongsToCurrentThread());
+  CHECK(thread_.task_runner()->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
   {
     base::AutoLock lock(volume_lock_);
     if (level == volumes_[type]) {
@@ -234,7 +236,8 @@ void VolumeControlAndroid::SetMutedOnThread(VolumeChangeSource source,
                                             AudioContentType type,
                                             bool muted,
                                             bool from_android) {
-  DCHECK(thread_.task_runner()->BelongsToCurrentThread());
+  CHECK(thread_.task_runner()->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
   {
     base::AutoLock lock(volume_lock_);
     if (muted == muted_[type]) {
@@ -259,7 +262,8 @@ void VolumeControlAndroid::SetMutedOnThread(VolumeChangeSource source,
 
 void VolumeControlAndroid::ReportVolumeChangeOnThread(AudioContentType type,
                                                       float level) {
-  DCHECK(thread_.task_runner()->BelongsToCurrentThread());
+  CHECK(thread_.task_runner()->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
   SetVolumeOnThread(VolumeChangeSource::kUser, type, level,
                     true /* from android */);
 }

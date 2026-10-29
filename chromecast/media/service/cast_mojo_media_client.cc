@@ -29,7 +29,7 @@ CastMojoMediaClient::CastMojoMediaClient(
       video_mode_switcher_(video_mode_switcher),
       video_resolution_policy_(video_resolution_policy),
       enable_buffering_cb_(std::move(enable_buffering_cb)) {
-  DCHECK(backend_factory_);
+  CHECK(backend_factory_, base::NotFatalUntil::M163);
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
   video_geometry_setter_ = video_geometry_setter;
 #else
@@ -45,7 +45,7 @@ std::unique_ptr<::media::Renderer> CastMojoMediaClient::CreateCastRenderer(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     ::media::MediaLog* /* media_log */,
     const base::UnguessableToken& overlay_plane_id) {
-  DCHECK(video_geometry_setter_);
+  CHECK(video_geometry_setter_, base::NotFatalUntil::M163);
   auto cast_renderer = std::make_unique<CastRenderer>(
       backend_factory_, task_runner, video_mode_switcher_,
       video_resolution_policy_, overlay_plane_id, frame_interfaces,
