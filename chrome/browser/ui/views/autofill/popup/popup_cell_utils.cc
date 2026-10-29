@@ -14,6 +14,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -22,6 +23,7 @@
 #include "cc/paint/skia_paint_canvas.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
@@ -37,6 +39,8 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_resource_util.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/grit/components_scaled_resources.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/qr_code_generator/bitmap_generator.h"
 #include "components/strings/grit/components_strings.h"
@@ -47,6 +51,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size.h"
@@ -667,6 +672,20 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
                                       kGooglePasswordManagerIconSize);
     case Suggestion::Icon::kGooglePay:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillEnableGradientGoogleLogos)) {
+        return ui::ImageModel::FromImageGenerator(
+            base::BindRepeating([](const ui::ColorProvider* provider) {
+              return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+                  provider->GetColor(kColorPaymentsGooglePayLogo) ==
+                          SK_ColorWHITE
+                      ? IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT_DARK
+                      : IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT);
+            }),
+            ui::ResourceBundle::GetSharedInstance()
+                .GetImageSkiaNamed(IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT)
+                ->size());
+      }
       return ui::ImageModel::FromImageGenerator(
           base::BindRepeating(&CreateTiledGooglePayLogo, kGooglePayLogoWidth,
                               kIconSize),
