@@ -3822,6 +3822,9 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_GEMINI_SETTINGS_EDIT_PROMPT" desc="Title for the button in the contextual cue settings sheet that opens the Gemini floaty with the contextual cue prompt pre-filled so the user can edit it.">
         Edit prompt
       </message>
+      <message name="IDS_IOS_GEMINI_SETTINGS_EDIT_PROMPT_FOOTER" desc="Footer text below the 'Edit prompt' button in the contextual cue settings sheet, showing the contextual cue prompt in quotation marks.">
+        "<ph name="PROMPT">$1<ex>Summarize this page</ex></ph>"
+      </message>
       <message name="IDS_IOS_GEMINI_SETTINGS_MANAGE_SUGGESTIONS" desc="Title for the button in the contextual cue settings sheet that opens the Gemini suggestions settings page.">
         Manage Gemini suggestions
       </message>

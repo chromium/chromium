@@ -1,0 +1,46 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("constants") {
+  sources = [
+    "gemini_contextual_cue_settings_constants.h",
+    "gemini_contextual_cue_settings_constants.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("ui") {
+  sources = [
+    "gemini_contextual_cue_settings_consumer.h",
+    "gemini_contextual_cue_settings_mutator.h",
+    "gemini_contextual_cue_settings_view_controller.h",
+    "gemini_contextual_cue_settings_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
+    "//ios/chrome/common/ui/colors",
+    "//ui/base",
+  ]
+  public_deps = [ ":constants" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "gemini_contextual_cue_settings_view_controller_unittest.mm" ]
+  deps = [
+    ":constants",
+    ":ui",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}
