@@ -115,32 +115,6 @@ TEST_F(ContextualTasksNavigationThrottleTest,
 }
 
 TEST_F(ContextualTasksNavigationThrottleTest,
-       ProcessNavigation_FeatureDisabled_Proceeds) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {}, {kContextualTasks, kContextualTasksSidePanel});
-  GURL ai_url(kAiPageUrl);
-  auto web_contents = content::WebContentsTester::CreateTestWebContents(
-      profile_.get(), content::SiteInstance::Create(profile_.get()));
-
-  content::MockNavigationHandle handle(ai_url,
-                                       web_contents->GetPrimaryMainFrame());
-  handle.set_is_in_primary_main_frame(true);
-
-  content::MockNavigationThrottleRegistry registry(
-      &handle,
-      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
-  ContextualTasksNavigationThrottle::MaybeCreateAndAdd(registry);
-
-  ASSERT_EQ(1u, registry.throttles().size());
-  auto* throttle = static_cast<ContextualTasksNavigationThrottle*>(
-      registry.throttles().back().get());
-
-  EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            throttle->WillStartRequest().action());
-}
-
-TEST_F(ContextualTasksNavigationThrottleTest,
        ProcessNavigation_GuestOpener_RendererInitiated_Cancelled) {
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));

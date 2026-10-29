@@ -2314,9 +2314,15 @@ bool ContextualTasksUiService::HandleNavigationImpl(
 
   if (!is_from_embedded_page && IsContextualTasksUrl(url_params.url)) {
     std::string_view path = url_params.url.path();
-    bool is_exempt =
-        IsWebContentsInSidePanel(source_contents) || path == "/internals" ||
-        base::StartsWith(path, "/internals/") || path == "/test_loader.html";
+    base::Uuid task_id = GetTaskIdFromUrl(url_params.url);
+    auto task_it =
+        task_id.is_valid() ? task_states_.find(task_id) : task_states_.end();
+    bool is_side_panel_task =
+        task_it != task_states_.end() && task_it->second.is_side_panel_task;
+    bool is_exempt = IsWebContentsInSidePanel(source_contents) ||
+                     is_side_panel_task || path == "/internals" ||
+                     base::StartsWith(path, "/internals/") ||
+                     path == "/test_loader.html";
     // If kContextualTasks is disabled and only the side panel UI is enabled,
     // redirect standalone tab navigations to AIM.
     // TODO(crbug.com/533072196): Clean up this redirect once the

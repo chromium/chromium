@@ -123,12 +123,8 @@ class ContextualTasksLensOverlayControllerInteractiveUiTest
   void SetUpFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{contextual_tasks::kContextualTasks, {}},
-         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
-         {lens::features::kLensOverlayTextSelectionContextMenuEntrypoint,
-          {{"contextualize", "true"}}},
-         {lens::features::kLensSidePanelUnification,
-          {{"allow-signed-out", "true"}}}},
+        {{lens::features::kLensOverlayTextSelectionContextMenuEntrypoint,
+          {{"contextualize", "true"}}}},
         /*disabled_features=*/
         {features::kNonBlockingOsClipboardReads,
          // These tests expect closing the side panel to close Lens sessions in
@@ -922,12 +918,8 @@ class ContextualTasksLensOverlayEphemeralButtonInteractiveUiTest
   void SetUpFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{contextual_tasks::kContextualTasks, {}},
-         {contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint,
-          {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}},
-         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
-         {lens::features::kLensSidePanelUnification,
-          {{"allow-signed-out", "true"}}}},
+        {{contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint,
+          {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}}},
         /*disabled_features=*/{features::kNonBlockingOsClipboardReads});
   }
 };
@@ -994,14 +986,7 @@ class ContextualTasksLensOverlayControllerEligibilityInteractiveUiTest
   }
 
   void SetUpFeatureList() override {
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{contextual_tasks::kContextualTasks, {}},
-                              {contextual_tasks::
-                                   kContextualTasksForceEntryPointEligibility,
-                               {}},
-                              {lens::features::kLensSidePanelUnification,
-                               {{"allow-signed-out", "true"}}}},
-        /*disabled_features=*/{features::kNonBlockingOsClipboardReads});
+    feature_list_.InitAndDisableFeature(features::kNonBlockingOsClipboardReads);
   }
 
   std::unique_ptr<KeyedService> BuildMockAimServiceInstance(
@@ -1109,18 +1094,13 @@ class OmniboxContextualSuggestionInteractiveUiTest
  public:
   void SetUpFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{contextual_tasks::kContextualTasks, {}},
-                              {contextual_tasks::kContextualTasksContext, {}},
-                              {contextual_tasks::
-                                   kContextualTasksForceEntryPointEligibility,
-                               {}},
+        /*enabled_features=*/{{contextual_tasks::kContextualTasksContext, {}},
                               {lens::features::kLensOverlay, {}},
                               {lens::features::kLensOverlayContextualSearchbox,
                                {}},
                               {omnibox::kWebUIOmniboxAskGAboutThisPage,
                                {{"Omnibox_AskGBypassPrivacyNotice", "true"}}}},
-        /*disabled_features=*/{features::kNonBlockingOsClipboardReads,
-                               lens::features::kLensSidePanelUnification});
+        /*disabled_features=*/{features::kNonBlockingOsClipboardReads});
   }
 };
 
@@ -1189,14 +1169,10 @@ class ContextualTasksContextMenuAskGoogleInteractiveUiTest
   void SetUpFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{contextual_tasks::kContextualTasks, {}},
-         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
-         {contextual_tasks::kEnableContextualTasksPinButtonInToolbar, {}},
+        {{contextual_tasks::kEnableContextualTasksPinButtonInToolbar, {}},
          {lens::features::kLensOverlay, {}},
          {lens::features::kLensOverlayEduActionChip,
           {{"max-shown-count", "5"}}},
-         {lens::features::kLensSidePanelUnification,
-          {{"allow-signed-out", "true"}}},
          {contextual_tasks::kContextualTasksUpdatedEntryPoints,
           {{"ContextualTasksContextMenuShowAskGoogle", "true"},
            {"ContextualTasksContextMenuSubmenu", "false"},
@@ -1487,11 +1463,7 @@ class ContextualTasksContextMenuSubmenuInteractiveUiTest
   void SetUpFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{contextual_tasks::kContextualTasks, {}},
-         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
-         {lens::features::kLensSidePanelUnification,
-          {{"allow-signed-out", "true"}}},
-         {contextual_tasks::kContextualTasksUpdatedEntryPoints,
+        {{contextual_tasks::kContextualTasksUpdatedEntryPoints,
           {{"ContextualTasksContextMenuShowAskGoogle", "true"},
            {"ContextualTasksContextMenuSubmenu", "true"},
            {"ContextualTasksContextMenuRouteAskGoogleToOmnibox", "false"}}}},
@@ -1693,14 +1665,10 @@ class ContextualTasksContextMenuRouteOmniboxInteractiveUiTest
   void SetUpFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{contextual_tasks::kContextualTasks, {}},
-         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
-         {contextual_tasks::kEnableContextualTasksPinButtonInToolbar, {}},
+        {{contextual_tasks::kEnableContextualTasksPinButtonInToolbar, {}},
          {lens::features::kLensOverlay, {}},
          {lens::features::kLensOverlayEduActionChip,
           {{"max-shown-count", "5"}}},
-         {lens::features::kLensSidePanelUnification,
-          {{"allow-signed-out", "true"}}},
          {contextual_tasks::kContextualTasksUpdatedEntryPoints,
           {{"ContextualTasksContextMenuShowAskGoogle", "true"},
            {"ContextualTasksContextMenuSubmenu", "false"},
@@ -1877,9 +1845,7 @@ class ContextualTasksLensRegionChipInteractiveUiTest
   void SetUpFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{contextual_tasks::kContextualTasks, {}},
-         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
-         {contextual_tasks::kEnableContextualTasksPinButtonInToolbar, {}},
+        {{contextual_tasks::kEnableContextualTasksPinButtonInToolbar, {}},
          {contextual_tasks::kContextualTasksRearchitecture, {}},
          {contextual_tasks::kContextualTasksSidePanelRearchitecture, {}},
          {extensions_features::kApiContextualTasksPrivate, {}}},

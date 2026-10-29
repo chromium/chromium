@@ -56,7 +56,6 @@
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/prefs.h"
-#include "components/lens/lens_features.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
@@ -1155,7 +1154,7 @@ class ContextualTasksSidePanelCoordinatorFeatureDisabledInteractiveUiTest
   ContextualTasksSidePanelCoordinatorFeatureDisabledInteractiveUiTest() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kContextualTasksSidePanel},
+        /*enabled_features=*/{},
         /*disabled_features=*/{kContextualTasks,
                                kContextualTasksClobberActiveTab});
   }
@@ -1167,8 +1166,7 @@ class ContextualTasksSidePanelCoordinatorFeatureDisabledClobberInteractiveUiTest
   ContextualTasksSidePanelCoordinatorFeatureDisabledClobberInteractiveUiTest() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kContextualTasksSidePanel,
-                              kContextualTasksClobberActiveTab},
+        /*enabled_features=*/{kContextualTasksClobberActiveTab},
         /*disabled_features=*/{kContextualTasks});
   }
 };
@@ -1784,17 +1782,8 @@ class ContextualTasksSignedOutAlignmentInteractiveUiTest
   ~ContextualTasksSignedOutAlignmentInteractiveUiTest() override = default;
 
   void SetUpFeatureList() override {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    for (const auto& feature : GetDefaultEnabledFeatures()) {
-      if (feature.feature == lens::features::kLensSidePanelUnification) {
-        base::FieldTrialParams params = feature.params;
-        params["allow-signed-out"] = "true";
-        enabled_features.emplace_back(lens::features::kLensSidePanelUnification,
-                                      params);
-      } else {
-        enabled_features.push_back(feature);
-      }
-    }
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        GetDefaultEnabledFeatures();
     std::vector<base::test::FeatureRef> disabled_features =
         GetDefaultDisabledFeatures();
     disabled_features.push_back(kContextualTasksForceEntryPointEligibility);
@@ -1881,17 +1870,8 @@ class ContextualTasksSignedOutPinnedButtonInteractiveUiTest
     : public ContextualTasksSignedOutAlignmentInteractiveUiTest {
  public:
   void SetUpFeatureList() override {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    for (const auto& feature : GetDefaultEnabledFeatures()) {
-      if (feature.feature == lens::features::kLensSidePanelUnification) {
-        base::FieldTrialParams params = feature.params;
-        params["allow-signed-out"] = "true";
-        enabled_features.emplace_back(lens::features::kLensSidePanelUnification,
-                                      params);
-      } else {
-        enabled_features.push_back(feature);
-      }
-    }
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        GetDefaultEnabledFeatures();
     enabled_features.push_back({kEnableContextualTasksPinButtonInToolbar, {}});
     std::vector<base::test::FeatureRef> disabled_features =
         GetDefaultDisabledFeatures();

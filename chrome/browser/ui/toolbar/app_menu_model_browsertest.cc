@@ -750,9 +750,6 @@ class ContextualTasksAskGoogleEnabledTest : public AppMenuModelTest {
   ContextualTasksAskGoogleEnabledTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{lens::features::kLensOverlay, {}},
-         {contextual_tasks::kContextualTasks, {}},
-         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
-         {lens::features::kLensSidePanelUnification, {}},
          {contextual_tasks::kContextualTasksUpdatedEntryPoints,
           {{"ContextualTasksContextMenuShowAskGoogle", "true"},
            {"ContextualTasksContextMenuSubmenu", "false"}}}},
@@ -806,9 +803,6 @@ class ContextualTasksAskGoogleSubmenuTest : public AppMenuModelTest {
   ContextualTasksAskGoogleSubmenuTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{lens::features::kLensOverlay, {}},
-         {contextual_tasks::kContextualTasks, {}},
-         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
-         {lens::features::kLensSidePanelUnification, {}},
          {contextual_tasks::kContextualTasksUpdatedEntryPoints,
           {{"ContextualTasksContextMenuShowAskGoogle", "true"},
            {"ContextualTasksContextMenuSubmenu", "true"}}}},

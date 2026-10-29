@@ -1384,7 +1384,6 @@ class ContextualTasksOmniboxContextManagementInteractiveUiTest
             {omnibox::kAimEnabled, {}},
             {omnibox::kAimUsePecApi, {}},
             {lens::features::kLensOverlay, {}},
-            {lens::features::kLensSidePanelUnification, {}},
             {lens::features::kLensOverlayContextualSearchbox, {}},
         },
         /*disabled_features=*/{

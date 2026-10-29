@@ -25,7 +25,6 @@
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
-#include "components/lens/lens_features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
@@ -411,12 +410,8 @@ TEST_F(EntryPointEligibilityManagerTest, IsPinningEligible_True) {
 }
 
 TEST_F(EntryPointEligibilityManagerTest, IsPinningEligible_True_SignedOut) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{contextual_tasks::kEnableContextualTasksPinButtonInToolbar, {}},
-       {lens::features::kLensSidePanelUnification,
-        {{"allow-signed-out", "true"}}}},
-      {});
+  base::test::ScopedFeatureList feature_list(
+      contextual_tasks::kEnableContextualTasksPinButtonInToolbar);
 
   EXPECT_CALL(*mock_ui_service_, IsSignedInToBrowserWithValidCredentials())
       .WillRepeatedly(Return(false));
@@ -430,27 +425,6 @@ TEST_F(EntryPointEligibilityManagerTest, IsPinningEligible_True_SignedOut) {
 
   EXPECT_FALSE(EntryPointEligibilityManager::IsEligible(profile_.get()));
   EXPECT_TRUE(EntryPointEligibilityManager::IsPinningEligible(profile_.get()));
-}
-
-TEST_F(EntryPointEligibilityManagerTest,
-       IsPinningEligible_False_SignedOut_UnificationDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {contextual_tasks::kEnableContextualTasksPinButtonInToolbar},
-      {lens::features::kLensSidePanelUnification});
-
-  EXPECT_CALL(*mock_ui_service_, IsSignedInToBrowserWithValidCredentials())
-      .WillRepeatedly(Return(false));
-
-  profile_->GetPrefs()->SetInteger(omnibox::kAIModeSettings, 0);  // Allowed
-
-  EXPECT_CALL(*mock_aim_service_, IsFuseboxEligible())
-      .WillRepeatedly(testing::Return(true));
-
-  InitializeManager();
-
-  EXPECT_FALSE(EntryPointEligibilityManager::IsEligible(profile_.get()));
-  EXPECT_FALSE(EntryPointEligibilityManager::IsPinningEligible(profile_.get()));
 }
 
 TEST_F(EntryPointEligibilityManagerTest,
@@ -494,11 +468,8 @@ TEST_F(EntryPointEligibilityManagerTest,
 TEST_F(EntryPointEligibilityManagerTest,
        IsPinningEligible_False_NotAimEligible) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{contextual_tasks::kEnableContextualTasksPinButtonInToolbar, {}},
-       {lens::features::kLensSidePanelUnification,
-        {{"allow-signed-out", "true"}}}},
-      {});
+  feature_list.InitAndEnableFeature(
+      contextual_tasks::kEnableContextualTasksPinButtonInToolbar);
 
   EXPECT_CALL(*mock_aim_service_, IsAimEligible())
       .WillRepeatedly(testing::Return(false));
@@ -544,11 +515,8 @@ TEST_F(EntryPointEligibilityManagerTest,
 TEST_F(EntryPointEligibilityManagerTest,
        IsPinningEligible_False_Incognito) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{contextual_tasks::kEnableContextualTasksPinButtonInToolbar, {}},
-       {lens::features::kLensSidePanelUnification,
-        {{"allow-signed-out", "true"}}}},
-      {});
+  feature_list.InitAndEnableFeature(
+      contextual_tasks::kEnableContextualTasksPinButtonInToolbar);
 
   TestingProfile::Builder otr_builder;
   otr_builder.AddTestingFactory(

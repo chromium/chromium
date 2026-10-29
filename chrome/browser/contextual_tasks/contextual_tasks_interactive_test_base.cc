@@ -172,8 +172,6 @@ ContextualTasksInteractiveTestBase::GetDefaultEnabledFeatures() {
   return {
       {kContextualTasks, {}},
       {lens::features::kLensOverlay, {}},
-      {lens::features::kLensSidePanelUnification,
-       {{"allow-signed-out", "true"}}},
       {lens::features::kLensOverlayContextualSearchbox,
        {{"use-pdfs-as-context", "true"}, {"auto-focus-searchbox", "false"}}},
       {lens::features::kLensOverlayTranslateButton, {}},

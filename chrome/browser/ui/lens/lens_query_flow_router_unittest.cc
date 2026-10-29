@@ -3876,7 +3876,8 @@ TEST_F(
   router.MaybeResumeQueryFlow();
 }
 
-TEST_F(LensQueryFlowRouterTest, RecordQueryEligibility_UnificationDisabled) {
+TEST_F(LensQueryFlowRouterTest,
+       RecordQueryEligibility_ContextualTasksDisabled) {
   base::HistogramTester histogram_tester;
 
   LensQueryFlowRouter router(mock_lens_search_controller_.get());
@@ -3900,14 +3901,6 @@ TEST_F(LensQueryFlowRouterTest, RecordQueryEligibility_UnificationDisabled) {
 class LensQueryFlowRouterUnifiedEligibilityTest
     : public LensQueryFlowRouterContextualTaskEnabledTest {
  protected:
-  void InitFeatureList() override {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{lens::features::kLensSidePanelUnification, {}},
-         {contextual_tasks::kContextualTasks, {}},
-         {contextual_tasks::kContextualTasksContext, {}}},
-        {});
-  }
-
   void SetUp() override {
     LensQueryFlowRouterContextualTaskEnabledTest::SetUp();
     AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(

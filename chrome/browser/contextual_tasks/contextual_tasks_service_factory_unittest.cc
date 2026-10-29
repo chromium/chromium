@@ -90,16 +90,6 @@ TEST_F(ContextualTasksServiceFactoryTest, UsesRealService) {
   EXPECT_EQ(false, task.IsEphemeral());
 }
 
-TEST_F(ContextualTasksServiceFactoryTest, ReturnsNullIfFeatureDisabled) {
-  feature_list_.InitWithFeatures({},
-                                 {kContextualTasks, kContextualTasksSidePanel});
-  std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
-
-  ContextualTasksService* service =
-      ContextualTasksServiceFactory::GetForProfile(profile.get());
-  EXPECT_EQ(nullptr, service);
-}
-
 TEST_F(ContextualTasksServiceFactoryTest, UsesRealServiceInIncognito) {
   feature_list_.InitAndEnableFeature(kContextualTasks);
   std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();

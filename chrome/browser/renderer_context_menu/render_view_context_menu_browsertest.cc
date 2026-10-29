@@ -5126,9 +5126,7 @@ class ContextualTasksContextMenuBrowserTest : public ContextMenuBrowserTest {
  public:
   ContextualTasksContextMenuBrowserTest() {
     feature_list_.InitWithFeatures(
-        {lens::features::kLensOverlay, contextual_tasks::kContextualTasks,
-         contextual_tasks::kContextualTasksForceEntryPointEligibility,
-         lens::features::kLensSidePanelUnification},
+        {lens::features::kLensOverlay},
         {contextual_tasks::kContextualTasksUpdatedEntryPoints});
   }
 
@@ -5163,9 +5161,6 @@ class ContextualTasksContextMenuAskGoogleBrowserTest
   ContextualTasksContextMenuAskGoogleBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{lens::features::kLensOverlay, {}},
-         {contextual_tasks::kContextualTasks, {}},
-         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
-         {lens::features::kLensSidePanelUnification, {}},
          {contextual_tasks::kContextualTasksUpdatedEntryPoints,
           {{"ContextualTasksContextMenuShowAskGoogle", "true"},
            {"ContextualTasksContextMenuSubmenu", "false"},
@@ -5228,9 +5223,6 @@ class ContextualTasksContextMenuSubmenuBrowserTest
   ContextualTasksContextMenuSubmenuBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{lens::features::kLensOverlay, {}},
-         {contextual_tasks::kContextualTasks, {}},
-         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
-         {lens::features::kLensSidePanelUnification, {}},
          {contextual_tasks::kContextualTasksUpdatedEntryPoints,
           {{"ContextualTasksContextMenuShowAskGoogle", "true"},
            {"ContextualTasksContextMenuSubmenu", "true"},

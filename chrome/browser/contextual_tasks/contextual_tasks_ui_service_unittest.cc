@@ -43,7 +43,6 @@
 #include "components/contextual_tasks/public/host_override.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/contextual_tasks/public/prefs.h"
-#include "components/lens/lens_features.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/testing_pref_service.h"
@@ -387,11 +386,6 @@ TEST_F(ContextualTasksUiServiceTest,
 }
 
 TEST_F(ContextualTasksUiServiceTest, ShouldShowOauthErrorDialog) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      lens::features::kLensSidePanelUnification,
-      {{"allow-signed-out", "true"}});
-
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
@@ -428,29 +422,6 @@ TEST_F(ContextualTasksUiServiceTest, ShouldShowOauthErrorDialog) {
   ON_CALL(*service_for_nav_, IsSignedInToBrowserWithValidCredentials())
       .WillByDefault(Return(false));
   EXPECT_FALSE(service_for_nav_->ShouldShowOauthErrorDialogForTesting(
-      web_contents.get()));
-}
-
-TEST_F(ContextualTasksUiServiceTest,
-       ShouldShowOauthErrorDialog_SignedOutNotAllowed) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{lens::features::kLensSidePanelUnification,
-        {{"allow-signed-out", "false"}}}},
-      {kAllowSignedOutUserInDesktopAndroid});
-
-  auto web_contents = content::WebContentsTester::CreateTestWebContents(
-      profile_.get(), content::SiteInstance::Create(profile_.get()));
-
-  // Unification is configured to reject signed-out users and Desktop Android
-  // signed-out browsing is disabled, so no surface admits them on any platform.
-  // The suppression must not apply and the OAuth error dialog is surfaced as it
-  // was before.
-  ON_CALL(*service_for_nav_, IsSignedInForWebContentsOnInit(web_contents.get()))
-      .WillByDefault(Return(false));
-  ON_CALL(*service_for_nav_, IsSignedInToBrowserWithValidCredentials())
-      .WillByDefault(Return(false));
-  EXPECT_TRUE(service_for_nav_->ShouldShowOauthErrorDialogForTesting(
       web_contents.get()));
 }
 
@@ -4829,12 +4800,7 @@ TEST_F(ContextualTasksUiServiceTest, HandleNavigation_WebUI_TokensNotLoaded) {
 TEST_F(
     ContextualTasksUiServiceTest,
     HandleNavigation_WebUI_SignedOut_NoRedirect_WhenInSidePanelUnderUnification) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{contextual_tasks::kContextualTasks, {}},
-       {lens::features::kLensSidePanelUnification,
-        {{"allow-signed-out", "true"}}}},
-      {});
+  base::test::ScopedFeatureList scoped_feature_list(kContextualTasksSidePanel);
   GURL webui_url(chrome::kChromeUIContextualTasksURL);
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
@@ -4856,12 +4822,7 @@ TEST_F(
 TEST_F(
     ContextualTasksUiServiceTest,
     HandleNavigation_WebUI_SignedOut_NoRedirect_WhenPendingLensSessionUnderUnification) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{contextual_tasks::kContextualTasks, {}},
-       {lens::features::kLensSidePanelUnification,
-        {{"allow-signed-out", "true"}}}},
-      {});
+  base::test::ScopedFeatureList scoped_feature_list(kContextualTasksSidePanel);
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   GURL webui_url =
       net::AppendQueryParameter(GURL(chrome::kChromeUIContextualTasksURL),
@@ -4898,11 +4859,7 @@ TEST_F(
 TEST_F(
     ContextualTasksUiServiceTest,
     HandleNavigation_WebUI_AimNotEligible_NoRedirect_WhenLensSessionUnderUnification) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {contextual_tasks::kContextualTasks,
-       lens::features::kLensSidePanelUnification},
-      {});
+  base::test::ScopedFeatureList scoped_feature_list(kContextualTasksSidePanel);
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   GURL webui_url =
       net::AppendQueryParameter(GURL(chrome::kChromeUIContextualTasksURL),
@@ -4940,12 +4897,7 @@ TEST_F(
 TEST_F(
     ContextualTasksUiServiceTest,
     HandleNavigation_WebUI_SignedOut_NoRedirect_WhenOmniboxSessionUnderUnification) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{contextual_tasks::kContextualTasks, {}},
-       {lens::features::kLensSidePanelUnification,
-        {{"allow-signed-out", "true"}}}},
-      {});
+  base::test::ScopedFeatureList scoped_feature_list(kContextualTasksSidePanel);
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   GURL webui_url =
       net::AppendQueryParameter(GURL(chrome::kChromeUIContextualTasksURL),
@@ -4978,12 +4930,7 @@ TEST_F(
 TEST_F(
     ContextualTasksUiServiceTest,
     HandleNavigation_WebUI_SignedOut_Redirects_WhenOmniboxSessionWithoutSidePanel) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{contextual_tasks::kContextualTasks, {}},
-       {lens::features::kLensSidePanelUnification,
-        {{"allow-signed-out", "true"}}}},
-      {});
+  base::test::ScopedFeatureList scoped_feature_list(kContextualTasksSidePanel);
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   GURL webui_url =
       net::AppendQueryParameter(GURL(chrome::kChromeUIContextualTasksURL),
@@ -5040,11 +4987,8 @@ TEST_F(ContextualTasksUiServiceTest,
 TEST_F(ContextualTasksUiServiceTest,
        HandleNavigation_WebUI_NotSignedIn_NoRedirect_WhenPinnedToolbarButton) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{contextual_tasks::kContextualTasks, {}},
-       {contextual_tasks::kEnableContextualTasksPinButtonInToolbar, {}},
-       {lens::features::kLensSidePanelUnification,
-        {{"allow-signed-out", "true"}}}},
+  scoped_feature_list.InitWithFeatures(
+      {kContextualTasksSidePanel, kEnableContextualTasksPinButtonInToolbar},
       {});
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   GURL webui_url = net::AppendOrReplaceQueryParameter(

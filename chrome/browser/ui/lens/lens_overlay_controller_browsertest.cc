@@ -1627,12 +1627,6 @@ class LensOverlayControllerContextualTasksSidePanelBrowserTest
     feature_list_.InitWithFeaturesAndParameters(
         {{lens::features::kLensOverlay,
           {{"results-search-url", kResultsSearchBaseUrl}}},
-         // Routes Lens results to the Contextual Tasks side panel. Otherwise,
-         // the overlay closes when that side panel opens.
-         {lens::features::kLensSidePanelUnification,
-          {{"allow-signed-out", "true"}}},
-         {contextual_tasks::kContextualTasks, {}},
-         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
          {contextual_tasks::kContextualTasksSidePanelRearchitecture, {}}},
         /*disabled_features=*/{
             lens::features::kLensOverlayNonBlockingPrivacyNotice});
@@ -10602,8 +10596,7 @@ class LensOverlayControllerNonBlockingPrivacyNoticeBrowserTest
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {lens::features::kLensOverlayNonBlockingPrivacyNotice,
-         lens::features::kLensOverlayContextualSearchbox,
-         contextual_tasks::kContextualTasksSidePanel},
+         lens::features::kLensOverlayContextualSearchbox},
         /*disabled_features=*/{contextual_tasks::kContextualTasks});
   }
 
@@ -10807,8 +10800,7 @@ class LensOverlayControllerPrivacyNoticeFeatureDisabledBrowserTest
   void SetupFeatureList() override {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {lens::features::kLensOverlayContextualSearchbox,
-         contextual_tasks::kContextualTasksSidePanel},
+        {lens::features::kLensOverlayContextualSearchbox},
         /*disabled_features=*/{
             lens::features::kLensOverlayNonBlockingPrivacyNotice,
             contextual_tasks::kContextualTasks});
