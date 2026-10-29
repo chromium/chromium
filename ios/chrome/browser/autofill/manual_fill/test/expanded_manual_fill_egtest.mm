@@ -249,17 +249,6 @@ GREYElementInteraction* SearchAutofillFormButton(id<GREYMatcher> scroll_view) {
       onElementWithMatcher:scroll_view];
 }
 
-// Scrolls the web element with `element_id` into view so that subsequent tap
-// actions do not fail due to off-screen or obscured coordinates.
-void ScrollWebElementIntoView(std::string_view element_id) {
-  [ChromeEarlGrey
-      evaluateJavaScriptForSideEffect:
-          [NSString stringWithFormat:
-                        @"document.getElementById('%.*s').scrollIntoView();",
-                        static_cast<int>(element_id.size()),
-                        element_id.data()]];
-}
-
 }  // namespace
 
 // Test case for the expanded manual fill view.
@@ -322,7 +311,7 @@ void ScrollWebElementIntoView(std::string_view element_id) {
 // manual fill view.
 - (void)openExpandedManualFillViewForDataType:(ManualFillDataType)dataType
                                   fieldToFill:(std::string)fieldToFill {
-  ScrollWebElementIntoView(fieldToFill);
+  [ChromeEarlGrey scrollWebStateElementIntoViewWithID:fieldToFill];
 
   // Tap on the provided field.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -603,7 +592,7 @@ void ScrollWebElementIntoView(std::string_view element_id) {
   LoadForm(self.testServer, ManualFillDataType::kOther);
 
   // Tap on a field that's not associated to password, payment or address.
-  ScrollWebElementIntoView(kOtherStuffFieldID);
+  [ChromeEarlGrey scrollWebStateElementIntoViewWithID:kOtherStuffFieldID];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kOtherStuffFieldID)];
 
@@ -655,7 +644,7 @@ void ScrollWebElementIntoView(std::string_view element_id) {
   // Now focus a password-related field.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
-  ScrollWebElementIntoView(kPasswordFieldID);
+  [ChromeEarlGrey scrollWebStateElementIntoViewWithID:kPasswordFieldID];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kPasswordFieldID)];
 

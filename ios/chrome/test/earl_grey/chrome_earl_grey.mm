@@ -841,6 +841,14 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 #pragma mark - WebState Utilities (EG2)
 
+- (void)scrollWebStateElementIntoViewWithID:(std::string_view)elementID {
+  [self
+      evaluateJavaScriptForSideEffect:
+          [NSString stringWithFormat:
+                        @"document.getElementById('%.*s').scrollIntoView();",
+                        static_cast<int>(elementID.size()), elementID.data()]];
+}
+
 - (void)tapWebStateElementWithID:(NSString*)elementID {
   EG_TEST_HELPER_ASSERT_NO_ERROR(
       [ChromeEarlGreyAppInterface tapWebStateElementWithID:elementID]);

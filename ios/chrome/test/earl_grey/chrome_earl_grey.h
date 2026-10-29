@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/time/time.h"
 #import "components/content_settings/core/common/content_settings.h"
@@ -714,6 +715,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)addSyncPassphrase:(NSString*)syncPassphrase;
 
 #pragma mark - WebState Utilities (EG2)
+
+// Scrolls the HTML element with `elementID` into view in the current WebState.
+// A GREYAssert is induced on failure.
+- (void)scrollWebStateElementIntoViewWithID:(std::string_view)elementID;
 
 // Taps html element with `elementID` in the current web state.
 // A GREYAssert is induced on failure.
