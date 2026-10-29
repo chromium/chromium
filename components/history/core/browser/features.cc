@@ -129,8 +129,12 @@ BASE_FEATURE(kBrowsingHistoryImprovedHostnameSuffixMatching,
 // directly; use `IsBrowsingHistoryFilterByDeviceEnabled()` instead.
 BASE_FEATURE(kBrowsingHistoryFilterByDevice, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables browser history filtering by domain.
+// Enables browser history filtering by domain on desktop.
 BASE_FEATURE(kBrowsingHistoryFilterByDomain, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables V2 of browser history filtering by domain.
+BASE_FEATURE(kBrowsingHistoryFilterByDomainV2,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables browser history filtering by time.
 BASE_FEATURE(kBrowsingHistoryFilterByTime, base::FEATURE_DISABLED_BY_DEFAULT);

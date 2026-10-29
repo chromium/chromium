@@ -200,7 +200,7 @@ public class HistoryContentManagerUnitTest {
     @Features.EnableFeatures({
         ChromeFeatureList.APP_SPECIFIC_HISTORY,
         ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_ACTOR,
-        ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN
+        ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN_V2
     })
     public void testCreateForPageInfo_FilterChipsDisabled() {
         when(mBrowsingHistoryBridgeJni.isBrowsingHistoryFilterByDeviceEnabled()).thenReturn(true);

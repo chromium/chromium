@@ -138,7 +138,7 @@ import java.util.function.Supplier;
     ChromeFeatureList.ANDROID_DESKTOP_HISTORY_LAYOUT,
     ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_ACTOR,
     ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DEVICE,
-    ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN
+    ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN_V2
 })
 public class HistoryUiTest {
     private static final int PAGE_INCREMENT = 2;
@@ -644,7 +644,7 @@ public class HistoryUiTest {
     }
 
     @DisableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)
-    @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN)
+    @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN_V2)
     @Test
     public void testSearch_HostFilterChipVisibleWhenAppSpecificHistoryDisabled() {
         mHistoryManager =
@@ -784,7 +784,7 @@ public class HistoryUiTest {
                         .toString());
 
         // When another filter is also enabled, the chip uses the shorter "App" label.
-        FeatureOverrides.enable(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN);
+        FeatureOverrides.enable(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN_V2);
         HistoryContentManager contentManager = createHistoryManager().getContentManagerForTests();
         assertEquals(
                 mActivity.getString(R.string.history_app_filter_chip_text),
@@ -796,7 +796,7 @@ public class HistoryUiTest {
                         .toString());
     }
 
-    @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN)
+    @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN_V2)
     @Test
     public void testSearch_HostFilterSheet() {
         HistoryFilterChip<String> hostFilter = mContentManager.getHostFilterForTesting();
@@ -821,13 +821,13 @@ public class HistoryUiTest {
         assertEquals(1, mUserActionTester.getActionCount("Android.HistoryPage.HostFilterSelected"));
     }
 
-    @DisableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN)
+    @DisableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN_V2)
     @Test
     public void testSearch_HostFilterDisabled() {
         Assert.assertFalse(mContentManager.showHostFilter());
     }
 
-    @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN)
+    @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN_V2)
     @Test
     public void testSearch_HostFilterList() {
         long timestamp = new Date().getTime();
@@ -902,7 +902,7 @@ public class HistoryUiTest {
         Assert.assertTrue(hostFilter.isVisible());
     }
 
-    @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN)
+    @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN_V2)
     @Test
     public void testSearch_HostFilterHiddenWithSingleHost() {
         mHistoryProvider = new StubbedHistoryProvider();
@@ -1077,7 +1077,7 @@ public class HistoryUiTest {
     }
 
     @EnableFeatures({
-        ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN,
+        ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN_V2,
         ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DEVICE
     })
     @Test

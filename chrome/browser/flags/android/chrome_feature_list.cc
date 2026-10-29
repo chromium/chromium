@@ -249,7 +249,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &finds::features::kChromeFinds,
     &history::kBrowsingHistoryFilterByActor,
     &history::kBrowsingHistoryFilterByDevice,
-    &history::kBrowsingHistoryFilterByDomain,
+    &history::kBrowsingHistoryFilterByDomainV2,
     &history::kOrganicRepeatableQueries,
     &kAccountForSuppressedKeyboardInsets,
     &kAccountPickerDialog,

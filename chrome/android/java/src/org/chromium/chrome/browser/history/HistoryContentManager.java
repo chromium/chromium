@@ -806,7 +806,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * @return True if history page needs to show host filter UI.
      */
     boolean showHostFilter() {
-        return ChromeFeatureList.sBrowsingHistoryFilterByDomain.isEnabled() && mShowHostFilter;
+        return ChromeFeatureList.sBrowsingHistoryFilterByDomainV2.isEnabled() && mShowHostFilter;
     }
 
     /**
