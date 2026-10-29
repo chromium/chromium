@@ -1671,6 +1671,10 @@ export class OmniboxPopupSearchboxElement extends
     this.clickQueriedZps_ = false;
     this.getInputElement().setSelectionRange(0, 0);
     this.getInputElement().blur();
+    // Show the start of the text, so that the #mirror elides its end. Blink
+    // scrolls an <input> back to its start on blur, but only fires blur (from
+    // `blur()`) while the page has system focus, so don't rely on it.
+    this.getInputElement().inputElement.scrollLeft = 0;
     // Cache the selected match before clearing autocomplete results so the
     // searchbox icon does not fall back to the default icon while blurred.
     if (this.selectedMatch) {
