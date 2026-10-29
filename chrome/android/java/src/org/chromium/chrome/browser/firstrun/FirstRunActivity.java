@@ -82,6 +82,7 @@ import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.util.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -534,6 +535,7 @@ public class FirstRunActivity extends FirstRunActivityBase
         ScrimManager scrimManager =
                 new ScrimManager(this, contentView, ScrimClient.FIRST_RUN_ACTIVITY);
         mScrimManager = scrimManager;
+        scrimManager.getStatusBarColorSupplier().addSyncObserver(this::applyScrimToStatusBar);
         mBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(
                         () -> scrimManager,
@@ -551,6 +553,27 @@ public class FirstRunActivity extends FirstRunActivityBase
                 this,
                 getOnBackPressedDispatcher(),
                 mBottomSheetController.getBottomSheetBackPressHandler());
+    }
+
+    /**
+     * Tints the status bar with the scrim color, on top of the default status bar color. The scrim
+     * is drawn in the content view, which doesn't cover the status bar.
+     *
+     * @param scrimColor The (translucent) scrim color over the status bar, transparent if none.
+     */
+    private void applyScrimToStatusBar(@ColorInt int scrimColor) {
+        // TODO(crbug.com/534388538): Handle tablets/LFF, where the FRE is shown as a modal and the
+        // status bar color is colorSurfaceContainerLow.
+        if (DialogWhenLargeContentLayout.shouldShowAsDialog(this)) return;
+
+        @ColorInt int baseColor = SemanticColorUtils.getDefaultBgColor(this);
+        @ColorInt int finalColor = ColorUtils.overlayColor(baseColor, scrimColor);
+        EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper =
+                getEdgeToEdgeManager() != null
+                        ? getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper()
+                        : null;
+        StatusBarColorController.setStatusBarColor(
+                edgeToEdgeSystemBarColorHelper, this, finalColor);
     }
 
     @Override
