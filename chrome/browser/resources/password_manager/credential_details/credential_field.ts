@@ -6,13 +6,19 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import {getCss as getCrIconsCss} from 'chrome://resources/cr_elements/cr_icons_lit.css.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {getCss as getCrInputStyleCss} from 'chrome://resources/cr_elements/cr_input/cr_input_style_lit.css.js';
+import {getCss as getCrSharedStyleCss} from 'chrome://resources/cr_elements/cr_shared_style_lit.css.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {PasswordManagerImpl, PasswordViewPageInteractions} from '../password_manager_proxy.js';
+import type {PasswordViewPageInteractions} from '../password_manager_proxy.js';
+import {PasswordManagerImpl} from '../password_manager_proxy.js';
+import {getCss as getSharedStyleCss} from '../shared_style_lit.css.js';
 
-import {getTemplate} from './credential_field.html.js';
+import {getCss as getCredentialDetailsCardCss} from './credential_details_card_lit.css.js';
+import {getHtml} from './credential_field.html.js';
 
 export interface CredentialFieldElement {
   $: {
@@ -22,57 +28,67 @@ export interface CredentialFieldElement {
 }
 
 // An element that represents a credential field with a 'copy' button.
-export class CredentialFieldElement extends PolymerElement {
+export class CredentialFieldElement extends CrLitElement {
   static get is() {
     return 'credential-field';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return [
+      getCrIconsCss(),
+      getCrInputStyleCss(),
+      getCrSharedStyleCss(),
+      getSharedStyleCss(),
+      getCredentialDetailsCardCss(),
+    ];
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * The label on the actual input element. Required.
        */
-      label: String,
+      label: {type: String},
 
       /**
        * The label on the copy button. Required.
        */
-      copyButtonLabel: String,
+      copyButtonLabel: {type: String},
 
       /**
        * Text that appears on the toast when clicking the copy button.
        * Required.
        */
-      valueCopiedToastLabel: String,
+      valueCopiedToastLabel: {type: String},
 
       /**
        * Field value.
        */
-      value: String,
+      value: {type: String},
 
       /*
        * Placeholder when the value is empty.
        */
-      placeholder: String,
+      placeholder: {type: String},
 
       /**
        * If set, clicking the copy button will record this password view
        * interaction.
        */
-      interactionId: PasswordViewPageInteractions,
+      interactionId: {type: Number},
     };
   }
 
-  declare label: string;
-  declare copyButtonLabel: string;
-  declare valueCopiedToastLabel: string;
-  declare value: string;
-  declare placeholder: string;
-  declare interactionId: PasswordViewPageInteractions;
+  accessor label: string = '';
+  accessor copyButtonLabel: string = '';
+  accessor valueCopiedToastLabel: string = '';
+  accessor value: string = '';
+  accessor placeholder: string = '';
+  accessor interactionId: PasswordViewPageInteractions|undefined;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -81,22 +97,18 @@ export class CredentialFieldElement extends PolymerElement {
     assert(this.valueCopiedToastLabel);
   }
 
-  private onCopyValueClick_() {
+  protected onCopyValueClick_() {
     navigator.clipboard.writeText(this.value).catch(() => {});
     this.showToast_();
     PasswordManagerImpl.getInstance().extendAuthValidity();
-    if (this.interactionId) {
+    if (this.interactionId !== undefined) {
       PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
           this.interactionId);
     }
   }
 
   private showToast_() {
-    this.dispatchEvent(new CustomEvent('value-copied', {
-      bubbles: true,
-      composed: true,
-      detail: {toastMessage: this.valueCopiedToastLabel},
-    }));
+    this.fire('value-copied', {toastMessage: this.valueCopiedToastLabel});
   }
 }
 

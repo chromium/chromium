@@ -6,8 +6,7 @@ import 'chrome://password-manager/password_manager.js';
 
 import type {SharePasswordGroupAvatarElement} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {makeRecipientInfo} from './test_util.js';
 
@@ -43,7 +42,7 @@ suite('SharePasswordGroupAvatarTest', function() {
   test('Has correct state with 1 member', async function() {
     element.members = createMembers(1);
     document.body.appendChild(element);
-    await flushTasks();
+    await microtasksFinished();
 
     assertVisibleImg(element.$.firstImg);
     assertMissingImg(element.$.secondImg);
@@ -55,7 +54,7 @@ suite('SharePasswordGroupAvatarTest', function() {
   test('Has correct state with 2 member', async function() {
     element.members = createMembers(2);
     document.body.appendChild(element);
-    await flushTasks();
+    await microtasksFinished();
 
     assertVisibleImg(element.$.firstImg);
     assertVisibleImg(element.$.secondImg);
@@ -67,7 +66,7 @@ suite('SharePasswordGroupAvatarTest', function() {
   test('Has correct state with 3 member', async function() {
     element.members = createMembers(3);
     document.body.appendChild(element);
-    await flushTasks();
+    await microtasksFinished();
 
     assertVisibleImg(element.$.firstImg);
     assertVisibleImg(element.$.secondImg);
@@ -79,7 +78,7 @@ suite('SharePasswordGroupAvatarTest', function() {
   test('Has correct state with 4 member', async function() {
     element.members = createMembers(4);
     document.body.appendChild(element);
-    await flushTasks();
+    await microtasksFinished();
 
     assertVisibleImg(element.$.firstImg);
     assertVisibleImg(element.$.secondImg);
@@ -91,7 +90,7 @@ suite('SharePasswordGroupAvatarTest', function() {
   test('Has correct state with 5+ member', async function() {
     element.members = createMembers(5);
     document.body.appendChild(element);
-    await flushTasks();
+    await microtasksFinished();
 
     assertFalse(isVisible(element.$.firstImg));
     assertVisibleImg(element.$.secondImg);

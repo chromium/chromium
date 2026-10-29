@@ -5,12 +5,12 @@
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import '../shared_style.css.js';
 
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './share_password_recipient.html.js';
+import {getCss} from './share_password_recipient.css.js';
+import {getHtml} from './share_password_recipient.html.js';
 
 export interface SharePasswordRecipientElement {
   $: {
@@ -21,41 +21,50 @@ export interface SharePasswordRecipientElement {
   };
 }
 
-export class SharePasswordRecipientElement extends PolymerElement {
+export class SharePasswordRecipientElement extends CrLitElement {
   static get is() {
     return 'share-password-recipient';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      disabled: {
-        type: Boolean,
-        value: false,
-      },
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      recipient: Object,
+  static override get properties() {
+    return {
+      disabled: {type: Boolean},
+      recipient: {type: Object},
 
       selected: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
+        reflect: true,
         notify: true,
       },
     };
   }
-  declare disabled: boolean;
-  declare selected: boolean;
-  declare recipient: chrome.passwordsPrivate.RecipientInfo;
 
-  override ready() {
-    super.ready();
+  accessor disabled: boolean = false;
+  accessor selected: boolean = false;
+  accessor recipient: chrome.passwordsPrivate.RecipientInfo = {
+    userId: '',
+    email: '',
+    displayName: '',
+    profileImageUrl: '',
+    isEligible: false,
+  };
+
+  override firstUpdated() {
     this.addEventListener('click', this.onClick_.bind(this));
     this.addEventListener('mouseover', this.onMouseOver_.bind(this));
     this.addEventListener('mouseout', this.onMouseOut_.bind(this));
+  }
+
+  protected onCheckboxCheckedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.selected = e.detail.value;
   }
 
   private onClick_(e: Event) {

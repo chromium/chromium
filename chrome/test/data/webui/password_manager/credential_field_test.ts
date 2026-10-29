@@ -7,7 +7,6 @@ import 'chrome://password-manager/password_manager.js';
 import type {CredentialFieldElement} from 'chrome://password-manager/password_manager.js';
 import {Page, PasswordManagerImpl, PasswordViewPageInteractions, Router} from 'chrome://password-manager/password_manager.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 
@@ -18,7 +17,7 @@ const VALUE = 'nadeshiko@example.com';
 const INTERACTION_ID =
     PasswordViewPageInteractions.USERNAME_COPY_BUTTON_CLICKED;
 
-async function createCredentialFieldElement(): Promise<CredentialFieldElement> {
+function createCredentialFieldElement(): CredentialFieldElement {
   const element = document.createElement('credential-field');
   element.label = LABEL;
   element.copyButtonLabel = COPY_BUTTON_LABEL;
@@ -26,7 +25,6 @@ async function createCredentialFieldElement(): Promise<CredentialFieldElement> {
   element.value = VALUE;
   element.interactionId = INTERACTION_ID;
   document.body.appendChild(element);
-  await flushTasks();
   return element;
 }
 
@@ -38,18 +36,17 @@ suite('CredentialFieldTest', function() {
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
     Router.getInstance().navigateTo(Page.PASSWORDS);
-    return flushTasks();
   });
 
-  test('element sets all the attributes', async function() {
-    const element = await createCredentialFieldElement();
+  test('element sets all the attributes', function() {
+    const element = createCredentialFieldElement();
     assertEquals(element.$.inputValue.value, VALUE);
     assertEquals(element.$.inputValue.label, LABEL);
     assertEquals(element.$.copyButton.title, COPY_BUTTON_LABEL);
   });
 
   test('copy value', async function() {
-    const element = await createCredentialFieldElement();
+    const element = createCredentialFieldElement();
 
     element.$.copyButton.click();
     await passwordManager.whenCalled('extendAuthValidity');

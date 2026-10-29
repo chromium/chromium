@@ -120,10 +120,15 @@ build_webui("build") {
     "cr_scrollable.css",
     "cr_spinner_style.css",
     "credential_details/credential_details_card.css",
+    "credential_details/credential_details_card_lit.css",
+    "credential_details/credential_note.css",
     "prefs/pref_toggle_button.css",
     "shared_style.css",
     "shared_style_lit.css",
     "shared_vars.css",
+    "sharing/share_password_dialog_header.css",
+    "sharing/share_password_group_avatar.css",
+    "sharing/share_password_recipient.css",
     "site_favicon.css",
   ]
 

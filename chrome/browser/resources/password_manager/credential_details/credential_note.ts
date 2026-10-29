@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import '../cr_input_style.css.js';
-
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {PasswordManagerImpl} from '../password_manager_proxy.js';
 
-import {getTemplate} from './credential_note.html.js';
+import {getCss} from './credential_note.css.js';
+import {getHtml} from './credential_note.html.js';
 
 export interface CredentialNoteElement {
   $: {
@@ -19,46 +18,55 @@ export interface CredentialNoteElement {
   };
 }
 
-const CredentialNoteElementBase = I18nMixin(PolymerElement);
+const CredentialNoteElementBase = I18nMixinLit(CrLitElement);
 
 export class CredentialNoteElement extends CredentialNoteElementBase {
   static get is() {
     return 'credential-note';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      note: String,
-      showNoteFully_: Boolean,
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      alwaysExpanded: {
-        type: Boolean,
-        value: false,
-      },
+  static override get properties() {
+    return {
+      note: {type: String},
+      showNoteFully_: {type: Boolean},
+      alwaysExpanded: {type: Boolean},
     };
   }
 
-  declare note: string;
-  declare alwaysExpanded: boolean;
-  declare private showNoteFully_: boolean;
+  accessor note: string = '';
+  accessor alwaysExpanded: boolean = false;
+  protected accessor showNoteFully_: boolean = false;
 
-  override connectedCallback() {
-    super.connectedCallback();
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
     // Initialize visibility state based on whether the note should always be
     // expanded.
-    this.showNoteFully_ = this.alwaysExpanded;
+    if (changedProperties.has('alwaysExpanded')) {
+      this.showNoteFully_ = this.alwaysExpanded;
+    }
   }
 
-  private getNoteValue_(): string {
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedProperties.has('note') ||
+        changedPrivateProperties.has('showNoteFully_')) {
+      this.$.showMore.hidden = this.isNoteFullyVisible_();
+    }
+  }
+
+  protected getNoteValue_(): string {
     return !this.note ? this.i18n('emptyNote') : this.note;
-  }
-
-  private noteIsEmpty_(): boolean {
-    return !this.note;
   }
 
   private isNoteFullyVisible_(): boolean {
@@ -66,7 +74,7 @@ export class CredentialNoteElement extends CredentialNoteElementBase {
         this.$.noteValue.scrollHeight === this.$.noteValue.offsetHeight;
   }
 
-  private onshowMoreClick_(e: Event) {
+  protected onShowMoreClick_(e: Event) {
     e.preventDefault();
     this.showNoteFully_ = true;
     PasswordManagerImpl.getInstance().extendAuthValidity();
