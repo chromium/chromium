@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/identity_manager_provider_impl.h"
 
+#include "base/check.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/account_id/account_id.h"
+#include "content/public/browser/browser_context.h"
 
 namespace ash {
 
@@ -15,9 +18,11 @@ IdentityManagerProviderImpl::~IdentityManagerProviderImpl() = default;
 
 signin::IdentityManager* IdentityManagerProviderImpl::Find(
     const AccountId& account_id) {
-  return IdentityManagerFactory::GetForProfile(Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-          account_id)));
+  content::BrowserContext* context =
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id);
+  CHECK(context);
+  return IdentityManagerFactory::GetForProfile(
+      Profile::FromBrowserContext(context));
 }
 
 }  // namespace ash
