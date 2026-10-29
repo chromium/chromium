@@ -130,6 +130,7 @@
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/state_observer.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -1765,7 +1766,8 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserSigninInterceptionWithAccountPreviewTest,
   // ENABLE_SYNC header.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), https_server_.GetURL(kChromeSyncEndpointURL),
-      WindowOpenDisposition::kCurrentTab, ui_test_utils::BROWSER_TEST_NO_WAIT);
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   ASSERT_FALSE(DiceTabHelper::FromWebContents(
       browser()->tab_strip_model()->GetActiveWebContents()));
 

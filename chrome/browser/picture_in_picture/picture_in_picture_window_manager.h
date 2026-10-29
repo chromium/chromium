@@ -84,7 +84,7 @@ class PictureInPictureWindowManager {
   // picture.
   //
   // Document picture-in-picture mode is triggered from the Renderer via
-  // WindowOpenDisposition::kNewPictureInPicture, and the browser
+  // `ui::mojom::WindowOpenDisposition::kNewPictureInPicture`, and the browser
   // (i.e. Chrome's BrowserNavigator) then calls this method to create the
   // window. There's no corresponding path through the WebContentsDelegate, so
   // it doesn't have a failure state.

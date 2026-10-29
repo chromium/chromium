@@ -19,7 +19,7 @@
 #include "components/infobars/core/infobar_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -111,7 +111,7 @@ TEST_F(InstallerDownloaderInfoBarDelegateTest, LinkClicked) {
   ASSERT_TRUE(added_infobar_ptr);
 
   EXPECT_FALSE(added_infobar_ptr->delegate()->LinkClicked(
-      WindowOpenDisposition::kCurrentTab));
+      ui::mojom::WindowOpenDisposition::kCurrentTab));
 }
 
 TEST_F(InstallerDownloaderInfoBarDelegateTest, AddInfoBarToManager) {

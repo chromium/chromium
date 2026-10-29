@@ -61,7 +61,7 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 #if !BUILDFLAG(ENABLE_DICE_SUPPORT)
 #error This file only contains DICE browser tests for now.
@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, EnableSyncWithExistingAccount) {
 IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, EnableSyncWithAccountThatNeedsReauth) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("http://example.com"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
@@ -361,7 +361,8 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, EnableSyncForNewAccountWithOneTab) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("http://foo/1"), WindowOpenDisposition::kNewForegroundTab,
+      browser(), GURL("http://foo/1"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   ExpectNoSigninStartedHistograms(histogram_tester);
@@ -388,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, EnableSyncForNewAccountWithOneTab) {
 IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInWithAlreadySignedInAccount) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://example.com"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
@@ -419,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInWithAlreadySignedInAccount) {
 IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInWithAccountThatNeedsReauth) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("http://example.com"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
@@ -469,7 +470,8 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInForNewAccountWithNoTab) {
 
 IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInForNewAccountWithOneTab) {
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("http://foo/1"), WindowOpenDisposition::kNewForegroundTab,
+      browser(), GURL("http://foo/1"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   SignIn(CoreAccountInfo());
@@ -598,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, MergeDiceSigninTab) {
   GURL other_url = GURL("https://example.com");
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), other_url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), other_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   tab_strip->ActivateTabAt(
       1, TabStripUserGestureDetails(
@@ -624,7 +626,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, MergeDiceSigninTab) {
 IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, ShowReauthTab) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("http://example.com"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   AccountInfo account_info = signin::MakePrimaryAccountAvailable(
       GetIdentityManager(), "foo@example.com", signin::ConsentLevel::kSync);

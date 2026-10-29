@@ -32,7 +32,7 @@
 #include "pdf/pdf_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/gfx/geometry/point.h"
 
 using ::content::WebContents;
@@ -116,7 +116,7 @@ testing::AssertionResult PDFExtensionTestBase::LoadPdf(const GURL& url) {
 testing::AssertionResult PDFExtensionTestBase::LoadPdfInNewTab(
     const GURL& url) {
   EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   return EnsureFullPagePDFHasLoadedWithValidFrameTree(
       GetActiveWebContents(), /*allow_multiple_frames=*/false);

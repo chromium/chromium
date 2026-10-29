@@ -46,8 +46,8 @@
 #include "pdf/pdf_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/gurl.h"
 
@@ -415,7 +415,7 @@ class PDFExtensionContentSettingJSTest : public PDFExtensionJSTest {
   bool LoadPdfAndWait(const GURL& url, bool new_tab) override {
     if (new_tab) {
       EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-          browser(), url, WindowOpenDisposition::kNewForegroundTab,
+          browser(), url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     } else {
       EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));

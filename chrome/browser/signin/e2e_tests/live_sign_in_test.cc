@@ -73,8 +73,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/webview/webview.h"
 #include "url/gurl.h"
@@ -502,7 +502,8 @@ IN_PROC_BROWSER_TEST_F(LiveSignInGaiaIntegrationTest,
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           GaiaUrls::GetInstance()->add_account_url(),
-          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED);
+          ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED);
   content::WebContents* contents =
       signin_tab->OpenURL(params, /*navigation_handle_callback=*/{});
   ASSERT_EQ(current_tab_count, browser()->GetTabStripModel()->count());

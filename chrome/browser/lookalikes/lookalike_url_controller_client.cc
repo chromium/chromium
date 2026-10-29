@@ -17,8 +17,8 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 // static
 std::unique_ptr<security_interstitials::MetricsHelper>
@@ -51,7 +51,7 @@ void LookalikeUrlControllerClient::GoBack() {
   // We don't offer 'go back', but rather redirect to the legitimate site.
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          safe_url_, WindowOpenDisposition::kCurrentTab,
+          safe_url_, ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_LINK);
 
   // Prevent the back button from returning to the bad site.

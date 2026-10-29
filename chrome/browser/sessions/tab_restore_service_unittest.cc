@@ -65,8 +65,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
-#include "ui/base/window_open_disposition.h"
 
 typedef sessions::tab_restore::Entry Entry;
 typedef sessions::tab_restore::Tab Tab;
@@ -1649,8 +1649,9 @@ TEST_F(TabRestoreServiceImplWithMockClientTest, SplitVisualDataPersistence) {
               ReconstructSplit(_, _, split_id, testing::Eq(visual_data)))
       .Times(1);
 
-  service_->RestoreEntryById(&mock_live_tab_context, entry->id,
-                             WindowOpenDisposition::kNewForegroundTab);
+  service_->RestoreEntryById(
+      &mock_live_tab_context, entry->id,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 }
 
 TEST_F(TabRestoreServiceImplWithMockClientTest,
@@ -1697,8 +1698,9 @@ TEST_F(TabRestoreServiceImplWithMockClientTest,
               ReconstructSplit(_, _, split_id, testing::Eq(visual_data)))
       .Times(1);
 
-  service_->RestoreEntryById(&mock_live_tab_context, entry->id,
-                             WindowOpenDisposition::kNewForegroundTab);
+  service_->RestoreEntryById(
+      &mock_live_tab_context, entry->id,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 }
 
 TEST_F(TabRestoreServiceImplWithMockClientTest,
@@ -1747,8 +1749,9 @@ TEST_F(TabRestoreServiceImplWithMockClientTest,
               ReconstructSplit(_, _, split_id, testing::Eq(visual_data)))
       .Times(1);
 
-  service_->RestoreEntryById(&mock_live_tab_context, entry->id,
-                             WindowOpenDisposition::kNewForegroundTab);
+  service_->RestoreEntryById(
+      &mock_live_tab_context, entry->id,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 }
 
 TEST_F(TabRestoreServiceImplWithMockClientTest, RestoreOneTabFromSplit) {
@@ -1776,8 +1779,9 @@ TEST_F(TabRestoreServiceImplWithMockClientTest, RestoreOneTabFromSplit) {
   SessionID tab2_id = split_entry->tabs[1]->id;
 
   // Restore only tab1 from the split.
-  service_->RestoreEntryById(&mock_live_tab_context, tab1_id,
-                             WindowOpenDisposition::kNewForegroundTab);
+  service_->RestoreEntryById(
+      &mock_live_tab_context, tab1_id,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 
   // Verify the Split entry has been replaced by the remaining tab entry.
   ASSERT_EQ(1U, service_->entries().size());
@@ -1791,8 +1795,9 @@ TEST_F(TabRestoreServiceImplWithMockClientTest, RestoreOneTabFromSplit) {
   EXPECT_EQ(std::nullopt, tab_entry->split_visual_data);
 
   // Restore the remaining tab to verify that it does not crash.
-  service_->RestoreEntryById(&mock_live_tab_context, tab2_id,
-                             WindowOpenDisposition::kNewForegroundTab);
+  service_->RestoreEntryById(
+      &mock_live_tab_context, tab2_id,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 
   EXPECT_TRUE(service_->entries().empty());
 }
@@ -1863,8 +1868,9 @@ TEST_F(TabRestoreServiceImplWithMockClientTest,
         return nullptr;
       });
 
-  service_->RestoreEntryById(&restore_context, group_entry_id,
-                             WindowOpenDisposition::kNewForegroundTab);
+  service_->RestoreEntryById(
+      &restore_context, group_entry_id,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 
   EXPECT_EQ(2, restored_tab_count);
   EXPECT_EQ(max_entries - 1, service_->entries().size());
@@ -1916,8 +1922,9 @@ TEST_F(TabRestoreServiceImplWithMockClientTest,
   });
 
   std::optional<std::vector<sessions::LiveTab*>> restored_tabs =
-      service_->RestoreEntryById(&restore_context, entry_id,
-                                 WindowOpenDisposition::kNewForegroundTab);
+      service_->RestoreEntryById(
+          &restore_context, entry_id,
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 
   // The result should omit tab 1 (closed during restore) and tab 3 (not
   // created), returning only `restored_tab2`.
@@ -1955,16 +1962,17 @@ TEST_F(TabRestoreServiceImplWithMockClientTest,
   });
 
   std::optional<std::vector<sessions::LiveTab*>> restored_tabs =
-      service_->RestoreEntryById(&restore_context, entry_id,
-                                 WindowOpenDisposition::kNewForegroundTab);
+      service_->RestoreEntryById(
+          &restore_context, entry_id,
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   EXPECT_THAT(restored_tabs, Optional(IsEmpty()));
 }
 
 // Attempting to restore an invalid ID returns nullopt.
 TEST_F(TabRestoreServiceImplWithMockClientTest, RestoreEntryByIdInvalidId) {
   testing::NiceMock<MockLiveTabContext> restore_context;
-  auto restored_tabs =
-      service_->RestoreEntryById(&restore_context, SessionID::NewUnique(),
-                                 WindowOpenDisposition::kNewForegroundTab);
+  auto restored_tabs = service_->RestoreEntryById(
+      &restore_context, SessionID::NewUnique(),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   EXPECT_EQ(restored_tabs, std::nullopt);
 }

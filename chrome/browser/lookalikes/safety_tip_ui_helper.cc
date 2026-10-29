@@ -11,8 +11,8 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
@@ -57,18 +57,18 @@ void LeaveSiteFromSafetyTip(content::WebContents* web_contents,
 
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          navigated_to, WindowOpenDisposition::kCurrentTab,
+          navigated_to, ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.should_replace_current_entry = true;
   web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 void OpenHelpCenterFromSafetyTip(content::WebContents* web_contents) {
-  web_contents->OpenURL(
-      content::OpenURLParams::CreateBrowserInitiated(
-          GURL(chrome::kSafetyTipHelpCenterURL),
-          WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK),
-      /*navigation_handle_callback=*/{});
+  web_contents->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                            GURL(chrome::kSafetyTipHelpCenterURL),
+                            ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                            ui::PAGE_TRANSITION_LINK),
+                        /*navigation_handle_callback=*/{});
 }
 
 std::u16string GetSafetyTipTitle(

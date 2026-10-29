@@ -30,7 +30,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 namespace {
@@ -50,7 +50,7 @@ void TestMirrorRequestForProfile(net::EmbeddedTestServer* test_server,
   BrowserWindowInterface* browser = CreateBrowserWindow(
       BrowserWindowCreateParams(profile, /*from_user_gesture=*/true));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser, gaia_url, WindowOpenDisposition::kSingletonTab,
+      browser, gaia_url, ui::mojom::WindowOpenDisposition::kSingletonTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   std::string inner_text =

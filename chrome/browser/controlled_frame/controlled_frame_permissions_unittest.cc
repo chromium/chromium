@@ -6,7 +6,6 @@
 #include "extensions/browser/guest_view/web_view/web_view_permission_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace controlled_frame {
 

@@ -40,8 +40,8 @@
 #include "components/url_formatter/spoof_checks/top_domains/top_domain_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 using lookalikes::DomainInfo;
 using lookalikes::GetETLDPlusOne;
@@ -251,7 +251,8 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::WillProcessResponse() {
     // initiated.
     handle->GetWebContents()->OpenURL(
         content::OpenURLParams::CreateBrowserInitiated(
-            interstitial_params.url, WindowOpenDisposition::kCurrentTab,
+            interstitial_params.url,
+            ui::mojom::WindowOpenDisposition::kCurrentTab,
             ui::PageTransition::PAGE_TRANSITION_RELOAD,
             interstitial_params.referrer),
         /*navigation_handle_callback=*/{});

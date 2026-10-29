@@ -16,7 +16,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/sessions/session_restore_observer.h"
 #include "components/sessions/core/session_types.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class BrowserWindowInterface;
 class Profile;
@@ -119,7 +119,7 @@ class SessionRestore {
   static content::WebContents* RestoreForeignSessionTab(
       content::WebContents* source_web_contents,
       const sessions::SessionTab& tab,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       bool skip_renderer_creation = false);
 
   // Returns true if we're in the process of restoring |profile|.

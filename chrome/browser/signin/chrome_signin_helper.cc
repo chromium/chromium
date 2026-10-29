@@ -41,8 +41,8 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "net/http/http_response_headers.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
@@ -396,7 +396,7 @@ void ProcessMirrorHeader(
   if (service_type == signin::GAIA_SERVICE_TYPE_INCOGNITO) {
     web_contents->OpenURL(
         content::OpenURLParams::CreateBrowserInitiated(
-            continue_url, WindowOpenDisposition::kOffTheRecord,
+            continue_url, ui::mojom::WindowOpenDisposition::kOffTheRecord,
             ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
         /*navigation_handle_callback=*/{});
     return;

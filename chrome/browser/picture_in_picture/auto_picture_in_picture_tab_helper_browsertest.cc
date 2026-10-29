@@ -88,7 +88,7 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/test_event.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -587,7 +587,8 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
         base::FilePath(base::FilePath::kCurrentDirectory),
         base::FilePath(kBlankPage));
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser, test_page_url, WindowOpenDisposition::kNewForegroundTab,
+        browser, test_page_url,
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   }
 
@@ -596,7 +597,7 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
         base::FilePath(base::FilePath::kCurrentDirectory),
         base::FilePath(kBlankPage));
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser, test_page_url, WindowOpenDisposition::kNewPopup,
+        browser, test_page_url, ui::mojom::WindowOpenDisposition::kNewPopup,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   }
 

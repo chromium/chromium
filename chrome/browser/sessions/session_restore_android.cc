@@ -20,7 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "extensions/buildflags/buildflags.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace {
 
@@ -52,7 +52,7 @@ BrowserWindowInterface::Type BrowserTypeFromWindowType(
 content::WebContents* SessionRestore::RestoreForeignSessionTab(
     content::WebContents* web_contents,
     const sessions::SessionTab& session_tab,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     bool skip_renderer_creation) {
   DCHECK(session_tab.navigations.size() > 0);
   content::BrowserContext* context = web_contents->GetBrowserContext();
@@ -64,7 +64,7 @@ content::WebContents* SessionRestore::RestoreForeignSessionTab(
           session_tab.navigations, profile);
 
   bool is_background_tab =
-      disposition == WindowOpenDisposition::kNewBackgroundTab;
+      disposition == ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
   content::WebContents::CreateParams create_params(context);
   if (is_background_tab && skip_renderer_creation) {
     create_params.initially_hidden = true;
@@ -86,7 +86,7 @@ content::WebContents* SessionRestore::RestoreForeignSessionTab(
   // Fake replacing the current tab's WebContents with a new one by creating and
   // selecting a new tab then closing the old one. Using the current tab as the
   // parent will ensure group state, position, etc. should be kept.
-  if (disposition == WindowOpenDisposition::kCurrentTab) {
+  if (disposition == ui::mojom::WindowOpenDisposition::kCurrentTab) {
     // This will never be a bulk session restore so we can select the tab here.
     tab_model->CreateTab(current_tab, std::move(new_web_contents),
                          TabModel::kInvalidIndex,
@@ -95,11 +95,11 @@ content::WebContents* SessionRestore::RestoreForeignSessionTab(
     tab_model->CloseTab(current_tab->GetHandle());
     return raw_new_web_contents;
   }
-  DCHECK(disposition == WindowOpenDisposition::kNewForegroundTab ||
-         disposition == WindowOpenDisposition::kNewBackgroundTab);
+  DCHECK(disposition == ui::mojom::WindowOpenDisposition::kNewForegroundTab ||
+         disposition == ui::mojom::WindowOpenDisposition::kNewBackgroundTab);
   // Do not select a tab here it will interrupt bulk session restores.
   TabModel::TabLaunchType launch_type =
-      disposition == WindowOpenDisposition::kNewForegroundTab
+      disposition == ui::mojom::WindowOpenDisposition::kNewForegroundTab
           ? TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND
           : TabModel::TabLaunchType::FROM_RECENT_TABS;
   tab_model->CreateTab(current_tab, std::move(new_web_contents),

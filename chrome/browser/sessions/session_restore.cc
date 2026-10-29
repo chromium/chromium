@@ -115,9 +115,9 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_set.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
@@ -464,7 +464,7 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
   // NEW_WINDOW, in which case the tab will be opened in a new browser. Returns
   // the WebContents of the restored tab.
   WebContents* RestoreForeignTab(const sessions::SessionTab& tab,
-                                 WindowOpenDisposition disposition) {
+                                 ui::mojom::WindowOpenDisposition disposition) {
     DCHECK(is_foreign_session_restore_);
     DCHECK(!tab.navigations.empty());
     int selected_index = tab.current_navigation_index;
@@ -472,7 +472,8 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
         0,
         std::min(selected_index, static_cast<int>(tab.navigations.size() - 1)));
 
-    bool use_new_window = disposition == WindowOpenDisposition::kNewWindow;
+    bool use_new_window =
+        disposition == ui::mojom::WindowOpenDisposition::kNewWindow;
 
     BrowserWindowInterface* browser =
         use_new_window ? CreateBrowserWindow(BrowserWindowCreateParams(
@@ -482,7 +483,7 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
     RecordAppLaunchForTab(browser, tab, selected_index);
 
     WebContents* web_contents;
-    if (disposition == WindowOpenDisposition::kCurrentTab) {
+    if (disposition == ui::mojom::WindowOpenDisposition::kCurrentTab) {
       DCHECK(!use_new_window);
       web_contents = chrome::ReplaceRestoredTab(
           browser, tab.navigations, selected_index, tab.extension_app_id,
@@ -494,7 +495,8 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
       web_contents = chrome::AddRestoredTab(
           browser, tab.navigations, tab_index, selected_index,
           tab.extension_app_id, std::nullopt,
-          disposition == WindowOpenDisposition::kNewForegroundTab,  // selected
+          disposition ==
+              ui::mojom::WindowOpenDisposition::kNewForegroundTab,  // selected
           tab.pinned, base::TimeTicks(), base::Time(), nullptr,
           tab.user_agent_override, tab.extra_data,
           true /* from_session_restore */, std::nullopt);
@@ -1441,9 +1443,9 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
         add_types |= AddTabTypes::ADD_ACTIVE;
       }
       NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-      params.disposition = is_first_tab
-                               ? WindowOpenDisposition::kNewForegroundTab
-                               : WindowOpenDisposition::kNewBackgroundTab;
+      params.disposition =
+          is_first_tab ? ui::mojom::WindowOpenDisposition::kNewForegroundTab
+                       : ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
       params.tabstrip_add_types = add_types;
       is_first_tab = false;
       Navigate(&params);
@@ -1705,7 +1707,7 @@ void SessionRestore::RestoreForeignSessionWindows(
 WebContents* SessionRestore::RestoreForeignSessionTab(
     content::WebContents* source_web_contents,
     const sessions::SessionTab& tab,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     bool skip_renderer_creation) {
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(

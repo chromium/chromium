@@ -58,7 +58,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace {
 using ::net::CanonicalCookie;
@@ -507,7 +507,8 @@ testing::AssertionResult SimulateBtmBounce(BrowserWindowInterface* browser,
                                            const GURL& bounce_url,
                                            const GURL& final_url) {
   if (!ui_test_utils::NavigateToURLWithDisposition(
-          browser, initial_url, WindowOpenDisposition::kNewForegroundTab,
+          browser, initial_url,
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP)) {
     return testing::AssertionFailure()

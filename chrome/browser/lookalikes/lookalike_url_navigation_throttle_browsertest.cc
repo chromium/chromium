@@ -64,8 +64,8 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace {
 
@@ -147,7 +147,7 @@ void NavigateToURLSync(BrowserWindowInterface* browser, const GURL& url) {
 
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_LINK);
   params.initiator_origin = url::Origin::Create(GURL("about:blank"));
-  params.disposition = WindowOpenDisposition::kCurrentTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
   params.is_renderer_initiated = true;
   ui_test_utils::NavigateToURL(&params);
 
@@ -1601,7 +1601,7 @@ IN_PROC_BROWSER_TEST_F(LookalikeUrlNavigationThrottleBrowserTest,
   // Reload the interstitial twice. Should still work.
   for (size_t i = 0; i < 2; i++) {
     content::TestNavigationObserver navigation_observer(web_contents);
-    chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+    chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
     navigation_observer.Wait();
 
     EXPECT_EQ(LookalikeUrlBlockingPage::kTypeForTesting,
