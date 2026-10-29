@@ -69,6 +69,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/url_util.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -4141,6 +4142,147 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   webui::SetBrowserWindowInterface(ai_tab->GetContents(), nullptr);
   ON_CALL(*full_tab_session_ptr, GetController())
       .WillByDefault(Return(nullptr));
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       NavigationMetrics_RecordsResponseCodesAndNetError) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  base::HistogramTester histogram_tester;
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  CreateCachedWebContentsForTesting(task_id, /*is_open=*/true);
+  content::WebContents* web_contents = GetWebContentsForTaskForTesting(task_id);
+  ASSERT_TRUE(web_contents);
+
+  // 1. Successful commit with HTTP 200 on non-zero-state URL.
+  auto sim = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://www.google.com/search?q=test"),
+      web_contents->GetPrimaryMainFrame());
+  sim->SetResponseHeaders(
+      net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\r\n\r\n"));
+  sim->Commit();
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Navigation.HttpResponseCode", 200, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Navigation.HttpResponseCode.ExcludeZeroStateLoads", 200,
+      1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.Navigation.NetErrorCode",
+                                      0, 1);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       NavigationMetrics_ZeroStateExcludeZeroStateLoads) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  base::HistogramTester histogram_tester;
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  CreateCachedWebContentsForTesting(task_id, /*is_open=*/true);
+  content::WebContents* web_contents = GetWebContentsForTaskForTesting(task_id);
+  ASSERT_TRUE(web_contents);
+
+  // Navigation to zero-state URL (https://g.ai/).
+  auto sim = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://g.ai/"), web_contents->GetPrimaryMainFrame());
+  sim->SetResponseHeaders(
+      net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\r\n\r\n"));
+  sim->Commit();
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Navigation.HttpResponseCode", 200, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Navigation.HttpResponseCode.ExcludeZeroStateLoads", 0);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.Navigation.NetErrorCode",
+                                      0, 1);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       NavigationMetrics_NetErrorCodeOnFailure) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  base::HistogramTester histogram_tester;
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  CreateCachedWebContentsForTesting(task_id, /*is_open=*/true);
+  content::WebContents* web_contents = GetWebContentsForTaskForTesting(task_id);
+  ASSERT_TRUE(web_contents);
+
+  auto sim = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://www.google.com/search?q=test"),
+      web_contents->GetPrimaryMainFrame());
+  sim->Fail(net::ERR_TIMED_OUT);
+  sim->CommitErrorPage();
+
+  histogram_tester.ExpectBucketCount("ContextualTasks.Navigation.NetErrorCode",
+                                     std::abs(net::ERR_TIMED_OUT), 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Navigation.HttpResponseCode", 0);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       NavigationMetrics_RecordedAfterTransferWebContentsFromTab) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  base::HistogramTester histogram_tester;
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+
+  // Create an existing cached WebContents so TransferWebContentsFromTab
+  // replaces it.
+  CreateCachedWebContentsForTesting(task_id, /*is_open=*/true);
+
+  auto transferred_wc = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), nullptr);
+  content::WebContents* transferred_wc_ptr = transferred_wc.get();
+  coordinator_->TransferWebContentsFromTab(task_id, std::move(transferred_wc));
+
+  auto sim = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://www.google.com/search?q=test"),
+      transferred_wc_ptr->GetPrimaryMainFrame());
+  sim->SetResponseHeaders(
+      net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\r\n\r\n"));
+  sim->Commit();
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Navigation.HttpResponseCode", 200, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Navigation.HttpResponseCode.ExcludeZeroStateLoads", 200,
+      1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.Navigation.NetErrorCode",
+                                      0, 1);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       NavigationMetrics_NotRecordedWhenRearchitectureDisabled) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndDisableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  base::HistogramTester histogram_tester;
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  CreateCachedWebContentsForTesting(task_id, /*is_open=*/true);
+  content::WebContents* web_contents = GetWebContentsForTaskForTesting(task_id);
+  ASSERT_TRUE(web_contents);
+
+  auto sim = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://www.google.com/search?q=test"),
+      web_contents->GetPrimaryMainFrame());
+  sim->SetResponseHeaders(
+      net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\r\n\r\n"));
+  sim->Commit();
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Navigation.HttpResponseCode", 0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Navigation.HttpResponseCode.ExcludeZeroStateLoads", 0);
+  histogram_tester.ExpectTotalCount("ContextualTasks.Navigation.NetErrorCode",
+                                    0);
 }
 
 }  // namespace contextual_tasks

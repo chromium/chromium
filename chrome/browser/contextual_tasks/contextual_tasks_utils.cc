@@ -31,6 +31,8 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_handle.h"
+#include "net/http/http_response_headers.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -153,6 +155,38 @@ void RecordInnerFrameContentsHttpResponseCode(int http_status_code,
         "ContextualTasks.InnerFrameContents.HttpResponseCode."
         "ExcludeZeroStateLoads",
         http_status_code);
+  }
+}
+
+void RecordContextualTasksNavigationMetrics(
+    content::NavigationHandle* navigation_handle,
+    bool is_zero_state) {
+  if (!navigation_handle || navigation_handle->IsSameDocument() ||
+      !navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+  const GURL& url = navigation_handle->GetURL();
+  if (url.is_empty() || url.IsAboutBlank()) {
+    return;
+  }
+
+  if (const net::HttpResponseHeaders* response_headers =
+          navigation_handle->GetResponseHeaders()) {
+    int response_code = response_headers->response_code();
+    base::UmaHistogramSparse("ContextualTasks.Navigation.HttpResponseCode",
+                             response_code);
+    if (!is_zero_state) {
+      base::UmaHistogramSparse(
+          "ContextualTasks.Navigation.HttpResponseCode.ExcludeZeroStateLoads",
+          response_code);
+    }
+  }
+
+  net::Error net_error = navigation_handle->GetNetErrorCode();
+  if (navigation_handle->HasCommitted() ||
+      (net_error != net::OK && net_error != net::ERR_ABORTED)) {
+    base::UmaHistogramSparse("ContextualTasks.Navigation.NetErrorCode",
+                             std::abs(net_error));
   }
 }
 
