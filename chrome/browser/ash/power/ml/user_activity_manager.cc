@@ -17,8 +17,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
@@ -29,8 +27,11 @@
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "ui/aura/client/aura_constants.h"
 
 namespace ash {
@@ -276,10 +277,8 @@ void UserActivityManager::UpdateAndGetSmartDimDecision(
   // otherwise. If there are multiple users, the primary one may have
   // more-restrictive policy-controlled settings.
   bool smart_dim_enabled = true;
-  const Profile* const profile = ProfileManager::GetPrimaryUserProfile();
-  if (profile) {
-    smart_dim_enabled =
-        profile->GetPrefs()->GetBoolean(ash::prefs::kPowerSmartDimEnabled);
+  if (const PrefService* const prefs = GetPrimaryUserPrefs()) {
+    smart_dim_enabled = prefs->GetBoolean(ash::prefs::kPowerSmartDimEnabled);
   }
 
   if (smart_dim_enabled &&
@@ -350,6 +349,17 @@ void UserActivityManager::OnSessionStateChanged() {
   if (!was_locked && screen_is_locked_) {
     screen_lock_occurred_ = true;
   }
+}
+
+const PrefService* UserActivityManager::GetPrimaryUserPrefs() const {
+  const session_manager::Session* const primary_session =
+      session_manager_->GetPrimarySession();
+  if (!primary_session) {
+    return nullptr;
+  }
+  const user_manager::User* const user =
+      user_manager::UserManager::Get()->FindUser(primary_session->account_id());
+  return user ? user->GetProfilePrefs() : nullptr;
 }
 
 void UserActivityManager::OnReceiveSwitchStates(

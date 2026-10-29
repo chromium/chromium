@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/power/ml/adaptive_screen_brightness_ukm_logger.h"
 #include "chrome/browser/ash/power/ml/adaptive_screen_brightness_ukm_logger_impl.h"
 #include "chrome/browser/ash/power/ml/recent_events_counter.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
@@ -25,7 +24,11 @@
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -78,12 +81,14 @@ AdaptiveScreenBrightnessManager::AdaptiveScreenBrightnessManager(
     chromeos::PowerManagerClient* power_manager_client,
     AccessibilityManager* accessibility_manager,
     MagnificationManager* magnification_manager,
+    session_manager::SessionManager* session_manager,
     mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver,
     std::unique_ptr<base::RepeatingTimer> periodic_timer)
     : periodic_timer_(std::move(periodic_timer)),
       ukm_logger_(std::move(ukm_logger)),
       accessibility_manager_(accessibility_manager),
       magnification_manager_(magnification_manager),
+      session_manager_(session_manager),
       receiver_(this, std::move(receiver)),
       mouse_counter_(
           std::make_unique<RecentEventsCounter>(kUserInputEventsDuration,
@@ -98,6 +103,7 @@ AdaptiveScreenBrightnessManager::AdaptiveScreenBrightnessManager(
           std::make_unique<RecentEventsCounter>(kUserInputEventsDuration,
                                                 kNumUserInputEventsBuckets)) {
   CHECK(ukm_logger_, base::NotFatalUntil::M160);
+  CHECK(session_manager_, base::NotFatalUntil::M163);
   CHECK(detector, base::NotFatalUntil::M160);
   user_activity_observation_.Observe(detector);
 
@@ -134,6 +140,9 @@ AdaptiveScreenBrightnessManager::CreateInstance() {
   MagnificationManager* const magnification_manager =
       MagnificationManager::Get();
   CHECK(magnification_manager, base::NotFatalUntil::M160);
+  session_manager::SessionManager* const session_manager =
+      session_manager::SessionManager::Get();
+  CHECK(session_manager, base::NotFatalUntil::M163);
   mojo::PendingRemote<viz::mojom::VideoDetectorObserver>
       video_observer_screen_brightness_logger;
 
@@ -141,6 +150,7 @@ AdaptiveScreenBrightnessManager::CreateInstance() {
       std::make_unique<AdaptiveScreenBrightnessManager>(
           std::make_unique<AdaptiveScreenBrightnessUkmLoggerImpl>(), detector,
           power_manager_client, accessibility_manager, magnification_manager,
+          session_manager,
           video_observer_screen_brightness_logger
               .InitWithNewPipeAndPassReceiver(),
           std::make_unique<base::RepeatingTimer>());
@@ -296,12 +306,19 @@ void AdaptiveScreenBrightnessManager::OnReceiveScreenBrightnessPercent(
 
 const std::optional<int>
 AdaptiveScreenBrightnessManager::GetNightLightTemperaturePercent() const {
-  const Profile* const profile = ProfileManager::GetActiveUserProfile();
-  if (!profile) {
+  const session_manager::Session* const active_session =
+      session_manager_->GetActiveSession();
+  if (!active_session) {
     return std::nullopt;
   }
 
-  const PrefService* const pref_service = profile->GetPrefs();
+  const user_manager::User* const user =
+      user_manager::UserManager::Get()->FindUser(active_session->account_id());
+  if (!user) {
+    return std::nullopt;
+  }
+
+  const PrefService* const pref_service = user->GetProfilePrefs();
   if (!pref_service) {
     return std::nullopt;
   }

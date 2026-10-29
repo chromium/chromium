@@ -17,6 +17,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -90,6 +91,7 @@ class AdaptiveScreenBrightnessManagerBrowserTest : public InProcessBrowserTest {
         std::make_unique<AdaptiveScreenBrightnessManager>(
             std::move(logger), ui::UserActivityDetector::Get(),
             chromeos::PowerManagerClient::Get(), nullptr, nullptr,
+            session_manager::SessionManager::Get(),
             observer.InitWithNewPipeAndPassReceiver(),
             std::move(periodic_timer));
   }

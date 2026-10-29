@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/power/ml/adaptive_screen_brightness_ukm_logger.h"
 #include "chrome/browser/ash/power/ml/screen_brightness_event.pb.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -22,6 +21,9 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
+#include "components/account_id/account_id.h"
+#include "components/session_manager/core/session_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,6 +37,10 @@ namespace power {
 namespace ml {
 
 namespace {
+
+constexpr char kTestUserEmail[] = "user@example.com";
+constexpr GaiaId::Literal kTestUserGaiaId("1234567890");
+
 struct LogActivityInfo {
   ScreenBrightnessEvent screen_brightness_event;
   ukm::SourceId tab_id;
@@ -82,6 +88,9 @@ class AdaptiveScreenBrightnessManagerTest
  public:
   AdaptiveScreenBrightnessManagerTest()
       : ChromeRenderViewHostTestHarness(
+            LogInParams{.account_id =
+                            AccountId::FromUserEmailGaiaId(kTestUserEmail,
+                                                           kTestUserGaiaId)},
             base::test::TaskEnvironment::MainThreadType::UI,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME,
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {}
@@ -107,6 +116,7 @@ class AdaptiveScreenBrightnessManagerTest
         std::make_unique<AdaptiveScreenBrightnessManager>(
             std::move(logger), ui::UserActivityDetector::Get(),
             chromeos::FakePowerManagerClient::Get(), nullptr, nullptr,
+            session_manager::SessionManager::Get(),
             observer.InitWithNewPipeAndPassReceiver(),
             std::move(periodic_timer));
     browser_controller_ = std::make_unique<ash::BrowserControllerImpl>();
@@ -180,7 +190,6 @@ class AdaptiveScreenBrightnessManagerTest
                                                     0);
 
  private:
-  FakeChromeUserManager fake_user_manager_;
   std::unique_ptr<AdaptiveScreenBrightnessManager> screen_brightness_manager_;
   std::unique_ptr<BrowserControllerImpl> browser_controller_;
   raw_ptr<TestingAdaptiveScreenBrightnessUkmLogger, DanglingUntriaged>

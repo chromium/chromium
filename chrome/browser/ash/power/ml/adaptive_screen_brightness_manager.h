@@ -26,6 +26,10 @@ namespace base {
 class RepeatingTimer;
 }  // namespace base
 
+namespace session_manager {
+class SessionManager;
+}  // namespace session_manager
+
 namespace ash {
 
 class AccessibilityManager;
@@ -56,6 +60,7 @@ class AdaptiveScreenBrightnessManager
       chromeos::PowerManagerClient* power_manager_client,
       AccessibilityManager* accessibility_manager,
       MagnificationManager* magnification_manager,
+      session_manager::SessionManager* session_manager,
       mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver,
       std::unique_ptr<base::RepeatingTimer> periodic_timer);
 
@@ -121,6 +126,7 @@ class AdaptiveScreenBrightnessManager
 
   const raw_ptr<AccessibilityManager> accessibility_manager_;
   const raw_ptr<MagnificationManager> magnification_manager_;
+  const raw_ptr<session_manager::SessionManager> session_manager_;
 
   const mojo::Receiver<viz::mojom::VideoDetectorObserver> receiver_;
 

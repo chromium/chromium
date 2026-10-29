@@ -32,6 +32,8 @@
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 
+class PrefService;
+
 namespace ash {
 namespace power {
 namespace ml {
@@ -135,6 +137,10 @@ class UserActivityManager : public ui::UserActivityObserver,
   // Data structure associated with the 1st ScreenDimImminent event. See
   // PopulatePreviousEventData function below.
   struct PreviousIdleEventData;
+
+  // Returns the primary user's prefs, or null when no user has logged in yet
+  // or their browser context has not been created.
+  const PrefService* GetPrimaryUserPrefs() const;
 
   // Updates lid state and tablet mode from received switch states.
   void OnReceiveSwitchStates(

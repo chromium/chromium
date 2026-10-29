@@ -33,11 +33,12 @@
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
-#include "components/session_manager/core/fake_session_manager_delegate.h"
+#include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/user_activity/user_activity_detector.h"
@@ -45,6 +46,13 @@
 namespace ash {
 namespace power {
 namespace ml {
+
+namespace {
+
+constexpr char kTestUserEmail[] = "user@example.com";
+constexpr GaiaId::Literal kTestUserGaiaId("1234567890");
+
+}  // namespace
 
 void EqualEvent(const UserActivityEvent::Event& expected_event,
                 const UserActivityEvent::Event& result_event) {
@@ -103,6 +111,9 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
  public:
   UserActivityManagerTest()
       : ChromeRenderViewHostTestHarness(
+            LogInParams{.account_id =
+                            AccountId::FromUserEmailGaiaId(kTestUserEmail,
+                                                           kTestUserGaiaId)},
             base::test::TaskEnvironment::MainThreadType::UI,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME,
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {}
@@ -120,7 +131,8 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
     mojo::PendingRemote<viz::mojom::VideoDetectorObserver> observer;
     activity_logger_ = std::make_unique<UserActivityManager>(
         &delegate_, ui::UserActivityDetector::Get(),
-        chromeos::PowerManagerClient::Get(), &session_manager_,
+        chromeos::PowerManagerClient::Get(),
+        session_manager::SessionManager::Get(),
         observer.InitWithNewPipeAndPassReceiver());
 
     browser_controller_ = std::make_unique<ash::BrowserControllerImpl>();
@@ -184,7 +196,8 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
   }
 
   void ReportScreenLocked() {
-    session_manager_.SetSessionState(session_manager::SessionState::LOCKED);
+    session_manager::SessionManager::Get()->SetSessionState(
+        session_manager::SessionState::LOCKED);
   }
 
   void ReportSuspend(power_manager::SuspendImminent::Reason reason,
@@ -208,8 +221,6 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
 
  private:
   std::unique_ptr<IdleEventNotifier> idle_event_notifier_;
-  session_manager::SessionManager session_manager_{
-      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   std::unique_ptr<UserActivityManager> activity_logger_;
   std::unique_ptr<BrowserControllerImpl> browser_controller_;
 };
