@@ -24,16 +24,6 @@ class SavePaymentIconController {
   static SavePaymentIconController* Get(content::WebContents* web_contents,
                                         int command_id);
 
-  // Once the animation ends, it shows a new bubble if needed.
-  virtual void OnAnimationEnded() = 0;
-
-  // Returns true iff the payment saved animation should be shown.
-  virtual bool ShouldShowPaymentSavedLabelAnimation() const = 0;
-
-  // Returns true iff upload save is in progress and the saving animation should
-  // be shown.
-  virtual bool ShouldShowSavingPaymentAnimation() const = 0;
-
   // Returns true iff the payment icon is visible.
   virtual bool IsIconVisible() const = 0;
 
@@ -43,10 +33,6 @@ class SavePaymentIconController {
 
   // Returns the tooltip message for the save payment icon.
   virtual std::u16string GetSavePaymentIconTooltipText() const = 0;
-
-  // Returns the id of the string to show in the save animation upon a
-  // successful save.
-  virtual int GetSaveSuccessAnimationStringId() const = 0;
 };
 
 }  // namespace autofill

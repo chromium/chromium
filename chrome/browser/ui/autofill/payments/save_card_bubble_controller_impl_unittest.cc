@@ -358,9 +358,6 @@ class SaveCardBubbleControllerImplTest
       CloseBubble(close_reason);
     }
     controller()->OnBubbleClosed(close_reason);
-    if (controller()->ShouldShowPaymentSavedLabelAnimation()) {
-      controller()->OnAnimationEnded();
-    }
   }
 
   void AddCreditCard(const CreditCard& card) {
@@ -1681,8 +1678,6 @@ TEST_F(SaveCardBubbleControllerImplTest,
   ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
   EXPECT_EQ(controller()->GetWindowTitle(), u"Card saved");
   EXPECT_EQ(controller()->GetSavePaymentIconTooltipText(), u"Save card");
-  EXPECT_EQ(controller()->GetSaveSuccessAnimationStringId(),
-            IDS_AUTOFILL_CARD_SAVED);
 }
 
 TEST_F(SaveCardBubbleControllerImplTest,
@@ -1704,8 +1699,6 @@ TEST_F(SaveCardBubbleControllerImplTest,
   ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
   EXPECT_EQ(controller()->GetWindowTitle(), u"CVC saved");
   EXPECT_EQ(controller()->GetSavePaymentIconTooltipText(), u"Save CVC");
-  EXPECT_EQ(controller()->GetSaveSuccessAnimationStringId(),
-            IDS_AUTOFILL_CVC_SAVED);
 }
 
 TEST_F(SaveCardBubbleControllerImplTest,

@@ -107,9 +107,6 @@ class IbanBubbleControllerImplTest : public ChromeRenderViewHostTestHarness {
   void ClickSaveButton(const std::u16string& nickname) {
     controller()->OnAcceptButton(nickname);
     controller()->OnBubbleClosed(PaymentsUiClosedReason::kAccepted);
-    if (controller()->ShouldShowPaymentSavedLabelAnimation()) {
-      controller()->OnAnimationEnded();
-    }
   }
 
   void ShowConfirmationBubbleView(bool iban_saved, bool hit_max_strikes) {

@@ -265,9 +265,6 @@ void IbanBubbleControllerImpl::OnAcceptButton(std::u16string_view nickname) {
   switch (current_bubble_type_) {
     case IbanBubbleType::kLocalSave:
       CHECK(!save_iban_prompt_callback_.is_null());
-      // Show an animated IBAN saved confirmation message next time
-      // UpdatePageActionIcon() is called.
-      should_show_iban_saved_label_animation_ = true;
       autofill_metrics::LogSaveIbanPromptResultSavedWithNicknameMetric(
           !nickname.empty(), /*is_upload_save=*/false);
       iban_.set_nickname(std::u16string(nickname));
@@ -438,20 +435,6 @@ std::u16string IbanBubbleControllerImpl::GetSavePaymentIconTooltipText() const {
   }
 }
 
-bool IbanBubbleControllerImpl::ShouldShowSavingPaymentAnimation() const {
-  return false;
-}
-
-bool IbanBubbleControllerImpl::ShouldShowPaymentSavedLabelAnimation() const {
-  return should_show_iban_saved_label_animation_;
-}
-
-void IbanBubbleControllerImpl::OnAnimationEnded() {
-  // Do not repeat the animation next time UpdatePageActionIcon() is called,
-  // unless explicitly set somewhere else.
-  should_show_iban_saved_label_animation_ = false;
-}
-
 bool IbanBubbleControllerImpl::IsIconVisible() const {
   // If there is no bubble to show, then there should be no icon.
   return current_bubble_type_ != IbanBubbleType::kInactive;
@@ -459,10 +442,6 @@ bool IbanBubbleControllerImpl::IsIconVisible() const {
 
 AutofillBubbleBase* IbanBubbleControllerImpl::GetPaymentBubbleView() const {
   return bubble_view();
-}
-
-int IbanBubbleControllerImpl::GetSaveSuccessAnimationStringId() const {
-  return IDS_AUTOFILL_IBAN_SAVED;
 }
 
 const SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams&
