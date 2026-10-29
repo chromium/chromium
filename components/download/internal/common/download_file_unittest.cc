@@ -11,7 +11,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -66,10 +66,11 @@ struct SourceStreamTestData {
   bool finished;
 };
 
-int64_t GetBuffersLength(const char** buffers, size_t num_buffer) {
+int64_t GetBuffersLength(base::span<const char* const> buffers) {
   int64_t result = 0;
-  for (size_t i = 0; i < num_buffer; ++i)
-    result += static_cast<int64_t>(strlen(UNSAFE_TODO(buffers[i])));
+  for (const char* buffer : buffers) {
+    result += static_cast<int64_t>(strlen(buffer));
+  }
   return result;
 }
 
@@ -345,18 +346,17 @@ class DownloadFileTest : public testing::Test {
 
   // Setup the stream to append data or write from |offset| to the file.
   // Don't actually trigger the callback or do verifications.
-  void SetupDataAppend(const char** data_chunks,
-                       size_t num_chunks,
+  void SetupDataAppend(base::span<const char* const> data_chunks,
                        MockInputStream* input_stream,
                        ::testing::Sequence s,
                        int64_t offset = -1) {
     DCHECK(input_stream);
     size_t current_pos = static_cast<size_t>(offset);
-    for (size_t i = 0; i < num_chunks; i++) {
-      const char* source_data = UNSAFE_TODO(data_chunks[i]);
-      size_t length = strlen(source_data);
+    for (const char* source_data : data_chunks) {
+      std::string_view source_string(source_data);
+      size_t length = source_string.size();
       auto data = base::MakeRefCounted<net::IOBufferWithSize>(length);
-      UNSAFE_TODO(memcpy(data->data(), source_data, length));
+      data->span().copy_from(base::as_byte_span(source_string));
       EXPECT_CALL(*input_stream, Read(_, _))
           .InSequence(s)
           .WillOnce(DoAll(SetArgPointee<0>(data), SetArgPointee<1>(length),
@@ -365,7 +365,7 @@ class DownloadFileTest : public testing::Test {
 
       if (offset < 0) {
         // Append data.
-        expected_data_ += source_data;
+        expected_data_ += source_string;
         continue;
       }
 
@@ -373,7 +373,7 @@ class DownloadFileTest : public testing::Test {
       size_t new_len = current_pos + length;
       if (new_len > expected_data_.size())
         expected_data_.append(new_len - expected_data_.size(), '\0');
-      expected_data_.replace(current_pos, length, source_data);
+      expected_data_.replace(current_pos, length, source_string);
       current_pos += length;
     }
   }
@@ -386,9 +386,9 @@ class DownloadFileTest : public testing::Test {
   }
 
   // TODO(rdsmith): Manage full percentage issues properly.
-  void AppendDataToFile(const char** data_chunks, size_t num_chunks) {
+  void AppendDataToFile(base::span<const char* const> data_chunks) {
     ::testing::Sequence s1;
-    SetupDataAppend(data_chunks, num_chunks, input_stream_, s1);
+    SetupDataAppend(data_chunks, input_stream_, s1);
     EXPECT_CALL(*input_stream_, Read(_, _))
         .InSequence(s1)
         .WillOnce(Return(InputStream::EMPTY))
@@ -497,8 +497,7 @@ class DownloadFileTest : public testing::Test {
                      int64_t offset,
                      bool create_stream,
                      bool will_finish,
-                     const char** buffers,
-                     size_t num_buffer) {
+                     base::span<const char* const> buffers) {
     if (create_stream)
       *stream = new StrictMock<MockInputStream>();
 
@@ -511,7 +510,7 @@ class DownloadFileTest : public testing::Test {
     // 3. GetStatus: Only called if the stream is completed and last Read call
     // returns STREAM_COMPLETE.
     Sequence seq;
-    SetupDataAppend(buffers, num_buffer, *stream, seq, offset);
+    SetupDataAppend(buffers, *stream, seq, offset);
     if (will_finish)
       SetupFinishStream(DOWNLOAD_INTERRUPT_REASON_NONE, *stream, seq);
   }
@@ -666,7 +665,7 @@ TEST_P(DownloadFileTestWithRename, RenameFileFinal) {
       .RetiresOnSaturation();
   // Download the data.
   const char* chunks1[] = {kTestData1, kTestData2};
-  AppendDataToFile(chunks1, 2);
+  AppendDataToFile(chunks1);
 
   // Rename the file after downloading some data.
   EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_NONE,
@@ -683,7 +682,7 @@ TEST_P(DownloadFileTestWithRename, RenameFileFinal) {
       .Times(1)
       .RetiresOnSaturation();
   const char* chunks2[] = {kTestData3};
-  AppendDataToFile(chunks2, 1);
+  AppendDataToFile(chunks2);
 
   // Rename the file after downloading all the data.
   EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_NONE,
@@ -962,7 +961,7 @@ TEST_F(DownloadFileTest, StreamEmptySuccess) {
   EXPECT_CALL(*input_stream_, RegisterDataReadyCallback(_))
       .Times(1)
       .RetiresOnSaturation();
-  AppendDataToFile(nullptr, 0);
+  AppendDataToFile({});
 
   // Finish the download this way and make sure we see it on the observer.
   FinishStream(DOWNLOAD_INTERRUPT_REASON_NONE, true, kEmptyHash);
@@ -1007,7 +1006,7 @@ TEST_F(DownloadFileTest, StreamNonEmptySuccess) {
 
   const char* chunks1[] = {kTestData1, kTestData2};
   ::testing::Sequence s1;
-  SetupDataAppend(chunks1, 2, input_stream_, s1);
+  SetupDataAppend(chunks1, input_stream_, s1);
   SetupFinishStream(DOWNLOAD_INTERRUPT_REASON_NONE, input_stream_, s1);
   EXPECT_CALL(*(observer_.get()), MockDestinationCompleted(_, _));
   sink_callback_.Run(MOJO_RESULT_OK);
@@ -1023,7 +1022,7 @@ TEST_F(DownloadFileTest, StreamNonEmptyError) {
 
   const char* chunks1[] = {kTestData1, kTestData2};
   ::testing::Sequence s1;
-  SetupDataAppend(chunks1, 2, input_stream_, s1);
+  SetupDataAppend(chunks1, input_stream_, s1);
   SetupFinishStream(DOWNLOAD_INTERRUPT_REASON_NETWORK_DISCONNECTED,
                     input_stream_, s1);
 
@@ -1060,7 +1059,7 @@ TEST_F(DownloadFileTest, FileContentValidationSuccess) {
 
   const char* chunks1[] = {kTestData1, kTestData1};
   ::testing::Sequence s1;
-  SetupDataAppend(chunks1, 2 /* num_chunks */, input_stream_, s1);
+  SetupDataAppend(chunks1, input_stream_, s1);
   SetupFinishStream(DOWNLOAD_INTERRUPT_REASON_NONE, input_stream_, s1);
   EXPECT_CALL(*(observer_.get()), MockDestinationCompleted(_, _));
   sink_callback_.Run(MOJO_RESULT_OK);
@@ -1088,7 +1087,7 @@ TEST_F(DownloadFileTest, FileContentValidationFail) {
   ::testing::Sequence s1;
   // Only 1 chunk will be read, and it will generate an error after
   // failing the validation.
-  SetupDataAppend(chunks1, 1 /* num_chunks */, input_stream_, s1);
+  SetupDataAppend(base::span(chunks1).first(1u), input_stream_, s1);
   EXPECT_CALL(*input_stream_, ClearDataReadyCallback());
   EXPECT_CALL(*(observer_.get()),
               MockDestinationError(DOWNLOAD_INTERRUPT_REASON_FILE_HASH_MISMATCH,
@@ -1103,15 +1102,15 @@ TEST_F(DownloadFileTest, FileContentValidationFail) {
 //
 // Activate both streams at the same time.
 TEST_F(DownloadFileTest, MultipleStreamsWrite) {
-  int64_t stream_0_length = GetBuffersLength(kTestData6, 2);
-  int64_t stream_1_length = GetBuffersLength(kTestData7, 2);
+  int64_t stream_0_length = GetBuffersLength(kTestData6);
+  int64_t stream_1_length = GetBuffersLength(kTestData7);
 
   ASSERT_TRUE(CreateDownloadFile(stream_0_length, true,
                                  DownloadItem::ReceivedSlices()));
 
-  PrepareStream(&input_stream_, 0, false, true, kTestData6, 2);
+  PrepareStream(&input_stream_, 0, false, true, kTestData6);
   PrepareStream(&additional_streams_[0], stream_0_length, true, true,
-                kTestData7, 2);
+                kTestData7);
 
   EXPECT_CALL(*(observer_.get()), MockDestinationCompleted(_, _));
 
@@ -1133,24 +1132,24 @@ TEST_F(DownloadFileTest, MultipleStreamsWrite) {
 
 // 3 streams write to one sink, the second stream has a limited length.
 TEST_F(DownloadFileTest, MultipleStreamsLimitedLength) {
-  int64_t stream_0_length = GetBuffersLength(kTestData6, 2);
+  int64_t stream_0_length = GetBuffersLength(kTestData6);
 
   // The second stream has a limited length and should be partially written
   // to disk. When we prepare the stream, we fill the stream with 2 full buffer.
-  int64_t stream_1_length = GetBuffersLength(kTestData7, 2) - 1;
+  int64_t stream_1_length = GetBuffersLength(kTestData7) - 1;
 
   // The last stream can't have length limit, it's a half open request, e.g
   // "Range:50-".
-  int64_t stream_2_length = GetBuffersLength(kTestData6, 2);
+  int64_t stream_2_length = GetBuffersLength(kTestData6);
 
   ASSERT_TRUE(CreateDownloadFile(stream_0_length, true,
                                  DownloadItem::ReceivedSlices()));
 
-  PrepareStream(&input_stream_, 0, false, true, kTestData6, 2);
+  PrepareStream(&input_stream_, 0, false, true, kTestData6);
   PrepareStream(&additional_streams_[0], stream_0_length, true, false,
-                kTestData7, 2);
+                kTestData7);
   PrepareStream(&additional_streams_[1], stream_0_length + stream_1_length,
-                true, true, kTestData6, 2);
+                true, true, kTestData6);
 
   EXPECT_CALL(*additional_streams_[0], ClearDataReadyCallback())
       .Times(1)
@@ -1186,12 +1185,12 @@ TEST_F(DownloadFileTest, MultipleStreamsLimitedLength) {
 
 // Activate and deplete one stream, later add the second stream.
 TEST_F(DownloadFileTest, MultipleStreamsFirstStreamWriteAllData) {
-  int64_t stream_0_length = GetBuffersLength(kTestData8, 4);
+  int64_t stream_0_length = GetBuffersLength(kTestData8);
 
   ASSERT_TRUE(CreateDownloadFile(DownloadSaveInfo::kLengthFullContent, true,
                                  DownloadItem::ReceivedSlices()));
 
-  PrepareStream(&input_stream_, 0, false, true, kTestData8, 4);
+  PrepareStream(&input_stream_, 0, false, true, kTestData8);
 
   EXPECT_CALL(*(observer_.get()), MockDestinationCompleted(_, _));
 
@@ -1222,13 +1221,13 @@ TEST_F(DownloadFileTest, MultipleStreamsFirstStreamWriteAllData) {
 // While one stream is writing, kick off another stream with an offset that has
 // been written by the first one.
 TEST_F(DownloadFileTest, SecondStreamStartingOffsetAlreadyWritten) {
-  int64_t stream_0_length = GetBuffersLength(kTestData6, 2);
+  int64_t stream_0_length = GetBuffersLength(kTestData6);
 
   ASSERT_TRUE(CreateDownloadFile(stream_0_length, true,
                                  DownloadItem::ReceivedSlices()));
 
   Sequence seq;
-  SetupDataAppend(kTestData6, 2, input_stream_, seq, 0);
+  SetupDataAppend(kTestData6, input_stream_, seq, 0);
 
   EXPECT_CALL(*input_stream_, Read(_, _))
       .InSequence(seq)
@@ -1262,14 +1261,14 @@ TEST_F(DownloadFileTest, SecondStreamStartingOffsetAlreadyWritten) {
 // before it is able to write the data, the same block was written by
 // the first stream.
 TEST_F(DownloadFileTest, SecondStreamReadsOffsetWrittenByFirst) {
-  int64_t stream_0_length = GetBuffersLength(kTestData8, 4);
+  int64_t stream_0_length = GetBuffersLength(kTestData8);
 
   ASSERT_TRUE(CreateDownloadFile(stream_0_length, true,
                                  DownloadItem::ReceivedSlices()));
 
   // First stream writes the first 2 chunks.
   Sequence seq;
-  SetupDataAppend(kTestData8, 2, input_stream_, seq, 0);
+  SetupDataAppend(base::span(kTestData8).first(2u), input_stream_, seq, 0);
 
   EXPECT_CALL(*input_stream_, Read(_, _))
       .InSequence(seq)
@@ -1297,7 +1296,7 @@ TEST_F(DownloadFileTest, SecondStreamReadsOffsetWrittenByFirst) {
 
   // First stream reads the 3rd chunk and writes it to disk.
   const char* chunk[] = {kTestData4};
-  SetupDataAppend(chunk, 1, input_stream_, seq, offset);
+  SetupDataAppend(chunk, input_stream_, seq, offset);
   EXPECT_CALL(*input_stream_, Read(_, _))
       .InSequence(seq)
       .WillOnce(Return(InputStream::EMPTY))
@@ -1306,13 +1305,13 @@ TEST_F(DownloadFileTest, SecondStreamReadsOffsetWrittenByFirst) {
   base::RunLoop().RunUntilIdle();
 
   // Second stream also reads the 3rd chunk, but it will be terminated.
-  SetupDataAppend(chunk, 1, additional_streams_[0], seq, offset);
+  SetupDataAppend(chunk, additional_streams_[0], seq, offset);
   OnStreamActive(offset);
   base::RunLoop().RunUntilIdle();
 
   // First stream writes the last chunk, and completes the download.
   chunk[0] = kTestData5;
-  SetupDataAppend(chunk, 1, input_stream_, seq, offset + strlen(kTestData4));
+  SetupDataAppend(chunk, input_stream_, seq, offset + strlen(kTestData4));
   SetupFinishStream(DOWNLOAD_INTERRUPT_REASON_NONE, input_stream_, seq);
   EXPECT_CALL(*(observer_.get()), MockDestinationCompleted(_, _));
   sink_callback_.Run(MOJO_RESULT_OK);
@@ -1451,7 +1450,7 @@ TEST_F(DownloadFileTestWithObfuscation, ObfuscationEnabled) {
 
   // Append dummy data for obfuscated size verification.
   expected_data_ += std::string(CalculateObfuscationOverhead(3), '\0');
-  AppendDataToFile(chunks, 3);
+  AppendDataToFile(chunks);
 
   // The download appends an empty chunk at the end of the file when completed,
   // so we need to append its size.
@@ -1487,7 +1486,7 @@ TEST_F(DownloadFileTestWithObfuscation,
 
   // Append dummy data for obfuscated size verification.
   expected_data_ += std::string(CalculateObfuscationOverhead(3), '\0');
-  AppendDataToFile(chunks, 3);
+  AppendDataToFile(chunks);
 
   // The download appends an empty chunk at the end of the file when completed,
   // so we need to append its size.
@@ -1520,7 +1519,7 @@ TEST_F(DownloadFileTestWithObfuscation, ObfuscationWithUnknownFileSize) {
 
   // Append dummy data for obfuscated size verification.
   expected_data_ += std::string(CalculateObfuscationOverhead(3), '\0');
-  AppendDataToFile(chunks, 3);
+  AppendDataToFile(chunks);
 
   // For files of unknown sizes, an empty chunk is appended once download
   // completes.
@@ -1554,7 +1553,7 @@ TEST_F(DownloadFileTestWithObfuscation, ObfuscationDisabled) {
       .Times(1)
       .RetiresOnSaturation();
 
-  AppendDataToFile(chunks, 3);
+  AppendDataToFile(chunks);
   FinishStream(DOWNLOAD_INTERRUPT_REASON_NONE, true, kDataHash);
 
   // Verify that the file content is not obfuscated.
@@ -1577,7 +1576,7 @@ TEST_F(DownloadFileTestWithObfuscation, DeobfuscateAndRename) {
       .RetiresOnSaturation();
 
   expected_data_ += std::string(CalculateObfuscationOverhead(3), '\0');
-  AppendDataToFile(chunks, 3);
+  AppendDataToFile(chunks);
 
   expected_data_ += std::string(kObfuscationChunkOverhead, '\0');
   FinishStream(DOWNLOAD_INTERRUPT_REASON_NONE, true, kDataHash);
