@@ -4420,8 +4420,8 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
                     if (content::NavigationEntry* entry =
                             web_contents->GetController()
                                 .GetLastCommittedEntry()) {
-                      tracker->OnCopyRecorded(tab_id, entry->GetUniqueID(),
-                                              selection_text);
+                      tracker->OnContextMenuSearchRecorded(
+                          tab_id, entry->GetUniqueID(), selection_text);
                     }
                   }
                 }

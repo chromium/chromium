@@ -34,6 +34,9 @@ struct CopyRecord {
   SessionID source_tab_id = SessionID::InvalidValue();
   int source_nav_entry_id = 0;
   uint64_t nonce = 0;
+  // Whether the text was selected for a context-menu search rather than
+  // copied.
+  bool is_context_menu_search = false;
 };
 
 // Coarse labels that Search can send about the query. Only used to slice
@@ -103,8 +106,9 @@ struct JourneyState {
 // Profile-keyed service that tracks ABA search journeys: the user leaves an
 // eligible tab (Tab A), a Google default-search-provider search commits in the
 // tab they switch to (Tab B), and the user then returns to Tab A. It also keeps
-// a bounded volatile ring buffer of hashes of recently copied text, used only
-// to label journeys whose query matches a copy made on Tab A.
+// a bounded volatile ring buffer of hashes of text recently copied, or selected
+// for a context-menu search. It's used only to label journeys whose query
+// matches such text from Tab A, and searches whose query matches a recent copy.
 class SearchJourneyTracker : public KeyedService,
                              public TemplateURLServiceObserver {
  public:
@@ -128,13 +132,21 @@ class SearchJourneyTracker : public KeyedService,
   static std::optional<size_t> NormalizeForJourneyMatch(
       std::u16string_view text);
 
-  // Records a copy or selection of `copied_text` on `source_tab_id` at
+  // Records a copy of `copied_text` on `source_tab_id` at
   // `source_nav_entry_id`. No-op if the default search provider is not Google,
   // `source_tab_id` is invalid, or `copied_text` is rejected by
   // `NormalizeForJourneyMatch`.
   void OnCopyRecorded(SessionID source_tab_id,
                       int source_nav_entry_id,
                       std::u16string_view copied_text);
+
+  // Like `OnCopyRecorded()`, for `selected_text` selected for a context-menu
+  // search. It labels journeys the same way as a copy, but
+  // `MaybeAppendCopyMatchParam()` ignores it, since the context-menu search
+  // already tells Search where its query came from.
+  void OnContextMenuSearchRecorded(SessionID source_tab_id,
+                                   int source_nav_entry_id,
+                                   std::u16string_view selected_text);
 
   // Called when `tab_id` stops being the tab the user is looking at. If `url`
   // is an HTTPS page that isn't a Google search results page, `tab_id` becomes
@@ -151,6 +163,18 @@ class SearchJourneyTracker : public KeyedService,
   // is dropped. Unless intermediate tabs are allowed, activating a tab other
   // than Tab A or Tab B also drops the journey, so only A -> B -> A counts.
   bool OnTabActivated(SessionID tab_id, int nav_entry_id);
+
+  // Returns the search terms of `url` if it's a Google results page of the
+  // default search provider, or an empty string otherwise. These are the
+  // search terms to pass to `OnSearchNavigationCommitted()` and
+  // `OnAimPromoParamsReceived()`.
+  std::u16string GetSearchTerms(const GURL& url) const;
+
+  // Returns `url` with `ictfc=1` added if it's a Google results page URL whose
+  // search terms match text copied on any tab within the TTL. The parameter
+  // lets Search slice metrics by searches for copied text; it never carries the
+  // text itself. Otherwise, returns `url` unchanged.
+  GURL MaybeAppendCopyMatchParam(const GURL& url);
 
   // Called when a Google default-search-provider results page commits in
   // `search_tab_id` with `search_terms`. A commit for the same query as the
@@ -205,6 +229,13 @@ class SearchJourneyTracker : public KeyedService,
 
   void ClearState();
   void EvictExpiredRecords();
+
+  // Records `text` on `source_tab_id` at `source_nav_entry_id`, as a copy or as
+  // a context-menu search selection. See `OnCopyRecorded()`.
+  void RecordCopy(SessionID source_tab_id,
+                  int source_nav_entry_id,
+                  std::u16string_view text,
+                  bool is_context_menu_search);
 
   // Returns whether `search_terms` matches a copy recorded on `tab_id`.
   bool MatchesCopyFromTab(SessionID tab_id,

@@ -42,6 +42,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
@@ -339,6 +340,71 @@ IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
 
   tab_list()->CloseTab(source_tab->GetHandle());
   EXPECT_TRUE(tracker()->GetActiveJourneysForTesting().empty());
+}
+
+// Tests that an omnibox search for text the user copied tells Search that the
+// query matches a copy.
+IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
+                       OmniboxSearchForCopiedTextAddsCopyMatchParam) {
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/doc")));
+  content::WebContents* contents = tab_list()->GetActiveTab()->GetContents();
+  CopyTextToClipboard(contents, "how do tides work");
+
+  content::TestNavigationObserver observer(contents);
+  ui_test_utils::SendToOmniboxAndSubmit(browser(), "How do tides work");
+  observer.Wait();
+
+  std::string copy_match;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(observer.last_navigation_url(),
+                                         "ictfc", &copy_match));
+  EXPECT_EQ(copy_match, "1");
+}
+
+IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
+                       OmniboxSearchForOtherTextOmitsCopyMatchParam) {
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/doc")));
+  content::WebContents* contents = tab_list()->GetActiveTab()->GetContents();
+  CopyTextToClipboard(contents, "how do tides work");
+
+  content::TestNavigationObserver observer(contents);
+  ui_test_utils::SendToOmniboxAndSubmit(browser(), "why is the sky blue");
+  observer.Wait();
+
+  std::string query;
+  ASSERT_TRUE(
+      net::GetValueForKeyInQuery(observer.last_navigation_url(), "q", &query));
+  EXPECT_EQ(query, "why is the sky blue");
+  std::string copy_match;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(observer.last_navigation_url(),
+                                          "ictfc", &copy_match));
+}
+
+// Tests that an Incognito omnibox search never tells Search that the query
+// matches a copy, even one made in a regular window.
+IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
+                       IncognitoOmniboxSearchOmitsCopyMatchParam) {
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/doc")));
+  CopyTextToClipboard(tab_list()->GetActiveTab()->GetContents(),
+                      "how do tides work");
+  ASSERT_EQ(tracker()->GetRingBufferSizeForTesting(), 1u);
+
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
+  content::WebContents* incognito_contents =
+      TabListInterface::From(incognito_browser)->GetActiveTab()->GetContents();
+  content::TestNavigationObserver observer(incognito_contents);
+  ui_test_utils::SendToOmniboxAndSubmit(incognito_browser, "how do tides work");
+  observer.Wait();
+
+  std::string query;
+  ASSERT_TRUE(
+      net::GetValueForKeyInQuery(observer.last_navigation_url(), "q", &query));
+  EXPECT_EQ(query, "how do tides work");
+  std::string copy_match;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(observer.last_navigation_url(),
+                                          "ictfc", &copy_match));
 }
 
 namespace {

@@ -5394,6 +5394,11 @@ IN_PROC_BROWSER_TEST_F(ABASearchJourneysContextMenuBrowserTest,
   EXPECT_EQ(source_nav_entry_id, it->second.source_nav_entry_id);
   EXPECT_EQ(search_tab_id, it->second.search_tab_id);
   EXPECT_TRUE(it->second.matched_copy);
+
+  // The selection isn't a copy, so a later omnibox search for it doesn't get
+  // the copy-match parameter.
+  const GURL search_url = search_web_contents->GetVisibleURL();
+  EXPECT_EQ(tracker()->MaybeAppendCopyMatchParam(search_url), search_url);
 }
 
 // Verifies that if Enterprise Data Controls cancels the context-menu search,

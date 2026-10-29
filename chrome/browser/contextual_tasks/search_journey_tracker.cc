@@ -17,10 +17,20 @@
 #include "components/google/core/common/google_util.h"
 #include "components/omnibox/browser/omnibox_text_util.h"
 #include "components/search/search.h"
+#include "components/search_engines/template_url.h"
+#include "net/base/url_util.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
 namespace contextual_tasks {
+
+namespace {
+
+// Added to Google searches whose query matches recently copied text. `1` means
+// an exact match.
+constexpr char kCopyMatchParam[] = "ictfc";
+
+}  // namespace
 
 AimPromoParams::AimPromoParams() = default;
 AimPromoParams::AimPromoParams(const AimPromoParams&) = default;
@@ -83,29 +93,16 @@ std::optional<size_t> SearchJourneyTracker::NormalizeForJourneyMatch(
 void SearchJourneyTracker::OnCopyRecorded(SessionID source_tab_id,
                                           int source_nav_entry_id,
                                           std::u16string_view copied_text) {
-  if (!search::DefaultSearchProviderIsGoogle(template_url_service_) ||
-      !source_tab_id.is_valid()) {
-    return;
-  }
-  std::optional<size_t> hash = NormalizeForJourneyMatch(copied_text);
-  if (!hash.has_value()) {
-    return;
-  }
+  RecordCopy(source_tab_id, source_nav_entry_id, copied_text,
+             /*is_context_menu_search=*/false);
+}
 
-  EvictExpiredRecords();
-
-  CopyRecord record;
-  record.timestamp = base::TimeTicks::Now();
-  record.normalized_query_hash = *hash;
-  record.source_tab_id = source_tab_id;
-  record.source_nav_entry_id = source_nav_entry_id;
-  record.nonce = base::RandUint64();
-
-  ring_buffer_.push_back(std::move(record));
-  const size_t max_ring_buffer_size = GetABASearchJourneysMaxRingBufferSize();
-  while (ring_buffer_.size() > max_ring_buffer_size) {
-    ring_buffer_.pop_front();
-  }
+void SearchJourneyTracker::OnContextMenuSearchRecorded(
+    SessionID source_tab_id,
+    int source_nav_entry_id,
+    std::u16string_view selected_text) {
+  RecordCopy(source_tab_id, source_nav_entry_id, selected_text,
+             /*is_context_menu_search=*/true);
 }
 
 void SearchJourneyTracker::OnTabDeactivated(SessionID tab_id,
@@ -157,6 +154,41 @@ bool SearchJourneyTracker::OnTabActivated(SessionID tab_id, int nav_entry_id) {
     return !allow_intermediate_tabs;
   });
   return returned;
+}
+
+std::u16string SearchJourneyTracker::GetSearchTerms(const GURL& url) const {
+  if (!template_url_service_ || !google_util::IsGoogleSearchUrl(url)) {
+    return std::u16string();
+  }
+  const TemplateURL* default_provider =
+      template_url_service_->GetDefaultSearchProvider();
+  std::u16string search_terms;
+  if (!default_provider ||
+      !default_provider->ExtractSearchTermsFromURL(
+          url, template_url_service_->search_terms_data(), &search_terms)) {
+    return std::u16string();
+  }
+  return search_terms;
+}
+
+GURL SearchJourneyTracker::MaybeAppendCopyMatchParam(const GURL& url) {
+  if (!search::DefaultSearchProviderIsGoogle(template_url_service_)) {
+    return url;
+  }
+  const std::optional<size_t> query_hash =
+      NormalizeForJourneyMatch(GetSearchTerms(url));
+  if (!query_hash.has_value()) {
+    return url;
+  }
+
+  EvictExpiredRecords();
+  if (std::ranges::none_of(ring_buffer_, [&](const CopyRecord& record) {
+        return !record.is_context_menu_search &&
+               record.normalized_query_hash == *query_hash;
+      })) {
+    return url;
+  }
+  return net::AppendOrReplaceQueryParameter(url, kCopyMatchParam, "1");
 }
 
 void SearchJourneyTracker::OnSearchNavigationCommitted(
@@ -280,6 +312,36 @@ void SearchJourneyTracker::EvictExpiredRecords() {
   std::erase_if(active_journeys_, [now, ttl](const auto& pair) {
     return now - pair.second.search_committed_time > ttl;
   });
+}
+
+void SearchJourneyTracker::RecordCopy(SessionID source_tab_id,
+                                      int source_nav_entry_id,
+                                      std::u16string_view text,
+                                      bool is_context_menu_search) {
+  if (!search::DefaultSearchProviderIsGoogle(template_url_service_) ||
+      !source_tab_id.is_valid()) {
+    return;
+  }
+  std::optional<size_t> hash = NormalizeForJourneyMatch(text);
+  if (!hash.has_value()) {
+    return;
+  }
+
+  EvictExpiredRecords();
+
+  CopyRecord record;
+  record.timestamp = base::TimeTicks::Now();
+  record.normalized_query_hash = *hash;
+  record.source_tab_id = source_tab_id;
+  record.source_nav_entry_id = source_nav_entry_id;
+  record.nonce = base::RandUint64();
+  record.is_context_menu_search = is_context_menu_search;
+
+  ring_buffer_.push_back(std::move(record));
+  const size_t max_ring_buffer_size = GetABASearchJourneysMaxRingBufferSize();
+  while (ring_buffer_.size() > max_ring_buffer_size) {
+    ring_buffer_.pop_front();
+  }
 }
 
 bool SearchJourneyTracker::MatchesCopyFromTab(

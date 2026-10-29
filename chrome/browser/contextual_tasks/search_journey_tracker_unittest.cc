@@ -148,6 +148,74 @@ TEST_F(SearchJourneyTrackerTest, NormalizeForJourneyMatchShortStrings) {
       SearchJourneyTracker::NormalizeForJourneyMatch(u"abcdefgh").has_value());
 }
 
+TEST_F(SearchJourneyTrackerTest, GetSearchTerms) {
+  EXPECT_EQ(tracker_.GetSearchTerms(
+                GURL("https://www.google.com/search?q=how+do+tides+work")),
+            u"how do tides work");
+}
+
+TEST_F(SearchJourneyTrackerTest, GetSearchTermsForOtherPagesIsEmpty) {
+  EXPECT_EQ(tracker_.GetSearchTerms(GURL(kSourceUrl)), u"");
+  EXPECT_EQ(tracker_.GetSearchTerms(GURL("https://www.google.com/maps")), u"");
+  EXPECT_EQ(tracker_.GetSearchTerms(GURL("https://www.google.com/search")),
+            u"");
+}
+
+TEST_F(SearchJourneyTrackerTest, GetSearchTermsWithNonGoogleDseIsEmpty) {
+  SetNonGoogleDefaultSearchProvider(
+      search_engines_test_environment_.template_url_service());
+
+  EXPECT_EQ(tracker_.GetSearchTerms(
+                GURL("https://www.google.com/search?q=how+do+tides+work")),
+            u"");
+  EXPECT_EQ(tracker_.GetSearchTerms(
+                GURL("https://www.nongoogle.com/search?q=how+do+tides+work")),
+            u"");
+}
+
+TEST_F(SearchJourneyTrackerTest, MaybeAppendCopyMatchParamForCopiedQuery) {
+  tracker_.OnCopyRecorded(kOtherTab, kNavEntryId, u"How Do  Tides Work");
+
+  EXPECT_EQ(tracker_.MaybeAppendCopyMatchParam(
+                GURL("https://www.google.com/search?q=how+do+tides+work")),
+            GURL("https://www.google.com/search?q=how+do+tides+work&ictfc=1"));
+}
+
+TEST_F(SearchJourneyTrackerTest, MaybeAppendCopyMatchParamWithoutMatchingCopy) {
+  const GURL search_url("https://www.google.com/search?q=how+do+tides+work");
+  EXPECT_EQ(tracker_.MaybeAppendCopyMatchParam(search_url), search_url);
+
+  tracker_.OnCopyRecorded(kOtherTab, kNavEntryId, u"why is the sky blue");
+  EXPECT_EQ(tracker_.MaybeAppendCopyMatchParam(search_url), search_url);
+}
+
+TEST_F(SearchJourneyTrackerTest, MaybeAppendCopyMatchParamForOtherPages) {
+  tracker_.OnCopyRecorded(kOtherTab, kNavEntryId, u"how do tides work");
+
+  const GURL other_url("https://example.com/search?q=how+do+tides+work");
+  EXPECT_EQ(tracker_.MaybeAppendCopyMatchParam(other_url), other_url);
+}
+
+TEST_F(SearchJourneyTrackerTest, MaybeAppendCopyMatchParamAfterTtl) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kABASearchJourneys, {{"aba_search_journeys_ttl", "5m"}});
+  tracker_.OnCopyRecorded(kOtherTab, kNavEntryId, u"how do tides work");
+
+  task_environment_.AdvanceClock(base::Minutes(6));
+  const GURL search_url("https://www.google.com/search?q=how+do+tides+work");
+  EXPECT_EQ(tracker_.MaybeAppendCopyMatchParam(search_url), search_url);
+}
+
+TEST_F(SearchJourneyTrackerTest,
+       MaybeAppendCopyMatchParamIgnoresContextMenuSearch) {
+  tracker_.OnContextMenuSearchRecorded(kOtherTab, kNavEntryId,
+                                       u"how do tides work");
+
+  const GURL search_url("https://www.google.com/search?q=how+do+tides+work");
+  EXPECT_EQ(tracker_.MaybeAppendCopyMatchParam(search_url), search_url);
+}
+
 TEST_F(SearchJourneyTrackerTest, ArmsJourneyForCrossTabSearch) {
   StartJourney(kSourceTab1, kSearchTab1, u"how do plants make food");
 
@@ -174,6 +242,18 @@ TEST_F(SearchJourneyTrackerTest, ShortQueryArmsJourney) {
 TEST_F(SearchJourneyTrackerTest, CopyFromSourceTabLabelsJourney) {
   const std::u16string kQuery = u"quantum computing basics";
   tracker_.OnCopyRecorded(kSourceTab1, kNavEntryId, kQuery);
+  EXPECT_EQ(tracker_.GetRingBufferSizeForTesting(), 1u);
+
+  StartJourney(kSourceTab1, kSearchTab1, kQuery);
+
+  const JourneyState* journey = GetJourney(kSourceTab1);
+  ASSERT_TRUE(journey);
+  EXPECT_TRUE(journey->matched_copy);
+}
+
+TEST_F(SearchJourneyTrackerTest, ContextMenuSearchFromSourceTabLabelsJourney) {
+  const std::u16string kQuery = u"quantum computing basics";
+  tracker_.OnContextMenuSearchRecorded(kSourceTab1, kNavEntryId, kQuery);
   EXPECT_EQ(tracker_.GetRingBufferSizeForTesting(), 1u);
 
   StartJourney(kSourceTab1, kSearchTab1, kQuery);
