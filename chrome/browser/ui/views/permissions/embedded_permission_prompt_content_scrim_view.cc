@@ -36,6 +36,10 @@ bool EmbeddedPermissionPromptContentScrimView::IsOmniboxEverywhere(
 }
 
 // static
+// When adding support for a new privileged WebUI surface, also ensure the WebUI
+// handles `@voice-permission-changed` and applies
+// `--cr_composebox_minimum_height` and `--cr_composebox_minimum_width` in CSS.
+// LINT.IfChange(PrivilegedPepcSurfaces)
 gfx::Rect EmbeddedPermissionPromptContentScrimView::GetScrimBounds(
     content::WebContents& web_contents) {
   gfx::Rect bounds = web_contents.GetContainerBounds();
@@ -63,6 +67,7 @@ gfx::Rect EmbeddedPermissionPromptContentScrimView::GetScrimBounds(
   }
   return bounds;
 }
+// LINT.ThenChange(//chrome/browser/permissions/chrome_permissions_client.cc:PrivilegedPepcSurfaces)
 
 // Only require web contents instance to be passed in and not widget instance
 // (for window sizing) since web contents knows which widget it belongs to.

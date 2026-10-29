@@ -960,6 +960,17 @@ bool ChromePermissionsClient::IsPrivilegedInternalWebUIForUIRouting(
   return IsPrivilegedInternalWebUIForUIRouting(embedding_origin);
 }
 
+// When adding a new privileged WebUI surface here for embedded permission
+// prompts (PEPC), ensure that:
+// 1. The WebUI surface handles `@voice-permission-changed`
+//    from `composebox_voice_search.ts` and applies
+//    `--cr_composebox_minimum_height` and `--cr_composebox_minimum_width` in
+//    CSS so the container resizes to fit the permission prompt.
+// 2. `EmbeddedPermissionPromptContentScrimView::GetScrimBounds()` (and its
+//    rounded corner handling, if applicable) is updated if the surface's
+//    `WebContents` includes transparent padding or shadow margins around the
+//    visible card.
+// LINT.IfChange(PrivilegedPepcSurfaces)
 bool ChromePermissionsClient::
     IsPrivilegedInternalWebUIForUIRouting(  // overloaded private version
         const url::Origin& embedding_origin) {
@@ -967,6 +978,7 @@ bool ChromePermissionsClient::
          embedding_origin == GetOmniboxPopupOrigin() ||
          embedding_origin == GetOmniboxEverywhereOrigin();
 }
+// LINT.ThenChange(//chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.cc:PrivilegedPepcSurfaces)
 
 bool ChromePermissionsClient::IsOmniboxEverywhere(
     content::WebContents* web_contents) {
