@@ -50,6 +50,7 @@
 <translation id="1165109137568919258">Ambil foto atau tambahkan gambar dari galeri foto Anda untuk menelusuri</translation>
 <translation id="1173894706177603556">Ganti nama</translation>
 <translation id="1174479719160874822">Chrome akan meminta situs seluler jika layarnya sempit</translation>
+<translation id="1174759280027683968">Buka Chrome</translation>
 <translation id="1175241315203286684">Administrator dapat melakukan perubahan pada profil dan browser Anda dari jarak jauh, menganalisis informasi tentang browser melalui pelaporan, dan melakukan tugas lain yang diperlukan. Aktivitas di perangkat ini juga dapat dikelola di luar Chrome.</translation>
 <translation id="1177863135347784049">Sesuaikan</translation>
 <translation id="1181037720776840403">Hapus</translation>
@@ -608,6 +609,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3452832259067974318">Untuk melindungi privasi Anda, Chrome tidak akan mengisi otomatis sandi Anda di kolom ini.</translation>
 <translation id="3474624961160222204">Lanjutkan sebagai <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Anda dapat memilih mesin telusur Anda</translation>
+<translation id="3479552764303398839">Jangan sekarang</translation>
 <translation id="3482805106082349287">Telusuri menggunakan keyboard, suara, mode Samaran, atau kamera</translation>
 <translation id="3487903178221457900">File yang diekspor dapat diakses oleh orang lain, termasuk aplikasi. Setelah diekspor, sandi Anda akan dihapus dari Chrome.</translation>
 <translation id="3488199663160411179">nama</translation>
@@ -896,6 +898,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4578289292431526768">Mulai</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# menit yang lalu}other{# menit yang lalu}}</translation>
 <translation id="4585751637295612750">Buka tab baru untuk menambahkannya ke pertanyaan Anda</translation>
+<translation id="4585793705637313973">Edit halaman</translation>
 <translation id="4587589328781138893">Situs</translation>
 <translation id="4594952190837476234">Halaman offline ini dibuat pada <ph name="CREATION_TIME" /> dan mungkin berbeda dengan versi onlinenya.</translation>
 <translation id="4595237294768457124">Buka halaman Tab baru</translation>
@@ -1536,6 +1539,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6996145122199359148">Download halaman ini</translation>
 <translation id="7007648447224463482">Buka semua di jendela baru</translation>
 <translation id="7013762323294215682">Kunci sandi ini akan disimpan ke pengelola sandi Anda. Siapa pun yang memiliki akses ke pengelola sandi akan dapat menggunakan kunci sandi ini.</translation>
+<translation id="7017219178341817193">Tambahkan halaman baru</translation>
 <translation id="7022756207310403729">Buka di browser</translation>
 <translation id="7029809446516969842">Sandi</translation>
 <translation id="7037994709569287156">Jadikan Chrome sebagai default</translation>
@@ -1602,6 +1606,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="72415438529550637">Saran sandi ditutup.</translation>
 <translation id="724510009481365878">Halaman ini tidak dapat dicetak</translation>
 <translation id="7248671827512403053">Aplikasi</translation>
+<translation id="7253205084599155458">Tampilkan navigasi dan alat di toolbar bawah agar mudah diakses</translation>
 <translation id="7253951228444156601">Memeriksa sandi…</translation>
 <translation id="7265857422443387781">Telusuri tab dengan Google Lens <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Kirim <ph name="ONE_TIME_CODE" /> ke <ph name="ORIGIN" />?</translation>
@@ -1750,6 +1755,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7821130663268546430">Anda dapat menemukan semua tab yang terbuka di pengalih tab</translation>
 <translation id="7822705602465980873">Jika Anda login, data ini akan ditautkan ke Akun Google Anda untuk melindungi Anda di berbagai layanan Google, misalnya, meningkatkan perlindungan di Gmail setelah insiden keamanan.</translation>
 <translation id="7824665136384946951">Organisasi Anda menonaktifkan Safe Browsing</translation>
+<translation id="782590969421016895">Gunakan halaman saat ini</translation>
 <translation id="7825973332242257878">Grup tab</translation>
 <translation id="7845155831233417403">Anda dapat membuka hingga <ph name="MAX_INSTANCE_COUNT" /> jendela. Tutup salah satu jendela untuk melanjutkan.</translation>
 <translation id="7846161022626028328">Terjadi error. Coba lagi.</translation>

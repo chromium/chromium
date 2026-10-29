@@ -50,6 +50,7 @@
 <translation id="1165109137568919258">Scatta una foto o aggiungi un'immagine dalla tua galleria fotografica per eseguire la ricerca</translation>
 <translation id="1173894706177603556">Rinomina</translation>
 <translation id="1174479719160874822">Se lo schermo è stretto, Chrome richiederà il sito mobile</translation>
+<translation id="1174759280027683968">Vai a Chrome</translation>
 <translation id="1175241315203286684">L'amministratore può apportare modifiche al profilo e al browser da remoto, analizzare le informazioni sul browser tramite i report ed eseguire altre attività necessarie. L'attività svolta su questo dispositivo potrebbe essere gestita anche al di fuori di Chrome.</translation>
 <translation id="1177863135347784049">Personalizzati</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
@@ -608,6 +609,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3452832259067974318">Per proteggere la tua privacy, Chrome non compilerà automaticamente questo campo con la tua password.</translation>
 <translation id="3474624961160222204">Continua come <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Puoi scegliere il motore di ricerca</translation>
+<translation id="3479552764303398839">Non adesso</translation>
 <translation id="3482805106082349287">Cerca usando la tastiera, la voce, la modalità Incognito o la fotocamera</translation>
 <translation id="3487903178221457900">Il file esportato potrebbe essere accessibile da altri utenti, anche da app. Una volta eseguita l'esportazione, le tue password vengono eliminate da Chrome.</translation>
 <translation id="3488199663160411179">nome</translation>
@@ -896,6 +898,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4578289292431526768">Inizia</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minuto fa}other{# minuti fa}}</translation>
 <translation id="4585751637295612750">Apri una nuova scheda per aggiungerla alla tua domanda</translation>
+<translation id="4585793705637313973">Modifica pagina</translation>
 <translation id="4587589328781138893">Siti</translation>
 <translation id="4594952190837476234">Questa pagina offline risale al giorno <ph name="CREATION_TIME" /> e potrebbe essere diversa dalla versione online.</translation>
 <translation id="4595237294768457124">Apri una pagina Nuova scheda</translation>
@@ -1536,6 +1539,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6996145122199359148">Scarica questa pagina</translation>
 <translation id="7007648447224463482">Apri tutto in una nuova finestra</translation>
 <translation id="7013762323294215682">Questa passkey verrà salvata nel tuo gestore delle password. Chiunque abbia accesso al tuo gestore delle password potrà utilizzare questa passkey.</translation>
+<translation id="7017219178341817193">Aggiungi una nuova pagina</translation>
 <translation id="7022756207310403729">Apri nel browser</translation>
 <translation id="7029809446516969842">Password</translation>
 <translation id="7037994709569287156">Imposta Chrome come predefinito</translation>
@@ -1602,6 +1606,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="72415438529550637">Il suggerimento per la password è chiuso.</translation>
 <translation id="724510009481365878">Impossibile stampare la pagina</translation>
 <translation id="7248671827512403053">Applicazione</translation>
+<translation id="7253205084599155458">Visualizza la navigazione e gli strumenti in una barra degli strumenti in basso per un facile accesso</translation>
 <translation id="7253951228444156601">Controllo delle password…</translation>
 <translation id="7265857422443387781">Cerca nella scheda con Google Lens <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Inviare <ph name="ONE_TIME_CODE" /> a <ph name="ORIGIN" />?</translation>
@@ -1750,6 +1755,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7821130663268546430">Puoi trovare tutte le schede aperte nel Selettore di schede</translation>
 <translation id="7822705602465980873">Se hai eseguito l'accesso, questi dati vengono collegati al tuo Account Google per proteggerti nei servizi Google, ad esempio aumentando la protezione in Gmail dopo un incidente di sicurezza.</translation>
 <translation id="7824665136384946951">La tua organizzazione ha disattivato Navigazione sicura</translation>
+<translation id="782590969421016895">Usa pagine correnti</translation>
 <translation id="7825973332242257878">Gruppi di schede</translation>
 <translation id="7845155831233417403">Puoi avere fino a <ph name="MAX_INSTANCE_COUNT" /> finestre. Chiudi una finestra per continuare.</translation>
 <translation id="7846161022626028328">Si è verificato un errore. Riprova.</translation>

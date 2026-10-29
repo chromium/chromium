@@ -518,7 +518,6 @@
 <translation id="2524699375503213836">Přeneste si data ze Safari</translation>
 <translation id="2526166285241366046">Uložení hesla</translation>
 <translation id="2529021024822217800">Otevřít vše</translation>
-<translation id="2530932541542751783">S tímto nastavením se něco pokazilo. Aktualizujte a restartujte Chrome a iPadOS a zkuste to znovu. Pokud k této chybě dochází opakovaně, váš iPad toto nastavení zřejmě nepodporuje.</translation>
 <translation id="2536991091671391962">Uložená hesla můžete používat v libovolném zařízení. Ukládají se do Správce hesel Google pro účet <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Skryté, heslo</translation>
 <translation id="2538705697765638552">Uložte si své údaje, ať můžete ve službách Google pracovat rychleji, například rychleji vyplňovat formuláře. Své údaje v Peněžence Google pro účet <ph name="USER_EMAIL" /> můžete spravovat.</translation>
@@ -600,7 +599,6 @@
 <translation id="2781331604911854368">Zapnuto</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783161812871838616">Požádat o web pro počítače</translation>
-<translation id="2789486458103222910">OK</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Heslo bylo uloženo do vašeho účtu Google ({EMAIL})}few{Hesla byla uložena do vašeho účtu Google ({EMAIL})}many{Hesla byla uložena do vašeho účtu Google ({EMAIL})}other{Hesla byla uložena do vašeho účtu Google ({EMAIL})}}</translation>
 <translation id="2791174088547598693">Přidat heslo…</translation>
 <translation id="2793703503584038325">Vyberte heslo a klepněte na ikonu Sdílet</translation>
@@ -801,7 +799,6 @@
 <translation id="3481315707647070701">Vizualizovat a upravit</translation>
 <translation id="3485558910355485767">Nové anonymní okno</translation>
 <translation id="3488501490964659223">Karty byly zavřeny a byly vymazány údaje o prohlížení. Byli jste odhlášeni</translation>
-<translation id="3490396108106323715">Sdílet aktuální kartu</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /> o navrhovaném obsahu</translation>
 <translation id="349446645805573740">Vyberte, kam chcete uložit soubor „<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />“</translation>
 <translation id="3504377992102007712">Nastavení</translation>
@@ -829,7 +826,6 @@
 <translation id="3565012355885596568">Obrázky se nepodařilo načíst</translation>
 <translation id="3565930036634619844">Karta <ph name="TAB_INDEX" /> z <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Uložit jinak</translation>
-<translation id="3572503683475187385">Když zahájíte nový chat, bude se aktuální karta sdílet s Gemini. Když sdílíte kartu s Gemini, její obsah a adresa URL se odešlou do Googlu. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">V účtu Google</translation>
 <translation id="3575234738189584619">Vyhledat pomocí Lens</translation>
 <translation id="3575426792457739946">Tento seznam obsahuje všechny načtené profily.</translation>
@@ -988,7 +984,6 @@
 <translation id="4092655288299341041">Zobrazit nápovědu</translation>
 <translation id="4095483462103784441">Vytvořit novou skupinu karet</translation>
 <translation id="4099756562043439968">Nastavit připomenutí</translation>
-<translation id="4108998448622696017">Rozpoznává nebezpečné události a upozorňuje vás na ně, když k nim dojde.</translation>
 <translation id="4111985840824673503">Označit všechny přečtené</translation>
 <translation id="411254640334432676">Stahování se nezdařilo.</translation>
 <translation id="4112644173421521737">Hledat</translation>
@@ -1170,6 +1165,7 @@
 <translation id="4658335131052370646">Uložit</translation>
 <translation id="465947902531722727">Přepnout profil</translation>
 <translation id="466307903888586355">Vaše organizace ukládání souborů blokuje</translation>
+<translation id="4665303625242639572">Zavřít stránku <ph name="PAGE_TITLE" /></translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Vaše organizace vyžaduje, abyste si obsah prohlíželi anonymně. V anonymním režimu se skupiny karet nesynchronizují.
 <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
@@ -1287,6 +1283,7 @@
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Barva skupiny karet: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopírování hesla</translation>
+<translation id="5007392906805964215">Zkontrolovat</translation>
 <translation id="5009127379503001909">Pokračovat v procházení</translation>
 <translation id="5016205925109358554">Patková</translation>
 <translation id="5016420433031926653">Odeslat na adresu <ph name="USER_EMAIL" /></translation>
@@ -1707,7 +1704,6 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Vyberte pozici adresního řádku</translation>
 <translation id="6305257382500066042">Vyzkoušet</translation>
-<translation id="6307241780749477694">Pokud na tomhle zařízení chcete mít všechna svá hesla, ověřte svou totožnost</translation>
 <translation id="6307792728709337290">Uložte si kartu do účtu Google, aby se při tomto a budoucích nákupech v Chromu mohla vyplnit automaticky.</translation>
 <translation id="6316141353357700666">Ze zobrazeného seznamu vyberte heslo, které chcete použít.</translation>
 <translation id="6321526113093607004">Přidat do záložek</translation>
@@ -1940,7 +1936,6 @@ Pokud chcete pokračovat z počítače, přepněte na <ph name="OTHER_EMAIL" />
 <translation id="6938212956536472404">Tuhle kartu nejde sdílet</translation>
 <translation id="6945221475159498467">Vybrat</translation>
 <translation id="6946722113367118030">Přemýšlení</translation>
-<translation id="6947751977892029882">S tímto nastavením se něco pokazilo. Aktualizujte a restartujte Chrome a iOS a zkuste to znovu. Pokud k této chybě dochází opakovaně, váš iPhone toto nastavení pravděpodobně nepodporuje.</translation>
 <translation id="6950522403736391608">Skryté</translation>
 <translation id="6957084631403333422">Vyzkoušejte stránku Nová karta s jedním zaměřením</translation>
 <translation id="695965663642079255">Uložte si a spravujte platební údaje, ať můžete platit rychleji</translation>
@@ -2171,7 +2166,6 @@ Kdykoli můžete začít znovu.</translation>
 <translation id="7700527812567437847">Hledat na obrazovce pomocí Google Lens</translation>
 <translation id="7701040980221191251">Žádné</translation>
 <translation id="7702428539671224160">Automaticky vyplnit platební údaje na webu <ph name="URL" /></translation>
-<translation id="7708994397325774423">Získejte všechna svá hesla</translation>
 <translation id="7710096647785049958">Ušetřete čas u každého odkazu</translation>
 <translation id="7711440461521638739">Nemáte žádná opakovaně použitá hesla</translation>
 <translation id="7712361583414030698">Zobrazuje se offline verze</translation>
@@ -2192,7 +2186,6 @@ Kdykoli můžete začít znovu.</translation>
 <translation id="7758789811447313947">Fialový motiv</translation>
 <translation id="7759809451544302770">Volitelné</translation>
 <translation id="7765158879357617694">Přesunout</translation>
-<translation id="7767651976342854115">V nastavení využití dat došlo k chybě.</translation>
 <translation id="7768507955883790804">Weby, které navštívíte, se automaticky řídí tímto nastavením</translation>
 <translation id="7772032839648071052">Potvrďte heslovou frázi</translation>
 <translation id="7772948288262733182">Vítejte zpět</translation>
@@ -2505,7 +2498,6 @@ Kdykoli můžete začít znovu.</translation>
 <translation id="8674716540979958118">Máte prolomená hesla.</translation>
 <translation id="8679900250380464358">Přidat do seznamu četby</translation>
 <translation id="8680643216091361291">Ve výchozím stavu máte nastavení <ph name="BEGIN_LINK" />Uchovávat aktivitu<ph name="END_LINK" /> vypnuté. Když je vypnuté, ukládá Google chaty na 3 dny. Používají se k zajištění správného fungování a bezpečnosti aplikací s Gemini a vaše zpětná vazba se používá k řešení problémů. Nastavení Uchovávat aktivitu můžete zapnout a pomáhat tak s vylepšováním Google AI pro všechny.</translation>
-<translation id="8680786875305615692">Pomáhat se zlepšováním bezpečnosti internetu pro všechny</translation>
 <translation id="8680787084697685621">Přihlašovací údaje k účtu jsou zastaralé.</translation>
 <translation id="868648444055742370">Web <ph name="SITE_DOMAIN" /> nemá povolen přístup k mikrofonu</translation>
 <translation id="8690752723634292147">Potvrdit smazání</translation>
@@ -2581,7 +2573,6 @@ Kdykoli můžete začít znovu.</translation>
 <translation id="8888595487174963247">Odstranit připomenutí</translation>
 <translation id="8890516388109605451">Zdroje</translation>
 <translation id="8893208530912252670">Videa</translation>
-<translation id="8898822736010347272">Odesílá adresy URL některých navštívených stránek, omezené informace o systému a část obsahu stránek do Googlu a pomáhá tak objevovat nové hrozby a chránit všechny uživatele internetu.</translation>
 <translation id="890009681345348416">Automaticky vyplněno nejméně 40 hesel</translation>
 <translation id="8900845556227858314">Prohlížeč</translation>
 <translation id="890565330728586731">Zpět</translation>
@@ -2612,6 +2603,7 @@ Kdykoli můžete začít znovu.</translation>
 <translation id="8976414606286374109">Karty se ukládají do vašeho účtu Google.</translation>
 <translation id="8981454092730389528">Ovládací prvky aktivity Google</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, připnutý web</translation>
+<translation id="8989779557457435460">Ve výchozím nastavení sdílet aktuální kartu</translation>
 <translation id="8990960056509724223">Soubor se kvůli zásadám vaší organizace nepodařilo uložit</translation>
 <translation id="8998289560386111590">Na vašem zařízení není k dispozici</translation>
 <translation id="9003677638446136377">Zkontrolovat znovu</translation>

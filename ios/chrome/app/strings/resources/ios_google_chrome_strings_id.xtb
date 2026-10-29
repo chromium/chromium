@@ -198,7 +198,6 @@ Coba tunggu beberapa menit sebelum logout. Jika Anda logout sekarang, data ini a
 <translation id="5460571915754665838">4. Pilih Chrome</translation>
 <translation id="5492504007368565877">Pengelola Sandi Google tidak dapat memeriksa sandi Anda.</translation>
 <translation id="5527026824954593399">Ketuk “Lihat dengan Google Maps di Chrome”.</translation>
-<translation id="5552137475244467770">Chrome memeriksa sandi Anda secara berkala berdasarkan daftar sandi yang telah diterbitkan secara online. Saat pemeriksaan dilakukan, sandi dan nama pengguna Anda dienkripsi, sehingga tidak dapat dibaca oleh siapa pun, termasuk Google.</translation>
 <translation id="5554520618550346933">Jika Anda menggunakan sandi, Chrome akan memperingatkan Anda jika sandi telah dipublikasikan secara online. Saat pemeriksaan dilakukan, sandi dan nama pengguna Anda dienkripsi, sehingga tidak dapat dibaca oleh siapa pun, termasuk Google.</translation>
 <translation id="5601180634394228718">Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chrome Anda, buka <ph name="BEGIN_LINK" />Layanan Google<ph name="END_LINK" />.</translation>
 <translation id="5639704535586432836">Buka Setelan &gt; Privasi &gt; Kamera &gt; Google Chrome, lalu aktifkan kamera.</translation>
@@ -239,7 +238,6 @@ Coba tunggu beberapa menit sebelum beralih akun. Jika Anda beralih akun sekarang
 <translation id="6348855835728304880">Akses sandi Chrome dan lainnya di seluruh aplikasi lain pada perangkat ini.</translation>
 <translation id="6373751563207403289">Pemeriksaan Keamanan melindungi Anda dari pelanggaran data, situs yang tidak aman, dan lainnya. Menerima notifikasi terkait masalah privasi atau keamanan apa pun yang dideteksi oleh Chrome untuk Anda.</translation>
 <translation id="6389317667633680932">Pelajari beragam fitur baru yang membantu Anda mengoptimalkan penggunaan Chrome.</translation>
-<translation id="6412673304250309937">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chrome. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chrome mungkin juga mengirim URL, termasuk bit konten halaman, ke Safe Browsing.</translation>
 <translation id="6427126399757991875">Organisasi Anda sedang menyiapkan Chrome ...</translation>
 <translation id="6481963882741794338">Tautkan Chrome dan layanan Google lainnya untuk personalisasi dan tujuan lainnya</translation>
 <translation id="6484712497741564393">Login sebagai <ph name="EMAIL" />.
@@ -251,7 +249,6 @@ Data Anda dienkripsi dengan frasa sandi. Masukkan frasa sandi untuk menggunakan 
 <translation id="660537754475262202">Jadikan Chrome sebagai browser default Anda untuk meluncurkan link di sini secara instan.</translation>
 <translation id="6611692150236062461">Untuk mendapatkan sandi tersimpan dengan mudah di aplikasi lain, pilih Chrome untuk Isi Otomatis.</translation>
 <translation id="6636941099779251629">Organisasi mengharuskan Anda login untuk menggunakan Chrome. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
-<translation id="6646696210740573446">Mengirim bagian URL yang di-obfuscate ke Google melalui server privasi yang menyembunyikan alamat IP Anda. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chrome mungkin juga mengirimkan URL, termasuk bit konten halaman, ke Google.</translation>
 <translation id="6647304104688527905">Membuka tab baru di Chrome.</translation>
 <translation id="6684809838922667136">Buat Chrome menjadi lebih baik</translation>
 <translation id="6709398533399187136">Sandi Anda terekspos dalam pelanggaran data. Pengelola Sandi Google merekomendasikan untuk mengubahnya sekarang.</translation>

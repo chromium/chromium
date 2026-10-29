@@ -50,6 +50,7 @@
 <translation id="1165109137568919258">Maak een foto of voeg een afbeelding uit je fotogalerij toe om te zoeken</translation>
 <translation id="1173894706177603556">Naam wijzigen</translation>
 <translation id="1174479719160874822">Chrome vraagt de mobiele site op als het scherm smal is</translation>
+<translation id="1174759280027683968">Ga naar Chrome</translation>
 <translation id="1175241315203286684">Je beheerder kan op afstand wijzigingen aanbrengen in je profiel en browser, informatie over de browser analyseren via rapportage en andere nodige taken uitvoeren. Activiteit op dit apparaat kan ook buiten Chrome worden beheerd.</translation>
 <translation id="1177863135347784049">Aangepast</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
@@ -608,6 +609,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3452832259067974318">Ter bescherming van je privacy vult Chrome je wachtwoord niet automatisch in dit veld in.</translation>
 <translation id="3474624961160222204">Doorgaan als <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Je kunt je zoekmachine kiezen</translation>
+<translation id="3479552764303398839">Niet nu</translation>
 <translation id="3482805106082349287">Zoek met je toetsenbord, stem, camera of incognito</translation>
 <translation id="3487903178221457900">Het geëxporteerde bestand is mogelijk toegankelijk voor anderen, waaronder apps. Na de export worden je wachtwoorden verwijderd uit Chrome.</translation>
 <translation id="3488199663160411179">naam</translation>
@@ -896,6 +898,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4578289292431526768">Aan de slag</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minuut geleden}other{# minuten geleden}}</translation>
 <translation id="4585751637295612750">Open een nieuw tabblad om dit toe te voegen aan je vraag</translation>
+<translation id="4585793705637313973">Pagina bewerken</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">Deze offline pagina is van <ph name="CREATION_TIME" /> en kan afwijken van de online versie.</translation>
 <translation id="4595237294768457124">Open een pagina Nieuw tabblad</translation>
@@ -1536,6 +1539,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6996145122199359148">Deze pagina downloaden</translation>
 <translation id="7007648447224463482">Alles openen in nieuw venster</translation>
 <translation id="7013762323294215682">Deze toegangssleutel wordt opgeslagen in je wachtwoordmanager. Iedereen met toegang kan deze toegangssleutel gebruiken.</translation>
+<translation id="7017219178341817193">Een nieuwe pagina toevoegen</translation>
 <translation id="7022756207310403729">Openen in browser</translation>
 <translation id="7029809446516969842">Wachtwoorden</translation>
 <translation id="7037994709569287156">Chrome instellen als standaard</translation>
@@ -1602,6 +1606,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="72415438529550637">Wachtwoordsuggestie is gesloten.</translation>
 <translation id="724510009481365878">Deze pagina is niet worden afgedrukt</translation>
 <translation id="7248671827512403053">Applicatie</translation>
+<translation id="7253205084599155458">Navigatie en tools tonen in een werkbalk onderaan voor makkelijke toegang</translation>
 <translation id="7253951228444156601">Wachtwoorden checken…</translation>
 <translation id="7265857422443387781">Tabblad doorzoeken met Google Lens <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
 <translation id="727288900855680735"><ph name="ONE_TIME_CODE" /> sturen naar <ph name="ORIGIN" />?</translation>
@@ -1750,6 +1755,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7821130663268546430">Je vindt alle geopende tabbladen in de tabbladschakelaar</translation>
 <translation id="7822705602465980873">Als je bent ingelogd, worden deze gegevens gekoppeld aan je Google-account om je te beschermen in Google-services, bijvoorbeeld om de beveiliging in Gmail te verbeteren na een beveiligingsincident.</translation>
 <translation id="7824665136384946951">Je organisatie heeft Safe Browsing uitgezet</translation>
+<translation id="782590969421016895">Huidige pagina's gebruiken</translation>
 <translation id="7825973332242257878">Tabbladgroepen</translation>
 <translation id="7845155831233417403">Je kunt maximaal <ph name="MAX_INSTANCE_COUNT" /> vensters hebben. Sluit een venster om door te gaan.</translation>
 <translation id="7846161022626028328">Er is iets fout gegaan. Probeer het opnieuw.</translation>

@@ -96,7 +96,6 @@
 <translation id="1165174597379888365">Sayfa ziyaret etme</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Yok}=1{1 siteden (Google Hesabınızın oturumu açık kalır)}other{# siteden (Google Hesabınızın oturumu açık kalır)}}</translation>
 <translation id="1167877250265821930"><ph name="LANGUAGE" /> indirilemedi</translation>
-<translation id="1171306609584863516"><ph name="IDP_ORIGIN" /> tarafından doğrulandı</translation>
 <translation id="1174644974616730562">Zarf Chinese #1</translation>
 <translation id="1174723505405632867"><ph name="EMBEDDED_URL" /> sitesinin, <ph name="TOP_LEVEL_URL" /> üzerinde çerezleri ve site verilerini kullanmasına izin vermek istiyor musunuz?
 
@@ -585,6 +584,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1988881251331415125">Yazım doğruysa <ph name="BEGIN_LINK" />Bağlantı Teşhisi'ni çalıştırmayı deneyin<ph name="END_LINK" />.</translation>
 <translation id="1991370806334788445">Üçüncü taraf çerezlerine izin vermeyi deneyin. Bu durumda, internette gezinirken daha az korunursunuz ancak site özelliklerinin beklendiği gibi çalışma olasılığı daha yüksektir.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
+<translation id="1996557034791506430">İzin kaldırılsın mı?</translation>
 <translation id="1997484222658892567"><ph name="URL" />, yerel bilgisiayarınızda büyük miktarda veri depolamak istiyor</translation>
 <translation id="1997774360448418989">Kağıt (İnce)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{ve 1 tane daha}other{ve # diğer hesap için}}</translation>
@@ -661,6 +661,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2118132148597630479">Zarf C5</translation>
 <translation id="2119505898009119320">Verildiği kuruluş: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Sağ altta delik</translation>
+<translation id="2121418473709291357">Chrome Tarayıcı Bulut Yönetimi devre dışı bırakıldığı için yoksayıldı.</translation>
 <translation id="2122214041802369259">Yüksek Fiyatlı</translation>
 <translation id="2122719317867821810">Bu politika beklendiği gibi çalışıyor, ancak başka bir yerde ayarlanmış çakışan bir değeri geçersiz kılıyor.</translation>
 <translation id="2124081665399116863">Google Cüzdan'daki aracı güncelleyin</translation>
@@ -690,6 +691,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2155260325161282517">5 x 7 inç</translation>
 <translation id="2156467141257470387">Kayıtlı adresleri tüm Google ürünlerinde kullanabilirsiniz. Bu işlem, mevcut iş adresinizi değiştirmez. Adres, Google Hesabınıza (<ph name="ACCOUNT" />) kaydedilir.</translation>
 <translation id="2157640075051554492">Fiyat takibi bildirimleri</translation>
+<translation id="2158964559178498011">Otomatik doldurma artık daha fazla yerde çalışıyor. Bilgileri bulup doldurmak için Ctrl tuşuna iki kez basın</translation>
 <translation id="2161656808144014275">Metin</translation>
 <translation id="2162435186600002085">Birincil Başlık Logosu</translation>
 <translation id="2162535140284745414">Yapay zeka ile göz atmanın yeni yollarını bulmanıza yardımcı olabilecek anlık öneriler alın.</translation>
@@ -2200,6 +2202,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Sayfa çevrilsin mi?</translation>
 <translation id="468314109939257734">Sanal kart numaranızı görüntüleyin</translation>
+<translation id="4684818564800397688">Otomatik doldurma artık daha fazla yerde çalışıyor. Bilgileri bulup doldurmak için ⌘ tuşuna iki kez basın</translation>
 <translation id="4686942373615810936">Az önce oluşturuldu</translation>
 <translation id="4690205240253392065">Daha sonra ödeme imkanı sunan sağlayıcı seçin</translation>
 <translation id="469028408546145398">Gizli pencereleri kapat düğmesi, açık olan tüm gizli pencereleri kapatmak için etkinleştirin</translation>
@@ -2480,6 +2483,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5115232566827194440">Kısıtlanmış yönetilen misafir oturumunun geçersiz kılınması</translation>
 <translation id="5115563688576182185">(64 bit)</translation>
 <translation id="5116015291385561204">Hassas bilgileri otomatik doldurmak için kimliğimi doğrula</translation>
+<translation id="5121592697493894155">Yan panelde Google Arama</translation>
 <translation id="5122786942953798871">Zarf (Pamuk)</translation>
 <translation id="5123063207673082822">Hafta sonu</translation>
 <translation id="5124797626438336458">"Şimdi al sonra öde" hata ekranı ekranın yarısına kadar açıldı.</translation>
@@ -2916,6 +2920,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5843987376989109187">Bu dil henüz desteklenmiyor.
     <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Siparişinizi inceledikten sonra bir <ph name="BNPL_ISSUER_NAME" /> hesabında oturum açmanız veya hesap oluşturmanız gerekir. Bu hesap, Google Cüzdan'a otomatik olarak bağlanacaktır.</translation>
+<translation id="5848916806551637625">Pix hesabı <ph name="ACCOUNT_EMAIL" /> hesabına bağlanacak. Pix kodu algılamayı devre dışı bırakmak için <ph name="BEGIN_LINK1" />Chrome Ayarları<ph name="END_LINK1" />'na gidin.</translation>
 <translation id="5851548754964597211">Sekme listesi</translation>
 <translation id="5851868085455377790">Sertifikayı Veren</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -3499,6 +3504,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="6834757537110528125">Bu site güvenli bağlantıyı desteklemiyor</translation>
 <translation id="6841864657731852591">Gravür Silindir</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
+<translation id="6843919992766261684">Bundan sonra <ph name="ISSUER" />, bu e-posta adresini otomatik olarak onaylamayı durduracak</translation>
 <translation id="6844746916504777213">Bu siteleri hiçbir zaman paylaşmayın</translation>
 <translation id="6844998850832008753">El takibine bu sefer izin veriliyor</translation>
 <translation id="6849023911358004088">Güvenlik ayarlarını yönet düğmesi, Chrome ayarlarında Güvenli Tarama ve diğer özellikleri yönetmek için etkinleştirin</translation>
@@ -3649,6 +3655,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="7083258188081898530">Tepsi 9</translation>
 <translation id="70846382339153529">OpenDocument Metni</translation>
 <translation id="7086090958708083563">Kullanıcı tarafından istenen yükleme</translation>
+<translation id="7087807086191250928">Gemini hata yapabilir. Orijinal kaynağı incelemek ve bu bilgilerin doğru olduğundan emin olmak için öneriye uzun basın.</translation>
 <translation id="7089745480771070611">Yan panelde açılır</translation>
 <translation id="7090698782953528257">Matematik denklemini görselleştirmek ve eğrinin şeklini görmek için fonksiyonun grafiğini çizmeme yardım et</translation>
 <translation id="7092087596499105699">Yöneticiniz, kuruluşunuzun özel web uygulamalarına erişimi korumak için güvenli ağ geçidi bağlayıcısını yapılandırdı. Erişimi doğrulamak için iş profilinizdeki veriler kullanılabilir.</translation>
@@ -4080,6 +4087,7 @@ Ek ayrıntılar:
 <translation id="7765158879357617694">Taşı</translation>
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="776749070095465053">Kumaş</translation>
+<translation id="7770247511810814330">İzni kaldırın</translation>
 <translation id="7772659560036894129">Ürün adları</translation>
 <translation id="7773005668374414287">Aynı sırada ön yüz yukarı bakacak şekilde</translation>
 <translation id="7779418012194492374"><ph name="DEVICE_NAME" /> için erişim iznini iptal et</translation>
@@ -4191,7 +4199,6 @@ Ek ayrıntılar:
 <translation id="7961015016161918242">Hiçbir zaman</translation>
 <translation id="7961493403319780137">Bu özellik (Gmail'deki doğrulama kodlarını otomatik doldurma) hakkında daha fazla bilgi edinin</translation>
 <translation id="7962467575542381659">Platform makinesi</translation>
-<translation id="796439090588610411">Chrome, desteklenen sitelerde bu e-posta adresini otomatik olarak onaylamayı durduracak.</translation>
 <translation id="7966803981046576691">İş hesap türü</translation>
 <translation id="7967973398323409409">Otomatik doldurulan bilgileriniz hiçbir zaman başkaları tarafından görülmez</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" değeri, geçersiz bir onaltılık renk.</translation>
@@ -4427,6 +4434,7 @@ Ek ayrıntılar:
 <translation id="8371841335382565017">Yayın için cihaz listesini göster</translation>
 <translation id="8371889962595521444">Özel kök sertifikalar</translation>
 <translation id="8374636051559112948">Değişkenlik gösterir</translation>
+<translation id="8376752431516546391">Google Arama yan paneli</translation>
 <translation id="8377507422902936905">Siparişler</translation>
 <translation id="837840316697671463">Cihazınızda bulamadığınız dosyaları <ph name="CLOUD_PROVIDER" /> sağlayıcısında arayın.</translation>
 <translation id="8378714024927312812">Kuruluşunuz tarafından yönetiliyor</translation>
@@ -4473,7 +4481,6 @@ Ek ayrıntılar:
 <translation id="8446884382197647889">Daha Fazla Bilgi Edinin</translation>
 <translation id="8449036207308062757">Depolama alanını yönet</translation>
 <translation id="8449155699563577224">17 x 24 inç</translation>
-<translation id="8449513475775663994">Doğrulanmış e-posta adresi kaldırılsın mı?</translation>
 <translation id="8449836157089738489">Tümünü yeni sekme grubunda aç</translation>
 <translation id="8451518040456311377">Kimlik belgelerini kaydedip doldur</translation>
 <translation id="84561192812921051">Yöneticiniz profilinizde ve tarayıcınızda uzaktan değişiklik yapabilir, raporlama aracılığıyla tarayıcı hakkındaki bilgileri analiz edebilir ve diğer gerekli görevleri yerine getirebilir. Bu cihazdaki etkinlikler Chrome dışında da yönetilebilir.  <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>

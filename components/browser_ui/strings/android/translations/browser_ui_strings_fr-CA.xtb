@@ -525,6 +525,7 @@
 <translation id="6439114592976064011">Empêcher les sites d'utiliser vos appareils et vos données de réalité virtuelle</translation>
 <translation id="6447842834002726250">Témoins</translation>
 <translation id="6452138246455930388">Baisse de prix sur votre onglet ouvert, de <ph name="OLD_PRICE" /> à <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
+<translation id="6495608040096939405">Révoquer l'autorisation de l'appareil pour <ph name="NAME" /></translation>
 <translation id="6500423977866688905">Lorsque la fenêtre est étroite, demander l'affichage sur appareil mobile</translation>
 <translation id="6527303717912515753">Partager</translation>
 <translation id="6530703012083415527">Lorsque cette option est activée, les sites peuvent utiliser des fenêtres contextuelles et des redirections. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser des fenêtres contextuelles ni des redirections.</translation>
@@ -590,6 +591,7 @@
 <translation id="7188508872042490670">Données relatives aux sites sur l’appareil</translation>
 <translation id="7201549776650881587">Cette action supprimera toutes les données et tous les témoins stockés par tous les sites subordonnés de <ph name="ORIGIN" /> ou par son application sur votre écran d'accueil</translation>
 <translation id="7219254577985949841">Supprimer les données relatives aux sites?</translation>
+<translation id="7225256190577194089">Révoquer toutes les autorisations pour l'appareil <ph name="DEVICE_NAME" /></translation>
 <translation id="723171743924126238">Sélectionner des images</translation>
 <translation id="7243246278722455312">Zone de contenu dans le bas de l'écran de Personnaliser votre page Nouvel onglet</translation>
 <translation id="7243308994586599757">Options disponibles vers le bas de l’écran</translation>

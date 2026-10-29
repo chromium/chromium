@@ -198,7 +198,6 @@ Odota muutama minuutti ennen uloskirjautumista. Jos kirjaudut ulos nyt, tämä d
 <translation id="5460571915754665838">4. Valitse Chrome</translation>
 <translation id="5492504007368565877">Google Salasanat ei voi tarkistaa salasanojasi.</translation>
 <translation id="5527026824954593399">Valitse "Katso Google Mapsin avulla Chromessa".</translation>
-<translation id="5552137475244467770">Chrome vertaa salasanojasi säännöllisesti listoihin salasanoista, jotka on julkaistu verkossa. Tätä varten salasanat ja käyttäjänimet salataan, joten kukaan (myöskään Google) ei voi lukea niitä.</translation>
 <translation id="5554520618550346933">Kun käytät salasanaa, Chrome varoittaa, jos se on julkaistu verkossa. Tätä varten salasanat ja käyttäjänimet salataan, joten kukaan (myöskään Google) ei voi lukea niitä.</translation>
 <translation id="5601180634394228718">Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, jos haluat nähdä lisää asetuksia, jotka käyttävät dataa Chromen käyttökokemuksen parantamiseen.</translation>
 <translation id="5639704535586432836">Avaa Asetukset &gt; Tietosuoja &gt; Kamera &gt; Google Chrome ja ota kamera käyttöön.</translation>
@@ -239,7 +238,6 @@ Odota muutama minuutti ennen tilin vaihtamista. Jos vaihdat tiliä nyt, tämä d
 <translation id="6348855835728304880">Käytä esimerkiksi Chromen salasanoja tällä laitteella muissa sovelluksissa.</translation>
 <translation id="6373751563207403289">Turvatarkistus suojaa sinua esimerkiksi tietosuojaloukkauksilta ja riskialttiilta verkkosivustoilta. Saat ilmoituksia kaikista yksityisyys- tai tietoturvaongelmista, jotka Chrome havaitsee puolestasi.</translation>
 <translation id="6389317667633680932">Tutustu uusiin ominaisuuksiin, joiden avulla saat parhaan hyödyn Chromesta.</translation>
-<translation id="6412673304250309937">Tarkistaa URL-osoitteet Chromeen tallennetun vaarallisten sivustojen luettelon avulla. Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chrome voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, mukaan lukien osia sivujen sisällöstä.</translation>
 <translation id="6427126399757991875">Organisaatiosi ottaa käyttöön Chromea…</translation>
 <translation id="6481963882741794338">Linkitä Chrome ja muita Googlen palveluja esimerkiksi personointia varten</translation>
 <translation id="6484712497741564393">Kirjautuneena tilillä <ph name="EMAIL" />.
@@ -251,7 +249,6 @@ Datasi salataan tunnuslauseella. Lisää se, niin voit käyttää ja tallentaa C
 <translation id="660537754475262202">Valitse Chrome oletusselaimeksi, niin voit avata linkkejä täällä heti.</translation>
 <translation id="6611692150236062461">Löydät muiden sovellusten tallennetut salasanat helposti käyttämällä Chromea automaattiseen täyttöön.</translation>
 <translation id="6636941099779251629">Organisaatiosi edellyttää sisäänkirjautumista, jotta voit käyttää Chromea. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
-<translation id="6646696210740573446">Lähettää osan URL-osoitteesta obfuskoituna Googlelle yksityisen palvelimen kautta, jolloin IP-osoitteesi piilotetaan. Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chrome voi myös lähettää Googlelle URL-osoitteita, mukaan lukien osia sivujen sisällöstä</translation>
 <translation id="6647304104688527905">Avaa uuden välilehden Chromessa.</translation>
 <translation id="6684809838922667136">Entistä parempi Chrome</translation>
 <translation id="6709398533399187136">Salasanasi vaarantui tietosuojaloukkauksessa. Googlen Salasanojen ylläpito suosittelee, että vaihdat sen heti.</translation>

@@ -27,6 +27,7 @@
 <translation id="3812541808639806898">Image Alt Text Viewer</translation>
 <translation id="381767806621926835">Кликнете с десния бутон на мишката върху всеки елемент с атрибут „aria-describedat“ или „longdesc“, за да осъществите достъп до дългото му описание.</translation>
 <translation id="4023902424053835668">Разглеждайте текста на уеб страниците посредством клавишите със стрелки.</translation>
+<translation id="4384008284958619421">Съвременните екранни четци и Google Chrome вече имат вградена поддръжка за достъпни описания на елементите и за стандартите ARIA.</translation>
 <translation id="4388820049312272371">Открояване на позицията на курсора с бързо премигване.</translation>
 <translation id="4394049700291259645">Деактивиране</translation>
 <translation id="4769065380738716500">Изображенията бяха заменени с алтернативния текст за тях.</translation>
@@ -63,6 +64,7 @@
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="786423340267544509">Добавяне на контури към елементите с атрибути „aria-describedat“ или „longdesc“.</translation>
 <translation id="7942349550061667556">Червено</translation>
+<translation id="8081200409424070383">Разширението Long Descriptions ще бъде оттеглено на 20 ноември 2026 г.</translation>
 <translation id="8260673944985561857">Опции за Caret Browsing</translation>
 <translation id="8321034316479930120">Правило за анимациите</translation>
 <translation id="8480209185614411573">High Contrast</translation>

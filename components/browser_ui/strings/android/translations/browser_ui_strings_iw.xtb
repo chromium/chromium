@@ -526,6 +526,7 @@
 <translation id="6439114592976064011">תיחסם האפשרות של אתרים להשתמש במכשיר המציאות המדומה ובנתוני המציאות המדומה</translation>
 <translation id="6447842834002726250">‏קובצי Cookie</translation>
 <translation id="6452138246455930388">זוהתה ירידה במחיר בכרטיסייה הפתוחה שלך, מ-<ph name="OLD_PRICE" /> ל-<ph name="NEW_PRICE" />,‏ <ph name="PRODUCT_NAME" />,‏ <ph name="DOMAIN_NAME" /></translation>
+<translation id="6495608040096939405">ביטול ההרשאה של <ph name="NAME" /> למכשיר</translation>
 <translation id="6500423977866688905">כשהחלון צר, אפשר לבקש תצוגת נייד.</translation>
 <translation id="6527303717912515753">שיתוף</translation>
 <translation id="6530703012083415527">כשהאפשרות מופעלת, אתרים יכולים להציג חלונות קופצים ולהשתמש בהפניות אוטומטיות. כשהאפשרות מושבתת, אתרים לא יכולים להציג חלונות קופצים ולהשתמש בהפניות אוטומטיות.</translation>
@@ -591,6 +592,7 @@
 <translation id="7188508872042490670">נתונים מאתרים ששמורים במכשיר</translation>
 <translation id="7201549776650881587">‏הפעולה הזו תמחק את כל הנתונים וקובצי ה-Cookie שאוחסנו על ידי כל אתרי המשנה של <ph name="ORIGIN" /> או על ידי האפליקציה שלו במסך הבית</translation>
 <translation id="7219254577985949841">למחוק את הנתונים מהאתר?</translation>
+<translation id="7225256190577194089">ביטול כל ההרשאות שיש למכשיר <ph name="DEVICE_NAME" /></translation>
 <translation id="723171743924126238">בחירת תמונות</translation>
 <translation id="7243246278722455312">גיליון תחתון להתאמה אישית של דף הכרטיסייה החדשה</translation>
 <translation id="7243308994586599757">אפשרויות הזמינות באזור החלק התחתון של המסך</translation>

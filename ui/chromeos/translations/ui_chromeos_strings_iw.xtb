@@ -519,6 +519,7 @@
 <translation id="5045550434625856497">סיסמה שגויה</translation>
 <translation id="5059127710849015030">תעתיק נפאלית</translation>
 <translation id="5068919226082848014">פיצה</translation>
+<translation id="5075336522277785691">‏כללים לשינוי ברירת המחדל של שרת proxy הוגדרו על ידי <ph name="EXTENSION_NAME" /></translation>
 <translation id="5081517858322016911">קבצים בנפח כולל של <ph name="TOTAL_FILE_SIZE" /> יימחקו</translation>
 <translation id="508423945471810158">מתבצעת העברה של <ph name="NUMBER_OF_ITEMS" /> פריטים אל <ph name="FOLDER_NAME" /></translation>
 <translation id="509429900233858213">אירעה שגיאה.</translation>

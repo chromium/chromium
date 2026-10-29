@@ -58,7 +58,6 @@ Hindi mase-save ang mga bagong bookmark sa iyong account hangga't hindi ka nagde
 <translation id="2027881372245801507">Hindi kinokontrol ng pag-off ng mga suhestyon ang pagpoproseso ng Chromium ng mga pamagat ng page at URL para sa iba pang feature. Puwede mong pamahalaan ang access sa data na ito sa iyong <ph name="BEGIN_LINK" />mga setting ng pag-sync<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Mag-sign in sa site na ito at sa Chromium para makuha ang iyong mga password at higit pa sa lahat ng device mo</translation>
 <translation id="2042889939382983733">Tingnan ang Iyong History sa Chromium</translation>
-<translation id="2052320862053429062">Pana-panahong sinusuri ng Chromium ang iyong mga password sa mga listahang na-publish online. Kapag ginagawa ito, naka-encrypt ang iyong mga password at username, para hindi mabasa ng sinuman ang mga ito, kabilang ang Google.</translation>
 <translation id="2059365270911640413">Tapusin ang pag-set up ng Chromium</translation>
 <translation id="2168108852149185974">Nagiging dahilan ng pag-crash ng Chromium ang ilang add-on. Paki-uninstall.</translation>
 <translation id="2168593389981132306">Mas pahusayin ang Chromium</translation>
@@ -69,7 +68,6 @@ Hindi mase-save ang mga bagong bookmark sa iyong account hangga't hindi ka nagde
 <translation id="2236584955986023187">Nangangahulugan itong hihilingin ng Chromium ang pang-desktop na site sa lahat ng pagkakataon.</translation>
 <translation id="2245694534483711162">Posibleng gamitin ng Gemini ang iyong eksaktong lokasyon, depende sa pahintulot na ibinigay mo na sa Chromium</translation>
 <translation id="2270466829363945454">Mamili</translation>
-<translation id="2313870531055795960">Sinusuri ang mga URL sa pamamagitan ng listahan ng mga hindi ligtas na site na naka-store sa Chromium. Kung susubukan ng site na nakawin ang iyong password, o kapag nag-download ka ng mapaminsalang file, posible ring magpadala ang Chromium sa Ligtas na Pag-browse ng mga URL, kabilang ang ilang content ng page.</translation>
 <translation id="2314220608288760290">Awtomatikong binubuksan ng Chromium sa Incognito ang mga Incognito na link ng YouTube.</translation>
 <translation id="231828342043114302">Para makatanggap ng naka-personalize na content batay sa iyong mga interes, mag-sign in sa Chromium.</translation>
 <translation id="2334943301233020675">Hindi na-import ang mga sumusunod na passkey sa Password Manager, dahil hindi tumutugma ang mga ito sa mga requirement.</translation>

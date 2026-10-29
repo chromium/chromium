@@ -198,7 +198,6 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
 <translation id="5460571915754665838">4. Select Chrome</translation>
 <translation id="5492504007368565877">Google Password Manager can’t check your passwords.</translation>
 <translation id="5527026824954593399">Tap 'View with Google Maps on Chrome'</translation>
-<translation id="5552137475244467770">Chrome periodically checks your passwords against lists that have been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.</translation>
 <translation id="5554520618550346933">When you use a password, Chrome warns you if it has been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.</translation>
 <translation id="5601180634394228718">For more settings that use data to improve your Chrome experience, go to <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" />.</translation>
 <translation id="5639704535586432836">Open Settings &gt; Privacy &gt; Camera &gt; Google Chrome and turn on the camera.</translation>
@@ -239,7 +238,6 @@ Try waiting a few minutes before switching accounts. If you switch accounts now,
 <translation id="6348855835728304880">Access your Chrome passwords and more across other apps on this device.</translation>
 <translation id="6373751563207403289">Safety Check keeps you safe from data breaches, unsafe websites and more. Receive alerts on any privacy or security issues that Chrome detects for you.</translation>
 <translation id="6389317667633680932">Explore new features that help you get the most out of Chrome.</translation>
-<translation id="6412673304250309937">Checks URLs with a list of unsafe sites stored in Chrome. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing.</translation>
 <translation id="6427126399757991875">Your organisation is setting up Chrome…</translation>
 <translation id="6481963882741794338">Link Chrome and other Google services for personalisation and other purposes</translation>
 <translation id="6484712497741564393">Signed in as <ph name="EMAIL" />.
@@ -251,7 +249,6 @@ Your data is encrypted with your passphrase. Enter it to use and save Chrome dat
 <translation id="660537754475262202">Make Chrome your default browser to launch links here instantly.</translation>
 <translation id="6611692150236062461">To easily get your saved passwords in other apps, choose Chrome for autofill.</translation>
 <translation id="6636941099779251629">Your organisation requires you to sign in to use Chrome. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
-<translation id="6646696210740573446">Sends an obfuscated portion of the URL to Google through a privacy server that hides your IP address. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Google.</translation>
 <translation id="6647304104688527905">Opens a new tab in Chrome.</translation>
 <translation id="6684809838922667136">Make Chrome better</translation>
 <translation id="6709398533399187136">Your password was exposed in a data breach. Google Password Manager recommends changing it now.</translation>

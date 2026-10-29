@@ -22,6 +22,7 @@
 <translation id="1148360048981192980">Wenn du Chrome das nächste Mal auf deinem Gerät (<ph name="DEVICE_TYPE" />) öffnest, wirst du aufgefordert, den Google Passwortmanager zu verwenden.</translation>
 <translation id="1152920704813762236">Über ChromeOS</translation>
 <translation id="1154147086299354128">In Chr&amp;ome öffnen</translation>
+<translation id="1157952955648710254">Seitenleiste der Google Suche schließen</translation>
 <translation id="1157985233335035034">Zuletzt verwendete Sprachen</translation>
 <translation id="1158134713295836892">Gemini in Chrome</translation>
 <translation id="1184145431117212167">Die Installation ist fehlgeschlagen, weil deine Windows-Version nicht unterstützt wird.</translation>
@@ -46,6 +47,7 @@
 <translation id="141901961143729572">Lass uns wissen, was du denkst</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Die Aktualisierung von Chrome ist abgeschlossen. Du kannst die neueste Version nach dem Neustart verwenden. Anschließend werden deine aktuellen Tabs wieder geöffnet.}=1{Die Aktualisierung von Chrome ist abgeschlossen. Du kannst die neueste Version nach dem Neustart verwenden. Anschließend werden deine aktuellen Tabs wieder geöffnet. Dein Inkognitofenster wird nicht wieder geöffnet.}other{Die Aktualisierung von Chrome ist abgeschlossen. Du kannst die neueste Version nach dem Neustart verwenden. Anschließend werden deine aktuellen Tabs wieder geöffnet. Deine # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
 <translation id="1434626383986940139">Chrome Canary-Apps</translation>
+<translation id="1438812738230833934">Du kannst die Google Suche in der Seitenleiste wieder öffnen, um beim Surfen Fragen zu stellen</translation>
 <translation id="1439793550875056299">Chrome anpinnen</translation>
 <translation id="1446616215961349840">{COUNT,plural, =1{Laut deinem Administrator musst du Chrome neu starten, um ein Update durchzuführen. Dein isoliertes Fenster wird nicht wieder geöffnet.}other{Laut deinem Administrator musst du Chrome neu starten, um ein Update durchzuführen. # isolierte Fenster werden nicht wieder geöffnet.}}</translation>
 <translation id="146866447420868597">In Chrome anmelden?</translation>
@@ -157,6 +159,7 @@
 <translation id="2482846200327569645"><ph name="EXISTING_USER" /> ist bereits angemeldet. Wenn du deine Browsingaktivitäten getrennt halten möchtest, melde dich mit <ph name="USER_EMAIL_ADDRESS" /> in deinem eigenen Profil in Chrome an. Du kannst dann auch auf deine Lesezeichen und weitere Daten von <ph name="DEVICE" /> zugreifen.</translation>
 <translation id="2485422356828889247">Deinstallieren</translation>
 <translation id="2513154137948333830">Neustart erforderlich: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2521391734665471391">KI-Modus der Google Suche schließen</translation>
 <translation id="2523492931736391680">Deine Arbeit ist in Chrome geschützt</translation>
 <translation id="2534365042754120737">Erlaube Chrome zum Schutz deiner Daten, Berechtigungen von Websites zu entfernen, die du in letzter Zeit nicht besucht hast. Benachrichtigungen werden dadurch nicht deaktiviert.</translation>
 <translation id="2556847002339236023">In deiner Organisation wird Chrome nach <ph name="TIMEOUT_DURATION" /> Inaktivität geschlossen. Browserdaten wurden gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.</translation>
@@ -302,7 +305,6 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex konnte deine Daten aufgrund eines Fehlers bei der Anmeldung nicht synchronisieren.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
-<translation id="3809772425479558446">Für Google Chrome ist Windows 10 oder höher erforderlich.</translation>
 <translation id="3810973564298564668">Verwalten</translation>
 <translation id="383455301564000773">Du führst ein Upgrade auf Windows 11 durch? Lade Chrome auf OneDrive herunter, damit du direkt startklar bist.</translation>
 <translation id="383928141529488001">Google Chrome benötigt Bluetooth-Zugriff, um Bluetooth-Geräte zu suchen. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -374,6 +376,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="4458462641685292929">In Google Chrome wird eine andere Aktion durchgeführt. Bitte versuche es später noch einmal.</translation>
 <translation id="4493028449971051158">Fehler beim Starten: Bitte führe das Installationsprogramm als Administrator aus.</translation>
 <translation id="4501471624619070934">Fehler bei der Installation. Der Zugriff ist in diesem Land eingeschränkt.</translation>
+<translation id="4501839397124711198">Du kannst die Google Suche in der Seitenleiste anpinnen, um während des Surfens Fragen zu stellen</translation>
 <translation id="4571503333518166079">Chrome-Benachrichtigungseinstellungen aufrufen</translation>
 <translation id="4580939929828762295">Gut geschützt mit dem Google Passwortmanager</translation>
 <translation id="459622048091363950">Sobald Chrome Zugriff hat, können Websites dich um Zugriff bitten.</translation>
@@ -397,6 +400,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="4793679854893018356">So trägt Chrome zu deinem Schutz bei</translation>
 <translation id="4828579605166583682">Google Chrome versucht, vorhandene Passwörter zu ersetzen. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="4836321460899997044">Chrome-Profil</translation>
+<translation id="4839733921943823254">Kurzbefehl anpinnen</translation>
 <translation id="4842397268809523050">Chrome OS Flex konnte deine Daten nicht synchronisieren, da die Synchronisierung für deine Domain nicht zur Verfügung steht.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> ist bereits angemeldet. Wenn du deine Browsingaktivitäten getrennt halten möchtest, melde dich in Chrome in deinem eigenen Profil als <ph name="USER_EMAIL_ADDRESS" /> an.</translation>
 <translation id="4855026984605187434">Wenn du deinen Bildschirm teilen möchtest, musst du in den Systemeinstellungen die Bildschirmaufzeichnung für Chrome zulassen</translation>
@@ -415,6 +419,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="4970761609246024540">Willkommen bei den Chrome-Profilen</translation>
 <translation id="4970880042055371251">Chrome OS-Version</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5000497292978544380">KI-Modus der Google Suche</translation>
 <translation id="5003967926796347400">Klicke auf „Google Passwortmanager“</translation>
 <translation id="5043786843026425788">Weitere Informationen zum Suchen mit Google Lens in Chrome</translation>
 <translation id="504867494566807945">Du kannst über jede App Links in Chrome öffnen. Außerdem wird Chrome für einen einfachen Zugriff an die Taskleiste angepinnt.</translation>
@@ -422,6 +427,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="5105120510934353742">Du benötigst macOS 13 oder höher, um zukünftige Google Chrome-Updates zu erhalten. Auf diesem Computer wird macOS 12 ausgeführt.</translation>
 <translation id="5114340746415930644">Gib deine Passphrase ein, um Chrome-Daten in deinem Konto <ph name="USER_EMAIL" /> zu verwenden und zu speichern</translation>
 <translation id="5120334927898581447">In Chrome anmelden, wenn du dich in anderen Google-Diensten anmeldest</translation>
+<translation id="5121592697493894155">Google Suche in der Seitenleiste</translation>
 <translation id="5126049312684316860">Chrome lädt noch mehr Seiten vorab, die du wahrscheinlich besuchen wirst, sodass sie dann schneller zur Verfügung stehen</translation>
 <translation id="5127558335897923940">Du kannst Chrome im Dock behalten, um jederzeit schnell darauf zugreifen zu können</translation>
 <translation id="5132929315877954718">Entdecke tolle Apps, Spiele, Erweiterungen und Designs für Google Chrome.</translation>
@@ -719,6 +725,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="7777080907402804672">Wenn ein Bild keine brauchbare Beschreibung hat, versucht Chrome, eine für dich zu finden. Damit entsprechende Beschreibungen erstellt werden können, werden die Bilder an Google gesendet. Du kannst dies jederzeit in den Einstellungen deaktivieren.</translation>
 <translation id="778331955594035129">Chrome benötigt die Berechtigung zur Standortermittlung für diese Website</translation>
 <translation id="7787950393032327779">Das Profil wird offenbar gerade von einem Google Chrome-Prozess (<ph name="PROCESS_ID" />) auf einem anderen Computer (<ph name="HOST_NAME" />) verwendet. Das Profil wurde von Chrome gesperrt, damit es nicht beschädigt wird. Wenn du sicher bist, dass das Profil nicht von anderen Prozessen verwendet wird, kannst du das Profil entsperren und Chrome neu starten.</translation>
+<translation id="7800043020703832708">Google Suche in der Seitenleiste schließen</translation>
 <translation id="7801699035218095297">Google Chrome versucht, Passwörter zu kopieren. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="7804364787702057554">Mein Konto in Chrome</translation>
 <translation id="7804947029129221742">Deine Suchmaschine wurde außerhalb von Chrome geändert. Zu deinem Schutz hat Chrome die ursprüngliche Standardsuchmaschine wiederhergestellt. <ph name="LEARN_MORE_LINK" /></translation>
@@ -735,6 +742,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="7886087451482920026">Text mit Google Lens auswählen</translation>
 <translation id="7890208801193284374">Bei gemeinsam genutzten Computern können die verschiedenen Personen separat surfen und Chrome jeweils nach ihren Wünschen einrichten.</translation>
 <translation id="7896673875602241923">Auf diesem Computer war zuvor ein Nutzer mit dem Konto <ph name="ACCOUNT_EMAIL_LAST" /> in Chrome angemeldet. Erstelle einen neuen Chrome-Nutzer, um deine Daten getrennt zu verwenden.</translation>
+<translation id="7904213866086517086">Google Suche in der Seitenleiste wieder öffnen</translation>
 <translation id="7904985524660297937">Gemini in Google Chrome ausprobieren</translation>
 <translation id="7905880575591690197">ChromeOS konnte die Chrome-Daten aufgrund eines Fehlers bei der Anmeldung nicht in deinem Google-Konto speichern</translation>
 <translation id="7917876797003313048">Du kannst deine angemeldeten Google-Konten verwalten. Deine Google-Konten werden für den Chrome-Browser, den Play Store, Gmail und mehr verwendet. Wenn du ein Konto für jemand anderen hinzufügen möchtest, z. B. ein Familienmitglied, ordne bitte stattdessen deinem Gerät (<ph name="DEVICE_TYPE" />) eine neue Person zu. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
@@ -794,12 +802,14 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="8367950957770994118">Du kannst Gemini in Chrome jederzeit schnell öffnen</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle Rechte vorbehalten.</translation>
 <translation id="8370748943308169953">QR-Code, um dich als <ph name="USER_NAME" /> in Chrome anzumelden</translation>
+<translation id="8376752431516546391">Seitenleiste der Google Suche</translation>
 <translation id="8377158135256176353">Gemini in Chrome Canary aktivieren / deaktivieren</translation>
 <translation id="8380754585531979907">Du kannst mit der Tastatur zwischen Gemini in Chrome und deinem geöffneten Tab wechseln.</translation>
 <translation id="8387459386171870978">Chrome weiterhin verwenden</translation>
 <translation id="8394720698884623075">Prüft URLs anhand einer Liste unsicherer Websites, die in Chrome gespeichert ist</translation>
 <translation id="8402881611069691789">{COUNT,plural, =1{Die Aktualisierung von Chrome ist abgeschlossen. Du kannst die aktuelle Version nach dem Neustart verwenden. Anschließend werden deine aktuellen Tabs wieder geöffnet. Ein Inkognito- oder isoliertes Fenster ist geöffnet. Es wird nach dem Neustart nicht wieder geöffnet.}other{Die Aktualisierung von Chrome ist abgeschlossen. Du kannst die aktuelle Version nach dem Neustart verwenden. Anschließend werden deine aktuellen Tabs wieder geöffnet. # Inkognito- oder isolierte Fenster sind geöffnet. Sie werden nach dem Neustart nicht wieder geöffnet.}}</translation>
 <translation id="8403038600646341038">Chrome-Logo auf einem Computerbildschirm.</translation>
+<translation id="8406687098231754303">Über den Button für die Google Suche in der Seitenleiste, den du in der Symbolleiste findest, kannst du die Google Suche in der Seitenleiste wieder öffnen, um beim Surfen Fragen zu stellen</translation>
 <translation id="8418845734693287262">Chrome OS konnte deine Daten nicht synchronisieren, da die Anmeldedaten deines Kontos veraltet sind.</translation>
 <translation id="842386925677997438">Sicherheitstools von Chrome</translation>
 <translation id="8425765582779547329">Wenn du die von deinen Eltern festgelegten Einstellungen nutzen möchtest, um im Internet besser geschützt zu sein, melde dich in Chrome an</translation>
@@ -817,6 +827,7 @@ Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelös
 <translation id="8533056045953418157">Chrome als standardmäßigen PDF-Viewer festlegen</translation>
 <translation id="854593887324189900">Dieses Bild mit Google Lens durchsuchen</translation>
 <translation id="8555465886620020932">Dienstfehler: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8564408666201523086">Fertig! Mit der Google Suche in der Seitenleiste kannst du jetzt ganz einfach Fragen stellen, während du surfst</translation>
 <translation id="856656450041460113">In Liste mit Sprachen suchen</translation>
 <translation id="8575047640889685742">Verwende deine <ph name="BEGIN_LINK" />eigene Passphrase<ph name="END_LINK" /> für die Verschlüsselung aller Chrome-Daten in deinem Google-Konto. Zahlungsmethoden und Adressen bei Google Pay werden nicht verschlüsselt. Der Chrome-Browserverlauf wird nicht synchronisiert.</translation>
 <translation id="8590782867495422699">KI-Modus der Google Suche wieder öffnen</translation>

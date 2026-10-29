@@ -198,7 +198,6 @@ Pokušajte pričekati nekoliko minuta prije odjave. Ako se sada odjavite, ovi ć
 <translation id="5460571915754665838">4. Odaberite Chrome</translation>
 <translation id="5492504007368565877">Google upravitelj zaporki ne može provjeriti vaše zaporke.</translation>
 <translation id="5527026824954593399">Dodirnite "Prikaži putem Google karata u Chromeu".</translation>
-<translation id="5552137475244467770">Chrome povremeno uspoređuje vaše zaporke s javno objavljenim popisima. Tom su prilikom vaše zaporke i korisnička imena kriptirani, tako da ih nitko ne može pročitati, uključujući Google.</translation>
 <translation id="5554520618550346933">Kad upotrijebite zaporku, Chrome vas upozorava ako je objavljena online. Tom su prilikom vaše zaporke i korisnička imena šifrirani, tako da ih nitko ne može pročitati, uključujući Google.</translation>
 <translation id="5601180634394228718">Više postavki koje upotrebljavaju podatke za poboljšanje vašeg doživljaja u Chromeu potražite u <ph name="BEGIN_LINK" />Googleovim uslugama<ph name="END_LINK" />.</translation>
 <translation id="5639704535586432836">Otvorite Postavke &gt; Privatnost &gt; Fotoaparat &gt; Google Chrome i uključite fotoaparat.</translation>
@@ -239,7 +238,6 @@ Pokušajte pričekati nekoliko minuta prije prebacivanja na drugi račun. Ako sa
 <translation id="6348855835728304880">Pristupajte zaporkama u Chromeu i ostalom u drugim aplikacijama na ovom uređaju.</translation>
 <translation id="6373751563207403289">Sigurnosna provjera štiti vas od neovlaštenog pristupa podacima, nesigurnih web-lokacija i još mnogo toga. Primajte upozorenja o problemima s privatnošću ili sigurnošću koje Chrome otkrije za vas.</translation>
 <translation id="6389317667633680932">Istražite nove značajke koje će vam pomoći da iskoristite sve prednosti Chromea.</translation>
-<translation id="6412673304250309937">Provjerava URL-ove s popisom nesigurnih web-lokacija pohranjenih u Chromeu. Ako neka web-lokacija pokuša ukrasti vašu zaporku ili ako preuzmete štetnu datoteku, Chrome također može poslati URL-ove, uključujući dijelove sadržaja web-stranice, Sigurnom pregledavanju.</translation>
 <translation id="6427126399757991875">Vaša organizacija postavlja Chrome...</translation>
 <translation id="6481963882741794338">Povezivanje Chromea i drugih Googleovih usluga radi personalizacije i u druge svrhe</translation>
 <translation id="6484712497741564393">Prijavljeni ste kao <ph name="EMAIL" />.
@@ -251,7 +249,6 @@ Vaši se podaci šifriraju vašom šifrom. Unesite je da biste upotrebljavali i 
 <translation id="660537754475262202">Postavite Chrome kao zadani preglednik da biste odmah pokrenuli veze ovdje.</translation>
 <translation id="6611692150236062461">Da biste lako dohvatili spremljene zaporke u drugim aplikacijama, odaberite Chrome za automatsko popunjavanje.</translation>
 <translation id="6636941099779251629">Vaša organizacija zahtijeva da se prijavite da biste koristili Chrome. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
-<translation id="6646696210740573446">Googleu se šalje maskirani dio URL-a putem poslužitelja za zaštitu privatnosti koji skriva vašu IP adresu. Ako neka web-lokacija pokuša ukrasti vašu zaporku ili ako preuzmete štetnu datoteku, Chrome također može Googleu poslati URL-ove, uključujući dijelove sadržaja web-stranice.</translation>
 <translation id="6647304104688527905">Otvara novu karticu u Chromeu.</translation>
 <translation id="6684809838922667136">Poboljšavanje Chromea</translation>
 <translation id="6709398533399187136">Vaša je zaporka ugrožena zbog povrede podataka. Google upravitelj zaporki preporučuje da je odmah promijenite.</translation>

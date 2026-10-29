@@ -198,7 +198,6 @@ Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, wer
 <translation id="5460571915754665838">4. Wähle Chrome aus</translation>
 <translation id="5492504007368565877">Der Google Passwortmanager kann deine Passwörter nicht prüfen.</translation>
 <translation id="5527026824954593399">Tippe auf „In Chrome mit Maps ansehen“.</translation>
-<translation id="5552137475244467770">Chrome prüft in regelmäßigen Abständen, ob deine Passwörter auf Listen erscheinen, die online veröffentlicht wurden. Dabei werden deine Passwörter und Nutzernamen verschlüsselt, damit sie von niemandem gelesen werden können, auch nicht von Google.</translation>
 <translation id="5554520618550346933">Wenn du ein Passwort verwendest, wirst du von Chrome gewarnt, falls es online veröffentlicht wurde. Dabei werden deine Passwörter und Nutzernamen verschlüsselt, damit sie von niemandem gelesen werden können, auch nicht von Google.</translation>
 <translation id="5601180634394228718">Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet werden, findest du in den <ph name="BEGIN_LINK" />Google-Diensten<ph name="END_LINK" />.</translation>
 <translation id="5639704535586432836">Öffne „Einstellungen“ &gt; „Datenschutz“ &gt; „Kamera“ &gt; „Google Chrome“ und aktiviere die Kamera.</translation>
@@ -239,7 +238,6 @@ Warte einige Minuten, bevor du das Konto wechselst. Wenn du jetzt das Konto wech
 <translation id="6348855835728304880">Du kannst in anderen Apps auf diesem Gerät auf deine Chrome-Passwörter und mehr zugreifen.</translation>
 <translation id="6373751563207403289">Der Sicherheitscheck hilft dabei, dich vor Bedrohungen wie Datenpannen und schädlichen Erweiterungen zu schützen. Du erhältst Benachrichtigungen bei Problemen mit dem Datenschutz oder der Sicherheit, die Chrome für dich erkennt.</translation>
 <translation id="6389317667633680932">Entdecke neue Funktionen, mit denen du Chrome noch besser nutzen kannst.</translation>
-<translation id="6412673304250309937">Prüft URLs anhand einer Liste unsicherer Websites, die in Chrome gespeichert wird. Wenn eine Website versucht, dein Passwort zu stehlen, oder wenn du eine schädliche Datei herunterlädst, kann Chrome auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden.</translation>
 <translation id="6427126399757991875">Deine Organisation richtet Chrome ein…</translation>
 <translation id="6481963882741794338">Chrome und andere Google-Dienste zur Personalisierung und für andere Zwecke verknüpfen</translation>
 <translation id="6484712497741564393">Angemeldet als <ph name="EMAIL" />.
@@ -251,7 +249,6 @@ Deine Daten werden mit deiner Passphrase verschlüsselt. Gib sie ein, um Chrome-
 <translation id="660537754475262202">Wenn du Chrome als Standardbrowser festlegst, werden Links sofort hier geöffnet.</translation>
 <translation id="6611692150236062461">Wähle die Funktion „Autofill“ in Chrome, um deine gespeicherten Passwörter ganz einfach in deinen anderen Apps abzurufen.</translation>
 <translation id="6636941099779251629">Deine Organisation verlangt, dass du dich für die Verwendung von Chrome anmeldest. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
-<translation id="6646696210740573446">Sendet einen verschleierten Teil der URL über einen Datenschutzserver, der deine IP-Adresse verbirgt, an Google. Wenn eine Website versucht, dein Passwort zu stehlen, oder wenn du eine schädliche Datei herunterlädst, kann Chrome auch URLs und Teile von Seiteninhalten an Google senden.</translation>
 <translation id="6647304104688527905">Öffnet einen neuen Tab in Chrome.</translation>
 <translation id="6684809838922667136">Chrome verbessern</translation>
 <translation id="6709398533399187136">Dein Passwort wurde durch eine Datenpanne preisgegeben. Der Google Passwortmanager empfiehlt, dieses Passwort jetzt zu ändern.</translation>

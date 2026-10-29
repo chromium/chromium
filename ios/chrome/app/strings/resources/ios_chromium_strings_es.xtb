@@ -58,7 +58,6 @@ No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si
 <translation id="2027881372245801507">Desactivar las sugerencias no afecta a cómo procesa Chromium los títulos de las páginas y las URL para otras funciones. Puedes gestionar el acceso a estos datos en tu <ph name="BEGIN_LINK" />configuración de sincronización<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Inicia sesión en este sitio y en Chromium para acceder a tus contraseñas y a otros datos en todos tus dispositivos</translation>
 <translation id="2042889939382983733">Ver el historial de Chromium</translation>
-<translation id="2052320862053429062">Chromium comprueba de forma periódica si tus contraseñas se encuentran en alguna lista publicada en Internet. Al hacerlo, tus contraseñas y nombres de usuario se cifran para que nadie pueda leerlos, ni siquiera Google.</translation>
 <translation id="2059365270911640413">Termina de configurar Chromium</translation>
 <translation id="2168108852149185974">Algunos complementos hacen que Chromium falle. Desinstala los que se indican a continuación:</translation>
 <translation id="2168593389981132306">Mejora Chromium</translation>
@@ -69,7 +68,6 @@ No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si
 <translation id="2236584955986023187">Esto significa que Chromium siempre solicitará la vista del sitio web como ordenador.</translation>
 <translation id="2245694534483711162">Gemini puede usar tu ubicación precisa, según el permiso que ya hayas dado a Chromium</translation>
 <translation id="2270466829363945454">Compra</translation>
-<translation id="2313870531055795960">Comprueba las URLs guardadas en Chromium con una lista de sitios que no son seguros. Si un sitio intenta robarte tu contraseña o si te descargas un archivo dañino, puede que Chromium también envíe URLs, así como fragmentos de contenido de la página, a Navegación segura.</translation>
 <translation id="2314220608288760290">Chromium abre automáticamente los enlaces de Incógnito de YouTube en el modo Incógnito.</translation>
 <translation id="231828342043114302">Para recibir contenido personalizado según tus intereses, inicia sesión en Chromium.</translation>
 <translation id="2334943301233020675">Las siguientes llaves de acceso no se han importado al Gestor de contraseñas porque no cumplen los requisitos.</translation>

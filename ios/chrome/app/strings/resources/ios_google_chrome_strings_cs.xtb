@@ -198,7 +198,6 @@ Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato 
 <translation id="5460571915754665838">4. Vyberte Chrome.</translation>
 <translation id="5492504007368565877">Správce hesel Google vaše hesla nemůže zkontrolovat.</translation>
 <translation id="5527026824954593399">Klepněte na Zobrazit v Mapách Google v Chromu.</translation>
-<translation id="5552137475244467770">Chrome vaše hesla pravidelně porovnává se seznamy hesel, která unikla na internet. Vaše hesla a uživatelská jména jsou při tom šifrována, takže je nemůže nikdo zobrazit (ani Google).</translation>
 <translation id="5554520618550346933">Když použijete heslo, Chrome vás upozorní, pokud bylo zveřejněno online. Vaše hesla a uživatelská jména jsou při tom šifrována, takže je nemůže nikdo zobrazit (ani Google).</translation>
 <translation id="5601180634394228718">Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chrome najdete v sekci <ph name="BEGIN_LINK" />Služby Google<ph name="END_LINK" />.</translation>
 <translation id="5639704535586432836">Otevřete Nastavení &gt; Soukromí &gt; Fotoaparát &gt; Google Chrome a zapněte fotoaparát.</translation>
@@ -239,7 +238,6 @@ Zkuste před přepnutím účtů pár minut počkat. Pokud teď přepnete účty
 <translation id="6348855835728304880">Získejte přístup ke svým heslům v Chromu a k dalším funkcím v jiných aplikacích na tomto zařízení.</translation>
 <translation id="6373751563207403289">Bezpečnostní kontrola vás chrání před úniky dat, nebezpečnými weby a dalšími hrozbami. Nechte si zasílat upozornění na problémy s ochranou soukromí nebo zabezpečením, které u vás Chrome zjistí.</translation>
 <translation id="6389317667633680932">Prozkoumejte nové funkce, které vám pomohou využít Chrome na maximum.</translation>
-<translation id="6412673304250309937">Kontroluje adresy URL oproti seznamu nebezpečných webů uloženému v Chromu. Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chrome Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky.</translation>
 <translation id="6427126399757991875">Vaše organizace nastavuje Chrome…</translation>
 <translation id="6481963882741794338">Propojte Chrome a další služby Google pro personalizaci a další účely</translation>
 <translation id="6484712497741564393">Jste přihlášeni jako <ph name="EMAIL" />.
@@ -251,7 +249,6 @@ Vaše data jsou šifrována pomocí heslové fráze. Pokud chcete používat a 
 <translation id="660537754475262202">Nastavte si Chrome jako výchozí prohlížeč, aby se tu odkazy otevíraly okamžitě.</translation>
 <translation id="6611692150236062461">Pokud chcete mít uložená hesla snadno k dispozici v jiných aplikacích, vyberte Chrome pro automatické vyplňování.</translation>
 <translation id="6636941099779251629">Vaše organizace vyžaduje, abyste se k používání Chromu přihlásili. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
-<translation id="6646696210740573446">Odešle obfuskovanou část adresy URL do Googlu prostřednictvím serveru pro ochranu soukromí, který skryje vaši IP adresu. Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chrome do Googlu odeslat také adresy URL, včetně částí obsahu stránky</translation>
 <translation id="6647304104688527905">Otevře novou kartu v prohlížeči Chrome.</translation>
 <translation id="6684809838922667136">Vylepšujeme Chrome</translation>
 <translation id="6709398533399187136">Vaše heslo bylo vyzrazeno při porušení zabezpečení údajů. Správce hesel Google doporučuje ihned ho změnit.</translation>

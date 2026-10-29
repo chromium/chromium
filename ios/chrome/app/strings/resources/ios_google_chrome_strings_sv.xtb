@@ -198,7 +198,6 @@ Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas d
 <translation id="5460571915754665838">4. Välj Chrome</translation>
 <translation id="5492504007368565877">Google Lösenordshantering kan inte kontrollera dina lösenord.</translation>
 <translation id="5527026824954593399">Tryck på Visa med Google Maps i Chrome.</translation>
-<translation id="5552137475244467770">Chrome kontrollerar regelbundet om dina lösenord finns med på listor som har publicerats online. Under kontrollen krypteras dina lösenord och användarnamn så att varken Google eller någon annan kan läsa dem.</translation>
 <translation id="5554520618550346933">När du använder ett lösenord visas en varning i Chrome om det har publicerats online. När detta görs krypteras dina lösenord och användarnamn så att varken Google eller någon annan kan läsa dem.</translation>
 <translation id="5601180634394228718">Du hittar fler inställningar som använder data för att förbättra Chrome-upplevelsen under <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" />.</translation>
 <translation id="5639704535586432836">Öppna Inställningar &gt; Integritet &gt; Kamera &gt; Google Chrome och aktivera kameran.</translation>
@@ -239,7 +238,6 @@ Testa att vänta några minuter innan du byter konto. Om du byter konto nu rader
 <translation id="6348855835728304880">Få åtkomst till dina lösenord och annat från Chrome i andra appar på den här enheten.</translation>
 <translation id="6373751563207403289">Med säkerhetskontrollen skyddas du från dataintrång, osäkra webbplatser med mera. Få varningar om integritets- eller säkerhetsproblem som identifieras av Chrome.</translation>
 <translation id="6389317667633680932">Utforska nya funktioner som hjälper dig att få ut så mycket som möjligt av Chrome.</translation>
-<translation id="6412673304250309937">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chrome. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Säker webbsökning tillsammans med delar av sidinnehållet.</translation>
 <translation id="6427126399757991875">Organisationen konfigurerar Chrome …</translation>
 <translation id="6481963882741794338">Länka Chrome och andra tjänster från Google för anpassning och andra syften</translation>
 <translation id="6484712497741564393">Inloggad som <ph name="EMAIL" />.
@@ -251,7 +249,6 @@ Din data krypteras med lösenfrasen. Ange den om du vill använda och spara Chro
 <translation id="660537754475262202">Gör Chrome till din standardwebbläsare för att öppna länkar här direkt.</translation>
 <translation id="6611692150236062461">Välj Chrome för autofyll så att du enkelt får tillgång till dina sparade lösenord i andra appar.</translation>
 <translation id="6636941099779251629">Organisationen kräver att du loggar in för att använda Chrome. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
-<translation id="6646696210740573446">En obfuskerad del av webbadressen skickas till Google via en integritetsserver som döljer din IP-adress. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Google tillsammans med delar av sidinnehållet.</translation>
 <translation id="6647304104688527905">Öppnar en ny flik i Chrome.</translation>
 <translation id="6684809838922667136">Gör Chrome bättre</translation>
 <translation id="6709398533399187136">Ditt lösenord har läckt ut vid ett dataintrång. Du rekommenderas av Google Lösenordshantering att byta lösenord nu.</translation>

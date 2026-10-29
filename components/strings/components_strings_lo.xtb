@@ -96,7 +96,6 @@
 <translation id="1165174597379888365">ມີການເຂົ້າເບິ່ງໜ້າເວັບ</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{ບໍ່ມີ}=1{ຈາກ 1 ເວັບໄຊ (ທ່ານຈະເຂົ້າສູ່ລະບົບບັນຊີ Google ຂອງທ່ານຕໍ່ໄປ)}other{ຈາກ # ເວັບໄຊ (ທ່ານຈະເຂົ້າສູ່ລະບົບບັນຊີ Google ຂອງທ່ານຕໍ່ໄປ)}}</translation>
 <translation id="1167877250265821930">ດາວໂຫຼດ <ph name="LANGUAGE" /> ບໍ່ສຳເລັດ</translation>
-<translation id="1171306609584863516">ຢັ້ງຢືນໂດຍ <ph name="IDP_ORIGIN" /></translation>
 <translation id="1174644974616730562">Envelope Chinese #1</translation>
 <translation id="1174723505405632867">ທ່ານຕ້ອງການອະນຸຍາດໃຫ້ <ph name="EMBEDDED_URL" /> ໃຊ້ຄຸກກີ້ ແລະ ຂໍ້ມູນເວັບໄຊໃນ <ph name="TOP_LEVEL_URL" /> ບໍ?
 
@@ -585,6 +584,7 @@
 <translation id="1988881251331415125">ຖ້າການສະກົດຄຳຖືກຕ້ອງ, <ph name="BEGIN_LINK" />ລອງເປີດໃຊ້ Connectivity Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="1991370806334788445">ລອງອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມ, ເຊິ່ງໝາຍຄວາມວ່າການປົກປ້ອງລະຫວ່າງທ່ອງເວັບຈະຫຼຸດລົງ ແຕ່ຄຸນສົມບັດຂອງເວັບໄຊມີແນວໂນ້ມທີ່ຈະເຮັດວຽກຕາມທີ່ຄາດໄດ້ຫຼາຍກວ່າ.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
+<translation id="1996557034791506430">ລຶບການອະນຸຍາດອອກບໍ?</translation>
 <translation id="1997484222658892567"><ph name="URL" /> ຕ້ອງການເກັບຂໍ້ມູນຂະຫນາດໃຫຍ່ໄວ້ໃນຄອມພິວເຕີສະເພາະບ່ອນຂອງທ່ານຢ່າງຖາວອນ</translation>
 <translation id="1997774360448418989">ເຈ້ຍ (ນ້ຳໜັກເບົາ)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{ແລະ ອີກ 1 ອັນ}other{ແລະ ອີກ # ອັນ}}</translation>
@@ -661,6 +661,7 @@
 <translation id="2118132148597630479">Envelope C5</translation>
 <translation id="2119505898009119320">ອອກໃຫ້ແກ່: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">ເຈາະຮູຢູ່ລຸ່ມສຸດເບື້ອງຂວາ</translation>
+<translation id="2121418473709291357">ເພີກເສີຍເນື່ອງຈາກການຈັດການຄລາວຂອງໂປຣແກຣມທ່ອງເວັບ Chrome ປິດການນຳໃຊ້ຢູ່.</translation>
 <translation id="2122214041802369259">ລາຄາສູງ</translation>
 <translation id="2122719317867821810">ນະໂຍບາຍນີ້ກຳລັງເຮັດວຽກຕາມທີ່ກຳນົດໄວ້ ແຕ່ມີການຕັ້ງຄ່າທີ່ຂັດແຍ່ງກັນຢູ່ບ່ອນອື່ນ ແລະ ນະໂຍບາຍນີ້ກຳລັງລົບລ້າງມັນ.</translation>
 <translation id="2124081665399116863">ອັບເດດພາຫະນະໃນ Google Wallet</translation>
@@ -1205,6 +1206,7 @@
 <translation id="3030331669969285614">ທຸງເຫຼົ່ານີ້ຈະປ້ອງກັນ ຫຼື ແປງກັບຄືນໃນສ່ວນຂອງການປ່ຽນແປງທີ່ສົ່ງຜົນກັບສ່ວນອື່ນຂອງລະບົບ.</translation>
 <translation id="3033200136993730761">ທີ່ຢູ່ເຮືອນຂອງທ່ານສາມາດຊ່ວຍໃຫ້ທ່ານເຮັດສິ່ງຕ່າງໆໃຫ້ສຳເລັດດ້ວຍບໍລິການ Google ໄດ້ ເຊັ່ນ: ຜົນການຊອກຫາທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນ ແລະ ເສັ້ນທາງໃນ Google ແຜນທີ່. ທ່ານສາມາດແກ້ໄຂ ຫຼື ລຶບທີ່ຢູ່ຂອງທ່ານ <ph name="BEGIN_LINK" />ໃນບັນຊີ Google <ph name="ACCOUNT" /><ph name="END_LINK" /> ຂອງທ່ານໄດ້.</translation>
 <translation id="3033777742142108756">ອະນຸຍາດໃຫ້ໃຊ້ເຊັນເຊີກວດຈັບການເຄື່ອນໄຫວ ແລະ ແສງໄດ້ໃນຕອນນີ້</translation>
+<translation id="3034219227076811559">Google ຊອກຫາໃນ Chrome</translation>
 <translation id="3034526003882782781">ອະນຸຍາດໃຫ້ເລື່ອນ ແລະ ຊູມ</translation>
 <translation id="3037177537145227281">ກຳລັງຕິດຕາມລາຄາ</translation>
 <translation id="3037605927509011580">ອ່າ, ຖ່າຍຮູບ!</translation>
@@ -2482,6 +2484,7 @@
 <translation id="5115232566827194440">ຈຳກັດການຍົກເລີກໄລຍະເວລາຂອງແຂກທີ່ມີການຈັດການແລ້ວ</translation>
 <translation id="5115563688576182185">(64-ບິດ)</translation>
 <translation id="5116015291385561204">ຢັ້ງຢືນວ່າແມ່ນທ່ານເພື່ອຕື່ມຂໍ້ມູນລະອຽດອ່ອນໂດຍອັດຕະໂນມັດ</translation>
+<translation id="5121592697493894155">Google ຊອກຫາໃນແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
 <translation id="5122786942953798871">ຊອງ (ເຈ້ຍໃຍຝ້າຍ)</translation>
 <translation id="5123063207673082822">ທ້າຍອາທິດ</translation>
 <translation id="5124797626438336458">ໜ້າຈໍຄວາມຜິດພາດຂອງຊື້ກ່ອນຈ່າຍນຳຫຼັງເປີດຢູ່ລະດັບຄວາມສູງເຄິ່ງໜຶ່ງຂອງໜ້າຈໍ.</translation>
@@ -2918,6 +2921,7 @@
 <translation id="5843987376989109187">ພາສານີ້ຍັງບໍ່ໄດ້ຮັບການຮອງຮັບເທື່ອ.
     <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">ຫຼັງຈາກທີ່ທ່ານກວດສອບຄຳສັ່ງຊື້ຂອງຕົນເອງແລ້ວ, ທ່ານຕ້ອງເຂົ້າສູ່ລະບົບ ຫຼື ສ້າງບັນຊີກັບ <ph name="BNPL_ISSUER_NAME" />. ລະບົບຈະລິ້ງບັນຊີນີ້ໃນ Google Wallet ໂດຍອັດຕະໂນມັດ.</translation>
+<translation id="5848916806551637625">ລະບົບຈະລິ້ງບັນຊີ Pix ກັບ <ph name="ACCOUNT_EMAIL" />. ເພື່ອປິດໃຊ້ການກວດຫາລະຫັດ Pix, ໃຫ້ເຂົ້າໄປ <ph name="BEGIN_LINK1" />ການຕັ້ງຄ່າ Chrome<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">ລາຍການແຖບ</translation>
 <translation id="5851868085455377790">ຜູ້ອອກ</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -3501,6 +3505,7 @@
 <translation id="6834757537110528125">ເວັບໄຊນີ້ບໍ່ຮອງຮັບການເຊື່ອມຕໍ່ທີ່ປອດໄພ</translation>
 <translation id="6841864657731852591">ກະບອກພິມຮູບ</translation>
 <translation id="6842196666980060516">184 x 260 ມມ</translation>
+<translation id="6843919992766261684">ຕໍ່ໄປນີ້, <ph name="ISSUER" /> ຈະຢຸດການຢືນຢັນອີເມວນີ້ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="6844746916504777213">ບໍ່ຕ້ອງແບ່ງປັນເວັບໄຊເຫຼົ່ານີ້</translation>
 <translation id="6844998850832008753">ອະນຸຍາດໃຫ້ໃຊ້ການຕິດຕາມການເຄື່ອນໄຫວຂອງມືໃນເທື່ອນີ້</translation>
 <translation id="6849023911358004088">ປຸ່ມຈັດການການຕັ້ງຄ່າຄວາມປອດໄພ, ເປີດນຳໃຊ້ເພື່ອຈັດການ Safe Browsing ຂອງທ່ານ ແລະ ອື່ນໆໃນການຕັ້ງຄ່າ Chrome</translation>
@@ -3651,6 +3656,7 @@
 <translation id="7083258188081898530">ຖາດ 9</translation>
 <translation id="70846382339153529">ຂໍ້ຄວາມ OpenDocument</translation>
 <translation id="7086090958708083563">ການອັບໂຫຼດທີ່ຂໍໂດຍຜູ້ໃຊ້</translation>
+<translation id="7087807086191250928">Gemini ອາດເຮັດວຽກຜິດພາດໄດ້. ກົດຄຳແນະນຳຄ້າງໄວ້ເພື່ອກວດສອບແຫຼ່ງຂໍ້ມູນຕົ້ນສະບັບ ແລະ ກວດສອບວ່າຂໍ້ມູນນີ້ຖືກຕ້ອງ.</translation>
 <translation id="7089745480771070611">ເປີດໃນແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
 <translation id="7090698782953528257">ຊ່ວຍຂ້ອຍສ້າງກຣາບຟັງຊັນເພື່ອສະແດງສົມຜົນທາງຄະນິດສາດເປັນພາບ ແລະ ເບິ່ງຮູບຮ່າງຂອງເສັ້ນໂຄ້ງ</translation>
 <translation id="7092087596499105699">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ຕັ້ງຄ່າຕົວເຊື່ອມຕໍ່ເກດເວທີ່ປອດໄພເພື່ອປົກປ້ອງການເຂົ້າເຖິງໂປຣແກຣມນຳໃຊ້ຜ່ານເວັບສ່ວນຕົວຂອງອົງກອນຂອງທ່ານ. ໂດຍອາດໃຊ້ຂໍ້ມູນຈາກໂປຣໄຟລ໌ບ່ອນເຮັດວຽກຂອງທ່ານເພື່ອຢັ້ງຢືນການເຂົ້າເຖິງ.</translation>
@@ -4081,6 +4087,7 @@
 <translation id="7765158879357617694">ຍ້າຍ</translation>
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="776749070095465053">ຜ້າ</translation>
+<translation id="7770247511810814330">ລຶບການອະນຸຍາດອອກ</translation>
 <translation id="7772659560036894129">ຊື່ຜະລິດຕະພັນ</translation>
 <translation id="7773005668374414287">ລຳດັບດຽວກັນປີ້ນໜ້າຂຶ້ນ</translation>
 <translation id="7779418012194492374">ຖອດຖອນສິດເຂົ້າເຖິງ <ph name="DEVICE_NAME" /></translation>
@@ -4192,7 +4199,6 @@
 <translation id="7961015016161918242">ບໍ່​ເລີຍ</translation>
 <translation id="7961493403319780137">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄຸນສົມບັດນີ້ - ຕື່ມຂໍ້ມູນລະຫັດການຢັ້ງຢືນຈາກ Gmail ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="7962467575542381659">ເຄື່ອງຈັກແພລດຟອມ</translation>
-<translation id="796439090588610411">Chrome ຈະຢຸດການຢືນຢັນອີເມວນີ້ໂດຍອັດຕະໂນມັດໃນເວັບໄຊທີ່ຮອງຮັບ.</translation>
 <translation id="7966803981046576691">ປະເພດບັນຊີວຽກ</translation>
 <translation id="7967973398323409409">ຂໍ້ມູນທີ່ທ່ານຕື່ມຂໍ້ມູນອັດຕະໂນມັດຈະບໍ່ມີໃຜເຫັນ</translation>
 <translation id="79682505114836835">ຄ່າ "<ph name="VALUE" />" ເປັນສີ hex ທີ່ບໍ່ຖືກຕ້ອງ.</translation>
@@ -4318,6 +4324,7 @@
 <translation id="8199437620497683918">ອັອບຕິຄອລດິສ (ມັນວາວ)</translation>
 <translation id="8202097416529803614">ສະຫຼຸບຄຳສັ່ງຊື້</translation>
 <translation id="8202370299023114387">ຂັດແຍ່ງ</translation>
+<translation id="8203105157044679380">ແຜງ Google ຊອກຫາ</translation>
 <translation id="8208363704094329105">300 x 400 ມມ</translation>
 <translation id="8208629719488976364">ເນື້ອຫາຂອງໜ້າທີ່ທ່ານພິມ ແລະ ຂໍ້ມູນກ່ຽວກັບເຄື່ອງພິມຂອງທ່ານແມ່ນຖືກສົ່ງໄປໃຫ້ Google Cloud ຫຼື ພາກສ່ວນທີສາມເພື່ອວິເຄາະ. ຕົວຢ່າງ: ມັນອາດຖືກສະແກນເພື່ອຊອກຫາຂໍ້ມູນທີ່ລະອຽດອ່ອນ ແລະ ອາດຖືກຈັດເກັບຕາມນະໂຍບາຍບໍລິສັດ ແລະ ສະແດງໃຫ້ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານເຫັນ.</translation>
 <translation id="8210490490377416373">ເລືອກຊື່ນະໂຍບາຍ</translation>
@@ -4428,6 +4435,7 @@
 <translation id="8371841335382565017">ສະແດງລາຍຊື່ອຸປະກອນສຳລັບການສົ່ງສັນຍານ</translation>
 <translation id="8371889962595521444">ໃບຮັບຮອງຮາກຖານທີ່ກຳນົດເອງ</translation>
 <translation id="8374636051559112948">ຫຼາກຫຼາຍ</translation>
+<translation id="8376752431516546391">ແຜງຄວບຄຸມດ້ານຂ້າງຂອງ Google ຊອກຫາ</translation>
 <translation id="8377507422902936905">ຄຳສັ່ງຊື້</translation>
 <translation id="837840316697671463">ຫາກທ່ານບໍ່ພົບໄຟລ໌ໃນອຸປະກອນຂອງທ່ານ, ໃຫ້ຊອກຫາຢູ່ <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">ຈັດການໂດຍອົງການຂອງທ່ານ</translation>
@@ -4474,7 +4482,6 @@
 <translation id="8446884382197647889">ຮຽນ​ຮູ້​ເພີ່ມ​ເຕີມ</translation>
 <translation id="8449036207308062757">ຈັດການບ່ອນເກັບຂໍ້ມູນ</translation>
 <translation id="8449155699563577224">17 x 24 ນິ້ວ</translation>
-<translation id="8449513475775663994">ລຶບອີເມວທີ່ຢັ້ງຢືນແລ້ວອອກບໍ?</translation>
 <translation id="8449836157089738489">ເປີດທັງໝົດໃນກຸ່ມແຖບໃໝ່</translation>
 <translation id="8451518040456311377">ບັນທຶກ ແລະ ຕື່ມຂໍ້ມູນເອກະສານລະບຸຕົວຕົນ</translation>
 <translation id="84561192812921051">ຜູ້ເບິ່ງແຍງຂອງທ່ານສາມາດປ່ຽນແປງໂປຣໄຟລ໌ ແລະ ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານຈາກທາງໄກ, ວິເຄາະຂໍ້ມູນກ່ຽວກັບໂປຣແກຣມທ່ອງເວັບຜ່ານການລາຍງານ ແລະ ເຮັດໜ້າວຽກທີ່ຈຳເປັນອື່ນໆໄດ້. ການເຄື່ອນໄຫວຢູ່ອຸປະກອນນີ້ອາດຖືກຈັດການຢູ່ນອກ Chrome ໄດ້ນຳ.  <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>

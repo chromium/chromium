@@ -50,6 +50,7 @@
 <translation id="1165109137568919258">Snimite fotografiju ili dodajte sliku iz galerije fotografija za pretraživanje</translation>
 <translation id="1173894706177603556">Preimenuj</translation>
 <translation id="1174479719160874822">Chrome će zahtijevati web-lokaciju za mobilne uređaje kad je zaslon uzak</translation>
+<translation id="1174759280027683968">Otvorite Chrome</translation>
 <translation id="1175241315203286684">Vaš administrator može daljinski unositi promjene u vaš profil i preglednik, analizirati podatke o pregledniku putem izvješćivanja i izvršavati druge potrebne zadatke. Aktivnostima na ovom uređaju može se upravljati i izvan Chromea.</translation>
 <translation id="1177863135347784049">Prilagođeno</translation>
 <translation id="1181037720776840403">Ukloni</translation>
@@ -608,6 +609,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3452832259067974318">Da bi zaštitio vašu privatnost, Chrome neće automatski popuniti zaporku u ovom polju.</translation>
 <translation id="3474624961160222204">Nastavi kao <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Možete odabrati tražilicu</translation>
+<translation id="3479552764303398839">Ne sada</translation>
 <translation id="3482805106082349287">Pretražujte pomoću tipkovnice, glasa, anonimnog načina ili kamere</translation>
 <translation id="3487903178221457900">Izvezena datoteka može biti dostupna drugima, uključujući aplikacije. Nakon izvoza vaše se zaporke brišu iz Chromea.</translation>
 <translation id="3488199663160411179">ime</translation>
@@ -896,6 +898,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="4578289292431526768">Započnimo</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{prije # minute}one{prije # minute}few{prije # minute}other{prije # minuta}}</translation>
 <translation id="4585751637295612750">Otvorite novu karticu da biste je dodali u pitanje</translation>
+<translation id="4585793705637313973">Uredi stranicu</translation>
 <translation id="4587589328781138893">Web-lokacije</translation>
 <translation id="4594952190837476234">Ova offline stranica nastala je <ph name="CREATION_TIME" /> i možda se razlikuje od online verzije.</translation>
 <translation id="4595237294768457124">Otvorite stranicu Nova kartica</translation>
@@ -1536,6 +1539,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6996145122199359148">Preuzmite ovu stranicu</translation>
 <translation id="7007648447224463482">Otvori sve u novom prozoru</translation>
 <translation id="7013762323294215682">Ovaj će se pristupni ključ spremiti u vaš upravitelj zaporki. Svatko s pristupom upravitelju zaporki moći će upotrebljavati taj pristupni ključ.</translation>
+<translation id="7017219178341817193">Dodajte novu stranicu</translation>
 <translation id="7022756207310403729">Otvori u pregledniku</translation>
 <translation id="7029809446516969842">Zaporke</translation>
 <translation id="7037994709569287156">Postavite Chrome kao zadani preglednik</translation>
@@ -1602,6 +1606,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="72415438529550637">Prijedlog zaporke je zatvoren.</translation>
 <translation id="724510009481365878">Stranica se ne može ispisati</translation>
 <translation id="7248671827512403053">Aplikacija</translation>
+<translation id="7253205084599155458">Prikaz navigacije i alata na donjoj alatnoj traci radi lakšeg pristupa</translation>
 <translation id="7253951228444156601">Provjera zaporki…</translation>
 <translation id="7265857422443387781">Pretraži karticu pomoću Google objektiva <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Poslati <ph name="ONE_TIME_CODE" /> na <ph name="ORIGIN" />?</translation>
@@ -1750,6 +1755,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7821130663268546430">Sve otvorene kartice možete pronaći u izmjenjivanju kartica</translation>
 <translation id="7822705602465980873">Kad ste prijavljeni, ti se podaci povezuju s vašim Google računom kako biste dobili zaštitu na svim Googleovim uslugama, na primjer radi poboljšanja zaštite na Gmailu nakon sigurnosnog incidenta.</translation>
 <translation id="7824665136384946951">Vaša organizacija isključila je sigurno pregledavanje</translation>
+<translation id="782590969421016895">Upotrijebi trenutačne stranice</translation>
 <translation id="7825973332242257878">Grupe kartica</translation>
 <translation id="7845155831233417403">Možete imati najviše ovoliko prozora: <ph name="MAX_INSTANCE_COUNT" />. Zatvorite prozor da biste nastavili.</translation>
 <translation id="7846161022626028328">Došlo je do pogreške. Pokušajte ponovo.</translation>

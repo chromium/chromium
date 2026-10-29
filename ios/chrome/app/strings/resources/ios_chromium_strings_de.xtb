@@ -57,7 +57,6 @@ Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelös
 <translation id="2027881372245801507">Wenn du Vorschläge deaktivierst, hat das keine Auswirkungen auf die Verarbeitung von Seitentiteln und URLs für andere Funktionen durch Chromium. Du kannst den Zugriff auf diese Daten in deinen <ph name="BEGIN_LINK" />Synchronisierungseinstellungen<ph name="END_LINK" /> verwalten.</translation>
 <translation id="2036929290919363111">Melde dich bei dieser Website und in Chromium an, um deine Passwörter und mehr auf allen deinen Geräten abzurufen</translation>
 <translation id="2042889939382983733">Meinen Chromium-Verlauf ansehen</translation>
-<translation id="2052320862053429062">Chromium prüft in regelmäßigen Abständen, ob deine Passwörter auf Listen erscheinen, die online veröffentlicht wurden. Dabei werden deine Passwörter und Nutzernamen verschlüsselt, damit sie von niemandem gelesen werden können, auch nicht von Google.</translation>
 <translation id="2059365270911640413">Chromium fertig einrichten</translation>
 <translation id="2168108852149185974">Einige Add-ons führen zum Ausfall von Chromium. Bitte deinstalliere:</translation>
 <translation id="2168593389981132306">Chromium verbessern</translation>
@@ -68,7 +67,6 @@ Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelös
 <translation id="2236584955986023187">Das bedeutet, dass Chromium immer die Desktopversion der Website anfordert.</translation>
 <translation id="2245694534483711162">Gemini kann deinen genauen Standort verwenden, je nachdem, welche Berechtigung du Chromium bereits erteilt hast</translation>
 <translation id="2270466829363945454">Einkaufen</translation>
-<translation id="2313870531055795960">Prüft URLs anhand einer Liste unsicherer Websites, die in Chromium gespeichert ist. Wenn eine Website versucht, dein Passwort zu stehlen, oder wenn du eine schädliche Datei herunterlädst, kann Chromium auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden.</translation>
 <translation id="2314220608288760290">In Chromium werden YouTube-Inkognitolinks automatisch im Inkognitomodus geöffnet.</translation>
 <translation id="231828342043114302">Melde dich in Chromium an, um personalisierte Inhalte zu erhalten, die auf deinen Interessen basieren.</translation>
 <translation id="2334943301233020675">Die folgenden Passkeys wurden nicht in den Passwortmanager importiert, da sie die Anforderungen nicht erfüllen.</translation>

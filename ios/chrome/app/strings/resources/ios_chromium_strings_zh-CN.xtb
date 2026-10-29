@@ -58,7 +58,6 @@
 <translation id="2027881372245801507">关闭建议功能不会影响 Chromium 处理网页标题和网址以提供其他功能。您可以在<ph name="BEGIN_LINK" />同步设置<ph name="END_LINK" />中管理对此类数据的访问权限。</translation>
 <translation id="2036929290919363111">登录此网站和 Chromium，即可在所有设备上获取密码等内容</translation>
 <translation id="2042889939382983733">查看您的 Chromium 历史记录</translation>
-<translation id="2052320862053429062">Chromium 会定期检查您的密码是否已被列在网上发布的外泄密码列表内。当 Chromium 进行这项检查时，您的密码和用户名都会被加密，所以绝不会被任何人员/任何一方（包括 Google）读取。</translation>
 <translation id="2059365270911640413">完成 Chromium 设置</translation>
 <translation id="2168108852149185974">部分插件会导致 Chromium 崩溃，请卸载这些插件：</translation>
 <translation id="2168593389981132306">帮助改善 Chromium</translation>
@@ -69,7 +68,6 @@
 <translation id="2236584955986023187">这意味着 Chromium 每次都会对桌面版网站发出请求。</translation>
 <translation id="2245694534483711162">Gemini 可能会使用您的精确位置，具体取决于您已向 Chromium 授予的权限</translation>
 <translation id="2270466829363945454">选购</translation>
-<translation id="2313870531055795960">将网址与存储在 Chromium 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chromium 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
 <translation id="2314220608288760290">Chromium 会自动在无痕模式下打开 YouTube 无痕式链接。</translation>
 <translation id="231828342043114302">如要根据您的兴趣接收个性化内容，请登录 Chromium。</translation>
 <translation id="2334943301233020675">以下通行密钥不符合要求，因此未导入密码管理工具。</translation>

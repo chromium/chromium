@@ -549,6 +549,7 @@
 <translation id="7171259390164035663">Nie rejestruj</translation>
 <translation id="7189451821249468368">Nie masz wystarczającej liczby licencji, by zarejestrować to urządzenie. Aby dokupić licencje, skontaktuj się z działem sprzedaży. Jeśli uważasz, że widzisz tę wiadomość z powodu błędu, skontaktuj się z zespołem pomocy.</translation>
 <translation id="7202337678781136582">Zeskanuj kod QR telefonem z Androidem</translation>
+<translation id="7227254059753088272">Skonfiguruj ekran dotykowy</translation>
 <translation id="7228854227189381547">Nie przełączaj</translation>
 <translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />System operacyjny <ph name="DEVICE_OS" /> będzie działać najlepiej po zainstalowaniu na dysku wewnętrznym. Instalację możesz przeprowadzić też później z poziomu ekranu logowania.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Jeśli nie wszystko jest gotowe do instalacji, możesz uruchomić system z nośnika USB, aby go wypróbować. W takim przypadku Twój obecny system operacyjny i dane zostaną zachowane, ale możesz zauważyć ograniczenia dotyczące pamięci i wydajności.<ph name="END_PARAGRAPH2" /></translation>

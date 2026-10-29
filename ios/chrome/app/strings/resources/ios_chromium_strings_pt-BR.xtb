@@ -56,7 +56,6 @@
 <translation id="2027881372245801507">Desativar as sugestões não controla o processamento de títulos de páginas e URLs do Chromium para outros recursos. Você pode gerenciar o acesso a esses dados nas <ph name="BEGIN_LINK" />configurações de sincronização<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Faça login neste site e no Chromium para acessar suas senhas e muito mais em todos os seus dispositivos</translation>
 <translation id="2042889939382983733">Abrir histórico do Chromium</translation>
-<translation id="2052320862053429062">O Chromium verifica periodicamente se as suas senhas estão em listas que foram publicadas on-line. Quando isso é feito, as senhas e os nomes de usuário são criptografados para que não possam ser lidos por ninguém, nem o Google.</translation>
 <translation id="2059365270911640413">Terminar a configuração do Chromium</translation>
 <translation id="2168108852149185974">Alguns complementos causam falhas no Chromium. Desinstale-os:</translation>
 <translation id="2168593389981132306">Melhorar o Chromium</translation>
@@ -67,7 +66,6 @@
 <translation id="2236584955986023187">Isso significa que o Chromium vai solicitar sempre o site para computador.</translation>
 <translation id="2245694534483711162">O Gemini pode usar seu local exato, dependendo da permissão que você já deu ao Chromium</translation>
 <translation id="2270466829363945454">Compras</translation>
-<translation id="2313870531055795960">Confere se os URLs estão em uma lista de sites não seguros armazenada no Chromium. Se um site tentar roubar sua senha ou se você fizer o download de um arquivo nocivo, o Chromium também poderá enviar os URLs, incluindo partes do conteúdo da página, para o Navegação segura.</translation>
 <translation id="2314220608288760290">O Chromium abre automaticamente os links anônimos do YouTube na navegação anônima.</translation>
 <translation id="231828342043114302">Para receber conteúdo personalizado com base nos seus interesses, faça login no Chromium.</translation>
 <translation id="2334943301233020675">As chaves de acesso a seguir não foram importadas para o Gerenciador de Senhas porque não atendem aos requisitos.</translation>

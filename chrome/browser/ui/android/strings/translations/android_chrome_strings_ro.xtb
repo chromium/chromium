@@ -50,6 +50,7 @@
 <translation id="1165109137568919258">Fă o fotografie sau adaugă o imagine din galeria foto pentru a căuta</translation>
 <translation id="1173894706177603556">Redenumește</translation>
 <translation id="1174479719160874822">Chrome va solicita site-ul mobil când ecranul este îngust</translation>
+<translation id="1174759280027683968">Accesează Chrome</translation>
 <translation id="1175241315203286684">Administratorul poate să modifice profilul și browserul de la distanță, să analizeze informațiile despre browser cu ajutorul rapoartelor și să finalizeze alte activități necesare. Este posibil ca activitatea de pe acest dispozitiv să fie gestionată și din afara Chrome.</translation>
 <translation id="1177863135347784049">Personalizează</translation>
 <translation id="1181037720776840403">Elimină</translation>
@@ -608,6 +609,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3452832259067974318">Pentru a-ți proteja confidențialitatea, Chrome nu va completa automat parola în acest câmp.</translation>
 <translation id="3474624961160222204">Continuă ca <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Poți alege motorul de căutare</translation>
+<translation id="3479552764303398839">Nu acum</translation>
 <translation id="3482805106082349287">Caută folosind tastatura, vocea, modul incognito sau camera foto</translation>
 <translation id="3487903178221457900">Fișierul exportat poate fi accesibil altor persoane, inclusiv aplicațiilor. După ce exporți, parolele se șterg din Chrome.</translation>
 <translation id="3488199663160411179">nume</translation>
@@ -896,6 +898,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4578289292431526768">Să începem!</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{Acum # minut}few{Acum # minute}other{Acum # de minute}}</translation>
 <translation id="4585751637295612750">Deschide o filă nouă pentru a o adăuga la întrebare</translation>
+<translation id="4585793705637313973">Editează pagina</translation>
 <translation id="4587589328781138893">Site-uri</translation>
 <translation id="4594952190837476234">Această pagină offline este din data de <ph name="CREATION_TIME" /> și poate fi diferită de versiunea online.</translation>
 <translation id="4595237294768457124">Deschide o pagină Filă nouă</translation>
@@ -1536,6 +1539,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6996145122199359148">Descarcă această pagină</translation>
 <translation id="7007648447224463482">Deschide totul într-o fereastră nouă</translation>
 <translation id="7013762323294215682">Cheia de acces se va salva în managerul de parole. Oricine are acces la el va putea să o folosească.</translation>
+<translation id="7017219178341817193">Adaugă o pagină nouă</translation>
 <translation id="7022756207310403729">Deschide în browser</translation>
 <translation id="7029809446516969842">Parole</translation>
 <translation id="7037994709569287156">Setează Chrome ca prestabilit</translation>
@@ -1602,6 +1606,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="72415438529550637">Sugestia de parolă se închide.</translation>
 <translation id="724510009481365878">Pagina nu poate fi printată</translation>
 <translation id="7248671827512403053">Aplicație</translation>
+<translation id="7253205084599155458">Afișează navigarea și instrumentele într-o bară de instrumente în partea de jos a ecranului, pentru acces ușor</translation>
 <translation id="7253951228444156601">Se verifică parolele…</translation>
 <translation id="7265857422443387781">Caută în filă cu Google Lens <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Trimiți <ph name="ONE_TIME_CODE" /> către <ph name="ORIGIN" />?</translation>
@@ -1750,6 +1755,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7821130663268546430">Toate filele deschise apar în Comutatorul de file</translation>
 <translation id="7822705602465980873">Când te conectezi, aceste date sunt asociate Contului tău Google pentru a te proteja în toate serviciile Google, de exemplu, sporind gradul de protecție în Gmail după un incident de securitate.</translation>
 <translation id="7824665136384946951">Organizația ta a dezactivat Navigarea sigură</translation>
+<translation id="782590969421016895">Utilizează paginile actuale</translation>
 <translation id="7825973332242257878">Grupuri de file</translation>
 <translation id="7845155831233417403">Poți deschide maximum <ph name="MAX_INSTANCE_COUNT" /> ferestre. Închide o fereastră pentru a continua.</translation>
 <translation id="7846161022626028328">A apărut o eroare. Încearcă din nou.</translation>

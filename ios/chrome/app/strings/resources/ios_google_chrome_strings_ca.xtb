@@ -198,7 +198,6 @@ Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sess
 <translation id="5460571915754665838">4. Selecciona Chrome.</translation>
 <translation id="5492504007368565877">El gestor de contrasenyes de Google no pot comprovar les teves contrasenyes.</translation>
 <translation id="5527026824954593399">Toca Mostra amb Google Maps a Chrome.</translation>
-<translation id="5552137475244467770">Chrome contrasta periòdicament les teves contrasenyes amb les d'una sèrie de llistes publicades en línia. Quan ho fa, les teves contrasenyes i els teus noms d'usuari s'encripten i, per tant, ningú no els pot llegir (ni tan sols Google).</translation>
 <translation id="5554520618550346933">Quan utilitzes una contrasenya, Chrome t'avisa si s'ha publicat en línia. Quan ho fa, les teves contrasenyes i els teus noms d'usuari s'encripten i, per tant, ningú no els pot llegir (ni tan sols Google).</translation>
 <translation id="5601180634394228718">Per veure més opcions de configuració que utilitzin dades per millorar la teva experiència de Chrome, ves a <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" />.</translation>
 <translation id="5639704535586432836">Obre Configuració &gt; Privacitat &gt; Càmera &gt; Google Chrome i activa la càmera.</translation>
@@ -239,7 +238,6 @@ Espera uns quants minuts abans de canviar de compte. Si canvies de compte ara, a
 <translation id="6348855835728304880">Accedeix a les teves contrasenyes de Chrome i a altres aplicacions en aquest dispositiu.</translation>
 <translation id="6373751563207403289">Comprovació de seguretat et protegeix de violacions de les dades, de llocs web no segurs i més. Rep alertes sobre qualsevol problema de privadesa o de seguretat que Chrome detecti.</translation>
 <translation id="6389317667633680932">Explora funcions noves que t'ajudaran a treure el màxim partit de Chrome.</translation>
-<translation id="6412673304250309937">Compara els URL amb una llista de llocs web no segurs emmagatzemada a Chrome. Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chrome també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura.</translation>
 <translation id="6427126399757991875">La teva organització està configurant Chrome...</translation>
 <translation id="6481963882741794338">Enllaça Chrome i altres serveis de Google per a la personalització i altres finalitats</translation>
 <translation id="6484712497741564393">Has iniciat la sessió com a <ph name="EMAIL" />.
@@ -251,7 +249,6 @@ Les teves dades s'encripten amb la teva frase de contrasenya. Per utilitzar i de
 <translation id="660537754475262202">Estableix Chrome com a navegador predeterminat per obrir-hi enllaços a l'instant.</translation>
 <translation id="6611692150236062461">Per obtenir fàcilment les contrasenyes desades en altres aplicacions, tria Chrome per a l'Emplenament automàtic.</translation>
 <translation id="6636941099779251629">La teva organització requereix que iniciïs la sessió per utilitzar Chrome. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
-<translation id="6646696210740573446">Envia una part ofuscada de l'URL a Google mitjançant un servidor de privadesa que amaga la teva adreça IP. Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chrome també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Google.</translation>
 <translation id="6647304104688527905">Obre una pestanya nova a Chrome.</translation>
 <translation id="6684809838922667136">Millora Chrome</translation>
 <translation id="6709398533399187136">La teva contrasenya ha quedat exposada en una violació de les dades. El gestor de contrasenyes de Google recomana que la canviïs ara.</translation>

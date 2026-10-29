@@ -198,7 +198,6 @@
 <translation id="5460571915754665838">4. Chrome을 선택합니다.</translation>
 <translation id="5492504007368565877">Google 비밀번호 관리자에서 내 비밀번호를 확인할 수 없습니다.</translation>
 <translation id="5527026824954593399">'Chrome에서 Google 지도로 보기'를 탭합니다.</translation>
-<translation id="5552137475244467770">Chrome에서는 온라인에 게시된 비밀번호 목록에 사용자의 비밀번호가 포함되어 있는지를 주기적으로 확인합니다. 이렇게 하면 비밀번호 및 사용자 이름이 암호화되어 Google을 포함해 누구도 읽을 수 없습니다.</translation>
 <translation id="5554520618550346933">비밀번호를 사용하면 온라인에 비밀번호가 게시된 경우 Chrome에서 경고를 표시합니다. 이렇게 하면 비밀번호 및 사용자 이름이 암호화되어 Google을 포함해 누구도 읽을 수 없습니다.</translation>
 <translation id="5601180634394228718">Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려면 <ph name="BEGIN_LINK" />Google 서비스<ph name="END_LINK" />로 이동하세요.</translation>
 <translation id="5639704535586432836">설정 &gt; 개인 정보 보호 &gt; 카메라 &gt; Chrome을 열고 카메라를 사용 설정하세요.</translation>
@@ -239,7 +238,6 @@
 <translation id="6348855835728304880">이 기기의 다른 앱에서 Chrome 비밀번호 등에 액세스합니다.</translation>
 <translation id="6373751563207403289">안전 확인은 정보 유출, 안전하지 않은 웹사이트 등으로부터 사용자를 보호합니다. Chrome에서 감지한 개인 정보 보호 또는 보안 문제에 대한 알림을 받습니다.</translation>
 <translation id="6389317667633680932">Chrome을 최대한 활용하는 데 도움이 되는 새로운 기능을 살펴보세요</translation>
-<translation id="6412673304250309937">Chrome에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="6427126399757991875">조직에서 Chrome을 설정하는 중...</translation>
 <translation id="6481963882741794338">맞춤설정 등의 목적으로 Chrome과 다른 Google 서비스를 연결합니다</translation>
 <translation id="6484712497741564393"><ph name="EMAIL" /> 계정으로 로그인되었습니다.
@@ -251,7 +249,6 @@
 <translation id="660537754475262202">Chrome을 기본 브라우저로 설정하여 링크를 여기에서 바로 실행하세요.</translation>
 <translation id="6611692150236062461">저장된 비밀번호를 다른 앱에서 쉽게 사용하려면 Chrome 자동 완성을 선택하세요.</translation>
 <translation id="6636941099779251629">조직에서 Chrome을 사용하려면 로그인할 것을 요구합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
-<translation id="6646696210740573446">IP 주소를 숨기는 개인 정보 보호 서버를 통해 URL의 난독화된 부분을 Google로 전송합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 Google에 보낼 수 있습니다.</translation>
 <translation id="6647304104688527905">Chrome에서 새 탭을 엽니다.</translation>
 <translation id="6684809838922667136">Chrome 개선에 참여</translation>
 <translation id="6709398533399187136">정보 유출로 인해 비밀번호가 노출되었습니다. Google 비밀번호 관리자에서 지금 바로 비밀번호를 변경하시기 바랍니다.</translation>

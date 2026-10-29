@@ -50,6 +50,7 @@
 <translation id="1165109137568919258">Neem ’n foto of voeg ’n prent uit jou fotogalery by om te soek</translation>
 <translation id="1173894706177603556">Hernoem</translation>
 <translation id="1174479719160874822">Chrome sal die mobiele werf versoek wanneer die skerm smal is</translation>
+<translation id="1174759280027683968">Gaan na Chrome</translation>
 <translation id="1175241315203286684">Jou administrateur kan oor ’n afstand veranderinge aan jou profiel en blaaier maak, inligting oor die blaaier ontleed deur middel van verslagdoening, en ander nodige take uitvoer. Aktiwiteit op hierdie toestel kan ook buite Chrome bestuur word.</translation>
 <translation id="1177863135347784049">Gepasmaak</translation>
 <translation id="1181037720776840403">Verwyder</translation>
@@ -608,6 +609,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3452832259067974318">Om jou privaatheid te beskerm, sal Chrome nie outomaties jou wagwoord in hierdie veld invul nie.</translation>
 <translation id="3474624961160222204">Gaan voort as <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Jy kan jou soekenjin kies</translation>
+<translation id="3479552764303398839">Nie nou nie</translation>
 <translation id="3482805106082349287">Soek met behulp van sleutelbord, stem, Incognito of kamera</translation>
 <translation id="3487903178221457900">Die uitgevoerde lêer kan toeganklik wees vir ander, insluitend apps. Sodra jy uitvoer, sal jou wagwoorde van Chrome af uitgevee word.</translation>
 <translation id="3488199663160411179">naam</translation>
@@ -896,6 +898,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4578289292431526768">Kom ons begin</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minuut gelede}other{# minute gelede}}</translation>
 <translation id="4585751637295612750">Maak ’n nuwe oortjie oop om dit by jou vraag te voeg</translation>
+<translation id="4585793705637313973">Wysig bladsy</translation>
 <translation id="4587589328781138893">Werwe</translation>
 <translation id="4594952190837476234">Hierdie vanlyn bladsy is van <ph name="CREATION_TIME" /> af en kan van die aanlyn weergawe verskil.</translation>
 <translation id="4595237294768457124">Maak ’n Nuwe oortjie-bladsy oop</translation>
@@ -1536,6 +1539,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6996145122199359148">Laai hierdie bladsy af</translation>
 <translation id="7007648447224463482">Maak almal in nuwe venster oop</translation>
 <translation id="7013762323294215682">Hierdie toegangsleutel sal in jou wagwoordbestuurder gestoor word. Enigiemand met toegang daartoe sal hierdie toegangsleutel kan gebruik.</translation>
+<translation id="7017219178341817193">Voeg 'n nuwe bladsy by</translation>
 <translation id="7022756207310403729">Maak in blaaier oop</translation>
 <translation id="7029809446516969842">Wagwoorde</translation>
 <translation id="7037994709569287156">Maak Chrome die verstekblaaier</translation>
@@ -1602,6 +1606,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="72415438529550637">Wagwoordvoorstel is toe.</translation>
 <translation id="724510009481365878">Hierdie bladsy kan nie gedruk word nie</translation>
 <translation id="7248671827512403053">App</translation>
+<translation id="7253205084599155458">Wys navigasie en nutsgoed in ’n onderste nutsbalk vir maklike toegang</translation>
 <translation id="7253951228444156601">Gaan tans wagwoorde na …</translation>
 <translation id="7265857422443387781">Deursoek oortjie met Google Lens <ph name="BEGIN_NEW" />Nuut<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Dien <ph name="ONE_TIME_CODE" /> in by <ph name="ORIGIN" />?</translation>
@@ -1750,6 +1755,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7821130663268546430">Jy kan alle oop oortjies in die oortjiewisselaar vind</translation>
 <translation id="7822705602465980873">Wanneer jy aangemeld is, word hierdie data aan jou Google-rekening gekoppel om jou oral in Google-dienste te beskerm, byvoorbeeld deur beskerming in Gmail te verhoog ná ’n sekuriteitvoorval.</translation>
 <translation id="7824665136384946951">Jou organisasie het Veiligblaai afgeskakel</translation>
+<translation id="782590969421016895">Gebruik huidige bladsye</translation>
 <translation id="7825973332242257878">Oortjiegroepe</translation>
 <translation id="7845155831233417403">Jy kan tot <ph name="MAX_INSTANCE_COUNT" /> vensters hê. Maak ’n venster toe om voort te gaan.</translation>
 <translation id="7846161022626028328">Iets is fout. Probeer weer.</translation>

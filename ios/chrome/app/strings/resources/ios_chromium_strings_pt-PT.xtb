@@ -58,7 +58,6 @@ Não é possível guardar novos marcadores na sua conta até eliminar alguns. Se
 <translation id="2027881372245801507">A desativação das sugestões não controla o processamento de títulos de páginas e URLs do Chromium para outras funcionalidades. Pode gerir o acesso a estes dados nas suas <ph name="BEGIN_LINK" />definições de sincronização<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Inicie sessão neste site e no Chromium para ter acesso às suas palavras-passe e muito mais em todos os seus dispositivos</translation>
 <translation id="2042889939382983733">Veja o histórico do Chromium</translation>
-<translation id="2052320862053429062">O Chromium verifica periodicamente se as suas palavras-passe fazem parte das listas publicadas online. Ao fazê-lo, as suas palavras-passe e nomes de utilizador estão encriptados, pelo que não podem ser lidos por ninguém, incluindo a Google.</translation>
 <translation id="2059365270911640413">Conclua a configuração do Chromium</translation>
 <translation id="2168108852149185974">Alguns suplementos provocam falhas no sistema do Chromium. Desinstale:</translation>
 <translation id="2168593389981132306">Melhore o Chromium</translation>
@@ -69,7 +68,6 @@ Não é possível guardar novos marcadores na sua conta até eliminar alguns. Se
 <translation id="2236584955986023187">Isto significa que o Chromium irá pedir sempre o site para computador.</translation>
 <translation id="2245694534483711162">O Gemini pode usar a sua localização exata, consoante a autorização que já deu ao Chromium</translation>
 <translation id="2270466829363945454">Faça compras</translation>
-<translation id="2313870531055795960">Verifica os URLs com base numa lista de sites inseguros armazenada no Chromium. Se um site tentar roubar a sua palavra-passe, ou quando transferir um ficheiro prejudicial, o Chromium também pode enviar URLs, incluindo bits de conteúdo das páginas, para a Navegação segura.</translation>
 <translation id="2314220608288760290">O Chromium abre automaticamente links de Navegação anónima do YouTube na Navegação anónima.</translation>
 <translation id="231828342043114302">Para receber conteúdo personalizado com base nos seus interesses, inicie sessão no Chromium.</translation>
 <translation id="2334943301233020675">As seguintes chaves de acesso não foram importadas para o Gestor de Palavras-passe porque não correspondem aos requisitos.</translation>

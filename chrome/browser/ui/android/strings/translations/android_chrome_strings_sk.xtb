@@ -50,6 +50,7 @@
 <translation id="1165109137568919258">Ak chcete vyhľadávať, nasnímajte fotku alebo pridajte obrázok z fotogalérie</translation>
 <translation id="1173894706177603556">Premenovať</translation>
 <translation id="1174479719160874822">Keď bude obrazovka úzka, Chrome bude žiadať o mobilný web</translation>
+<translation id="1174759280027683968">Prihlásiť sa do Chromu</translation>
 <translation id="1175241315203286684">Správca môže vzdialene vykonávať zmeny v profile a prehliadači, analyzovať informácie o prehliadači na základe reportov a vykonávať ďalšie potrebné úlohy. Aktivita v tomto zariadení môže byť spravovaná aj mimo Chromu.</translation>
 <translation id="1177863135347784049">Vlastné</translation>
 <translation id="1181037720776840403">Odstrániť</translation>
@@ -608,6 +609,7 @@
 <translation id="3452832259067974318">V záujme ochrany vášho súkromia nebude Chrome do tohto poľa automaticky dopĺňať heslá.</translation>
 <translation id="3474624961160222204">Pokračovať ako <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Môžete si vybrať vyhľadávač</translation>
+<translation id="3479552764303398839">Teraz nie</translation>
 <translation id="3482805106082349287">Vyhľadávajte pomocou klávesnice, hlasu, režimu inkognito alebo kamery</translation>
 <translation id="3487903178221457900">K exportovanému súboru môžu mať prístup iní, napríklad aj aplikácie. Po exporte budú vaše heslá z Chromu odstránené.</translation>
 <translation id="3488199663160411179">meno</translation>
@@ -896,6 +898,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4578289292431526768">Začať</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{pred # minútou}few{pred # minútami}many{pred # minútou}other{pred # minútami}}</translation>
 <translation id="4585751637295612750">Otvorte novú kartu a pridajte tak dopyt do otázky</translation>
+<translation id="4585793705637313973">Úprava stránky</translation>
 <translation id="4587589328781138893">Weby</translation>
 <translation id="4594952190837476234">Táto offline stránka je z <ph name="CREATION_TIME" /> a líši sa od online verzie.</translation>
 <translation id="4595237294768457124">Otvorte stránku na novej karte</translation>
@@ -1536,6 +1539,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6996145122199359148">Stiahnuť túto stránku</translation>
 <translation id="7007648447224463482">Otvoriť všetky v novom okne</translation>
 <translation id="7013762323294215682">Tento prístupový kľúč bude uložený do vášho správcu hesiel. Budú ho môcť používať všetci, ktorí k nemu majú prístup.</translation>
+<translation id="7017219178341817193">Pridať novú stránku</translation>
 <translation id="7022756207310403729">Otvoriť v prehliadači</translation>
 <translation id="7029809446516969842">Heslá</translation>
 <translation id="7037994709569287156">Nastaviť Chrome ako predvolený</translation>
@@ -1602,6 +1606,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="72415438529550637">Návrh hesla je zavretý</translation>
 <translation id="724510009481365878">Túto stránku nemožno vytlačiť</translation>
 <translation id="7248671827512403053">Aplikácia</translation>
+<translation id="7253205084599155458">Zobrazujte navigáciu a nástroje na dolnom paneli s nástrojmi, aby ste k nim mali jednoduchý prístup</translation>
 <translation id="7253951228444156601">Kontrolujú sa heslá…</translation>
 <translation id="7265857422443387781">Vyhľadať na karte cez Google Lens <ph name="BEGIN_NEW" />Novinka<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Chcete odoslať kód <ph name="ONE_TIME_CODE" /> do zdroja <ph name="ORIGIN" />?</translation>
@@ -1750,6 +1755,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7821130663268546430">Všetky otvorené karty nájdete v prepínači kariet</translation>
 <translation id="7822705602465980873">Keď sa prihlásite, tieto údaje sú pripojené k vášmu účtu Google, aby vás chránili v službách Googlu (napríklad zvýšenie ochrany v Gmaile po bezpečnostnom incidente).</translation>
 <translation id="7824665136384946951">Vaša organizácia vypla Bezpečné prehliadanie</translation>
+<translation id="782590969421016895">Použiť aktuálne stránky</translation>
 <translation id="7825973332242257878">Skupiny kariet</translation>
 <translation id="7845155831233417403">Maximálny počet okien, ktorý môžete mať, je <ph name="MAX_INSTANCE_COUNT" />. Pokračujte zavretím okna.</translation>
 <translation id="7846161022626028328">Vyskytla sa chyba. Skúste to znova.</translation>

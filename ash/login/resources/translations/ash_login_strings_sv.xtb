@@ -579,6 +579,7 @@ proxyservern fungerar. Om du inte tror att du bör använda en
 <translation id="7171259390164035663">Registrera dig inte</translation>
 <translation id="7189451821249468368">Du har inte tillräckligt med uppgraderingar för att registrera enheten. Kontakta säljavdelningen om du vill köpa fler. Om du anser att detta meddelande visas på felaktig grund kontaktar du supporten.</translation>
 <translation id="7202337678781136582">Skanna QR-koden med Android-telefonen</translation>
+<translation id="7227254059753088272">Konfigurera pekskärmen</translation>
 <translation id="7228854227189381547">Byt inte</translation>
 <translation id="7230429581553827767"><ph name="BEGIN_PARAGRAPH1" />Du får en bättre upplevelse om du installerar <ph name="DEVICE_OS" /> på den interna disken. Du kan även installera det senare från inloggningsskärmen.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Om du inte vill installera ännu kan du köra från ett USB-minne och testa. På så vis behåller du det befintliga operativsystemet och din data, men det kan finnas begränsningar för lagringsutrymme och prestanda.<ph name="END_PARAGRAPH2" /></translation>

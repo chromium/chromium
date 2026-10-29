@@ -199,7 +199,6 @@ Hisobdan chiqishga shoshilmang. Hozir chiqsangiz, bu maʼlumotlar oʻchib ketadi
 <translation id="5460571915754665838">4. Chrome brauzerini tanlang</translation>
 <translation id="5492504007368565877">Google Parollar menejeri parollaringizni tekshira olmaydi.</translation>
 <translation id="5527026824954593399">“Chromeda Google Xaritalar bilan ochish” ustiga bosing.</translation>
-<translation id="5552137475244467770">Vaqti-vaqti bilan Chrome internetda oshkor etilgan roʻyxatlarda parolingiz borligini tekshirib turadi. Bunda parolingiz va foydalanuvchi nomingiz shifrlanadi, hatto Google xodimlariga ham koʻrinmaydi.</translation>
 <translation id="5554520618550346933">Paroldan foydalansangiz, u internetga chiqib ketgan boʻlsa, Chrome sizni ogohlantiradi. Bunda parolingiz va foydalanuvchi nomingiz shifrlanadi, hatto Google xodimlariga ham koʻrinmaydi.</translation>
 <translation id="5601180634394228718">Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph name="BEGIN_LINK" />Google xizmatlari<ph name="END_LINK" /> sahifasida ochish mumkin.</translation>
 <translation id="5639704535586432836">Kameradan foydalanishga ruxsat berish uchun “Sozlamalar &gt; Maxfiylik &gt; Kamera &gt; Google Chrome” bandini oching.</translation>
@@ -240,7 +239,6 @@ Hisoblarni almashtirishdan oldin bir necha daqiqa kuting. Hisoblarni hozir almas
 <translation id="6348855835728304880">Bu qurilmadagi boshqa ilovalarda Chrome parollaringiz va boshqalarga kiring.</translation>
 <translation id="6373751563207403289">Xavfsizlik tekshiruvi maʼlumotlaringizni shubhali saytlar, axborotlar sizib chiqishi va xavfsizlikka oid muammolardan himoya qiladi. Maxfiylik va xavfsizlikka oid muammolar aniqlanganda Chrome bu haqida xabar qiladi.</translation>
 <translation id="6389317667633680932">Chromedan unumli foydalanishga yordam beruvchi yangi funksiyalar bilan tanishing.</translation>
-<translation id="6412673304250309937">URL manzillar Chrome bilgan zararli saytlar roʻyxati orqali tekshiriladi. Agar sayt parolingizni oʻgirlashga urinsa yoki zararli fayl yuklab olsangiz, Chrome ham URL manzillar kabi sahifa elementlarini Saytlarni xavfsiz kezish tizimiga yuborishi mumkin.</translation>
 <translation id="6427126399757991875">Chrome tashkilotingiz tomonidan sozlanmoqda...</translation>
 <translation id="6481963882741794338">Chrome va boshqa Google xizmatlarini moslashtirish kabi maqsadlarda ulang</translation>
 <translation id="6484712497741564393"><ph name="EMAIL" /> hisobi bilan kirgansiz.
@@ -252,7 +250,6 @@ Maʼlumotlaringiz kodli ibora bilan shifrlangan. Chrome maʼlumotlarini Google h
 <translation id="660537754475262202">Havolalarni shu yerda bir zumda ochish uchun Chromeni birlamchi brauzeringizga aylantiring.</translation>
 <translation id="6611692150236062461">Boshqa ilovalarda saqlangan parollarni oson ochish uchun Chrome avtomatik kiritishini tanlang.</translation>
 <translation id="6636941099779251629">Chrome brauzeridan foydalanishingiz uchun tashkilotingiz roʻyxatdan oʻtishni talab qiladi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
-<translation id="6646696210740573446">Himoyalangan URL parchasini IP manzilni yashiruvchi maxfiy server orqali Googlega yuboradi. Agar sayt parolingizni oʻgʻirlashga urinsa yoki zararli fayl yuklab olsangiz, Chrome URL manzillar va sahifa elementlarini ham Googlega yuborishi mumkin.</translation>
 <translation id="6647304104688527905">Chromeda yangi varaq ochadi.</translation>
 <translation id="6684809838922667136">Chromeni yaxshilash</translation>
 <translation id="6709398533399187136">Parolingiz oshkor qilingan. Google Parollar menejeri uni hoziroq almashtirishni tavsiya etadi.</translation>

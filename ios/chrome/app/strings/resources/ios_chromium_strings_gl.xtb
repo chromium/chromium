@@ -58,7 +58,6 @@ Non poderás gardar máis ata que elimines uns cantos. Se pechas a sesión agora
 <translation id="2027881372245801507">Ao desactivar as suxestións, non se controla o procesamento que fai Chromium dos títulos das páxinas e dos URL para outras funcións. Podes xestionar o acceso a estes datos na <ph name="BEGIN_LINK" />configuración de sincronización<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Inicia sesión neste sitio e en Chromium para acceder aos teus contrasinais e a máis contido en todos os teus dispositivos</translation>
 <translation id="2042889939382983733">Consulta o teu historial de Chromium</translation>
-<translation id="2052320862053429062">Chromium comproba periodicamente se os teus contrasinais aparecen nas listas que se publican en liña. Cando o fai, os teus contrasinais e os teus nomes de usuario encríptanse, polo que ninguén pode lelos, nin sequera Google.</translation>
 <translation id="2059365270911640413">Termina de configurar Chromium</translation>
 <translation id="2168108852149185974">Algúns complementos fan que Chromium falle. Desinstala:</translation>
 <translation id="2168593389981132306">Mellorar Chromium</translation>
@@ -69,7 +68,6 @@ Non poderás gardar máis ata que elimines uns cantos. Se pechas a sesión agora
 <translation id="2236584955986023187">En consecuencia, Chromium sempre solicitará abrir o sitio para ordenadores.</translation>
 <translation id="2245694534483711162">Gemini pode usar a túa localización precisa, en función do permiso que xa lle concedeses a Chromium</translation>
 <translation id="2270466829363945454">Comprar</translation>
-<translation id="2313870531055795960">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chromium. Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chromium tamén pode comprobar os enderezos URL, entre os que se inclúen fragmentos de contido das páxinas, a través da función Navegación segura.</translation>
 <translation id="2314220608288760290">Chromium abre automaticamente as ligazóns de incógnito de YouTube no modo de incógnito.</translation>
 <translation id="231828342043114302">Para recibir contido personalizado en función dos teus intereses, inicia sesión en Chromium.</translation>
 <translation id="2334943301233020675">Non se importaron as seguintes claves de acceso ao xestor de contrasinais porque non cumpren os requisitos.</translation>

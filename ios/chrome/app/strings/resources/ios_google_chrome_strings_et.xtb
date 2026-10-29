@@ -198,7 +198,6 @@ Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andme
 <translation id="5460571915754665838">4. Valige Chrome</translation>
 <translation id="5492504007368565877">Google'i paroolihaldur ei saa teie paroole kontrollida.</translation>
 <translation id="5527026824954593399">Puudutage valikut „Kuva Google Mapsi abil Chrome'is“.</translation>
-<translation id="5552137475244467770">Chrome võrdleb teie paroole regulaarselt veebis avaldatud loenditega. Selle käigus on teie paroolid ja kasutajanimed krüpteeritud, et mitte keegi (sh Google) ei saaks neid lugeda.</translation>
 <translation id="5554520618550346933">Kui kasutate parooli, hoiatab Chrome teid, kui see on veebis avalikustatud. Selle käigus on teie paroolid ja kasutajanimed krüpteeritud, et mitte keegi (sh Google) ei saaks neid lugeda.</translation>
 <translation id="5601180634394228718">Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chrome'i kasutuskogemust, avage <ph name="BEGIN_LINK" />Google'i teenused<ph name="END_LINK" />.</translation>
 <translation id="5639704535586432836">Tehke valikud Seaded &gt; Privaatsus &gt; Kaamera &gt; Google Chrome ja lülitage kaamera sisse.</translation>
@@ -239,7 +238,6 @@ Oodake enne konto vahetamist paar minutit. Kui vahetate kohe kontot, siis need a
 <translation id="6348855835728304880">Pääsete selles seadmes juurde oma Chrome'i paroolidele ja muule teabele.</translation>
 <translation id="6373751563207403289">Ohutuskontroll kaitseb teid andmetega seotud rikkumiste, ebaturvaliste veebisaitide ja muu eest. Saate hoiatusi mis tahes privaatsus- ja turvaprobleemide kohta, mille Chrome teie eest tuvastab.</translation>
 <translation id="6389317667633680932">Avastage uusi funktsioone, mis aitavad teil Chrome'i parimal moel kasutada.</translation>
-<translation id="6412673304250309937">Kontrollib URL-e Chrome'i talletatud ohtlike saitide loendi alusel. Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chrome saata URL-id ja lehe sisu osad teenusesse Google'i ohutu sirvimine.</translation>
 <translation id="6427126399757991875">Teie organisatsioon seadistab Chrome'i …</translation>
 <translation id="6481963882741794338">Linkige Chrome ja teised Google’i teenused isikupärastamiseks ja muudel eesmärkidel</translation>
 <translation id="6484712497741564393">Sisse logitud kasutajana <ph name="EMAIL" />.
@@ -251,7 +249,6 @@ Teie andmed on krüpteeritud teie parooliga. Chrome’i andmete kasutamiseks ja 
 <translation id="660537754475262202">Määrake Chrome oma vaikebrauseriks, et lingid kohe siin avada.</translation>
 <translation id="6611692150236062461">Selleks et muudes rakendustes hõlpsasti oma salvestatud paroolidele juurde pääseda, valige automaattäite jaoks Chrome.</translation>
 <translation id="6636941099779251629">Teie organisatsioon nõuab, et logiksite Chrome'i kasutamiseks sisse. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
-<translation id="6646696210740573446">Saadab privaatse serveri kaudu Google'ile URL-i hägustatud osa, mis peidab teie IP-aadressi. Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chrome saata Google'ile ka URL-e, sh lehe sisu.</translation>
 <translation id="6647304104688527905">Avab Chrome'is uue vahelehe.</translation>
 <translation id="6684809838922667136">Chrome'i täiustamine</translation>
 <translation id="6709398533399187136">Teie parool oli andmetega seotud rikkumise käigus avalikustatud. Google'i paroolihaldur soovitab teil kohe seda parooli muuta.</translation>

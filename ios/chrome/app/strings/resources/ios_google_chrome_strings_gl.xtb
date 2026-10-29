@@ -198,7 +198,6 @@ Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos 
 <translation id="5460571915754665838">4. Selecciona Chrome</translation>
 <translation id="5492504007368565877">O xestor de contrasinais de Google non puido comprobar os teus contrasinais.</translation>
 <translation id="5527026824954593399">Toca Ver con Google Maps en Chrome.</translation>
-<translation id="5552137475244467770">Chrome comproba periodicamente se os teus contrasinais aparecen nas listas que se publican en liña. Cando o fai, os teus contrasinais e os teus nomes de usuario están encriptados, polo que ninguén pode lelos, nin sequera Google.</translation>
 <translation id="5554520618550346933">Cando usas un contrasinal, Chrome avísate se se publicou en liña. Ao facelo, os teus contrasinais e os teus nomes de usuario encríptanse, polo que ninguén pode lelos, nin sequera Google.</translation>
 <translation id="5601180634394228718">Se queres ver máis opcións de configuración que usen datos para mellorar a túa experiencia con Chrome, vai a <ph name="BEGIN_LINK" />Servizos de Google<ph name="END_LINK" />.</translation>
 <translation id="5639704535586432836">Abre Configuración &gt; Privacidade &gt; Cámara &gt; Google Chrome e activa a cámara.</translation>
@@ -239,7 +238,6 @@ Espera uns minutiños antes de cambiar de conta. Se a cambias agora, eliminarans
 <translation id="6348855835728304880">Accede aos teus contrasinais de Chrome e moito máis noutras aplicacións deste dispositivo.</translation>
 <translation id="6373751563207403289">Comprobación de seguranza protéxete contra as violacións da seguranza dos datos, os sitios web que non sexan seguros e moito máis. Recibe alertas sobre calquera problema de privacidade ou seguranza que detecte Chrome.</translation>
 <translation id="6389317667633680932">Explora novas funcións que che axudarán a tirar o máximo proveito de Chrome.</translation>
-<translation id="6412673304250309937">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chrome. Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chrome tamén pode comprobar os enderezos URL, entre os que se inclúen fragmentos de contido das páxinas, a través da función Navegación segura.</translation>
 <translation id="6427126399757991875">A túa organización está configurando Chrome…</translation>
 <translation id="6481963882741794338">Vincula Chrome e outros servizos de Google para beneficiarte da personalización, entre outras cousas</translation>
 <translation id="6484712497741564393">Tes a sesión iniciada como <ph name="EMAIL" />.
@@ -251,7 +249,6 @@ Os teus datos están encriptados coa túa frase de acceso. Introdúcea para usar
 <translation id="660537754475262202">Define Chrome como navegador predeterminado para abrir as ligazóns aquí ao instante.</translation>
 <translation id="6611692150236062461">Escolle Chrome para autocompletar facilmente noutras aplicacións os teus contrasinais gardados.</translation>
 <translation id="6636941099779251629">Segundo as políticas da túa organización, cómpre que inicies sesión para usar Chrome. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
-<translation id="6646696210740573446">Envíalle unha parte confusa do URL a Google mediante un servidor de privacidade que oculta o teu enderezo IP. Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chrome tamén pode enviarlle a Google os URL, así como fragmentos do contido das páxinas.</translation>
 <translation id="6647304104688527905">Abre unha pestana nova en Chrome.</translation>
 <translation id="6684809838922667136">Mellora Chrome</translation>
 <translation id="6709398533399187136">O teu contrasinal púxose en risco debido a unha violación da seguranza dos datos. O xestor de contrasinais de Google recomenda que o cambies de inmediato.</translation>

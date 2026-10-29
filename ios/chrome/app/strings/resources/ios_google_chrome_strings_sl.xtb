@@ -198,7 +198,6 @@ Počakajte nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatk
 <translation id="5460571915754665838">4. Izberite Chrome.</translation>
 <translation id="5492504007368565877">Googlov upravitelj gesel ne more preveriti vaših gesel.</translation>
 <translation id="5527026824954593399">Dotaknite se možnosti »View with Google Maps on Chrome« (Ogled z Google Zemljevidi v Chromu).</translation>
-<translation id="5552137475244467770">Chrome občasno preveri vaša gesla, tako da jih primerja s seznami gesel, objavljenimi v spletu. Pri tem so vaša gesla in uporabniška imena šifrirana, da jih ne more prebrati nihče, vključno z Googlom.</translation>
 <translation id="5554520618550346933">Ko uporabite geslo, vas Chrome opozori, če je bilo objavljeno v spletu. Pri tem so vaša gesla in uporabniška imena šifrirana, da jih ne more prebrati nihče, vključno z Googlom.</translation>
 <translation id="5601180634394228718">Če želite več nastavitev, ki uporabljajo podatke za izboljšanje izkušnje v Chromu, odprite <ph name="BEGIN_LINK" />Googlove storitve<ph name="END_LINK" />.</translation>
 <translation id="5639704535586432836">Odprite Settings &gt; Privacy &gt; Camera &gt; Google Chrome in vklopite fotoaparat.</translation>
@@ -239,7 +238,6 @@ Počakajte nekaj minut, preden preklopite račun. Če zdaj preklopite med račun
 <translation id="6348855835728304880">Dostopajte do gesel v Chromu in drugega v drugih aplikacijah v tej napravi.</translation>
 <translation id="6373751563207403289">Varnostno preverjanje vas varuje pred podatkovnimi kršitvami, spletnimi mesti, ki niso varna, in drugim. Prejemajte opozorila o težavah z zasebnostjo ali varnostjo, ki jih Chrome zazna.</translation>
 <translation id="6389317667633680932">Raziščite nove funkcije, s katerimi boste lahko najbolje izkoristili Chrome.</translation>
-<translation id="6412673304250309937">Preveri URL-je, tako da jih primerja s seznamom spletnih mest, ki niso varna, shranjenim v Chromu. Če vam spletno mesto poskusi ukrasti geslo ali ko prenašate škodljivo datoteko, lahko Chrome prav tako pošlje URL-je, vključno z delčki vsebine strani, Varnemu brskanju.</translation>
 <translation id="6427126399757991875">Vaša organizacija nastavlja Chrome …</translation>
 <translation id="6481963882741794338">Povežite Chrome in druge Googlove storitve za osebno prilagajanje in druge namene</translation>
 <translation id="6484712497741564393">Prijavljeni ste kot <ph name="EMAIL" />.
@@ -251,7 +249,6 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma
 <translation id="660537754475262202">Nastavite Chrome kot privzeti brskalnik in povezave odpirajte tukaj.</translation>
 <translation id="6611692150236062461">Če želite preprosto do shranjenih gesel v drugih aplikacijah, uporabite Chrome za samodejno izpolnjevanje.</translation>
 <translation id="6636941099779251629">Vaša organizacija zahteva, da se za uporabo Chroma prijavite. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
-<translation id="6646696210740573446">Googlu pošlje zakriti del URL-ja prek strežnika za zasebnost, ki skrije vaš naslov IP. Če vam spletno mesto poskusi ukrasti geslo ali ko prenašate škodljivo datoteko, lahko Chrome Googlu prav tako pošlje URL-je, vključno z delčki vsebine strani.</translation>
 <translation id="6647304104688527905">Odpiranje novega zavihka v Chromu.</translation>
 <translation id="6684809838922667136">Izboljšajte Chrome</translation>
 <translation id="6709398533399187136">Geslo je bilo razkrito zaradi podatkovne kršitve. Google Upravitelj gesel priporoča, da ga takoj spremenite.</translation>

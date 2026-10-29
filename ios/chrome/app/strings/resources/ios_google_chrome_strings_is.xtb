@@ -198,7 +198,6 @@ Prófaðu að bíða í nokkrar mínútur áður en þú skráir þig út. Ef þ
 <translation id="5460571915754665838">4. Veldu Chrome</translation>
 <translation id="5492504007368565877">Google-aðgangsorðastjórnun getur ekki að athugað aðgangsorðin þín.</translation>
 <translation id="5527026824954593399">Ýttu á „Skoða með Google-kortum í Chrome“.</translation>
-<translation id="5552137475244467770">Chrome athugar aðgangsorðin þín reglulega og ber þau saman við lista sem hafa verið birtir á netinu. Meðan á þessu stendur eru aðgangsorðin þín og notandanöfn dulkóðuð svo enginn geti lesið þau, þ.m.t. ekki Google.</translation>
 <translation id="5554520618550346933">Þegar þú notar aðgangsorð varar Chrome þig við ef það hefur verið birt á netinu. Meðan á þessu stendur eru aðgangsorðin þín og notandanöfnin dulkóðuð svo enginn geti lesið þau, þ.m.t. Google.</translation>
 <translation id="5601180634394228718">Til að skoða fleiri stillingar sem nota gögn til að bæta Chrome-upplifunina þína skaltu fara í <ph name="BEGIN_LINK" />Google-þjónustur<ph name="END_LINK" />.</translation>
 <translation id="5639704535586432836">Opnaðu Stillingar &gt; Persónuvernd &gt; Myndavél &gt; Chrome og kveiktu á myndavélinni.</translation>
@@ -239,7 +238,6 @@ Prófaðu að bíða í nokkrar mínútur áður en þú skiptir um reikning. Ef
 <translation id="6348855835728304880">Nálgastu Chrome-aðgangsorðin þín og fleira í öðrum forritum í tækinu.</translation>
 <translation id="6373751563207403289">Öryggisathugun veitir þér vernd gegn öryggisbrotum, hættulegum vefsvæðum og fleira. Fáðu viðvaranir varðandi öll persónuverndar- eða öryggismál sem Chrome greinir fyrir þig.</translation>
 <translation id="6389317667633680932">Kannaðu nýja eiginleika sem hjálpa þér að fá sem mest út úr Chrome.</translation>
-<translation id="6412673304250309937">Ber vefslóðir saman við lista yfir óörugg vefsvæði sem er vistaður í Chrome. Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chrome einnig sent vefslóðir í Örugga vefskoðun, þar á meðal hluta af innihaldi síðna.</translation>
 <translation id="6427126399757991875">Fyrirtækið þitt er að setja upp Chrome...</translation>
 <translation id="6481963882741794338">Tengdu Chrome við aðrar Google-þjónustur til að sérsníða upplifun þína og fleira</translation>
 <translation id="6484712497741564393">Skráð(ur) inn sem <ph name="EMAIL" />.
@@ -251,7 +249,6 @@ Gögnin þín eru dulkóðuð með aðgangsorði. Sláðu það inn til að nota
 <translation id="660537754475262202">Veldu Chrome sem sjálfgefinn vafra til að opna tengla hér á augabragði.</translation>
 <translation id="6611692150236062461">Notaðu sjálfvirka útfyllingu í Chrome til að hafa greiðan aðgang að vistuðu aðgangsorðunum þínum í öðrum forritum.</translation>
 <translation id="6636941099779251629">Fyrirtækið þitt krefst þess að þú skráir þig inn til að nota Chrome. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
-<translation id="6646696210740573446">Sendir ruglaðan hluta vefslóðarinnar til Google í gegnum traustan þjón sem felur IP-töluna þína. Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chrome einnig sent vefslóðir til Google, þar á meðal hluta af efni síðna.</translation>
 <translation id="6647304104688527905">Opnar nýjan flipa í Chrome.</translation>
 <translation id="6684809838922667136">Bættu Chrome</translation>
 <translation id="6709398533399187136">Aðgangsorðið þitt var afhjúpað vegna öryggisbrots. Aðgangsorðastjórnun Google mælir með að þú breytir því núna.</translation>

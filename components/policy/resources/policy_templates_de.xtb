@@ -1511,6 +1511,23 @@ Wird sie nicht konfiguriert, ist die Funktion „Zum Anrufen klicken“ standard
       Beachte, dass diese Richtlinie JavaScript blockiert, wenn der Ursprung des obersten Dokuments (normalerweise die URL der Seite, die auch in der Adressleiste angezeigt wird) mit einem der Muster übereinstimmt. Daher ist diese Richtlinie nicht geeignet, um Web‑Lieferkettenangriffe zu verhindern. Wenn du beispielsweise das Muster „https://[*.]foo.de/“ angibst, wird nicht verhindert, dass eine Seite, die unter https://beispiel.de gehostet wird, ein Script ausführt, das von https://www.foo.de/beispiel.js geladen wird. Außerdem verhindert das Muster „https://beispiel.de/“ nicht, dass ein Dokument von https://beispiel.de Scripts ausführt, wenn es nicht das übergeordnete Dokument ist, sondern als Subframe in eine Seite eingebettet ist, die auf einem anderen Ursprung gehostet wird, z. B. https://www.bar.de.</translation>
 <translation id="1942015922182679826">Löschen nicht entschlüsselbarer Passwörter aktivieren</translation>
 <translation id="1942626390957213764">Desktop-Freigabe-Hub deaktivieren</translation>
+<translation id="1943243146727870858">Deaktiviere die Einmalanmeldung (SSO) über <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> für die aufgeführten Identitätsanbieter.
+
+Wenn du den Wert „<ph name="POLICY_VALUE_ALL" />“ hinzufügst, werden alle unterstützten Identitätsanbieter für die Einmalanmeldung deaktiviert.
+
+Wenn du den Wert „<ph name="POLICY_VALUE_MICROSOFT" />“ hinzufügst, wird die Unterstützung für die Einmalanmeldung für den Microsoft®-Cloud-Identitätsanbieter in Chrome deaktiviert.
+
+Wenn du diese Richtlinie nicht konfigurierst, werden alle Identitätsanbieter aktiviert, die von <ph name="PRODUCT_NAME" /> unterstützt werden.
+
+Für Identitätsanbieter, die in <ph name="PRODUCT_NAME" /> aktiviert und von Admins auf dem Gerät konfiguriert sind, können Nutzer, die sich über diesen Identitätsanbieter einmal in einer Anwendung anmelden, die <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> unterstützt, über diesen Identitätsanbieter automatisch in Web-Properties angemeldet werden. Informationen zu den Authentifizierungsdaten des Nutzers werden bei jedem Authentifizierungsereignis an den Cloud-Identitätsanbieter des Nutzers gesendet.
+
+Hinweise:
+
+<ph name="PRODUCT_NAME" /> unterstützt nicht die Einmalanmeldung über <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> im Inkognito- oder Gastmodus.
+
+<ph name="PRODUCT_NAME" /> unterstützt die Einmalanmeldung über <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> nur für die folgenden Identitätsanbieter: Microsoft, Okta und Ping.
+
+Diese Funktion ist unter <ph name="MAC_OS_NAME" /> 10.15 und höher verfügbar.</translation>
 <translation id="1943628907052340534"><ph name="PRODUCT_NAME" /> nicht öffnen, wenn sich der Nutzer in <ph name="MS_WIN_NAME" /> anmeldet</translation>
 <translation id="194407941132272412">Website-Isolierung für alle Websites deaktivieren (Nutzer kann dies ändern)</translation>
 <translation id="1945994447126139909">Diese Unternehmensrichtlinie kann nur übergangsweise verwendet werden und wird in Version 88 von <ph name="PRODUCT_NAME" /> entfernt.
@@ -5557,6 +5574,27 @@ Das Erhöhen über den Standardwert (128) erfolgt auf eigenes Risiko.
 Beachte, dass die erzwungenen Limits durch „<ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" />“ beeinflusst werden.</translation>
 <translation id="4528981768990874684">Funktion „<ph name="IP_PROTECTION_NAME" />“ deaktivieren.</translation>
 <translation id="453031441196755904">Diese Richtlinie ist veraltet.</translation>
+<translation id="4531088355818260318">Mit dieser Richtlinie lässt sich eine Liste von Regeln definieren, um benutzerdefinierte HTTP-Header in Webanfragen einzuschleusen, die mit bestimmten URL-Mustern übereinstimmen. Header, die durch diese Richtlinie festgelegt werden, haben Vorrang vor Headern, die ursprünglich bereits in der Anfrage vorhanden waren, sowie vor Änderungen, die von Nutzern oder Erweiterungen vorgenommen werden.
+
+Ein häufiger Anwendungsfall für diese Richtlinie ist die Durchsetzung von Mandanten-Zugriffskontrollen durch das Einschleusen benutzerdefinierter Header (z. B. <ph name="EXAMPLE_HEADER_NAME" />).
+
+Die Richtlinie akzeptiert eine Liste von Regeln. Jede Regel enthält:
+
+* <ph name="PATTERNS_KEY" />: Eine Liste von URL-Mustern, die abgeglichen werden sollen. Wie ein URL-Muster formatiert wird, erfährst du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+* <ph name="HEADERS_KEY" />: Eine Liste von Objekten, die die einzufügenden Header repräsentieren. Jedes Objekt enthält:
+
+  * <ph name="HEADER_NAME_KEY" />: Den Namen des einzuschleusenden Headers.
+
+  * <ph name="HEADER_VALUE_KEY" />: Den Wert des einzuschleusenden Headers.
+
+Wenn mehrere Regeln auf eine Anfrage zutreffen, werden Header aus allen übereinstimmenden Regeln angewendet. Falls mehrere Header denselben Namen haben, wird der Header mit dem spezifischsten URL-Muster angewendet. Sind die Muster gleich spezifisch, wird der Header angewendet, der zuletzt in der Liste erscheint.
+
+Headernamen müssen RFC 2616 (https://www.rfc-editor.org/rfc/rfc2616) entsprechen. Headerwerte dürfen keine NUL-, CR- oder LF-Zeichen enthalten. Einzelne Header dürfen eine Größe von 8 KB nicht überschreiten. Ungültige Header und URL-Muster werden ignoriert.
+
+Diese Richtlinie ist auf insgesamt 500 URL-Muster über alle Regeln hinweg begrenzt. Jede Regel darf maximal 20 Header enthalten. Muster und Header, die diese Grenzwerte überschreiten, werden ignoriert.
+
+Hinweis: Wenn ein URL-Muster mit unverschlüsselten Schemas übereinstimmt (http://, ws:// oder kein Schema), werden die konfigurierten Header möglicherweise als Nur-Text über einen unverschlüsselten Kanal übertragen und können von Netzwerkbeobachtern eingesehen werden. Beschränke URL-Muster auf verschlüsselte Schemas (https:// oder wss://), um vertrauliche oder identifizierende Headerwerte zu schützen.</translation>
 <translation id="4531706050939927436">Die Installation von Android-Apps kann von der Google Admin-Konsole aus über Google Play erzwungen werden. Android-Apps nutzen diese Richtlinie nicht.</translation>
 <translation id="4534500438517478692">Name der Android-Einschränkung:</translation>
 <translation id="4541530620466526913">Lokale Gerätekonten</translation>
@@ -7097,6 +7135,7 @@ Es gibt mehrere Richtlinien, die Ursprünge auflisten, die sich auf Anfragen an 
 
       Wenn sie auf "false" gesetzt oder nicht konfiguriert ist, werden keine Informationen ausgegeben.
       Ist sie auf "true" gesetzt, werden Informationen zu Anwendungen und zur Verwendung eines Geräts ausgegeben.</translation>
+<translation id="5418723809273651607">Ping®-Cloud-Identitätsanbieter</translation>
 <translation id="5420245232720940848">Aktiviert PCIe-Tunneling für Thunderbolt/USB4-Peripheriegeräte und schränkt die Gerätefunktion ein</translation>
 <translation id="5420673997623782432">Zugriff auf Standortbestimmung des Systems für alle Clients blockieren</translation>
 <translation id="5420774177427557782">Bestimmt, ob VMs, für die diese Konfiguration verwendet wird, installiert und ausgeführt (<ph name="INSTALL_ALLOWED" />), ausgeführt, aber nicht installiert (<ph name="RUN_ALLOWED" />), oder nicht ausgeführt (<ph name="BLOCKED" />) werden können. Hinweis: Zum Installieren einer VM muss auch der installer_image_x86_64-Schlüssel festgelegt sein. Wenn eine Konfiguration vollständig entfernt wird, wird die Property implizit auf „<ph name="BLOCKED" />“ gesetzt. Dadurch wird verhindert, dass VMs ohne Richtlinie ausgeführt werden.</translation>

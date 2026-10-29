@@ -19,6 +19,7 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="1131805035311359397">Parollarınızın data pozuntuları və digər güvənlik məsələlərinə qarşı güvəndə olduğunu yoxlamaq üçün <ph name="BEGIN_LINK" />Chromium'a daxil olun<ph name="END_LINK" />.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{Administrator bu güncəlləməni tətbiq etmək üçün Chromium-u yenidən başlatmağınızı tələb edir. Açıq Anonim və ya İzolə edilmiş pəncərə var. Yenidən başlatdıqdan sonra təkrar açılmayacaq.}other{Administrator bu güncəlləməni tətbiq etmək üçün Chromium-u yenidən başlatmağınızı tələb edir. Profillər üzrə # Anonim və İzolə edilmiş pəncərə açıqdır. Yenidən başlatdıqdan sonra onlar yenidən açılmayacaq.}}</translation>
 <translation id="1153368717515616349">Chromium menyusuna klikləyin</translation>
+<translation id="1157952955648710254">Google Axtarış yan panelini bağlayın</translation>
 <translation id="1157985233335035034">Son dillər</translation>
 <translation id="1184145431117212167">Windows versiyanız dəstəklənmədiyi üçün quraşdırma alınmadı.</translation>
 <translation id="1185134272377778587">Chromium haqqında</translation>
@@ -46,6 +47,7 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="1383876407941801731">Axtar</translation>
 <translation id="1388276868779258475">İstənilən vaxt, istənilən yerdə axtarış etmək üçün Chromium tətbiqindən istifadə edin</translation>
 <translation id="141901961143729572">Fikirlərinizi paylaşın</translation>
+<translation id="1438812738230833934">Axtarış edərkən sual vermək üçün Google Axtarışı yan paneldə yenidən aça bilərsiniz</translation>
 <translation id="1465192221147974788">Pəncərəni paylaşmaq üçün Sistem Ayarlarında Chromium üzrə ekranın qeydə alınmasına icazə verin.</translation>
 <translation id="1478370723027452770">Sınaq üçün Chrome ilə bağlı kömək alın</translation>
 <translation id="147870194906295621"><ph name="DEVICE" /> cihazından yadda saxlanmış məlumatları və s. əldə etmək üçün Chromium-a daxil olun</translation>
@@ -149,6 +151,7 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="2483889755041906834">Chromium'da</translation>
 <translation id="2485422356828889247">Sistemdən silin</translation>
 <translation id="2513154137948333830">Yenidən yükləmə tələb edilir: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2521391734665471391">Google Axtarış üzrə Sİ rejimini bağlayın</translation>
 <translation id="2542968102051442371">Şəkil Axtarışı ilə mətn seçin</translation>
 <translation id="2554739539410784893">Chromium mövcud parolları əvəz etmək istəyir. İcazə vermək üçün Windows parolunu yazın.</translation>
 <translation id="2560420686485554789">Faylları endirmək üçün Chromium yaddaşa giriş tələb edir</translation>
@@ -340,6 +343,7 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="4470974262661801543">Google Hesabında Chromium datasını istifadə etmək və saxlamaq üçün parol ifadəsi daxil edin</translation>
 <translation id="4493028449971051158">Başlatma xətası: quraşdırıcını administrator kimi işə salın.</translation>
 <translation id="4501471624619070934">Bu ölkədə giriş məhdudlaşdırıldığı üçün quraşdırma alınmadı.</translation>
+<translation id="4501839397124711198">Axtarış edərkən sual vermək üçün yan paneldə Google Axtarışı bərkidə bilərsiniz</translation>
 <translation id="4510853178268397146">Bu artırma datanın toplanma və istifadə qaydası kimi məxfilik təcrübələrini dərc etməyib. Chromium onu silməyinizi tövsiyə edir.</translation>
 <translation id="452711251841752011">Chromium'a xoş gəlmisiniz; yeni brauzer pəncərəsi açılıb</translation>
 <translation id="4531137820806573936">Chromium ətrafın xəritəsini çəkmək və əllərinizi izləmək üçün icazə tələb edir</translation>
@@ -383,8 +387,10 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="4987820182225656817">Qonaqlar geridə heç nə buraxmadan Chromium istifadə edə bilər.</translation>
 <translation id="4992938037305302429">Chromium-dakı Hesabınız</translation>
 <translation id="4994636714258228724">Özünüzü Chromium'a əlavə edin</translation>
+<translation id="5000497292978544380">Google Axtarışda Sİ rejimi</translation>
 <translation id="504699503110800016">Əlavə menyunu açın</translation>
 <translation id="5074496654342756568"><ph name="DEVICE_TYPE" /> cihazında Chromium ilə bütün Google sevimlilərinizə daxil olun</translation>
+<translation id="5121592697493894155">Yan paneldə Google Axtarış</translation>
 <translation id="5123973130450702873">Chromium əllərinizi izləmək üçün icazə istəyir</translation>
 <translation id="5141988424377517949">Bu yaxınlarda daxil olmamısınız. Chromium sildi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5171868502429358653">Chromium'a daxil olun</translation>
@@ -670,6 +676,7 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="7781047659465034537">Chromium-u defolt kimi ayarlayın və işləmə panelinə bərkidin</translation>
 <translation id="7786760609782648049">Chromium'u sürətli edin</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
+<translation id="7800043020703832708">Yan paneldə Google Axtarışı bağlayın</translation>
 <translation id="7803986347287457849">İnternet trafikinizə girişi olanların daxil olduğunuz saytları görməsini çətinləşdirin. Chromium saytın IP ünvanını DNS-də (Domen adı sistemi) axtarmaq üçün güvənli bağlantıdan istifadə edir.</translation>
 <translation id="7810005234485217901">Asan giriş üçün Şəkil Axtarışını bərkidə bilərsiniz</translation>
 <translation id="7813559034750130602">{COUNT,plural, =1{Chromium üçün yeni güncəllənmə əlçatandır. Chromium yenidən işə başladıqdan sonra tətbiq ediləcək. Açıq Anonim və ya İzolə edilmiş pəncərə var. Yenidən başlatdıqdan sonra təkrar açılmayacaq.}other{Chromium üçün yeni güncəllənmə əlçatandır. Chromium yenidən işə başladıqdan sonra tətbiq ediləcək. Profillər üzrə # Anonim və İzolə edilmiş pəncərə açıqdır. Yenidən başlatdıqdan sonra onlar yenidən açılmayacaq.}}</translation>
@@ -684,6 +691,7 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="7873537467422636035">Parol ifadəsini unutmusunuzsa, yaxud bu ayarı dəyişmək istəyirsinizsə, <ph name="BEGIN_LINK" />hesabınızdakı Chromium datasını silin<ph name="END_LINK" /></translation>
 <translation id="7874369989024033742">İstədiyiniz zaman Chromium-da Gemini-ı cəld açın</translation>
 <translation id="7888981273428720788">Chromium-u defolt kimi ayarlayın</translation>
+<translation id="7904213866086517086">Yan paneldə Google Axtarışı yenidən açın</translation>
 <translation id="7934340546140346950">Chromium mümkün olduqda güvənsiz bağlantıları avtomatik olaraq HTTPS-ə təkmilləşdirir</translation>
 <translation id="7937630085815544518">Chromium'a <ph name="USER_EMAIL_ADDRESS" /> kimi daxil olmuşdunuz. Lütfən, yenidən daxil olmaq üçün eyni hesabdan istifadə edin.</translation>
 <translation id="7944602660083060118"><ph name="EXISTING_USER" /> artıq daxil olub. Baxışı ayrı saxlamaq üçün öz profilinizdə Chromium-a <ph name="USER_EMAIL_ADDRESS" /> kimi daxil olun. Bütün cihazlarınızda əlfəcinlərinizi və daha çoxunu da əldə edəcəksiniz.</translation>
@@ -738,14 +746,15 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="8370517070665726704">Müəllif hüquqları <ph name="YEAR" /> Google MMC. Bütün hüquqlar qorunur.</translation>
 <translation id="8372327902843331129">Parolları və s. datanı bütün cihazlarınızda əldə etmək üçün Chromium-a daxil olun. Daxil olduqdan sonra bu parol Google Hesabında yadda saxlanılacaq.</translation>
 <translation id="837460953767177950">Sonra Chromium-u yenidən başlatmalı olacaqsınız.</translation>
+<translation id="8376752431516546391">Google Axtarış yan paneli</translation>
 <translation id="8397248745433792218">Chromium onu silməyinizi tövsiyə edir. <ph name="BEGIN_LINK" />Dəstəklənən artırmalar haqqında ətraflı məlumat əldə edin<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">Bu artırmanın yayımı tərtibatçı tərəfindən ləğv edildi və təhlükəli ola bilər. Onu Chromium-dan silin ki, daxil olduğunuz saytlardakı dataya, o cümlədən şəxsi məlumatlara baxa və onları dəyişə bilməsin.</translation>
+<translation id="8406687098231754303">Alətlər panelindəki "Yan paneldə Google Axtarış" düyməsindən istifadə edərək axtarış zamanı suallar vermək üçün yan paneldə Google Axtarışı yenidən aça bilərsiniz</translation>
 <translation id="8416884904046428725">Müəyyən datanın Google Hesabında yadda saxlanılması və bütün cihazlarda istifadə edilməsi üçün Chromium kimliyinizi doğrulamalıdır. İndi çıxsanız, bu data silinəcək.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Chromium'u bir gün ərzində yenidən başladın}other{Chromium'u # gün ərzində yenidən başladın}}</translation>
 <translation id="8438543370129609977">Şəkil axtarışından istifadə edəndə səhifə başlığı, URL və kontent, o cümlədən PDF sənədləri serverə göndərilir. <ph name="LEARN_MORE" /></translation>
 <translation id="8447525028100794994">Chromium-da Şəkil Axtarışı ilə axtarış haqqında ətraflı məlumat</translation>
 <translation id="8453117565092476964">Quraşdırıcı arxivi zədələnib və ya yanlışdır. Lütfən, Chromium'u yenidən endirin.</translation>
-<translation id="8458614432758743027">Chromium Windows 10 və ya daha yeni versiya tələb edir.</translation>
 <translation id="8463672209299734063">İstəyə görə: Diaqnostika və istifadəçi datasını avtomatik Google'a göndərməklə ChromiumOS funksiyalarını təkmilləşdirməyə yardım edin.</translation>
 <translation id="8471947159125090285">Chromium datasını Google Hesabınızda istifadə etmək və yadda saxlamaq üçün kimliyinizi doğrulayın</translation>
 <translation id="8482493977473846331">Chromium-a giriş sorğularını göstərir</translation>
@@ -757,6 +766,7 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="8555465886620020932">Xidmət xətası: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Bəzi Chromium funksiyaları və artırmaları qısayollara malikdir. Onları yenidən aktiv etməyi seçə bilərsiniz.</translation>
 <translation id="8556420416730706394">Asan giriş üçün Şəkil Axtarışını bərkidə bilərsiniz; yan panelin yuxarısındakı Bərkitmə düyməsinə klikləyin</translation>
+<translation id="8564408666201523086">Uğurlu oldu! Artıq yan paneldə Google Axtarış ilə axtarış edərkən asanlıqla suallar verə bilərsiniz</translation>
 <translation id="856656450041460113">Dil siyahısını axtarın</translation>
 <translation id="8576826849825683917">Bir neçə təşkilat Chromium-u idarə edir</translation>
 <translation id="8586442755830160949">Müəlliflik Hüququ <ph name="YEAR" /> Chromium Müəllifləri. Bütün hüquqlar qorunur.</translation>

@@ -198,7 +198,6 @@ Saioa amaitu aurretik, itxaron minutu batzuk. Orain amaitzen baduzu saioa, datua
 <translation id="5460571915754665838">4. Hautatu Chrome.</translation>
 <translation id="5492504007368565877">Google-ren Pasahitz-kudeatzailea aplikazioak ezin ditu egiaztatu pasahitzak.</translation>
 <translation id="5527026824954593399">Sakatu "Ikusi Google Maps-ekin Chrome-n".</translation>
-<translation id="5552137475244467770">Sarean argitaratu diren zerrendetan zure pasahitzak dauden egiaztatzen du noizean behin Chrome-k. Hori egiteko, pasahitzak eta erabiltzaile-izenak enkriptatu egiten ditu, inork ezin ditzan irakurri, Google barne.</translation>
 <translation id="5554520618550346933">Pasahitz bat erabiltzen duzunean, Chrome-k sarean argitaratu den ala ez jakinarazten dizu. Horretarako, pasahitzak eta erabiltzaile-izenak enkriptatzen ditu inork irakurri ezin ditzan, ezta Google-k ere.</translation>
 <translation id="5601180634394228718">Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikusteko, joan <ph name="BEGIN_LINK" />Google-ren zerbitzuak<ph name="END_LINK" /> atalera.</translation>
 <translation id="5639704535586432836">Ireki Ezarpenak &gt; Pribatutasuna &gt; Kamera &gt; Google Chrome, eta aktibatu kamera.</translation>
@@ -239,7 +238,6 @@ Kontua aldatu aurretik, itxaron minutu batzuk. Kontua orain aldatzen baduzu, dat
 <translation id="6348855835728304880">Erabili Chrome-ko pasahitzak eta gainerako informazioa gailu honetako beste aplikazioetan.</translation>
 <translation id="6373751563207403289">Segurtasun-egiaztapenari esker, babestuta egongo zara datuen isilpekotasunaren urratzeen, seguruak ez diren webguneen eta abarren aurrean. Jaso Chrome-k zuretzat hautematen dituen pribatutasun- edo segurtasun-arazoei buruzko alertak.</translation>
 <translation id="6389317667633680932">Arakatu Chrome-ri etekinik handiena ateratzen laguntzen dizuten eginbide berriak.</translation>
-<translation id="6412673304250309937">URLak Chrome-n gordetako webgune ez-seguruen zerrendan dauden ala ez egiaztatzen du. Webguneren bat pasahitza lapurtzen saiatzen bada, edo fitxategi kaltegarriren bat deskargatzen baduzu, baliteke Chrome-k URLak ere bidaltzea (orriko edukiaren zati batzuk barne) Arakatze segurua eginbideari.</translation>
 <translation id="6427126399757991875">Zure erakundea Chrome konfiguratzen ari da…</translation>
 <translation id="6481963882741794338">Lotu Chrome eta Google-ren beste zerbitzuak pertsonalizaziorako eta bestelako helburuetarako</translation>
 <translation id="6484712497741564393"><ph name="EMAIL" /> gisa hasi duzu saioa.
@@ -251,7 +249,6 @@ Datuak pasaesaldiarekin enkriptatuta daude. Chrome-ko datuak Google-ko kontuan g
 <translation id="660537754475262202">Ezarri Chrome arakatzaile lehenetsi gisa, estekak berehala irekitzeko.</translation>
 <translation id="6611692150236062461">Gordetako pasahitzak beste aplikazio batzuetan erraz lortzeko, aukeratu Chrome betetze automatikorako.</translation>
 <translation id="6636941099779251629">Erakundeak saioa hastea eskatzen du Chrome erabiltzeko. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
-<translation id="6646696210740573446">URLaren zati nahasi bat bidaltzen dio Google-ri, zure IP helbidea ezkutatzen duen pribatutasun-zerbitzari baten bidez. Webguneren bat pasahitza lapurtzen saiatzen bada edo fitxategi kaltegarriren bat deskargatzen baduzu, baliteke Chrome-k URLak ere bidaltzea (orriko edukiaren zati batzuk barne) Google-ri.</translation>
 <translation id="6647304104688527905">Chrome-n fitxa berri bat irekitzen du.</translation>
 <translation id="6684809838922667136">Hobetu Chrome</translation>
 <translation id="6709398533399187136">Pasahitza arriskuan jarri da, datuen isilpekotasuna urratu delako. Google-ren Pasahitz-kudeatzailea zerbitzuak hura orain aldatzea gomendatzen du.</translation>

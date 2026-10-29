@@ -27,6 +27,7 @@
 <translation id="3812541808639806898">이미지 대체 텍스트 뷰어</translation>
 <translation id="381767806621926835">상세 설명에 액세스하려면 'longdesc' 또는 'aria-describedat' 속성을 포함하는 항목을 마우스 오른쪽 버튼으로 클릭합니다.</translation>
 <translation id="4023902424053835668">화살표 키를 사용하여 웹페이지 텍스트를 탐색합니다.</translation>
+<translation id="4384008284958619421">이제 최신 스크린 리더와 Google Chrome에서 액세스 가능한 요소 설명 및 ARIA 표준을 기본적으로 지원합니다.</translation>
 <translation id="4388820049312272371">빠르게 깜박이며 커서 위치를 강조표시합니다.</translation>
 <translation id="4394049700291259645">사용 중지</translation>
 <translation id="4769065380738716500">이미지를 대체 텍스트로 바꿨습니다.</translation>
@@ -63,6 +64,7 @@
 <translation id="7658239707568436148">취소</translation>
 <translation id="786423340267544509">aria-describedat 또는 longdesc 속성을 포함하는 요소에 테두리 추가</translation>
 <translation id="7942349550061667556">빨간색</translation>
+<translation id="8081200409424070383">상세 설명은 2026년 11월 20일에 지원 중단됩니다.</translation>
 <translation id="8260673944985561857">캐럿 브라우징 옵션</translation>
 <translation id="8321034316479930120">애니메이션 정책</translation>
 <translation id="8480209185614411573">고대비</translation>

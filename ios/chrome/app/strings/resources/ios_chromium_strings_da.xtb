@@ -58,7 +58,6 @@ Der kan ikke gemmes nye bogmærker på din konto, før du sletter nogle. Hvis du
 <translation id="2027881372245801507">Deaktivering af forslag styrer ikke Chromiums behandling af sidetitler og webadresser for andre funktioner. Du kan administrere adgangen til disse data i dine <ph name="BEGIN_LINK" />synkroniseringsindstillinger<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Log ind på dette website og i Chromium for at få adgang til dine adgangskoder og meget mere på alle dine enheder</translation>
 <translation id="2042889939382983733">Se din Chromium-historik</translation>
-<translation id="2052320862053429062">Chromium tjekker regelmæssigt, om dine adgangskoder er på nogen lister over adgangskoder, der er blevet afsløret online. Dine adgangskoder og brugernavne krypteres under disse tjek, så de kan ikke læses af nogen, heller ikke Google.</translation>
 <translation id="2059365270911640413">Afslut konfigurationen af Chromium</translation>
 <translation id="2168108852149185974">Nogle tilføjelser får Chromium til at gå ned. Prøv at afinstallere:</translation>
 <translation id="2168593389981132306">Gør Chromium bedre</translation>
@@ -69,7 +68,6 @@ Der kan ikke gemmes nye bogmærker på din konto, før du sletter nogle. Hvis du
 <translation id="2236584955986023187">Det betyder, at Chromium anmoder om computerwebsitet hver gang.</translation>
 <translation id="2245694534483711162">Gemini kan bruge din præcise lokation, afhængigt af den tilladelse du allerede har givet Chromium</translation>
 <translation id="2270466829363945454">Shop</translation>
-<translation id="2313870531055795960">Tjekker webadresser ift. en liste over usikre websites, der er gemt i Chromium. Hvis et website forsøger at stjæle din adgangskode, eller hvis du downloader en skadelig fil, sender Chromium muligvis også webadresser og bl.a. mindre mængder sideindhold til Beskyttet browsing.</translation>
 <translation id="2314220608288760290">Chromium åbner automatisk YouTube-inkognitolinks i inkognitotilstand.</translation>
 <translation id="231828342043114302">Log ind i Chromium for at få personligt tilpasset indhold baseret på dine interesser.</translation>
 <translation id="2334943301233020675">Følgende adgangsnøgler blev ikke importeret til Adgangskodeadministrator, fordi de ikke opfylder kravene.</translation>

@@ -63,7 +63,7 @@
 <translation id="1099928364755383720">picture-in-picture automático</translation>
 <translation id="1100782917270858593">Botão "Retomar jornada". Pressione Enter para retomar a jornada e ver as atividades relevantes no seu histórico do Chrome</translation>
 <translation id="1101672080107056897">Ação de erro</translation>
-<translation id="1104409666019087579">Alguns campos obrigatórios estão em branco. Preencha antes de salvar.</translation>
+<translation id="1104409666019087579">Preencha os campos obrigatórios antes de salvar.</translation>
 <translation id="1104860668737945357">Botão "Gerenciar senhas". Ative para conferir e gerenciar suas senhas nas configurações do Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110809716549020493">Cartão virtual não preenchido? Copie os detalhes do cartão virtual para a área de transferência clicando neles. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL_VIRTUAL_CARD" /></translation>
@@ -96,7 +96,6 @@
 <translation id="1165174597379888365">Uma página é acessada</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Nenhum}=1{Em 1 site. Sua Conta do Google vai continuar conectada}one{Em # site. Sua Conta do Google vai continuar conectada}other{Em # sites. Sua Conta do Google vai continuar conectada}}</translation>
 <translation id="1167877250265821930">Falha ao baixar <ph name="LANGUAGE" /></translation>
-<translation id="1171306609584863516">Verificado por <ph name="IDP_ORIGIN" /></translation>
 <translation id="1174644974616730562">Envelope chinês 1</translation>
 <translation id="1174723505405632867">Você quer permitir que <ph name="EMBEDDED_URL" /> use cookies e dados do site em <ph name="TOP_LEVEL_URL" />?
 
@@ -585,6 +584,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1988881251331415125">Se o endereço estiver correto, <ph name="BEGIN_LINK" />tente executar o Diagnóstico de Conectividade<ph name="END_LINK" />.</translation>
 <translation id="1991370806334788445">Permita o uso de cookies de terceiros, o que diminui a proteção da navegação, mas os recursos do site têm mais chances de funcionar conforme o esperado.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
+<translation id="1996557034791506430">Remover permissão?</translation>
 <translation id="1997484222658892567"><ph name="URL" /> quer armazenar permanentemente dados grandes no computador local</translation>
 <translation id="1997774360448418989">Papel (fino)</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{e mais um}one{e mais #}other{e mais #}}</translation>
@@ -1206,6 +1206,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3030331669969285614">Essas sinalizações evitam ou revertem uma mudança interruptiva e só ficam disponíveis por tempo limitado.</translation>
 <translation id="3033200136993730761">Seu endereço de casa deixa os Serviços do Google, como resultados da Pesquisa e rotas do Google Maps, mais úteis e relevantes. Ele pode ser editado ou excluído na sua <ph name="BEGIN_LINK" />Conta do Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3033777742142108756">Sensores de movimento e luz permitidos no momento</translation>
+<translation id="3034219227076811559">Pesquisa Google no Chrome</translation>
 <translation id="3034526003882782781">Configuração de rolagem e zoom permitida</translation>
 <translation id="3037177537145227281">Monitorando preço</translation>
 <translation id="3037605927509011580">Ah, não!</translation>
@@ -2483,6 +2484,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5115232566827194440">Substituição da sessão de visitante gerenciada restrita</translation>
 <translation id="5115563688576182185">64 bits</translation>
 <translation id="5116015291385561204">Confirme sua identidade para preencher automaticamente informações sensíveis</translation>
+<translation id="5121592697493894155">Pesquisa Google no painel lateral</translation>
 <translation id="5122786942953798871">Envelope (algodão)</translation>
 <translation id="5123063207673082822">Final de semana</translation>
 <translation id="5124797626438336458">Tela de erro da opção Compre Agora, Pague Depois aberta na metade do tamanho.</translation>
@@ -3222,6 +3224,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6342069812937806050">Neste instante</translation>
 <translation id="6342171901363060580">Enviamos este alerta porque o site não é compatível com HTTPS e você está no modo de navegação anônima. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Rotas</translation>
+<translation id="6345664705388712774">Adicionar imagens à sua pesquisa</translation>
 <translation id="6348220984832452017">Variações ativas</translation>
 <translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>
 <translation id="6350739641326887427">Pague sem copiar e colar o código Pix. <ph name="BEGIN_LINK1" />Veja como funciona<ph name="END_LINK1" /></translation>
@@ -3503,6 +3506,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6834757537110528125">O site não pode fazer uma conexão segura</translation>
 <translation id="6841864657731852591">Cilindro de gravação</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
+<translation id="6843919992766261684">A partir de agora, <ph name="ISSUER" /> deixará de confirmar este e-mail de forma automática</translation>
 <translation id="6844746916504777213">Nunca compartilhar estes sites</translation>
 <translation id="6844998850832008753">Rastreamento de mãos permitido apenas desta vez</translation>
 <translation id="6849023911358004088">Botão "Gerenciar configurações de segurança". Ative para gerenciar o Navegação segura e muito mais nas configurações do Chrome</translation>
@@ -3653,6 +3657,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="7083258188081898530">Bandeja 9</translation>
 <translation id="70846382339153529">Texto OpenDocument</translation>
 <translation id="7086090958708083563">Upload solicitado pelo usuário</translation>
+<translation id="7087807086191250928">O Gemini pode cometer erros. Toque e segure a sugestão para revisar a fonte original e garantir que as informações estejam corretas.</translation>
 <translation id="7089745480771070611">Abre no painel lateral</translation>
 <translation id="7090698782953528257">Me ajude a traçar o gráfico de uma função para visualizar a equação matemática e ver a forma da curva</translation>
 <translation id="7092087596499105699">O admin configurou o conector de gateway seguro para proteger o acesso aos aplicativos da web privados da sua organização. Ele pode usar dados do seu perfil de trabalho para verificar o acesso.</translation>
@@ -4084,6 +4089,7 @@ Mais detalhes:
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="776749070095465053">Tecido</translation>
+<translation id="7770247511810814330">Remover permissão</translation>
 <translation id="7772659560036894129">Nomes dos produtos</translation>
 <translation id="7773005668374414287">Mesma ordem virada para cima</translation>
 <translation id="7779418012194492374">Revogue o acesso ao dispositivo <ph name="DEVICE_NAME" /></translation>
@@ -4092,7 +4098,7 @@ Mais detalhes:
 <translation id="7782465647372057580">As informações da conta são criptografadas e a privacidade delas é protegida</translation>
 <translation id="7785471469930192436">Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de pesquisa, se aplicável</translation>
 <translation id="7785790577395078482">este tablet</translation>
-<translation id="7786368602962652765">Um campo obrigatório está em branco. Preencha antes de salvar.</translation>
+<translation id="7786368602962652765">Preencha o campo obrigatório antes de salvar.</translation>
 <translation id="7791011319128895129">Não lançada</translation>
 <translation id="7791196057686275387">Agrupar</translation>
 <translation id="7791543448312431591">Adicionar</translation>
@@ -4195,7 +4201,6 @@ Mais detalhes:
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7961493403319780137">Saiba mais sobre esse recurso: preencher códigos de verificação do Gmail automaticamente</translation>
 <translation id="7962467575542381659">Computador da plataforma</translation>
-<translation id="796439090588610411">O Chrome vai parar de confirmar automaticamente este e-mail em sites compatíveis.</translation>
 <translation id="7966803981046576691">Tipo de conta da tarefa</translation>
 <translation id="7967973398323409409">As informações que você preenche automaticamente nunca são vistas por ninguém</translation>
 <translation id="79682505114836835">O valor "<ph name="VALUE" />" é uma cor hexadecimal inválida.</translation>
@@ -4321,6 +4326,7 @@ Mais detalhes:
 <translation id="8199437620497683918">Disco óptico (brilhante)</translation>
 <translation id="8202097416529803614">Resumo do pedido</translation>
 <translation id="8202370299023114387">Conflito</translation>
+<translation id="8203105157044679380">Painel da Pesquisa Google</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
 <translation id="8208629719488976364">As informações sobre sua impressora e o conteúdo das páginas que você imprime são enviados ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem ser verificados em busca de dados sensíveis e podem ser armazenados com base nas políticas da empresa e ficar visíveis para seu administrador.</translation>
 <translation id="8210490490377416373">Selecionar o nome da política</translation>
@@ -4431,6 +4437,7 @@ Mais detalhes:
 <translation id="8371841335382565017">Mostrar lista de dispositivos para transmissão</translation>
 <translation id="8371889962595521444">Personalizar certificados raiz</translation>
 <translation id="8374636051559112948">Varia</translation>
+<translation id="8376752431516546391">Painel lateral da Pesquisa Google</translation>
 <translation id="8377507422902936905">Pedidos</translation>
 <translation id="837840316697671463">Se você não encontrar um arquivo no seu dispositivo, procure em <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Gerenciado pela sua organização</translation>
@@ -4477,7 +4484,6 @@ Mais detalhes:
 <translation id="8446884382197647889">Saiba mais</translation>
 <translation id="8449036207308062757">Gerenciar armazenamento</translation>
 <translation id="8449155699563577224">17 x 24 pol.</translation>
-<translation id="8449513475775663994">Remover e-mail verificado?</translation>
 <translation id="8449836157089738489">Abrir tudo em um novo grupo de guias</translation>
 <translation id="8451518040456311377">Salvar e preencher documentos de identificação</translation>
 <translation id="84561192812921051">O administrador pode fazer mudanças no seu perfil e no seu navegador remotamente, analisar informações sobre o navegador com relatórios e realizar outras tarefas necessárias. A atividade deste dispositivo também pode ser gerenciada fora do Chrome.  <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>

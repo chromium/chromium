@@ -58,7 +58,6 @@
 <translation id="2027881372245801507">A javaslatok kikapcsolása nem befolyásolja azt, hogy a Chromium hogyan dolgozza fel az oldalcímeket és az URL-eket más funkciókhoz. Az ezekhez az adatokhoz való hozzáférést a <ph name="BEGIN_LINK" />szinkronizálási beállításokban<ph name="END_LINK" /> kezelheti.</translation>
 <translation id="2036929290919363111">Jelentkezzen be erre a webhelyre és a Chromiumba, hogy az összes eszközén hozzáférhessen jelszavaihoz és még sok minden máshoz</translation>
 <translation id="2042889939382983733">A Chromium-előzmények megtekintése</translation>
-<translation id="2052320862053429062">A Chromium rendszeres időközönként online közzétett listák alapján ellenőrzi az Ön jelszavait. Az eljárás során jelszavai és felhasználónevei titkosítva vannak, így senki nem láthatja őket, még a Google sem.</translation>
 <translation id="2059365270911640413">Fejezze be a Chromium beállítását</translation>
 <translation id="2168108852149185974">Bizonyos bővítmények a Chromium összeomlását eredményezik. Távolítsa el a következőket:</translation>
 <translation id="2168593389981132306">A Chromium fejlesztése</translation>
@@ -69,7 +68,6 @@
 <translation id="2236584955986023187">Ez azt jelenti, hogy a Chromium mindig az asztali webhelyet kéri majd.</translation>
 <translation id="2245694534483711162">A Gemini használhatja az Ön pontos helyadatait a Chromiumnak már megadott engedélytől függően</translation>
 <translation id="2270466829363945454">Vásárlás</translation>
-<translation id="2313870531055795960">Ellenőrzi az URL-eket a Chromiumban a nem biztonságos webhelyekről tárolt lista alapján. Ha valamelyik webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön kártékony fájlt tölt le, akkor a Chromium elküldheti az URL-eket is (az oldal tartalmának részeivel együtt) a Biztonságos Böngészésnek.</translation>
 <translation id="2314220608288760290">A Chromium automatikusan inkognitó módban nyitja meg a YouTube inkognitó linkjeit.</translation>
 <translation id="231828342043114302">Ha személyre szabott tartalmakat szeretne kapni az érdeklődési körei alapján, jelentkezzen be a Chromiumba.</translation>
 <translation id="2334943301233020675">A következő azonosítókulcsokat nem importálta a rendszer a Jelszókezelőbe, mert nem felelnek meg a követelményeknek.</translation>

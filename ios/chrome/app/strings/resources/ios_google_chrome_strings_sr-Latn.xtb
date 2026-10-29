@@ -198,7 +198,6 @@ Sačekajte nekoliko minuta pre nego što se odjavite. Ako se odjavite odmah, ovi
 <translation id="5460571915754665838">4. Izaberite Chrome</translation>
 <translation id="5492504007368565877">Google menadžer lozinki ne može da vam proverava lozinke.</translation>
 <translation id="5527026824954593399">Dodirnite Prikaži pomoću Google mapa u Chrome-u.</translation>
-<translation id="5552137475244467770">Chrome povremeno upoređuje vaše lozinke sa listama koje su objavljene onlajn. Dok to radi, vaše lozinke i korisnička imena su šifrovani, pa niko ne može da ih pročita, uključujući Google.</translation>
 <translation id="5554520618550346933">Kada koristite lozinku, Chrome vas upozorava ako je ona objavljena onlajn. Dok to radi, vaše lozinke i korisnička imena su šifrovani, pa niko ne može da ih pročita, uključujući Google.</translation>
 <translation id="5601180634394228718">Još podešavanja koja koriste podatke za poboljšanje doživljaja Chrome-a potražite u <ph name="BEGIN_LINK" />Google uslugama<ph name="END_LINK" />.</translation>
 <translation id="5639704535586432836">Otvorite Podešavanja &gt; Privatnost &gt; Kamera &gt; Google Chrome i uključite kameru.</translation>
@@ -239,7 +238,6 @@ Sačekajte nekoliko minuta pre nego što promenite nalog. Ako sada promenite nal
 <translation id="6348855835728304880">Pristupajte Chrome lozinkama i ostalim funkcijama u drugim aplikacijama na ovom uređaju.</translation>
 <translation id="6373751563207403289">Provera bezbednosti vas štiti od povrede podataka, nebezbednih veb-sajtova i drugog. Primajte obaveštenja o svim problemima u vezi sa privatnošću ili bezbednošću koje Chrome otkrije za vas.</translation>
 <translation id="6389317667633680932">Istražite nove funkcije koje vam pomažu da maksimalno iskoristite Chrome.</translation>
-<translation id="6412673304250309937">Proverava URL-ove sa listom nebezbednih sajtova koji se čuvaju u Chrome-u. Ako neki sajt pokuša da ukrade vašu lozinku ili probate da preuzmete štetnu datoteku, Chrome može da pošalje URL-ove, uključujući delove sadržaja stranice, u Bezbedno pregledanje.</translation>
 <translation id="6427126399757991875">Vaša organizacija podešava Chrome...</translation>
 <translation id="6481963882741794338">Povežite Chrome i druge Google usluge radi personalizacije i drugih svrha</translation>
 <translation id="6484712497741564393">Prijavljeni ste kao <ph name="EMAIL" />.
@@ -251,7 +249,6 @@ Podaci se šifruju pomoću pristupne fraze. Unesite je da biste koristili i sa�
 <translation id="660537754475262202">Podesite Chrome kao podrazumevani pregledač da biste odmah pokretali linkove ovde.</translation>
 <translation id="6611692150236062461">Da biste lako pristupali sačuvanim lozinkama u drugim aplikacijama, odaberite Chrome za automatsko popunjavanje.</translation>
 <translation id="6636941099779251629">Organizacija zahteva da se prijavite da biste koristili Chrome. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
-<translation id="6646696210740573446">Šalje maskirani deo URL-a Google-u preko servera za privatnost koji krije IP adresu. Chrome može da pošalje URL-ove Google-u, uključujući delove sadržaja stranice, i ako neki sajt pokuša da ukrade vašu lozinku ili probate da preuzmete štetni fajl.</translation>
 <translation id="6647304104688527905">Otvara novu karticu u Chrome-u.</translation>
 <translation id="6684809838922667136">Poboljšajte Chrome</translation>
 <translation id="6709398533399187136">Vaša lozinka je otkrivena pri upadu u podatke. Google menadžer lozinki preporučuje da je odmah promenite.</translation>

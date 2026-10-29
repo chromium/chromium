@@ -198,7 +198,6 @@ Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes
 <translation id="5460571915754665838">4. Vælg Chrome</translation>
 <translation id="5492504007368565877">Google Adgangs­kode­admin­istrator kan ikke tjekke dine adgangskoder.</translation>
 <translation id="5527026824954593399">Tryk på "Se med Google Maps i Chrome".</translation>
-<translation id="5552137475244467770">Chrome tjekker regelmæssigt, om dine adgangskoder er på nogen lister over adgangskoder, der er blevet afsløret online. Dine adgangskoder og brugernavne krypteres under disse tjek, så de kan ikke læses af nogen, heller ikke Google.</translation>
 <translation id="5554520618550346933">Når du bruger en adgangskode, underretter Chrome dig, hvis den er blevet afsløret online. I forbindelse med dette krypteres dine adgangskoder og brugernavne, så de kan ikke læses af nogen, heller ikke Google.</translation>
 <translation id="5601180634394228718">Du kan finde flere indstillinger, der bruger data til at forbedre din Chrome-oplevelse, ved at gå til <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
 <translation id="5639704535586432836">Åbn Indstillinger &gt; Privatliv &gt; Kamera &gt; Google Chrome, og slå kameraet til.</translation>
@@ -239,7 +238,6 @@ Prøv at vente et par minutter, før du skifter konto. Hvis du skifter konto nu,
 <translation id="6348855835728304880">Få adgang til dine Chrome-adgangskoder m.m. i andre apps på denne enhed.</translation>
 <translation id="6373751563207403289">Sikkerhedstjek beskytter dig mod brud på datasikkerheden, usikre websites og meget mere. Modtag underretninger om eventuelle privatlivsrelaterede eller sikkerhedsmæssige problemer, som Chrome registrerer for dig.</translation>
 <translation id="6389317667633680932">Se nye funktioner, der hjælper dig med at få mest muligt ud af Chrome.</translation>
-<translation id="6412673304250309937">Tjekker webadresser ift. en liste over usikre websites, der er gemt i Chrome. Hvis et website forsøger at stjæle din adgangskode, eller når du downloader en skadelig fil, sender Chrome muligvis også webadresser, bl.a. mindre mængder sideindhold, til Beskyttet browsing.</translation>
 <translation id="6427126399757991875">Din organisation konfigurerer Chrome...</translation>
 <translation id="6481963882741794338">Tilknyt Chrome og andre Google-tjenester med henblik på personlig tilpasning og andre formål</translation>
 <translation id="6484712497741564393">Logget ind som <ph name="EMAIL" />.
@@ -251,7 +249,6 @@ Dine data krypteres med din adgangssætning. Angiv adgangssætningen for at brug
 <translation id="660537754475262202">Gør Chrome til din standardbrowser, så du kan åbne links her med det samme.</translation>
 <translation id="6611692150236062461">Hvis du nemt vil have adgang til dine gemte adgangskoder i andre apps, skal du vælge Autofyld i Chrome.</translation>
 <translation id="6636941099779251629">Din organisation kræver, at du logger ind for at bruge Chrome. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
-<translation id="6646696210740573446">Sender en sløret del af webadressen til Google via en privatlivsbeskyttende server, som skjuler din IP-adresse. Hvis et website forsøger at stjæle din adgangskode, eller når du downloader en skadelig fil, sender Chrome muligvis også webadresser, bl.a. mindre mængder sideindhold, til Google.</translation>
 <translation id="6647304104688527905">Åbner en ny fane i Chrome.</translation>
 <translation id="6684809838922667136">Gør Chrome bedre</translation>
 <translation id="6709398533399187136">Din adgangskode er blevet offentliggjort i forbindelse med et brud på datasikkerheden. Google Adgangs­kode­admin­istrator anbefaler, at du ændrer det nu.</translation>

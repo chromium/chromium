@@ -27,6 +27,7 @@
 <translation id="3812541808639806898">Zobrazovač textu obrázkov</translation>
 <translation id="381767806621926835">Kliknutím pravým tlačidlom na ľubovoľný prvok s atribútom „longdesc“ alebo „aria-describedat“ získate jeho dlhý popis.</translation>
 <translation id="4023902424053835668">Prehliadajte text na webových stránkach pomocou klávesov šípok.</translation>
+<translation id="4384008284958619421">Moderné čítačky obrazovky a Google Chrome teraz natívne podporujú opisy prvkov dostupnosti a štandardy ARIA.</translation>
 <translation id="4388820049312272371">Zvýrazniť pozíciu kurzora krátkym zábleskom.</translation>
 <translation id="4394049700291259645">Zakázať</translation>
 <translation id="4769065380738716500">Obrázky boli nahradené textom z atribútu alt.</translation>
@@ -63,6 +64,7 @@
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="786423340267544509">Pridať ohraničenie k prvkom s atribútom aria-describedat alebo longdesc.</translation>
 <translation id="7942349550061667556">Červená</translation>
+<translation id="8081200409424070383">Podpora dlhých opisov bude 20. novembra 2026 ukončená.</translation>
 <translation id="8260673944985561857">Možnosti prehliadania Caret</translation>
 <translation id="8321034316479930120">Pravidlá pre animácie</translation>
 <translation id="8480209185614411573">Vysoký kontrast</translation>

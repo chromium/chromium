@@ -58,7 +58,6 @@
 <translation id="2027881372245801507">提案をオフにしても、他の機能での Chromium によるページのタイトルと URL の処理は制御されません。このデータへのアクセスは、<ph name="BEGIN_LINK" />同期設定<ph name="END_LINK" />で管理できます。</translation>
 <translation id="2036929290919363111">このサイトと Chromium にログインすると、すべてのデバイスで同じパスワードなどを使用できます</translation>
 <translation id="2042889939382983733">Chromium 履歴を表示する</translation>
-<translation id="2052320862053429062">Chromium では、定期的にパスワードをオンライン上の公開リストと照合し、確認しています。その際、パスワードとユーザー名は Google を含め誰も読み取ることができないよう暗号化されます。</translation>
 <translation id="2059365270911640413">Chromium の設定を完了しましょう</translation>
 <translation id="2168108852149185974">アドオンが原因で Chromium がクラッシュしました。次をアンインストールしてください:</translation>
 <translation id="2168593389981132306">Chromium の品質を向上</translation>
@@ -69,7 +68,6 @@
 <translation id="2236584955986023187">Chromium は毎回 PC 版サイトをリクエストします。</translation>
 <translation id="2245694534483711162">Gemini は、Chromium にすでに付与されている権限に応じて、正確な位置情報を使用することがあります</translation>
 <translation id="2270466829363945454">購入</translation>
-<translation id="2313870531055795960">Chromium に保存されている安全でないサイトのリストと URL を照合します。サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります。</translation>
 <translation id="2314220608288760290">YouTube のシークレット リンクが Chromium のシークレット モードで自動的に開きます。</translation>
 <translation id="231828342043114302">興味や関心に基づいてパーソナライズされたコンテンツを受け取るには、Chromium にログインします。</translation>
 <translation id="2334943301233020675">次のパスキーは要件を満たしていないため、パスワード マネージャーにインポートされませんでした。</translation>
