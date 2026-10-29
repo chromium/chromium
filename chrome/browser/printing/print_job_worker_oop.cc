@@ -234,16 +234,19 @@ void PrintJobWorkerOop::OnDidCancel(scoped_refptr<PrintJob> job,
   UnregisterServiceManagerClient();
   printing_context_id_.reset();
 
+  // Note that `job` may be the one keeping `this` alive. As such, do not hand
+  // it away with std::move().
   if (cancel_reason == mojom::ResultCode::kCanceled) {
-    print_job()->PostTask(FROM_HERE,
-                          base::BindOnce(&PrintJob::Cancel, std::move(job)));
+    print_job()->PostTask(FROM_HERE, base::BindOnce(&PrintJob::Cancel, job));
   } else {
     PostTask(FROM_HERE, base::BindOnce(
                             [](base::WeakPtr<PrintJobWorkerOop> self,
                                scoped_refptr<PrintJob> job) {
-                              self->PrintJobWorker::OnFailure();
+                              if (self) {
+                                self->PrintJobWorker::OnFailure();
+                              }
                             },
-                            worker_weak_factory_.GetWeakPtr(), std::move(job)));
+                            worker_weak_factory_.GetWeakPtr(), job));
   }
   // Done with private document reference.
   document_oop_ = nullptr;
