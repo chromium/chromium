@@ -50,6 +50,21 @@ TEST_F(GetDetailsForPixAccountLinkingRequestTest,
             "linking_info\":{}}");
 }
 
+// Verify that the customer context is omitted when the user does not have a
+// billing customer number.
+TEST_F(GetDetailsForPixAccountLinkingRequestTest,
+       VerifyRequestContent_NoBillingCustomerNumber) {
+  auto request = std::make_unique<GetDetailsForPixAccountLinkingRequest>(
+      /*billing_customer_number=*/0, std::vector<uint8_t>{},
+      /*response_callback=*/base::DoNothing(),
+      /*app_locale=*/"US", /*full_sync_enabled=*/true);
+
+  EXPECT_EQ(request->GetRequestContent(),
+            "{\"chrome_user_context\":{\"full_sync_enabled\":true},\"context\":"
+            "{\"billable_service\":70073,\"language_code\":\"US\"},\"pix_"
+            "account_linking_info\":{}}");
+}
+
 TEST_F(GetDetailsForPixAccountLinkingRequestTest,
        ParseResponse_Success_AccountLinkingEligibilitySetToTrue) {
   auto request = std::make_unique<GetDetailsForPixAccountLinkingRequest>(
