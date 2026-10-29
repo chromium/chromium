@@ -744,8 +744,7 @@ HTMLElement* TextFieldInputType::UpdatePlaceholderText(
     auto* new_element =
         MakeGarbageCollected<HTMLDivElement>(GetElement().GetDocument());
     placeholder = new_element;
-    placeholder->SetShadowPseudoId(
-        shadow_element_names::kPseudoInputPlaceholder);
+    GetElement().UpdatePlaceholderShadowPseudoId(*placeholder);
     placeholder->SetInlineStyleProperty(CSSPropertyID::kDisplay,
                                         GetElement().IsPlaceholderVisible()
                                             ? CSSValueID::kBlock

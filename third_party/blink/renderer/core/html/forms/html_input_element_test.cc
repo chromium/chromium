@@ -1191,6 +1191,29 @@ TEST_F(HTMLInputElementTest, SuggestedValueFontFamilyIsGeneric) {
   EXPECT_TRUE(style->GetFontDescription().Family().FamilyIsGeneric());
 }
 
+TEST_F(HTMLInputElementTest,
+       RecreatedPlaceholderWithSuggestedValueIsNotAuthorStyled) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<style>input::placeholder { font-family: author-font; }</style>"
+      "<input id=test>");
+  HTMLInputElement& input = TestElement();
+  UpdateAllLifecyclePhasesForTest();
+
+  input.SetSuggestedValue("preview");
+  input.setAttribute(html_names::kTypeAttr, input_type_names::kPassword);
+  // Recreates the placeholder element in the new shadow tree.
+  input.setAttribute(html_names::kPlaceholderAttr, AtomicString("hint"));
+  UpdateAllLifecyclePhasesForTest();
+
+  HTMLElement* placeholder = input.PlaceholderElement();
+  ASSERT_TRUE(placeholder);
+  EXPECT_EQ(shadow_element_names::kPseudoInternalInputSuggested,
+            placeholder->ShadowPseudoId());
+  const ComputedStyle* style = placeholder->GetComputedStyle();
+  ASSERT_TRUE(style);
+  EXPECT_TRUE(style->GetFontDescription().Family().FamilyIsGeneric());
+}
+
 TEST_F(HTMLInputElementTest, SetCheckedForBindingClearsSuggestedValue) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("<input id=test>");
   HTMLInputElement& input = TestElement();
