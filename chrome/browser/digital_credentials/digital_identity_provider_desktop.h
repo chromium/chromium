@@ -85,6 +85,10 @@ class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
  private:
   FRIEND_TEST_ALL_PREFIXES(DigitalIdentityMultiStepDialogBrowserTest,
                            OnCableEventOwnerDestroyedDuringDialogUpdate);
+  FRIEND_TEST_ALL_PREFIXES(DigitalIdentityMultiStepDialogBrowserTest,
+                           ThemeChangedAfterProviderDestroyed);
+  FRIEND_TEST_ALL_PREFIXES(DigitalIdentityMultiStepDialogBrowserTest,
+                           ThemeChangedWhileProviderAlive);
 
   // Called whenever some significant event occurs during the transaction.
   void OnEvent(const std::string& qr_url,
@@ -133,13 +137,14 @@ class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
   std::unique_ptr<content::digital_credentials::cross_device::Transaction>
       transaction_;
 
+  // Dialog which supports swapping its contents when the user goes to the next
+  // step. Declared before `bluetooth_manual_dialog_controller_` because the
+  // controller holds a `raw_ptr` to `dialog_`.
+  std::unique_ptr<DigitalIdentityMultiStepDialog> dialog_;
+
   // Shows dialog requesting that the user manually turn on bluetooth.
   std::unique_ptr<DigitalIdentityBluetoothManualDialogController>
       bluetooth_manual_dialog_controller_;
-
-  // Dialog which supports swapping its contents when the user goes to the next
-  // step.
-  std::unique_ptr<DigitalIdentityMultiStepDialog> dialog_;
 
   DigitalIdentityCallback callback_;
 

@@ -338,16 +338,14 @@ void DigitalIdentityProviderDesktop::OnUserRequestedBluetoothPowerOn() {
 }
 
 void DigitalIdentityProviderDesktop::ShowConnectingToPhoneDialog() {
-  // Ensure the dialog is created to have access to GetBackgroundColor().
-  EnsureDialogCreated();
+  DigitalIdentityMultiStepDialog* dialog = EnsureDialogCreated();
   std::u16string title_text = l10n_util::GetStringUTF16(
       IDS_WEB_DIGITAL_CREDENTIALS_CABLEV2_CONNECTING_TITLE);
   auto illustration = std::make_unique<views::ThemeTrackingAnimatedImageView>(
       IDR_WEBAUTHN_HYBRID_CONNECTING_LIGHT, IDR_WEBAUTHN_HYBRID_CONNECTING_DARK,
-      base::BindRepeating(&DigitalIdentityMultiStepDialog::GetBackgroundColor,
-                          base::Unretained(dialog_.get())));
+      dialog->GetBackgroundColorCallback());
 
-  EnsureDialogCreated()->TryShow(
+  dialog->TryShow(
       /*accept_button=*/std::nullopt, base::OnceClosure(),
       /*cancel_button=*/
       ui::DialogModel::Button::Params()
@@ -363,17 +361,15 @@ void DigitalIdentityProviderDesktop::ShowConnectingToPhoneDialog() {
 }
 
 void DigitalIdentityProviderDesktop::ShowContinueStepsOnThePhoneDialog() {
-  // Ensure the dialog is created to have access to GetBackgroundColor().
-  EnsureDialogCreated();
+  DigitalIdentityMultiStepDialog* dialog = EnsureDialogCreated();
   std::u16string title_text = l10n_util::GetStringUTF16(
       IDS_WEB_DIGITAL_CREDENTIALS_CABLEV2_CONNECTED_TITLE);
   auto illustration = std::make_unique<ThemeTrackingNonAccessibleImageView>(
       ui::ImageModel::FromVectorIcon(kPasskeyPhoneCustomIcon),
       ui::ImageModel::FromVectorIcon(kPasskeyPhoneDarkCustomIcon),
-      base::BindRepeating(&DigitalIdentityMultiStepDialog::GetBackgroundColor,
-                          base::Unretained(dialog_.get())));
+      dialog->GetBackgroundColorCallback());
 
-  EnsureDialogCreated()->TryShow(
+  dialog->TryShow(
       /*accept_button=*/std::nullopt, base::OnceClosure(),
       /*cancel_button=*/
       ui::DialogModel::Button::Params()

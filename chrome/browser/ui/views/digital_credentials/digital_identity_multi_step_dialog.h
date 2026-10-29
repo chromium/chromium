@@ -76,9 +76,12 @@ class DigitalIdentityMultiStepDialog {
       std::unique_ptr<views::View> custom_body_field,
       bool show_progress_bar);
 
-  ui::ColorVariant GetBackgroundColor();
+  // Returns a repeating callback that resolves the dialog's background color,
+  // or a placeholder color if the dialog wrapper has been destroyed.
+  base::RepeatingCallback<ui::ColorVariant()> GetBackgroundColorCallback();
 
  private:
+  ui::ColorVariant GetBackgroundColor();
   DigitalIdentityMultiStepDialogDelegate* GetWidgetDelegate();
 
   // The web contents the dialog is modal to.

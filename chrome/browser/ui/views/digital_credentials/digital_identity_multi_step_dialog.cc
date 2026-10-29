@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
@@ -14,6 +16,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/color/color_variant.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -386,6 +389,18 @@ void DigitalIdentityMultiStepDialog::TryShow(
   }
   delegate->GetBubbleFrameView()->SetProgress(
       show_progress_bar ? std::optional<double>(-1) : std::nullopt);
+}
+
+base::RepeatingCallback<ui::ColorVariant()>
+DigitalIdentityMultiStepDialog::GetBackgroundColorCallback() {
+  return base::BindRepeating(
+      [](base::WeakPtr<DigitalIdentityMultiStepDialog> dialog) {
+        if (!dialog) {
+          return ui::ColorVariant(gfx::kPlaceholderColor);
+        }
+        return dialog->GetBackgroundColor();
+      },
+      weak_ptr_factory_.GetWeakPtr());
 }
 
 ui::ColorVariant DigitalIdentityMultiStepDialog::GetBackgroundColor() {
