@@ -156,6 +156,7 @@
 #include "media/media_buildflags.h"
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "third_party/blink/public/public_buildflags.h"
 #include "ui/accessibility/accessibility_prefs.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -675,7 +676,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDefaultSubAppsWithoutPromptsSetting,
     prefs::kManagedDefaultSubAppsWithoutPromptsSetting,
     base::Value::Type::INTEGER },
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
   {  key::kDefaultSmartCardConnectSetting,
     prefs::kManagedDefaultSmartCardConnectSetting,
     base::Value::Type::INTEGER },
@@ -880,7 +881,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kSitePerProcess,
     prefs::kSitePerProcess,
     base::Value::Type::BOOLEAN },
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
   { key::kSmartCardConnectAllowedForUrls,
     prefs::kManagedSmartCardConnectAllowedForUrls,
     base::Value::Type::LIST },

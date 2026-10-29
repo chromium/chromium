@@ -2014,7 +2014,6 @@ if (!is_android) {
         "//chrome/browser/media_galleries/fileapi:browser_tests",
         "//chrome/browser/metrics/structured:browser_tests",
         "//chrome/browser/resources/chromeos/accessibility:browser_tests",
-        "//chrome/browser/smart_card:browser_tests",
         "//chrome/browser/support_tool/ash:browser_tests",
         "//chrome/browser/ui/ash:browser_tests",
         "//chrome/browser/ui/ash/arc/arc_app_dialog_view:browser_tests",
@@ -2035,6 +2034,9 @@ if (!is_android) {
         "//third_party/liblouis:browser_tests",
         "//ui/file_manager/integration_tests:build",
       ]
+    }
+    if (enable_smart_card) {
+      deps += [ "//chrome/browser/smart_card:browser_tests" ]
     }
     if (safe_browsing_mode == 1) {
       deps += [
@@ -3311,7 +3313,6 @@ test("unit_tests") {
       "//chrome/browser/nearby_sharing/common:unit_tests",
       "//chrome/browser/nearby_sharing/contacts:unit_tests",
       "//chrome/browser/nearby_sharing/local_device_data:unit_tests",
-      "//chrome/browser/smart_card:unit_tests",
       "//chrome/browser/support_tool/ash:unit_tests",
       "//chrome/browser/ui/ash:unit_tests",
       "//chrome/browser/ui/views/crostini:unit_tests",
@@ -3333,6 +3334,10 @@ test("unit_tests") {
     ]
 
     data_deps += [ "//testing/buildbot/filters:chromeos_filters" ]
+  }
+
+  if (enable_smart_card) {
+    deps += [ "//chrome/browser/smart_card:unit_tests" ]
   }
 
   if (enable_background_mode) {
@@ -4059,12 +4064,15 @@ if (!is_android && !is_chromeos_device) {
     if (is_chromeos) {
       deps += [
         "//chrome/browser/chromeos:interactive_ui_tests",
-        "//chrome/browser/smart_card:interactive_ui_tests",
         "//chrome/browser/ui/ash/privacy_hub:interactive_ui_tests",
       ]
     } else {  # ! is_chromeos
       # Non-ChromeOS tests.
       deps += [ "//chrome/browser/ui/signin:interactive_ui_tests" ]
+    }
+
+    if (enable_smart_card) {
+      deps += [ "//chrome/browser/smart_card:interactive_ui_tests" ]
     }
 
     deps += [ "//chrome/browser/signin:interactive_ui_tests" ]

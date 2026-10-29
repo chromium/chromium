@@ -12,6 +12,7 @@ import("//components/on_device_translation/buildflags/features.gni")
 import("//components/signin/features.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//third_party/blink/public/public_features.gni")
 
 # This target should be the default place for adding public interface things
 # (ie, non-factory, non-impl). There will likely need to be a :factory or :impl
@@ -933,6 +934,7 @@ source_set("profiles_extra_parts_impl") {
     "//components/sync/base:features",
     "//media",
     "//services/network/public/cpp",
+    "//third_party/blink/public:buildflags",
     "//ui/webui:buildflags",
   ]
 
@@ -1024,8 +1026,11 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/media_galleries",
       "//chrome/browser/nearby_sharing",
       "//chrome/browser/policy:onc",
-      "//chrome/browser/smart_card",
     ]
+  }
+
+  if (enable_smart_card) {
+    deps += [ "//chrome/browser/smart_card" ]
   }
 
   if (!is_chromeos) {

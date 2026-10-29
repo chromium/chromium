@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "ash/constants/ash_switches.h"
 #include "base/check_deref.h"
 #include "base/memory/raw_ref.h"
 #include "base/test/bind.h"
@@ -15,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/smart_card/smart_card_permission_context.h"
 #include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -26,7 +26,6 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_types.mojom-shared.h"
 #include "components/tabs/public/tab_interface.h"
-#include "components/user_manager/user_names.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/smart_card_delegate.h"
@@ -34,6 +33,11 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "third_party/blink/public/common/features.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
+#include "components/user_manager/user_names.h"
+#endif
 
 namespace {
 constexpr char kDummyReader[] = "Dummy Reader";
@@ -231,6 +235,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsSmartCardDelegateBrowserTest,
       [&]() { return !HasReaderPermission(origin, kDummyReader); }));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 class ChromeOsSmartCardDelegateBrowserTestGuestMode
     : public web_app::IsolatedWebAppBrowserTestHarness {
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -251,3 +256,4 @@ IN_PROC_BROWSER_TEST_F(ChromeOsSmartCardDelegateBrowserTestGuestMode,
   ASSERT_NO_FATAL_FAILURE(
       SmartCardPermissionContextFactory::GetForProfile(*profile()););
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)

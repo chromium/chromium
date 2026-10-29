@@ -331,6 +331,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/webui/buildflags.h"
 
@@ -469,18 +470,21 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater_factory.h"
-#include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
 #include "chromeos/constants/chromeos_features.h"
-
-#if !BUILDFLAG(IS_CHROMEOS_DEVICE)
-// A ChromeOS build for a dev linux machine.
-#include "chrome/browser/smart_card/fake_smart_card_device_service_factory.h"
-#endif
 #else
 #include "chrome/browser/enterprise/groups/enterprise_groups_handler_factory.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/profiles/gaia_info_update_service_factory.h"
 #endif
+
+#if BUILDFLAG(ENABLE_SMART_CARD)
+#include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
+
+#if !BUILDFLAG(IS_CHROMEOS_DEVICE)
+// A ChromeOS build for a dev linux machine.
+#include "chrome/browser/smart_card/fake_smart_card_device_service_factory.h"
+#endif
+#endif  // BUILDFLAG(ENABLE_SMART_CARD)
 
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service_factory.h"
@@ -1023,7 +1027,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   // factory is built here, rather than with other Extension APIs.
   extensions::TtsAPI::GetFactoryInstance();
 #endif
-#if BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_DEVICE)
+#if BUILDFLAG(ENABLE_SMART_CARD) && !BUILDFLAG(IS_CHROMEOS_DEVICE)
   // A ChromeOS build for a dev linux machine.
   // Makes manual testing possible.
   FakeSmartCardDeviceServiceFactory::GetInstance();
@@ -1489,7 +1493,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   SkillRecordingServiceFactory::GetInstance();
 #endif
   skills::SkillsServiceFactory::GetInstance();
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
   SmartCardPermissionContextFactory::GetInstance();
 #endif
 #if !BUILDFLAG(IS_ANDROID)

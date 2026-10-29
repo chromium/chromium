@@ -2017,7 +2017,6 @@ source_set("core") {
       "//chrome/browser/nearby_sharing/common",
       "//chrome/browser/policy:onc",
       "//chrome/browser/policy:system_features_disable_list",
-      "//chrome/browser/smart_card",
       "//chrome/browser/ui/ash/login",
       "//chrome/browser/ui/ash/main_extra_parts",
       "//chrome/browser/ui/ash/system_web_apps",
@@ -2048,6 +2047,10 @@ source_set("core") {
   } else {
     # Activity reporting must never be built into ChromeOS.
     deps += [ "//components/activity_reporter" ]
+  }
+
+  if (enable_smart_card) {
+    deps += [ "//chrome/browser/smart_card" ]
   }
 
   if (enable_screen_ai_service) {
