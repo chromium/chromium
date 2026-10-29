@@ -43,13 +43,11 @@ class FakeProxyResolver : public ProxyResolverV8Tracing {
 
  private:
   // ProxyResolverV8Tracing overrides.
-  void GetProxyForURL(
-      const GURL& url,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
-      net::ProxyInfo* results,
-      net::CompletionOnceCallback callback,
-      std::unique_ptr<net::ProxyResolver::Request>* request,
-      std::unique_ptr<Bindings> bindings) override {}
+  void GetProxyForURL(const GURL& url,
+                      net::ProxyInfo* results,
+                      net::CompletionOnceCallback callback,
+                      std::unique_ptr<net::ProxyResolver::Request>* request,
+                      std::unique_ptr<Bindings> bindings) override {}
 
   base::OnceClosure on_destruction_;
 };

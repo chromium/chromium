@@ -9,7 +9,6 @@ module proxy_resolver.mojom;
 
 import "sandbox/policy/mojom/sandbox.mojom";
 import "services/network/public/mojom/ip_address.mojom";
-import "services/network/public/mojom/network_anonymization_key.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "url/mojom/url.mojom";
 
@@ -36,11 +35,10 @@ interface ProxyResolver {
   // Use a ProxyResolverRequestClient instead of returning a result so we can
   // cancel in-flight requests by destroying the client.
   //
-  // |network_anonymization_key| is the NetworkAnonymizationKey used by the DNS cache
-  // to separate requests made in different contexts.
+  // The request's NetworkAnonymizationKey is intentionally not passed to the
+  // proxy resolver. See ProxyResolverRequestClient::ResolveDns().
   GetProxyForUrl(
     url.mojom.Url url,
-    network.mojom.NetworkAnonymizationKey network_anonymization_key,
     pending_remote<ProxyResolverRequestClient> client);
 };
 
@@ -53,14 +51,12 @@ interface ProxyResolverRequestClient {
   // Does a DNS lookup for `host`, and invokes `client`'s ReportResult() method
   // with the result.
   //
-  // The lookup is performed using the NetworkAnonymizationKey that was passed
-  // to the GetProxyForUrl() call that this ProxyResolverRequestClient was
-  // passed to, so the network process does not need to trust a
-  // NetworkAnonymizationKey provided by the proxy resolver. As a result, this
-  // method must only be used for DNS lookups made on behalf of the
-  // GetProxyForUrl() request associated with this client, and never for lookups
-  // for other requests. The results must not be used for requests made with a
-  // different NetworkAnonymizationKey.
+  // The lookup is performed using the NetworkAnonymizationKey of the request
+  // this ProxyResolverRequestClient was created for, which only the network
+  // process knows. As a result, this method must only be used for DNS lookups
+  // made on behalf of the GetProxyForUrl() call that this client was passed
+  // to, and never for lookups for other requests. The results must not be used
+  // for other requests.
   ResolveDns(
     string host,
     HostResolveOperation operation,

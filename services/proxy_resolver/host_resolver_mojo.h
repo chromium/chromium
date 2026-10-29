@@ -24,8 +24,7 @@ class HostResolverMojo : public ProxyHostResolver {
    public:
     virtual ~Impl() = default;
     // Resolves `hostname`. The NetworkAnonymizationKey used is determined by
-    // the receiving end (the network process uses the key associated with the
-    // client pipe).
+    // the receiving end. See the ResolveDns() methods in proxy_resolver.mojom.
     virtual void ResolveDns(
         const std::string& hostname,
         net::ProxyResolveDnsOperation operation,

@@ -23,7 +23,6 @@
 #include "base/trace_event/trace_event.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_anonymization_key.h"
 #include "net/base/network_interfaces.h"
 #include "net/base/trace_constants.h"
 #include "net/log/net_log_with_source.h"
@@ -32,6 +31,7 @@
 #include "net/proxy_resolution/proxy_resolver_error_observer.h"
 #include "services/proxy_resolver/proxy_host_resolver.h"
 #include "services/proxy_resolver/proxy_resolver_v8.h"
+#include "url/gurl.h"
 
 // The intent of this class is explained in the design document:
 // https://docs.google.com/a/chromium.org/document/d/16Ij5OcVnR3s0MH4Z5XkhI9VTPoMJdaBn9rKreAmGOdE/edit
@@ -110,11 +110,9 @@ class Job : public base::RefCountedThreadSafe<Job>,
                              net::CompletionOnceCallback callback);
 
   // Called from origin thread.
-  void StartGetProxyForURL(
-      const GURL& url,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
-      net::ProxyInfo* results,
-      net::CompletionOnceCallback callback);
+  void StartGetProxyForURL(const GURL& url,
+                           net::ProxyInfo* results,
+                           net::CompletionOnceCallback callback);
 
   // Called from origin thread.
   void Cancel();
@@ -263,7 +261,6 @@ class Job : public base::RefCountedThreadSafe<Job>,
   raw_ptr<net::ProxyInfo, AcrossTasksDanglingUntriaged>
       user_results_;  // Owned by caller, lives on origin thread.
   GURL url_;
-  net::NetworkAnonymizationKey network_anonymization_key_;
   net::ProxyInfo results_;
 
   // ---------------------------------------------------------------------------
@@ -320,13 +317,11 @@ class ProxyResolverV8TracingImpl : public ProxyResolverV8Tracing {
   ~ProxyResolverV8TracingImpl() override;
 
   // ProxyResolverV8Tracing overrides.
-  void GetProxyForURL(
-      const GURL& url,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
-      net::ProxyInfo* results,
-      net::CompletionOnceCallback callback,
-      std::unique_ptr<net::ProxyResolver::Request>* request,
-      std::unique_ptr<Bindings> bindings) override;
+  void GetProxyForURL(const GURL& url,
+                      net::ProxyInfo* results,
+                      net::CompletionOnceCallback callback,
+                      std::unique_ptr<net::ProxyResolver::Request>* request,
+                      std::unique_ptr<Bindings> bindings) override;
 
   class RequestImpl : public net::ProxyResolver::Request {
    public:
@@ -368,13 +363,6 @@ void Job::StartCreateV8Resolver(
     net::CompletionOnceCallback callback) {
   CheckIsOnOriginThread();
 
-  // |network_anonymization_key_| is not populated, so any resolutions done
-  // while loading the PAC script will be done with an empty
-  // net::NetworkAnonymizationKey. Since a PAC script is considered trusted, and
-  // is loaded once and then handles requests made by multiple
-  // NetworkAnonymizationKeys, using an empty key makes sense.
-  DCHECK(network_anonymization_key_.IsEmpty());
-
   resolver_out_ = resolver;
   script_data_ = script_data;
 
@@ -385,15 +373,12 @@ void Job::StartCreateV8Resolver(
   Start(CREATE_V8_RESOLVER, true /*blocking*/, std::move(callback));
 }
 
-void Job::StartGetProxyForURL(
-    const GURL& url,
-    const net::NetworkAnonymizationKey& network_anonymization_key,
-    net::ProxyInfo* results,
-    net::CompletionOnceCallback callback) {
+void Job::StartGetProxyForURL(const GURL& url,
+                              net::ProxyInfo* results,
+                              net::CompletionOnceCallback callback) {
   CheckIsOnOriginThread();
 
   url_ = url;
-  network_anonymization_key_ = network_anonymization_key;
   user_results_ = results;
 
   Start(GET_PROXY_FOR_URL, false /*non-blocking*/, std::move(callback));
@@ -975,7 +960,6 @@ net::LoadState ProxyResolverV8TracingImpl::RequestImpl::GetLoadState() {
 
 void ProxyResolverV8TracingImpl::GetProxyForURL(
     const GURL& url,
-    const net::NetworkAnonymizationKey& network_anonymization_key,
     net::ProxyInfo* results,
     net::CompletionOnceCallback callback,
     std::unique_ptr<net::ProxyResolver::Request>* request,
@@ -987,8 +971,7 @@ void ProxyResolverV8TracingImpl::GetProxyForURL(
 
   *request = std::make_unique<RequestImpl>(job);
 
-  job->StartGetProxyForURL(url, network_anonymization_key, results,
-                           std::move(callback));
+  job->StartGetProxyForURL(url, results, std::move(callback));
 }
 
 class ProxyResolverV8TracingFactoryImpl : public ProxyResolverV8TracingFactory {

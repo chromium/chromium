@@ -55,8 +55,9 @@ base::DictValue NetLogErrorParams(int line_number, const std::string& message) {
 // and DNS requests to a MojoHostResolverImpl, which is implemented in terms of
 // a HostResolver, or myIpAddress[Ex]() which is implemented by MyIpAddressImpl.
 //
-// All DNS requests use `network_anonymization_key`, rather than one provided by
-// the (untrusted) proxy resolver process.
+// All DNS requests use `network_anonymization_key`. The (untrusted) proxy
+// resolver process is never told the key, and so has no control over which key
+// is used.
 template <typename ClientInterface>
 class ClientMixin : public ClientInterface {
  public:
@@ -254,7 +255,7 @@ ProxyResolverMojo::Job::Job(
       results_(results),
       callback_(std::move(callback)) {
   resolver->mojo_proxy_resolver_remote_->GetProxyForUrl(
-      url_, network_anonymization_key, receiver_.BindNewPipeAndPassRemote());
+      url_, receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(base::BindOnce(
       &ProxyResolverMojo::Job::OnMojoDisconnect, base::Unretained(this)));
 }

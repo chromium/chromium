@@ -395,9 +395,8 @@ disk_cache::Backend* WaitForCacheBackend(NetworkContext& network_context) {
 }
 
 // proxy_resolver::mojom::ProxyResolverFactory that captures the most recent PAC
-// script passed to it, and the most recent URL/NetworkAnonymizationKey passed
-// to the GetProxyForUrl() method of proxy_resolver::mojom::ProxyResolver it
-// returns.
+// script passed to it, and the most recent URL passed to the GetProxyForUrl()
+// method of proxy_resolver::mojom::ProxyResolver it returns.
 class CapturingMojoProxyResolverFactory
     : public proxy_resolver::mojom::ProxyResolverFactory,
       public proxy_resolver::mojom::ProxyResolver {
@@ -434,11 +433,9 @@ class CapturingMojoProxyResolverFactory
   // proxy_resolver::mojom::ProxyResolver:
   void GetProxyForUrl(
       const GURL& url,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
       mojo::PendingRemote<proxy_resolver::mojom::ProxyResolverRequestClient>
           client) override {
     url_ = url;
-    network_anonymization_key_ = network_anonymization_key;
 
     mojo::Remote<proxy_resolver::mojom::ProxyResolverRequestClient>
         resolver_request_client(std::move(client));
@@ -449,12 +446,8 @@ class CapturingMojoProxyResolverFactory
 
   const std::string& pac_script() const { return pac_script_; }
 
-  // Return the GURL and NetworkAnonymizationKey passed to the most recent
-  // GetProxyForUrl() call.
+  // Return the GURL passed to the most recent GetProxyForUrl() call.
   const GURL& url() const { return url_; }
-  const net::NetworkAnonymizationKey& network_anonymization_key() const {
-    return network_anonymization_key_;
-  }
 
  private:
   mojo::Receiver<ProxyResolverFactory> proxy_factory_receiver_{this};
@@ -463,7 +456,6 @@ class CapturingMojoProxyResolverFactory
   std::string pac_script_;
 
   GURL url_;
-  net::NetworkAnonymizationKey network_anonymization_key_;
 };
 
 // ProxyLookupClient that drives proxy lookups and can wait for the responses to
@@ -4640,9 +4632,11 @@ TEST_F(NetworkContextTest, CancelPendingProxyLookup) {
   EXPECT_EQ(0u, network_context->pending_proxy_lookup_requests_for_testing());
 }
 
-// Test to make sure the NetworkAnonymizationKey passed to LookUpProxyForURL()
-// makes it to the proxy resolver.
-TEST_F(NetworkContextTest, ProxyLookupWithNetworkIsolationKey) {
+// Test to make sure the PAC script and URL passed to LookUpProxyForURL() make
+// it to the proxy resolver. The NetworkAnonymizationKey is intentionally not
+// sent to the proxy resolver; instead, the network process uses it for any DNS
+// lookups the proxy resolver makes on behalf of the request.
+TEST_F(NetworkContextTest, ProxyLookupWithMojoProxyResolver) {
   const GURL kUrl("http://bar.test/");
   const net::SchemefulSite kSite =
       net::SchemefulSite(GURL("https://foo.test/"));
@@ -4684,8 +4678,6 @@ TEST_F(NetworkContextTest, ProxyLookupWithNetworkIsolationKey) {
 
   EXPECT_EQ(kPacScript, proxy_resolver_factory.pac_script());
   EXPECT_EQ(kUrl, proxy_resolver_factory.url());
-  EXPECT_EQ(kNetworkAnonymizationKey,
-            proxy_resolver_factory.network_anonymization_key());
 }
 
 // Test mojom::ProxyResolver that completes calls to GetProxyForUrl() with a
@@ -4702,7 +4694,6 @@ class MockMojoProxyResolver : public proxy_resolver::mojom::ProxyResolver {
   // Overridden from proxy_resolver::mojom::ProxyResolver:
   void GetProxyForUrl(
       const GURL& url,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
       mojo::PendingRemote<proxy_resolver::mojom::ProxyResolverRequestClient>
           pending_client) override {
     // Report a Javascript error and then complete the request successfully,

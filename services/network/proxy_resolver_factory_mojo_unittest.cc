@@ -204,7 +204,6 @@ class MockMojoProxyResolver : public proxy_resolver::mojom::ProxyResolver {
   // Overridden from proxy_resolver::mojom::ProxyResolver:
   void GetProxyForUrl(
       const GURL& url,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
       mojo::PendingRemote<proxy_resolver::mojom::ProxyResolverRequestClient>
           pending_client) override;
 
@@ -255,7 +254,6 @@ void MockMojoProxyResolver::AddConnection(
 
 void MockMojoProxyResolver::GetProxyForUrl(
     const GURL& url,
-    const net::NetworkAnonymizationKey& network_anonymization_key,
     mojo::PendingRemote<proxy_resolver::mojom::ProxyResolverRequestClient>
         pending_client) {
   ASSERT_FALSE(get_proxy_actions_.empty());

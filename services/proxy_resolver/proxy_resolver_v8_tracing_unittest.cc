@@ -23,7 +23,6 @@
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_anonymization_key.h"
 #include "net/base/network_interfaces.h"
 #include "net/base/proxy_string_util.h"
 #include "net/base/test_completion_callback.h"
@@ -36,7 +35,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 #include "v8/include/v8.h"
 
 using net::test::IsError;
@@ -255,8 +253,8 @@ TEST_F(ProxyResolverV8TracingTest, Simple) {
   net::ProxyInfo proxy_info;
   std::unique_ptr<net::ProxyResolver::Request> req;
 
-  resolver->GetProxyForURL(GURL("http://foo/"), net::NetworkAnonymizationKey(),
-                           &proxy_info, callback.callback(), &req,
+  resolver->GetProxyForURL(GURL("http://foo/"), &proxy_info,
+                           callback.callback(), &req,
                            mock_bindings.CreateBindings());
 
   EXPECT_THAT(callback.WaitForResult(), IsOk());
@@ -281,9 +279,9 @@ TEST_F(ProxyResolverV8TracingTest, JavascriptError) {
   net::ProxyInfo proxy_info;
 
   std::unique_ptr<net::ProxyResolver::Request> req;
-  resolver->GetProxyForURL(
-      GURL("http://throw-an-error/"), net::NetworkAnonymizationKey(),
-      &proxy_info, callback.callback(), &req, mock_bindings.CreateBindings());
+  resolver->GetProxyForURL(GURL("http://throw-an-error/"), &proxy_info,
+                           callback.callback(), &req,
+                           mock_bindings.CreateBindings());
 
   EXPECT_THAT(callback.WaitForResult(), IsError(net::ERR_PAC_SCRIPT_FAILED));
 
@@ -310,8 +308,8 @@ TEST_F(ProxyResolverV8TracingTest, TooManyAlerts) {
   net::ProxyInfo proxy_info;
 
   std::unique_ptr<net::ProxyResolver::Request> req;
-  resolver->GetProxyForURL(GURL("http://foo/"), net::NetworkAnonymizationKey(),
-                           &proxy_info, callback.callback(), &req,
+  resolver->GetProxyForURL(GURL("http://foo/"), &proxy_info,
+                           callback.callback(), &req,
                            mock_bindings.CreateBindings());
 
   EXPECT_THAT(callback.WaitForResult(), IsOk());
@@ -347,8 +345,8 @@ TEST_F(ProxyResolverV8TracingTest, TooManyEmptyAlerts) {
   net::ProxyInfo proxy_info;
 
   std::unique_ptr<net::ProxyResolver::Request> req;
-  resolver->GetProxyForURL(GURL("http://foo/"), net::NetworkAnonymizationKey(),
-                           &proxy_info, callback.callback(), &req,
+  resolver->GetProxyForURL(GURL("http://foo/"), &proxy_info,
+                           callback.callback(), &req,
                            mock_bindings.CreateBindings());
 
   EXPECT_THAT(callback.WaitForResult(), IsOk());
@@ -402,8 +400,8 @@ TEST_F(ProxyResolverV8TracingTest, Dns) {
   net::ProxyInfo proxy_info;
 
   std::unique_ptr<net::ProxyResolver::Request> req;
-  resolver->GetProxyForURL(GURL("http://foo/"), net::NetworkAnonymizationKey(),
-                           &proxy_info, callback.callback(), &req,
+  resolver->GetProxyForURL(GURL("http://foo/"), &proxy_info,
+                           callback.callback(), &req,
                            mock_bindings.CreateBindings());
 
   EXPECT_THAT(callback.WaitForResult(), IsOk());
@@ -456,8 +454,8 @@ TEST_F(ProxyResolverV8TracingTest, FallBackToSynchronous1) {
   net::ProxyInfo proxy_info;
 
   std::unique_ptr<net::ProxyResolver::Request> req;
-  resolver->GetProxyForURL(GURL("http://foo/"), net::NetworkAnonymizationKey(),
-                           &proxy_info, callback.callback(), &req,
+  resolver->GetProxyForURL(GURL("http://foo/"), &proxy_info,
+                           callback.callback(), &req,
                            mock_bindings.CreateBindings());
   EXPECT_THAT(callback.WaitForResult(), IsOk());
 
@@ -499,8 +497,8 @@ TEST_F(ProxyResolverV8TracingTest, FallBackToSynchronous2) {
   net::ProxyInfo proxy_info;
 
   std::unique_ptr<net::ProxyResolver::Request> req;
-  resolver->GetProxyForURL(GURL("http://foo/"), net::NetworkAnonymizationKey(),
-                           &proxy_info, callback.callback(), &req,
+  resolver->GetProxyForURL(GURL("http://foo/"), &proxy_info,
+                           callback.callback(), &req,
                            mock_bindings.CreateBindings());
   EXPECT_THAT(callback.WaitForResult(), IsOk());
 
@@ -535,8 +533,8 @@ TEST_F(ProxyResolverV8TracingTest, InfiniteDNSSequence) {
   net::ProxyInfo proxy_info;
 
   std::unique_ptr<net::ProxyResolver::Request> req;
-  resolver->GetProxyForURL(GURL("http://foo/"), net::NetworkAnonymizationKey(),
-                           &proxy_info, callback.callback(), &req,
+  resolver->GetProxyForURL(GURL("http://foo/"), &proxy_info,
+                           callback.callback(), &req,
                            mock_bindings.CreateBindings());
   EXPECT_THAT(callback.WaitForResult(), IsOk());
 
@@ -583,8 +581,8 @@ TEST_F(ProxyResolverV8TracingTest, InfiniteDNSSequence2) {
   net::ProxyInfo proxy_info;
 
   std::unique_ptr<net::ProxyResolver::Request> req;
-  resolver->GetProxyForURL(GURL("http://foo/"), net::NetworkAnonymizationKey(),
-                           &proxy_info, callback.callback(), &req,
+  resolver->GetProxyForURL(GURL("http://foo/"), &proxy_info,
+                           callback.callback(), &req,
                            mock_bindings.CreateBindings());
   EXPECT_THAT(callback.WaitForResult(), IsOk());
 
@@ -624,8 +622,8 @@ void DnsDuringInitHelper(bool synchronous_host_resolver) {
   net::ProxyInfo proxy_info;
 
   std::unique_ptr<net::ProxyResolver::Request> req;
-  resolver->GetProxyForURL(GURL("http://foo/"), net::NetworkAnonymizationKey(),
-                           &proxy_info, callback.callback(), &req,
+  resolver->GetProxyForURL(GURL("http://foo/"), &proxy_info,
+                           callback.callback(), &req,
                            mock_bindings.CreateBindings());
   EXPECT_THAT(callback.WaitForResult(), IsOk());
 
@@ -674,8 +672,7 @@ TEST_F(ProxyResolverV8TracingTest, CancelAll) {
       request;
 
   for (size_t i = 0; i < kNumRequests; ++i) {
-    resolver->GetProxyForURL(GURL("http://foo/"),
-                             net::NetworkAnonymizationKey(), &proxy_info[i],
+    resolver->GetProxyForURL(GURL("http://foo/"), &proxy_info[i],
                              base::BindOnce(&CrashCallback), &request[i],
                              mock_bindings.CreateBindings());
   }
@@ -703,11 +700,11 @@ TEST_F(ProxyResolverV8TracingTest, CancelSome) {
   std::unique_ptr<net::ProxyResolver::Request> request2;
   net::TestCompletionCallback callback;
 
-  resolver->GetProxyForURL(GURL("http://foo/"), net::NetworkAnonymizationKey(),
-                           &proxy_info1, base::BindOnce(&CrashCallback),
-                           &request1, mock_bindings.CreateBindings());
-  resolver->GetProxyForURL(GURL("http://foo/"), net::NetworkAnonymizationKey(),
-                           &proxy_info2, callback.callback(), &request2,
+  resolver->GetProxyForURL(GURL("http://foo/"), &proxy_info1,
+                           base::BindOnce(&CrashCallback), &request1,
+                           mock_bindings.CreateBindings());
+  resolver->GetProxyForURL(GURL("http://foo/"), &proxy_info2,
+                           callback.callback(), &request2,
                            mock_bindings.CreateBindings());
 
   request1.reset();
@@ -732,8 +729,7 @@ TEST_F(ProxyResolverV8TracingTest, CancelWhilePendingCompletionTask) {
   std::unique_ptr<net::ProxyResolver::Request> request2;
   net::TestCompletionCallback callback;
 
-  resolver->GetProxyForURL(GURL("http://throw-an-error/"),
-                           net::NetworkAnonymizationKey(), &proxy_info1,
+  resolver->GetProxyForURL(GURL("http://throw-an-error/"), &proxy_info1,
                            base::BindOnce(&CrashCallback), &request1,
                            mock_bindings.CreateBindings());
 
@@ -746,8 +742,7 @@ TEST_F(ProxyResolverV8TracingTest, CancelWhilePendingCompletionTask) {
 
   // Start another request, to make sure it is able to complete.
   resolver->GetProxyForURL(GURL("http://i-have-no-idea-what-im-doing/"),
-                           net::NetworkAnonymizationKey(), &proxy_info2,
-                           callback.callback(), &request2,
+                           &proxy_info2, callback.callback(), &request2,
                            mock_bindings.CreateBindings());
 
   EXPECT_THAT(callback.WaitForResult(), IsOk());
@@ -771,8 +766,7 @@ TEST_F(ProxyResolverV8TracingTest, CancelWhileOutstandingNonBlockingDns) {
   std::unique_ptr<net::ProxyResolver::Request> request1;
   std::unique_ptr<net::ProxyResolver::Request> request2;
 
-  resolver->GetProxyForURL(GURL("http://foo/req1"),
-                           net::NetworkAnonymizationKey(), &proxy_info1,
+  resolver->GetProxyForURL(GURL("http://foo/req1"), &proxy_info1,
                            base::BindOnce(&CrashCallback), &request1,
                            mock_bindings.CreateBindings());
 
@@ -780,8 +774,7 @@ TEST_F(ProxyResolverV8TracingTest, CancelWhileOutstandingNonBlockingDns) {
 
   base::RunLoop run_loop2;
   host_resolver.set_hang_callback(run_loop2.QuitClosure());
-  resolver->GetProxyForURL(GURL("http://foo/req2"),
-                           net::NetworkAnonymizationKey(), &proxy_info2,
+  resolver->GetProxyForURL(GURL("http://foo/req2"), &proxy_info2,
                            base::BindOnce(&CrashCallback), &request2,
                            mock_bindings.CreateBindings());
 
@@ -827,9 +820,9 @@ TEST_F(ProxyResolverV8TracingTest, CancelWhileBlockedInNonBlockingDns) {
   host_resolver.set_hang_callback(
       base::BindRepeating(&CancelRequestAndPause, &request, &run_loop));
 
-  resolver->GetProxyForURL(GURL("http://foo/"), net::NetworkAnonymizationKey(),
-                           &proxy_info, base::BindOnce(&CrashCallback),
-                           &request, mock_bindings.CreateBindings());
+  resolver->GetProxyForURL(GURL("http://foo/"), &proxy_info,
+                           base::BindOnce(&CrashCallback), &request,
+                           mock_bindings.CreateBindings());
 
   run_loop.Run();
 }
@@ -846,9 +839,9 @@ TEST_F(ProxyResolverV8TracingTest, CancelWhileBlockedInNonBlockingDns2) {
   net::ProxyInfo proxy_info;
   std::unique_ptr<net::ProxyResolver::Request> request;
 
-  resolver->GetProxyForURL(GURL("http://foo/"), net::NetworkAnonymizationKey(),
-                           &proxy_info, base::BindOnce(&CrashCallback),
-                           &request, mock_bindings.CreateBindings());
+  resolver->GetProxyForURL(GURL("http://foo/"), &proxy_info,
+                           base::BindOnce(&CrashCallback), &request,
+                           mock_bindings.CreateBindings());
 
   // Wait a bit, so the DNS task has hopefully been posted. The test will
   // work whatever the delay is here, but it is most useful if the delay
@@ -934,9 +927,9 @@ TEST_F(ProxyResolverV8TracingTest, Terminate) {
   net::ProxyInfo proxy_info;
 
   std::unique_ptr<net::ProxyResolver::Request> req;
-  resolver->GetProxyForURL(
-      GURL("http://foopy/req1"), net::NetworkAnonymizationKey(), &proxy_info,
-      callback.callback(), &req, mock_bindings.CreateBindings());
+  resolver->GetProxyForURL(GURL("http://foopy/req1"), &proxy_info,
+                           callback.callback(), &req,
+                           mock_bindings.CreateBindings());
   EXPECT_THAT(callback.WaitForResult(), IsOk());
 
   // The test does 2 DNS resolutions.
@@ -1023,11 +1016,11 @@ TEST_F(ProxyResolverV8TracingTest, MultipleResolvers) {
 
   for (size_t i = 0; i < kNumResults; ++i) {
     size_t resolver_i = i % kNumResolvers;
-    resolver[resolver_i]->GetProxyForURL(
-        GURL("http://foo/"), net::NetworkAnonymizationKey(), &proxy_info[i],
-        callback[i].callback(), &request[i],
-        resolver_i == 3 ? mock_bindings3.CreateBindings()
-                        : mock_bindings0.CreateBindings());
+    resolver[resolver_i]->GetProxyForURL(GURL("http://foo/"), &proxy_info[i],
+                                         callback[i].callback(), &request[i],
+                                         resolver_i == 3
+                                             ? mock_bindings3.CreateBindings()
+                                             : mock_bindings0.CreateBindings());
   }
 
   // ------------------------
@@ -1097,9 +1090,9 @@ TEST_F(ProxyResolverV8TracingTest, FinalizationRegistryCleanup) {
   net::TestCompletionCallback callback_b;
   net::ProxyInfo proxy_info_b;
   std::unique_ptr<net::ProxyResolver::Request> req_b;
-  resolver_b->GetProxyForURL(
-      GURL("http://foo/"), net::NetworkAnonymizationKey(), &proxy_info_b,
-      callback_b.callback(), &req_b, mock_bindings_b.CreateBindings());
+  resolver_b->GetProxyForURL(GURL("http://foo/"), &proxy_info_b,
+                             callback_b.callback(), &req_b,
+                             mock_bindings_b.CreateBindings());
 
   run_loop_second.Run();
 

@@ -45,7 +45,7 @@ class NET_EXPORT_PRIVATE ProxyResolver {
   // resolution information.  In the case of asynchronous completion
   // |*request| is written to. Call request_.reset() to cancel the request.
   //
-  // |network_isolation_key| is used for any DNS lookups associated with the
+  // |network_anonymization_key| is used for any DNS lookups associated with the
   // request, if net's HostResolver is used. If the underlying platform itself
   // handles proxy resolution, |network_anonymization_key| will be ignored.
   virtual int GetProxyForURL(

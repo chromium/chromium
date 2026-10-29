@@ -10,12 +10,12 @@
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_anonymization_key.h"
 #include "net/base/proxy_string_util.h"
 #include "net/proxy_resolution/pac_file_data.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "services/proxy_resolver/mojo_proxy_resolver_v8_tracing_bindings.h"
 #include "services/proxy_resolver/proxy_resolver_v8_tracing.h"
+#include "url/gurl.h"
 
 namespace proxy_resolver {
 
@@ -30,7 +30,7 @@ class ProxyResolverImpl::Job {
 
   ~Job();
 
-  void Start(const net::NetworkAnonymizationKey& network_anonymization_key);
+  void Start();
 
  private:
   // Mojo error handler. This is invoked in response to the client
@@ -56,14 +56,13 @@ ProxyResolverImpl::~ProxyResolverImpl() = default;
 
 void ProxyResolverImpl::GetProxyForUrl(
     const GURL& url,
-    const net::NetworkAnonymizationKey& network_anonymization_key,
     mojo::PendingRemote<mojom::ProxyResolverRequestClient> client) {
   DVLOG(1) << "GetProxyForUrl(" << url << ")";
   std::unique_ptr<Job> job =
       std::make_unique<Job>(std::move(client), this, url);
   Job* job_ptr = job.get();
   resolve_jobs_[job_ptr] = std::move(job);
-  job_ptr->Start(network_anonymization_key);
+  job_ptr->Start();
 }
 
 void ProxyResolverImpl::DeleteJob(Job* job) {
@@ -82,10 +81,12 @@ ProxyResolverImpl::Job::Job(
 
 ProxyResolverImpl::Job::~Job() = default;
 
-void ProxyResolverImpl::Job::Start(
-    const net::NetworkAnonymizationKey& network_anonymization_key) {
+void ProxyResolverImpl::Job::Start() {
+  // The bindings are scoped to this Job, and send DNS lookups over `client_`,
+  // so the network process performs them using the NetworkAnonymizationKey
+  // associated with this Job's request.
   resolver_->resolver_->GetProxyForURL(
-      url_, network_anonymization_key, &result_,
+      url_, &result_,
       base::BindOnce(&Job::GetProxyDone, base::Unretained(this)), &request_,
       std::make_unique<MojoProxyResolverV8TracingBindings<
           mojom::ProxyResolverRequestClient>>(client_.get()));
