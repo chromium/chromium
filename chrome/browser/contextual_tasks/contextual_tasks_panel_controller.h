@@ -164,6 +164,9 @@ class ContextualTasksPanelController {
                              base::Uuid task_id) = 0;
   // Called when there is an AI interaction in the panel.
   virtual void OnAiInteraction() = 0;
+  // Called when a user clicks a link inside the panel. Also counts as an AI
+  // interaction.
+  virtual void OnLinkClicked() = 0;
 
   // Sets a task to be used once the side panel opens. Used to open a specific
   // task without associating a web contents (which would inherently get added

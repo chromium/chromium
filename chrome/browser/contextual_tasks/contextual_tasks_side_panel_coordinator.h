@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_SIDE_PANEL_COORDINATOR_H_
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -114,6 +115,10 @@ class ContextualTasksSidePanelCoordinator
     // Whether the panel is open.
     bool is_open;
 
+    // Whether this cache item has an active open session whose link click count
+    // has not yet been recorded.
+    bool has_open_session = false;
+
     // The time when the WebContents becomes inactive.
     base::TimeTicks last_active_time_ticks;
 
@@ -135,6 +140,10 @@ class ContextualTasksSidePanelCoordinator
     // Whether the time to handshake complete metric has been recorded for this
     // open session.
     bool time_to_handshake_complete_recorded = false;
+
+    // Number of links clicked in this task's panel during the current open
+    // session.
+    size_t link_click_count = 0;
 
     // Observer for the embedded WebContents in the side panel.
     std::unique_ptr<SidePanelWebContentsObserver> web_contents_observer;
@@ -197,6 +206,7 @@ class ContextualTasksSidePanelCoordinator
   void OnTaskChanged(content::WebContents* web_contents,
                      base::Uuid task_id) override;
   void OnAiInteraction() override;
+  void OnLinkClicked() override;
   void SetPendingTaskForTab(tabs::TabInterface* tab,
                             const base::Uuid& task_id) override;
   content::WebContents* GetActiveWebContents() const override;
@@ -497,6 +507,10 @@ class ContextualTasksSidePanelCoordinator
   // is being closed so that it can be logged.
   std::optional<ContextualTasksPanelController::EntrySource>
       closing_entry_source_;
+
+  // Used to save whether a link was clicked in the task's panel during the open
+  // session when the panel is being closed so that it can be logged.
+  std::optional<bool> closing_had_link_click_;
 
   // Tabs on which the panel was closed while the tab stays associated with its
   // task, so that the panel stays open on other tabs of the same task. Only

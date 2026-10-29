@@ -2367,6 +2367,11 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, OnTabRemoved_ActiveTab) {
   histogram_tester.ExpectUniqueSample(
       "ContextualTasks.Tab.ClosedWithSidePanelOpenState",
       ContextualTasksTabCloseState::kActiveTab, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Tab.ClosedWithSidePanelOpenState.WithoutLinkClick",
+      ContextualTasksTabCloseState::kActiveTab, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Tab.ClosedWithSidePanelOpenState.WithLinkClick", 0);
   EXPECT_EQ(
       1,
       user_action_tester.GetActionCount(
@@ -4664,6 +4669,215 @@ TEST_F(ContextualTasksSidePanelCoordinatorWebSignOutTest,
   coordinator_->OnActiveTabChanged(*tab_list_, background_tab);
   EXPECT_EQ(coordinator_->GetActiveWebContents(), panel_contents);
   EXPECT_FALSE(GetWebContentsForTaskForTesting(task_.GetTaskId()));
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       SessionLinkClickCount_AndCloseSidePanelMetrics_WithoutLinkClick) {
+  base::HistogramTester histogram_tester;
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::
+          DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT);
+
+  coordinator_->Close();
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kClosed,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+
+  histogram_tester.ExpectUniqueSample("ContextualTasks.Session.LinkClickCount",
+                                      0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SidePanel.UserAction.CloseHadLinkClick", false, 1);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       SessionLinkClickCount_AndCloseSidePanelMetrics_WithLinkClicks) {
+  base::HistogramTester histogram_tester;
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::
+          DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT);
+
+  coordinator_->OnLinkClicked();
+  coordinator_->OnLinkClicked();
+  coordinator_->OnLinkClicked();
+
+  coordinator_->Close();
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kClosed,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+
+  histogram_tester.ExpectUniqueSample("ContextualTasks.Session.LinkClickCount",
+                                      3, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SidePanel.UserAction.CloseHadLinkClick", true, 1);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       SessionLinkClickCount_RecordedAndResetWhenOpenTimeTicksIsNull) {
+  base::test::ScopedFeatureList tab_state_feature(
+      kContextualTasksSidePanelTabState);
+  TrackTabAssociations();
+  ON_CALL(*mock_controller_, DisassociateTabFromTask(_, _))
+      .WillByDefault([this](const base::Uuid& task_id, SessionID tab_id) {
+        if (auto it = tab_to_task_.find(tab_id);
+            it != tab_to_task_.end() && it->second == task_id) {
+          tab_to_task_.erase(it);
+        }
+      });
+
+  base::HistogramTester histogram_tester;
+  ContextualTask shared_task(base::Uuid::GenerateRandomV4());
+  existing_tasks_.insert(shared_task.GetTaskId());
+
+  tabs::TabInterface* tab1 = tab_list_->GetActiveTab();
+  tabs::TabInterface* tab2 = CreateMockTab();
+  const SessionID tab1_id =
+      sessions::SessionTabHelper::IdForTab(tab1->GetContents());
+  const SessionID tab2_id =
+      sessions::SessionTabHelper::IdForTab(tab2->GetContents());
+  tab_to_task_[tab1_id] = shared_task.GetTaskId();
+  tab_to_task_[tab2_id] = shared_task.GetTaskId();
+
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::
+          DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT);
+
+  // Move the active tab to a new thread while the panel is already open; this
+  // creates a cache item with a null `open_time_ticks`.
+  ContextualTask new_task(base::Uuid::GenerateRandomV4());
+  existing_tasks_.insert(new_task.GetTaskId());
+  EXPECT_CALL(*mock_controller_, CreateTask()).WillOnce(Return(new_task));
+  ASSERT_TRUE(coordinator_->MoveActiveTabToNewThreadIfShared());
+
+  coordinator_->OnLinkClicked();
+  coordinator_->OnLinkClicked();
+
+  // Closing the new thread's panel on tab1 should record its 2 clicks without
+  // recording or resetting `shared_task` on tab2.
+  coordinator_->Close();
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kClosed,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+
+  histogram_tester.ExpectUniqueSample("ContextualTasks.Session.LinkClickCount",
+                                      2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SidePanel.UserAction.CloseHadLinkClick", true, 1);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       TabScopedClose_DoesNotRecordOrResetOtherOpenTasksSession) {
+  base::test::ScopedFeatureList tab_state_feature(
+      kContextualTasksSidePanelTabState);
+  TrackTabAssociations();
+  ON_CALL(*mock_controller_, DisassociateTabFromTask(_, _))
+      .WillByDefault([this](const base::Uuid& task_id, SessionID tab_id) {
+        if (auto it = tab_to_task_.find(tab_id);
+            it != tab_to_task_.end() && it->second == task_id) {
+          tab_to_task_.erase(it);
+        }
+      });
+
+  base::HistogramTester histogram_tester;
+  ContextualTask task_a(base::Uuid::GenerateRandomV4());
+  ContextualTask task_b(base::Uuid::GenerateRandomV4());
+  existing_tasks_.insert(task_a.GetTaskId());
+  existing_tasks_.insert(task_b.GetTaskId());
+
+  tabs::TabInterface* tab1 = tab_list_->GetActiveTab();
+  tabs::TabInterface* tab2 = CreateMockTab();
+  const SessionID tab1_id =
+      sessions::SessionTabHelper::IdForTab(tab1->GetContents());
+  const SessionID tab2_id =
+      sessions::SessionTabHelper::IdForTab(tab2->GetContents());
+  tab_to_task_[tab1_id] = task_a.GetTaskId();
+  tab_to_task_[tab2_id] = task_b.GetTaskId();
+
+  // Open panel on tab1 (task_a) and click 2 links.
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::
+          DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT);
+  coordinator_->OnLinkClicked();
+  coordinator_->OnLinkClicked();
+
+  // Switch to tab2 (task_b), open its panel, and click 1 link.
+  SetActiveTab(tab2);
+  coordinator_->OnActiveTabChanged(*tab_list_, tab2);
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::
+          DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT);
+  coordinator_->OnLinkClicked();
+
+  // Close task_b's panel on tab2. Only task_b's session should be recorded.
+  coordinator_->Close();
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kClosed,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+
+  histogram_tester.ExpectUniqueSample("ContextualTasks.Session.LinkClickCount",
+                                      1, 1);
+
+  // Switch back to tab1 and close task_a's panel. Its 2 link clicks should
+  // still be intact and recorded now.
+  SetActiveTab(tab1);
+  coordinator_->OnActiveTabChanged(*tab_list_, tab1);
+  coordinator_->Close();
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kClosed,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+
+  histogram_tester.ExpectTotalCount("ContextualTasks.Session.LinkClickCount",
+                                    2);
+  histogram_tester.ExpectBucketCount("ContextualTasks.Session.LinkClickCount",
+                                     1, 1);
+  histogram_tester.ExpectBucketCount("ContextualTasks.Session.LinkClickCount",
+                                     2, 1);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       OnTabRemoved_ActiveTab_WithLinkClicks) {
+  base::HistogramTester histogram_tester;
+
+  tabs::TabInterface* tab = tab_list_->GetActiveTab();
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+
+  ON_CALL(*mock_controller_,
+          GetContextualTaskForTab(
+              sessions::SessionTabHelper::IdForTab(tab->GetContents())))
+      .WillByDefault(Return(task));
+
+  CreateCachedWebContentsForTesting(task_id, /*is_open=*/true);
+  UpdateWebContentsForActiveTab();
+  ASSERT_EQ(coordinator_->GetActiveWebContents(),
+            GetWebContentsForTaskForTesting(task_id));
+
+  coordinator_->OnLinkClicked();
+
+  coordinator_->OnTabRemoved(*tab_list_, tab, TabRemovedReason::kDeleted);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Tab.ClosedWithSidePanelOpenState",
+      ContextualTasksTabCloseState::kActiveTab, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Tab.ClosedWithSidePanelOpenState.WithLinkClick",
+      ContextualTasksTabCloseState::kActiveTab, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Tab.ClosedWithSidePanelOpenState.WithoutLinkClick", 0);
 }
 
 }  // namespace contextual_tasks

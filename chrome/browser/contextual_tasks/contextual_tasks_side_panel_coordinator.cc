@@ -24,6 +24,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -251,6 +252,46 @@ void RecordUserActionAndHistogram(const std::string& metric_name) {
   base::UmaHistogramBoolean(metric_name, true);
 }
 
+void RecordCacheItemSessionEndMetrics(
+    contextual_tasks::ContextualTasksSidePanelCoordinator::WebContentsCacheItem&
+        cache_item) {
+  if (std::exchange(cache_item.has_open_session, false)) {
+    base::UmaHistogramCounts100(
+        "ContextualTasks.Session.LinkClickCount",
+        base::saturated_cast<int>(cache_item.link_click_count));
+  }
+  cache_item.link_click_count = 0;
+
+  if (cache_item.open_time_ticks.is_null()) {
+    return;
+  }
+
+  if (cache_item.entry_source ==
+      contextual_tasks::ContextualTasksPanelController::EntrySource::
+          kAioToCobr) {
+    base::TimeDelta duration =
+        base::TimeTicks::Now() - cache_item.open_time_ticks;
+    base::UmaHistogramLongTimes("ContextualTasks.Session.Duration.AioToCobr",
+                                duration);
+  } else if (cache_item.entry_source ==
+             contextual_tasks::ContextualTasksPanelController::EntrySource::
+                 kEphemeralToolbarButton) {
+    base::TimeDelta duration =
+        base::TimeTicks::Now() - cache_item.open_time_ticks;
+    base::UmaHistogramLongTimes(
+        "ContextualTasks.Session.Duration.EphemeralToolbarButton", duration);
+  } else if (contextual_tasks::IsContextualTasksPinningV2Enabled() &&
+             cache_item.entry_source ==
+                 contextual_tasks::ContextualTasksPanelController::EntrySource::
+                     kPermanentToolbarButton) {
+    base::TimeDelta duration =
+        base::TimeTicks::Now() - cache_item.open_time_ticks;
+    base::UmaHistogramLongTimes(
+        "ContextualTasks.Session.Duration.PermanentToolbarButton", duration);
+  }
+  cache_item.open_time_ticks = base::TimeTicks();
+}
+
 std::vector<tabs::TabHandle> FilterValidTabHandlesForSharing(
     const std::vector<tabs::TabHandle>& tab_handles) {
   std::vector<tabs::TabHandle> valid_tab_handles;
@@ -342,6 +383,7 @@ ContextualTasksSidePanelCoordinator::WebContentsCacheItem::WebContentsCacheItem(
     base::RepeatingClosure on_navigation_callback)
     : web_contents(std::move(wc)),
       is_open(open),
+      has_open_session(open),
       last_active_time_ticks(base::TimeTicks::Now()),
       open_time_ticks(base::TimeTicks::Now()),
       web_contents_observer(
@@ -629,6 +671,8 @@ void ContextualTasksSidePanelCoordinator::Show(
           open_time_ticks.value_or(base::TimeTicks::Now());
       it->second->first_contentful_paint_recorded = false;
       it->second->time_to_handshake_complete_recorded = false;
+      it->second->has_open_session = true;
+      it->second->link_click_count = 0;
     }
   }
   UpdateWebContentsForActiveTab();
@@ -698,9 +742,10 @@ void ContextualTasksSidePanelCoordinator::Close() {
     }
     if (WebContentsCacheItem* cache_item =
             GetWebContentsCacheItemForWebContents(active_web_contents)) {
-      // Save the entry source so that it can be logged in
-      // OnSurfaceStateChanged.
+      // Save the entry source and link click state so that they can be logged
+      // in `OnSurfaceStateChanged()`.
       closing_entry_source_ = cache_item->entry_source;
+      closing_had_link_click_ = cache_item->link_click_count > 0;
     }
   }
   UpdateOpenState(/*is_open=*/false);
@@ -719,13 +764,34 @@ void ContextualTasksSidePanelCoordinator::Close() {
 
   NotifyActiveTaskContextProvider();
 
-  // When scoped to the tab, the session continues while another tab of the
-  // task still shows the panel.
+  // When scoped to the tab, only end the current task's session if no other tab
+  // of the task still shows the panel, leaving other tasks' open panels intact.
   const bool scoped_to_tab = ShouldScopeSidePanelStateToTab();
   std::optional<ContextualTask> current_task =
       scoped_to_tab ? GetCurrentTask() : std::nullopt;
-  if (!current_task ||
-      !IsPanelOpenOnOtherTabOfTask(current_task->GetTaskId())) {
+  if (scoped_to_tab) {
+    if (!current_task) {
+      RecordSessionEndMetrics();
+    } else if (!IsPanelOpenOnOtherTabOfTask(current_task->GetTaskId())) {
+      if (auto it =
+              task_id_to_web_contents_cache_.find(current_task->GetTaskId());
+          it != task_id_to_web_contents_cache_.end() && it->second) {
+        RecordCacheItemSessionEndMetrics(*it->second);
+      }
+      const bool any_panel_still_open =
+          !tasks_pending_panel_rebuild_.empty() ||
+          std::ranges::any_of(task_id_to_web_contents_cache_,
+                              [](const auto& entry) {
+                                return entry.second && entry.second->is_open;
+                              });
+      if (!any_panel_still_open) {
+        if (in_cobrowsing_session_) {
+          base::UmaHistogramBoolean("ContextualTasks.Session.Completed", true);
+        }
+        in_cobrowsing_session_ = false;
+      }
+    }
+  } else {
     RecordSessionEndMetrics();
   }
 
@@ -1228,6 +1294,8 @@ void ContextualTasksSidePanelCoordinator::TransferWebContentsFromTab(
             it->second->web_contents.get(), base::NullCallback(),
             base::NullCallback());
     it->second->first_contentful_paint_recorded = true;
+    it->second->has_open_session = true;
+    it->second->link_click_count = 0;
   }
   UpdateOpenState(/*is_open=*/true);
   UpdateWebContentsForActiveTab();
@@ -1362,14 +1430,24 @@ void ContextualTasksSidePanelCoordinator::OnTaskChanged(
     // The new task takes over the WebContents, so it doesn't need a rebuild.
     tasks_pending_panel_rebuild_.erase(new_task_id);
     const EntrySource old_entry_source = cache_item->entry_source;
+    const size_t old_link_click_count = cache_item->link_click_count;
     const bool was_open = cache_item->is_open;
+    const bool split_from_old_task =
+        ShouldScopeSidePanelStateToTab() && old_task_id &&
+        *old_task_id != new_task_id && was_open &&
+        IsTaskAssociatedWithTabInWindow(*old_task_id);
 
     // If found, update the found WebContents with new_task_id.
     // This will potentially kick out the existing WebContents with new_task_id
     // since only 1 WebContents per task is kept in the cache.
+    size_t existing_new_task_link_clicks = 0;
     auto it = task_id_to_web_contents_cache_.find(new_task_id);
     if (it != task_id_to_web_contents_cache_.end()) {
+      existing_new_task_link_clicks = it->second->link_click_count;
       MaybeDetachWebContents(it->second->web_contents.get());
+    }
+    if (split_from_old_task) {
+      cache_item->link_click_count = existing_new_task_link_clicks;
     }
     task_id_to_web_contents_cache_[new_task_id] = std::move(cache_item);
 
@@ -1378,12 +1456,14 @@ void ContextualTasksSidePanelCoordinator::OnTaskChanged(
     // right away if one of those tabs shows the panel, so that the thread is
     // ready when the tab becomes active. Otherwise, recreate it when the panel
     // is reopened on one of them.
-    if (ShouldScopeSidePanelStateToTab() && old_task_id &&
-        *old_task_id != new_task_id && was_open &&
-        IsTaskAssociatedWithTabInWindow(*old_task_id)) {
+    if (split_from_old_task) {
       tasks_pending_panel_rebuild_[*old_task_id] = old_entry_source;
       if (IsPanelOpenOnTabOfTask(*old_task_id)) {
         RebuildCachedWebContentsForTask(*old_task_id);
+        if (auto old_it = task_id_to_web_contents_cache_.find(*old_task_id);
+            old_it != task_id_to_web_contents_cache_.end() && old_it->second) {
+          old_it->second->link_click_count = old_link_click_count;
+        }
       }
     }
   }
@@ -1399,6 +1479,18 @@ void ContextualTasksSidePanelCoordinator::OnTaskChanged(
 
 void ContextualTasksSidePanelCoordinator::OnAiInteraction() {
   in_cobrowsing_session_ = true;
+}
+
+void ContextualTasksSidePanelCoordinator::OnLinkClicked() {
+  OnAiInteraction();
+  content::WebContents* web_contents = GetActiveWebContents();
+  if (!web_contents) {
+    web_contents = GetPanelWebContentsForActiveTab();
+  }
+  if (WebContentsCacheItem* cache_item =
+          GetWebContentsCacheItemForWebContents(web_contents)) {
+    cache_item->link_click_count++;
+  }
 }
 
 void ContextualTasksSidePanelCoordinator::SetPendingTaskForTab(
@@ -1539,6 +1631,13 @@ void ContextualTasksSidePanelCoordinator::OnTabRemoved(
                               : ContextualTasksTabCloseState::kBackgroundTab;
             base::UmaHistogramEnumeration(
                 "ContextualTasks.Tab.ClosedWithSidePanelOpenState",
+                close_state);
+            base::UmaHistogramEnumeration(
+                cache_item->link_click_count > 0
+                    ? "ContextualTasks.Tab.ClosedWithSidePanelOpenState."
+                      "WithLinkClick"
+                    : "ContextualTasks.Tab.ClosedWithSidePanelOpenState."
+                      "WithoutLinkClick",
                 close_state);
             if (is_active_tab) {
               base::RecordAction(
@@ -1794,36 +1893,7 @@ void ContextualTasksSidePanelCoordinator::CleanUpUnusedWebContents() {
     // If the WebContents has no open tabs associated with it in the current
     // window, or is not active for long enough time, then remove it.
     if (!associated_with_tab || (!is_active && expired)) {
-      if (it->second->entry_source ==
-              ContextualTasksPanelController::EntrySource::kAioToCobr &&
-          !it->second->open_time_ticks.is_null()) {
-        base::TimeDelta duration =
-            base::TimeTicks::Now() - it->second->open_time_ticks;
-        base::UmaHistogramLongTimes(
-            "ContextualTasks.Session.Duration.AioToCobr", duration);
-        it->second->open_time_ticks = base::TimeTicks();
-      } else if (it->second->entry_source ==
-                     ContextualTasksPanelController::EntrySource::
-                         kEphemeralToolbarButton &&
-                 !it->second->open_time_ticks.is_null()) {
-        base::TimeDelta duration =
-            base::TimeTicks::Now() - it->second->open_time_ticks;
-        base::UmaHistogramLongTimes(
-            "ContextualTasks.Session.Duration.EphemeralToolbarButton",
-            duration);
-        it->second->open_time_ticks = base::TimeTicks();
-      } else if (contextual_tasks::IsContextualTasksPinningV2Enabled() &&
-                 it->second->entry_source ==
-                     ContextualTasksPanelController::EntrySource::
-                         kPermanentToolbarButton &&
-                 !it->second->open_time_ticks.is_null()) {
-        base::TimeDelta duration =
-            base::TimeTicks::Now() - it->second->open_time_ticks;
-        base::UmaHistogramLongTimes(
-            "ContextualTasks.Session.Duration.PermanentToolbarButton",
-            duration);
-        it->second->open_time_ticks = base::TimeTicks();
-      }
+      RecordCacheItemSessionEndMetrics(*it->second);
       MaybeDetachWebContents(web_contents);
       it = task_id_to_web_contents_cache_.erase(it);
     } else {
@@ -2074,12 +2144,16 @@ void ContextualTasksSidePanelCoordinator::Hide() {
 }
 
 void ContextualTasksSidePanelCoordinator::Unhide() {
-#if !BUILDFLAG(IS_ANDROID)
   if (auto* cache_item = GetWebContentsCacheItemForWebContents(
           GetPanelWebContentsForActiveTab())) {
+    if (!cache_item->has_open_session) {
+      cache_item->has_open_session = true;
+      cache_item->link_click_count = 0;
+    }
+#if !BUILDFLAG(IS_ANDROID)
     onboarding_controller_->SetEntryPoint(cache_item->entry_point);
-  }
 #endif
+  }
   contextual_tasks_panel_host_->Show(
       ContextualTasksPanelHost::AnimationStyle::kNoAnimation);
   UpdateContextualTaskUI();
@@ -2436,6 +2510,10 @@ void ContextualTasksSidePanelCoordinator::UpdateOpenState(bool is_open) {
     if (is_open) {
       tabs_with_closed_panel_.erase(active_tab->GetHandle());
       if (it != task_id_to_web_contents_cache_.end()) {
+        if (!it->second->has_open_session) {
+          it->second->has_open_session = true;
+          it->second->link_click_count = 0;
+        }
         it->second->is_open = true;
       }
     } else {
@@ -2450,6 +2528,10 @@ void ContextualTasksSidePanelCoordinator::UpdateOpenState(bool is_open) {
   }
 
   if (it != task_id_to_web_contents_cache_.end()) {
+    if (is_open && !it->second->has_open_session) {
+      it->second->has_open_session = true;
+      it->second->link_click_count = 0;
+    }
     it->second->is_open = is_open;
   }
 
@@ -2852,11 +2934,17 @@ void ContextualTasksSidePanelCoordinator::OnSurfaceStateChanged(
             break;
         }
       }
+      if (closing_had_link_click_.has_value()) {
+        base::UmaHistogramBoolean(
+            "ContextualTasks.SidePanel.UserAction.CloseHadLinkClick",
+            *closing_had_link_click_);
+      }
       if (auto* ui_service = GetUiService()) {
         ui_service->ShowUndoSnackbar(browser_window_);
       }
     }
     closing_entry_source_.reset();
+    closing_had_link_click_.reset();
   }
 
   observers_.Notify(
@@ -2924,34 +3012,10 @@ void ContextualTasksSidePanelCoordinator::RecordSessionEndMetrics() {
   in_cobrowsing_session_ = false;
 
   for (auto& [task_id, cache_item] : task_id_to_web_contents_cache_) {
-    if (!cache_item || cache_item->open_time_ticks.is_null()) {
+    if (!cache_item) {
       continue;
     }
-    if (cache_item->entry_source ==
-        ContextualTasksPanelController::EntrySource::kAioToCobr) {
-      base::TimeDelta duration =
-          base::TimeTicks::Now() - cache_item->open_time_ticks;
-      base::UmaHistogramLongTimes("ContextualTasks.Session.Duration.AioToCobr",
-                                  duration);
-      cache_item->open_time_ticks = base::TimeTicks();
-    } else if (cache_item->entry_source ==
-               ContextualTasksPanelController::EntrySource::
-                   kEphemeralToolbarButton) {
-      base::TimeDelta duration =
-          base::TimeTicks::Now() - cache_item->open_time_ticks;
-      base::UmaHistogramLongTimes(
-          "ContextualTasks.Session.Duration.EphemeralToolbarButton", duration);
-      cache_item->open_time_ticks = base::TimeTicks();
-    } else if (contextual_tasks::IsContextualTasksPinningV2Enabled() &&
-               cache_item->entry_source ==
-                   ContextualTasksPanelController::EntrySource::
-                       kPermanentToolbarButton) {
-      base::TimeDelta duration =
-          base::TimeTicks::Now() - cache_item->open_time_ticks;
-      base::UmaHistogramLongTimes(
-          "ContextualTasks.Session.Duration.PermanentToolbarButton", duration);
-      cache_item->open_time_ticks = base::TimeTicks();
-    }
+    RecordCacheItemSessionEndMetrics(*cache_item);
   }
 }
 

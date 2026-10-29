@@ -982,7 +982,7 @@ void ContextualTasksUiService::OnThreadLinkClicked(
              "citation handled on active tab";
       if (auto* controller =
               ContextualTasksPanelController::From(browser.get())) {
-        controller->OnAiInteraction();
+        controller->OnLinkClicked();
       }
       return;
     }
@@ -1102,7 +1102,7 @@ void ContextualTasksUiService::OnThreadLinkClicked(
              "counting as part of a cobrowsing session";
       // Count as part of a cobrowsing session if the user interacted with the
       // AI response.
-      controller->OnAiInteraction();
+      controller->OnLinkClicked();
     }
 
     return;
@@ -1769,7 +1769,7 @@ bool ContextualTasksUiService::HandleCitationClick(
   if (browser_window) {
     if (auto* controller =
             ContextualTasksPanelController::From(browser_window)) {
-      controller->OnAiInteraction();
+      controller->OnLinkClicked();
     }
   }
 
@@ -2003,7 +2003,7 @@ bool ContextualTasksUiService::HandleSidePanelExternalNavigation(
   if (browser_window) {
     if (auto* controller =
             ContextualTasksPanelController::From(browser_window)) {
-      controller->OnAiInteraction();
+      controller->OnLinkClicked();
     }
   }
 
