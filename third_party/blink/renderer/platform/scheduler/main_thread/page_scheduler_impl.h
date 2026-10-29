@@ -55,6 +55,9 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   static constexpr base::TimeDelta kIntensiveThrottledWakeUpInterval =
       base::Minutes(1);
 
+  static constexpr base::TimeDelta kDelayForTrackingIPCsPostedToCachedFrames =
+      base::Seconds(15);
+
   PageSchedulerImpl(PageScheduler::Delegate*, AgentGroupSchedulerImpl&);
   PageSchedulerImpl(const PageSchedulerImpl&) = delete;
   PageSchedulerImpl& operator=(const PageSchedulerImpl&) = delete;

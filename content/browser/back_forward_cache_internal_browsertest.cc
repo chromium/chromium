@@ -6,7 +6,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/task/common/task_annotator.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -534,46 +533,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // We expect to have navigated through the proxy.
   EXPECT_EQ(url_c, controller.GetLastCommittedEntry()->GetURL());
-}
-
-// Flaky on Android, see crbug.com/1135601 and on other platforms, see
-// crbug.com/1128772.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       DISABLED_LogIpcPostedToCachedFrame) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // 1) Navigate to a page.
-  GURL url(embedded_test_server()->GetURL("/title1.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-  RenderFrameHostImpl* rfh_a = current_frame_host();
-
-  // 2) Navigate away. The first page should be in the cache.
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
-
-  // 3) Post IPC tasks to the page, testing mojo remote objects.
-
-  // Send a message via an associated interface - which will post a task with an
-  // IPC hash and will be routed to the per-thread task queue.
-  base::RunLoop run_loop;
-  rfh_a->RequestTextSurroundingSelection(
-      base::BindOnce(
-          [](base::RepeatingClosure quit_closure, const std::u16string& str,
-             uint32_t num, uint32_t num2) { quit_closure.Run(); },
-          run_loop.QuitClosure()),
-      1);
-  run_loop.Run();
-
-  // 4) Check the histogram.
-  base::HistogramBase::Sample32 sample = base::HistogramBase::Sample32(
-      base::TaskAnnotator::ScopedSetIpcHash::MD5HashMetricName(
-          "blink.mojom.LocalFrame"));
-
-  FetchHistogramsFromChildProcesses();
-  EXPECT_TRUE(HistogramContainsIntValue(
-      sample, histogram_tester().GetAllSamples(
-                  "BackForwardCache.Experimental."
-                  "UnexpectedIPCMessagePostedToCachedFrame.MethodHash")));
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,

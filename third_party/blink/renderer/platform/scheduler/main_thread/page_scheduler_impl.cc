@@ -63,9 +63,6 @@ constexpr base::TimeDelta kThrottledWakeUpDuration = base::Milliseconds(3);
 constexpr base::TimeDelta
     kTimeToInhibitIntensiveThrottlingOnTitleOrFaviconUpdate = base::Seconds(3);
 
-constexpr base::TimeDelta kDefaultDelayForTrackingIPCsPostedToCachedFrames =
-    base::Seconds(15);
-
 // Values coming from the field trial config are interpreted as follows:
 //   -1 is "not set". Scheduler should use a reasonable default.
 //   0 corresponds to std::nullopt.
@@ -131,25 +128,12 @@ base::TimeDelta GetDelayForBackgroundTabFreezing() {
   return base::Milliseconds(kDelayForBackgroundTabFreezingMillis.Get());
 }
 
-base::TimeDelta GetTimeToDelayIPCTrackingWhileStoredInBackForwardCache() {
-  if (base::FeatureList::IsEnabled(
-          features::kLogUnexpectedIPCPostedToBackForwardCachedDocuments)) {
-    static const base::FeatureParam<int>
-        kDelayForLoggingUnexpectedIPCPostedToBckForwardCacheMillis{
-            &features::kLogUnexpectedIPCPostedToBackForwardCachedDocuments,
-            "delay_before_tracking_ms",
-            static_cast<int>(kDefaultDelayForTrackingIPCsPostedToCachedFrames
-                                 .InMilliseconds())};
-    return base::Milliseconds(
-        kDelayForLoggingUnexpectedIPCPostedToBckForwardCacheMillis.Get());
-  }
-  return kDefaultDelayForTrackingIPCsPostedToCachedFrames;
-}
-
 }  // namespace
 
 constexpr base::TimeDelta PageSchedulerImpl::kDefaultThrottledWakeUpInterval;
 constexpr base::TimeDelta PageSchedulerImpl::kIntensiveThrottledWakeUpInterval;
+constexpr base::TimeDelta
+    PageSchedulerImpl::kDelayForTrackingIPCsPostedToCachedFrames;
 
 PageSchedulerImpl::PageSchedulerImpl(
     PageScheduler::Delegate* delegate,
@@ -306,7 +290,7 @@ void PageSchedulerImpl::SetPageBackForwardCached(
         *main_thread_scheduler_->ControlTaskRunner(), FROM_HERE,
         base::BindRepeating(&PageSchedulerImpl::SetUpIPCTaskDetection,
                             GetWeakPtr()),
-        GetTimeToDelayIPCTrackingWhileStoredInBackForwardCache());
+        kDelayForTrackingIPCsPostedToCachedFrames);
     // If the page is already frozen, the subsequent call to SetPageFrozen() is
     // a no-op and won't trigger a policy update. The update must be triggered
     // here to ensure policies are correctly updated for the BFCache state.

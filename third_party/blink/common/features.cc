@@ -1396,9 +1396,6 @@ BASE_FEATURE(kLightweightNoStatePrefetch,
 // the page is frozen.
 BASE_FEATURE(kLoadingTasksUnfreezable, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLogUnexpectedIPCPostedToBackForwardCachedDocuments,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 // Allow low latency canvas (both 2D and WebGL) to be in overlay (generally
 // meaning scanned out directly to display), even if regular canvases are not

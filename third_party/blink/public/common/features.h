@@ -1120,9 +1120,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLightweightNoStatePrefetch);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLoadingTasksUnfreezable);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kLogUnexpectedIPCPostedToBackForwardCachedDocuments);
-
 #if BUILDFLAG(IS_ANDROID)
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowLatencyUsageSupportedForCanvas);
 #endif

@@ -110,9 +110,6 @@ class BackForwardCacheBrowserTest
 
   std::string DepictFrameTree(FrameTreeNode* node);
 
-  bool HistogramContainsIntValue(base::HistogramBase::Sample32 sample,
-                                 std::vector<base::Bucket> histogram_values);
-
   void EvictByJavaScript(RenderFrameHostImpl* rfh);
 
   void StartRecordingEvents(RenderFrameHostImpl* rfh);

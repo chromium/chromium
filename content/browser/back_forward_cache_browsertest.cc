@@ -19,7 +19,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
-#include "base/task/common/task_annotator.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -184,9 +183,6 @@ void BackForwardCacheBrowserTest::SetUpCommandLine(
   DisableFeature(features::kBackForwardCacheEntryTimeout);
   EnableFeatureAndSetParams(features::kBackForwardCache,
                             "message_handling_when_cached", "log");
-  EnableFeatureAndSetParams(
-      blink::features::kLogUnexpectedIPCPostedToBackForwardCachedDocuments,
-      "delay_before_tracking_ms", "0");
   // Allow unlimited network during tests. Override this if you want to test the
   // network limiting.
   EnableFeatureAndSetParams(blink::features::kLoadingTasksUnfreezable,
@@ -314,13 +310,6 @@ BackForwardCacheBrowserTest::render_frame_host_manager() {
 
 std::string BackForwardCacheBrowserTest::DepictFrameTree(FrameTreeNode* node) {
   return visualizer_.DepictFrameTree(node);
-}
-
-bool BackForwardCacheBrowserTest::HistogramContainsIntValue(
-    base::HistogramBase::Sample32 sample,
-    std::vector<base::Bucket> histogram_values) {
-  return std::ranges::contains(histogram_values, static_cast<int>(sample),
-                               &base::Bucket::min);
 }
 
 void BackForwardCacheBrowserTest::EvictByJavaScript(RenderFrameHostImpl* rfh) {

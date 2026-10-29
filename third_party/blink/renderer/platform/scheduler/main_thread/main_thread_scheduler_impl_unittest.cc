@@ -2953,19 +2953,12 @@ TEST_F(MainThreadSchedulerImplTest,
        LogIpcsPostedToDocumentsInBackForwardCache) {
   base::HistogramTester histogram_tester;
 
-  // Start recording IPCs immediately.
-  base::FieldTrialParams params;
-  params["delay_before_tracking_ms"] = "0";
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      blink::features::kLogUnexpectedIPCPostedToBackForwardCachedDocuments,
-      params);
-
   // Store documents inside the back-forward cache. IPCs are only tracked IFF
   // all pages are in the back-forward cache.
   PageSchedulerImpl* page_scheduler = page_scheduler_.get();
   page_scheduler->SetPageBackForwardCached(true);
-  base::RunLoop().RunUntilIdle();
+  task_environment_.FastForwardBy(
+      PageSchedulerImpl::kDelayForTrackingIPCsPostedToCachedFrames);
   {
     base::TaskAnnotator::ScopedSetIpcHash scoped_set_ipc_hash(1);
     default_task_runner_->PostTask(FROM_HERE, base::DoNothing());
