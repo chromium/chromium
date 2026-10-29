@@ -147,8 +147,10 @@
                                                      .value()];
       break;
     case NotificationsOptInAlertResult::kPermissionDenied:
-    case NotificationsOptInAlertResult::kOpenedSettings:
     case NotificationsOptInAlertResult::kCanceled:
+      [self dismissViewController];
+      break;
+    case NotificationsOptInAlertResult::kOpenedSettings:
     case NotificationsOptInAlertResult::kError:
       break;
   }
