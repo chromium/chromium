@@ -206,7 +206,8 @@ BASE_DECLARE_FEATURE(kExtensionAutoRejectIncognitoConnectability);
 // to per-URL IsPolicyBlockedHost checks and allowing attachment when
 // screenshots are disabled. Note that disabling this feature has security
 // implications.
-// See https://developer.chrome.com/blog/debugger-enterprise-policy-restrictions.
+// See
+// https://developer.chrome.com/blog/debugger-enterprise-policy-restrictions.
 BASE_DECLARE_FEATURE(kExtensionDebuggerStrictPolicyRestrictions);
 
 // Allow e.g. .css files to use default_locale messages in WAR files via GUID.
@@ -342,6 +343,15 @@ BASE_DECLARE_FEATURE(kExtensionBrowserNamespaceOnWebPages);
 // loaded extension's root directory are allowed to start. This helps avoid
 // memory leaks from stale cache entries and false-positive corruption reports.
 BASE_DECLARE_FEATURE(kExtensionContentVerificationUsesExtensionRoot);
+
+// If enabled, content verification reports a dedicated failure reason
+// (ContentVerifyJob::MISSING_EXTENSION_MANIFEST) when an extension with
+// unsigned hashes has neither computed_hashes.json nor manifest.json on disk
+// (e.g. after a browser rollback restored a user data snapshot without the
+// Extensions directory), instead of the generic MISSING_ALL_HASHES. This lets
+// the embedder repair such extensions without touching the handling of
+// extensions that merely lack computed_hashes.json.
+BASE_DECLARE_FEATURE(kExtensionContentVerificationReportsMissingManifest);
 
 // Enables the shouldShowPromotion API to determine which promotion to show for
 // Chrome Enterprise on CWS.

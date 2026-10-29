@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -18,6 +19,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
@@ -61,6 +63,7 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/file_util.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/test_extension_dir.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -800,6 +803,55 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
                   .GetByID(kTestExtensionId));
 }
 
+// Tests that a component extension that has no manifest.json on disk (here its
+// manifest has another name; it can also come from resources) isn't disabled
+// as corrupted when its content script fails verification for lack of hashes:
+// only extensions installed from a CRX are guaranteed to have a manifest.json.
+IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
+                       ComponentExtensionWithoutManifestJsonNotRepaired) {
+  base::HistogramTester histogram_tester;
+  std::string extension_id;
+  crypto::keypair::PrivateKey key = CreateExtensionSigningKey(extension_id);
+  TestExtensionDir test_dir;
+  test_dir.WriteFile(
+      FILE_PATH_LITERAL("other_manifest.json"),
+      base::StringPrintf(
+          R"({
+            "name": "Component extension",
+            "version": "1",
+            "manifest_version": 3,
+            "key": "%s",
+            "content_scripts": [{
+              "matches": ["<all_urls>"],
+              "js": ["script.js"]
+            }]
+          })",
+          base::Base64Encode(key.ToSubjectPublicKeyInfo()).c_str()));
+  test_dir.WriteFile(FILE_PATH_LITERAL("script.js"), "// script\n");
+
+  // Component extensions are verified because they must remain enabled.
+  // Loading the extension reads, and thus verifies, its content script.
+  const Extension* extension = LoadExtensionAsComponentWithManifest(
+      test_dir.UnpackedPath(), FILE_PATH_LITERAL("other_manifest.json"));
+  ASSERT_TRUE(extension);
+  ASSERT_EQ(extension_id, extension->id());
+
+  // The failure reaches the delegate in the same task that records this
+  // histogram, so once it's recorded, the delegate has handled it.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount(
+               "Extensions.ContentVerification.VerifyFailedOnFile."
+               "ContentScript",
+               ContentVerifyJob::MISSING_EXTENSION_MANIFEST) > 0;
+  }));
+  EXPECT_TRUE(
+      extension_registry()->enabled_extensions().Contains(extension_id));
+  EXPECT_FALSE(CorruptedExtensionReinstaller::Get(profile())
+                   ->IsReinstallForCorruptionExpected(extension_id));
+  histogram_tester.ExpectTotalCount(
+      "Extensions.CorruptPolicyExtensionDetected3", 0);
+}
+
 class UserInstalledContentVerifierTest : public ContentVerifierTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
@@ -1528,6 +1580,35 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierRepairsAllExtensionsDowngradeTest,
   EXPECT_TRUE(
       GetCorruptedExtensionReinstaller()->IsReinstallForCorruptionExpected(
           kStoragePermissionExtensionId));
+}
+
+// Verifies that an unpacked extension, which is verified because the command
+// line switch 'repair-all-valid-extensions' is set, isn't disabled for repair
+// when its manifest.json is reported missing: it can't be reinstalled, and a
+// missing manifest.json is only acted on for policy installs.
+IN_PROC_BROWSER_TEST_F(ContentVerifierRepairsAllExtensionsDowngradeTest,
+                       UnpackedExtensionWithMissingManifestNotRepaired) {
+  base::HistogramTester histogram_tester;
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+    "name": "Unpacked extension",
+    "version": "1",
+    "manifest_version": 3
+  })");
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  const ExtensionId extension_id = extension->id();
+
+  ExtensionSystem::Get(profile())->content_verifier()->VerifyFailedForTest(
+      extension_id, ContentVerifyJob::MISSING_EXTENSION_MANIFEST);
+
+  EXPECT_TRUE(
+      extension_registry()->enabled_extensions().Contains(extension_id));
+  EXPECT_FALSE(
+      GetCorruptedExtensionReinstaller()->IsReinstallForCorruptionExpected(
+          extension_id));
+  histogram_tester.ExpectTotalCount(
+      "Extensions.CorruptPolicyExtensionDetected3", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ContentVerifierRepairsAllExtensionsDowngradeTest,

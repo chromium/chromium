@@ -282,6 +282,9 @@ void ContentVerifyJob::StartWithContentHash(
       case ContentHashReaderInitStatus::HASHES_DAMAGED:
         DispatchFailureCallback(CORRUPTED_HASHES);
         return;
+      case ContentHashReaderInitStatus::EXTENSION_MANIFEST_MISSING:
+        DispatchFailureCallback(MISSING_EXTENSION_MANIFEST);
+        return;
       case ContentHashReaderInitStatus::NO_HASHES_FOR_RESOURCE:
         // Proceed and dispatch failure only if the file exists.
         break;

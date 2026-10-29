@@ -44,6 +44,11 @@ enum class ContentHashReaderInitStatus {
 
   // Extension has not attempted to fetch hashes yet.
   FETCH_NOT_ATTEMPTED_YET,
+
+  // Extension has no hashes, and no manifest.json on disk either (e.g. because
+  // its install directory was deleted). Only reported for extensions with
+  // unsigned hashes, see ContentHash::extension_manifest_missing().
+  EXTENSION_MANIFEST_MISSING,
 };
 
 // Reads expected hashes that may have been fetched/calculated by the

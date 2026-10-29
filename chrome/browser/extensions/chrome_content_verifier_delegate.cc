@@ -65,6 +65,22 @@ const char kContentVerificationExperimentName[] =
 ChromeContentVerifierDelegate::GetVerifyInfoTestOverride::VerifyInfoCallback*
     g_verify_info_test_callback = nullptr;
 
+// Returns the reason to record in UMA when scheduling a reinstall of a
+// force-installed extension after content verification failed with `reason`.
+CorruptedExtensionReinstaller::PolicyReinstallReason GetPolicyReinstallReason(
+    ContentVerifyJob::FailureReason reason,
+    bool is_from_webstore) {
+  using PolicyReinstallReason =
+      CorruptedExtensionReinstaller::PolicyReinstallReason;
+  if (is_from_webstore) {
+    return PolicyReinstallReason::CORRUPTION_DETECTED_WEBSTORE;
+  }
+  if (reason == ContentVerifyJob::MISSING_EXTENSION_MANIFEST) {
+    return PolicyReinstallReason::EXTENSION_MANIFEST_MISSING_FOR_NON_WEBSTORE;
+  }
+  return PolicyReinstallReason::CORRUPTION_DETECTED_NON_WEBSTORE;
+}
+
 }  // namespace
 
 ChromeContentVerifierDelegate::GetVerifyInfoTestOverride::
@@ -92,8 +108,9 @@ ChromeContentVerifierDelegate::VerifyInfo::VerifyInfo(Mode mode,
 // static
 ChromeContentVerifierDelegate::VerifyInfo::Mode
 ChromeContentVerifierDelegate::GetDefaultMode() {
-  if (GetModeForTesting())
+  if (GetModeForTesting()) {
     return *GetModeForTesting();
+  }
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
 #if BUILDFLAG(PLATFORM_CFM)
@@ -110,14 +127,15 @@ ChromeContentVerifierDelegate::GetDefaultMode() {
 #endif
   const std::string group =
       base::FieldTrialList::FindFullName(kContentVerificationExperimentName);
-  if (group == "EnforceStrict")
+  if (group == "EnforceStrict") {
     experiment_value = VerifyInfo::Mode::ENFORCE_STRICT;
-  else if (group == "Enforce")
+  } else if (group == "Enforce") {
     experiment_value = VerifyInfo::Mode::ENFORCE;
-  else if (group == "Bootstrap")
+  } else if (group == "Bootstrap") {
     experiment_value = VerifyInfo::Mode::BOOTSTRAP;
-  else if (group == "None")
+  } else if (group == "None") {
     experiment_value = VerifyInfo::Mode::NONE;
+  }
 
   // The field trial value that normally comes from the server can be
   // overridden on the command line, which we don't want to allow since
@@ -129,24 +147,27 @@ ChromeContentVerifierDelegate::GetDefaultMode() {
     std::string forced_trials =
         command_line->GetSwitchValueASCII(::switches::kForceFieldTrials);
     if (forced_trials.find(kContentVerificationExperimentName) !=
-        std::string::npos)
+        std::string::npos) {
       experiment_value = VerifyInfo::Mode::ENFORCE_STRICT;
+    }
   }
 
   VerifyInfo::Mode cmdline_value = VerifyInfo::Mode::NONE;
   if (command_line->HasSwitch(::switches::kExtensionContentVerification)) {
     std::string switch_value = command_line->GetSwitchValueASCII(
         ::switches::kExtensionContentVerification);
-    if (switch_value == ::switches::kExtensionContentVerificationBootstrap)
+    if (switch_value == ::switches::kExtensionContentVerificationBootstrap) {
       cmdline_value = VerifyInfo::Mode::BOOTSTRAP;
-    else if (switch_value == ::switches::kExtensionContentVerificationEnforce)
+    } else if (switch_value ==
+               ::switches::kExtensionContentVerificationEnforce) {
       cmdline_value = VerifyInfo::Mode::ENFORCE;
-    else if (switch_value ==
-             ::switches::kExtensionContentVerificationEnforceStrict)
+    } else if (switch_value ==
+               ::switches::kExtensionContentVerificationEnforceStrict) {
       cmdline_value = VerifyInfo::Mode::ENFORCE_STRICT;
-    else
+    } else {
       // If no value was provided (or the wrong one), just default to enforce.
       cmdline_value = VerifyInfo::Mode::ENFORCE;
+    }
   }
 
   // We don't want to allow the command-line flags to eg disable enforcement
@@ -173,10 +194,12 @@ ContentVerifierDelegate::VerifierSourceType
 ChromeContentVerifierDelegate::GetVerifierSourceType(
     const Extension& extension) {
   const VerifyInfo info = GetVerifyInfo(extension);
-  if (info.mode == VerifyInfo::Mode::NONE)
+  if (info.mode == VerifyInfo::Mode::NONE) {
     return VerifierSourceType::NONE;
-  if (info.is_from_webstore)
+  }
+  if (info.is_from_webstore) {
     return VerifierSourceType::SIGNED_HASHES;
+  }
   return VerifierSourceType::UNSIGNED_HASHES;
 }
 
@@ -214,8 +237,9 @@ void ChromeContentVerifierDelegate::VerifyFailed(
   ExtensionRegistry* registry = ExtensionRegistry::Get(context_);
   const Extension* extension =
       registry->enabled_extensions().GetByID(extension_id);
-  if (!extension)
+  if (!extension) {
     return;
+  }
 
   auto* registrar = ExtensionRegistrar::Get(context_);
   if (!registrar || !registrar->IsInitialized()) {
@@ -230,16 +254,34 @@ void ChromeContentVerifierDelegate::VerifyFailed(
 
   const VerifyInfo info = GetVerifyInfo(*extension);
 
+  // A missing manifest.json only proves corruption for extensions installed
+  // from a CRX, and for now it is only acted on for policy installs, which
+  // policy can install again. Anything else keeps the missing-hashes handling
+  // below, e.g. a component extension whose manifest comes from resources or
+  // has another name, or an unpacked extension verified because of
+  // --repair-all-valid-extensions.
+  if (reason == ContentVerifyJob::MISSING_EXTENSION_MANIFEST &&
+      !Manifest::IsPolicyLocation(extension->location())) {
+    reason = ContentVerifyJob::MISSING_ALL_HASHES;
+  }
+
   if (reason == ContentVerifyJob::MISSING_ALL_HASHES) {
     // If the failure was due to hashes missing, only "enforce_strict" would
     // disable the extension, but not "enforce".
-    if (info.mode != VerifyInfo::Mode::ENFORCE_STRICT)
+    if (info.mode != VerifyInfo::Mode::ENFORCE_STRICT) {
       return;
+    }
 
     // If a non-webstore extension has no computed hashes for content
-    // verification, leave it as is for now.
-    // See https://crbug.com/40625642#comment23 for more details.
-    // TODO(crbug.com/40669814): Schedule the extension for reinstall.
+    // verification, leave it as is. Hashes for such extensions are only
+    // computed at install time, so UMA shows the vast majority of these are
+    // extensions whose files are intact (e.g. installed before they were
+    // force-installed, or before hashes were computed at all); disabling and
+    // reinstalling them would break any whose update URL no longer serves the
+    // CRX. The one unambiguous case, a policy install whose manifest.json is
+    // missing too, is reported as MISSING_EXTENSION_MANIFEST instead and
+    // handled below.
+    // See https://crbug.com/40625642#comment23 and crbug.com/40669814.
     if (!info.is_from_webstore) {
       if (!would_be_reinstalled_ids_.contains(extension_id)) {
         corrupted_extension_reinstaller->RecordPolicyReinstallReason(
@@ -272,15 +314,11 @@ void ChromeContentVerifierDelegate::VerifyFailed(
 
   if (info.should_repair) {
     if (corrupted_extension_reinstaller->IsReinstallForCorruptionExpected(
-            extension_id))
+            extension_id)) {
       return;
+    }
     corrupted_extension_reinstaller->ExpectReinstallForCorruption(
-        extension_id,
-        info.is_from_webstore
-            ? CorruptedExtensionReinstaller::PolicyReinstallReason::
-                  CORRUPTION_DETECTED_WEBSTORE
-            : CorruptedExtensionReinstaller::PolicyReinstallReason::
-                  CORRUPTION_DETECTED_NON_WEBSTORE,
+        extension_id, GetPolicyReinstallReason(reason, info.is_from_webstore),
         extension->location());
     registrar->DisableExtension(extension_id,
                                 {disable_reason::DISABLE_CORRUPTED});
@@ -344,15 +382,19 @@ ChromeContentVerifierDelegate::GetVerifyInfo(const Extension& extension) const {
   }
 #endif
 
-  if (should_repair)
+  if (should_repair) {
     return VerifyInfo(default_mode_, is_from_webstore, should_repair);
+  }
 
-  if (!extension.is_extension() && !extension.is_legacy_packaged_app())
+  if (!extension.is_extension() && !extension.is_legacy_packaged_app()) {
     return VerifyInfo(VerifyInfo::Mode::NONE, is_from_webstore, should_repair);
-  if (!Manifest::IsAutoUpdateableLocation(extension.location()))
+  }
+  if (!Manifest::IsAutoUpdateableLocation(extension.location())) {
     return VerifyInfo(VerifyInfo::Mode::NONE, is_from_webstore, should_repair);
-  if (!is_from_webstore)
+  }
+  if (!is_from_webstore) {
     return VerifyInfo(VerifyInfo::Mode::NONE, is_from_webstore, should_repair);
+  }
 
   return VerifyInfo(default_mode_, is_from_webstore, should_repair);
 }

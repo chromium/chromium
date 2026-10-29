@@ -55,7 +55,7 @@ class ContentVerifier;
 class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
  public:
   // Used in UMA metrics. Ensure this stays in sync with
-  // CorruptExtensionDisabledReason in
+  // ContentVerifyJobResult in
   // //tools/metrics/histograms/metadata/extensions/enums.xml.
   enum FailureReason {
     // No failure.
@@ -74,6 +74,13 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
 
     // Some of the content read did not match the expected hash.
     HASH_MISMATCH,
+
+    // Failed because there were no expected hashes and the extension's
+    // manifest.json does not exist on disk either (e.g. because its install
+    // directory was deleted while the extension stayed installed). Only
+    // reported for extensions with unsigned hashes; see
+    // ContentHash::extension_manifest_missing().
+    MISSING_EXTENSION_MANIFEST,
 
     FAILURE_REASON_MAX
   };

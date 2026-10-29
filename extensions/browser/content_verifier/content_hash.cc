@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -23,6 +24,8 @@
 #include "extensions/browser/content_hash_tree.h"
 #include "extensions/browser/content_verifier/content_verifier_utils.h"
 #include "extensions/browser/extension_file_task_runner.h"
+#include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/file_util.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -37,8 +40,9 @@ bool CreateDirAndWriteFile(const base::FilePath& destination,
                            const std::string& content) {
   DCHECK(GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence());
   base::FilePath dir = destination.DirName();
-  if (!base::CreateDirectory(dir))
+  if (!base::CreateDirectory(dir)) {
     return false;
+  }
 
   return base::WriteFile(destination, content);
 }
@@ -139,11 +143,13 @@ ContentHash::TreeHashVerificationResult ContentHash::VerifyTreeHashRoot(
                 : TreeHashVerificationResult::NO_ENTRY;
   }
 
-  if (!verified_contents_->HasTreeHashRoot(relative_path))
+  if (!verified_contents_->HasTreeHashRoot(relative_path)) {
     return TreeHashVerificationResult::NO_ENTRY;
+  }
 
-  if (!root || !verified_contents_->TreeHashRootEquals(relative_path, *root))
+  if (!root || !verified_contents_->TreeHashRootEquals(relative_path, *root)) {
     return TreeHashVerificationResult::HASH_MISMATCH;
+  }
 
   return TreeHashVerificationResult::SUCCESS;
 }
@@ -216,8 +222,9 @@ void ContentHash::FetchVerifiedContents(ContentHash::FetchKey key,
 std::unique_ptr<VerifiedContents> ContentHash::StoreAndRetrieveVerifiedContents(
     std::optional<std::string> fetched_contents,
     const FetchKey& key) {
-  if (!fetched_contents)
+  if (!fetched_contents) {
     return nullptr;
+  }
 
   // Write file and continue reading hash.
   // Write:
@@ -463,16 +470,39 @@ void ContentHash::BuildComputedHashes(bool attempted_fetching_verified_contents,
   }
 
   // Read computed_hashes.json:
-  if (!base::PathExists(computed_hashes_path))
+  if (!base::PathExists(computed_hashes_path)) {
+    // Unsigned hashes are only written at install time, so a missing
+    // computed_hashes.json usually means "installed without hashes" and the
+    // extension's files are otherwise intact. A missing manifest.json, on the
+    // other hand, is unambiguous corruption for an extension installed from a
+    // CRX (e.g. the install directory was deleted while the extension stayed
+    // installed in prefs), so record it for callers. Signed hashes don't need
+    // this: they take the `will_create` path above and missing files then show
+    // up as hash mismatches against verified_contents.json.
+    if (source_type_ ==
+            ContentVerifierDelegate::VerifierSourceType::UNSIGNED_HASHES &&
+        base::FeatureList::IsEnabled(
+            extensions_features::
+                kExtensionContentVerificationReportsMissingManifest)) {
+      // Every extension installed from a CRX has a manifest.json, whereas
+      // without computed_hashes.json there is no telling which other files it
+      // should have. Checking for it rather than for the directory also catches
+      // a directory that exists but is empty or incomplete (e.g. half deleted
+      // or half restored).
+      extension_manifest_missing_ =
+          !base::PathExists(extension_root_.Append(kManifestFilename));
+    }
     return;
+  }
 
   std::optional<ComputedHashes> computed_hashes =
       ComputedHashes::CreateFromFile(computed_hashes_path,
                                      &computed_hashes_status_);
   DCHECK_EQ(computed_hashes_status_ == ComputedHashes::Status::SUCCESS,
             computed_hashes.has_value());
-  if (!computed_hashes)
+  if (!computed_hashes) {
     return;
+  }
 
   // Read successful.
   computed_hashes_ =

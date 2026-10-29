@@ -18,6 +18,8 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -84,6 +86,7 @@
 #include "extensions/browser/updater/extension_downloader_test_helper.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/file_util.h"
@@ -95,6 +98,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/switches.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -1691,11 +1695,12 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Verifies that corrupted non-webstore policy-based extension is not repaired
-// if there are no computed_hashes.json for it. Note that this behavior will
-// change in the future.
-// See https://crbug.com/40625642#comment23 for details.
-// TODO(crbug.com/40669814): Change this test so extension without hashes
-// will be also reinstalled.
+// if there are no computed_hashes.json for it. Hashes of such extensions are
+// only computed at install time, so missing hashes alone don't tell a corrupted
+// extension from an intact one that was installed without hashes. See
+// https://crbug.com/40625642#comment23 and crbug.com/40669814 for details.
+// A missing manifest.json is unambiguous and is handled separately, see
+// ExtensionPolicyMissingManifestTest below.
 // TODO(crbug.com/511917153): Re-enable this test on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_CorruptedNonWebstoreExtensionWithoutHashesRemained \
@@ -1765,6 +1770,133 @@ IN_PROC_BROWSER_TEST_F(
           NO_UNSIGNED_HASHES_FOR_NON_WEBSTORE_SKIP,
       1);
 }
+
+// Exercises a non-webstore policy-based extension whose install directory, and
+// with it its manifest.json, went missing while it stayed installed (e.g. a
+// browser rollback restored a snapshot of the profile without its "Extensions"
+// directory, see crbug.com/567192264), with the detection of missing manifests
+// turned on (the default) or off.
+class ExtensionPolicyMissingManifestTest
+    : public ExtensionPolicyTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ExtensionPolicyMissingManifestTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        extensions_features::
+            kExtensionContentVerificationReportsMissingManifest,
+        IsMissingManifestDetectionEnabled());
+  }
+
+  bool IsMissingManifestDetectionEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies that a non-webstore policy-based extension whose manifest.json went
+// missing along with its install directory is automatically repaired
+// (reinstalled), even though it has no computed_hashes.json left either. With
+// the detection turned off, verifies that such an extension is treated like any
+// other extension without computed_hashes.json instead, i.e. that it is left
+// alone (see CorruptedNonWebstoreExtensionWithoutHashesRemained).
+IN_PROC_BROWSER_TEST_P(ExtensionPolicyMissingManifestTest,
+                       MissingNonWebstoreExtensionDirectory) {
+  // Mark as enterprise managed.
+  policy::ScopedDomainEnterpriseManagement scoped_domain;
+  ignore_content_verifier_.reset();
+  ExtensionRequestInterceptor interceptor;
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::HistogramTester histogram_tester;
+
+  const base::FilePath kResourcePath(FILE_PATH_LITERAL("script1.js"));
+
+  // Step 1: Setup a policy and force-install an extension.
+  const extensions::Extension* extension = InstallForceListExtension(
+      "/extensions/good_v1_update_manifest.xml", kGoodCrxId);
+  ASSERT_TRUE(extension);
+
+  // Step 2: Disable the extension, delete its whole install directory and
+  // enable it again. Re-enabling it mirrors the startup after a rollback: the
+  // extension still loads (from the manifest stored in prefs) and its content
+  // scripts are read, and thus verified, from the missing directory, so the
+  // verify job expectation has to be in place before enabling. Disabling first
+  // makes sure nothing is reading the directory while it is deleted. Not using
+  // the DISABLE_USER_ACTION reason since force-installed extensions may not be
+  // disabled by user action.
+  extensions::TestContentVerifyJobObserver content_verify_job_observer;
+  content_verify_job_observer.ExpectJobResult(
+      kGoodCrxId, kResourcePath,
+      extensions::TestContentVerifyJobObserver::Result::FAILURE);
+  extension_registrar()->DisableExtension(
+      kGoodCrxId, {extensions::disable_reason::DISABLE_RELOAD});
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::DeletePathRecursively(extension->path()));
+  }
+  // Only start observing the registry now, so that the unload waited for below
+  // is the one caused by the corruption, not by the temporary disable above.
+  extensions::TestExtensionRegistryObserver registry_observer(
+      extension_registry(), kGoodCrxId);
+  extension_registrar()->EnableExtension(kGoodCrxId);
+
+  // Step 3: Wait for content verification of the missing content script to
+  // fail. The failure is reported to the browser asynchronously, so the
+  // checks below also wait for its effects rather than checking right away.
+  EXPECT_TRUE(content_verify_job_observer.WaitForExpectedJobs());
+
+  constexpr char kHistogramName[] = "Extensions.CorruptPolicyExtensionDetected3";
+  CorruptedExtensionReinstaller* reinstaller =
+      CorruptedExtensionReinstaller::Get(profile());
+  if (!IsMissingManifestDetectionEnabled()) {
+    // Step 4: Wait for the failure to be recorded as a skipped reinstall, then
+    // check that the extension is neither reinstalled nor disabled.
+    constexpr auto kSkipReason = extensions::CorruptedExtensionReinstaller::
+        PolicyReinstallReason::NO_UNSIGNED_HASHES_FOR_NON_WEBSTORE_SKIP;
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return histogram_tester.GetBucketCount(kHistogramName, kSkipReason) > 0;
+    }));
+    EXPECT_FALSE(reinstaller->IsReinstallForCorruptionExpected(kGoodCrxId));
+    EXPECT_TRUE(
+        extension_registry()->enabled_extensions().Contains(kGoodCrxId));
+    histogram_tester.ExpectUniqueSample(kHistogramName, kSkipReason, 1);
+    return;
+  }
+
+  // Step 4: Wait for the extension to be disabled because of the failure, then
+  // check that it is going to be reinstalled and wait for the reinstall.
+  registry_observer.WaitForExtensionUnloaded();
+  EXPECT_TRUE(reinstaller->IsReinstallForCorruptionExpected(kGoodCrxId));
+  registry_observer.WaitForExtensionWillBeInstalled();
+
+  // Extension was reloaded, old extension object is invalid.
+  extension = extension_registry()->enabled_extensions().GetByID(kGoodCrxId);
+  ASSERT_TRUE(extension);
+
+  // Step 5: Check that the extension's files are back, including the hashes
+  // that let content verification catch corruption from now on.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    std::string contents;
+    ASSERT_TRUE(base::ReadFileToString(extension->path().Append(kResourcePath),
+                                       &contents));
+    EXPECT_EQ("// script1\n", contents);
+    EXPECT_TRUE(base::PathExists(
+        extensions::file_util::GetComputedHashesPath(extension->path())));
+  }
+  histogram_tester.ExpectUniqueSample(
+      kHistogramName,
+      extensions::CorruptedExtensionReinstaller::PolicyReinstallReason::
+          EXTENSION_MANIFEST_MISSING_FOR_NON_WEBSTORE,
+      1);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExtensionPolicyMissingManifestTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "DetectionEnabled"
+                                             : "DetectionDisabled";
+                         });
 
 // Verifies that the extension is installed when the manifest is not fetched in
 // case the remote update server is down.

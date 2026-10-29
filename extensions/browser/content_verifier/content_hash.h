@@ -163,6 +163,10 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
            !did_attempt_creating_computed_hashes_;
   }
 
+  bool extension_manifest_missing() const {
+    return extension_manifest_missing_;
+  }
+
   static std::string ComputeTreeHashForContent(const std::string& contents,
                                                size_t block_size);
 
@@ -263,6 +267,16 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
       ComputedHashes::Status::UNKNOWN;
 
   bool did_attempt_creating_computed_hashes_ = false;
+
+  // Whether manifest.json was found to be missing on disk when there was no
+  // computed_hashes.json either (e.g. because the extension's install
+  // directory was deleted while the extension stayed installed). Every
+  // extension installed from a CRX has a manifest.json, so for those, unlike
+  // missing hashes alone, this is unambiguous corruption. Component extensions
+  // may not have one, so it's up to the embedder which extensions to act on.
+  // Only ever set for UNSIGNED_HASHES; with SIGNED_HASHES, missing files show
+  // up as hash mismatches against verified_contents.json instead.
+  bool extension_manifest_missing_ = false;
 
   // TODO(lazyboy): Avoid dynamic allocations here, `this` already supports
   // move.

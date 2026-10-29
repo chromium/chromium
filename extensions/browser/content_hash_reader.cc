@@ -23,6 +23,11 @@ ContentHashData& ContentHashData::operator=(ContentHashData&&) = default;
 base::expected<ContentHashData, ContentHashReaderInitStatus> ReadContentHashes(
     const base::FilePath& relative_path,
     const scoped_refptr<const ContentHash>& content_hash) {
+  if (content_hash->extension_manifest_missing()) {
+    // Failure: no hashes, and no manifest.json either.
+    return base::unexpected(
+        ContentHashReaderInitStatus::EXTENSION_MANIFEST_MISSING);
+  }
   ComputedHashes::Status hashes_status = content_hash->computed_hashes_status();
   if (hashes_status == ComputedHashes::Status::UNKNOWN ||
       hashes_status == ComputedHashes::Status::READ_FAILED) {

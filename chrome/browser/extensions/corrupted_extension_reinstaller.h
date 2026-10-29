@@ -65,9 +65,20 @@ class CorruptedExtensionReinstaller : public KeyedService {
     // them. See https://crbug.com/40625642#comment23 for details.
     NO_UNSIGNED_HASHES_FOR_NON_WEBSTORE_SKIP = 4,
 
+    // A policy-installed extension outside Chrome Web Store has no computed
+    // hashes and no manifest.json on disk either (e.g. after a browser
+    // rollback restored user data without the Extensions directory). Unlike
+    // NO_UNSIGNED_HASHES_FOR_NON_WEBSTORE_SKIP, this is unambiguous
+    // corruption, since policy installs come from a CRX, which always has a
+    // manifest.json, so Chrome attempts to reinstall it (which may not
+    // succeed, e.g. if its update URL no longer serves it). Extensions from
+    // Chrome Web Store in this state are repaired via
+    // CORRUPTION_DETECTED_WEBSTORE after re-fetching their signed hashes.
+    EXTENSION_MANIFEST_MISSING_FOR_NON_WEBSTORE = 5,
+
     // Magic constant used by the histogram macros.
     // Always update it to the max value.
-    kMaxValue = NO_UNSIGNED_HASHES_FOR_NON_WEBSTORE_SKIP
+    kMaxValue = EXTENSION_MANIFEST_MISSING_FOR_NON_WEBSTORE
   };
 
   using ReinstallCallback =

@@ -258,6 +258,9 @@ BASE_FEATURE(kExtensionBrowserNamespaceOnWebPages,
 BASE_FEATURE(kExtensionContentVerificationUsesExtensionRoot,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kExtensionContentVerificationReportsMissingManifest,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableShouldShowPromotion, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSearchEngineExplicitChoiceDialog,
