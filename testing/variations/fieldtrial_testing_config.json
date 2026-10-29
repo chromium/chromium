@@ -1628,21 +1628,6 @@
             ]
         }
     ],
-    "AutofillAiEditEntitiesFromSaveUpdatePrompt": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillAiEditEntitiesFromSaveUpdatePrompt"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillAiIos": [
         {
             "platforms": [
