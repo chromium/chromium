@@ -20,6 +20,20 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace translate {
+namespace {
+
+// Text long enough for a reliable detection, in Chinese (Traditional) and in
+// Chinese (Simplified).
+constexpr char16_t kTraditionalChineseContents[] =
+    u"網頁瀏覽器是一種用於檢索並展示全球資訊網資訊資源的應用程式。這些資訊資源"
+    u"可為網頁、圖片、影音或其他內容，它們由統一資源標誌符標誌。資訊資源中的超"
+    u"連結可使使用者方便地瀏覽相關資訊。";
+constexpr char16_t kSimplifiedChineseContents[] =
+    u"网页浏览器是一种用于检索并展示万维网信息资源的应用程序。这些信息资源可为"
+    u"网页、图片、影音或其他内容，它们由统一资源标志符标志。信息资源中的超链接"
+    u"可使用户方便地浏览相关信息。";
+
+}  // namespace
 
 class LanguageDetectionModelValidTest : public testing::Test {
  public:
@@ -139,6 +153,49 @@ TEST_F(LanguageDetectionModelValidTest, BelowMinimumContentSizeUnreliable) {
   EXPECT_EQ(language_detection::kUnknownLanguageCode, predicted_language);
   // Should fallback to the provided "es" language code.
   EXPECT_EQ("es", language);
+}
+
+// Tests that the model determines whether a page declaring a generic Chinese
+// language ("zh") is in Chinese (Simplified) or Chinese (Traditional).
+TEST_F(LanguageDetectionModelValidTest, GenericChineseHtmlLang) {
+  bool is_prediction_reliable;
+  float model_reliability_score = 0.0;
+  std::string predicted_language;
+
+  std::string language = language_detection_model_->DeterminePageLanguage(
+      /*code=*/std::string(), /*html_lang=*/std::string("zh"),
+      kTraditionalChineseContents, &predicted_language, &is_prediction_reliable,
+      model_reliability_score);
+  EXPECT_TRUE(is_prediction_reliable);
+  EXPECT_EQ("zh-TW", predicted_language);
+  EXPECT_EQ("zh-TW", language);
+
+  language = language_detection_model_->DeterminePageLanguage(
+      /*code=*/std::string(), /*html_lang=*/std::string("zh"),
+      kSimplifiedChineseContents, &predicted_language, &is_prediction_reliable,
+      model_reliability_score);
+  EXPECT_TRUE(is_prediction_reliable);
+  EXPECT_EQ("zh-CN", predicted_language);
+  EXPECT_EQ("zh-CN", language);
+}
+
+// Tests that a generic Chinese language ("zh") declared by the page is kept,
+// instead of being resolved to a script, when the contents are too short for a
+// detection.
+TEST_F(LanguageDetectionModelValidTest, GenericChineseBelowMinimumContentSize) {
+  bool is_prediction_reliable;
+  float model_reliability_score = 0.0;
+  std::string predicted_language;
+  std::u16string contents = u"歡迎";
+  ASSERT_LT(base::UTF16ToUTF8(contents).length(), 25u);
+
+  std::string language = language_detection_model_->DeterminePageLanguage(
+      /*code=*/std::string(), /*html_lang=*/std::string("zh"), contents,
+      &predicted_language, &is_prediction_reliable, model_reliability_score);
+
+  EXPECT_FALSE(is_prediction_reliable);
+  EXPECT_EQ(language_detection::kUnknownLanguageCode, predicted_language);
+  EXPECT_EQ("zh", language);
 }
 
 TEST_F(LanguageDetectionModelValidTest, LongTextLanguageDetemination) {

@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/i18n/chinese_helpers.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
 #include "base/logging.h"
@@ -31,6 +32,7 @@ namespace {
 
 using ::base::i18n::GetKnownLanguageTag;
 using ::base::i18n::GetLanguageTagFromString;
+using ::base::i18n::IsChinese;
 using ::base::i18n::LanguageTag;
 
 constexpr auto kBosnianCroatian = base::MakeFixedFlatSet<LanguageTag>(
@@ -38,15 +40,15 @@ constexpr auto kBosnianCroatian = base::MakeFixedFlatSet<LanguageTag>(
 constexpr auto kHindiNepali = base::MakeFixedFlatSet<LanguageTag>(
     {GetKnownLanguageTag("hi"), GetKnownLanguageTag("ne")});
 
-bool IsSameOrSimilarLanguages(std::string_view lhs, std::string_view rhs) {
-  std::optional<LanguageTag> first_lang = GetLanguageTagFromString(lhs);
-  std::optional<LanguageTag> second_lang = GetLanguageTagFromString(rhs);
-  if (!first_lang || !second_lang) {
-    return false;
-  }
-  LanguageTag first_language_subtag_only = first_lang->WithLanguageSubtagOnly();
+// Chinese without a script or region subtag, which does not tell whether the
+// text is in Chinese (Simplified) or Chinese (Traditional).
+constexpr LanguageTag kGenericChinese = GetKnownLanguageTag("zh");
+
+bool IsSameOrSimilarLanguages(const LanguageTag& first_lang,
+                              const LanguageTag& second_lang) {
+  LanguageTag first_language_subtag_only = first_lang.WithLanguageSubtagOnly();
   LanguageTag second_language_subtag_only =
-      second_lang->WithLanguageSubtagOnly();
+      second_lang.WithLanguageSubtagOnly();
 
   return first_language_subtag_only == second_language_subtag_only ||
          (kBosnianCroatian.contains(first_language_subtag_only) &&
@@ -55,10 +57,22 @@ bool IsSameOrSimilarLanguages(std::string_view lhs, std::string_view rhs) {
           kHindiNepali.contains(second_language_subtag_only));
 }
 
+// Matches a language declared by the page, either in the html lang attribute or
+// in the Content-Language, to a language supported by Translate, with the
+// exception of generic Chinese (see below). Returns nullopt if there is no
+// match.
 std::optional<LanguageTag> GetTranslateLanguage(
     std::optional<LanguageTag> tag) {
   if (!tag) {
     return std::nullopt;
+  }
+  // Translate has no generic Chinese, only Chinese (Simplified) and Chinese
+  // (Traditional). Keep "zh" as is instead of matching it to "zh-CN", so that
+  // the model can complement the script from the page contents (see
+  // CanModelComplementSubCode()) and no translation is offered from a guessed
+  // script when the model cannot tell. See crbug.com/575677364.
+  if (*tag == kGenericChinese) {
+    return tag;
   }
   return GetTranslateLanguageMatcher().Match(*tag);
 }
@@ -81,15 +95,15 @@ std::optional<LanguageTag> GetHTMLOrHTTPContentLanguage(
 
 // Checks if the model can complement a sub code when the page language doesn't
 // know the sub code.
-bool CanModelComplementSubCode(std::string_view page_language,
-                               std::string_view model_detected_language) {
+bool CanModelComplementSubCode(const LanguageTag& page_language,
+                               const LanguageTag& model_detected_language) {
   // Translate server cannot treat general Chinese. If Content-Language and
   // the detection model agree that the language is Chinese and Content-Language
   // doesn't know which dialect is used, the model language has priority.
   // TODO(hajimehoshi): How about the other dialects like zh-MO?
-  return page_language == "zh" &&
-         base::StartsWith(model_detected_language, "zh-",
-                          base::CompareCase::INSENSITIVE_ASCII);
+  return page_language == kGenericChinese &&
+         model_detected_language != kGenericChinese &&
+         IsChinese(model_detected_language);
 }
 
 }  // namespace
@@ -226,15 +240,17 @@ std::string DeterminePageLanguage(std::string_view code,
     return std::string(language->tag_string());
   }
 
-  if (CanModelComplementSubCode(language->tag_string(),
-                                model_detected_language)) {
+  std::optional<LanguageTag> model_detected_language_tag =
+      GetLanguageTagFromString(model_detected_language);
+  if (model_detected_language_tag &&
+      CanModelComplementSubCode(*language, *model_detected_language_tag)) {
     translate::ReportLanguageVerification(
         translate::LanguageVerificationType::kModelComplementsCountry);
     return std::string(model_detected_language);
   }
 
-  if (IsSameOrSimilarLanguages(language->tag_string(),
-                               model_detected_language)) {
+  if (model_detected_language_tag &&
+      IsSameOrSimilarLanguages(*language, *model_detected_language_tag)) {
     translate::ReportLanguageVerification(
         translate::LanguageVerificationType::kModelAgrees);
     return std::string(language->tag_string());
