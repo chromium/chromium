@@ -494,6 +494,11 @@ GenerateBlockPaths(bool should_normalize_file_path) {
                               BlockType::kBlockWrite),
       BlockPath::CreateSuffix(FILE_PATH_LITERAL(".git/modules"),
                               BlockType::kBlockWrite),
+      // Block write access to */.mvn, which holds Maven project and JVM
+      // configuration (such as jvm.config, maven.config, and extensions.xml),
+      // see crbug.com/578500839.
+      BlockPath::CreateSuffix(FILE_PATH_LITERAL(".mvn"),
+                              BlockType::kBlockWrite),
 #if BUILDFLAG(IS_WIN)
       // Some Windows specific directories to block, basically all apps, the
       // operating system itself, as well as configuration data for apps.
