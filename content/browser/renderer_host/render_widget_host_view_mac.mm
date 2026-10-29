@@ -1828,8 +1828,13 @@ void RenderWidgetHostViewMac::SetActive(bool active) {
       host()->LostFocus();
     }
   }
-  if (HasFocus())
+  // Always deactivate text input when becoming inactive, so that Secure Event
+  // Input isn't left enabled for a focused password field in a window that is
+  // no longer key. Don't gate deactivation on HasFocus(), which already returns
+  // false once the window has resigned key. https://crbug.com/577708579
+  if (!active || HasFocus()) {
     SetTextInputActive(active);
+  }
   if (!active)
     UnlockPointer();
 }

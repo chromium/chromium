@@ -2350,6 +2350,33 @@ TEST_F(InputMethodMacTest, SecurePasswordInputDisabledInBackForwardCache) {
   EXPECT_FALSE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
 }
 
+// Secure Event Input must be released when the window resigns key while a
+// password field is focused, and enabled again when the window becomes key.
+// https://crbug.com/577708579
+TEST_F(InputMethodMacTest, SecurePasswordInputDisabledWhenWindowResignsKey) {
+  ASSERT_FALSE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
+
+  EXPECT_CALL(*host_, Focus()).Times(::testing::AnyNumber());
+  EXPECT_CALL(*host_, Blur()).Times(::testing::AnyNumber());
+
+  [window_ makeFirstResponder:tab_view()->GetInProcessNSView()];
+  SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_PASSWORD);
+  tab_view()->SetActive(true);
+  ASSERT_TRUE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
+
+  // RenderWidgetHostViewCocoa calls OnWindowIsKeyChanged() when the window
+  // resigns or becomes key. Unlike calling SetActive() directly, this updates
+  // the window key status before the view is deactivated.
+  tab_view()->OnWindowIsKeyChanged(false);
+  EXPECT_FALSE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
+
+  tab_view()->OnWindowIsKeyChanged(true);
+  EXPECT_TRUE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
+
+  tab_view()->OnWindowIsKeyChanged(false);
+  EXPECT_FALSE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
+}
+
 TEST_F(InputMethodMacTest, SecureHasBeenAPasswordInput) {
   ASSERT_FALSE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
   ASSERT_EQ(text_input_manager(), tab_view()->GetTextInputManager());
