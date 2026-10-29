@@ -37,8 +37,8 @@ import type {UserEducationMixedTrustHandlerInterface} from 'chrome://resources/m
 
 import {getCss} from './user_education_internals.css.js';
 import {getHtml} from './user_education_internals.html.js';
+import {browserProxyFactory} from './user_education_internals.mojom-webui.js';
 import type {FeaturePromoDemoPageData, FeaturePromoDemoPageInfo, UserEducationInternalsPageHandlerInterface, WhatsNewEditionDemoPageInfo, WhatsNewModuleDemoPageInfo} from './user_education_internals.mojom-webui.js';
-import {UserEducationInternalsPageHandler} from './user_education_internals.mojom-webui.js';
 import type {PromoAction, PromoActionDescription} from './user_education_internals_card.js';
 
 const CLEAR_PROMO_DATA_WARNING =
@@ -230,7 +230,7 @@ export class UserEducationInternalsElement extends
 
   constructor() {
     super();
-    this.handler_ = UserEducationInternalsPageHandler.getRemote();
+    this.handler_ = browserProxyFactory.getInstance().handler;
     this.userEducation_ = userEducationProxyFactory.getInstance().handler;
   }
 

@@ -432,7 +432,8 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
       ReadAnythingUntrustedUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      ::mojom::user_education_internals::UserEducationInternalsPageHandler,
+      ::mojom::user_education_internals::
+          UserEducationInternalsPageHandlerFactory,
       UserEducationInternalsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<

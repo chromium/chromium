@@ -37,9 +37,7 @@ UserEducationInternalsUIConfig::UserEducationInternalsUIConfig()
     : DefaultInternalWebUIConfig(chrome::kChromeUIUserEducationInternalsHost) {}
 
 UserEducationInternalsUI::UserEducationInternalsUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
-      help_bubble_handler_factory_receiver_(this),
-      user_education_handler_factory_receiver_(this) {
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   Profile* profile = Profile::FromWebUI(web_ui);
   auto* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIUserEducationInternalsHost);
@@ -67,11 +65,13 @@ UserEducationInternalsUI::UserEducationInternalsUI(content::WebUI* web_ui)
 UserEducationInternalsUI::~UserEducationInternalsUI() = default;
 
 void UserEducationInternalsUI::BindInterface(
-    mojo::PendingReceiver<
-        mojom::user_education_internals::UserEducationInternalsPageHandler>
-        receiver) {
-  page_handler_ = std::make_unique<UserEducationInternalsPageHandlerImpl>(
-      web_ui(), Profile::FromWebUI(web_ui()), std::move(receiver));
+    mojo::PendingReceiver<mojom::user_education_internals::
+                              UserEducationInternalsPageHandlerFactory>
+        pending_receiver) {
+  if (page_handler_factory_receiver_.is_bound()) {
+    page_handler_factory_receiver_.reset();
+  }
+  page_handler_factory_receiver_.Bind(std::move(pending_receiver));
 }
 
 void UserEducationInternalsUI::BindInterface(
@@ -91,6 +91,14 @@ void UserEducationInternalsUI::BindInterface(
     user_education_handler_factory_receiver_.reset();
   }
   user_education_handler_factory_receiver_.Bind(std::move(pending_receiver));
+}
+
+void UserEducationInternalsUI::CreateUserEducationInternalsPageHandler(
+    mojo::PendingReceiver<
+        mojom::user_education_internals::UserEducationInternalsPageHandler>
+        pending_handler) {
+  page_handler_ = std::make_unique<UserEducationInternalsPageHandlerImpl>(
+      web_ui(), Profile::FromWebUI(web_ui()), std::move(pending_handler));
 }
 
 void UserEducationInternalsUI::CreateHelpBubbleHandler(

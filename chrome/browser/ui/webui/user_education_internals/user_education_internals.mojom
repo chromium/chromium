@@ -67,6 +67,13 @@ struct WhatsNewEditionDemoPageInfo {
   int32 version_used;
 };
 
+// Used by the WebUI page to bootstrap communication with the browser.
+interface UserEducationInternalsPageHandlerFactory {
+  // Creates the backend handler for the chrome://user-education-internals page.
+  CreateUserEducationInternalsPageHandler(
+      pending_receiver<UserEducationInternalsPageHandler> handler);
+};
+
 // Provides access to browser-side user education data for
 // chrome://user-education-internals
 interface UserEducationInternalsPageHandler {

@@ -32,6 +32,8 @@ class UserEducationInternalsUIConfig
 // e.g. chrome://internals/your-feature.
 class UserEducationInternalsUI
     : public ui::MojoWebUIController,
+      public mojom::user_education_internals::
+          UserEducationInternalsPageHandlerFactory,
       public help_bubble::mojom::HelpBubbleHandlerFactory,
       public user_education::mojom::UserEducationMixedTrustHandlerFactory {
  public:
@@ -43,9 +45,9 @@ class UserEducationInternalsUI
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToolbarElementId);
 
   void BindInterface(
-      mojo::PendingReceiver<
-          mojom::user_education_internals::UserEducationInternalsPageHandler>
-          receiver);
+      mojo::PendingReceiver<mojom::user_education_internals::
+                                UserEducationInternalsPageHandlerFactory>
+          pending_receiver);
 
   // The HelpBubbleHandlerFactory provides support for help bubbles in this
   // WebUI. Also see CreateHelpBubbleHandler() below.
@@ -61,6 +63,17 @@ class UserEducationInternalsUI
           user_education::mojom::UserEducationMixedTrustHandlerFactory>
           pending_receiver);
 
+ private:
+  WEB_UI_CONTROLLER_TYPE_DECL();
+
+  friend UserEducationHandlerBrowsertest;
+
+  // mojom::user_education_internals::UserEducationInternalsPageHandlerFactory:
+  void CreateUserEducationInternalsPageHandler(
+      mojo::PendingReceiver<
+          mojom::user_education_internals::UserEducationInternalsPageHandler>
+          pending_handler) override;
+
   // help_bubble::mojom::HelpBubbleHandlerFactory:
   void CreateHelpBubbleHandler(
       mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> pending_client,
@@ -73,21 +86,19 @@ class UserEducationInternalsUI
           user_education::mojom::UserEducationMixedTrustHandler>
           pending_handler) override;
 
- private:
-  WEB_UI_CONTROLLER_TYPE_DECL();
-
-  friend UserEducationHandlerBrowsertest;
-
   std::unique_ptr<
       mojom::user_education_internals::UserEducationInternalsPageHandler>
       page_handler_;
 
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   std::unique_ptr<UserEducationMixedTrustHandler> user_education_handler_;
+  mojo::Receiver<
+      mojom::user_education_internals::UserEducationInternalsPageHandlerFactory>
+      page_handler_factory_receiver_{this};
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
-      help_bubble_handler_factory_receiver_;
+      help_bubble_handler_factory_receiver_{this};
   mojo::Receiver<user_education::mojom::UserEducationMixedTrustHandlerFactory>
-      user_education_handler_factory_receiver_;
+      user_education_handler_factory_receiver_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_USER_EDUCATION_INTERNALS_USER_EDUCATION_INTERNALS_UI_H_
