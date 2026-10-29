@@ -6579,17 +6579,24 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20260907",
+                    "name": "EnabledDLS_20261026",
                     "enable_features": [
                         "IOSGCR_allow_unsorted_cache_index",
+                        "IOSGCR_data_load_strategy_send_updates_when_no_reload",
+                        "IOSGCR_disable_data_store_card_cache_expired_check",
+                        "IOSGCR_disable_memory_card_cache_clear_cache_on_open_if_expired",
+                        "IOSGCR_disable_open_expired_persistent_cache_check",
                         "IOSGCR_do_not_short_circuit_on_feed_operations_generator_failure",
                         "IOSGCR_dsc_enable_synchronous_feed_sourcer_observer_registration",
+                        "IOSGCR_enable_data_loading_strategy",
                         "IOSGCR_enable_persisted_feed_deferred_disk_writes",
                         "IOSGCR_handle_feed_sourcer_processing_errors",
+                        "IOSGCR_use_live_feed_sourcer"
+                    ],
+                    "disable_features": [
                         "IOSGCR_notify_collection_model_of_account_change",
                         "IOSGCR_notify_on_canceled_reload_by_cache",
-                        "IOSGCR_reset_sourcer_on_account_switch",
-                        "IOSGCR_use_live_feed_sourcer"
+                        "IOSGCR_reset_sourcer_on_account_switch"
                     ]
                 }
             ]
