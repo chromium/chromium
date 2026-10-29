@@ -383,7 +383,7 @@ Refer to README.md for content description and update process.
  <item id="remoting_corp_session_authz_verify_session_token" added_in_milestone="123" content_hash_code="04127f42" os_list="linux,windows,chromeos,android" file_path="remoting/base/corp_session_authz_service_client.cc" />
  <item id="remoting_corp_session_reauthorize_host" added_in_milestone="123" content_hash_code="0731c945" os_list="linux,windows,chromeos,android" file_path="remoting/base/corp_session_authz_service_client.cc" />
  <item id="birch_calendar_provider" added_in_milestone="124" content_hash_code="00ad7833" os_list="chromeos" file_path="chrome/browser/ui/ash/birch/birch_calendar_fetcher.cc" />
- <item id="recovery_key_store_fetch" added_in_milestone="124" content_hash_code="05d9dc45" os_list="linux,windows,chromeos" file_path="chrome/browser/webauthn/enclave_manager.cc" />
+ <item id="recovery_key_store_fetch" added_in_milestone="124" content_hash_code="052d64ae" os_list="linux,windows,chromeos" file_path="chrome/browser/webauthn/enclave_manager.cc" />
  <item id="enterprise_logo_fetcher" added_in_milestone="124" content_hash_code="03b77fed" os_list="linux,windows,chromeos,android" file_path="chrome/browser/enterprise/util/managed_browser_utils.cc" />
  <item id="private_metrics_encryption_key" added_in_milestone="141" content_hash_code="007eb169" os_list="linux,windows,android,chromeos" file_path="components/metrics/private_metrics/data_upload_config_downloader.cc" />
  <item id="remoting_corp_logging_report_session_disconnected" added_in_milestone="124" content_hash_code="04807b73" os_list="windows,linux,chromeos,android" file_path="remoting/base/corp_logging_service_client.cc" />

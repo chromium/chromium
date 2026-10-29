@@ -269,6 +269,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             }
           }
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "cryptauthvault.googleapis.com"
           last_reviewed: "2024-02-08"
         }
         policy {
