@@ -470,12 +470,16 @@ void AbusiveNotificationPermissionsManager::OnPermissionChanged(
   RecordAbusiveNotificationPermissionChangedHistogram(
       is_ignored, revocation_source, new_setting);
 
-  // If the user re-granted notification permission revoked due to suspicious
-  // content, set revocation entry to ignore so the permission will not be
-  // revoked again.
+  // If the user re-granted a notification permission that was auto-revoked,
+  // set revocation entry to ignore so the permission will not be
+  // auto-revoked again.
   if (new_setting == CONTENT_SETTING_ALLOW &&
-      revocation_source == safe_browsing::NotificationRevocationSource::
-                               kSuspiciousContentAutoRevocation) {
+      (revocation_source == safe_browsing::NotificationRevocationSource::
+                                kSuspiciousContentAutoRevocation ||
+       revocation_source == safe_browsing::NotificationRevocationSource::
+                                kSocialEngineeringBlocklist ||
+       revocation_source == safe_browsing::NotificationRevocationSource::
+                                kSafeBrowsingUnwantedRevocation)) {
     SetRevokedAbusiveNotificationPermission(hcsm_.get(), setting_url,
                                             /*is_ignored=*/true);
     // Return without deleting abusive revocation entry.
@@ -713,13 +717,19 @@ bool AbusiveNotificationPermissionsManager::ShouldCheckOrigin(
     if (stored_value.is_none()) {
       return true;
     }
+    // Track how often we hit this desynced state (where the setting is ALLOW
+    // but the revocation status is not marked as ignore).
+    bool is_ignored = safety_hub_util::IsAbusiveNotificationRevocationIgnored(
+        hcsm_.get(), setting.primary_pattern.ToRepresentativeUrl());
+    base::UmaHistogramBoolean(
+        "Settings.SafetyHub.AbusiveNotificationPermissionRevocation."
+        "InconsistentStateEncountered",
+        !is_ignored);
     // If the url has a REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS setting value
     // and the NOTIFICATIONS permission is set to CONTENT_SETTING_ALLOW, then
-    // the user chose to ignore the origin for future revocations so the setting
-    // value should specify ignore.
-    CHECK(safety_hub_util::IsAbusiveNotificationRevocationIgnored(
-              hcsm_.get(), setting.primary_pattern.ToRepresentativeUrl()),
-          base::NotFatalUntil::M162);
+    // the user chose to ignore the origin for future revocations. This could have been done
+    // by re-allowing in Safety Hub or otherwise manually updating the notification permission
+    // following an auto-revocation. We do not need to check the origin again.
     return false;
   }
   return false;

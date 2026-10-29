@@ -622,6 +622,20 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram
+    name="Settings.SafetyHub.AbusiveNotificationPermissionRevocation.InconsistentStateEncountered"
+    enum="Boolean" expires_after="2027-04-11">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether a notification permission was found in a desynced state
+    (setting is ALLOW, but revocation status is missing the ignore flag) when
+    checked by ShouldCheckOrigin. Logged each time the abusive notification
+    manager encounters an allowed notification that had a previous revocation
+    entry.
+  </summary>
+</histogram>
+
+<histogram
     name="Settings.SafetyHub.AbusiveNotificationPermissionRevocation.Interactions"
     enum="SafetyCheckUnusedSitePermissionsModuleInteractions"
     expires_after="2027-03-07">
