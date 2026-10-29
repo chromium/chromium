@@ -198,8 +198,8 @@ suite('BrowserActuatorInternalsAppTest', () => {
     await render([]);
 
     assertEquals(
-        'No sessions recorded yet. A session is recorded when it receives ' +
-            'its first downstream message.',
+        'No sessions recorded yet. A session is recorded from the moment it ' +
+            'is created, which is usually its first FCM wake-up message.',
         getText(app.shadowRoot, '#empty-state'));
     assertEquals(
         'Total Sessions: 0', getText(app.shadowRoot, '.session-count'));
