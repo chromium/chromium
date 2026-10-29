@@ -33,7 +33,7 @@ base::FilePath GetExecutablePath() {
   // FilePath::DirName() work incorrectly, convert it to absolute path so that
   // paths such as DIR_SRC_TEST_DATA_ROOT can work, since we expect absolute
   // paths to be returned here.
-  // TODO(bauerb): http://crbug.com/259796, http://crbug.com/373477
+  // TODO(bauerb): http://crbug.com/259796
   base::ScopedAllowBlocking allow_blocking;
   return base::MakeAbsoluteFilePath(base::FilePath(executable_path));
 }
