@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_egtest_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
 #import "ios/chrome/browser/badges/model/features.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_constants.h"
@@ -62,11 +63,6 @@ constexpr char kFormElementSubmit[] = "submit_profile";
 // minimum should be the frame rate, something aroung 17ms (1/60hz), but we
 // prefer giving extra buffer as there are probably other latencies.
 constexpr base::TimeDelta kTypingCoolDownPeriod = base::Milliseconds(50);
-
-// Overall timeout for retrying a verified web element tap. A single verified
-// tap attempt can take up to ~8 seconds when it misses, so this leaves room for
-// a few attempts.
-constexpr base::TimeDelta kWebElementTapTimeout = base::Seconds(30);
 
 // Timeout for the initial page load in a test. On a freshly booted simulator,
 // the first navigation away from the native New Tab Page must wait for
@@ -398,12 +394,12 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
   GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
                   @"There should a saved local profile.");
 
-  // Tap on a field to trigger form activity. A single `TapWebElementWithId`
-  // tap can miss the field (see `-scrollToAndTapWebElementWithID:`), so use
-  // that method, which also scrolls the field into view with JavaScript (a
+  // Tap on a field to trigger form activity. A single `TapWebElementWithId()`
+  // tap can miss the field (see `autofill::FocusWebElementWithId()`), so use
+  // that helper, which also scrolls the field into view with JavaScript (a
   // no-op for the name field, at the top of the page), retries the tap, and
   // verifies that the field got the focus.
-  [self scrollToAndTapWebElementWithID:kFormElementName];
+  autofill::FocusWebElementWithId(kFormElementName);
 
   // Wait for suggestions as it may take some time because of form fetch
   // throttling or other delays. Don't wait for the keyboard: the keyboard
@@ -431,47 +427,15 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
   [ChromeEarlGrey waitForJavaScriptCondition:javaScriptCondition];
 
   // Settle the keyboard so the web view layout is stable before any subsequent
-  // coordinate-based tap. `TapWebElementWithId` computes its tap point when the
-  // action is created, so an in-flight keyboard transition after autofill can
-  // make the tap miss its target. Depending on the iOS version the keyboard may
-  // or may not still be up after autofill, so blur the focused element (a
+  // coordinate-based tap. `TapWebElementWithId()` computes its tap point when
+  // the action is created, so an in-flight keyboard transition after autofill
+  // can make the tap miss its target. Depending on the iOS version the keyboard
+  // may or may not still be up after autofill, so blur the focused element (a
   // no-op when nothing is focused) instead of using EarlGrey's keyboard
   // dismissal, which fails when the keyboard isn't showing.
   [ChromeEarlGrey
       evaluateJavaScriptForSideEffect:@"document.activeElement.blur();"];
   [ChromeEarlGrey waitForKeyboardToDisappear];
-}
-
-// Scrolls the web element with `elementID` into view and taps it natively,
-// which is required to give it native keyboard focus (JS `focus()` doesn't on
-// iOS 27+). The tap is retried with a freshly created action, hence a freshly
-// computed tap point, because `TapWebElementWithId` computes its point once at
-// creation and a focus zoom or viewport resize can make it land on a
-// neighboring field. Finally verifies that the element got the focus.
-- (void)scrollToAndTapWebElementWithID:(const char*)elementID {
-  NSString* scrollScript = [NSString
-      stringWithFormat:@"document.getElementById('%s').scrollIntoView({block: "
-                       @"'center'});",
-                       elementID];
-  [ChromeEarlGrey evaluateJavaScriptForSideEffect:scrollScript];
-
-  GREYCondition* tapped = [GREYCondition
-      conditionWithName:@"Tap web element"
-                  block:^BOOL {
-                    NSError* error = nil;
-                    [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                                            WebViewMatcher()]
-                        performAction:chrome_test_util::TapWebElementWithId(
-                                          elementID)
-                                error:&error];
-                    return error == nil;
-                  }];
-  GREYAssertTrue([tapped waitWithTimeout:kWebElementTapTimeout.InSecondsF()],
-                 @"Failed to tap web element with ID %s", elementID);
-
-  NSString* focusedCondition = [NSString
-      stringWithFormat:@"document.activeElement.id === '%s'", elementID];
-  [ChromeEarlGrey waitForJavaScriptCondition:focusedCondition];
 }
 
 #pragma mark - Tests
@@ -490,7 +454,7 @@ TAG_SMOKE_TEST(SaveProfileEGTest, testUserData_LocalUpdate);
   [self focusOnNameAndAutofillUntilElementIsFilled:kFormElementZip];
 
   // Tap on email field.
-  [self scrollToAndTapWebElementWithID:kFormElementEmail];
+  autofill::FocusWebElementWithId(kFormElementEmail);
 
   // Wait for the keyboard to appear.
   [ChromeEarlGrey waitForKeyboardToAppear];

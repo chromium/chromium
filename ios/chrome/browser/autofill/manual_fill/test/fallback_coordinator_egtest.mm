@@ -6,6 +6,7 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/autofill/manual_fill/test/manual_fill_matchers.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_egtest_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -18,7 +19,7 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
-using base::test::ios::kWaitForActionTimeout;
+using autofill::FocusWebElementWithId;
 using chrome_test_util::AutofillSuggestionViewMatcher;
 
 namespace {
@@ -335,17 +336,17 @@ void OpenAddressManualFillView() {
 }
 
 // Tests that the manual fallback view is not duplicated after incognito.
-// TODO(crbug.com/40777592): Disabled due to flakiness.
-- (void)DISABLED_testReturningFromIncognitoDoesNotDuplicatesManualFallbackMenu {
+- (void)testReturningFromIncognitoDoesNotDuplicateManualFallbackMenu {
   // Add the profile to use for verification.
   [AutofillAppInterface saveExampleProfile];
 
   // Bring up the keyboard by tapping the city, which is the element before the
   // picker.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormElementCity)];
+  FocusWebElementWithId(kFormElementCity);
 
   // Verify the profiles icon is visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      manual_fill::FormSuggestionViewMatcher()];
   [[EarlGrey selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
   [[EarlGrey selectElementWithMatcher:KeyboardAccessoryExpandButton()]
@@ -359,8 +360,12 @@ void OpenAddressManualFillView() {
 
   // Bring up the keyboard by tapping the city, which is the element before the
   // picker.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormElementCity)];
+  FocusWebElementWithId(kFormElementCity);
+  // Make sure the incognito keyboard accessory was actually created before
+  // switching back to a regular tab, otherwise the duplication scenario this
+  // test covers would not be exercised.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      manual_fill::FormSuggestionViewMatcher()];
 
   // Open a  regular tab.
   [ChromeEarlGrey openNewTab];
@@ -369,10 +374,11 @@ void OpenAddressManualFillView() {
 
   // Bring up the keyboard by tapping the city, which is the element before the
   // picker.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormElementCity)];
+  FocusWebElementWithId(kFormElementCity);
 
   // This will fail if there is more than one profiles icon in the hierarchy.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      manual_fill::FormSuggestionViewMatcher()];
   [[EarlGrey selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
   [[EarlGrey selectElementWithMatcher:KeyboardAccessoryExpandButton()]
