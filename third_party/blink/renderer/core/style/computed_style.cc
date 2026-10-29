@@ -2132,21 +2132,21 @@ FontBaseline ComputedStyle::GetFontBaseline() const {
     case EDominantBaseline::kAuto:
       break;
     case EDominantBaseline::kMiddle:
-      return kXMiddleBaseline;
+      return FontBaseline::kXMiddle;
     case EDominantBaseline::kAlphabetic:
-      return kAlphabeticBaseline;
+      return FontBaseline::kAlphabetic;
     case EDominantBaseline::kHanging:
-      return kHangingBaseline;
+      return FontBaseline::kHanging;
     case EDominantBaseline::kCentral:
-      return kCentralBaseline;
+      return FontBaseline::kCentral;
     case EDominantBaseline::kTextBeforeEdge:
-      return kTextOverBaseline;
+      return FontBaseline::kTextOver;
     case EDominantBaseline::kTextAfterEdge:
-      return kTextUnderBaseline;
+      return FontBaseline::kTextUnder;
     case EDominantBaseline::kIdeographic:
-      return kIdeographicUnderBaseline;
+      return FontBaseline::kIdeographicUnder;
     case EDominantBaseline::kMathematical:
-      return kMathBaseline;
+      return FontBaseline::kMath;
 
     case EDominantBaseline::kUseScript:
     case EDominantBaseline::kNoChange:
@@ -2157,8 +2157,9 @@ FontBaseline ComputedStyle::GetFontBaseline() const {
   // Vertical flow (except 'text-orientation: sideways') uses ideographic
   // central baseline.
   // https://drafts.csswg.org/css-writing-modes-3/#text-baselines
-  return !GetFontDescription().IsVerticalAnyUpright() ? kAlphabeticBaseline
-                                                      : kCentralBaseline;
+  return !GetFontDescription().IsVerticalAnyUpright()
+             ? FontBaseline::kAlphabetic
+             : FontBaseline::kCentral;
 }
 
 FontHeight ComputedStyle::GetFontHeight(FontBaseline baseline) const {

@@ -50,7 +50,7 @@ FontHeight LogicalBoxFragment::BaselineMetrics(
   }
 
   const auto SynthesizeMetrics = [&](LayoutUnit size) -> FontHeight {
-    return baseline_type == kAlphabeticBaseline
+    return baseline_type == FontBaseline::kAlphabetic
                ? FontHeight(size, LayoutUnit())
                : FontHeight(size - size / 2, size / 2);
   };

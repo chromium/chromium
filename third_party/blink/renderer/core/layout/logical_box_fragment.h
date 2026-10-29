@@ -33,8 +33,9 @@ class CORE_EXPORT LogicalBoxFragment final : public LogicalFragment {
   static LayoutUnit SynthesizedBaseline(FontBaseline baseline_type,
                                         bool is_flipped_lines,
                                         LayoutUnit block_size) {
-    if (baseline_type == kAlphabeticBaseline)
+    if (baseline_type == FontBaseline::kAlphabetic) {
       return is_flipped_lines ? LayoutUnit() : block_size;
+    }
 
     return block_size / 2;
   }

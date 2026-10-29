@@ -78,10 +78,10 @@ TEST_F(FontTest, ConvertBaseline) {
   const FontMetrics& metrics = font_data->GetFontMetrics();
   EXPECT_EQ(metrics.FixedAscent(), 80);
   EXPECT_EQ(metrics.FixedDescent(), 20);
-  EXPECT_EQ(metrics.FixedAlphabetic(FontBaseline::kAlphabeticBaseline), 0);
-  EXPECT_EQ(metrics.FixedAlphabetic(FontBaseline::kCentralBaseline), -30);
-  EXPECT_EQ(metrics.FixedCapHeight(FontBaseline::kAlphabeticBaseline), 80);
-  EXPECT_EQ(metrics.FixedCapHeight(FontBaseline::kCentralBaseline), 50);
+  EXPECT_EQ(metrics.FixedAlphabetic(FontBaseline::kAlphabetic), 0);
+  EXPECT_EQ(metrics.FixedAlphabetic(FontBaseline::kCentral), -30);
+  EXPECT_EQ(metrics.FixedCapHeight(FontBaseline::kAlphabetic), 80);
+  EXPECT_EQ(metrics.FixedCapHeight(FontBaseline::kCentral), 50);
 }
 
 TEST_F(FontTest, FixedPitchMatchesTypeface) {

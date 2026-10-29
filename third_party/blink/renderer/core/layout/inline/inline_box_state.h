@@ -83,7 +83,7 @@ struct InlineBoxState {
   LayoutUnit text_height;
 
   // SVG alignment-baseline presentation property resolved to a FontBaseline.
-  FontBaseline alignment_type = FontBaseline::kAlphabeticBaseline;
+  FontBaseline alignment_type = FontBaseline::kAlphabetic;
 
   // These values are to create a box fragment. Set only when needs_box_fragment
   // is set.

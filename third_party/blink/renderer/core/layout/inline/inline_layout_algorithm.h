@@ -152,7 +152,7 @@ class CORE_EXPORT InlineLayoutAlgorithm final
 
   std::optional<LineClampEllipsis> line_clamp_ellipsis_;
 
-  FontBaseline baseline_type_ = FontBaseline::kAlphabeticBaseline;
+  FontBaseline baseline_type_ = FontBaseline::kAlphabetic;
 
   // True if in quirks or limited-quirks mode, which require line-height quirks.
   // https://quirks.spec.whatwg.org/#the-line-height-calculation-quirk

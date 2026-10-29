@@ -115,8 +115,8 @@ struct GlyphBoundsAccumulator {
     // ShapeResult uses alphabetic baseline.
     // See diagrams of base lines at
     // https://drafts.csswg.org/css-writing-modes-3/#intro-baselines
-    int baseline_adjust = font_metrics.Ascent(kCentralBaseline) -
-                          font_metrics.Ascent(kAlphabeticBaseline);
+    int baseline_adjust = font_metrics.Ascent(FontBaseline::kCentral) -
+                          font_metrics.Ascent(FontBaseline::kAlphabetic);
     min_y += baseline_adjust;
     max_y += baseline_adjust;
   }
@@ -323,8 +323,8 @@ class VectorizedGlyphBoundsAccumulator final {
     // ShapeResult uses alphabetic baseline.
     // See diagrams of base lines at
     // https://drafts.csswg.org/css-writing-modes-3/#intro-baselines
-    const int baseline_adjust = font_metrics.Ascent(kCentralBaseline) -
-                                font_metrics.Ascent(kAlphabeticBaseline);
+    const int baseline_adjust = font_metrics.Ascent(FontBaseline::kCentral) -
+                                font_metrics.Ascent(FontBaseline::kAlphabetic);
     min_y += baseline_adjust;
     max_y += baseline_adjust;
   }

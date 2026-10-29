@@ -136,7 +136,8 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
       pending_vertical_baseline_x_offset_ =
           !IsCanvasRotationInVerticalUpright(canvas_rotation)
               ? 0
-              : metrics.FloatAscent() - metrics.FloatAscent(kCentralBaseline);
+              : metrics.FloatAscent() -
+                    metrics.FloatAscent(FontBaseline::kCentral);
     }
 
     pending_glyphs_.push_back(glyph);

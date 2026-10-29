@@ -79,29 +79,29 @@ void InlineBoxState::ResetStyle(const ComputedStyle& style_ref,
       break;
     case EAlignmentBaseline::kBeforeEdge:
     case EAlignmentBaseline::kTextBeforeEdge:
-      alignment_type = FontBaseline::kTextOverBaseline;
+      alignment_type = FontBaseline::kTextOver;
       break;
     case EAlignmentBaseline::kMiddle:
-      alignment_type = FontBaseline::kXMiddleBaseline;
+      alignment_type = FontBaseline::kXMiddle;
       break;
     case EAlignmentBaseline::kCentral:
-      alignment_type = FontBaseline::kCentralBaseline;
+      alignment_type = FontBaseline::kCentral;
       break;
     case EAlignmentBaseline::kAfterEdge:
     case EAlignmentBaseline::kTextAfterEdge:
-      alignment_type = FontBaseline::kTextUnderBaseline;
+      alignment_type = FontBaseline::kTextUnder;
       break;
     case EAlignmentBaseline::kIdeographic:
-      alignment_type = FontBaseline::kIdeographicUnderBaseline;
+      alignment_type = FontBaseline::kIdeographicUnder;
       break;
     case EAlignmentBaseline::kAlphabetic:
-      alignment_type = FontBaseline::kAlphabeticBaseline;
+      alignment_type = FontBaseline::kAlphabetic;
       break;
     case EAlignmentBaseline::kHanging:
-      alignment_type = FontBaseline::kHangingBaseline;
+      alignment_type = FontBaseline::kHanging;
       break;
     case EAlignmentBaseline::kMathematical:
-      alignment_type = FontBaseline::kMathBaseline;
+      alignment_type = FontBaseline::kMath;
       break;
   }
 }

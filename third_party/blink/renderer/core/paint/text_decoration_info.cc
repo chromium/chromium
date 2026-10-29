@@ -32,7 +32,7 @@ static ResolvedUnderlinePosition ResolveUnderlinePosition(
   // scripts where it would not be appropriate (e.g., ideographs.)
   // However, this has performance implications. For now, we only work with
   // vertical text.
-  if (style.GetFontBaseline() != kCentralBaseline) {
+  if (style.GetFontBaseline() != FontBaseline::kCentral) {
     if (EnumHasFlags(position, TextUnderlinePosition::kUnder)) {
       return ResolvedUnderlinePosition::kUnder;
     }

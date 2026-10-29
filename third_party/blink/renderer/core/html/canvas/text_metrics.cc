@@ -47,14 +47,14 @@ float TextMetrics::GetFontBaseline(
       // http://wiki.apache.org/xmlgraphics-fop/LineLayout/AlignmentHandling
       // "FOP (Formatting Objects Processor) puts the hanging baseline at 80% of
       // the ascender height"
-      return font_metrics.FloatAscent(kAlphabeticBaseline,
+      return font_metrics.FloatAscent(FontBaseline::kAlphabetic,
                                       FontMetrics::ApplyBaselineTable(true)) *
              kHangingAsPercentOfAscent / 100.0;
     case V8CanvasTextBaseline::Enum::kIdeographic:
       if (font_metrics.IdeographicBaseline().has_value()) {
         return font_metrics.IdeographicBaseline().value();
       }
-      return -font_metrics.FloatDescent(kAlphabeticBaseline,
+      return -font_metrics.FloatDescent(FontBaseline::kAlphabetic,
                                         FontMetrics::ApplyBaselineTable(true));
     case V8CanvasTextBaseline::Enum::kBottom:
       return -font_data.NormalizedTypoDescent().ToFloat();
@@ -131,9 +131,9 @@ void TextMetrics::Update(const Font* font,
   // y direction
   const FontMetrics& font_metrics = font_data->GetFontMetrics();
   const float ascent = font_metrics.FloatAscent(
-      kAlphabeticBaseline, FontMetrics::ApplyBaselineTable(true));
+      FontBaseline::kAlphabetic, FontMetrics::ApplyBaselineTable(true));
   const float descent = font_metrics.FloatDescent(
-      kAlphabeticBaseline, FontMetrics::ApplyBaselineTable(true));
+      FontBaseline::kAlphabetic, FontMetrics::ApplyBaselineTable(true));
   baseline_y = GetFontBaseline(baseline, *font_data);
   font_bounding_box_ascent_ = ascent - baseline_y;
   font_bounding_box_descent_ = descent + baseline_y;

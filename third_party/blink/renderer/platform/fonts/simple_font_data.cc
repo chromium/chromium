@@ -340,7 +340,7 @@ SimpleFontData* SimpleFontData::MetricsOverriddenFontData(
 // -------------------------------------------
 FontHeight SimpleFontData::NormalizedTypoAscentAndDescent(
     FontBaseline baseline_type) const {
-  if (baseline_type == kAlphabeticBaseline) {
+  if (baseline_type == FontBaseline::kAlphabetic) {
     if (!normalized_typo_ascent_descent_.ascent)
       ComputeNormalizedTypoAscentAndDescent();
     return normalized_typo_ascent_descent_;

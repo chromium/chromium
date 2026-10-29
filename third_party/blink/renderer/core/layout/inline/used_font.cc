@@ -17,7 +17,7 @@ LayoutUnit UsedFont::FixedAscent(FontBaseline baseline) const {
 LayoutUnit UsedFont::FixedDescent() const {
   if (const auto* font_data = PrimaryFont()) [[likely]] {
     return LayoutUnit(
-        font_data->GetFontMetrics().FloatDescent(kAlphabeticBaseline) *
+        font_data->GetFontMetrics().FloatDescent(FontBaseline::kAlphabetic) *
         text_fit_scaling_factor_);
   }
   return LayoutUnit();
