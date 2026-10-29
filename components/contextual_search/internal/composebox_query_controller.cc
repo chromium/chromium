@@ -2095,6 +2095,15 @@ void ComposeboxQueryController::HandleClusterInfoResponse(
     return;
   }
 
+  if (response->http_status_code > 0) {
+    base::UmaHistogramSparse("ContextualTasks.ClusterInfo.HttpStatus",
+                             response->http_status_code);
+  }
+  if (response->net_error_code.has_value()) {
+    base::UmaHistogramSparse("ContextualTasks.ClusterInfo.NetError",
+                             std::abs(response->net_error_code.value()));
+  }
+
   if (cluster_info_fetch_start_time_.has_value()) {
     base::UmaHistogramTimes(
         "Lens.Composebox.ClusterInfo.ResponseTime",
@@ -3295,6 +3304,18 @@ void ComposeboxQueryController::UploadChunk(
                  std::unique_ptr<endpoint_fetcher::EndpointResponse>)>
                  completion_callback,
              std::unique_ptr<endpoint_fetcher::EndpointResponse> response) {
+            if (response) {
+              if (response->http_status_code > 0) {
+                base::UmaHistogramSparse(
+                    "ContextualTasks.UploadChunk.HttpStatus",
+                    response->http_status_code);
+              }
+              if (response->net_error_code.has_value()) {
+                base::UmaHistogramSparse(
+                    "ContextualTasks.UploadChunk.NetError",
+                    std::abs(response->net_error_code.value()));
+              }
+            }
             std::move(completion_callback).Run(std::move(response));
           },
           std::move(completion_callback)),

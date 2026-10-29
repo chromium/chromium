@@ -95,6 +95,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.ClusterInfo.HttpStatus"
+    enum="HttpResponseCode" expires_after="2027-03-07">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when an HTTP response is received for a contextual cluster info
+    fetch request. Records the HTTP status code of the response.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.ClusterInfo.NetError" enum="NetErrorCodes"
+    expires_after="2027-03-07">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when a contextual cluster info fetch request completes at the
+    network layer (either successfully or with an error). Records the network
+    error code. Not recorded if the fetch failed before a network request was
+    made, e.g. due to an authentication failure.
+  </summary>
+</histogram>
+
 <histogram
     name="ContextualTasks.Composebox.UserAction.AddedActiveTabAfterDeletingAutoSuggestion"
     enum="Boolean" expires_after="2027-02-07">
@@ -1163,6 +1185,28 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded when the user interacts with the contextual tasks toolbar close tab
     button. Always recorded as true.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.UploadChunk.HttpStatus"
+    enum="HttpResponseCode" expires_after="2027-03-07">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when an HTTP response is received for a contextual upload chunk
+    request. Records the HTTP status code of the response.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.UploadChunk.NetError" enum="NetErrorCodes"
+    expires_after="2027-03-07">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when a contextual upload chunk request completes at the network
+    layer (either successfully or with an error). Records the network error
+    code. Not recorded if the upload chunk failed before a network request was
+    made, e.g. due to an authentication failure.
   </summary>
 </histogram>
 
