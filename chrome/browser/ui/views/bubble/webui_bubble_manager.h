@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "ui/base/base_window.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -229,7 +230,8 @@ WebUIBubbleManagerImpl<T>::CreateWebUIBubbleDialog(
   }
 
   auto bubble_view = std::make_unique<WebUIBubbleDialogView>(
-      anchor_view, contents_wrapper->GetWeakPtr(), anchor_rect, arrow);
+      views::BubbleAnchor(anchor_view), contents_wrapper->GetWeakPtr(),
+      anchor_rect, arrow);
 
   // Anchor bubbles with no `anchor_view` to their host browsers.
   if (!anchor_view) {

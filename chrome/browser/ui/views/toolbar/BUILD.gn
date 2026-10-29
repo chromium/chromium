@@ -430,6 +430,7 @@ if (!is_android) {
       "//chrome/browser/ui/waap:manager",
       "//chrome/browser/ui/window_feature_controller",
       "//components/metrics:content",
+      "//components/user_education/common",
       "//content/public/browser",
       "//content/public/common",
       "//content/test:test_support",

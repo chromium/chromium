@@ -21,11 +21,14 @@
 #include "components/user_education/common/user_education_context.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_views.h"
+#include "components/user_education/webui/help_bubble_handler.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/interaction/element_tracker_views.h"
+#include "ui/webui/tracked_element/tracked_element_handler.h"
+#include "ui/webui/tracked_element/tracked_element_web_ui.h"
 #include "url/gurl.h"
 
 // Class that wraps a WebUI whose controller is a `CustomHelpBubbleUi` in a
@@ -48,7 +51,7 @@ class CustomWebUIHelpBubble : public user_education::CustomHelpBubbleViews {
   // you need to e.g. change preferred size behavior.
   using BuildCustomWebUIHelpBubbleViewCallback =
       base::RepeatingCallback<std::unique_ptr<WebUIBubbleDialogView>(
-          views::View* anchor_view,
+          views::BubbleAnchor anchor,
           views::BubbleBorder::Arrow arrow,
           base::WeakPtr<WebUIContentsWrapper> contents_wrapper)>;
   static BuildCustomWebUIHelpBubbleViewCallback
@@ -136,7 +139,7 @@ CustomWebUIHelpBubble::CreateForController(
       IDS_HELP_BUBBLE);
   auto ui = wrapper->GetWebUIController()->GetCustomUiAsWeakPtr();
   auto bubble_ptr = build_bubble_view_callback.Run(
-      params.anchor_element->AsA<views::TrackedElementViews>()->view(),
+      views::BubbleAnchor(params.anchor_element),
       user_education::HelpBubbleViews::TranslateArrow(params.arrow),
       wrapper->GetWeakPtr());
   auto* const bubble = bubble_ptr.get();
@@ -163,8 +166,15 @@ CustomWebUIHelpBubble::CreateForController(
   }
 
   wrapper->ShowUI();
-  return base::WrapUnique(new CustomWebUIHelpBubble(
+  auto result = base::WrapUnique(new CustomWebUIHelpBubble(
       std::move(widget), bubble, std::move(wrapper), params.anchor_element));
+  if (auto* const anchor_webui =
+          params.anchor_element->AsA<ui::TrackedElementWebUI>()) {
+    if (auto* const handler = anchor_webui->handler()->GetHelpBubbleHandler()) {
+      handler->OnFloatingHelpBubbleCreated(anchor_webui, result.get());
+    }
+  }
+  return result;
 }
 
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_CUSTOM_WEBUI_HELP_BUBBLE_H_

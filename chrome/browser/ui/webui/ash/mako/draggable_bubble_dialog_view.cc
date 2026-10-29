@@ -13,16 +13,17 @@
 #include "ui/gfx/draggable_region.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/bubble/bubble_anchor.h"
 
 namespace ash {
 
 DraggableBubbleDialogView::DraggableBubbleDialogView(
     WebUIContentsWrapper* contents_wrapper)
-    : WebUIBubbleDialogView(nullptr,
+    : WebUIBubbleDialogView(views::BubbleAnchor(),
                             contents_wrapper->GetWeakPtr(),
                             std::nullopt,
                             views::BubbleBorder::TOP_RIGHT,
-                            false) {
+                            /*autosize=*/false) {
   event_handler_ = std::make_unique<MakoBubbleEventHandler>(this);
   dragging_initialized_ = false;
 }

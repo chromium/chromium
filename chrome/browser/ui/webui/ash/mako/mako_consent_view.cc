@@ -7,6 +7,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/screen.h"
+#include "ui/views/bubble/bubble_anchor.h"
 
 namespace ash {
 
@@ -18,7 +19,8 @@ constexpr int kMakoConsentCornerRadius = 20;
 
 MakoConsentView::MakoConsentView(WebUIContentsWrapper* contents_wrapper,
                                  const gfx::Rect& caret_bounds)
-    : WebUIBubbleDialogView(nullptr, contents_wrapper->GetWeakPtr()) {
+    : WebUIBubbleDialogView(views::BubbleAnchor(),
+                            contents_wrapper->GetWeakPtr()) {
   set_has_parent(false);
   set_corner_radius(kMakoConsentCornerRadius);
   SetModalType(ui::mojom::ModalType::kSystem);

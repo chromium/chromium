@@ -2,18 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/user_education/custom_webui_help_bubble.h"
+
 #include <memory>
 
 #include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
+#include "chrome/browser/ui/views/toolbar/test_support/app_menu_test_accessor.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
-#include "chrome/browser/ui/views/user_education/custom_webui_help_bubble.h"
 #include "chrome/browser/ui/views/user_education/custom_webui_help_bubble_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
@@ -49,8 +53,12 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view_utils.h"
 #include "ui/webui/resources/cr_components/help_bubble/custom_help_bubble.mojom.h"
+#include "ui/webui/tracked_element/tracked_element_web_ui.h"
 #include "ui/webui/webui_util.h"
 
 namespace {
@@ -187,6 +195,8 @@ class CustomWebUIHelpBubbleUiTest : public InteractiveFeaturePromoTest {
             kCustomWebUIHelpBubbleTestFeature, kToolbarAppMenuButtonElementId,
             MakeCustomWebUIHelpBubbleFactoryCallback<
                 TestWebUIHelpBubbleController>(GURL(kTestWebUIHostUrl))));
+
+    WaitForInitialWebUIToolbar(browser());
   }
 
   auto CheckMostRecentClosedReason(
@@ -242,22 +252,38 @@ class CustomWebUIHelpBubbleUiTest : public InteractiveFeaturePromoTest {
   }
 
   auto CheckIsAnchor(ElementSpecifier el, bool is_anchor) {
-    return Steps(CheckView(
-                     kToolbarAppMenuButtonElementId,
-                     [](BrowserAppMenuButton* button) {
-                       return button->GetProperty(
-                           user_education::kHasInProductHelpPromoKey);
-                     },
-                     is_anchor)
-                     .SetDescription("Check IPH key property."),
-                 CheckView(
-                     kToolbarAppMenuButtonElementId,
-                     [](BrowserAppMenuButton* button) {
-                       return views::InkDrop::Get(button)
-                           ->in_attention_state_for_testing();
-                     },
-                     is_anchor)
-                     .SetDescription("Check in attention state."));
+    return CheckElement(
+               el,
+               [this, is_anchor](ui::TrackedElement* element) {
+                 if (auto* const view_el =
+                         element->AsA<views::TrackedElementViews>()) {
+                   auto* const button =
+                       views::AsViewClass<BrowserAppMenuButton>(
+                           view_el->view());
+                   if (!button) {
+                     return false;
+                   }
+                   return button->GetProperty(
+                              user_education::kHasInProductHelpPromoKey) ==
+                              is_anchor &&
+                          views::InkDrop::Get(button)
+                                  ->in_attention_state_for_testing() ==
+                              is_anchor;
+                 }
+                 if (element->IsA<ui::TrackedElementWebUI>()) {
+                   const AppMenuTestAccessor accessor(browser());
+                   return (views::BubbleDialogDelegate::GetAnchoredDialog(
+                               views::BubbleAnchor(element)) != nullptr) ==
+                              is_anchor &&
+                          base::test::RunUntil([&]() {
+                            return accessor.IsHighlighted() == is_anchor &&
+                                   accessor.HasInProductHelpPromo() ==
+                                       is_anchor;
+                          });
+                 }
+                 return false;
+               })
+        .SetDescription("CheckIsAnchor()");
   }
 
   auto CheckFrame() {

@@ -41,6 +41,7 @@ source_set("user_education") {
     "//ui/events",
     "//ui/views",
     "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
+    "//ui/webui/tracked_element",
   ]
 
   # impl/browser_user_education_interface_impl.h needs

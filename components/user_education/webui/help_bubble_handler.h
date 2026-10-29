@@ -36,6 +36,8 @@ class TrackedElementHandler;
 class TrackedElementWebUI;
 }  // namespace ui
 
+class CustomWebUIHelpBubble;
+
 namespace user_education {
 
 class HelpBubbleWebUI;
@@ -100,6 +102,7 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
   virtual void ReportBadMessage(std::string_view error);
 
  private:
+  friend class ::CustomWebUIHelpBubble;
   friend class FloatingWebUIHelpBubbleFactory;
   friend class HelpBubbleFactoryWebUI;
   friend class HelpBubbleWebUI;

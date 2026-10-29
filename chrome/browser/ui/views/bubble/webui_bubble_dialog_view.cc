@@ -14,6 +14,7 @@
 #include "ui/gfx/draggable_region.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
@@ -74,16 +75,16 @@ END_METADATA
 }  // namespace
 
 WebUIBubbleDialogView::WebUIBubbleDialogView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     base::WeakPtr<WebUIContentsWrapper> contents_wrapper,
     const std::optional<gfx::Rect>& anchor_rect,
     views::BubbleBorder::Arrow arrow,
     bool autosize)
-    : BubbleDialogDelegateView(anchor_view,
+    : BubbleDialogDelegateView(anchor,
                                arrow,
                                views::BubbleBorder::DIALOG_SHADOW,
                                autosize),
-      contents_wrapper_(contents_wrapper),
+      contents_wrapper_(std::move(contents_wrapper)),
       web_view_(AddChildView(std::make_unique<WebUIBubbleView>(
           contents_wrapper_->web_contents()))),
       bubble_anchor_(anchor_rect) {

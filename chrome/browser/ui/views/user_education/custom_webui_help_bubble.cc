@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/user_education/custom_webui_help_bubble.h"
 
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_class_properties.h"
 
@@ -18,10 +19,11 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CustomWebUIHelpBubble,
 CustomWebUIHelpBubble::BuildCustomWebUIHelpBubbleViewCallback
 CustomWebUIHelpBubble::GetDefaultBuildBubbleViewCallback() {
   return base::BindRepeating(
-      [](views::View* anchor_view, views::BubbleBorder::Arrow arrow,
+      [](views::BubbleAnchor anchor, views::BubbleBorder::Arrow arrow,
          base::WeakPtr<WebUIContentsWrapper> contents_wrapper) {
         auto result = std::make_unique<WebUIBubbleDialogView>(
-            anchor_view, std::move(contents_wrapper), std::nullopt, arrow);
+            anchor, std::move(contents_wrapper), /*anchor_rect=*/std::nullopt,
+            arrow);
         result->SetProperty(views::kElementIdentifierKey,
                             kHelpBubbleIdForTesting);
         result->web_view()->SetProperty(views::kElementIdentifierKey,

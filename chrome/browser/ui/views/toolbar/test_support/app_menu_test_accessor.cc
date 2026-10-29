@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/user_education/common/user_education_class_properties.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -197,6 +198,30 @@ bool AppMenuTestAccessor::IsHighlighted() const {
                            "!!document.querySelector('toolbar-app')?.shadowRoot"
                            "?.querySelector('#app-menu')?.classList.contains("
                            "'anchor-highlight')")
+        .ExtractBool();
+  }
+  return false;
+}
+
+bool AppMenuTestAccessor::HasInProductHelpPromo() const {
+  CHECK(control_);
+  views::View* view = control_->GetFocusablePaneView();
+  if (!view) {
+    return false;
+  }
+  if (views::InkDropHost* ink_drop = views::InkDrop::Get(view)) {
+    return view->GetProperty(user_education::kHasInProductHelpPromoKey) &&
+           ink_drop->in_attention_state_for_testing();
+  }
+  if (content::WebContents* web_contents = GetWebContentsFromView(view)) {
+    return content::EvalJs(
+               web_contents,
+               "(() => {"
+               "  const appMenu = document.querySelector('toolbar-app')"
+               "      ?.shadowRoot?.querySelector('#app-menu');"
+               "  return !!appMenu && appMenu.hasHelpBubble === true &&"
+               "      appMenu.classList.contains('help-anchor-highlight');"
+               "})()")
         .ExtractBool();
   }
   return false;

@@ -15,6 +15,7 @@
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/widget/widget.h"
@@ -41,9 +42,9 @@ class WebUIBubbleDialogView : public views::WidgetObserver,
  public:
   // An optional anchor_rect can be passed to anchor the dialog to a specific
   // point on the screen. The provided anchor_rect will take precedent over the
-  // anchor_view.
+  // anchor.
   WebUIBubbleDialogView(
-      views::View* anchor_view,
+      views::BubbleAnchor anchor,
       // Note that `contents_wrapper` has a lifetime that is unrelated
       // to this View, so it needs to reference via a WeakPtr in case
       // the contents wrapper is destroyed before `this`.

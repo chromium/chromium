@@ -30,6 +30,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/webui/webui_util.h"
 
@@ -44,7 +45,7 @@ class EmojiBubbleDialogView : public WebUIBubbleDialogView {
   explicit EmojiBubbleDialogView(
       std::unique_ptr<WebUIContentsWrapper> contents_wrapper,
       gfx::Rect caret_bounds)
-      : WebUIBubbleDialogView(nullptr,
+      : WebUIBubbleDialogView(views::BubbleAnchor(),
                               contents_wrapper->GetWeakPtr(),
                               std::nullopt,
                               views::BubbleBorder::TOP_RIGHT,

@@ -66,6 +66,10 @@ class AppMenuTestAccessor {
   // bubble anchor).
   bool IsHighlighted() const;
 
+  // Returns true if the app menu button currently has an in-product help
+  // promo attention highlight.
+  bool HasInProductHelpPromo() const;
+
   // Returns the underlying AppMenuControl.
   AppMenuControl* GetControl() const { return control_; }
 

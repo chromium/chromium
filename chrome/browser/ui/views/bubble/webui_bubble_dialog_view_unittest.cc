@@ -16,6 +16,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -67,7 +68,8 @@ class WebUIBubbleDialogViewTest : public ChromeViewsTestBase,
         profile_.get(), /*supports_draggable_regions=*/GetParam());
 
     auto bubble_view = std::make_unique<WebUIBubbleDialogView>(
-        anchor_widget_->GetContentsView(), contents_wrapper_->GetWeakPtr());
+        views::BubbleAnchor(anchor_widget_->GetContentsView()),
+        contents_wrapper_->GetWeakPtr());
     bubble_view_ = bubble_view.get();
     bubble_widget_ =
         BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
@@ -160,7 +162,8 @@ TEST_P(WebUIBubbleDialogViewTest, GetAnchorRectWithProvidedAnchorRect) {
 
   gfx::Rect anchor(666, 666, 0, 0);
   auto bubble_dialog = std::make_unique<WebUIBubbleDialogView>(
-      anchor_widget->GetContentsView(), contents_wrapper->GetWeakPtr(), anchor);
+      views::BubbleAnchor(anchor_widget->GetContentsView()),
+      contents_wrapper->GetWeakPtr(), anchor);
   auto* bubble_dialog_ptr = bubble_dialog.get();
   BubbleDialogDelegateView::CreateBubble(std::move(bubble_dialog));
 
@@ -181,7 +184,8 @@ TEST_P(WebUIBubbleDialogViewTest, DestroyingContentsWrapperDoesNotSegfault) {
 
   gfx::Rect anchor(666, 666, 0, 0);
   auto bubble_dialog = std::make_unique<WebUIBubbleDialogView>(
-      anchor_widget->GetContentsView(), contents_wrapper->GetWeakPtr(), anchor);
+      views::BubbleAnchor(anchor_widget->GetContentsView()),
+      contents_wrapper->GetWeakPtr(), anchor);
 
   contents_wrapper.reset();
 }
@@ -198,7 +202,8 @@ TEST_P(WebUIBubbleDialogViewTest, ShowUIAndCloseUIWithoutWidget) {
 
   gfx::Rect anchor(666, 666, 0, 0);
   auto bubble_dialog = std::make_unique<WebUIBubbleDialogView>(
-      anchor_widget->GetContentsView(), contents_wrapper->GetWeakPtr(), anchor);
+      views::BubbleAnchor(anchor_widget->GetContentsView()),
+      contents_wrapper->GetWeakPtr(), anchor);
 
   EXPECT_EQ(nullptr, bubble_dialog->GetWidget());
   bubble_dialog->ShowUI();

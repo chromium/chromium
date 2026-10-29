@@ -14,6 +14,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/menus/simple_menu_model.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_class_properties.h"
@@ -145,7 +146,7 @@ ComposeDialogView::ComposeDialogView(
     std::unique_ptr<WebUIContentsWrapperT<ComposeUntrustedUI>> bubble_wrapper,
     const gfx::Rect& anchor_bounds,
     views::BubbleBorder::Arrow anchor_position)
-    : WebUIBubbleDialogView(anchor_view,
+    : WebUIBubbleDialogView(views::BubbleAnchor(anchor_view),
                             bubble_wrapper->GetWeakPtr(),
                             anchor_bounds,
                             anchor_position),
