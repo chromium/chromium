@@ -37,6 +37,8 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/embedder_support/switches.h"
 #include "components/permissions/permission_request_manager.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
@@ -450,6 +452,70 @@ IN_PROC_BROWSER_TEST_P(MultiScreenCaptureInIsolatedWebAppBrowserTest,
   EXPECT_FALSE(RunGetAllScreensMediaAndGetIds(web_contents, stream_ids,
                                               track_ids, &error_name));
   EXPECT_EQ(error_name, "NotAllowedError");
+}
+
+IN_PROC_BROWSER_TEST_P(MultiScreenCaptureInIsolatedWebAppBrowserTest,
+                       InFlightGetAllScreensMediaStoppedOnUserSwitch) {
+  if (!IsPermissionPolicySet()) {
+    GTEST_SKIP();
+  }
+  SetScreens(/*screen_count=*/1u);
+  content::RenderFrameHost* app_frame = OpenApp(allowed_url_info_1().app_id());
+
+  const AccountId secondary_account_id = AccountId::FromUserEmailGaiaId(
+      "secondary@example.com", GaiaId("secondary-gaia-id"));
+  user_manager::UserManager::Get()->EnsureUser(secondary_account_id,
+                                               user_manager::UserType::kRegular,
+                                               /*is_ephemeral=*/false);
+  session_manager::SessionManager::Get()->CreateSession(
+      secondary_account_id,
+      user_manager::TestHelper::GetFakeUsernameHash(secondary_account_id),
+      /*new_user=*/false, /*has_active_session=*/true);
+
+  ASSERT_TRUE(content::ExecJs(app_frame, R"(
+    window.inFlightCapturePromise = (async () => {
+      try {
+        const streams = await Promise.race([
+          navigator.mediaDevices.getAllScreensMedia(),
+          new Promise(resolve => setTimeout(() => resolve(null), 500)),
+        ]);
+        if (!streams) {
+          return 'stopped-before-first-frame';
+        }
+        if (streams.length === 0 || streams[0].getVideoTracks().length === 0) {
+          return 'no-tracks';
+        }
+        const track = streams[0].getVideoTracks()[0];
+        if (track.readyState === 'live') {
+          await Promise.race([
+            new Promise(resolve => { track.addEventListener('ended', resolve); }),
+            new Promise(resolve => setTimeout(resolve, 500)),
+          ]);
+        }
+        return track.readyState;
+      } catch (error) {
+        return 'error:' + error.name;
+      }
+    })();
+    true;
+  )"));
+
+  // Flush the IO thread once so `GenerateStreams` has posted
+  // `CheckRequestAllScreensAllowed` to the UI thread and the UI thread has
+  // admitted the request, while `EnumerateScreens` ->
+  // `HandleAccessRequestResponse` -> `MultiCaptureStarted` is still in flight.
+  base::RunLoop io_flush_loop;
+  content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+      FROM_HERE, base::DoNothing(), io_flush_loop.QuitClosure());
+  io_flush_loop.Run();
+
+  session_manager::SessionManager::Get()->SwitchActiveSession(
+      secondary_account_id);
+
+  // An in-flight getAllScreensMedia() request admitted before the active user
+  // switch must not survive as a live track after the switch.
+  EXPECT_NE("live",
+            content::EvalJs(app_frame, "window.inFlightCapturePromise"));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

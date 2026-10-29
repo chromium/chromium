@@ -46,6 +46,12 @@ bool MultiCaptureSessionController::IsSessionEligibleForMultiCapture() const {
 void MultiCaptureSessionController::MultiCaptureStarted(
     const std::string& label,
     base::OnceClosure stop_callback) {
+  if (!IsSessionEligibleForMultiCapture()) {
+    if (stop_callback) {
+      std::move(stop_callback).Run();
+    }
+    return;
+  }
   if (stop_callback) {
     stop_callbacks_[label] = std::move(stop_callback);
   }

@@ -186,4 +186,25 @@ IN_PROC_BROWSER_TEST_F(MultiCaptureSessionControllerBrowserTest,
   EXPECT_FALSE(controller->IsSessionEligibleForMultiCapture());
 }
 
+IN_PROC_BROWSER_TEST_F(MultiCaptureSessionControllerBrowserTest,
+                       StopsCaptureStartedWhenSessionIneligible) {
+  MultiCaptureSessionController* controller =
+      MultiCaptureSessionControllerFactory::GetForBrowserContext(
+          browser()->GetProfile());
+  ASSERT_TRUE(controller);
+
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOGIN_SECONDARY);
+  ASSERT_FALSE(controller->IsSessionEligibleForMultiCapture());
+
+  bool was_stopped = false;
+  controller->MultiCaptureStarted(
+      "test_label",
+      base::BindOnce([](bool* stopped) { *stopped = true; }, &was_stopped));
+
+  // When a capture starts after the session has already become ineligible,
+  // MultiCaptureStarted() must immediately run stop_callback.
+  EXPECT_TRUE(was_stopped);
+}
+
 }  // namespace multi_capture
