@@ -101,7 +101,8 @@ class SelectionOverlayController
       tabs::TabInterface* tab,
       GlicSharingManagerInternal& sharing_manager,
       mojo::PendingRemote<mojom::CaptureRegionObserver> observer,
-      mojom::TabContextOptionsPtr options);
+      mojom::TabContextOptionsPtr options,
+      bool capture_region_handoff = false);
 
   // Returns whether a new overlay session can start on the current tab,
   // applying to every entry point.
@@ -151,11 +152,9 @@ class SelectionOverlayController
   // Asks the panel's web client to take over a session started from the
   // page, when the panel is open: from `ShowImpl()` if it already is, from
   // `OnSidePanelStateChanged()` if it opens mid-session. The client answers
-  // with `CaptureRegion()`, which calls `AdoptSession()`. See
-  // `pending_handoff_`.
+  // with `CaptureRegion()`, which calls `AdoptSession()`.
   void PostHandSessionToPanel();
   void HandSessionToPanel();
-  void OnPendingHandoffPanelState(GlicSidePanelCoordinator::State state);
   void AdoptSession(mojo::PendingRemote<mojom::CaptureRegionObserver> observer);
   // What `SelectionOverlayPage::SetSidePanelOpen()` sends: the panel is
   // showing, or backgrounded and comes back with `tab_`.
@@ -353,24 +352,6 @@ class SelectionOverlayController
 
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
-
-  // TODO(b/578525278): Remove once the client says which invoke its
-  // `CaptureRegion()` answers. Then no memory is needed here.
-  //
-  // Live while `HandSessionToPanel()` has asked the glic web client for a
-  // capture and the client hasn't answered with `CaptureRegion()` yet. It's
-  // the subscription that also clears it when the panel closes, since the
-  // client drops its capture then.
-  //
-  // This outlives the overlay session on purpose. The client answers later,
-  // sometimes seconds later. If the user dismissed the overlay by then, the
-  // answer looks like a user clicking "+", and without this it would bring
-  // the overlay back. With it, `CaptureRegion()` rejects the answer instead.
-  //
-  // Known gap: if the client drops the invoke (its preflight timed out or the
-  // feature is off etc) and the user then clicks "+" in the same panel session,
-  // that click is rejected once and "+" flips back off.
-  base::CallbackListSubscription pending_handoff_;
 
   // For callbacks that belong to `session_`. Invalidated by `Reset()`.
   base::WeakPtrFactory<SelectionOverlayController> session_weak_factory_{this};

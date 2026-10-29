@@ -36,6 +36,7 @@ export import AdditionalContext = generated.AdditionalContext;
 export import AnnotatedPageData = generated.AnnotatedPageData;
 export import AutofillSuggestion = generated.AutofillSuggestion;
 export import CaptureRegionParams = generated.CaptureRegionParams;
+export import CaptureRegionPayload = generated.CaptureRegionPayload;
 export import CaptureRegionResult = generated.CaptureRegionResult;
 export import CapturedRegion = generated.CapturedRegion;
 export import CloseAuthTabOptions = generated.CloseAuthTabOptions;
@@ -219,6 +220,7 @@ export declare interface InvocationPayload {
   universalCart?: UniversalCartPayload;
   skillsPayload?: SkillsPayload;
   experimentalTriggering?: ExperimentalTriggeringPayload;
+  captureRegion?: CaptureRegionPayload;
 }
 
 /**

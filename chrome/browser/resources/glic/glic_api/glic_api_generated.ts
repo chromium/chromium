@@ -1107,6 +1107,10 @@ export declare interface CreateActorTabOptions {
 export declare interface CaptureRegionParams {
   tabId: string;
   options: TabContextOptions;
+  // Set when this capture answers an invoke that asked the panel to take over
+  // the user's selection (see InvocationPayload). Lets the browser tell it
+  // apart from the user starting a capture.
+  captureRegionHandoff?: boolean;
 }
 
 // Holds optional parameters for GlicBrowserHost#activateTabWithUrl.
@@ -1223,6 +1227,14 @@ export declare interface ExperimentalTriggeringPayload {
   // that triggered this invocation. Passed through verbatim; opaque to the
   // browser. May be empty.
   paymentMetadata: ArrayBuffer;
+}
+
+// Payload for invoking region capture.
+export declare interface CaptureRegionPayload {
+  // Set when the browser asks the client to start a capture so the panel can
+  // take over a region selection the user already started on the page. Pass
+  // it back in CaptureRegionParams when starting that capture.
+  captureRegionHandoff: boolean;
 }
 
 // Options for invoking Glic.

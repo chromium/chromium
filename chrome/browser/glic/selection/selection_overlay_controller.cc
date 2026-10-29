@@ -373,45 +373,30 @@ void SelectionOverlayController::PostHandSessionToPanel() {
 }
 
 void SelectionOverlayController::HandSessionToPanel() {
-  if (session_->owner != Session::Owner::kDirect || pending_handoff_ ||
+  if (session_->owner != Session::Owner::kDirect ||
       !GlicSidePanelCoordinator::IsShowing(tab_)) {
     return;
   }
   GlicKeyedService* service = GlicKeyedService::Get(tab_->GetProfile());
-  GlicSidePanelCoordinator* coordinator =
-      GlicSidePanelCoordinator::GetForTab(tab_);
-  if (!service || !coordinator) {
+  if (!service) {
     return;
   }
-  // Remember that we asked, until the client answers or the panel closes.
-  // See `pending_handoff_`.
-  pending_handoff_ = coordinator->AddStateCallback(base::BindRepeating(
-      &SelectionOverlayController::OnPendingHandoffPanelState,
-      weak_factory_.GetWeakPtr()));
-  // The same request the capture hotkey makes while the panel is open. The
-  // glic web client enters its capture mode and calls `CaptureRegion()`,
-  // which adopts this session instead of starting one.
+  // The same request the capture hotkey makes while the panel is open, marked
+  // as a hand-off so `CaptureRegion()` can tell its answer apart from a user
+  // clicking "+". The glic web client enters its capture mode and calls
+  // `CaptureRegion()`, which adopts this session instead of starting one.
   // TODO(b:579008191): Use a hand-off invocation source so hand-offs don't
   // count as hotkey presses in metrics.
   GlicInvokeOptions options(Target(*tab_),
-                            mojom::InvocationSource::kCaptureRegionHotkey);
+                            mojom::InvocationPayload::NewCaptureRegion(
+                                mojom::CaptureRegionPayload::New(
+                                    /*capture_region_handoff=*/true)));
   options.wait_for_panel_open = true;
   service->Invoke(std::move(options));
 }
 
-void SelectionOverlayController::OnPendingHandoffPanelState(
-    GlicSidePanelCoordinator::State state) {
-  if (state == GlicSidePanelCoordinator::State::kClosed) {
-    // The client drops its capture when the panel closes; drop the request
-    // with it.
-    pending_handoff_ = {};
-  }
-}
-
 void SelectionOverlayController::AdoptSession(
     mojo::PendingRemote<mojom::CaptureRegionObserver> observer) {
-  // The client answered.
-  pending_handoff_ = {};
   session_->owner = Session::Owner::kPanel;
   BindCaptureRegionObserver(std::move(observer));
   if (!session_->selected_regions.empty()) {
@@ -511,7 +496,8 @@ void SelectionOverlayController::CaptureRegion(
     tabs::TabInterface* tab,
     GlicSharingManagerInternal& sharing_manager,
     mojo::PendingRemote<mojom::CaptureRegionObserver> observer,
-    mojom::TabContextOptionsPtr options) {
+    mojom::TabContextOptionsPtr options,
+    bool capture_region_handoff) {
   content::WebContents* web_contents = tab ? tab->GetContents() : nullptr;
   if (!web_contents) {
     mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
@@ -563,10 +549,9 @@ void SelectionOverlayController::CaptureRegion(
     selection_overlay_controller->AdoptSession(std::move(observer));
     return;
   }
-  if (selection_overlay_controller->pending_handoff_) {
+  if (capture_region_handoff) {
     // The glic web client is answering `HandSessionToPanel()`, but the user
     // dismissed the overlay in the meantime. Don't bring it back.
-    selection_overlay_controller->pending_handoff_ = {};
     mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
     remote->OnUpdate(mojom::CaptureRegionResultPtr(),
                      mojom::CaptureRegionErrorReason::kUnknown);

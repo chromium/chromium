@@ -719,6 +719,13 @@ export function invocationPayloadToClient(payload: InvocationPayloadMojo|null):
       },
     };
   }
+  if (payload.captureRegion) {
+    return {
+      captureRegion: {
+        captureRegionHandoff: payload.captureRegion.captureRegionHandoff,
+      },
+    };
+  }
   throw new Error('Unknown payload type');
 }
 

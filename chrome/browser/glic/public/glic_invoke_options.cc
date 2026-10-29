@@ -118,6 +118,9 @@ glic::mojom::InvocationSource GlicInvokeOptions::GetInvocationSource() const {
             if (payload->is_experimental_triggering()) {
               return glic::mojom::InvocationSource::kExperimentalTriggering;
             }
+            if (payload->is_capture_region()) {
+              return glic::mojom::InvocationSource::kCaptureRegionHotkey;
+            }
             NOTREACHED();
           }},
       source_or_payload);

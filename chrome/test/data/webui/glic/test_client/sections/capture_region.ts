@@ -4,7 +4,7 @@
 
 import type {CaptureRegionResult, Subscriber} from '/glic/glic_api/glic_api.js';
 
-import {client, getBrowser, logMessage, releaseHeldCaptureRegionHotkey} from '../client.js';
+import {client, consumeCaptureRegionHandoff, getBrowser, logMessage, releaseHeldCaptureRegionHotkey} from '../client.js';
 import {$} from '../page_element_types.js';
 
 let captureRegionSubscription: Subscriber|null = null;
@@ -61,6 +61,7 @@ function onCaptureRegionClick() {
         viewportScreenshot: true,
         annotatedPageContent: true,
       },
+      captureRegionHandoff: consumeCaptureRegionHandoff(),
     });
     captureRegionSubscription = observable.subscribeObserver!({
       next: (result: CaptureRegionResult) => {

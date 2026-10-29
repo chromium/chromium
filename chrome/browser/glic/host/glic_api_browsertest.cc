@@ -4062,6 +4062,18 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testInvoke) {
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testInvokeWithCaptureRegionHandoff) {
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient());
+  auto options = mojom::InvokeOptions::New();
+  options->invocation_source = mojom::InvocationSource::kCaptureRegionHotkey;
+  options->payload = mojom::InvocationPayload::NewCaptureRegion(
+      mojom::CaptureRegionPayload::New(/*capture_region_handoff=*/true));
+  instance->host().GetPrimaryWebClient()->Invoke(std::move(options),
+                                                 base::DoNothing());
+  ExecuteJsTest();
+}
+
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetContextFromFocusedTabWithIframe) {
   ASSERT_TRUE(content::NavigateToURL(
       GetTabListInterface()->GetActiveTab()->GetContents(),

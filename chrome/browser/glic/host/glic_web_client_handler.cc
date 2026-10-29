@@ -1178,9 +1178,11 @@ class GlicWebClientHandler
       // "focusable" by Glic (e.g. chrome:// pages).
       tab = focus.is_focus() ? focus.focus() : focus.unfocused_tab();
     }
-    SelectionOverlayController::CaptureRegion(tab, GetSharingManagerInternal(),
-                                              std::move(observer),
-                                              std::move(tab_context_options));
+    bool capture_region_handoff =
+        params ? params->capture_region_handoff : false;
+    SelectionOverlayController::CaptureRegion(
+        tab, GetSharingManagerInternal(), std::move(observer),
+        std::move(tab_context_options), capture_region_handoff);
 #else
     NOTIMPLEMENTED();
 #endif

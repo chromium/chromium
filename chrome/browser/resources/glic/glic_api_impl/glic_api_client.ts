@@ -1409,6 +1409,7 @@ export class CaptureRegionObservable extends
           this.params ? {
             tabId: idFromClient(this.params.tabId),
             options: tabContextOptionsFromClient(this.params.options),
+            captureRegionHandoff: this.params.captureRegionHandoff ?? false,
           } :
                         null);
     } else {

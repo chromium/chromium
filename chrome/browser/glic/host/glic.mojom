@@ -1037,6 +1037,12 @@ struct CaptureRegionParams {
   // @glic_type string
   int32 tab_id;
   TabContextOptions options;
+
+  // Set when this capture answers an invoke that asked the panel to take over
+  // the user's selection (see InvocationPayload). Lets the browser tell it
+  // apart from the user starting a capture.
+  // @glic_optional
+  bool capture_region_handoff;
 };
 
 // Interface for annotation-related functionality, used by the web client.
@@ -1655,6 +1661,15 @@ struct ExperimentalTriggeringPayload {
   array<uint8> payment_metadata;
 };
 
+// @generate glic_api
+// Payload for invoking region capture.
+struct CaptureRegionPayload {
+  // Set when the browser asks the client to start a capture so the panel can
+  // take over a region selection the user already started on the page. Pass
+  // it back in CaptureRegionParams when starting that capture.
+  bool capture_region_handoff;
+};
+
 union InvocationPayload {
   UniversalCartPayload universal_cart;
 
@@ -1663,6 +1678,8 @@ union InvocationPayload {
 
   [MinVersion=4]
   ExperimentalTriggeringPayload experimental_triggering;
+
+  CaptureRegionPayload capture_region;
 };
 
 // @generate glic_api

@@ -3288,6 +3288,20 @@ class InvokeTest extends ApiTests {
     assertEquals(
         client.lastInvokeOptions!.invocationSource,
         InvocationSource.TOP_CHROME_BUTTON);
+    assertUndefined(client.lastInvokeOptions!.payload);
+  }
+
+  async testInvokeWithCaptureRegionHandoff() {
+    const client = this.getInvokeClient();
+    await runUntil(() => {
+      return client.lastInvokeOptions !== null;
+    });
+    assertEquals(
+        InvocationSource.CAPTURE_REGION_HOTKEY,
+        client.lastInvokeOptions!.invocationSource);
+    assertTrue(
+        client.lastInvokeOptions!.payload?.captureRegion
+            ?.captureRegionHandoff === true);
   }
 }
 

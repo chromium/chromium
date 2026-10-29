@@ -369,6 +369,12 @@ void LogGlicInvokeOptions(const GlicInvokeOptions& options,
                  << payload->get_experimental_triggering()
                         ->payment_metadata.size()
                  << " }";
+            } else if (payload->is_capture_region()) {
+              ss << "CaptureRegionPayload { capture_region_handoff: "
+                 << (payload->get_capture_region()->capture_region_handoff
+                         ? "true"
+                         : "false")
+                 << " }";
             } else {
               ss << "Unknown Payload";
             }

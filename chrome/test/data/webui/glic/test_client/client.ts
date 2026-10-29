@@ -37,6 +37,13 @@ export function logMessage(message: string) {
 const holdCaptureRegionHotkey = new URLSearchParams(window.location.search)
                                     .has('hold_capture_region_hotkey');
 let heldCaptureRegionHotkeyResolve: (() => void)|null = null;
+let pendingCaptureRegionHandoff = false;
+
+export function consumeCaptureRegionHandoff(): boolean {
+  const handoff = pendingCaptureRegionHandoff;
+  pendingCaptureRegionHandoff = false;
+  return handoff;
+}
 
 // Completes the held invoke. The caller starts the capture first, so the
 // browser sees the capture request before the invoke's completion, as it
@@ -318,6 +325,8 @@ class WebClient implements GlicWebClient {
     $.invocationLog.prepend(entry);
 
     if (options.invocationSource === InvocationSource.CAPTURE_REGION_HOTKEY) {
+      pendingCaptureRegionHandoff =
+          options.payload?.captureRegion?.captureRegionHandoff ?? false;
       if (holdCaptureRegionHotkey) {
         await new Promise<void>(resolve => {
           heldCaptureRegionHotkeyResolve = resolve;

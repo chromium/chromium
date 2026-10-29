@@ -25,6 +25,7 @@ struct GlicInvokeHandlerTestCase {
   std::vector<std::string> prompts;
   std::optional<mojom::FeatureMode> feature_mode;
   bool disable_zss = false;
+  bool capture_region_handoff = false;
   mojom::ActuationTarget actuation_target =
       mojom::ActuationTarget::kAgentDecides;
   std::optional<std::string> skill_id;
@@ -39,7 +40,12 @@ class GlicInvokeHandlerTest
 TEST_P(GlicInvokeHandlerTest, RequiresClientInvoke) {
   const auto& param = GetParam();
 
-  GlicInvokeOptions options(param.invocation_source);
+  GlicInvokeOptions options =
+      param.capture_region_handoff
+          ? GlicInvokeOptions(mojom::InvocationPayload::NewCaptureRegion(
+                mojom::CaptureRegionPayload::New(
+                    /*capture_region_handoff=*/true)))
+          : GlicInvokeOptions(param.invocation_source);
   options.prompts = param.prompts;
   options.feature_mode = param.feature_mode;
   options.disable_zss = param.disable_zss;
@@ -90,6 +96,9 @@ INSTANTIATE_TEST_SUITE_P(
         GlicInvokeHandlerTestCase{.test_name = "WithDisableZss",
                                   .expected_result = true,
                                   .disable_zss = true},
+        GlicInvokeHandlerTestCase{.test_name = "WithCaptureRegionHandoff",
+                                  .expected_result = true,
+                                  .capture_region_handoff = true},
         GlicInvokeHandlerTestCase{
             .test_name = "WithActuationTarget",
             .expected_result = true,
