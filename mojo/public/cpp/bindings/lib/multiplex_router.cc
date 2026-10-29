@@ -882,8 +882,8 @@ bool MultiplexRouter::WaitForFlushToComplete(ScopedMessagePipeHandle pipe) {
     return false;
   }
 
-  flush_pipe_watcher_.emplace(FROM_HERE, SimpleWatcher::ArmingPolicy::MANUAL,
-                              task_runner());
+  flush_pipe_watcher_ = std::make_unique<SimpleWatcher>(
+      FROM_HERE, SimpleWatcher::ArmingPolicy::MANUAL, task_runner());
   flush_pipe_watcher_->Watch(
       pipe.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
       MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
@@ -983,7 +983,7 @@ bool MultiplexRouter::ExclusiveSyncWaitForReply(InterfaceId interface_id,
   DCHECK(!exclusive_sync_wait_);
 
   scoped_refptr<MultiplexRouter> keep_alive(this);
-  exclusive_sync_wait_.emplace();
+  exclusive_sync_wait_ = std::make_unique<ExclusiveSyncWaitInfo>();
   exclusive_sync_wait_->interface_id = interface_id;
   exclusive_sync_wait_->request_id = request_id;
   while (!exclusive_sync_wait_->finished) {

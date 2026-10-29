@@ -311,16 +311,24 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MultiplexRouter
 
   const Config config_;
 
+  // The small fields below are grouped here so that they don't each occupy
+  // their own 8-byte slot between pointer-sized members.
+  uint32_t next_interface_id_value_ = 1;
+
   // Whether to set the namespace bit when generating interface IDs. Please see
   // comments of kInterfaceIdNamespaceMask.
   const bool set_interface_id_namespace_bit_;
+
+  bool posted_to_process_tasks_ = false;
 
   MessageDispatcher dispatcher_;
   Connector connector_;
 
   // Active whenever dispatch is blocked by a pending remote flush.
   ScopedMessagePipeHandle active_flush_pipe_;
-  std::optional<mojo::SimpleWatcher> flush_pipe_watcher_;
+  // Only exists while a flush is in progress; out of line because there is a
+  // MultiplexRouter per message pipe and a SimpleWatcher is 88 bytes.
+  std::unique_ptr<mojo::SimpleWatcher> flush_pipe_watcher_;
 
   // Tracks information about the current exclusive sync wait, if any, on the
   // MultiplexRouter's primary thread. Note that exclusive off-thread sync waits
@@ -330,7 +338,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MultiplexRouter
     uint64_t request_id = 0;
     bool finished = false;
   };
-  std::optional<ExclusiveSyncWaitInfo> exclusive_sync_wait_;
+  // Only exists during an exclusive sync wait; out of line, see above.
+  std::unique_ptr<ExclusiveSyncWaitInfo> exclusive_sync_wait_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -344,14 +353,12 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MultiplexRouter
 
   base::small_map<std::map<InterfaceId, scoped_refptr<InterfaceEndpoint>>, 1>
       endpoints_;
-  uint32_t next_interface_id_value_ = 1;
 
   base::circular_deque<std::unique_ptr<Task>> tasks_;
   // It refers to tasks in |tasks_| and doesn't own any of them.
   std::map<InterfaceId, base::circular_deque<raw_ptr<Task>>>
       sync_message_tasks_;
 
-  bool posted_to_process_tasks_ = false;
   scoped_refptr<base::SequencedTaskRunner> posted_to_task_runner_;
 
   // Indicates whether we're currently within ProcessTasks(). Used to avoid
