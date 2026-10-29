@@ -15,6 +15,7 @@
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
+#include "components/autofill/core/common/autofill_test_util.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -115,6 +116,7 @@ class TabInteractionRecorderAndroidBrowserTest : public AndroidBrowserTest {
   base::HistogramTester histogram_tester_;
 
  private:
+  autofill::test::AutofillBrowserTestEnvironment autofill_test_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::map<base::test::FeatureRef, std::map<std::string, std::string>>
       features_with_params_;

@@ -1375,6 +1375,7 @@ source_set("android_browsertests") {
     "//components/autofill/content/browser:test_support",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
+    "//components/autofill/core/common:test_support",
     "//components/back_forward_cache",
     "//content/public/browser",
     "//content/test:test_support",

@@ -27,6 +27,7 @@
 #include "components/actor/core/actor_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
+#include "components/autofill/core/common/autofill_test_util.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -237,6 +238,7 @@ class ActorAttemptLoginToolTest : public ActorToolsTest {
   }
 
  private:
+  autofill::test::AutofillBrowserTestEnvironment autofill_test_environment_;
   MockActorLoginService mock_login_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::CallbackListSubscription create_services_subscription_;

@@ -649,6 +649,7 @@ source_set("browser_tests") {
     "//chrome/test/base:chrome_test_utils",
     "//chrome/test/base:testing_browser_process",
     "//components/affiliations/core/browser:test_support",
+    "//components/autofill/core/common:test_support",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
     "//components/favicon/core/test:test_support",
