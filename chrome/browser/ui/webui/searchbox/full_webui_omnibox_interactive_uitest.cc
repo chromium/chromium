@@ -4,12 +4,17 @@
 
 #include <optional>
 #include <string_view>
+#include <tuple>
+#include <utility>
 
 #include "base/auto_reset.h"
 #include "base/base64.h"
 #include "base/json/string_escape.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -33,6 +38,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
@@ -78,6 +84,7 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -93,6 +100,8 @@
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/prefs/pref_service.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -113,7 +122,12 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/clipboard/clipboard_observer.h"
+#include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/emoji/emoji_panel_helper.h"
+#include "ui/base/interaction/state_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/display/screen.h"
@@ -123,10 +137,14 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/render_text.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/strings/grit/ui_strings.h"
+#include "ui/touch_selection/touch_editing_controller.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/menu/menu_controller.h"
+#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/menu_separator.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 #include "ui/views/controls/webview/webview.h"
@@ -134,6 +152,7 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -180,6 +199,57 @@ const DeepQuery kAimInput = {"omnibox-aim-app", "#composebox",
                              "cr-composebox-input", "#input"};
 const DeepQuery kCancelIcon = {"omnibox-aim-app", "#composebox",
                                "cr-composebox-input", "#cancelIcon"};
+
+#if !BUILDFLAG(IS_MAC)
+// Observes the text on the copy-paste clipboard. The clipboard is read
+// asynchronously because on Windows reads complete on a worker thread, and
+// waiting for one from inside a test step never finishes.
+class ContextMenuClipboardTextObserver
+    : public ui::test::ObservationStateObserver<std::u16string,
+                                                ui::ClipboardMonitor,
+                                                ui::ClipboardObserver> {
+ public:
+  explicit ContextMenuClipboardTextObserver(
+      ui::ClipboardMonitor* clipboard_monitor)
+      : ObservationStateObserver<std::u16string,
+                                 ui::ClipboardMonitor,
+                                 ui::ClipboardObserver>(clipboard_monitor) {
+    ReadClipboard();
+  }
+  ~ContextMenuClipboardTextObserver() override = default;
+
+  // ObservationStateObserver:
+  std::u16string GetStateObserverInitialState() const override {
+    return initial_text_;
+  }
+
+  // ui::ClipboardObserver:
+  void OnClipboardDataChanged() override { ReadClipboard(); }
+
+ private:
+  void ReadClipboard() {
+    ui::Clipboard::GetForCurrentThread()->ReadText(
+        ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
+        base::BindOnce(&ContextMenuClipboardTextObserver::OnReadClipboard,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void OnReadClipboard(std::u16string text) {
+    // If `ReadText()` completes synchronously in the constructor (e.g. on
+    // ChromeOS or Wayland), `SetStateObserverStateChangedCallback()` hasn't
+    // been called yet, so save the text for `GetStateObserverInitialState()`.
+    initial_text_ = text;
+    OnStateObserverStateChanged(std::move(text));
+  }
+
+  std::u16string initial_text_;
+  base::WeakPtrFactory<ContextMenuClipboardTextObserver> weak_ptr_factory_{
+      this};
+};
+
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ContextMenuClipboardTextObserver,
+                                    kContextMenuClipboardText);
+#endif  // !BUILDFLAG(IS_MAC)
 }  // namespace
 
 class FullWebUIOmniboxInteractiveTestBase
@@ -4754,6 +4824,440 @@ INSTANTIATE_TEST_SUITE_P(All,
                          [](const testing::TestParamInfo<bool>&) {
                            return "WebUIToolbarDisabled";
                          });
+
+// Not on Mac, where the context menu is a native NSMenu that runs a nested run
+// loop and only exposes its Copy, Paste and "Always show full URLs" items to
+// tests (see `RightClickShowsContextMenu` for how Paste is selected there). The
+// tests below need to inspect and click any item of the menu.
+#if !BUILDFLAG(IS_MAC)
+// Covers each item of the context menu that `OmniboxFullPopupWebUIContent`
+// shows for a right-click in the full WebUI popup's input, with both toolbars,
+// and with chrome://flags/#menu-simplification disabled and enabled. The menu
+// is opened, and its items are clicked, with real mouse input.
+//
+// Not covered: Emoji, which shows an OS panel the test can't observe (and
+// isn't offered on Linux), and Look Up, which is Mac-only.
+class FullWebUIOmniboxContextMenuInteractiveTest
+    : public FullWebUIOmniboxInteractiveTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  FullWebUIOmniboxContextMenuInteractiveTest() {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        omnibox::internal::kWebUIOmniboxFullPopup};
+    std::vector<base::test::FeatureRef> disabled_features = {
+        omnibox::internal::kWebUIOmniboxPopup};
+    if (IsWebUIToolbarEnabled()) {
+      // `features::IsWebUIToolbarEnabled()` and
+      // `features::IsWebUILocationBarEnabled()` are gated on `kInitialWebUI`,
+      // which is disabled by default on ChromeOS.
+      enabled_features.push_back(features::kInitialWebUI);
+      enabled_features.push_back(features::kWebUIToolbar);
+    } else {
+      disabled_features.push_back(features::kWebUIToolbar);
+    }
+    if (IsMenuSimplificationEnabled()) {
+      enabled_features.push_back(features::kMenuSimplification);
+    } else {
+      disabled_features.push_back(features::kMenuSimplification);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+  ~FullWebUIOmniboxContextMenuInteractiveTest() override = default;
+
+  void SetUpOnMainThread() override {
+    FullWebUIOmniboxInteractiveTestBase::SetUpOnMainThread();
+    // Mark the profile as AIM-eligible so the context menu includes "Always
+    // Show AI Mode" (`IDC_SHOW_AI_MODE_OMNIBOX_BUTTON`).
+    omnibox::AimEligibilityResponse response;
+    response.set_is_eligible(true);
+    AimEligibilityServiceFactory::GetForProfile(browser()->GetProfile())
+        ->SetEligibilityResponseForDebugging(
+            base::Base64Encode(response.SerializeAsString()));
+  }
+
+  bool IsWebUIToolbarEnabled() const { return std::get<0>(GetParam()); }
+  bool IsMenuSimplificationEnabled() const { return std::get<1>(GetParam()); }
+
+ protected:
+  static constexpr std::string_view kPageUrl = "chrome://version/";
+  // `kPageUrl` as shown in the WebUI input.
+  static constexpr char kPageText[] = "chrome://version";
+  static constexpr int kPageTextLength = sizeof(kPageText) - 1;
+  static constexpr char16_t kClipboardSentinel[] = u"clipboard sentinel";
+
+  // Returns the item for `command_id` in the shown context menu, or null if
+  // the menu isn't shown or doesn't have one.
+  static views::MenuItemView* FindContextMenuItem(int command_id) {
+    auto* const el =
+        ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+            OmniboxContextMenuMixinBase::kPasteMenuItem);
+    auto* const paste_item =
+        el ? views::AsViewClass<views::MenuItemView>(
+                 el->AsA<views::TrackedElementViews>()->view())
+           : nullptr;
+    return paste_item
+               ? paste_item->GetParentMenuItem()->GetMenuItemByID(command_id)
+               : nullptr;
+  }
+
+  static void WriteClipboardText(const std::u16string& text) {
+    ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste).WriteText(text);
+  }
+
+  // Returns the copy-paste clipboard's sequence number, which changes whenever
+  // the clipboard is written. Unlike reading the clipboard's contents, this
+  // doesn't block on a worker thread on Windows.
+  static ui::ClipboardSequenceNumberToken GetClipboardSequenceNumber() {
+    return ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+        ui::ClipboardBuffer::kCopyPaste);
+  }
+
+  // Starts observing the clipboard's text as `kContextMenuClipboardText`, and
+  // waits until `initial_text` has shown up on the clipboard.
+  auto ObserveClipboardText(const std::u16string& initial_text) {
+    return Steps(
+        ObserveState(kContextMenuClipboardText,
+                     []() { return ui::ClipboardMonitor::GetInstance(); }),
+        WaitForState(kContextMenuClipboardText, initial_text));
+  }
+
+  // Opens the WebUI popup on `kPageUrl`, verifies `kPageText` is selected, and
+  // waits until the popup no longer forwards mouse events over the location
+  // bar, so mouse clicks in its input reach it.
+  auto OpenPopupForContextMenu() {
+    return Steps(OpenInitialTabAndFocusOmnibox(kTab1, GURL(kPageUrl)),
+                 WaitForWebUIInputValue(kPageText),
+                 InAnyContext(CheckWebUIInputSelection(0, kPageTextLength)),
+                 WaitForPopupToStopForwardingMouseEvents());
+  }
+
+  // Moves the mouse to the horizontal middle of the WebUI input's text.
+  auto MoveMouseToWebUIInputTextMiddle() {
+    return InAnyContext(MoveMouseTo(
+        kPopupWebView, base::BindOnce([](ui::TrackedElement* el) {
+          auto* const contents = el->AsA<TrackedElementWebContents>();
+          CHECK(contents);
+          const gfx::Rect bounds =
+              contents->owner()->GetElementBoundsInScreen(kWebUIInput);
+          // The horizontal offset of the middle of the text from the left
+          // of the input.
+          const double text_middle = contents->owner()
+                                         ->EvaluateAt(kWebUIInput, R"((el) => {
+                    const style = getComputedStyle(el);
+                    const context =
+                        document.createElement('canvas').getContext('2d');
+                    context.font = style.font;
+                    const width = context.measureText(el.value).width;
+                    return Math.max(
+                        4,
+                        Math.min(
+                            parseFloat(style.borderLeftWidth) +
+                                parseFloat(style.paddingLeft) + width / 2,
+                            el.offsetWidth / 2));
+                  })")
+                                         .GetIfDouble()
+                                         .value();
+          return gfx::Point(bounds.x() + base::ClampRound(text_middle),
+                            bounds.CenterPoint().y());
+        })));
+  }
+
+  // Right-clicks the middle of the WebUI input's text, which keeps a selection
+  // of all of the text, and waits for the context menu to show.
+  auto RightClickWebUIInputAndWaitForContextMenu() {
+    return Steps(
+        MoveMouseToWebUIInputTextMiddle(),
+        InSameContext(ClickMouse(ui_controls::RIGHT)),
+        InAnyContext(WaitForShow(OmniboxContextMenuMixinBase::kPasteMenuItem)));
+  }
+
+  // Checks whether the shown context menu has an item for `command_id`.
+  auto CheckContextMenuHasItem(int command_id, bool expected) {
+    return CheckResult(
+        [command_id]() { return !!FindContextMenuItem(command_id); }, expected,
+        base::StringPrintf("CheckContextMenuHasItem(%d)", command_id));
+  }
+
+  // Checks the label of the shown context menu's item for `command_id`, as
+  // UTF-8.
+  template <typename M>
+  auto CheckContextMenuItemLabel(int command_id, M&& matcher) {
+    return CheckResult(
+        [command_id]() {
+          views::MenuItemView* item = FindContextMenuItem(command_id);
+          return item ? base::UTF16ToUTF8(item->title()) : std::string();
+        },
+        std::forward<M>(matcher),
+        base::StringPrintf("CheckContextMenuItemLabel(%d)", command_id));
+  }
+
+  // Clicks the shown context menu's item for `command_id`, which must be
+  // enabled, and waits for the menu to close.
+  auto ClickContextMenuItem(int command_id) {
+    const std::string name =
+        base::StringPrintf("ContextMenuItem%d", command_id);
+    return Steps(
+        InAnyContext(NameView(
+            name, base::BindLambdaForTesting([command_id]() -> views::View* {
+              return FindContextMenuItem(command_id);
+            }))),
+        InSameContext(CheckView(
+            name, [](views::MenuItemView* item) { return item->GetEnabled(); },
+            true)),
+        InSameContext(MoveMouseTo(name)), InSameContext(ClickMouse()),
+        InAnyContext(WaitForHide(OmniboxContextMenuMixinBase::kPasteMenuItem)));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verifies the context menu has the items of the Views omnibox's context menu,
+// and that menu simplification drops Emoji (where it's offered at all) and
+// separates "Always show full URLs" from "Manage search engines", as it does
+// in the Views omnibox. Closing the menu with Escape leaves the WebUI input
+// focused.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxContextMenuInteractiveTest,
+                       ItemsMatchMenuSimplification) {
+  RunTestSequence(
+      OpenPopupForContextMenu(), RightClickWebUIInputAndWaitForContextMenu(),
+      CheckContextMenuHasItem(views::Textfield::kUndo, true),
+      CheckContextMenuHasItem(
+          std::to_underlying(ui::TouchEditable::MenuCommands::kCut), true),
+      CheckContextMenuHasItem(
+          std::to_underlying(ui::TouchEditable::MenuCommands::kCopy), true),
+      CheckContextMenuHasItem(IDC_PASTE_AND_GO, true),
+      CheckContextMenuHasItem(views::Textfield::kDelete, true),
+      CheckContextMenuHasItem(
+          std::to_underlying(ui::TouchEditable::MenuCommands::kSelectAll),
+          true),
+      CheckContextMenuHasItem(IDC_EDIT_SEARCH_ENGINES, true),
+      CheckContextMenuHasItem(IDC_SHOW_FULL_URLS, true),
+      CheckContextMenuHasItem(IDC_SHOW_AI_MODE_OMNIBOX_BUTTON, true),
+      CheckContextMenuHasItem(
+          IDS_CONTENT_CONTEXT_EMOJI,
+          !IsMenuSimplificationEnabled() && ui::IsEmojiPanelSupported()),
+      // When menu simplification is enabled, a separator precedes "Always show
+      // full URLs" (separating it from "Manage search engines" above it).
+      InAnyContext(CheckView(
+          OmniboxContextMenuMixinBase::kShowFullUrlsMenuItem,
+          [](views::MenuItemView* item) {
+            const std::optional<size_t> index =
+                item->parent()->GetIndexOf(item);
+            return index.value_or(0) > 0 &&
+                   views::IsViewClass<views::MenuSeparator>(
+                       item->parent()->children()[index.value() - 1]);
+          },
+          IsMenuSimplificationEnabled())),
+#if BUILDFLAG(IS_WIN)
+      // On Windows, key presses can only be sent to the foreground window,
+      // which the menu's window never becomes. Press Escape in the browser
+      // window instead; the menu intercepts key events while it's shown.
+      InAnyContext(
+          SendKeyPress(kBrowserViewElementId, ui::VKEY_ESCAPE, ui::EF_NONE)),
+#else
+      InAnyContext(SendKeyPress(OmniboxContextMenuMixinBase::kPasteMenuItem,
+                                ui::VKEY_ESCAPE, ui::EF_NONE)),
+#endif
+      InAnyContext(WaitForHide(OmniboxContextMenuMixinBase::kPasteMenuItem)),
+      CheckWebUIInputFocus(true), WaitForWebUIInputValue(kPageText));
+}
+
+// Verifies Undo reverts an edit made in the WebUI input.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxContextMenuInteractiveTest, Undo) {
+  RunTestSequence(
+      OpenPopupForContextMenu(), RightClickWebUIInputAndWaitForContextMenu(),
+      WaitForWebUIInputValue(kPageText),
+      ClickContextMenuItem(views::Textfield::kDelete),
+      WaitForWebUIInputValue(""), RightClickWebUIInputAndWaitForContextMenu(),
+      ClickContextMenuItem(views::Textfield::kUndo),
+      WaitForWebUIInputValue(kPageText), CheckWebUIInputFocus(true));
+}
+
+// Verifies Cut puts the selected URL (`kPageUrl`, i.e. the full URL rather than
+// the `kPageText` shown in the input) on the clipboard and removes it from the
+// WebUI input.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxContextMenuInteractiveTest, Cut) {
+  WriteClipboardText(kClipboardSentinel);
+  RunTestSequence(
+      ObserveClipboardText(kClipboardSentinel), OpenPopupForContextMenu(),
+      RightClickWebUIInputAndWaitForContextMenu(),
+      WaitForWebUIInputValue(kPageText),
+      ClickContextMenuItem(
+          std::to_underlying(ui::TouchEditable::MenuCommands::kCut)),
+      WaitForWebUIInputValue(""),
+      WaitForState(kContextMenuClipboardText, base::UTF8ToUTF16(kPageUrl)),
+      CheckWebUIInputFocus(true));
+}
+
+// Verifies Copy puts the selected URL (`kPageUrl`, i.e. the full URL rather
+// than the `kPageText` shown in the input) on the clipboard and leaves the
+// WebUI input unchanged.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxContextMenuInteractiveTest, Copy) {
+  WriteClipboardText(kClipboardSentinel);
+  RunTestSequence(
+      ObserveClipboardText(kClipboardSentinel), OpenPopupForContextMenu(),
+      RightClickWebUIInputAndWaitForContextMenu(),
+      WaitForWebUIInputValue(kPageText),
+      ClickContextMenuItem(
+          std::to_underlying(ui::TouchEditable::MenuCommands::kCopy)),
+      WaitForState(kContextMenuClipboardText, base::UTF8ToUTF16(kPageUrl)),
+      WaitForWebUIInputValue(kPageText), CheckWebUIInputFocus(true));
+}
+
+// Verifies Paste replaces the selection in the WebUI input with the clipboard
+// text and updates autocomplete matches.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxContextMenuInteractiveTest, Paste) {
+  WriteClipboardText(u"pasted text");
+  RunTestSequence(
+      OpenPopupForContextMenu(), RightClickWebUIInputAndWaitForContextMenu(),
+      WaitForWebUIInputValue(kPageText),
+      ClickContextMenuItem(
+          std::to_underlying(ui::TouchEditable::MenuCommands::kPaste)),
+      WaitForWebUIInputValue("pasted text"),
+      WaitForVerbatimMatch(kPopupWebView, kDefaultMatchSuggestion,
+                           "pasted text"),
+      CheckWebUIInputFocus(true));
+}
+
+// Verifies that with a URL on the clipboard, the paste-and-go item offers to go
+// to it, and navigates to it.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxContextMenuInteractiveTest, PasteAndGo) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url = embedded_test_server()->GetURL("/title2.html");
+  WriteClipboardText(base::UTF8ToUTF16(url.spec()));
+  RunTestSequence(
+      OpenPopupForContextMenu(), RightClickWebUIInputAndWaitForContextMenu(),
+      CheckContextMenuItemLabel(
+          IDC_PASTE_AND_GO, testing::AllOf(testing::HasSubstr("title2.html"),
+                                           testing::Ne(l10n_util::GetStringUTF8(
+                                               IDS_PASTE_AND_GO_EMPTY)))),
+      ClickContextMenuItem(IDC_PASTE_AND_GO),
+      WaitForWebContentsNavigation(kTab1, url));
+}
+
+// Verifies that with search terms on the clipboard, the paste-and-go item
+// offers to search for them, and searches for them with the default search
+// engine.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxContextMenuInteractiveTest,
+                       PasteAndSearch) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
+  search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
+  TemplateURLData data;
+  data.SetShortName(u"test");
+  data.SetKeyword(u"test");
+  data.SetURL(
+      embedded_test_server()->GetURL("/title2.html?q={searchTerms}").spec());
+  TemplateURL* search_engine =
+      template_url_service->Add(std::make_unique<TemplateURL>(data));
+  ASSERT_TRUE(search_engine);
+  template_url_service->SetUserSelectedDefaultSearchProvider(search_engine);
+
+  const std::u16string kSearchTerms = u"context menu search";
+  const GURL search_url(search_engine->url_ref().ReplaceSearchTerms(
+      TemplateURLRef::SearchTermsArgs(kSearchTerms),
+      template_url_service->search_terms_data()));
+  WriteClipboardText(kSearchTerms);
+  RunTestSequence(
+      OpenPopupForContextMenu(), RightClickWebUIInputAndWaitForContextMenu(),
+      CheckContextMenuItemLabel(IDC_PASTE_AND_GO,
+                                base::UTF16ToUTF8(l10n_util::GetStringFUTF16(
+                                    IDS_PASTE_AND_SEARCH, kSearchTerms))),
+      ClickContextMenuItem(IDC_PASTE_AND_GO),
+      WaitForWebContentsNavigation(kTab1, search_url));
+}
+
+// Verifies Delete removes the selection from the WebUI input without touching
+// the clipboard.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxContextMenuInteractiveTest, Delete) {
+  WriteClipboardText(kClipboardSentinel);
+  const ui::ClipboardSequenceNumberToken clipboard_sequence_number =
+      GetClipboardSequenceNumber();
+  RunTestSequence(
+      OpenPopupForContextMenu(), RightClickWebUIInputAndWaitForContextMenu(),
+      WaitForWebUIInputValue(kPageText),
+      ClickContextMenuItem(views::Textfield::kDelete),
+      WaitForWebUIInputValue(""), CheckWebUIInputFocus(true),
+      CheckResult(
+          [clipboard_sequence_number]() {
+            return GetClipboardSequenceNumber() == clipboard_sequence_number;
+          },
+          true, "CheckClipboardUnchanged"));
+}
+
+// Verifies Select All selects all of the WebUI input's text.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxContextMenuInteractiveTest, SelectAll) {
+  RunTestSequence(OpenPopupForContextMenu(), MoveMouseToWebUIInputTextMiddle(),
+                  InSameContext(ClickMouse()),
+                  WaitForJsConditionAt(
+                      kPopupWebView, kWebUIInput,
+                      "(el) => el && el.selectionStart === el.selectionEnd"),
+                  RightClickWebUIInputAndWaitForContextMenu(),
+                  WaitForWebUIInputValue(kPageText),
+                  ClickContextMenuItem(std::to_underlying(
+                      ui::TouchEditable::MenuCommands::kSelectAll)),
+                  InAnyContext(CheckWebUIInputSelection(0, kPageTextLength)),
+                  CheckWebUIInputFocus(true));
+}
+
+// Verifies "Always show full URLs" turns on showing full URLs.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxContextMenuInteractiveTest,
+                       AlwaysShowFullUrls) {
+  auto show_full_urls = [this]() {
+    return browser()->GetProfile()->GetPrefs()->GetBoolean(
+        omnibox::kPreventUrlElisionsInOmnibox);
+  };
+  RunTestSequence(CheckResult(show_full_urls, false, "CheckNotShowingFullUrls"),
+                  OpenPopupForContextMenu(),
+                  RightClickWebUIInputAndWaitForContextMenu(),
+                  ClickContextMenuItem(IDC_SHOW_FULL_URLS),
+                  PollUntil(show_full_urls, "WaitForShowingFullUrls"));
+}
+
+// Verifies "Always Show AI Mode" toggles showing the AI Mode button.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxContextMenuInteractiveTest,
+                       AlwaysShowAiMode) {
+  auto show_ai_mode = [this]() {
+    return browser()->GetProfile()->GetPrefs()->GetBoolean(
+        omnibox::kShowAiModeOmniboxButton);
+  };
+  RunTestSequence(CheckResult(show_ai_mode, true, "CheckShowingAiMode"),
+                  OpenPopupForContextMenu(),
+                  RightClickWebUIInputAndWaitForContextMenu(),
+                  ClickContextMenuItem(IDC_SHOW_AI_MODE_OMNIBOX_BUTTON),
+                  PollUntil([show_ai_mode]() { return !show_ai_mode(); },
+                            "WaitForNotShowingAiMode"));
+}
+
+// Verifies "Manage search engines" opens the search engine settings in a new
+// tab.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxContextMenuInteractiveTest,
+                       ManageSearchEngines) {
+  const GURL settings_url = chrome::GetSettingsUrl(
+      base::FeatureList::IsEnabled(switches::kSearchSettingsUpdate)
+          ? chrome::kSearchSubPage
+          : chrome::kSearchEnginesSubPage);
+  RunTestSequence(
+      OpenPopupForContextMenu(), RightClickWebUIInputAndWaitForContextMenu(),
+      InstrumentNextTab(kTab2), ClickContextMenuItem(IDC_EDIT_SEARCH_ENGINES),
+      WaitForWebContentsReady(kTab2, settings_url));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FullWebUIOmniboxContextMenuInteractiveTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
+      return base::StrCat({std::get<0>(info.param) ? "WebUIToolbarEnabled"
+                                                   : "WebUIToolbarDisabled",
+                           "_",
+                           std::get<1>(info.param)
+                               ? "MenuSimplificationEnabled"
+                               : "MenuSimplificationDisabled"});
+    });
+#endif  // !BUILDFLAG(IS_MAC)
 
 class FullWebUIOmniboxAimInteractiveTestBase
     : public FullWebUIOmniboxInteractiveTestBase {
