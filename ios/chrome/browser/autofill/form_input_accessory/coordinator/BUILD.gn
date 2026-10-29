@@ -84,6 +84,7 @@ source_set("coordinator") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "form_input_accessory_coordinator_unittest.mm",
     "form_input_accessory_mediator+testing.h",
     "form_input_accessory_mediator_unittest.mm",
   ]
@@ -92,6 +93,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
+    "//components/autofill/core/common:features",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/browser:test_support",
     "//components/autofill/ios/common",
@@ -99,10 +101,13 @@ source_set("unit_tests") {
     "//components/autofill/ios/form_util:test_support",
     "//components/password_manager/core/browser/ui:credential_ui_entry",
     "//components/test/ios",
+    "//ios/chrome/browser/autofill/autofill_ai/ui",
+    "//ios/chrome/browser/autofill/form_input_accessory/public",
     "//ios/chrome/browser/autofill/form_input_accessory/ui",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/autofill/model:features",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
+    "//ios/chrome/browser/autofill/public",
     "//ios/chrome/browser/intelligence/bwg/utils:prefs",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
@@ -110,11 +115,15 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/webdata_services/model",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//url",
   ]
 }
