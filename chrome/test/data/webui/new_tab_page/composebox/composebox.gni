@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 composebox_test_files = [
-  "composebox/composebox_autocomplete_test.ts",
   "composebox/composebox_context_menu_test.ts",
   "composebox/composebox_submit_test.ts",
   "composebox/composebox_test.ts",
