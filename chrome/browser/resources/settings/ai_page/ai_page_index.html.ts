@@ -4,6 +4,8 @@
 
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {AiSettingsSection} from '../route.js';
+
 import type {SettingsAiPageIndexElement} from './ai_page_index.js';
 
 export function getHtml(this: SettingsAiPageIndexElement) {
@@ -17,7 +19,7 @@ export function getHtml(this: SettingsAiPageIndexElement) {
     </settings-ai-mode-search-page>
   ` : ''}
 
-  ${this.showGlicSettings_ ? html`
+  ${this.aiSettingsSection_ === AiSettingsSection.GEMINI ? html`
     <settings-glic-page slot="view" id="glic"></settings-glic-page>
 
     <settings-glic-subpage slot="view" id="gemini" data-parent-view-id="glic"
@@ -25,7 +27,7 @@ export function getHtml(this: SettingsAiPageIndexElement) {
     </settings-glic-subpage>
   ` : ''}
 
-  ${this.showGeicSettings_ ? html`
+  ${this.aiSettingsSection_ === AiSettingsSection.GEMINI_ENTERPRISE ? html`
     <settings-geic-page slot="view" id="geic"></settings-geic-page>
 
     <settings-geic-subpage slot="view" id="geminiEnterprise"

@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(GlicButtonTest, NormalIconIsGlicIcon) {
   ASSERT_TRUE(glic_button());
   EXPECT_TRUE(NormalIconIsResource(glic_button(), IDR_GLIC_BUTTON_ALT_ICON));
   const auto& spec = glic::GetGlicProviderSpec(browser()->GetProfile());
-  EXPECT_EQ(spec.GetSettingsSection(), glic::GlicSettingsSection::kGemini);
+  EXPECT_EQ(spec.GetSettingsSectionId(), glic::kGeminiSettingsSectionId);
   EXPECT_EQ(spec.GetSettingsSubpage(), chrome::kGlicSettingsSubpage);
   EXPECT_EQ(spec.GetEntryPointIconId(), IDR_GLIC_BUTTON_ALT_ICON);
 }
@@ -136,8 +136,8 @@ IN_PROC_BROWSER_TEST_F(GlicButtonGeicIconTest, NormalIconIsGeicIcon) {
   ASSERT_TRUE(glic_button());
   EXPECT_TRUE(NormalIconIsResource(glic_button(), IDR_GEIC_BUTTON_ICON));
   const auto& spec = glic::GetGlicProviderSpec(browser()->GetProfile());
-  EXPECT_EQ(spec.GetSettingsSection(),
-            glic::GlicSettingsSection::kGeminiEnterprise);
+  EXPECT_EQ(spec.GetSettingsSectionId(),
+            glic::kGeminiEnterpriseSettingsSectionId);
   EXPECT_EQ(spec.GetSettingsSubpage(), chrome::kGlicEnterpriseSettingsSubpage);
   EXPECT_EQ(spec.GetEntryPointIconId(), IDR_GEIC_BUTTON_ICON);
 }

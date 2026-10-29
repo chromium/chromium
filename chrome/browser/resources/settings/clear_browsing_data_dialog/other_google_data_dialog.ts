@@ -26,6 +26,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {PasswordManagerImpl, PasswordManagerPage} from '../autofill_page/passwords/password_manager_proxy.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
+import {AiSettingsSection} from '../route.js';
 
 import type {ClearBrowsingDataBrowserProxy, UpdateSyncStateEvent} from './clear_browsing_data_browser_proxy.js';
 import {ClearBrowsingDataBrowserProxyImpl} from './clear_browsing_data_browser_proxy.js';
@@ -151,7 +152,8 @@ export class SettingsOtherGoogleDataDialogElement extends
 
   protected shouldShowGeminiAppsActivityLink_() {
     return isSignedIn(this.syncStatus_) &&
-        loadTimeData.getBoolean('showGlicSettings');
+        loadTimeData.getString('aiSettingsSection') ===
+        AiSettingsSection.GEMINI;
   }
 }
 

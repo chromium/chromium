@@ -136,9 +136,8 @@ class SettingsUI
   void TryShowHatsSurveyWithTimeout();
 
   // Updates, based on account and profile state, the loadTimeData values that
-  // control whether the glic settings page should be shown. Returns the enabled
-  // value.
-  void UpdateShowGlicState();
+  // control whichever AI settings section applies.
+  void UpdateAiSettingsSection();
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // theme_color_picker::mojom::ThemeColorPickerHandlerFactory:

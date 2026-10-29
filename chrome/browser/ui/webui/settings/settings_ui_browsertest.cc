@@ -211,14 +211,14 @@ IN_PROC_BROWSER_TEST_F(SettingsUITestGlicDisabledButAnchored, DoesNotCrash) {
 
   // Check that the Glic settings section is hidden because the killswitch
   // (kGlic) is disabled.
-  bool show_glic_settings =
+  std::string ai_settings_section =
       content::EvalJs(
           web_contents,
           "import('chrome://resources/js/load_time_data.js').then(m => "
-          "m.loadTimeData.getBoolean('showGlicSettings'))")
-          .ExtractBool();
+          "m.loadTimeData.getString('aiSettingsSection'))")
+          .ExtractString();
 
-  EXPECT_FALSE(show_glic_settings);
+  EXPECT_EQ("", ai_settings_section);
 }
 
 class SettingsUIWalletReminderNoticeTest : public SettingsUITest {

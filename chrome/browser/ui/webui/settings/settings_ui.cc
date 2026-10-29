@@ -28,7 +28,6 @@
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/public/glic_fre_store.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
@@ -225,27 +224,22 @@
 
 namespace settings {
 
-using optimization_guide::UserVisibleFeatureKey;
-
 namespace {
 
-// Returns true if the Gemini Enterprise settings section should be shown. With
-// `features::kGeicFre`, the section stays hidden until the GEiC FRE is
-// completed.
-// TODO(crbug.com/571928442): Remove when AI settings page visibility is
-// derived in one place. `ShouldShowSettingsPage()` already requires FRE consent
-// from the active provider's store, so this helper can go away then.
-bool ShouldShowGeicSettings(glic::GlicKeyedService* glic_service) {
-  return glic_service &&
-         glic_service->provider_spec().GetSettingsSection() ==
-             glic::GlicSettingsSection::kGeminiEnterprise &&
-         (!glic_service->provider_spec()
-               .GetFreStore()
-               .HidesSettingsUntilCompleted() ||
-          glic_service->enabling().HasConsented());
+std::string_view GetAiSettingsSection(
+    Profile* profile,
+    const glic::GlicEnabling::ProfileEnablement& enablement) {
+  // Profiles without a GlicKeyedService (shown via
+  // kAiSettingsPageForceAvailable) get the Gemini section from
+  // GetGlicProviderSpec()'s fallback.
+  return enablement.ShouldShowSettingsPage()
+             ? glic::GetGlicProviderSpec(profile).GetSettingsSectionId()
+             : "";
 }
 
 }  // namespace
+
+using optimization_guide::UserVisibleFeatureKey;
 
 // static
 void SettingsUI::RegisterProfilePrefs(
@@ -588,37 +582,26 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(features::kGlicSelectionPrompt));
 
   // AI
-  auto* glic_service = glic::GlicKeyedService::Get(profile);
-  const bool show_geic_section = ShouldShowGeicSettings(glic_service);
-  bool show_glic_section = false;
-  bool glic_disallowed_by_admin = false;
-
   auto glic_enablement = glic::GlicEnabling::EnablementForProfile(profile);
-  // No service means an ineligible profile shown via
-  // kAiSettingsPageForceAvailable; keep showing the Gemini page there.
-  // TODO(crbug.com/571928442): Derive AI settings page visibility in one place
-  // instead of checking the settings section per provider.
-  show_glic_section =
-      glic_enablement.ShouldShowSettingsPage() &&
-      (!glic_service || glic_service->provider_spec().GetSettingsSection() ==
-                            glic::GlicSettingsSection::kGemini);
-  glic_disallowed_by_admin = glic_enablement.DisallowedByAdmin();
+  std::string_view ai_settings_section =
+      GetAiSettingsSection(profile, glic_enablement);
+  bool glic_disallowed_by_admin = glic_enablement.DisallowedByAdmin();
 
   if (glic_enablement.IsProfileEligible()) {
     AddSettingsPageUIHandler(std::make_unique<GlicHandler>());
 
+    auto* glic_service = glic::GlicKeyedService::Get(profile);
     CHECK(glic_service);
 
     // `this` unretained because the subscription is owned by this and will
     // unregister the callback on destruction.
     glic_settings_state_subscription_ =
         glic_service->enabling().RegisterOnShowSettingsPageChanged(
-            base::BindRepeating(&SettingsUI::UpdateShowGlicState,
+            base::BindRepeating(&SettingsUI::UpdateAiSettingsSection,
                                 base::Unretained(this)));
   }
 
-  html_source->AddBoolean("showGlicSettings", show_glic_section);
-  html_source->AddBoolean("showGeicSettings", show_geic_section);
+  html_source->AddString("aiSettingsSection", ai_settings_section);
   html_source->AddBoolean("glicDisallowedByAdmin", glic_disallowed_by_admin);
 
   const auto& autofill_client =
@@ -688,9 +671,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   // Within the AI subpage are separate sections for Glic, for GEIC, and for all
   // other AI features. The visibility of these is separately controlled, but
   // we want to show the subpage if any of them are enabled.
-  html_source->AddBoolean("showAiPage",
-                          show_glic_section || show_ai_features_section ||
-                              enable_ai_mode_search || show_geic_section);
+  html_source->AddBoolean("showAiPage", !ai_settings_section.empty() ||
+                                            show_ai_features_section ||
+                                            enable_ai_mode_search);
   html_source->AddBoolean("showAiPageAiFeatureSection",
                           show_ai_features_section);
 
@@ -969,29 +952,20 @@ void SettingsUI::CreateSettingsSearchHandler(
           std::vector<std::unique_ptr<settings_search::SettingsSearchItem>>());
 }
 
-void SettingsUI::UpdateShowGlicState() {
-  // The visibility of the Glic page can change based on the user accepting the
-  // FRE. Propagate this state to the WebUI value used to display the settings
-  // page.
+void SettingsUI::UpdateAiSettingsSection() {
+  // The visibility of the AI settings page section can change based on the user
+  // accepting the FRE. Propagate this state to the WebUI value used to display
+  // the settings page.
   Profile* profile = Profile::FromWebUI(web_ui());
   auto enablement = glic::GlicEnabling::EnablementForProfile(profile);
-  auto* glic_service = glic::GlicKeyedService::Get(profile);
-  // TODO(crbug.com/571928442): Derive AI settings page visibility in one place
-  // instead of checking the settings section per provider.
-  const bool show_glic =
-      enablement.ShouldShowSettingsPage() &&
-      (!glic_service || glic_service->provider_spec().GetSettingsSection() ==
-                            glic::GlicSettingsSection::kGemini);
-  // Like `show_glic`, only takes effect on the next page load (e.g. a
-  // refresh, which reuses this controller), since `loadTimeData` is read once
-  // at startup.
-  const bool show_geic = ShouldShowGeicSettings(glic_service);
+
+  std::string_view ai_settings_section =
+      GetAiSettingsSection(profile, enablement);
 
   base::DictValue update;
-  update.Set("showGlicSettings", show_glic);
-  update.Set("showGeicSettings", show_geic);
+  update.Set("aiSettingsSection", ai_settings_section);
   update.Set("glicDisallowedByAdmin", enablement.DisallowedByAdmin());
-  if (show_glic || show_geic) {
+  if (!ai_settings_section.empty()) {
     update.Set("showAiPage", true);
   }
 

@@ -8,7 +8,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {ClearBrowsingDataResult, SettingsCheckboxElement, SettingsClearBrowsingDataDialogElement, SettingsHistoryDeletionDialogElement} from 'chrome://settings/lazy_load.js';
 import {BrowsingDataType, ClearBrowsingDataBrowserProxyImpl, getDataTypePrefName, getTimePeriodString, TimePeriod} from 'chrome://settings/lazy_load.js';
-import {loadTimeData, MetricsBrowserProxyImpl, PrefService, resetRouterForTesting, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {AiSettingsSection, loadTimeData, MetricsBrowserProxyImpl, PrefService, resetRouterForTesting, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -40,8 +40,10 @@ suite('DeleteBrowsingDataDialog', function() {
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
     await setClearBrowsingDataPrefs(false);
-    loadTimeData.overrideValues(
-        {showGlicSettings: true, showDeleteSkillsDataType: false});
+    loadTimeData.overrideValues({
+      aiSettingsSection: AiSettingsSection.GEMINI,
+      showDeleteSkillsDataType: false,
+    });
     return createDialog();
   });
 
@@ -792,7 +794,7 @@ suite('DeleteBrowsingDataDialog', function() {
 
   test('OtherGoogleDataRow', async function() {
     loadTimeData.overrideValues({
-      showGlicSettings: false,
+      aiSettingsSection: AiSettingsSection.NONE,
     });
     await createDialog();
     function setSignedInAndDseState(
@@ -875,7 +877,7 @@ suite('DeleteBrowsingDataDialog', function() {
 
     // Case 7: User is signed-out, has Google as DSE, and actor flags are ON.
     loadTimeData.overrideValues({
-      showGlicSettings: true,
+      aiSettingsSection: AiSettingsSection.GEMINI,
     });
     await createDialog();
     setSignedInAndDseState(SignedInState.SIGNED_OUT, /*isGoogleDse=*/ true);

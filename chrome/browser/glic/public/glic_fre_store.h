@@ -44,10 +44,6 @@ class GlicFreStore {
   // Called when the primary account is cleared (Android only).
   virtual void OnPrimaryAccountCleared(Profile* profile) const = 0;
 
-  // Whether the provider's AI settings section stays hidden until this FRE is
-  // completed.
-  virtual bool HidesSettingsUntilCompleted() const = 0;
-
   // The profile pref that stores this FRE's status. Observe it to learn when
   // `GetStatus()` may have changed.
   // TODO(b/576047045): Replace with a store-owned observer API once

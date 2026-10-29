@@ -5,7 +5,7 @@
 import 'chrome://settings/settings.js';
 
 import {AiPageActions} from 'chrome://settings/lazy_load.js';
-import {loadTimeData, MetricsBrowserProxyImpl, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
+import {AiSettingsSection, loadTimeData, MetricsBrowserProxyImpl, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import type {SettingsGlicPageElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -20,7 +20,7 @@ suite('GlicPage', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       showAiPage: true,
-      showGlicSettings: true,
+      aiSettingsSection: AiSettingsSection.GEMINI,
       glicDisallowedByAdmin: false,
     });
     resetRouterForTesting();

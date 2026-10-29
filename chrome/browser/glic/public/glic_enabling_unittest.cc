@@ -1826,7 +1826,6 @@ class GlicEnablingGeicWithoutGeicFreTest : public GlicEnablingGeicTestBase {
 
 TEST_F(GlicEnablingProfileEligibilityTest, FreStoreIsGemini) {
   const GlicFreStore& store = GetGlicProviderSpec(profile()).GetFreStore();
-  EXPECT_FALSE(store.HidesSettingsUntilCompleted());
   EXPECT_EQ(store.GetStatusPrefName(), prefs::kGlicCompletedFre);
   EXPECT_EQ(GetGlicProviderSpec(nullptr).GetFreStore().GetStatusPrefName(),
             prefs::kGlicCompletedFre);
@@ -1834,8 +1833,6 @@ TEST_F(GlicEnablingProfileEligibilityTest, FreStoreIsGemini) {
 
 TEST_F(GlicEnablingGeicFreTest, FreStoreIsGeminiEnterprise) {
   const GlicFreStore& store = GetGlicProviderSpec(profile()).GetFreStore();
-  // The GEiC settings section stays hidden until the GEiC FRE is completed.
-  EXPECT_TRUE(store.HidesSettingsUntilCompleted());
   EXPECT_EQ(store.GetStatusPrefName(), geic::prefs::kGeicCompletedFre);
 }
 

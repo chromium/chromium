@@ -7,7 +7,7 @@ import 'chrome://settings/settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {AiPageActions} from 'chrome://settings/lazy_load.js';
 import type {CrCollapseElement} from 'chrome://settings/lazy_load.js';
-import {GlicBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrefService, resetRouterForTesting, Router, routes, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
+import {AiSettingsSection, GlicBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrefService, resetRouterForTesting, Router, routes, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
 import type {SettingsGlicSubpageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
@@ -102,7 +102,7 @@ suite('GlicSubpage', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       showAiPage: true,
-      showGlicSettings: true,
+      aiSettingsSection: AiSettingsSection.GEMINI,
       glicDisallowedByAdmin: false,
       glicSelectionFeatureEnabled: true,
       glicHotkeyLocalScopeEnabled: false,

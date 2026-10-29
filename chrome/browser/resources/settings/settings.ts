@@ -135,7 +135,7 @@ export {RelaunchMixinLit, RestartType} from './relaunch_mixin_lit.js';
 export {ResetBrowserProxyImpl} from './reset_page/reset_browser_proxy.js';
 export type {ResetBrowserProxy} from './reset_page/reset_browser_proxy.js';
 export {SettingsResetProfileBannerElement} from './reset_page/reset_profile_banner.js';
-export {buildRouter, getTopLevelRoute, resetRouterForTesting, routes} from './route.js';
+export {AiSettingsSection, buildRouter, getTopLevelRoute, resetRouterForTesting, routes} from './route.js';
 export {Route, Router} from './router.js';
 export type {SettingsRoutes} from './router.js';
 export {MAX_DWELL_TIME_MS, QUERY_SUBMITTED_DELAY_MS, SearchMetricsRecorder} from './search_metrics_recorder.js';

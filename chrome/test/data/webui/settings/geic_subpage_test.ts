@@ -4,7 +4,7 @@
 
 import 'chrome://settings/settings.js';
 
-import {loadTimeData, OpenWindowProxyImpl, PrefService, resetRouterForTesting} from 'chrome://settings/settings.js';
+import {AiSettingsSection, loadTimeData, OpenWindowProxyImpl, PrefService, resetRouterForTesting} from 'chrome://settings/settings.js';
 import type {SettingsGeicSubpageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
@@ -18,7 +18,7 @@ suite('GeicSubpage', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       showAiPage: true,
-      showGeicSettings: true,
+      aiSettingsSection: AiSettingsSection.GEMINI_ENTERPRISE,
     });
     resetRouterForTesting();
     prefService = PrefService.getInstance();

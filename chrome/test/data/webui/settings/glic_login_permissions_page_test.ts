@@ -5,7 +5,7 @@
 import 'chrome://settings/settings.js';
 
 import type {CrToastElement, SettingsGlicLoginPermissionsPageElement} from 'chrome://settings/lazy_load.js';
-import {GlicBrowserProxyImpl, loadTimeData, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
+import {AiSettingsSection, GlicBrowserProxyImpl, loadTimeData, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -32,7 +32,7 @@ suite('GlicLoginPermissionsPage', function() {
 
     loadTimeData.overrideValues({
       showAiPage: true,
-      showGlicSettings: true,
+      aiSettingsSection: AiSettingsSection.GEMINI,
       actorLoginFederatedLoginSupportEnabled: true,
     });
     resetRouterForTesting();

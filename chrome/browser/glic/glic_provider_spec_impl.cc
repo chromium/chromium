@@ -78,8 +78,8 @@ GURL MaybeAppendAuthUser(const GURL& guest_url, Profile* profile) {
 class GeminiGlicProviderSpec final : public GlicProviderSpec {
  public:
   ~GeminiGlicProviderSpec() override = default;
-  GlicSettingsSection GetSettingsSection() const override {
-    return GlicSettingsSection::kGemini;
+  std::string_view GetSettingsSectionId() const override {
+    return kGeminiSettingsSectionId;
   }
   std::string_view GetSettingsSubpage() const override {
     return chrome::kGlicSettingsSubpage;
@@ -120,8 +120,8 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
   explicit GeminiEnterpriseGlicProviderSpec(GeicProviderInitOptions options)
       : guest_url_(std::move(options.guest_url)) {}
   ~GeminiEnterpriseGlicProviderSpec() override = default;
-  GlicSettingsSection GetSettingsSection() const override {
-    return GlicSettingsSection::kGeminiEnterprise;
+  std::string_view GetSettingsSectionId() const override {
+    return kGeminiEnterpriseSettingsSectionId;
   }
   std::string_view GetSettingsSubpage() const override {
     return chrome::kGlicEnterpriseSettingsSubpage;

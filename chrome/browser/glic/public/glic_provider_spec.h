@@ -16,14 +16,16 @@ class Profile;
 
 namespace glic {
 
-enum class GlicSettingsSection { kGemini, kGeminiEnterprise };
+// LINT.IfChange(AiSettingsSection)
+inline constexpr char kGeminiSettingsSectionId[] = "gemini";
+inline constexpr char kGeminiEnterpriseSettingsSectionId[] = "geminiEnterprise";
+// LINT.ThenChange(//chrome/browser/resources/settings/route.ts:AiSettingsSection)
 
 struct GeicProviderInitOptions {
   GURL guest_url;
 };
 
 class GlicFreStore;
-
 // Provider-specific data for a profile's Glic surface. Feature code reads
 // values from here instead of checking which provider the profile uses.
 // Holds data only. Values don't change for a given profile.
@@ -45,8 +47,10 @@ class GlicProviderSpec {
   GlicProviderSpec& operator=(const GlicProviderSpec&) = delete;
   virtual ~GlicProviderSpec() = default;
 
-  // The AI settings section to show for this provider.
-  virtual GlicSettingsSection GetSettingsSection() const = 0;
+  // Id of the AI settings page section for this provider, sent to the settings
+  // WebUI as "aiSettingsSection" (e.g. "gemini"). Must match AiSettingsSection
+  // in chrome/browser/resources/settings/route.ts.
+  virtual std::string_view GetSettingsSectionId() const = 0;
   // The settings subpage that OpenGlicSettingsPage opens, e.g. "ai/gemini".
   virtual std::string_view GetSettingsSubpage() const = 0;
   // Resource ID of the entry-point (Glic button) icon.

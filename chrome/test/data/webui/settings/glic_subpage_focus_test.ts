@@ -6,7 +6,7 @@ import 'chrome://settings/settings.js';
 
 import type {CrShortcutInputElement} from 'chrome://settings/lazy_load.js';
 import type {SettingsGlicSubpageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {GlicBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, PrefService, resetRouterForTesting, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
+import {AiSettingsSection, GlicBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, PrefService, resetRouterForTesting, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -32,7 +32,7 @@ suite('GlicPageFocusTest', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       showAiPage: true,
-      showGlicSettings: true,
+      aiSettingsSection: AiSettingsSection.GEMINI,
     });
     resetRouterForTesting();
     prefService = PrefService.getInstance();

@@ -18,11 +18,11 @@ import '../glic_page/glic_subpage.js';
 import './inline_cue_menu_page.js';
 
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {routes} from '../route.js';
+import {AiSettingsSection, routes} from '../route.js';
 import {RouteObserverMixinLit} from '../router.js';
 import type {Route, SettingsRoutes} from '../router.js';
 import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
@@ -58,8 +58,7 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
   static override get properties() {
     return {
       routes_: {type: Object},
-      showGlicSettings_: {type: Boolean},
-      showGeicSettings_: {type: Boolean},
+      aiSettingsSection_: {type: String},
       showAiPageAiFeatureSection_: {type: Boolean},
       showComposeControl_: {type: Boolean},
       enableAiModeSearchSetting_: {type: Boolean},
@@ -75,10 +74,8 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
   }
 
   protected accessor routes_: SettingsRoutes = routes;
-  protected accessor showGlicSettings_: boolean =
-      loadTimeData.getBoolean('showGlicSettings');
-  protected accessor showGeicSettings_: boolean =
-      loadTimeData.getBoolean('showGeicSettings');
+  protected accessor aiSettingsSection_: AiSettingsSection =
+      loadTimeData.getString('aiSettingsSection') as AiSettingsSection;
   protected accessor showAiPageAiFeatureSection_: boolean =
       loadTimeData.getBoolean('showAiPageAiFeatureSection');
   protected accessor showComposeControl_: boolean =
@@ -111,12 +108,17 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
       defaultViews.push('aiModeSearch');
     }
 
-    if (this.showGlicSettings_) {
-      defaultViews.push('glic');
-    }
-
-    if (this.showGeicSettings_) {
-      defaultViews.push('geic');
+    switch (this.aiSettingsSection_) {
+      case AiSettingsSection.NONE:
+        break;
+      case AiSettingsSection.GEMINI:
+        defaultViews.push('glic');
+        break;
+      case AiSettingsSection.GEMINI_ENTERPRISE:
+        defaultViews.push('geic');
+        break;
+      default:
+        assertNotReachedCase(this.aiSettingsSection_);
     }
 
     this.$.viewManager.switchViews(
@@ -124,7 +126,7 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
   }
 
   protected shouldShowPermissionsPage_(): boolean {
-    return this.showGlicSettings_ &&
+    return this.aiSettingsSection_ === AiSettingsSection.GEMINI &&
         this.actorLoginFederatedLoginSupportEnabled_;
   }
 
@@ -149,18 +151,19 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
               'compose', 'no-animation', 'no-animation');
           break;
         case routes.GEMINI:
-          assert(this.showGlicSettings_);
+          assert(this.aiSettingsSection_ === AiSettingsSection.GEMINI);
           this.$.viewManager.switchView(
               'gemini', 'no-animation', 'no-animation');
           break;
         case routes.GEMINI_LOGIN:
-          assert(this.showGlicSettings_);
+          assert(this.aiSettingsSection_ === AiSettingsSection.GEMINI);
           assert(this.actorLoginFederatedLoginSupportEnabled_);
           this.$.viewManager.switchView(
               'geminiLoginPermissions', 'no-animation', 'no-animation');
           break;
         case routes.GEMINI_ENTERPRISE:
-          assert(this.showGeicSettings_);
+          assert(
+              this.aiSettingsSection_ === AiSettingsSection.GEMINI_ENTERPRISE);
           this.$.viewManager.switchView(
               'geminiEnterprise', 'no-animation', 'no-animation');
           break;

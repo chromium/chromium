@@ -59,8 +59,8 @@ class GlicProviderLatchTest : public testing::Test {
     factory->CreateServiceNowForTesting(profile);
     EXPECT_FALSE(factory->IsServiceCreated(profile));
     EXPECT_EQ(GlicProviderLatch::GetProvider(*profile), GlicProvider::kGemini);
-    EXPECT_EQ(GetGlicProviderSpec(profile).GetSettingsSection(),
-              GlicSettingsSection::kGemini);
+    EXPECT_EQ(GetGlicProviderSpec(profile).GetSettingsSectionId(),
+              kGeminiSettingsSectionId);
   }
 
   base::test::ScopedFeatureList feature_list_;
