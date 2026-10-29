@@ -31,6 +31,28 @@ enum class NTPUICleanupVariation {
   kFakeboxBackgroundAndShadow,
 };
 
+// Defines the arms for the AIM Refactor Experiment.
+enum class AimButtonRefactorArm {
+  kDisabled = 0,
+  // Focuses the composebox with AI Mode enabled when the AIM Quick Action
+  // button is tapped.
+  kFocusComposeboxAimQuickAction = 1,
+  // Present AIM button in the Quick Actions row alongside an image generation
+  // mode chip.
+  kImageGenerationQuickAction = 2,
+  // Present AIM button in the Quick Actions row alongside an attach images
+  // chip.
+  kAttachImageQuickAction = 3,
+  // Present the AIM button as a standalone module beside the Most Visited
+  // Tiles. Remove the Quick Actions row from the NTP.
+  kAimAsModule = 4,
+  // Present the AIM button as a Most Visited Tile. Remove the Quick Actions row
+  // from the NTP.
+  kAimAsMvt = 5,
+  // Remove the AIM button and the Quick Actions row from the NTP.
+  kNoChips = 6,
+};
+
 #pragma mark - Feature declarations
 
 // Flag to modify the feed header through the server. Enabling this feature on
@@ -67,6 +89,9 @@ BASE_DECLARE_FEATURE(kNewTabPageEphemeralTheme);
 // Checks if the New Tab Page ephemeral theme feature is enabled.
 bool IsNTPEphemeralThemeEnabled();
 
+// Enables the AimButtonRefactor feature.
+BASE_DECLARE_FEATURE(kAimButtonRefactor);
+
 #pragma mark - Feature parameters
 
 // A parameter value for the feed's refresh threshold when the feed has already
@@ -93,6 +118,9 @@ extern const char kFeedSwipeInProductHelpArmParam[];
 // Parameter to indicate which arm of the feature kNewTabPageUICleanup is
 // enabled.
 extern const char kNewTabPageUICleanupArmParam[];
+
+// Parameter to indicate which arm of the feature kAimButtonRefactor is enabled.
+extern const char kAimButtonRefactorArmParam[];
 
 // URL parameter for the ephemeral theme Lottie animation.
 BASE_DECLARE_FEATURE_PARAM(std::string,
@@ -126,6 +154,9 @@ bool UseFeedEligibilityService();
 
 // Whether the AIM button is allowed in NTP.
 bool IsAimEnabledInNtp();
+
+// Returns the active arm for the AimButtonRefactor feature.
+AimButtonRefactorArm GetAimButtonRefactorArm();
 
 // Whether the NTP Logo and Doodle should have a consistent height.
 bool IsConsistentLogoDoodleHeightEnabled();

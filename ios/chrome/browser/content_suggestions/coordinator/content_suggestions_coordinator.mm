@@ -22,7 +22,6 @@
 #import "components/commerce/core/shopping_service.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
-#import "components/ntp_tiles/features.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/ntp_tiles/pref_names.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -340,8 +339,7 @@ using segmentation_platform::TipIdentifier;
 
   if (!IsNTPRedesignEnabled()) {
     AIModeButtonServiceIOS* aimButtonService =
-        ntp_tiles::GetAimButtonRefactorArm() ==
-                ntp_tiles::AimButtonRefactorArm::kAimAsMvt
+        GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsMvt
             ? AIModeButtonServiceIOSFactory::GetForProfile(profile)
             : nil;
     _mostVisitedTilesMediator = [[MostVisitedTilesMediator alloc]
@@ -745,8 +743,7 @@ using segmentation_platform::TipIdentifier;
 }
 
 - (void)didTapAIMModule {
-  CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
-           ntp_tiles::AimButtonRefactorArm::kAimAsModule);
+  CHECK_EQ(GetAimButtonRefactorArm(), AimButtonRefactorArm::kAimAsModule);
   [self.NTPActionsDelegate standaloneAIMModuleOpened];
 }
 

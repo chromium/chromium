@@ -19,7 +19,6 @@
 #import "components/image_fetcher/core/image_fetcher_service.h"
 #import "components/image_fetcher/core/request_metadata.h"
 #import "components/lens/lens_overlay_invocation_source.h"
-#import "components/ntp_tiles/features.h"
 #import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/omnibox/browser/omnibox_field_trial.h"
 #import "components/search/search.h"
@@ -316,8 +315,7 @@ UIImage* AIModeButtonServiceIOS::GetIcon() const {
   }
   Symbol symbol = is_google ? SymbolMagnifyingglassSpark : SymbolSearch;
 
-  if (ntp_tiles::GetAimButtonRefactorArm() ==
-      ntp_tiles::AimButtonRefactorArm::kAimAsMvt) {
+  if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsMvt) {
     return MakeSymbolMonochrome(
         SymbolWithPointSize(symbol, kMostVisitedAimIconSize));
   }

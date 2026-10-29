@@ -9,8 +9,8 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "components/ntp_tiles/features.h"
 #import "ios/chrome/browser/ntp/shared/metrics/new_tab_page_metrics_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 
 @implementation NewTabPageMetricsRecorder
 
@@ -74,8 +74,8 @@
 }
 
 - (void)recordAIMImageGenerationButtonTapped {
-  if (ntp_tiles::GetAimButtonRefactorArm() !=
-      ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction) {
+  if (GetAimButtonRefactorArm() !=
+      AimButtonRefactorArm::kImageGenerationQuickAction) {
     return;
   }
   base::RecordAction(
@@ -83,9 +83,9 @@
 }
 
 - (void)recordAIMAttachImageButtonTapped {
-  ntp_tiles::AimButtonRefactorArm arm = ntp_tiles::GetAimButtonRefactorArm();
-  if (arm != ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction &&
-      arm != ntp_tiles::AimButtonRefactorArm::kAttachImageQuickAction) {
+  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
+  if (arm != AimButtonRefactorArm::kImageGenerationQuickAction &&
+      arm != AimButtonRefactorArm::kAttachImageQuickAction) {
     return;
   }
   base::RecordAction(

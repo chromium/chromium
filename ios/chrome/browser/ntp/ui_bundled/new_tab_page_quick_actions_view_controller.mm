@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_quick_actions_view_controller.h"
 
-#import "components/ntp_tiles/features.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_quick_actions_button_factory.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h"
@@ -16,9 +16,6 @@
 #import "ios/chrome/common/ui/util/ui_util.h"
 
 namespace {
-
-using ntp_tiles::AimButtonRefactorArm;
-using ntp_tiles::GetAimButtonRefactorArm;
 
 // The spacing in points between the buttons.
 constexpr CGFloat kButtonStackViewSpacing = 8.0;

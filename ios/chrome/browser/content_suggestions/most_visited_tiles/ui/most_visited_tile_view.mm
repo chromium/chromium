@@ -8,7 +8,6 @@
 #import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/favicon_base/fallback_icon_style.h"
-#import "components/ntp_tiles/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_content_view_delegate.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/public/most_visited_tiles_constants.h"
@@ -63,8 +62,7 @@ constexpr CGFloat kMostVisitedFaviconWidth = 24.0;
     if (IsNewTabPageUICleanupEnabled()) {
       self.titleLabel.numberOfLines = 1;
     }
-    if (ntp_tiles::GetAimButtonRefactorArm() ==
-        ntp_tiles::AimButtonRefactorArm::kAimAsModule) {
+    if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsModule) {
       self.imageContainerView.backgroundColor = UIColor.clearColor;
       self.titleLabel.numberOfLines = 1;
     }
@@ -88,9 +86,8 @@ constexpr CGFloat kMostVisitedFaviconWidth = 24.0;
     _faviconView.translatesAutoresizingMaskIntoConstraints = NO;
     [NSLayoutConstraint activateConstraints:@[
       [_faviconView.heightAnchor
-          constraintEqualToConstant:ntp_tiles::GetAimButtonRefactorArm() ==
-                                            ntp_tiles::AimButtonRefactorArm::
-                                                kAimAsModule
+          constraintEqualToConstant:GetAimButtonRefactorArm() ==
+                                            AimButtonRefactorArm::kAimAsModule
                                         ? kMostVisitedFaviconWidth
                                         : kMagicStackFaviconWidth],
       [_faviconView.widthAnchor
@@ -115,9 +112,9 @@ constexpr CGFloat kMostVisitedFaviconWidth = 24.0;
 #pragma mark - Public
 
 - (void)configureAsAIMTile {
-  ntp_tiles::AimButtonRefactorArm arm = ntp_tiles::GetAimButtonRefactorArm();
-  CHECK(arm == ntp_tiles::AimButtonRefactorArm::kAimAsMvt ||
-        arm == ntp_tiles::AimButtonRefactorArm::kAimAsModule);
+  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
+  CHECK(arm == AimButtonRefactorArm::kAimAsMvt ||
+        arm == AimButtonRefactorArm::kAimAsModule);
   _faviconView.hidden = YES;
   if (!_aimIconView) {
     _aimIconView = [[UIImageView alloc] init];
@@ -140,8 +137,7 @@ constexpr CGFloat kMostVisitedFaviconWidth = 24.0;
   }
 
   _aimIconView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
-  if (ntp_tiles::GetAimButtonRefactorArm() ==
-      ntp_tiles::AimButtonRefactorArm::kAimAsModule) {
+  if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsModule) {
     if (!self.titleLabel.text) {
       self.titleLabel.text =
           l10n_util::GetNSString(IDS_IOS_NTP_QUICK_ACTIONS_AIM);
@@ -261,8 +257,7 @@ constexpr CGFloat kMostVisitedFaviconWidth = 24.0;
 #pragma mark - NewTabPageColorUpdating
 
 - (void)applyBackgroundColors {
-  if (ntp_tiles::GetAimButtonRefactorArm() ==
-      ntp_tiles::AimButtonRefactorArm::kAimAsModule) {
+  if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsModule) {
     return;
   }
   NewTabPageColorPalette* colorPalette =

@@ -590,7 +590,6 @@ source_set("feature_flags") {
     "new_tab_page_feature.mm",
   ]
   deps = [
-    "//components/ntp_tiles",
     "//components/prefs",
     "//components/variations/service",
     "//ios/chrome/browser/authentication/ui_bundled/cells:constants",
