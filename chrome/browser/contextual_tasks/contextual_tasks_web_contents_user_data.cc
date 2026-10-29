@@ -245,10 +245,31 @@ struct ContextualTasksWebContentsUserData::PageSearchState
           ContextualTasksWebContentsUserData::PageSearchState> {
   explicit PageSearchState(content::Page& page)
       : content::PageUserData<PageSearchState>(page) {}
-  ~PageSearchState() override = default;
+  ~PageSearchState() override { RecordTeardownMetricsIfNeeded(); }
+
+  void RecordTeardownMetricsIfNeeded() {
+    if (handshake_start_time.has_value() && !handshake_status_recorded) {
+      handshake_status_recorded = true;
+      RecordExtensionHandshakeStatus(ExtensionHandshakeStatus::kFrameDetached);
+    }
+    if ((handshake_start_time.has_value() || !pending_search_messages.empty() ||
+         dropped_overflow_messages > 0) &&
+        !queued_messages_dropped_recorded) {
+      queued_messages_dropped_recorded = true;
+      RecordExtensionQueuedSearchMessagesDropped(
+          pending_search_messages.size() + dropped_overflow_messages);
+    }
+    handshake_start_time.reset();
+    pending_search_messages.clear();
+    dropped_overflow_messages = 0;
+  }
 
   std::string connected_document_id;
   ServiceWorkerPostMessageCallback service_worker_post_message_cb;
+  std::optional<base::TimeTicks> handshake_start_time;
+  bool handshake_status_recorded = false;
+  bool queued_messages_dropped_recorded = false;
+  size_t dropped_overflow_messages = 0;
   bool is_handshake_complete = false;
   std::optional<base::TimeTicks> handshake_complete_time;
   bool has_recorded_first_thread_context_library_update = false;
@@ -269,6 +290,7 @@ ContextualTasksWebContentsUserData::ContextualTasksWebContentsUserData(
     content::WebContents* contents)
     : content::WebContentsUserData<ContextualTasksWebContentsUserData>(
           *contents),
+      content::WebContentsObserver(contents),
       // The callbacks are only run by `query_contextualizer_`, which is owned
       // by `this`, so `base::Unretained` is safe.
       query_contextualizer_delegate_(std::make_unique<
@@ -552,6 +574,9 @@ void ContextualTasksWebContentsUserData::OnDocumentConnected(
     return;
   }
   auto& page_state = *PageSearchState::GetOrCreateForPage(main_rfh->GetPage());
+  if (page_state.handshake_start_time.has_value()) {
+    page_state.RecordTeardownMetricsIfNeeded();
+  }
   std::string doc_id;
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   doc_id =
@@ -568,6 +593,10 @@ void ContextualTasksWebContentsUserData::OnDocumentConnected(
   page_state.last_sent_suggest_inputs_serialized.clear();
   page_state.connected_document_id = doc_id;
   page_state.service_worker_post_message_cb = std::move(post_message_cb);
+  page_state.handshake_start_time = base::TimeTicks::Now();
+  page_state.handshake_status_recorded = false;
+  page_state.queued_messages_dropped_recorded = false;
+  page_state.dropped_overflow_messages = 0;
   page_state.is_handshake_complete = false;
   page_state.handshake_complete_time.reset();
   page_state.has_recorded_first_thread_context_library_update = false;
@@ -677,6 +706,13 @@ void ContextualTasksWebContentsUserData::OnHandshakeComplete(
     }
   }
   auto& page_state = GetPrimaryPageSearchState();
+  if (!source_handler_id && page_state.handshake_start_time.has_value() &&
+      !page_state.handshake_status_recorded) {
+    page_state.handshake_status_recorded = true;
+    RecordExtensionHandshakeLatency(base::TimeTicks::Now() -
+                                    *page_state.handshake_start_time);
+    RecordExtensionHandshakeStatus(ExtensionHandshakeStatus::kSuccess);
+  }
   const bool is_first_page_handshake = !page_state.is_handshake_complete;
   if (is_first_page_handshake) {
     page_state.handshake_complete_time = base::TimeTicks::Now();
@@ -724,6 +760,8 @@ void ContextualTasksWebContentsUserData::PostSearchMessage(
       if (page_state.pending_search_messages.size() <
           kMaxPendingSearchMessages) {
         page_state.pending_search_messages.push_back(std::move(bytes));
+      } else {
+        ++page_state.dropped_overflow_messages;
       }
       return;
     }
@@ -747,6 +785,8 @@ void ContextualTasksWebContentsUserData::PostSearchMessage(
   if (!page_state.is_handshake_complete) {
     if (page_state.pending_search_messages.size() < kMaxPendingSearchMessages) {
       page_state.pending_search_messages.push_back(std::move(bytes));
+    } else {
+      ++page_state.dropped_overflow_messages;
     }
     return;
   }
@@ -868,6 +908,26 @@ void ContextualTasksWebContentsUserData::OnTaskDisassociatedFromTab(
 
 void ContextualTasksWebContentsUserData::OnWillBeDestroyed() {
   contextual_tasks_service_observation_.Reset();
+}
+
+void ContextualTasksWebContentsUserData::RenderFrameHostChanged(
+    content::RenderFrameHost* old_host,
+    content::RenderFrameHost* new_host) {
+  if (old_host && new_host && new_host->IsInPrimaryMainFrame()) {
+    if (auto* old_state = PageSearchState::GetForPage(old_host->GetPage())) {
+      old_state->RecordTeardownMetricsIfNeeded();
+    }
+  }
+}
+
+void ContextualTasksWebContentsUserData::RenderFrameDeleted(
+    content::RenderFrameHost* render_frame_host) {
+  if (render_frame_host && render_frame_host->IsInPrimaryMainFrame()) {
+    if (auto* page_state =
+            PageSearchState::GetForPage(render_frame_host->GetPage())) {
+      page_state->RecordTeardownMetricsIfNeeded();
+    }
+  }
 }
 
 void ContextualTasksWebContentsUserData::HandleOnSubmitQueryRequest() {

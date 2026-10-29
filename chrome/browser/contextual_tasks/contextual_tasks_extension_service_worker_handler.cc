@@ -114,6 +114,8 @@ void ContextualTasksExtensionServiceWorkerHandler::GetHandshakeMessage(
   if (!document_id.has_value() || document_id->empty()) {
     OMNIBOX_LOG(kPostServiceWorkerMessageTag)
         << "HandshakePing rejected: missing document_id";
+    RecordExtensionHandshakeStatus(
+        ExtensionHandshakeStatus::kInvalidDocumentId);
     std::move(callback).Run(
         mojo_base::ProtoWrapper(lens::ClientToAimMessage()));
     return;
@@ -125,6 +127,8 @@ void ContextualTasksExtensionServiceWorkerHandler::GetHandshakeMessage(
     OMNIBOX_LOG(kPostServiceWorkerMessageTag)
         << "HandshakePing rejected: invalid frame (document_id=" << *document_id
         << ")";
+    RecordExtensionHandshakeStatus(
+        ExtensionHandshakeStatus::kInvalidDocumentId);
     std::move(callback).Run(
         mojo_base::ProtoWrapper(lens::ClientToAimMessage()));
     return;
@@ -136,6 +140,8 @@ void ContextualTasksExtensionServiceWorkerHandler::GetHandshakeMessage(
     OMNIBOX_LOG(kPostServiceWorkerMessageTag)
         << "HandshakePing rejected: missing WebContents (document_id="
         << *document_id << ")";
+    RecordExtensionHandshakeStatus(
+        ExtensionHandshakeStatus::kInvalidDocumentId);
     std::move(callback).Run(
         mojo_base::ProtoWrapper(lens::ClientToAimMessage()));
     return;
@@ -173,6 +179,8 @@ void ContextualTasksExtensionServiceWorkerHandler::OnWebviewMessage(
   if (!document_id.has_value() || document_id->empty()) {
     OMNIBOX_LOG(kOnServiceWorkerMessageTag)
         << "SearchToClientMessage dropped: missing document_id";
+    RecordExtensionPostMessageError(
+        ExtensionPostMessageError::kInvalidDocumentId);
     return;
   }
 
@@ -180,6 +188,9 @@ void ContextualTasksExtensionServiceWorkerHandler::OnWebviewMessage(
     OMNIBOX_LOG(kOnServiceWorkerMessageTag)
         << "SearchToClientMessage dropped: invalid size=" << message.size()
         << " (document_id=" << *document_id << ")";
+    RecordExtensionPostMessageError(
+        message.empty() ? ExtensionPostMessageError::kUnexpectedDataType
+                        : ExtensionPostMessageError::kMessageTooLarge);
     return;
   }
 
@@ -189,6 +200,8 @@ void ContextualTasksExtensionServiceWorkerHandler::OnWebviewMessage(
     OMNIBOX_LOG(kOnServiceWorkerMessageTag)
         << "SearchToClientMessage dropped: invalid frame (document_id="
         << *document_id << ")";
+    RecordExtensionPostMessageError(
+        ExtensionPostMessageError::kInvalidDocumentId);
     return;
   }
 
@@ -198,6 +211,8 @@ void ContextualTasksExtensionServiceWorkerHandler::OnWebviewMessage(
     OMNIBOX_LOG(kOnServiceWorkerMessageTag)
         << "SearchToClientMessage dropped: missing WebContents (document_id="
         << *document_id << ")";
+    RecordExtensionPostMessageError(
+        ExtensionPostMessageError::kInvalidDocumentId);
     return;
   }
 
@@ -206,6 +221,8 @@ void ContextualTasksExtensionServiceWorkerHandler::OnWebviewMessage(
     OMNIBOX_LOG(kOnServiceWorkerMessageTag)
         << "SearchToClientMessage dropped: failed to parse proto (document_id="
         << *document_id << ")";
+    RecordExtensionPostMessageError(
+        ExtensionPostMessageError::kProtoParseFailed);
     return;
   }
 
@@ -267,6 +284,8 @@ void ContextualTasksExtensionServiceWorkerHandler::DispatchSearchMessage(
     OMNIBOX_LOG(kPostServiceWorkerMessageTag)
         << "ClientToSearchMessage dropped: failed to parse proto (document_id="
         << document_id << ")";
+    RecordExtensionPostMessageError(
+        ExtensionPostMessageError::kProtoParseFailed);
     return;
   }
   if (!page_) {
@@ -274,6 +293,7 @@ void ContextualTasksExtensionServiceWorkerHandler::DispatchSearchMessage(
                            std::string("lens.chrome.ClientToSearchMessage"))
         << GetClientToSearchMessageName(proto)
         << " dropped: page remote unbound (document_id=" << document_id << ")";
+    RecordExtensionPostMessageError(ExtensionPostMessageError::kMojoPipeClosed);
     return;
   }
   OMNIBOX_LOG_WITH_PROTO(kPostServiceWorkerMessageTag, proto,

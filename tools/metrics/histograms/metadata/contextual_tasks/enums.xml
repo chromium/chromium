@@ -48,6 +48,37 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_tasks/contextual_tasks_ui_service.cc:EntrypointSource) -->
 
+<!-- LINT.IfChange(ContextualTasksExtensionHandshakeStatus) -->
+
+<enum name="ContextualTasksExtensionHandshakeStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Host origin rejected"/>
+  <int value="2" label="Frame detached"/>
+  <int value="3" label="Mojo request failed"/>
+  <int value="4" label="Invalid document ID"/>
+</enum>
+
+<!-- LINT.ThenChange(
+  //chrome/browser/contextual_tasks/contextual_tasks_utils.h:ContextualTasksExtensionHandshakeStatus,
+  //chrome/browser/resources/contextual_tasks/extension/background.ts:ContextualTasksExtensionHandshakeStatus
+) -->
+
+<!-- LINT.IfChange(ContextualTasksExtensionPostMessageError) -->
+
+<enum name="ContextualTasksExtensionPostMessageError">
+  <int value="0" label="Untrusted origin"/>
+  <int value="1" label="Unexpected data type"/>
+  <int value="2" label="Message too large"/>
+  <int value="3" label="Invalid document ID"/>
+  <int value="4" label="Proto parse failed"/>
+  <int value="5" label="Mojo pipe closed"/>
+</enum>
+
+<!-- LINT.ThenChange(
+  //chrome/browser/contextual_tasks/contextual_tasks_utils.h:ContextualTasksExtensionPostMessageError,
+  //chrome/browser/resources/contextual_tasks/extension/background.ts:ContextualTasksExtensionPostMessageError
+) -->
+
 <!-- LINT.IfChange(ContextualTasksPermanentToolbarButtonThreadAction) -->
 
 <enum name="ContextualTasksPermanentToolbarButtonThreadAction">
