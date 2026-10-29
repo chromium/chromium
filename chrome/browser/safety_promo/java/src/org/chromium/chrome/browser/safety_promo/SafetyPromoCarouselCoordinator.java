@@ -94,8 +94,12 @@ public class SafetyPromoCarouselCoordinator {
         getOrCreateView();
     }
 
-    /** Stops observing the selected item and unbinds and drops the carousel views. */
+    /**
+     * Dismisses the bottom sheet, stops observing the selected item and unbinds and drops the
+     * carousel views.
+     */
     public void destroy() {
+        dismissBottomSheet();
         mMediator.destroy();
         clearCachedViews();
     }
@@ -104,13 +108,19 @@ public class SafetyPromoCarouselCoordinator {
      * Updates the carousel after a configuration change, keeping the current item. The embedder
      * should then show {@link #getView()}, which may have changed.
      *
+     * <p>The bottom sheet stays open across rotations, but is dismissed when resources change, e.g.
+     * when the font size or display size changes.
+     *
      * @param useLandscapeLayout Whether to show the landscape (dual-pane) layout.
      * @param resourcesChanged Whether the change may outdate the resources of the cached views, in
      *     which case they are dropped.
      */
     public void onConfigurationChanged(boolean useLandscapeLayout, boolean resourcesChanged) {
         if (!resourcesChanged && useLandscapeLayout == mUseLandscapeLayout) return;
-        if (resourcesChanged) clearCachedViews();
+        if (resourcesChanged) {
+            dismissBottomSheet();
+            clearCachedViews();
+        }
 
         mUseLandscapeLayout = useLandscapeLayout;
         getOrCreateView();
@@ -125,12 +135,20 @@ public class SafetyPromoCarouselCoordinator {
     private void showBottomSheet() {
         if (mBottomSheetCoordinator != null) return;
 
-        // TODO(crbug.com/534388538): Dismiss the sheet when the carousel is destroyed or its
-        // resources change.
         mBottomSheetCoordinator =
                 new SafetyPromoBottomSheetCoordinator(
                         mContext, mBottomSheetController, this::onBottomSheetDestroyed);
         mBottomSheetCoordinator.showBottomSheet();
+    }
+
+    /**
+     * Closes the "Show me how" bottom sheet if it is open. The reference to the sheet is released
+     * in {@link #onBottomSheetDestroyed()}.
+     */
+    private void dismissBottomSheet() {
+        if (mBottomSheetCoordinator == null) return;
+
+        mBottomSheetCoordinator.dismissBottomSheet(/* animate= */ false);
     }
 
     /** Called when the "Show me how" bottom sheet is closed for any reason and destroyed. */
