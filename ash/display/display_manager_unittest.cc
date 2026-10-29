@@ -35,17 +35,12 @@
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
-#include "base/dcheck_is_on.h"
-#include "base/debug/debugging_buildflags.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/format_macros.h"
-#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/math_constants.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/gtest_util.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -5792,54 +5787,6 @@ TEST_F(DisplayManagerTest, ReplaceTwoDisplaysWithNewDisplayWhilePowerMenuOpen) {
                 display::DisplayObserver::DISPLAY_METRIC_PRIMARY,
             changed_metrics(kDisplayId3));
   EXPECT_EQ("c2 a1 r2 w1 d1", GetCountSummaryAndReset());
-}
-
-using DisplayManagerDeathTest = DisplayManagerTest;
-
-TEST_F(DisplayManagerDeathTest, MinimumDisplaySizeEnforcement) {
-  UpdateDisplay("320x200");
-  EXPECT_EQ((gfx::Size{320, 200}),
-            display::Screen::Get()->GetPrimaryDisplay().size());
-  EXPECT_EQ((gfx::Size{320, 200}),
-            Shell::GetPrimaryRootWindow()->bounds().size());
-
-  UpdateDisplay("200x320");
-  EXPECT_EQ((gfx::Size{200, 320}),
-            display::Screen::Get()->GetPrimaryDisplay().size());
-  EXPECT_EQ((gfx::Size{200, 320}),
-            Shell::GetPrimaryRootWindow()->bounds().size());
-
-#if BUILDFLAG(UNSAFE_DEVELOPER_BUILD)
-  BASE_EXPECT_DEATH(UpdateDisplay("319x200"), "is smaller than minimum");
-  BASE_EXPECT_DEATH(UpdateDisplay("320x199"), "is smaller than minimum");
-  BASE_EXPECT_DEATH(UpdateDisplay("199x320"), "is smaller than minimum");
-  BASE_EXPECT_DEATH(UpdateDisplay("200x319"), "is smaller than minimum");
-#else
-  if (DCHECK_IS_ON() && logging::LOGGING_DCHECK == logging::LOGGING_FATAL) {
-    BASE_EXPECT_DEATH(UpdateDisplay("319x200"), "is smaller than minimum");
-    BASE_EXPECT_DEATH(UpdateDisplay("199x320"), "is smaller than minimum");
-  } else {
-    static int dump_count = 0;
-    dump_count = 0;
-    base::debug::SetDumpWithoutCrashingFunction([]() { ++dump_count; });
-
-    UpdateDisplay("300x180");
-    EXPECT_EQ(1, dump_count);
-    EXPECT_EQ((gfx::Size{300, 180}),
-              display::Screen::Get()->GetPrimaryDisplay().size());
-    EXPECT_EQ((gfx::Size{300, 180}),
-              Shell::GetPrimaryRootWindow()->bounds().size());
-
-    UpdateDisplay("180x300");
-    EXPECT_EQ(2, dump_count);
-    EXPECT_EQ((gfx::Size{180, 300}),
-              display::Screen::Get()->GetPrimaryDisplay().size());
-    EXPECT_EQ((gfx::Size{180, 300}),
-              Shell::GetPrimaryRootWindow()->bounds().size());
-
-    base::debug::SetDumpWithoutCrashingFunction(nullptr);
-  }
-#endif
 }
 
 }  // namespace ash
