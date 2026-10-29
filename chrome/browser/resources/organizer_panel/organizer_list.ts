@@ -140,7 +140,8 @@ export class OrganizerListElement extends CrLitElement {
     const currentSection = sections.find(s => path.includes(s));
     const currentIndex = currentSection ? sections.indexOf(currentSection) : -1;
 
-    if (currentIndex === -1 || currentIndex === sections.length - 1) {
+    if (this.searchQuery || currentIndex === -1 ||
+        currentIndex === sections.length - 1) {
       this.fire('focus-after-list', customEvent.detail);
     } else {
       sections[currentIndex + 1]!.focus();
@@ -172,13 +173,17 @@ export class OrganizerListElement extends CrLitElement {
 
   private onFocusCurrentSection_(e: Event) {
     const customEvent = e as CustomEvent<{sourceEvent?: KeyboardEvent}>;
-    const sections = this.getVisibleSections();
-    const path = e.composedPath();
-    const currentSection = sections.find(s => path.includes(s));
-    if (currentSection) {
-      currentSection.focus();
-      customEvent.detail?.sourceEvent?.preventDefault();
-      customEvent.detail?.sourceEvent?.stopPropagation();
+    if (this.searchQuery) {
+      this.fire('focus-before-list', customEvent.detail);
+    } else {
+      const sections = this.getVisibleSections();
+      const path = e.composedPath();
+      const currentSection = sections.find(s => path.includes(s));
+      if (currentSection) {
+        currentSection.focus();
+        customEvent.detail?.sourceEvent?.preventDefault();
+        customEvent.detail?.sourceEvent?.stopPropagation();
+      }
     }
   }
 }

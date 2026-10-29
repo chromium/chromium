@@ -466,4 +466,89 @@ suite('OrganizerListTest', () => {
     assertEquals(
         sections[0]!.$.header.$.expandButton.$.icon, getDeepActiveElement());
   });
+
+  test('keyboard navigation across search results', async () => {
+    list.sectionDelegates = [
+      new TestSectionDelegate(
+          'Section 1',
+          [
+            {title: ['Item 1A']},
+            {title: ['Item 1B']},
+          ]),
+      new TestSectionDelegate(
+          'Section 2',
+          [
+            {title: ['Item 2A']},
+          ]),
+    ];
+    await microtasksFinished();
+
+    list.searchQuery = 'Item';
+    await microtasksFinished();
+
+    const sections = list.getVisibleSections();
+    assertEquals(2, sections.length);
+    const sec1Items = sections[0]!.getVisibleItems();
+    const sec2Items = sections[1]!.getVisibleItems();
+
+    // focusFirstSection focuses the first item of Section 1.
+    assertTrue(list.focusFirstSection());
+    assertEquals(
+        sec1Items[0]!.$.crUrlListItem.getFocusableElement(),
+        getDeepActiveElement());
+
+    // ArrowDown navigates directly across items, skipping disabled headers.
+    sec1Items[0]!.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'ArrowDown',
+      bubbles: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+    assertEquals(
+        sec1Items[1]!.$.crUrlListItem.getFocusableElement(),
+        getDeepActiveElement());
+
+    sec1Items[1]!.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'ArrowDown',
+      bubbles: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+    assertEquals(
+        sec2Items[0]!.$.crUrlListItem.getFocusableElement(),
+        getDeepActiveElement());
+
+    // ArrowUp navigates back across sections, skipping disabled headers.
+    sec2Items[0]!.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'ArrowUp',
+      bubbles: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+    assertEquals(
+        sec1Items[1]!.$.crUrlListItem.getFocusableElement(),
+        getDeepActiveElement());
+
+    // Tab from a search result item exits the list (fires focus-after-list).
+    const whenFocusAfterList = eventToPromise('focus-after-list', list);
+    sec1Items[0]!.$.crUrlListItem.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Tab',
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    }));
+    await whenFocusAfterList;
+
+    // Shift+Tab from any search result item exits the list backwards (fires
+    // focus-before-list).
+    const whenFocusBeforeList = eventToPromise('focus-before-list', list);
+    sec2Items[0]!.$.crUrlListItem.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Tab',
+      shiftKey: true,
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    }));
+    await whenFocusBeforeList;
+  });
 });

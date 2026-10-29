@@ -68,8 +68,9 @@ export class OrganizerPanelAppElement extends CrLitElement {
   private verticalTabsEnabledChangedListenerId_: number|null = null;
   private onKeydown_: (e: KeyboardEvent) => void = (e: KeyboardEvent) => {
     if (e.key === 'Tab') {
+      const path = e.composedPath();
       const closeButton = this.getCloseButton_();
-      if (closeButton && e.composedPath().includes(closeButton)) {
+      if (closeButton && path.includes(closeButton)) {
         if (!e.shiftKey) {
           this.$.searchField.getSearchInput().focus();
         } else {
@@ -77,6 +78,12 @@ export class OrganizerPanelAppElement extends CrLitElement {
             this.$.searchField.getSearchInput().focus();
           }
         }
+        e.preventDefault();
+        e.stopPropagation();
+      } else if (
+          !e.shiftKey && path.includes(this.$.searchField) &&
+          !this.$.searchField.isSearchFocused() &&
+          this.$.list.focusFirstSection()) {
         e.preventDefault();
         e.stopPropagation();
       }
