@@ -14,8 +14,8 @@
 #include "base/strings/string_util.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_recorder.h"
-#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/enterprise/watermark/settings.h"
+#include "chrome/browser/enterprise/watermark/watermark_features.h"
 #include "components/enterprise/watermarking/watermark.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -32,7 +32,8 @@ DataProtectionOverlayView::DataProtectionOverlayView()
   SetCanProcessEventsWithinSubtree(false);
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  if (!base::FeatureList::IsEnabled(kEnableSkipEmptyWatermark)) {
+  if (!base::FeatureList::IsEnabled(
+          enterprise_watermark::kEnableSkipEmptyWatermark)) {
     UpdateWatermarkBlock(/*watermark_text=*/std::string(""),
                          enterprise_watermark::GetDefaultFillColor(),
                          enterprise_watermark::GetDefaultOutlineColor(),
@@ -85,7 +86,8 @@ void DataProtectionOverlayView::SetWatermarkText(const std::string& text,
 
 void DataProtectionOverlayView::OnPaint(gfx::Canvas* canvas) {
   if (watermark_block_.record.empty() &&
-      base::FeatureList::IsEnabled(kEnableSkipEmptyWatermark)) {
+      base::FeatureList::IsEnabled(
+          enterprise_watermark::kEnableSkipEmptyWatermark)) {
     return;
   }
   gfx::Rect contents_bounds = GetContentsBounds();
@@ -99,7 +101,8 @@ void DataProtectionOverlayView::UpdateWatermarkBlock(const std::string& text,
                                                      SkColor fill_color,
                                                      SkColor outline_color,
                                                      int font_size) {
-  if (text.empty() && base::FeatureList::IsEnabled(kEnableSkipEmptyWatermark)) {
+  if (text.empty() && base::FeatureList::IsEnabled(
+                          enterprise_watermark::kEnableSkipEmptyWatermark)) {
     watermark_block_ = {};
   } else {
     watermark_block_ = enterprise_watermark::DrawWatermarkToPaintRecord(

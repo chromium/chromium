@@ -10,4 +10,6 @@ BASE_FEATURE(kEnableWatermarkCustomization, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableWatermarkTestPage, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableSkipEmptyWatermark, base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace enterprise_watermark

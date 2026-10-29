@@ -6,7 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "cc/paint/paint_recorder.h"
-#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
+#include "chrome/browser/enterprise/watermark/watermark_features.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -73,7 +73,8 @@ TEST(DataProtectionOverlayViewTest,
 // when `kEnableSkipEmptyWatermark` is enabled, both after construction and
 // after clearing a non-empty watermark.
 TEST(DataProtectionOverlayViewTest, EmptyWatermarkSkipsOnPaint) {
-  base::test::ScopedFeatureList feature_list(kEnableSkipEmptyWatermark);
+  base::test::ScopedFeatureList feature_list(
+      enterprise_watermark::kEnableSkipEmptyWatermark);
 
   DataProtectionOverlayView view;
   view.SetBounds(0, 0, 200, 200);
@@ -110,7 +111,8 @@ TEST(DataProtectionOverlayViewTest, EmptyWatermarkSkipsOnPaint) {
 TEST(DataProtectionOverlayViewTest,
      EmptyWatermarkPaintsWhenSkipEmptyFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kEnableSkipEmptyWatermark);
+  feature_list.InitAndDisableFeature(
+      enterprise_watermark::kEnableSkipEmptyWatermark);
 
   DataProtectionOverlayView view;
   view.SetBounds(0, 0, 200, 200);

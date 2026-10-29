@@ -8,9 +8,9 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/enterprise/connectors/referrer_cache_utils.h"
-#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h"
 #include "chrome/browser/enterprise/watermark/settings.h"
+#include "chrome/browser/enterprise/watermark/watermark_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/data_protection/utils.h"
@@ -204,14 +204,16 @@ void DataProtectionNavigationController::
 #endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
-  // Regardless of whether watermark text is empty, attach it as web contents
-  // user data so that other browser process code can draw watermarks outside
-  // of the context of a navigation (ex. when printing).
+  // Attach the watermark as web contents user data, even when it is empty, so
+  // that other browser process code can draw watermarks outside of the context
+  // of a navigation (ex. when printing). An empty watermark clears any
+  // previously attached one.
   auto* watermark_text_container =
       enterprise_watermark::WatermarkTextContainer::GetOrCreateForWebContents(
           expected_web_contents.get());
   if (settings.watermark_text.empty() &&
-      base::FeatureList::IsEnabled(kEnableSkipEmptyWatermark)) {
+      base::FeatureList::IsEnabled(
+          enterprise_watermark::kEnableSkipEmptyWatermark)) {
     watermark_text_container->SetWatermarkText(nullptr, 0, 0);
   } else {
     Profile* profile =

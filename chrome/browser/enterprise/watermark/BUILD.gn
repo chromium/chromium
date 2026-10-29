@@ -26,7 +26,6 @@ executable("watermark_app") {
   configs += [ "//components/enterprise:extra_warnings" ]
 
   sources = [
-    "../data_protection/data_protection_features.cc",
     "example_app.cc",
     "watermark_example.cc",
     "watermark_example.h",

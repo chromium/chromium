@@ -12,6 +12,11 @@ namespace enterprise_watermark {
 BASE_DECLARE_FEATURE(kEnableWatermarkCustomization);
 BASE_DECLARE_FEATURE(kEnableWatermarkTestPage);
 
+// Kill switch: skip building and painting the watermark block when the
+// watermark text is empty.
+// TODO(crbug.com/578441882): Remove once shipped to Stable.
+BASE_DECLARE_FEATURE(kEnableSkipEmptyWatermark);
+
 }  // namespace enterprise_watermark
 
 #endif  // CHROME_BROWSER_ENTERPRISE_WATERMARK_WATERMARK_FEATURES_H_
