@@ -999,6 +999,17 @@ ToolData* ModelContext::FindToolDataByName(const String& name) const {
   return nullptr;
 }
 
+ToolData* ModelContext::FindToolDataById(
+    const base::UnguessableToken& tool_id) const {
+  // Blink's `HashMap` disallows looking up the empty value, and an empty token
+  // is never a valid key (ids are always minted at registration).
+  if (tool_id.is_empty()) {
+    return nullptr;
+  }
+  auto it = tool_map_.find(tool_id);
+  return it == tool_map_.end() ? nullptr : it->value.Get();
+}
+
 ExecutionContext* ModelContext::GetExecutionContext() const {
   return document_ ? document_->GetExecutionContext() : nullptr;
 }

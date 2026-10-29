@@ -222,7 +222,7 @@ void HandleFetchPageResult(
     if (tab) {
       if (auto* actor_tab_data = actor::ActorTabData::From(tab.get())) {
         actor_tab_data->DidObserveContent(
-            page_context.annotated_page_content_result->proto,
+            *page_context.annotated_page_content_result,
             actor::ApcSource::kGlic);
       }
     }

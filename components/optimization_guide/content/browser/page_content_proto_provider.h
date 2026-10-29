@@ -129,6 +129,15 @@ enum class AIPageContentExtractionStatus {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:AIPageContentExtractionStatus)
 
+// Maps the name of each WebMCP script tool that a document reported in the page
+// content to the tool's browser-internal unique ID.
+using ToolNameToToolId = base::flat_map<std::string, base::UnguessableToken>;
+
+// Maps a serialized document identifier (as used in
+// `AIPageContentResult::document_identifiers`) to that document's script tools.
+using DocumentIdentifierToScriptTools =
+    base::flat_map<std::string, ToolNameToToolId>;
+
 // The result of a call to GetAIPageContent.  It contains the
 // AnnotatedPageContent proto and metadata about the page content.
 struct AIPageContentResult {
@@ -148,6 +157,13 @@ struct AIPageContentResult {
   // Final screenshot redaction boxes. The converter folds together renderer
   // password boxes plus browser-derived sensitive payment and OTP boxes.
   std::vector<gfx::Rect> visible_bounding_boxes_for_redaction;
+  // The script tools of all documents in `proto`, keyed by document identifier
+  // and then by the tools' names in `proto`, mapping each tool to its
+  // browser-internal unique ID. Callers use this to target exactly the tool
+  // that was observed, rather than whichever tool has the same name at time of
+  // use. The IDs are deliberately not part of `proto`, so that they're never
+  // sent to the server.
+  DocumentIdentifierToScriptTools script_tool_ids;
 };
 
 // Describes an error that occurred during `GetAIPageContent()`.

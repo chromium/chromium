@@ -12,6 +12,7 @@
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_surface.h"
+#include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal_render_frame_binder.h"
 #include "chrome/common/actor/action_result.h"
@@ -104,6 +105,20 @@ mojom::ActionResultPtr ScriptToolHost::TimeOfUseValidation(
   if (!target_rfh->IsFeatureEnabled(
           network::mojom::PermissionsPolicyFeature::kTools)) {
     return MakeResult(mojom::ActionResultCode::kScriptToolInvocationFailed);
+  }
+
+  if (base::FeatureList::IsEnabled(kActorScriptToolIdValidation)) {
+    // Pin the action to the tool that the target document reported under this
+    // name in the last observed page content, so that the renderer fails rather
+    // than running a different tool the page has since registered under the
+    // same name. If the last observation has no such tool (e.g., no
+    // observation was made), leave `tool_id` unset, and the renderer looks the
+    // tool up by name.
+    if (ActorTabData* tab_data = ActorTabData::From(actor_surface_handle_)) {
+      mojom::ScriptToolActionPtr& script_tool = action_->get_script_tool();
+      script_tool->tool_id = tab_data->GetLastObservedScriptToolId(
+          target_document_id_, script_tool->name);
+    }
   }
 
   target_frame_tree_node_id_ = target_rfh->GetFrameTreeNodeId();

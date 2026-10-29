@@ -55,6 +55,13 @@ ActorTabData* ActorTabData::From(ActorSurfaceHandle actor_surface_handle) {
 }
 
 void ActorTabData::DidObserveContent(
+    const optimization_guide::AIPageContentResult& result,
+    ApcSource source) {
+  DidObserveContent(result.proto, source);
+  last_observed_script_tool_ids_ = result.script_tool_ids;
+}
+
+void ActorTabData::DidObserveContent(
     const optimization_guide::proto::AnnotatedPageContent& content,
     ApcSource source) {
   if (last_observed_page_content_ && ShouldRecordApcComparison()) {
@@ -65,7 +72,24 @@ void ActorTabData::DidObserveContent(
   }
 
   last_observed_page_content_.emplace(content);
+  last_observed_script_tool_ids_.clear();
   last_observed_dom_node_geometry_.reset();
+}
+
+std::optional<base::UnguessableToken> ActorTabData::GetLastObservedScriptToolId(
+    const base::UnguessableToken& document_id,
+    const std::string& tool_name) const {
+  // The map is keyed by serialized document identifiers.
+  auto document_it =
+      last_observed_script_tool_ids_.find(document_id.ToString());
+  if (document_it == last_observed_script_tool_ids_.end()) {
+    return std::nullopt;
+  }
+  auto tool_it = document_it->second.find(tool_name);
+  if (tool_it == document_it->second.end()) {
+    return std::nullopt;
+  }
+  return tool_it->second;
 }
 
 const optimization_guide::proto::AnnotatedPageContent*

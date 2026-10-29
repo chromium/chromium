@@ -1054,8 +1054,8 @@ void ConvertFrameData(
     optimization_guide::proto::FrameData* proto_frame_data,
     blink::mojom::PageMetadata& metadata,
     FrameTokenSet& frame_token_set,
-    optimization_guide::proto::PageInteractionInfo*
-        proto_page_interaction_info) {
+    optimization_guide::proto::PageInteractionInfo* proto_page_interaction_info,
+    DocumentIdentifierToScriptTools& script_tool_ids) {
   ConvertFrameMetadata(GetURLForFrameMetadata(render_frame_info.url,
                                               render_frame_info.source_origin),
                        mojom_frame_data, metadata);
@@ -1116,6 +1116,12 @@ void ConvertFrameData(
   if (render_frame_info.script_tools_are_allowed) {
     for (const auto& tool : mojom_frame_data.script_tools) {
       ConvertScriptTool(*tool, proto_frame_data->add_script_tools());
+      // TODO(https://crbug.com/536063275): Drop the check once `tool_id` is
+      // required.
+      if (tool->tool_id) {
+        script_tool_ids[render_frame_info.serialized_server_token][tool->name] =
+            *tool->tool_id;
+      }
     }
   }
 
@@ -1524,7 +1530,8 @@ class Converter {
           proto_page_interaction_info) {
     ConvertFrameData(render_frame_info, mojom_local_frame_data,
                      proto_iframe_data->mutable_frame_data(), page_metadata(),
-                     *frame_token_set_, proto_page_interaction_info);
+                     *frame_token_set_, proto_page_interaction_info,
+                     page_content_result_->script_tool_ids);
   }
 
   // Password boxes are handled by AddRendererPasswordRedactionBoxes(). This
@@ -1728,7 +1735,8 @@ base::expected<void, AIPageContentError> ConvertAIPageContentToProto(
   ConvertFrameData(*render_frame_info, *main_frame_page_content->frame_data,
                    page_content_result.proto.mutable_main_frame_data(),
                    *page_content_result.metadata, frame_token_set,
-                   proto_page_interaction_info);
+                   proto_page_interaction_info,
+                   page_content_result.script_tool_ids);
 
   Converter converter(std::move(main_frame_options), page_content_map,
                       get_render_frame_info, frame_token_set,

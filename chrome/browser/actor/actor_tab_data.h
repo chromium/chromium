@@ -7,9 +7,12 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -38,6 +41,16 @@ class ActorTabData {
   static ActorTabData* From(tabs::TabInterface* tab);
   static ActorTabData* From(ActorSurfaceHandle actor_surface_handle);
 
+  // Stores `result`'s page content, along with the internal IDs of the script
+  // tools in it (see `AIPageContentResult::script_tool_ids`).
+  void DidObserveContent(const optimization_guide::AIPageContentResult& result,
+                         ApcSource source);
+  // Like the above, for callers that only have the page content proto. No
+  // script tool IDs are stored, so actions fall back to looking script tools up
+  // by name.
+  //
+  // DEPRECATED; TODO(http://b/458415347): Convert browser tests to call
+  // `DidObserveContent()` with a result struct.
   void DidObserveContent(
       const optimization_guide::proto::AnnotatedPageContent& content,
       ApcSource source);
@@ -48,6 +61,13 @@ class ActorTabData {
   GetLastObservedPageContent();
 
   const ui::DomNodeGeometry* GetLastObservedDomNodeGeometry();
+
+  // Returns the internal ID of the script tool named `tool_name` that the
+  // document identified by `document_id` reported in the last observed page
+  // content, or nullopt if there is no such tool.
+  std::optional<base::UnguessableToken> GetLastObservedScriptToolId(
+      const base::UnguessableToken& document_id,
+      const std::string& tool_name) const;
 
   // Sets the coordinate that was resolved by the renderer during the tool
   // validation phase.
@@ -60,6 +80,9 @@ class ActorTabData {
   // Stores the last observed page content for TOCTOU check.
   std::optional<optimization_guide::proto::AnnotatedPageContent>
       last_observed_page_content_;
+  // The internal IDs of the script tools in `last_observed_page_content_`.
+  optimization_guide::DocumentIdentifierToScriptTools
+      last_observed_script_tool_ids_;
   std::unique_ptr<ui::DomNodeGeometry> last_observed_dom_node_geometry_;
   std::optional<gfx::Point> last_renderer_resolved_target_;
 

@@ -132,6 +132,20 @@ struct DragAndReleaseAction {
 struct ScriptToolAction {
   string name;
   string input_arguments;
+  // If set, the renderer executes exactly the tool with this internal ID, and
+  // fails if it is no longer registered, rather than looking the tool up by
+  // `name`. The browser sets this to the ID of the tool named `name` in the
+  // last observed page content, so that the action can't run a different tool
+  // that the page has since registered under the same name.
+  //
+  // This is null when the browser has no observed tool to pin the action to:
+  // when `kActorScriptToolIdValidation` is disabled, or when the last observed
+  // page content has no tool named `name` in the target document (e.g., no
+  // observation has been made yet, or the tool was registered by an earlier
+  // action in the same batch). In that case, the renderer falls back to looking
+  // the tool up by `name`, and executes whichever tool is registered under that
+  // name at execution time.
+  mojo_base.mojom.UnguessableToken? tool_id;
 };
 
 // Union of tool-specific actions.

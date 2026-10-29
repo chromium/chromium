@@ -246,6 +246,8 @@ class CORE_EXPORT ModelContext : public EventTarget,
   // TODO(https://crbug.com/536063275): Remove this once all embedders always
   // identify tools by ID. See `ExecuteToolByName()`.
   ToolData* FindToolDataByName(const String& name) const;
+  // Returns the tool registered with `tool_id`, or null if there is none.
+  ToolData* FindToolDataById(const base::UnguessableToken& tool_id) const;
 
   ExecutionContext* GetExecutionContext() const override;
 

@@ -144,7 +144,7 @@ bool IsEmptyTabUrl(const GURL& url) {
 
 BASE_FEATURE(kGlicActorFixPageObservationCrash,
              base::FEATURE_ENABLED_BY_DEFAULT);
-}
+}  // namespace
 
 std::optional<page_content_annotations::PaintPreviewOptions>
 CreateOptionalPaintPreviewOptions() {
@@ -785,7 +785,7 @@ void ActorKeyedService::RequestActorSurfaceObservation(
               if (ActorSurface* actor_surface = actor_surface_handle.Get()) {
                 if (ActorTabData* tab_data = actor_surface->GetActorTabData()) {
                   tab_data->DidObserveContent(
-                      fetch_result.annotated_page_content_result->proto,
+                      *fetch_result.annotated_page_content_result,
                       actor::ApcSource::kActor);
                 }
               }

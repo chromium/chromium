@@ -97,7 +97,10 @@ ToolRequest::CreateToolResult ScriptToolRequest::CreateTool(
                                          "The tab is no longer present.")};
   }
 
-  auto script = mojom::ScriptToolAction::New(name_, input_arguments_);
+  // The tool ID, if any, is resolved against the last observation at time of
+  // use. See `ScriptToolHost::TimeOfUseValidation()`.
+  auto script = mojom::ScriptToolAction::New(name_, input_arguments_,
+                                             /*tool_id=*/std::nullopt);
   return {std::make_unique<ScriptToolHost>(
               task_id, tool_delegate, actor_surface_handle, target_document_id_,
               mojom::ToolAction::NewScriptTool(std::move(script))),

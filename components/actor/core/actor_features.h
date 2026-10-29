@@ -167,6 +167,11 @@ BASE_DECLARE_FEATURE(kActorObservePageContentDefault);
 BASE_DECLARE_FEATURE(kActorScriptToolSkipScreenshot);
 BASE_DECLARE_FEATURE(kActorScriptToolSkipPageContent);
 BASE_DECLARE_FEATURE(kActorScriptToolTransientUserActivation);
+// When enabled, a script tool action is pinned to the internal ID of the tool
+// with that name in the last observed page content, so that the action fails
+// instead of running a different tool that the page registered under the same
+// name since the observation.
+BASE_DECLARE_FEATURE(kActorScriptToolIdValidation);
 
 // Guards the new Actor Task invocation source completion metrics.
 BASE_DECLARE_FEATURE(kActorRecordInvocationSourceCompletionMetrics);

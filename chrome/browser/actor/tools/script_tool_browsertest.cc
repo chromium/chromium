@@ -419,16 +419,13 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, HasTransientUserActivation) {
   EXPECT_EQ(response->result, "true");
 }
 
-// Demonstrates the tool re-registration race for the actor: the action is
-// formed against one tool (as if the model observed it), but before the action
-// runs, the page unregisters that tool and registers a different one under the
-// same name. Because the actor targets tools by name, the replacement runs.
-//
-// TODO(https://crbug.com/536063275): This documents the current, racy
-// behavior. Once the actor targets tools by ID, the action should fail instead
-// and these expectations should be flipped.
+// Tests the tool re-registration race for the actor: the page content (APC) is
+// observed while one tool is registered, but before the action runs, the page
+// unregisters that tool and registers a different one under the same name. The
+// action is pinned to the observed tool, so it fails rather than running the
+// replacement.
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
-                       ReRegisteredToolWithSameNameIsExecuted) {
+                       ReRegisteredToolWithSameNameIsNotExecuted) {
   const GURL url = embedded_https_test_server().GetURL(
       "example.com", "/actor/script_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -447,6 +444,11 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
     }, {signal: window.controller.signal});
   )"));
 
+  // Observe the page while the original tool is registered, as the model would
+  // before choosing an action. The action is pinned to the tool in this
+  // observation; without one, it would fall back to looking the tool up by
+  // name.
+  GetPageApc();
   auto action = MakeScriptToolRequest(*main_frame(), "swapped_tool", "{}");
 
   // Swap the tool out from under the pending action.
@@ -462,12 +464,23 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
     });
   )"));
 
+  RunScriptToolExpectingError(std::move(action),
+                              mojom::ActionResultCode::kScriptToolInvalidName);
+  EXPECT_EQ(content::EvalJs(web_contents(), "window.executed.join(',')"), "");
+}
+
+// When the page has been observed, the action is pinned to the observed tool's
+// ID, and executes that tool.
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ObservedToolIsExecuted) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  GetPageApc();
+  auto action = MakeScriptToolRequest(*main_frame(), "echo",
+                                      R"JSON({"text": "test"})JSON");
   auto [action_result, response] = RunScriptTool(std::move(action));
-  EXPECT_EQ(response->result, "replacement");
-  EXPECT_EQ(response->tool->description,
-            "a different tool that reused the name");
-  EXPECT_EQ(content::EvalJs(web_contents(), "window.executed.join(',')"),
-            "replacement");
+  EXPECT_EQ(response->result, "test");
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, WindowOpenTopLevelNavigate) {

@@ -9,8 +9,10 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/common/chrome_features.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -116,6 +118,31 @@ TEST_F(ActorTabDataTest, DidObserveContentRecordsNoMetricsWhenDisabled) {
   histogram_tester.ExpectTotalCount(
       kActorPageContextAPCComparisonGlicIsIdenticalToPreviousFetchMetricName,
       0);
+}
+
+TEST_F(ActorTabDataTest, LastObservedScriptToolIds) {
+  auto tab_data_ptr = std::make_unique<ActorTabData>(&mock_tab_);
+  ActorTabData* tab_data = ActorTabData::From(&mock_tab_);
+  ASSERT_TRUE(tab_data);
+
+  const base::UnguessableToken document_id = base::UnguessableToken::Create();
+  const base::UnguessableToken tool_id = base::UnguessableToken::Create();
+  optimization_guide::AIPageContentResult result;
+  result.script_tool_ids[document_id.ToString()]["tool"] = tool_id;
+
+  tab_data->DidObserveContent(result, ApcSource::kActor);
+  EXPECT_EQ(tab_data->GetLastObservedScriptToolId(document_id, "tool"),
+            tool_id);
+  EXPECT_EQ(tab_data->GetLastObservedScriptToolId(document_id, "other_tool"),
+            std::nullopt);
+  EXPECT_EQ(tab_data->GetLastObservedScriptToolId(
+                base::UnguessableToken::Create(), "tool"),
+            std::nullopt);
+
+  // An observation of only the page content proto clears the stored IDs.
+  tab_data->DidObserveContent(result.proto, ApcSource::kActor);
+  EXPECT_EQ(tab_data->GetLastObservedScriptToolId(document_id, "tool"),
+            std::nullopt);
 }
 
 }  // namespace
