@@ -20,6 +20,8 @@
 #include "third_party/angle/include/EGL/egl.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/extension_set.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/linux/gbm_defines.h"
 #include "ui/gfx/linux/scoped_gbm_device.h"
@@ -414,15 +416,17 @@ GbmSurfaceFactory::CreateNativePixmapFromHandle(
     auto protected_pixmap = get_protected_native_pixmap_callback_.Run(handle);
     if (protected_pixmap) {
       // The substituted pixmap is used in place of the supplied handle, so it
-      // must match the geometry the caller will use to bind it.
-      // See https://crbug.com/501762862
-      if (protected_pixmap->GetBufferSize() != size ||
+      // must be able to contain the geometry the caller will use to bind it
+      // (the backing pixmap may be larger due to hardware decoder alignment).
+      // See https://crbug.com/501762862 and https://crbug.com/575535958
+      if (!gfx::Rect(protected_pixmap->GetBufferSize())
+               .Contains(gfx::Rect(size)) ||
           protected_pixmap->GetSharedImageFormat() != format) {
         LOG(ERROR) << "Protected pixmap ("
                    << protected_pixmap->GetBufferSize().ToString() << ", "
                    << protected_pixmap->GetSharedImageFormat().ToString()
-                   << ") does not match requested geometry (" << size.ToString()
-                   << ", " << format.ToString() << ")";
+                   << ") is incompatible with requested geometry ("
+                   << size.ToString() << ", " << format.ToString() << ")";
         return nullptr;
       }
       return protected_pixmap;

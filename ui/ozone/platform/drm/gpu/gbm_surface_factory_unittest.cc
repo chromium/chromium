@@ -51,7 +51,25 @@ TEST_F(GbmSurfaceFactoryTest,
 }
 
 TEST_F(GbmSurfaceFactoryTest,
-       CreateNativePixmapFromHandleRejectsProtectedPixmapWithMismatchedSize) {
+       CreateNativePixmapFromHandleAcceptsLargerAlignedProtectedPixmap) {
+  scoped_refptr<gfx::NativePixmap> protected_pixmap =
+      base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
+          gfx::Size(640, 384), viz::MultiPlaneFormat::kNV12,
+          gfx::NativePixmapHandle());
+  surface_factory_.SetGetProtectedNativePixmapDelegate(
+      base::BindRepeating(&ReturnProtectedPixmap, protected_pixmap));
+
+  viz::SharedImageFormat requested_format = viz::MultiPlaneFormat::kNV12;
+  requested_format.SetPrefersExternalSampler();
+  scoped_refptr<gfx::NativePixmap> pixmap =
+      surface_factory_.CreateNativePixmapFromHandle(
+          gfx::kNullAcceleratedWidget, gfx::Size(640, 360), requested_format,
+          gfx::NativePixmapHandle());
+  EXPECT_EQ(pixmap, protected_pixmap);
+}
+
+TEST_F(GbmSurfaceFactoryTest,
+       CreateNativePixmapFromHandleRejectsProtectedPixmapWithSmallerSize) {
   scoped_refptr<gfx::NativePixmap> protected_pixmap =
       base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
           gfx::Size(16, 16), viz::MultiPlaneFormat::kNV12,
@@ -59,11 +77,15 @@ TEST_F(GbmSurfaceFactoryTest,
   surface_factory_.SetGetProtectedNativePixmapDelegate(
       base::BindRepeating(&ReturnProtectedPixmap, protected_pixmap));
 
-  scoped_refptr<gfx::NativePixmap> pixmap =
-      surface_factory_.CreateNativePixmapFromHandle(
-          gfx::kNullAcceleratedWidget, gfx::Size(100, 100),
-          viz::MultiPlaneFormat::kNV12, gfx::NativePixmapHandle());
-  EXPECT_FALSE(pixmap);
+  EXPECT_FALSE(surface_factory_.CreateNativePixmapFromHandle(
+      gfx::kNullAcceleratedWidget, gfx::Size(100, 100),
+      viz::MultiPlaneFormat::kNV12, gfx::NativePixmapHandle()));
+  EXPECT_FALSE(surface_factory_.CreateNativePixmapFromHandle(
+      gfx::kNullAcceleratedWidget, gfx::Size(16, 100),
+      viz::MultiPlaneFormat::kNV12, gfx::NativePixmapHandle()));
+  EXPECT_FALSE(surface_factory_.CreateNativePixmapFromHandle(
+      gfx::kNullAcceleratedWidget, gfx::Size(100, 16),
+      viz::MultiPlaneFormat::kNV12, gfx::NativePixmapHandle()));
 }
 
 TEST_F(GbmSurfaceFactoryTest,
