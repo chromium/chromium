@@ -2037,3 +2037,17 @@ TEST_F(OmniboxViewViewsTest, DragAndDropTextWithinOmnibox) {
   EXPECT_EQ(omnibox_view()->GetText(), u"bcdaef");
   EXPECT_EQ(output_drag_op, ui::mojom::DragOperation::kMove);
 }
+
+TEST_F(OmniboxViewViewsTest,
+       UpdateInstallsPlaceholderWhenDisplayTextsUnchanged) {
+  omnibox_view()->SetPlaceholderText(u"Placeholder");
+  EXPECT_EQ(u"Placeholder", omnibox_view()->GetPlaceholderText());
+
+  // Calling Update() when ResetDisplayTexts() returns false should still
+  // install placeholder text (recomputing from location bar / controller).
+  EXPECT_FALSE(omnibox_controller()->edit_model()->ResetDisplayTexts());
+  omnibox_view()->Update();
+  // TestingOmniboxView has a null location_bar_view, so ComputePlaceholderText
+  // resets placeholder text to empty.
+  EXPECT_TRUE(omnibox_view()->GetPlaceholderText().empty());
+}
