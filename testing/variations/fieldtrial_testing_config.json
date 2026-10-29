@@ -6778,6 +6778,7 @@
                         "DsePreload2",
                         "DsePreload2AheadOfImminentNavigation",
                         "DsePreload2OnPress",
+                        "DsePreload2OnPressIncognito",
                         "PrefetchAheadOfImminentNavigation"
                     ]
                 }
