@@ -603,10 +603,6 @@
       "chrome-untrusted://lens-overlay/*"
     ]
   }],
-  "loginState": {
-    "dependencies": ["permission:loginState"],
-    "contexts": ["privileged_extension"]
-  },
   "webcamPrivate": {
     "dependencies": ["permission:webcamPrivate"],
     "contexts": ["privileged_extension"]

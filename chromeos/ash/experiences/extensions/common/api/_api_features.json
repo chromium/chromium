@@ -219,6 +219,10 @@
     "dependencies": ["permission:loginScreenUi"],
     "contexts": ["privileged_extension"]
   },
+  "loginState": {
+    "dependencies": ["permission:loginState"],
+    "contexts": ["privileged_extension"]
+  },
   "odfsConfigPrivate": {
     "dependencies": ["permission:odfsConfigPrivate"],
     "contexts": ["privileged_extension"],

@@ -117,7 +117,6 @@ if (enable_extensions) {
       "enterprise_platform_keys.webidl",
       "enterprise_platform_keys_internal.webidl",
       "enterprise_platform_keys_private.json",
-      "login_state.idl",
       "platform_keys.idl",
       "platform_keys_internal.idl",
       "quick_unlock_private.idl",

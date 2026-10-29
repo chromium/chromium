@@ -40,6 +40,8 @@ constexpr APIPermissionInfo::InitInfo kPermissionsToRegister[] = {
     {APIPermissionID::kLogin, "login"},
     {APIPermissionID::kLoginScreenStorage, "loginScreenStorage"},
     {APIPermissionID::kLoginScreenUi, "loginScreenUi"},
+    {APIPermissionID::kLoginState, "loginState",
+     APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kOdfsConfigPrivate, "odfsConfigPrivate",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kPrinting, "printing",

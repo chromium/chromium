@@ -17,7 +17,7 @@ static_library("login_state") {
 
   public_deps = [
     "//base",
-    "//chrome/common/extensions/api",
+    "//chromeos/ash/experiences/extensions/common/api",
     "//extensions/browser",
     "//mojo/public/cpp/bindings",
   ]
@@ -70,11 +70,11 @@ source_set("unit_tests") {
     ":login_state",
     "//base",
     "//chrome/common:non_code_constants",
-    "//chrome/common/extensions/api",
     "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/experiences/extensions/common/api",
     "//components/session_manager:base",
     "//components/session_manager/core",
     "//components/session_manager/core:test_support",

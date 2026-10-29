@@ -7,7 +7,6 @@ chromeos_info_private.json
 command_line_private.json
 crash_report_private.webidl
 language_settings_private.webidl
-login_state.idl
 quick_unlock_private.idl
 settings_private.idl
 tabs.json

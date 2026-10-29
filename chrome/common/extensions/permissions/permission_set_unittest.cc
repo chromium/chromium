@@ -782,7 +782,9 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermissionID::kGcm);
   skip.insert(APIPermissionID::kIdle);
   skip.insert(APIPermissionID::kImeWindowEnabled);
+#if BUILDFLAG(IS_CHROMEOS)
   skip.insert(APIPermissionID::kLoginState);
+#endif
   skip.insert(APIPermissionID::kOffscreen);
   skip.insert(APIPermissionID::kOverrideEscFullscreen);
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)

@@ -4,10 +4,11 @@
 
 /**
  * @fileoverview Definitions for chrome.loginState API
- * Generated from: chrome/common/extensions/api/login_state.idl
+ * Generated from:
+ * chromeos/ash/experiences/extensions/common/api/login_state.idl
  * run `tools/json_schema_compiler/compiler.py
- * chrome/common/extensions/api/login_state.idl -g ts_definitions` to
- * regenerate.
+ * chromeos/ash/experiences/extensions/common/api/login_state.idl -g
+ * ts_definitions` to regenerate.
  */
 
 import type {ChromeEvent} from '../../../../../../tools/typescript/definitions/chrome_event.js';

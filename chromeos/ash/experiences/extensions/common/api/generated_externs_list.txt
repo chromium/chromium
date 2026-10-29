@@ -4,4 +4,5 @@
 accessibility_private.json
 file_system_provider.webidl
 input_method_private.json
+login_state.idl
 speech_recognition_private.idl

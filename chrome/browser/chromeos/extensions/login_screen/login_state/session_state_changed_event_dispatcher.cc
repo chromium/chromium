@@ -6,7 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login_state/login_state_api.h"
-#include "chrome/common/extensions/api/login_state.h"
+#include "chromeos/ash/experiences/extensions/common/api/login_state.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "content/public/browser/browser_context.h"
