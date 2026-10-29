@@ -23,6 +23,7 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/hit_test.h"
 #include "ui/events/gestures/motion_event_aura.h"
+#include "ui/wm/public/activation_change_observer.h"
 
 namespace ui {
 class Layer;
@@ -36,6 +37,7 @@ class RenderWidgetHostViewBase;
 class UnboundedSurfaceWindowAura : public UnboundedSurfaceWindow,
                                    public aura::WindowDelegate,
                                    public aura::WindowObserver,
+                                   public wm::ActivationChangeObserver,
                                    public viz::HostFrameSinkClient {
  public:
   static std::unique_ptr<UnboundedSurfaceWindowAura> Create(
@@ -92,6 +94,12 @@ class UnboundedSurfaceWindowAura : public UnboundedSurfaceWindow,
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnScrollEvent(ui::ScrollEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
+  void OnCancelMode(ui::CancelModeEvent* event) override;
+
+  // wm::ActivationChangeObserver overrides:
+  void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override;
 
   // viz::HostFrameSinkClient overrides:
   void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override {
@@ -109,6 +117,13 @@ class UnboundedSurfaceWindowAura : public UnboundedSurfaceWindow,
       RenderWidgetHostViewAura* parent_view,
       base::WeakPtr<RenderWidgetHostViewBase> subframe_view);
   bool InitWindow(const gfx::Rect& bounds_in_screen);
+  // Removes `this` as an observer of `root_window_` and its activation client.
+  void StopObservingRootWindow();
+  // Returns true if `window` is `window_`, the owner view's native view, a
+  // descendant of either, or a transient child of either (e.g. child popups
+  // such as an HTML date picker attached via
+  // RenderWidgetHostViewAura::InitAsPopup).
+  bool IsInOwnerView(aura::Window* window) const;
 
   viz::FrameSinkId frame_sink_id_;
   viz::FrameSinkId parent_frame_sink_id_;

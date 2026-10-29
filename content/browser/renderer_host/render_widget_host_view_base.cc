@@ -1069,9 +1069,17 @@ RenderWidgetHostViewBase::ConvertSubframeBoundsToScreenWithoutConstraints(
 }
 
 void RenderWidgetHostViewBase::DismissUnboundedSurface() {
+  dismiss_unbounded_surface_called_for_testing_ = true;
   if (unbounded_surface_window_) {
     unbounded_surface_window_->Dismiss();
+  } else if (RenderWidgetHostViewBase* root_view = GetRootView();
+             root_view && root_view != this) {
+    root_view->DismissUnboundedSurface();
   }
+}
+
+bool RenderWidgetHostViewBase::TakeDismissUnboundedSurfaceCalledForTesting() {
+  return std::exchange(dismiss_unbounded_surface_called_for_testing_, false);
 }
 
 void RenderWidgetHostViewBase::DestroyUnboundedSurfaceForThisView() {

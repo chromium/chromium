@@ -2056,6 +2056,9 @@ void RenderWidgetHostViewMac::OnWindowIsKeyChanged(bool is_key) {
     return;
   is_window_key_ = is_key;
   accessibility_focus_overrider_.SetWindowIsKey(is_window_key_);
+  if (!is_window_key_) {
+    DismissUnboundedSurface();
+  }
   if (is_first_responder_)
     SetActive(is_key);
 }

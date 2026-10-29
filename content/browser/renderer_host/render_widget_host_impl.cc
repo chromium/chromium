@@ -383,6 +383,16 @@ bool ShouldProcessKeyEventForListeners(
   return false;
 }
 
+void DismissUnboundedSurfaceOnKeyDown(
+    base::WeakPtr<RenderWidgetHostImpl> host,
+    const input::NativeWebKeyboardEvent& key_event) {
+  if (host && host->GetView() &&
+      (key_event.GetType() == WebInputEvent::Type::kRawKeyDown ||
+       key_event.GetType() == WebInputEvent::Type::kKeyDown)) {
+    host->GetView()->DismissUnboundedSurface();
+  }
+}
+
 gfx::Rect ClampPopupBoundsToDisplay(const gfx::Rect& bounds,
                                     RenderWidgetHostViewBase* view) {
   // More than twice the width of an 8K display, so it never constrains a
@@ -1935,13 +1945,16 @@ void RenderWidgetHostImpl::ForwardKeyboardEventWithCommands(
       suppress_events_until_keydown_ = true;
     }
 
+    const auto weak_this = weak_factory_.GetWeakPtr();
     // Tab switching/closing accelerators aren't sent to the renderer to avoid
     // a hung/malicious renderer from interfering.
     switch (delegate_->PreHandleKeyboardEvent(key_event)) {
       case KeyboardEventProcessingResult::HANDLED:
+        DismissUnboundedSurfaceOnKeyDown(weak_this, key_event);
         return;
 #if defined(USE_AURA)
       case KeyboardEventProcessingResult::HANDLED_DONT_UPDATE_EVENT:
+        DismissUnboundedSurfaceOnKeyDown(weak_this, key_event);
         if (update_event) {
           *update_event = false;
         }
@@ -2846,7 +2859,12 @@ void RenderWidgetHostImpl::OnKeyboardEventAck(
   // of this key event.
   if (delegate_ && !processed && !IsHidden() &&
       !event.event.skip_if_unhandled) {
-    delegate_->HandleKeyboardEvent(event.event);
+    const auto weak_this = weak_factory_.GetWeakPtr();
+    if (delegate_->HandleKeyboardEvent(event.event)) {
+      if (event.event.is_browser_shortcut) {
+        DismissUnboundedSurfaceOnKeyDown(weak_this, event.event);
+      }
+    }
   }
   // WARNING: This RenderWidgetHostImpl can be deallocated at this point
   // (i.e.  in the case of Ctrl+W, where the call to
