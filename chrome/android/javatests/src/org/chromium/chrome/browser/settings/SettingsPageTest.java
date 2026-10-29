@@ -69,8 +69,10 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -78,7 +80,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -96,6 +97,7 @@ import org.chromium.chrome.browser.settings.search.SearchResultsPreferenceFragme
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -120,18 +122,27 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
 public class SettingsPageTest {
-    @Rule
+    private static Integer sInitialOrientation;
+    private boolean mFinishActivity;
+
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
+    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+            new BlankCTATabInitialStateRule(mActivityTestRule, false);
+
+    @Rule
+    public final RuleChain mRuleChain =
+            RuleChain.outerRule(mActivityTestRule).around(mBlankCTATabInitialStateRule);
 
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        var activity = mActivityTestRule.getActivity();
+        if (sInitialOrientation == null) {
+            sInitialOrientation = activity.getResources().getConfiguration().orientation;
+        }
 
         // Skip the tests on Android 14 landscape devices. See below.
-        var activity = mActivityTestRule.getActivity();
-        boolean isLandscape =
-                activity.getResources().getConfiguration().orientation
-                        == Configuration.ORIENTATION_LANDSCAPE;
+        boolean isLandscape = sInitialOrientation == Configuration.ORIENTATION_LANDSCAPE;
         Assume.assumeFalse(
                 "Rotating to portrait letterboxes the activity on landscape-oriented devices,"
                         + " causing Android 14's letterbox education dialog to intercept clicks.",
@@ -141,17 +152,20 @@ public class SettingsPageTest {
     @After
     public void tearDown() {
         LocalizationUtils.setRtlForTesting(false);
-        ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
+        var activity = mActivityTestRule.getActivity();
+        ActivityTestUtils.clearActivityOrientation(activity);
+        if (mFinishActivity) {
+            mActivityTestRule.finishActivity();
+            return;
+        }
+        Espresso.closeSoftKeyboard();
+        if (sInitialOrientation != null
+                && activity.getResources().getConfiguration().orientation != sInitialOrientation) {
+            ensureActivityOrientation(sInitialOrientation);
+        }
     }
 
-    /**
-     * Returns the index of the currently selected tab in the current tab model.
-     *
-     * <p>Tests in this class are batched, so they share one activity and tab model, and {@link
-     * ChromeTabbedActivityTestRule#startMainActivityOnBlankPage()} opens an additional tab for each
-     * test. Tests that switch tabs must therefore remember the index of the tab they loaded rather
-     * than assuming it is index 0.
-     */
+    /** Returns the index of the currently selected tab in the current tab model. */
     private int getCurrentTabIndex() {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getActivity().getCurrentTabModel().index());
@@ -419,8 +433,8 @@ public class SettingsPageTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
     public void testThemeChangeFromSearchKeepsThemePage_urlNav() {
+        FeatureOverrides.enable(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV);
         int dark = org.chromium.chrome.browser.night_mode.R.id.dark;
         int light = org.chromium.chrome.browser.night_mode.R.id.light;
         try {
@@ -480,8 +494,8 @@ public class SettingsPageTest {
         // Automotive devices do not support display rotation.
         DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
     })
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
     public void testThemeSwitchInSingleColumnThenToolbarBackOnNestedPage() {
+        FeatureOverrides.enable(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV);
         ensureActivityOrientation(Configuration.ORIENTATION_PORTRAIT);
         mActivityTestRule.loadUrl("chrome-native://settings/");
         ensureSingleColumnMode();
@@ -607,11 +621,7 @@ public class SettingsPageTest {
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testAutofillAndPasswordsHighlighting() {
-        // The test requires an emulator wide enough to use two-column mode.
-        Resources res = mActivityTestRule.getActivity().getResources();
-        int minWidth = res.getDimensionPixelSize(R.dimen.settings_min_multi_column_screen_width);
-        int screenWidth = res.getDisplayMetrics().widthPixels;
-        Assume.assumeTrue("Test requires two-column mode.", screenWidth >= minWidth);
+        assumeTwoColumnScreenWidth();
 
         mActivityTestRule.loadUrl("chrome-native://settings/");
 
@@ -655,13 +665,9 @@ public class SettingsPageTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
     public void testExternalActivityPreferenceKeepsHighlight_urlNav() {
-        // The test requires an emulator wide enough to use two-column mode.
-        Resources res = mActivityTestRule.getActivity().getResources();
-        int minWidth = res.getDimensionPixelSize(R.dimen.settings_min_multi_column_screen_width);
-        int screenWidth = res.getDisplayMetrics().widthPixels;
-        Assume.assumeTrue("Test requires two-column mode.", screenWidth >= minWidth);
+        FeatureOverrides.enable(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV);
+        assumeTwoColumnScreenWidth();
         Assume.assumeTrue(
                 "Test requires the notification settings row.",
                 PackageManagerUtils.canResolveActivity(
@@ -715,8 +721,8 @@ public class SettingsPageTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
     public void testPaymentAppsUrlHighlightsMainMenu_urlNav() {
+        FeatureOverrides.enable(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV);
         assertUrlHighlightsAutofillAndPasswords("/paymentApps", AndroidPaymentAppsFragment.class);
     }
 
@@ -727,8 +733,8 @@ public class SettingsPageTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
     public void testFoldedRowPagesUrlHighlightMainMenu_urlNav() {
+        FeatureOverrides.enable(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV);
         assertUrlHighlightsAutofillAndPasswords("/payments", AutofillPaymentMethodsFragment.class);
         assertUrlHighlightsAutofillAndPasswords("/addresses", AutofillProfilesFragment.class);
         assertUrlHighlightsAutofillAndPasswords(
@@ -741,11 +747,7 @@ public class SettingsPageTest {
      */
     private void assertUrlHighlightsAutofillAndPasswords(
             String path, Class<? extends Fragment> fragmentClass) {
-        // The test requires an emulator wide enough to use two-column mode.
-        Resources res = mActivityTestRule.getActivity().getResources();
-        int minWidth = res.getDimensionPixelSize(R.dimen.settings_min_multi_column_screen_width);
-        int screenWidth = res.getDisplayMetrics().widthPixels;
-        Assume.assumeTrue("Test requires two-column mode.", screenWidth >= minWidth);
+        assumeTwoColumnScreenWidth();
 
         mActivityTestRule.loadUrl("chrome-native://settings" + path);
 
@@ -928,6 +930,7 @@ public class SettingsPageTest {
 
         // Recreate activity (simulating theme change or OS configuration change).
         mActivityTestRule.recreateActivity();
+        onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
 
         // Switch back to the first Settings tab.
         ChromeTabUtils.switchTabInCurrentTabModel(
@@ -1097,8 +1100,8 @@ public class SettingsPageTest {
         // Automotive devices do not support display rotation.
         DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
     })
-    @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
     public void testSearchBoxAlignmentInPortrait() {
+        FeatureOverrides.disable(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV);
         Rect searchBoxBounds = openThemeSettingsFromSearchInPortrait();
 
         // Simulate theme switch / activity recreation.
@@ -1121,8 +1124,8 @@ public class SettingsPageTest {
         // Automotive devices do not support display rotation.
         DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
     })
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
     public void testSearchBoxAlignmentInPortrait_urlNav() {
+        FeatureOverrides.enable(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV);
         Rect searchBoxBounds = openThemeSettingsFromSearchInPortrait();
 
         // Simulate theme switch / activity recreation.
@@ -1195,6 +1198,7 @@ public class SettingsPageTest {
         DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
     })
     public void testSearchBoxAlignmentInPortrait_Rtl() {
+        mFinishActivity = true;
         // Start in portrait (single-column mode on tablet).
         ensureActivityOrientation(Configuration.ORIENTATION_PORTRAIT);
 
@@ -1286,6 +1290,7 @@ public class SettingsPageTest {
         DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
     })
     public void testSearchQueryHintAlignmentOnContainerResized_Rtl() {
+        mFinishActivity = true;
         ensureActivityOrientation(Configuration.ORIENTATION_PORTRAIT);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -1609,20 +1614,13 @@ public class SettingsPageTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
     public void testRootSettingsShownAfterLeavingTwoColumn_urlNav() {
+        FeatureOverrides.enable(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV);
+        assumeTwoColumnScreenWidth();
+
         mActivityTestRule.loadUrl("chrome-native://settings/");
         onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
-
-        boolean isTwoColumn =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            var hostFragment =
-                                    SettingsHostFragment.get(mActivityTestRule.getActivity());
-                            return hostFragment != null
-                                    && hostFragment.isTwoColumnSettingsVisible();
-                        });
-        Assume.assumeTrue("Settings must start in two-column mode.", isTwoColumn);
+        ensureTwoColumnMode();
 
         // Resize container to narrow width (500px <= 632dp threshold) to force single-column mode.
         setSettingsContainerWidth(500);
@@ -1665,6 +1663,7 @@ public class SettingsPageTest {
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testDensityChangeKeepsSettingsInTab() {
+        mFinishActivity = true;
         mActivityTestRule.loadUrl("chrome-native://settings/");
         onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
 
@@ -1726,6 +1725,7 @@ public class SettingsPageTest {
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testFoldKeepsSettingsInTab() {
+        mFinishActivity = true;
         mActivityTestRule.loadUrl("chrome-native://settings/");
         onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
 
@@ -1849,6 +1849,14 @@ public class SettingsPageTest {
                     assertNotNull(backArrow);
                     assertTrue(backArrow.performClick());
                 });
+    }
+
+    private void assumeTwoColumnScreenWidth() {
+        // The test requires an emulator wide enough to use two-column mode.
+        Resources res = mActivityTestRule.getActivity().getResources();
+        int minWidth = res.getDimensionPixelSize(R.dimen.settings_min_multi_column_screen_width);
+        int screenWidth = res.getDisplayMetrics().widthPixels;
+        Assume.assumeTrue("Test requires two-column mode.", screenWidth >= minWidth);
     }
 
     private void ensureTwoColumnMode() {
