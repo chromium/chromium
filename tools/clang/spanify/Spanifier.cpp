@@ -2507,20 +2507,36 @@ void RewriteUnaryOperation(const MatchFinder::MatchResult& result) {
                                    -kRewriteUnaryOperationPrecedence));
 }
 
-// Rewrite:
-//   `sizeof(c_array)`
-// Into:
-//   `base::SpanificationSizeofForStdArray(std_array)`
-// Tests are in: tests/chrome/array-tests-original.cc
-void RewriteArraySizeof(const MatchFinder::MatchResult& result) {
-  clang::SourceManager& source_manager = *result.SourceManager;
+// Excludes `x` from the rewrite when `sizeof(x)` would change value once `x` is
+// rewritten. Otherwise `sizeof(x)` is left as is.
+//
+// `sizeof(c_array)` is left as is when `c_array` becomes a `std::array`. The
+// standard doesn't guarantee that `sizeof(std::array<T, N>)` is
+// `sizeof(T) * N`, but for N > 0, libc++, libstdc++ and the MSVC STL all
+// implement `std::array` as a single `T[N]` member, so the value doesn't
+// change. Zero-length arrays are never rewritten: see `getNodeFromArrayDecl()`.
+// Tests are in: tests/chrome/sizeof-std-array-original.cc,
+// tests/chrome/sizeof-on-string-view-array-original.cc and
+// tests/angle/sizeof-std-array-original.cc
+void ExcludeIfSizeofChanges(const MatchFinder::MatchResult& result) {
   const clang::ASTContext& ast_context = *result.Context;
 
   const auto* sizeof_expr =
       result.Nodes.getNodeAs<clang::UnaryExprOrTypeTraitExpr>("sizeof_expr");
 
-  const auto* array_decl =
-      result.Nodes.getNodeAs<clang::DeclaratorDecl>("rhs_begin");
+  // `sizeof` of anything but an array, e.g. of a pointer, measures a pointer,
+  // not the span it becomes. Exclude the rewrite so `sizeof` keeps its value.
+  // The operand of `sizeof` doesn't decay, so an array keeps its array type,
+  // even in parentheses. The operand can be a type, e.g. a VLA whose size
+  // expression is matched.
+  if (sizeof_expr->isArgumentType() ||
+      !sizeof_expr->getArgumentExpr()->getType()->isArrayType()) {
+    EmitExclusion(GetRHS(result));
+    return;
+  }
+
+  const auto* array_decl = GetNodeOrCrash<clang::DeclaratorDecl>(
+      result, "rhs_begin", "an array operand names a variable or a field");
 
   // `sizeof` of a `std::string_view` gives the size of the view, not of the
   // buffer. Exclude the rewrite so `sizeof` keeps measuring the buffer.
@@ -2532,37 +2548,6 @@ void RewriteArraySizeof(const MatchFinder::MatchResult& result) {
       return;
     }
   }
-
-  const std::string& array_decl_as_string = array_decl->getNameAsString();
-
-  // sizeof_expr matches with "sizeof(c_array)" in case of
-  // `sizeof(c_array)`, and "sizeof " in case of `sizeof c_array`. In the
-  // latter case, we need to include "c_array" in the replacement range.
-  int end_offset = 1;
-  if (const auto* decl_ref = clang::dyn_cast_or_null<clang::DeclRefExpr>(
-          sizeof_expr->getArgumentExpr())) {
-    // Unfortunately decl_ref matches with "" (the empty string) at the
-    // beginning of "c_array", so we cannot use decl_ref->getSourceRange().
-    // Count the length of "c_array" (variable name) instead.
-    const clang::DeclarationNameInfo& name_info = decl_ref->getNameInfo();
-    const clang::DeclarationName& name = name_info.getName();
-    end_offset = name.getAsString().length();
-  }
-
-  const std::string& key = GetRHS(result);
-  const clang::SourceRange replacement_range = {
-      sizeof_expr->getBeginLoc(),
-      sizeof_expr->getEndLoc().getLocWithOffset(end_offset)};
-  EmitReplacement(key,
-                  GetReplacementDirective(
-                      replacement_range,
-                      llvm::formatv("base::SpanificationSizeofForStdArray({0})",
-                                    array_decl_as_string),
-                      source_manager));
-  EmitReplacement(key,
-                  GetIncludeDirective(
-                      replacement_range, source_manager,
-                      GetProject()->GetAutoSpanificationHelperIncludePath()));
 }
 
 // Add `.data()` at the frontier of a span change. This is applied if the node
@@ -2961,7 +2946,7 @@ bool IsConstexpr(const clang::DeclaratorDecl* decl) {
 }
 
 // Returns true if `array_decl` is rewritten into a `std::string_view` instead
-// of a `std::array`. Shared with `RewriteArraySizeof()` so both agree.
+// of a `std::array`. Shared with `ExcludeIfSizeofChanges()` so both agree.
 bool IsRewrittenToStringView(const clang::DeclaratorDecl* array_decl,
                              clang::QualType element_type,
                              const clang::ASTContext& ast_context) {
@@ -4161,12 +4146,12 @@ class Spanifier {
       EmitExclusion(GetRHS(result));
     });
 
-    // `sizeof(c_array)` is rewritten to
-    // `std_array.size() * sizeof(element_size)`.
+    // `sizeof(x)` is kept as is; `x` is excluded if that would change its
+    // value.
     auto sizeof_array_expr = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
         sizeOfExpr(has(rhs_exprs_without_size_nodes)).bind("sizeof_expr"));
-    Match(sizeof_array_expr, RewriteArraySizeof);
+    Match(sizeof_array_expr, ExcludeIfSizeofChanges);
 
     // Same macro check as RewriteUnaryOperation(), so that `*` is rewritten
     // together with the increment in `UNSAFE_TODO(*ptr++)`.

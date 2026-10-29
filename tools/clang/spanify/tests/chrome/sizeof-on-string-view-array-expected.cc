@@ -5,8 +5,6 @@
 #include <array>
 #include <tuple>
 
-#include "base/containers/auto_spanification_helper.h"
-
 int UnsafeIndex();  // This function might return an out-of-bound index.
 
 // Unrelated array: still rewritten. Checks that the tool ran at all.
@@ -42,13 +40,13 @@ int const_case() {
 }
 
 // A non-const char array becomes a `std::array`, where `sizeof` is fine.
-// Still rewritten.
+// Still rewritten, and `sizeof` is kept as is.
 //
 // Expected rewrite:
 // std::array<char, 4> buf{"abc"};
-// std::ignore = base::SpanificationSizeofForStdArray(buf);
+// std::ignore = sizeof(buf);
 void std_array_case() {
   std::array<char, 4> buf{"abc"};
   std::ignore = buf[UnsafeIndex()];
-  std::ignore = base::SpanificationSizeofForStdArray(buf);
+  std::ignore = sizeof(buf);
 }

@@ -6,7 +6,6 @@
 #include <cstring>
 #include <tuple>
 
-#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 
 struct Mailbox {
@@ -46,11 +45,8 @@ void TestSizeofArithmetic(const Mailbox& source, const Mailbox& dest) {
 
   // Test `sizeof` used on array.
   // Expected rewrite:
-  // memcpy(base::span<char>(buffer)
-  //   .subspan(base::SpanificationSizeofForStdArray(buffer) - 1u)
-  //   .data(), dest.name, 1);
-  memcpy(base::span<char>(buffer)
-             .subspan(base::SpanificationSizeofForStdArray(buffer) - 1u)
-             .data(),
-         dest.name, 1);
+  // memcpy(base::span<char>(buffer).subspan(sizeof buffer - 1u).data(),
+  //        dest.name, 1);
+  memcpy(base::span<char>(buffer).subspan(sizeof buffer - 1u).data(), dest.name,
+         1);
 }

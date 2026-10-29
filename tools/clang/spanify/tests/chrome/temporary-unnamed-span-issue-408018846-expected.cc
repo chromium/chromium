@@ -6,7 +6,6 @@
 #include <cstdint>
 #include <string_view>
 
-#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 
 std::string_view ReturnOffsetIntoString(size_t offset) {
@@ -20,8 +19,8 @@ std::string_view ReturnOffsetIntoString(size_t offset) {
   // Expected rewrite:
   // return std::string_view(
   //     base::span<char>(non_const_buffer).subspan(offset).data(),
-  //     base::SpanificationSizeofForStdArray(non_const_buffer) - offset);
+  //     sizeof(non_const_buffer) - offset);
   return std::string_view(
       base::span<char>(non_const_buffer).subspan(offset).data(),
-      base::SpanificationSizeofForStdArray(non_const_buffer) - offset);
+      sizeof(non_const_buffer) - offset);
 }

@@ -39,8 +39,7 @@ void TestSizeofArithmetic(const Mailbox& source, const Mailbox& dest) {
 
   // Test `sizeof` used on array.
   // Expected rewrite:
-  // memcpy(base::span<char>(buffer)
-  //   .subspan(base::SpanificationSizeofForStdArray(buffer) - 1u)
-  //   .data(), dest.name, 1);
+  // memcpy(base::span<char>(buffer).subspan(sizeof buffer - 1u).data(),
+  //        dest.name, 1);
   memcpy(buffer + sizeof buffer - 1, dest.name, 1);
 }

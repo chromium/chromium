@@ -39,11 +39,11 @@ int const_case() {
 }
 
 // A non-const char array becomes a `std::array`, where `sizeof` is fine.
-// Still rewritten.
+// Still rewritten, and `sizeof` is kept as is.
 //
 // Expected rewrite:
 // std::array<char, 4> buf{"abc"};
-// std::ignore = base::SpanificationSizeofForStdArray(buf);
+// std::ignore = sizeof(buf);
 void std_array_case() {
   char buf[] = "abc";
   std::ignore = buf[UnsafeIndex()];
