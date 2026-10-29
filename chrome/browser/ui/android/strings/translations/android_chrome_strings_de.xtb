@@ -1875,7 +1875,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8282950411412455249">Zu den Sicherheitseinstellungen</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{1 Inkognitofenster schließen}other{# Inkognitofenster schließen}}</translation>
 <translation id="8289602658021943461">Videoframe speichern unter…</translation>
-<translation id="8313599942510782709">Deine Aufgabe wird noch ausgeführt</translation>
+<translation id="8313599942510782709">Deine Aufgabe wird aktuell ausgeführt</translation>
 <translation id="8317318757008452355">Druckeroptionen öffnen</translation>
 <translation id="8320212361750431956">Letzte Aktivität</translation>
 <translation id="8322452989119079156">In <ph name="NATIVE_APP_NAME" /> öffnen – gesendet von <ph name="DEVICE_NAME" /></translation>

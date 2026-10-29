@@ -1360,7 +1360,7 @@
 <translation id="5250371859659394278">來源不明</translation>
 <translation id="525510229763628836">已縮到最小</translation>
 <translation id="5260842098960755113">已關閉討論串</translation>
-<translation id="5271265092610673171">{count,plural, =1{必填欄位沒有內容，請先填寫再儲存。}other{部分必填欄位沒有內容，請先填寫再儲存。}}</translation>
+<translation id="5271265092610673171">{count,plural, =1{一個必填欄位沒有內容，請先填寫再儲存。}other{部分必填欄位沒有內容，請先填寫再儲存。}}</translation>
 <translation id="5271549068863921519">儲存密碼</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) 邀請你加入分頁群組。知道連結的使用者都可以編輯所有分頁，請謹慎考慮是否加入。連結將在 48 小時後失效。</translation>
 <translation id="5275953427913009986">附加分頁「{title}」</translation>
@@ -2137,7 +2137,7 @@
 <translation id="76830702375944649">已完成「建立分頁群組」！</translation>
 <translation id="7695953765525234038">搜尋列</translation>
 <translation id="7696316012653762532">網頁翻譯選項</translation>
-<translation id="7700527812567437847">用 Google 智慧鏡頭搜尋畫面內容</translation>
+<translation id="7700527812567437847">使用 Google 智慧鏡頭搜尋畫面內容</translation>
 <translation id="7701040980221191251">無</translation>
 <translation id="7702428539671224160">在 <ph name="URL" /> 自動填入付款資訊</translation>
 <translation id="7708994397325774423">取得所有密碼</translation>

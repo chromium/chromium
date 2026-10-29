@@ -1431,7 +1431,7 @@
 <translation id="5524590039848017563">Skupljeno dugme primarne trake s alatkama</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} slaba lozinka}one{{COUNT} slaba lozinka}few{{COUNT} slabe lozinke}other{{COUNT} slabih lozinki}}</translation>
 <translation id="5532545557415295622">Dijalog za vremensko ograničenje za neaktivnost</translation>
-<translation id="5547868626772433490">Upitajte Gemini</translation>
+<translation id="5547868626772433490">Pitajte Gemini</translation>
 <translation id="5548760955356983418">Handoff vam omogućava da započnete pregledanje veb-sajta na ovom uređaju, pa da jednostavno nastavite na Mac-u. Veb-sajt koji je trenutno otvoren prikazaće se na doku na Mac-u.
 
 Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Podešavanja), a uređaji moraju da koriste isti iCloud nalog.</translation>

@@ -76,7 +76,7 @@
 <translation id="1593594475886691512">در حال قالب‌بندی...</translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">دوربین</translation>
-<translation id="162175252992296058">پرتغالی با صفحه‌کلید بین‌المللی آمریکایی</translation>
+<translation id="162175252992296058">پرتغالی با صفحه‌کلید بین‌المللی امریکایی</translation>
 <translation id="1629521517399325891">گواهینامه کاربر برای اصالت‌سنجی شبکه دردسترس نیست.</translation>
 <translation id="1641780993263690097">چینی (پین‌یین)</translation>
 <translation id="164969095109328410">‏دستگاه Chrome</translation>
@@ -156,7 +156,7 @@
 <translation id="2161573825856688200">‏پروژه Google</translation>
 <translation id="2163152940313951844">نویسه نامعتبر: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
-<translation id="2184934335987813305">پرتغالی با صفحه‌کلید بین‌المللی آمریکایی رایانه</translation>
+<translation id="2184934335987813305">پرتغالی با صفحه‌کلید بین‌المللی امریکایی رایانه</translation>
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> مصرف‌شده</translation>
 <translation id="2198315389084035571">چینی ساده</translation>
 <translation id="22085916256174561">کره‌ای</translation>
@@ -640,7 +640,7 @@
 <translation id="5896749729057314184">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />،‏ <ph name="NETWORK_NAME" />،‏ غیرفعال، قدرت سیگنال: <ph name="SIGNAL_STRENGTH" />٪، جزئیات</translation>
 <translation id="5912396950572065471">قالب</translation>
 <translation id="5918480239180455431">ویژگی‌های جستجوی جدید دردسترس است</translation>
-<translation id="5926082595146149752">هلندی (هلند) با صفحه‌کلید بین‌المللی آمریکایی رایانه</translation>
+<translation id="5926082595146149752">هلندی (هلند) با صفحه‌کلید بین‌المللی امریکایی رایانه</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5948255720516436063">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" /> شبکه، <ph name="NETWORK_NAME" />، بعداز راه‌اندازی دستگاه فعال کنید</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> مورد</translation>
@@ -661,7 +661,7 @@
 <translation id="6129953537138746214">Space</translation>
 <translation id="6133173853026656527">در حال انتقال <ph name="FILE_NAME" /></translation>
 <translation id="6133877453787250710">سرپرست بر موارد زیر نظارت دارد:</translation>
-<translation id="613750717151263950">ژاپنی با صفحه‌کلید انگلیسی آمریکایی</translation>
+<translation id="613750717151263950">ژاپنی با صفحه‌کلید انگلیسی امریکایی</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />، بدون شبکه</translation>
 <translation id="6146563240635539929">ویدیو</translation>
 <translation id="6150853954427645995">برای ذخیره این فایل جهت استفاده آفلاین، دوباره انلاین شوید، روی فایل کلیک راست کنید و گزینه <ph name="OFFLINE_CHECKBOX_NAME" /> را انتخاب کنید.</translation>

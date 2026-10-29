@@ -5970,7 +5970,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Dodaj karticu u grupu}one{Dodaj kartice u grupu}few{Dodaj kartice u grupu}other{Dodaj kartice u grupu}}</translation>
 <translation id="554535686826424776">Pronađi kupone</translation>
 <translation id="5546865291508181392">Pronađi</translation>
-<translation id="5547868626772433490">Upitajte Gemini</translation>
+<translation id="5547868626772433490">Pitajte Gemini</translation>
 <translation id="5548075230008247516">Poništen je izbor svih stavki. Napustili se režim izbora.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ i još 1 kartica}one{„<ph name="TAB_TITLE" />“ i još # kartica}few{„<ph name="TAB_TITLE" />“ i još # kartice}other{„<ph name="TAB_TITLE" />“ i još # kartica}}</translation>
 <translation id="554903022911579950">Kerberos</translation>
