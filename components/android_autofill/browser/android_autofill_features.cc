@@ -23,6 +23,7 @@ constexpr std::array kFeaturesExposedToJava = {
     &kAndroidAutofillImprovedVisibilityDetection,
     &kAndroidAutofillFieldsUpdatedOnSelect,
     &kAndroidAutofillSuppressOffscreenDatalist,
+    &kAndroidAutofillIncludeSelectOptionValues,
 };
 
 }  // namespace
@@ -53,6 +54,12 @@ BASE_FEATURE(kAndroidAutofillFieldsUpdatedOnSelect,
 // If enabled, datalist popups are suppressed when the field is outside the
 // container view's visible bounds.
 BASE_FEATURE(kAndroidAutofillSuppressOffscreenDatalist,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, <select> elements include both option display texts and option
+// values in ViewStructure.setAutofillOptions(), and AutofillRequest maps
+// indices from either range back to the corresponding option value.
+BASE_FEATURE(kAndroidAutofillIncludeSelectOptionValues,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 static int64_t JNI_AndroidAutofillFeatures_GetFeature(JNIEnv* env,

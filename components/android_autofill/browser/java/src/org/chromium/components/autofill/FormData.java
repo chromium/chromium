@@ -18,6 +18,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
 
@@ -64,6 +65,7 @@ public class FormData {
                 structure.newHtmlInfoBuilder("form").addAttribute("name", mName).build());
         int index = structure.addChildCount(mFields.size());
         short fieldIndex = 0;
+        @Nullable Boolean includeSelectOptionValues = null;
         for (FormFieldData field : mFields) {
             ViewStructure child = structure.newChild(index++);
             if (focusFieldIndex == fieldIndex) {
@@ -116,8 +118,15 @@ public class FormData {
             }
             switch (field.getControlType()) {
                 case FormFieldData.ControlType.LIST:
+                    if (includeSelectOptionValues == null) {
+                        includeSelectOptionValues =
+                                AndroidAutofillFeatures
+                                        .ANDROID_AUTOFILL_INCLUDE_SELECT_OPTION_VALUES
+                                        .isEnabled();
+                    }
                     child.setAutofillType(View.AUTOFILL_TYPE_LIST);
-                    child.setAutofillOptions(field.mOptionContents);
+                    child.setAutofillOptions(
+                            getSelectAutofillOptions(field, includeSelectOptionValues));
                     int i = findIndex(field.mOptionValues, field.getValue());
                     if (i != -1) {
                         child.setAutofillValue(AutofillValue.forList(i));
@@ -145,6 +154,26 @@ public class FormData {
 
     static int toFieldVirtualId(int sessionId, short index) {
         return (sessionId << 16) | index;
+    }
+
+    // ViewStructure.setAutofillOptions(CharSequence[]) only accepts a flat array of strings and
+    // AutofillValue.forList(int) returns an index into that array, so option texts and option
+    // values are concatenated into a single array of length 2N.
+    private static String[] getSelectAutofillOptions(
+            FormFieldData field, boolean includeSelectOptionValues) {
+        assert field.mOptionContents.length == field.mOptionValues.length;
+        if (!includeSelectOptionValues) {
+            return field.mOptionContents;
+        }
+        String[] options = new String[field.mOptionContents.length + field.mOptionValues.length];
+        System.arraycopy(field.mOptionContents, 0, options, 0, field.mOptionContents.length);
+        System.arraycopy(
+                field.mOptionValues,
+                0,
+                options,
+                field.mOptionContents.length,
+                field.mOptionValues.length);
+        return options;
     }
 
     static int findIndex(String[] values, String value) {

@@ -261,6 +261,10 @@ public final class ProductionSupportedFlagList {
                 "When enabled, datalist popups are suppressed when the field is outside the"
                         + " container view's visible bounds."),
         Flag.baseFeature(
+                AndroidAutofillFeatures.ANDROID_AUTOFILL_INCLUDE_SELECT_OPTION_VALUES_NAME,
+                "When enabled, select elements include both option display texts and option"
+                        + " values in ViewStructure.setAutofillOptions."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ACCEPT_DOM_MUTATION_AFTER_AUTOFILL_SUBMISSION,
                 "Accepts DOM_MUTATION_AFTER_AUTOFILL submissions detected on password forms."),
         Flag.baseFeature(
