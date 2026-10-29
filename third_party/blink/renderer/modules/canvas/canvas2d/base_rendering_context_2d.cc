@@ -2260,4 +2260,12 @@ BaseRenderingContext2D::GetAnimatedImageFrameIndexMap(uint32_t id) const {
   return nullptr;
 }
 
+void BaseRenderingContext2D::SetOriginTainted() {
+  Host()->SetOriginTainted();
+}
+
+bool BaseRenderingContext2D::OriginClean() const {
+  return Host()->OriginClean();
+}
+
 }  // namespace blink

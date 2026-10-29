@@ -146,14 +146,6 @@ void OffscreenCanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
 }
 
 // BaseRenderingContext2D implementation
-bool OffscreenCanvasRenderingContext2D::OriginClean() const {
-  return Host()->OriginClean();
-}
-
-void OffscreenCanvasRenderingContext2D::SetOriginTainted() {
-  Host()->SetOriginTainted();
-}
-
 int OffscreenCanvasRenderingContext2D::Width() const {
   return Host()->Size().width();
 }

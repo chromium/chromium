@@ -704,14 +704,6 @@ void CanvasRenderingContext2D::ResourceContentChanged(SVGResource*) {
   GetState().ClearResolvedFilter();
 }
 
-bool CanvasRenderingContext2D::OriginClean() const {
-  return Host()->OriginClean();
-}
-
-void CanvasRenderingContext2D::SetOriginTainted() {
-  Host()->SetOriginTainted();
-}
-
 int CanvasRenderingContext2D::Width() const {
   return Host()->Size().width();
 }
