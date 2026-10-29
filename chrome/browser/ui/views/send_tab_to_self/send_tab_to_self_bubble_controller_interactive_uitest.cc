@@ -136,7 +136,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfInteractiveUiTest,
   RunTestSequence(SetUpSingleDeviceAndShowBubble(), Do([this]() {
                     SendTabToSelfBubbleController::GetOrCreateForWebContents(
                         browser()->GetTabStripModel()->GetActiveWebContents())
-                        ->OnDeviceSelected("device_1", "device_1");
+                        ->OnDeviceSelected("device_1", "device_1",
+                                           FormFactor::kDesktop);
                   }),
                   WaitForShow(toasts::ToastView::kToastViewId),
                   StopToastTimer(),

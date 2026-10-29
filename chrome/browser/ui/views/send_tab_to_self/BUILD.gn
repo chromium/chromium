@@ -51,7 +51,6 @@ source_set("send_tab_to_self") {
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/toolbar",
-    "//components/prefs",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/strings",

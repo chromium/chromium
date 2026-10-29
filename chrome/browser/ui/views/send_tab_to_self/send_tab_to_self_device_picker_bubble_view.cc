@@ -158,7 +158,8 @@ void SendTabToSelfDevicePickerBubbleView::HandleSendClicked() {
   CHECK(selected_button_);
 
   controller_->OnDeviceSelected(selected_button_->device_guid(),
-                                selected_button_->device_name());
+                                selected_button_->device_name(),
+                                selected_button_->device_form_factor());
 
   GetViewAccessibility().AnnounceText(l10n_util::GetStringFUTF16(
       IDS_SEND_TAB_TO_SELF_SENDING_ANNOUNCE,

@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -48,8 +47,6 @@ struct RemoteDeviceInfo;
 namespace send_tab_to_self {
 
 class SendTabToSelfBubbleView;
-
-class SendTabToSelfModel;
 class TargetDeviceListWaiter;
 
 class SendTabToSelfBubbleController
@@ -72,16 +69,18 @@ class SendTabToSelfBubbleController
 
   // Returns nullptr if no bubble is currently shown.
   SendTabToSelfBubbleView* send_tab_to_self_bubble_view() const;
-  // Returns the valid devices info map.
+  // Returns the list of valid target devices, sorted by recency.
   virtual std::vector<syncer::RemoteDeviceInfo> GetValidDevices();
 
   virtual AccountInfo GetSharingAccountInfo();
 
-  // Handles the action when the user click on one valid device. Sends tab to
-  // the target device.
+  // Handles the action when the user clicks on one valid device. Sends tab to
+  // the target device; `form_factor` is the target device's form factor used
+  // to display the confirmation toast.
   // Virtual for testing.
   virtual void OnDeviceSelected(const std::string& target_device_guid,
-                                std::string_view device_name);
+                                const std::string& device_name,
+                                syncer::DeviceInfo::FormFactor form_factor);
 
   // Handler for when user clicks the link to manage their available devices.
   void OnManageDevicesClicked(const ui::Event& event);
@@ -92,8 +91,6 @@ class SendTabToSelfBubbleController
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  void SetSelectorGenerationTimeoutForTesting(base::TimeDelta timeout);
-
  protected:
   explicit SendTabToSelfBubbleController(content::WebContents* web_contents);
 
@@ -101,7 +98,6 @@ class SendTabToSelfBubbleController
   friend class content::WebContentsUserData<SendTabToSelfBubbleController>;
 
   Profile* GetProfile();
-  SendTabToSelfModel* GetModel();
   virtual std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason();
 
   // Prepares the anchor and initiates showing the bubble for a specific reason.

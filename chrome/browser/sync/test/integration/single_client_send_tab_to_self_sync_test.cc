@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_page_handler.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/send_tab_to_self_helper.h"
@@ -40,6 +41,7 @@
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
+#include "components/sync_device_info/device_info.h"
 #include "components/sync_user_events/user_event_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -52,6 +54,7 @@
 
 namespace {
 
+using FormFactor = syncer::DeviceInfo::FormFactor;
 using send_tab_to_self_helper::GetFormFieldValueById;
 using send_tab_to_self_helper::PopulateFormField;
 using testing::AllOf;
@@ -62,6 +65,7 @@ using testing::HasSubstr;
 using testing::Not;
 using testing::Property;
 using testing::UnorderedElementsAre;
+using testing::WithParamInterface;
 
 constexpr char kGuid[] = "kGuid";
 constexpr char kUrl[] = "https://www.example.com";
@@ -78,7 +82,7 @@ constexpr char kEmail[] = "john@example.com";
 
 class SingleClientSendTabToSelfSyncTest
     : public SyncTest,
-      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
+      public WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientSendTabToSelfSyncTest() : SyncTest(SINGLE_CLIENT) {
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
@@ -496,9 +500,12 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
       send_tab_to_self::SendTabToSelfBubbleController::
           GetOrCreateForWebContents(web_contents);
   // Increase the timeout to avoid flakiness on slow bots.
-  controller->SetSelectorGenerationTimeoutForTesting(base::Seconds(2));
+  send_tab_to_self::SendTabToSelfPageHandler::GetOrCreateForWebContents(
+      web_contents)
+      ->SetSelectorGenerationTimeoutForTesting(base::Seconds(2));
 
-  controller->OnDeviceSelected(kTargetDeviceSyncCacheGuid, kSenderDeviceName);
+  controller->OnDeviceSelected(kTargetDeviceSyncCacheGuid, kSenderDeviceName,
+                               FormFactor::kDesktop);
 
   ASSERT_TRUE(
       ServerCountMatchStatusChecker(syncer::SEND_TAB_TO_SELF, 1).Wait());
@@ -547,7 +554,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest, ShouldSendEmptyPage) {
       send_tab_to_self::SendTabToSelfBubbleController::
           GetOrCreateForWebContents(web_contents);
 
-  controller->OnDeviceSelected(kTargetDeviceSyncCacheGuid, kSenderDeviceName);
+  controller->OnDeviceSelected(kTargetDeviceSyncCacheGuid, kSenderDeviceName,
+                               FormFactor::kDesktop);
 
   ASSERT_TRUE(
       ServerCountMatchStatusChecker(syncer::SEND_TAB_TO_SELF, 1).Wait());

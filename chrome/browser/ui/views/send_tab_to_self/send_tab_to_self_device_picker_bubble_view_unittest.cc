@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -61,7 +60,8 @@ class SendTabToSelfBubbleControllerMock : public SendTabToSelfBubbleController {
   MOCK_METHOD(void,
               OnDeviceSelected,
               (const std::string& target_device_guid,
-               std::string_view device_name),
+               const std::string& device_name,
+               FormFactor form_factor),
               (override));
 };
 
@@ -151,7 +151,8 @@ TEST_F(SendTabToSelfDevicePickerBubbleViewTest,
   views::test::ButtonTestApi(third_button).NotifyDefaultMouseClick();
   EXPECT_TRUE(third_button->IsSelected());
 
-  EXPECT_CALL(*controller_, OnDeviceSelected(kDeviceGuid3, kDeviceName3));
+  EXPECT_CALL(*controller_,
+              OnDeviceSelected(kDeviceGuid3, kDeviceName3, FormFactor::kPhone));
   bubble_->AcceptDialog();
 }
 

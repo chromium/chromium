@@ -15,6 +15,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_page_handler.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
@@ -214,12 +215,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
   TestSendTabToSelfModelObserver observer(
       sync_service->GetSendTabToSelfModel());
 
-  sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
-      {RemoteDeviceInfo(kTargetDeviceName, kTargetDeviceId,
-                        FormFactor::kDesktop, OsType::kLinux, base::Time::Now(),
-                        /*has_high_precision_timestamp=*/false)});
-
-  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
+  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName,
+                               FormFactor::kDesktop);
   observer.WaitForNextEntry();
 
   const gfx::VectorIcon& expected_icon = features::IsRoundedIconsEnabled()
@@ -244,12 +241,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
   TestSendTabToSelfModelObserver observer(
       sync_service->GetSendTabToSelfModel());
 
-  sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
-      {RemoteDeviceInfo(kTargetDeviceName, kTargetDeviceId, FormFactor::kPhone,
-                        OsType::kAndroid, base::Time::Now(),
-                        /*has_high_precision_timestamp=*/false)});
-
-  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
+  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName,
+                               FormFactor::kPhone);
   observer.WaitForNextEntry();
 
   const gfx::VectorIcon& expected_icon = features::IsRoundedIconsEnabled()
@@ -274,12 +267,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
   TestSendTabToSelfModelObserver observer(
       sync_service->GetSendTabToSelfModel());
 
-  sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
-      {RemoteDeviceInfo(kTargetDeviceName, kTargetDeviceId, FormFactor::kTablet,
-                        OsType::kAndroid, base::Time::Now(),
-                        /*has_high_precision_timestamp=*/false)});
-
-  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
+  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName,
+                               FormFactor::kTablet);
   observer.WaitForNextEntry();
 
   const gfx::VectorIcon& expected_icon =
@@ -302,14 +291,11 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
   TestSendTabToSelfModelObserver observer(
       sync_service->GetSendTabToSelfModel());
 
-  sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
-      {RemoteDeviceInfo(kTargetDeviceName, kTargetDeviceId,
-                        FormFactor::kDesktop, OsType::kLinux, base::Time::Now(),
-                        /*has_high_precision_timestamp=*/false)});
   sync_service->GetFakeSendTabToSelfModel()->SetSendResult(
       SendTabToSelfResult::kSuccessThrottled);
 
-  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
+  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName,
+                               FormFactor::kDesktop);
   observer.WaitForNextEntry();
 
   const gfx::VectorIcon& expected_icon = features::IsRoundedIconsEnabled()
@@ -372,7 +358,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
   sync_service->GetFakeSendTabToSelfModel()->SetSendEntryCallback(
       future.GetRepeatingCallback());
 
-  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
+  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName,
+                               FormFactor::kDesktop);
   EXPECT_EQ(future.Get(), nullptr);
 
   // Verify that the failure toast is shown.
@@ -403,7 +390,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
   sync_service->GetFakeSendTabToSelfModel()->SetSendEntryCallback(
       future.GetRepeatingCallback());
 
-  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
+  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName,
+                               FormFactor::kDesktop);
   EXPECT_NE(future.Get(), nullptr);
 
   const gfx::VectorIcon& expected_icon = features::IsRoundedIconsEnabled()
@@ -435,13 +423,15 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
   SendTabToSelfBubbleController* controller =
       SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
   // Increase the timeout for tests to avoid flakiness on slow bots.
-  controller->SetSelectorGenerationTimeoutForTesting(base::Seconds(2));
+  SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents)
+      ->SetSelectorGenerationTimeoutForTesting(base::Seconds(2));
 
   TestSendTabToSelfModelObserver observer(
       sync_service->GetSendTabToSelfModel());
 
   base::HistogramTester histogram_tester;
-  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
+  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName,
+                               FormFactor::kDesktop);
   SendTabToSelfEntry entry = observer.WaitForNextEntry();
 
   // Test that the entry was added with the correct URL.
@@ -474,13 +464,15 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
   SendTabToSelfBubbleController* controller =
       SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
   // Increase the timeout for tests to avoid flakiness on slow bots.
-  controller->SetSelectorGenerationTimeoutForTesting(base::Seconds(2));
+  SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents)
+      ->SetSelectorGenerationTimeoutForTesting(base::Seconds(2));
 
   TestSendTabToSelfModelObserver observer(
       sync_service->GetSendTabToSelfModel());
 
   base::HistogramTester histogram_tester;
-  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
+  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName,
+                               FormFactor::kDesktop);
   SendTabToSelfEntry entry = observer.WaitForNextEntry();
 
   // Test that the entry was added with the correct URL.
@@ -513,13 +505,15 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
   SendTabToSelfBubbleController* controller =
       SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
   // Increase the timeout for tests to avoid flakiness on slow bots.
-  controller->SetSelectorGenerationTimeoutForTesting(base::Seconds(2));
+  SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents)
+      ->SetSelectorGenerationTimeoutForTesting(base::Seconds(2));
 
   TestSendTabToSelfModelObserver observer(
       sync_service->GetSendTabToSelfModel());
 
   base::HistogramTester histogram_tester;
-  controller->OnDeviceSelected("device_1", "device_name_1");
+  controller->OnDeviceSelected("device_1", "device_name_1",
+                               FormFactor::kDesktop);
   SendTabToSelfEntry entry = observer.WaitForNextEntry();
 
   EXPECT_EQ(web_contents->GetLastCommittedURL(), entry.GetURL());
@@ -563,13 +557,15 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
   SendTabToSelfBubbleController* controller =
       SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
   // Increase the timeout for tests to avoid flakiness on slow bots.
-  controller->SetSelectorGenerationTimeoutForTesting(base::Seconds(2));
+  SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents)
+      ->SetSelectorGenerationTimeoutForTesting(base::Seconds(2));
 
   TestSendTabToSelfModelObserver observer(
       sync_service->GetSendTabToSelfModel());
 
   base::HistogramTester histogram_tester;
-  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName);
+  controller->OnDeviceSelected(kTargetDeviceId, kTargetDeviceName,
+                               FormFactor::kDesktop);
   SendTabToSelfEntry entry = observer.WaitForNextEntry();
 
   // Test that the entry was added with the correct URL.
@@ -618,13 +614,15 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
   SendTabToSelfBubbleController* controller =
       SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
   // Increase the timeout for tests to avoid flakiness on slow bots.
-  controller->SetSelectorGenerationTimeoutForTesting(base::Seconds(2));
+  SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents)
+      ->SetSelectorGenerationTimeoutForTesting(base::Seconds(2));
 
   TestSendTabToSelfModelObserver observer(
       sync_service->GetSendTabToSelfModel());
 
   base::HistogramTester histogram_tester;
-  controller->OnDeviceSelected("device_1", "device_name_1");
+  controller->OnDeviceSelected("device_1", "device_name_1",
+                               FormFactor::kDesktop);
   SendTabToSelfEntry entry = observer.WaitForNextEntry();
 
   EXPECT_EQ(web_contents->GetLastCommittedURL(), entry.GetURL());
