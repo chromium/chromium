@@ -88,6 +88,8 @@ namespace scheduler {
 class WebAgentGroupScheduler;
 }  // namespace scheduler
 
+enum class DetachReason;
+
 class BrowserInterfaceBrokerProxy;
 class FrameScheduler;
 class InterfaceRegistry;
@@ -201,6 +203,11 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
       WebLocalFrameClient*,
       InterfaceRegistry*,
       const LocalFrameToken& frame_token) = 0;
+
+  // This method closes and deletes the WebLocalFrame. This is typically called
+  // by the embedder in response to a frame detached callback to the
+  // WebLocalFrameClient.
+  virtual void Close(DetachReason detach_reason) = 0;
 
   // Returns the WebFrame associated with the current V8 context. This
   // function can return 0 if the context is associated with a Document that

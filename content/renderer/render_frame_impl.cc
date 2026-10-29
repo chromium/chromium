@@ -4523,10 +4523,6 @@ bool RenderFrameImpl::SwapOutAndDeleteThis(
   }
 
   if (!success) {
-    // The swap can fail when the frame is detached during swap (this can
-    // happen while running the unload handlers). When that happens, delete
-    // the proxy.
-    remote_frame->Close(blink::DetachReason::kFrameDeletion);
     return false;
   }
 

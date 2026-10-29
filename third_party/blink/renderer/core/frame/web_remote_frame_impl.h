@@ -13,7 +13,7 @@
 #include "third_party/blink/public/web/web_remote_frame.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
-#include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -63,7 +63,6 @@ class CORE_EXPORT WebRemoteFrameImpl final
   ~WebRemoteFrameImpl() override;
 
   // WebFrame methods:
-  void Close(DetachReason detach_reason) override;
   WebView* View() const override;
 
   // WebRemoteFrame methods:
@@ -147,11 +146,6 @@ class CORE_EXPORT WebRemoteFrameImpl final
   // TODO(dcheng): Inline this field directly rather than going through Member.
   Member<RemoteFrameClientImpl> frame_client_;
   Member<RemoteFrame> frame_;
-
-  // Oilpan: WebRemoteFrameImpl must remain alive until close() is called.
-  // Accomplish that by keeping a self-referential Persistent<>. It is
-  // cleared upon close().
-  SelfKeepAlive<WebRemoteFrameImpl> self_keep_alive_{{}, this};
 };
 
 template <>

@@ -177,8 +177,6 @@ WebFrame::WebFrame(mojom::blink::TreeScopeType scope,
   DCHECK(frame_token.value());
 }
 
-void WebFrame::Close(DetachReason detach_reason) {}
-
 Frame* WebFrame::ToCoreFrame(const WebFrame& frame) {
   if (auto* web_local_frame = DynamicTo<WebLocalFrameImpl>(&frame))
     return web_local_frame->GetFrame();

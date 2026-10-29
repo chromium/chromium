@@ -114,7 +114,6 @@ class CORE_EXPORT WebLocalFrameImpl final
       public WebNavigationControl {
  public:
   // WebFrame overrides:
-  void Close(DetachReason detach_reason) override;
   WebView* View() const override;
   v8::Local<v8::Object> GlobalProxy(v8::Isolate* isolate) const override;
   bool IsLoading() const override;
@@ -125,6 +124,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       WebLocalFrameClient*,
       InterfaceRegistry*,
       const LocalFrameToken& frame_token) override;
+  void Close(DetachReason detach_reason) override;
   WebLocalFrameClient* Client() const override { return client_; }
   void SetAutofillClient(WebAutofillClient*) override;
   WebAutofillClient* AutofillClient() override;

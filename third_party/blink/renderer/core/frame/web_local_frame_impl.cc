@@ -805,8 +805,6 @@ const WebRemoteFrame* WebLocalFrameImpl::ToWebRemoteFrame() const {
 }
 
 void WebLocalFrameImpl::Close(DetachReason detach_reason) {
-  WebLocalFrame::Close(detach_reason);
-
   if (frame_widget_) {
     frame_widget_->Close(detach_reason);
     frame_widget_ = nullptr;
