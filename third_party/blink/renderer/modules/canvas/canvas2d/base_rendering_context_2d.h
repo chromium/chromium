@@ -404,6 +404,7 @@ class MODULES_EXPORT BaseRenderingContext2D
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
 
+  void RasterRecordToSharedImage(cc::PaintRecord last_recording);
   void RasterRecordToSoftwareSurface(cc::PaintRecord last_recording);
   void ApplyAnimatedImageFrameIndexesForId(SkCanvas* canvas, uint32_t id);
   // Returns a map of frame indexes to be used by

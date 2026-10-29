@@ -359,6 +359,8 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
     return;
   }
 
+  shared_image_provider_ = std::move(provider);
+
   if (is_accelerated) {
     MemoryManagedPaintRecorder recorder(size, nullptr);
     if (alpha_type == kOpaque_SkAlphaType) {
@@ -366,17 +368,18 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
     } else {
       recorder.getRecordingCanvas().clear(SkColors::kTransparent);
     }
-    provider->RasterRecord(recorder.ReleaseMainRecording(), {});
+    RasterRecordToSharedImage(recorder.ReleaseMainRecording());
 
     // An error might have occurred while clearing.
-    if (!provider->IsValid()) {
+    if (!shared_image_provider_->IsValid()) {
+      shared_image_provider_.reset();
       return;
     }
-  } else if (!provider->resource()) {
+  } else if (!shared_image_provider_->resource()) {
+    shared_image_provider_.reset();
     return;
   }
 
-  shared_image_provider_ = std::move(provider);
   if (raster_mode == RasterMode::kCPU) {
     CreateSoftwareSurface();
     if (!surface_) {
@@ -542,6 +545,16 @@ void BaseRenderingContext2D::ApplyAnimatedImageFrameIndexesForId(
   CHECK(canvas_image_provider_);
   canvas_image_provider_->SetAnimatedImageFrameIndexes(
       GetAnimatedImageFrameIndexMap(id));
+}
+
+void BaseRenderingContext2D::RasterRecordToSharedImage(
+    cc::PaintRecord last_recording) {
+  cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback =
+      blink::BindRepeating(
+          &BaseRenderingContext2D::ApplyAnimatedImageFrameIndexesForId,
+          WrapWeakPersistent(this));
+  shared_image_provider_->RasterRecord(std::move(last_recording),
+                                       std::move(custom_callback));
 }
 
 void BaseRenderingContext2D::RasterRecordToSoftwareSurface(
@@ -1282,11 +1295,7 @@ std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
   if (shared_image_provider_ && shared_image_provider_->IsAccelerated()) {
     ScopedRasterTimer timer(shared_image_provider_->RasterInterface(),
                             shared_image_provider_.get());
-    cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback =
-        blink::BindRepeating(
-            &BaseRenderingContext2D::ApplyAnimatedImageFrameIndexesForId,
-            WrapWeakPersistent(this));
-    shared_image_provider_->RasterRecord(recording, std::move(custom_callback));
+    RasterRecordToSharedImage(recording);
   } else if (surface_) {
     ScopedRasterTimer timer(nullptr, nullptr);
     RasterRecordToSoftwareSurface(recording);
