@@ -80,6 +80,19 @@ class NodeLinkMemoryTest : public testing::Test {
     memory.AddBlockBuffer(id, block_size, std::move(mapping));
   }
 
+  static std::vector<Fragment> DrainFragments(NodeLinkMemory& memory,
+                                              size_t size) {
+    std::vector<Fragment> allocated;
+    for (;;) {
+      Fragment fragment = memory.AllocateFragment(size);
+      if (fragment.is_null()) {
+        break;
+      }
+      allocated.push_back(fragment);
+    }
+    return allocated;
+  }
+
   void SetUp() override {
     // Brokers assign their own names, no need to assign one to `node_a_`.
     auto links = ConnectNodes(node_a_, node_b_, kTestNonBrokerName);
@@ -202,6 +215,54 @@ TEST_F(NodeLinkMemoryTest, ExpandCapacity) {
   // The new buffer should have also been shared with the other NodeLinkMemory
   // already.
   EXPECT_TRUE(memory_b().FreeFragment(fragment));
+}
+
+TEST_F(NodeLinkMemoryTest, PreActivationCapacityExpansion) {
+  const Ref<Node> node_c{
+      MakeRefCounted<Node>(Node::Type::kNormal, GetTestDriver())};
+  auto transports = DriverTransport::CreatePair(GetTestDriver());
+  DriverMemoryWithMapping buffer =
+      NodeLinkMemory::AllocateMemory(GetTestDriver());
+  Ref<NodeLink> link_a = NodeLink::CreateInactive(
+      node_a(), LinkSide::kA, node_a()->GetAssignedName(),
+      kOtherTestNonBrokerName, Node::Type::kNormal, 0, Features{},
+      transports.first,
+      NodeLinkMemory::Create(node_a(), LinkSide::kA, Features{},
+                             std::move(buffer.mapping)));
+  Ref<NodeLink> link_c = NodeLink::CreateInactive(
+      node_c, LinkSide::kB, kOtherTestNonBrokerName,
+      node_a()->GetAssignedName(), Node::Type::kBroker, 0, Features{},
+      transports.second,
+      NodeLinkMemory::Create(node_c, LinkSide::kB, Features{},
+                             buffer.memory.Map()));
+  node_a()->AddConnection(kOtherTestNonBrokerName, {.link = link_a});
+  node_c->AddConnection(node_a()->GetAssignedName(),
+                        {.link = link_c, .broker = link_c});
+
+  // Drain all 64-byte blocks in PrimaryBuffer and request an 8 KB fragment
+  // (which has no pre-allocated capacity in PrimaryBuffer) before the links are
+  // activated.
+  EXPECT_EQ(1483u, DrainFragments(link_a->memory(), 64).size());
+  EXPECT_TRUE(link_a->memory().AllocateFragment(64).is_null());
+  EXPECT_TRUE(link_a->memory().AllocateFragment(8192).is_null());
+
+  // Activating the links must fulfill all pending pre-activation capacity
+  // requests via SetNodeLink().
+  link_a->Activate();
+  link_c->Activate();
+
+  Fragment fragment_64 = link_a->memory().AllocateFragment(64);
+  ASSERT_TRUE(fragment_64.is_addressable());
+  EXPECT_NE(NodeLinkMemory::kPrimaryBufferId, fragment_64.buffer_id());
+  EXPECT_TRUE(link_c->memory().FreeFragment(fragment_64));
+
+  Fragment fragment_8k = link_a->memory().AllocateFragment(8192);
+  ASSERT_TRUE(fragment_8k.is_addressable());
+  EXPECT_EQ(8192u, fragment_8k.size());
+  EXPECT_NE(NodeLinkMemory::kPrimaryBufferId, fragment_8k.buffer_id());
+  EXPECT_TRUE(link_c->memory().FreeFragment(fragment_8k));
+
+  node_c->Close();
 }
 
 TEST_F(NodeLinkMemoryTest, LimitedCapacityExpansion) {

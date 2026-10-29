@@ -189,7 +189,7 @@ void NodeLinkMemory::SetNodeLink(Ref<NodeLink> link) {
   {
     absl::MutexLock lock(&mutex_);
     node_link_ = std::move(link);
-    if (!node_link_) {
+    if (!node_link_ || capacity_callbacks_.empty()) {
       return;
     }
 
@@ -198,10 +198,11 @@ void NodeLinkMemory::SetNodeLink(Ref<NodeLink> link) {
     for (auto& [size, callbacks] : capacity_callbacks_) {
       block_sizes_needed.push_back(size);
     }
+    link = node_link_;
   }
 
   for (size_t size : block_sizes_needed) {
-    RequestBlockCapacity(size, [](bool) {});
+    AllocateBlockBuffer(link, size);
   }
 }
 
@@ -430,11 +431,6 @@ void NodeLinkMemory::RequestBlockCapacity(
     RequestBlockCapacityCallback callback) {
   ABSL_ASSERT(block_size >= kMinFragmentSize);
 
-  const size_t min_buffer_size = block_size * kMinBlockAllocatorCapacity;
-  const size_t num_pages =
-      (min_buffer_size + kBlockAllocatorPageSize - 1) / kBlockAllocatorPageSize;
-  const size_t buffer_size = num_pages * kBlockAllocatorPageSize;
-
   Ref<NodeLink> link;
   {
     absl::MutexLock lock(&mutex_);
@@ -456,6 +452,15 @@ void NodeLinkMemory::RequestBlockCapacity(
     link = node_link_;
   }
 
+  AllocateBlockBuffer(std::move(link), block_size);
+}
+
+void NodeLinkMemory::AllocateBlockBuffer(Ref<NodeLink> link,
+                                         size_t block_size) {
+  const size_t min_buffer_size = block_size * kMinBlockAllocatorCapacity;
+  const size_t num_pages =
+      (min_buffer_size + kBlockAllocatorPageSize - 1) / kBlockAllocatorPageSize;
+  const size_t buffer_size = num_pages * kBlockAllocatorPageSize;
   node_->AllocateSharedMemory(
       buffer_size, [self = WrapRefCounted(this), block_size,
                     link = std::move(link)](DriverMemory memory) {

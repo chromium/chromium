@@ -76,11 +76,16 @@ class TestNodePair {
   NodeLinkMemory& memory_a() const { return node_link_a_->memory(); }
   NodeLinkMemory& memory_b() const { return node_link_b_->memory(); }
 
+  // Activates only node A's or node B's NodeLink transport. Each NodeLink may
+  // only be activated once.
+  void ActivateTransportA() { node_link_a_->Activate(); }
+  void ActivateTransportB() { node_link_b_->Activate(); }
+
   // Activates both of the test nodes' NodeLink transports. Tests can defer this
   // activation as a means of deferring NodeLink communications in general.
   void ActivateTransports() {
-    node_link_a_->Activate();
-    node_link_b_->Activate();
+    ActivateTransportA();
+    ActivateTransportB();
   }
 
   // Establishes new RemoteRouterLinks between `a` and `b`. Different initial
@@ -307,13 +312,30 @@ TEST_F(RemoteRouterLinkTest, NewLinkWithPendingState) {
   // Occupy all fragments in the primary buffer so they aren't usable.
   std::vector<FragmentRef<RouterLinkState>> unused_fragments =
       nodes().AllocateAllRouterLinkStates();
+  ASSERT_FALSE(unused_fragments.empty());
+
+  bool callback_called = false;
+  FragmentRef<RouterLinkState> callback_state;
+  nodes().memory_a().AllocateRouterLinkState(
+      [&](FragmentRef<RouterLinkState> state) {
+        callback_called = true;
+        callback_state = std::move(state);
+      });
+  EXPECT_FALSE(callback_called);
+
+  // Activating node A's transport fulfills the pre-activation capacity requests
+  // queued above while node B's transport remains inactive.
+  nodes().ActivateTransportA();
+  EXPECT_TRUE(callback_called);
+  EXPECT_TRUE(callback_state.is_addressable());
 
   // Now allocate another batch of fragments which must be in a newly allocated
-  // buffer on node A. Because the nodes' transports are not active yet, there
-  // is no way for node B to have had this buffer shared with it yet. Hence all
-  // of these fragments will be seen as pending on node B.
+  // buffer on node A. Because node B's transport is not active yet, there is no
+  // way for node B to have had this buffer shared with it yet. Hence all of
+  // these fragments will be seen as pending on node B.
   std::vector<FragmentRef<RouterLinkState>> fragments =
       nodes().AllocateAllRouterLinkStates();
+  EXPECT_FALSE(fragments.empty());
 
   std::vector<Router::Pair> router_pairs =
       CreateTestRouterPairs(fragments.size());
@@ -341,11 +363,11 @@ TEST_F(RemoteRouterLinkTest, NewLinkWithPendingState) {
     EXPECT_FALSE(b_link->TryLockForClosure());
   }
 
-  // We're using the synchronous driver, so as soon as we activate our
-  // transports, all pending NodeLink communications will complete before this
+  // We're using the synchronous driver, so as soon as we activate node B's
+  // transport, all pending NodeLink communications will complete before this
   // call returns. This also means side B of each link will resolve its
   // RouterLinkState.
-  nodes().ActivateTransports();
+  nodes().ActivateTransportB();
 
   // Now all links should be lockable from either side, implying that both
   // sides have a valid reference to the same RouterLinkState.

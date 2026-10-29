@@ -53,12 +53,12 @@ class NodeLinkMemory : public RefCounted<NodeLinkMemory> {
   const Features& available_features() const { return available_features_; }
 
   // Sets a reference to the NodeLink using this NodeLinkMemory. This is called
-  // by the NodeLink itself before any other methods can be called on the
-  // NodeLinkMemory, and it's only reset to null once the NodeLink is
-  // deactivated. This link may be used to share information with the remote
-  // node, where another NodeLinkMemory is cooperatively managing the same
-  // memory pool as this one. `link` must belong to the same side of the node
-  // link as this object.
+  // by the NodeLink itself upon activation, and it's only reset to null once
+  // the NodeLink is deactivated. Any block capacity requests made before
+  // activation are deferred until then. This link may be used to share
+  // information with the remote node, where another NodeLinkMemory is
+  // cooperatively managing the same memory pool as this one. `link` must
+  // belong to the same side of the node link as this object.
   void SetNodeLink(Ref<NodeLink> link);
 
   // Allocates a new DriverMemory object and initializes its contents to be
@@ -198,6 +198,7 @@ class NodeLinkMemory : public RefCounted<NodeLinkMemory> {
   using RequestBlockCapacityCallback = std::function<void(bool)>;
   void RequestBlockCapacity(size_t block_size,
                             RequestBlockCapacityCallback callback);
+  void AllocateBlockBuffer(Ref<NodeLink> link, size_t block_size);
   void OnCapacityRequestComplete(size_t block_size, bool success);
 
   // Initializes `fragment` as a new RouterLinkState and returns a ref to it.
