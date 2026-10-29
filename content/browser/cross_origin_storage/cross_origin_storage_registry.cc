@@ -568,7 +568,7 @@ class CrossOriginStorageRegistry::StorageBackend
 CrossOriginStorageRegistry*
 CrossOriginStorageRegistry::GetOrCreateForBrowserContext(
     BrowserContext* browser_context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   CHECK(browser_context);
 
   auto* existing = static_cast<CrossOriginStorageRegistry*>(
@@ -604,7 +604,7 @@ CrossOriginStorageRegistry::CrossOriginStorageRegistry(
                    {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
                     base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
                std::move(root_directory)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
 }
 
 CrossOriginStorageRegistry::~CrossOriginStorageRegistry() = default;
@@ -613,7 +613,7 @@ void CrossOriginStorageRegistry::OpenForRead(const CrossOriginStorageHash& hash,
                                              const url::Origin& caller,
                                              bool update_access_time,
                                              OpenForReadCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   backend_.AsyncCall(&StorageBackend::OpenForRead)
       .WithArgs(hash, caller, update_access_time)
       .Then(std::move(callback));
@@ -625,7 +625,7 @@ void CrossOriginStorageRegistry::Commit(
     CrossOriginStorageAccessSpec access_spec,
     CrossOriginStorageStagingWriter::Result staging_result,
     CommitCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   backend_.AsyncCall(&StorageBackend::Commit)
       .WithArgs(hash, caller, std::move(access_spec), std::move(staging_result))
       .Then(std::move(callback));
@@ -634,7 +634,7 @@ void CrossOriginStorageRegistry::Commit(
 void CrossOriginStorageRegistry::CreateStagingWriter(
     blink::mojom::CrossOriginStorageAlgorithm algorithm,
     CreateStagingWriterCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   backend_.AsyncCall(&StorageBackend::CreateStagingWriter)
       .WithArgs(algorithm)
       .Then(std::move(callback));
@@ -642,12 +642,12 @@ void CrossOriginStorageRegistry::CreateStagingWriter(
 
 base::WeakPtr<CrossOriginStorageRegistry>
 CrossOriginStorageRegistry::GetWeakPtr() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   return weak_factory_.GetWeakPtr();
 }
 
 void CrossOriginStorageRegistry::SynchronouslyResetBackendForTesting() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   backend_.SynchronouslyResetForTest();  // IN-TEST
 }
 

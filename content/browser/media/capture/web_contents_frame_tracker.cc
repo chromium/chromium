@@ -95,8 +95,8 @@ class CapturedTabRegistry {
   CapturedTabRegistry& operator=(const CapturedTabRegistry&) = delete;
 
   void Register(const GlobalRenderFrameHostId& id, WebContents* web_contents) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    DCHECK(web_contents);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
+    CHECK(web_contents, base::NotFatalUntil::M163);
     // Opportunistically drop entries whose WebContents has gone away, so the
     // map stays proportional to the number of live captured tabs.
     std::erase_if(entries_, [](const auto& entry) { return !entry.second; });
@@ -104,7 +104,7 @@ class CapturedTabRegistry {
   }
 
   WebContents* Lookup(const GlobalRenderFrameHostId& id) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
     const auto it = entries_.find(id);
     if (it == entries_.end()) {
       return nullptr;

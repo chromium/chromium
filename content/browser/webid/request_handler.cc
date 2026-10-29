@@ -410,7 +410,7 @@ bool RequestHandler::RequestToken(scoped_refptr<Request> req,
     } else if (any_idp_has_parameters) {
       parameters = RpParameters::kHasParameters;
     } else {
-      DCHECK(any_idp_has_custom_scopes);
+      CHECK(any_idp_has_custom_scopes, base::NotFatalUntil::M163);
       parameters = RpParameters::kHasNonDefaultScope;
     }
     fedcm_metrics_->RecordRpParameters(parameters);
@@ -488,7 +488,8 @@ void RequestHandler::OnIdpSigninStatusReceived(
 bool RequestHandler::HasPendingRequest() const {
   RequestPageData* page_data = GetPageData(render_frame_host().GetPage());
   bool has_pending_request = page_data->PendingRequestHandler() != nullptr;
-  DCHECK(has_pending_request || !request_token_callback_);
+  CHECK(has_pending_request || !request_token_callback_,
+        base::NotFatalUntil::M163);
   return has_pending_request;
 }
 
@@ -721,7 +722,8 @@ void RequestHandler::OnFetchDataForIdpFailed(
 
   // We do not call both OnFetchDataForIdpFailed() after OnFetchDataSucceeded()
   // for the same IDP.
-  DCHECK(idp_infos_.find(idp_config_url) == idp_infos_.end());
+  CHECK(idp_infos_.find(idp_config_url) == idp_infos_.end(),
+        base::NotFatalUntil::M163);
   MaybeShowAccountsDialog();
 }
 
@@ -943,7 +945,7 @@ void RequestHandler::MaybeShowAccountsDialog() {
   fetch_data_ = FetchData();
 
   // RenderFrameHost should be in the primary page (ex not in the BFCache).
-  DCHECK(render_frame_host().GetPage().IsPrimary());
+  CHECK(render_frame_host().GetPage().IsPrimary(), base::NotFatalUntil::M163);
 
   bool intercept = false;
   // In tests (content_shell or when --use-fake-ui-for-fedcm is used), the
@@ -1162,7 +1164,7 @@ void RequestHandler::ShowSingleIdpFailureDialog() {
   url::Origin idp_origin =
       url::Origin::Create(idp_info->provider->config->config_url);
   // RenderFrameHost should be in the primary page (ex not in the BFCache).
-  DCHECK(render_frame_host().GetPage().IsPrimary());
+  CHECK(render_frame_host().GetPage().IsPrimary(), base::NotFatalUntil::M163);
 
   fetch_data_ = FetchData();
 
@@ -1211,7 +1213,7 @@ void RequestHandler::ShowSingleIdpFailureDialog() {
 void RequestHandler::OnAccountSelected(const GURL& idp_config_url,
                                        const std::string& account_id,
                                        bool is_sign_in) {
-  DCHECK(!account_id.empty());
+  CHECK(!account_id.empty(), base::NotFatalUntil::M163);
   const IdentityProviderInfo& idp_info = *idp_infos_[idp_config_url];
 
   // Check if the user has disabled the FedCM API after the FedCM UI is
@@ -1290,7 +1292,7 @@ void RequestHandler::OnAccountSelected(const GURL& idp_config_url,
   std::string query;
   if (idp_blindness) {
     // Checked previously.
-    DCHECK(IsDelegationEnabled());
+    CHECK(IsDelegationEnabled(), base::NotFatalUntil::M163);
 
     endpoint = idp_info.endpoints.issuance;
     federated_sdjwt_handler_ = std::make_unique<FederatedSdJwtHandler>(
@@ -1579,7 +1581,7 @@ void RequestHandler::RedirectTo(const GURL& idp_config_url,
   }
 
   // can_accept_redirect_to is only true for primary main frames.
-  DCHECK(render_frame_host().IsInPrimaryMainFrame());
+  CHECK(render_frame_host().IsInPrimaryMainFrame(), base::NotFatalUntil::M163);
 
   WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
       WebContents::FromRenderFrameHost(&render_frame_host()));
@@ -1748,7 +1750,7 @@ void RequestHandler::CompleteTokenRequest(const GURL& idp_config_url,
                                           std::optional<base::Value> token,
                                           std::optional<TokenError> token_error,
                                           bool should_delay_callback) {
-  DCHECK(!start_time_.is_null());
+  CHECK(!start_time_.is_null(), base::NotFatalUntil::M163);
   constexpr char kIdAssertionUrl[] = "id assertion endpoint";
   if (status.parse_status != ParseStatus::kSuccess) {
     MaybeAddResponseCodeToConsole(render_frame_host(), kIdAssertionUrl,
@@ -1786,7 +1788,7 @@ void RequestHandler::CompleteTokenRequest(const GURL& idp_config_url,
 
   const IdentityProviderRequestOptionsPtr& provider =
       idp_infos_[idp_config_url]->provider;
-  DCHECK(provider);
+  CHECK(provider, base::NotFatalUntil::M163);
 
   if (provider->format && *provider->format == blink::mojom::Format::kSdJwt) {
     if (token->is_string()) {
@@ -1823,7 +1825,8 @@ void RequestHandler::CompleteRequest(
     const std::optional<GURL>& selected_idp_config_url,
     std::optional<base::Value> token_data,
     bool should_delay_callback) {
-  DCHECK(result == FederatedRequestResult::kSuccess || !token_data.has_value());
+  CHECK(result == FederatedRequestResult::kSuccess || !token_data.has_value(),
+        base::NotFatalUntil::M163);
   if (!request_token_callback_) {
     return;
   }
@@ -1855,7 +1858,7 @@ void RequestHandler::CompleteRequest(
     CompleteRequestInternal(result, token_error, selected_idp_config_url,
                             std::move(token_data), is_auto_selected);
   } else {
-    DCHECK(!complete_request_delayed_);
+    CHECK(!complete_request_delayed_, base::NotFatalUntil::M163);
     complete_request_delayed_ = true;
     base::TimeDelta delay = GetRandomRejectionTime();
     TRACE_EVENT_INSTANT("content.fedcm", "Delaying FedCM rejection",
@@ -2009,7 +2012,7 @@ void RequestHandler::CleanUp() {
 }
 
 void RequestHandler::AddDevToolsIssue(FederatedRequestResult result) {
-  DCHECK_NE(result, FederatedRequestResult::kSuccess);
+  CHECK_NE(result, FederatedRequestResult::kSuccess, base::NotFatalUntil::M163);
 
   // It would be possible to add this inspector issue on the renderer, which
   // will receive the callback. However, it is preferable to do so on the
@@ -2117,7 +2120,7 @@ bool RequestHandler::OnResolve(GURL idp_config_url,
 
   const IdentityProviderRequestOptionsPtr& provider =
       idp_infos_[idp_config_url]->provider;
-  DCHECK(provider);
+  CHECK(provider, base::NotFatalUntil::M163);
 
   if (params->is_redirect_to() && req_->can_accept_redirect_to()) {
     const auto& redirect_to = params->get_redirect_to();
@@ -2125,7 +2128,7 @@ bool RequestHandler::OnResolve(GURL idp_config_url,
       RedirectTo(idp_config_url, blink::mojom::RedirectParams::Tag::kGet,
                  redirect_to->get_get()->url, "");
     } else {
-      DCHECK(redirect_to->is_post());
+      CHECK(redirect_to->is_post(), base::NotFatalUntil::M163);
       RedirectTo(idp_config_url, blink::mojom::RedirectParams::Tag::kPost,
                  redirect_to->get_post()->url,
                  redirect_to->get_post()->request_body);
@@ -2274,7 +2277,7 @@ void RequestHandler::OnNativeAppLoginFinished(const GURL& idp_config_url) {
 }
 
 FederatedApiPermissionStatus RequestHandler::GetApiPermissionStatus() {
-  DCHECK(api_permission_delegate());
+  CHECK(api_permission_delegate(), base::NotFatalUntil::M163);
   return api_permission_delegate()->GetApiPermissionStatus(
       GetEmbeddingOrigin());
 }
@@ -2305,7 +2308,7 @@ void RequestHandler::DismissAccountsDialogForDevtools(bool should_embargo) {
 }
 
 void RequestHandler::AcceptConfirmIdpLoginDialogForDevtools() {
-  DCHECK(login_url_.is_valid());
+  CHECK(login_url_.is_valid(), base::NotFatalUntil::M163);
   LoginToIdP(/*can_append_hints=*/true, config_url_, login_url_);
 }
 
@@ -2330,14 +2333,15 @@ bool RequestHandler::HasMoreDetailsButtonForDevtools() {
 }
 
 void RequestHandler::ClickErrorDialogGotItForDevtools() {
-  DCHECK(token_error_);
+  CHECK(token_error_, base::NotFatalUntil::M163);
   OnDismissErrorDialog(
       config_url_, token_request_status_,
       IdentityRequestDialogController::DismissReason::kGotItButton);
 }
 
 void RequestHandler::ClickErrorDialogMoreDetailsForDevtools() {
-  DCHECK(token_error_ && token_error_->url.is_valid());
+  CHECK(token_error_ && token_error_->url.is_valid(),
+        base::NotFatalUntil::M163);
   if (!ShowDialog([&]() {
         ShowModalDialog(DialogType::kErrorUrlPopup, config_url_,
                         token_error_->url);

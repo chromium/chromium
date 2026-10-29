@@ -32,7 +32,7 @@ namespace content {
 // static
 scoped_refptr<CrossThreadNetworkContext> CrossThreadNetworkContext::Create(
     base::WeakPtr<StoragePartitionImpl> storage_partition) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   return CreateForTesting(
       base::BindRepeating(&StoragePartitionImpl::CloneNetworkContext,
                           std::move(storage_partition)),
@@ -55,7 +55,8 @@ CrossThreadNetworkContext::CrossThreadNetworkContext(
       ui_task_runner_(std::move(ui_task_runner)) {
   CHECK(network_context_binder_);
   CHECK(ui_task_runner_);
-  DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(ui_task_runner_->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M163);
   // Create a PendingRemote on the UI thread upfront so the initial call on the
   // background sequence can bind it directly without posting back to the UI
   // thread.

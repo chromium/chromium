@@ -18,7 +18,7 @@ void ProvisionFetcherImpl::Create(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     mojo::PendingReceiver<media::mojom::ProvisionFetcher> receiver) {
   CHECK(render_frame_host);
-  DCHECK(url_loader_factory);
+  CHECK(url_loader_factory, base::NotFatalUntil::M163);
   // The created ProvisionFetcherImpl is bound to (and owned by) `receiver` and
   // the document associated with `render_frame_host`.
   base::MakeSelfDeleting<ProvisionFetcherImpl>(
