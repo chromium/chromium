@@ -160,6 +160,9 @@ endif
 	eu-strip -f "$(REMOTE_WEBAUTHN_DEBUGFILE)" "$(INSTALL_DIR)/remote-webauthn"
 
 	install -m 0644 \
+	  "$(BUILD_DIR)/remoting/com.google.ChromeRemoteDesktop.desktop" \
+	  "$(SYSTEM_WIDE_DESKTOP_ENTRIES_DIR)/com.google.ChromeRemoteDesktop.desktop"
+	install -m 0644 \
 	  "$(BUILD_DIR)/remoting/crd-url-forwarder.desktop" \
 	  "$(SYSTEM_WIDE_DESKTOP_ENTRIES_DIR)/crd-url-forwarder.desktop"
 

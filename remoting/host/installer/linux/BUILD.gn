@@ -110,6 +110,7 @@ if (is_chrome_branded && enable_me2me_host && target_cpu == "x64" &&
       "$root_out_dir/remoting/com.google.chrome.remote_desktop-firefox.json",
       "$root_out_dir/remoting/com.google.chrome.remote_desktop.json",
       "$root_out_dir/remoting/com.google.chrome.remote_webauthn.json",
+      "$root_out_dir/remoting/com.google.ChromeRemoteDesktop.desktop",
       "$root_out_dir/remoting/crd-url-forwarder.desktop",
     ]
 
@@ -138,6 +139,7 @@ if (is_chrome_branded && enable_me2me_host && target_cpu == "x64" &&
       "//remoting/host/crash:crash_tools",
       "//remoting/host/it2me:remote_assistance_host",
       "//remoting/host/linux:remote_session_info",
+      "//remoting/host/linux:remoting_me2me_host_desktop_entry",
       "//remoting/host/linux:remoting_migrate_host",
       "//remoting/host/linux:url_forwarder_desktop_entry",
       "//remoting/host/remote_open_url",

@@ -1,0 +1,15 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This desktop entry exists solely so the Chrome Remote Desktop host can claim
+# and register its app ID with the XDG portal. It is never executed directly.
+[Desktop Entry]
+Name={{ gettext("PRODUCT_NAME") }}
+Exec=/usr/bin/true
+Type=Application
+Terminal=false
+# Hide this entry from app launchers while keeping it visible to XDG portal
+# lookups. We cannot use Hidden=true here: per the spec, it means "deleted",
+# so portal registration skips it as such.
+NoDisplay=true
