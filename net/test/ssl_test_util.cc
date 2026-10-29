@@ -8,6 +8,8 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 
 namespace net {
@@ -42,9 +44,11 @@ bssl::UniquePtr<SSL_ECH_KEYS> MakeTestEchKeys(
   }
   bssl::UniquePtr<uint8_t> scoped_ech_config_list(ech_config_list_raw);
 
-  ech_config_list->assign(
-      ech_config_list_raw,
-      UNSAFE_TODO(ech_config_list_raw + ech_config_list_len));
+  // SAFETY: SSL_ECH_KEYS_marshal_retry_configs() returns a buffer of
+  // `ech_config_list_len` bytes at `ech_config_list_raw`.
+  auto retry_configs =
+      UNSAFE_BUFFERS(base::span(ech_config_list_raw, ech_config_list_len));
+  *ech_config_list = base::ToVector(retry_configs);
   return keys;
 }
 
