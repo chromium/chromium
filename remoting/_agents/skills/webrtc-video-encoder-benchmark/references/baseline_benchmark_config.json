@@ -1,0 +1,69 @@
+{
+  "frames": 100,
+  "fps": 30.0,
+  "sizes": [
+    "1920x1080",
+    "1080x1920",
+    "2560x1440",
+    "1440x2560",
+    "3840x2160",
+    "2160x3840"
+  ],
+  "scenarios": [
+    "desktop_clock",
+    "scroll_vertical",
+    "scroll_horizontal",
+    "moving_window",
+    "busy_developer",
+    "low_motion",
+    "high_motion",
+    "chaos_stress"
+  ],
+  "encoders": [
+    {
+      "name": "vp8_p0",
+      "codec": "vp8",
+      "profile": 0
+    },
+    {
+      "name": "vp9_p0_s9",
+      "codec": "vp9",
+      "profile": 0,
+      "encoder_speed": 9
+    },
+    {
+      "name": "vp9_p1_s9",
+      "codec": "vp9",
+      "profile": 1,
+      "encoder_speed": 9
+    },
+    {
+      "name": "av1_p0_s11_no_am",
+      "codec": "av1",
+      "profile": 0,
+      "encoder_speed": 11,
+      "use_active_map": false
+    },
+    {
+      "name": "av1_p0_s11_am",
+      "codec": "av1",
+      "profile": 0,
+      "encoder_speed": 11,
+      "use_active_map": true
+    },
+    {
+      "name": "av1_p1_s11_no_am",
+      "codec": "av1",
+      "profile": 1,
+      "encoder_speed": 11,
+      "use_active_map": false
+    },
+    {
+      "name": "av1_p1_s11_am",
+      "codec": "av1",
+      "profile": 1,
+      "encoder_speed": 11,
+      "use_active_map": true
+    }
+  ]
+}

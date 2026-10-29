@@ -36,3 +36,6 @@ desktop streaming.
     is the default and most commonly used video encoder implementation.
 *   `remoting/codec/webrtc_video_encoder_vpx.h`: Provides the VP8 and VP9
     encoders which are used for fallback or compatibility.
+*   `remoting/_agents/skills/webrtc-video-encoder-benchmark/SKILL.md`: Workflow
+    for running `webrtc_video_encoder_benchmark` and generating Markdown and
+    Google Sheet benchmark reports.

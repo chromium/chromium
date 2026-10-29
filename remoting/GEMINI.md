@@ -27,6 +27,11 @@ these documents:**
     information about Linux-specific libraries like GVariant and D-Bus
     wrappers.
 
+*   **Video Encoder Benchmarking & Reporting:** See
+    `_agents/skills/webrtc-video-encoder-benchmark/SKILL.md` when running
+    `webrtc_video_encoder_benchmark` or generating encoder benchmark reports and
+    Google Sheets.
+
 ## Security Context
 
 CRD host processes often run with high privileges (e.g., `SYSTEM` on Windows,
