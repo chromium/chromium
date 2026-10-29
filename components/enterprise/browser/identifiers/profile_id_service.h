@@ -35,7 +35,8 @@ class ProfileIdService : public KeyedService {
   ProfileIdService(std::unique_ptr<ProfileIdDelegate> delegate,
                    PrefService* profile_prefs);
 
-  // Used in tests to set a fake profile id.
+  // Used in tests to set a fake profile id. The fake id is returned by every
+  // `ProfileIdService` instance until this instance is destroyed.
   explicit ProfileIdService(const std::string profile_id);
 
   ~ProfileIdService() override;
@@ -50,6 +51,8 @@ class ProfileIdService : public KeyedService {
  private:
   std::unique_ptr<ProfileIdDelegate> delegate_;
   raw_ptr<PrefService> profile_prefs_;
+  // Whether this instance set the fake profile id used in tests.
+  bool overrides_profile_id_for_testing_ = false;
 };
 
 }  // namespace enterprise

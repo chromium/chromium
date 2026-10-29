@@ -4,6 +4,8 @@
 
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/base64url.h"
@@ -23,6 +25,7 @@ namespace {
 
 constexpr char kFakeProfileGUID[] = "fake-guid";
 constexpr char kFakeDeviceId[] = "fake-id";
+constexpr char kFakeTestProfileId[] = "fake-test-profile-id";
 constexpr char kProfildeIdErrorHistogramName[] =
     "Enterprise.ProfileIdentifier.Error";
 constexpr char kProfildeIdStatusHistogramName[] =
@@ -83,6 +86,22 @@ TEST_F(ProfileIdServiceTest, GetProfileId_Success) {
   EXPECT_EQ(encoded_string, service_->GetProfileId());
   histogram_tester_.ExpectTotalCount(kProfildeIdErrorHistogramName, 0);
   histogram_tester_.ExpectUniqueSample(kProfildeIdStatusHistogramName, true, 1);
+}
+
+// Tests that the fake profile id set by the testing constructor is returned
+// while the testing instance is alive, and no longer once it is destroyed.
+TEST_F(ProfileIdServiceTest, TestingProfileIdClearedOnDestruction) {
+  profile_prefs_.SetString(kProfileGUIDPref, kFakeProfileGUID);
+  EXPECT_CALL(*mock_delegate_, GetDeviceId())
+      .WillRepeatedly(Return(kFakeDeviceId));
+  std::optional<std::string> real_profile_id = service_->GetProfileId();
+  ASSERT_TRUE(real_profile_id);
+
+  auto testing_service = std::make_unique<ProfileIdService>(kFakeTestProfileId);
+  EXPECT_EQ(kFakeTestProfileId, service_->GetProfileId());
+
+  testing_service.reset();
+  EXPECT_EQ(real_profile_id, service_->GetProfileId());
 }
 
 }  // namespace enterprise

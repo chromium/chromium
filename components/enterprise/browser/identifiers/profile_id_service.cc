@@ -45,11 +45,18 @@ ProfileIdService::ProfileIdService(std::unique_ptr<ProfileIdDelegate> delegate,
   DCHECK(profile_prefs_);
 }
 
-ProfileIdService::ProfileIdService(const std::string profile_id) {
+ProfileIdService::ProfileIdService(const std::string profile_id)
+    : overrides_profile_id_for_testing_(true) {
   GetTestProfileIdFromStorage() = profile_id;
 }
 
-ProfileIdService::~ProfileIdService() = default;
+ProfileIdService::~ProfileIdService() {
+  // The fake id is stored in a process-wide static, so it must be cleared to
+  // avoid leaking into other tests running in the same process.
+  if (overrides_profile_id_for_testing_) {
+    GetTestProfileIdFromStorage().clear();
+  }
+}
 
 std::optional<std::string> ProfileIdService::GetProfileId() {
   std::string profile_id = GetTestProfileIdFromStorage();
