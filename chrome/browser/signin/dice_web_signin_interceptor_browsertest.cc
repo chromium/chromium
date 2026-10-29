@@ -100,6 +100,7 @@
 #include "content/public/test/test_launcher.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -704,90 +705,148 @@ class DiceWebSigninInterceptorGaiaBrowserTest
 
   net::EmbeddedTestServer* gaia_server() { return &https_server_; }
 
+  // TODO(crbug.com/390905260): Add browser test coverage for new profile
+  // creation when intercepting a Gaia URL.
+
+ protected:
+  // Performs a DICE profile switch interception for a tab opened at
+  // `intercepted_url` and verifies that the moved tab in the target browser
+  // navigates to `expected_url`.
+  void SwitchToExistingProfileAndVerifyMovedTabUrl(
+      const GURL& intercepted_url,
+      const GURL& expected_url,
+      base::HistogramTester& histogram_tester) {
+    AccountInfo account_info = MakeAccountInfoAvailableAndUpdate(
+        "alice@example.com", /*hosted_domain=*/std::string());
+    // Create another profile with a browser window.
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    const base::FilePath profile_path =
+        profile_manager->GenerateNextProfileDirectoryPath();
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
+    base::RunLoop loop;
+    Profile* other_profile = nullptr;
+    profiles::SwitchToProfile(
+        profile_path, /*always_create=*/true,
+        base::BindLambdaForTesting(
+            [&other_profile, &loop](BrowserWindowInterface* browser) {
+              other_profile = browser->GetProfile();
+              loop.Quit();
+            }));
+    loop.Run();
+    ASSERT_TRUE(other_profile);
+    const BrowserWindowInterface* const other_browser =
+        browser_created_observer.Wait();
+    ASSERT_TRUE(other_browser);
+    ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
+    ASSERT_EQ(other_browser->GetProfile(), other_profile);
+
+    // Add the account to the other profile.
+    signin::IdentityManager* other_identity_manager =
+        IdentityManagerFactory::GetForProfile(other_profile);
+    signin::MakePrimaryAccountAvailable(other_identity_manager,
+                                        account_info.GetEmail(),
+                                        signin::ConsentLevel::kSignin);
+
+    content::WebContents* web_contents = AddTab(intercepted_url);
+    int original_tab_count = browser()->GetTabStripModel()->count();
+    int other_original_tab_count = other_browser->GetTabStripModel()->count();
+
+    // Start the interception.
+    GetInterceptorDelegate(GetProfile())
+        ->set_expected_interception_type(
+            WebSigninInterceptor::SigninInterceptionType::kProfileSwitch);
+    DiceWebSigninInterceptor* interceptor =
+        DiceWebSigninInterceptorFactory::GetForProfile(GetProfile());
+    interceptor->MaybeInterceptWebSignin(
+        web_contents, account_info.GetAccountId(),
+        signin_metrics::AccessPoint::kWebSignin,
+        /*is_new_account=*/true,
+        /*is_chrome_signin=*/false,
+        /*primary_is_connected=*/signin::Tribool::kUnknown);
+    interceptor->OnDiceSigninSessionComplete(account_info.GetAccountId(), {});
+
+    // Add the account to the cookies (simulates the account reconcilor).
+    signin::SetCookieAccounts(
+        other_identity_manager, test_url_loader_factory(),
+        {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
+
+    // Wait until the tab is moved to the other browser.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return browser()->GetTabStripModel()->count() == original_tab_count - 1;
+    }));
+
+    ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
+    ASSERT_EQ(other_browser->GetTabStripModel()->count(),
+              other_original_tab_count + 1);
+
+    CheckHistograms(
+        histogram_tester,
+        SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch);
+
+    EXPECT_EQ(other_browser->GetTabStripModel()
+                  ->GetActiveWebContents()
+                  ->GetVisibleURL(),
+              expected_url);
+  }
+
  private:
   net::EmbeddedTestServer https_server_;
   std::unique_ptr<GaiaUrls> custom_gaia_urls_;
 };
 
+// Fixture with the killswitch disabled so that the intercepted Gaia URL is
+// reopened in the destination profile, keeping the b/504560109 Gaia navigation
+// crash regression covered.
+class DiceWebSigninInterceptorGaiaSanitizeDisabledBrowserTest
+    : public DiceWebSigninInterceptorGaiaBrowserTest {
+ public:
+  DiceWebSigninInterceptorGaiaSanitizeDisabledBrowserTest() {
+    feature_list_.InitAndDisableFeature(
+        switches::kDiceInterceptSanitizeGaiaUrl);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Tests that performing a Gaia navigation during the profile switch flow does
 // not trigger a reentrant iteration crash in AccountReconcilor observers.
 // Regression test for b/504560109.
-IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorGaiaBrowserTest,
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorGaiaSanitizeDisabledBrowserTest,
                        SwitchAlreadyOpen_GaiaNavigationCrashRegression) {
   base::HistogramTester histogram_tester;
 
-  AccountInfo account_info = MakeAccountInfoAvailableAndUpdate(
-      "alice@example.com", /*hosted_domain=*/std::string());
-  // Create another profile with a browser window.
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  const base::FilePath profile_path =
-      profile_manager->GenerateNextProfileDirectoryPath();
-  ui_test_utils::BrowserCreatedObserver browser_created_observer;
-  base::RunLoop loop;
-  Profile* other_profile = nullptr;
-  profiles::SwitchToProfile(
-      profile_path, /*always_create=*/true,
-      base::BindLambdaForTesting(
-          [&other_profile, &loop](BrowserWindowInterface* browser) {
-            other_profile = browser->GetProfile();
-            loop.Quit();
-          }));
-  loop.Run();
-  ASSERT_TRUE(other_profile);
-  const BrowserWindowInterface* const other_browser =
-      browser_created_observer.Wait();
-  ASSERT_TRUE(other_browser);
-  ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
-  ASSERT_EQ(other_browser->GetProfile(), other_profile);
-  // Add the account to the other profile.
-  signin::IdentityManager* other_identity_manager =
-      IdentityManagerFactory::GetForProfile(other_profile);
-  signin::MakePrimaryAccountAvailable(other_identity_manager,
-                                      account_info.GetEmail(),
-                                      signin::ConsentLevel::kSignin);
-
-  // Add a tab with a GAIA URL!
   GURL intercepted_url =
       gaia_server()->GetURL("accounts.google.com", "/defaultresponse");
-  content::WebContents* web_contents = AddTab(intercepted_url);
-  int original_tab_count = browser()->GetTabStripModel()->count();
-  int other_original_tab_count = other_browser->GetTabStripModel()->count();
+  SwitchToExistingProfileAndVerifyMovedTabUrl(
+      intercepted_url, /*expected_url=*/intercepted_url, histogram_tester);
+}
 
-  // Start the interception.
-  GetInterceptorDelegate(GetProfile())
-      ->set_expected_interception_type(
-          WebSigninInterceptor::SigninInterceptionType::kProfileSwitch);
-  DiceWebSigninInterceptor* interceptor =
-      DiceWebSigninInterceptorFactory::GetForProfile(GetProfile());
-  interceptor->MaybeInterceptWebSignin(
-      web_contents, account_info.GetAccountId(),
-      signin_metrics::AccessPoint::kWebSignin,
-      /*is_new_account=*/true,
-      /*is_chrome_signin=*/false,
-      /*primary_is_connected=*/signin::Tribool::kUnknown);
-  interceptor->OnDiceSigninSessionComplete(account_info.GetAccountId(), {});
+// Tests that profile switch from a Gaia signin URL without a continue URL
+// redirects to the New Tab Page instead of reopening the Gaia signin page.
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorGaiaBrowserTest,
+                       SwitchAlreadyOpen_GaiaSigninUrlRedirectsToNtp) {
+  base::HistogramTester histogram_tester;
 
-  // Add the account to the cookies (simulates the account reconcilor).
-  signin::SetCookieAccounts(
-      other_identity_manager, test_url_loader_factory(),
-      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
+  GURL intercepted_url =
+      gaia_server()->GetURL("accounts.google.com", "/defaultresponse");
+  SwitchToExistingProfileAndVerifyMovedTabUrl(
+      intercepted_url, /*expected_url=*/GURL("chrome://newtab/"),
+      histogram_tester);
+}
 
-  // Wait until the tab is moved to the other browser.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return browser()->GetTabStripModel()->count() == original_tab_count - 1;
-  }));
+// Tests that profile switch from a Gaia signin URL with a valid Google continue
+// URL redirects to the continue URL instead of reopening the Gaia signin page.
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorGaiaBrowserTest,
+                       SwitchAlreadyOpen_GaiaSigninUrlWithContinue) {
+  base::HistogramTester histogram_tester;
 
-  // The tab was moved to the new browser.
-  ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
-  EXPECT_EQ(other_browser->GetTabStripModel()->count(),
-            other_original_tab_count + 1);
-  EXPECT_EQ(other_browser->GetTabStripModel()
-                ->GetActiveWebContents()
-                ->GetVisibleURL(),
-            intercepted_url);
-
-  CheckHistograms(histogram_tester,
-                  SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch);
+  const GURL continue_url("https://mail.google.com/");
+  GURL intercepted_url = net::AppendQueryParameter(
+      gaia_server()->GetURL("accounts.google.com", "/defaultresponse"),
+      "continue", continue_url.spec());
+  SwitchToExistingProfileAndVerifyMovedTabUrl(
+      intercepted_url, /*expected_url=*/continue_url, histogram_tester);
 }
 
 // Close the source tab during the interception and check that the NTP is opened

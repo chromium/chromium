@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
@@ -20,10 +21,12 @@
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/list_accounts_test_utils.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -40,6 +43,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -260,4 +264,148 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
 
   histogram_tester.ExpectTotalCount(
       kDiceLinkedAccountsLatencyNewProfileOAuthMultiLogin, 0);
+}
+
+struct DestinationURLTestCase {
+  const char* test_name;
+  const char* intercepted_url;
+  const char* expected_url;
+};
+
+class DiceInterceptedSessionStartupHelperUrlTest
+    : public testing::TestWithParam<DestinationURLTestCase> {};
+
+TEST_P(DiceInterceptedSessionStartupHelperUrlTest, GetDestinationURL) {
+  const DestinationURLTestCase& test_case = GetParam();
+  GURL intercepted_url(test_case.intercepted_url);
+  GURL expected_url = (test_case.expected_url == nullptr)
+                          ? chrome::ChromeUINewTabURLAsGURL()
+                          : GURL(test_case.expected_url);
+
+  EXPECT_EQ(
+      DiceInterceptedSessionStartupHelper::GetDestinationURLForInterceptedTab(
+          intercepted_url),
+      expected_url);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DiceInterceptedSessionStartupHelperUrlTest,
+    testing::Values(
+        DestinationURLTestCase{
+            .test_name = "GoogleDomainContinue",
+            .intercepted_url =
+                "https://accounts.google.com/"
+                "AddSession?continue=https%3A%2F%2Fmail.google.com%2Fmail",
+            .expected_url = "https://mail.google.com/mail"},
+        DestinationURLTestCase{
+            .test_name = "YoutubeDomainContinue",
+            .intercepted_url =
+                "https://accounts.google.com/"
+                "AddSession?continue=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%"
+                "3D123",
+            .expected_url = "https://www.youtube.com/watch?v=123"},
+        DestinationURLTestCase{
+            .test_name = "UntrustedExternalContinue",
+            .intercepted_url =
+                "https://accounts.google.com/"
+                "AddSession?continue=https%3A%2F%2Fevil.example.com",
+            .expected_url = nullptr},
+        DestinationURLTestCase{
+            .test_name = "GoogleUserContentContinue",
+            .intercepted_url =
+                "https://accounts.google.com/"
+                "AddSession?continue=https%3A%2F%2Fstorage.googleusercontent."
+                "com%2Ffile",
+            .expected_url = nullptr},
+        DestinationURLTestCase{
+            .test_name = "NonStandardPortContinue",
+            .intercepted_url =
+                "https://accounts.google.com/"
+                "AddSession?continue=https%3A%2F%2Fmail.google.com%3A8443%"
+                "2Fmail",
+            .expected_url = nullptr},
+        DestinationURLTestCase{
+            .test_name = "HttpContinue",
+            .intercepted_url =
+                "https://accounts.google.com/"
+                "AddSession?continue=http%3A%2F%2Fmail.google.com%2Fmail",
+            .expected_url = nullptr},
+        DestinationURLTestCase{
+            .test_name = "CredentialsInContinue",
+            .intercepted_url =
+                "https://accounts.google.com/"
+                "AddSession?continue=https%3A%2F%2Fuser%3Apass%40mail.google."
+                "com%2F",
+            .expected_url = nullptr},
+        DestinationURLTestCase{
+            .test_name = "GaiaContinue",
+            .intercepted_url =
+                "https://accounts.google.com/"
+                "AddSession?continue=https%3A%2F%2Faccounts.google.com%"
+                "2FServiceLogin",
+            .expected_url = nullptr},
+        DestinationURLTestCase{
+            .test_name = "GaiaWithoutContinue",
+            .intercepted_url = "https://accounts.google.com/AddSession",
+            .expected_url = nullptr},
+        DestinationURLTestCase{.test_name = "NonGaiaHttpUrl",
+                               .intercepted_url = "https://example.com/page",
+                               .expected_url = "https://example.com/page"},
+        DestinationURLTestCase{
+            .test_name = "AccountsGoogleCountryDomainUrl",
+            .intercepted_url = "https://accounts.google.de/page",
+            .expected_url = "https://accounts.google.de/page"},
+        DestinationURLTestCase{
+            .test_name = "AccountsYoutubeContinue",
+            .intercepted_url =
+                "https://accounts.google.com/"
+                "AddSession?continue=https%3A%2F%2Faccounts.youtube.com%2F",
+            .expected_url = "https://accounts.youtube.com/"},
+        DestinationURLTestCase{
+            .test_name = "AccountsGoogleCountryDomainContinue",
+            .intercepted_url =
+                "https://accounts.google.com/"
+                "AddSession?continue=https%3A%2F%2Faccounts.google.de%2F",
+            .expected_url = "https://accounts.google.de/"},
+        DestinationURLTestCase{.test_name = "NonGaiaNonHttpUrl",
+                               .intercepted_url = "chrome://settings/",
+                               .expected_url = nullptr},
+        DestinationURLTestCase{
+            .test_name = "ChromeUrlWithContinue",
+            .intercepted_url =
+                "chrome://something?continue=https://accounts.youtube.com/",
+            .expected_url = nullptr},
+        DestinationURLTestCase{.test_name = "EmptyUrl",
+                               .intercepted_url = "",
+                               .expected_url = nullptr},
+        DestinationURLTestCase{.test_name = "InvalidUrl",
+                               .intercepted_url = "http://?",
+                               .expected_url = nullptr}),
+    [](const testing::TestParamInfo<
+        DiceInterceptedSessionStartupHelperUrlTest::ParamType>& info) {
+      return info.param.test_name;
+    });
+
+TEST(DiceInterceptedSessionStartupHelperUrlTest, FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(switches::kDiceInterceptSanitizeGaiaUrl);
+
+  GURL gaia_url(
+      "https://accounts.google.com/"
+      "AddSession?continue=https%3A%2F%2Fmail.google.com%2Fmail");
+  EXPECT_EQ(
+      DiceInterceptedSessionStartupHelper::GetDestinationURLForInterceptedTab(
+          gaia_url),
+      gaia_url);
+
+  // Empty or invalid URLs still return NTP even when the feature is disabled.
+  EXPECT_EQ(
+      DiceInterceptedSessionStartupHelper::GetDestinationURLForInterceptedTab(
+          GURL()),
+      chrome::ChromeUINewTabURLAsGURL());
+  EXPECT_EQ(
+      DiceInterceptedSessionStartupHelper::GetDestinationURLForInterceptedTab(
+          GURL("http://?")),
+      chrome::ChromeUINewTabURLAsGURL());
 }

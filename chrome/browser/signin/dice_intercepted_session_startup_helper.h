@@ -19,6 +19,8 @@
 inline constexpr char kDiceLinkedAccountsLatencyNewProfileOAuthMultiLogin[] =
     "Signin.Dice.LinkedAccounts.Latency.NewProfileOAuthMultiLogin";
 
+class GURL;
+
 namespace content {
 class WebContents;
 }
@@ -60,6 +62,20 @@ class DiceInterceptedSessionStartupHelper
 
   // Start up the session. Can only be called once.
   void Startup(base::OnceClosure callback);
+
+  // Resolves the destination URL to open in the destination browser (new or
+  // existing profile) when moving the intercepted tab.
+  // - Empty or invalid URLs return the New Tab Page (even if the killswitch
+  //   `kDiceInterceptSanitizeGaiaUrl` is disabled).
+  // - When `kDiceInterceptSanitizeGaiaUrl` is disabled, returns valid URLs
+  //   unchanged.
+  // - When `kDiceInterceptSanitizeGaiaUrl` is enabled:
+  //   - Non-Gaia HTTP(S) URLs are returned unchanged.
+  //   - Non-Gaia non-HTTP(S) URLs return the New Tab Page.
+  //   - Gaia URLs return the `continue` query parameter if it is a valid HTTPS
+  //     google.<TLD> or youtube.<TLD> URL on a standard port without
+  //     credentials and not on the Gaia origin, or the New Tab Page otherwise.
+  static GURL GetDestinationURLForInterceptedTab(const GURL& intercepted_url);
 
   // signin::IdentityManager::Observer:
   void OnAccountsInCookieUpdated(

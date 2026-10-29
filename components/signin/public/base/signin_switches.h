@@ -278,6 +278,15 @@ BASE_DECLARE_FEATURE(kDiceHeaderVersion2);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Killswitch for sanitizing the URL when moving an intercepted tab to the
+// destination profile (new or existing). When enabled, navigates Gaia URLs to
+// an HTTPS google.<TLD> or youtube.<TLD> continue URL on a standard port if
+// present, or falls back to the New Tab Page (including for non-HTTP(S) URLs).
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kDiceInterceptSanitizeGaiaUrl);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Feature flag for the Linked Accounts request header support.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kDiceLinkedAccounts);

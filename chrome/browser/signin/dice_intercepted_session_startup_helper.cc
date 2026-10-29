@@ -5,9 +5,11 @@
 #include "chrome/browser/signin/dice_intercepted_session_startup_helper.h"
 
 #include <algorithm>
+#include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -19,8 +21,10 @@
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/google/core/common/google_util.h"
 #include "components/signin/public/base/multilogin_parameters.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
@@ -28,10 +32,26 @@
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "net/base/url_util.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace {
+
+// Returns true for an HTTPS google.<TLD> or youtube.<TLD> URL without
+// credentials that isn't on the Gaia origin.
+bool IsAllowedContinueURL(const GURL& continue_url) {
+  return continue_url.is_valid() && continue_url.SchemeIs(url::kHttpsScheme) &&
+         !continue_url.has_username() && !continue_url.has_password() &&
+         !gaia::HasGaiaSchemeHostPort(continue_url) &&
+         (google_util::IsGoogleDomainUrl(
+              continue_url, google_util::ALLOW_SUBDOMAIN,
+              google_util::DISALLOW_NON_STANDARD_PORTS) ||
+          google_util::IsYoutubeDomainUrl(
+              continue_url, google_util::ALLOW_SUBDOMAIN,
+              google_util::DISALLOW_NON_STANDARD_PORTS));
+}
 
 // Returns true if |account_id| is signed in the cookies.
 bool CookieInfoContains(const signin::AccountsInCookieJarInfo& cookie_info,
@@ -89,6 +109,36 @@ void DiceInterceptedSessionStartupHelper::Startup(base::OnceClosure callback) {
     else
       StartupReconcilor(identity_manager);
   }
+}
+
+// static
+GURL DiceInterceptedSessionStartupHelper::GetDestinationURLForInterceptedTab(
+    const GURL& intercepted_url) {
+  if (!intercepted_url.is_valid()) {
+    return chrome::ChromeUINewTabURLAsGURL();
+  }
+  if (!base::FeatureList::IsEnabled(switches::kDiceInterceptSanitizeGaiaUrl)) {
+    return intercepted_url;
+  }
+  if (!gaia::HasGaiaSchemeHostPort(intercepted_url)) {
+    // Only standard HTTP(S) web navigations represent external web sessions
+    // intended to be transferred across profile boundaries. Non-HTTP(S) schemes
+    // (such as chrome:// internal pages, data:, or javascript:) can carry
+    // profile-specific internal state or script execution across the profile
+    // boundary, so they fall back to the New Tab Page in the destination
+    // profile.
+    return intercepted_url.SchemeIsHTTPOrHTTPS()
+               ? intercepted_url
+               : chrome::ChromeUINewTabURLAsGURL();
+  }
+  std::string continue_spec;
+  if (!net::GetValueForKeyInQuery(intercepted_url, "continue",
+                                  &continue_spec)) {
+    return chrome::ChromeUINewTabURLAsGURL();
+  }
+  GURL continue_url(continue_spec);
+  return IsAllowedContinueURL(continue_url) ? continue_url
+                                            : chrome::ChromeUINewTabURLAsGURL();
 }
 
 void DiceInterceptedSessionStartupHelper::OnAccountsInCookieUpdated(
@@ -209,7 +259,8 @@ void DiceInterceptedSessionStartupHelper::PerformMoveTab() {
   GURL url_to_open = chrome::ChromeUINewTabURLAsGURL();
   // If the intercepted web contents is still alive, close it now.
   if (web_contents_) {
-    url_to_open = web_contents_->GetLastCommittedURL();
+    url_to_open = GetDestinationURLForInterceptedTab(
+        web_contents_->GetLastCommittedURL());
     web_contents_->Close();
   }
 
@@ -218,6 +269,7 @@ void DiceInterceptedSessionStartupHelper::PerformMoveTab() {
                         ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   Navigate(&params);
 
-  if (callback_)
+  if (callback_) {
     std::move(callback_).Run();
+  }
 }
