@@ -1587,6 +1587,58 @@ TEST_F(ChromeFileSystemAccessPermissionContextNoSymbolicLinkCheckTest,
       SensitiveDirectoryResult::kAbort);
 }
 
+// Verifies that only subfolders of a WSL home directory are allowed, except its
+// dot entries and bin, see crbug.com/573422635.
+TEST_F(ChromeFileSystemAccessPermissionContextNoSymbolicLinkCheckTest,
+       ConfirmSensitiveEntryAccess_WSL_HomeSubfolders) {
+  static constexpr const base::FilePath::CharType* kAllowedPaths[] = {
+      FILE_PATH_LITERAL("\\\\wsl.localhost\\Ubuntu\\home\\user\\projects"),
+      FILE_PATH_LITERAL("\\\\WSL.LOCALHOST\\Ubuntu\\home\\user\\src\\app"),
+      FILE_PATH_LITERAL("\\\\wsl.localhost\\Ubuntu\\home\\user\\src\\.vscode"),
+      FILE_PATH_LITERAL(
+          "\\\\wsl.localhost\\Ubuntu\\home\\user\\src\\.git\\hooks"),
+      FILE_PATH_LITERAL("//wsl.localhost/Ubuntu/home/user/projects"),
+  };
+  static constexpr const base::FilePath::CharType* kBlockedPaths[] = {
+      FILE_PATH_LITERAL("\\\\wsl.localhost\\Ubuntu\\home"),
+      FILE_PATH_LITERAL("\\\\wsl.localhost\\Ubuntu\\home\\user\\.config\\app"),
+      FILE_PATH_LITERAL("\\\\wsl.localhost\\Ubuntu\\home\\user\\bin"),
+      FILE_PATH_LITERAL("\\\\wsl.localhost\\Ubuntu\\mnt\\c\\Users\\user\\src"),
+      FILE_PATH_LITERAL("\\\\wsl.localhost\\Ubuntu\\root\\projects"),
+      FILE_PATH_LITERAL("\\\\wsl.localhost\\Ubuntu\\HOME\\user\\projects"),
+      FILE_PATH_LITERAL("\\\\wsl.localhost\\.\\home\\user\\projects"),
+      FILE_PATH_LITERAL("\\\\wsl.localhost\\Ubuntu\\home\\.\\user"),
+      FILE_PATH_LITERAL("\\\\wsl.localhost\\Ubuntu\\home\\ \\user"),
+      FILE_PATH_LITERAL("\\\\wsl.localhost\\Ubuntu\\home\\user\\."),
+      FILE_PATH_LITERAL("\\\\wsl.localhost\\Ubuntu\\home\\user\\ ."),
+      FILE_PATH_LITERAL("\\\\wsl.localhost\\Ubuntu\\home\\user\\ "),
+      FILE_PATH_LITERAL("\\\\wsl.localhost\\Ubuntu\\home\\user\\projects."),
+      FILE_PATH_LITERAL("\\\\wsl.localhost\\Ubuntu\\home\\user\\a\\..\\.ssh"),
+      FILE_PATH_LITERAL("\\\\wsl$\\Ubuntu\\home\\user\\projects"),
+  };
+  for (const auto* path : kAllowedPaths) {
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(), PathInfo(path), HandleType::kDirectory,
+                  AccessTrigger::kOpen),
+              SensitiveDirectoryResult::kAllowed)
+        << path;
+  }
+  for (const auto* path : kBlockedPaths) {
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(), PathInfo(path), HandleType::kDirectory,
+                  AccessTrigger::kOpen),
+              SensitiveDirectoryResult::kAbort)
+        << path;
+  }
+  // The regular rules still apply, such as the write block on .git/hooks.
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL(
+                    "\\\\wsl.localhost\\Ubuntu\\home\\user\\src\\.git\\hooks")),
+                HandleType::kDirectory, AccessTrigger::kSave),
+            SensitiveDirectoryResult::kAbort);
+}
+
 // Verifies that legitimate remote UNC shares remain allowed.
 TEST_F(ChromeFileSystemAccessPermissionContextNoSymbolicLinkCheckTest,
        ConfirmSensitiveEntryAccess_RemoteUNC_Allowed) {

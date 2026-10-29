@@ -359,6 +359,47 @@ bool MaybeIsLocalUNCPath(const base::FilePath& path) {
 
   return false;
 }
+
+// Kill switch for the WSL home exemption below, see crbug.com/573422635.
+BASE_FEATURE(kFileSystemAccessAllowWslHomeSubfolders,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Returns true if `path` is inside a home directory of a WSL distribution, such
+// as \\wsl.localhost\Ubuntu\home\user\src, and not inside one of the home
+// directory's dot entries, such as .ssh or .bashrc, or its bin directory. The
+// home-relative rules resolve to drive-letter paths and cannot match WSL paths,
+// so `ShouldBlockAccessToPath()` rejects all other WSL paths through
+// `MaybeIsLocalUNCPath()`.
+bool IsAllowedWslHomePath(const base::FilePath& path) {
+  if (!base::FeatureList::IsEnabled(kFileSystemAccessAllowWslHomeSubfolders) ||
+      !path.IsNetwork() || path.ReferencesParent()) {
+    return false;
+  }
+
+  // {\\, wsl.localhost, <distro>, home, <user>, <child>, ...}. Linux paths are
+  // case-sensitive, so "home" must match exactly.
+  const std::vector<base::FilePath::StringType> components =
+      path.GetComponents();
+  if (components.size() < 6 ||
+      !base::FilePath::CompareEqualIgnoreCase(
+          components[1], FILE_PATH_LITERAL("wsl.localhost")) ||
+      components[3] != FILE_PATH_LITERAL("home")) {
+    return false;
+  }
+
+  // Rejects dot entries, and names that Windows path normalization can drop
+  // (".", " .", " "), which could make the path resolve to a home directory.
+  const auto is_plain_name = [](base::FilePath::StringViewType name) {
+    return !name.empty() && name.front() != FILE_PATH_LITERAL('.') &&
+           name.back() != FILE_PATH_LITERAL('.') &&
+           name.back() != FILE_PATH_LITERAL(' ');
+  };
+  // ~/bin is on the default PATH, and files created from Windows in WSL can be
+  // executable.
+  return is_plain_name(components[2]) && is_plain_name(components[4]) &&
+         is_plain_name(components[5]) &&
+         components[5] != FILE_PATH_LITERAL("bin");
+}
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -726,7 +767,7 @@ bool ShouldBlockAccessToPath(
 #if BUILDFLAG(IS_WIN)
   // On Windows, local UNC paths are rejected, as UNC path can be written in a
   // way that can bypass the blocklist.
-  if (MaybeIsLocalUNCPath(path)) {
+  if (MaybeIsLocalUNCPath(path) && !IsAllowedWslHomePath(path)) {
     return true;
   }
 #endif
