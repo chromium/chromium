@@ -44,7 +44,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, OnInputEntered) {
 
   auto send_input = [this, autocomplete_controller, extension](
                         std::u16string input_string,
-                        WindowOpenDisposition disposition) {
+                        ui::mojom::WindowOpenDisposition disposition) {
     (void)extension;  // used only on Android
 
     AutocompleteInput input(input_string, metrics::OmniboxEventProto::NTP,
@@ -378,11 +378,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, OnInputEntered) {
 #endif  // BUILDFLAG(IS_ANDROID)
   };
 
-  send_input(u"alpha current tab", WindowOpenDisposition::kCurrentTab);
-  send_input(u"alpha new tab", WindowOpenDisposition::kNewForegroundTab);
+  send_input(u"alpha current tab",
+             ui::mojom::WindowOpenDisposition::kCurrentTab);
+  send_input(u"alpha new tab",
+             ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 
   ExtensionTestMessageListener listener;
-  send_input(u"alpha send results", WindowOpenDisposition::kCurrentTab);
+  send_input(u"alpha send results",
+             ui::mojom::WindowOpenDisposition::kCurrentTab);
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
   static constexpr char kExpectedResult[] =
@@ -1284,7 +1287,7 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, OnInputEntered) {
 #if BUILDFLAG(IS_ANDROID)
   ExtensionOmniboxEventRouter::OnInputEntered(
       GetActiveWebContents(), extension->id(), "sending input",
-      WindowOpenDisposition::kCurrentTab);
+      ui::mojom::WindowOpenDisposition::kCurrentTab);
 #else   // BUILDFLAG(IS_ANDROID)
   chrome::FocusLocationBar(browser());
 
@@ -1299,7 +1302,7 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, OnInputEntered) {
   // Select the suggestion created by the extension, which will trigger the
   // `onInputEntered` event.
   location_bar->GetOmniboxController()->edit_model()->OpenCurrentSelection(
-      base::TimeTicks(), WindowOpenDisposition::kCurrentTab);
+      base::TimeTicks(), ui::mojom::WindowOpenDisposition::kCurrentTab);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   ASSERT_TRUE(listener.WaitUntilSatisfied());
@@ -1483,7 +1486,7 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, OnActionExecuted) {
           /*line=*/1,
           /*state=*/OmniboxPopupSelection::LineState::kFocusedButtonAction,
           /*action_index=*/0),
-      base::TimeTicks(), WindowOpenDisposition::kCurrentTab);
+      base::TimeTicks(), ui::mojom::WindowOpenDisposition::kCurrentTab);
 
   ASSERT_TRUE(listener.WaitUntilSatisfied());
   EXPECT_EQ("do_something-sending input", listener.message());

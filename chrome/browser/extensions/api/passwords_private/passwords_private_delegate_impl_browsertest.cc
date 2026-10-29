@@ -102,8 +102,8 @@
 #include "ui/base/base_window.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 using device_reauth::ReauthResult;
 using password_manager::PasswordForm;
@@ -567,7 +567,7 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateDelegateImplTest,
                             embedded_test_server()->GetURL("/empty.html"),
                             ui::PAGE_TRANSITION_TYPED);
   nav_params.tabstrip_index = 0;
-  nav_params.disposition = WindowOpenDisposition::kCurrentTab;
+  nav_params.disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
   Navigate(&nav_params);
 
   webapps::WebappsClientDesktop::CreateSingleton();

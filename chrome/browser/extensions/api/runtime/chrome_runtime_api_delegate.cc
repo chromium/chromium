@@ -47,8 +47,8 @@
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "net/base/backoff_entry.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/components/kiosk/kiosk_utils.h"
@@ -290,7 +290,7 @@ void ChromeRuntimeAPIDelegate::OpenURL(const GURL& uninstall_url) {
 
   NavigateParams params(profile, uninstall_url,
                         ui::PAGE_TRANSITION_CLIENT_REDIRECT);
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   params.user_gesture = false;
   Navigate(&params);
 

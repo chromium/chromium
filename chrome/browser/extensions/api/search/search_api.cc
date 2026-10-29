@@ -20,8 +20,8 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/constants.h"
 #include "extensions/buildflags/buildflags.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -174,7 +174,7 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
 
     case Disposition::kNewTab:
       ExtensionTabUtil::NavigateToURL(
-          WindowOpenDisposition::kNewForegroundTab,
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           /*source_contents=*/web_contents, url,
           // Binding `this` is safe because it is ref-counted.
           base::BindOnce(&SearchQueryFunction::OnNavigate, this));
@@ -182,7 +182,7 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
 
     case Disposition::kNewWindow:
       ExtensionTabUtil::NavigateToURL(
-          WindowOpenDisposition::kNewWindow,
+          ui::mojom::WindowOpenDisposition::kNewWindow,
           /*source_contents=*/web_contents, url,
           // Binding `this` is safe because it is ref-counted.
           base::BindOnce(&SearchQueryFunction::OnNavigate, this));

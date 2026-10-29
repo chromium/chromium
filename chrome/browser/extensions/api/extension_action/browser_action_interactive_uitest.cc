@@ -60,8 +60,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/buildflags.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/scrollbar_size.h"
 #include "ui/views/widget/widget.h"
@@ -328,11 +328,11 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, MAYBE_TestOpenPopup) {
     // Open a new window.
     BrowserWindowInterface* new_browser_interface =
         GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-            browser()->OpenURL(
-                content::OpenURLParams::CreateBrowserInitiated(
-                    GURL("about:blank"), WindowOpenDisposition::kNewWindow,
-                    ui::PAGE_TRANSITION_TYPED),
-                /*navigation_handle_callback=*/{}));
+            browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                                   GURL("about:blank"),
+                                   ui::mojom::WindowOpenDisposition::kNewWindow,
+                                   ui::PAGE_TRANSITION_TYPED),
+                               /*navigation_handle_callback=*/{}));
     ui_test_utils::BrowserActivationWaiter waiter(new_browser_interface);
     new_browser = new_browser_interface;
     waiter.WaitForActivation();
@@ -567,11 +567,11 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, DestroyHWNDDoesNotCrash) {
   EXPECT_EQ(TRUE, ::IsWindow(browser_hwnd));
 
   // Create a new browser window to prevent the message loop from terminating.
-  browser()->OpenURL(
-      content::OpenURLParams::CreateBrowserInitiated(
-          GURL("chrome://version"), WindowOpenDisposition::kNewWindow,
-          ui::PAGE_TRANSITION_TYPED),
-      /*navigation_handle_callback=*/{});
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         GURL("chrome://version"),
+                         ui::mojom::WindowOpenDisposition::kNewWindow,
+                         ui::PAGE_TRANSITION_TYPED),
+                     /*navigation_handle_callback=*/{});
 
   // Forcibly closing the browser HWND should not cause a crash.
   EXPECT_EQ(TRUE, ::CloseWindow(browser_hwnd));

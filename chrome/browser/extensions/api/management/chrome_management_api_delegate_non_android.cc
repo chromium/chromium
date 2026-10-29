@@ -64,7 +64,7 @@
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace extensions {
 namespace {
@@ -211,7 +211,7 @@ void LaunchWebApp(const webapps::AppId& app_id, Profile* profile) {
 
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
       apps::AppLaunchParams(app_id, launch_container,
-                            WindowOpenDisposition::kNewForegroundTab,
+                            ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                             apps::LaunchSource::kFromManagementApi));
 }
 
@@ -248,10 +248,11 @@ void OnWebAppInstallabilityChecked(
       chrome::ScopedTabbedBrowserDisplayer displayer(profile.get());
       const GURL& url = web_contents->GetLastCommittedURL();
 
-      chrome::AddWebContents(displayer.browser_window_interface(), nullptr,
-                             std::move(web_contents), url,
-                             WindowOpenDisposition::kNewForegroundTab,
-                             blink::mojom::WindowFeatures());
+      chrome::AddWebContents(
+          displayer.browser_window_interface(), nullptr,
+          std::move(web_contents), url,
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+          blink::mojom::WindowFeatures());
       if (!weak_contents) {
         std::move(callback).Run(InstallOrLaunchWebAppResult::kUnknownError);
         return;
@@ -291,7 +292,7 @@ bool ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
   }
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
       apps::AppLaunchParams(extension->id(), launch_container,
-                            WindowOpenDisposition::kNewForegroundTab,
+                            ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                             apps::LaunchSource::kFromManagementApi));
 
   RecordAppLaunchType(extension_misc::APP_LAUNCH_EXTENSION_API,

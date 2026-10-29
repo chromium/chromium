@@ -53,8 +53,8 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/mojom/context_type.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
-#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/callback_android.h"
@@ -933,7 +933,7 @@ ExtensionFunction::ResponseAction SessionsRestoreFunction::RestoreLocalSession(
   std::optional<std::vector<sessions::LiveTab*>> restored_tabs =
       tab_restore_service->RestoreEntryById(
           context, SessionID::FromSerializedValue(session_id.id()),
-          WindowOpenDisposition::kUnknown);
+          ui::mojom::WindowOpenDisposition::kUnknown);
   if (!restored_tabs.has_value()) {
     return RespondNow(Error(kInvalidSessionIdError, session_id.ToString()));
   }
@@ -980,7 +980,8 @@ SessionsRestoreFunction::RestoreForeignSession(
 
     content::WebContents* tab_contents =
         SessionRestore::RestoreForeignSessionTab(
-            contents, *tab, WindowOpenDisposition::kNewForegroundTab);
+            contents, *tab,
+            ui::mojom::WindowOpenDisposition::kNewForegroundTab);
     return RespondNow(GetRestoredTabResult(tab_contents));
   }
 

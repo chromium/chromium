@@ -81,9 +81,9 @@
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
 using bookmarks::BookmarkModel;
@@ -936,10 +936,11 @@ BookmarkManagerPrivateOpenInNewWindowFunction::RunOnReady() {
                                    ui::PAGE_TRANSITION_LINK);
     navigate_params.window_action = NavigateParams::WindowAction::kShowWindow;
     navigate_params.disposition =
-        first_tab ? WindowOpenDisposition::kNewWindow
-                  : WindowOpenDisposition::kNewForegroundTab;
+        first_tab ? ui::mojom::WindowOpenDisposition::kNewWindow
+                  : ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     if (params->incognito) {
-      navigate_params.disposition = WindowOpenDisposition::kOffTheRecord;
+      navigate_params.disposition =
+          ui::mojom::WindowOpenDisposition::kOffTheRecord;
     }
     base::WeakPtr<content::NavigationHandle> handle =
         Navigate(&navigate_params);
@@ -1011,9 +1012,9 @@ BookmarkManagerPrivateOpenInNewTabGroupFunction::RunOnReady() {
     }
   }
 
-  bookmarks::OpenAllIfAllowed(browser, nodes,
-                              WindowOpenDisposition::kNewBackgroundTab,
-                              bookmarks::OpenAllBookmarksContext::kInGroup);
+  bookmarks::OpenAllIfAllowed(
+      browser, nodes, ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+      bookmarks::OpenAllBookmarksContext::kInGroup);
 
   return RespondNow(NoArguments());
 }

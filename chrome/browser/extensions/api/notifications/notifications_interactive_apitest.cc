@@ -37,7 +37,7 @@
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
@@ -185,9 +185,10 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
   void LaunchPlatformApp(const Extension* extension) {
     apps::AppServiceProxyFactory::GetForProfile(profile())->LaunchAppWithParams(
-        apps::AppLaunchParams(
-            extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-            WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest));
+        apps::AppLaunchParams(extension->id(),
+                              apps::LaunchContainer::kLaunchContainerNone,
+                              ui::mojom::WindowOpenDisposition::kNewWindow,
+                              apps::LaunchSource::kFromTest));
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 

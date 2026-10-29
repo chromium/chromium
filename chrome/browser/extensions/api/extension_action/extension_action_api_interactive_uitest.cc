@@ -29,7 +29,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace extensions {
 
@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(ActionAPIInteractiveUITest,
   // Open a new web popup window (which has no toolbar).
   NavigateParams params(browser(), GURL("about:blank"),
                         ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::kNewPopup;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewPopup;
   params.window_action = NavigateParams::WindowAction::kShowWindow;
   ui_test_utils::NavigateToURL(&params);
   ASSERT_TRUE(params.browser);

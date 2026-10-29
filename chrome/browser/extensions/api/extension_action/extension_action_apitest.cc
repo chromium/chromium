@@ -53,7 +53,6 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/color_utils.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

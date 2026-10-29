@@ -40,7 +40,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/api_permission_id.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -153,7 +153,7 @@ void ExtensionOmniboxEventRouter::OnInputEntered(
     content::WebContents* web_contents,
     const ExtensionId& extension_id,
     const std::string& input,
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
@@ -164,9 +164,10 @@ void ExtensionOmniboxEventRouter::OnInputEntered(
 
   auto args = base::MakeRefCounted<EventArgs>();
   args->data.Append(input);
-  if (disposition == WindowOpenDisposition::kNewForegroundTab) {
+  if (disposition == ui::mojom::WindowOpenDisposition::kNewForegroundTab) {
     args->data.Append(kForegroundTabDisposition);
-  } else if (disposition == WindowOpenDisposition::kNewBackgroundTab) {
+  } else if (disposition ==
+             ui::mojom::WindowOpenDisposition::kNewBackgroundTab) {
     args->data.Append(kBackgroundTabDisposition);
   } else {
     args->data.Append(kCurrentTabDisposition);

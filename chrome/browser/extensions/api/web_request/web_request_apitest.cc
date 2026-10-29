@@ -160,8 +160,8 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/webui/buildflags.h"
 #include "ui/webui/untrusted_web_ui_browsertest_util.h"  // nogncheck
 #include "url/origin.h"
@@ -1191,7 +1191,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
   const GURL url(
       embedded_test_server()->GetURL("/set-cookie?cookieName=cookieValue"));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kCurrentTab,
+      browser(), url, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   // Check that `Network.responseReceived` contains the response header added
@@ -1259,7 +1259,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
   const GURL url(
       embedded_test_server()->GetURL("/set-cookie?cookieName=cookieValue"));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kCurrentTab,
+      browser(), url, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
   base::DictValue request_paused_result =
       WaitForNotification("Fetch.requestPaused", true);
@@ -2344,7 +2344,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   const std::string kHost = "a.com";
   GURL url = embedded_test_server()->GetURL(kHost, "/iframe_cross_site.html");
   NavigateParams params(browser(), url, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   ui_test_utils::NavigateToURL(&params);
 
   content::WebContents* web_contents = GetActiveWebContents();
@@ -7167,7 +7167,8 @@ IN_PROC_BROWSER_TEST_P(ManifestV3WebRequestApiDispatchModeTest,
   ExtensionTestMessageListener listener("received event");
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("test.example", "/simple.html"),
-      WindowOpenDisposition::kCurrentTab, ui_test_utils::BROWSER_TEST_NO_WAIT);
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 
   EXPECT_TRUE(web_contents->IsLoading());
@@ -9326,7 +9327,7 @@ IN_PROC_BROWSER_TEST_P(ManifestV3WebRequestApiDispatchModeTest,
   nav_observer.StartWatchingNewWebContents();
   ExtensionTestMessageListener test_listener("received");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
   content::WebContents* web_contents = GetActiveWebContents();
   EXPECT_TRUE(test_listener.WaitUntilSatisfied());

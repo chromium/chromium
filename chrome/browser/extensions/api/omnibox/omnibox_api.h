@@ -23,7 +23,7 @@
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -75,7 +75,7 @@ class ExtensionOmniboxEventRouter {
   static void OnInputEntered(content::WebContents* web_contents,
                              const ExtensionId& extension_id,
                              const std::string& input,
-                             WindowOpenDisposition disposition);
+                             ui::mojom::WindowOpenDisposition disposition);
 
   // The user has cleared the keyword, or closed the omnibox popup. This is
   // sent at most once in a give input session, after any OnInputChanged events.

@@ -98,8 +98,8 @@
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -460,7 +460,7 @@ class DownloadExtensionTest : public ExtensionApiTest {
     GURL url(extension_->GetResourceURL("empty.html"));
     // NOTE: `current_browser()` could be incognito.
     NavigateParams params(current_browser(), url, ui::PAGE_TRANSITION_LINK);
-    params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
     CHECK(handle);
     content::WebContents* const tab = handle->GetWebContents();
@@ -735,7 +735,7 @@ class DownloadExtensionTest : public ExtensionApiTest {
     DownloadManager* manager = GetCurrentManager();
 
     const GURL url = embedded_test_server()->GetURL(path);
-    LoadURLNoWait(url, WindowOpenDisposition::kCurrentTab);
+    LoadURLNoWait(url, ui::mojom::WindowOpenDisposition::kCurrentTab);
 
     response->WaitForRequest();
     response->Send(
@@ -846,8 +846,9 @@ class DownloadExtensionTest : public ExtensionApiTest {
   }
 
   // Loads a URL without waiting for the navigation to complete.
-  content::WebContents* LoadURLNoWait(const GURL& url,
-                                      WindowOpenDisposition disposition) {
+  content::WebContents* LoadURLNoWait(
+      const GURL& url,
+      ui::mojom::WindowOpenDisposition disposition) {
     content::WebContents* tab = GetActiveWebContents();
     if (current_profile()->IsOffTheRecord()) {
       // Ensure we have an OTR window and OTR web contents.
@@ -879,8 +880,8 @@ class DownloadExtensionTest : public ExtensionApiTest {
                            ? GURL(url::kAboutBlankURL)
                            : extension->GetResourceURL("empty.html");
       // Recreate the tab each time for insulation.
-      content::WebContents* tab =
-          LoadURLNoWait(url, WindowOpenDisposition::kNewForegroundTab);
+      content::WebContents* tab = LoadURLNoWait(
+          url, ui::mojom::WindowOpenDisposition::kNewForegroundTab);
       CHECK(tab);
       CHECK(content::WaitForLoadStop(tab));
       function->set_extension(extension);
@@ -916,7 +917,7 @@ class DownloadExtensionTest : public ExtensionApiTest {
     CHECK(extension);
     GURL url = extension->GetResourceURL("empty.html");
     content::WebContents* tab =
-        LoadURLNoWait(url, WindowOpenDisposition::kNewForegroundTab);
+        LoadURLNoWait(url, ui::mojom::WindowOpenDisposition::kNewForegroundTab);
     EXPECT_TRUE(content::WaitForLoadStop(tab));
     EventRouter::Get(current_profile())
         ->AddEventListener(downloads::OnCreated::kEventName,

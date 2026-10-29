@@ -36,6 +36,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace extensions {
 namespace {
@@ -177,7 +178,7 @@ IN_PROC_BROWSER_TEST_P(ExperimentalAiDataPolicyBrowserTest,
 IN_PROC_BROWSER_TEST_P(ExperimentalAiDataPolicyBrowserTest, RejectsOtherTab) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("blocked.test", "/simple.html"),
-      WindowOpenDisposition::kNewBackgroundTab,
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   BlockHost("*://blocked.test/*");
   auto result = Collect();

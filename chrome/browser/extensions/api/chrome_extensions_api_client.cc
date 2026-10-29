@@ -62,8 +62,8 @@
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
@@ -344,7 +344,7 @@ void ChromeExtensionsAPIClient::OpenFileUrlForTesting(
   // Open the file URL in the current tab.
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          file_url, WindowOpenDisposition::kCurrentTab,
+          file_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_FROM_API);
   web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }

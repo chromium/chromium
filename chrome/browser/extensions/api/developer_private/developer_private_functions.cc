@@ -84,7 +84,7 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/extensions/extension_site_settings_android.h"
@@ -649,8 +649,9 @@ DeveloperPrivateOpenReviewPageFunction::Run() {
   GURL review_url = util::GetCWSWritingReviewUrl(
       params->extension_id, util::CWSReviewSource::kExtensionsPage);
 
-  ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::kNewForegroundTab,
-                                  web_contents, review_url, base::DoNothing());
+  ExtensionTabUtil::NavigateToURL(
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab, web_contents,
+      review_url, base::DoNothing());
 
   return RespondNow(NoArguments());
 }

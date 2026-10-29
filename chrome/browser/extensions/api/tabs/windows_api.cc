@@ -42,9 +42,9 @@
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -748,14 +748,16 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
   auto create_nav_params = [&](const GURL& url, bool is_first_nav) {
     NavigateParams navigate_params(new_window, url, ui::PAGE_TRANSITION_LINK);
 
-    navigate_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    navigate_params.disposition =
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab;
 
 #if BUILDFLAG(IS_ANDROID)
     // On Android, new windows are created with a single empty tab. As such,
     // when navigating, we need to navigate that first tab, instead of adding
     // new ones. Otherwise, we'd end up with one extra tab in the new window.
     if (is_first_nav) {
-      navigate_params.disposition = WindowOpenDisposition::kCurrentTab;
+      navigate_params.disposition =
+          ui::mojom::WindowOpenDisposition::kCurrentTab;
     }
 #endif
     // Ensure that these navigations will not get 'captured' into PWA windows,

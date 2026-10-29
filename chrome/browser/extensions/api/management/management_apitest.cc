@@ -36,7 +36,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
@@ -448,9 +448,10 @@ IN_PROC_BROWSER_TEST_F(InstallReplacementWebAppApiTest, CapturedNavigation) {
 
   // Launch App A window using AppServiceProxy to hit intent filters.
   apps::AppServiceProxyFactory::GetForProfile(profile())->LaunchAppWithParams(
-      apps::AppLaunchParams(
-          appA_id, apps::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest));
+      apps::AppLaunchParams(appA_id,
+                            apps::LaunchContainer::kLaunchContainerWindow,
+                            ui::mojom::WindowOpenDisposition::kNewWindow,
+                            apps::LaunchSource::kFromTest));
 
   url_observer.Wait();
 
