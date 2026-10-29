@@ -14,3 +14,6 @@ per-file proto/client_model.proto=nwokedi@chromium.org
 per-file proto/client_model.proto=jdh@chromium.org
 per-file visual_utils*=nwokedi@chromium.org
 per-file visual_utils*=jdh@chromium.org
+
+per-file safe_browsing_policy_handler*=jacastro@chromium.org
+per-file safe_browsing_settings_metrics*=jacastro@chromium.org
