@@ -84,6 +84,21 @@ class ContextualTasksWebContentsUserData
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_tasks/enums.xml:ContextualTasksThreadContextLibraryUpdateOutcome)
 
+  enum class ContextState {
+    kNone,
+    kUploading,
+    kReady,
+  };
+
+  struct PageSearchDebugState {
+    std::string connected_document_id;
+    bool is_handshake_complete = false;
+    size_t pending_search_messages_count = 0;
+    bool is_lens_crop_mounted = false;
+    bool context_library_is_active = false;
+    ContextState last_sent_context_state = ContextState::kNone;
+  };
+
   struct ExtensionFrameInfo {
     ExtensionFrameInfo();
     ExtensionFrameInfo(const ExtensionFrameInfo&);
@@ -105,6 +120,10 @@ class ContextualTasksWebContentsUserData
   ~ContextualTasksWebContentsUserData() override;
 
   base::WeakPtr<contextual_search::InputStateModel> input_state_model() {
+    return last_active_model_;
+  }
+  base::WeakPtr<const contextual_search::InputStateModel> input_state_model()
+      const {
     return last_active_model_;
   }
   void set_input_state_model(
@@ -151,6 +170,9 @@ class ContextualTasksWebContentsUserData
       base::RepeatingClosure on_tab_context_updated_cb = base::NullCallback());
   void UnregisterExtensionFrame(const void* handler_id);
   bool HasBoundExtensionFrame() const;
+  const std::vector<ExtensionFrameInfo>& extension_frames() const {
+    return extension_frames_;
+  }
 
   // Service Worker Port connection and search communication lifecycle.
   using ServiceWorkerPostMessageCallback =
@@ -161,6 +183,7 @@ class ContextualTasksWebContentsUserData
   bool IsServiceWorkerPortConnected() const;
   bool IsHandshakeCompleteForTesting() const;
   const std::string& GetConnectedDocumentIdForTesting() const;
+  PageSearchDebugState GetPageSearchDebugState() const;
 
   // Parses and handles an incoming SearchToClientMessage. Returns true if the
   // message was a valid SearchToClientMessage with a recognized payload, or
@@ -222,6 +245,8 @@ class ContextualTasksWebContentsUserData
   GetExistingContextualSessionHandle();
   contextual_search::ContextualSearchSessionHandle*
   GetOrCreateContextualSessionHandle();
+  const contextual_search::ContextualSearchSessionHandle*
+  GetExistingContextualSessionHandle() const;
   std::optional<base::UnguessableToken> GetLensOverlayToken();
 #if !BUILDFLAG(IS_ANDROID)
   LensSearchController* GetLensSearchController() const;
@@ -233,6 +258,15 @@ class ContextualTasksWebContentsUserData
   // that are delayed tabs pending upload or whose context token is still
   // pending submission (in `GetUploadedContextTokens()`).
   std::vector<contextual_search::TabInfo> GetSelectedTabs();
+  std::vector<contextual_search::TabInfo> GetSelectedTabsSnapshot() const;
+  const base::flat_set<base::UnguessableToken>& pending_context_uploads()
+      const {
+    return pending_context_uploads_;
+  }
+  const base::flat_set<base::UnguessableToken>& failed_context_uploads() const {
+    return failed_context_uploads_;
+  }
+  bool submit_pending() const { return submit_pending_; }
   void DeleteContext(const base::UnguessableToken& file_token);
   void DeleteTabContext(int32_t tab_id);
   bool OnBrowserTabClosedOrNavigated(SessionID tab_session_id,
@@ -282,6 +316,9 @@ class ContextualTasksWebContentsUserData
   // matching tab handle exists.
   std::optional<int32_t> ResolveAndRecordTabHandleForSessionTabId(
       int32_t session_tab_id);
+  const base::flat_map<int32_t, int32_t>& tab_handle_to_session_id() const {
+    return tab_handle_to_session_id_;
+  }
 
   void AppendTabContextsToOnSubmitQueryResponseForTesting(
       lens::ClientToSearchMessage* response_message,
@@ -292,11 +329,6 @@ class ContextualTasksWebContentsUserData
   enum class InjectedInputType {
     kContextLibrary,
     kLensChip,
-  };
-  enum class ContextState {
-    kNone,
-    kUploading,
-    kReady,
   };
   struct PageSearchState;
 
