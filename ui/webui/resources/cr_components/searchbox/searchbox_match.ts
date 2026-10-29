@@ -486,26 +486,26 @@ export class SearchboxMatchElement extends CrLitElement {
 
   /**
    * Maps the color and weight of a FormattedString fragment to CSS classes.
-   * Each suggest color gets a class named after the color token it maps to.
+   * Each suggest color gets a class named after its color type.
    * Other colors get no class and keep the default color.
    */
   private getFragmentCssClasses_(fragment: FormattedStringFragment): string[] {
     const classes = [];
     switch (fragment.color) {
       case ColorType.kSuggestQueryText:
-        classes.push('color-on-surface');
+        classes.push('suggest-query-text');
         break;
       case ColorType.kSuggestHintText:
-        classes.push('color-on-surface-subtle');
+        classes.push('suggest-hint-text');
         break;
       case ColorType.kSuggestActionHigh:
-        classes.push('color-primary');
+        classes.push('suggest-action-high');
         break;
       default:
         break;
     }
     if (fragment.isBolded) {
-      classes.push('match');
+      classes.push('bolded');
     }
     return classes;
   }

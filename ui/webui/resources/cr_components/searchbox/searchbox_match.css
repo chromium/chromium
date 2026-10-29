@@ -274,14 +274,14 @@
   transform: scaleX(-1);
 }
 
-.match {
+.bolded {
   font-weight: var(--cr-searchbox-match-font-weight, 600);
 }
 
 /* Embedders can give the typed prefix of a match its own color. Make sure this
  * only applies to the non-bolded prefix of suggest query text. */
 :host(:not([is-top-chrome-searchbox_]))
-    #primaryText .color-on-surface:not(.match),
+    #primaryText .suggest-query-text:not(.bolded),
 #ellipsis {
   color: var(--color-searchbox-results-typed-prefix,
       var(--color-searchbox-results-foreground));
@@ -289,42 +289,45 @@
 
 /* Zero prefix matches have no typed prefix, so suggest query text keeps the
  * foreground color. */
-:host-context([has-empty-input]) #primaryText .color-on-surface,
+:host-context([has-empty-input]) #primaryText .suggest-query-text,
 :host-context([has-empty-input]) #ellipsis {
   color: var(--color-searchbox-results-foreground);
 }
 
-.color-on-surface {
+.suggest-query-text {
   color: var(--color-searchbox-results-foreground);
 }
 
-:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) .color-on-surface {
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected]))
+    .suggest-query-text {
   color: var(--color-searchbox-results-foreground-selected,
       var(--color-searchbox-results-foreground));
 }
 
 /* text-overflow draws the ellipsis of truncated secondary text in the color of
  * #secondaryText, not of its spans, so #secondaryText takes its last span's
- * color when that is on-surface-subtle or primary. */
-#secondaryText:has(> .color-on-surface-subtle:last-child),
-.color-on-surface-subtle {
+ * color when that is hint text or action high. */
+#secondaryText:has(> .suggest-hint-text:last-child),
+.suggest-hint-text {
   color: var(--color-searchbox-results-foreground-dimmed);
 }
 
 :host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected]))
-    #secondaryText:has(> .color-on-surface-subtle:last-child),
-:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) .color-on-surface-subtle {
+    #secondaryText:has(> .suggest-hint-text:last-child),
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected]))
+    .suggest-hint-text {
   color: var(--color-searchbox-results-dim-selected);
 }
 
-#secondaryText:has(> .color-primary:last-child),
-.color-primary {
+#secondaryText:has(> .suggest-action-high:last-child),
+.suggest-action-high {
   color: var(--color-searchbox-results-url);
 }
 
 :host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected]))
-    #secondaryText:has(> .color-primary:last-child),
-:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) .color-primary {
+    #secondaryText:has(> .suggest-action-high:last-child),
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected]))
+    .suggest-action-high {
   color: var(--color-searchbox-results-url-selected);
 }
 
