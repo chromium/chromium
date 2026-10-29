@@ -49,7 +49,7 @@ from blinkpy.w3c.local_wpt import LocalWPT
 from blinkpy.w3c.test_copier import TestCopier
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
 from blinkpy.w3c.wpt_github import WPTGitHub
-from blinkpy.w3c.wpt_manifest import WPTManifest, BASE_MANIFEST_NAME
+from blinkpy.w3c.wpt_manifest import WPTManifest
 from blinkpy.web_tests.models import typ_types
 from blinkpy.web_tests.models.test_expectations import (
     ParseError,
@@ -542,8 +542,7 @@ class TestImporter:
     def _generate_manifest(self):
         """Generates MANIFEST.json for imported tests.
 
-        Runs the (newly-updated) manifest command if it's found, and then
-        stages the generated MANIFEST.json in the git index, ready to commit.
+        Runs the (newly-updated) manifest command if it's found.
         """
         _log.info('Generating MANIFEST.json')
         WPTManifest.generate_manifest(
@@ -551,11 +550,10 @@ class TestImporter:
         )
         manifest_path = self.fs.join(self.dest_path, 'MANIFEST.json')
         assert self.fs.exists(manifest_path)
-        manifest_base_path = self.fs.normpath(
-            self.fs.join(self.dest_path, '..', BASE_MANIFEST_NAME)
-        )
-        self.copyfile(manifest_path, manifest_base_path)
-        self.project_git.add_list([manifest_base_path])
+        # TODO(crbug.com/578616780): The importer used to copy `MANIFEST.json`
+        # to `WPT_BASE_MANIFEST_8.json` and stage it, but this was disabled
+        # because the base manifest exceeded the 20MB presubmit size limit.
+        # Decide what to do with the base manifest.
 
     def regenerate_gtest_filelists(self) -> None:
         """Regenerate `.filelist`s used by Blink GTests on iOS.

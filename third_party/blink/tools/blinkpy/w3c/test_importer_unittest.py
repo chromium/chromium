@@ -816,10 +816,8 @@ class TestImporterTest(LoggingTestCase):
         )
         importer._generate_manifest()
         self.assertEqual(host.executive.calls, [MANIFEST_INSTALL_CMD] * 2)
-        self.assertEqual(
-            importer.project_git.added_paths,
-            {MOCK_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME},
-        )
+        # The base manifest is no longer updated or staged to git.
+        self.assertEqual(importer.project_git.added_paths, set())
 
     def test_regenerate_gtest_filelists(self):
         host = self.mock_host()
