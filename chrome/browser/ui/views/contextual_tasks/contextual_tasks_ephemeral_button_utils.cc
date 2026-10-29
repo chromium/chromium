@@ -162,7 +162,9 @@ void HandleEphemeralButtonPressed(BrowserWindowInterface* browser,
     std::move(on_ephemeral_open).Run();
   }
 
-  if (kShowEntryPoint.Get() == EntryPointOption::kToolbarEphemeralBranded) {
+  if (kShowEntryPoint.Get() == EntryPointOption::kToolbarEphemeralBranded ||
+      (IsContextualTasksEphemeralPinButtonRefactorEnabled() &&
+       controller->GetCurrentTask().has_value())) {
     controller->Show(
         /*transition_from_tab=*/false,
         is_pinned ? omnibox::ChromeAimEntryPoint::
