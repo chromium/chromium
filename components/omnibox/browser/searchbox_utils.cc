@@ -47,6 +47,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "net/cookies/cookie_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -136,7 +137,7 @@ void OpenMatch(
     const AutocompleteSnapshot& snapshot,
     OmniboxPopupSelection selection,
     AutocompleteMatch match,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const InteractionMetricsTracker& metrics_tracker,
     OmniboxEventProto::KeywordModeEntryMethod keyword_mode_entry_method,
     const std::u16string& pasted_text) {
@@ -177,7 +178,7 @@ void OpenMatch(
   const bool is_tab_switch_action =
       action && action->ActionId() == OmniboxActionId::TAB_SWITCH;
   if (is_open_tab_match || is_tab_switch_action) {
-    disposition = WindowOpenDisposition::kSwitchToTab;
+    disposition = ui::mojom::WindowOpenDisposition::kSwitchToTab;
   }
 
   base::TimeDelta elapsed_time_since_user_first_modified_omnibox =
@@ -266,7 +267,7 @@ void OpenMatch(
   log.input_state = input.input_state();
   log.ukm_source_id = client->GetUKMSourceId();
 
-  if ((disposition == WindowOpenDisposition::kCurrentTab) &&
+  if ((disposition == ui::mojom::WindowOpenDisposition::kCurrentTab) &&
       client->CurrentPageExists()) {
     // If we know the destination is being opened in the current tab,
     // we can easily get the tab ID.  (If it's being opened in a new
@@ -449,7 +450,7 @@ void PasteAndGo(AutocompleteController* autocomplete_controller,
       input, autocomplete_controller->result().CopyForSnapshot());
   OpenMatch(autocomplete_controller, client, snapshot,
             OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch), match,
-            WindowOpenDisposition::kCurrentTab, metrics_tracker,
+            ui::mojom::WindowOpenDisposition::kCurrentTab, metrics_tracker,
             keyword_mode_entry_method, text);
 }
 
@@ -498,7 +499,7 @@ void RecordSuggestionUsedMetrics(const AutocompleteMatch& match) {
   LOCAL_HISTOGRAM_BOOLEAN("Omnibox.EventCount", true);
 }
 
-WindowOpenDisposition ComputeOpenDispositionFromModifiersAndLogToUma(
+ui::mojom::WindowOpenDisposition ComputeOpenDispositionFromModifiersAndLogToUma(
     bool shift,
     bool control,
     bool alt,
@@ -523,28 +524,29 @@ WindowOpenDisposition ComputeOpenDispositionFromModifiersAndLogToUma(
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:OpenMatchWithKeyboardModifiers)
 
-  WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab;
+  ui::mojom::WindowOpenDisposition disposition =
+      ui::mojom::WindowOpenDisposition::kCurrentTab;
   OpenMatchWithKeyboardModifiers metric_value;
   if (alt && !shift) {
     metric_value = control ? OpenMatchWithKeyboardModifiers::kCtrlAlt
                            : OpenMatchWithKeyboardModifiers::kAlt;
-    disposition = WindowOpenDisposition::kNewForegroundTab;
+    disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   } else if (shift && command) {
     metric_value = control ? OpenMatchWithKeyboardModifiers::kCtrlShiftCommand
                            : OpenMatchWithKeyboardModifiers::kShiftCommand;
-    disposition = WindowOpenDisposition::kNewForegroundTab;
+    disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   } else if (alt && shift) {
     metric_value = control ? OpenMatchWithKeyboardModifiers::kCtrlAltShift
                            : OpenMatchWithKeyboardModifiers::kAltShift;
-    disposition = WindowOpenDisposition::kNewBackgroundTab;
+    disposition = ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
   } else if (command && !shift) {
     metric_value = control ? OpenMatchWithKeyboardModifiers::kCtrlCommand
                            : OpenMatchWithKeyboardModifiers::kCommand;
-    disposition = WindowOpenDisposition::kNewBackgroundTab;
+    disposition = ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
   } else if (shift && !alt) {
     metric_value = control ? OpenMatchWithKeyboardModifiers::kCtrlShift
                            : OpenMatchWithKeyboardModifiers::kShift;
-    disposition = WindowOpenDisposition::kNewWindow;
+    disposition = ui::mojom::WindowOpenDisposition::kNewWindow;
   } else {
     metric_value = control ? OpenMatchWithKeyboardModifiers::kCtrl
                            : OpenMatchWithKeyboardModifiers::kNoModifier;

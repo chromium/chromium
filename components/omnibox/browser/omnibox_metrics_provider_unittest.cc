@@ -30,7 +30,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 using ScoringSignals = ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
 using OmniboxScoringSignals = ::metrics::OmniboxScoringSignals;
@@ -59,7 +59,7 @@ class OmniboxMetricsProviderTest : public testing::Test {
         metrics::OmniboxEventProto_KeywordModeEntryMethod_INVALID,
         /*is_popup_open=*/false,
         /*selection=*/OmniboxPopupSelection(selected_index),
-        /*disposition=*/WindowOpenDisposition::kCurrentTab,
+        /*disposition=*/ui::mojom::WindowOpenDisposition::kCurrentTab,
         /*is_paste_and_go=*/false,
         /*tab_id=*/SessionID::FromSerializedValue(1),
         /*current_page_classification=*/

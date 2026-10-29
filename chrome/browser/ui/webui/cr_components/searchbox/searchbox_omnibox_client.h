@@ -7,6 +7,7 @@
 
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/omnibox_client.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/gfx/vector_icon_types.h"
 
 class AutocompleteSchemeClassifier;
@@ -61,7 +62,7 @@ class SearchboxOmniboxClient : public OmniboxClient {
   void OnAutocompleteAccept(
       const GURL& destination_url,
       TemplateURLRef::PostContent* post_content,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       ui::PageTransition transition,
       omnibox::AutocompleteMatchType match_type,
       base::TimeTicks match_selection_timestamp,
@@ -71,7 +72,7 @@ class SearchboxOmniboxClient : public OmniboxClient {
       const AutocompleteMatch& match,
       const AutocompleteMatch& alternative_nav_match) override;
   void OpenUrl(GURL gurl,
-               WindowOpenDisposition disposition) override;
+               ui::mojom::WindowOpenDisposition disposition) override;
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;
 
  protected:

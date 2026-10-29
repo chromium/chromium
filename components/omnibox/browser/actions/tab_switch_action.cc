@@ -9,8 +9,8 @@
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
@@ -27,7 +27,7 @@ TabSwitchAction::TabSwitchAction(GURL url)
 TabSwitchAction::~TabSwitchAction() = default;
 
 void TabSwitchAction::Execute(ExecutionContext& context) const {
-  context.disposition_ = WindowOpenDisposition::kSwitchToTab;
+  context.disposition_ = ui::mojom::WindowOpenDisposition::kSwitchToTab;
   OpenURL(context, url_);
 }
 

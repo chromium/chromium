@@ -15,7 +15,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/gfx/vector_icon_types.h"
 
 class AutocompleteController;
@@ -151,7 +151,7 @@ void OpenMatch(AutocompleteController* autocomplete_controller,
                const AutocompleteSnapshot& snapshot,
                OmniboxPopupSelection selection,
                AutocompleteMatch match,
-               WindowOpenDisposition disposition,
+               ui::mojom::WindowOpenDisposition disposition,
                const InteractionMetricsTracker& metrics_tracker,
                metrics::OmniboxEventProto::KeywordModeEntryMethod
                    keyword_mode_entry_method,
@@ -189,7 +189,7 @@ void EmitAcceptedKeywordSuggestionHistogram(
     const TemplateURL* turl);
 void RecordSuggestionUsedMetrics(const AutocompleteMatch& match);
 
-WindowOpenDisposition ComputeOpenDispositionFromModifiersAndLogToUma(
+ui::mojom::WindowOpenDisposition ComputeOpenDispositionFromModifiersAndLogToUma(
     bool shift,
     bool control,
     bool alt,

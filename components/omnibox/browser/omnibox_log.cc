@@ -6,6 +6,7 @@
 
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 OmniboxLog::OmniboxLog(
     const std::u16string& text,
@@ -15,7 +16,7 @@ OmniboxLog::OmniboxLog(
     metrics::OmniboxEventProto::KeywordModeEntryMethod entry_method,
     bool is_popup_open,
     OmniboxPopupSelection selection,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     bool is_paste_and_go,
     SessionID tab_id,
     metrics::OmniboxEventProto::PageClassification current_page_classification,

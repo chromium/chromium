@@ -20,7 +20,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "url/gurl.h"
 
 class AutocompleteResult;
@@ -35,7 +35,7 @@ struct OmniboxLog {
              metrics::OmniboxEventProto::KeywordModeEntryMethod entry_method,
              bool is_popup_open,
              OmniboxPopupSelection selection,
-             WindowOpenDisposition disposition,
+             ui::mojom::WindowOpenDisposition disposition,
              bool is_paste_and_go,
              SessionID tab_id,
              metrics::OmniboxEventProto::PageClassification
@@ -76,9 +76,9 @@ struct OmniboxLog {
   // dropdown is closed and therefore there is only one implicit suggestion).
   OmniboxPopupSelection selection;
 
-  // The disposition used to open the match. Currently, only SWITCH_TO_TAB
+  // The disposition used to open the match. Currently, only kSwitchToTab
   // is relevant to the log; all other dispositions are treated identically.
-  WindowOpenDisposition disposition;
+  ui::mojom::WindowOpenDisposition disposition;
 
   // True if this is a paste-and-search or paste-and-go omnibox interaction.
   // (The codebase refers to both these types as paste-and-go.)

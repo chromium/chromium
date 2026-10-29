@@ -30,6 +30,7 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 using metrics::OmniboxEventProto;
 
@@ -281,8 +282,8 @@ void OmniboxMetricsProvider::RecordOmniboxEvent(const OmniboxLog& log) {
   omnibox_event->set_just_deleted_text(log.just_deleted_text);
   omnibox_event->set_num_typed_terms(static_cast<int>(terms.size()));
   omnibox_event->set_selected_index(log.selection.line);
-  omnibox_event->set_selected_tab_match(log.disposition ==
-                                        WindowOpenDisposition::kSwitchToTab);
+  omnibox_event->set_selected_tab_match(
+      log.disposition == ui::mojom::WindowOpenDisposition::kSwitchToTab);
   if (log.completed_length != std::u16string::npos)
     omnibox_event->set_completed_length(log.completed_length);
   // Set the typing duration only if set/valid.
