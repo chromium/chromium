@@ -18,7 +18,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "content/browser/manifest/manifest_manager_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -47,6 +49,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/manifest/manifest_invariants.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -1110,19 +1113,20 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, BadMessage_StartUrlCrossOrigin) {
   ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
       shell()->web_contents()->GetPrimaryPage());
 
-  // Test that a cross-site start_url triggers a bad message.
+  // Test that a manifest with a cross-origin start_url triggers a bad message.
   mojo::FakeMessageDispatchContext fake_dispatch_context;
   auto bad_manifest = blink::mojom::Manifest::New();
   bad_manifest->start_url = GURL("https://evil.com/");
-  bad_manifest->id = test_url;
-  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
+  bad_manifest->id = GURL("https://evil.com/");
+  bad_manifest->scope = GURL("https://evil.com/");
 
+  base::HistogramTester tester;
   mojo::test::BadMessageObserver bad_message_observer;
   host->ValidateAndMaybeOverrideManifestForTesting(
       blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
-  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
-              ::testing::StartsWith("Manifest start_url (https://evil.com/) "
-                                    "must be same-origin with the document"));
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "Manifest origin must match the document origin.");
+  tester.ExpectTotalCount("WebApp.Manifest.InvariantViolation", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, BadMessage_IdCrossOrigin) {
@@ -1133,19 +1137,21 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, BadMessage_IdCrossOrigin) {
   ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
       shell()->web_contents()->GetPrimaryPage());
 
-  // Test that a cross-site start_url triggers a bad message.
+  // Test that a cross-origin id triggers a bad message and logs UMA.
   mojo::FakeMessageDispatchContext fake_dispatch_context;
   auto bad_manifest = blink::mojom::Manifest::New();
   bad_manifest->start_url = test_url;
   bad_manifest->id = GURL("https://evil.com/");
   bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
 
+  base::HistogramTester tester;
   mojo::test::BadMessageObserver bad_message_observer;
   host->ValidateAndMaybeOverrideManifestForTesting(
       blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
-  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
-              ::testing::StartsWith(
-                  "Manifest id must be same-origin with the document."));
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "Manifest id must be same-origin with the document.");
+  tester.ExpectUniqueSample("WebApp.Manifest.InvariantViolation",
+                            blink::ManifestInvariantError::kIdCrossOrigin, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, BadMessage_ScopeCrossOrigin) {
@@ -2119,6 +2125,117 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
   EXPECT_EQ(result, blink::mojom::ManifestRequestResult::kNoManifestAllowed);
   ASSERT_TRUE(manifest);
   EXPECT_TRUE(blink::IsEmptyManifest(manifest));
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
+                       BadMessage_RequestManifestDebugInfo_InvariantViolation) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  MockManifestManager mock_manifest_manager;
+  service_manager::InterfaceProvider::TestApi test_api(
+      rfh->GetRemoteInterfaces());
+  test_api.SetBinderForName(
+      blink::mojom::ManifestManager::Name_,
+      base::BindRepeating(&MockManifestManager::Bind,
+                          base::Unretained(&mock_manifest_manager)));
+
+  EXPECT_CALL(mock_manifest_manager, RequestManifestDebugInfo)
+      .WillOnce([&test_url](
+                    MockManifestManager::RequestManifestDebugInfoCallback cb) {
+        auto bad_manifest = blink::mojom::Manifest::New();
+        bad_manifest->start_url = test_url;
+        bad_manifest->id = GURL("https://evil.com/");
+        bad_manifest->scope = test_url;
+        std::move(cb).Run(test_url, std::move(bad_manifest),
+                          blink::mojom::ManifestDebugInfo::New());
+      });
+
+  base::HistogramTester tester;
+  mojo::test::BadMessageObserver bad_message_observer;
+  base::test::TestFuture<const GURL&, blink::mojom::ManifestPtr,
+                         blink::mojom::ManifestDebugInfoPtr>
+      debug_future;
+
+  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
+      shell()->web_contents()->GetPrimaryPage());
+  host->RequestManifestDebugInfo(debug_future.GetCallback());
+
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "Manifest id must be same-origin with the document.");
+  tester.ExpectUniqueSample("WebApp.Manifest.InvariantViolation",
+                            blink::ManifestInvariantError::kIdCrossOrigin, 1);
+
+  auto [url, manifest, debug_info] = debug_future.Take();
+  ASSERT_TRUE(manifest);
+  EXPECT_TRUE(blink::IsEmptyManifest(manifest));
+
+  test_api.ClearBinderForName(blink::mojom::ManifestManager::Name_);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ManifestBrowserTest,
+    OnConnectionError_NotifiesSubscribersWithUnexpectedFailure) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/dynamic-manifest.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  MockManifestManager mock_manifest_manager;
+  service_manager::InterfaceProvider::TestApi test_api(
+      rfh->GetRemoteInterfaces());
+  test_api.SetBinderForName(
+      blink::mojom::ManifestManager::Name_,
+      base::BindRepeating(&MockManifestManager::Bind,
+                          base::Unretained(&mock_manifest_manager)));
+
+  base::test::TestFuture<base::expected<blink::mojom::ManifestPtr,
+                                        blink::mojom::RequestManifestErrorPtr>>
+      specified_future;
+  base::test::TestFuture<base::expected<blink::mojom::ManifestPtr,
+                                        blink::mojom::RequestManifestErrorPtr>>
+      all_future;
+
+  PageManifestManager* manifest_manager = PageManifestManager::GetOrCreate(
+      shell()->web_contents()->GetPrimaryPage());
+  auto sub1 = manifest_manager->GetSpecifiedManifest(
+      base::BindOnce(&CopyMojoExpectedConstRef)
+          .Then(specified_future.GetCallback()));
+  auto sub2 = manifest_manager->GetAllSpecifiedManifests(
+      base::BindRepeating(&CopyMojoExpectedConstRef)
+          .Then(all_future.GetRepeatingCallback()));
+
+  base::RunLoop run_loop;
+  MockManifestManager::RequestManifestAndErrorsCallback saved_cb;
+  EXPECT_CALL(mock_manifest_manager, RequestManifestAndErrors)
+      .WillOnce([&run_loop, &saved_cb](
+                    MockManifestManager::RequestManifestAndErrorsCallback cb) {
+        saved_cb = std::move(cb);
+        run_loop.Quit();
+      });
+
+  std::string manifest_link =
+      embedded_test_server()->GetURL("/manifest/sample-manifest.json").spec();
+  ASSERT_TRUE(ExecJs(shell(), "setManifestTo('" + manifest_link + "')"));
+  run_loop.Run();
+
+  // Close the receiver pipe to simulate a renderer crash / connection error.
+  mock_manifest_manager.receiver_.reset();
+  saved_cb.Reset();
+
+  ASSERT_TRUE(specified_future.Wait());
+  EXPECT_FALSE(specified_future.Get().has_value());
+  EXPECT_EQ(specified_future.Get().error()->error,
+            blink::mojom::ManifestRequestResult::kUnexpectedFailure);
+
+  ASSERT_TRUE(all_future.Wait());
+  EXPECT_FALSE(all_future.Get().has_value());
+  EXPECT_EQ(all_future.Get().error()->error,
+            blink::mojom::ManifestRequestResult::kUnexpectedFailure);
+
+  test_api.ClearBinderForName(blink::mojom::ManifestManager::Name_);
 }
 
 IN_PROC_BROWSER_TEST_F(

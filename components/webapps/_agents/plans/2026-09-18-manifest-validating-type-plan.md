@@ -67,7 +67,7 @@ To keep each CL small and independently reviewable:
 - [x] **Milestone 2: Make `Manifest?` Nullable in `ManifestManager` Mojo IPCs**
 - [x] **Milestone 3: Implement `blink::Manifest` Class, `Builder`, Nested Struct
   Traits, and Bridges**
-- [ ] **Milestone 4: Switch `ManifestManagerHost` Internals to `blink::Manifest`
+- [x] **Milestone 4: Switch `ManifestManagerHost` Internals to `blink::Manifest`
   and Contextual Checks `C1`–`C5`**
 - [ ] **Milestone 5: Migrate `ContentBrowserClient::MaybeOverrideManifest` and
   Embedder Overrides**

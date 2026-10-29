@@ -10,11 +10,13 @@
 #include "base/containers/id_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/page_manifest_manager.h"
 #include "content/public/browser/page_user_data.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest_observer.mojom.h"
@@ -86,10 +88,10 @@ class CONTENT_EXPORT ManifestManagerHost
 
   blink::mojom::ManifestManager& GetManifestManager();
 
-  // If it is a bad message, returns an unpopulated Manifest instance.
-  blink::mojom::ManifestPtr ValidateAndMaybeOverrideManifest(
-      blink::mojom::ManifestRequestResult result,
-      blink::mojom::ManifestPtr manifest);
+  // Returns the manifest to deliver, or an error result.
+  base::expected<blink::Manifest, blink::mojom::ManifestRequestResult>
+  ValidateAndMaybeOverrideManifest(blink::mojom::ManifestRequestResult result,
+                                   std::optional<blink::Manifest> manifest);
 
   blink::mojom::ManifestPtr ValidateParsedManifestFromString(
       const GURL& document_url,
@@ -100,6 +102,12 @@ class CONTENT_EXPORT ManifestManagerHost
                                          const GURL& manifest_url,
                                          ParseManifestCallback callback,
                                          blink::mojom::ManifestPtr manifest);
+
+  void OnRequestManifestDebugInfoResponse(
+      blink::mojom::ManifestManager::RequestManifestDebugInfoCallback callback,
+      const GURL& url,
+      blink::mojom::ManifestPtr parsed_manifest,
+      blink::mojom::ManifestDebugInfoPtr debug_info);
 
   std::vector<GetManifestCallback> ExtractPendingCallbacks();
   void OnConnectionError();
@@ -119,8 +127,6 @@ class CONTENT_EXPORT ManifestManagerHost
   void MaybeFetchManifestForSubscriptions();
 
   void NotifyOnceSubscriptionsIfSuccessCached();
-
-  void NotifySubscriptionsIfSuccessCached();
 
   bool HasManifestSubscriptions() const;
 
