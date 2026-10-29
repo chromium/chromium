@@ -9,7 +9,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "content/browser/reduce_accept_language/reduce_accept_language_throttle.h"
 #include "content/public/browser/reduce_accept_language_controller_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -507,80 +506,6 @@ TEST_F(AcceptLanguageUtilsTests, VerifyClearAcceptLanguage) {
   std::optional<std::string> new_persisted_language =
       delegate.GetReducedLanguage(origin);
   EXPECT_FALSE(new_persisted_language.has_value());
-}
-
-TEST_F(AcceptLanguageUtilsTests, ThrottleProcessResponse) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {network::features::kReduceAcceptLanguage}, {});
-
-  MockReduceAcceptLanguageControllerDelegate delegate =
-      MockReduceAcceptLanguageControllerDelegate("en,zh");
-  ReduceAcceptLanguageUtils reduce_language_utils =
-      ReduceAcceptLanguageUtils::CreateForTesting(delegate);
-
-  GURL request_url = GURL(kFirstPartyUrl);
-  contents()->NavigateAndCommit(request_url);
-
-  ReduceAcceptLanguageThrottle throttle(std::move(reduce_language_utils));
-
-  // User's first prefer language.
-  std::string language = delegate.GetUserAcceptLanguages()[0];
-
-  network::ResourceRequest request;
-  request.url = request_url;
-  net::HttpRequestHeaders headers;
-  headers.SetHeader(net::HttpRequestHeaders::kAcceptLanguage, language);
-  request.headers = headers;
-  bool defer = false;
-  blink::URLLoaderThrottle::RestartWithURLReset restart_with_url_reset(false);
-  throttle.WillStartRequest(&request, &defer);
-
-  delegate.PersistReducedLanguage(url::Origin::Create(request_url), language);
-
-  network::mojom::URLResponseHead response_head;
-  response_head.headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
-
-  // Early returns without the avail-language header.
-  {
-    throttle.BeforeWillProcessResponse(request_url, response_head,
-                                       &restart_with_url_reset);
-    std::optional<std::string> persist_language =
-        delegate.GetReducedLanguage(url::Origin::Create(request_url));
-    EXPECT_EQ(persist_language.value(), language);
-  }
-
-  // Early returns with service worker.
-  response_head.parsed_headers = network::mojom::ParsedHeaders::New();
-  response_head.parsed_headers->content_language =
-      network::ParseContentLanguages("ja");
-  response_head.parsed_headers->avail_language =
-      network::ParseAvailLanguage("ja, zh");
-  {
-    response_head.did_service_worker_navigation_preload = true;
-    throttle.BeforeWillProcessResponse(request_url, response_head,
-                                       &restart_with_url_reset);
-
-    std::optional<std::string> persist_language =
-        delegate.GetReducedLanguage(url::Origin::Create(request_url));
-    EXPECT_EQ(persist_language.value(), language);
-  }
-
-  // ReduceAcceptLanguageThrottle reads and parses the language: the persisted
-  // language should be updated to new negotiated language `zh`.
-  // User's initial accept-language is `en`, user full accept-language is
-  // [`en`, `zh`], and site supports language list is [`ja`, `zh`]. After
-  // language negotiation, the user's preferred language is `zh`.
-  {
-    response_head.did_service_worker_navigation_preload = false;
-    throttle.BeforeWillProcessResponse(request_url, response_head,
-                                       &restart_with_url_reset);
-
-    std::optional<std::string> persist_language =
-        delegate.GetReducedLanguage(url::Origin::Create(request_url));
-    EXPECT_EQ(persist_language.value(), "zh");
-  }
 }
 
 TEST_F(AcceptLanguageUtilsTests, GetLanguageWithDefaultLimits) {

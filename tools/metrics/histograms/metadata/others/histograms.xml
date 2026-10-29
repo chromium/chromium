@@ -4229,17 +4229,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="ReduceAcceptLanguage.AcceptLanguageNegotiationRestart"
-    enum="AcceptLanguageNegotiationRestart" expires_after="2026-07-26">
-  <owner>victortan@chromium.org</owner>
-  <owner>awillia@chromium.org</owner>
-  <owner>miketaylr@chromium.org</owner>
-  <summary>
-    Count of requests restarted or the reason why not restarted when reducing
-    accept-language HTTP header.
-  </summary>
-</histogram>
-
 <histogram name="ReduceAcceptLanguage.AcceptLanguagePrefValueIsEmpty"
     enum="BooleanAvailable" expires_after="M145">
   <owner>victortan@chromium.org</owner>

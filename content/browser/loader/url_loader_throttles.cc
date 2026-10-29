@@ -14,7 +14,6 @@
 #include "content/browser/origin_trials/critical_origin_trials_throttle.h"
 #include "content/browser/preloading/prefetch/cancel_unrelated_prefetch_url_loader_throttle.h"
 #include "content/browser/preloading/prerender/prerender_url_loader_throttle.h"
-#include "content/browser/reduce_accept_language/reduce_accept_language_throttle.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/common/features.h"
@@ -22,7 +21,6 @@
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
-#include "content/public/browser/reduce_accept_language_controller_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/web_identity.h"
 #include "net/base/load_flags.h"
@@ -66,16 +64,6 @@ CreateContentBrowserURLLoaderThrottles(
       request.is_outermost_main_frame && client_hint_delegate) {
     throttles.push_back(std::make_unique<CriticalClientHintsThrottle>(
         browser_context, client_hint_delegate, frame_tree_node_id));
-  }
-
-  // Creating a throttle only for outermost main frames to persist the reduced
-  // accept language for an origin and to restart requests if needed, due to
-  // language negotiation.
-  if (auto reduce_accept_lang_utils =
-          ReduceAcceptLanguageUtils::Create(browser_context);
-      reduce_accept_lang_utils && request.is_outermost_main_frame) {
-    throttles.push_back(std::make_unique<ReduceAcceptLanguageThrottle>(
-        std::move(reduce_accept_lang_utils.value())));
   }
 
   // frame_tree_node_id may be invalid if we are loading the first frame
