@@ -2,6 +2,7 @@
     clippy::assertions_on_result_states,
     clippy::byte_char_slices,
     clippy::cast_precision_loss,
+    clippy::clone_on_copy,
     clippy::derive_partial_eq_without_eq,
     clippy::excessive_precision,
     clippy::float_cmp,
@@ -45,7 +46,6 @@ use std::iter;
 use std::marker::PhantomData;
 use std::mem;
 use std::str::FromStr;
-use std::{f32, f64};
 
 macro_rules! treemap {
     () => {
@@ -851,6 +851,27 @@ fn test_parse_negative_zero() {
 }
 
 #[test]
+fn test_negative_zero_value() {
+    // `-0` read into a Value keeps its sign.
+    for text in ["-0", "-0.0", "-0e2"] {
+        let value: Value = from_str(text).unwrap();
+        assert!(
+            value.as_f64().unwrap().is_sign_negative(),
+            "{text}: {value}"
+        );
+        assert!(
+            from_value::<f64>(value.clone()).unwrap().is_sign_negative(),
+            "{text}: {value}"
+        );
+        let written = to_string(&value).unwrap();
+        assert!(written.starts_with('-'), "{text} written as {written}");
+    }
+    let value: Value = from_str("[-0, 0]").unwrap();
+    assert!(value[0].as_f64().unwrap().is_sign_negative());
+    assert!(value[1].as_f64().unwrap().is_sign_positive());
+}
+
+#[test]
 fn test_parse_f64() {
     test_parse_ok(vec![
         ("0.0", 0.0f64),
@@ -1086,11 +1107,11 @@ fn test_parse_string() {
     test_parse_slice_err::<String>(&[
         (
             &[b'"', 159, 146, 150, b'"'],
-            "invalid unicode code point at line 1 column 5",
+            "invalid unicode code point at line 1 column 2",
         ),
         (
             &[b'"', b'\\', b'n', 159, 146, 150, b'"'],
-            "invalid unicode code point at line 1 column 7",
+            "invalid unicode code point at line 1 column 4",
         ),
         (
             &[b'"', b'\\', b'u', 48, 48, 51],
@@ -2169,9 +2190,22 @@ fn test_partialeq_number() {
         u8::MIN u8::MAX u16::MIN u16::MAX u32::MIN u32::MAX u64::MIN u64::MAX
         f32::MIN f32::MAX f32::MIN_EXP f32::MAX_EXP f32::MIN_POSITIVE
         f64::MIN f64::MAX f64::MIN_EXP f64::MAX_EXP f64::MIN_POSITIVE
-        f32::consts::E f32::consts::PI f32::consts::LN_2 f32::consts::LOG2_E
-        f64::consts::E f64::consts::PI f64::consts::LN_2 f64::consts::LOG2_E
+        std::f32::consts::E std::f32::consts::PI std::f32::consts::LN_2 std::f32::consts::LOG2_E
+        std::f64::consts::E std::f64::consts::PI std::f64::consts::LN_2 std::f64::consts::LOG2_E
     );
+}
+
+#[test]
+fn test_partialeq_f32_out_of_range() {
+    // A number outside the range of f32 is not equal to an infinite f32.
+    for (text, inf) in [("1e300", f32::INFINITY), ("-1e39", f32::NEG_INFINITY)] {
+        let value: Value = from_str(text).unwrap();
+        assert_ne!(value, inf);
+        assert_ne!(inf, value);
+        assert_ne!(value, f64::from(inf));
+    }
+    let max: Value = from_str("3.4028235e38").unwrap();
+    assert_eq!(max, f32::MAX);
 }
 
 #[test]
@@ -2514,11 +2548,11 @@ fn test_raw_invalid_utf8() {
 
     assert_eq!(
         value_err.to_string(),
-        "invalid unicode code point at line 1 column 4",
+        "invalid unicode code point at line 1 column 2",
     );
     assert_eq!(
         raw_value_err.to_string(),
-        "invalid unicode code point at line 1 column 4",
+        "invalid unicode code point at line 1 column 2",
     );
 }
 

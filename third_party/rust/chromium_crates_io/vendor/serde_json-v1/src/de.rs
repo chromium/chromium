@@ -945,7 +945,7 @@ impl<'de, R: Read<'de>> Deserializer<R> {
             if let Ok(unsigned) = buf.parse() {
                 return Ok(ParserNumber::U64(unsigned));
             }
-        } else {
+        } else if buf != "-0" {
             if let Ok(signed) = buf.parse() {
                 return Ok(ParserNumber::I64(signed));
             }

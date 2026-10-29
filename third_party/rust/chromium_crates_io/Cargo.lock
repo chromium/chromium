@@ -2037,9 +2037,10 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.151"
+version = "1.0.154"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
+ "foldhash",
  "indexmap",
  "itoa",
  "memchr",

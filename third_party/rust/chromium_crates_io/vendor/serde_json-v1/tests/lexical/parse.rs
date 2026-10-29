@@ -2,7 +2,6 @@
 
 use crate::lexical::num::Float;
 use crate::lexical::{parse_concise_float, parse_truncated_float};
-use core::f64;
 use core::fmt::Debug;
 
 fn check_concise_float<F>(mantissa: u64, exponent: i32, expected: F)

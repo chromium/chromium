@@ -3,6 +3,11 @@
 //! By default the map is backed by a [`BTreeMap`]. Enable the `preserve_order`
 //! feature of serde_json to use [`IndexMap`] instead.
 //!
+//! In builds without the `std` feature, `preserve_order` hashes keys with
+//! [`foldhash::fast::RandomState`]. Foldhash provides minimal HashDoS
+//! resistance, but does not protect against interactive attackers. Builds with
+//! `std` use the standard library's [`std::hash::RandomState`].
+//!
 //! [`BTreeMap`]: std::collections::BTreeMap
 //! [`IndexMap`]: indexmap::IndexMap
 
@@ -33,14 +38,19 @@ pub struct Map<K, V> {
 #[cfg(not(feature = "preserve_order"))]
 type MapImpl<K, V> = BTreeMap<K, V>;
 #[cfg(feature = "preserve_order")]
-type MapImpl<K, V> = IndexMap<K, V>;
+type MapImpl<K, V> = IndexMap<K, V, BuildHasherImpl>;
+
+#[cfg(all(feature = "preserve_order", feature = "std"))]
+type BuildHasherImpl = std::collections::hash_map::RandomState;
+#[cfg(all(feature = "preserve_order", not(feature = "std")))]
+type BuildHasherImpl = foldhash::fast::RandomState;
 
 impl Map<String, Value> {
     /// Makes a new empty Map.
     #[inline]
     pub fn new() -> Self {
         Map {
-            map: MapImpl::new(),
+            map: MapImpl::default(),
         }
     }
 
@@ -55,7 +65,7 @@ impl Map<String, Value> {
                 BTreeMap::new()
             },
             #[cfg(feature = "preserve_order")]
-            map: IndexMap::with_capacity(capacity),
+            map: IndexMap::with_capacity_and_hasher(capacity, BuildHasherImpl::default()),
         }
     }
 
@@ -386,9 +396,7 @@ impl Map<String, Value> {
 impl Default for Map<String, Value> {
     #[inline]
     fn default() -> Self {
-        Map {
-            map: MapImpl::new(),
-        }
+        Map::new()
     }
 }
 

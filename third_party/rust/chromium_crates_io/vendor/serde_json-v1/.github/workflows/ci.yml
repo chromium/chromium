@@ -69,11 +69,15 @@ jobs:
       - run: cargo check --manifest-path tests/crate/Cargo.toml --no-default-features --features alloc,raw_value
       - run: cargo check --manifest-path tests/crate/Cargo.toml --features serde_json/preserve_order
         if: matrix.rust != '1.71.0'
-      - run: cargo check --manifest-path tests/crate/Cargo.toml --no-default-features --features alloc,serde_json/preserve_order
+      - run: cargo check --manifest-path tests/crate/Cargo.toml --no-default-features --features serde_json/preserve_order
         if: matrix.rust != '1.71.0'
       - name: Build without std
         run: cargo check --manifest-path tests/crate/Cargo.toml --target
           ${{matrix.target}} --no-default-features --features alloc
+        if: matrix.target
+      - name: Build without std with preserve_order
+        run: cargo check --manifest-path tests/crate/Cargo.toml --target
+          ${{matrix.target}} --no-default-features --features alloc,serde_json/preserve_order
         if: matrix.target
 
   minimal:
