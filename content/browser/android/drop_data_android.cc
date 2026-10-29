@@ -93,9 +93,14 @@ ScopedJavaLocalRef<jobject> ToJavaDropData(const DropData& drop_data) {
         ConvertUTF16ToJavaString(env, *drop_data.source_effect_allowed);
   }
 
-  return ui::Java_DropDataAndroid_create(env, jtext, jgurl, jimage_bytes,
-                                         jimage_extension, jimage_filename,
-                                         jcustom_data, jeffect_allowed);
+  ScopedJavaLocalRef<jstring> jdrag_id;
+  if (drop_data.drag_id) {
+    jdrag_id = ConvertUTF8ToJavaString(env, drop_data.drag_id->ToString());
+  }
+
+  return ui::Java_DropDataAndroid_create(
+      env, jtext, jgurl, jimage_bytes, jimage_extension, jimage_filename,
+      jcustom_data, jeffect_allowed, jdrag_id);
 }  // ToJavaDropData
 
 std::optional<base::Value> ParseCustomDataFromEvent(
@@ -117,6 +122,16 @@ std::optional<base::Value> ParseCustomDataFromEvent(
     return std::nullopt;
   }
   return value;
+}
+
+std::optional<base::UnguessableToken> ParseDragIdFromEvent(
+    const ui::DragEventAndroid& event) {
+  base::android::ScopedJavaLocalRef<jstring> j_drag_id = event.GetJavaDragId();
+  if (j_drag_id.is_null()) {
+    return std::nullopt;
+  }
+  return base::UnguessableToken::DeserializeFromString(
+      base::android::ConvertJavaStringToUTF8(AttachCurrentThread(), j_drag_id));
 }
 
 namespace {
@@ -180,6 +195,8 @@ void PopulateDropDataFromEvent(
     drop_data->source_effect_allowed = base::android::ConvertJavaStringToUTF16(
         env, event.GetJavaEffectAllowed());
   }
+
+  drop_data->drag_id = ParseDragIdFromEvent(event);
 }
 
 }  // namespace content

@@ -161,6 +161,31 @@ public class DragAndDropDelegateImplUnitTest {
     }
 
     @Test
+    public void testBuildClipData_DragId() {
+        final DropDataAndroid dropData =
+                DropDataAndroid.create("text", null, null, null, null, null, null, "DRAG_ID");
+
+        ClipData clipData = mDragAndDropDelegateImpl.buildClipData(dropData);
+
+        Assert.assertEquals(
+                "Drag ID should be carried in the ClipDescription extras.",
+                "DRAG_ID",
+                clipData.getDescription().getExtras().getString(DropDataAndroid.EXTRA_DRAG_ID));
+    }
+
+    @Test
+    public void testBuildClipData_NoDragId() {
+        final DropDataAndroid dropData =
+                DropDataAndroid.create("text", null, null, null, null, null, null);
+
+        ClipData clipData = mDragAndDropDelegateImpl.buildClipData(dropData);
+
+        Assert.assertFalse(
+                "No drag ID extra should be added when the drop data has none.",
+                clipData.getDescription().getExtras().containsKey(DropDataAndroid.EXTRA_DRAG_ID));
+    }
+
+    @Test
     @Config(shadows = ShadowContentResolver.class)
     public void testStartDragAndDrop_Image() {
         final Bitmap shadowImage = Bitmap.createBitmap(100, 200, Bitmap.Config.ALPHA_8);

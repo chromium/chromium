@@ -37,7 +37,8 @@ class EVENTS_EXPORT DragEventAndroid {
                    const base::android::JavaRef<jstring>& html,
                    const base::android::JavaRef<jstring>& url,
                    const base::android::JavaRef<jstring>& custom_data,
-                   const base::android::JavaRef<jstring>& effect_allowed);
+                   const base::android::JavaRef<jstring>& effect_allowed,
+                   const base::android::JavaRef<jstring>& drag_id);
 
   DragEventAndroid(const DragEventAndroid&) = delete;
   DragEventAndroid& operator=(const DragEventAndroid&) = delete;
@@ -52,6 +53,11 @@ class EVENTS_EXPORT DragEventAndroid {
 
   base::android::ScopedJavaLocalRef<jstring> GetJavaCustomData() const;
   base::android::ScopedJavaLocalRef<jstring> GetJavaEffectAllowed() const;
+  // The drag ID read from the drag's ClipDescription extras. The browser sets
+  // it on drags started from web content, but any app can set it, so it is
+  // unverified. Unlike the drop items, it is available before the drop; it is
+  // null on ACTION_DRAG_ENDED, which has no ClipDescription.
+  base::android::ScopedJavaLocalRef<jstring> GetJavaDragId() const;
 
   base::android::ScopedJavaLocalRef<jobjectArray> GetJavaFilenames() const;
   base::android::ScopedJavaLocalRef<jstring> GetJavaText() const;
@@ -78,6 +84,7 @@ class EVENTS_EXPORT DragEventAndroid {
   base::android::ScopedJavaGlobalRef<jstring> url_;
   base::android::ScopedJavaGlobalRef<jstring> custom_data_;
   base::android::ScopedJavaGlobalRef<jstring> effect_allowed_;
+  base::android::ScopedJavaGlobalRef<jstring> drag_id_;
 };
 
 }  // namespace ui

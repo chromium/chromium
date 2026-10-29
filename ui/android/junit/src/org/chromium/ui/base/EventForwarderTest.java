@@ -28,6 +28,7 @@ import android.content.ClipDescription;
 import android.graphics.Insets;
 import android.net.Uri;
 import android.os.Build;
+import android.os.PersistableBundle;
 import android.view.DragEvent;
 import android.view.InputDevice;
 import android.view.MotionEvent;
@@ -55,6 +56,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.ui.base.EventForwarder.TouchSequenceObserver;
+import org.chromium.ui.dragdrop.DropDataAndroid;
 import org.chromium.ui.util.MotionEventUtils;
 
 import java.io.IOException;
@@ -911,8 +913,46 @@ public class EventForwarderTest {
                         eq(expectedHtml),
                         eq(expectedUrl),
                         isNull(),
+                        isNull(),
                         isNull());
         histograms.assertExpected();
+        eventForwarder.destroy();
+    }
+
+    @Test
+    public void testDragEventForwardsDragId() {
+        String[] mimeTypes = new String[] {"image/jpeg"};
+        ClipDescription clipDescription = new ClipDescription("label", mimeTypes);
+        PersistableBundle extras = new PersistableBundle();
+        extras.putString(DropDataAndroid.EXTRA_DRAG_ID, "DRAG_ID");
+        clipDescription.setExtras(extras);
+        EventForwarder eventForwarder =
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, false, false, mScaledTouchSlop);
+        DragEvent event = mock(DragEvent.class);
+        // The drag ID is in the ClipDescription, which (unlike ClipData) is available before the
+        // drop.
+        doReturn(DragEvent.ACTION_DRAG_ENTERED).when(event).getAction();
+        doReturn(clipDescription).when(event).getClipDescription();
+
+        eventForwarder.onDragEvent(event, mView);
+
+        verify(mNativeMock, times(1))
+                .onDragEvent(
+                        eq(EventForwarderTest.NATIVE_EVENT_FORWARDER_ID),
+                        eq(DragEvent.ACTION_DRAG_ENTERED),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat(),
+                        eq(mimeTypes),
+                        anyBoolean(),
+                        any(),
+                        isNull(),
+                        isNull(),
+                        isNull(),
+                        isNull(),
+                        isNull(),
+                        eq("DRAG_ID"));
         eventForwarder.destroy();
     }
 

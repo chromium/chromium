@@ -634,6 +634,7 @@ scoped_refptr<WebContentsViewAndroid::DragTargetSession>
 WebContentsViewAndroid::CreateDragTargetSession(
     const ui::DragEventAndroid& event) const {
   auto session = base::MakeRefCounted<DragTargetSession>();
+  session->drag_id = ParseDragIdFromEvent(event);
   for (const std::u16string& mime_type : event.mime_types()) {
     // The old Android ClipData API does not let you detect whether URIs
     // (files) are included in drag-start event, only in drop event.  We
@@ -785,6 +786,7 @@ void WebContentsViewAndroid::DragEnteredCallback(
   if (WebContentsDelegate* delegate = web_contents_->GetDelegate()) {
     DropData provisional_drop_data =
         BuildProvisionalDropDataFromMetadata(drag_session.metadata);
+    provisional_drop_data.drag_id = drag_session.drag_id;
     if (!delegate->CanDragEnter(web_contents_, provisional_drop_data,
                                 allowed_ops)) {
       drag_session.rejected_by_delegate = true;

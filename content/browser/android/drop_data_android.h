@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "base/android/jni_android.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/public/common/drop_data.h"
@@ -42,6 +43,14 @@ CONTENT_EXPORT void PopulateDropDataFromEvent(
 // fails. If successful, the returned base::Value is guaranteed to be a
 // dictionary.
 CONTENT_EXPORT std::optional<base::Value> ParseCustomDataFromEvent(
+    const ui::DragEventAndroid& event);
+
+// Parses and returns the drag ID (`DropData::drag_id`) that a drag started from
+// web content carries in its ClipDescription extras. Any app can set this
+// extra, so the result is unverified: it must not be treated as proof that the
+// drag came from this browser. Returns std::nullopt if the event has no drag
+// ID or it fails to parse.
+CONTENT_EXPORT std::optional<base::UnguessableToken> ParseDragIdFromEvent(
     const ui::DragEventAndroid& event);
 
 }  // namespace content

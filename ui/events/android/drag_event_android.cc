@@ -25,7 +25,8 @@ DragEventAndroid::DragEventAndroid(
     const base::android::JavaRef<jstring>& html,
     const base::android::JavaRef<jstring>& url,
     const base::android::JavaRef<jstring>& custom_data,
-    const base::android::JavaRef<jstring>& effect_allowed)
+    const base::android::JavaRef<jstring>& effect_allowed,
+    const base::android::JavaRef<jstring>& drag_id)
     : action_(action),
       location_(location),
       screen_location_(screen_location),
@@ -37,6 +38,7 @@ DragEventAndroid::DragEventAndroid(
   url_.Reset(env, url);
   custom_data_.Reset(env, custom_data);
   effect_allowed_.Reset(env, effect_allowed);
+  drag_id_.Reset(env, drag_id);
 }
 
 DragEventAndroid::~DragEventAndroid() {}
@@ -65,6 +67,10 @@ ScopedJavaLocalRef<jstring> DragEventAndroid::GetJavaEffectAllowed() const {
   return ScopedJavaLocalRef<jstring>(effect_allowed_);
 }
 
+ScopedJavaLocalRef<jstring> DragEventAndroid::GetJavaDragId() const {
+  return ScopedJavaLocalRef<jstring>(drag_id_);
+}
+
 std::unique_ptr<DragEventAndroid> DragEventAndroid::CreateFor(
     const gfx::PointF& new_location) const {
   gfx::PointF new_screen_location =
@@ -72,7 +78,7 @@ std::unique_ptr<DragEventAndroid> DragEventAndroid::CreateFor(
   JNIEnv* env = AttachCurrentThread();
   return std::make_unique<DragEventAndroid>(
       env, action_, new_location, new_screen_location, *mime_types_, has_files_,
-      filenames_, text_, html_, url_, custom_data_, effect_allowed_);
+      filenames_, text_, html_, url_, custom_data_, effect_allowed_, drag_id_);
 }
 
 }  // namespace ui

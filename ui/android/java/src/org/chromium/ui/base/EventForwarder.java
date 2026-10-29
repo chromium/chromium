@@ -825,6 +825,7 @@ public class EventForwarder {
                 extras != null ? extras.getString(DropDataAndroid.EXTRA_CUSTOM_DATA) : null;
         String effectAllowed =
                 extras != null ? extras.getString(DropDataAndroid.EXTRA_EFFECT_ALLOWED) : null;
+        String dragId = extras != null ? extras.getString(DropDataAndroid.EXTRA_DRAG_ID) : null;
 
         String[] mimeTypes =
                 new String[clipDescription != null ? clipDescription.getMimeTypeCount() : 0];
@@ -930,7 +931,8 @@ public class EventForwarder {
                         html,
                         url,
                         customData,
-                        effectAllowed);
+                        effectAllowed,
+                        dragId);
         return true;
     }
 
@@ -1236,7 +1238,8 @@ public class EventForwarder {
                 @Nullable String html,
                 @Nullable String url,
                 @Nullable String customData,
-                @Nullable String effectAllowed);
+                @Nullable String effectAllowed,
+                @Nullable String dragId);
 
         boolean onGestureEvent(long nativeEventForwarder, int type, long timeMs, float delta);
 

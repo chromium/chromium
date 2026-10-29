@@ -131,7 +131,8 @@ struct DragAndDropSimulator::PlatformState {
     forwarder->OnDragEvent(env, action, x_px, y_px, screen_px.x(),
                            screen_px.y(), j_mime_types, has_files, j_filenames,
                            j_text, j_html, j_url, j_custom_data,
-                           j_effect_allowed);
+                           j_effect_allowed,
+                           /*j_dragId=*/base::android::JavaRef<jstring>());
     return true;
   }
 

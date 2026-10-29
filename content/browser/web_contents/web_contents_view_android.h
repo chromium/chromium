@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/unguessable_token.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_view.h"
@@ -210,6 +211,10 @@ class CONTENT_EXPORT WebContentsViewAndroid : public WebContentsView,
     // Metadata parsed from the drag event's `ClipDescription` when the session
     // was created.
     std::vector<DropData::Metadata> metadata;
+    // Drag ID claimed by the current drag's `ClipDescription` extras
+    // (unverified; see `ParseDragIdFromEvent()`). Populated when the session is
+    // created (unlike drop items, which arrive only on `ACTION_DROP`).
+    std::optional<base::UnguessableToken> drag_id;
     // Target RenderWidgetHost currently entered by this drag. If hit-testing
     // moves onto a different RenderWidgetHost during the drag, the previous one
     // receives `DragTargetDragLeave` and the new one receives

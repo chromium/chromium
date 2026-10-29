@@ -25,6 +25,7 @@
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/unguessable_token.h"
 #include "content/browser/android/drop_data_android.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -295,6 +296,7 @@ struct DragEventParams {
   base::android::ScopedJavaLocalRef<jstring> url;
   base::android::ScopedJavaLocalRef<jstring> custom_data;
   base::android::ScopedJavaLocalRef<jstring> effect_allowed;
+  base::android::ScopedJavaLocalRef<jstring> drag_id;
 };
 
 ui::DragEventAndroid MakeDragEvent(const DragEventParams& params) {
@@ -304,7 +306,7 @@ ui::DragEventAndroid MakeDragEvent(const DragEventParams& params) {
       params.screen_location,
       params.mime_types ? *params.mime_types : *kNoMimeTypes, params.has_files,
       params.filenames, params.text, params.html, params.url,
-      params.custom_data, params.effect_allowed);
+      params.custom_data, params.effect_allowed, params.drag_id);
 }
 
 }  // namespace
@@ -757,6 +759,146 @@ TEST_F(WebContentsViewAndroidTest, CanDragEnter_AcceptedSetsTargetRwh) {
   EXPECT_EQ(active_drag()->target_rwh.get(), GetRenderWidgetHost());
 
   web_contents()->SetDelegate(nullptr);
+}
+
+TEST_F(WebContentsViewAndroidTest, DragIdRestoredFromJava) {
+  MockWebContentsDelegate delegate(/*can_drag_enter=*/true);
+  web_contents()->SetDelegate(&delegate);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::vector<std::u16string> mime_types = {u"image/png"};
+  const base::UnguessableToken drag_id = base::UnguessableToken::Create();
+  base::android::ScopedJavaLocalRef<jstring> j_drag_id =
+      base::android::ConvertUTF8ToJavaString(env, drag_id.ToString());
+
+  // The drag ID is available at ACTION_DRAG_ENTERED, so the delegate sees it
+  // in the provisional drop data.
+  ui::DragEventAndroid enter_event =
+      MakeDragEvent({.action = DragEventJni::ACTION_DRAG_ENTERED,
+                     .mime_types = &mime_types,
+                     .has_files = true,
+                     .drag_id = j_drag_id});
+  view()->OnDragEvent(enter_event);
+  EXPECT_EQ(delegate.can_drag_enter_call_count(), 1);
+  EXPECT_EQ(delegate.last_drop_data().drag_id, drag_id);
+
+  // It is also restored into the drop data on ACTION_DROP.
+  ui::DragEventAndroid drop_event =
+      MakeDragEvent({.action = DragEventJni::ACTION_DROP,
+                     .mime_types = &mime_types,
+                     .has_files = true,
+                     .drag_id = j_drag_id});
+  view()->OnDragEvent(drop_event);
+  ASSERT_TRUE(view()->GetDropData());
+  EXPECT_EQ(view()->GetDropData()->drag_id, drag_id);
+
+  web_contents()->SetDelegate(nullptr);
+}
+
+TEST_F(WebContentsViewAndroidTest, MalformedDragIdIgnored) {
+  MockWebContentsDelegate delegate(/*can_drag_enter=*/true);
+  web_contents()->SetDelegate(&delegate);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::vector<std::u16string> mime_types = {u"image/png"};
+
+  for (const char* malformed_id : {"not-a-token", ""}) {
+    SCOPED_TRACE(malformed_id);
+    base::android::ScopedJavaLocalRef<jstring> j_drag_id =
+        base::android::ConvertUTF8ToJavaString(env, malformed_id);
+
+    ui::DragEventAndroid enter_event =
+        MakeDragEvent({.action = DragEventJni::ACTION_DRAG_ENTERED,
+                       .mime_types = &mime_types,
+                       .has_files = true,
+                       .drag_id = j_drag_id});
+    view()->OnDragEvent(enter_event);
+    EXPECT_FALSE(delegate.last_drop_data().drag_id.has_value());
+
+    ui::DragEventAndroid drop_event =
+        MakeDragEvent({.action = DragEventJni::ACTION_DROP,
+                       .mime_types = &mime_types,
+                       .has_files = true,
+                       .drag_id = j_drag_id});
+    view()->OnDragEvent(drop_event);
+    ASSERT_TRUE(view()->GetDropData());
+    EXPECT_FALSE(view()->GetDropData()->drag_id.has_value());
+
+    ui::DragEventAndroid end_event =
+        MakeDragEvent({.action = DragEventJni::ACTION_DRAG_ENDED});
+    view()->OnDragEvent(end_event);
+  }
+  EXPECT_EQ(delegate.can_drag_enter_call_count(), 2);
+
+  web_contents()->SetDelegate(nullptr);
+}
+
+TEST_F(WebContentsViewAndroidTest, OnDragEnded_ResetsDragId) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::vector<std::u16string> mime_types = {u"image/png"};
+  const base::UnguessableToken drag_id = base::UnguessableToken::Create();
+  base::android::ScopedJavaLocalRef<jstring> j_drag_id =
+      base::android::ConvertUTF8ToJavaString(env, drag_id.ToString());
+
+  ui::DragEventAndroid enter_event =
+      MakeDragEvent({.action = DragEventJni::ACTION_DRAG_ENTERED,
+                     .mime_types = &mime_types,
+                     .has_files = true,
+                     .drag_id = j_drag_id});
+  view()->OnDragEvent(enter_event);
+  ASSERT_TRUE(active_drag());
+  EXPECT_EQ(active_drag()->drag_id, drag_id);
+
+  // Android provides no ClipDescription, so no drag ID, on ACTION_DRAG_ENDED.
+  ui::DragEventAndroid end_event =
+      MakeDragEvent({.action = DragEventJni::ACTION_DRAG_ENDED});
+  view()->OnDragEvent(end_event);
+  EXPECT_FALSE(active_drag());
+}
+
+// Checks that a drag ID survives the trip out to Java (as
+// `DropDataAndroid.dragId`, which DragAndDropDelegateImpl copies into the
+// ClipDescription extras) and back in through a drag event.
+TEST(DropDataAndroidTest, DragIdRoundTripsThroughJava) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  DropData drop_data;
+  drop_data.drag_id = base::UnguessableToken::Create();
+
+  base::android::ScopedJavaLocalRef<jobject> j_drop_data =
+      ToJavaDropData(drop_data);
+  ASSERT_FALSE(j_drop_data.is_null());
+  base::android::ScopedJavaLocalRef<jclass> j_class =
+      base::android::ScopedJavaLocalRef<jclass>::Adopt(
+          env, env->GetObjectClass(j_drop_data.obj()));
+  jfieldID drag_id_field =
+      env->GetFieldID(j_class.obj(), "dragId", "Ljava/lang/String;");
+  ASSERT_TRUE(drag_id_field);
+  base::android::ScopedJavaLocalRef<jstring> j_drag_id =
+      base::android::ScopedJavaLocalRef<jstring>::Adopt(
+          env, static_cast<jstring>(
+                   env->GetObjectField(j_drop_data.obj(), drag_id_field)));
+  ASSERT_FALSE(j_drag_id.is_null());
+
+  ui::DragEventAndroid drop_event = MakeDragEvent(
+      {.action = DragEventJni::ACTION_DROP, .drag_id = j_drag_id});
+  EXPECT_EQ(ParseDragIdFromEvent(drop_event), drop_data.drag_id);
+}
+
+TEST(DropDataAndroidTest, NoDragIdInJavaWithoutOne) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> j_drop_data =
+      ToJavaDropData(DropData());
+  ASSERT_FALSE(j_drop_data.is_null());
+  base::android::ScopedJavaLocalRef<jclass> j_class =
+      base::android::ScopedJavaLocalRef<jclass>::Adopt(
+          env, env->GetObjectClass(j_drop_data.obj()));
+  jfieldID drag_id_field =
+      env->GetFieldID(j_class.obj(), "dragId", "Ljava/lang/String;");
+  ASSERT_TRUE(drag_id_field);
+  base::android::ScopedJavaLocalRef<jobject> j_drag_id =
+      base::android::ScopedJavaLocalRef<jobject>::Adopt(
+          env, env->GetObjectField(j_drop_data.obj(), drag_id_field));
+  EXPECT_TRUE(j_drag_id.is_null());
 }
 
 TEST_F(WebContentsViewAndroidTest, UpdateDragOperation_IgnoresStaleTargetRwh) {

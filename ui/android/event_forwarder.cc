@@ -223,7 +223,8 @@ void EventForwarder::OnDragEvent(JNIEnv* env,
                                  const JavaRef<jstring>& j_html,
                                  const JavaRef<jstring>& j_url,
                                  const JavaRef<jstring>& j_customData,
-                                 const JavaRef<jstring>& j_effectAllowed) {
+                                 const JavaRef<jstring>& j_effectAllowed,
+                                 const JavaRef<jstring>& j_dragId) {
   float dip_scale = view_->GetDipScale();
   gfx::PointF location(x / dip_scale, y / dip_scale);
   gfx::PointF root_location(screen_x / dip_scale, screen_y / dip_scale);
@@ -232,7 +233,7 @@ void EventForwarder::OnDragEvent(JNIEnv* env,
 
   DragEventAndroid event(env, action, location, root_location, mime_types,
                          has_files, j_filenames, j_text, j_html, j_url,
-                         j_customData, j_effectAllowed);
+                         j_customData, j_effectAllowed, j_dragId);
   view_->OnDragEvent(event);
 }
 

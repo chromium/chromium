@@ -77,7 +77,8 @@ class UI_ANDROID_EXPORT EventForwarder {
                    const base::android::JavaRef<jstring>& j_html,
                    const base::android::JavaRef<jstring>& j_url,
                    const base::android::JavaRef<jstring>& j_customData,
-                   const base::android::JavaRef<jstring>& j_effectAllowed);
+                   const base::android::JavaRef<jstring>& j_effectAllowed,
+                   const base::android::JavaRef<jstring>& j_dragId);
 
   bool OnGestureEvent(JNIEnv* env, int32_t type, int64_t time_ms, float scale);
 

@@ -261,6 +261,9 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         if (dropData.effectAllowed != null) {
             extras.putString(DropDataAndroid.EXTRA_EFFECT_ALLOWED, dropData.effectAllowed);
         }
+        if (dropData.dragId != null) {
+            extras.putString(DropDataAndroid.EXTRA_DRAG_ID, dropData.dragId);
+        }
         clipData.getDescription().setExtras(extras);
         return clipData;
     }
