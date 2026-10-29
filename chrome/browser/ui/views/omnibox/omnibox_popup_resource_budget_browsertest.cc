@@ -24,7 +24,6 @@
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/test/bind.h"
-#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
@@ -176,43 +175,7 @@ void LogPopupResources(std::string_view label,
             << " total_pmf_kb=" << total_kb;
 }
 
-// Returns the popup presenters of `profile`'s browser windows that exist.
-std::vector<OmniboxPopupPresenterBase*> GetPopupPresenters(Profile* profile) {
-  std::vector<OmniboxPopupPresenterBase*> presenters;
-  for (BrowserWindowInterface* browser : GetAllBrowserWindowInterfaces()) {
-    LocationBarView* location_bar = browser->GetProfile() == profile
-                                        ? GetLocationBarView(browser)
-                                        : nullptr;
-    if (!location_bar) {
-      continue;
-    }
-    OmniboxPopupPresenterBase* window_presenters[] = {
-        location_bar->GetOmniboxPopupView()->presenter(),
-        location_bar->GetOmniboxPopupAimPresenter()};
-    for (OmniboxPopupPresenterBase* presenter : window_presenters) {
-      if (presenter) {
-        presenters.push_back(presenter);
-      }
-    }
-  }
-  return presenters;
-}
-
-// Waits until every popup presenter has created its content. The deferrals
-// (`omnibox::kOmniboxWebUIPopupDeferCreation` and
-// `omnibox::kOmniboxAimPopupDeferCreation`, on by default on ChromeOS) create
-// it after the window's first presented frame, and the budget is the state
-// after that.
-void WaitForPopupContentsToBeCreated(Profile* profile) {
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return std::ranges::all_of(
-        GetPopupPresenters(profile),
-        [](OmniboxPopupPresenterBase* p) { return !!p->GetWebUIContent(); });
-  }));
-}
-
 void WaitForPopupsToLoad(Profile* profile) {
-  WaitForPopupContentsToBeCreated(profile);
   for (content::WebContents* contents :
        CountPopupResources(profile).web_contents) {
     EXPECT_TRUE(content::WaitForLoadStop(contents));
@@ -351,7 +314,6 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupResourceBudgetBrowserTest,
   }
   LocationBarView* location_bar = GetLocationBarView(browser());
   ASSERT_TRUE(location_bar);
-  WaitForPopupContentsToBeCreated(browser()->GetProfile());
   content::WebContents* contents = location_bar->GetOmniboxPopupView()
                                        ->presenter()
                                        ->GetWebUIContent()
