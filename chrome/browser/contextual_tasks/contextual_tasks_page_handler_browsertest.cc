@@ -27,6 +27,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -145,6 +146,17 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksPageHandlerBrowserTest,
   content::WebContents* active_contents =
       browser()->GetActiveTabInterface()->GetContents();
   EXPECT_EQ(active_contents->GetURL(), GURL(chrome::kGoogleAccountURL));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksPageHandlerBrowserTest, OpenLogOutFlow) {
+  auto* tab_list = TabListInterface::From(browser());
+  int start_count = tab_list->GetTabCount();
+  contextual_tasks_ui_->OpenLogOutFlow();
+  EXPECT_EQ(tab_list->GetTabCount(), start_count + 1);
+  content::WebContents* active_contents =
+      browser()->GetActiveTabInterface()->GetContents();
+  EXPECT_EQ(active_contents->GetVisibleURL(),
+            GaiaUrls::GetInstance()->service_logout_url());
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksPageHandlerBrowserTest, OpenOnboardingHelpUi) {

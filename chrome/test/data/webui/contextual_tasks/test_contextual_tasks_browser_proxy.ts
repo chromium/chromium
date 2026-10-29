@@ -524,6 +524,7 @@ export class TestToolbarPageHandler extends TestBrowserProxy implements
       'openMyActivityUi',
       'openOverflowMenuHelpUi',
       'openManageAccountUi',
+      'openLogOutFlow',
       'openFeedbackUi',
       'moveTaskUiToNewTab',
       'showThreadHistory',
@@ -556,6 +557,10 @@ export class TestToolbarPageHandler extends TestBrowserProxy implements
 
   openManageAccountUi() {
     this.methodCalled('openManageAccountUi');
+  }
+
+  openLogOutFlow() {
+    this.methodCalled('openLogOutFlow');
   }
 
   openFeedbackUi() {

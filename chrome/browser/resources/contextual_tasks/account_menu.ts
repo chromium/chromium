@@ -68,6 +68,11 @@ export class AccountMenuElement extends CrLitElement {
     this.toolbarBrowserProxy_.handler.openManageAccountUi();
   }
 
+  protected onSignOutClick_() {
+    this.close();
+    this.toolbarBrowserProxy_.handler.openLogOutFlow();
+  }
+
   protected getAccountLabel_(): string {
     if (!this.fullName) {
       return this.email;

@@ -103,6 +103,7 @@ class ContextualTasksUIBase
   void OpenMyActivityUi() override;
   void OpenOverflowMenuHelpUi() override;
   void OpenManageAccountUi() override;
+  void OpenLogOutFlow() override;
   void OpenFeedbackUi() override;
   void MoveTaskUiToNewTab() override;
   void ShowThreadHistory() override;
