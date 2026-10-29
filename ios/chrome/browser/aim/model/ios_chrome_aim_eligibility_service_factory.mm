@@ -76,22 +76,22 @@ AimEligibilityService::Configuration CreateConfiguration(
   return config;
 }
 
-std::unique_ptr<KeyedService> BuildAimEligibilityService(ProfileIOS* profile) {
-  if (auto service = tests_hook::CreateAimEligibilityService(profile)) {
+std::unique_ptr<KeyedService> BuildAimEligibilityService(ProfileIOS& profile) {
+  if (auto service = tests_hook::CreateAimEligibilityService(&profile)) {
     return service;
   }
   return std::make_unique<IOSChromeAimEligibilityService>(
-      profile->GetPrefs(),
+      profile.GetPrefs(),
       ios::TemplateURLServiceFactory::GetForProfile(profile),
-      profile->GetSharedURLLoaderFactory(),
+      profile.GetSharedURLLoaderFactory(),
       IdentityManagerFactory::GetForProfile(profile),
-      CreateConfiguration(profile->IsOffTheRecord()));
+      CreateConfiguration(profile.IsOffTheRecord()));
 }
 
 }  // namespace
 
 // static
-IOSChromeAimEligibilityServiceFactory::TestingFactory
+IOSChromeAimEligibilityServiceFactory::TestingFactoryByRef
 IOSChromeAimEligibilityServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildAimEligibilityService);
 }
@@ -114,6 +114,6 @@ IOSChromeAimEligibilityServiceFactory::IOSChromeAimEligibilityServiceFactory(
 
 std::unique_ptr<KeyedService>
 IOSChromeAimEligibilityServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildAimEligibilityService(profile);
 }
