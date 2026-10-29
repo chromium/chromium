@@ -2407,36 +2407,6 @@ TEST_F(InputMethodMacTest, SecureHasBeenAPasswordInput) {
   EXPECT_FALSE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
 }
 
-TEST_F(InputMethodMacTest, SecureHasBeenACustomPasswordInput) {
-  ASSERT_FALSE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
-  ASSERT_EQ(text_input_manager(), tab_view()->GetTextInputManager());
-
-  // RenderWidgetHostViewMacTest.LostFocusAndGotFocusOnSetActive checks the
-  // GotFocus()/LostFocus() rules, just silence the warnings here.
-  EXPECT_CALL(*host_, Focus()).Times(::testing::AnyNumber());
-  EXPECT_CALL(*host_, Blur()).Times(::testing::AnyNumber());
-
-  [window_ makeFirstResponder:tab_view()->GetInProcessNSView()];
-
-  // Shouldn't enable secure input if it's not a "has been a custom password"
-  // textfield.
-  tab_view()->SetActive(true);
-  EXPECT_FALSE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
-
-  SetTextInputType(child_view_, ui::TEXT_INPUT_TYPE_TEXT,
-                   ui::TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD);
-  ASSERT_EQ(child_widget_.get(), text_input_manager()->GetActiveWidget());
-  ASSERT_EQ(text_input_manager(), tab_view()->GetTextInputManager());
-  ASSERT_EQ(ui::TEXT_INPUT_TYPE_TEXT, tab_view()->GetTextInputType());
-
-  // Single matched calls immediately update IsPasswordInputEnabled().
-  tab_view()->SetActive(true);
-  EXPECT_TRUE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
-
-  tab_view()->SetActive(false);
-  EXPECT_FALSE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
-}
-
 // This test creates a test view to mimic a child frame's view and verifies that
 // calling ImeCancelComposition on either the child view or the tab's view will
 // always lead to a call to cancelComposition on the cocoa view.

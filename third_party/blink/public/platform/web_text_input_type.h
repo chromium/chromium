@@ -99,7 +99,8 @@ enum WebTextInputFlags {
   // Whether an input field is or has been a custom password field. This is a
   // weak heuristic to determine what a "password" is based on the field's
   // behavior. Therefore, it is useful for masking in captures and selection
-  // behavior changes, but nothing more; see https://crbug.com/567321058.
+  // behavior changes, but nothing more; see https://crbug.com/567321058 and
+  // https://crbug.com/575203732.
   kWebTextInputFlagHasBeenCustomPassword = 1 << 14,
 };
 // LINT.ThenChange(//ui/base/ime/text_input_flags.h:TextInputFlags)

@@ -1224,9 +1224,11 @@ void Textfield::OnFocus() {
   }
 
 #if BUILDFLAG(IS_MAC)
+  // Intentionally do not do scoped password enabling for heuristic passwords
+  // (TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD) as it is disruptive and triggers
+  // too easily. https://crbug.com/575203732
   if (text_input_type_ == ui::TEXT_INPUT_TYPE_PASSWORD ||
-      text_input_flags_ & ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD ||
-      text_input_flags_ & ui::TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD) {
+      text_input_flags_ & ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD) {
     password_input_enabler_ =
         std::make_unique<ui::ScopedPasswordInputEnabler>();
   }
