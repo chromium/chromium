@@ -61,6 +61,10 @@ public class SigninChecker implements AccountsChangeObserver, Destroyable {
         return mNumOfChildAccountChecksDone;
     }
 
+    public void resetForTesting() {
+        mNumOfChildAccountChecksDone = 0;
+    }
+
     private void checkChildAccount(List<AccountInfo> accounts) {
         AccountUtils.checkIsSubjectToParentalControls(
                 mAccountManagerFacade, accounts, this::onChildAccountStatusReady);
