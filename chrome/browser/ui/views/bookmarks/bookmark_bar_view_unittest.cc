@@ -461,7 +461,8 @@ TEST_F(BookmarkBarViewTest, RemoveAccountNodesNotAllAccountNodesVisible) {
   EXPECT_EQ("a b", GetStringForVisibleButtons());
 }
 
-// Assertions for moving a node on the bookmark bar.
+// Tests that moving a `BookmarkNode` on the bookmark bar updates button
+// ordering and visibility.
 TEST_F(BookmarkBarViewTest, MoveNode) {
   const BookmarkNode* bookmark_bar_node = model()->bookmark_bar_node();
   AddNodesToBookmarkBarFromModelString("a b c d e f ");
@@ -516,9 +517,9 @@ TEST_F(BookmarkBarViewInWidgetTest, ButtonVisiblityUpdatesOverflowMenu) {
   EXPECT_EQ(3u, overflow_menu->GetSubmenu()->GetMenuItems().size());
 }
 
-// TODO(crbug.com/375364962): Deflake and re-enable.
-// Assertions for changing the title of a node.
-TEST_F(BookmarkBarViewTest, DISABLED_ChangeTitle) {
+// Tests that changing a `BookmarkNode` title updates button text and visibility
+// as available space and label widths change.
+TEST_F(BookmarkBarViewTest, ChangeTitle) {
   const BookmarkNode* bookmark_bar_node = model()->bookmark_bar_node();
   AddNodesToBookmarkBarFromModelString("a b c d e f ");
   EXPECT_EQ(0u, test_helper_->GetBookmarkButtonCount());
@@ -566,6 +567,8 @@ TEST_F(BookmarkBarViewTest, DISABLED_ChangeTitle) {
   EXPECT_EQ("a1 b1 c d1 e f1", GetStringForVisibleButtons());
 }
 
+// Tests that `BookmarkBarView` supports expected drop formats, including URLs
+// and bookmark entries.
 TEST_F(BookmarkBarViewTest, GetDropFormats) {
   int formats = 0;
   std::set<ui::ClipboardFormatType> format_types;
@@ -575,6 +578,8 @@ TEST_F(BookmarkBarViewTest, GetDropFormats) {
             format_types.end());
 }
 
+// Tests that dropping a URL onto `BookmarkBarView` invokes the drop callback
+// and adds the bookmark button.
 TEST_F(BookmarkBarViewTest, DropCallbackTest) {
   AddNodesToBookmarkBarFromModelString("a b c d e f ");
   EXPECT_EQ(0u, test_helper_->GetBookmarkButtonCount());
@@ -601,6 +606,8 @@ TEST_F(BookmarkBarViewTest, DropCallbackTest) {
   EXPECT_EQ(output_drag_op, ui::mojom::DragOperation::kCopy);
 }
 
+// Tests that mutating the `BookmarkModel` during an active drag updates drop
+// state correctly.
 TEST_F(BookmarkBarViewTest, MutateModelDuringDrag) {
   AddNodesToBookmarkBarFromModelString("a b c d e f ");
   SizeUntilButtonsVisible(7);
