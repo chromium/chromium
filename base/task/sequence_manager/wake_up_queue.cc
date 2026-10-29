@@ -36,10 +36,6 @@ void WakeUpQueue::RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now) {
   }
 }
 
-// TODO(kraynov): https://crbug.com/857101 Consider making an interface
-// for SequenceManagerImpl which will expose SetNextDelayedDoWork and
-// MaybeScheduleImmediateWork methods to make the functions below pure-virtual.
-
 void WakeUpQueue::SetNextWakeUpForQueue(internal::TaskQueueImpl* queue,
                                         LazyNow* lazy_now,
                                         std::optional<WakeUp> wake_up) {
