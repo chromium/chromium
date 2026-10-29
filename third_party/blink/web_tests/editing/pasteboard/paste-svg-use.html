@@ -47,4 +47,19 @@ selection_test(
   },
   '<div contenteditable>|<svg></svg><svg></svg></div>',
   'Paste blocks non-local hrefs in SVG use elements');
+
+// crbug.com/578083806
+selection_test(
+  '<div contenteditable>|</div>',
+  selection => {
+    selection.setClipboardData(
+      '<select><svg><use href="#safe">' +
+      '<use href="https://example.com/external.svg#xss"></use>' +
+      '<use xlink:href="https://example.com/external.svg#xss"></use>' +
+      '<use href="data:application/xml,<svg id=x></svg>#x"></use>' +
+      '</use></svg></select>');
+    selection.document.execCommand('paste');
+  },
+  '<div contenteditable><select><svg><use href="#safe"></use></svg></select>|</div>',
+  'Paste blocks nested non-local and data hrefs inside local SVG use elements');
 </script>
