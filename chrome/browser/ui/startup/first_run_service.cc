@@ -236,7 +236,9 @@ void FirstRunService::FinishFirstRunWithoutResumeTask() {
     return;
   }
 
-  CHECK(ProfilePicker::IsFirstRunOpen(), base::NotFatalUntil::M162);
+  // TODO(crbug.com/577151131): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(ProfilePicker::IsFirstRunOpen());
   OnFirstRunHasExited(ProfilePicker::FirstRunExitStatus::kAbandonedFlow,
                       ProfilePicker::FirstRunFinishReason::kFinishedFlow);
   ProfilePicker::Hide();
