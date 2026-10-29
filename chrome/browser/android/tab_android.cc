@@ -86,7 +86,6 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "ui/android/view_android.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 

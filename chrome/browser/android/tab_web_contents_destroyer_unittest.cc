@@ -27,8 +27,8 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace tabs {
@@ -248,7 +248,8 @@ TEST_F(TabWebContentsDestroyerTest, NavigationSuppressionAndInterception) {
   // OpenURLFromTab should be suppressed (return nullptr).
   content::OpenURLParams params =
       content::OpenURLParams::CreateRendererInitiated(
-          GURL("https://example.com"), WindowOpenDisposition::kCurrentTab,
+          GURL("https://example.com"),
+          ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_LINK, content::Referrer(),
           raw_web_contents->GetPrimaryMainFrame()
               ->GetCurrentInitiatorNavigationState());
@@ -296,7 +297,7 @@ TEST_F(TabWebContentsDestroyerTest, WindowCreationSuppression) {
                 raw_web_contents->GetPrimaryMainFrame()->GetSiteInstance(),
                 /*is_new_browsing_instance=*/true, GURL("https://example.com"),
                 "test_frame", GURL("https://target.example.com"),
-                WindowOpenDisposition::kNewPopup, window_features,
+                ui::mojom::WindowOpenDisposition::kNewPopup, window_features,
                 partition_config, /*session_storage_namespace=*/nullptr));
 
   task_environment()->FastForwardBy(base::Seconds(2));

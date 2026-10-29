@@ -46,6 +46,7 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/constants/chromeos_features.h"
@@ -732,10 +733,11 @@ IN_PROC_BROWSER_TEST_F(
   // 1. Start navigation to the first page with a slow subresource.
   SetPagePassages({"Sample initial page content"});
   GURL first_url = embedded_test_server()->GetURL("/page_with_slow_image");
-  browser()->OpenURL(content::OpenURLParams(first_url, content::Referrer(),
-                                            WindowOpenDisposition::kCurrentTab,
-                                            ui::PAGE_TRANSITION_TYPED, false),
-                     /*navigation_handle_callback=*/{});
+  browser()->OpenURL(
+      content::OpenURLParams(first_url, content::Referrer(),
+                             ui::mojom::WindowOpenDisposition::kCurrentTab,
+                             ui::PAGE_TRANSITION_TYPED, false),
+      /*navigation_handle_callback=*/{});
 
   // Wait until the initial document commits and requests the subresource.
   slow_response.WaitForRequest();

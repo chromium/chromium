@@ -13,7 +13,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/android/gurl_android.h"
 #include "url/origin.h"
 
@@ -41,11 +41,11 @@ ServiceTabLauncher::~ServiceTabLauncher() = default;
 void ServiceTabLauncher::LaunchTab(content::BrowserContext* browser_context,
                                    const content::OpenURLParams& params,
                                    TabLaunchedCallback callback) {
-  WindowOpenDisposition disposition = params.disposition;
-  if (disposition != WindowOpenDisposition::kNewWindow &&
-      disposition != WindowOpenDisposition::kNewPopup &&
-      disposition != WindowOpenDisposition::kNewForegroundTab &&
-      disposition != WindowOpenDisposition::kNewBackgroundTab) {
+  ui::mojom::WindowOpenDisposition disposition = params.disposition;
+  if (disposition != ui::mojom::WindowOpenDisposition::kNewWindow &&
+      disposition != ui::mojom::WindowOpenDisposition::kNewPopup &&
+      disposition != ui::mojom::WindowOpenDisposition::kNewForegroundTab &&
+      disposition != ui::mojom::WindowOpenDisposition::kNewBackgroundTab) {
     // ServiceTabLauncher can currently only launch new tabs.
     NOTIMPLEMENTED();
     return;

@@ -76,7 +76,7 @@
 #include "content/public/test/slow_download_http_response.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
@@ -307,7 +307,8 @@ class BrowserCloseManagerBrowserTest : public InProcessBrowserTest {
         browser->GetProfile()->GetDownloadManager(), 1);
     SetPromptForDownload(browser, false);
     ui_test_utils::NavigateToURLWithDisposition(
-        browser, slow_download_url, WindowOpenDisposition::kNewBackgroundTab,
+        browser, slow_download_url,
+        ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
         ui_test_utils::BROWSER_TEST_NO_WAIT);
     observer.WaitForFinished();
     EXPECT_EQ(1UL, observer.NumDownloadsSeenInState(
@@ -399,7 +400,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest, PRE_TestSessionRestore) {
       browser()->tab_strip_model()->GetActiveWebContents(), 1);
   ASSERT_NO_FATAL_FAILURE(NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUIVersionURL),
-      WindowOpenDisposition::kCurrentTab, ui_test_utils::BROWSER_TEST_NO_WAIT));
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
+      ui_test_utils::BROWSER_TEST_NO_WAIT));
   ASSERT_NO_FATAL_FAILURE(AcceptClose());
   navigation_observer.Wait();
 
@@ -765,7 +767,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
       std::make_optional<ui_test_utils::BrowserCreatedObserver>();
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("/beforeunload.html"),
-      WindowOpenDisposition::kNewWindow,
+      ui::mojom::WindowOpenDisposition::kNewWindow,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
   BrowserWindowInterface* browser2 = browser_created_observer->Wait();
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
@@ -780,7 +782,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   // This page doesn't have beforeunload handler. Yet.
   ui_test_utils::NavigateToURLWithDisposition(
       browser2, embedded_test_server()->GetURL("/title2.html"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_TRUE(content::WaitForLoadStop(
       browser2->GetTabStripModel()->GetWebContentsAt(1)));
@@ -954,12 +956,12 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   ASSERT_NO_FATAL_FAILURE(
       ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
           browser(), embedded_test_server()->GetURL("/beforeunload.html"),
-          WindowOpenDisposition::kNewForegroundTab,
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP)));
   PrepareForDialog(browser());
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("/title2.html"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   // Set silent exit to hit ignore unload handlers flow
   browser_shutdown::OnShutdownStarting(
@@ -1023,7 +1025,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
       browser()->GetProfile()->GetDownloadManager(), 1,
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_QUIT);
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(download_url), WindowOpenDisposition::kNewBackgroundTab,
+      browser(), GURL(download_url),
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
   observer.WaitForFinished();
 

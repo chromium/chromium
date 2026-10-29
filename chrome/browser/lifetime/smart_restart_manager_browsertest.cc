@@ -39,7 +39,7 @@
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
 namespace smart_restart {
@@ -663,7 +663,7 @@ IN_PROC_BROWSER_TEST_F(SmartRestartManagerConservativeBrowserTest,
   // 2. Setup Tab 2: PDF Mime Type.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("data:application/pdf,test"),
-      WindowOpenDisposition::kNewBackgroundTab,
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   fake_upgrade_detector_.SetUpgradeAvailable();

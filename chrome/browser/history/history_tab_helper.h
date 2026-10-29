@@ -20,6 +20,7 @@
 #include "components/translate/core/browser/translate_driver.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 namespace history {
 struct HistoryAddPageArgs;
@@ -97,7 +98,7 @@ class HistoryTabHelper
                            content::RenderFrameHost* source_render_frame_host,
                            const GURL& url,
                            const content::Referrer& referrer,
-                           WindowOpenDisposition disposition,
+                           ui::mojom::WindowOpenDisposition disposition,
                            ui::PageTransition transition,
                            bool started_from_context_menu,
                            bool renderer_initiated) override;

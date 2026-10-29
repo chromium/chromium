@@ -50,8 +50,8 @@
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace performance_manager::policies {
@@ -148,8 +148,8 @@ void EnsureTabsInBrowser(BrowserWindowInterface* browser, int num_tabs) {
   for (int i = 0; i < num_tabs; ++i) {
     ui_test_utils::NavigateToURLWithDisposition(
         browser, GURL("data:text/html;charset=utf-8,hello"),
-        i == 0 ? WindowOpenDisposition::kCurrentTab
-               : WindowOpenDisposition::kNewBackgroundTab,
+        i == 0 ? ui::mojom::WindowOpenDisposition::kCurrentTab
+               : ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
@@ -213,7 +213,7 @@ class PageDiscardingHelperBrowserTest
     content::OpenURLParams page =
         content::OpenURLParams::CreateBrowserInitiated(
             embedded_test_server()->GetURL("/favicon/title2_with_favicon.html"),
-            WindowOpenDisposition::kNewBackgroundTab,
+            ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
             ui::PAGE_TRANSITION_TYPED);
     content::WebContents* contents =
         browser()->OpenURL(page, /*navigation_handle_callback=*/{});

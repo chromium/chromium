@@ -55,8 +55,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "url/gurl.h"
 
@@ -512,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(ProcessPriorityBrowserTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("b.test", "/title1.html"),
-      WindowOpenDisposition::kNewBackgroundTab,
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   ASSERT_EQ(2, tab_strip_model()->count());
   content::WebContents* contents = tab_strip_model()->GetWebContentsAt(1);
@@ -576,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(ProcessPriorityNotAppliedBrowserTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("b.test", "/title1.html"),
-      WindowOpenDisposition::kNewBackgroundTab,
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   ASSERT_EQ(2, tab_strip_model()->count());
   content::WebContents* contents = tab_strip_model()->GetWebContentsAt(1);

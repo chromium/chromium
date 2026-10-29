@@ -33,8 +33,8 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "net/base/mime_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -56,7 +56,7 @@ void NavigateShareTargetPostInternal(
     content::WebContents* web_contents) {
   content::OpenURLParams open_url_params =
       content::OpenURLParams::CreateBrowserInitiated(
-          share_target_gurl, WindowOpenDisposition::kCurrentTab,
+          share_target_gurl, ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL);
   // The share target action URL has already been verified to be within the web
   // app's scope, so the app itself is the initiator of this navigation.

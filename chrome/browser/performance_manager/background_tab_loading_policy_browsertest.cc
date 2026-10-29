@@ -22,7 +22,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace performance_manager {
 
@@ -43,7 +43,7 @@ class BackgroundTabLoadingBrowserTest : public InProcessBrowserTest {
 
     for (int i = 0; i < number_of_tabs_to_add; ++i) {
       ui_test_utils::NavigateToURLWithDisposition(
-          browser, url_, WindowOpenDisposition::kNewForegroundTab,
+          browser, url_, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     }
     int tab_count = browser->GetTabStripModel()->count();
@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTabLoadingBrowserTest, RestoreTab) {
   {
     ui_test_utils::BrowserCreatedObserver browser_created_observer;
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url_, WindowOpenDisposition::kNewWindow,
+        browser(), url_, ui::mojom::WindowOpenDisposition::kNewWindow,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     browser_to_restore = browser_created_observer.Wait();
   }
@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTabLoadingBrowserTest,
   auto browser_created_observer =
       std::make_optional<ui_test_utils::BrowserCreatedObserver>();
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url_, WindowOpenDisposition::kNewWindow,
+      browser(), url_, ui::mojom::WindowOpenDisposition::kNewWindow,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   BrowserWindowInterface* const browser_to_restore =
       browser_created_observer->Wait();

@@ -60,7 +60,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 constexpr char kBlockedContentUkmName[] = "FamilyLinkUser.BlockedContent";
 constexpr char kBlockedContentUkmMainFrameMetricName[] = "MainFrameBlocked";
@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(FamilyLinkUrlFilterTest, BlockNewTabAfterLoading) {
   GURL test_url("http://www.example.com/simple.html");
   kids_management_api_mock().AllowSubsequentClassifyUrl();
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), test_url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), test_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Check that there is no interstitial.
@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(FamilyLinkUrlFilterTest, DontShowInterstitialTwice) {
   GURL test_url("http://www.example.com/simple.html");
   kids_management_api_mock().AllowSubsequentClassifyUrl();
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), test_url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), test_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Check that there is no interstitial.
@@ -401,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(FamilyLinkUrlFilterTest, RecordBlockedContentUkm) {
   GURL test_url("http://www.example.com/simple.html");
   kids_management_api_mock().RestrictSubsequentClassifyUrl();
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), test_url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), test_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Check that the interstitial is displayed.
@@ -541,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(FamilyLinkBlockModeTest, OpenBlockedURLInNewTab) {
   // Open blocked URL in a new tab.
   GURL test_url("http://www.example.com/simple.html");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), test_url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), test_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Check that we got the interstitial.

@@ -16,8 +16,8 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace performance_manager {
 
@@ -127,11 +127,11 @@ IN_PROC_BROWSER_TEST_F(PageLoadTrackerDecoratorTest, PageNodeLoadingState) {
                                     /* exit_if_already_loaded_idle=*/false);
 
   // Navigate.
-  browser()->OpenURL(
-      content::OpenURLParams::CreateBrowserInitiated(
-          embedded_test_server()->GetURL("/empty.html"),
-          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
-      /*navigation_handle_callback=*/{});
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         embedded_test_server()->GetURL("/empty.html"),
+                         ui::mojom::WindowOpenDisposition::kCurrentTab,
+                         ui::PAGE_TRANSITION_TYPED),
+                     /*navigation_handle_callback=*/{});
 
   // Wait until GetLoadingState() transitions to LoadingState::kLoadedIdle.
   observer.Wait();

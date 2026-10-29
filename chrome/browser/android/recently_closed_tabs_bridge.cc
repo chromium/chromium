@@ -27,7 +27,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -339,7 +339,7 @@ bool RecentlyClosedTabsBridge::OpenRecentlyClosedTab(JNIEnv* env,
   std::optional<std::vector<sessions::LiveTab*>> restored_tabs =
       tab_restore_service_->RestoreEntryById(
           &restore_context, entry_id,
-          static_cast<WindowOpenDisposition>(j_disposition));
+          static_cast<ui::mojom::WindowOpenDisposition>(j_disposition));
   return !restored_tabs.value_or({}).empty();
 }
 
@@ -361,7 +361,7 @@ bool RecentlyClosedTabsBridge::OpenRecentlyClosedEntry(
   std::optional<std::vector<sessions::LiveTab*>> restored_tabs =
       tab_restore_service_->RestoreEntryById(
           &restore_context, SessionID::FromSerializedValue(entry_session_id),
-          WindowOpenDisposition::kNewBackgroundTab);
+          ui::mojom::WindowOpenDisposition::kNewBackgroundTab);
   RestoreAndroidTabGroups(env, model, restore_context.GetTabGroups());
   return !restored_tabs.value_or({}).empty();
 }
@@ -378,16 +378,17 @@ bool RecentlyClosedTabsBridge::OpenMostRecentlyClosedEntry(JNIEnv* env,
   }
 
   AndroidLiveTabContextRestoreWrapper restore_context(model);
-  // Do not use OpenMostRecentEntry as it uses WindowOpenDisposition::kUnknown.
-  // WindowOpenDisposition::kUnknown looks for a desktop window to use (N/A on
-  // Android) this ends up replacing `restore_context` with the base
+  // Do not use OpenMostRecentEntry as it uses
+  // ui::mojom::WindowOpenDisposition::kUnknown.
+  // ui::mojom::WindowOpenDisposition::kUnknown looks for a desktop window to
+  // use (N/A on Android) this ends up replacing `restore_context` with the base
   // AndroidLiveTabContext. `restore_context` is required to rebuild groups
   // information. To avoid this just use the first entry in entries when
   // restoring.
   std::optional<std::vector<sessions::LiveTab*>> restored_tabs =
       tab_restore_service_->RestoreEntryById(
           &restore_context, tab_restore_service_->entries().front()->id,
-          WindowOpenDisposition::kNewBackgroundTab);
+          ui::mojom::WindowOpenDisposition::kNewBackgroundTab);
   RestoreAndroidTabGroups(env, model, restore_context.GetTabGroups());
   return !restored_tabs.value_or({}).empty();
 }

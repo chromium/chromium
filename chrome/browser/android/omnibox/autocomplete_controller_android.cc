@@ -84,8 +84,8 @@
 #include "net/cookies/cookie_util.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -411,8 +411,9 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
       false,                /* don't know */
       input_.type(), false, /* not keyword mode */
       OmniboxEventProto::INVALID, true, OmniboxPopupSelection(suggestion_line),
-      static_cast<WindowOpenDisposition>(j_window_open_disposition), false,
-      sessions::SessionTabHelper::IdForTab(web_contents), page_classification,
+      static_cast<ui::mojom::WindowOpenDisposition>(j_window_open_disposition),
+      false, sessions::SessionTabHelper::IdForTab(web_contents),
+      page_classification,
       base::Milliseconds(elapsed_time_since_first_modified), completed_length,
       now - autocomplete_controller_->last_time_default_match_changed(),
       autocomplete_controller_->result(), match.destination_url,

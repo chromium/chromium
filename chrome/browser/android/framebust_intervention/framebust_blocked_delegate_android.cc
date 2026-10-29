@@ -17,8 +17,8 @@
 #include "content/public/browser/initiator_navigation_state.h"
 #include "content/public/browser/page_navigator.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace blocked_content {
 
@@ -128,7 +128,7 @@ void FramebustBlockedMessageDelegate::HandleClick() {
 void FramebustBlockedMessageDelegate::HandleOpenLink() {
   content::OpenURLParams params =
       content::OpenURLParams::CreateRendererInitiated(
-          blocked_url_, WindowOpenDisposition::kCurrentTab,
+          blocked_url_, ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_LINK, content::Referrer(),
           initiator_navigation_state_);
   params.initiator_origin = initiator_origin_;

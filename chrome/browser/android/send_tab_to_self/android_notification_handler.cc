@@ -30,8 +30,8 @@
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/origin.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -329,7 +329,7 @@ void AndroidNotificationHandler::OpenEntryInBackground(
       Profile::FromBrowserContext(target_web_contents.GetBrowserContext()),
       entry.GetURL(), ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   nav_params->source_contents = &target_web_contents;
-  nav_params->disposition = WindowOpenDisposition::kNewBackgroundTab;
+  nav_params->disposition = ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
   nav_params->window_action = NavigateParams::WindowAction::kNoAction;
   nav_params->tabstrip_index = tabstrip_index;
   nav_params->internal_scroll_to_text_fragment =

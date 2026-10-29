@@ -31,7 +31,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/jni_zero/default_conversions.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -356,8 +356,8 @@ bool ForeignSessionHelper::OpenForeignSessionTab(TabAndroid* tab_android,
     return false;
   }
 
-  WindowOpenDisposition disposition =
-      static_cast<WindowOpenDisposition>(j_disposition);
+  ui::mojom::WindowOpenDisposition disposition =
+      static_cast<ui::mojom::WindowOpenDisposition>(j_disposition);
   SessionRestore::RestoreForeignSessionTab(web_contents, *session_tab,
                                            disposition);
 
@@ -450,7 +450,7 @@ content::WebContents* ForeignSessionHelper::RestoreTabWithRenderer(
 
   return SessionRestore::RestoreForeignSessionTab(
       web_contents, *foreground_session_tab,
-      WindowOpenDisposition::kCurrentTab);
+      ui::mojom::WindowOpenDisposition::kCurrentTab);
 }
 
 bool ForeignSessionHelper::RestoreTabNoRenderer(
@@ -466,7 +466,7 @@ bool ForeignSessionHelper::RestoreTabNoRenderer(
 
   SessionRestore::RestoreForeignSessionTab(
       web_contents, *background_session_tab,
-      WindowOpenDisposition::kNewBackgroundTab,
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       /*skip_renderer_creation=*/true);
   return true;
 }

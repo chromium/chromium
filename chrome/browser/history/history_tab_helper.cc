@@ -34,8 +34,8 @@
 #include "net/http/http_response_headers.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
@@ -592,7 +592,7 @@ void HistoryTabHelper::DidOpenRequestedURL(
     content::RenderFrameHost* source_render_frame_host,
     const GURL& url,
     const content::Referrer& referrer,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     ui::PageTransition transition,
     bool started_from_context_menu,
     bool renderer_initiated) {

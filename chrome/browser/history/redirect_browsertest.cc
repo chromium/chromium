@@ -38,7 +38,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/filename_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/events/event_constants.h"
 
 class RedirectTest : public InProcessBrowserTest {
@@ -287,14 +287,14 @@ IN_PROC_BROWSER_TEST_F(RedirectTest,
   content::TestNavigationObserver observer(web_contents, 2);
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), first_url, WindowOpenDisposition::kCurrentTab,
+      browser(), first_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
   // We don't sleep here - the first navigation won't have been committed yet
   // because we told the server to wait a minute. This means the browser has
   // started it's provisional load for the client redirect destination page but
   // hasn't completed. Our time is now!
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), final_url, WindowOpenDisposition::kCurrentTab,
+      browser(), final_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
   observer.Wait();
 

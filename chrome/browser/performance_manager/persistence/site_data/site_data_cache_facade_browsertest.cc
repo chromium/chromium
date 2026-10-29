@@ -40,8 +40,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -185,7 +185,7 @@ class SiteDataCacheFacadeBrowserTest : public InProcessBrowserTest {
     NavigateParams params(browser(), url,
                           ui::PageTransition::PAGE_TRANSITION_LINK);
     params.tabstrip_index = index;
-    params.disposition = WindowOpenDisposition::kNewBackgroundTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
     Navigate(&params);
     content::WebContents* web_contents = params.navigated_or_inserted_contents;
     return content::WaitForLoadStop(web_contents) ? web_contents : nullptr;

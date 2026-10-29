@@ -55,8 +55,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/webui/untrusted_web_ui_browsertest_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -594,10 +594,10 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, MultiTabsWindowsHistory) {
   BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, url2));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser2, url3, WindowOpenDisposition::kNewForegroundTab,
+      browser2, url3, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ui_test_utils::NavigateToURLWithDisposition(
-      browser2, url4, WindowOpenDisposition::kNewForegroundTab,
+      browser2, url4, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   std::vector<GURL> urls(GetHistoryContents());
@@ -788,7 +788,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, ReloadBringPageToTop) {
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url2, WindowOpenDisposition::kNewBackgroundTab,
+      browser(), url2, ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   std::vector<GURL> urls(GetHistoryContents());
@@ -818,7 +818,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, BackForwardBringPageToTop) {
 
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
-  chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::GoBack(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
   EXPECT_TRUE(content::WaitForLoadStop(tab));
 
   std::vector<GURL> urls(GetHistoryContents());
@@ -826,7 +826,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, BackForwardBringPageToTop) {
   ASSERT_EQ(url1, urls[0]);
   ASSERT_EQ(url2, urls[1]);
 
-  chrome::GoForward(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::GoForward(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
   EXPECT_TRUE(content::WaitForLoadStop(tab));
   urls = GetHistoryContents();
   ASSERT_EQ(2u, urls.size());
@@ -962,7 +962,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, OneHistoryTabPerWindow) {
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   chrome::ExecuteCommand(browser(), IDC_SHOW_HISTORY);
 
@@ -1301,7 +1301,8 @@ IN_PROC_BROWSER_TEST_F(HistoryTaskTagBrowserTest, TwoTabs) {
 
   // Open a new tab and navigate on it so it becomes active.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GetActorInitialUrl(), WindowOpenDisposition::kNewForegroundTab,
+      browser(), GetActorInitialUrl(),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   // Set up the test observer for this new tab.

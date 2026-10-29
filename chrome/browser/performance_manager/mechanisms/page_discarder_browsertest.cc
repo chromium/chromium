@@ -24,7 +24,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 namespace performance_manager {
@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_P(PageDiscarderBrowserTest, DiscardPageNodes) {
 
   content::RenderFrameHost* frame_host = NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("/title1.html"),
-      WindowOpenDisposition::kNewBackgroundTab,
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_TRUE(frame_host);
   auto* contents = content::WebContents::FromRenderFrameHost(frame_host);

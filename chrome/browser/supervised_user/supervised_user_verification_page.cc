@@ -23,8 +23,8 @@
 #include "content/public/common/referrer.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/profiles/profile.h"
@@ -201,7 +201,7 @@ void SupervisedUserVerificationPage::CommandReceived(
 #else
       content::OpenURLParams params =
           content::OpenURLParams::CreateBrowserInitiated(
-              reauth_url_, WindowOpenDisposition::kNewForegroundTab,
+              reauth_url_, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
               ui::PAGE_TRANSITION_LINK);
       auto* signin_web_contents =
           SecurityInterstitialPage::web_contents()->OpenURL(

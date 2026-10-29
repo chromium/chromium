@@ -12,7 +12,7 @@
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 // Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/android/thin_webview/jni_headers/ThinWebViewHost_jni.h"
@@ -100,12 +100,13 @@ content::WebContents* TabThinWebViewHost::OpenURLFromTab(
     return nullptr;
   }
   content::OpenURLParams new_params = params;
-  if (new_params.disposition == WindowOpenDisposition::kCurrentTab) {
+  if (new_params.disposition == ui::mojom::WindowOpenDisposition::kCurrentTab) {
     // `browser` would interpret CURRENT_TAB as "the window's active tab", but
     // the source here is the side panel, not that tab. Never replace the
     // current tab: open a new one instead, as the desktop Customize Chrome
     // side panel does in customize_chrome_page_handler.cc.
-    new_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    new_params.disposition =
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   }
   return browser->OpenURL(new_params, std::move(navigation_handle_callback));
 }

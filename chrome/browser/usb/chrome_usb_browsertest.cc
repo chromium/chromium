@@ -60,8 +60,8 @@
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/app/chrome_command_ids.h"  // nogncheck
@@ -518,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebUsbTest, ShowChooserInBackgroundTab) {
   GURL url = embedded_test_server()->GetURL("localhost", "/simple_page.html");
   NavigateParams params(GetBrowserWindowInterface(), url,
                         ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
   content::WaitForLoadStop(params.navigated_or_inserted_contents);
 

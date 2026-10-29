@@ -50,8 +50,8 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "base/threading/thread_restrictions.h"
@@ -482,16 +482,16 @@ class TabsSnapshotTest
   void SimulateUserActions() override {
     browser()->GetProfile()->GetPrefs()->SetInteger(prefs::kRestoreOnStartup,
                                                     1);
-    browser()->OpenURL(
-        content::OpenURLParams::CreateBrowserInitiated(
-            embedded_test_server()->GetURL("/title1.html"),
-            WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
-        /*navigation_handle_callback=*/{});
-    browser()->OpenURL(
-        content::OpenURLParams::CreateBrowserInitiated(
-            embedded_test_server()->GetURL("/title2.html"),
-            WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK),
-        /*navigation_handle_callback=*/{});
+    browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                           embedded_test_server()->GetURL("/title1.html"),
+                           ui::mojom::WindowOpenDisposition::kCurrentTab,
+                           ui::PAGE_TRANSITION_TYPED),
+                       /*navigation_handle_callback=*/{});
+    browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                           embedded_test_server()->GetURL("/title2.html"),
+                           ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                           ui::PAGE_TRANSITION_LINK),
+                       /*navigation_handle_callback=*/{});
   }
 
   void ValidateUserActions() override {

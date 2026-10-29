@@ -33,9 +33,9 @@
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -95,7 +95,7 @@ void OpenURL(const GURL& url) {
       ProfileManager::GetLastUsedProfileAllowedByPolicy());
   browser_displayer.browser_window_interface()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::kNewForegroundTab,
+          url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 }

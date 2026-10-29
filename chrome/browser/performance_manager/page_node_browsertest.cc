@@ -35,7 +35,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "url/gurl.h"
 
@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(PageNodeUserOrBrowserInitiatedLoadBrowserTest,
   // Open another tab in the foreground.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("/title2.html"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   ASSERT_NE(background_contents, tab_strip_model()->GetActiveWebContents());
 

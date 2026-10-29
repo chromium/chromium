@@ -18,7 +18,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/window_container_type.mojom-forward.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class GURL;
 class Profile;
@@ -77,7 +77,7 @@ class TabWebContentsDestroyer : public content::WebContentsDelegate,
       const GURL& opener_url,
       const std::string& frame_name,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespaceHandle* session_storage_namespace)

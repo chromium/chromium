@@ -58,8 +58,8 @@
 #include "pdf/buildflags.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point.h"
@@ -767,10 +767,11 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
   GURL dest_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
   GURL redirect_url(embedded_test_server()->GetURL(
       "c.com", "/server-redirect?" + dest_url.spec()));
-  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                         redirect_url, WindowOpenDisposition::kCurrentTab,
-                         ui::PAGE_TRANSITION_TYPED),
-                     /*navigation_handle_callback=*/{});
+  browser()->OpenURL(
+      content::OpenURLParams::CreateBrowserInitiated(
+          redirect_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED),
+      /*navigation_handle_callback=*/{});
   javascript_dialogs::AppModalDialogController* alert =
       ui_test_utils::WaitForAppModalDialog();
   EXPECT_TRUE(alert->is_before_unload_dialog());
@@ -1383,7 +1384,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
   // Add a second tab and load a page with an iframe.
   GURL main_url(embedded_test_server()->GetURL("a.com", "/iframe.html"));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), main_url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), main_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* second_web_contents =
       tab_strip_model->GetActiveWebContents();
@@ -1437,7 +1438,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
   // Add a second tab and load a page with a same-site iframe.
   GURL main_url(embedded_test_server()->GetURL("a.com", "/iframe.html"));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), main_url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), main_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* second_web_contents =
       tab_strip_model->GetActiveWebContents();
