@@ -23,6 +23,7 @@
 #include "absl/base/thread_annotations.h"
 #include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
+#include "absl/status/status_macros.h"
 #include "absl/strings/str_split.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/calculators/tensorflow/tensorflow_inference_calculator.pb.h"
@@ -35,7 +36,6 @@
 #include "mediapipe/framework/port/map_util.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status.h"
-#include "mediapipe/framework/port/status_macros.h"
 #include "mediapipe/framework/timestamp.h"
 #include "mediapipe/framework/tool/status_util.h"
 #include "tensorflow/core/framework/tensor.h"
@@ -271,7 +271,7 @@ class TensorFlowInferenceCalculator : public CalculatorBase {
   std::unique_ptr<InferenceState> CreateInferenceState(CalculatorContext* cc)
       ABSL_EXCLUSIVE_LOCKS_REQUIRED(mutex_) {
     std::unique_ptr<InferenceState> inference_state =
-        absl::make_unique<InferenceState>();
+        std::make_unique<InferenceState>();
     if (cc->InputSidePackets().HasTag(kRecurrentInitTensorsTag) &&
         !cc->InputSidePackets().Tag(kRecurrentInitTensorsTag).IsEmpty()) {
       std::map<std::string, tf::Tensor>* init_tensor_map;
@@ -456,7 +456,7 @@ class TensorFlowInferenceCalculator : public CalculatorBase {
     }
 
     if (inference_state_to_process) {
-      MP_RETURN_IF_ERROR(
+      ABSL_RETURN_IF_ERROR(
           OutputBatch(cc, std::move(inference_state_to_process)));
     }
 
@@ -474,7 +474,7 @@ class TensorFlowInferenceCalculator : public CalculatorBase {
       }
     }
     if (inference_state_to_process) {
-      MP_RETURN_IF_ERROR(
+      ABSL_RETURN_IF_ERROR(
           OutputBatch(cc, std::move(inference_state_to_process)));
     }
     return absl::OkStatus();

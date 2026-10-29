@@ -32,18 +32,18 @@ absl::StatusOr<std::vector<FieldData>> GetFieldValues(
   ProtoUtilLite::ProtoPath proto_path = {{field->number(), 0}};
   ProtoUtilLite::FieldValue mesage_bytes = message_data.message_value().value();
   int count;
-  MP_RETURN_IF_ERROR(ProtoUtilLite::GetFieldCount(mesage_bytes, proto_path,
-                                                  field->type(), &count));
+  ABSL_RETURN_IF_ERROR(ProtoUtilLite::GetFieldCount(mesage_bytes, proto_path,
+                                                    field->type(), &count));
   std::vector<std::string> field_values;
-  MP_RETURN_IF_ERROR(ProtoUtilLite::GetFieldRange(
+  ABSL_RETURN_IF_ERROR(ProtoUtilLite::GetFieldRange(
       mesage_bytes, proto_path, count, field->type(), &field_values));
   std::vector<FieldData> result;
   for (int i = 0; i < field_values.size(); ++i) {
     FieldData r;
     std::string message_type =
         field->message_type() ? field->message_type()->full_name() : "";
-    MP_RETURN_IF_ERROR(ProtoUtilLite::ReadValue(field_values[i], field->type(),
-                                                message_type, &r));
+    ABSL_RETURN_IF_ERROR(ProtoUtilLite::ReadValue(
+        field_values[i], field->type(), message_type, &r));
     result.push_back(std::move(r));
   }
   return result;
@@ -122,7 +122,7 @@ void OptionsRegistry::Register(const FieldData& message_type,
   std::string full_name = absl::StrCat(parent_name, ".", name);
   Descriptor descriptor(full_name, message_type);
   {
-    absl::MutexLock lock(&mutex());
+    absl::MutexLock lock(mutex());
     descriptors()[full_name] = descriptor;
   }
   auto nested_types = GetFieldValues(message_type, "nested_type");
@@ -134,7 +134,7 @@ void OptionsRegistry::Register(const FieldData& message_type,
     FieldDescriptor field(extension);
     std::string extendee = GetFieldString(extension, "extendee");
     {
-      absl::MutexLock lock(&mutex());
+      absl::MutexLock lock(mutex());
       extensions()[CanonicalTypeName(extendee)].push_back(field);
     }
   }
@@ -145,14 +145,14 @@ const Descriptor* OptionsRegistry::GetProtobufDescriptor(
   if (descriptors().count("google::protobuf.DescriptorProto") == 0) {
     RegisterDescriptorProtos(descriptors());
   }
-  absl::ReaderMutexLock lock(&mutex());
+  absl::ReaderMutexLock lock(mutex());
   auto it = descriptors().find(CanonicalTypeName(type_name));
   return (it == descriptors().end()) ? nullptr : &it->second;
 }
 
 void OptionsRegistry::FindAllExtensions(
     absl::string_view extendee, std::vector<const FieldDescriptor*>* result) {
-  absl::ReaderMutexLock lock(&mutex());
+  absl::ReaderMutexLock lock(mutex());
   result->clear();
   if (extensions().count(extendee) > 0) {
     for (const FieldDescriptor& field : extensions().at(extendee)) {

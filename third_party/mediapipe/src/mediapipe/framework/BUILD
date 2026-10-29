@@ -269,6 +269,7 @@ cc_library(
         "@com_google_absl//absl/container:flat_hash_map",
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:status_macros",
         "@com_google_absl//absl/strings",
     ],
 )
@@ -389,6 +390,7 @@ cc_library(
         "@com_google_absl//absl/log:check",
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:status_macros",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/synchronization",
@@ -661,6 +663,7 @@ cc_library(
         "@com_google_absl//absl/log:absl_log",
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:status_macros",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/synchronization",
         "@com_google_protobuf//:protobuf",
@@ -760,6 +763,7 @@ cc_test(
         "//mediapipe/framework/testdata:resource_path_cc_proto",
         "@com_google_absl//absl/log:absl_check",
         "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:status_macros",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
     ],
@@ -900,6 +904,7 @@ cc_test(
         "//mediapipe/framework/tool:sink",
         "//mediapipe/gpu:gpu_service",
         "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:status_macros",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
     ],
@@ -1046,6 +1051,7 @@ cc_library(
         "@com_google_absl//absl/log:absl_log",
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:status_macros",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/synchronization",
@@ -1398,6 +1404,7 @@ cc_library(
         "@com_google_absl//absl/log:absl_check",
         "@com_google_absl//absl/log:absl_log",
         "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:status_macros",
         "@com_google_absl//absl/strings",
         "@com_google_protobuf//:protobuf",
     ],
@@ -1487,6 +1494,7 @@ cc_test(
         "//mediapipe/framework/tool:source",
         "@com_google_absl//absl/log:absl_check",
         "@com_google_absl//absl/log:absl_log",
+        "@com_google_absl//absl/status:status_macros",
     ],
 )
 
@@ -1853,6 +1861,7 @@ cc_test(
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
+        "@com_google_protobuf//:protobuf",
     ],
 )
 
@@ -1934,6 +1943,7 @@ cc_test(
         "//mediapipe/framework/port:status",
         "//mediapipe/framework/tool:sink",
         "//mediapipe/framework/tool/testdata:dub_quad_test_subgraph",
+        "@com_google_absl//absl/status:status_macros",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/strings:str_format",
@@ -1945,11 +1955,11 @@ cc_library(
     hdrs = ["memory_manager.h"],
     visibility = ["//visibility:public"],
     deps = [
-        "//mediapipe/framework:port",
+        ":port",
+        "//mediapipe/gpu:multi_pool",
     ] + select({
         "//mediapipe:android": [
             "//mediapipe/framework/formats:hardware_buffer_pool",
-            "//mediapipe/gpu:multi_pool",
         ],
         "//conditions:default": [],
     }),

@@ -5,9 +5,9 @@
 #include <utility>
 
 #include "absl/log/absl_check.h"
+#include "absl/status/status_macros.h"
 #include "absl/status/statusor.h"
 #include "mediapipe/framework/formats/hardware_buffer.h"
-#include "mediapipe/framework/port/status_macros.h"
 #include "mediapipe/gpu/multi_pool.h"
 #include "mediapipe/gpu/reusable_pool.h"
 
@@ -35,7 +35,7 @@ class HardwareBufferSpecPool : public ReusablePool<HardwareBuffer> {
   }
   static absl::StatusOr<std::unique_ptr<HardwareBuffer>>
   CreateBufferWithoutPool(const HardwareBufferSpec& spec) {
-    MP_ASSIGN_OR_RETURN(auto hardware_buffer, HardwareBuffer::Create(spec));
+    ABSL_ASSIGN_OR_RETURN(auto hardware_buffer, HardwareBuffer::Create(spec));
     return std::make_unique<HardwareBuffer>(std::move(hardware_buffer));
   }
   const HardwareBufferSpec& spec() const { return spec_; }

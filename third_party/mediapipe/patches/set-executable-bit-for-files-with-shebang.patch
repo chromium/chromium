@@ -4,18 +4,13 @@ Date: Mon, 20 Jan 2025 02:59:52 +0000
 Subject: [PATCH] set executable bit for files with shebang
 
 ---
- third_party/mediapipe/src/run_llm_inference.sh         | 0
- third_party/mediapipe/src/setup_android_sdk_and_ndk.sh | 0
- third_party/mediapipe/src/setup_opencv.sh              | 0
- 3 files changed, 0 insertions(+), 0 deletions(-)
- mode change 100644 => 100755 third_party/mediapipe/src/run_llm_inference.sh
- mode change 100644 => 100755 third_party/mediapipe/src/setup_android_sdk_and_ndk.sh
+ third_party/mediapipe/src/build_manylinux_wheel.sh | 0
+ third_party/mediapipe/src/setup_opencv.sh          | 0
+ 2 files changed, 0 insertions(+), 0 deletions(-)
+ mode change 100644 => 100755 third_party/mediapipe/src/build_manylinux_wheel.sh
  mode change 100644 => 100755 third_party/mediapipe/src/setup_opencv.sh
 
-diff --git a/third_party/mediapipe/src/run_llm_inference.sh b/third_party/mediapipe/src/run_llm_inference.sh
-old mode 100644
-new mode 100755
-diff --git a/third_party/mediapipe/src/setup_android_sdk_and_ndk.sh b/third_party/mediapipe/src/setup_android_sdk_and_ndk.sh
+diff --git a/third_party/mediapipe/src/build_manylinux_wheel.sh b/third_party/mediapipe/src/build_manylinux_wheel.sh
 old mode 100644
 new mode 100755
 diff --git a/third_party/mediapipe/src/setup_opencv.sh b/third_party/mediapipe/src/setup_opencv.sh

@@ -19,13 +19,13 @@
 #include <set>
 #include <string>
 
+#include "absl/status/status_macros.h"
 #include "absl/strings/str_cat.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/collection_item_id.h"
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status.h"
-#include "mediapipe/framework/port/status_macros.h"
 #include "mediapipe/framework/tool/container_util.h"
 #include "mediapipe/framework/tool/switch_container.pb.h"
 
@@ -192,8 +192,8 @@ absl::Status SwitchDemuxCalculator::Open(CalculatorContext* cc) {
 }
 
 absl::Status SwitchDemuxCalculator::Process(CalculatorContext* cc) {
-  MP_RETURN_IF_ERROR(RecordPackets(cc));
-  MP_RETURN_IF_ERROR(SendActivePackets(cc));
+  ABSL_RETURN_IF_ERROR(RecordPackets(cc));
+  ABSL_RETURN_IF_ERROR(SendActivePackets(cc));
   return absl::OkStatus();
 }
 

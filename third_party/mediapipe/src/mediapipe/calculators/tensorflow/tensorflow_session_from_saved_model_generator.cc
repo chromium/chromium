@@ -134,24 +134,27 @@ class TensorFlowSessionFromSavedModelGenerator : public PacketGenerator {
     // Set user specified tags properly.
     // If no tags specified will use tensorflow::kSavedModelTagServe by default.
     std::unordered_set<std::string> tags_set;
-    for (const std::string& tag : options.saved_model_tag()) {
-      tags_set.insert(tag);
-    }
-    if (tags_set.empty()) {
-      tags_set.insert(tensorflow::kSavedModelTagServe);
+
+    if (!options.saved_model_has_empty_tag()) {
+      for (const std::string& tag : options.saved_model_tag()) {
+        tags_set.insert(tag);
+      }
+      if (tags_set.empty()) {
+        tags_set.insert(tensorflow::kSavedModelTagServe);
+      }
     }
 
     tensorflow::RunOptions run_options;
     tensorflow::SessionOptions session_options;
     session_options.config = options.session_config();
-    auto saved_model = absl::make_unique<tensorflow::SavedModelBundle>();
+    auto saved_model = std::make_unique<tensorflow::SavedModelBundle>();
     absl::Status status = tensorflow::LoadSavedModel(
         session_options, run_options, path, tags_set, saved_model.get());
     if (!status.ok()) {
       return absl::Status(static_cast<absl::StatusCode>(status.code()),
                           status.ToString());
     }
-    auto session = absl::make_unique<TensorFlowSession>();
+    auto session = std::make_unique<TensorFlowSession>();
     session->session = std::move(saved_model->session);
 
     // Use input side packet to overwrite signature name in options.

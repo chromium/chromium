@@ -18,6 +18,7 @@
 #include <utility>
 
 #include "absl/status/status.h"
+#include "absl/status/status_macros.h"
 #include "absl/status/statusor.h"
 #include "absl/strings/string_view.h"
 #include "mediapipe/calculators/util/resource_provider_calculator.pb.h"
@@ -26,7 +27,6 @@
 #include "mediapipe/framework/api2/port.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "mediapipe/framework/port/status_macros.h"
 #include "mediapipe/framework/resources.h"
 
 namespace mediapipe::api2 {
@@ -63,9 +63,9 @@ absl::Status ResourceProviderCalculator::Open(CalculatorContext* cc) {
   };
 
   for (int i = 0; i < kResources(cc).Count(); ++i) {
-    MP_ASSIGN_OR_RETURN(absl::string_view res_id, get_resource_id_fn(i));
-    MP_ASSIGN_OR_RETURN(std::unique_ptr<Resource> res,
-                        cc->GetResources().Get(res_id, res_opts));
+    ABSL_ASSIGN_OR_RETURN(absl::string_view res_id, get_resource_id_fn(i));
+    ABSL_ASSIGN_OR_RETURN(std::unique_ptr<Resource> res,
+                          cc->GetResources().Get(res_id, res_opts));
     Packet<Resource> res_packet = api2::PacketAdopting(std::move(res));
     kResources(cc)[i].Set(std::move(res_packet));
   }

@@ -23,6 +23,7 @@ limitations under the License.
 
 #include "absl/log/absl_log.h"
 #include "absl/status/status.h"
+#include "absl/status/status_macros.h"
 #include "absl/status/statusor.h"
 #include "absl/strings/ascii.h"
 #include "absl/strings/str_cat.h"
@@ -33,7 +34,6 @@ limitations under the License.
 #include "mediapipe/framework/api2/port.h"
 #include "mediapipe/framework/calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
-#include "mediapipe/framework/port/status_macros.h"
 #include "mediapipe/tasks/cc/common.h"
 #include "mediapipe/tasks/cc/core/model_asset_bundle_resources.h"
 #include "mediapipe/tasks/cc/core/model_resources.h"
@@ -95,8 +95,8 @@ class InferenceSubgraph : public Subgraph {
   absl::StatusOr<CalculatorGraphConfig> GetConfig(
       SubgraphContext* sc) override {
     auto* subgraph_options = sc->MutableOptions<InferenceSubgraphOptions>();
-    MP_ASSIGN_OR_RETURN(auto inference_delegate,
-                        DecideInferenceSettings(*subgraph_options));
+    ABSL_ASSIGN_OR_RETURN(auto inference_delegate,
+                          DecideInferenceSettings(*subgraph_options));
     Graph graph;
     auto& model_resources_node = graph.AddNode("ModelResourcesCalculator");
     auto& model_resources_opts =
@@ -140,6 +140,9 @@ class InferenceSubgraph : public Subgraph {
       case Acceleration::kNnapi:
         *delegate.mutable_nnapi() = acceleration.nnapi();
         break;
+      case Acceleration::kLitert:
+        *delegate.mutable_litert() = acceleration.litert();
+        break;
       case Acceleration::kTflite:
         *delegate.mutable_tflite() = acceleration.tflite();
         break;
@@ -167,8 +170,8 @@ absl::StatusOr<const ModelResources*> ModelTaskGraph::CreateModelResources(
     const std::string tag_suffix) {
   auto model_resources_cache_service = sc->Service(kModelResourcesCacheService);
   if (!model_resources_cache_service.IsAvailable()) {
-    MP_ASSIGN_OR_RETURN(auto local_model_resource,
-                        ModelResources::Create("", std::move(external_file)));
+    ABSL_ASSIGN_OR_RETURN(auto local_model_resource,
+                          ModelResources::Create("", std::move(external_file)));
     ABSL_LOG(WARNING)
         << "A local ModelResources object is created. Please consider using "
            "ModelResourcesCacheService to cache the created ModelResources "
@@ -176,15 +179,15 @@ absl::StatusOr<const ModelResources*> ModelTaskGraph::CreateModelResources(
     local_model_resources_.push_back(std::move(local_model_resource));
     return local_model_resources_.back().get();
   }
-  MP_ASSIGN_OR_RETURN(
+  ABSL_ASSIGN_OR_RETURN(
       auto op_resolver_packet,
       model_resources_cache_service.GetObject().GetGraphOpResolverPacket());
   const std::string tag =
       absl::StrCat(CreateModelResourcesTag(sc->OriginalNode()), tag_suffix);
-  MP_ASSIGN_OR_RETURN(auto model_resources,
-                      ModelResources::Create(tag, std::move(external_file),
-                                             op_resolver_packet));
-  MP_RETURN_IF_ERROR(
+  ABSL_ASSIGN_OR_RETURN(auto model_resources,
+                        ModelResources::Create(tag, std::move(external_file),
+                                               op_resolver_packet));
+  ABSL_RETURN_IF_ERROR(
       model_resources_cache_service.GetObject().AddModelResources(
           std::move(model_resources)));
   return model_resources_cache_service.GetObject().GetModelResources(tag);
@@ -215,7 +218,7 @@ ModelTaskGraph::CreateModelAssetBundleResources(
   // bundle resources into the model resources service since the memory is
   // not owned by this model asset bundle resources.
   if (!model_resources_cache_service.IsAvailable() || has_file_pointer_meta) {
-    MP_ASSIGN_OR_RETURN(
+    ABSL_ASSIGN_OR_RETURN(
         auto local_model_asset_bundle_resource,
         ModelAssetBundleResources::Create("", std::move(external_file)));
     if (!has_file_pointer_meta) {
@@ -230,10 +233,10 @@ ModelTaskGraph::CreateModelAssetBundleResources(
   }
   const std::string tag = absl::StrCat(
       CreateModelAssetBundleResourcesTag(sc->OriginalNode()), tag_suffix);
-  MP_ASSIGN_OR_RETURN(
+  ABSL_ASSIGN_OR_RETURN(
       auto model_bundle_resources,
       ModelAssetBundleResources::Create(tag, std::move(external_file)));
-  MP_RETURN_IF_ERROR(
+  ABSL_RETURN_IF_ERROR(
       model_resources_cache_service.GetObject().AddModelAssetBundleResources(
           std::move(model_bundle_resources)));
   return model_resources_cache_service.GetObject().GetModelAssetBundleResources(

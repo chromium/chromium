@@ -19,9 +19,13 @@ load("@rules_cc//cc:cc_test.bzl", "cc_test")
 licenses(["notice"])
 
 TEXT_EMBEDDER_DEPS = [
+    "@com_google_absl//absl/log:absl_check",
     "@com_google_absl//absl/log:absl_log",
     "@com_google_absl//absl/status",
-    "@com_google_absl//absl/log:absl_check",
+    "@com_google_absl//absl/status:status_macros",
+    "@com_google_absl//absl/status:statusor",
+    "@com_google_absl//absl/strings",
+    "//mediapipe/framework/port:status",
     "//mediapipe/tasks/c/components/containers:embedding_result",
     "//mediapipe/tasks/c/components/containers:embedding_result_converter",
     "//mediapipe/tasks/c/components/processors:embedder_options",
@@ -37,7 +41,10 @@ TEXT_EMBEDDER_DEPS = [
 cc_library(
     name = "text_embedder_lib",
     srcs = ["text_embedder.cc"],
-    hdrs = ["text_embedder.h"],
+    hdrs = [
+        "text_embedder.h",
+        "text_embedder_internal.h",
+    ],
     visibility = ["//visibility:public"],
     deps = TEXT_EMBEDDER_DEPS,
 )
@@ -45,7 +52,10 @@ cc_library(
 cc_library(
     name = "text_embedder_c_lib",
     srcs = ["text_embedder.cc"],
-    hdrs = ["text_embedder.h"],
+    hdrs = [
+        "text_embedder.h",
+        "text_embedder_internal.h",
+    ],
     visibility = ["//mediapipe/tasks/c:__subpackages__"],
     deps = TEXT_EMBEDDER_DEPS,
     alwayslink = 1,
@@ -88,7 +98,11 @@ cc_binary(
 cc_test(
     name = "text_embedder_test",
     srcs = ["text_embedder_test.cc"],
-    data = ["//mediapipe/tasks/testdata/text:mobilebert_embedding_model"],
+    data = [
+        "//mediapipe/models/embedding_gemma:embedding_gemma.task",
+        "//mediapipe/tasks/testdata/text:gecko_model",
+        "//mediapipe/tasks/testdata/text:mobilebert_embedding_model",
+    ],
     linkstatic = 1,
     deps = [
         ":text_embedder_lib",

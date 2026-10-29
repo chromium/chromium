@@ -20,6 +20,7 @@
 #include <utility>
 
 #include "absl/status/status.h"
+#include "absl/status/status_macros.h"
 #include "absl/status/statusor.h"
 #include "absl/types/optional.h"
 #include "mediapipe/framework/api2/packet.h"
@@ -28,7 +29,6 @@
 #include "mediapipe/framework/formats/image_frame.h"
 #include "mediapipe/framework/formats/tensor.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "mediapipe/framework/port/status_macros.h"
 #if !MEDIAPIPE_DISABLE_GPU
 #include "mediapipe/gpu/gpu_buffer.h"
 #endif  // !MEDIAPIPE_DISABLE_GPU
@@ -36,7 +36,7 @@
 namespace mediapipe {
 
 RotatedRect GetRoi(int input_width, int input_height,
-                   absl::optional<mediapipe::NormalizedRect> norm_rect) {
+                   std::optional<NormalizedRect> norm_rect) {
   if (norm_rect) {
     return {/*center_x=*/norm_rect->x_center() * input_width,
             /*center_y =*/norm_rect->y_center() * input_height,
@@ -296,7 +296,7 @@ absl::StatusOr<std::shared_ptr<const mediapipe::Image>> GetInputImage(
       },
       [&image_packet](const mediapipe::ImageFrame&)
           -> absl::StatusOr<std::shared_ptr<const mediapipe::Image>> {
-        MP_ASSIGN_OR_RETURN(
+        ABSL_ASSIGN_OR_RETURN(
             std::shared_ptr<const mediapipe::ImageFrame> image_frame,
             image_packet.Share<mediapipe::ImageFrame>());
         return std::make_shared<const mediapipe::Image>(

@@ -1,3 +1,4 @@
+// LINT: LEGACY_NAMES
 // Copyright 2019 The MediaPipe Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,6 +45,25 @@ message InferenceCalculatorOptions {
   message Delegate {
     // Default inference provided by tflite.
     message TfLite {}
+    message WebNn {
+      enum DeviceType {
+        DEFAULT_CPU = 0;  // Default if unspecified.
+        GPU = 1;
+        NPU = 2;
+      }
+      optional DeviceType device_type = 1;
+
+      enum PowerPreference {
+        DEFAULT = 0;  // Default if unspecified.
+        HIGH_PERFORMANCE = 1;
+        LOW_POWER = 2;
+      }
+      optional PowerPreference power_preference = 2;
+
+      // Set to true to use 16-bit float precision. If max precision is
+      // needed, set to false to prefer 32-bit float calculations.
+      optional bool allow_precision_loss = 3;
+    }
     // Delegate to run GPU inference depending on the device.
     // (Can use OpenGl, OpenCl, Metal depending on the device.)
     message Gpu {
@@ -131,6 +151,9 @@ message InferenceCalculatorOptions {
         SUSTAINED_SPEED = 2;
       }
       optional InferenceUsage usage = 5 [default = SUSTAINED_SPEED];
+
+      // Experimental support for WebNN delegate for GPU/NPU mode.
+      optional WebNn webnn = 13;
     }
 
     // Android only.
@@ -168,11 +191,361 @@ message InferenceCalculatorOptions {
       optional bool slow_consistent_arithmetic = 8;
     }
 
+    // Options for LiteRt integration.
+    // Allow inference with multiple different hardware accelerators
+    //
+    // LiteRt {
+    //   run_async: true
+    //   enable_dynamic_resize: false
+    //   cpu { num_threads: 4 }
+    //   gpu { precision: FP16 }
+    //   ...
+    // }.
+    message LiteRt {
+      // [General options] for LiteRt delegate which applies to all
+      // accelerators.
+
+      reserved 1, 2, 3;
+
+      // Whether to run inference asynchronously.
+      optional bool run_async = 4 [default = false];
+
+      // Enable automatic dynamic tensor resizing for models with dynamic
+      // shapes. When true, the calculator will automatically resize input
+      // tensors when the input shape differs from the model's current shape
+      // (for tensors with dynamic dimensions marked as -1). When false, strict
+      // shape checking is enforced.
+      optional bool enable_dynamic_resize = 5 [default = true];
+
+      reserved 6, 7;
+
+      // [Accelerator options] specific to LiteRt accelerators. Multiple
+      // hardware accelerators can be chosen within delegate.
+
+      // LiteRt::Cpu Accelerator.
+      message Cpu {
+        optional int32 num_threads = 1;
+
+        message Xnnpack {
+          // Flags to pass to XNNPack delegate. Users can specify what XNNPack
+          // flags they want by using bitwise OR, e.g.,
+          // TFLITE_XNNPACK_DELEGATE_FLAG_ENABLE_SUBGRAPH_RESHAPING |
+          // TFLITE_XNNPACK_DELEGATE_FLAG_ENABLE_LATEST_OPERATORS.
+          optional uint32 flags = 1;
+        }
+
+        oneof backend {
+          Xnnpack xnnpack = 2;
+        }
+      }
+      optional Cpu cpu = 8;
+
+      // LiteRt::Gpu Accelerator.
+      message Gpu {
+        // Calculation precision used by the GPU accelerator.
+        enum Precision {
+          // Precision is chosen by the accelerator. Typically FP16 if the GPU
+          // supports it, since it is faster and uses less memory.
+          DEFAULT = 0;
+          FP16 = 1;
+          FP32 = 2;
+          // FP16 storage and arithmetic with FP32 accumulation for
+          // convolution-like operations. Trades a little performance for better
+          // accuracy compared to plain FP16.
+          FP16_WITH_FP32_ACCUM = 3;
+        }
+        optional Precision precision = 1 [default = DEFAULT];
+        // Enables sharing of constant tensors (e.g. weights) between different
+        // subgraphs. This is useful for reducing memory usage when multiple
+        // subgraphs share the same weights.
+        optional bool enable_constant_tensors_sharing = 2 [default = false];
+        // Backend is dependent on which LiteRT GPU accelerator is linked.
+        // If a backend is chosen that is not supported by the linked LiteRT GPU
+        // accelerator, inference will fail (e.g. OpenGL is requested from
+        // LiteRT OPENCL-only accelerator).
+        enum Backend {
+          AUTOMATIC = 0;
+          OPENGL = 1;
+          OPENCL = 2;
+          WEBGPU = 3;
+        }
+        optional Backend backend = 3 [default = AUTOMATIC];
+        optional bool hint_fully_delegated_to_single_delegate = 4
+            [default = false];
+
+        // Helper to control the behavior of the GPU wait.
+        // Usually, the inferred behavior is sufficient. However, for advanced
+        // use cases, this option allows to force a specific behavior.
+        enum WaitType {
+          // Wait type will be automatically determined by the delegate.
+          WAIT_TYPE_UNSPECIFIED = 0;
+          // Blocked waiting for the GPU to finish.
+          // This creates a sync point where the CPU waits for the GPU to
+          // finish. This is useful when the CPU needs to access the output of
+          // the GPU immediately.
+          WAIT_TYPE_PASSIVE = 1;
+          // Active busy-waiting for the GPU to finish.
+          // This is useful when the latency of the GPU inference is very small
+          // and the overhead of the passive wait is too high.
+          WAIT_TYPE_ACTIVE = 2;
+          // Do not wait for the GPU to finish. Relies on other synchronization
+          // methods like barriers or in-order queues.
+          // This is useful when pipelining multiple GPU jobs.
+          WAIT_TYPE_DO_NOT_WAIT = 3;
+        }
+        optional WaitType wait_type = 5 [default = WAIT_TYPE_UNSPECIFIED];
+
+        message CacheOptions {
+          // Enables serialization of the program cache. This requires
+          // serialization_dir and model_cache_key to be set.
+          optional bool serialize_program_cache = 1 [default = false];
+          // The directory to load and save the serialized model or compiled
+          // programs cache. Ensure this directory exists and is writable if
+          // serialization is enabled.
+          optional string serialization_dir = 2;
+          // A unique key that represents the model in the serialization cache.
+          optional string model_cache_key = 3;
+          // Only takes effect when serialize_program_cache = true.
+          // If true, only compiled GPU shader/kernel programs will be cached.
+          // Supported for OpenCL and WebGPU backends; NOT supported for Metal
+          // (use full model caching serialize_program_cache = true with
+          // cache_only_compiled_programs = false for Metal).
+          // If false, full GPU model graph and serialized data will be cached.
+          optional bool cache_only_compiled_programs = 4 [default = false];
+          // File descriptor to read and write the program cache from. If set,
+          // it takes precedence over serialization_dir + model_cache_key.
+          // The file descriptor must stay open for the lifetime of the
+          // calculator.
+          optional int32 program_cache_fd = 5;
+          // File descriptor to read and write the weight cache from. If set,
+          // it takes precedence over serialization_dir + model_cache_key.
+          // The file descriptor must stay open for the lifetime of the
+          // calculator.
+          optional int32 weight_cache_fd = 6;
+          // If true, immutable external tensors (see
+          // enable_constant_tensors_sharing) are serialized as well. This
+          // removes the weight rearrangement done during initialization and
+          // therefore reduces warm start-up time, at the cost of a larger
+          // cache. By default only non-external tensors are serialized.
+          optional bool serialize_external_tensors = 7 [default = false];
+        }
+        reserved 6 to 9;
+        reserved "serialize_program_cache", "serialization_dir",
+            "model_cache_key", "cache_only_compiled_programs";
+        optional CacheOptions cache_options = 10;
+
+        // Scheduling priority hint for the GPU inference workload.
+        enum Priority {
+          PRIORITY_DEFAULT = 0;
+          PRIORITY_LOW = 1;
+          PRIORITY_NORMAL = 2;
+          PRIORITY_HIGH = 3;
+        }
+        optional Priority priority = 11 [default = PRIORITY_DEFAULT];
+
+        // Sets whether to convert constant tensors (e.g. weights) on the GPU
+        // instead of the CPU, which speeds up model initialization.
+        optional bool convert_weights_on_gpu = 12 [default = false];
+
+        // Sets whether to prefer texture storage for constant tensors (e.g.
+        // weights). This lets the GPU load them through the texture cache,
+        // which is faster than linear buffer loads on many mobile GPUs.
+        optional bool prefer_texture_weights = 13 [default = false];
+
+        // Enforces capping inf/-inf to the max float values for the softmax
+        // input and padding.
+        optional bool enable_infinite_float_capping = 14;
+
+        // Runs the GPU accelerator in benchmark mode, which disables
+        // optimizations that are not needed for benchmarking.
+        optional bool benchmark_mode = 15;
+
+        // Enables dynamic range quantization of the input tensor for large
+        // fully connected and convolution operations, if the device supports
+        // it. This results in accuracy loss (inputs are quantized to 8 bits)
+        // and increases initialization time, since extra constant tensors are
+        // calculated.
+        // Requires enable_constant_tensors_sharing to be true.
+        optional bool allow_src_quantized_fc_conv_ops = 16;
+
+        // Storage type used for GPU tensors.
+        enum BufferStorageType {
+          // The accelerator picks the fastest storage type for the device.
+          BUFFER_STORAGE_TYPE_UNSPECIFIED = 0;
+          // Forces buffer storage. On devices which would default to
+          // TEXTURE_2D (non-Apple devices) this reduces memory consumption at
+          // the cost of latency.
+          BUFFER_STORAGE_TYPE_BUFFER = 1;
+          BUFFER_STORAGE_TYPE_TEXTURE_2D = 2;
+        }
+        optional BufferStorageType buffer_storage_type = 17;
+
+        // Prefix patterns of tensor names which should use buffer storage,
+        // independently of buffer_storage_type.
+        //
+        // WARNING: This option is experimental and subject to change.
+        repeated string buffer_storage_tensor_patterns = 18;
+
+        // If true, input and output tensors are used directly as external
+        // tensors. External tensors are in PHWC4 format, so no additional
+        // conversion is needed. If false (default), GPU input and output
+        // tensors are converted to PHWC4 format, which performs slightly
+        // better and is easier to use.
+        //
+        // WARNING: This option is experimental and subject to change.
+        optional bool external_tensors_mode = 19;
+
+        // Prefix patterns of tensor names which are bound as external tensors
+        // even if external_tensors_mode is false. This is useful for state
+        // tensors (e.g. "kv_cache_") to avoid layout conversions.
+        repeated string external_tensor_patterns = 20;
+
+        // If false, disables madvising the original tensor memory of shared
+        // constant tensors after use. Only relevant if
+        // enable_constant_tensors_sharing is true, where madvising is enabled
+        // by default.
+        optional bool madvise_original_shared_tensors = 21;
+
+        // If true, initialization blocks until the weight conversion on the GPU
+        // has completed. Only meaningful if convert_weights_on_gpu is true.
+        optional bool wait_for_weights_conversion_complete = 22;
+
+        // WebGPU and Vulkan only.
+        //
+        // Number of steps to prepare command buffers in advance:
+        //   0 (default): No command buffer preparation in advance. Must be used
+        //     if GPU resource bindings change during inference.
+        //   1: Prepare one step ahead, assuming that all GPU resource bindings
+        //     are the same as in the previous step.
+        //   2: Prepare two steps ahead, e.g. for LLM inference which swaps
+        //     input and output KV caches.
+        optional int32 num_steps_of_command_buffer_preparations = 23;
+
+        // Options which only apply to a specific GPU backend. They are ignored
+        // if another backend is used.
+
+        message OpenCl {
+          // If true, the accelerator waits for all enqueued commands to
+          // complete after each invoke. This fixes a known quality issue on
+          // some AMD and Mali GPUs, at the cost of roughly 10% performance.
+          optional bool hint_waiting_for_completion = 1;
+          // If > 0, specifies the kernel (op) batch size for a flush.
+          optional int32 kernel_batch_size = 2;
+        }
+        optional OpenCl opencl = 28;
+
+        message WebGpu {
+          // Preferred WebGPU device name substring, case-insensitive. If set,
+          // the adapter whose device name contains this substring is chosen.
+          // Otherwise the device is determined by other factors.
+          optional string preferred_device_substr = 1;
+          // Number of threads used for WebGPU upload.
+          optional int32 num_threads_to_upload = 2;
+          // Number of threads used for WebGPU kernel shader compilation.
+          optional int32 num_threads_to_compile = 3;
+        }
+        optional WebGpu webgpu = 29;
+
+        message Vulkan {
+          // If true, kernel shader optimization is disabled, which reduces
+          // initialization time.
+          optional bool disable_shader_optimization = 1;
+        }
+        optional Vulkan vulkan = 30;
+
+        message Metal {
+          // If true, Metal argument buffers are used, which reduces the number
+          // of buffers bound to the argument table. This can be required for
+          // models (e.g. some LLMs) which exhaust the available buffer binding
+          // slots. Requires a Tier 2 GPU.
+          optional bool use_argument_buffers = 1;
+          // If true, MTLResidencySet is used to prevent memory swapping.
+          // Requires macOS 15.0+ or iOS 18.0+.
+          optional bool enable_residency_set = 2;
+        }
+        optional Metal metal = 31;
+      }
+      optional Gpu gpu = 9;
+
+      // LiteRt::Npu Accelerator.
+      message Npu {
+        // The path to the compiler plugin shared object library.
+        optional string compiler_plugin_library_path = 1;
+        // The directory to the dispatch shared object library.
+        optional string dispatch_library_path = 2;
+        // Darwinn accelerator options.
+        // For phones with Google Tensor chip only. i.e. Pixel 6 and later.
+        message Darwinn {
+          // Priority for the DarwiNN inference request.
+          // If set to -1, the inference will use the default priority provided
+          // by DarwiNN runtime.
+          optional int32 inference_priority = 1;
+        }
+        message Qualcomm {
+          enum HtpPerformanceMode {
+            DEFAULT = 0;
+            SUSTAINED_HIGH_PERFORMANCE = 1;
+            BURST = 2;
+            HIGH_PERFORMANCE = 3;
+            POWER_SAVER = 4;
+            LOW_POWER_SAVER = 5;
+            HIGH_POWER_SAVER = 6;
+            LOW_BALANCED = 7;
+            BALANCED = 8;
+            EXTREME_POWER_SAVER = 9;
+          }
+          optional HtpPerformanceMode htp_performance_mode = 1;
+
+          enum LogLevel {
+            LOG_LEVEL_OFF = 0;
+            LOG_LEVEL_ERROR = 1;
+            LOG_LEVEL_WARN = 2;
+            LOG_LEVEL_INFO = 3;
+            LOG_LEVEL_VERBOSE = 4;
+            LOG_LEVEL_DEBUG = 5;
+          }
+          // Defaults to INFO if not specified.
+          optional LogLevel log_level = 2;
+        }
+        oneof accelerator {
+          Darwinn darwinn = 3;
+          Qualcomm qualcomm = 4;
+        }
+      }
+      optional Npu npu = 10;
+
+      // LiteRt::Webnn Accelerator.
+      message Webnn {}
+      optional Webnn webnn = 11;
+
+      // Which model signature to use. If no signature is specified, the default
+      // signature is used.
+      optional string signature_key = 12;
+
+      // Defers inference runner creation from Open() to the first packet in
+      // Process(), so that a graph branch which never receives a packet does
+      // not pay for model compilation during graph initialization.
+      //
+      // Off by default because deferring moves initialization failures (bad
+      // model path, delegate init failure) from graph startup to the first
+      // frame. Callers that rely on StartRun() failing in order to fall back
+      // to another backend must leave this disabled.
+      //
+      // Note that a node which receives an *empty* packet still initializes;
+      // only branches whose Process() is never invoked skip the work.
+      //
+      // In open-source builds, the hook that completes the deferred creation
+      // on the first packet is not enabled, so the option is ignored (with a
+      // warning) and the runner is always created in Open().
+      optional bool defer_runner_creation = 13 [default = false];
+    }
+
     oneof delegate {
       TfLite tflite = 1;
       Gpu gpu = 2;
       Nnapi nnapi = 3;
       Xnnpack xnnpack = 4;
+      LiteRt litert = 8;
     }
   }
 

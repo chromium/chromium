@@ -35,13 +35,14 @@ cc_library(
         "//mediapipe/tasks/cc/components/processors/proto:classifier_options_cc_proto",
         "//mediapipe/tasks/cc/core:base_options",
         "//mediapipe/tasks/cc/core:base_task_api",
+        "//mediapipe/tasks/cc/core:running_mode",
         "//mediapipe/tasks/cc/core:task_api_factory",
         "//mediapipe/tasks/cc/core:task_runner",
         "//mediapipe/tasks/cc/text/text_classifier/proto:text_classifier_graph_options_cc_proto",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
-        "@org_tensorflow//tensorflow/lite/core/api:op_resolver",
+        "@litert//tflite/core/api:op_resolver",
     ],
 )
 
@@ -91,7 +92,7 @@ cc_test(
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/strings:cord",
         "@com_google_sentencepiece//:sentencepiece_processor",  # fixdeps: keep
-        "@org_tensorflow//tensorflow/lite:test_util",
+        "@litert//tflite:test_util",
     ],
 )
 
@@ -104,13 +105,14 @@ cc_library(
         "//mediapipe/framework/port:status",
         "//mediapipe/tasks/cc:common",
         "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:status_macros",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/strings:str_format",
-        "@org_tensorflow//tensorflow/lite:mutable_op_resolver",
-        "@org_tensorflow//tensorflow/lite:string_util",
-        "@org_tensorflow//tensorflow/lite:type_to_tflitetype",
-        "@org_tensorflow//tensorflow/lite/c:common",
-        "@org_tensorflow//tensorflow/lite/kernels:kernel_util",
+        "@litert//tflite:mutable_op_resolver",
+        "@litert//tflite:string_util",
+        "@litert//tflite:type_to_tflitetype",
+        "@litert//tflite/c:common",
+        "@litert//tflite/kernels:kernel_util",
     ],
 )

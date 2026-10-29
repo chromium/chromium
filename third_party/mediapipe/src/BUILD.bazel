@@ -12,11 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+load("@aspect_rules_ts//ts:defs.bzl", "ts_config")
+load("@npm//:defs.bzl", "npm_link_all_packages")
+
 licenses(["notice"])
+
+npm_link_all_packages(name = "node_modules")
+
+ts_config(
+    name = "tsconfig",
+    src = "tsconfig.json",
+    visibility = ["//visibility:public"],
+)
 
 exports_files([
     "LICENSE",
     "tsconfig.json",
     "package.json",
     "yarn.lock",
+    "requirements_lock.txt",
+    "requirements_lock_3_10.txt",
+    "requirements_lock_3_11.txt",
+    "requirements_lock_3_12.txt",
+    "requirements_lock_3_13.txt",
+    "requirements_lock_3_14.txt",
 ])

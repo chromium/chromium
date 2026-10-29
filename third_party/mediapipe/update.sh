@@ -136,6 +136,12 @@ function replace_checks() {
   )
 }
 
+function replace_tflite_includes() {
+  echo "Replacing tflite/ includes with tensorflow/lite/..."
+  find third_party/mediapipe/src -type f \( -name "*.h" -o -name "*.cc" \) \
+    -exec sed -Ei 's|#include "tflite/|#include "tensorflow/lite/|g' {} +
+}
+
 function apply_mediapipe_patches() {
   echo "Applying patches..."
   for patch_file in $(ls third_party/mediapipe/patches/) ; do
@@ -154,6 +160,7 @@ function all() {
   download_deps
   apply_deps_patches
   replace_checks
+  replace_tflite_includes
   apply_mediapipe_patches
   cleanup
 }

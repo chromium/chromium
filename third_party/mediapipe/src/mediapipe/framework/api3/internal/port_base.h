@@ -23,6 +23,7 @@
 #include "absl/base/attributes.h"
 #include "absl/log/absl_check.h"
 #include "absl/status/status.h"
+#include "absl/status/status_macros.h"
 #include "absl/strings/string_view.h"
 #include "mediapipe/framework/api3/any.h"
 #include "mediapipe/framework/api3/internal/contract_fields.h"
@@ -33,7 +34,6 @@
 #include "mediapipe/framework/calculator_context.h"
 #include "mediapipe/framework/calculator_contract.h"
 #include "mediapipe/framework/calculator_framework.h"
-#include "mediapipe/framework/port/status_macros.h"
 
 namespace mediapipe::api3 {
 
@@ -516,11 +516,11 @@ absl::Status AddToContract(P& port, CC& contract, bool optional = false) {
     }
   } else if constexpr (std::is_same_v<Field, RepeatedField>) {
     for (int i = 0; i < port.Count(); ++i) {
-      MP_RETURN_IF_ERROR(AddToContract(port.At(i), contract, optional));
+      ABSL_RETURN_IF_ERROR(AddToContract(port.At(i), contract, optional));
     }
   } else if constexpr (std::is_same_v<Field, OptionalField>) {
     const typename P::Contained& value = port;
-    MP_RETURN_IF_ERROR(AddToContract(value, contract, /*optional*/ true));
+    ABSL_RETURN_IF_ERROR(AddToContract(value, contract, /*optional*/ true));
   } else if constexpr (std::is_same_v<Field, OptionsField>) {
     // Nothing to update in the contract for options.
   } else {

@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "absl/status/status_macros.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/port/status.h"
-#include "mediapipe/framework/port/status_macros.h"
 #include "mediapipe/modules/face_geometry/env_generator_calculator.pb.h"
 #include "mediapipe/modules/face_geometry/libs/validation_utils.h"
 #include "mediapipe/modules/face_geometry/protos/environment.pb.h"
@@ -53,7 +53,7 @@ class EnvGeneratorCalculator : public CalculatorBase {
     const face_geometry::Environment& environment =
         cc->Options<FaceGeometryEnvGeneratorCalculatorOptions>().environment();
 
-    MP_RETURN_IF_ERROR(face_geometry::ValidateEnvironment(environment))
+    ABSL_RETURN_IF_ERROR(face_geometry::ValidateEnvironment(environment))
         << "Invalid environment!";
 
     cc->OutputSidePackets()

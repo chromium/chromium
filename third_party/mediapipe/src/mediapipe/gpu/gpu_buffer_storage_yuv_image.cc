@@ -16,11 +16,15 @@ limitations under the License.
 #include "mediapipe/gpu/gpu_buffer_storage_yuv_image.h"
 
 #include <cmath>
+#include <cstddef>
+#include <cstdint>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "absl/log/absl_check.h"
 #include "absl/log/absl_log.h"
+#include "absl/types/span.h"
 #include "libyuv/video_common.h"
 #include "mediapipe/framework/formats/frame_buffer.h"
 #include "mediapipe/framework/formats/image_frame.h"
@@ -169,7 +173,9 @@ GpuBufferStorageYuvImage::GpuBufferStorageYuvImage(int width, int height,
                                                    GpuBufferFormat format) {
   libyuv::FourCC fourcc = FourCCForGpuBufferFormat(format);
   int y_stride = std::ceil(1.0f * width / kDefaultDataAligment);
-  auto y_data = std::make_unique<uint8_t[]>(y_stride * height);
+  const size_t y_size = y_stride * height;
+  auto y_data = std::make_unique<uint8_t[]>(y_size);
+  absl::Span<uint8_t> y_span(y_data.get(), y_size);
   switch (fourcc) {
     case libyuv::FOURCC_NV12:
     case libyuv::FOURCC_NV21: {
@@ -177,10 +183,18 @@ GpuBufferStorageYuvImage::GpuBufferStorageYuvImage(int width, int height,
       int uv_width = 2 * std::ceil(0.5f * width);
       int uv_height = std::ceil(0.5f * height);
       int uv_stride = std::ceil(1.0f * uv_width / kDefaultDataAligment);
-      auto uv_data = std::make_unique<uint8_t[]>(uv_stride * uv_height);
-      yuv_image_ = std::make_shared<YUVImage>(
-          fourcc, std::move(y_data), y_stride, std::move(uv_data), uv_stride,
-          nullptr, 0, width, height);
+      const size_t uv_size = uv_stride * uv_height;
+      auto uv_data = std::make_unique<uint8_t[]>(uv_size);
+      absl::Span<uint8_t> uv_span(uv_data.get(), uv_size);
+      yuv_image_ = std::make_shared<YUVImage>();
+      yuv_image_->Initialize(
+          fourcc,
+          [y = std::move(y_data), uv = std::move(uv_data)]() mutable {
+            y.reset();
+            uv.reset();
+          },
+          y_span, y_stride, uv_span, uv_stride,
+          /*data2=*/{}, /*stride2=*/0, width, height);
       break;
     }
     case libyuv::FOURCC_YV12:
@@ -189,11 +203,22 @@ GpuBufferStorageYuvImage::GpuBufferStorageYuvImage(int width, int height,
       int uv_width = std::ceil(0.5f * width);
       int uv_height = std::ceil(0.5f * height);
       int uv_stride = std::ceil(1.0f * uv_width / kDefaultDataAligment);
-      auto u_data = std::make_unique<uint8_t[]>(uv_stride * uv_height);
-      auto v_data = std::make_unique<uint8_t[]>(uv_stride * uv_height);
-      yuv_image_ = std::make_shared<YUVImage>(
-          fourcc, std::move(y_data), y_stride, std::move(u_data), uv_stride,
-          std::move(v_data), uv_stride, width, height);
+      const size_t uv_size = uv_stride * uv_height;
+      auto u_data = std::make_unique<uint8_t[]>(uv_size);
+      auto v_data = std::make_unique<uint8_t[]>(uv_size);
+      absl::Span<uint8_t> u_span(u_data.get(), uv_size);
+      absl::Span<uint8_t> v_span(v_data.get(), uv_size);
+      yuv_image_ = std::make_shared<YUVImage>();
+      yuv_image_->Initialize(
+          fourcc,
+          [y = std::move(y_data), u = std::move(u_data),
+           v = std::move(v_data)]() mutable {
+            y.reset();
+            u.reset();
+            v.reset();
+          },
+          y_span, y_stride, u_span, uv_stride, v_span, uv_stride, width,
+          height);
       break;
     }
     default:

@@ -16,6 +16,7 @@ limitations under the License.
 #ifndef MEDIAPIPE_TASKS_CC_CORE_BASE_OPTIONS_H_
 #define MEDIAPIPE_TASKS_CC_CORE_BASE_OPTIONS_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -27,7 +28,6 @@ limitations under the License.
 #include "mediapipe/tasks/cc/core/mediapipe_builtin_op_resolver.h"
 #include "mediapipe/tasks/cc/core/proto/base_options.pb.h"
 #include "tensorflow/lite/core/api/op_resolver.h"
-#include "tensorflow/lite/kernels/register.h"
 
 namespace mediapipe {
 namespace tasks {
@@ -49,6 +49,8 @@ struct BaseOptions {
     GPU = 1,
     // Edge TPU acceleration using NNAPI delegate.
     EDGETPU_NNAPI = 2,
+    // NPU acceleration using LiteRT.
+    NPU = 4,
   };
 
   Delegate delegate = CPU;
@@ -58,10 +60,37 @@ struct BaseOptions {
 
   // Options for GPU.
   struct GpuOptions {
+    // The numerical precision to run inference with. Only applies to the
+    // Delegate::LiteRt::Gpu accelerator, where it maps to
+    // LiteRT::GpuOptions::Precision.
+    enum Precision {
+      DEFAULT = 0,
+      FP16 = 1,
+      FP32 = 2,
+      FP16_WITH_FP32_ACCUM = 3,
+    };
+    Precision precision = DEFAULT;
+
+    // The GPU API to run inference with. Only applies to the
+    // Delegate::LiteRt::Gpu accelerator, where it maps to
+    // LiteRT::GpuOptions::Backend.
+    enum Backend {
+      AUTOMATIC = 0,
+      OPENGL = 1,
+      OPENCL = 2,
+      WEBGPU = 3,
+    };
+    Backend backend = AUTOMATIC;
+
     // Load pre-compiled serialized binary cache to accelerate init process.
     // Only available on Android. Kernel caching will only be enabled if this
     // path is set. NOTE: binary cache usage may be skipped if valid serialized
     // model, specified by "serialized_model_dir", exists.
+    //
+    // Only applies to the Delegate::GPU accelerator. The
+    // Delegate::LiteRt::Gpu accelerator has no separate kernel binary cache
+    // and ignores this field, logging a warning if it is set; use
+    // "serialized_model_dir" there instead.
     std::string cached_kernel_path;
 
     // A dir to load from and save to a pre-compiled serialized model used to
@@ -69,12 +98,27 @@ struct BaseOptions {
     // NOTE: serialized model takes precedence over binary cache
     // specified by "cached_kernel_path", which still can be used if
     // serialized model is invalid or missing.
+    //
+    // Applies to both the Delegate::GPU and the Delegate::LiteRt::Gpu
+    // accelerators. On Delegate::LiteRt::Gpu it maps to
+    // LiteRT::GpuOptions::CacheOptions::serialization_dir and is the only
+    // supported serialization location.
     std::string serialized_model_dir;
 
     // Unique token identifying the model. Used in conjunction with
     // "serialized_model_dir". It is the caller's responsibility to ensure
     // there is no clash of the tokens.
+    //
+    // Applies to both the Delegate::GPU and the Delegate::LiteRt::Gpu
+    // accelerators. On Delegate::LiteRt::Gpu it maps to
+    // LiteRT::GpuOptions::CacheOptions::model_cache_key.
     std::string model_token;
+  };
+
+  // Options for NPU.
+  struct NpuOptions {
+    // The directory containing the NPU dispatch library.
+    std::string dispatch_library_directory;
   };
 
   // The file descriptor to a file opened with open(2), with optional additional
@@ -98,7 +142,8 @@ struct BaseOptions {
 
   // Options for the chosen delegate. If not set, the default delegate options
   // is used.
-  std::optional<std::variant<CpuOptions, GpuOptions>> delegate_options;
+  std::optional<std::variant<CpuOptions, GpuOptions, NpuOptions>>
+      delegate_options;
 
   // Disallows/disables default initialization of MediaPipe graph services. This
   // can be used to disable default OpenCL context creation so that the whole
@@ -120,10 +165,29 @@ struct BaseOptions {
 
   // The path to the CA bundle file.
   std::string ca_bundle_path;
+
+  // The app id of the host environment, e.g., Android package name.
+  std::string app_id;
+
+  // The app version of the host environment, e.g., Android version code.
+  std::string app_version;
 };
 
-// Converts a BaseOptions to a BaseOptionsProto.
-proto::BaseOptions ConvertBaseOptionsToProto(BaseOptions* base_options);
+// Converts a BaseOptions to a proto::BaseOptions.
+// If `use_litert` is true, LiteRT will be used for execution.
+proto::BaseOptions ConvertBaseOptionsToProto(BaseOptions* base_options,
+                                             bool use_litert = false);
+
+// Converts a proto::BaseOptions to a BaseOptions.
+// A LiteRT accelerator maps back to the equivalent `Delegate`, so the
+// CPU/GPU/NPU selection survives the conversion. Note that the choice of
+// execution engine itself does not: `BaseOptions` has no LiteRT bit, so a
+// caller that converts back with `ConvertBaseOptionsToProto` must pass
+// `use_litert` again to stay on LiteRT.
+BaseOptions ConvertProtoToBaseOptions(proto::BaseOptions&& base_options_proto);
+
+// Checks if the given base options correspond to a LiteRT LM model.
+bool IsLiteRtLmModel(const BaseOptions& base_options);
 
 }  // namespace core
 }  // namespace tasks

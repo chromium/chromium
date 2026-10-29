@@ -1,0 +1,11 @@
+--- a/third_party/xla/third_party/llvm/workspace.bzl
++++ b/third_party/xla/third_party/llvm/workspace.bzl
+@@ -11,7 +11,7 @@
+         sha256 = LLVM_SHA256,
+         strip_prefix = "llvm-project-{commit}".format(commit = LLVM_COMMIT),
+         urls = [
+-            "https://storage.googleapis.com/mirror.tensorflow.org/github.com/llvm/llvm-project/archive/{commit}.tar.gz".format(commit = LLVM_COMMIT),
++            "https://storage.googleapis.com/mediapipe-assets/llvm-project-{commit}.tar.gz".format(commit = LLVM_COMMIT),
+             "https://github.com/llvm/llvm-project/archive/{commit}.tar.gz".format(commit = LLVM_COMMIT),
+         ],
+         build_file = "//third_party/llvm:llvm.BUILD",

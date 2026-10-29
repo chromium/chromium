@@ -1,10 +1,10 @@
 Name: MediaPipe
 Short Name: mediapipe
 URL: https://github.com/google/mediapipe
-Version: v0.10.35
-Revision: f8ef212d5c962c0e853db7e59d217056b187084b
+Version: v1.2.0
+Revision: f329091f2f20a9143209897d7081e629421b9c9a
 Update Mechanism: Manual
-Date: 2026-04-30
+Date: 2026-10-29
 License: Apache-2.0, dtoa
 License File: LICENSE
 Security Critical: Yes
@@ -138,3 +138,8 @@ Here's the set of functions that were added to the generated file:
                                        &(const_cast<AnyLite*>(this)->value_));
     return any_metadata.Is<T>();
   }
+
+* restore-mp-status-macros.patch - Restores `MP_RETURN_IF_ERROR` and
+`MP_ASSIGN_OR_RETURN` in `status_macros.h` (and includes it from `ret_check.h`)
+for backwards compatibility with internal consumers that have not yet migrated
+to `ABSL_RETURN_IF_ERROR` / `ABSL_ASSIGN_OR_RETURN`.

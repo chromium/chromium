@@ -63,9 +63,10 @@ cc_test(
         "//mediapipe/framework/port:status",
         "//mediapipe/tasks/cc/components/containers/proto:classifications_cc_proto",
         "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:status_macros",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings:str_format",
-        "@org_tensorflow//tensorflow/lite:test_util",
+        "@litert//tflite:test_util",
     ],
 )
 
@@ -121,6 +122,7 @@ cc_library(
         "//mediapipe/tasks/cc:common",
         "//mediapipe/tasks/metadata:metadata_schema_cc",
         "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:status_macros",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/strings:str_format",
     ],
@@ -233,7 +235,8 @@ cc_test(
         "//mediapipe/framework/port:status",
         "//mediapipe/tasks/cc/components/containers/proto:embeddings_cc_proto",
         "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:status_macros",
         "@com_google_absl//absl/status:statusor",
-        "@org_tensorflow//tensorflow/lite:test_util",
+        "@litert//tflite:test_util",
     ],
 )

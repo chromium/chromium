@@ -154,11 +154,11 @@ GraphProfiler::GraphProfiler()
       mediapipe::MonotonicClock::CreateSynchronizedMonotonicClock());
 }
 
-GraphProfiler::~GraphProfiler() {}
+GraphProfiler::~GraphProfiler() = default;
 
 void GraphProfiler::Initialize(
     const ValidatedGraphConfig& validated_graph_config) {
-  absl::WriterMutexLock lock(&profiler_mutex_);
+  absl::WriterMutexLock lock(profiler_mutex_);
   validated_graph_ = &validated_graph_config;
   ABSL_CHECK(!is_initialized_)
       << "Cannot initialize the profiler for the same graph multiple times.";
@@ -168,7 +168,7 @@ void GraphProfiler::Initialize(
   int64_t num_intervals = profiler_config_.num_histogram_intervals();
   num_intervals = num_intervals ? num_intervals : 1;
   if (IsTracerEnabled(profiler_config_)) {
-    packet_tracer_ = absl::make_unique<GraphTracer>(profiler_config_);
+    packet_tracer_ = std::make_unique<GraphTracer>(profiler_config_);
   }
   for (int node_id = 0;
        node_id < validated_graph_config.CalculatorInfos().size(); ++node_id) {
@@ -202,7 +202,7 @@ void GraphProfiler::Initialize(
 }
 
 void GraphProfiler::SetClock(const std::shared_ptr<mediapipe::Clock>& clock) {
-  absl::WriterMutexLock lock(&profiler_mutex_);
+  absl::WriterMutexLock lock(profiler_mutex_);
   ABSL_CHECK(clock) << "GraphProfiler::SetClock() is called with a nullptr.";
   clock_ = clock;
 }
@@ -226,7 +226,7 @@ void GraphProfiler::Resume() {
 }
 
 void GraphProfiler::Reset() {
-  absl::WriterMutexLock lock(&profiler_mutex_);
+  absl::WriterMutexLock lock(profiler_mutex_);
   for (auto iter = calculator_profiles_.begin();
        iter != calculator_profiles_.end(); ++iter) {
     CalculatorProfile* calculator_profile = &iter->second;
@@ -247,7 +247,7 @@ absl::Status GraphProfiler::Start(mediapipe::Executor* executor) {
   if (is_tracing_ && IsTraceIntervalEnabled(profiler_config_, tracer()) &&
       executor != nullptr) {
     // Inform the user via logging the path to the trace logs.
-    MP_ASSIGN_OR_RETURN(std::string trace_log_path, GetTraceLogPath());
+    ABSL_ASSIGN_OR_RETURN(std::string trace_log_path, GetTraceLogPath());
     // Check that we can actually write to it.
     auto status =
         file::SetContents(absl::StrCat(trace_log_path, "trace_writing_check"),
@@ -288,7 +288,7 @@ absl::Status GraphProfiler::Stop() {
   Pause();
   // If specified, write a final profile.
   if (IsTraceLogEnabled(profiler_config_)) {
-    MP_RETURN_IF_ERROR(WriteProfile());
+    ABSL_RETURN_IF_ERROR(WriteProfile());
   }
   return absl::OkStatus();
 }
@@ -313,7 +313,7 @@ void GraphProfiler::LogEvent(const TraceEvent& event) {
 }
 
 void GraphProfiler::AddPacketInfo(const TraceEvent& packet_info) {
-  absl::ReaderMutexLock lock(&profiler_mutex_);
+  absl::ReaderMutexLock lock(profiler_mutex_);
   if (!is_profiling_) {
     return;
   }
@@ -342,7 +342,7 @@ void GraphProfiler::AddPacketInfo(const TraceEvent& packet_info) {
 
 absl::Status GraphProfiler::GetCalculatorProfiles(
     std::vector<CalculatorProfile>* profiles) const {
-  absl::ReaderMutexLock lock(&profiler_mutex_);
+  absl::ReaderMutexLock lock(profiler_mutex_);
   RET_CHECK(is_initialized_)
       << "GetCalculatorProfiles can only be called after Initialize()";
   for (auto& entry : calculator_profiles_) {
@@ -448,7 +448,7 @@ int64_t GraphProfiler::AddStreamLatencies(
 void GraphProfiler::SetOpenRuntime(const CalculatorContext& calculator_context,
                                    int64_t start_time_usec,
                                    int64_t end_time_usec) {
-  absl::ReaderMutexLock lock(&profiler_mutex_);
+  absl::ReaderMutexLock lock(profiler_mutex_);
   if (!is_profiling_) {
     return;
   }
@@ -471,7 +471,7 @@ void GraphProfiler::SetOpenRuntime(const CalculatorContext& calculator_context,
 void GraphProfiler::SetCloseRuntime(const CalculatorContext& calculator_context,
                                     int64_t start_time_usec,
                                     int64_t end_time_usec) {
-  absl::ReaderMutexLock lock(&profiler_mutex_);
+  absl::ReaderMutexLock lock(profiler_mutex_);
   if (!is_profiling_) {
     return;
   }
@@ -561,7 +561,7 @@ int64_t GraphProfiler::AddInputStreamTimeSamples(
 void GraphProfiler::AddProcessSample(
     const CalculatorContext& calculator_context, int64_t start_time_usec,
     int64_t end_time_usec) {
-  absl::ReaderMutexLock lock(&profiler_mutex_);
+  absl::ReaderMutexLock lock(profiler_mutex_);
   if (!is_profiling_) {
     return;
   }
@@ -592,7 +592,7 @@ std::unique_ptr<GlProfilingHelper> GraphProfiler::CreateGlProfilingHelper() {
   if (!IsTracerEnabled(profiler_config_)) {
     return nullptr;
   }
-  return absl::make_unique<mediapipe::GlProfilingHelper>(shared_from_this());
+  return std::make_unique<mediapipe::GlProfilingHelper>(shared_from_this());
 }
 
 // A simple ZeroCopyOutputStream that writes to a std::ostream.
@@ -677,8 +677,8 @@ absl::StatusOr<std::string> GraphProfiler::GetTraceLogPath() {
         "Trace log writing is disabled, unable to get trace_log_path.");
   }
   if (profiler_config_.trace_log_path().empty()) {
-    MP_ASSIGN_OR_RETURN(std::string directory_path,
-                        GetDefaultTraceLogDirectory());
+    ABSL_ASSIGN_OR_RETURN(std::string directory_path,
+                          GetDefaultTraceLogDirectory());
     std::string trace_log_path =
         absl::StrCat(directory_path, "/", kDefaultLogFilePrefix);
     return trace_log_path;
@@ -728,11 +728,11 @@ absl::Status GraphProfiler::WriteProfile() {
     // Logging is disabled, so we can exit writing without error.
     return absl::OkStatus();
   }
-  MP_ASSIGN_OR_RETURN(std::string trace_log_path, GetTraceLogPath());
+  ABSL_ASSIGN_OR_RETURN(std::string trace_log_path, GetTraceLogPath());
   int log_interval_count = GetLogIntervalCount(profiler_config_);
   int log_file_count = GetLogFileCount(profiler_config_);
   GraphProfile profile;
-  MP_RETURN_IF_ERROR(CaptureProfile(&profile, PopulateGraphConfig::kNo));
+  ABSL_RETURN_IF_ERROR(CaptureProfile(&profile, PopulateGraphConfig::kNo));
 
   // If there are no trace events, skip log writing.
   const GraphTrace& trace = *profile.graph_trace().rbegin();
@@ -755,15 +755,16 @@ absl::Status GraphProfiler::WriteProfile() {
   // Write the GraphProfile to the trace_log_path.
   int log_index = previous_log_index / log_interval_count % log_file_count;
   std::string log_path = absl::StrCat(trace_log_path, log_index, ".binarypb");
-  std::ofstream ofs;
+  std::string profile_bytes;
+  RET_CHECK(profile.SerializeToString(&profile_bytes))
+      << "Could not serialize GraphProfile";
   if (is_new_file) {
-    ofs.open(log_path, std::ofstream::out | std::ofstream::trunc);
+    RET_CHECK(mediapipe::file::SetContents(log_path, profile_bytes).ok())
+        << "Could not write binary GraphProfile to: " << log_path;
   } else {
-    ofs.open(log_path, std::ofstream::out | std::ofstream::app);
+    RET_CHECK(mediapipe::file::AppendStringToFile(log_path, profile_bytes).ok())
+        << "Could not write binary GraphProfile to: " << log_path;
   }
-  OstreamStream out(&ofs);
-  RET_CHECK(profile.SerializeToZeroCopyStream(&out))
-      << "Could not write binary GraphProfile to: " << log_path;
   return absl::OkStatus();
 }
 

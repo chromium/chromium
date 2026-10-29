@@ -20,8 +20,8 @@ index 0ad860c5480ec..c4d1dea48f354 100644
  
 -#include "absl/flags/flag.h"
  #include "absl/status/status.h"
+ #include "absl/status/status_macros.h"
  #include "absl/status/statusor.h"
- #include "absl/strings/str_cat.h"
 @@ -37,10 +36,6 @@
  #include "tensorflow/lite/portable_type_to_tflitetype.h"
  #include "tensorflow/lite/string_util.h"

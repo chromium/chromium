@@ -13,13 +13,13 @@
 // limitations under the License.
 
 #include "absl/log/absl_check.h"
+#include "absl/status/status_macros.h"
 #include "mediapipe/calculators/tensorflow/matrix_to_tensor_calculator_options.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/formats/matrix.h"
 #include "mediapipe/framework/formats/time_series_header.pb.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status.h"
-#include "mediapipe/framework/port/status_macros.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/tensor_shape.h"
 #include "tensorflow/core/framework/types.h"
@@ -108,7 +108,7 @@ absl::Status MatrixToTensorCalculator::Open(CalculatorContext* cc) {
   // If the input is part of a time series, then preserve the header so that
   // downstream consumers can access the sample rate if needed.
   options_ = cc->Options<MatrixToTensorCalculatorOptions>();
-  auto input_header = ::absl::make_unique<TimeSeriesHeader>();
+  auto input_header = std::make_unique<TimeSeriesHeader>();
   const absl::Status header_status = FillTimeSeriesHeaderIfValid(
       cc->Inputs().Index(0).Header(), input_header.get());
   if (header_status.ok()) {
@@ -129,7 +129,7 @@ absl::Status MatrixToTensorCalculator::Process(CalculatorContext* cc) {
   } else {
     tensor_shape = tf::TensorShape({matrix.rows(), matrix.cols()});
   }
-  auto tensor = ::absl::make_unique<tf::Tensor>(tf::DT_FLOAT, tensor_shape);
+  auto tensor = std::make_unique<tf::Tensor>(tf::DT_FLOAT, tensor_shape);
 
   float* tensor_data = tensor->flat<float>().data();
   if (options_.transpose()) {

@@ -11,12 +11,12 @@ diff --git a/third_party/mediapipe/src/mediapipe/framework/packet.h b/third_part
 index ef0b5d113925b..a5501848e9f2b 100644
 --- a/third_party/mediapipe/src/mediapipe/framework/packet.h
 +++ b/third_party/mediapipe/src/mediapipe/framework/packet.h
-@@ -691,53 +691,14 @@ inline Packet& Packet::operator=(const Packet& packet) {
+@@ -694,53 +694,14 @@ inline Packet& Packet::operator=(const Packet& packet) {
 
  template <typename T>
  inline absl::StatusOr<std::unique_ptr<T>> Packet::Consume() {
 -  // If type validation fails, returns error.
--  MP_RETURN_IF_ERROR(ValidateAsType<T>());
+-  ABSL_RETURN_IF_ERROR(ValidateAsType<T>());
 -  // Clients who use this function are responsible for ensuring that no
 -  // other thread is doing anything with this Packet.
 -  if (!holder_->HasForeignOwner() && holder_.use_count() == 1) {
@@ -40,7 +40,7 @@ index ef0b5d113925b..a5501848e9f2b 100644
  inline absl::StatusOr<std::unique_ptr<T>> Packet::ConsumeOrCopy(
      bool* was_copied,
      typename std::enable_if<!std::is_array<T>::value>::type*) {
--  MP_RETURN_IF_ERROR(ValidateAsType<T>());
+-  ABSL_RETURN_IF_ERROR(ValidateAsType<T>());
 -  // If holder is the sole owner of the underlying data, consumes this packet.
 -  if (!holder_->HasForeignOwner() && holder_.use_count() == 1) {
 -    VLOG(2) << "Consuming the data of " << DebugString();
@@ -67,11 +67,11 @@ index ef0b5d113925b..a5501848e9f2b 100644
  }
 
  template <typename T>
-@@ -745,35 +706,7 @@ inline absl::StatusOr<std::unique_ptr<T>> Packet::ConsumeOrCopy(
+@@ -748,35 +709,7 @@ inline absl::StatusOr<std::unique_ptr<T>> Packet::ConsumeOrCopy(
      bool* was_copied,
      typename std::enable_if<std::is_array<T>::value &&
                              std::extent<T>::value != 0>::type*) {
--  MP_RETURN_IF_ERROR(ValidateAsType<T>());
+-  ABSL_RETURN_IF_ERROR(ValidateAsType<T>());
 -  // If holder is the sole owner of the underlying data, consumes this packet.
 -  if (!holder_->HasForeignOwner() && holder_.use_count() == 1) {
 -    VLOG(2) << "Consuming the data of " << DebugString();

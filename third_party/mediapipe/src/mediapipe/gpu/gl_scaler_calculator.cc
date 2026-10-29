@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/formats/image.h"
+#include "mediapipe/framework/port.h"  // IWYU pragma: keep (MEDIAPIPE_GPU_BUFFER_USE_AHWB)
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/port/status_macros.h"
@@ -25,6 +27,7 @@
 #include "mediapipe/gpu/gl_simple_shaders.h"
 #include "mediapipe/gpu/gpu_buffer.h"
 #include "mediapipe/gpu/gpu_buffer_format.h"
+#include "mediapipe/gpu/gpu_buffer_storage_ahwb.h"  // IWYU pragma: keep (GpuBufferStorageAhwb)
 #include "mediapipe/gpu/shader_util.h"
 
 #ifdef __ANDROID__
@@ -78,7 +81,7 @@ using Image = mediapipe::Image;
 class GlScalerCalculator : public CalculatorBase {
  public:
   GlScalerCalculator() {}
-  ~GlScalerCalculator();
+  ~GlScalerCalculator() override;
 
   static absl::Status GetContract(CalculatorContract* cc);
 
@@ -116,6 +119,9 @@ class GlScalerCalculator : public CalculatorBase {
   FrameScaleMode scale_mode_ = FrameScaleMode::kStretch;
   bool use_nearest_neighbor_interpolation_ = false;
   bool use_input_format_for_output_ = false;
+  GlScalerCalculatorOptions::OutputTarget output_target_ =
+      GlScalerCalculatorOptions::UNSPECIFIED;
+  bool use_ahwb_ = false;
 };
 REGISTER_CALCULATOR(GlScalerCalculator);
 
@@ -138,7 +144,7 @@ absl::Status GlScalerCalculator::GetContract(CalculatorContract* cc) {
   if (cc->Inputs().HasTag(kOutputDimensionsTag)) {
     cc->Inputs().Tag(kOutputDimensionsTag).Set<DimensionsPacketType>();
   }
-  MP_RETURN_IF_ERROR(GlCalculatorHelper::UpdateContract(cc));
+  ABSL_RETURN_IF_ERROR(GlCalculatorHelper::UpdateContract(cc));
 
   if (cc->InputSidePackets().HasTag(kOptionsTag)) {
     cc->InputSidePackets().Tag(kOptionsTag).Set<GlScalerCalculatorOptions>();
@@ -166,7 +172,7 @@ absl::Status GlScalerCalculator::Open(CalculatorContext* cc) {
   cc->SetOffset(mediapipe::TimestampDiff(0));
 
   // Let the helper access the GL context information.
-  MP_RETURN_IF_ERROR(helper_.Open(cc));
+  ABSL_RETURN_IF_ERROR(helper_.Open(cc));
 
   int rotation_ccw = 0;
   const auto& options =
@@ -201,6 +207,35 @@ absl::Status GlScalerCalculator::Open(CalculatorContext* cc) {
   use_nearest_neighbor_interpolation_ =
       options.use_nearest_neighbor_interpolation();
   use_input_format_for_output_ = options.use_input_format_for_output();
+  output_target_ = options.output_target();
+  if (output_target_ == GlScalerCalculatorOptions::UNSPECIFIED) {
+    output_target_ = GlScalerCalculatorOptions::TEXTURE;
+  }
+  if (output_target_ == GlScalerCalculatorOptions::AHWB_TEXTURE_VIEW) {
+    ABSL_RETURN_IF_ERROR(helper_.RunInGlContext([this]() -> absl::Status {
+#if defined(MEDIAPIPE_GPU_BUFFER_USE_AHWB)
+      if (!mediapipe::AhwbSupportsGlViews()) {
+        return absl::UnavailableError(
+            "AHWB_TEXTURE_VIEW requested, but AHWB GL views are not supported "
+            "on this platform.");
+      }
+      use_ahwb_ = true;
+      return absl::OkStatus();
+#else
+      return absl::UnavailableError(
+          "AHWB_TEXTURE_VIEW requested, but MEDIAPIPE_GPU_BUFFER_USE_AHWB is "
+          "not defined.");
+#endif
+    }));
+  } else if (output_target_ ==
+             GlScalerCalculatorOptions::AHWB_TEXTURE_VIEW_IF_AVAILABLE) {
+#if defined(MEDIAPIPE_GPU_BUFFER_USE_AHWB)
+    ABSL_RETURN_IF_ERROR(helper_.RunInGlContext([this]() -> absl::Status {
+      use_ahwb_ = mediapipe::AhwbSupportsGlViews();
+      return absl::OkStatus();
+    }));
+#endif
+  }
   if (HasTagOrIndex(cc->InputSidePackets(), "OUTPUT_DIMENSIONS", 1)) {
     const auto& dimensions =
         TagOrIndex(cc->InputSidePackets(), "OUTPUT_DIMENSIONS", 1)
@@ -212,7 +247,7 @@ absl::Status GlScalerCalculator::Open(CalculatorContext* cc) {
     rotation_ccw = cc->InputSidePackets().Tag(kRotationTag).Get<int>();
   }
 
-  MP_RETURN_IF_ERROR(FrameRotationFromInt(&rotation_, rotation_ccw));
+  ABSL_RETURN_IF_ERROR(FrameRotationFromInt(&rotation_, rotation_ccw));
 
   return absl::OkStatus();
 }
@@ -243,7 +278,7 @@ absl::Status GlScalerCalculator::Process(CalculatorContext* cc) {
   }
 
   return helper_.RunInGlContext([this, cc]() -> absl::Status {
-    MP_ASSIGN_OR_RETURN(GpuBuffer input, GetInputGpuBuffer(cc));
+    ABSL_ASSIGN_OR_RETURN(GpuBuffer input, GetInputGpuBuffer(cc));
     QuadRenderer* renderer = nullptr;
     GlTexture src1;
     GlTexture src2;
@@ -253,7 +288,7 @@ absl::Status GlScalerCalculator::Process(CalculatorContext* cc) {
         input.format() == GpuBufferFormat::kBiPlanar420YpCbCr8FullRange) {
       if (!yuv_renderer_) {
         yuv_renderer_ = absl::make_unique<QuadRenderer>();
-        MP_RETURN_IF_ERROR(yuv_renderer_->GlSetup(
+        ABSL_RETURN_IF_ERROR(yuv_renderer_->GlSetup(
             kYUV2TexToRGBFragmentShader, {"video_frame_y", "video_frame_uv"}));
       }
       renderer = yuv_renderer_.get();
@@ -267,7 +302,7 @@ absl::Status GlScalerCalculator::Process(CalculatorContext* cc) {
       if (src1.target() == GL_TEXTURE_EXTERNAL_OES) {
         if (!ext_rgb_renderer_) {
           ext_rgb_renderer_ = absl::make_unique<QuadRenderer>();
-          MP_RETURN_IF_ERROR(ext_rgb_renderer_->GlSetup(
+          ABSL_RETURN_IF_ERROR(ext_rgb_renderer_->GlSetup(
               kBasicTexturedFragmentShaderOES, {"video_frame"}));
         }
         renderer = ext_rgb_renderer_.get();
@@ -275,8 +310,8 @@ absl::Status GlScalerCalculator::Process(CalculatorContext* cc) {
 #endif        // __ANDROID__
       {
         if (!rgb_renderer_) {
-          rgb_renderer_ = absl::make_unique<QuadRenderer>();
-          MP_RETURN_IF_ERROR(rgb_renderer_->GlSetup());
+          rgb_renderer_ = std::make_unique<QuadRenderer>();
+          ABSL_RETURN_IF_ERROR(rgb_renderer_->GlSetup());
         }
         renderer = rgb_renderer_.get();
       }
@@ -286,7 +321,7 @@ absl::Status GlScalerCalculator::Process(CalculatorContext* cc) {
     // Override input side packet if ROTATION input packet is provided.
     if (cc->Inputs().HasTag(kRotationTag)) {
       int rotation_ccw = cc->Inputs().Tag(kRotationTag).Get<int>();
-      MP_RETURN_IF_ERROR(FrameRotationFromInt(&rotation_, rotation_ccw));
+      ABSL_RETURN_IF_ERROR(FrameRotationFromInt(&rotation_, rotation_ccw));
     }
 
     int dst_width;
@@ -309,8 +344,22 @@ absl::Status GlScalerCalculator::Process(CalculatorContext* cc) {
               MakePacket<float>(left_right_padding).At(cc->InputTimestamp()));
     }
 
-    auto dst = helper_.CreateDestinationTexture(
-        dst_width, dst_height, GetOutputFormat(input.format()));
+    const GpuBufferFormat output_format = GetOutputFormat(input.format());
+    GlTexture dst;
+
+    if (use_ahwb_) {
+#if defined(MEDIAPIPE_GPU_BUFFER_USE_AHWB)
+      // Zero-copy AHWB output (b/531915132): render straight into an
+      // AHardwareBuffer-backed GpuBuffer so downstream consumers (e.g. the
+      // effects pipeline's AHWB observer) receive it without an extra copy.
+      GpuBuffer ahwb_buffer(std::make_shared<mediapipe::GpuBufferStorageAhwb>(
+          dst_width, dst_height, output_format));
+      dst = helper_.CreateDestinationTexture(ahwb_buffer);
+#endif
+    } else {
+      dst = helper_.CreateDestinationTexture(dst_width, dst_height,
+                                             output_format);
+    }
 
     helper_.BindFramebuffer(dst);
 
@@ -333,7 +382,7 @@ absl::Status GlScalerCalculator::Process(CalculatorContext* cc) {
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     }
 
-    MP_RETURN_IF_ERROR(renderer->GlRender(
+    ABSL_RETURN_IF_ERROR(renderer->GlRender(
         src1.width(), src1.height(), dst.width(), dst.height(), scale_mode_,
         rotation_, horizontal_flip_output_, vertical_flip_output_,
         /*flip_texture*/ false));

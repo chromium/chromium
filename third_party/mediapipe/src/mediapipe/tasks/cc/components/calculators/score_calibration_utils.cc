@@ -17,11 +17,11 @@
 #include <vector>
 
 #include "absl/status/status.h"
+#include "absl/status/status_macros.h"
 #include "absl/strings/numbers.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/str_split.h"
 #include "absl/strings/string_view.h"
-#include "mediapipe/framework/port/status_macros.h"
 #include "mediapipe/tasks/cc/common.h"
 #include "mediapipe/tasks/cc/components/calculators/score_calibration_calculator.pb.h"
 #include "mediapipe/tasks/metadata/metadata_schema_generated.h"
@@ -105,7 +105,7 @@ absl::Status ConfigureScoreCalibration(
       absl::StrSplit(score_calibration_file, '\n');
   for (const auto& line : lines) {
     auto* sigmoid = calculator_options->add_sigmoids();
-    MP_RETURN_IF_ERROR(FillSigmoidFromLine(line, sigmoid));
+    ABSL_RETURN_IF_ERROR(FillSigmoidFromLine(line, sigmoid));
   }
 
   return absl::OkStatus();

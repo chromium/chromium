@@ -27,6 +27,8 @@ enum HostEnvironment {
   HOST_ENVIRONMENT_IOS = 2,
   HOST_ENVIRONMENT_PYTHON = 3,
   HOST_ENVIRONMENT_WEB = 4,
+  HOST_ENVIRONMENT_FLUTTER = 5,
+  HOST_ENVIRONMENT_FLUTTER_WEB = 6,
 };
 
 // Host OS that MediaPipe runs on.
@@ -38,6 +40,9 @@ enum HostSystem {
   HOST_SYSTEM_IOS = 4,
   HOST_SYSTEM_ANDROID = 5,
 };
+
+HostEnvironment ToHostEnvironment(int host_environment);
+HostSystem ToHostSystem(int host_system);
 
 }  // namespace core
 }  // namespace tasks

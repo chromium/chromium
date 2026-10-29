@@ -17,6 +17,7 @@
 
 #include "absl/base/optimization.h"
 #include "absl/status/status.h"
+#include "absl/status/status_macros.h"
 #include "absl/status/statusor.h"
 #include "mediapipe/framework/deps/status_builder.h"
 #include "mediapipe/framework/deps/status_macros.h"
@@ -59,9 +60,9 @@ inline StatusBuilder RetCheckImpl(const absl::Status& status,
   while (ABSL_PREDICT_FALSE(!(cond))) \
   return mediapipe::RetCheckFailSlowPath(MEDIAPIPE_LOC, #cond)
 
-#define RET_CHECK_OK(status)                                              \
-  MP_RETURN_IF_ERROR(mediapipe::RetCheckImpl(mediapipe::AsStatus(status), \
-                                             #status, MEDIAPIPE_LOC))
+#define RET_CHECK_OK(status)                                                \
+  ABSL_RETURN_IF_ERROR(mediapipe::RetCheckImpl(mediapipe::AsStatus(status), \
+                                               #status, MEDIAPIPE_LOC))
 
 #define RET_CHECK_FAIL() return mediapipe::RetCheckFailSlowPath(MEDIAPIPE_LOC)
 

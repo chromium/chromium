@@ -21,13 +21,13 @@
 #include "absl/log/absl_log.h"
 #include "absl/meta/type_traits.h"
 #include "absl/status/status.h"
+#include "absl/status/status_macros.h"
 #include "absl/status/statusor.h"
 #include "absl/strings/str_cat.h"
 #include "mediapipe/framework/api2/tuple.h"
 #include "mediapipe/framework/legacy_calculator_support.h"
 #include "mediapipe/framework/packet.h"
 #include "mediapipe/framework/port/logging.h"
-#include "mediapipe/framework/port/status_macros.h"
 #include "mediapipe/framework/timestamp.h"
 
 namespace mediapipe {
@@ -160,7 +160,7 @@ absl::Status PacketBase::ValidateAsType() const {
 
 template <class T>
 absl::StatusOr<std::shared_ptr<const T>> PacketBase::Share() const {
-  MP_RETURN_IF_ERROR(ValidateAsType<T>());
+  ABSL_RETURN_IF_ERROR(ValidateAsType<T>());
   const T* ptr = &Get<T>();
   return std::shared_ptr<const T>(
       ptr, [packet = *this](const T* ptr) mutable { packet = {}; });

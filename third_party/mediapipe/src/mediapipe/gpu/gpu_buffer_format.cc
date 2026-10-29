@@ -277,8 +277,10 @@ ImageFormat::Format ImageFormatForGpuBufferFormat(GpuBufferFormat format) {
       return ImageFormat::GRAY8;
     case GpuBufferFormat::kBiPlanar420YpCbCr8VideoRange:
     case GpuBufferFormat::kBiPlanar420YpCbCr8FullRange:
-      // TODO: should either of these be YCBCR420P10?
       return ImageFormat::YCBCR420P;
+    case GpuBufferFormat::kBiPlanar420YpCbCr10VideoRange:
+    case GpuBufferFormat::kBiPlanar420YpCbCr10FullRange:
+      return ImageFormat::YCBCR420P10;
     case GpuBufferFormat::kRGB24:
       return ImageFormat::SRGB;
     case GpuBufferFormat::kTwoComponentFloat32:
@@ -289,10 +291,13 @@ ImageFormat::Format ImageFormatForGpuBufferFormat(GpuBufferFormat format) {
     case GpuBufferFormat::kRGBA32:
       return ImageFormat::SRGBA;
     case GpuBufferFormat::kGrayHalf16:
+      return ImageFormat::VEC16F1;
+    case GpuBufferFormat::kTwoComponentHalf16:
+      return ImageFormat::VEC16F2;
+    case GpuBufferFormat::kRGBAHalf64:
+      return ImageFormat::VEC16F4;
     case GpuBufferFormat::kOneComponent8Alpha:
     case GpuBufferFormat::kTwoComponent8:
-    case GpuBufferFormat::kTwoComponentHalf16:
-    case GpuBufferFormat::kRGBAHalf64:
     case GpuBufferFormat::kNV12:
     case GpuBufferFormat::kNV21:
     case GpuBufferFormat::kI420:
@@ -315,11 +320,20 @@ GpuBufferFormat GpuBufferFormatForImageFormat(ImageFormat::Format format) {
       return GpuBufferFormat::kTwoComponentFloat32;
     case ImageFormat::VEC32F4:
       return GpuBufferFormat::kRGBAFloat128;
+    case ImageFormat::VEC16F1:
+      return GpuBufferFormat::kGrayHalf16;
+    case ImageFormat::VEC16F2:
+      return GpuBufferFormat::kTwoComponentHalf16;
+    case ImageFormat::VEC16F4:
+      return GpuBufferFormat::kRGBAHalf64;
     case ImageFormat::GRAY8:
       return GpuBufferFormat::kOneComponent8;
     case ImageFormat::YCBCR420P:
       // TODO: or video range?
       return GpuBufferFormat::kBiPlanar420YpCbCr8FullRange;
+    case ImageFormat::YCBCR420P10:
+      // TODO: or video range?
+      return GpuBufferFormat::kBiPlanar420YpCbCr10FullRange;
     case ImageFormat::UNKNOWN:
     default:
       return GpuBufferFormat::kUnknown;

@@ -22,13 +22,13 @@
 
 #include "absl/log/absl_log.h"
 #include "absl/status/status.h"
+#include "absl/status/status_macros.h"
 #include "absl/strings/substitute.h"
 #include "mediapipe/calculators/tensor/tensor_converter_gpu.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/formats/tensor.h"
 #include "mediapipe/framework/memory_manager.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "mediapipe/framework/port/status_macros.h"
 #include "mediapipe/gpu/gl_base.h"
 #include "mediapipe/gpu/gl_calculator_helper.h"
 #include "mediapipe/gpu/gpu_buffer.h"
@@ -156,9 +156,9 @@ absl::StatusOr<std::unique_ptr<TensorConverterGpu>> CreateTensorConverterGl31(
     bool single_channel, bool flip_vertically, int num_output_channels) {
   auto converter =
       std::make_unique<TensorConverterGlImpl>(gpu_helper, memory_manager);
-  MP_RETURN_IF_ERROR(converter->Init(input_width, input_height, output_range,
-                                     include_alpha, single_channel,
-                                     flip_vertically, num_output_channels));
+  ABSL_RETURN_IF_ERROR(converter->Init(input_width, input_height, output_range,
+                                       include_alpha, single_channel,
+                                       flip_vertically, num_output_channels));
   return converter;
 }
 

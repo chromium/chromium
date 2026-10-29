@@ -111,15 +111,6 @@ index e747b1908cd4c..7d0c5d5d38258 100644
    ABSL_CONST_INIT thread_local std::weak_ptr<GlContext> current_context;
    return current_context;
  }
-@@ -1166,7 +1186,7 @@ void GlContext::SetStandardTextureParams(GLenum target, GLint internal_format) {
-   glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
- }
- 
--const GlContext::Attachment<GLuint> kUtilityFramebuffer(
-+ABSL_CONST_INIT const GlContext::Attachment<GLuint> kUtilityFramebuffer(
-     [](GlContext&) -> GlContext::Attachment<GLuint>::Ptr {
-       GLuint framebuffer;
-       glGenFramebuffers(1, &framebuffer);
 diff --git a/third_party/mediapipe/src/mediapipe/gpu/gl_context.h b/third_party/mediapipe/src/mediapipe/gpu/gl_context.h
 index 077942b64f192..b05b88bd9f337 100644
 --- a/third_party/mediapipe/src/mediapipe/gpu/gl_context.h
@@ -195,16 +186,4 @@ index d683d4447d768..de4f3ced5a3bd 100644
  
    std::deque<Job> jobs_ ABSL_GUARDED_BY(mutex_);
    absl::CondVar has_jobs_cv_ ABSL_GUARDED_BY(mutex_);
-diff --git a/third_party/mediapipe/src/mediapipe/gpu/gpu_service.cc b/third_party/mediapipe/src/mediapipe/gpu/gpu_service.cc
-index 53a0e0f479052..a18604ab83062 100644
---- a/third_party/mediapipe/src/mediapipe/gpu/gpu_service.cc
-+++ b/third_party/mediapipe/src/mediapipe/gpu/gpu_service.cc
-@@ -16,7 +16,7 @@
- 
- namespace mediapipe {
- 
--const GraphService<GpuResources> kGpuService(
-+ABSL_CONST_INIT const GraphService<GpuResources> kGpuService(
-     "kGpuService", GraphServiceBase::kAllowDefaultInitialization);
- 
- }  // namespace mediapipe
+

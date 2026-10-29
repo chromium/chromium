@@ -15,7 +15,6 @@ limitations under the License.
 
 #include "mediapipe/tasks/cc/metadata/utils/zip_readonly_mem_file.h"
 
-#include <algorithm>
 #include <cstdio>
 #include <cstring>
 

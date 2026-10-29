@@ -97,19 +97,19 @@ absl::Status Generate(const ValidatedGraphConfig& validated_graph,
       validated_graph.Config().packet_generator(generator_index);
   const auto& generator_name = generator_config.packet_generator();
 
-  MP_ASSIGN_OR_RETURN(
+  ABSL_ASSIGN_OR_RETURN(
       auto static_access,
       internal::StaticAccessToGeneratorRegistry::CreateByNameInNamespace(
           validated_graph.Package(), generator_name),
       _ << generator_name << " is not a valid PacketGenerator.");
-  MP_RETURN_IF_ERROR(static_access->Generate(generator_config.options(),
-                                             input_side_packet_set,
-                                             output_side_packet_set))
+  ABSL_RETURN_IF_ERROR(static_access->Generate(generator_config.options(),
+                                               input_side_packet_set,
+                                               output_side_packet_set))
           .SetPrepend()
       << generator_name << "::Generate() failed. ";
 
-  MP_RETURN_IF_ERROR(ValidatePacketSet(node_type_info.OutputSidePacketTypes(),
-                                       *output_side_packet_set))
+  ABSL_RETURN_IF_ERROR(ValidatePacketSet(node_type_info.OutputSidePacketTypes(),
+                                         *output_side_packet_set))
           .SetPrepend()
       << generator_name
       << "::Generate() output packets were of incorrect type: ";
@@ -190,7 +190,7 @@ GeneratorScheduler::GeneratorScheduler(
                             !initial) {
   if (!executor_) {
     // Run on the application thread.
-    delegating_executor_ = absl::make_unique<internal::DelegatingExecutor>(
+    delegating_executor_ = std::make_unique<internal::DelegatingExecutor>(
         std::bind(&GeneratorScheduler::AddApplicationThreadTask, this,
                   std::placeholders::_1));
     executor_ = delegating_executor_.get();
@@ -208,7 +208,7 @@ void GeneratorScheduler::GenerateAndScheduleNext(
     int generator_index, std::map<std::string, Packet>* side_packets,
     std::unique_ptr<PacketSet> input_side_packet_set) {
   {
-    absl::MutexLock lock(&mutex_);
+    absl::MutexLock lock(mutex_);
     if (!statuses_.empty()) {
       // Return early, don't run the generator if we already have errors.
       return;
@@ -224,7 +224,7 @@ void GeneratorScheduler::GenerateAndScheduleNext(
                &output_side_packet_set);
 
   {
-    absl::MutexLock lock(&mutex_);
+    absl::MutexLock lock(mutex_);
     if (!status.ok()) {
       statuses_.push_back(std::move(status));
       return;
@@ -252,7 +252,7 @@ void GeneratorScheduler::GenerateAndScheduleNext(
 
 void GeneratorScheduler::ScheduleAllRunnableGenerators(
     std::map<std::string, Packet>* side_packets) {
-  absl::MutexLock lock(&mutex_);
+  absl::MutexLock lock(mutex_);
   const auto& generators = validated_graph_->Config().packet_generator();
 
   for (int index = 0; index < generators.size(); ++index) {
@@ -262,9 +262,9 @@ void GeneratorScheduler::ScheduleAllRunnableGenerators(
     bool is_unrunnable = false;
     // TODO Input side packet set should only be created once.
     auto input_side_packet_set =
-        absl::make_unique<PacketSet>(validated_graph_->GeneratorInfos()[index]
-                                         .InputSidePacketTypes()
-                                         .TagMap());
+        std::make_unique<PacketSet>(validated_graph_->GeneratorInfos()[index]
+                                        .InputSidePacketTypes()
+                                        .TagMap());
 
     absl::Status status =
         CreateInputsForGenerator(*validated_graph_, index, *side_packets,
@@ -283,21 +283,21 @@ void GeneratorScheduler::ScheduleAllRunnableGenerators(
     // means a memory leak will result if the lambda is not run).
     PacketSet* input_side_packet_set_ptr = input_side_packet_set.release();
     ++num_tasks_;
-    mutex_.Unlock();
+    mutex_.unlock();
     executor_->Schedule(
         [this, index, side_packets, input_side_packet_set_ptr]() {
           GenerateAndScheduleNext(
               index, side_packets,
               std::unique_ptr<PacketSet>(input_side_packet_set_ptr));
           {
-            absl::MutexLock lock(&mutex_);
+            absl::MutexLock lock(mutex_);
             --num_tasks_;
             if (num_tasks_ == 0) {
               idle_condvar_.Signal();
             }
           }
         });
-    mutex_.Lock();
+    mutex_.lock();
   }
 }
 
@@ -306,7 +306,7 @@ void GeneratorScheduler::WaitUntilIdle() {
     // Run the tasks on the application thread.
     RunApplicationThreadTasks();
   } else {
-    absl::MutexLock lock(&mutex_);
+    absl::MutexLock lock(mutex_);
     while (num_tasks_ != 0) {
       idle_condvar_.Wait(&mutex_);
     }
@@ -317,7 +317,7 @@ absl::Status GeneratorScheduler::GetNonScheduledGenerators(
     std::vector<int>* non_scheduled_generators) const {
   non_scheduled_generators->clear();
 
-  absl::MutexLock lock(&mutex_);
+  absl::MutexLock lock(mutex_);
   if (!statuses_.empty()) {
     return tool::CombinedStatus("PacketGeneratorGraph failed.", statuses_);
   }
@@ -330,7 +330,7 @@ absl::Status GeneratorScheduler::GetNonScheduledGenerators(
 }
 
 void GeneratorScheduler::AddApplicationThreadTask(std::function<void()> task) {
-  absl::MutexLock lock(&app_thread_mutex_);
+  absl::MutexLock lock(app_thread_mutex_);
   app_thread_tasks_.push_back(std::move(task));
 }
 
@@ -339,7 +339,7 @@ void GeneratorScheduler::RunApplicationThreadTasks() {
     std::function<void()> task_callback;
     {
       // Get the next task.
-      absl::MutexLock lock(&app_thread_mutex_);
+      absl::MutexLock lock(app_thread_mutex_);
       if (app_thread_tasks_.empty()) {
         break;
       }
@@ -362,7 +362,7 @@ absl::Status PacketGeneratorGraph::Initialize(
   validated_graph_ = validated_graph;
   executor_ = executor;
   base_packets_ = input_side_packets;
-  MP_RETURN_IF_ERROR(
+  ABSL_RETURN_IF_ERROR(
       validated_graph_->CanAcceptSidePackets(input_side_packets));
   return ExecuteGenerators(&base_packets_, &non_base_generators_,
                            /*initial=*/true);
@@ -385,13 +385,13 @@ absl::Status PacketGeneratorGraph::RunGraphSetup(
   if (!non_scheduled_generators)
     non_scheduled_generators = &non_scheduled_generators_local;
 
-  MP_RETURN_IF_ERROR(
+  ABSL_RETURN_IF_ERROR(
       validated_graph_->CanAcceptSidePackets(input_side_packets));
   // This type check on the required side packets is redundant with
   // error checking in ExecuteGenerators, but we do it now to fail early.
-  MP_RETURN_IF_ERROR(
+  ABSL_RETURN_IF_ERROR(
       validated_graph_->ValidateRequiredSidePackets(*output_side_packets));
-  MP_RETURN_IF_ERROR(ExecuteGenerators(
+  ABSL_RETURN_IF_ERROR(ExecuteGenerators(
       output_side_packets, non_scheduled_generators, /*initial=*/false));
   return absl::OkStatus();
 }

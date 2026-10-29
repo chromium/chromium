@@ -19,6 +19,7 @@
 
 #include "Eigen/Core"
 #include "absl/status/status.h"
+#include "absl/status/status_macros.h"
 #include "audio/linear_filters/two_tap_fir_filter.h"
 #include "mediapipe/calculators/audio/stabilized_log_calculator.pb.h"
 #include "mediapipe/calculators/audio/two_tap_fir_filter_calculator.pb.h"
@@ -26,7 +27,6 @@
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/formats/matrix.h"
 #include "mediapipe/framework/formats/time_series_header.pb.h"
-#include "mediapipe/framework/port/status_macros.h"
 #include "mediapipe/util/time_series_util.h"
 
 namespace mediapipe {
@@ -70,8 +70,9 @@ class TwoTapFirFilterCalculator : public Node {
 
   absl::Status Open(CalculatorContext* cc) override {
     auto audio_header = std::make_unique<mediapipe::TimeSeriesHeader>();
-    MP_RETURN_IF_ERROR(mediapipe::time_series_util::FillTimeSeriesHeaderIfValid(
-        cc->Inputs().Tag(kInputTag).Header(), audio_header.get()));
+    ABSL_RETURN_IF_ERROR(
+        mediapipe::time_series_util::FillTimeSeriesHeaderIfValid(
+            cc->Inputs().Tag(kInputTag).Header(), audio_header.get()));
     const auto& options = cc->Options<TwoTapFirFilterCalculatorOptions>();
     two_tap_fir_filter_ = std::make_unique<TwoTapFirFilter>(
         std::make_pair(options.gain_prev(), options.gain_now()));

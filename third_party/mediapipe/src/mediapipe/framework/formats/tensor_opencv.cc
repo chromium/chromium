@@ -21,12 +21,12 @@
 
 #include "absl/log/absl_check.h"
 #include "absl/status/status.h"
+#include "absl/status/status_macros.h"
 #include "absl/status/statusor.h"
 #include "absl/strings/str_cat.h"
 #include "mediapipe/framework/formats/tensor.h"
 #include "mediapipe/framework/port/opencv_core_inc.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "mediapipe/framework/port/status_macros.h"
 
 namespace mediapipe::formats {
 namespace {
@@ -34,6 +34,8 @@ namespace {
 // Maps the Tensor element type to OpenCV Mat type.
 absl::StatusOr<int> GetMatType(Tensor::ElementType element_type, int channels) {
   switch (element_type) {
+    case Tensor::ElementType::kFloat16:
+      return CV_16FC(channels);
     case Tensor::ElementType::kFloat32:
       return CV_32FC(channels);
     case Tensor::ElementType::kUInt8:
@@ -106,8 +108,8 @@ absl::StatusOr<cv::Mat> MatView(const Tensor& tensor,
   mat_dims.pop_back();
   mat_steps.pop_back();
 
-  MP_ASSIGN_OR_RETURN(int mat_type,
-                      GetMatType(tensor.element_type(), mat_channels));
+  ABSL_ASSIGN_OR_RETURN(int mat_type,
+                        GetMatType(tensor.element_type(), mat_channels));
   uint8_t* mat_buffer = const_cast<uint8_t*>(view.buffer<uint8_t>() + offset);
   return cv::Mat(mat_dims.size(), mat_dims.data(), mat_type, mat_buffer,
                  mat_steps.data());

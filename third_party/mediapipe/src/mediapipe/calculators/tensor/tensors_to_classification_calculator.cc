@@ -22,6 +22,7 @@
 
 #include "absl/container/flat_hash_set.h"
 #include "absl/status/status.h"
+#include "absl/status/status_macros.h"
 #include "absl/strings/string_view.h"
 #include "mediapipe/calculators/tensor/tensors_to_classification_calculator.pb.h"
 #include "mediapipe/framework/api2/node.h"
@@ -30,7 +31,6 @@
 #include "mediapipe/framework/formats/classification.pb.h"
 #include "mediapipe/framework/formats/tensor.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "mediapipe/framework/port/status_macros.h"
 #include "mediapipe/framework/resources.h"
 #include "mediapipe/util/label_map.pb.h"
 #include "mediapipe/util/label_map_util.h"
@@ -119,11 +119,11 @@ absl::Status TensorsToClassificationCalculator::Open(CalculatorContext* cc) {
   sort_by_descending_score_ = options.sort_by_descending_score();
   if (options.has_label_map_path()) {
     std::string string_path;
-    MP_ASSIGN_OR_RETURN(string_path,
-                        PathToResourceAsFile(options.label_map_path()));
-    MP_ASSIGN_OR_RETURN(std::unique_ptr<mediapipe::Resource> label_map,
-                        cc->GetResources().Get(string_path));
-    MP_ASSIGN_OR_RETURN(
+    ABSL_ASSIGN_OR_RETURN(string_path,
+                          PathToResourceAsFile(options.label_map_path()));
+    ABSL_ASSIGN_OR_RETURN(std::unique_ptr<mediapipe::Resource> label_map,
+                          cc->GetResources().Get(string_path));
+    ABSL_ASSIGN_OR_RETURN(
         local_label_map_,
         BuildLabelMapFromFiles(label_map->ToStringView(),
                                /*display_names_file_contents*/ {}));

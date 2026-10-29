@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "absl/status/status.h"
+#include "absl/status/status_macros.h"
 #include "mediapipe/calculators/tensor/tensors_to_segmentation_calculator.pb.h"
 #include "mediapipe/calculators/tensor/tensors_to_segmentation_converter.h"
 #include "mediapipe/calculators/tensor/tensors_to_segmentation_utils.h"
@@ -30,10 +31,12 @@
 #include "mediapipe/framework/formats/tensor.h"
 #include "mediapipe/framework/port.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "mediapipe/framework/port/status_macros.h"
 
 #if !MEDIAPIPE_DISABLE_GPU
 #include "mediapipe/gpu/gl_calculator_helper.h"
+// IWYU pragma: begin_keep (MEDIAPIPE_GPU_BUFFER_POOL_USE_CV_PIXEL_BUFFER)
+#include "mediapipe/gpu/gpu_buffer_format.h"
+// IWYU pragma: end_keep
 
 #if MEDIAPIPE_OPENGL_ES_VERSION >= MEDIAPIPE_OPENGL_ES_31
 #include "mediapipe/calculators/tensor/tensors_to_segmentation_converter_gl_buffer.h"
@@ -76,13 +79,14 @@ class TensorsToSegmentationCalculator
 #if !MEDIAPIPE_DISABLE_GPU
       if (!gpu_converter_) {
 #if MEDIAPIPE_OPENGL_ES_VERSION >= MEDIAPIPE_OPENGL_ES_31
-        MP_ASSIGN_OR_RETURN(gpu_converter_,
-                            CreateGlBufferConverter(cc, options_));
+        ABSL_ASSIGN_OR_RETURN(gpu_converter_,
+                              CreateGlBufferConverter(cc, options_));
 #elif MEDIAPIPE_METAL_ENABLED
-        MP_ASSIGN_OR_RETURN(gpu_converter_, CreateMetalConverter(cc, options_));
+        ABSL_ASSIGN_OR_RETURN(gpu_converter_,
+                              CreateMetalConverter(cc, options_));
 #else
-        MP_ASSIGN_OR_RETURN(gpu_converter_,
-                            CreateGlTextureConverter(cc, options_));
+        ABSL_ASSIGN_OR_RETURN(gpu_converter_,
+                              CreateGlTextureConverter(cc, options_));
 #endif  // MEDIAPIPE_OPENGL_ES_VERSION >= MEDIAPIPE_OPENGL_ES_31
       }
 #else
@@ -92,7 +96,7 @@ class TensorsToSegmentationCalculator
     } else {
 #if !MEDIAPIPE_DISABLE_OPENCV
       if (!cpu_converter_) {
-        MP_ASSIGN_OR_RETURN(cpu_converter_, CreateOpenCvConverter(options_));
+        ABSL_ASSIGN_OR_RETURN(cpu_converter_, CreateOpenCvConverter(options_));
       }
 #else
       RET_CHECK_FAIL() << "Cannot initialize OpenCV converter because OpenCV "
@@ -114,11 +118,11 @@ absl::Status TensorsToSegmentationCalculator::UpdateContract(
       << "Either TENSOR or TENSORS must be connected";
   if (CanUseGpu()) {
 #if !MEDIAPIPE_DISABLE_GPU
-    MP_RETURN_IF_ERROR(mediapipe::GlCalculatorHelper::UpdateContract(
+    ABSL_RETURN_IF_ERROR(mediapipe::GlCalculatorHelper::UpdateContract(
         &cc.GetGenericContract(), /*request_gpu_as_optional=*/true));
 #if MEDIAPIPE_METAL_ENABLED
-    MP_RETURN_IF_ERROR([MPPMetalHelper updateContract:&cc.GetGenericContract()
-                                 requestGpuAsOptional:true]);
+    ABSL_RETURN_IF_ERROR([MPPMetalHelper updateContract:&cc.GetGenericContract()
+                                   requestGpuAsOptional:true]);
 #endif  // MEDIAPIPE_METAL_ENABLED
 #endif  // !MEDIAPIPE_DISABLE_GPU
   }
@@ -148,14 +152,34 @@ absl::Status TensorsToSegmentationCalculator::Process(
 
   bool use_gpu = false;
   if (CanUseGpu()) {
+#if MEDIAPIPE_METAL_ENABLED && !MEDIAPIPE_GPU_BUFFER_POOL_USE_CV_PIXEL_BUFFER
+    // The Metal converter writes the mask into a Metal view of a GpuBuffer and
+    // then reads it back through a GL view of that same GpuBuffer. Those are
+    // only the same memory while GpuBuffers are CVPixelBuffer-backed, where
+    // both views wrap one IOSurface.
+    //
+    // Where the pool vends GlTextureBuffer instead (macOS, which needs
+    // GL_TEXTURE_2D rather than the GL_TEXTURE_RECTANGLE_ARB that CoreVideo
+    // hands out), asking for a Metal texture finds no CVPixelBuffer storage and
+    // allocates a detached copy. The Metal kernel writes the mask into that
+    // copy, but the GL view still reads the original GpuBuffer, which was never
+    // written to, so the output mask is all zeros.
+    //
+    // The CPU converter has no such split. On Apple it is also behaviorally
+    // identical: IsGpuOriginAtBottom() is always false there, so the Metal
+    // converter's optional Y flip is never active and neither converter flips.
+    use_gpu = false;
+#else
     // Use GPU processing only if at least one input tensor is already on GPU.
     use_gpu = input_tensor->ready_on_gpu();
+#endif  // MEDIAPIPE_METAL_ENABLED &&
+        // !MEDIAPIPE_GPU_BUFFER_POOL_USE_CV_PIXEL_BUFFER
   }
 
   // Validate tensor channels and activation type.
   {
     RET_CHECK(input_tensor->element_type() == Tensor::ElementType::kFloat32);
-    MP_ASSIGN_OR_RETURN(auto hwc, GetHwcFromDims(input_tensor->shape().dims));
+    ABSL_ASSIGN_OR_RETURN(auto hwc, GetHwcFromDims(input_tensor->shape().dims));
     int tensor_channels = std::get<2>(hwc);
     using Options = ::mediapipe::TensorsToSegmentationCalculatorOptions;
     switch (options_.activation()) {
@@ -172,7 +196,7 @@ absl::Status TensorsToSegmentationCalculator::Process(
   }
 
   // Get dimensions.
-  MP_ASSIGN_OR_RETURN(auto hwc, GetHwcFromDims(input_tensor->shape().dims));
+  ABSL_ASSIGN_OR_RETURN(auto hwc, GetHwcFromDims(input_tensor->shape().dims));
   auto [tensor_height, tensor_width, tensor_channels] = hwc;
   int output_width = tensor_width, output_height = tensor_height;
   if (cc.output_size_in.IsConnected()) {
@@ -185,9 +209,9 @@ absl::Status TensorsToSegmentationCalculator::Process(
   if (use_gpu) {
 #if !MEDIAPIPE_DISABLE_GPU
     // Lazily initialize converter
-    MP_RETURN_IF_ERROR(
+    ABSL_RETURN_IF_ERROR(
         InitConverterIfNecessary(use_gpu, &cc.GetGenericContext()));
-    MP_ASSIGN_OR_RETURN(
+    ABSL_ASSIGN_OR_RETURN(
         std::unique_ptr<Image> output_mask,
         gpu_converter_->Convert(*input_tensor, output_width, output_height));
     cc.mask_out.Send(std::move(output_mask));
@@ -197,9 +221,9 @@ absl::Status TensorsToSegmentationCalculator::Process(
   } else {
 #if !MEDIAPIPE_DISABLE_OPENCV
     // Lazily initialize converter.
-    MP_RETURN_IF_ERROR(
+    ABSL_RETURN_IF_ERROR(
         InitConverterIfNecessary(use_gpu, &cc.GetGenericContext()));
-    MP_ASSIGN_OR_RETURN(
+    ABSL_ASSIGN_OR_RETURN(
         std::unique_ptr<Image> output_mask,
         cpu_converter_->Convert(*input_tensor, output_width, output_height));
     cc.mask_out.Send(std::move(output_mask));

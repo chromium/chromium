@@ -15,7 +15,10 @@
 #include "mediapipe/calculators/util/landmarks_smoothing_calculator.h"
 
 #include <memory>
+#include <optional>
+#include <utility>
 
+#include "absl/status/status_macros.h"
 #include "mediapipe/calculators/util/landmarks_smoothing_calculator.pb.h"
 #include "mediapipe/calculators/util/landmarks_smoothing_calculator_utils.h"
 #include "mediapipe/framework/api2/node.h"
@@ -43,7 +46,7 @@ class LandmarksSmoothingCalculatorImpl
     : public NodeImpl<LandmarksSmoothingCalculator> {
  public:
   absl::Status Open(CalculatorContext* cc) override {
-    MP_ASSIGN_OR_RETURN(
+    ABSL_ASSIGN_OR_RETURN(
         landmarks_filter_,
         InitializeLandmarksFilter(
             cc->Options<LandmarksSmoothingCalculatorOptions>()));
@@ -56,7 +59,7 @@ class LandmarksSmoothingCalculatorImpl
     if ((kInNormLandmarks(cc).IsConnected() &&
          kInNormLandmarks(cc).IsEmpty()) ||
         (kInLandmarks(cc).IsConnected() && kInLandmarks(cc).IsEmpty())) {
-      MP_RETURN_IF_ERROR(landmarks_filter_->Reset());
+      ABSL_RETURN_IF_ERROR(landmarks_filter_->Reset());
       return absl::OkStatus();
     }
 
@@ -66,11 +69,17 @@ class LandmarksSmoothingCalculatorImpl
     if (kInNormLandmarks(cc).IsConnected()) {
       const auto& in_norm_landmarks = kInNormLandmarks(cc).Get();
 
-      int image_width;
-      int image_height;
-      std::tie(image_width, image_height) = kImageSize(cc).Get();
+      const auto& image_size = kImageSize(cc).Get();
+      const auto& [image_width, image_height] = image_size;
 
-      absl::optional<float> object_scale;
+      // Reset the smoothing filter if the input image size changed between
+      // frames.
+      if (prev_image_size_.has_value() && image_size != *prev_image_size_) {
+        ABSL_RETURN_IF_ERROR(landmarks_filter_->Reset());
+      }
+      prev_image_size_ = image_size;
+
+      std::optional<float> object_scale;
       if (kObjectScaleRoi(cc).IsConnected() && !kObjectScaleRoi(cc).IsEmpty()) {
         auto& roi = kObjectScaleRoi(cc).Get<NormalizedRect>();
         object_scale = GetObjectScale(roi, image_width, image_height);
@@ -81,7 +90,7 @@ class LandmarksSmoothingCalculatorImpl
                                      image_height, *in_landmarks.get());
 
       auto out_landmarks = absl::make_unique<LandmarkList>();
-      MP_RETURN_IF_ERROR(landmarks_filter_->Apply(
+      ABSL_RETURN_IF_ERROR(landmarks_filter_->Apply(
           *in_landmarks, timestamp, object_scale, *out_landmarks));
 
       auto out_norm_landmarks = absl::make_unique<NormalizedLandmarkList>();
@@ -92,14 +101,14 @@ class LandmarksSmoothingCalculatorImpl
     } else {
       const auto& in_landmarks = kInLandmarks(cc).Get();
 
-      absl::optional<float> object_scale;
+      std::optional<float> object_scale;
       if (kObjectScaleRoi(cc).IsConnected() && !kObjectScaleRoi(cc).IsEmpty()) {
         auto& roi = kObjectScaleRoi(cc).Get<Rect>();
         object_scale = GetObjectScale(roi);
       }
 
       auto out_landmarks = absl::make_unique<LandmarkList>();
-      MP_RETURN_IF_ERROR(landmarks_filter_->Apply(
+      ABSL_RETURN_IF_ERROR(landmarks_filter_->Apply(
           in_landmarks, timestamp, object_scale, *out_landmarks));
 
       kOutLandmarks(cc).Send(std::move(out_landmarks));
@@ -110,6 +119,7 @@ class LandmarksSmoothingCalculatorImpl
 
  private:
   std::unique_ptr<LandmarksFilter> landmarks_filter_;
+  std::optional<std::pair<int, int>> prev_image_size_;
 };
 MEDIAPIPE_NODE_IMPLEMENTATION(LandmarksSmoothingCalculatorImpl);
 

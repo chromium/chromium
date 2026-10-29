@@ -16,13 +16,13 @@
 #define MEDIAPIPE_FRAMEWORK_API3_SUBGRAPH_H_
 
 #include "absl/status/status.h"
+#include "absl/status/status_macros.h"
 #include "absl/status/statusor.h"
 #include "mediapipe/framework/api2/node.h"
 #include "mediapipe/framework/api3/graph.h"
 #include "mediapipe/framework/api3/internal/contract_validator.h"
 #include "mediapipe/framework/api3/subgraph_context.h"
 #include "mediapipe/framework/calculator_framework.h"
-#include "mediapipe/framework/port/status_macros.h"
 #include "mediapipe/framework/tool/options_map.h"
 
 namespace mediapipe::api3 {
@@ -87,10 +87,10 @@ class Subgraph : public mediapipe::Subgraph,
   absl::StatusOr<CalculatorGraphConfig> GetConfig(
       mediapipe::SubgraphContext* sc) final {
     mediapipe::CalculatorContract contract;
-    MP_RETURN_IF_ERROR(contract.Initialize(sc->OriginalNode()));
+    ABSL_RETURN_IF_ERROR(contract.Initialize(sc->OriginalNode()));
     GenericGraph graph;
     SubgraphContext<NodeT> context(*sc, contract, graph);
-    MP_RETURN_IF_ERROR(Expand(graph, context));
+    ABSL_RETURN_IF_ERROR(Expand(graph, context));
     return graph.GetConfig();
   }
 

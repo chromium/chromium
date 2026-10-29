@@ -26,8 +26,8 @@ index a0ba58cc17d68..2b8d3c8a5b2c6 100644
 -#include "absl/log/check.h"
 -#include "absl/log/log.h"
  #include "absl/status/status.h"
+ #include "absl/status/status_macros.h"
  #include "mediapipe/calculators/tensor/vector_to_tensor_calculator.pb.h"
- #include "mediapipe/framework/api2/node.h"
 diff --git a/third_party/mediapipe/src/mediapipe/framework/input_stream_handler.cc b/third_party/mediapipe/src/mediapipe/framework/input_stream_handler.cc
 index ee4a86adf26b8..88ee6dddc4bf6 100644
 --- a/third_party/mediapipe/src/mediapipe/framework/input_stream_handler.cc
@@ -65,8 +65,8 @@ index e5d44b1efe138..126cd9b0f1107 100644
  #include "absl/log/absl_log.h"
 -#include "absl/log/log.h"
  #include "absl/status/status.h"
+ #include "absl/status/status_macros.h"
  #include "absl/strings/str_cat.h"
- #include "absl/strings/str_join.h"
 @@ -712,7 +711,7 @@ absl::Status ValidatedGraphConfig::AddInputStreamsForNode(
        }
      } else {

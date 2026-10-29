@@ -19,13 +19,13 @@
 #include <utility>
 
 #include "absl/status/status.h"
+#include "absl/status/status_macros.h"
 #include "mediapipe/framework/api3/calculator.h"
 #include "mediapipe/framework/api3/calculator_context.h"
 #include "mediapipe/framework/api3/calculator_contract.h"
 #include "mediapipe/framework/api3/packet.h"
 #include "mediapipe/framework/formats/image.h"
 #include "mediapipe/framework/formats/image_frame.h"
-#include "mediapipe/framework/port/status_macros.h"
 
 #if !MEDIAPIPE_DISABLE_GPU
 #include "mediapipe/gpu/gl_calculator_helper.h"
@@ -68,7 +68,7 @@ absl::Status FromImageNodeImpl::Open(CalculatorContext<FromImageNode>& cc) {
   check_image_source_ = cc.out_source_on_gpu.IsConnected();
   if (gpu_output_) {
 #if !MEDIAPIPE_DISABLE_GPU
-    MP_RETURN_IF_ERROR(gpu_helper_.Open(&cc.GetGenericContext()));
+    ABSL_RETURN_IF_ERROR(gpu_helper_.Open(&cc.GetGenericContext()));
 #endif  // !MEDIAPIPE_DISABLE_GPU
   }
 
@@ -83,7 +83,7 @@ absl::Status FromImageNodeImpl::Process(CalculatorContext<FromImageNode>& cc) {
 
   if (gpu_output_) {
 #if !MEDIAPIPE_DISABLE_GPU
-    MP_RETURN_IF_ERROR(gpu_helper_.RunInGlContext([&cc]() -> absl::Status {
+    ABSL_RETURN_IF_ERROR(gpu_helper_.RunInGlContext([&cc]() -> absl::Status {
       const Image& input = cc.in_image.GetOrDie();
       // Unwrap texture pointer; shallow copy.
       cc.out_image_gpu.Send(input.GetGpuBuffer());

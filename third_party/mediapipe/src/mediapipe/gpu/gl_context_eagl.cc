@@ -12,9 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <cstdint>
 #include <utility>
 
 #include "absl/memory/memory.h"
+#include "absl/status/status.h"
+#include "absl/types/span.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/port/status_builder.h"
@@ -47,9 +50,15 @@ GlContext::StatusOrGlContext GlContext::Create(EAGLContext* share_context,
 GlContext::StatusOrGlContext GlContext::Create(EAGLSharegroup* sharegroup,
                                                bool create_thread) {
   std::shared_ptr<GlContext> context(new GlContext());
-  MP_RETURN_IF_ERROR(context->CreateContext(sharegroup));
-  MP_RETURN_IF_ERROR(context->FinishInitialization(create_thread));
+  ABSL_RETURN_IF_ERROR(context->CreateContext(sharegroup));
+  ABSL_RETURN_IF_ERROR(context->FinishInitialization(create_thread));
   return std::move(context);
+}
+
+GlContext::StatusOrGlContext GlContext::CreateForDeviceUuid(
+    absl::Span<const uint8_t> /*device_uuid*/, bool /*create_thread*/) {
+  return absl::UnimplementedError(
+      "Selecting a GPU by device UUID is not supported on this platform.");
 }
 
 absl::Status GlContext::CreateContext(EAGLSharegroup* sharegroup) {

@@ -17,10 +17,10 @@
 #include <utility>
 
 #include "absl/status/status.h"
+#include "absl/status/status_macros.h"
 #include "mediapipe/calculators/util/local_file_contents_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/port/status.h"
-#include "mediapipe/framework/port/status_macros.h"
 #include "mediapipe/framework/resources.h"
 #include "mediapipe/util/resource_util.h"
 
@@ -90,9 +90,9 @@ class LocalFileContentsCalculator : public CalculatorBase {
          ++input_id, ++output_id) {
       std::string file_path =
           cc->InputSidePackets().Get(input_id).Get<std::string>();
-      MP_ASSIGN_OR_RETURN(file_path, PathToResourceAsFile(file_path));
+      ABSL_ASSIGN_OR_RETURN(file_path, PathToResourceAsFile(file_path));
 
-      MP_ASSIGN_OR_RETURN(
+      ABSL_ASSIGN_OR_RETURN(
           std::unique_ptr<Resource> resource,
           cc->GetResources().Get(file_path,
                                  {/* read_as_binary= */ !options.text_mode()}));

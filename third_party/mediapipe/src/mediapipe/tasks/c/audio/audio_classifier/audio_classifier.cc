@@ -22,9 +22,9 @@ limitations under the License.
 #include "Eigen/Core"
 #include "absl/log/absl_check.h"
 #include "absl/status/status.h"
+#include "absl/status/status_macros.h"
 #include "absl/status/statusor.h"
 #include "mediapipe/framework/formats/matrix.h"
-#include "mediapipe/framework/port/status_macros.h"
 #include "mediapipe/tasks/c/audio/core/common.h"
 #include "mediapipe/tasks/c/audio/core/running_mode_converter.h"
 #include "mediapipe/tasks/c/components/containers/classification_result.h"
@@ -74,7 +74,7 @@ void CppResultCallback(
     return;
   }
 
-  auto classification_result = std::make_unique<::ClassificationResult>();
+  auto classification_result = std::make_unique<MpClassificationResult>();
   CppConvertToClassificationResult(*result, classification_result.get());
 
   // The C++ async callback receives one classification result at a time, so we
@@ -104,8 +104,8 @@ absl::StatusOr<std::unique_ptr<AudioClassifier>> CppCreateAudioClassifier(
   CppConvertToBaseOptions(options.base_options, &cpp_options->base_options);
   CppConvertToClassifierOptions(options.classifier_options,
                                 &cpp_options->classifier_options);
-  MP_ASSIGN_OR_RETURN(cpp_options->running_mode,
-                      CppConvertToRunningMode(options.running_mode));
+  ABSL_ASSIGN_OR_RETURN(cpp_options->running_mode,
+                        CppConvertToRunningMode(options.running_mode));
 
   if (options.result_callback) {
     cpp_options->result_callback =
@@ -146,7 +146,7 @@ absl::Status MpAudioClassifierClassify(MpAudioClassifierPtr classifier,
   }
 
   auto c_classifications =
-      std::make_unique<::ClassificationResult[]>(cpp_result->size());
+      std::make_unique<MpClassificationResult[]>(cpp_result->size());
   result_out->results_count = cpp_result->size();
   for (int i = 0; i < result_out->results_count; ++i) {
     CppConvertToClassificationResult(cpp_result->at(i),

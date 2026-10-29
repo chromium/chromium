@@ -14,7 +14,7 @@
 #
 
 load(
-    "@org_tensorflow//tensorflow/lite/core/shims:cc_library_with_tflite.bzl",
+    "@litert//tflite/core/shims:cc_library_with_tflite.bzl",
     "cc_library_with_tflite",
     "cc_test_with_tflite",
 )
@@ -43,8 +43,8 @@ cc_library_with_tflite(
     srcs = ["cpu_op_resolver.cc"],
     hdrs = ["cpu_op_resolver.h"],
     tflite_deps = [
-        "@org_tensorflow//tensorflow/lite:framework_stable",
-        "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
+        "@litert//tflite:framework_stable",
+        "@litert//tflite/kernels:builtin_ops",
     ],
     visibility = ["//visibility:public"],
     deps = [
@@ -57,7 +57,7 @@ cc_library_with_tflite(
         "//mediapipe/util/tflite/operations:transform_tensor_bilinear",
         "//mediapipe/util/tflite/operations:transpose_conv_bias",
         "@com_google_absl//absl/log:absl_check",
-        "@org_tensorflow//tensorflow/lite:builtin_op_data",
+        "@litert//tflite:builtin_op_data",
     ],
     # For using the symbol `MediaPipe_RegisterTfLiteOpResolver` in Python
     # with `tensorflow.lite.python.interpreter.InterpreterWithCustomOps`.
@@ -69,9 +69,9 @@ cc_library(
     srcs = ["error_reporter.cc"],
     hdrs = ["error_reporter.h"],
     deps = [
-        "@org_tensorflow//tensorflow/lite:minimal_logging",
-        "@org_tensorflow//tensorflow/lite:stateful_error_reporter",
-        "@org_tensorflow//tensorflow/lite/core/api:error_reporter",
+        "@litert//tflite:minimal_logging",
+        "@litert//tflite:stateful_error_reporter",
+        "@litert//tflite/core/api:error_reporter",
     ],
 )
 
@@ -91,13 +91,13 @@ cc_library_with_tflite(
     srcs = ["op_resolver.cc"],
     hdrs = ["op_resolver.h"],
     tflite_deps = [
-        "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
-        "@org_tensorflow//tensorflow/lite/c:c_api",
-        "@org_tensorflow//tensorflow/lite/c:c_api_experimental",  # For c_api_opaque.h
-        "@org_tensorflow//tensorflow/lite/c:common",  # For builtin_op_data.h
+        "@litert//tflite/kernels:builtin_ops",
+        "@litert//tflite/c:c_api",
+        "@litert//tflite/c:c_api_experimental",  # For c_api_opaque.h
+        "@litert//tflite/c:common",  # For builtin_op_data.h
     ],
     deps = [
-        "@org_tensorflow//tensorflow/lite:builtin_ops",
+        "@litert//tflite:builtin_ops",
     ],
 )
 
@@ -122,16 +122,16 @@ cc_library(
                    "//mediapipe/framework/port:status",
                    "//mediapipe/framework/port:statusor",
                    "@com_google_absl//absl/strings",
-                   "@org_tensorflow//tensorflow/lite:framework",
-                   "@org_tensorflow//tensorflow/lite/delegates/gpu:api",
-                   "@org_tensorflow//tensorflow/lite/delegates/gpu/common:model",
-                   "@org_tensorflow//tensorflow/lite/delegates/gpu/common:model_builder",
-                   "@org_tensorflow//tensorflow/lite/delegates/gpu/gl:api2",
+                   "@litert//tflite:framework",
+                   "@litert//tflite/delegates/gpu:api",
+                   "@litert//tflite/delegates/gpu/common:model",
+                   "@litert//tflite/delegates/gpu/common:model_builder",
+                   "@litert//tflite/delegates/gpu/gl:api2",
                ],
            }) +
            select({
                "//mediapipe:android": [
-                   "@org_tensorflow//tensorflow/lite/delegates/gpu/cl:api",
+                   "@litert//tflite/delegates/gpu/cl:api",
                ],
                "//conditions:default": [],
            }) + [
@@ -139,11 +139,12 @@ cc_library(
         "//mediapipe/gpu:gl_base",
         "@com_google_absl//absl/log:absl_log",
         "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:status_macros",
         "@com_google_absl//absl/status:statusor",
-        "@org_tensorflow//tensorflow/lite/core:framework",
-        "@org_tensorflow//tensorflow/lite/core/api",
-        "@org_tensorflow//tensorflow/lite/delegates/gpu/common:data_type",
-        "@org_tensorflow//tensorflow/lite/delegates/gpu/common:shape",
+        "@litert//tflite/core:framework",
+        "@litert//tflite/core/api",
+        "@litert//tflite/delegates/gpu/common:data_type",
+        "@litert//tflite/delegates/gpu/common:shape",
     ],
 )
 
@@ -152,7 +153,7 @@ cc_library_with_tflite(
     srcs = ["tflite_model_loader.cc"],
     hdrs = ["tflite_model_loader.h"],
     tflite_deps = [
-        "@org_tensorflow//tensorflow/lite:framework_stable",
+        "@litert//tflite:framework_stable",
     ],
     visibility = ["//visibility:public"],
     deps = [
@@ -163,6 +164,7 @@ cc_library_with_tflite(
         "//mediapipe/util:resource_util",
         "@com_google_absl//absl/base:core_headers",
         "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:status_macros",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings:string_view",
     ],
@@ -176,7 +178,7 @@ cc_test_with_tflite(
     ],
     tflite_deps = [
         ":tflite_model_loader",
-        "@org_tensorflow//tensorflow/lite:test_util",
+        "@litert//tflite:test_util",
     ],
     deps = [
         "//mediapipe/framework:calculator_cc_proto",
@@ -198,7 +200,7 @@ cc_library_with_tflite(
     srcs = ["tflite_signature_reader.cc"],
     hdrs = ["tflite_signature_reader.h"],
     tflite_deps = [
-        "@org_tensorflow//tensorflow/lite:framework_stable",
+        "@litert//tflite:framework_stable",
     ],
     visibility = ["//visibility:public"],
     deps = [
@@ -206,6 +208,7 @@ cc_library_with_tflite(
         "//mediapipe/framework/port:status",
         "@com_google_absl//absl/container:flat_hash_map",
         "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:status_macros",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
     ],
@@ -229,10 +232,11 @@ cc_test(
         "//mediapipe/framework/port:status",
         "//mediapipe/framework/port:status_matchers",
         "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:status_macros",
         "@com_google_absl//absl/status:statusor",
-        "@org_tensorflow//tensorflow/lite:framework_stable",
-        "@org_tensorflow//tensorflow/lite:test_util",
-        "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
+        "@litert//tflite:framework_stable",
+        "@litert//tflite:test_util",
+        "@litert//tflite/kernels:builtin_ops",
     ],
 )
 
@@ -241,8 +245,8 @@ cc_library_with_tflite(
     srcs = ["utils.cc"],
     hdrs = ["utils.h"],
     tflite_deps = [
-        "@org_tensorflow//tensorflow/lite:framework_stable",
-        "@org_tensorflow//tensorflow/lite/c:common",
+        "@litert//tflite:framework_stable",
+        "@litert//tflite/c:common",
     ],
     visibility = ["//visibility:public"],
 )

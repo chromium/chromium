@@ -26,6 +26,7 @@
 #include <utility>
 
 #include "absl/status/status.h"
+#include "absl/status/status_macros.h"
 #include "absl/strings/substitute.h"
 #include "mediapipe/calculators/tensor/tensor_converter_gpu.h"
 #include "mediapipe/calculators/tensor/tensor_converter_metal.h"
@@ -33,7 +34,6 @@
 #include "mediapipe/framework/formats/tensor_mtl_buffer_view.h"
 #include "mediapipe/framework/memory_manager.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "mediapipe/framework/port/status_macros.h"
 #import "mediapipe/gpu/MPPMetalHelper.h"
 #include "mediapipe/gpu/gpu_buffer.h"
 
@@ -156,9 +156,9 @@ absl::StatusOr<std::unique_ptr<TensorConverterGpu>> CreateTensorConverterMetal(
     bool single_channel, bool flip_vertically, int num_output_channels) {
   auto converter =
       std::make_unique<TensorConverteMetalImpl>(gpu_helper, memory_manager);
-  MP_RETURN_IF_ERROR(converter->Init(output_range, include_alpha,
-                                     single_channel, flip_vertically,
-                                     num_output_channels));
+  ABSL_RETURN_IF_ERROR(converter->Init(output_range, include_alpha,
+                                       single_channel, flip_vertically,
+                                       num_output_channels));
   return converter;
 }
 

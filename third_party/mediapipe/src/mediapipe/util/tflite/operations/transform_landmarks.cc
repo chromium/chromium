@@ -14,7 +14,7 @@
 
 #include "mediapipe/util/tflite/operations/transform_landmarks.h"
 
-#include "tensorflow/lite/delegates/gpu/common/mediapipe/transform_landmarks.h"
+#include "tensorflow/lite/delegates/gpu/common/mediapipe/transform_landmarks.h"  // from @litert
 #include "tensorflow/lite/delegates/gpu/common/types.h"
 #include "tensorflow/lite/kernels/internal/common.h"
 #include "tensorflow/lite/kernels/internal/compatibility.h"

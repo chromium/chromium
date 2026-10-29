@@ -19,6 +19,7 @@ limitations under the License.
 #include <vector>
 
 #include "absl/status/status.h"
+#include "absl/status/status_macros.h"
 #include "mediapipe/calculators/tensor/vector_to_tensor_calculator.pb.h"
 #include "mediapipe/framework/api2/node.h"
 #include "mediapipe/framework/api2/packet.h"
@@ -28,7 +29,6 @@ limitations under the License.
 #include "mediapipe/framework/memory_manager.h"
 #include "mediapipe/framework/memory_manager_service.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "mediapipe/framework/port/status_macros.h"
 
 namespace mediapipe {
 namespace {
@@ -126,7 +126,7 @@ absl::StatusOr<Tensor> VectorToTensorCalculator::ConvertVectorToTensor(
 absl::Status VectorToTensorCalculator::Process(CalculatorContext* cc) {
   const VectorToTensorCalculatorOptions& options =
       cc->Options<VectorToTensorCalculatorOptions>();
-  MP_ASSIGN_OR_RETURN(
+  ABSL_ASSIGN_OR_RETURN(
       Tensor tensor, ConvertVectorToTensor(
                          kVectorIn(cc), options.output_dynamic_tensor_shape()));
   kOutTensor(cc).Send(std::move(tensor));

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "mediapipe/framework/port/status_macros.h"
 #include "mediapipe/framework/port/statusor.h"
 #include "mediapipe/gpu/gl_base.h"
 #include "mediapipe/gpu/gl_context.h"
@@ -56,9 +55,9 @@ std::unique_ptr<GlOverride> OverrideGlTexParametri(GLenum name, GLint value) {
   glGetTexParameteriv(GL_TEXTURE_2D, name, &old_value);
   if (value != old_value) {
     glTexParameteri(GL_TEXTURE_2D, name, value);
-    return {absl::make_unique<GlTexParameteriOverride>(name, old_value)};
+    return {std::make_unique<GlTexParameteriOverride>(name, old_value)};
   }
-  return {absl::make_unique<GlNoOpOverride>()};
+  return {std::make_unique<GlNoOpOverride>()};
 }
 
 template <int kNumValues>
@@ -71,7 +70,7 @@ std::unique_ptr<GlOverride> OverrideGlTexParameterfv(
     return {absl::make_unique<GlTexParameterfvOverride<kNumValues>>(
         name, std::move(old_values))};
   }
-  return {absl::make_unique<GlNoOpOverride>()};
+  return {std::make_unique<GlNoOpOverride>()};
 }
 
 template std::unique_ptr<GlOverride> OverrideGlTexParameterfv<4>(

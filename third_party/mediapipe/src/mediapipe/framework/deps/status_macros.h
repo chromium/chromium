@@ -27,6 +27,7 @@
 
 #include "absl/base/optimization.h"
 #include "absl/status/status.h"
+#include "absl/status/status_macros.h"
 #include "mediapipe/framework/deps/source_location.h"
 #include "mediapipe/framework/deps/status_builder.h"
 
@@ -140,8 +141,8 @@
 //
 #define MP_ASSIGN_OR_RETURN(...)                                  \
   MP_STATUS_MACROS_IMPL_GET_VARIADIC_(                            \
-      (__VA_ARGS__, MP_STATUS_MACROS_IMPL_MP_ASSIGN_OR_RETURN_3_, \
-       MP_STATUS_MACROS_IMPL_MP_ASSIGN_OR_RETURN_2_))             \
+  (__VA_ARGS__, MP_STATUS_MACROS_IMPL_MP_ASSIGN_OR_RETURN_3_,     \
+   MP_STATUS_MACROS_IMPL_MP_ASSIGN_OR_RETURN_2_))                 \
   (__VA_ARGS__)
 
 // =================================================================

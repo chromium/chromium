@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "absl/status/status.h"
+#include "absl/status/status_macros.h"
 #include "absl/status/statusor.h"
 #include "absl/time/time.h"
 #include "mediapipe/calculators/tensor/inference_calculator.h"
@@ -29,7 +30,6 @@
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/formats/tensor.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "mediapipe/framework/port/status_macros.h"
 #if defined(MEDIAPIPE_ANDROID)
 #include "tensorflow/lite/delegates/nnapi/nnapi_delegate.h"
 #endif  // ANDROID
@@ -61,21 +61,21 @@ absl::Status InferenceCalculatorCpuImpl::UpdateContract(
   RET_CHECK(!options.model_path().empty() ^ kSideInModel(cc).IsConnected())
       << "Either model as side packet or model path in options is required.";
 
-  MP_RETURN_IF_ERROR(TensorContractCheck(cc));
+  ABSL_RETURN_IF_ERROR(TensorContractCheck(cc));
 
   return absl::OkStatus();
 }
 
 absl::Status InferenceCalculatorCpuImpl::Open(CalculatorContext* cc) {
-  MP_ASSIGN_OR_RETURN(inference_runner_, CreateInferenceRunner(cc));
+  ABSL_ASSIGN_OR_RETURN(inference_runner_, CreateInferenceRunner(cc));
   return InferenceCalculatorNodeImpl::UpdateIoMapping(
       cc, inference_runner_->GetInputOutputTensorNames());
 }
 
 absl::StatusOr<std::vector<Tensor>> InferenceCalculatorCpuImpl::Process(
     CalculatorContext* cc, const TensorSpan& tensor_span) {
-  MP_ASSIGN_OR_RETURN(std::vector<Tensor> output_tensors,
-                      inference_runner_->Run(cc, tensor_span));
+  ABSL_ASSIGN_OR_RETURN(std::vector<Tensor> output_tensors,
+                        inference_runner_->Run(cc, tensor_span));
   return output_tensors;
 }
 
@@ -86,12 +86,12 @@ absl::Status InferenceCalculatorCpuImpl::Close(CalculatorContext* cc) {
 
 absl::StatusOr<std::unique_ptr<InferenceRunner>>
 InferenceCalculatorCpuImpl::CreateInferenceRunner(CalculatorContext* cc) {
-  MP_ASSIGN_OR_RETURN(auto model_packet, GetModelAsPacket(cc));
-  MP_ASSIGN_OR_RETURN(auto op_resolver_packet, GetOpResolverAsPacket(cc));
+  ABSL_ASSIGN_OR_RETURN(auto model_packet, GetModelAsPacket(cc));
+  ABSL_ASSIGN_OR_RETURN(auto op_resolver_packet, GetOpResolverAsPacket(cc));
   const auto& options = cc->Options<mediapipe::InferenceCalculatorOptions>();
   const int interpreter_num_threads =
       cc->Options<mediapipe::InferenceCalculatorOptions>().cpu_num_thread();
-  MP_ASSIGN_OR_RETURN(TfLiteDelegatePtr delegate, MaybeCreateDelegate(cc));
+  ABSL_ASSIGN_OR_RETURN(TfLiteDelegatePtr delegate, MaybeCreateDelegate(cc));
   return CreateInferenceInterpreterDelegateRunner(
       std::move(model_packet), std::move(op_resolver_packet),
       std::move(delegate), interpreter_num_threads,

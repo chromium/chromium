@@ -14,7 +14,9 @@
 
 #include "mediapipe/gpu/gpu_shared_data_internal.h"
 
+#include <cstdint>
 #include <functional>
+#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -23,8 +25,11 @@
 #include "absl/log/absl_check.h"
 #include "absl/log/absl_log.h"
 #include "absl/status/status.h"
+#include "absl/status/status_macros.h"
 #include "absl/status/statusor.h"
 #include "absl/strings/str_cat.h"
+#include "absl/synchronization/mutex.h"
+#include "absl/types/span.h"
 #include "mediapipe/framework/deps/no_destructor.h"
 #include "mediapipe/framework/executor.h"
 #include "mediapipe/framework/graph_service.h"
@@ -33,12 +38,16 @@
 #include "mediapipe/framework/port/status_macros.h"
 #include "mediapipe/gpu/gl_context.h"
 #include "mediapipe/gpu/gl_context_options.pb.h"
-#include "mediapipe/gpu/graph_support.h"
+#include "mediapipe/gpu/gpu_buffer_format.h"
 #include "mediapipe/gpu/multi_pool.h"
 
 #if MEDIAPIPE_METAL_ENABLED
 #include "mediapipe/gpu/metal_shared_resources.h"
 #endif  // MEDIAPIPE_METAL_ENABLED
+
+#if MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
+#include "mediapipe/gpu/gpu_buffer_storage_cv_pixel_buffer.h"
+#endif  // MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
 
 namespace mediapipe {
 
@@ -100,9 +109,20 @@ GpuResources::StatusOrGpuResources GpuResources::Create() {
 GpuResources::StatusOrGpuResources GpuResources::Create(
     PlatformGlContext external_context,
     const MultiPoolOptions* gpu_buffer_pool_options) {
-  MP_ASSIGN_OR_RETURN(
+  ABSL_ASSIGN_OR_RETURN(
       std::shared_ptr<GlContext> context,
       GlContext::Create(external_context, kGlContextUseDedicatedThread));
+  std::shared_ptr<GpuResources> gpu_resources(
+      new GpuResources(std::move(context), gpu_buffer_pool_options));
+  return gpu_resources;
+}
+
+GpuResources::StatusOrGpuResources GpuResources::CreateForDeviceUuid(
+    absl::Span<const uint8_t> device_uuid,
+    const MultiPoolOptions* gpu_buffer_pool_options) {
+  ABSL_ASSIGN_OR_RETURN(std::shared_ptr<GlContext> context,
+                        GlContext::CreateForDeviceUuid(
+                            device_uuid, kGlContextUseDedicatedThread));
   std::shared_ptr<GpuResources> gpu_resources(
       new GpuResources(std::move(context), gpu_buffer_pool_options));
   return gpu_resources;
@@ -111,13 +131,18 @@ GpuResources::StatusOrGpuResources GpuResources::Create(
 GpuResources::StatusOrGpuResources GpuResources::Create(
     const GpuResources& gpu_resources,
     const MultiPoolOptions* gpu_buffer_pool_options) {
-  return Create(gpu_resources.gl_context()->native_context(),
-                gpu_buffer_pool_options);
+  ABSL_ASSIGN_OR_RETURN(std::shared_ptr<GlContext> context,
+                        GlContext::Create(*gpu_resources.gl_context(),
+                                          kGlContextUseDedicatedThread));
+  std::shared_ptr<GpuResources> new_gpu_resources(
+      new GpuResources(std::move(context), gpu_buffer_pool_options));
+  return new_gpu_resources;
 }
 
 GpuResources::GpuResources(std::shared_ptr<GlContext> gl_context,
                            const MultiPoolOptions* gpu_buffer_pool_options)
-    : gl_key_context_(new GlContextMapType(),
+    : shared_gl_context_(std::move(gl_context)),
+      gl_key_context_(new GlContextMapType(),
                       [](auto* map) {
                         // This flushes all pending jobs in all GL contexts,
                         // ensuring that all GL contexts not referenced
@@ -135,6 +160,8 @@ GpuResources::GpuResources(std::shared_ptr<GlContext> gl_context,
                       }),
 #if MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
       texture_caches_(std::make_shared<CvTextureCacheManager>()),
+#endif  // MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
+#if MEDIAPIPE_GPU_BUFFER_POOL_USE_CV_PIXEL_BUFFER
       gpu_buffer_pool_(
           [tc = texture_caches_](const internal::GpuBufferSpec& spec,
                                  const MultiPoolOptions& options) {
@@ -142,19 +169,19 @@ GpuResources::GpuResources(std::shared_ptr<GlContext> gl_context,
           },
           gpu_buffer_pool_options ? *gpu_buffer_pool_options
                                   : kDefaultMultiPoolOptions)
-#else   // MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
-          gpu_buffer_pool_(gpu_buffer_pool_options ? *gpu_buffer_pool_options
-                                            : kDefaultMultiPoolOptions)
-#endif  // MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
+#else   // MEDIAPIPE_GPU_BUFFER_POOL_USE_CV_PIXEL_BUFFER
+      gpu_buffer_pool_(gpu_buffer_pool_options ? *gpu_buffer_pool_options
+                                               : kDefaultMultiPoolOptions)
+#endif  // MEDIAPIPE_GPU_BUFFER_POOL_USE_CV_PIXEL_BUFFER
 {
-  gl_key_context_->insert({SharedContextKey(), gl_context});
+  gl_key_context_->insert({SharedContextKey(), shared_gl_context_});
   const std::string executor_name =
       GetExecutorNameFromContextKey(SharedContextKey());
   named_executors_[executor_name] =
-      std::make_shared<GlContextExecutor>(gl_context.get());
+      std::make_shared<GlContextExecutor>(shared_gl_context_.get());
 #if __APPLE__
 #if MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
-  texture_caches_->RegisterTextureCache(gl_context->cv_texture_cache());
+  texture_caches_->RegisterTextureCache(shared_gl_context_->cv_texture_cache());
 #endif  // MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
 #if MEDIAPIPE_METAL_ENABLED
   metal_shared_ = std::make_unique<MetalSharedResources>();
@@ -166,9 +193,16 @@ absl::StatusOr<std::shared_ptr<Executor>> GpuResources::GetDefaultGpuExecutor()
     const {
   const std::string executor_name =
       GetExecutorNameFromContextKey(SharedContextKey());
+  absl::MutexLock lock(mutex_);
   const auto it = named_executors_.find(executor_name);
   RET_CHECK(it != named_executors_.end()) << "Can't find default gpu executor.";
   return it->second;
+}
+
+std::map<std::string, std::shared_ptr<Executor>> GpuResources::GetGpuExecutors()
+    const {
+  absl::MutexLock lock(mutex_);
+  return named_executors_;
 }
 
 GpuResources::~GpuResources() {
@@ -225,20 +259,24 @@ absl::Status GpuResources::PrepareGpuNode(CalculatorNode* node) {
   // On Emscripten we currently do not support multiple contexts.
   context_key = SharedContextKey();
 #endif  // !__EMSCRIPTEN__
-  node_key_[node_id] = context_key;
+  std::shared_ptr<GlContext> context;
 
-  MP_ASSIGN_OR_RETURN(std::shared_ptr<GlContext> context,
-                      GetOrCreateGlContext(context_key));
+  {
+    absl::MutexLock lock(mutex_);
+    node_key_[node_id] = context_key;
+    ABSL_ASSIGN_OR_RETURN(context, GetOrCreateGlContext(context_key));
 
-  if (kGlContextUseDedicatedThread) {
-    const std::string executor_name =
-        GetExecutorNameFromContextKey(context_key);
-    node->SetExecutor(executor_name);
-    if (!ContainsKey(named_executors_, executor_name)) {
-      named_executors_.emplace(
-          executor_name, std::make_shared<GlContextExecutor>(context.get()));
+    if (kGlContextUseDedicatedThread) {
+      const std::string executor_name =
+          GetExecutorNameFromContextKey(context_key);
+      node->SetExecutor(executor_name);
+      if (!ContainsKey(named_executors_, executor_name)) {
+        named_executors_.emplace(
+            executor_name, std::make_shared<GlContextExecutor>(context.get()));
+      }
     }
   }
+
   context->SetProfilingContext(
       node->GetCalculatorState().GetSharedProfilingContext());
 
@@ -247,27 +285,25 @@ absl::Status GpuResources::PrepareGpuNode(CalculatorNode* node) {
 
 // TODO: expose and use an actual ID instead of using the
 // canonicalized name.
-const std::shared_ptr<GlContext>& GpuResources::gl_context(
+std::shared_ptr<GlContext> GpuResources::gl_context(
     CalculatorContext* cc) const {
-  if (cc) {
-    const auto node_key_it = node_key_.find(cc->NodeName());
-    const auto it = gl_key_context_->find(node_key_it->second);
-    if (it != gl_key_context_->end()) {
-      return it->second;
-    }
-  }
+  if (cc == nullptr) return shared_gl_context_;
 
-  return gl_key_context_->at(SharedContextKey());
+  absl::MutexLock lock(mutex_);
+  const auto node_key_it = node_key_.find(cc->NodeName());
+  if (node_key_it == node_key_.end()) return shared_gl_context_;
+  const auto it = gl_key_context_->find(node_key_it->second);
+  if (it == gl_key_context_->end()) return shared_gl_context_;
+  return it->second;
 }
 
 GlContext::StatusOrGlContext GpuResources::GetOrCreateGlContext(
     const std::string& key) {
   auto it = gl_key_context_->find(key);
   if (it == gl_key_context_->end()) {
-    MP_ASSIGN_OR_RETURN(
+    ABSL_ASSIGN_OR_RETURN(
         std::shared_ptr<GlContext> new_context,
-        GlContext::Create(*gl_key_context_->at(SharedContextKey()),
-                          kGlContextUseDedicatedThread));
+        GlContext::Create(*shared_gl_context_, kGlContextUseDedicatedThread));
     it = gl_key_context_->emplace(key, new_context).first;
 #if MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
     texture_caches_->RegisterTextureCache(it->second->cv_texture_cache());
@@ -278,7 +314,7 @@ GlContext::StatusOrGlContext GpuResources::GetOrCreateGlContext(
 
 GpuSharedData::GpuSharedData() : GpuSharedData(kPlatformGlContextNone) {}
 
-#if !MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
+#if !MEDIAPIPE_GPU_BUFFER_POOL_USE_CV_PIXEL_BUFFER
 static std::shared_ptr<GlTextureBuffer> GetGlTextureBufferFromPool(
     int width, int height, GpuBufferFormat format) {
   std::shared_ptr<GlTextureBuffer> texture_buffer;
@@ -287,8 +323,9 @@ static std::shared_ptr<GlTextureBuffer> GetGlTextureBufferFromPool(
   if (cc && cc->Service(kGpuService).IsAvailable()) {
     GpuBufferMultiPool* pool =
         &cc->Service(kGpuService).GetObject().gpu_buffer_pool();
-    // Note that the "gpu_buffer_pool" serves GlTextureBuffers on non-Apple
-    // platforms. TODO: refactor into storage pools.
+    // Note that the "gpu_buffer_pool" serves GlTextureBuffers wherever
+    // MEDIAPIPE_GPU_BUFFER_POOL_USE_CV_PIXEL_BUFFER is 0 (non-Apple platforms
+    // and macOS). TODO: refactor into storage pools.
     auto texture_buffer_from_pool = pool->GetBuffer(width, height, format);
     ABSL_CHECK_OK(texture_buffer_from_pool);
     texture_buffer =
@@ -300,12 +337,19 @@ static std::shared_ptr<GlTextureBuffer> GetGlTextureBufferFromPool(
 }
 
 static auto kGlTextureBufferPoolRegistration = [] {
+#if MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
+  // On macOS GpuBufferStorageCvPixelBuffer is compiled in and also registers a
+  // factory for GlTextureView. The registry is last-wins, so register it first
+  // to make the pool-backed GlTextureBuffer factory below win deterministically
+  // rather than by static initialization order across translation units.
+  GpuBufferStorageCvPixelBuffer::RegisterOnce();
+#endif  // MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
   // Ensure that the GlTextureBuffer's own factory is already registered, so we
   // can override it.
   GlTextureBuffer::RegisterOnce();
   return internal::GpuBufferStorageRegistry::Get()
       .RegisterFactory<GlTextureBuffer>(GetGlTextureBufferFromPool);
 }();
-#endif  // !MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
+#endif  // !MEDIAPIPE_GPU_BUFFER_POOL_USE_CV_PIXEL_BUFFER
 
 }  // namespace mediapipe

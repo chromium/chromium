@@ -22,12 +22,12 @@ limitations under the License.
 
 #include "absl/algorithm/container.h"
 #include "absl/status/status.h"
+#include "absl/status/status_macros.h"
 #include "absl/status/statusor.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "absl/types/optional.h"
 #include "flatbuffers/flatbuffers.h"
-#include "mediapipe/framework/port/status_macros.h"
 #include "mediapipe/tasks/cc/common.h"
 #include "mediapipe/tasks/cc/metadata/metadata_extractor.h"
 #include "tensorflow/lite/schema/schema_generated.h"
@@ -107,8 +107,8 @@ absl::StatusOr<AudioTensorSpecs> BuildInputAudioTensorSpecs(
         MediaPipeTasksStatus::kMetadataNotFoundError);
   }
 
-  MP_ASSIGN_OR_RETURN(const AudioProperties* props,
-                      GetAudioPropertiesIfAny(*audio_tensor_metadata));
+  ABSL_ASSIGN_OR_RETURN(const AudioProperties* props,
+                        GetAudioPropertiesIfAny(*audio_tensor_metadata));
   // Input-related specifications.
   int tensor_shape_size = audio_tensor.shape()->size();
   if (tensor_shape_size > 2) {

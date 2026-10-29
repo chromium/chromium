@@ -2,7 +2,7 @@
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
-You may not obtain a copy of the License at
+You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
@@ -39,7 +39,7 @@ typedef struct MpAudioClassifierInternal* MpAudioClassifierPtr;
 // The C representation of a list of audio classification results.
 // The caller must call `MpAudioClassifierCloseResult` to free the memory.
 typedef struct {
-  struct ClassificationResult* results;
+  struct MpClassificationResult* results;
   int results_count;
 } MpAudioClassifierResult;
 
@@ -47,11 +47,11 @@ typedef struct {
 struct MpAudioClassifierOptions {
   // Base options for configuring MediaPipe Tasks, such as specifying the model
   // file with metadata, accelerator options, op resolver, etc.
-  struct BaseOptions base_options;
+  struct MpBaseOptions base_options;
 
   // Options for configuring the classifier behavior, such as score threshold,
   // number of results, etc.
-  struct ClassifierOptions classifier_options;
+  struct MpClassifierOptions classifier_options;
 
   // The running mode of the audio classifier. Default to the audio clips mode.
   // Audio classifier has two running modes:

@@ -21,7 +21,6 @@
 #include <string>
 
 #include "Eigen/Core"
-#include "absl/base/internal/endian.h"
 #include "absl/log/absl_check.h"
 #include "absl/log/absl_log.h"
 #include "absl/strings/numbers.h"
@@ -34,6 +33,7 @@
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/tool/status_util.h"
+#include "mediapipe/util/endian.h"
 
 extern "C" {
 #include "libavcodec/avcodec.h"
@@ -156,6 +156,27 @@ std::string AvErrorToString(int error) {
   return absl::StrCat("Unknown AVERROR number ", error);
 }
 
+// Returns the number of channels for a given FFmpeg struct. FFmpeg 6.1 uses
+// the channels field, while 8.1 uses ch_layout.nb_channels.
+template <typename AvStruct>
+int AvStructChannels(const AvStruct& s) {
+#if LIBAVUTIL_VERSION_INT < AV_VERSION_INT(60, 26, 100)
+  return s.channels;
+#else
+  return s.ch_layout.nb_channels;
+#endif
+}
+
+// Return the frame numbers. Only supported in ffmpeg 6.X and below. The field
+// was removed in ffmpeg 7.X
+int GetFrameNumber(const AVCodecContext& av_ctx) {
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(61, 0, 0)
+  return 0;
+#else
+  return av_ctx.frame_number;
+#endif
+}
+
 // Send a packet to the decoder.
 absl::Status SendPacket(const AVPacket& packet, AVCodecContext* avcodec_ctx) {
   const int error = avcodec_send_packet(avcodec_ctx, &packet);
@@ -195,7 +216,7 @@ absl::Status LogStatus(const absl::Status& status,
           << " media_type:"
           << (avcodec_ctx.codec_type == AVMEDIA_TYPE_VIDEO ? "video" : "audio")
           << " codec_id:" << avcodec_ctx.codec_id
-          << " frame_number:" << avcodec_ctx.frame_number
+          << " frame_number:" << GetFrameNumber(avcodec_ctx)
           << " pts:" << TimestampToString(packet.pts)
           << " dts:" << TimestampToString(packet.dts) << " size:" << packet.size
           << (packet.flags & AV_PKT_FLAG_KEY ? " Key Frame." : "");
@@ -251,7 +272,7 @@ absl::Status BasePacketProcessor::Flush() {
     // ProcessPacket increments num_frames_processed_ if it is able to
     // decode a frame.  Not being able to decode a frame while being
     // flushed signals that the codec is completely done.
-    MP_RETURN_IF_ERROR(ProcessPacket(av_packet.get()));
+    ABSL_RETURN_IF_ERROR(ProcessPacket(av_packet.get()));
   } while (last_num_frames_processed != num_frames_processed_);
 
   flushed_ = true;
@@ -260,10 +281,14 @@ absl::Status BasePacketProcessor::Flush() {
 
 void BasePacketProcessor::Close() {
   if (avcodec_ctx_) {
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(61, 0, 0)
+    avcodec_free_context(&avcodec_ctx_);
+#else
     if (avcodec_ctx_->codec) {
       avcodec_close(avcodec_ctx_);
       av_free(avcodec_ctx_);
     }
+#endif
     avcodec_ctx_ = nullptr;
   }
   if (avcodec_opts_) {
@@ -276,17 +301,18 @@ void BasePacketProcessor::Close() {
 
 absl::Status BasePacketProcessor::Decode(const AVPacket& packet,
                                          bool ignore_decode_failures) {
-  MP_RETURN_IF_ERROR(LogStatus(SendPacket(packet, avcodec_ctx_), *avcodec_ctx_,
-                               packet, ignore_decode_failures));
+  ABSL_RETURN_IF_ERROR(LogStatus(SendPacket(packet, avcodec_ctx_),
+                                 *avcodec_ctx_, packet,
+                                 ignore_decode_failures));
   while (true) {
     bool received;
-    MP_RETURN_IF_ERROR(
+    ABSL_RETURN_IF_ERROR(
         LogStatus(ReceiveFrame(avcodec_ctx_, decoded_frame_, &received),
                   *avcodec_ctx_, packet, ignore_decode_failures));
     if (received) {
       // Successfully decoded a frame (i.e., received it from the decoder). Now
       // further process it.
-      MP_RETURN_IF_ERROR(ProcessDecodedFrame(packet));
+      ABSL_RETURN_IF_ERROR(ProcessDecodedFrame(packet));
     } else {
       break;
     }
@@ -325,20 +351,22 @@ namespace {
 // Converts a PCM_S16LE-encoded input sample to float between -1 and 1.
 inline float PcmEncodedSampleToFloat(const char* data) {
   static const float kMultiplier = 1.f / (1 << 15);
-  return static_cast<int16_t>(absl::little_endian::Load16(data)) * kMultiplier;
+  return static_cast<int16_t>(mediapipe::little_endian::Load16(data)) *
+         kMultiplier;
 }
 
 // Converts a PCM_S32LE-encoded input sample to float between -1 and 1.
 inline float PcmEncodedSampleInt32ToFloat(const char* data) {
   static constexpr float kMultiplier = 1.f / (1u << 31);
-  return static_cast<int32_t>(absl::little_endian::Load32(data)) * kMultiplier;
+  return static_cast<int32_t>(mediapipe::little_endian::Load32(data)) *
+         kMultiplier;
 }
 
 }  // namespace
 
 AudioPacketProcessor::AudioPacketProcessor(const AudioStreamOptions& options)
     : sample_time_base_{0, 0}, options_(options) {
-  ABSL_DCHECK(absl::little_endian::IsLittleEndian());
+  ABSL_DCHECK(mediapipe::IsLittleEndian());
 }
 
 absl::Status AudioPacketProcessor::Open(int id, AVStream* stream) {
@@ -358,9 +386,9 @@ absl::Status AudioPacketProcessor::Open(int id, AVStream* stream) {
   source_frame_rate_ = stream->r_frame_rate;
   last_frame_time_regression_detected_ = false;
 
-  MP_RETURN_IF_ERROR(ValidateSampleFormat());
+  ABSL_RETURN_IF_ERROR(ValidateSampleFormat());
   bytes_per_sample_ = av_get_bytes_per_sample(avcodec_ctx_->sample_fmt);
-  num_channels_ = avcodec_ctx_->channels;
+  num_channels_ = AvStructChannels(*avcodec_ctx_);
   sample_rate_ = avcodec_ctx_->sample_rate;
 
   if (num_channels_ <= 0) {
@@ -427,11 +455,11 @@ absl::Status AudioPacketProcessor::ProcessPacket(AVPacket* packet) {
 }
 
 absl::Status AudioPacketProcessor::ProcessDecodedFrame(const AVPacket& packet) {
-  RET_CHECK_EQ(decoded_frame_->channels, num_channels_);
+  RET_CHECK_EQ(AvStructChannels(*decoded_frame_), num_channels_);
   int buf_size_bytes = av_samples_get_buffer_size(nullptr, num_channels_,
                                                   decoded_frame_->nb_samples,
                                                   avcodec_ctx_->sample_fmt, 1);
-  VLOG(3) << "Audio packet " << avcodec_ctx_->frame_number
+  VLOG(3) << "Audio packet " << GetFrameNumber(*avcodec_ctx_)
           << " pts: " << TimestampToString(packet.pts)
           << " frame.pts:" << TimestampToString(decoded_frame_->pts)
           << " pkt_dts:" << TimestampToString(decoded_frame_->pkt_dts)
@@ -469,7 +497,7 @@ absl::Status AudioPacketProcessor::ProcessDecodedFrame(const AVPacket& packet) {
     }
   }
 
-  MP_RETURN_IF_ERROR(AddAudioDataToBuffer(
+  ABSL_RETURN_IF_ERROR(AddAudioDataToBuffer(
       Timestamp(av_rescale_q(expected_sample_number_, sample_time_base_,
                              output_time_base_)),
       data_ptr, buf_size_bytes));
@@ -493,7 +521,7 @@ absl::Status AudioPacketProcessor::AddAudioDataToBuffer(
       buf_size_bytes / bytes_per_sample_ / num_channels_;
   VLOG(3) << "Adding " << num_samples << " audio samples in " << num_channels_
           << " channels to output.";
-  auto current_frame = absl::make_unique<Matrix>(num_channels_, num_samples);
+  auto current_frame = std::make_unique<Matrix>(num_channels_, num_samples);
 
   const char* sample_ptr = nullptr;
   switch (avcodec_ctx_->sample_fmt) {
@@ -525,7 +553,7 @@ absl::Status AudioPacketProcessor::AddAudioDataToBuffer(
            ++sample_index) {
         for (int channel = 0; channel < num_channels_; ++channel) {
           (*current_frame)(channel, sample_index) =
-              Uint32ToFloat(absl::little_endian::Load32(sample_ptr));
+              Uint32ToFloat(mediapipe::little_endian::Load32(sample_ptr));
           sample_ptr += bytes_per_sample_;
         }
       }
@@ -547,7 +575,7 @@ absl::Status AudioPacketProcessor::AddAudioDataToBuffer(
         for (int64_t sample_index = 0; sample_index < num_samples;
              ++sample_index) {
           (*current_frame)(channel, sample_index) =
-              Uint32ToFloat(absl::little_endian::Load32(sample_ptr));
+              Uint32ToFloat(mediapipe::little_endian::Load32(sample_ptr));
           sample_ptr += bytes_per_sample_;
         }
       }
@@ -651,7 +679,7 @@ absl::Status AudioDecoder::Initialize(
             stream_index_to_audio_options_index, current_audio_index);
         if (options_index_ptr) {
           std::unique_ptr<AudioPacketProcessor> processor =
-              absl::make_unique<AudioPacketProcessor>(
+              std::make_unique<AudioPacketProcessor>(
                   options.audio_stream(*options_index_ptr));
           if (!ContainsKey(audio_processor_, stream_id)) {
             ABSL_LOG(INFO) << "Created audio processor " << processor.get()
@@ -662,7 +690,7 @@ absl::Status AudioDecoder::Initialize(
                             << audio_processor_[stream_id].get();
           }
 
-          MP_RETURN_IF_ERROR(processor->Open(stream_id, stream));
+          ABSL_RETURN_IF_ERROR(processor->Open(stream_id, stream));
           audio_processor_.emplace(stream_id, std::move(processor));
           ABSL_CHECK(InsertIfNotPresent(
               &stream_index_to_stream_id_,
@@ -741,10 +769,10 @@ absl::Status AudioDecoder::GetData(int* options_index, Packet* data) {
       }
     }
     if (flushed_) {
-      MP_RETURN_IF_ERROR(Close());
+      ABSL_RETURN_IF_ERROR(Close());
       return tool::StatusStop();
     }
-    MP_RETURN_IF_ERROR(ProcessPacket());
+    ABSL_RETURN_IF_ERROR(ProcessPacket());
   }
   return absl::OkStatus();
 }
@@ -770,7 +798,7 @@ absl::Status AudioDecoder::FillAudioHeader(
       FindOrDie(stream_index_to_stream_id_, stream_option.stream_index()));
 
   RET_CHECK(processor_ptr_ && *processor_ptr_) << "audio stream is not open.";
-  MP_RETURN_IF_ERROR((*processor_ptr_)->FillHeader(header));
+  ABSL_RETURN_IF_ERROR((*processor_ptr_)->FillHeader(header));
   return absl::OkStatus();
 }
 
@@ -788,7 +816,7 @@ absl::Status AudioDecoder::ProcessPacket() {
     if (audio_iterator != audio_processor_.end()) {
       // This stream_id is belongs to an audio stream we care about.
       if (audio_iterator->second) {
-        MP_RETURN_IF_ERROR(
+        ABSL_RETURN_IF_ERROR(
             audio_iterator->second->ProcessPacket(av_packet.get()));
       } else {
         VLOG(3) << "processor for stream " << stream_id << " is nullptr.";

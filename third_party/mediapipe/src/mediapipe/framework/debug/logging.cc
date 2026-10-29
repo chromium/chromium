@@ -102,9 +102,40 @@ GetMatElementAccessor(const cv::Mat& mat) {
       return [](const uint8_t* mat_ptr, int idx) -> double {
         return reinterpret_cast<const double*>(mat_ptr)[idx];
       };
+    case CV_16F:
+      return [](const uint8_t* mat_ptr, int idx) -> double {
+#if CV_VERSION_MAJOR >= 5
+        return reinterpret_cast<const cv::hfloat*>(mat_ptr)[idx];
+#else
+        return reinterpret_cast<const cv::float16_t*>(mat_ptr)[idx];
+#endif
+      };
     default:
       return absl::UnimplementedError(
           absl::StrCat("Unhandled mat depth ", mat.depth()));
+  }
+}
+
+const char* MatDepthToString(int depth) {
+  switch (depth) {
+    case CV_8U:
+      return "8U";
+    case CV_8S:
+      return "8S";
+    case CV_16U:
+      return "16U";
+    case CV_16S:
+      return "16S";
+    case CV_32S:
+      return "32S";
+    case CV_32F:
+      return "32F";
+    case CV_64F:
+      return "64F";
+    case CV_16F:
+      return "16F";
+    default:
+      return "UnknownDepth";
   }
 }
 
@@ -343,7 +374,8 @@ void LogMat(const cv::Mat& mat, absl::string_view name) {
   int num_channels = mat.channels();
 
   ABSL_LOG(INFO) << name << "[" << width << " " << height << " " << num_channels
-                 << "] =";
+                 << " " << MatDepthToString(mat.depth()) << "C"
+                 << mat.channels() << "] =";
 
   if (width == 0 || height == 0 || num_channels == 0) {
     ABSL_LOG(INFO) << "  <empty>";

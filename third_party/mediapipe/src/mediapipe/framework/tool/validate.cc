@@ -16,10 +16,10 @@
 
 #include <string>
 
+#include "absl/status/status_macros.h"
 #include "mediapipe/framework/calculator.pb.h"
 #include "mediapipe/framework/port/canonical_errors.h"
 #include "mediapipe/framework/port/core_proto_inc.h"
-#include "mediapipe/framework/port/status_macros.h"
 #include "mediapipe/framework/tool/validate_name.h"
 
 namespace mediapipe {
@@ -28,7 +28,8 @@ namespace tool {
 
 absl::Status ValidateInput(const InputCollection& input_collection) {
   if (!input_collection.name().empty()) {
-    MP_RETURN_IF_ERROR(tool::ValidateName(input_collection.name())).SetPrepend()
+    ABSL_RETURN_IF_ERROR(tool::ValidateName(input_collection.name()))
+            .SetPrepend()
         << "InputCollection " << input_collection.name()
         << " has improperly specified name: ";
   }
