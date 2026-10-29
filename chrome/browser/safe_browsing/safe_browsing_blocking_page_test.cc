@@ -3889,15 +3889,15 @@ class SafeBrowsingBlockingPageEnterpriseIsolatedModeTestBase
     if (is_isolated_mode_enabled) {
       EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
           incognito_browser->GetTabStripModel()->GetActiveWebContents()));
-      histogram_tester.ExpectUniqueSample(
-          "SafeBrowsing.RT.EnterpriseRealTimePolicyEnabled.HasDmToken",
-          /*sample=*/true,
-          /*expected_bucket_count=*/1);
+      histogram_tester.ExpectTotalCount(
+          "SafeBrowsing.BrowserThrottle.TotalDelay2.EnterpriseFullUrlLookup",
+          /*expected_count=*/1);
     } else {
       EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(
           incognito_browser->GetTabStripModel()->GetActiveWebContents()));
       histogram_tester.ExpectTotalCount(
-          "SafeBrowsing.RT.EnterpriseRealTimePolicyEnabled.HasDmToken", 0);
+          "SafeBrowsing.BrowserThrottle.TotalDelay2.EnterpriseFullUrlLookup",
+          /*expected_count=*/0);
     }
   }
 };
@@ -3949,10 +3949,8 @@ class SafeBrowsingBlockingPageEnterpriseIsolatedModeDisabledTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/576842164): Re-enable this test.
-IN_PROC_BROWSER_TEST_F(
-    SafeBrowsingBlockingPageEnterpriseIsolatedModeTest,
-    DISABLED_EnterpriseRealTimeUrlCheck_IsolatedModeProfile) {
+IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageEnterpriseIsolatedModeTest,
+                       EnterpriseRealTimeUrlCheck_IsolatedModeProfile) {
   TestEnterpriseRealTimeUrlCheck(/*is_isolated_mode_enabled=*/true);
 }
 
