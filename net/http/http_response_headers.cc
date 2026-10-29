@@ -141,7 +141,7 @@ void CheckDoesNotHaveEmbeddedNulls(std::string_view str) {
   CHECK(!HasEmbeddedNulls(str));
 }
 
-void RemoveLeadingSpaces(std::string_view* s) {
+ALWAYS_INLINE void RemoveLeadingSpaces(std::string_view* s) {
   s->remove_prefix(std::min(s->find_first_not_of(' '), s->size()));
 }
 
@@ -164,13 +164,13 @@ int ParseStatus(std::string_view status, std::string& append_to) {
     return HTTP_OK;
   }
 
+  const std::string_view code(status.begin(), first_non_digit);
   append_to.push_back(' ');
-  append_to.append(status.begin(), first_non_digit);
+  append_to.append(code);
   int response_code = -1;
   // For backwards compatibility, overlarge response codes are permitted.
   // base::StringToInt will clamp the value to INT_MAX.
-  base::StringToInt(std::string_view(status.begin(), first_non_digit),
-                    &response_code);
+  base::StringToInt(code, &response_code);
   CHECK_GE(response_code, 0);
 
   status.remove_prefix(first_non_digit - status.begin());
@@ -268,7 +268,6 @@ HttpResponseHeaders::HttpResponseHeaders(
   // avoiding the overhead of parsing is the point of this constructor.
 
   std::string formatted_status;
-  formatted_status.reserve(status.size() + 1);  // ParseStatus() may add a space
   response_code_ = ParseStatus(status, formatted_status);
 
   // First calculate how big the output will be so that we can allocate the
