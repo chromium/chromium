@@ -88,6 +88,7 @@ class CORE_EXPORT CSSNumericLiteralValue : public CSSPrimitiveValue {
                              double multiplier) const;
   void AccumulateLengthUnitTypes(LengthTypeFlags& types) const;
 
+  static String Serialize(double value, UnitType type);
   String CustomCSSText() const;
   bool Equals(const CSSNumericLiteralValue& other) const;
   uint32_t CustomHash() const;
