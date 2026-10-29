@@ -105,6 +105,11 @@ public class FlatTabListDataProvider extends TabListDataProvider {
                     public void didChangePinState(Tab tab) {
                         updatePinState(tab);
                     }
+
+                    @Override
+                    public void onTabsSelectionChanged() {
+                        updateMultiSelection();
+                    }
                 };
 
         TabGroupObserver tabGroupObserver =

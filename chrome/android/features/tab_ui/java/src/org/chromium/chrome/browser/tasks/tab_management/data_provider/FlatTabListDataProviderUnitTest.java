@@ -596,6 +596,35 @@ public class FlatTabListDataProviderUnitTest extends TabListDataProviderTestBase
         assertItems(item(TAB1_ID));
     }
 
+    @Test
+    public void testOnTabsSelectionChanged_UpdatesOnlyChangedTabsAndPreservesAcrossSelection() {
+        mSelectedTab = mTab1;
+        setUpProviderWithTabs(/* filter= */ null, mTab1, mTab2, mTab3);
+        assertItems(selected(TAB1_ID), item(TAB2_ID), item(TAB3_ID));
+
+        setMultiSelectedTabs(TAB2_ID, TAB3_ID);
+
+        verify(mObserver).onItemUpdated(multiSelected(TAB2_ID), PayloadType.MULTI_SELECTION);
+        verify(mObserver).onItemUpdated(multiSelected(TAB3_ID), PayloadType.MULTI_SELECTION);
+        verifyNoMoreInteractions(mObserver);
+        assertItems(selected(TAB1_ID), multiSelected(TAB2_ID), multiSelected(TAB3_ID));
+        clearInvocations(mObserver);
+
+        // Selecting mTab2 preserves its multi-selected state.
+        TabItem selectedAndMultiTab2 =
+                new TabItem(
+                        TAB2_ID,
+                        /* isSelected= */ true,
+                        /* isPinned= */ false,
+                        /* isMultiSelected= */ true);
+        selectTab(mTab2, TAB1_ID);
+
+        InOrder inOrder = inOrder(mObserver);
+        inOrder.verify(mObserver).onItemUpdated(item(TAB1_ID), PayloadType.SELECTION);
+        inOrder.verify(mObserver).onItemUpdated(selectedAndMultiTab2, PayloadType.SELECTION);
+        assertItems(item(TAB1_ID), selectedAndMultiTab2, multiSelected(TAB3_ID));
+    }
+
     // ============================================================================================
     // TabModelObserver: didChangePinState
     // ============================================================================================
