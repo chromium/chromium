@@ -32,6 +32,9 @@ class TestVoicePlate : public VoicePlate {
     CreateWidget();
   }
   ~TestVoicePlate() override = default;
+
+  // VoicePlate:
+  void UpdateAudioLevel(float audio_level) override {}
 };
 
 class VoicePlateTest : public ChromeViewsTestBase {

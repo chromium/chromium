@@ -27,6 +27,8 @@ class VoicePlate : public views::BubbleDialogDelegate {
 
   virtual void Show();
 
+  virtual void UpdateAudioLevel(float audio_level) = 0;
+
   // views::BubbleDialogDelegate:
   gfx::Rect GetBubbleBounds() override;
   void Init() override;

@@ -1,0 +1,44 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(toolkit_views)
+
+source_set("ttc") {
+  public = [ "ttc_voice_plate.h" ]
+  sources = [ "ttc_voice_plate.cc" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/views/voice",
+    "//ui/base",
+    "//ui/views",
+  ]
+
+  deps = [
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/strings",
+    "//components/vector_icons",
+    "//ui/color",
+    "//ui/gfx",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ttc_voice_plate_unittest.cc" ]
+  deps = [
+    ":ttc",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui/views/voice",
+    "//chrome/test:test_support",
+    "//testing/gtest",
+    "//ui/events",
+    "//ui/gfx",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}

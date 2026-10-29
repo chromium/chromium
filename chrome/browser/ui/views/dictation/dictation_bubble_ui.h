@@ -30,14 +30,12 @@ class DictationBubbleUi : public voice::VoicePlate {
 
   void Show() override;
   void SetState(UiState state);
-  void UpdateAudioLevel(float audio_level);
+  void UpdateAudioLevel(float audio_level) override;
   void SetReviewingPageStatusDurationForTesting(base::TimeDelta duration);
 
   // views::BubbleDialogDelegate:
   void Init() override;
   views::View* GetInitiallyFocusedView() override;
-
-  UiState state() const { return state_; }
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kViewElementIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseButtonElementIdForTesting);

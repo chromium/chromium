@@ -8,14 +8,15 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/views/dictation/dictation_bubble_ui.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "chrome/browser/ui/views/ttc/ttc_voice_plate.h"
 #include "ui/views/view.h"
 
 namespace ttc {
+
+using voice::WaveformMode;
 
 namespace {
 
@@ -46,9 +47,9 @@ VoicePlateController::VoicePlateController(
 
 VoicePlateController::~VoicePlateController() = default;
 
-void VoicePlateController::SetState(dictation::UiState state) {
+void VoicePlateController::SetMode(WaveformMode mode) {
   if (voice_plate_) {
-    voice_plate_->SetState(state);
+    voice_plate_->SetMode(mode);
   }
 }
 
@@ -82,20 +83,17 @@ void VoicePlateController::MoveToWindow(BrowserWindowInterface* browser) {
     return;
   }
 
-  dictation::UiState initial_state = dictation::UiState::kInitializing;
+  WaveformMode initial_mode = WaveformMode::kProcessing;
   if (voice_plate_) {
-    initial_state = voice_plate_->state();
+    initial_mode = voice_plate_->mode();
   }
 
   anchored_browser_ = browser;
 
   // Re-parenting the existing View turned out to be somewhat fraught, at least
   // on Linux, so we recreate the View on each window move.
-  voice_plate_ = std::make_unique<dictation::DictationBubbleUi>(
-      anchor_view, close_callback_,
-      /*toggle_active_stream_callback=*/base::DoNothing(),
-      /*show_reviewing_page_status=*/false);
-  voice_plate_->SetState(initial_state);
+  voice_plate_ = std::make_unique<TtcVoicePlate>(anchor_view, close_callback_);
+  voice_plate_->SetMode(initial_mode);
   voice_plate_->Show();
 }
 
