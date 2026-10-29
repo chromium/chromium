@@ -165,6 +165,17 @@ class ActorUiStateManager : public ActorUiStateManagerInterface,
   // Called whenever an actor task state changes.
   void OnActorTaskStateChange(TaskId task_id, ActorTask::State new_task_state);
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Applies the cursor chip display rules to `event`.
+  void UpdateCursorChip(const SyncUiEvent& event);
+
+  // Shows `text` on the task's last actuated tab and clears the chip on the
+  // task's other tabs.
+  // Known limit: a tab change alone does not move the chip. It moves on the
+  // next step text or state change.
+  void SetCursorChipForTask(TaskId task_id, const std::string& text);
+#endif
+
   // Notify profile scoped ui components about actor task stop.
   void NotifyActorTaskStopped(TaskId task_id);
 
@@ -193,6 +204,9 @@ class ActorUiStateManager : public ActorUiStateManagerInterface,
 
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<actor::ActorTabStripTrackerDesktop> tab_strip_tracker_;
+
+  // Latest step progress per task. Shown in the cursor chip while acting.
+  absl::flat_hash_map<TaskId, std::string> step_progress_;
 #endif
 
   base::RepeatingCallbackList<void(TaskId)>

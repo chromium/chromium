@@ -394,9 +394,12 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
             }
           },
           [](const TaskStepProgressUpdated&) {
-            // TODO(b/573229718): Show the text next to the magic cursor.
+            // Handled by UpdateCursorChip() on desktop.
           }},
       event);
+#if !BUILDFLAG(IS_ANDROID)
+  UpdateCursorChip(event);
+#endif
 }
 
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
@@ -589,5 +592,68 @@ void ActorUiStateManager::OnPendingTabDetached(
     ClearTabPendingActuation(tab->GetHandle());
   }
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void ActorUiStateManager::UpdateCursorChip(const SyncUiEvent& event) {
+  if (!base::FeatureList::IsEnabled(features::kGlicActorUiMagicCursorChip)) {
+    return;
+  }
+  std::visit(
+      absl::Overload{
+          [](const StartTask&) {},
+          [this](const TaskStateChanged& e) {
+            using enum ActorTask::State;
+            // Keep the text while waiting on the user so it shows again on
+            // kActing. Drop it on other states. The client sends the text
+            // for an act right before its PerformActions call.
+            // An interrupt with user control reaches the UI as
+            // kPausedByActor, so it drops the text like a pause.
+            // TODO(b/573229718): Drop the text when an act fails before
+            // kActing. Otherwise the next act without new text shows it.
+            if (e.state != kActing && e.state != kWaitingOnUser) {
+              step_progress_.erase(e.task_id);
+            }
+            auto it = step_progress_.find(e.task_id);
+            const bool show = e.state == kActing && it != step_progress_.end();
+            SetCursorChipForTask(e.task_id, show ? it->second : "");
+          },
+          [this](const StopTask& e) {
+            // ActorTask::Stop() removes every tab first, and
+            // StoppedActingOnTab clears each chip.
+            step_progress_.erase(e.task_id);
+          },
+          [](const StoppedActingOnTab& e) {
+            tabs::TabInterface* tab = e.tab_handle.Get();
+            if (!tab) {
+              return;
+            }
+            if (auto* tab_controller =
+                    ActorUiTabControllerInterface::From(tab)) {
+              tab_controller->SetCursorChipText("");
+            }
+          },
+          [this](const TaskStepProgressUpdated& e) {
+            step_progress_[e.task_id] = e.step_progress;
+            if (GetActorTaskState(e.task_id) == ActorTask::State::kActing) {
+              SetCursorChipForTask(e.task_id, e.step_progress);
+            }
+          }},
+      event);
+}
+
+void ActorUiStateManager::SetCursorChipForTask(TaskId task_id,
+                                               const std::string& text) {
+  ActorTask* task = actor_service_->GetTask(task_id);
+  if (!task) {
+    return;
+  }
+  const tabs::TabHandle target = task->GetLastActuatedTabHandle();
+  for (tabs::TabInterface* tab : GetTabs(task_id)) {
+    if (auto* tab_controller = ActorUiTabControllerInterface::From(tab)) {
+      tab_controller->SetCursorChipText(tab->GetHandle() == target ? text : "");
+    }
+  }
+}
+#endif
 
 }  // namespace actor::ui

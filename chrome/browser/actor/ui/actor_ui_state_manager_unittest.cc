@@ -9,6 +9,7 @@
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/actor/actor_surface_registry.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/test_support/mock_actor_ui_tab_controller.h"
 #include "chrome/browser/glic/public/features.h"
@@ -38,6 +39,8 @@ using ::tabs::TabInterface;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
+using ::testing::ReturnRef;
+using ::testing::SaveArg;
 using ::testing::ValuesIn;
 
 using enum ActorTask::StoppedReason;
@@ -147,10 +150,12 @@ class ActorUiStateManagerTest : public testing::Test {
     actor_ui_state_manager()->OnUiEvent(reflecting_task_event);
   }
 
-  void AddTabToTask(TaskId task_id) {
+  void AddTabToTask(TaskId task_id) { AddTabToTask(task_id, mock_tab()); }
+
+  void AddTabToTask(TaskId task_id, TabInterface& tab) {
     base::RunLoop loop;
     actor_keyed_service()->GetTask(task_id)->AddTab(
-        mock_tab().GetHandle(),
+        tab.GetHandle(),
         /*stop_task_on_detach=*/true,
         base::BindLambdaForTesting([&](ActionResultPtr result) {
           EXPECT_TRUE(IsOk(*result));
@@ -169,9 +174,20 @@ class ActorUiStateManagerTest : public testing::Test {
     actor_ui_state_manager()->OnUiEvent(stop_task_event);
   }
 
+  // Creates a task that sends UI events to ActorUiStateManager, as in
+  // production. Tasks from CreateTaskForTesting() send them to a mock.
+  TaskId CreateTaskWithUiEvents() {
+    return actor_keyed_service()->CreateTaskWithOptions(
+        TestTaskSourceInfo(), &policy_checker_, /*options=*/nullptr,
+        /*delegate=*/nullptr, actor_ui_state_manager());
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  // Outlives `profile_`, whose shutdown stops the tasks that use it.
+  MockPolicyChecker policy_checker_{
+      EnterprisePolicyChecker::UrlBlockReason::kNotBlocked};
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<ActorKeyedServiceFake> actor_keyed_service_fake_;
   ::ui::UnownedUserDataHost user_data_host_;
@@ -605,6 +621,219 @@ TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
   EXPECT_FALSE(actor_ui_state_manager()->ClearTabPendingActuation(
       mock_tab().GetHandle()));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+class ActorUiStateManagerCursorChipTest : public ActorUiStateManagerTest {
+ public:
+  void SetUp() override {
+    ActorUiStateManagerTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kGlicActorUiMagicCursorChip);
+    EXPECT_CALL(*mock_actor_ui_tab_controller(), SetCursorChipText)
+        .WillRepeatedly(SaveArg<0>(&chip_text_));
+
+    ON_CALL(other_tab_, GetProfile).WillByDefault(Return(profile()));
+    ON_CALL(other_tab_, GetUnownedUserDataHost())
+        .WillByDefault(ReturnRef(other_tab_user_data_host_));
+    actor_keyed_service()->GetSurfaceRegistry().OnTabCreated(other_tab_);
+    other_tab_controller_.emplace(other_tab_);
+    EXPECT_CALL(*other_tab_controller_, SetCursorChipText)
+        .WillRepeatedly(SaveArg<0>(&other_chip_text_));
+  }
+
+  // Last text sent to the cursor chip of `mock_tab()`.
+  const std::string& chip_text() const { return chip_text_; }
+
+  // A second tab, and the last text sent to its cursor chip.
+  MockTabInterface& other_tab() { return other_tab_; }
+  const std::string& other_chip_text() const { return other_chip_text_; }
+
+  // Sets the task state, then sends the UI event, in production order.
+  void SetTaskState(TaskId task_id, ActorTask::State state) {
+    actor_keyed_service()->GetTask(task_id)->SetState(state);
+    actor_ui_state_manager()->OnUiEvent(TaskStateChanged(task_id, state));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::string chip_text_;
+  ::ui::UnownedUserDataHost other_tab_user_data_host_;
+  MockTabInterface other_tab_;
+  std::optional<MockActorUiTabController> other_tab_controller_;
+  std::string other_chip_text_;
+};
+
+TEST_F(ActorUiStateManagerCursorChipTest,
+       StepProgressBeforeActing_ShowsOnActing) {
+  TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
+  AddTabToTask(task_id);
+
+  actor_ui_state_manager()->OnUiEvent(
+      TaskStepProgressUpdated(task_id, "Searching flights"));
+  EXPECT_EQ(chip_text(), "");
+
+  SetTaskState(task_id, ActorTask::State::kActing);
+  EXPECT_EQ(chip_text(), "Searching flights");
+}
+
+TEST_F(ActorUiStateManagerCursorChipTest,
+       StepProgressDuringActing_RefreshesImmediately) {
+  TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
+  AddTabToTask(task_id);
+  SetTaskState(task_id, ActorTask::State::kActing);
+
+  actor_ui_state_manager()->OnUiEvent(
+      TaskStepProgressUpdated(task_id, "Adding to cart"));
+  EXPECT_EQ(chip_text(), "Adding to cart");
+}
+
+TEST_F(ActorUiStateManagerCursorChipTest, Reflecting_ClearsChipAndDropsText) {
+  TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
+  AddTabToTask(task_id);
+  actor_ui_state_manager()->OnUiEvent(
+      TaskStepProgressUpdated(task_id, "Typing query"));
+  SetTaskState(task_id, ActorTask::State::kActing);
+  ASSERT_EQ(chip_text(), "Typing query");
+
+  SetTaskState(task_id, ActorTask::State::kReflecting);
+  EXPECT_EQ(chip_text(), "");
+
+  SetTaskState(task_id, ActorTask::State::kActing);
+  EXPECT_EQ(chip_text(), "");
+}
+
+TEST_F(ActorUiStateManagerCursorChipTest,
+       PauseAndResume_ClearsChipAndWaitsForNewLabel) {
+  TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
+  AddTabToTask(task_id);
+  actor_ui_state_manager()->OnUiEvent(
+      TaskStepProgressUpdated(task_id, "Selecting item"));
+  SetTaskState(task_id, ActorTask::State::kActing);
+  ASSERT_EQ(chip_text(), "Selecting item");
+
+  PauseActorTask(task_id, /*from_actor=*/true);
+  EXPECT_EQ(chip_text(), "");
+
+  ResumeActorTask(task_id);
+  SetTaskState(task_id, ActorTask::State::kActing);
+  EXPECT_EQ(chip_text(), "");
+}
+
+TEST_F(ActorUiStateManagerCursorChipTest,
+       WaitingOnUser_HidesChipAndReShowsOnActing) {
+  TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
+  AddTabToTask(task_id);
+  actor_ui_state_manager()->OnUiEvent(
+      TaskStepProgressUpdated(task_id, "Confirm payment"));
+  SetTaskState(task_id, ActorTask::State::kActing);
+  ASSERT_EQ(chip_text(), "Confirm payment");
+
+  SetTaskState(task_id, ActorTask::State::kWaitingOnUser);
+  EXPECT_EQ(chip_text(), "");
+
+  SetTaskState(task_id, ActorTask::State::kActing);
+  EXPECT_EQ(chip_text(), "Confirm payment");
+}
+
+TEST_F(ActorUiStateManagerCursorChipTest, StoppedActingOnTab_ClearsChip) {
+  TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
+  AddTabToTask(task_id);
+  actor_ui_state_manager()->OnUiEvent(
+      TaskStepProgressUpdated(task_id, "Navigating"));
+  SetTaskState(task_id, ActorTask::State::kActing);
+  ASSERT_EQ(chip_text(), "Navigating");
+
+  actor_ui_state_manager()->OnUiEvent(
+      StoppedActingOnTab(mock_tab().GetHandle()));
+  EXPECT_EQ(chip_text(), "");
+}
+
+TEST_F(ActorUiStateManagerCursorChipTest,
+       StepProgressOnNewTab_MovesChipAndClearsOldTab) {
+  TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
+  AddTabToTask(task_id);
+  SetTaskState(task_id, ActorTask::State::kActing);
+  actor_ui_state_manager()->OnUiEvent(
+      TaskStepProgressUpdated(task_id, "Searching flights"));
+  ASSERT_EQ(chip_text(), "Searching flights");
+
+  AddTabToTask(task_id, other_tab());
+  actor_ui_state_manager()->OnUiEvent(
+      TaskStepProgressUpdated(task_id, "Comparing prices"));
+  EXPECT_EQ(other_chip_text(), "Comparing prices");
+  EXPECT_EQ(chip_text(), "");
+}
+
+// Known limit: a tab change alone does not move the chip. It moves on the
+// next step text (see above) or state change.
+TEST_F(ActorUiStateManagerCursorChipTest,
+       TabChangeWhileActing_ChipMovesOnNextStateChange) {
+  TaskId task_id = CreateTaskWithUiEvents();
+  ActorTask* task = actor_keyed_service()->GetTask(task_id);
+  AddTabToTask(task_id);
+  task->SetStepProgress("Searching flights");
+  task->SetState(ActorTask::State::kActing);
+  ASSERT_EQ(chip_text(), "Searching flights");
+
+  AddTabToTask(task_id, other_tab());
+  EXPECT_EQ(chip_text(), "Searching flights");
+  EXPECT_EQ(other_chip_text(), "");
+
+  task->Interrupt(/*retain_user_control=*/false);
+  task->Uninterrupt(ActorTask::State::kActing);
+  EXPECT_EQ(chip_text(), "");
+  EXPECT_EQ(other_chip_text(), "Searching flights");
+}
+
+TEST_F(ActorUiStateManagerCursorChipTest, StopTask_ClearsChipOnEveryTab) {
+  TaskId task_id = CreateTaskWithUiEvents();
+  ActorTask* task = actor_keyed_service()->GetTask(task_id);
+  AddTabToTask(task_id, other_tab());
+  AddTabToTask(task_id);
+  task->SetStepProgress("Checking out");
+  task->SetState(ActorTask::State::kActing);
+  ASSERT_EQ(chip_text(), "Checking out");
+
+  // ActorTask::Stop() removes every tab, which sends StoppedActingOnTab,
+  // before it sends StopTask. A user stop ends in kCancelled.
+  actor_keyed_service()->StopTask(task_id, kStoppedByUser);
+  EXPECT_EQ(chip_text(), "");
+  EXPECT_EQ(other_chip_text(), "");
+}
+
+// The UI sees an interrupt with user control as kPausedByActor, so the chip
+// follows the pause rule. Compare WaitingOnUser_HidesChipAndReShowsOnActing.
+TEST_F(ActorUiStateManagerCursorChipTest,
+       InterruptWithUserControl_ClearsChipAndDropsText) {
+  TaskId task_id = CreateTaskWithUiEvents();
+  ActorTask* task = actor_keyed_service()->GetTask(task_id);
+  AddTabToTask(task_id);
+  task->SetStepProgress("Signing in");
+  task->SetState(ActorTask::State::kActing);
+  ASSERT_EQ(chip_text(), "Signing in");
+
+  task->Interrupt(/*retain_user_control=*/true);
+  EXPECT_EQ(chip_text(), "");
+
+  task->Uninterrupt(ActorTask::State::kActing);
+  EXPECT_EQ(chip_text(), "");
+}
+
+TEST_F(ActorUiStateManagerTest, CursorChip_FlagDisabled_DoesNotUpdateChip) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kGlicActorUiMagicCursorChip);
+  TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
+  AddTabToTask(task_id);
+
+  EXPECT_CALL(*mock_actor_ui_tab_controller(), SetCursorChipText).Times(0);
+  actor_ui_state_manager()->OnUiEvent(
+      TaskStepProgressUpdated(task_id, "Searching"));
+  actor_ui_state_manager()->OnUiEvent(
+      TaskStateChanged(task_id, ActorTask::State::kActing));
+  actor_ui_state_manager()->OnUiEvent(
+      StoppedActingOnTab(mock_tab().GetHandle()));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace actor::ui
