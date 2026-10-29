@@ -96,8 +96,8 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -469,9 +469,9 @@ tabs::TabInterface* GlicKeyedService::CreateTab(
         profile_, url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   }
 
-  params->disposition = open_in_background
-                            ? WindowOpenDisposition::kNewBackgroundTab
-                            : WindowOpenDisposition::kNewForegroundTab;
+  params->disposition =
+      open_in_background ? ui::mojom::WindowOpenDisposition::kNewBackgroundTab
+                         : ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   // Set navigation as renderer initiated to open links in their app/PWA (if
   // installed).
   params->is_renderer_initiated = true;

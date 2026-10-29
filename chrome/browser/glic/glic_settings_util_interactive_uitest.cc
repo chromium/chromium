@@ -20,7 +20,7 @@
 #include "components/user_education/common/user_education_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
@@ -102,8 +102,9 @@ class GlicSettingsUtilUiTest
 
   auto ReloadTab(ui::ElementIdentifier id) {
     return Steps(Do([this]() {
-                   chrome::Reload(browser(),
-                                  WindowOpenDisposition::kCurrentTab);
+                   chrome::Reload(
+                       browser(),
+                       ui::mojom::WindowOpenDisposition::kCurrentTab);
                  }),
                  WaitForWebContentsNavigation(id));
   }

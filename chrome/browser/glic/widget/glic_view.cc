@@ -28,6 +28,7 @@
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/color/color_variant.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -195,7 +196,7 @@ void GlicView::DraggableRegionsChanged(
 bool GlicView::HandleWindowCreation(
     content::RenderFrameHost* opener,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& features) {
   return MaybeHandleGlicWindowCreation(opener, target_url, disposition,
                                        features);

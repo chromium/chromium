@@ -41,8 +41,8 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"
@@ -303,7 +303,7 @@ void GlicPageHandler::OpenDisabledByAdminLinkAndClosePanel() {
   std::unique_ptr<NavigateParams> params = std::make_unique<NavigateParams>(
       Profile::FromBrowserContext(browser_context_), disabled_by_admin_link_url,
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params->disposition = WindowOpenDisposition::kNewForegroundTab;
+  params->disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   glic::NavigateAsync(std::move(params), base::DoNothing());
   host().ClosePanel();
   base::RecordAction(
@@ -328,7 +328,7 @@ void GlicPageHandler::OpenLinkInPopup(const GURL& url,
   std::unique_ptr<NavigateParams> params = std::make_unique<NavigateParams>(
       Profile::FromBrowserContext(browser_context_), url,
       ui::PAGE_TRANSITION_LINK);
-  params->disposition = WindowOpenDisposition::kNewPopup;
+  params->disposition = ui::mojom::WindowOpenDisposition::kNewPopup;
   params->opened_by_another_window = true;
   params->window_features.bounds = gfx::Rect(x, y, popup_width, popup_height);
   glic::NavigateAsync(std::move(params), base::DoNothing());
@@ -341,7 +341,7 @@ void GlicPageHandler::OpenLinkInNewTab(const GURL& url) {
   std::unique_ptr<NavigateParams> params = std::make_unique<NavigateParams>(
       Profile::FromBrowserContext(browser_context_), url,
       ui::PAGE_TRANSITION_LINK);
-  params->disposition = WindowOpenDisposition::kNewForegroundTab;
+  params->disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   glic::NavigateAsync(std::move(params), base::DoNothing());
 }
 
@@ -369,7 +369,7 @@ void GlicPageHandler::OpenHelpCenterTopicAndClosePanel(
   auto params = std::make_unique<NavigateParams>(
       Profile::FromBrowserContext(browser_context_), help_url,
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params->disposition = WindowOpenDisposition::kNewForegroundTab;
+  params->disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   glic::Navigate(std::move(params));
   host().ClosePanel();
 }

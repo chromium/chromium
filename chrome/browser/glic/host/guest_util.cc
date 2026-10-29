@@ -97,6 +97,7 @@
 #include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "url/gurl.h"
@@ -318,7 +319,7 @@ bool IsGlicGuest(const content::WebContents* web_contents) {
 bool MaybeHandleGlicWindowCreation(
     content::RenderFrameHost* opener,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features) {
   if (!opener) {
     return false;
@@ -334,8 +335,9 @@ bool MaybeHandleGlicWindowCreation(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
-  bool is_popup = (disposition == WindowOpenDisposition::kNewPopup) ||
-                  window_features.is_popup;
+  bool is_popup =
+      (disposition == ui::mojom::WindowOpenDisposition::kNewPopup) ||
+      window_features.is_popup;
   if (base::FeatureList::IsEnabled(features::kGlicPopupWindowsEnabled) &&
       (is_popup || window_features.has_x || window_features.has_y ||
        window_features.has_width || window_features.has_height)) {
@@ -361,7 +363,7 @@ bool MaybeHandleGlicWindowCreation(
 
     std::unique_ptr<NavigateParams> params = std::make_unique<NavigateParams>(
         profile, target_url, ui::PAGE_TRANSITION_LINK);
-    params->disposition = WindowOpenDisposition::kNewPopup;
+    params->disposition = ui::mojom::WindowOpenDisposition::kNewPopup;
     params->opened_by_another_window = true;
     params->window_features.bounds = gfx::Rect(x, y, popup_width, popup_height);
     glic::NavigateAsync(std::move(params), base::DoNothing());
@@ -372,9 +374,9 @@ bool MaybeHandleGlicWindowCreation(
   std::unique_ptr<NavigateParams> params = std::make_unique<NavigateParams>(
       profile, target_url, ui::PAGE_TRANSITION_LINK);
   params->disposition =
-      (disposition == WindowOpenDisposition::kNewBackgroundTab)
-          ? WindowOpenDisposition::kNewBackgroundTab
-          : WindowOpenDisposition::kNewForegroundTab;
+      (disposition == ui::mojom::WindowOpenDisposition::kNewBackgroundTab)
+          ? ui::mojom::WindowOpenDisposition::kNewBackgroundTab
+          : ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   glic::NavigateAsync(std::move(params), base::DoNothing());
   return true;
 }

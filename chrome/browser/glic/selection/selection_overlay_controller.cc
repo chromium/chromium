@@ -50,8 +50,8 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/skia/include/core/SkPaint.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -1350,7 +1350,7 @@ void SelectionOverlayController::OpenDogfoodFeedback() {
   }
   Close();
   CHECK_DEREF(tab_->GetBrowserWindowInterface())
-      .OpenGURL(url, WindowOpenDisposition::kNewForegroundTab);
+      .OpenGURL(url, ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 }
 
 void SelectionOverlayController::Reset() {

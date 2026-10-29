@@ -14,8 +14,8 @@
 #include "components/variations/active_field_trials.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace glic {
 
@@ -46,7 +46,7 @@ class GlicPromotionSourceNavigationObserverBrowserTest
 
   bool OpenTabWithLink(const GURL& url) {
     NavigateParams params(GetBrowser(), url, ui::PAGE_TRANSITION_LINK);
-    params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     ui_test_utils::NavigateToURL(&params);
     return params.navigated_or_inserted_contents != nullptr;
   }

@@ -49,8 +49,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/background_script_executor.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/test/ui_controls.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/virtual_display_util.h"
@@ -670,14 +670,16 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
   ASSERT_TRUE(tab_1);
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
+      browser(), GURL("about:blank"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   tabs::TabInterface* tab_2 = tab_list_a->GetActiveTab();
   ASSERT_TRUE(tab_2);
   ASSERT_NE(tab_1, tab_2);
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
+      browser(), GURL("about:blank"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   tabs::TabInterface* tab_3 = tab_list_a->GetActiveTab();
   ASSERT_TRUE(tab_3);

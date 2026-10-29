@@ -29,8 +29,8 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/url_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_canon.h"
@@ -268,7 +268,7 @@ GlicNavigationThrottle::WillStartRequest() {
                 Profile::FromBrowserContext(web_contents->GetBrowserContext());
             NavigateParams params(profile, target_url,
                                   ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-            params.disposition = WindowOpenDisposition::kCurrentTab;
+            params.disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
             params.source_contents = web_contents.get();
             params.initiator_origin = initiator_origin;
             params.is_renderer_initiated = is_renderer_initiated;

@@ -23,6 +23,7 @@
 #include "content/public/browser/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-forward.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class BrowserWindowInterface;
 class GlobalBrowserCollection;
@@ -120,7 +121,7 @@ class GlicSidePanelUi
   bool HandleWindowCreation(
       content::RenderFrameHost* opener,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& features) override;
 
   // BrowserCollectionObserver

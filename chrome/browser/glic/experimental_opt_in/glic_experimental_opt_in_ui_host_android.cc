@@ -26,7 +26,7 @@
 #include "content/public/common/url_constants.h"
 #include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 // JNI headers must be included after standard headers.
@@ -166,7 +166,7 @@ void GlicExperimentalOptInUIHostAndroid::OpenLinkInNewTab(const GURL& url) {
   }
   std::unique_ptr<NavigateParams> params =
       std::make_unique<NavigateParams>(profile_, url, ui::PAGE_TRANSITION_LINK);
-  params->disposition = WindowOpenDisposition::kNewPopup;
+  params->disposition = ui::mojom::WindowOpenDisposition::kNewPopup;
   params->opened_by_another_window = true;
   glic::NavigateAsync(std::move(params), base::DoNothing());
 }

@@ -35,8 +35,8 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -227,7 +227,8 @@ class GlicTabObserverBrowserTest
     content::TestNavigationObserver navigation_observer(tab->GetContents());
     content::OpenURLParams params =
         content::OpenURLParams::CreateBrowserInitiated(
-            url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED);
+            url, ui::mojom::WindowOpenDisposition::kCurrentTab,
+            ui::PAGE_TRANSITION_TYPED);
     tab->GetContents()->OpenURL(params, base::DoNothing());
     navigation_observer.Wait();
   }
@@ -480,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest, LinkClickTracking) {
   GURL target_url("about:blank");
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          target_url, WindowOpenDisposition::kNewForegroundTab,
+          target_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
   ASSERT_OK_AND_ASSIGN(auto creation, OpenURLAndWaitForTabCreation(
                                           first_tab, params, collector));
@@ -499,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest, LinkClickNewWindowTracking) {
   GURL target_url("about:blank");
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          target_url, WindowOpenDisposition::kNewWindow,
+          target_url, ui::mojom::WindowOpenDisposition::kNewWindow,
           ui::PAGE_TRANSITION_LINK);
   params.source_render_process_id = first_tab->GetContents()
                                         ->GetPrimaryMainFrame()

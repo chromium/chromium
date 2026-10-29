@@ -32,7 +32,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/test/widget_test.h"
 #include "url/origin.h"
@@ -785,7 +785,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, CreateActorTabOnNewTabPage) {
         // Create another tab to ensure we're using the initiator tab.
         ui_test_utils::NavigateToURLWithDisposition(
             browser(), GURL(url::kAboutBlankURL),
-            WindowOpenDisposition::kNewForegroundTab,
+            ui::mojom::WindowOpenDisposition::kNewForegroundTab,
             ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
 
         // Sanity check - we'll ensure these won't change after binding to the
@@ -843,7 +843,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,
         // Create another tab to ensure we're using the initiator tab.
         ui_test_utils::NavigateToURLWithDisposition(
             browser(), GURL(url::kAboutBlankURL),
-            WindowOpenDisposition::kNewForegroundTab,
+            ui::mojom::WindowOpenDisposition::kNewForegroundTab,
             ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
 
         // Sanity check - we'll ensure these won't change after binding to the

@@ -42,7 +42,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/base_window.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace glic {
 namespace {
@@ -106,7 +106,8 @@ void OpenWebUiWithGuestView(const GURL& host_url) {
   new_browser.GetWindow()->Show();
 
   ui_test_utils::NavigateToURLWithDisposition(
-      &new_browser, host_url, WindowOpenDisposition::kNewForegroundTab,
+      &new_browser, host_url,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 }
 

@@ -49,6 +49,7 @@
 #include "ui/android/accelerator_manager_android.h"
 #include "ui/android/window_android.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/content_accelerators/accelerator_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -536,7 +537,7 @@ void GlicSidePanelUi::RunFileChooser(
 bool GlicSidePanelUi::HandleWindowCreation(
     content::RenderFrameHost* opener,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& features) {
   return MaybeHandleGlicWindowCreation(opener, target_url, disposition,
                                        features);

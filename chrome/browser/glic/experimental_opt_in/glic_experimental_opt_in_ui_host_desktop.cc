@@ -29,7 +29,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/base_window.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -159,7 +159,8 @@ class GlicExperimentalOptInUIHostDesktop : public GlicExperimentalOptInUIHost {
       return;
     }
     if (auto* browser_window = tab_interface_->GetBrowserWindowInterface()) {
-      browser_window->OpenGURL(url, WindowOpenDisposition::kNewForegroundTab);
+      browser_window->OpenGURL(
+          url, ui::mojom::WindowOpenDisposition::kNewForegroundTab);
     }
   }
 

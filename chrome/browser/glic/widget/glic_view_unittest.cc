@@ -38,7 +38,7 @@
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_switches.h"
@@ -496,7 +496,7 @@ class TestGlicViewForWindowCreation : public GlicView {
   bool HandleWindowCreation(
       content::RenderFrameHost* opener,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& features) override {
     last_opener_ = opener;
     last_url_ = target_url;
@@ -507,7 +507,8 @@ class TestGlicViewForWindowCreation : public GlicView {
 
   raw_ptr<content::RenderFrameHost> last_opener_ = nullptr;
   GURL last_url_;
-  WindowOpenDisposition last_disposition_ = WindowOpenDisposition::kUnknown;
+  ui::mojom::WindowOpenDisposition last_disposition_ =
+      ui::mojom::WindowOpenDisposition::kUnknown;
   bool window_creation_called_ = false;
 };
 
@@ -523,12 +524,13 @@ TEST_F(GlicViewNoWebviewTest, HandleWindowCreation_ForwardsFromPwc) {
   blink::mojom::WindowFeatures features;
 
   EXPECT_TRUE(pwc()->HandleWindowCreation(
-      rfh, target_url, WindowOpenDisposition::kNewForegroundTab, features));
+      rfh, target_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      features));
   EXPECT_TRUE(test_view->window_creation_called_);
   EXPECT_EQ(test_view->last_opener_, rfh);
   EXPECT_EQ(test_view->last_url_, target_url);
   EXPECT_EQ(test_view->last_disposition_,
-            WindowOpenDisposition::kNewForegroundTab);
+            ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 }
 
 TEST_F(GlicViewNoWebviewTest, SetWebContents_InformsSize) {

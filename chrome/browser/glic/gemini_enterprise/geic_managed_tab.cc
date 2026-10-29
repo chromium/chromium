@@ -24,8 +24,8 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -171,7 +171,7 @@ bool GeicManagedTab::Open(const GURL& url, ReuseMode reuse_mode) {
   auto params = std::make_unique<NavigateParams>(
       profile_, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params->browser = browser_window;
-  params->disposition = WindowOpenDisposition::kNewForegroundTab;
+  params->disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   params->user_gesture = false;
 
   base::WeakPtr<content::NavigationHandle> handle =

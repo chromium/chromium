@@ -103,8 +103,8 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -481,7 +481,7 @@ class GlicWebClientHandler
 
     std::unique_ptr<NavigateParams> params = std::make_unique<NavigateParams>(
         profile_, url, ui::PAGE_TRANSITION_LINK);
-    params->disposition = WindowOpenDisposition::kNewPopup;
+    params->disposition = ui::mojom::WindowOpenDisposition::kNewPopup;
     params->opened_by_another_window = true;
     params->window_features.bounds = gfx::Rect(x, y, popup_width, popup_height);
     glic::NavigateAsync(std::move(params), base::DoNothing());

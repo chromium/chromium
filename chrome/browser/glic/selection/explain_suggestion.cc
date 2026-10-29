@@ -32,8 +32,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace glic {
@@ -117,10 +117,11 @@ void ExplainSuggestion::OpenTabForSearch(const std::string& query) {
   if (!initiator->ConsumeTransientUserActivation()) {
     return;
   }
-  content::OpenURLParams params(url, content::Referrer(),
-                                WindowOpenDisposition::kNewForegroundTab,
-                                ui::PAGE_TRANSITION_LINK,
-                                /*is_renderer_initiated=*/true);
+  content::OpenURLParams params(
+      url, content::Referrer(),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui::PAGE_TRANSITION_LINK,
+      /*is_renderer_initiated=*/true);
   params.user_gesture = true;
   // The overlay is in its own WebContents, so it's the initiator but not the
   // `source_*` frame, which must be in `tab_`'s WebContents.

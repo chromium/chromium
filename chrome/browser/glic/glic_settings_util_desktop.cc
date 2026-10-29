@@ -29,8 +29,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace {
@@ -69,7 +69,7 @@ void OpenGlicSettingsPage(Profile* profile) {
       profile,
       chrome::GetSettingsUrl(GetGlicProviderSpec(profile).GetSettingsSubpage()),
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params->disposition = WindowOpenDisposition::kSingletonTab;
+  params->disposition = ui::mojom::WindowOpenDisposition::kSingletonTab;
   glic::Navigate(std::move(params));
 }
 
@@ -105,7 +105,7 @@ void OpenPasswordManagerSettingsPage(Profile* profile) {
           : GURL(GetGooglePasswordManagerSubPageURLStr());
   auto params = std::make_unique<NavigateParams>(
       profile, settings_url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params->disposition = WindowOpenDisposition::kSingletonTab;
+  params->disposition = ui::mojom::WindowOpenDisposition::kSingletonTab;
   glic::Navigate(std::move(params));
 }
 
@@ -113,7 +113,7 @@ void OpenContactInfoSettingsPage(Profile* profile) {
   auto params = std::make_unique<NavigateParams>(
       profile, chrome::GetSettingsUrl(chrome::kContactInfoSubPage),
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params->disposition = WindowOpenDisposition::kSingletonTab;
+  params->disposition = ui::mojom::WindowOpenDisposition::kSingletonTab;
   glic::Navigate(std::move(params));
 }
 
