@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -17,6 +18,7 @@
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/browser/cast_web_view.h"
 #include "chromecast/browser/cast_web_view_factory.h"
+#include "chromecast/browser/test/mock_cast_web_view.h"
 #include "components/cast_receiver/browser/public/content_window_controls.h"
 #include "components/cast_receiver/browser/public/runtime_application.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -41,6 +43,15 @@ class FakeCastContentWindow : public CastContentWindow {
   void EnableTouchInput(bool enabled) override {}
 };
 
+class FakeCastWebContents : public testing::NiceMock<MockCastWebContents> {
+ public:
+  ~FakeCastWebContents() override {
+    for (auto& observer : sync_observers_) {
+      observer.ResetCastWebContents();
+    }
+  }
+};
+
 class FakeCastWebView : public CastWebView {
  public:
   explicit FakeCastWebView(std::unique_ptr<CastContentWindow> window)
@@ -49,7 +60,7 @@ class FakeCastWebView : public CastWebView {
 
   CastContentWindow* window() const override { return window_.get(); }
   content::WebContents* web_contents() const override { return nullptr; }
-  CastWebContents* cast_web_contents() override { return nullptr; }
+  CastWebContents* cast_web_contents() override { return &cast_web_contents_; }
   base::TimeDelta shutdown_delay() const override { return base::TimeDelta(); }
   void OwnerDestroyed() override {}
 
@@ -60,6 +71,7 @@ class FakeCastWebView : public CastWebView {
 
  private:
   std::unique_ptr<CastContentWindow> window_;
+  FakeCastWebContents cast_web_contents_;
   base::WeakPtrFactory<FakeCastWebView> weak_factory_{this};
 };
 
@@ -378,6 +390,67 @@ TEST_F(RuntimeApplicationServiceImplTest,
   // this should safely return early.
   service_impl_->NotifyApplicationVisibilityChanged(
       cast::common::Visibility::HIDDEN);
+}
+
+TEST_F(RuntimeApplicationServiceImplTest,
+       GetStreamingConfigManagerAvailableAcrossPlatforms) {
+  cast_receiver::EmbedderApplication* embedder = service_impl_.get();
+  EXPECT_EQ(embedder->GetStreamingConfigManager(), nullptr);
+
+  cast::runtime::LoadApplicationRequest load_request;
+  load_request.mutable_application_config()->set_app_id(app_id_);
+  load_request.set_cast_session_id(session_id_);
+  load_request.mutable_runtime_application_service_info()->set_grpc_endpoint(
+      "localhost:0");
+  service_impl_->Load(load_request, base::DoNothing());
+  EXPECT_EQ(embedder->GetStreamingConfigManager(), nullptr);
+
+  cast::utils::GrpcServer core_server;
+  std::string connected_port_name;
+  base::RunLoop connect_loop;
+  base::RepeatingClosure quit_connect_loop = connect_loop.QuitClosure();
+  core_server
+      .SetHandler<cast::v2::CoreMessagePortApplicationServiceHandler::Connect>(
+          base::BindLambdaForTesting(
+              [&](cast::bindings::ConnectRequest request,
+                  cast::v2::CoreMessagePortApplicationServiceHandler::Connect::
+                      Reactor* reactor) {
+                connected_port_name = request.port_name();
+                reactor->Write(cast::bindings::ConnectResponse());
+                quit_connect_loop.Run();
+              }));
+  ASSERT_TRUE(core_server.Start("localhost:0").ok());
+  base::ScopedClosureRunner stop_core_server(
+      base::BindLambdaForTesting([this, &core_server]() {
+        core_server.Stop();
+        task_environment_.RunUntilIdle();
+      }));
+
+  cast::runtime::LaunchApplicationRequest launch_request;
+  launch_request.mutable_core_application_service_info()->set_grpc_endpoint(
+      core_server.endpoint());
+  launch_request.mutable_cast_media_service_info()->set_grpc_endpoint(
+      core_server.endpoint());
+
+  EXPECT_CALL(*mock_runtime_app_, Launch(_))
+      .WillOnce([](cast_receiver::RuntimeApplication::StatusCallback callback) {
+        std::move(callback).Run(cast_receiver::OkStatus());
+      });
+  service_impl_->Launch(launch_request, base::DoNothing());
+
+  cast_receiver::StreamingConfigManager* config_manager =
+      embedder->GetStreamingConfigManager();
+  ASSERT_NE(config_manager, nullptr);
+  EXPECT_EQ(embedder->GetStreamingConfigManager(), config_manager);
+  connect_loop.Run();
+  EXPECT_EQ(connected_port_name, "cast.__platform__.canDisplayType");
+
+  is_application_running_ = false;
+  service_impl_->NotifyApplicationStopped(
+      cast_receiver::EmbedderApplication::ApplicationStopReason::kUserRequest,
+      0);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(embedder->GetStreamingConfigManager(), nullptr);
 }
 
 }  // namespace

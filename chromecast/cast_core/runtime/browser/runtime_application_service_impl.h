@@ -19,7 +19,6 @@
 #include "chromecast/browser/cast_web_view.h"
 #include "chromecast/cast_core/grpc/grpc_server.h"
 #include "chromecast/cast_core/grpc/thread_safe_reactor_handle.h"
-#include "chromecast/chromecast_buildflags.h"
 #include "components/cast_receiver/browser/public/embedder_application.h"
 #include "components/cast_receiver/browser/public/runtime_application.h"
 #include "components/cast_receiver/common/public/status.h"
@@ -88,9 +87,7 @@ class RuntimeApplicationServiceImpl : public cast_receiver::EmbedderApplication,
   cast_receiver::MessagePortService* GetMessagePortService() override;
   content::WebContents* GetWebContents() override;
   cast_receiver::ContentWindowControls* GetContentWindowControls() override;
-#if !BUILDFLAG(IS_CAST_DESKTOP_BUILD)
   cast_receiver::StreamingConfigManager* GetStreamingConfigManager() override;
-#endif
   void NavigateToPage(const GURL& url) override;
 
  private:
