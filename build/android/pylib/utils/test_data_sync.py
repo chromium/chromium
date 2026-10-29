@@ -20,7 +20,7 @@ from devil.android import device_errors
 logger = logging.getLogger(__name__)
 
 # Bump when the stamp computation changes, to invalidate existing markers.
-_STAMP_VERSION = 1
+_STAMP_VERSION = 2
 _DEVICE_ERRORS = (
     device_errors.CommandFailedError,
     device_errors.CommandTimeoutError,
@@ -111,17 +111,14 @@ def _ReadMarkerStamp(device, marker, as_root):
 def _IterHostFiles(host_path):
     """Yields the files DeviceUtils.PushChangedFiles() pushes for host_path.
 
-    Mirrors DeviceUtils._GetChangedFiles(), which skips files in any directory
-    whose absolute path contains '/.' and doesn't follow symlinked directories.
+    Mirrors DeviceUtils._GetChangedFiles(), which skips hidden directories
+    below host_path and doesn't follow symlinked directories.
     """
     path = os.path.realpath(host_path)
     if not os.path.isdir(path):
         yield path
         return
     for root, dirs, files in os.walk(path):
-        if os.path.sep + '.' in root:
-            dirs[:] = []
-            continue
-        dirs.sort()
+        dirs[:] = sorted(d for d in dirs if not d.startswith('.'))
         for f in sorted(files):
             yield os.path.join(root, f)
