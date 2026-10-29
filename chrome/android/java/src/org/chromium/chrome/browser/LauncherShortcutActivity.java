@@ -84,6 +84,12 @@ public class LauncherShortcutActivity extends Activity {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Do not re-dispatch the shortcut intent if the activity is recreated from saved state
+        // (e.g., due to an unhandled configuration change or OS state restoration).
+        if (savedInstanceState != null) {
+            finish();
+            return;
+        }
         mIsProcessingIntent = false;
         handleIntent(getIntent());
     }

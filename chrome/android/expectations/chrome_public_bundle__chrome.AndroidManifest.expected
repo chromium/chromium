@@ -105,6 +105,7 @@
     </activity>  # DIFF-ANCHOR: 610e8ccf
     <activity  # DIFF-ANCHOR: 76686af9
         android:name="org.chromium.chrome.browser.LauncherShortcutActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
         android:excludeFromRecents="true"
         android:exported="false"
         android:launchMode="singleInstance"
