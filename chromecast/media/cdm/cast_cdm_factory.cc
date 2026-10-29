@@ -25,8 +25,8 @@ CastCdmFactory::CastCdmFactory(
     : media_resource_tracker_(media_resource_tracker),
       task_runner_(task_runner),
       cdm_origin_(cdm_origin) {
-  DCHECK(media_resource_tracker_);
-  DCHECK(task_runner_);
+  CHECK(media_resource_tracker_, base::NotFatalUntil::M163);
+  CHECK(task_runner_, base::NotFatalUntil::M163);
 }
 
 CastCdmFactory::~CastCdmFactory() {}
@@ -44,8 +44,9 @@ void CastCdmFactory::Create(
 
   CastKeySystem cast_key_system(GetKeySystemByName(cdm_config.key_system));
 
-  DCHECK((cast_key_system == chromecast::media::KEY_SYSTEM_PLAYREADY) ||
-         (cast_key_system == chromecast::media::KEY_SYSTEM_WIDEVINE));
+  CHECK((cast_key_system == chromecast::media::KEY_SYSTEM_PLAYREADY) ||
+            (cast_key_system == chromecast::media::KEY_SYSTEM_WIDEVINE),
+        base::NotFatalUntil::M163);
 
   scoped_refptr<chromecast::media::CastCdm> cast_cdm =
       CreatePlatformBrowserCdm(cast_key_system, cdm_origin_, cdm_config);

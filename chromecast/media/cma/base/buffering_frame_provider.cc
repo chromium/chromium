@@ -42,20 +42,20 @@ BufferingFrameProvider::BufferingFrameProvider(
       max_frame_size_(max_frame_size),
       frame_buffered_cb_(frame_buffered_cb),
       weak_factory_(this) {
-  DCHECK_LE(max_frame_size, max_buffer_size);
+  CHECK_LE(max_frame_size, max_buffer_size, base::NotFatalUntil::M163);
   weak_this_ = weak_factory_.GetWeakPtr();
   thread_checker_.DetachFromThread();
 }
 
 BufferingFrameProvider::~BufferingFrameProvider() {
   // Required since some weak pointers might be released in the destructor.
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
 }
 
 void BufferingFrameProvider::Read(ReadCB read_cb) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
 
-  DCHECK(!read_cb.is_null());
+  CHECK(!read_cb.is_null(), base::NotFatalUntil::M163);
   read_cb_ = std::move(read_cb);
 
   CompleteReadIfNeeded();
@@ -64,7 +64,7 @@ void BufferingFrameProvider::Read(ReadCB read_cb) {
 }
 
 void BufferingFrameProvider::Flush(base::OnceClosure flush_cb) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
 
   // Invalidate all the buffers that belong to this media timeline.
   // This is needed since, even though |coded_frame_provider_| is flushed later

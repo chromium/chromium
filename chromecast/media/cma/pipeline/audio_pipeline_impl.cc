@@ -40,7 +40,7 @@ bool AudioDecoderRequiresDecryption() {
 AudioPipelineImpl::AudioPipelineImpl(CmaBackend::AudioDecoder* decoder,
                                      AvPipelineClient client)
     : AvPipelineImpl(decoder, std::move(client)), audio_decoder_(decoder) {
-  DCHECK(audio_decoder_);
+  CHECK(audio_decoder_, base::NotFatalUntil::M163);
 }
 
 AudioPipelineImpl::~AudioPipelineImpl() = default;
@@ -54,7 +54,7 @@ AudioPipelineImpl::~AudioPipelineImpl() = default;
                           kMaxAudioFrameSize);
   }
 
-  DCHECK(audio_config.IsValidConfig());
+  CHECK(audio_config.IsValidConfig(), base::NotFatalUntil::M163);
   AudioConfig config =
       DecoderConfigAdapter::ToCastAudioConfig(kPrimary, audio_config);
   encryption_scheme_ = config.encryption_scheme;
@@ -101,7 +101,8 @@ EncryptionScheme AudioPipelineImpl::GetEncryptionScheme(StreamId id) const {
 
 std::unique_ptr<StreamDecryptor> AudioPipelineImpl::CreateDecryptor() {
   if (MediaPipelineBackend::CreateAudioDecryptor) {
-    DCHECK_NE(encryption_scheme_, EncryptionScheme::kUnencrypted);
+    CHECK_NE(encryption_scheme_, EncryptionScheme::kUnencrypted,
+             base::NotFatalUntil::M163);
     LOG(INFO) << __func__ << " Create backend decryptor for audio.";
     return std::make_unique<BackendDecryptor>(encryption_scheme_);
   }

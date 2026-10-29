@@ -40,7 +40,7 @@ DecoderBufferAdapter::DecoderBufferAdapter(
     StreamId stream_id,
     const scoped_refptr<::media::DecoderBuffer>& buffer)
     : stream_id_(stream_id), buffer_(buffer) {
-  DCHECK(buffer_);
+  CHECK(buffer_, base::NotFatalUntil::M163);
 
   const ::media::DecryptConfig* decrypt_config =
       buffer_->end_of_stream() ? nullptr : buffer_->decrypt_config();

@@ -54,10 +54,10 @@ AudioSocketService::AudioSocketService(const std::string& endpoint,
       use_socket_descriptor_(use_socket_descriptor),
       delegate_(delegate),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
-  DCHECK_GT(max_accept_loop_, 0);
-  DCHECK(delegate_);
+  CHECK_GT(max_accept_loop_, 0, base::NotFatalUntil::M163);
+  CHECK(delegate_, base::NotFatalUntil::M163);
 
-  DCHECK(!endpoint.empty());
+  CHECK(!endpoint.empty(), base::NotFatalUntil::M163);
   LOG(INFO) << "Using endpoint " << endpoint;
   auto unix_socket = std::make_unique<net::UnixDomainServerSocket>(
       base::BindRepeating(
@@ -75,7 +75,7 @@ AudioSocketService::AudioSocketService(const std::string& endpoint,
 }
 
 int AudioSocketService::AcceptOne() {
-  DCHECK(listen_socket_);
+  CHECK(listen_socket_, base::NotFatalUntil::M163);
 
   if (use_socket_descriptor_) {
     return static_cast<net::UnixDomainServerSocket*>(listen_socket_.get())

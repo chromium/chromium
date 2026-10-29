@@ -57,7 +57,7 @@ CastAudioOutputStream::CastAudioOutputStream(
                      ? device_id_or_group_id
                      : ::media::AudioDeviceDescription::kDefaultDeviceId),
       group_id_(GetGroupId(device_id_or_group_id)) {
-  DCHECK(audio_manager_);
+  CHECK(audio_manager_, base::NotFatalUntil::M163);
   DETACH_FROM_THREAD(audio_thread_checker_);
   DVLOG(1) << __func__ << " " << this << " created from group_id=" << group_id_
            << " with audio_params=" << audio_params_.AsHumanReadableString();
@@ -75,16 +75,17 @@ bool CastAudioOutputStream::Open() {
 
   // Sanity check the audio parameters.
   ::media::AudioParameters::Format format = audio_params_.format();
-  DCHECK((format == ::media::AudioParameters::AUDIO_PCM_LINEAR) ||
-         (format == ::media::AudioParameters::AUDIO_PCM_LOW_LATENCY));
+  CHECK((format == ::media::AudioParameters::AUDIO_PCM_LINEAR) ||
+            (format == ::media::AudioParameters::AUDIO_PCM_LOW_LATENCY),
+        base::NotFatalUntil::M163);
   ::media::ChannelLayout channel_layout = audio_params_.channel_layout();
   if ((channel_layout != ::media::CHANNEL_LAYOUT_MONO) &&
       (channel_layout != ::media::CHANNEL_LAYOUT_STEREO)) {
     LOG(WARNING) << "Unsupported channel layout: " << channel_layout;
     return false;
   }
-  DCHECK_GE(audio_params_.channels(), 1);
-  DCHECK_LE(audio_params_.channels(), 2);
+  CHECK_GE(audio_params_.channels(), 1, base::NotFatalUntil::M163);
+  CHECK_LE(audio_params_.channels(), 2, base::NotFatalUntil::M163);
 
   const std::string application_session_id =
       audio_manager_->GetSessionId(group_id_);
@@ -127,15 +128,16 @@ void CastAudioOutputStream::Close() {
 }
 
 void CastAudioOutputStream::Start(AudioSourceCallback* source_callback) {
-  DCHECK(source_callback);
+  CHECK(source_callback, base::NotFatalUntil::M163);
   DCHECK_CALLED_ON_VALID_THREAD(audio_thread_checker_);
   // We allow calls to start even in the unopened state.
-  DCHECK_NE(audio_thread_state_, AudioOutputState::kPendingClose);
+  CHECK_NE(audio_thread_state_, AudioOutputState::kPendingClose,
+           base::NotFatalUntil::M163);
   DVLOG(2) << this << ": " << __func__;
   audio_thread_state_ = AudioOutputState::kStarted;
   metrics::CastMetricsHelper::GetInstance()->LogTimeToFirstAudio();
 
-  DCHECK(cma_wrapper_);
+  CHECK(cma_wrapper_, base::NotFatalUntil::M163);
   POST_TO_CMA_WRAPPER(Start, source_callback);
 }
 
@@ -163,7 +165,8 @@ void CastAudioOutputStream::Flush() {
   if (cma_wrapper_) {
     // Make sure this is not on the same thread as CMA_WRAPPER to prevent
     // deadlock.
-    DCHECK(!audio_manager_->media_task_runner()->BelongsToCurrentThread());
+    CHECK(!audio_manager_->media_task_runner()->BelongsToCurrentThread(),
+          base::NotFatalUntil::M163);
 
     base::WaitableEvent finished;
     POST_TO_CMA_WRAPPER(Flush, base::Unretained(&finished));
@@ -173,7 +176,8 @@ void CastAudioOutputStream::Flush() {
 
 void CastAudioOutputStream::SetVolume(double volume) {
   DCHECK_CALLED_ON_VALID_THREAD(audio_thread_checker_);
-  DCHECK_NE(audio_thread_state_, AudioOutputState::kPendingClose);
+  CHECK_NE(audio_thread_state_, AudioOutputState::kPendingClose,
+           base::NotFatalUntil::M163);
   DVLOG(2) << this << ": " << __func__ << "(" << volume << ")";
   volume_ = volume;
 

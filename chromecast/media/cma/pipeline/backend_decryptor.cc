@@ -18,24 +18,24 @@ BackendDecryptor::BackendDecryptor(EncryptionScheme scheme)
     : decrypt_success_(true),
       wait_eos_(false),
       task_runner_(std::make_unique<TaskRunnerImpl>()) {
-  DCHECK(MediaPipelineBackend::CreateAudioDecryptor);
+  CHECK(MediaPipelineBackend::CreateAudioDecryptor, base::NotFatalUntil::M163);
 
   decryptor_ = base::WrapUnique(
       MediaPipelineBackend::CreateAudioDecryptor(scheme, task_runner_.get()));
 
-  DCHECK(decryptor_);
+  CHECK(decryptor_, base::NotFatalUntil::M163);
   decryptor_->SetDelegate(this);
 }
 
 BackendDecryptor::~BackendDecryptor() = default;
 
 void BackendDecryptor::Init(const DecryptCB& decrypt_cb) {
-  DCHECK(!decrypt_cb_);
+  CHECK(!decrypt_cb_, base::NotFatalUntil::M163);
   decrypt_cb_ = decrypt_cb;
 }
 
 void BackendDecryptor::Decrypt(scoped_refptr<DecoderBufferBase> buffer) {
-  DCHECK(!wait_eos_);
+  CHECK(!wait_eos_, base::NotFatalUntil::M163);
 
   // Push both clear and encrypted buffers to backend, so that |decryptor_|
   // won't be blocked if there are not enough encrypted buffers. EOS buffer is
@@ -87,7 +87,7 @@ void BackendDecryptor::OnDecryptComplete(bool success) {
 
   if (wait_eos_ && buffer->end_of_stream()) {
     // Last frame, all the buffers should be decrypted.
-    DCHECK(pending_buffers_.empty());
+    CHECK(pending_buffers_.empty(), base::NotFatalUntil::M163);
     if (decrypt_cb_) {
       LOG(INFO) << "Return all the ready buffers, size = "
                 << ready_buffers_.size();

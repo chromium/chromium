@@ -56,7 +56,7 @@ bool CastAudioManagerAndroid::HasAudioInputDevices() {
 
 bool CastAudioManagerAndroid::GetAudioInputDeviceNames(
     ::media::AudioDeviceNames* device_names) {
-  DCHECK(device_names->empty());
+  CHECK(device_names->empty(), base::NotFatalUntil::M163);
   LOG(WARNING) << "No support for input audio devices";
   return true;
 }
@@ -92,8 +92,8 @@ bool CastAudioManagerAndroid::GetAudioInputDeviceNames(
 
 bool CastAudioManagerAndroid::GetAudioOutputDeviceNames(
     ::media::AudioDeviceNames* device_names) {
-  DCHECK(device_names->empty());
-  DCHECK(HasAudioOutputDevices());
+  CHECK(device_names->empty(), base::NotFatalUntil::M163);
+  CHECK(HasAudioOutputDevices(), base::NotFatalUntil::M163);
 
   // Default device name is added inside AudioManagerAndroid.
   bool success =
@@ -105,7 +105,8 @@ bool CastAudioManagerAndroid::GetAudioOutputDeviceNames(
 ::media::AudioOutputStream* CastAudioManagerAndroid::MakeLinearOutputStream(
     const ::media::AudioParameters& params,
     const ::media::AudioManager::LogCallback& log_callback) {
-  DCHECK_EQ(::media::AudioParameters::AUDIO_PCM_LINEAR, params.format());
+  CHECK_EQ(::media::AudioParameters::AUDIO_PCM_LINEAR, params.format(),
+           base::NotFatalUntil::M163);
   // MakeLinearOutputStream is only used on Windows. In this case, we cannot get
   // a valid session id based on kDefaultDeviceId. Therefore we cannot know
   // whether it is an audio only session.
@@ -124,7 +125,8 @@ bool CastAudioManagerAndroid::GetAudioOutputDeviceNames(
     const ::media::AudioParameters& params,
     const std::string& device_id_or_group_id,
     const ::media::AudioManager::LogCallback& log_callback) {
-  DCHECK_EQ(::media::AudioParameters::AUDIO_PCM_LOW_LATENCY, params.format());
+  CHECK_EQ(::media::AudioParameters::AUDIO_PCM_LOW_LATENCY, params.format(),
+           base::NotFatalUntil::M163);
   std::string session_id =
       helper_.GetSessionId(GetGroupId(device_id_or_group_id));
   bool is_audio_app = helper_.IsAudioOnlySession(session_id);
@@ -145,7 +147,7 @@ bool CastAudioManagerAndroid::GetAudioOutputDeviceNames(
     const ::media::AudioParameters& params,
     const std::string& device_id,
     const ::media::AudioManager::LogCallback& log_callback) {
-  DCHECK(params.IsBitstreamFormat());
+  CHECK(params.IsBitstreamFormat(), base::NotFatalUntil::M163);
   return new ::media::AudioTrackOutputStream(this, params);
 }
 

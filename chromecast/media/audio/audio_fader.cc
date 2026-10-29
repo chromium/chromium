@@ -36,14 +36,14 @@ AudioFader::AudioFader(AudioProvider* provider,
       num_channels_(provider_->num_channels()),
       sample_rate_(provider_->sample_rate()),
       playback_rate_(playback_rate) {
-  DCHECK(provider_);
+  CHECK(provider_, base::NotFatalUntil::M163);
   CHECK_GT(fade_frames_, 0);
   // Cap the maximum fade length to 10 seconds at 192kHz to prevent
   // excessive memory allocation and potential integer overflows later.
   CHECK_LT(fade_frames_, 192000 * 10);
-  DCHECK_GT(num_channels_, 0u);
-  DCHECK_LE(num_channels_, kMaxChannels);
-  DCHECK_GT(sample_rate_, 0);
+  CHECK_GT(num_channels_, 0u, base::NotFatalUntil::M163);
+  CHECK_LE(num_channels_, kMaxChannels, base::NotFatalUntil::M163);
+  CHECK_GT(sample_rate_, 0, base::NotFatalUntil::M163);
 
   fade_buffer_ = CastAudioBus::Create(num_channels_, fade_frames_);
   fade_buffer_->Zero();
@@ -52,8 +52,8 @@ AudioFader::AudioFader(AudioProvider* provider,
 AudioFader::~AudioFader() = default;
 
 int AudioFader::FramesNeededFromSource(int num_fill_frames) const {
-  DCHECK_GE(num_fill_frames, 0);
-  DCHECK_GE(fade_frames_, buffered_frames_);
+  CHECK_GE(num_fill_frames, 0, base::NotFatalUntil::M163);
+  CHECK_GE(fade_frames_, buffered_frames_, base::NotFatalUntil::M163);
   return num_fill_frames + fade_frames_ - buffered_frames_;
 }
 
@@ -73,7 +73,7 @@ int AudioFader::sample_rate() const {
 int AudioFader::FillFrames(int num_frames,
                            int64_t playout_timestamp,
                            float* const* channel_data) {
-  DCHECK(channel_data);
+  CHECK(channel_data, base::NotFatalUntil::M163);
 
   int filled_frames = std::min(buffered_frames_, num_frames);
   if (filled_frames > 0) {
@@ -185,7 +185,7 @@ void AudioFader::IncompleteFill(float* const* channel_data, int filled_frames) {
 }
 
 void AudioFader::FadeIn(float* const* channel_data, int filled_frames) {
-  DCHECK(state_ == State::kFadingIn);
+  CHECK(state_ == State::kFadingIn, base::NotFatalUntil::M163);
 
   FadeInHelper(channel_data, num_channels_, filled_frames, fade_frames_,
                fade_frames_remaining_);
@@ -216,7 +216,7 @@ void AudioFader::FadeInHelper(float* const* channel_data,
 }
 
 void AudioFader::FadeOut(float* const* channel_data, int filled_frames) {
-  DCHECK(state_ == State::kFadingOut);
+  CHECK(state_ == State::kFadingOut, base::NotFatalUntil::M163);
 
   FadeOutHelper(channel_data, num_channels_, filled_frames, fade_frames_,
                 fade_frames_remaining_);

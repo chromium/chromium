@@ -100,7 +100,7 @@ AudioSocket::~AudioSocket() {
 }
 
 void AudioSocket::SetDelegate(Delegate* delegate) {
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M163);
   bool had_delegate = (delegate_ != nullptr);
   delegate_ = delegate;
   if (socket_ && !had_delegate) {
@@ -120,8 +120,8 @@ base::WeakPtr<AudioSocket> AudioSocket::GetWeakPtr() {
 }
 
 void AudioSocket::UseBufferPool(scoped_refptr<IOBufferPool> buffer_pool) {
-  DCHECK(buffer_pool);
-  DCHECK(buffer_pool->threadsafe());
+  CHECK(buffer_pool, base::NotFatalUntil::M163);
+  CHECK(buffer_pool->threadsafe(), base::NotFatalUntil::M163);
 
   buffer_pool_ = std::move(buffer_pool);
   if (socket_) {
@@ -174,7 +174,7 @@ bool AudioSocket::SendPreparedAudioBuffer(
     scoped_refptr<net::IOBuffer> audio_buffer) {
   uint16_t payload_size = base::U16FromBigEndian(
       base::as_bytes(base::as_bytes(audio_buffer->span()).first<2>()));
-  DCHECK_GE(payload_size, kAudioHeaderSize);
+  CHECK_GE(payload_size, kAudioHeaderSize, base::NotFatalUntil::M163);
   return SendBuffer(0, std::move(audio_buffer),
                     sizeof(uint16_t) + payload_size);
 }
@@ -250,7 +250,7 @@ bool AudioSocket::SendBuffer(int type,
 bool AudioSocket::SendBufferToSocket(int type,
                                      scoped_refptr<net::IOBuffer> buffer,
                                      size_t buffer_size) {
-  DCHECK(socket_);
+  CHECK(socket_, base::NotFatalUntil::M163);
   if (!socket_->SendBuffer(buffer, buffer_size)) {
     if (type == 0) {
       return false;
@@ -261,7 +261,7 @@ bool AudioSocket::SendBufferToSocket(int type,
 }
 
 void AudioSocket::OnSendUnblocked() {
-  DCHECK(socket_);
+  CHECK(socket_, base::NotFatalUntil::M163);
   base::flat_map<int, scoped_refptr<net::IOBuffer>> pending;
   pending_writes_.swap(pending);
   for (auto& m : pending) {
@@ -280,12 +280,12 @@ void AudioSocket::ReceiveMoreMessages() {
 
 void AudioSocket::OnError(int error) {
   LOG(ERROR) << "Socket error from " << this << ": " << error;
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M163);
   delegate_->OnConnectionError();
 }
 
 void AudioSocket::OnEndOfStream() {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M163);
   delegate_->OnConnectionError();
 }
 

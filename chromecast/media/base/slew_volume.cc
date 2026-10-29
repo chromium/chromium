@@ -151,13 +151,17 @@ void SlewVolume::ProcessData(bool repeat_transition,
                              int frames,
                              int channels,
                              float* dest) {
-  DCHECK(src);
-  DCHECK(dest);
+  CHECK(src, base::NotFatalUntil::M163);
+  CHECK(dest, base::NotFatalUntil::M163);
   // Ensure |src| and |dest| are 16-byte aligned.
-  DCHECK_EQ(0u, reinterpret_cast<uintptr_t>(src) &
-                    (::media::vector_math::kRequiredAlignment - 1));
-  DCHECK_EQ(0u, reinterpret_cast<uintptr_t>(dest) &
-                    (::media::vector_math::kRequiredAlignment - 1));
+  CHECK_EQ(0u,
+           reinterpret_cast<uintptr_t>(src) &
+               (::media::vector_math::kRequiredAlignment - 1),
+           base::NotFatalUntil::M163);
+  CHECK_EQ(0u,
+           reinterpret_cast<uintptr_t>(dest) &
+               (::media::vector_math::kRequiredAlignment - 1),
+           base::NotFatalUntil::M163);
 
   if (!frames) {
     return;

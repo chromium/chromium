@@ -40,22 +40,22 @@ AvPipelineImpl::AvPipelineImpl(CmaBackend::Decoder* decoder,
       cast_cdm_context_(nullptr),
       weak_factory_(this),
       decrypt_weak_factory_(this) {
-  DCHECK(decoder_);
+  CHECK(decoder_, base::NotFatalUntil::M163);
   decoder_->SetDelegate(this);
   weak_this_ = weak_factory_.GetWeakPtr();
   thread_checker_.DetachFromThread();
 }
 
 AvPipelineImpl::~AvPipelineImpl() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
 }
 
 void AvPipelineImpl::SetCodedFrameProvider(
     std::unique_ptr<CodedFrameProvider> frame_provider,
     size_t max_buffer_size,
     size_t max_frame_size) {
-  DCHECK_EQ(state_, kUninitialized);
-  DCHECK(frame_provider);
+  CHECK_EQ(state_, kUninitialized, base::NotFatalUntil::M163);
+  CHECK(frame_provider, base::NotFatalUntil::M163);
 
   // Wrap the incoming frame provider to add some buffering capabilities.
   frame_provider_.reset(new BufferingFrameProvider(
@@ -67,7 +67,7 @@ bool AvPipelineImpl::StartPlayingFrom(
     base::TimeDelta time,
     const scoped_refptr<BufferingState>& buffering_state) {
   LOG(INFO) << __FUNCTION__ << " t0=" << time.InMilliseconds();
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
 
   // Reset the pipeline statistics.
   previous_stats_ = ::media::PipelineStatistics();
@@ -82,7 +82,7 @@ bool AvPipelineImpl::StartPlayingFrom(
   }
 
   // Buffering related initialization.
-  DCHECK(frame_provider_);
+  CHECK(frame_provider_, base::NotFatalUntil::M163);
   buffering_state_ = buffering_state;
   if (buffering_state_.get())
     buffering_state_->SetMediaTime(time);
@@ -99,14 +99,14 @@ bool AvPipelineImpl::StartPlayingFrom(
 
 void AvPipelineImpl::Flush(base::OnceClosure flush_cb) {
   LOG(INFO) << __FUNCTION__;
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(flush_cb_.is_null());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK(flush_cb_.is_null(), base::NotFatalUntil::M163);
 
   if (state_ == kError) {
     LOG(INFO) << __FUNCTION__ << " called while in error state";
     return;
   }
-  DCHECK_EQ(state_, kPlaying);
+  CHECK_EQ(state_, kPlaying, base::NotFatalUntil::M163);
   set_state(kFlushing);
 
   flush_cb_ = std::move(flush_cb);
@@ -142,20 +142,20 @@ void AvPipelineImpl::Flush(base::OnceClosure flush_cb) {
 
 void AvPipelineImpl::OnFlushDone() {
   LOG(INFO) << __FUNCTION__;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
   if (state_ == kError) {
     // Flush callback is reset on error.
-    DCHECK(flush_cb_.is_null());
+    CHECK(flush_cb_.is_null(), base::NotFatalUntil::M163);
     return;
   }
-  DCHECK_EQ(state_, kFlushing);
+  CHECK_EQ(state_, kFlushing, base::NotFatalUntil::M163);
   set_state(kFlushed);
   std::move(flush_cb_).Run();
 }
 
 void AvPipelineImpl::SetCdm(CastCdmContext* cast_cdm_context) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(cast_cdm_context);
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK(cast_cdm_context, base::NotFatalUntil::M163);
 
   cast_cdm_context_ = cast_cdm_context;
   event_cb_registration_ = cast_cdm_context_->RegisterEventCB(
@@ -166,11 +166,11 @@ void AvPipelineImpl::SetCdm(CastCdmContext* cast_cdm_context) {
 }
 
 void AvPipelineImpl::FetchBuffer() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
   if (!enable_feeding_)
     return;
 
-  DCHECK(!pending_read_ && !pending_buffer_);
+  CHECK(!pending_read_ && !pending_buffer_, base::NotFatalUntil::M163);
 
   pending_read_ = true;
   frame_provider_->Read(
@@ -181,7 +181,7 @@ void AvPipelineImpl::OnNewFrame(
     const scoped_refptr<DecoderBufferBase>& buffer,
     const ::media::AudioDecoderConfig& audio_config,
     const ::media::VideoDecoderConfig& video_config) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
   pending_read_ = false;
 
   if (!enable_feeding_)
@@ -198,7 +198,7 @@ void AvPipelineImpl::ProcessPendingBuffer() {
   if (!enable_feeding_)
     return;
 
-  DCHECK(!pushed_buffer_);
+  CHECK(!pushed_buffer_, base::NotFatalUntil::M163);
 
   // Break the feeding loop when the end of stream is reached.
   if (pending_buffer_->end_of_stream()) {
@@ -227,11 +227,12 @@ void AvPipelineImpl::ProcessPendingBuffer() {
       return;
     }
 
-    DCHECK_NE(decrypt_context->GetKeySystem(), KEY_SYSTEM_NONE);
+    CHECK_NE(decrypt_context->GetKeySystem(), KEY_SYSTEM_NONE,
+             base::NotFatalUntil::M163);
 
     if (!decryptor_) {
       decryptor_ = CreateStreamDecryptor(decrypt_context->GetKeySystem());
-      DCHECK(decryptor_);
+      CHECK(decryptor_, base::NotFatalUntil::M163);
       decryptor_->Init(base::BindRepeating(&AvPipelineImpl::OnBufferDecrypted,
                                            decrypt_weak_factory_.GetWeakPtr()));
     }
@@ -244,7 +245,7 @@ void AvPipelineImpl::ProcessPendingBuffer() {
     return;
   }
 
-  DCHECK(ready_buffers_.empty());
+  CHECK(ready_buffers_.empty(), base::NotFatalUntil::M163);
   PushReadyBuffer(std::move(pending_buffer_));
 }
 
@@ -252,7 +253,7 @@ void AvPipelineImpl::PushAllReadyBuffers() {
   if (state_ != kPlaying)
     return;
 
-  DCHECK(!ready_buffers_.empty());
+  CHECK(!ready_buffers_.empty(), base::NotFatalUntil::M163);
 
   scoped_refptr<DecoderBufferBase> ready_buffer =
       std::move(ready_buffers_.front());
@@ -262,7 +263,7 @@ void AvPipelineImpl::PushAllReadyBuffers() {
 }
 
 void AvPipelineImpl::PushReadyBuffer(scoped_refptr<DecoderBufferBase> buffer) {
-  DCHECK(!pushed_buffer_);
+  CHECK(!pushed_buffer_, base::NotFatalUntil::M163);
 
   if (!buffer->end_of_stream() && buffering_state_.get()) {
     base::TimeDelta timestamp = base::Microseconds(buffer->timestamp());
@@ -280,7 +281,7 @@ void AvPipelineImpl::PushReadyBuffer(scoped_refptr<DecoderBufferBase> buffer) {
 
 void AvPipelineImpl::OnBufferDecrypted(bool success,
                                        StreamDecryptor::BufferQueue buffers) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
 
   if (!success) {
     OnDecoderError();
@@ -299,7 +300,7 @@ void AvPipelineImpl::OnBufferDecrypted(bool success,
 }
 
 void AvPipelineImpl::OnPushBufferComplete(BufferStatus status) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
 
   pushed_buffer_ = nullptr;
   if (status == CmaBackend::BufferStatus::kBufferFailed) {
@@ -336,7 +337,7 @@ void AvPipelineImpl::OnKeyStatusChanged(const std::string& key_id,
                                         uint32_t system_code) {
   LOG(INFO) << __FUNCTION__ << " key_status= " << key_status
             << " system_code=" << system_code;
-  DCHECK(cast_cdm_context_);
+  CHECK(cast_cdm_context_, base::NotFatalUntil::M163);
   cast_cdm_context_->SetKeyStatus(key_id, key_status, system_code);
 }
 
@@ -345,7 +346,7 @@ void AvPipelineImpl::OnVideoResolutionChanged(const Size& size) {
 }
 
 void AvPipelineImpl::OnCdmStateChanged(::media::CdmContext::Event event) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
 
   if (event != ::media::CdmContext::Event::kHasAdditionalUsableKey)
     return;
@@ -362,7 +363,7 @@ void AvPipelineImpl::OnCdmStateChanged(::media::CdmContext::Event event) {
 void AvPipelineImpl::OnDataBuffered(
     const scoped_refptr<DecoderBufferBase>& buffer,
     bool is_at_max_capacity) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
 
   if (!buffering_state_.get())
     return;

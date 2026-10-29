@@ -270,7 +270,8 @@ void VolumeControlAndroid::ReportVolumeChangeOnThread(AudioContentType type,
 
 void VolumeControlAndroid::ReportMuteChangeOnThread(AudioContentType type,
                                                     bool muted) {
-  DCHECK(thread_.task_runner()->BelongsToCurrentThread());
+  CHECK(thread_.task_runner()->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
   SetMutedOnThread(VolumeChangeSource::kUser, type, muted,
                    true /* from_android */);
 }

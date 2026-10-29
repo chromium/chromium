@@ -21,9 +21,9 @@ CastAudioManagerHelper::CastAudioManagerHelper(
       delegate_(delegate),
       backend_factory_getter_(std::move(backend_factory_getter)),
       media_task_runner_(std::move(media_task_runner)) {
-  DCHECK(audio_manager_);
-  DCHECK(delegate_);
-  DCHECK(backend_factory_getter_);
+  CHECK(audio_manager_, base::NotFatalUntil::M163);
+  CHECK(delegate_, base::NotFatalUntil::M163);
+  CHECK(backend_factory_getter_, base::NotFatalUntil::M163);
 }
 
 CastAudioManagerHelper::~CastAudioManagerHelper() = default;

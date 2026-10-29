@@ -32,13 +32,13 @@ constexpr int kMaxRetries = 3;
 OutputConnection::OutputConnection(
     mojo::PendingRemote<mojom::AudioSocketBroker> pending_socket_broker)
     : socket_broker_(std::move(pending_socket_broker)) {
-  DCHECK(socket_broker_.is_connected());
+  CHECK(socket_broker_.is_connected(), base::NotFatalUntil::M163);
 }
 
 OutputConnection::~OutputConnection() = default;
 
 void OutputConnection::Connect() {
-  DCHECK(!connecting_socket_);
+  CHECK(!connecting_socket_, base::NotFatalUntil::M163);
 
   socket_broker_->GetSocketDescriptor(base::BindOnce(
       &OutputConnection::OnSocketDescriptor, weak_factory_.GetWeakPtr()));
@@ -57,12 +57,12 @@ void OutputConnection::OnSocketDescriptor(mojo::PlatformHandle handle) {
     HandleConnectResult(net::ERR_FAILED);
     return;
   }
-  DCHECK(connecting_socket_->IsConnected());
+  CHECK(connecting_socket_->IsConnected(), base::NotFatalUntil::M163);
   HandleConnectResult(net::OK);
 }
 
 void OutputConnection::HandleConnectResult(int result) {
-  DCHECK_NE(result, net::ERR_IO_PENDING);
+  CHECK_NE(result, net::ERR_IO_PENDING, base::NotFatalUntil::M163);
 
   if (result == net::OK) {
     log_connection_failure_ = true;

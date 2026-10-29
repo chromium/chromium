@@ -99,7 +99,7 @@ MediaPipelineImpl::MediaPipelineImpl()
 
 MediaPipelineImpl::~MediaPipelineImpl() {
   LOG(INFO) << __FUNCTION__;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
 
   // TODO(b/67112414): Do something better than this.
   MediaPipelineObserver::NotifyPipelineDestroyed(this);
@@ -115,7 +115,7 @@ void MediaPipelineImpl::Initialize(
     std::unique_ptr<CmaBackend> media_pipeline_backend,
     bool is_buffering_enabled) {
   LOG(INFO) << __FUNCTION__;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
   media_pipeline_backend_ = std::move(media_pipeline_backend);
 
   if ((load_type == kLoadTypeURL || load_type == kLoadTypeMediaSource) &&
@@ -136,16 +136,16 @@ void MediaPipelineImpl::Initialize(
 }
 
 void MediaPipelineImpl::SetClient(MediaPipelineClient client) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(!client.error_cb.is_null());
-  DCHECK(!client.buffering_state_cb.is_null());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK(!client.error_cb.is_null(), base::NotFatalUntil::M163);
+  CHECK(!client.buffering_state_cb.is_null(), base::NotFatalUntil::M163);
   client_ = std::move(client);
 }
 
 void MediaPipelineImpl::SetCdm(const base::UnguessableToken* cdm_id) {
   LOG(INFO) << __FUNCTION__
             << " cdm_id=" << ::media::CdmContext::CdmIdToString(cdm_id);
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
   NOTIMPLEMENTED();
   // TODO(gunsch): SetCdm(int) is not implemented.
   // One possibility would be a GetCdmByIdCB that's passed in.
@@ -153,7 +153,7 @@ void MediaPipelineImpl::SetCdm(const base::UnguessableToken* cdm_id) {
 
 void MediaPipelineImpl::SetCdm(CastCdmContext* cdm_context) {
   LOG(INFO) << __FUNCTION__;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
   cdm_context_ = cdm_context;
   if (audio_pipeline_)
     audio_pipeline_->SetCdm(cdm_context);
@@ -165,8 +165,8 @@ void MediaPipelineImpl::SetCdm(CastCdmContext* cdm_context) {
     const ::media::AudioDecoderConfig& config,
     AvPipelineClient client,
     std::unique_ptr<CodedFrameProvider> frame_provider) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(!audio_decoder_);
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK(!audio_decoder_, base::NotFatalUntil::M163);
 
   audio_decoder_ = media_pipeline_backend_->CreateAudioDecoder();
   if (!audio_decoder_) {
@@ -191,8 +191,8 @@ void MediaPipelineImpl::SetCdm(CastCdmContext* cdm_context) {
     const std::vector<::media::VideoDecoderConfig>& configs,
     VideoPipelineClient client,
     std::unique_ptr<CodedFrameProvider> frame_provider) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(!video_decoder_);
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK(!video_decoder_, base::NotFatalUntil::M163);
 
   video_decoder_ = media_pipeline_backend_->CreateVideoDecoder();
   if (!video_decoder_) {
@@ -207,8 +207,8 @@ void MediaPipelineImpl::SetCdm(CastCdmContext* cdm_context) {
 
 void MediaPipelineImpl::StartPlayingFrom(base::TimeDelta time) {
   LOG(INFO) << __FUNCTION__ << " t0=" << time.InMilliseconds();
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(audio_pipeline_ || video_pipeline_);
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK(audio_pipeline_ || video_pipeline_, base::NotFatalUntil::M163);
 
   // The backend is only stopped once every per-stream flush has completed,
   // so a flush that is still pending means the backend may still be using a
@@ -279,11 +279,12 @@ void MediaPipelineImpl::StartPlayingFrom(base::TimeDelta time) {
 
 void MediaPipelineImpl::Flush(base::OnceClosure flush_cb) {
   LOG(INFO) << __FUNCTION__;
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK((backend_state_ == BACKEND_STATE_PLAYING) ||
-         (backend_state_ == BACKEND_STATE_PAUSED));
-  DCHECK(audio_pipeline_ || video_pipeline_);
-  DCHECK(!pending_flush_task_);
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK((backend_state_ == BACKEND_STATE_PLAYING) ||
+            (backend_state_ == BACKEND_STATE_PAUSED),
+        base::NotFatalUntil::M163);
+  CHECK(audio_pipeline_ || video_pipeline_, base::NotFatalUntil::M163);
+  CHECK(!pending_flush_task_, base::NotFatalUntil::M163);
 
   media_time_interpolator_.StopInterpolating();
 
@@ -310,7 +311,7 @@ void MediaPipelineImpl::Flush(base::OnceClosure flush_cb) {
 
 void MediaPipelineImpl::SetPlaybackRate(double rate) {
   LOG(INFO) << __FUNCTION__ << " rate=" << rate;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
 
   playback_rate_ = rate;
   if ((backend_state_ != BACKEND_STATE_PLAYING) &&
@@ -341,36 +342,36 @@ void MediaPipelineImpl::SetPlaybackRate(double rate) {
 
 void MediaPipelineImpl::SetVolume(float volume) {
   LOG(INFO) << __FUNCTION__ << " vol=" << volume;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
   if (audio_pipeline_)
     audio_pipeline_->SetVolume(volume);
 }
 
 base::TimeDelta MediaPipelineImpl::GetMediaTime() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
   base::TimeDelta time = last_media_time_;
   return (time == ::media::kNoTimestamp ? start_media_time_ : time);
 }
 
 bool MediaPipelineImpl::HasAudio() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
   return audio_pipeline_ != nullptr;
 }
 
 bool MediaPipelineImpl::HasVideo() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
   return video_pipeline_ != nullptr;
 }
 
 void MediaPipelineImpl::OnFlushDone(bool is_audio_stream) {
   LOG(INFO) << __FUNCTION__ << " is_audio_stream=" << is_audio_stream;
-  DCHECK(pending_flush_task_);
+  CHECK(pending_flush_task_, base::NotFatalUntil::M163);
 
   if (is_audio_stream) {
-    DCHECK(!pending_flush_task_->audio_flushed);
+    CHECK(!pending_flush_task_->audio_flushed, base::NotFatalUntil::M163);
     pending_flush_task_->audio_flushed = true;
   } else {
-    DCHECK(!pending_flush_task_->video_flushed);
+    CHECK(!pending_flush_task_->video_flushed, base::NotFatalUntil::M163);
     pending_flush_task_->video_flushed = true;
   }
 
@@ -393,11 +394,13 @@ void MediaPipelineImpl::OnFlushDone(bool is_audio_stream) {
 
 void MediaPipelineImpl::OnBufferingNotification(bool is_buffering) {
   LOG(INFO) << __FUNCTION__ << " is_buffering=" << is_buffering;
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK((backend_state_ == BACKEND_STATE_PLAYING) ||
-         (backend_state_ == BACKEND_STATE_PAUSED));
-  DCHECK(buffering_controller_);
-  DCHECK_EQ(is_buffering, buffering_controller_->IsBuffering());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK((backend_state_ == BACKEND_STATE_PLAYING) ||
+            (backend_state_ == BACKEND_STATE_PAUSED),
+        base::NotFatalUntil::M163);
+  CHECK(buffering_controller_, base::NotFatalUntil::M163);
+  CHECK_EQ(is_buffering, buffering_controller_->IsBuffering(),
+           base::NotFatalUntil::M163);
 
   if (waiting_for_first_have_enough_data_) {
     waiting_for_first_have_enough_data_ = is_buffering;
@@ -435,7 +438,7 @@ void MediaPipelineImpl::OnBufferingNotification(bool is_buffering) {
 
 void MediaPipelineImpl::CheckForPlaybackStall(base::TimeDelta media_time,
                                               base::TimeTicks current_stc) {
-  DCHECK(media_time != ::media::kNoTimestamp);
+  CHECK(media_time != ::media::kNoTimestamp, base::NotFatalUntil::M163);
 
   // A playback stall is defined as a scenario where the underlying media
   // pipeline has unexpectedly stopped making forward progress. The pipeline is
@@ -539,7 +542,7 @@ void MediaPipelineImpl::UpdateMediaTime() {
   base::TimeTicks stc = base::TimeTicks::Now();
 
   if (media_time == ::media::kNoTimestamp) {
-    DCHECK(media_time_interpolator_.interpolating());
+    CHECK(media_time_interpolator_.interpolating(), base::NotFatalUntil::M163);
     media_time = media_time_interpolator_.GetInterpolatedTime();
 
     LOG(WARNING) << "Backend returns invalid timestamp. Estimated time is "
@@ -583,7 +586,7 @@ void MediaPipelineImpl::UpdateMediaTime() {
 }
 
 void MediaPipelineImpl::OnError(::media::PipelineStatus error) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
   DCHECK(error != ::media::PIPELINE_OK) << "PIPELINE_OK is not an error!";
 
   metrics::CastMetricsHelper::GetInstance()->RecordApplicationEventWithValue(

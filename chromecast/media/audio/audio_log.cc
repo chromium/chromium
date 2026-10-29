@@ -113,11 +113,11 @@ class AudioLogMessage::BufferManager {
 
     {
       base::AutoLock lock(lock_);
-      DCHECK_LT(num_disposed_buffers_, kMaxBuffers);
+      CHECK_LT(num_disposed_buffers_, kMaxBuffers, base::NotFatalUntil::M163);
       UNSAFE_TODO(disposed_buffers_[num_disposed_buffers_]) = buffer;
       ++num_disposed_buffers_;
     }
-    DCHECK(task_runner_);
+    CHECK(task_runner_, base::NotFatalUntil::M163);
     task_runner_->PostTask(FROM_HERE, dispose_callback_);
   }
 

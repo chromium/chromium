@@ -149,7 +149,7 @@ base::TimeDelta BalancedMediaTaskRunner::GetMediaTimestamp() const {
 bool BalancedMediaTaskRunner::PostMediaTask(const base::Location& from_here,
                                             base::OnceClosure task,
                                             base::TimeDelta timestamp) {
-  DCHECK(!task.is_null());
+  CHECK(!task.is_null(), base::NotFatalUntil::M163);
 
   // Pass through for a task with no timestamp.
   if (timestamp == ::media::kNoTimestamp) {
@@ -165,7 +165,7 @@ bool BalancedMediaTaskRunner::PostMediaTask(const base::Location& from_here,
   }
 
   // Only support one pending task at a time.
-  DCHECK(pending_task_.is_null());
+  CHECK(pending_task_.is_null(), base::NotFatalUntil::M163);
   from_here_ = from_here;
   pending_task_ = std::move(task);
   last_timestamp_ = timestamp;

@@ -72,7 +72,7 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
         output_format_(output_format),
         weak_factory_(this) {
     weak_this_ = weak_factory_.GetWeakPtr();
-    DCHECK(task_runner_);
+    CHECK(task_runner_, base::NotFatalUntil::M163);
 
     input_config_ = config;
     input_config_.encryption_scheme = EncryptionScheme::kUnencrypted;
@@ -113,8 +113,9 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
 
   void Decode(scoped_refptr<media::DecoderBufferBase> data,
               DecodeCallback decode_callback) override {
-    DCHECK(decode_callback);
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
+    CHECK(decode_callback, base::NotFatalUntil::M163);
+    CHECK(task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M163);
 
     if (data->decrypt_context() != nullptr || error_) {
       if (data->decrypt_context() != nullptr) {
@@ -177,7 +178,7 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
   }
 
   void OnInitialized(::media::DecoderStatus status) {
-    DCHECK(!initialized_);
+    CHECK(!initialized_, base::NotFatalUntil::M163);
     initialized_ = true;
     if (status.is_ok()) {
       if (!decode_queue_.empty()) {
@@ -205,7 +206,7 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
 
   void OnDecodeStatus(base::TimeDelta buffer_timestamp,
                       ::media::DecoderStatus status) {
-    DCHECK(pending_decode_callback_);
+    CHECK(pending_decode_callback_, base::NotFatalUntil::M163);
 
     Status result_status = kDecodeOk;
     scoped_refptr<media::DecoderBufferBase> decoded;
@@ -266,7 +267,7 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
   }
 
   scoped_refptr<media::DecoderBufferBase> ConvertDecoded() {
-    DCHECK(!decoded_chunks_.empty());
+    CHECK(!decoded_chunks_.empty(), base::NotFatalUntil::M163);
     int num_frames = 0;
     for (auto& chunk : decoded_chunks_)
       num_frames += chunk->frame_count();

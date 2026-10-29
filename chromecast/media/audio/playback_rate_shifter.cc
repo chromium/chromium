@@ -43,7 +43,7 @@ PlaybackRateShifter::PlaybackRateShifter(AudioProvider* provider,
       request_size_(request_size),
       audio_buffer_pool_(
           base::MakeRefCounted<::media::AudioBufferMemoryPool>()) {
-  DCHECK(provider_);
+  CHECK(provider_, base::NotFatalUntil::M163);
   CHECK_LE(num_channels_, static_cast<size_t>(kMaxChannels));
 }
 
@@ -137,7 +137,7 @@ int PlaybackRateShifter::DrainBufferedData(int num_frames,
                                            int64_t playout_timestamp,
                                            float* const* channel_data) {
   // Drain buffered data from rate shifter.
-  DCHECK_EQ(playback_rate_, 1.0);
+  CHECK_EQ(playback_rate_, 1.0, base::NotFatalUntil::M163);
 
   int filled = 0;
   while (filled < num_frames) {

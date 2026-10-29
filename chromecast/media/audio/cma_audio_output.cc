@@ -66,7 +66,7 @@ CmaAudioOutput::CmaAudioOutput(
       use_hw_av_sync_(use_hw_av_sync),
       delegate_(delegate),
       timestamp_helper_(audio_params_.sample_rate()) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M163);
   Initialize(sample_format, device_id, application_session_id, sync_type,
              audio_track_session_id, cma_backend_factory);
 }
@@ -81,7 +81,7 @@ void CmaAudioOutput::Initialize(
     int audio_track_session_id,
     CmaBackendFactory* cma_backend_factory) {
   DCHECK_CALLED_ON_VALID_THREAD(media_thread_checker_);
-  DCHECK(cma_backend_factory);
+  CHECK(cma_backend_factory, base::NotFatalUntil::M163);
 
   auto cma_backend_task_runner = std::make_unique<TaskRunnerImpl>();
   MediaPipelineDeviceParams device_params(
@@ -109,7 +109,7 @@ void CmaAudioOutput::Initialize(
   audio_config.samples_per_second = audio_params_.sample_rate();
   audio_config.use_hw_av_sync = use_hw_av_sync_;
   audio_config.audio_track_session_id = audio_track_session_id;
-  DCHECK(IsValidConfig(audio_config));
+  CHECK(IsValidConfig(audio_config), base::NotFatalUntil::M163);
   // Need to first set the config of the audio decoder then initialize the cma
   // backend if succeed.
   if (!audio_decoder->SetConfig(audio_config) || !cma_backend->Initialize()) {
@@ -166,11 +166,11 @@ void CmaAudioOutput::PushBuffer(
     scoped_refptr<CastDecoderBufferImpl> decoder_buffer,
     bool is_silence) {
   DCHECK_CALLED_ON_VALID_THREAD(media_thread_checker_);
-  DCHECK_GT(decoder_buffer->data_size(), 0u);
-  DCHECK_EQ(
+  CHECK_GT(decoder_buffer->data_size(), 0u, base::NotFatalUntil::M163);
+  CHECK_EQ(
       decoder_buffer->data_size() % (sample_size_ * audio_params_.channels()),
-      0u);
-  DCHECK(audio_decoder_);
+      0u, base::NotFatalUntil::M163);
+  CHECK(audio_decoder_, base::NotFatalUntil::M163);
 
   if (!is_silence) {
     if (!use_hw_av_sync_) {
@@ -190,14 +190,14 @@ void CmaAudioOutput::PushBuffer(
 
 CmaBackend::AudioDecoder::RenderingDelay CmaAudioOutput::GetRenderingDelay() {
   DCHECK_CALLED_ON_VALID_THREAD(media_thread_checker_);
-  DCHECK(audio_decoder_);
+  CHECK(audio_decoder_, base::NotFatalUntil::M163);
   return audio_decoder_->GetRenderingDelay();
 }
 
 CmaBackend::AudioDecoder::AudioTrackTimestamp
 CmaAudioOutput::GetAudioTrackTimestamp() {
   DCHECK_CALLED_ON_VALID_THREAD(media_thread_checker_);
-  DCHECK(audio_decoder_);
+  CHECK(audio_decoder_, base::NotFatalUntil::M163);
   return audio_decoder_->GetAudioTrackTimestamp();
 }
 

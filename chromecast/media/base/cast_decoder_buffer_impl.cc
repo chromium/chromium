@@ -36,27 +36,27 @@ StreamId CastDecoderBufferImpl::stream_id() const {
 }
 
 int64_t CastDecoderBufferImpl::timestamp() const {
-  DCHECK(!end_of_stream());
+  CHECK(!end_of_stream(), base::NotFatalUntil::M163);
   return timestamp_.InMicroseconds();
 }
 
 void CastDecoderBufferImpl::set_timestamp(base::TimeDelta timestamp) {
-  DCHECK(!end_of_stream());
+  CHECK(!end_of_stream(), base::NotFatalUntil::M163);
   timestamp_ = timestamp;
 }
 
 const uint8_t* CastDecoderBufferImpl::data() const {
-  DCHECK(!end_of_stream());
+  CHECK(!end_of_stream(), base::NotFatalUntil::M163);
   return data_.get();
 }
 
 uint8_t* CastDecoderBufferImpl::writable_data() const {
-  DCHECK(!end_of_stream());
+  CHECK(!end_of_stream(), base::NotFatalUntil::M163);
   return data_.get();
 }
 
 size_t CastDecoderBufferImpl::data_size() const {
-  DCHECK(!end_of_stream());
+  CHECK(!end_of_stream(), base::NotFatalUntil::M163);
   return size_;
 }
 

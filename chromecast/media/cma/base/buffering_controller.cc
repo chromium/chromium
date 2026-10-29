@@ -43,7 +43,7 @@ BufferingController::BufferingController(
 
 BufferingController::~BufferingController() {
   // Some weak pointers might possibly be invalidated here.
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
 }
 
 void BufferingController::UpdateHighLevelThreshold(
@@ -78,7 +78,7 @@ void BufferingController::UpdateHighLevelThreshold(
 
 scoped_refptr<BufferingState> BufferingController::AddStream(
     const std::string& stream_id) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
 
   // Add a new stream to the list of streams being monitored.
   scoped_refptr<BufferingState> buffering_state(new BufferingState(
@@ -120,7 +120,7 @@ base::TimeDelta BufferingController::GetMaxRenderingTime() const {
 }
 
 void BufferingController::Reset() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
 
   is_buffering_ = false;
   initial_buffering_ = true;
@@ -131,7 +131,7 @@ void BufferingController::Reset() {
 
 void BufferingController::OnBufferingStateChanged(
     bool force_notification, bool buffering_timeout) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
 
   // Log the state of each stream.
   DumpState();

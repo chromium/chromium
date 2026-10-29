@@ -36,7 +36,7 @@ constexpr base::TimeDelta kAuthorizationTimeout = base::Seconds(100);
 content::RenderFrame* GetRenderFrameForToken(
     const blink::LocalFrameToken& frame_token) {
   auto* web_frame = blink::WebLocalFrame::FromFrameToken(frame_token);
-  DCHECK(web_frame);
+  CHECK(web_frame, base::NotFatalUntil::M163);
 
   return content::RenderFrame::FromWebFrame(web_frame);
 }
@@ -69,7 +69,7 @@ class NonSwitchableAudioRendererSink
         supported_bitstream_audio_codecs_info_(
             std::move(supported_bitstream_audio_codecs_info)) {
     auto* render_frame = GetRenderFrameForToken(frame_token);
-    DCHECK(render_frame);
+    CHECK(render_frame, base::NotFatalUntil::M163);
     render_frame->GetBrowserInterfaceBroker().GetInterface(
         pending_audio_socket_broker_.InitWithNewPipeAndPassReceiver());
     render_frame->GetBrowserInterfaceBroker().GetInterface(

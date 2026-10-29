@@ -62,7 +62,8 @@ bool IsAlsaDeviceAvailable(CastAudioManagerAlsa::StreamType type,
     }
     return true;
   } else {
-    DCHECK_EQ(CastAudioManagerAlsa::kStreamPlayback, type);
+    CHECK_EQ(CastAudioManagerAlsa::kStreamPlayback, type,
+             base::NotFatalUntil::M163);
     // We prefer the device type that maps straight to hardware but
     // goes through software conversion if needed (e.g. incompatible
     // sample rate).
@@ -103,7 +104,7 @@ bool CastAudioManagerAlsa::HasAudioInputDevices() {
 
 bool CastAudioManagerAlsa::GetAudioInputDeviceNames(
     ::media::AudioDeviceNames* device_names) {
-  DCHECK(device_names->empty());
+  CHECK(device_names->empty(), base::NotFatalUntil::M163);
 
   // Prepend the default device since we always want it to be on the top of the
   // list for all platforms. Note, pulse has exclusively opened the default
@@ -132,7 +133,8 @@ bool CastAudioManagerAlsa::GetAudioInputDeviceNames(
     const ::media::AudioParameters& params,
     const std::string& device_id,
     const ::media::AudioManager::LogCallback& log_callback) {
-  DCHECK_EQ(::media::AudioParameters::AUDIO_PCM_LINEAR, params.format());
+  CHECK_EQ(::media::AudioParameters::AUDIO_PCM_LINEAR, params.format(),
+           base::NotFatalUntil::M163);
   return MakeInputStream(params, device_id);
 }
 
@@ -140,7 +142,8 @@ bool CastAudioManagerAlsa::GetAudioInputDeviceNames(
     const ::media::AudioParameters& params,
     const std::string& device_id,
     const ::media::AudioManager::LogCallback& log_callback) {
-  DCHECK_EQ(::media::AudioParameters::AUDIO_PCM_LOW_LATENCY, params.format());
+  CHECK_EQ(::media::AudioParameters::AUDIO_PCM_LOW_LATENCY, params.format(),
+           base::NotFatalUntil::M163);
   return MakeInputStream(params, device_id);
 }
 

@@ -50,7 +50,7 @@ float* InterleavedChannelMixer::Transform(const float* input, int num_frames) {
     return const_cast<float*>(input);
   }
 
-  DCHECK_LE(num_frames, max_frames_);
+  CHECK_LE(num_frames, max_frames_, base::NotFatalUntil::M163);
   // TODO(kmackay) Could use Eigen, but it's not available in public Chromium.
   float* output = buffer_.data();
   for (int f = 0; f < num_frames; ++f) {

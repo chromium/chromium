@@ -30,10 +30,10 @@ class AudioClockSimulatorImpl : public AudioClockSimulator {
       : provider_(provider),
         sample_rate_(provider_->sample_rate()),
         num_channels_(provider_->num_channels()) {
-    DCHECK(provider_);
-    DCHECK_GT(sample_rate_, 0);
-    DCHECK_GT(num_channels_, 0u);
-    DCHECK_LE(num_channels_, kMaxChannels);
+    CHECK(provider_, base::NotFatalUntil::M163);
+    CHECK_GT(sample_rate_, 0, base::NotFatalUntil::M163);
+    CHECK_GT(num_channels_, 0u, base::NotFatalUntil::M163);
+    CHECK_LE(num_channels_, kMaxChannels, base::NotFatalUntil::M163);
 
     resample_buffer_ =
         ::media::AudioBus::Create(num_channels_, kDefaultResampleBufferFrames);

@@ -32,7 +32,7 @@ VideoPipelineImpl::VideoPipelineImpl(CmaBackend::VideoDecoder* decoder,
     : AvPipelineImpl(decoder, std::move(client.av_pipeline_client)),
       video_decoder_(decoder),
       natural_size_changed_cb_(client.natural_size_changed_cb) {
-  DCHECK(video_decoder_);
+  CHECK(video_decoder_, base::NotFatalUntil::M163);
 }
 
 VideoPipelineImpl::~VideoPipelineImpl() {
@@ -41,7 +41,7 @@ VideoPipelineImpl::~VideoPipelineImpl() {
 ::media::PipelineStatus VideoPipelineImpl::Initialize(
     const std::vector<::media::VideoDecoderConfig>& configs,
     std::unique_ptr<CodedFrameProvider> frame_provider) {
-  DCHECK_GT(configs.size(), 0u);
+  CHECK_GT(configs.size(), 0u, base::NotFatalUntil::M163);
   for (const auto& config : configs) {
     LOG(INFO) << __FUNCTION__ << " " << config.AsHumanReadableString();
   }
@@ -54,8 +54,8 @@ VideoPipelineImpl::~VideoPipelineImpl() {
   if (configs.empty()) {
     return ::media::PIPELINE_ERROR_INITIALIZATION_FAILED;
   }
-  DCHECK_LE(configs.size(), 2U);
-  DCHECK(configs[0].IsValidConfig());
+  CHECK_LE(configs.size(), 2U, base::NotFatalUntil::M163);
+  CHECK(configs[0].IsValidConfig(), base::NotFatalUntil::M163);
   encryption_schemes_.resize(configs.size());
 
   VideoConfig video_config =
@@ -64,7 +64,7 @@ VideoPipelineImpl::~VideoPipelineImpl() {
 
   VideoConfig secondary_config;
   if (configs.size() == 2) {
-    DCHECK(configs[1].IsValidConfig());
+    CHECK(configs[1].IsValidConfig(), base::NotFatalUntil::M163);
     secondary_config = DecoderConfigAdapter::ToCastVideoConfig(kSecondary,
                                                                configs[1]);
     video_config.additional_config = &secondary_config;
@@ -107,7 +107,7 @@ void VideoPipelineImpl::OnUpdateConfig(
     LOG(INFO) << __FUNCTION__ << " id:" << id << " "
               << video_config.AsHumanReadableString();
 
-    DCHECK_LT(id, encryption_schemes_.size());
+    CHECK_LT(id, encryption_schemes_.size(), base::NotFatalUntil::M163);
     VideoConfig cast_video_config =
         DecoderConfigAdapter::ToCastVideoConfig(id, video_config);
     encryption_schemes_[static_cast<int>(id)] =
@@ -120,7 +120,7 @@ void VideoPipelineImpl::OnUpdateConfig(
 }
 
 EncryptionScheme VideoPipelineImpl::GetEncryptionScheme(StreamId id) const {
-  DCHECK_LT(id, encryption_schemes_.size());
+  CHECK_LT(id, encryption_schemes_.size(), base::NotFatalUntil::M163);
   return encryption_schemes_[static_cast<int>(id)];
 }
 

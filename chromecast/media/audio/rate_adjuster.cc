@@ -24,7 +24,7 @@ RateAdjuster::RateAdjuster(const Config& config,
       change_clock_rate_(std::move(change_clock_rate)),
       linear_error_(config_.linear_regression_window.InMicroseconds()),
       current_clock_rate_(current_clock_rate) {
-  DCHECK(change_clock_rate_);
+  CHECK(change_clock_rate_, base::NotFatalUntil::M163);
 }
 
 RateAdjuster::~RateAdjuster() = default;

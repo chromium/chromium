@@ -25,7 +25,7 @@ class CastAudioResamplerImpl : public CastAudioResampler {
                          int input_sample_rate,
                          int output_sample_rate)
       : channel_count_(channel_count) {
-    DCHECK_GT(channel_count_, 0);
+    CHECK_GT(channel_count_, 0, base::NotFatalUntil::M163);
     const double io_sample_rate_ratio =
         static_cast<double>(input_sample_rate) / output_sample_rate;
     resamplers_.reserve(channel_count_);
@@ -58,7 +58,7 @@ class CastAudioResamplerImpl : public CastAudioResampler {
   }
 
   void ReadCallback(int channel_index, int frames, float* dest) {
-    DCHECK_LE(buffered_input_.frames, frames);
+    CHECK_LE(buffered_input_.frames, frames, base::NotFatalUntil::M163);
     std::copy_n(buffered_input_.channels[channel_index].get(),
                 buffered_input_.frames, dest);
 
@@ -74,9 +74,9 @@ class CastAudioResamplerImpl : public CastAudioResampler {
   }
 
   void CopyCurrentInputTo(int channel_index, int frames_to_copy, float* dest) {
-    DCHECK(current_input_.data);
-    DCHECK_LE(current_input_.frame_offset + frames_to_copy,
-              current_input_.frames);
+    CHECK(current_input_.data, base::NotFatalUntil::M163);
+    CHECK_LE(current_input_.frame_offset + frames_to_copy,
+             current_input_.frames, base::NotFatalUntil::M163);
     std::copy_n(current_input_.data + channel_index * current_input_.frames +
                     current_input_.frame_offset,
                 frames_to_copy, dest);
@@ -100,7 +100,8 @@ class CastAudioResamplerImpl : public CastAudioResampler {
     }
 
     int frames_left = current_input_.frames - current_input_.frame_offset;
-    DCHECK_LE(buffered_input_.frames + frames_left, kRequestFrames);
+    CHECK_LE(buffered_input_.frames + frames_left, kRequestFrames,
+             base::NotFatalUntil::M163);
     for (int c = 0; c < channel_count_; ++c) {
       CopyCurrentInputTo(
           c, frames_left,

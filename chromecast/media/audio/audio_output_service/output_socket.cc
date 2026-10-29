@@ -29,7 +29,7 @@ OutputSocket::OutputSocket() = default;
 OutputSocket::~OutputSocket() = default;
 
 void OutputSocket::SetDelegate(Delegate* delegate) {
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M163);
 
   delegate_ = delegate;
   AudioSocket::SetDelegate(delegate);

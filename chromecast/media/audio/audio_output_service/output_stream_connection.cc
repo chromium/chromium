@@ -38,7 +38,7 @@ OutputStreamConnection::OutputStreamConnection(
     : OutputConnection(std::move(pending_socket_broker)),
       delegate_(delegate),
       params_(std::move(params)) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M163);
 }
 
 OutputStreamConnection::~OutputStreamConnection() = default;
@@ -136,7 +136,7 @@ void OutputStreamConnection::Connect() {
 }
 
 void OutputStreamConnection::OnConnected(std::unique_ptr<OutputSocket> socket) {
-  DCHECK(socket);
+  CHECK(socket, base::NotFatalUntil::M163);
 
   socket_ = std::move(socket);
   socket_->SetDelegate(this);

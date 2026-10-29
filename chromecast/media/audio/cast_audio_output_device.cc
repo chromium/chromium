@@ -57,7 +57,7 @@ class CastAudioOutputDevice::Internal
   Internal(const ::media::AudioParameters& audio_params,
            RenderCallback* render_callback)
       : audio_params_(audio_params), render_callback_(render_callback) {
-    DCHECK(render_callback_);
+    CHECK(render_callback_, base::NotFatalUntil::M163);
   }
 
   Internal(const Internal&) = delete;
@@ -106,8 +106,8 @@ class CastAudioOutputDevice::Internal
         (audio_params_.effects() & ::media::AudioParameters::AUDIO_PREFETCH)
             ? kPrefetchRendererBufferSize
             : kDefaultRendererBufferSize;
-    DCHECK_GT(renderer_buffer_size_estimate_,
-              audio_params_.GetBufferDuration());
+    CHECK_GT(renderer_buffer_size_estimate_, audio_params_.GetBufferDuration(),
+             base::NotFatalUntil::M163);
 
     media_start_time_ = base::TimeTicks::Now();
     if (!backend_initialized_) {
@@ -177,7 +177,7 @@ class CastAudioOutputDevice::Internal
       return;
     }
 
-    DCHECK(output_connection_);
+    CHECK(output_connection_, base::NotFatalUntil::M163);
     backend_initialized_ = true;
     output_connection_->SetVolume(volume_);
     if (paused_) {
@@ -240,7 +240,8 @@ class CastAudioOutputDevice::Internal
       renderer_buffer_size_estimate_ -=
           ::media::AudioTimestampHelper::FramesToTime(
               frames_filled, audio_params_.sample_rate());
-      DCHECK_GE(renderer_buffer_size_estimate_, base::TimeDelta());
+      CHECK_GE(renderer_buffer_size_estimate_, base::TimeDelta(),
+               base::NotFatalUntil::M163);
 
       size_t filled_bytes = frames_filled * audio_params_.GetBytesPerFrame(
                                                 ::media::kSampleFormatS16);
@@ -255,7 +256,7 @@ class CastAudioOutputDevice::Internal
                      .subspan<audio_output_service::OutputSocket::
                                   kAudioMessageHeaderSize>());
 
-      DCHECK(output_connection_);
+      CHECK(output_connection_, base::NotFatalUntil::M163);
       output_connection_->SendAudioBuffer(std::move(io_buffer), filled_bytes,
                                           media_pos.InMicroseconds());
       media_pos_frames_ += frames_filled;
@@ -285,7 +286,7 @@ class CastAudioOutputDevice::Internal
   }
 
   int ReadBuffer(base::TimeDelta delay, ::media::AudioBus* audio_bus) {
-    DCHECK(audio_bus);
+    CHECK(audio_bus, base::NotFatalUntil::M163);
     base::AutoLock lock(callback_lock_);
     if (!active_render_callback_) {
       return 0;
@@ -368,9 +369,9 @@ CastAudioOutputDevice::~CastAudioOutputDevice() {
 
 void CastAudioOutputDevice::Initialize(const ::media::AudioParameters& params,
                                        RenderCallback* callback) {
-  DCHECK(callback);
-  DCHECK(!internal_);
-  DCHECK(!internal_ptr_);
+  CHECK(callback, base::NotFatalUntil::M163);
+  CHECK(!internal_, base::NotFatalUntil::M163);
+  CHECK(!internal_ptr_, base::NotFatalUntil::M163);
 
   auto internal = std::make_unique<Internal>(params, callback);
   internal_ptr_ = internal.get();

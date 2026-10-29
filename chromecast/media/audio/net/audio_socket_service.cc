@@ -20,7 +20,7 @@ namespace media {
 AudioSocketService::~AudioSocketService() = default;
 
 void AudioSocketService::Accept() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
   if (!listen_socket_) {
     return;
   }
@@ -38,7 +38,7 @@ void AudioSocketService::Accept() {
 }
 
 void AudioSocketService::OnAsyncAcceptComplete(int result) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
   if (HandleAcceptResult(result)) {
     Accept();
   }

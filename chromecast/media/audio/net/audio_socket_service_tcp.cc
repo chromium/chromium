@@ -41,10 +41,10 @@ AudioSocketService::AudioSocketService(const std::string& endpoint,
       use_socket_descriptor_(false),
       delegate_(delegate),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
-  DCHECK_GT(max_accept_loop_, 0);
-  DCHECK(delegate_);
+  CHECK_GT(max_accept_loop_, 0, base::NotFatalUntil::M163);
+  CHECK(delegate_, base::NotFatalUntil::M163);
 
-  DCHECK_GE(port, 0);
+  CHECK_GE(port, 0, base::NotFatalUntil::M163);
   LOG(INFO) << "Using port " << port;
   listen_socket_ = std::make_unique<net::TCPServerSocket>(nullptr /* net_log */,
                                                           net::NetLogSource());
@@ -59,7 +59,7 @@ AudioSocketService::AudioSocketService(const std::string& endpoint,
 }
 
 int AudioSocketService::AcceptOne() {
-  DCHECK(listen_socket_);
+  CHECK(listen_socket_, base::NotFatalUntil::M163);
   return listen_socket_->Accept(
       &accepted_socket_,
       base::BindOnce(&AudioSocketService::OnAsyncAcceptComplete,

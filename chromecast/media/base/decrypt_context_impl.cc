@@ -16,8 +16,8 @@ namespace chromecast {
 namespace media {
 namespace {
 void BufferDecryptCB(bool* called, bool* ret, bool success) {
-  DCHECK(called);
-  DCHECK(ret);
+  CHECK(called, base::NotFatalUntil::M163);
+  CHECK(ret, base::NotFatalUntil::M163);
   *called = true;
   *ret = success;
 }

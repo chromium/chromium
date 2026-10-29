@@ -47,12 +47,14 @@ CastAudioManager::CastAudioManager(
               std::move(media_task_runner)),
       browser_task_runner_(std::move(browser_task_runner)),
       weak_factory_(this) {
-  DCHECK(browser_task_runner_->BelongsToCurrentThread());
+  CHECK(browser_task_runner_->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
   weak_this_ = weak_factory_.GetWeakPtr();
 }
 
 CastAudioManager::~CastAudioManager() {
-  DCHECK(browser_task_runner_->BelongsToCurrentThread());
+  CHECK(browser_task_runner_->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
 }
 
 bool CastAudioManager::HasAudioOutputDevices() {
@@ -61,7 +63,7 @@ bool CastAudioManager::HasAudioOutputDevices() {
 
 bool CastAudioManager::GetAudioOutputDeviceNames(
     ::media::AudioDeviceNames* device_names) {
-  DCHECK(device_names->empty());
+  CHECK(device_names->empty(), base::NotFatalUntil::M163);
   if (HasAudioOutputDevices()) {
     device_names->push_front(::media::AudioDeviceName::CreateCommunications());
     device_names->push_front(::media::AudioDeviceName::CreateDefault());
@@ -75,7 +77,7 @@ bool CastAudioManager::HasAudioInputDevices() {
 
 bool CastAudioManager::GetAudioInputDeviceNames(
     ::media::AudioDeviceNames* device_names) {
-  DCHECK(device_names->empty());
+  CHECK(device_names->empty(), base::NotFatalUntil::M163);
   LOG(WARNING) << "No support for input audio devices";
   return true;
 }
@@ -99,7 +101,8 @@ const std::string_view CastAudioManager::GetName() {
 ::media::AudioOutputStream* CastAudioManager::MakeLinearOutputStream(
     const ::media::AudioParameters& params,
     const ::media::AudioManager::LogCallback& log_callback) {
-  DCHECK_EQ(::media::AudioParameters::AUDIO_PCM_LINEAR, params.format());
+  CHECK_EQ(::media::AudioParameters::AUDIO_PCM_LINEAR, params.format(),
+           base::NotFatalUntil::M163);
 
   return new CastAudioOutputStream(
       &helper_, params, ::media::AudioDeviceDescription::kDefaultDeviceId);
@@ -109,7 +112,8 @@ const std::string_view CastAudioManager::GetName() {
     const ::media::AudioParameters& params,
     const std::string& device_id_or_group_id,
     const ::media::AudioManager::LogCallback& log_callback) {
-  DCHECK_EQ(::media::AudioParameters::AUDIO_PCM_LOW_LATENCY, params.format());
+  CHECK_EQ(::media::AudioParameters::AUDIO_PCM_LOW_LATENCY, params.format(),
+           base::NotFatalUntil::M163);
 
   return new CastAudioOutputStream(
       &helper_, params,

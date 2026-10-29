@@ -46,7 +46,7 @@ CmaAudioOutputStream::CmaAudioOutputStream(
       cma_backend_factory_(cma_backend_factory),
       buffer_duration_(buffer_duration),
       render_buffer_size_estimate_(kRenderBufferSize) {
-  DCHECK(cma_backend_factory_);
+  CHECK(cma_backend_factory_, base::NotFatalUntil::M163);
   DETACH_FROM_THREAD(media_thread_checker_);
 
   LOG(INFO) << "Enable audio prefetch: " << is_audio_prefetch_;
@@ -62,7 +62,8 @@ void CmaAudioOutputStream::SetRunning(bool running) {
 void CmaAudioOutputStream::Initialize(
     const std::string& application_session_id) {
   DCHECK_CALLED_ON_VALID_THREAD(media_thread_checker_);
-  DCHECK_EQ(cma_backend_state_, CmaBackendState::kUninitialized);
+  CHECK_EQ(cma_backend_state_, CmaBackendState::kUninitialized,
+           base::NotFatalUntil::M163);
   // If AUDIO_PREFETCH is enabled, we're able to push audio ahead of
   // realtime. Set the sync mode to kModeSyncPts to allow cma backend to
   // buffer the early pushed data, instead of dropping them.
@@ -80,7 +81,7 @@ void CmaAudioOutputStream::Initialize(
 
 void CmaAudioOutputStream::Start(
     ::media::AudioOutputStream::AudioSourceCallback* source_callback) {
-  DCHECK(source_callback);
+  CHECK(source_callback, base::NotFatalUntil::M163);
   DCHECK_CALLED_ON_VALID_THREAD(media_thread_checker_);
   if (cma_backend_state_ == CmaBackendState::kPendingClose)
     return;
@@ -185,7 +186,7 @@ void CmaAudioOutputStream::PushBuffer() {
   // prevent the source callback from closing the output stream
   // mid-push.
   base::AutoLock lock(running_lock_);
-  DCHECK(!push_in_progress_);
+  CHECK(!push_in_progress_, base::NotFatalUntil::M163);
 
   // Do not fill more buffers if we have stopped running.
   if (!running_)
@@ -243,14 +244,16 @@ void CmaAudioOutputStream::PushBuffer() {
 
 void CmaAudioOutputStream::OnPushBufferComplete(BufferStatus status) {
   DCHECK_CALLED_ON_VALID_THREAD(media_thread_checker_);
-  DCHECK_NE(status, CmaBackend::BufferStatus::kBufferPending);
+  CHECK_NE(status, CmaBackend::BufferStatus::kBufferPending,
+           base::NotFatalUntil::M163);
 
   push_in_progress_ = false;
 
   if (!source_callback_ || encountered_error_)
     return;
 
-  DCHECK_EQ(cma_backend_state_, CmaBackendState::kStarted);
+  CHECK_EQ(cma_backend_state_, CmaBackendState::kStarted,
+           base::NotFatalUntil::M163);
 
   if (status != CmaBackend::BufferStatus::kBufferSuccess) {
     source_callback_->OnError(

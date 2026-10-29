@@ -31,7 +31,7 @@ constexpr size_t kKeyStatusCount =
 class CastCdmContextImpl : public CastCdmContext {
  public:
   explicit CastCdmContextImpl(CastCdm* cast_cdm) : cast_cdm_(cast_cdm) {
-    DCHECK(cast_cdm_);
+    CHECK(cast_cdm_, base::NotFatalUntil::M163);
   }
 
   CastCdmContextImpl(const CastCdmContextImpl&) = delete;
@@ -103,7 +103,7 @@ CastCdm::CastCdm(MediaResourceTracker* media_resource_tracker)
 }
 
 CastCdm::~CastCdm() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
 }
 
 void CastCdm::Initialize(
@@ -111,7 +111,7 @@ void CastCdm::Initialize(
     const ::media::SessionClosedCB& session_closed_cb,
     const ::media::SessionKeysChangeCB& session_keys_change_cb,
     const ::media::SessionExpirationUpdateCB& session_expiration_update_cb) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
 
   if (media_resource_tracker_) {
     media_resource_usage_ = std::make_unique<MediaResourceTracker::ScopedUsage>(
@@ -191,7 +191,7 @@ void CastCdm::OnSessionExpirationUpdate(const std::string& session_id,
 
 void CastCdm::KeyIdAndKeyPairsToInfo(const ::media::KeyIdAndKeyPairs& keys,
                                      ::media::CdmKeysInfo* keys_info) {
-  DCHECK(keys_info);
+  CHECK(keys_info, base::NotFatalUntil::M163);
   for (const std::pair<std::string, std::string>& key : keys) {
     keys_info->push_back(std::make_unique<::media::CdmKeyInformation>(
         key.first, ::media::CdmKeyInformation::USABLE, 0));
