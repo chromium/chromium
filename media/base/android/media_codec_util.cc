@@ -282,6 +282,7 @@ std::optional<gfx::Size> MediaCodecUtil::LookupCodedSizeAlignment(
       // Unisoc
       {"omx.sprd.(h264|vpx)", gfx::Size(16, 16)},
       {"omx.sprd.(hevc|vp9)", gfx::Size(64, 64)},
+      {"c2.unisoc.av1", gfx::Size(64, 64)},
   };
 
   const auto lower_name = base::ToLowerASCII(name);

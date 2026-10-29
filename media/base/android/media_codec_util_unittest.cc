@@ -46,6 +46,9 @@ TEST_F(MediaCodecUtilTest, GuessCodedSizeAlignment) {
             MediaCodecUtil::LookupCodedSizeAlignment(
                 "c2.android.hevc.decoder",
                 base::android::android_info::SDK_VERSION_Q));
+
+  EXPECT_EQ(gfx::Size(64, 64),
+            MediaCodecUtil::LookupCodedSizeAlignment("c2.unisoc.av1.decoder"));
 }
 
 TEST_F(MediaCodecUtilTest, EstimateVideoBufferSize) {
