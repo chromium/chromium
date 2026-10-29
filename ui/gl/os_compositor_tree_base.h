@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
 #include "ui/gfx/overlay_layer_id.h"
 
 namespace gl {
@@ -56,9 +57,13 @@ concept OsCompositorVisualsWrapper = requires(T layer, const T* below_layer) {
 // updates an OS compositor tree (via platform-specific implementations of its
 // interfaces).
 //
+// `Error` is the platform-specific error type returned when committing fails.
+//
 // See:
 // https://docs.google.com/document/d/18wX75CqPIdFAk0W4Je5q_4FZZzLHtbBJsdp6Y7o80xM/edit?usp=sharing
-template <HasParentLayerId OverlayParams, OsCompositorVisualsWrapper Layer>
+template <HasParentLayerId OverlayParams,
+          OsCompositorVisualsWrapper Layer,
+          typename Error>
 class OsCompositorTreeBase {
  public:
   enum class UpdateMode {
@@ -88,9 +93,8 @@ class OsCompositorTreeBase {
   // Given overlays, builds or updates this overlay tree. `overlays` must be
   // topologically sorted by hierarchy based on the `parent_layer_id` pointers
   // and siblings must be sorted back-to-front in z-order.
-  //
-  // Returns true if commit succeeded.
-  bool UpdateTree(const base::span<const OverlayParams> overlays);
+  base::expected<void, Error> UpdateTree(
+      const base::span<const OverlayParams> overlays);
 
   int num_layers_modified_last_frame_for_testing() const {
     return num_layers_modified_last_frame_;
@@ -117,9 +121,7 @@ class OsCompositorTreeBase {
   virtual void DestroyLayer(std::unique_ptr<Layer> layer) = 0;
 
   // Finalize and commit a frame, showing its contents on the screen.
-  //
-  // Returns true on success.
-  virtual bool CommitTree() = 0;
+  virtual base::expected<void, Error> CommitTree() = 0;
 
  private:
   const UpdateMode update_mode_;
@@ -181,16 +183,24 @@ class OsCompositorTreeBase {
   int num_layers_modified_last_frame_ = 0;
 };
 
-template <HasParentLayerId OverlayParams, OsCompositorVisualsWrapper Layer>
-OsCompositorTreeBase<OverlayParams, Layer>::OsCompositorTreeBase(
+template <HasParentLayerId OverlayParams,
+          OsCompositorVisualsWrapper Layer,
+          typename Error>
+OsCompositorTreeBase<OverlayParams, Layer, Error>::OsCompositorTreeBase(
     UpdateMode update_mode)
     : update_mode_(update_mode) {}
 
-template <HasParentLayerId OverlayParams, OsCompositorVisualsWrapper Layer>
-OsCompositorTreeBase<OverlayParams, Layer>::~OsCompositorTreeBase() = default;
+template <HasParentLayerId OverlayParams,
+          OsCompositorVisualsWrapper Layer,
+          typename Error>
+OsCompositorTreeBase<OverlayParams, Layer, Error>::~OsCompositorTreeBase() =
+    default;
 
-template <HasParentLayerId OverlayParams, OsCompositorVisualsWrapper Layer>
-bool OsCompositorTreeBase<OverlayParams, Layer>::UpdateTree(
+template <HasParentLayerId OverlayParams,
+          OsCompositorVisualsWrapper Layer,
+          typename Error>
+base::expected<void, Error>
+OsCompositorTreeBase<OverlayParams, Layer, Error>::UpdateTree(
     const base::span<const OverlayParams> overlays) {
   TRACE_EVENT("gpu", "OsCompositorTreeBase::UpdateTree", "overlays",
               overlays.size());
@@ -382,11 +392,13 @@ bool OsCompositorTreeBase<OverlayParams, Layer>::UpdateTree(
     return CommitTree();
   }
 
-  return true;
+  return base::ok();
 }
 
-template <HasParentLayerId OverlayParams, OsCompositorVisualsWrapper Layer>
-Layer* OsCompositorTreeBase<OverlayParams, Layer>::GetLayer(
+template <HasParentLayerId OverlayParams,
+          OsCompositorVisualsWrapper Layer,
+          typename Error>
+Layer* OsCompositorTreeBase<OverlayParams, Layer, Error>::GetLayer(
     const std::optional<gfx::OverlayLayerId>& overlay_id) const {
   if (overlay_id) {
     if (auto it = layers_.find(overlay_id.value()); it != layers_.end()) {
@@ -396,13 +408,21 @@ Layer* OsCompositorTreeBase<OverlayParams, Layer>::GetLayer(
   return nullptr;
 }
 
-template <HasParentLayerId OverlayParams, OsCompositorVisualsWrapper Layer>
-OsCompositorTreeBase<OverlayParams, Layer>::Siblings::Siblings() = default;
-template <HasParentLayerId OverlayParams, OsCompositorVisualsWrapper Layer>
-OsCompositorTreeBase<OverlayParams, Layer>::Siblings::~Siblings() = default;
+template <HasParentLayerId OverlayParams,
+          OsCompositorVisualsWrapper Layer,
+          typename Error>
+OsCompositorTreeBase<OverlayParams, Layer, Error>::Siblings::Siblings() =
+    default;
+template <HasParentLayerId OverlayParams,
+          OsCompositorVisualsWrapper Layer,
+          typename Error>
+OsCompositorTreeBase<OverlayParams, Layer, Error>::Siblings::~Siblings() =
+    default;
 
-template <HasParentLayerId OverlayParams, OsCompositorVisualsWrapper Layer>
-void OsCompositorTreeBase<OverlayParams, Layer>::PatchSiblingsTogether(
+template <HasParentLayerId OverlayParams,
+          OsCompositorVisualsWrapper Layer,
+          typename Error>
+void OsCompositorTreeBase<OverlayParams, Layer, Error>::PatchSiblingsTogether(
     const std::optional<gfx::OverlayLayerId>& overlay_id,
     const std::optional<gfx::OverlayLayerId>& below_id) {
   if (below_id && overlay_id) {
@@ -433,8 +453,10 @@ void OsCompositorTreeBase<OverlayParams, Layer>::PatchSiblingsTogether(
   }
 }
 
-template <HasParentLayerId OverlayParams, OsCompositorVisualsWrapper Layer>
-void OsCompositorTreeBase<OverlayParams, Layer>::RemoveSibling(
+template <HasParentLayerId OverlayParams,
+          OsCompositorVisualsWrapper Layer,
+          typename Error>
+void OsCompositorTreeBase<OverlayParams, Layer, Error>::RemoveSibling(
     const gfx::OverlayLayerId& overlay_id) {
   auto it = siblings_.find(overlay_id);
   if (it != siblings_.end()) {
@@ -453,8 +475,10 @@ void OsCompositorTreeBase<OverlayParams, Layer>::RemoveSibling(
   }
 }
 
-template <HasParentLayerId OverlayParams, OsCompositorVisualsWrapper Layer>
-void OsCompositorTreeBase<OverlayParams, Layer>::MoveSibling(
+template <HasParentLayerId OverlayParams,
+          OsCompositorVisualsWrapper Layer,
+          typename Error>
+void OsCompositorTreeBase<OverlayParams, Layer, Error>::MoveSibling(
     const gfx::OverlayLayerId& overlay_id,
     const gfx::OverlayLayerId& new_parent_id,
     const std::optional<gfx::OverlayLayerId>& new_below_id) {
@@ -511,8 +535,10 @@ void OsCompositorTreeBase<OverlayParams, Layer>::MoveSibling(
            << ".parent = " << PrintOverlayId(new_parent_id);
 }
 
-template <HasParentLayerId OverlayParams, OsCompositorVisualsWrapper Layer>
-std::string OsCompositorTreeBase<OverlayParams, Layer>::PrintOverlayId(
+template <HasParentLayerId OverlayParams,
+          OsCompositorVisualsWrapper Layer,
+          typename Error>
+std::string OsCompositorTreeBase<OverlayParams, Layer, Error>::PrintOverlayId(
     const std::optional<gfx::OverlayLayerId>& overlay_id) {
   if (overlay_id) {
     return base::StringPrintf("%s", overlay_id->ToString());

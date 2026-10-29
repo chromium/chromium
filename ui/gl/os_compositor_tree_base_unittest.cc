@@ -5,12 +5,15 @@
 #include "ui/gl/os_compositor_tree_base.h"
 
 #include <algorithm>
+#include <tuple>
+#include <variant>
 #include <vector>
 
 #include "base/functional/function_ref.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/traced_value.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -433,8 +436,11 @@ class MiniTreeNodeWrapper {
   std::optional<MiniTree::node_type> below_node_;
 };
 
-class TestCompositorTree
-    : public OsCompositorTreeBase<TestOverlayParams, MiniTreeNodeWrapper> {
+// std::monostate is a type with a single value.
+using TestError = std::monostate;
+class TestCompositorTree : public OsCompositorTreeBase<TestOverlayParams,
+                                                       MiniTreeNodeWrapper,
+                                                       TestError> {
  public:
   explicit TestCompositorTree(TestCompositorTree::UpdateMode update_mode)
       : OsCompositorTreeBase(update_mode) {}
@@ -469,9 +475,9 @@ class TestCompositorTree
                            layer->container_node().value());
   }
 
-  bool CommitTree() override {
+  base::expected<void, TestError> CommitTree() override {
     last_frame_commit_stats_ = mini_tree_.Commit();
-    return true;
+    return base::ok();
   }
 
  private:
@@ -520,7 +526,7 @@ class OsCompositorTreeBaseTest
     SCOPED_TRACE(base::StringPrintf("Generated overlay candidates = %s",
                                     overlays_list.DebugString()));
 
-    EXPECT_TRUE(tree_.UpdateTree(overlays));
+    EXPECT_EQ(tree_.UpdateTree(overlays), base::ok());
 
     const base::Value actual_tree = tree_.mini_tree().RootNodeToValue();
     const base::Value expected_tree =
@@ -933,7 +939,7 @@ TEST_P(OsCompositorTreeBaseTestInvalidInput, UnsortedSiblings) {
   overlays.back().z_order = 1;
   overlays.back().layer_id = LayerId(1);
 
-  EXPECT_DEATH(tree_.UpdateTree(overlays), kZOrderCheckMessage);
+  EXPECT_DEATH(std::ignore = tree_.UpdateTree(overlays), kZOrderCheckMessage);
 }
 
 TEST_P(OsCompositorTreeBaseTestInvalidInput, UnsortedSiblingsInLayer) {
@@ -953,7 +959,7 @@ TEST_P(OsCompositorTreeBaseTestInvalidInput, UnsortedSiblingsInLayer) {
   overlays.back().layer_id = LayerId(3);
   overlays.back().parent_layer_id = LayerId(1);
 
-  EXPECT_DEATH(tree_.UpdateTree(overlays), kZOrderCheckMessage);
+  EXPECT_DEATH(std::ignore = tree_.UpdateTree(overlays), kZOrderCheckMessage);
 }
 
 TEST_P(OsCompositorTreeBaseTestInvalidInput, NoSameZOrder) {
@@ -967,7 +973,7 @@ TEST_P(OsCompositorTreeBaseTestInvalidInput, NoSameZOrder) {
   overlays.back().z_order = 1;
   overlays.back().layer_id = LayerId(2);
 
-  EXPECT_DEATH(tree_.UpdateTree(overlays), kZOrderCheckMessage);
+  EXPECT_DEATH(std::ignore = tree_.UpdateTree(overlays), kZOrderCheckMessage);
 }
 
 TEST_P(OsCompositorTreeBaseTestInvalidInput, NotTopologicallySorted) {
@@ -982,7 +988,8 @@ TEST_P(OsCompositorTreeBaseTestInvalidInput, NotTopologicallySorted) {
   overlays.back().z_order = 1;
   overlays.back().layer_id = LayerId(1);
 
-  EXPECT_DEATH(tree_.UpdateTree(overlays), kHierarchyCheckMessage);
+  EXPECT_DEATH(std::ignore = tree_.UpdateTree(overlays),
+               kHierarchyCheckMessage);
 }
 
 TEST_P(OsCompositorTreeBaseTestInvalidInput, NeedsExplicitLayerId) {
@@ -991,7 +998,8 @@ TEST_P(OsCompositorTreeBaseTestInvalidInput, NeedsExplicitLayerId) {
   overlays.emplace_back();
   overlays.back().z_order = 1;
 
-  EXPECT_DEATH(tree_.UpdateTree(overlays), kMustHaveLayerIdMessage);
+  EXPECT_DEATH(std::ignore = tree_.UpdateTree(overlays),
+               kMustHaveLayerIdMessage);
 }
 
 TEST_P(OsCompositorTreeBaseTestInvalidInput, NoDuplicateLayerId) {
@@ -1005,7 +1013,8 @@ TEST_P(OsCompositorTreeBaseTestInvalidInput, NoDuplicateLayerId) {
   overlays.back().z_order = 2;
   overlays.back().layer_id = LayerId(1);
 
-  EXPECT_DEATH(tree_.UpdateTree(overlays), kLayerIdUniquenessCheckMessage);
+  EXPECT_DEATH(std::ignore = tree_.UpdateTree(overlays),
+               kLayerIdUniquenessCheckMessage);
 }
 #endif
 
@@ -1014,32 +1023,32 @@ class MockTestCompositorTree : public TestCompositorTree {
   MockTestCompositorTree()
       : TestCompositorTree(TestCompositorTree::UpdateMode::kIncremental) {}
 
-  MOCK_METHOD(bool, CommitTree, (), (override));
+  MOCK_METHOD((base::expected<void, TestError>), CommitTree, (), (override));
 };
 
 TEST(OsCompositorTreeBaseTestCommit, NoUpdatesSkipCommit) {
   MockTestCompositorTree tree;
   EXPECT_CALL(tree, CommitTree()).Times(0);
-  EXPECT_TRUE(tree.UpdateTree({}));
+  EXPECT_EQ(tree.UpdateTree({}), base::ok());
 }
 
 TEST(OsCompositorTreeBaseTestCommit, Commit) {
   MockTestCompositorTree tree;
-  EXPECT_CALL(tree, CommitTree()).WillOnce(testing::Return(true));
+  EXPECT_CALL(tree, CommitTree()).WillOnce(testing::Return(base::ok()));
   const auto overlays = TestTreeBuilder::OverlaysFromRootLayers({
       Layer(1, {}),
   });
-  EXPECT_TRUE(tree.UpdateTree(overlays));
+  EXPECT_EQ(tree.UpdateTree(overlays), base::ok());
 }
 
 TEST(OsCompositorTreeBaseTestCommit, NoUpdatesOnSubsequentFrameSkipCommit) {
   MockTestCompositorTree tree;
   {
-    EXPECT_CALL(tree, CommitTree()).WillOnce(testing::Return(true));
+    EXPECT_CALL(tree, CommitTree()).WillOnce(testing::Return(base::ok()));
     const auto overlays = TestTreeBuilder::OverlaysFromRootLayers({
         Layer(1, {}),
     });
-    EXPECT_TRUE(tree.UpdateTree(overlays));
+    EXPECT_EQ(tree.UpdateTree(overlays), base::ok());
   }
 
   {
@@ -1047,17 +1056,18 @@ TEST(OsCompositorTreeBaseTestCommit, NoUpdatesOnSubsequentFrameSkipCommit) {
     const auto overlays = TestTreeBuilder::OverlaysFromRootLayers({
         Layer(1, {}),
     });
-    EXPECT_TRUE(tree.UpdateTree(overlays));
+    EXPECT_EQ(tree.UpdateTree(overlays), base::ok());
   }
 }
 
 TEST(OsCompositorTreeBaseTestCommit, FailedCommit) {
   MockTestCompositorTree tree;
-  EXPECT_CALL(tree, CommitTree()).WillOnce(testing::Return(false));
+  EXPECT_CALL(tree, CommitTree())
+      .WillOnce(testing::Return(base::unexpected(TestError{})));
   const auto overlays = TestTreeBuilder::OverlaysFromRootLayers({
       Layer(1, {}),
   });
-  EXPECT_FALSE(tree.UpdateTree(overlays));
+  EXPECT_EQ(tree.UpdateTree(overlays), base::unexpected(TestError{}));
 }
 
 }  // namespace
