@@ -5,10 +5,14 @@
 //! Chromium ICU4X data generator tool (`//tools/crates/icu4x_datagen`).
 //!
 //! Generates per-platform baked ICU4X data in `//third_party/rust/icu4x_data`
-//! using upstream CLDR / ICU / Unicode RSCD / TZDB / segmenter LSTM tags.
+//! using upstream CLDR / ICU / Unicode RSCD / TZDB / segmenter LSTM tags and
+//! ICU4C filter files (`//third_party/icu/filters/*.json`).
 
 extern crate alloc;
 
+mod filters;
+
+use crate::filters::FilteredDataProvider;
 use anyhow::{Context, Result};
 use clap::{Parser, Subcommand, ValueEnum};
 use icu_locale_fallback::LocaleFallbacker;
@@ -21,17 +25,17 @@ use std::path::{Path, PathBuf};
 
 /// Default upstream source tags tested with the current `icu_provider_source`
 /// crate.
-pub const DEFAULT_CLDR_TAG: &str = SourceDataProvider::TESTED_CLDR_TAG;
-pub const DEFAULT_ICUEXPORT_TAG: &str = SourceDataProvider::TESTED_ICUEXPORT_TAG;
-pub const DEFAULT_UNICODE_TAG: &str = SourceDataProvider::TESTED_UNICODE_TAG;
-pub const DEFAULT_TZDB_TAG: &str = SourceDataProvider::TESTED_TZDB_TAG;
-pub const DEFAULT_SEGMENTER_LSTM_TAG: &str = SourceDataProvider::TESTED_SEGMENTER_LSTM_TAG;
+const DEFAULT_CLDR_TAG: &str = SourceDataProvider::TESTED_CLDR_TAG;
+const DEFAULT_ICUEXPORT_TAG: &str = SourceDataProvider::TESTED_ICUEXPORT_TAG;
+const DEFAULT_UNICODE_TAG: &str = SourceDataProvider::TESTED_UNICODE_TAG;
+const DEFAULT_TZDB_TAG: &str = SourceDataProvider::TESTED_TZDB_TAG;
+const DEFAULT_SEGMENTER_LSTM_TAG: &str = SourceDataProvider::TESTED_SEGMENTER_LSTM_TAG;
 
 /// Target platform bundle corresponding to
 /// `//third_party/icu/filters/<platform>.json`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, ValueEnum)]
 #[value(rename_all = "snake_case")]
-pub enum Icu4xPlatform {
+enum Icu4xPlatform {
     Common,
     Chromeos,
     Android,
@@ -43,7 +47,7 @@ pub enum Icu4xPlatform {
 }
 
 impl Icu4xPlatform {
-    pub const fn as_str(self) -> &'static str {
+    const fn as_str(self) -> &'static str {
         match self {
             Self::Common => "common",
             Self::Chromeos => "chromeos",
@@ -73,18 +77,35 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// List registered ICU4X markers.
+    /// List registered ICU4X markers and their mapped ICU4C filter
+    /// categories.
     ListMarkers {
         /// Only list markers matching the specified marker path prefixes
         /// (defaults to `all`).
         #[arg(long, num_args = 1.., default_value = "all")]
         markers: Vec<String>,
     },
+    /// Parse all ICU4C filter JSON files in `third_party/icu/filters` and print
+    /// a diagnostic summary of how each ICU4C filter category (`locales_tree`,
+    /// `curr_tree`, `lang_tree`, `brkitr_dictionaries`, etc.) resolves per
+    /// platform. Useful for debugging filter rules and verifying parity with
+    /// ICU4C's `filtration.py`.
+    InspectFilters {
+        /// Directory containing ICU4C filter JSON files
+        /// (`third_party/icu/filters`).
+        #[arg(long, default_value = "third_party/icu/filters")]
+        icu_filters_dir: PathBuf,
+    },
     /// Generate `//third_party/rust/icu4x_data` for one or more platforms.
     Generate {
         /// Path to the existing `//third_party/rust/icu4x_data` crate.
         #[arg(long, default_value = "third_party/rust/icu4x_data")]
         icu4x_data_dir: PathBuf,
+
+        /// Directory containing ICU4C filter JSON files
+        /// (`third_party/icu/filters`).
+        #[arg(long, default_value = "third_party/icu/filters")]
+        icu_filters_dir: PathBuf,
 
         /// Platforms to generate (defaults to all ICU4C filter platforms; must
         /// include `common`).
@@ -97,6 +118,14 @@ enum Commands {
         /// `decimal/` or `locale/names/`).
         #[arg(long, num_args = 1.., default_value = "chromium")]
         markers: Vec<String>,
+
+        /// Ignore ICU4C filter files and export upstream CLDR recommended
+        /// locales (`Modern`, `Moderate`, and `Basic` coverage levels) for all
+        /// selected markers. Useful for measuring the size reduction of
+        /// Chromium's locale filters or testing upstream data before updating
+        /// filter rules.
+        #[arg(long)]
+        unfiltered: bool,
 
         /// Override CLDR tag (defaults to `DEFAULT_CLDR_TAG`).
         #[arg(long, default_value = DEFAULT_CLDR_TAG)]
@@ -122,15 +151,15 @@ enum Commands {
 }
 
 #[derive(Clone, Copy, Debug)]
-pub struct MarkerEntry {
-    pub name: &'static str,
-    pub info: DataMarkerInfo,
-    pub is_unstable: bool,
+struct MarkerEntry {
+    name: &'static str,
+    info: DataMarkerInfo,
+    is_unstable: bool,
 }
 
 macro_rules! cb {
     ($($marker_ty:ty:$marker:ident,)+ #[unstable] $($emarker_ty:ty:$emarker:ident,)+) => {
-        pub fn all_registered_markers() -> Vec<MarkerEntry> {
+        fn all_registered_markers() -> Vec<MarkerEntry> {
             vec![
                 $(
                     MarkerEntry {
@@ -148,6 +177,14 @@ macro_rules! cb {
                 )+
             ]
         }
+
+        icu_provider::export::make_exportable_provider!(
+            FilteredDataProvider<SourceDataProvider>,
+            [
+                $($marker_ty,)+
+                $($emarker_ty,)+
+            ]
+        );
     };
 }
 
@@ -156,7 +193,7 @@ icu_provider_registry::registry!(cb);
 /// Convert a `DataMarkerId` (e.g. `DatetimeNamesWeekdayV1`) into its
 /// slash-separated path string (e.g. `"datetime/names/weekday/v1"`), matching
 /// `icu_provider_fs`.
-pub fn marker_path_str(marker: icu_provider::marker::DataMarkerId) -> String {
+fn marker_path_str(marker: icu_provider::marker::DataMarkerId) -> String {
     let mut parts = Vec::new();
     let mut last = 0;
     let name = marker.name();
@@ -173,7 +210,7 @@ pub fn marker_path_str(marker: icu_provider::marker::DataMarkerId) -> String {
 /// `icu_*_data` crates transitively depended on by
 /// `//third_party/rust/chromium_crates_io`), as well as data we plan to use
 /// shortly.
-pub const CHROMIUM_MARKER_PREFIXES: &[&str] = &[
+const CHROMIUM_MARKER_PREFIXES: &[&str] = &[
     "calendar/",
     "case/",
     "currency/",
@@ -189,7 +226,7 @@ pub const CHROMIUM_MARKER_PREFIXES: &[&str] = &[
     "units/",
 ];
 
-pub fn select_markers_by_args(marker_args: &[String]) -> Result<Vec<MarkerEntry>> {
+fn select_markers_by_args(marker_args: &[String]) -> Result<Vec<MarkerEntry>> {
     let all = all_registered_markers();
     let matches_arg = |arg: &str, path: &str, name: &str| match arg {
         "all" => true,
@@ -216,21 +253,17 @@ fn main() -> Result<()> {
 
     match cli.command {
         Commands::ListMarkers { markers } => {
-            for m in select_markers_by_args(&markers)? {
-                println!(
-                    "  {:42} -> {:45} (singleton={}, unstable={})",
-                    m.name,
-                    marker_path_str(m.info.id),
-                    m.info.is_singleton,
-                    m.is_unstable
-                );
-            }
+            let selected = select_markers_by_args(&markers)?;
+            filters::print_markers_by_category(&selected);
             Ok(())
         }
+        Commands::InspectFilters { icu_filters_dir } => filters::inspect_filters(&icu_filters_dir),
         Commands::Generate {
             icu4x_data_dir,
+            icu_filters_dir,
             platforms,
             markers: marker_args,
+            unfiltered,
             cldr_tag,
             icuexport_tag,
             unicode_tag,
@@ -274,9 +307,6 @@ fn main() -> Result<()> {
             let data_root = src_dir.join("data");
             std::fs::create_dir_all(&data_root)?;
 
-            // TODO(crbug.com/571707298): Apply per-platform ICU4C locale and
-            // feature filters from `//third_party/icu/filters/*.json` (wired up
-            // in https://crrev.com/c/8640572).
             for plat in &platform_list {
                 let plat_dir = data_root.join(plat.as_str());
                 if plat_dir.exists() {
@@ -289,22 +319,34 @@ fn main() -> Result<()> {
                 let baked_exporter = BakedExporter::new(plat_dir.clone(), baked_opts)
                     .with_context(|| format!("Failed to create BakedExporter for {plat}"))?;
 
-                let rec_locales: Vec<DataLocaleFamily> = provider
-                    .locales_for_coverage_levels([
-                        icu_provider_source::CoverageLevel::Modern,
-                        icu_provider_source::CoverageLevel::Moderate,
-                        icu_provider_source::CoverageLevel::Basic,
-                    ])?
-                    .into_iter()
-                    .map(DataLocaleFamily::with_descendants)
-                    .collect();
-                let driver = ExportDriver::new(
-                    rec_locales,
-                    DeduplicationStrategy::Maximal.into(),
-                    fallbacker.clone(),
-                )
-                .with_markers(selected_markers.iter().map(|m| m.info));
-                driver.export(&provider, baked_exporter)?;
+                if unfiltered {
+                    let exportable = FilteredDataProvider::unfiltered(provider.clone());
+                    let rec_locales: Vec<DataLocaleFamily> = provider
+                        .locales_for_coverage_levels([
+                            icu_provider_source::CoverageLevel::Modern,
+                            icu_provider_source::CoverageLevel::Moderate,
+                            icu_provider_source::CoverageLevel::Basic,
+                        ])?
+                        .into_iter()
+                        .map(DataLocaleFamily::with_descendants)
+                        .collect();
+                    let driver = ExportDriver::new(
+                        rec_locales,
+                        DeduplicationStrategy::Maximal.into(),
+                        fallbacker.clone(),
+                    )
+                    .with_markers(selected_markers.iter().map(|m| m.info));
+                    driver.export(&exportable, baked_exporter)?;
+                } else {
+                    filters::export_platform_filtered(
+                        *plat,
+                        &icu_filters_dir,
+                        provider.clone(),
+                        fallbacker.clone(),
+                        &selected_markers,
+                        baked_exporter,
+                    )?;
+                }
             }
 
             deduplicate_cross_platform_data(&data_root, &platform_list)?;
@@ -554,6 +596,18 @@ macro_rules! segmenter_lstm_tag {
     }
 
     Ok(())
+}
+
+#[cfg(test)]
+fn chromium_src_root() -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .unwrap()
+        .parent()
+        .unwrap()
+        .parent()
+        .unwrap()
+        .to_path_buf()
 }
 
 #[cfg(test)]
