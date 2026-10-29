@@ -34,6 +34,7 @@
 #import <Foundation/Foundation.h>
 #import <math.h>
 
+#include <array>
 #include <optional>
 #include <utility>
 
@@ -928,7 +929,7 @@ int ToAppKitFontWeight(FontSelectionValue font_weight) {
     return 5;
 
   size_t select_weight = roundf(weight / 100) - 1;
-  static int app_kit_font_weights[] = {
+  static constexpr auto kAppKitFontWeights = std::to_array<int>({
       2,   // FontWeight100
       3,   // FontWeight200
       4,   // FontWeight300
@@ -938,10 +939,8 @@ int ToAppKitFontWeight(FontSelectionValue font_weight) {
       9,   // FontWeight700
       10,  // FontWeight800
       12,  // FontWeight900
-  };
-  DCHECK_GE(select_weight, 0ul);
-  DCHECK_LE(select_weight, std::size(app_kit_font_weights));
-  return UNSAFE_TODO(app_kit_font_weights[select_weight]);
+  });
+  return kAppKitFontWeights[select_weight];
 }
 
 // CoreText font weight ranges are taken from `GetFontWeightFromCTFont` in
@@ -975,7 +974,7 @@ float ToCTFontWeight(int css_weight) {
   if (css_weight <= 50 || css_weight >= 950) {
     return 0.0;
   }
-  const float weights[] = {
+  static constexpr auto kWeights = std::to_array<float>({
       -0.80,  // Thin (Hairline)
       -0.60,  // Extra Light (Ultra Light)
       -0.40,  // Light
@@ -985,9 +984,9 @@ float ToCTFontWeight(int css_weight) {
       0.40,   // Bold
       0.56,   // Extra Bold (Ultra Bold)
       0.62,   // Black (Heavy)
-  };
+  });
   int index = (css_weight - 50) / 100;
-  return UNSAFE_TODO(weights[index]);
+  return kWeights[index];
 }
 
 // AppKit font weight ranges are taken from `ToNSFontManagerWeight` in
