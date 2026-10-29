@@ -273,6 +273,10 @@ source_set("ondevice") {
     "model_execution/on_device_prefs.cc",
     "model_execution/on_device_prefs.h",
   ]
+  public_deps = [
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/optimization_guide/public/mojom",
+  ]
   deps = [
     ":core_util",
     ":features",
@@ -281,8 +285,6 @@ source_set("ondevice") {
     "//build:branding_buildflags",
     "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-    "//components/optimization_guide/public/mojom",
     "//components/policy/core/common",
     "//components/prefs",
     "//components/variations/net",
@@ -349,8 +351,6 @@ source_set("ondevice") {
       ":on_device_model_execution_proto_generator",
       ":prediction",
       "//components/component_updater",
-      "//components/optimization_guide/proto:optimization_guide_proto",
-      "//components/optimization_guide/public/mojom",
       "//components/prefs",
       "//components/update_client",
       "//components/version_info",
@@ -441,6 +441,7 @@ if (build_with_model_execution) {
       "//components/optimization_guide/core/model_execution/configs:substitution_builders",
     ]
     deps = [
+      ":features",
       ":manifest_broker",
       ":ondevice",
       ":ondevice_test_support",
