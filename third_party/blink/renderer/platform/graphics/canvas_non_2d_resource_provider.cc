@@ -803,7 +803,8 @@ void CanvasNon2DResourceProvider::FlushRecording(
 base::ByteSize CanvasNon2DResourceProvider::EstimatedSizeInBytes() const {
   base::ByteSize result;
   if (resource_) {
-    result += resource_->EstimatedSizeInBytes() * num_inflight_resources_;
+    result += resource_->GetSharedImage()->EstimatedSizeInBytes() *
+              num_inflight_resources_;
   }
   return result;
 }

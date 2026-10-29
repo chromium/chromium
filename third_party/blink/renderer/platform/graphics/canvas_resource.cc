@@ -64,21 +64,6 @@ CanvasResource::CanvasResource(
 }
 
 // static
-void CanvasResource::ReleaseFrameResources(
-    scoped_refptr<CanvasResource>&& resource,
-    const gpu::SyncToken& sync_token,
-    bool lost_resource) {
-  CHECK(resource);
-
-  resource->WaitSyncToken(sync_token);
-  if (lost_resource) {
-    resource->NotifyResourceLost();
-  }
-
-  CanvasResource::DropRefOnOwningThread(std::move(resource));
-}
-
-// static
 void CanvasResource::DropRefOnOwningThread(
     scoped_refptr<CanvasResource> resource) {
   CHECK(resource);
@@ -95,7 +80,7 @@ void CanvasResource::DropRefOnOwningThread(
 
 CanvasResourceSharedImage::CanvasResourceSharedImage(
     scoped_refptr<gpu::ClientSharedImage> shared_image)
-    : CanvasResource(shared_image), alpha_type_(shared_image->alpha_type()) {}
+    : CanvasResource(shared_image) {}
 
 void CanvasResourceSharedImage::InitializeSoftware(
     base::WeakPtr<Client> client,
@@ -201,8 +186,9 @@ SkImageInfo CanvasResourceSharedImage::CreateSkImageInfo() const {
   auto size = GetSharedImage()->size();
   auto format = GetSharedImage()->format();
   auto color_space = GetSharedImage()->color_space();
+  auto alpha_type = GetSharedImage()->alpha_type();
   return SkImageInfo::Make(SkISize::Make(size.width(), size.height()),
-                           viz::ToClosestSkColorType(format), alpha_type_,
+                           viz::ToClosestSkColorType(format), alpha_type,
                            color_space.ToSkColorSpace());
 }
 
@@ -252,16 +238,27 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
   // ref-count on the resource as a proxy for a read lock to allow recycling the
   // resource once all refs have been released.
   auto release_callback = base::BindOnce(
-      &ReleaseFrameResources, scoped_refptr<CanvasResourceSharedImage>(this));
+      [](scoped_refptr<CanvasResourceSharedImage>&& resource,
+         const gpu::SyncToken& sync_token, bool lost_resource) {
+        CHECK(resource);
+
+        resource->WaitSyncToken(sync_token);
+        if (lost_resource) {
+          resource->NotifyResourceLost();
+        }
+
+        CanvasResource::DropRefOnOwningThread(std::move(resource));
+      },
+      scoped_refptr<CanvasResourceSharedImage>(this));
 
   scoped_refptr<StaticBitmapImage> image;
   const auto& client_shared_image = GetSharedImage();
 
   // If its cross thread, then the sync token was already verified.
   image = AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-      client_shared_image, sync_token(), alpha_type_, hdr_metadata_,
-      context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
-      std::move(release_callback));
+      client_shared_image, sync_token(), client_shared_image->alpha_type(),
+      hdr_metadata_, context_provider_wrapper_, owning_thread_ref_,
+      owning_thread_task_runner_, std::move(release_callback));
 
   DCHECK(image);
   return image;

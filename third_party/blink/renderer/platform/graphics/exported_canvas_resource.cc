@@ -170,7 +170,7 @@ void ExportedCanvasResource::OnPlaceholderReleasedResource(
 }
 
 gfx::Size ExportedCanvasResource::Size() const {
-  return resource_->Size();
+  return resource_->GetSharedImage()->size();
 }
 
 bool ExportedCanvasResource::OriginClean() const {

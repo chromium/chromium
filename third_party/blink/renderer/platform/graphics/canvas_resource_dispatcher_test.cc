@@ -245,7 +245,6 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
       /*context_provider_wrapper=*/nullptr, shared_image_interface_provider());
 
   EXPECT_TRUE(!!canvas_resource);
-  EXPECT_EQ(canvas_resource->Size(), GetSize());
 
   const bool context_alpha = GetParam().context_alpha;
 

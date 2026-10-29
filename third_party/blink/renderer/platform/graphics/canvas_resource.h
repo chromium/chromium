@@ -66,12 +66,6 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
 
   static void DropRefOnOwningThread(scoped_refptr<CanvasResource> resource);
 
-  // The bounds for this resource.
-  gfx::Size Size() const { return GetSharedImage()->size(); }
-  base::ByteSize EstimatedSizeInBytes() const {
-    return GetSharedImage()->EstimatedSizeInBytes();
-  }
-
   // Issues a wait for this sync token on the context used by this resource for
   // rendering.
   virtual void WaitSyncToken(const gpu::SyncToken&) = 0;
@@ -100,10 +94,6 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
 
  protected:
   explicit CanvasResource(scoped_refptr<gpu::ClientSharedImage> shared_image);
-
-  static void ReleaseFrameResources(scoped_refptr<CanvasResource>&& resource,
-                                    const gpu::SyncToken& sync_token,
-                                    bool lost_resource);
 
   virtual const gfx::HDRMetadata& GetHdrMetadata() const = 0;
   virtual viz::TransferableResource::ResourceSource
@@ -205,7 +195,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   ~CanvasResourceSharedImage() override;
 
   SkImageInfo CreateSkImageInfo() const;
-  SkAlphaType GetAlphaType() const { return alpha_type_; }
   gpu::raster::RasterInterface* RasterInterface() const;
 
   // These members are either only accessed on the owning thread, or are only
@@ -222,7 +211,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   // Accessed on any thread.
   bool is_accelerated_ = false;
   bool is_initialized_ = false;
-  const SkAlphaType alpha_type_;
   gfx::HDRMetadata hdr_metadata_;
   base::WeakPtr<Client> client_;
 };
