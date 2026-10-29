@@ -3694,7 +3694,7 @@
         "type": "android"
       },
       "gl_vendor": "ARM.*",
-      "gl_renderer": "Mali-G.*",
+      "gl_renderer": "Mali.*",
       "features": [
         "check_graphics_reset_status_after_readback"
       ]
