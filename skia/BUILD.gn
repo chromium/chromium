@@ -87,6 +87,10 @@ config("skia_config") {
     "SK_EXIF_PARSE_WITH_RUST",
   ]
 
+  if (use_partition_alloc_as_malloc) {
+    defines += [ "SK_USE_PARTITION_ALLOC_AS_MALLOC" ]
+  }
+
   if (!allow_avx512) {
     defines += [ "SK_DISABLE_AVX512_OPTS" ]
   } else {
