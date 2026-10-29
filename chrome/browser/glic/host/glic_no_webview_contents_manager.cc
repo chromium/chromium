@@ -34,6 +34,7 @@
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_perf_traits_tracker.h"
 #include "chrome/browser/glic/public/glic_provider_metrics.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/pwc/privileged_web_contents.h"
@@ -197,8 +198,9 @@ const char* ErrorPanelTypeToHistogramSuffix(mojom::ErrorPanelType error_type) {
   }
 }
 
-bool ShouldDisableLoadingOverlay(bool guest_main_page_loaded) {
-  if (!base::FeatureList::IsEnabled(features::kGlicSsr)) {
+bool ShouldDisableLoadingOverlay(Profile* profile,
+                                 bool guest_main_page_loaded) {
+  if (!GetGlicProviderSpec(profile).SupportsSsr()) {
     return false;
   }
   if (features::kGlicShowLoaderUntilMainPageOnload.Get()) {
@@ -377,6 +379,7 @@ GlicNoWebviewContentsManager::OverlayContentsManager::DetermineOverlayState(
     std::optional<mojom::ErrorPanelType> error_type,
     GuestState guest_state,
     std::optional<mojom::PanelStateKind> panel_state_kind,
+    Profile* profile,
     bool guest_main_page_loaded) {
   // Input 1: Active error state. An error panel always takes precedence.
   if (error_type.has_value()) {
@@ -388,7 +391,7 @@ GlicNoWebviewContentsManager::OverlayContentsManager::DetermineOverlayState(
   // overlay is disabled, the guest WebContents is shown and no overlay is
   // needed.
   if (guest_state != GuestState::kLoading ||
-      ShouldDisableLoadingOverlay(guest_main_page_loaded)) {
+      ShouldDisableLoadingOverlay(profile, guest_main_page_loaded)) {
     return nullptr;
   }
 
@@ -409,7 +412,7 @@ GlicNoWebviewContentsManager::OverlayContentsManager::DetermineOverlayState() {
     panel_state_kind = (*panel_state_)->kind;
   }
   return DetermineOverlayState(*error_type_, *guest_state_, panel_state_kind,
-                               *guest_main_page_loaded_);
+                               profile_, *guest_main_page_loaded_);
 }
 
 void GlicNoWebviewContentsManager::OverlayContentsManager::
@@ -881,7 +884,7 @@ GlicNoWebviewContentsManager::CalculateDesiredState() const {
     return DisplayState::kShowingOverlay;
   }
   if (guest_state_ != GuestState::kLoading ||
-      ShouldDisableLoadingOverlay(*guest_main_page_loaded_)) {
+      ShouldDisableLoadingOverlay(profile_, *guest_main_page_loaded_)) {
     return DisplayState::kShowingGuest;
   }
   if (features::IsGlicNativeLoadingPlaceholderEnabled()) {

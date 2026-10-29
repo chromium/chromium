@@ -27,6 +27,9 @@ specific_include_rules = {
   "glic_enabling_unittest\\.cc": [
     "+chrome/browser/glic/gemini_enterprise/geic_fre.h",
   ],
+  "glic_no_webview_contents_manager_browsertest\\.cc": [
+    "+chrome/browser/glic/gemini_enterprise/geic_enabling.h",
+  ],
   "glic_actor_attempt_otp_filling_.*": [
     "+components/one_time_tokens/core/browser",
   ],

@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
@@ -575,7 +576,9 @@ void GlicWebClientManager::DidFinishNavigation(
 }
 
 void GlicWebClientManager::DocumentOnLoadCompletedInPrimaryMainFrame() {
-  if (base::FeatureList::IsEnabled(features::kGlicSsr) &&
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  if (GetGlicProviderSpec(profile).SupportsSsr() &&
       features::kGlicShowLoaderUntilMainPageOnload.Get() &&
       last_committed_page_type_ == mojom::GuestPageType::kRegular &&
       last_committed_is_api_allowed_) {

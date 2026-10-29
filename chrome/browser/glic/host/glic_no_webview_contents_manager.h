@@ -109,10 +109,13 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
     //   (returns nullptr).
     // - `panel_state_kind`: Detached panels show a floating loading skeleton;
     //   otherwise, a side-panel loading skeleton is shown.
+    // - `profile`: The loading overlay is only skipped if the profile's
+    //   provider supports SSR (see `GlicProviderSpec::SupportsSsr()`).
     static mojom::OverlayStatePtr DetermineOverlayState(
         std::optional<mojom::ErrorPanelType> error_type,
         GuestState guest_state,
         std::optional<mojom::PanelStateKind> panel_state_kind,
+        Profile* profile,
         bool guest_main_page_loaded);
 
     // Evaluates current inputs to determine the desired overlay state.

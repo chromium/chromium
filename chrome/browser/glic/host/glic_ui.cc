@@ -32,6 +32,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/resources/glic_resources.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
@@ -242,8 +243,8 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   source->AddString("chromeVersion", version_info::GetVersionNumber());
   source->AddString("chromeChannel",
                     version_info::GetChannelString(chrome::GetChannel()));
-  source->AddBoolean("glicSsr",
-                     base::FeatureList::IsEnabled(features::kGlicSsr));
+  const bool supports_ssr = GetGlicProviderSpec(profile).SupportsSsr();
+  source->AddBoolean("glicSsr", supports_ssr);
   source->AddBoolean("onboardingCompleted",
                      GlicEnabling::HasConsentedForProfile(profile));
   if (std::optional<std::string> onboarding_arm = GetOnboardingArm(profile);
@@ -352,7 +353,7 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   source->AddBoolean(
       "noLoader", base::FeatureList::IsEnabled(features::kGlicNoWebUiLoader) ||
                       features::IsGlicNativeLoadingPlaceholderEnabled() ||
-                      (base::FeatureList::IsEnabled(features::kGlicSsr) &&
+                      (supports_ssr &&
                        !features::kGlicShowLoaderUntilMainPageOnload.Get()));
 
   source->AddBoolean("enableWebClientUnresponsiveMetrics",

@@ -9,6 +9,7 @@
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/public/glic_request_headers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
@@ -97,7 +98,7 @@ void GlicURLLoaderThrottle::SetHeaders(net::HttpRequestHeaders* headers,
   headers->SetHeader(kGlicVersionHeaderName, version_info::GetVersionNumber());
   headers->SetHeader(kGlicChannelHeaderName,
                      version_info::GetChannelString(chrome::GetChannel()));
-  if (base::FeatureList::IsEnabled(features::kGlicSsr)) {
+  if (GetGlicProviderSpec(profile).SupportsSsr()) {
     SetOnboardingCompletedHeader(headers, profile);
     MaybeSetOnboardingArmHeader(headers, profile);
   }

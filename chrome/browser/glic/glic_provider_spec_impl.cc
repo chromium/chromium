@@ -110,6 +110,9 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
   const GlicFreStore& GetFreStore() const override { return *fre_store_; }
   bool RequiresGeminiAccountEligibility() const override { return true; }
   bool SupportsFeature(GlicFeature feature) const override { return true; }
+  bool SupportsSsr() const override {
+    return base::FeatureList::IsEnabled(features::kGlicSsr);
+  }
 
  private:
   const std::unique_ptr<GlicFreStore> fre_store_ = CreateGeminiFreStore();
@@ -154,6 +157,10 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
         return false;
     }
     NOTREACHED();
+  }
+  // TODO(b/576365433): Enable `kGeicSsr` once the webapp supports it.
+  bool SupportsSsr() const override {
+    return base::FeatureList::IsEnabled(features::kGeicSsr);
   }
 
  private:

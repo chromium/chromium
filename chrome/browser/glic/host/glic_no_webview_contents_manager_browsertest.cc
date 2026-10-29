@@ -19,17 +19,21 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_enabling.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_provider.h"
+#include "chrome/browser/glic/public/glic_provider_latch.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_tab_added_waiter.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/metrics/structured/buildflags/buildflags.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/test/test_structured_metrics_recorder.h"
@@ -918,14 +922,16 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
   // Input 1: Active error state takes precedence over loading/guest readiness.
   auto error_state = OverlayContentsManager::DetermineOverlayState(
       mojom::ErrorPanelType::kSignIn, GuestState::kLoading,
-      mojom::PanelStateKind::kDetached, /*guest_main_page_loaded=*/false);
+      mojom::PanelStateKind::kDetached, GetProfile(),
+      /*guest_main_page_loaded=*/false);
   ASSERT_TRUE(error_state && error_state->is_error());
   EXPECT_EQ(error_state->get_error(), mojom::ErrorPanelType::kSignIn);
 
   // Error also takes precedence even if guest is ready.
   auto error_ready_state = OverlayContentsManager::DetermineOverlayState(
       mojom::ErrorPanelType::kDisabledByAdmin, GuestState::kReady,
-      mojom::PanelStateKind::kAttached, /*guest_main_page_loaded=*/false);
+      mojom::PanelStateKind::kAttached, GetProfile(),
+      /*guest_main_page_loaded=*/false);
   ASSERT_TRUE(error_ready_state && error_ready_state->is_error());
   EXPECT_EQ(error_ready_state->get_error(),
             mojom::ErrorPanelType::kDisabledByAdmin);
@@ -934,21 +940,26 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
   // returns null (no overlay needed).
   EXPECT_FALSE(OverlayContentsManager::DetermineOverlayState(
       /*error_type=*/std::nullopt, GuestState::kReady,
-      mojom::PanelStateKind::kAttached, /*guest_main_page_loaded=*/false));
+      mojom::PanelStateKind::kAttached, GetProfile(),
+      /*guest_main_page_loaded=*/false));
   EXPECT_FALSE(OverlayContentsManager::DetermineOverlayState(
       /*error_type=*/std::nullopt, GuestState::kLogin,
-      mojom::PanelStateKind::kAttached, /*guest_main_page_loaded=*/false));
+      mojom::PanelStateKind::kAttached, GetProfile(),
+      /*guest_main_page_loaded=*/false));
   EXPECT_FALSE(OverlayContentsManager::DetermineOverlayState(
       /*error_type=*/std::nullopt, GuestState::kSecurityInterstitial,
-      mojom::PanelStateKind::kAttached, /*guest_main_page_loaded=*/false));
+      mojom::PanelStateKind::kAttached, GetProfile(),
+      /*guest_main_page_loaded=*/false));
   EXPECT_FALSE(OverlayContentsManager::DetermineOverlayState(
       /*error_type=*/std::nullopt, GuestState::kGuestError,
-      mojom::PanelStateKind::kAttached, /*guest_main_page_loaded=*/false));
+      mojom::PanelStateKind::kAttached, GetProfile(),
+      /*guest_main_page_loaded=*/false));
 
   // Input 3: Panel state. When loading and detached, returns kFloating style.
   auto floating_state = OverlayContentsManager::DetermineOverlayState(
       /*error_type=*/std::nullopt, GuestState::kLoading,
-      mojom::PanelStateKind::kDetached, /*guest_main_page_loaded=*/false);
+      mojom::PanelStateKind::kDetached, GetProfile(),
+      /*guest_main_page_loaded=*/false);
   ASSERT_TRUE(floating_state && floating_state->is_loading());
   EXPECT_EQ(floating_state->get_loading(), mojom::LoadingStyle::kFloating);
 
@@ -956,13 +967,15 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
   // style.
   auto attached_state = OverlayContentsManager::DetermineOverlayState(
       /*error_type=*/std::nullopt, GuestState::kLoading,
-      mojom::PanelStateKind::kAttached, /*guest_main_page_loaded=*/false);
+      mojom::PanelStateKind::kAttached, GetProfile(),
+      /*guest_main_page_loaded=*/false);
   ASSERT_TRUE(attached_state && attached_state->is_loading());
   EXPECT_EQ(attached_state->get_loading(), mojom::LoadingStyle::kSidePanel);
 
   auto unattached_state = OverlayContentsManager::DetermineOverlayState(
       /*error_type=*/std::nullopt, GuestState::kLoading,
-      /*panel_state_kind=*/std::nullopt, /*guest_main_page_loaded=*/false);
+      /*panel_state_kind=*/std::nullopt, GetProfile(),
+      /*guest_main_page_loaded=*/false);
   ASSERT_TRUE(unattached_state && unattached_state->is_loading());
   EXPECT_EQ(unattached_state->get_loading(), mojom::LoadingStyle::kSidePanel);
 }
@@ -1469,6 +1482,48 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewSsrOverlayBrowserTest,
   EXPECT_EQ(manager->state(),
             GlicNoWebviewContentsManager::DisplayState::kShowingOverlay);
   EXPECT_EQ(manager->active_web_contents(), manager->overlay_contents());
+}
+
+// Same as `GlicNoWebviewSsrOverlayBrowserTest`, but the profile is latched to
+// Gemini Enterprise, which doesn't support SSR.
+class GlicNoWebviewGeicSsrOverlayBrowserTest
+    : public GlicNoWebviewSsrOverlayBrowserTest {
+ public:
+  GlicNoWebviewGeicSsrOverlayBrowserTest() {
+    geic_feature_list_.InitAndEnableFeature(features::kGeic);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    GlicNoWebviewSsrOverlayBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(geic::kGeicGuestURLSwitch,
+                                    GetGuestURL().spec());
+    // Lets the GEiC guest URL point at the test server rather than an
+    // allowlisted Gemini Enterprise host.
+    command_line->AppendSwitch(::switches::kGlicDev);
+  }
+
+ private:
+  base::test::ScopedFeatureList geic_feature_list_;
+};
+
+// kGlicSsr only skips the loading overlay for providers that support SSR (see
+// `GlicProviderSpec::SupportsSsr()`).
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewGeicSsrOverlayBrowserTest,
+                       KeepsLoadingOverlayWithoutSsrSupport) {
+  ASSERT_EQ(GlicProviderLatch::GetProvider(*GetProfile()),
+            GlicProvider::kGeminiEnterprise);
+
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+
+  EXPECT_EQ(manager->guest_state().get(),
+            GlicNoWebviewContentsManager::GuestState::kLoading);
+  EXPECT_EQ(manager->state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingOverlay);
+  EXPECT_EQ(manager->active_web_contents(), manager->overlay_contents());
+  mojom::OverlayStatePtr overlay_state = manager->GetOverlayStateForTesting();
+  ASSERT_TRUE(overlay_state && overlay_state->is_loading());
 }
 
 class GlicNoWebviewShowLoaderUntilMainPageOnloadBrowserTest

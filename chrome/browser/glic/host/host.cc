@@ -31,6 +31,7 @@
 #include "chrome/browser/glic/public/glic_instance_metrics_backwards_compatibility.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/common/actor_webui.mojom.h"
@@ -759,7 +760,7 @@ bool Host::ComputeIsShowingNativeLoading() const {
     return false;
   }
   const GlicWebClientManager* client_manager = web_client_manager();
-  if (base::FeatureList::IsEnabled(features::kGlicSsr) &&
+  if (GetGlicProviderSpec(profile_).SupportsSsr() &&
       (!features::kGlicShowLoaderUntilMainPageOnload.Get() ||
        (client_manager && client_manager->guest_main_page_loaded()))) {
     return false;

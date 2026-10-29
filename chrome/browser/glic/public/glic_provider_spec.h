@@ -95,6 +95,8 @@ class GlicProviderSpec {
   // Whether this provider supports `feature`. This only reports provider
   // support; callers still apply the feature's other requirements.
   virtual bool SupportsFeature(GlicFeature feature) const = 0;
+  // Whether this provider's guest supports server-side rendering.
+  virtual bool SupportsSsr() const = 0;
 };
 
 }  // namespace glic
