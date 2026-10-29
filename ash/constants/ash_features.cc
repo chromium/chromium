@@ -1059,6 +1059,11 @@ BASE_FEATURE(kLocalFactorsPasswordComplexity, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables local authentication controller with PIN support.
 BASE_FEATURE(kLocalAuthenticationWithPin, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables client certificate authentication for browser-process network
+// requests on the login screen (e.g. behind an mTLS proxy).
+BASE_FEATURE(kLoginScreenProxyClientCertAuth,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature to allow MAC address randomization to be enabled for WiFi networks.
 BASE_FEATURE(kMacAddressRandomization, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2400,6 +2405,10 @@ bool IsLobsterAlwaysShowDisclaimerForTesting() {
 
 bool IsLobsterEnabledForManagedUsers() {
   return base::FeatureList::IsEnabled(kLobsterForManagedUsers);
+}
+
+bool IsLoginScreenProxyClientCertAuthEnabled() {
+  return base::FeatureList::IsEnabled(kLoginScreenProxyClientCertAuth);
 }
 
 bool IsProductivityLauncherImageSearchEnabled() {

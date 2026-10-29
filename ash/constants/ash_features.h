@@ -493,6 +493,8 @@ BASE_DECLARE_FEATURE(kLobsterAlwaysShowDisclaimerForTesting);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLobsterRightClickMenu);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kLoginScreenProxyClientCertAuth);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kManagedLocalPinAndPassword);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFeatureManagementLobster);
@@ -1007,6 +1009,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLobsterDisabledByInvalidIME();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLobsterI18nEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLobsterUseRewrittenQuery();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLobsterAlwaysShowDisclaimerForTesting();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLoginScreenProxyClientCertAuthEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsMacAddressRandomizationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldMigrateOwnerKeyToPrivateSlot();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationLimitEnabled();
