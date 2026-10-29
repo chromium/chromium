@@ -17,6 +17,9 @@ let kJPEGImageQualityDefault: CGFloat = 1.0
 // file size by ~3-5x compared to 1.0.
 let kJPEGImageQualityCompressed: CGFloat = 0.97
 
+// Scale factor applied when downsampling snapshot images for storage.
+let kSnapshotDownsampleScaleFactor: CGFloat = 0.7
+
 // Wraps a main-thread completion so it can be transferred through the background queue.
 private final class ImageWriteCompletion: @unchecked Sendable {
   let callback: (UIImage) -> Void
@@ -314,11 +317,11 @@ extension SnapshotReadImageTrace: @unchecked Sendable {}
     }
   }
 
-  // Halves the pixel density of the image while keeping the same point dimensions.
+  // Downsamples the pixel density of the image while keeping the same point dimensions.
   private static func downsampledForStorage(_ image: UIImage) -> UIImage {
     let targetSize = image.size
     let format = UIGraphicsImageRendererFormat()
-    format.scale = image.scale / 2.0
+    format.scale = image.scale * kSnapshotDownsampleScaleFactor
     let renderer = UIGraphicsImageRenderer(size: targetSize, format: format)
     return renderer.image { _ in
       image.draw(in: CGRect(origin: .zero, size: targetSize))

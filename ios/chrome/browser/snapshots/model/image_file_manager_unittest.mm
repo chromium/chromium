@@ -23,7 +23,7 @@
 namespace {
 
 const NSUInteger kSnapshotCount = 10;
-const NSUInteger kSnapshotPixelSize = 8;
+const NSUInteger kSnapshotPixelSize = 10;
 
 // Guesses the order of the color channels in the image.
 // Supports RGB, BGR, RGBA, BGRA, ARGB, ABGR.
@@ -367,10 +367,10 @@ TEST_F(ImageFileManagerTest, DownsampleImage) {
   ASSERT_TRUE(optimized_image);
   EXPECT_EQ(image.size.width, optimized_image.size.width);
   EXPECT_EQ(image.size.height, optimized_image.size.height);
-  EXPECT_EQ(image.scale / 2.0, optimized_image.scale);
-  EXPECT_EQ(CGImageGetWidth(image.CGImage) / 2,
+  EXPECT_DOUBLE_EQ(image.scale * 0.7, optimized_image.scale);
+  EXPECT_EQ(CGImageGetWidth(image.CGImage) * 0.7,
             CGImageGetWidth(optimized_image.CGImage));
-  EXPECT_EQ(CGImageGetHeight(image.CGImage) / 2,
+  EXPECT_EQ(CGImageGetHeight(image.CGImage) * 0.7,
             CGImageGetHeight(optimized_image.CGImage));
 }
 

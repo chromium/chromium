@@ -12,7 +12,7 @@
 // When disabled (default), snapshots use quality 1.0 (no compression).
 BASE_DECLARE_FEATURE(kSnapshotCompressedJPEGQuality);
 
-// Feature flag to enable downsampling snapshot images to half resolution
+// Feature flag to enable downsampling snapshot images to 70% resolution
 // before writing to disk. When disabled (default), snapshots are written
 // at their original captured resolution.
 BASE_DECLARE_FEATURE(kSnapshotDownsampleImage);

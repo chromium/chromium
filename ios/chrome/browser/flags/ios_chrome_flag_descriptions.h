@@ -1913,7 +1913,7 @@ inline constexpr char kSnapshotConcurrentAccessDescription[] =
 inline constexpr char kSnapshotDownsampleImageName[] =
     "Snapshot Downsample Image";
 inline constexpr char kSnapshotDownsampleImageDescription[] =
-    "Downsamples tab snapshots to half resolution before writing to disk, "
+    "Downsamples tab snapshots to 70% resolution before writing to disk, "
     "reducing storage and I/O while keeping full resolution in memory.";
 
 inline constexpr char kStartSurfaceUserSettingName[] =
