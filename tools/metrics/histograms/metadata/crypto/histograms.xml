@@ -172,8 +172,10 @@ chromium-metrics-reviews@google.com.
   <owner>jdoerrie@chromium.org</owner>
   <owner>src/crypto/OWNERS</owner>
   <summary>
-    Collected on Windows when tbs.dll fails to load during TPM certification.
-    Records the HRESULT from loading the library.
+    Records the HRESULT from loading tbs.dll on Windows (S_OK on success), once
+    per process. Before M159, recorded during TPM certification. Starting in
+    M159, recorded on the first request for the Windows TPM key provider, which
+    now checks for a TPM.
   </summary>
 </histogram>
 

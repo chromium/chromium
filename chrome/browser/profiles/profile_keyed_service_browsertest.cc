@@ -62,6 +62,10 @@
 #include "components/policy/core/common/features.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
+#if BUILDFLAG(IS_WIN)
+#include "crypto/scoped_fake_unexportable_key_provider.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -450,6 +454,12 @@ class ProfileKeyedServiceGuestBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+#if BUILDFLAG(IS_WIN)
+  // BoundSessionCookieRefreshService is only created with an unexportable key
+  // provider, which Windows only has on machines with a TPM. Use a fake one so
+  // the expected services don't depend on the bot's hardware.
+  crypto::ScopedFakeUnexportableKeyProvider fake_key_provider_;
+#endif  // BUILDFLAG(IS_WIN)
 };
 #endif
 

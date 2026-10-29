@@ -1323,6 +1323,7 @@ if (!is_android) {
       "//components/universal_optout:features",
       "//components/user_manager",
       "//content/test:test_support",
+      "//crypto:test_support",
       "//testing/gmock",
       "//testing/gtest",
     ]

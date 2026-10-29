@@ -10,6 +10,7 @@
 #include <array>
 #include <concepts>
 #include <functional>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -647,13 +648,20 @@ bool IsTbsAvailable() {
   return is_available;
 }
 
-bool IsTpm20Available() {
-  if (!IsTbsAvailable()) {
-    return false;
-  }
-  TPM_DEVICE_INFO tpm_info{};
-  TBS_RESULT result = ::Tbsi_GetDeviceInfo(sizeof(tpm_info), &tpm_info);
-  return result == TBS_SUCCESS && tpm_info.tpmVersion >= TPM_VERSION_20;
+// Returns the TPM version reported by TBS, or nullopt if there is no usable
+// TPM. Cached for the lifetime of the process. The first call loads tbs.dll.
+std::optional<UINT32> GetTpmVersion() {
+  static const auto tpm_version = []() -> std::optional<UINT32> {
+    if (!IsTbsAvailable()) {
+      return std::nullopt;
+    }
+    TPM_DEVICE_INFO tpm_info{};
+    if (::Tbsi_GetDeviceInfo(sizeof(tpm_info), &tpm_info) != TBS_SUCCESS) {
+      return std::nullopt;
+    }
+    return tpm_info.tpmVersion;
+  }();
+  return tpm_version;
 }
 
 // Maps a TPM operation (represented by a TPM command) to a TPMOperation enum.
@@ -1285,8 +1293,9 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
 
     // Both routes yield a restricted signing key, which `AttestationKeyWin`
     // can only sign with over TBS, so require TBS even on the PCP route.
-    if (provider_type_ != ProviderType::kTPM || !IsTbsAvailable() ||
-        !IsTpm20Available()) {
+    // `GetTpmVersion()` returns nullopt without TBS.
+    if (provider_type_ != ProviderType::kTPM ||
+        GetTpmVersion() < TPM_VERSION_20) {
       return nullptr;
     }
 
@@ -1577,6 +1586,10 @@ ScopedNCryptKey DuplicatePlatformKeyHandle(const UnexportableSigningKey& key) {
 }
 
 std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderWin() {
+  // Any TPM version counts. TPM 1.2 machines get an RSA-only provider.
+  if (!GetTpmVersion()) {
+    return nullptr;
+  }
   return std::make_unique<UnexportableKeyProviderWin>(ProviderType::kTPM);
 }
 

@@ -18,7 +18,9 @@ namespace crypto {
 CRYPTO_EXPORT ScopedNCryptKey
 DuplicatePlatformKeyHandle(const UnexportableSigningKey& key);
 
-// Returns an `UnexportableKeyProvider` that is backed by the Windows TPM.
+// Returns an `UnexportableKeyProvider` that is backed by the Windows TPM, or
+// nullptr if the machine has no TPM. The first call loads tbs.dll to ask TBS
+// for the TPM, and the result is cached for the lifetime of the process.
 std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderWin();
 
 // Returns an `UnexportableKeyProvider` that is backed by the Microsoft Software

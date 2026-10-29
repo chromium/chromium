@@ -307,10 +307,12 @@ class CRYPTO_EXPORT StatefulUnexportableKeyProvider
   virtual std::optional<size_t> DeleteAllKeysSlowly() = 0;
 };
 
-// GetUnexportableKeyProvider returns an |UnexportableKeyProvider|
-// for the current platform, or nullptr if there isn't one. This can be called
-// from any thread but, in tests, but be sequenced with
-// |SetUnexportableSigningKeyProvider|.
+// GetUnexportableKeyProvider returns an `UnexportableKeyProvider`
+// for the current platform, or nullptr if there isn't one, e.g. on Windows
+// machines without a TPM or Macs without a Secure Enclave. This can be called
+// from any thread but, in tests, must be sequenced with
+// `SetUnexportableKeyProviderForTesting()`. On Windows, the first call loads
+// tbs.dll to check for a TPM.
 CRYPTO_EXPORT std::unique_ptr<UnexportableKeyProvider>
 GetUnexportableKeyProvider(UnexportableKeyProvider::Config config);
 
