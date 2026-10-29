@@ -1022,7 +1022,7 @@ IN_PROC_BROWSER_TEST_F(OriginKeyedProcessByDefaultBrowserTest,
   // nested_child is an ad because of its same-site ad parent. It must find the
   // uncommitted origin-keyed non_ad_url navigation and also be origin-keyed. If
   // it records a site-keyed state for other.bar.com, the non_ad_child commit
-  // below fails the CanAccessOrigin() CHECK, because its process is already
+  // below fails the CanCommitNewOrigin() CHECK, because its process is already
   // origin-keyed.
   content::TestNavigationManager nested_nav_manager(web_contents, nested_url);
   EXPECT_TRUE(content::ExecJs(
@@ -1181,7 +1181,7 @@ IN_PROC_BROWSER_TEST_F(OriginKeyedProcessByDefaultBrowserTest,
 // While A is paused, navigation B to the same origin is an ad from the start,
 // thus it does the global walk. The walk must find the paused navigation A, and
 // B must join A's origin-keyed SiteInstance. If B records a site-keyed state
-// for the origin, A's commit fails the CanAccessOrigin() CHECK.
+// for the origin, A's commit fails the CanCommitNewOrigin() CHECK.
 IN_PROC_BROWSER_TEST_F(OriginKeyedProcessByDefaultBrowserTest,
                        AdTagDuringWillProcessResponse) {
   base::HistogramTester histograms;
@@ -1219,7 +1219,7 @@ IN_PROC_BROWSER_TEST_F(OriginKeyedProcessByDefaultBrowserTest,
 
   // A commits after B. B's global walk recorded that other.bar.com stays
   // origin-keyed in this BrowsingInstance, so A's commit to its origin-keyed
-  // process passes the CanAccessOrigin() CHECK.
+  // process passes the CanCommitNewOrigin() CHECK.
   ASSERT_TRUE(late_ad_nav_manager.WaitForNavigationFinished());
   EXPECT_TRUE(late_ad_nav_manager.was_committed());
 

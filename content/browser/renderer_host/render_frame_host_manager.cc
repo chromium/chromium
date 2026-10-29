@@ -2320,9 +2320,8 @@ RenderFrameHostManager::GetFrameHostForNavigation(
         request->state() >= NavigationRequest::WILL_PROCESS_RESPONSE
             ? request->GetOriginToCommit().value()
             : request->GetTentativeOriginAtRequestTime();
-    if (!policy->CanAccessOrigin(
-            navigation_rfh->GetProcess()->GetDeprecatedID(), origin_to_commit,
-            ChildProcessSecurityPolicyImpl::AccessType::kCanCommitNewOrigin)) {
+    if (!policy->CanCommitNewOrigin(navigation_rfh->GetProcess()->GetID(),
+                                    origin_to_commit)) {
       SCOPED_CRASH_KEY_STRING256("GetFrameHostForNav", "lock_url",
                                  process_lock.ToString());
       SCOPED_CRASH_KEY_STRING64(

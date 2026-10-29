@@ -4366,7 +4366,7 @@ void NavigationRequest::MaybeRegisterExistingOriginAsHavingDefaultIsolation(
   // origin. Since this is different than the default origin-keyed state, it
   // also needs the global walk. Without it, one BrowsingInstance can have two
   // keys for one origin, and a commit to the origin-keyed process fails the
-  // CanAccessOrigin() check.
+  // CanCommitNewOrigin() check.
   if (!IsOriginAgentClusterOptInRequested() &&
       !IsOriginAgentClusterOptOutRequested() &&
       exclude_ad_from_origin_keyed_process_.value() == false) {
@@ -10482,11 +10482,9 @@ NavigationRequest::GetOriginForURLLoaderFactoryAfterResponse() {
   if (HasRenderFrameHost() &&
       !GetRenderFrameHost()->ShouldBypassSecurityChecksForErrorPage(this) &&
       !IsForMhtmlSubframe()) {
-    int process_id = GetRenderFrameHost()->GetProcess()->GetDeprecatedID();
     auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-    CHECK(policy->CanAccessOrigin(
-        process_id, origin,
-        ChildProcessSecurityPolicyImpl::AccessType::kCanCommitNewOrigin));
+    CHECK(policy->CanCommitNewOrigin(
+        GetRenderFrameHost()->GetProcess()->GetID(), origin));
   }
 
   return origin;

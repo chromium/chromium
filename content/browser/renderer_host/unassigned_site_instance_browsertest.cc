@@ -787,13 +787,11 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   // navigations.
   RenderProcessHost* new_process = new_instance->GetProcess();
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  EXPECT_TRUE(policy->CanAccessOrigin(
-      new_process->GetDeprecatedID(),
-      url::Origin::Create(embedder_defined_unassigned_url()),
-      ChildProcessSecurityPolicyImpl::AccessType::kCanCommitNewOrigin));
-  EXPECT_TRUE(policy->CanAccessOrigin(
-      new_process->GetDeprecatedID(), url::Origin::Create(regular_url()),
-      ChildProcessSecurityPolicyImpl::AccessType::kCanCommitNewOrigin));
+  EXPECT_TRUE(policy->CanCommitNewOrigin(
+      new_process->GetID(),
+      url::Origin::Create(embedder_defined_unassigned_url())));
+  EXPECT_TRUE(policy->CanCommitNewOrigin(new_process->GetID(),
+                                         url::Origin::Create(regular_url())));
 }
 
 // Ensure that when navigating from a URL with an unassigned SiteInstance to a

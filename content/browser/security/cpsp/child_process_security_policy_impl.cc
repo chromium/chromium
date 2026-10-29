@@ -2547,7 +2547,7 @@ CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(
 
   // Next check whether the origin resolved from the URL is allowed to commit.
   const url::Origin url_origin = url::Origin::Resolve(url_info.url, origin);
-  if (!CanAccessOrigin(child_id, url_origin, AccessType::kCanCommitNewOrigin)) {
+  if (!CanCommitNewOrigin(child_id, url_origin)) {
     // Check for special cases, like blob:null/ and data: URLs, where the
     // origin does not contain information to match against the process lock,
     // but using the whole URL can result in a process lock match.  Note that
@@ -2565,7 +2565,7 @@ CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(
   }
 
   // Finally check the origin on its own.
-  if (!CanAccessOrigin(child_id, origin, AccessType::kCanCommitNewOrigin)) {
+  if (!CanCommitNewOrigin(child_id, origin)) {
     return CanCommitStatus::CANNOT_COMMIT_ORIGIN;
   }
 
@@ -2647,6 +2647,46 @@ bool ChildProcessSecurityPolicyImpl::CanAccessOrigin(ChildProcessId child_id,
   // CanAccessDataForOrigin() call above. The code below overrides the origin
   // crash key set in that call with data from |origin| because it provides
   // more accurate information than the origin derived from |url_to_check|.
+  auto* requested_origin_key = GetRequestedOriginCrashKey();
+  base::debug::SetCrashKeyString(requested_origin_key, origin.GetDebugString());
+  return false;
+}
+
+bool ChildProcessSecurityPolicyImpl::CanCommitNewOrigin(
+    ChildProcessId child_id,
+    const url::Origin& origin) {
+  // TODO(crbug.com/522872468): Move the blocks duplicated between
+  // CanAccessOrigin() and CanCommitNewOrigin() into helper functions.
+  GURL url_to_check;
+  if (origin.opaque()) {
+    auto precursor_tuple = origin.GetTupleOrPrecursorTupleIfOpaque();
+    if (!precursor_tuple.IsValid()) {
+      // Allow opaque origins w/o precursors (if the process state exists).
+      // TODO(acolwell): Investigate all cases that trigger this path (e.g.,
+      // browser-initiated navigations to data: URLs) and fix them so we have
+      // precursor information (or the process lock is compatible with a missing
+      // precursor). Remove this logic once that has been completed.
+      base::AutoLock lock(lock_);
+      const ProcessState* process_state =
+          process_states_.GetProcessStateForQuery(child_id);
+      return !!process_state;
+    } else {
+      url_to_check = precursor_tuple.GetURL();
+    }
+  } else {
+    url_to_check = origin.GetURL();
+  }
+  bool success = CanAccessMaybeOpaqueOrigin(
+      child_id, url_to_check, origin.opaque(), AccessType::kCanCommitNewOrigin);
+  if (success) {
+    return true;
+  }
+
+  // Note: LogCanAccessDataForOriginCrashKeys() is called in the
+  // CanAccessMaybeOpaqueOrigin() call above. The code below overrides the
+  // origin crash key set in that call with data from |origin| because it
+  // provides more accurate information than the origin derived from
+  // |url_to_check|.
   auto* requested_origin_key = GetRequestedOriginCrashKey();
   base::debug::SetCrashKeyString(requested_origin_key, origin.GetDebugString());
   return false;

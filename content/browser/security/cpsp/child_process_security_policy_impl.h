@@ -311,6 +311,15 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                        const url::Origin& origin,
                        AccessType access_type);
 
+  // Whether the process can commit a navigation to `origin`, allowing a
+  // document with that origin to be hosted in this process. This is
+  // specifically about whether a particular new origin may be introduced into a
+  // given process.
+  //
+  // This can only be called on the UI thread, because it involves jail and
+  // citadel checks which require UI thread data structures.
+  bool CanCommitNewOrigin(ChildProcessId child_id, const url::Origin& origin);
+
   // Determines if the combination of origin, url and web_exposed_isolation_info
   // bundled in `url_info` are safe to commit to the process associated with
   // `child_id`.

@@ -13282,10 +13282,8 @@ void RenderFrameHostImpl::CommitNavigation(
       ProcessLock::FromSiteInfo(GetSiteInstance()->GetSiteInfo());
   auto browser_calc_origin_to_commit = navigation_request->GetOriginToCommit();
   if (!process_lock.is_error_page() && !is_mhtml_subframe &&
-      !policy->CanAccessOrigin(
-          GetProcess()->GetDeprecatedID(),
-          browser_calc_origin_to_commit.value(),
-          ChildProcessSecurityPolicyImpl::AccessType::kCanCommitNewOrigin)) {
+      !policy->CanCommitNewOrigin(GetProcess()->GetID(),
+                                  browser_calc_origin_to_commit.value())) {
     SCOPED_CRASH_KEY_STRING64("CommitNavigation", "lock_url",
                               process_lock.ToString());
     SCOPED_CRASH_KEY_STRING64(
@@ -14629,7 +14627,7 @@ void RenderFrameHostImpl::UpdatePermissionsForNavigation(
   // CanAccessDataForOrigin while setting up storage interfaces.
   //
   // Note that GetOriginToCommit() internally CHECKs that the origin to commit
-  // is valid for this process, using CanAccessOrigin() to perform jail and
+  // is valid for this process, using CanCommitNewOrigin() to perform jail and
   // citadel process lock checks, so this origin should to be safe to add.
   ChildProcessSecurityPolicyImpl::GetInstance()->AddCommittedOrigin(
       GetProcess()->GetDeprecatedID(), request->GetOriginToCommit().value());

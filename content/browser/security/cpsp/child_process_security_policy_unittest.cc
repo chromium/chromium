@@ -1909,16 +1909,12 @@ TEST_P(ChildProcessSecurityPolicyTest, SandboxedProcessEnforcements) {
 
   // A sandboxed process should be able to commit new URLs, as long as they
   // have an opaque origin with a matching precursor.
-  EXPECT_TRUE(p->CanAccessOrigin(renderer_id, opaque_foo_origin,
-                                 AccessType::kCanCommitNewOrigin));
+  EXPECT_TRUE(p->CanCommitNewOrigin(process.GetID(), opaque_foo_origin));
   // TODO(crbug.com/325410297): Currently, non-opaque origins are allowed to
   // commit. Fix this and flip the expectation to false.
-  EXPECT_TRUE(p->CanAccessOrigin(renderer_id, foo_origin,
-                                 AccessType::kCanCommitNewOrigin));
-  EXPECT_FALSE(p->CanAccessOrigin(renderer_id, bar_origin,
-                                  AccessType::kCanCommitNewOrigin));
-  EXPECT_FALSE(p->CanAccessOrigin(renderer_id, opaque_bar_origin,
-                                  AccessType::kCanCommitNewOrigin));
+  EXPECT_TRUE(p->CanCommitNewOrigin(process.GetID(), foo_origin));
+  EXPECT_FALSE(p->CanCommitNewOrigin(process.GetID(), bar_origin));
+  EXPECT_FALSE(p->CanCommitNewOrigin(process.GetID(), opaque_bar_origin));
 
   // A sandboxed process should not be able to access data for any origin,
   // including origins it has committed.
@@ -1946,19 +1942,18 @@ TEST_P(ChildProcessSecurityPolicyTest, SandboxedProcessEnforcements) {
                                   AccessType::kHostsOrigin));
 }
 
-// Verify that kCanCommitNewOrigin checks, which obtain the process's
+// Verify that CanCommitNewOrigin checks, which obtain the process's
 // BrowserContext from its RenderProcessHost, fail if the RenderProcessHost is
 // gone.
 TEST_P(ChildProcessSecurityPolicyTest,
        CanCommitNewOriginRequiresRenderProcessHost) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
-  using AccessType = ChildProcessSecurityPolicyImpl::AccessType;
 
   TestBrowserContext browser_context;
   // The process below is locked to https://foo.com if needed. With full site
   // isolation (e.g., on desktop), this gives it a site lock, so the
-  // kCanCommitNewOrigin check that succeeds goes through the Jail check. With
+  // CanCommitNewOrigin check that succeeds goes through the Jail check. With
   // partial site isolation (e.g., on Android), foo.com doesn't require a
   // dedicated process, so the process gets a lock that allows any site, and
   // that check goes through the Citadel check instead. The check that fails
@@ -1969,28 +1964,25 @@ TEST_P(ChildProcessSecurityPolicyTest,
 
   // A process with a live RenderProcessHost can commit.
   auto process = std::make_unique<MockRenderProcessHost>(&browser_context);
-  LockProcessIfNeeded(process->GetID(), &browser_context, foo_url);
-  const int renderer_id = process->GetDeprecatedID();
-  EXPECT_TRUE(p->CanAccessOrigin(renderer_id, foo_origin,
-                                 AccessType::kCanCommitNewOrigin));
+  const ChildProcessId renderer_id = process->GetID();
+  LockProcessIfNeeded(renderer_id, &browser_context, foo_url);
+  EXPECT_TRUE(p->CanCommitNewOrigin(renderer_id, foo_origin));
 
   // Without a RenderProcessHost, there's no way to obtain the process's
-  // BrowserContext, so kCanCommitNewOrigin checks should fail. (To test this,
+  // BrowserContext, so CanCommitNewOrigin checks should fail. (To test this,
   // use a Handle to keep the process's ProcessState alive after its
   // RenderProcessHost is destroyed.)
-  auto handle = p->CreateHandle(process->GetID());
+  auto handle = p->CreateHandle(renderer_id);
   process.reset();
-  EXPECT_FALSE(p->CanAccessOrigin(renderer_id, foo_origin,
-                                  AccessType::kCanCommitNewOrigin));
+  EXPECT_FALSE(p->CanCommitNewOrigin(renderer_id, foo_origin));
 }
 
-// Verify that kCanCommitNewOrigin checks fail once the process's BrowserContext
+// Verify that CanCommitNewOrigin checks fail once the process's BrowserContext
 // has started shutting down.
 TEST_P(ChildProcessSecurityPolicyTest,
        CanCommitNewOriginFailsAfterBrowserContextShutdownStarted) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
-  using AccessType = ChildProcessSecurityPolicyImpl::AccessType;
 
   TestBrowserContext browser_context;
   // As in CanCommitNewOriginRequiresRenderProcessHost, the process is locked
@@ -2000,17 +1992,15 @@ TEST_P(ChildProcessSecurityPolicyTest,
   const url::Origin foo_origin = url::Origin::Create(foo_url);
 
   MockRenderProcessHost process(&browser_context);
-  LockProcessIfNeeded(process.GetID(), &browser_context, foo_url);
-  const int renderer_id = process.GetDeprecatedID();
-  EXPECT_TRUE(p->CanAccessOrigin(renderer_id, foo_origin,
-                                 AccessType::kCanCommitNewOrigin));
+  const ChildProcessId renderer_id = process.GetID();
+  LockProcessIfNeeded(renderer_id, &browser_context, foo_url);
+  EXPECT_TRUE(p->CanCommitNewOrigin(renderer_id, foo_origin));
 
-  // Once the BrowserContext starts shutting down, kCanCommitNewOrigin checks
+  // Once the BrowserContext starts shutting down, CanCommitNewOrigin checks
   // should fail, since some of the state they depend on (e.g., isolated
   // origins) has already been cleared for that BrowserContext.
   browser_context.NotifyWillBeDestroyed();
-  EXPECT_FALSE(p->CanAccessOrigin(renderer_id, foo_origin,
-                                  AccessType::kCanCommitNewOrigin));
+  EXPECT_FALSE(p->CanCommitNewOrigin(renderer_id, foo_origin));
 }
 
 TEST_P(ChildProcessSecurityPolicyTest, PdfProcessEnforcements) {
@@ -2040,10 +2030,8 @@ TEST_P(ChildProcessSecurityPolicyTest, PdfProcessEnforcements) {
   using AccessType = ChildProcessSecurityPolicyImpl::AccessType;
 
   // A PDF process should be able to commit new URLs that match its ProcessLock.
-  EXPECT_TRUE(p->CanAccessOrigin(renderer_id, foo_origin,
-                                 AccessType::kCanCommitNewOrigin));
-  EXPECT_FALSE(p->CanAccessOrigin(renderer_id, bar_origin,
-                                  AccessType::kCanCommitNewOrigin));
+  EXPECT_TRUE(p->CanCommitNewOrigin(process.GetID(), foo_origin));
+  EXPECT_FALSE(p->CanCommitNewOrigin(process.GetID(), bar_origin));
 
   // A PDF process should also be able to host an origin that matches its
   // ProcessLock; for example, PDF documents can still use postMessage so they
