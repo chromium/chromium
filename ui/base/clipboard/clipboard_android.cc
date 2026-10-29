@@ -115,6 +115,18 @@ static void JNI_Clipboard_AddMapEntry(
   }
 }
 
+// Formats whose source of truth is the Android clipboard. While the local cache
+// is out of date, its entries for these formats can't be trusted.
+bool IsAndroidBackedFormat(const ClipboardFormatType& format) {
+  return format == ClipboardFormatType::PlainTextType() ||
+         format == ClipboardFormatType::HtmlType() ||
+         format == ClipboardFormatType::UrlType() ||
+         format == ClipboardFormatType::PngType() ||
+         format == ClipboardFormatType::BitmapType() ||
+         format == ClipboardFormatType::FilenamesType() ||
+         format == ClipboardFormatType::DataTransferCustomType();
+}
+
 class ClipboardMap {
  public:
   ClipboardMap();
@@ -168,6 +180,9 @@ class ClipboardMap {
   std::optional<std::string> GetCustomClipData(
       JNIEnv* env,
       const std::string& custom_type_name);
+  // Whether the Android clipboard carries custom web data, checked without
+  // reading the clip data itself.
+  bool HasCustomClipData(JNIEnv* env);
 
   std::map<ClipboardFormatType, std::string> map_ GUARDED_BY(lock_);
   MapState map_state_;
@@ -291,6 +306,8 @@ bool ClipboardMap::HasFormat(const ClipboardFormatType& format) {
     return Java_Clipboard_hasImage(env, clipboard_manager_);
   } else if (format == ClipboardFormatType::FilenamesType()) {
     return Java_Clipboard_hasFilenames(env, clipboard_manager_);
+  } else if (format == ClipboardFormatType::DataTransferCustomType()) {
+    return HasCustomClipData(env);
   }
 
   // Android unsupported format types, check local only.
@@ -334,11 +351,16 @@ base::flat_set<ClipboardFormatType> ClipboardMap::GetAllAvailableFormats(
   if (Java_Clipboard_hasFilenames(env, clipboard_manager_)) {
     formats.insert(ClipboardFormatType::FilenamesType());
   }
-
-  for (const auto& entry : map_) {
-    formats.insert(entry.first);
+  if (HasCustomClipData(env)) {
+    formats.insert(ClipboardFormatType::DataTransferCustomType());
   }
 
+  // Check local cache for formats not supported by the Android clipboard.
+  for (const auto& entry : map_) {
+    if (!IsAndroidBackedFormat(entry.first)) {
+      formats.insert(entry.first);
+    }
+  }
   return formats;
 }
 
@@ -537,6 +559,10 @@ void ClipboardMap::UpdateFromAndroidClipboard() {
   JNI_Clipboard_AddMapEntry(env, &map_, ClipboardFormatType::UrlType(), jurl);
   JNI_Clipboard_AddMapEntry(env, &map_, ClipboardFormatType::BitmapType(),
                             jimageuri);
+  // PngType is Chrome's copy of the bytes of an image it also put on the
+  // Android clipboard, which only exposes the image as a URI (BitmapType).
+  // Android is the source of truth for images, so drop the stale bytes.
+  map_.erase(ClipboardFormatType::PngType());
 
   ReadWebCustomData(env);
 
@@ -551,6 +577,16 @@ std::optional<std::string> ClipboardMap::GetCustomClipData(
   }
   return Java_Clipboard_getCustomClipData(env, clipboard_manager_,
                                           custom_type_name);
+}
+
+bool ClipboardMap::HasCustomClipData(JNIEnv* env) {
+  // Honor the test override, like GetCustomClipData().
+  if (has_test_custom_data_) {
+    return test_custom_data_.has_value();
+  }
+  return Java_Clipboard_hasClipboardDataForMimeType(
+      env, clipboard_manager_,
+      ClipboardFormatType::DataTransferCustomType().GetName());
 }
 
 void ClipboardMap::ReadWebCustomData(JNIEnv* env) {
