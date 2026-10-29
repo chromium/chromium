@@ -1,0 +1,29 @@
+Tests content quads, box model, and inspect-mode hit testing for HTML-in-Canvas.
+1. Non-drawn ancestor of drawable elements:
+#nondrawn contentQuads: [[0,0,100,0,100,200,0,200]]
+#nondrawn boxModel: {"content":[0,0,100,0,100,200,0,200],"padding":[0,0,100,0,100,200,0,200],"border":[0,0,100,0,100,200,0,200],"margin":[0,0,100,0,100,200,0,200],"width":100,"height":200}
+inspect(50, 50) -> highlight: canvas#canvas, inspect: canvas#canvas, getNodeForLocation: canvas#canvas
+2. Non-drawn drawable elements:
+#drawable contentQuads: [[0,0,100,0,100,100,0,100]]
+#drawable boxModel: {"content":[0,0,100,0,100,100,0,100],"padding":[0,0,100,0,100,100,0,100],"border":[0,0,100,0,100,100,0,100],"margin":[0,0,100,0,100,100,0,100],"width":100,"height":100}
+#nesteddrawable contentQuads: [[0,0,100,0,100,100,0,100]]
+#nesteddrawable boxModel: {"content":[0,0,100,0,100,100,0,100],"padding":[0,0,100,0,100,100,0,100],"border":[0,0,100,0,100,100,0,100],"margin":[0,0,100,0,100,100,0,100],"width":100,"height":100}
+inspect(50, 50) -> highlight: canvas#canvas, inspect: canvas#canvas, getNodeForLocation: canvas#canvas
+3. Drawn drawable elements:
+#drawable contentQuads: [[20,30,120,30,120,130,20,130]]
+#drawable boxModel: {"content":[20,30,120,30,120,130,20,130],"padding":[20,30,120,30,120,130,20,130],"border":[20,30,120,30,120,130,20,130],"margin":[20,30,120,30,120,130,20,130],"width":100,"height":100}
+#nesteddrawable contentQuads: [[150,40,250,40,250,140,150,140]]
+#nesteddrawable boxModel: {"content":[150,40,250,40,250,140,150,140],"padding":[150,40,250,40,250,140,150,140],"border":[150,40,250,40,250,140,150,140],"margin":[150,40,250,40,250,140,150,140],"width":100,"height":100}
+inspect(5, 5) -> highlight: canvas#canvas, inspect: canvas#canvas, getNodeForLocation: canvas#canvas
+inspect(70, 80) -> highlight: div#drawable, inspect: div#drawable, getNodeForLocation: div#drawable
+inspect(200, 90) -> highlight: div#nesteddrawable, inspect: div#nesteddrawable, getNodeForLocation: div#nesteddrawable
+4. Manual geometry update via updateElementGeometry:
+#drawable contentQuads: [[10,20,110,20,110,220,10,220]]
+#drawable boxModel: {"content":[10,20,110,20,110,220,10,220],"padding":[10,20,110,20,110,220,10,220],"border":[10,20,110,20,110,220,10,220],"margin":[10,20,110,20,110,220,10,220],"width":100,"height":100}
+#nesteddrawable contentQuads: [[140,30,240,30,240,130,140,130]]
+#nesteddrawable boxModel: {"content":[140,30,240,30,240,130,140,130],"padding":[140,30,240,30,240,130,140,130],"border":[140,30,240,30,240,130,140,130],"margin":[140,30,240,30,240,130,140,130],"width":100,"height":100}
+inspect(5, 5) -> highlight: canvas#canvas, inspect: canvas#canvas, getNodeForLocation: canvas#canvas
+inspect(60, 80) -> highlight: div#drawable, inspect: div#drawable, getNodeForLocation: div#drawable
+inspect(60, 180) -> highlight: canvas#canvas, inspect: canvas#canvas, getNodeForLocation: canvas#canvas
+inspect(190, 80) -> highlight: div#nesteddrawable, inspect: div#nesteddrawable, getNodeForLocation: div#nesteddrawable
+
