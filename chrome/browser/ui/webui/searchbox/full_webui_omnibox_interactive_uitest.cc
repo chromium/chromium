@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/scoped_observation.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -93,6 +94,7 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/google/core/common/google_switches.h"
+#include "components/google/core/common/google_util.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
@@ -115,6 +117,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/test_extension_dir.h"
+#include "net/base/url_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -782,6 +785,59 @@ class FullWebUIOmniboxInteractiveTestBase
                      ->GetText() == expected_text;
         },
         "WaitForOmniboxText");
+  }
+
+  // Waits until the omnibox edit session has ended: the popup is closed, the
+  // omnibox shows `expected_text`, and no user input is in progress.
+  auto WaitForOmniboxReverted(const std::u16string& expected_text) {
+    return Steps(WaitForPopupState(OmniboxPopupState::kNone),
+                 WaitForOmniboxText(expected_text),
+                 CheckUserInputInProgress(false));
+  }
+
+  auto CheckTabCount(int expected_count) {
+    return CheckResult(
+        [this]() { return browser()->tab_strip_model()->count(); },
+        expected_count, "CheckTabCount");
+  }
+
+  auto CheckActiveTabIndex(int expected_index) {
+    return CheckResult(
+        [this]() { return browser()->tab_strip_model()->active_index(); },
+        expected_index, "CheckActiveTabIndex");
+  }
+
+  // Returns whether `url` is a Google search for exactly `query`.
+  static bool IsGoogleSearchFor(const GURL& url, const std::string& query) {
+    std::string q;
+    return google_util::IsGoogleSearchUrl(url) &&
+           net::GetValueForKeyInQuery(url, "q", &q) &&
+           base::UnescapeURLComponent(
+               q, base::UnescapeRule::REPLACE_PLUS_WITH_SPACE) == query;
+  }
+
+  // Waits until exactly one browser window other than `browser()` is open, and
+  // its active tab has committed a Google search for `query`.
+  auto WaitForNewWindowWithGoogleSearch(const std::string& query) {
+    return PollUntil(
+        [this, query]() {
+          std::vector<BrowserWindowInterface*> other_browsers;
+          GlobalBrowserCollection::GetInstance()->ForEach(
+              [&](BrowserWindowInterface* other_browser) {
+                if (other_browser != browser()) {
+                  other_browsers.push_back(other_browser);
+                }
+                return true;
+              });
+          if (other_browsers.size() != 1) {
+            return false;
+          }
+          content::WebContents* contents =
+              other_browsers[0]->GetTabStripModel()->GetActiveWebContents();
+          return contents &&
+                 IsGoogleSearchFor(contents->GetLastCommittedURL(), query);
+        },
+        "WaitForNewWindowWithGoogleSearch");
   }
 
   // Waits for the 100ms popup transition state lock that
@@ -3556,7 +3612,10 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 }
 
 // Verifies that opening a suggestion in a new foreground tab via Alt+Enter
-// leaves the Omnibox on the new tab unfocused and the popup closed.
+// (Option+Return on Mac) searches for it in the new tab, leaves the Omnibox on
+// the new tab unfocused and the popup closed, and leaves the original tab on
+// its page. Returning to the original tab shows its URL rather than the draft,
+// with the omnibox unfocused and the popup closed, as with the classic omnibox.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        AltEnterOpensForegroundTabUnfocusedOmnibox) {
   RunTestSequence(
@@ -3564,33 +3623,180 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       InputWebUIText("a"),
       WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
                    "suggestion-1"),
-      InstrumentNextTab(kTab2),
+      CheckTabCount(2), CheckActiveTabIndex(1), InstrumentNextTab(kTab2),
       SendKeyPress(kBrowserViewElementId, ui::VKEY_RETURN, ui::EF_ALT_DOWN),
       WaitForWebContentsReady(kTab2),
       InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
-      WaitForOmniboxFocus(false));
+      WaitForOmniboxFocus(false),
+      // The default match, a search for the typed text, opened in a new tab
+      // that is now active.
+      WaitForGoogleSearch(kTab2, {{"q", "a"}}), CheckTabCount(3),
+      CheckActiveTabIndex(2),
+      // The original tab stays on its page.
+      CheckResult(
+          [this]() {
+            return browser()
+                ->tab_strip_model()
+                ->GetWebContentsAt(1)
+                ->GetLastCommittedURL();
+          },
+          GURL("chrome://version/"), "CheckOriginalTabUrl"),
+      // TODO(b/568378107): With the WebUI toolbar, the omnibox keeps focus
+      // after the full popup closes, so returning to the original tab reopens
+      // the popup. Check the original tab with the WebUI toolbar too once that
+      // is fixed.
+      If([this]() { return !IsWebUIToolbarEnabled(); },
+         Then(SwitchTab(kTabStripElementId, 1),
+              WaitForOmniboxReverted(u"chrome://version"),
+              InAnyContext(
+                  WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
+              WaitForOmniboxFocus(false))));
 }
 
 // Verifies that opening a suggestion in a background tab via Alt+Shift+Enter
-// and subsequently switching to it leaves the Omnibox unfocused and the popup
-// closed on the new tab.
+// searches for it in a new background tab while the original tab stays active
+// with its draft and popup, that a second Alt+Shift+Enter opens the
+// then-selected match in another background tab, and that subsequently
+// switching to a new tab leaves the Omnibox unfocused and the popup closed on
+// it.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        AltShiftEnterOpensBackgroundTabUnfocusedOmnibox) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab3);
   RunTestSequence(
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
       InputWebUIText("a"),
       WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
                    "suggestion-1"),
-      InstrumentNextTab(kTab2),
+      CheckTabCount(2), CheckActiveTabIndex(1), InstrumentNextTab(kTab2),
       SendKeyPress(kBrowserViewElementId, ui::VKEY_RETURN,
                    ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN),
       WaitForWebContentsReady(kTab2),
-      // Verify popup remains open on Tab 1.
+      // The default match, a search for the typed text, opened in a new tab.
+      WaitForGoogleSearch(kTab2, {{"q", "a"}}), CheckTabCount(3),
+      // Verify Tab 1 stays active, with its draft and popup still open.
+      CheckActiveTabIndex(1),
       InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
-      // Switch to the newly opened background tab (index 2).
+      CheckPopupState(OmniboxPopupState::kFull), CheckUserInputInProgress(true),
+      InAnyContext(WaitForWebUIInputValue("a")), WaitForOmniboxFocus(true),
+      // Since the edit session is kept, select the first search suggestion and
+      // open it in another background tab.
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_DOWN, ui::EF_NONE)),
+      InAnyContext(WaitForWebUIInputValue("suggestion-1")),
+      InstrumentNextTab(kTab3),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_RETURN,
+                                ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN)),
+      WaitForGoogleSearch(kTab3, {{"q", "suggestion-1"}}), CheckTabCount(4),
+      // Tab 1 stays active with the popup open, and the first background tab
+      // is unchanged.
+      CheckActiveTabIndex(1), CheckPopupState(OmniboxPopupState::kFull),
+      CheckUserInputInProgress(true), WaitForGoogleSearch(kTab2, {{"q", "a"}}),
+      // Switch to the first background tab (index 2).
       SelectTab(kTabStripElementId, 2), WaitForPopupTransitionLockout(),
       InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
       WaitForOmniboxFocus(false));
+}
+
+#if BUILDFLAG(IS_MAC)
+// Verifies that Cmd+Shift+Return, the other Mac shortcut for opening a match in
+// a new foreground tab besides Option+Return, searches for the default match in
+// a new active tab.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       CmdShiftEnterOpensForegroundTab) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InputWebUIText("a"),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
+                   "suggestion-1"),
+      CheckTabCount(2), CheckActiveTabIndex(1), InstrumentNextTab(kTab2),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_RETURN,
+                                ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)
+                       .SetMustRemainVisible(false)),
+      WaitForGoogleSearch(kTab2, {{"q", "a"}}), CheckTabCount(3),
+      CheckActiveTabIndex(2),
+      InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)));
+}
+
+// Verifies that Cmd+Return, the Mac shortcut for opening a match in a new
+// background tab, searches for the default match in a background tab while the
+// original tab stays active with its draft and popup.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       CmdEnterOpensBackgroundTab) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InputWebUIText("a"),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
+                   "suggestion-1"),
+      CheckTabCount(2), CheckActiveTabIndex(1), InstrumentNextTab(kTab2),
+      InAnyContext(
+          SendKeyPress(kPopupWebView, ui::VKEY_RETURN, ui::EF_COMMAND_DOWN)),
+      WaitForGoogleSearch(kTab2, {{"q", "a"}}), CheckTabCount(3),
+      CheckActiveTabIndex(1), WaitForPopupState(OmniboxPopupState::kFull),
+      CheckUserInputInProgress(true),
+      InAnyContext(WaitForWebUIInputValue("a")));
+}
+#endif  // BUILDFLAG(IS_MAC)
+
+// Verifies that pressing Down to select a non-default search suggestion and
+// then Enter searches for that suggestion, rather than for the typed text, in
+// the current tab, and ends the edit session.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       DownEnterOnSearchSuggestionSearchesInCurrentTab) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InputWebUIText("a"),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
+                   "suggestion-1"),
+      // Select the first search suggestion, below the default match.
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_DOWN, ui::EF_NONE)),
+      InAnyContext(WaitForWebUIInputValue("suggestion-1")), CheckTabCount(2),
+      CheckActiveTabIndex(1),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_RETURN, ui::EF_NONE)
+                       .SetMustRemainVisible(false)),
+      WaitForGoogleSearch(kTab1, {{"q", "suggestion-1"}}), CheckTabCount(2),
+      CheckActiveTabIndex(1), WaitForPopupState(OmniboxPopupState::kNone),
+      CheckUserInputInProgress(false));
+}
+
+// Verifies that typing a URL and pressing Enter navigates the current tab to
+// it, without opening any tab, and ends the edit session.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       TypedUrlEnterNavigatesCurrentTab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url_a = embedded_test_server()->GetURL("/title1.html");
+  const GURL url_b = embedded_test_server()->GetURL("/title2.html");
+
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, url_a), InputWebUIText(url_b.spec()),
+      // Wait for the results for the typed URL, so that Enter opens their
+      // default match.
+      WaitForJsConditionAt(
+          kPopupWebView, kPopupSearchbox,
+          base::StringPrintf(
+              "(el) => !!el && el.dropdownIsVisible && el.result?.input === "
+              "'%s'",
+              url_b.spec().c_str())),
+      CheckTabCount(2), CheckActiveTabIndex(1),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_RETURN, ui::EF_NONE)
+                       .SetMustRemainVisible(false)),
+      PollUntil(
+          [this, url_b]() {
+            return browser()
+                       ->tab_strip_model()
+                       ->GetWebContentsAt(1)
+                       ->GetLastCommittedURL() == url_b;
+          },
+          "WaitForTypedUrlCommitted"),
+      CheckTabCount(2), CheckActiveTabIndex(1),
+      WaitForPopupState(OmniboxPopupState::kNone),
+      CheckUserInputInProgress(false),
+      CheckResult(
+          [this]() {
+            return GetOmniboxControllerForTest()
+                       ->edit_model()
+                       ->GetPermanentDisplayText()
+                       .find(u"title2.html") != std::u16string::npos;
+          },
+          true, "PermanentDisplayTextShowsTypedUrl"));
 }
 
 // Verifies that opening a New Tab Page focuses the WebUI Omnibox popup by
@@ -3642,7 +3848,8 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 }
 
 // Verifies that pressing Shift+Enter on a match opens the result in a new
-// window and resets the original window's omnibox popup state to steady state.
+// window and resets the original window's omnibox popup state to steady state,
+// without navigating or adding tabs to the original window.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        ShiftEnterOpensNewWindowAndResetsOmnibox) {
   RunTestSequence(
@@ -3655,12 +3862,27 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
                            "(el) => el && el.dropdownIsVisible"),
       // 3. Send Shift+Enter to open the suggestion in a new window.
+      CheckTabCount(2), CheckActiveTabIndex(1),
       InAnyContext(
-          SendKeyPress(kPopupWebView, ui::VKEY_RETURN, ui::EF_SHIFT_DOWN)),
-      // 4. Verify that in the original window, the full popup frame is hidden
-      // and Omnibox focus is cleared.
+          SendKeyPress(kPopupWebView, ui::VKEY_RETURN, ui::EF_SHIFT_DOWN)
+              .SetMustRemainVisible(false)),
+      // 4. Verify that the default match, a search for the typed text, opened
+      // in a new window.
+      WaitForNewWindowWithGoogleSearch("a"),
+      // 5. Verify that in the original window, the full popup frame is hidden,
+      // Omnibox focus is cleared, the draft is discarded, and the tab is still
+      // on its page.
       InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
-      WaitForOmniboxFocus(false));
+      WaitForOmniboxFocus(false), WaitForOmniboxReverted(u"chrome://version"),
+      CheckTabCount(2), CheckActiveTabIndex(1),
+      CheckResult(
+          [this]() {
+            return browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetLastCommittedURL();
+          },
+          GURL("chrome://version/"), "CheckOriginalTabUrl"));
 }
 
 // Verifies that copying text in the full WebUI Omnibox records the
@@ -3821,9 +4043,11 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        AltEnterOpensInNewForegroundTab) {
   RunTestSequence(
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
-      WaitForWebUIInputValue("chrome://version"), InstrumentNextTab(kTab2),
+      WaitForWebUIInputValue("chrome://version"), CheckTabCount(2),
+      CheckActiveTabIndex(1), InstrumentNextTab(kTab2),
       SendKeyPress(kBrowserViewElementId, ui::VKEY_RETURN, ui::EF_ALT_DOWN),
-      WaitForWebContentsReady(kTab2),
+      WaitForWebContentsReady(kTab2, GURL("chrome://version/")),
+      CheckTabCount(3), CheckActiveTabIndex(2),
       InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
       WaitForOmniboxFocus(false));
 }
