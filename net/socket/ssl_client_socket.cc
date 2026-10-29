@@ -77,11 +77,7 @@ void SSLClientSocket::RecordSSLConnectResult(
     bool is_ech_capable,
     bool ech_enabled,
     const std::optional<std::vector<uint8_t>>& ech_retry_configs,
-    bool trust_anchor_ids_from_dns,
-    bool retried_with_trust_anchor_ids,
-    bool trust_anchor_retry_used_mtc_fallback,
     const LoadTimingInfo::ConnectTiming& connect_timing) {
-  const bool is_ok = result == OK;
   if (is_ech_capable && ech_enabled) {
     // These values are persisted to logs. Entries should not be renumbered
     // and numeric values should never be reused.
@@ -101,6 +97,7 @@ void SSLClientSocket::RecordSSLConnectResult(
       kErrorRollback = 5,
       kMaxValue = kErrorRollback,
     };
+    const bool is_ok = result == OK;
     ECHResult ech_result;
     if (!ech_retry_configs.has_value()) {
       ech_result =
@@ -113,32 +110,6 @@ void SSLClientSocket::RecordSSLConnectResult(
     }
     base::UmaHistogramEnumeration("Net.SSL.ECHResult", ech_result);
   }
-
-  TrustAnchorIDsResult tai_result;
-  if (trust_anchor_ids_from_dns) {
-    if (retried_with_trust_anchor_ids && trust_anchor_retry_used_mtc_fallback) {
-      tai_result = is_ok ? TrustAnchorIDsResult::kDnsSuccessRetryMtcFallback
-                         : TrustAnchorIDsResult::kDnsErrorRetryMtcFallback;
-    } else if (retried_with_trust_anchor_ids) {
-      tai_result = is_ok ? TrustAnchorIDsResult::kDnsSuccessRetry
-                         : TrustAnchorIDsResult::kDnsErrorRetry;
-    } else {
-      tai_result = is_ok ? TrustAnchorIDsResult::kDnsSuccessInitial
-                         : TrustAnchorIDsResult::kDnsErrorInitial;
-    }
-  } else {
-    if (retried_with_trust_anchor_ids && trust_anchor_retry_used_mtc_fallback) {
-      tai_result = is_ok ? TrustAnchorIDsResult::kNoDnsSuccessRetryMtcFallback
-                         : TrustAnchorIDsResult::kNoDnsErrorRetryMtcFallback;
-    } else if (retried_with_trust_anchor_ids) {
-      tai_result = is_ok ? TrustAnchorIDsResult::kNoDnsSuccessRetry
-                         : TrustAnchorIDsResult::kNoDnsErrorRetry;
-    } else {
-      tai_result = is_ok ? TrustAnchorIDsResult::kNoDnsSuccessInitial
-                         : TrustAnchorIDsResult::kNoDnsErrorInitial;
-    }
-  }
-  base::UmaHistogramEnumeration("Net.SSL.TrustAnchorIDsResult", tai_result);
 
   if (result == OK) {
     DCHECK(!connect_timing.ssl_start.is_null());

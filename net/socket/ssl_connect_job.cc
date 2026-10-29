@@ -525,11 +525,9 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
     return OK;
   }
 
-  SSLClientSocket::RecordSSLConnectResult(
-      ssl_socket_.get(), result, is_ech_capable, ech_enabled,
-      ech_retry_configs_, /*trust_anchor_ids_from_dns=*/false,
-      /*retried_with_trust_anchor_ids=*/false,
-      /*trust_anchor_retry_used_mtc_fallback=*/false, connect_timing_);
+  SSLClientSocket::RecordSSLConnectResult(ssl_socket_.get(), result,
+                                          is_ech_capable, ech_enabled,
+                                          ech_retry_configs_, connect_timing_);
 
   if (result == OK || IsCertificateError(result)) {
     SetSocket(std::move(ssl_socket_), std::move(dns_aliases_));

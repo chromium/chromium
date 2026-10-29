@@ -3897,48 +3897,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="QUIC"/>
 </enum>
 
-<enum name="SSLTrustAnchorIDsResult">
-  <summary>
-    Whether a TLS connection relied on the trust anchor ID retry.
-  </summary>
-  <int value="0"
-      label="There was a DNS hint, and the connection succeeded on the
-             initial connection"/>
-  <int value="1"
-      label="There was a DNS hint, and the connection failed on the initial
-             connection, without retrying"/>
-  <int value="2"
-      label="There was a DNS hint, and the connection succeeded after
-             retrying with fresh Trust Anchor IDs"/>
-  <int value="3"
-      label="There was a DNS hint, and the connection failed after retrying
-             with fresh Trust Anchor IDs"/>
-  <int value="4"
-      label="There was no DNS hint, and the connection succeeded on the
-             initial connection"/>
-  <int value="5"
-      label="There was no DNS hint, and the connection failed on the initial
-             connection, without retrying"/>
-  <int value="6"
-      label="There was no DNS hint, and the connection succeeded after
-             retrying with fresh Trust Anchor IDs"/>
-  <int value="7"
-      label="There was no DNS hint, and the connection failed after retrying
-             with fresh Trust Anchor IDs"/>
-  <int value="8"
-      label="There was a DNS hint, and the connection succeeded after
-             retrying with the MTC fallback"/>
-  <int value="9"
-      label="There was a DNS hint, and the connection failed after retrying
-             with the MTC fallback"/>
-  <int value="10"
-      label="There was no DNS hint, and the connection succeeded after
-             retrying with the MTC fallback"/>
-  <int value="11"
-      label="There was no DNS hint, and the connection failed after retrying
-             with the MTC fallback"/>
-</enum>
-
 <!-- LINT.IfChange(StreamSocketCloseReason) -->
 
 <enum name="StreamSocketCloseReason">

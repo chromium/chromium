@@ -1250,7 +1250,6 @@ TEST_P(SSLConnectJobTest, TrustAnchorIDs) {
     }
     socket_factory_.AddSSLSocketDataProvider(&ssl);
 
-    base::HistogramTester histogram_tester;
     TestConnectJobDelegate test_delegate;
     RecordingNetLogObserver net_log_observer(common_connect_job_params_.net_log,
                                              NetLogCaptureMode::kDefault);
@@ -1258,9 +1257,6 @@ TEST_P(SSLConnectJobTest, TrustAnchorIDs) {
         CreateConnectJob(&test_delegate, ProxyChain::Direct(), MEDIUM);
     EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
     EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
-    histogram_tester.ExpectUniqueSample(
-        "Net.SSL.TrustAnchorIDsResult",
-        SSLClientSocket::TrustAnchorIDsResult::kNoDnsSuccessInitial, 1);
     auto events = net_log_observer.GetEntriesWithType(
         NetLogEventType::SSL_CONNECT_JOB_SSL_CONNECT);
     ASSERT_EQ(1u, events.size());

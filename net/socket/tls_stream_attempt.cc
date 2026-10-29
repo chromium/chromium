@@ -298,11 +298,9 @@ int TlsStreamAttempt::DoTlsAttemptComplete(int rv) {
     return OK;
   }
 
-  SSLClientSocket::RecordSSLConnectResult(
-      ssl_socket_.get(), rv, is_ech_capable_, ech_enabled, ech_retry_configs_,
-      /*trust_anchor_ids_from_dns=*/false,
-      /*retried_with_trust_anchor_ids=*/false,
-      /*trust_anchor_retry_used_mtc_fallback=*/false, connect_timing());
+  SSLClientSocket::RecordSSLConnectResult(ssl_socket_.get(), rv,
+                                          is_ech_capable_, ech_enabled,
+                                          ech_retry_configs_, connect_timing());
 
   if (rv == OK || IsCertificateError(rv)) {
     CHECK(ssl_socket_);
