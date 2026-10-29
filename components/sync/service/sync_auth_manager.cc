@@ -41,8 +41,8 @@ constexpr net::BackoffEntry::Policy
         0.2,  // 20%
 
         // Maximum amount of time we are willing to delay our request in ms.
-        // TODO(crbug.com/40320443): We should retry RequestAccessToken on
-        // connection state change after backoff.
+        // TODO(crbug.com/40320443): We should retry `RequestAccessTokenNow()`
+        // on connection state change after backoff.
         1000 * 3600 * 4,  // 4 hours.
 
         // Time to keep an entry from being discarded even when it
@@ -257,8 +257,11 @@ void SyncAuthManager::FetchAccessToken(
 
   access_token_callbacks_.push_back(std::move(callback));
 
-  // Verifies an ongoing access token fetch internally.
-  RequestAccessToken();
+  // Do not bypass exponential backoff if a retry is already scheduled.
+  if (!request_access_token_retry_timer_.IsRunning()) {
+    // No-op if a fetch is already ongoing.
+    RequestAccessTokenNow();
+  }
 }
 
 void SyncAuthManager::ConnectionOpened() {
@@ -273,7 +276,7 @@ void SyncAuthManager::ConnectionOpened() {
   DCHECK(!ongoing_access_token_fetch_);
   DCHECK(!request_access_token_retry_timer_.IsRunning());
 
-  RequestAccessToken();
+  RequestAccessTokenNow();
 }
 
 void SyncAuthManager::ConnectionStatusChanged(ConnectionStatus status) {
@@ -370,7 +373,7 @@ void SyncAuthManager::ScheduleAccessTokenRequest() {
 
   request_access_token_retry_timer_.Start(
       FROM_HERE, request_access_token_backoff_.GetTimeUntilRelease(),
-      base::BindRepeating(&SyncAuthManager::RequestAccessToken,
+      base::BindRepeating(&SyncAuthManager::RequestAccessTokenNow,
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -436,7 +439,7 @@ void SyncAuthManager::OnRefreshTokenUpdatedForAccount(
     // If we have an open connection to the server, then also get a new access
     // token now.
     if (connection_open_) {
-      RequestAccessToken();
+      RequestAccessTokenNow();
     }
   } else if (!access_token_info_.token.empty() ||
              request_access_token_retry_timer_.IsRunning()) {
@@ -444,7 +447,7 @@ void SyncAuthManager::OnRefreshTokenUpdatedForAccount(
     // (and hence the retry timer is running), then request a fresh access token
     // now. This will also drop the current access token.
     DCHECK(!ongoing_access_token_fetch_);
-    RequestAccessToken();
+    RequestAccessTokenNow();
   }
 }
 
@@ -551,7 +554,7 @@ void SyncAuthManager::AccountManagednessDetermined() {
   delegate_->SyncAuthAccountStateChanged();
 }
 
-void SyncAuthManager::RequestAccessToken() {
+void SyncAuthManager::RequestAccessTokenNow() {
   DCHECK(registered_for_auth_notifications_);
   DCHECK(connection_open_);
 
@@ -599,7 +602,7 @@ void SyncAuthManager::AccessTokenFetched(
   if (error.state() == GoogleServiceAuthError::REQUEST_CANCELED &&
       !access_token_retried_) {
     access_token_retried_ = true;
-    RequestAccessToken();
+    RequestAccessTokenNow();
     return;
   }
 

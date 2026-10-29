@@ -1283,6 +1283,42 @@ TEST_P(SyncAuthManagerTest, FetchAccessTokenReturnsEmptyTokenOnPermanentError) {
               CREDENTIALS_REJECTED_BY_SERVER));
 }
 
+TEST_P(SyncAuthManagerTest, FetchAccessTokenRespectsRetryBackoffTimer) {
+  base::test::ScopedFeatureList feature_list(kSyncUsePropagatedAccessToken);
+
+  std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
+  auth_manager->RegisterForAuthNotifications();
+
+  identity_env()->MakePrimaryAccountAvailable("test@email.com",
+                                              /*consent_level=*/GetParam());
+
+  auth_manager->ConnectionOpened();
+  identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "initial_token", base::Time::Now() + base::Hours(1));
+
+  // Server returns AUTH_ERROR, which invalidates the token and schedules a
+  // retry via `request_access_token_retry_timer_`.
+  auth_manager->ConnectionStatusChanged(CONNECTION_AUTH_ERROR);
+  ASSERT_TRUE(auth_manager->IsRetryingAccessTokenFetchForTest());
+
+  base::MockCallback<base::OnceCallback<void(signin::AccessTokenInfo)>>
+      callback;
+  EXPECT_CALL(callback, Run).Times(0);
+
+  // Calling `FetchAccessToken()` while the retry timer is running must not
+  // cancel the retry timer or issue an immediate token request.
+  auth_manager->FetchAccessToken(callback.Get());
+  EXPECT_TRUE(auth_manager->IsRetryingAccessTokenFetchForTest());
+
+  // Once the retry timer fires and the token request succeeds, the queued
+  // callback is resolved with the new access token.
+  EXPECT_CALL(callback,
+              Run(Field(&signin::AccessTokenInfo::token, "second_token")));
+  identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "second_token", base::Time::Now() + base::Hours(1));
+  EXPECT_FALSE(auth_manager->IsRetryingAccessTokenFetchForTest());
+}
+
 }  // namespace
 
 }  // namespace syncer

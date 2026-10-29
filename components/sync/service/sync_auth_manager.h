@@ -213,7 +213,7 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
   // Immediately starts an access token request, unless one is already ongoing.
   // If another request is scheduled for later, it is canceled. Any access token
   // we currently have is invalidated.
-  void RequestAccessToken();
+  void RequestAccessTokenNow();
 
   // Callback for `ongoing_access_token_fetch_`.
   void AccessTokenFetched(GoogleServiceAuthError error,
@@ -258,8 +258,8 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
   // ongoing.
   std::unique_ptr<signin::AccessTokenFetcher> ongoing_access_token_fetch_;
 
-  // If RequestAccessToken fails with transient error then retry requesting
-  // access token with exponential backoff.
+  // If `RequestAccessTokenNow()` fails with transient error then retry
+  // requesting access token with exponential backoff.
   base::OneShotTimer request_access_token_retry_timer_;
   net::BackoffEntry request_access_token_backoff_;
 
