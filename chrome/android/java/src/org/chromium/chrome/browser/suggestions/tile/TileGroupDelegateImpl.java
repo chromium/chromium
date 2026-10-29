@@ -118,7 +118,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
 
         GURL url = item.getUrl();
         mMostVisitedSites.addBlocklistedUrl(url);
-        showTileRemovedSnackbar(url);
+        showTileRemovedSnackbar(() -> mMostVisitedSites.removeBlocklistedUrl(url));
     }
 
     @Override
@@ -245,7 +245,8 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
         }
     }
 
-    private void showTileRemovedSnackbar(GURL url) {
+    @Override
+    public void showTileRemovedSnackbar(Runnable undoHandler) {
         if (mTileRemovedSnackbarController == null) {
             mTileRemovedSnackbarController =
                     new SnackbarController() {
@@ -256,9 +257,9 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
                         @Override
                         public void onAction(@Nullable Object actionData) {
                             if (mIsDestroyed) return;
-                            GURL url = (GURL) actionData;
-                            if (url == null) return;
-                            mMostVisitedSites.removeBlocklistedUrl(url);
+
+                            Runnable undoHandlerFromData = (Runnable) actionData;
+                            assumeNonNull(undoHandlerFromData).run();
                         }
                     };
         }
@@ -268,7 +269,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
                                 mTileRemovedSnackbarController,
                                 Snackbar.TYPE_ACTION,
                                 Snackbar.UMA_NTP_MOST_VISITED_DELETE_UNDO)
-                        .setAction(mContext.getString(R.string.undo), url);
+                        .setAction(mContext.getString(R.string.undo), undoHandler);
         mSnackbarManager.showSnackbar(snackbar);
     }
 

@@ -40,6 +40,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -777,6 +778,61 @@ public class TileGroupUnitTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/" + LayoutType.INSIDE_MVT})
+    public void testAiModeTile_removeAndUndo() {
+        enableAiModeTileInsideMvt();
+        SiteSuggestion[] sites = createSiteSuggestions(8);
+
+        TileGroup tileGroup = initializeTileGroup(SuggestionsConfig.MAX_TILE_COUNT + 1, sites);
+        List<Tile> tiles = tileGroup.getTileSections().get(TileSectionType.PERSONALIZED);
+        assertThat(tiles).isNotNull();
+        assertEquals(9, tiles.size());
+        Tile aiTile = tiles.get(0);
+        assertTrue(aiTile.isAiMode());
+
+        reset(mTileGroupObserver);
+        tileGroup
+                .getTileSetupDelegate()
+                .getCustomTileModificationDelegate()
+                .remove(aiTile.getData());
+
+        assertEquals(
+                -1,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, 0));
+        verify(mTileGroupObserver).onTileCountChanged();
+        verify(mTileGroupObserver).onTileDataChanged();
+
+        tiles = tileGroup.getTileSections().get(TileSectionType.PERSONALIZED);
+        assertThat(tiles).isNotNull();
+        assertEquals(8, tiles.size());
+        for (int i = 0; i < 8; i++) {
+            assertFalse(tiles.get(i).isAiMode());
+            assertEquals("Site " + i, tiles.get(i).getTitle());
+            assertEquals(i, tiles.get(i).getIndex());
+        }
+
+        ArgumentCaptor<Runnable> undoCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mTileGroupDelegate).showTileRemovedSnackbar(undoCaptor.capture());
+
+        reset(mTileGroupObserver);
+        undoCaptor.getValue().run();
+
+        assertEquals(
+                0,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, -1));
+        verify(mTileGroupObserver).onTileCountChanged();
+        verify(mTileGroupObserver).onTileDataChanged();
+
+        tiles = tileGroup.getTileSections().get(TileSectionType.PERSONALIZED);
+        assertThat(tiles).isNotNull();
+        assertEquals(9, tiles.size());
+        assertTrue(tiles.get(0).isAiMode());
+        assertEquals(0, tiles.get(0).getIndex());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/" + LayoutType.INSIDE_MVT})
     public void testAiModeTile_editIgnored() {
         enableAiModeTileInsideMvt();
         SiteSuggestion[] sites = createSiteSuggestions(2);
@@ -790,6 +846,142 @@ public class TileGroupUnitTest {
         tileGroup.getTileSetupDelegate().getCustomTileModificationDelegate().edit(aiTile.getData());
 
         verify(mTileGroupDelegate, never()).createCustomTileEditCoordinator(any());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/" + LayoutType.INSIDE_MVT})
+    public void testDeleteCustomLink_undoTranslatesIndexAfterAiModeTile() {
+        enableAiModeTileInsideMvt();
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, 1);
+
+        GURL custom0Url = JUnitTestGURLs.URL_2;
+        GURL custom1Url = JUnitTestGURLs.URL_3;
+        SiteSuggestion[] sites = new SiteSuggestion[3];
+        sites[0] = createCustomLinkSiteSuggestion("Custom 0", custom0Url.getSpec());
+        sites[1] = createCustomLinkSiteSuggestion("Custom 1", custom1Url.getSpec());
+        sites[2] = createSiteSuggestion("Organic 0", JUnitTestGURLs.RED_1.getSpec());
+
+        TileGroup tileGroup = initializeTileGroup(SuggestionsConfig.MAX_TILE_COUNT + 1, sites);
+        List<Tile> tiles = tileGroup.getTileSections().get(TileSectionType.PERSONALIZED);
+        assertThat(tiles).isNotNull();
+        // Rendered layout: [Custom 0 (0), AI Mode (1), Custom 1 (2), Organic 0 (3)].
+        assertEquals(4, tiles.size());
+        Tile custom1Tile = tiles.get(2);
+        assertEquals("Custom 1", custom1Tile.getTitle());
+        assertEquals(2, custom1Tile.getIndex());
+
+        when(mTileGroupDelegate.deleteCustomLink(custom1Url)).thenReturn(true);
+        when(mTileGroupDelegate.addCustomLink(any(), any(), anyInt())).thenReturn(true);
+
+        tileGroup
+                .getTileSetupDelegate()
+                .getCustomTileModificationDelegate()
+                .remove(custom1Tile.getData());
+
+        verify(mTileGroupDelegate).deleteCustomLink(custom1Url);
+        ArgumentCaptor<Runnable> undoCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mTileGroupDelegate).showTileUnpinSnackbar(undoCaptor.capture());
+
+        undoCaptor.getValue().run();
+        // Custom 1 was at visual screen index 2, but its native custom link index is 1.
+        verify(mTileGroupDelegate).addCustomLink(eq("Custom 1"), eq(custom1Url), eq(1));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/" + LayoutType.INSIDE_MVT})
+    public void testDeleteCustomLink_beforeAiModeTile_shiftsAndRestoresAiModeIndex() {
+        enableAiModeTileInsideMvt();
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, 1);
+
+        GURL custom0Url = JUnitTestGURLs.URL_2;
+        GURL custom1Url = JUnitTestGURLs.URL_3;
+        SiteSuggestion[] sites = new SiteSuggestion[3];
+        sites[0] = createCustomLinkSiteSuggestion("Custom 0", custom0Url.getSpec());
+        sites[1] = createCustomLinkSiteSuggestion("Custom 1", custom1Url.getSpec());
+        sites[2] = createSiteSuggestion("Organic 0", JUnitTestGURLs.RED_1.getSpec());
+
+        TileGroup tileGroup = initializeTileGroup(SuggestionsConfig.MAX_TILE_COUNT + 1, sites);
+        List<Tile> tiles = tileGroup.getTileSections().get(TileSectionType.PERSONALIZED);
+        assertThat(tiles).isNotNull();
+        // Rendered layout: [Custom 0 (0), AI Mode (1), Custom 1 (2), Organic 0 (3)].
+        assertEquals(4, tiles.size());
+        Tile custom0Tile = tiles.get(0);
+        assertEquals("Custom 0", custom0Tile.getTitle());
+
+        when(mTileGroupDelegate.deleteCustomLink(custom0Url)).thenReturn(true);
+        when(mTileGroupDelegate.addCustomLink(any(), any(), anyInt())).thenReturn(true);
+
+        tileGroup
+                .getTileSetupDelegate()
+                .getCustomTileModificationDelegate()
+                .remove(custom0Tile.getData());
+
+        verify(mTileGroupDelegate).deleteCustomLink(custom0Url);
+        // Deleting Custom 0 before the AI Mode tile shifts the AI Mode tile index from 1 to 0.
+        assertEquals(
+                0,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, -1));
+
+        ArgumentCaptor<Runnable> undoCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mTileGroupDelegate).showTileUnpinSnackbar(undoCaptor.capture());
+
+        undoCaptor.getValue().run();
+        assertEquals(
+                1,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, -1));
+        verify(mTileGroupDelegate).addCustomLink(eq("Custom 0"), eq(custom0Url), eq(0));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/" + LayoutType.INSIDE_MVT})
+    public void testDeleteCustomLink_beforeAiModeTile_preservesClampedLogicalIndex() {
+        enableAiModeTileInsideMvt();
+        // Stores a logical index larger than the custom-link count so injectAiModeTile() clamps it.
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, 10);
+
+        GURL custom0Url = JUnitTestGURLs.URL_2;
+        SiteSuggestion[] sites = new SiteSuggestion[2];
+        sites[0] = createCustomLinkSiteSuggestion("Custom 0", custom0Url.getSpec());
+        sites[1] = createSiteSuggestion("Organic 0", JUnitTestGURLs.RED_1.getSpec());
+
+        TileGroup tileGroup = initializeTileGroup(SuggestionsConfig.MAX_TILE_COUNT + 1, sites);
+        List<Tile> tiles = tileGroup.getTileSections().get(TileSectionType.PERSONALIZED);
+        assertThat(tiles).isNotNull();
+        // Rendered layout: [Custom 0 (0), AI Mode (1), Organic 0 (2)]; AI Mode is clamped to 1.
+        assertEquals(3, tiles.size());
+        Tile aiTile = tiles.get(1);
+        assertTrue(aiTile.isAiMode());
+        assertEquals(1, aiTile.getIndex());
+
+        Tile custom0Tile = tiles.get(0);
+        when(mTileGroupDelegate.deleteCustomLink(custom0Url)).thenReturn(true);
+        when(mTileGroupDelegate.addCustomLink(any(), any(), anyInt())).thenReturn(true);
+
+        tileGroup
+                .getTileSetupDelegate()
+                .getCustomTileModificationDelegate()
+                .remove(custom0Tile.getData());
+
+        // The stored index shifts from 10 to 9, not from the rendered index 1 to 0.
+        assertEquals(
+                9,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, -1));
+
+        ArgumentCaptor<Runnable> undoCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mTileGroupDelegate).showTileUnpinSnackbar(undoCaptor.capture());
+
+        undoCaptor.getValue().run();
+        assertEquals(
+                10,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, -1));
+        verify(mTileGroupDelegate).addCustomLink(eq("Custom 0"), eq(custom0Url), eq(0));
     }
 
     private boolean isAddNewButton(View view) {

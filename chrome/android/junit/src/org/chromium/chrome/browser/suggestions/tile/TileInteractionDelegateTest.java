@@ -379,8 +379,8 @@ public class TileInteractionDelegateTest {
         assertTrue(mDelegate.isItemSupported(ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP));
         assertTrue(mDelegate.isItemSupported(ContextMenuItemId.OPEN_IN_NEW_WINDOW));
         assertTrue(mDelegate.isItemSupported(ContextMenuItemId.OPEN_IN_OTHER_WINDOW));
+        assertTrue(mDelegate.isItemSupported(ContextMenuItemId.REMOVE));
 
-        assertFalse(mDelegate.isItemSupported(ContextMenuItemId.REMOVE));
         assertFalse(mDelegate.isItemSupported(ContextMenuItemId.SAVE_FOR_OFFLINE));
         assertFalse(mDelegate.isItemSupported(ContextMenuItemId.PIN_THIS_SHORTCUT));
         assertFalse(mDelegate.isItemSupported(ContextMenuItemId.EDIT_SHORTCUT));

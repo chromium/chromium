@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -156,9 +157,29 @@ public class TileGroupDelegateImplUnitTest {
         verify(mMostVisitedSites).addBlocklistedUrl(NON_SEARCH_URL);
         ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
         verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());
+        Snackbar snackbar = snackbarCaptor.getValue();
         Assert.assertEquals(
                 mContext.getString(R.string.most_visited_item_removed),
-                snackbarCaptor.getValue().getTextForTesting());
+                snackbar.getTextForTesting());
+
+        snackbar.getController().onAction(snackbar.getActionData());
+        verify(mMostVisitedSites).removeBlocklistedUrl(NON_SEARCH_URL);
+    }
+
+    @Test
+    public void testShowTileRemovedSnackbar() {
+        Runnable undoHandler = mock(Runnable.class);
+        mTileGroupDelegateImpl.showTileRemovedSnackbar(undoHandler);
+
+        ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
+        verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());
+        Snackbar snackbar = snackbarCaptor.getValue();
+        Assert.assertEquals(
+                mContext.getString(R.string.most_visited_item_removed),
+                snackbar.getTextForTesting());
+
+        snackbar.getController().onAction(snackbar.getActionData());
+        verify(undoHandler).run();
     }
 
     @Test

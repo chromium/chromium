@@ -250,9 +250,7 @@ class TileInteractionDelegateImpl
             case ContextMenuItemId.SAVE_FOR_OFFLINE:
                 return !isAiMode();
             case ContextMenuItemId.REMOVE:
-                // TODO(crbug.com/549681251): Enables REMOVE for the AI Mode tile once removal and
-                // undo are implemented
-                return !isCustomizationItemSupported(/* matchIsCustomLink= */ true) && !isAiMode();
+                return !isCustomizationItemSupported(/* matchIsCustomLink= */ true);
             case ContextMenuItemId.PIN_THIS_SHORTCUT:
                 return isCustomizationItemSupported(/* matchIsCustomLink= */ false);
             case ContextMenuItemId.EDIT_SHORTCUT: // Fall through.
