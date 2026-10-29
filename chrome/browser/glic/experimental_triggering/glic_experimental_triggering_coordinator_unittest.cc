@@ -11,7 +11,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
@@ -261,6 +263,16 @@ class GlicExperimentalTriggeringCoordinatorTest : public testing::Test {
         glic::prefs::FreStatus::kCompleted);
     glic_service->enabling().SetUserEnabledActuationOnWeb(true);
     glic_service->enabling().SetExperimentalTriggeringEnabled(true);
+  }
+
+  void OptOut() {
+    auto* glic_service =
+        GlicKeyedServiceFactory::GetGlicKeyedService(profile_, /*create=*/true);
+    ASSERT_TRUE(glic_service);
+    glic_service->enabling().SetCompletedFre(
+        glic::prefs::FreStatus::kNotStarted);
+    glic_service->enabling().SetUserEnabledActuationOnWeb(false);
+    glic_service->enabling().SetExperimentalTriggeringEnabled(false);
   }
 
   std::optional<ExperimentalTriggeringResponse> SendRequest(
@@ -955,6 +967,50 @@ class GlicExperimentalTriggeringCoordinatorWithTabTest
     return confirmation_request;
   }
 
+  // Builds a request for kTestContextId with the given payload.
+  ExperimentalTriggeringRequest CreateRequest(
+      ExperimentalTriggeringRequest::Payload payload) {
+    ExperimentalTriggeringRequest request;
+    request.version = 1;
+    request.context_id = kTestContextId;
+    request.task_metadata =
+        TaskMetadata{.conversation_id = kTestConversationId};
+    request.payload = std::move(payload);
+    return request;
+  }
+
+  // Starts a direct action execution on kTestContextId that stays in flight
+  // until the test stops it.
+  void StartActionExecution() {
+    auto* user_data = optimization_guide::DocumentIdentifierUserData::
+        GetOrCreateForCurrentDocument(web_contents_->GetPrimaryMainFrame());
+    EXPECT_FALSE(
+        SendRequest(CreateExecuteScriptToolRequest(
+                        /*tab_id=*/std::nullopt, user_data->serialized_token()))
+            .has_value());
+    ASSERT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 1u);
+  }
+
+  // Sends `request` to kTestContextId, which must already own a live session,
+  // and expects that the request does not tear down the session's handler.
+  std::optional<ExperimentalTriggeringResponse> SendRequestToLiveSession(
+      const ExperimentalTriggeringRequest& request) {
+    EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 1u);
+    auto response = SendRequest(request);
+    EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 1u);
+    return response;
+  }
+
+  // Expects `response` to be a synchronous failed task update.
+  void ExpectFailedTaskUpdate(
+      const std::optional<ExperimentalTriggeringResponse>& response,
+      std::string_view expected_error) {
+    ASSERT_TRUE(response.has_value());
+    ASSERT_TRUE(response->task_update.has_value());
+    EXPECT_EQ(response->task_update->state, TaskUpdate::State::kFailed);
+    EXPECT_EQ(response->task_update->data, expected_error);
+  }
+
  protected:
   MockBrowserWindowInterface mock_browser_window_;
   std::unique_ptr<content::WebContents> web_contents_;
@@ -1285,6 +1341,316 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<ConfirmationTestCase>& info) {
       return info.param.test_name;
     });
+
+// Handlers are shared per context id, so a request that fails early must not
+// tear down a live session on the same context (b/574916669). The tests below
+// cover one early failure per request type, first on an actuation session and
+// then on a direct action execution.
+
+// Regression test for the user-visible symptoms: if the failure tore the
+// handler down, web client updates would be dropped, and the next reply would
+// come from a new handler that restarts at sequence number 0, which the server
+// discards as stale.
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       EarlyFailureDuringActuation_KeepsUpdatesAndSequenceNumbers) {
+  auto send = [&](const ExperimentalTriggeringRequest& request,
+                  GlicExperimentalTriggeringUpdateCallback update_callback) {
+    return coordinator_->OnRequest(
+        kTestContextId, request,
+        ScopedIncomingMessageResultLogger(
+            GlicMetricReporter(profile_),
+            ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+        std::move(update_callback), nullptr);
+  };
+
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
+  auto start_response =
+      send(CreateRequest(TriggerActuationRequest{.initial_prompt = "hello"}),
+           update_future.GetRepeatingCallback());
+  ASSERT_TRUE(start_response.has_value());
+  EXPECT_EQ(start_response->task_metadata->sender_sequence_number, 0);
+
+  auto failure_response = send(CreateRequest(RequestPayloadNotSet{}),
+                               GlicExperimentalTriggeringUpdateCallback());
+  ASSERT_TRUE(failure_response.has_value());
+  EXPECT_EQ(failure_response->task_metadata->sender_sequence_number, 1);
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 1u);
+
+  // A recreated handler would restart this at 0.
+  auto next_response = send(CreateRequest(std::monostate()),
+                            GlicExperimentalTriggeringUpdateCallback());
+  ASSERT_TRUE(next_response.has_value());
+  EXPECT_EQ(next_response->task_metadata->sender_sequence_number, 2);
+
+  auto update = mojom::ExperimentalTriggeringUpdate::New();
+  update->type = mojom::ExperimentalTriggeringUpdateType::kWorklog;
+  update->data = "still running";
+  test_triggering_manager_.SendUpdate(
+      std::move(update), mojom::SubscriberObservationType::kUpdate);
+  test_triggering_manager_.FlushForTesting();
+  ASSERT_TRUE(update_future.IsReady());
+  auto async_response = update_future.Take();
+  ASSERT_TRUE(async_response.task_update.has_value());
+  EXPECT_EQ(async_response.task_update->data, "still running");
+  EXPECT_EQ(async_response.task_metadata->sender_sequence_number, 3);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       MissingTaskMetadataDuringActuation_KeepsHandler) {
+  StartActuationSession();
+
+  ExperimentalTriggeringRequest request =
+      CreateRequest(TriggerActuationRequest{.initial_prompt = "hello"});
+  request.task_metadata.reset();
+  ExpectFailedTaskUpdate(
+      SendRequestToLiveSession(request),
+      "Received GlicExperimentalTriggering message with missing task "
+      "metadata.");
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       RequestPayloadNotSetDuringActuation_KeepsHandler) {
+  StartActuationSession();
+
+  ExpectFailedTaskUpdate(
+      SendRequestToLiveSession(CreateRequest(RequestPayloadNotSet{})),
+      "Received GlicExperimentalTriggering message with no actionable "
+      "request.");
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       MonostatePayloadDuringActuation_KeepsHandler) {
+  StartActuationSession();
+
+  ExpectFailedTaskUpdate(
+      SendRequestToLiveSession(CreateRequest(std::monostate())),
+      "Received GlicExperimentalTriggering message with no actionable "
+      "request.");
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       ContinueActuationNotOptedInDuringActuation_KeepsHandler) {
+  StartActuationSession();
+  OptOut();
+
+  ExpectFailedTaskUpdate(
+      SendRequestToLiveSession(CreateRequest(
+          ContinueActuationRequest{.continuation_prompt = "keep going"})),
+      "User is not opted in to experimental triggering.");
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       ContinueActuationNoBrowserWindowDuringActuation_KeepsHandler) {
+  StartActuationSession();
+  coordinator_->set_browser_window(nullptr);
+
+  ExpectFailedTaskUpdate(
+      SendRequestToLiveSession(CreateRequest(
+          ContinueActuationRequest{.continuation_prompt = "keep going"})),
+      "No browser window found for current profile.");
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       DeviceOptInFailureDuringActuation_KeepsHandler) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      features::kGlicExperimentalTriggeringOptInTabFocus);
+  StartActuationSession();
+  // Without a tab there is no WebContents to show the opt-in dialog in.
+  coordinator_->set_active_tab(nullptr);
+
+  EXPECT_TRUE(SendRequestToLiveSession(CreateRequest(DeviceOptInRequest{}))
+                  .has_value());
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       ExecuteActionsDisabledDuringActuation_KeepsHandler) {
+  StartActuationSession();
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      features::kGlicExperimentalTriggeringScriptTools);
+
+  ExpectFailedTaskUpdate(
+      SendRequestToLiveSession(CreateExecuteScriptToolRequest()),
+      "Script tool execution is not enabled.");
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       ExecuteActionsDuringActuation_RejectedAndKeepsHandler) {
+  StartActuationSession();
+
+  ExpectFailedTaskUpdate(
+      SendRequestToLiveSession(CreateExecuteScriptToolRequest()),
+      "Another task is already executing for this context.");
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       SubmitConfirmationNotOptedInDuringActuation_KeepsHandler) {
+  StartActuationSession();
+  OptOut();
+
+  auto response = SendRequestToLiveSession(CreateConfirmationRequest());
+  ASSERT_TRUE(response.has_value());
+  ASSERT_TRUE(response->confirmation_result.has_value());
+  EXPECT_EQ(response->confirmation_result->status,
+            ConfirmationResult::Status::kErrorUnavailable);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       StopActuationDuringActuation_TearsDownHandler) {
+  StartActuationSession();
+
+  auto response = SendRequest(
+      CreateRequest(StopActuationRequest{.stop_reason = "STOPPED_BY_USER"}));
+  ASSERT_TRUE(response.has_value());
+  ASSERT_TRUE(response->task_update.has_value());
+  EXPECT_EQ(response->task_update->state, TaskUpdate::State::kStopped);
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       TaskMetadataUpdatedDuringActionExecution_KeepsHandler) {
+  StartActionExecution();
+
+  // There is no Glic instance to relay the metadata to, but the in-flight
+  // execution still needs the handler to report its result.
+  EXPECT_FALSE(SendRequestToLiveSession(CreateRequest(TaskMetadataUpdated{}))
+                   .has_value());
+
+  EXPECT_TRUE(SendRequest(CreateRequest(StopActuationRequest{
+                              .stop_reason = "STOPPED_BY_USER"}))
+                  .has_value());
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       GetScreenshotFailureDuringActionExecution_KeepsHandler) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      features::kGlicExperimentalTriggeringScreenshot);
+  StartActionExecution();
+
+  auto response = SendRequestToLiveSession(CreateScreenshotRequest());
+  ASSERT_TRUE(response.has_value());
+  ASSERT_TRUE(response->screenshot_result.has_value());
+  EXPECT_EQ(response->screenshot_result->status,
+            ScreenshotResult::Status::kErrorDisabled);
+
+  EXPECT_TRUE(SendRequest(CreateRequest(StopActuationRequest{
+                              .stop_reason = "STOPPED_BY_USER"}))
+                  .has_value());
+}
+
+// A handler created for a request that fails early has no live work, so it
+// must not leak.
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       TaskMetadataUpdatedWithoutSession_CleansUpHandler) {
+  EXPECT_FALSE(SendRequest(CreateRequest(TaskMetadataUpdated{})).has_value());
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+}
+
+// The tests below cover a pending device opt-in. The user is already opted
+// in, so ShowDialog() posts its `accepted` answer instead of showing UI. Until
+// that task runs, the opt-in is pending, as if the dialog were open.
+class GlicExperimentalTriggeringCoordinatorOptInTest
+    : public GlicExperimentalTriggeringCoordinatorWithTabTest {
+ public:
+  void SetUp() override {
+    GlicExperimentalTriggeringCoordinatorWithTabTest::SetUp();
+    // Show the opt-in on the test tab instead of looking for a Gemini tab.
+    // Initialized after the base fixture's list, so it is destroyed first.
+    opt_in_features_.InitAndDisableFeature(
+        features::kGlicExperimentalTriggeringOptInTabFocus);
+  }
+
+  // Sends `request` with replies going to `update_callback`. Every request on
+  // a context replaces the handler's update callback, so tests that wait for
+  // a reply must pass the same callback to each request.
+  std::optional<ExperimentalTriggeringResponse> SendRequestWithCallback(
+      const ExperimentalTriggeringRequest& request,
+      GlicExperimentalTriggeringUpdateCallback update_callback) {
+    return coordinator_->OnRequest(
+        kTestContextId, request,
+        ScopedIncomingMessageResultLogger(
+            GlicMetricReporter(profile_),
+            ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+        std::move(update_callback), nullptr);
+  }
+
+ private:
+  base::test::ScopedFeatureList opt_in_features_;
+};
+
+// A request that arrives while the opt-in is pending must not destroy the
+// handler, or the user's answer is dropped.
+TEST_F(GlicExperimentalTriggeringCoordinatorOptInTest,
+       OptInPending_OtherRequestKeepsHandlerAndResult) {
+  base::test::TestFuture<ExperimentalTriggeringResponse> result_future;
+  EXPECT_FALSE(SendRequestWithCallback(CreateRequest(DeviceOptInRequest{}),
+                                       result_future.GetRepeatingCallback())
+                   .has_value());
+  ASSERT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 1u);
+
+  // Fails without a Glic instance, before the posted answer runs.
+  EXPECT_FALSE(SendRequestWithCallback(CreateRequest(TaskMetadataUpdated{}),
+                                       result_future.GetRepeatingCallback())
+                   .has_value());
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 1u);
+
+  ASSERT_TRUE(result_future.Wait());
+  auto result = result_future.Take();
+  ASSERT_TRUE(result.device_opt_in_result.has_value());
+  EXPECT_EQ(*result.device_opt_in_result, DeviceOptInResult::kAccepted);
+  // Nothing else runs on this context, so the answer ends the handler.
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+}
+
+// Answering an opt-in on a context that already has a live session must not
+// destroy that session's handler.
+TEST_F(GlicExperimentalTriggeringCoordinatorOptInTest,
+       OptInAnsweredDuringActuation_KeepsHandler) {
+  StartActuationSession();
+
+  base::test::TestFuture<ExperimentalTriggeringResponse> result_future;
+  EXPECT_FALSE(SendRequestWithCallback(CreateRequest(DeviceOptInRequest{}),
+                                       result_future.GetRepeatingCallback())
+                   .has_value());
+  ASSERT_TRUE(result_future.Wait());
+  auto result = result_future.Take();
+  ASSERT_TRUE(result.device_opt_in_result.has_value());
+  EXPECT_EQ(*result.device_opt_in_result, DeviceOptInResult::kAccepted);
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 1u);
+}
+
+// The server resends DeviceOptInRequest after it pauses and resumes. Both
+// requests wait on one answer, and only one result is sent.
+TEST_F(GlicExperimentalTriggeringCoordinatorOptInTest,
+       ResentOptIn_SendsOneResult) {
+  // Keep the handler alive after the first answer, so that a second result
+  // would be sent if the handler did not drop it.
+  StartActuationSession();
+
+  std::vector<ExperimentalTriggeringResponse> results;
+  auto record =
+      base::BindLambdaForTesting([&](ExperimentalTriggeringResponse response) {
+        if (response.device_opt_in_result.has_value()) {
+          results.push_back(std::move(response));
+        }
+      });
+  for (int i = 0; i < 2; ++i) {
+    EXPECT_FALSE(
+        SendRequestWithCallback(CreateRequest(DeviceOptInRequest{}), record)
+            .has_value());
+  }
+  // Both answers were posted already, so this task runs after them.
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_EQ(*results[0].device_opt_in_result, DeviceOptInResult::kAccepted);
+}
 
 TEST_F(GlicExperimentalTriggeringCoordinatorTest,
        RecordsInitialMessageDeliveryLatency) {

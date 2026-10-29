@@ -300,6 +300,26 @@ GlicExperimentalTriggeringExecutionOutcome GlicInvokeErrorToOutcome(
 
 }  // namespace
 
+// Handles every request for one context id, and owns the session that those
+// requests drive.
+//
+// Lifetime: the coordinator keeps one handler per context id, so a handler must
+// stay alive for as long as it has live work (see HasLiveWork()). Deleting it
+// earlier drops the session's web client updates, and the next request creates
+// a new handler whose sequence numbers restart at 0, so the server discards its
+// replies as stale (b/574916669).
+//
+// The handler is deleted only in these places:
+//  - OnRequest(): if a request reaches a handler with no live work, OnRequest()
+//    arms `cleanup_runner`, which deletes the handler when the request is done.
+//    A Process* method that starts async work which reports back through this
+//    handler must call `cleanup_runner.Release()` after that work has started.
+//    A Process* method must not arm `cleanup_runner` itself, unless it ends a
+//    live session on purpose (ProcessStopActuationRequest()).
+//  - CleanupAsync(): the Glic invocation failed or the web client disconnected.
+//  - SendDeviceOptInResult() and SendExecuteActionsResponse(): the async work
+//    that a request started has finished, and the handler has no other live
+//    work.
 class ExperimentalTriggeringUpdatesHandler
     : public mojom::ExperimentalTriggeringUpdatesHandler {
  public:
@@ -360,9 +380,13 @@ class ExperimentalTriggeringUpdatesHandler
     if (update_callback) {
       update_callback_ = std::move(update_callback);
     }
-    base::ScopedClosureRunner cleanup_runner(base::BindOnce(
-        &GlicExperimentalTriggeringCoordinator::OnUpdatesHandlerCleanup,
-        coordinator_, context_id_));
+    // Decide here, once, whether this request may delete the handler: only if
+    // the handler has no live work. This also covers every early return below.
+    // See "Lifetime" above the class.
+    base::ScopedClosureRunner cleanup_runner;
+    if (!HasLiveWork()) {
+      cleanup_runner = CreateCleanupRunner();
+    }
 
     if (!request.task_metadata.has_value()) {
       result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
@@ -541,6 +565,28 @@ class ExperimentalTriggeringUpdatesHandler
   }
 
  private:
+  // Whether this handler has work that still reports back through it: a Glic
+  // instance driving an actuation, an in-flight direct action execution, an
+  // open device opt-in dialog, or a Glic invocation that has not finished. A
+  // request never deletes a handler that has live work, except
+  // StopActuationRequest.
+  //
+  // A completed turn still counts: `instance_` stays set after the turn
+  // reaches a terminal state, so that continuations keep their sequence
+  // numbers. So this means "a session is still open", not "something is
+  // running right now".
+  bool HasLiveWork() const {
+    return instance_ || actions_runner_ || awaiting_opt_in_ ||
+           !pending_invoke_ids_.empty();
+  }
+
+  // Returns a runner that tears this handler down when it goes out of scope.
+  base::ScopedClosureRunner CreateCleanupRunner() {
+    return base::ScopedClosureRunner(base::BindOnce(
+        &GlicExperimentalTriggeringCoordinator::OnUpdatesHandlerCleanup,
+        coordinator_, context_id_));
+  }
+
   bool HandleUnavailableExperimentalTriggering(GlicKeyedService* glic_service) {
     auto state = glic_service->enabling().GetExperimentalTriggeringState();
     metric_reporter_.RecordEnumeration(
@@ -762,9 +808,6 @@ class ExperimentalTriggeringUpdatesHandler
     if (actions_runner_) {
       result_logger.set_result(
           GlicExperimentalTriggeringIncomingMessageResult::kTaskAlreadyRunning);
-      // Rejecting this request must not clean up the handler, which is still
-      // needed to report the result of the in-flight execution.
-      std::ignore = cleanup_runner.Release();
       return CreateResponseMessage(
           context_id_, TaskUpdate::State::kFailed,
           TaskUpdate::DataType::kErrorMessage,
@@ -834,6 +877,7 @@ class ExperimentalTriggeringUpdatesHandler
         context_id_, TaskUpdate::State::kStarting, std::nullopt, "",
         request.task_metadata.has_value() ? &*request.task_metadata : nullptr,
         sequence_generator_.GetNext());
+    // The invocation reports back through this handler, so keep it alive.
     std::ignore = cleanup_runner.Release();
 
     GlicInvokeWithAutoSubmitOptions auto_submit_options;
@@ -869,16 +913,6 @@ class ExperimentalTriggeringUpdatesHandler
       const TaskMetadata* task_metadata,
       base::ScopedClosureRunner cleanup_runner,
       ScopedIncomingMessageResultLogger result_logger) {
-    // Keep the handler alive if an actuation session or action execution is
-    // already running on this context so that neither early validation failures
-    // nor the async screenshot response tear down the in-flight task.
-    // TODO(b/574916669): Decide this once in OnRequest(), by only arming
-    // `cleanup_runner` when the handler has no live work, instead of guarding
-    // each Process* method individually.
-    if (instance_ || actions_runner_) {
-      std::ignore = cleanup_runner.Release();
-    }
-
     // Like `ProcessSubmitConfirmation`, failures are reported as a
     // `ScreenshotResult` rather than a failed `TaskUpdate`: being unable to
     // capture a screenshot says nothing about the health of the actuation task,
@@ -991,13 +1025,6 @@ class ExperimentalTriggeringUpdatesHandler
       const TaskMetadata* task_metadata,
       base::ScopedClosureRunner cleanup_runner,
       ScopedIncomingMessageResultLogger result_logger) {
-    // Keep the handler alive if an actuation session or action execution is
-    // already running on this context so that neither early validation failures
-    // nor the async confirmation response tear down the in-flight task.
-    if (instance_ || actions_runner_) {
-      std::ignore = cleanup_runner.Release();
-    }
-
     // Unlike actuation requests, delivery failures are reported as a
     // `ConfirmationResult` rather than a failed `TaskUpdate`. A confirmation
     // that could not be delivered says nothing about the health of the
@@ -1111,7 +1138,6 @@ class ExperimentalTriggeringUpdatesHandler
     }
     result_logger.set_result(
         GlicExperimentalTriggeringIncomingMessageResult::kSuccess);
-    std::ignore = cleanup_runner.Release();
     return std::nullopt;
   }
 
@@ -1119,6 +1145,12 @@ class ExperimentalTriggeringUpdatesHandler
       const TaskMetadata* request_metadata,
       base::ScopedClosureRunner cleanup_runner,
       ScopedIncomingMessageResultLogger result_logger) {
+    // Stopping ends the session, so this tears the handler down even when it
+    // has live work and OnRequest() left `cleanup_runner` unarmed.
+    if (!cleanup_runner) {
+      cleanup_runner = CreateCleanupRunner();
+    }
+
     std::optional<ExperimentalTriggeringResponse> response;
     if (actions_runner_) {
       actions_timeout_timer_.Stop();
@@ -1210,9 +1242,6 @@ class ExperimentalTriggeringUpdatesHandler
     if (actions_runner_ || instance_) {
       result_logger.set_result(
           GlicExperimentalTriggeringIncomingMessageResult::kTaskAlreadyRunning);
-      // Rejecting this request must not clean up the handler, which the task
-      // that is already running still needs.
-      std::ignore = cleanup_runner.Release();
       return CreateResponseMessage(
           context_id_, TaskUpdate::State::kFailed,
           TaskUpdate::DataType::kErrorMessage,
@@ -1300,6 +1329,7 @@ class ExperimentalTriggeringUpdatesHandler
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(conversation_id), std::move(task_id)));
 
+    // The execution reports back through this handler, so keep it alive.
     std::ignore = cleanup_runner.Release();
     result_logger.set_result(
         GlicExperimentalTriggeringIncomingMessageResult::kSuccess);
@@ -1367,9 +1397,13 @@ class ExperimentalTriggeringUpdatesHandler
         &ExperimentalTriggeringUpdatesHandler::SendDeviceOptInResult,
         weak_ptr_factory_.GetWeakPtr());
 
+    // Set before ShowDialog(), which may answer right away.
+    awaiting_opt_in_ = true;
     glic_service->opt_in_controller().ShowDialog(web_contents,
                                                  std::move(callback));
 
+    // The dialog reports back through SendDeviceOptInResult(), so keep the
+    // handler alive until then.
     std::ignore = cleanup_runner.Release();
 
     result_logger.set_result(
@@ -1397,6 +1431,12 @@ class ExperimentalTriggeringUpdatesHandler
   }
 
   void SendDeviceOptInResult(bool accepted) {
+    // A resent DeviceOptInRequest adds a second callback for the same dialog.
+    // Send only the first answer.
+    if (!awaiting_opt_in_) {
+      return;
+    }
+    awaiting_opt_in_ = false;
     if (update_callback_) {
       ExperimentalTriggeringResponse response =
           CreateBaseResponse(context_id_, sequence_generator_.GetNext(),
@@ -1405,7 +1445,8 @@ class ExperimentalTriggeringUpdatesHandler
                                                : DeviceOptInResult::kDeclined;
       update_callback_.Run(std::move(response));
     }
-    if (coordinator_) {
+    // A session that shares this context id still needs the handler.
+    if (coordinator_ && !HasLiveWork()) {
       coordinator_->OnUpdatesHandlerCleanup(context_id_);
     }
   }
@@ -1519,6 +1560,8 @@ class ExperimentalTriggeringUpdatesHandler
   bool first_response_received_ = false;
   bool outcome_recorded_ = false;
   bool is_cleaning_up_ = false;
+  // Whether a device opt-in dialog is open and its result not yet sent.
+  bool awaiting_opt_in_ = false;
   // Ids of invocations started by this handler that have neither succeeded nor
   // failed yet.
   base::flat_set<int> pending_invoke_ids_;
