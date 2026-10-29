@@ -761,13 +761,31 @@ TEST_F(LegacyGlicActivityManagerOsNotificationTest,
           IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_BODY_STARTED_V2));
 }
 
-// Verifies that the updated notification copy ignores the task title, which is
-// a generic placeholder: the generic title is shown with a "Started" body.
+// Verifies that the updated notification copy includes a custom task title in
+// the body when present.
 TEST_F(LegacyGlicActivityManagerOsNotificationTest,
-       UpdatedStrings_WithTaskTitle_IgnoresTaskTitle) {
+       UpdatedStrings_WithTaskTitle_ShowsTitleInBody) {
   auto notification = StartTaskAndGetNotification(
       actor_service()->CreateExperimentalTriggeringTaskWithTitleForTesting(
           "Book a table"));
+  ASSERT_TRUE(notification.has_value());
+  EXPECT_EQ(notification->title(),
+            l10n_util::GetStringUTF16(
+                IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_TITLE_V2));
+  EXPECT_EQ(
+      notification->message(),
+      l10n_util::GetStringFUTF16(
+          IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_BODY_STARTED_WITH_TITLE_V2,
+          u"Book a table"));
+}
+
+// Verifies that the updated notification copy ignores the default server
+// placeholder task title and shows the "Started" body instead.
+TEST_F(LegacyGlicActivityManagerOsNotificationTest,
+       UpdatedStrings_PlaceholderTaskTitle_ShowsStartedOnly) {
+  auto notification = StartTaskAndGetNotification(
+      actor_service()->CreateExperimentalTriggeringTaskWithTitleForTesting(
+          "Running task in Chrome"));
   ASSERT_TRUE(notification.has_value());
   EXPECT_EQ(notification->title(),
             l10n_util::GetStringUTF16(

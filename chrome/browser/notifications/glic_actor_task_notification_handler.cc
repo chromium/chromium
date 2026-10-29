@@ -33,6 +33,9 @@
 namespace {
 constexpr char kActorTaskStartNotificationPrefix[] = "actor_task_start_";
 constexpr char kNotifierId[] = "glic_actor_task";
+// Static placeholder title sent by the server when an eagerly generated
+// conversation title is not yet available at task creation time.
+constexpr char kDefaultPlaceholderTaskTitle[] = "Running task in Chrome";
 
 std::string GetNotificationId(actor::TaskId task_id) {
   return base::StrCat({kActorTaskStartNotificationPrefix,
@@ -78,12 +81,17 @@ void GlicActorTaskNotificationHandler::MaybeShow(Profile* profile,
   std::u16string body;
   if (base::FeatureList::IsEnabled(
           features::kGlicExperimentalTriggeringOsNotificationUpdatedStrings)) {
-    // The title is always generic and the body only states that the task has
-    // started. The task title isn't used, as it is a generic placeholder.
+    const bool has_custom_task_title =
+        has_task_title && *task_title != kDefaultPlaceholderTaskTitle;
     title = l10n_util::GetStringUTF16(
         IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_TITLE_V2);
-    body = l10n_util::GetStringUTF16(
-        IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_BODY_STARTED_V2);
+    body =
+        has_custom_task_title
+            ? l10n_util::GetStringFUTF16(
+                  IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_BODY_STARTED_WITH_TITLE_V2,
+                  base::UTF8ToUTF16(*task_title))
+            : l10n_util::GetStringUTF16(
+                  IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_BODY_STARTED_V2);
   } else {
     title = l10n_util::GetStringUTF16(
         IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_TITLE);
