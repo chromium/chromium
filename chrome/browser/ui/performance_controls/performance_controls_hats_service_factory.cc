@@ -43,7 +43,19 @@ PerformanceControlsHatsServiceFactory::GetForProfile(Profile* profile) {
 // static
 bool PerformanceControlsHatsServiceFactory::IsAnySurveyFeatureEnabled() {
   return base::FeatureList::IsEnabled(
-      performance_manager::features::kPerformanceControlsPPMSurvey);
+             performance_manager::features::
+                 kPerformanceControlsPerformanceSurvey) ||
+         base::FeatureList::IsEnabled(
+             performance_manager::features::kPerformanceControlsPPMSurvey) ||
+         base::FeatureList::IsEnabled(
+             performance_manager::features::
+                 kPerformanceControlsBatteryPerformanceSurvey) ||
+         base::FeatureList::IsEnabled(
+             performance_manager::features::
+                 kPerformanceControlsMemorySaverOptOutSurvey) ||
+         base::FeatureList::IsEnabled(
+             performance_manager::features::
+                 kPerformanceControlsBatterySaverOptOutSurvey);
 }
 
 std::unique_ptr<KeyedService>
