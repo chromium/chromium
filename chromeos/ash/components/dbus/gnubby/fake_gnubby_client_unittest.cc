@@ -5,7 +5,6 @@
 #include "chromeos/ash/components/dbus/gnubby/fake_gnubby_client.h"
 
 #include "base/scoped_observation.h"
-#include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/attestation/attestation.pb.h"
 #include "chromeos/ash/components/dbus/gnubby/gnubby_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,7 +37,6 @@ class FakeGnubbyClientTest : public testing::Test {
   FakeGnubbyClientTest& operator=(const FakeGnubbyClientTest&) = delete;
 
  protected:
-  base::test::TaskEnvironment task_environment_;
   FakeGnubbyClient fake_gnubby_client_;
 };
 
@@ -51,7 +49,6 @@ TEST_F(FakeGnubbyClientTest, NotificationSent) {
   EXPECT_EQ(fake_gnubby_client_.calls(), 0);
   EXPECT_EQ(observer.calls(), 0);
   fake_gnubby_client_.SignalPromptUserAuth();
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(fake_gnubby_client_.calls(), 1);
   EXPECT_EQ(observer.calls(), 1);
 }

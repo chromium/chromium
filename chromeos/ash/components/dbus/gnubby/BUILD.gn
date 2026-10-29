@@ -25,7 +25,6 @@ source_set("unit_tests") {
   deps = [
     ":gnubby",
     "//base",
-    "//base/test:test_support",
     "//chromeos/ash/components/dbus/cryptohome:attestation_proto",
     "//dbus",
     "//testing/gtest",
