@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
+#include "chrome/browser/safe_browsing/advanced_protection/advanced_protection_status_manager.h"
 
 #include "base/command_line.h"
 #include "base/test/task_environment.h"
@@ -16,10 +16,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/safe_browsing/advanced_protection_status_manager_android.h"
+#include "chrome/browser/safe_browsing/advanced_protection/advanced_protection_status_manager_android.h"
 #include "chrome/browser/safe_browsing/android/advanced_protection_status_manager_test_util.h"
 #else
-#include "chrome/browser/safe_browsing/advanced_protection_status_manager_desktop.h"
+#include "chrome/browser/safe_browsing/advanced_protection/advanced_protection_status_manager_desktop.h"
 #endif
 
 namespace safe_browsing {

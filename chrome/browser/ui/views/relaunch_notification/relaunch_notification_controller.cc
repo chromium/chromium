@@ -14,7 +14,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
-#include "chrome/browser/safe_browsing/application_advanced_protection_status_detector.h"
+#include "chrome/browser/safe_browsing/advanced_protection/application_advanced_protection_status_detector.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 

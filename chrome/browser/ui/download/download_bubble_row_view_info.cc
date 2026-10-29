@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/download/download_bubble_row_view_info.h"
 
 #include "chrome/browser/download/download_ui_safe_browsing_util.h"
-#include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
-#include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
+#include "chrome/browser/safe_browsing/advanced_protection/advanced_protection_status_manager.h"
+#include "chrome/browser/safe_browsing/advanced_protection/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/download/download_item_mode.h"
 #include "components/download/public/common/download_danger_type.h"

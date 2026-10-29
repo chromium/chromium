@@ -7,7 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
+#include "chrome/browser/safe_browsing/advanced_protection/advanced_protection_status_manager.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
 
 class Profile;

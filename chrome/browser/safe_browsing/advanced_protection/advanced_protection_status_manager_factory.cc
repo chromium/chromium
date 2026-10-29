@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
+#include "chrome/browser/safe_browsing/advanced_protection/advanced_protection_status_manager_factory.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
+#include "chrome/browser/safe_browsing/advanced_protection/advanced_protection_status_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "content/public/browser/browser_context.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/safe_browsing/advanced_protection_status_manager_android.h"
+#include "chrome/browser/safe_browsing/advanced_protection/advanced_protection_status_manager_android.h"
 #else
-#include "chrome/browser/safe_browsing/advanced_protection_status_manager_desktop.h"
+#include "chrome/browser/safe_browsing/advanced_protection/advanced_protection_status_manager_desktop.h"
 #endif
 
 namespace {

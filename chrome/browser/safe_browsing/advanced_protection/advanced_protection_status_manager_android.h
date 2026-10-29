@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_ADVANCED_PROTECTION_STATUS_MANAGER_ANDROID_H_
-#define CHROME_BROWSER_SAFE_BROWSING_ADVANCED_PROTECTION_STATUS_MANAGER_ANDROID_H_
+#ifndef CHROME_BROWSER_SAFE_BROWSING_ADVANCED_PROTECTION_ADVANCED_PROTECTION_STATUS_MANAGER_ANDROID_H_
+#define CHROME_BROWSER_SAFE_BROWSING_ADVANCED_PROTECTION_ADVANCED_PROTECTION_STATUS_MANAGER_ANDROID_H_
 
 #include "base/android/jni_android.h"
-#include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
+#include "chrome/browser/safe_browsing/advanced_protection/advanced_protection_status_manager.h"
 
 namespace safe_browsing {
 
@@ -38,4 +38,4 @@ class AdvancedProtectionStatusManagerAndroid
 };
 
 }  // namespace safe_browsing
-#endif  // CHROME_BROWSER_SAFE_BROWSING_ADVANCED_PROTECTION_STATUS_MANAGER_ANDROID_H_
+#endif  // CHROME_BROWSER_SAFE_BROWSING_ADVANCED_PROTECTION_ADVANCED_PROTECTION_STATUS_MANAGER_ANDROID_H_

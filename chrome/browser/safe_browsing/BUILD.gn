@@ -701,12 +701,12 @@ source_set("verdict_cache_manager_factory") {
 
 static_library("advanced_protection") {
   sources = [
-    "advanced_protection_status_manager.cc",
-    "advanced_protection_status_manager.h",
-    "advanced_protection_status_manager_factory.cc",
-    "advanced_protection_status_manager_factory.h",
-    "application_advanced_protection_status_detector.cc",
-    "application_advanced_protection_status_detector.h",
+    "advanced_protection/advanced_protection_status_manager.cc",
+    "advanced_protection/advanced_protection_status_manager.h",
+    "advanced_protection/advanced_protection_status_manager_factory.cc",
+    "advanced_protection/advanced_protection_status_manager_factory.h",
+    "advanced_protection/application_advanced_protection_status_detector.cc",
+    "advanced_protection/application_advanced_protection_status_detector.h",
   ]
 
   deps = [
@@ -725,14 +725,14 @@ static_library("advanced_protection") {
 
   if (is_android) {
     sources += [
-      "advanced_protection_status_manager_android.cc",
-      "advanced_protection_status_manager_android.h",
+      "advanced_protection/advanced_protection_status_manager_android.cc",
+      "advanced_protection/advanced_protection_status_manager_android.h",
     ]
     deps += [ "android:jni_headers" ]
   } else {
     sources += [
-      "advanced_protection_status_manager_desktop.cc",
-      "advanced_protection_status_manager_desktop.h",
+      "advanced_protection/advanced_protection_status_manager_desktop.cc",
+      "advanced_protection/advanced_protection_status_manager_desktop.h",
     ]
   }
 }
@@ -765,9 +765,9 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
   sources = [
-    "advanced_protection_status_manager_factory_unittest.cc",
-    "advanced_protection_status_manager_unittest.cc",
-    "application_advanced_protection_status_detector_unittest.cc",
+    "advanced_protection/advanced_protection_status_manager_factory_unittest.cc",
+    "advanced_protection/advanced_protection_status_manager_unittest.cc",
+    "advanced_protection/application_advanced_protection_status_detector_unittest.cc",
     "gemini_antiscam_protection/gemini_antiscam_protection_service_factory_unittest.cc",
     "metrics/bundled_settings_metrics_provider_unittest.cc",
     "notification_content_detection/notification_content_detection_service_factory_unittest.cc",
@@ -904,7 +904,7 @@ source_set("unit_tests") {
 
   if (safe_browsing_mode == 1) {
     sources += [
-      "advanced_protection_status_manager_desktop_unittest.cc",
+      "advanced_protection/advanced_protection_status_manager_desktop_unittest.cc",
       "chrome_password_reuse_detection_manager_client_unittest.cc",
       "chrome_ping_manager_factory_unittest.cc",
       "chrome_safe_browsing_hats_delegate_desktop_unittest.cc",

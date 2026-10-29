@@ -9,7 +9,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
+#include "chrome/browser/safe_browsing/advanced_protection/advanced_protection_status_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 
 // The generated pref for HTTPS-First Mode. Only used for managing the setting

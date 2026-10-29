@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_ADVANCED_PROTECTION_STATUS_MANAGER_DESKTOP_H_
-#define CHROME_BROWSER_SAFE_BROWSING_ADVANCED_PROTECTION_STATUS_MANAGER_DESKTOP_H_
+#ifndef CHROME_BROWSER_SAFE_BROWSING_ADVANCED_PROTECTION_ADVANCED_PROTECTION_STATUS_MANAGER_DESKTOP_H_
+#define CHROME_BROWSER_SAFE_BROWSING_ADVANCED_PROTECTION_ADVANCED_PROTECTION_STATUS_MANAGER_DESKTOP_H_
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
+#include "chrome/browser/safe_browsing/advanced_protection/advanced_protection_status_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -162,4 +162,4 @@ class AdvancedProtectionStatusManagerDesktop
 };
 
 }  // namespace safe_browsing
-#endif  // CHROME_BROWSER_SAFE_BROWSING_ADVANCED_PROTECTION_STATUS_MANAGER_DESKTOP_H_
+#endif  // CHROME_BROWSER_SAFE_BROWSING_ADVANCED_PROTECTION_ADVANCED_PROTECTION_STATUS_MANAGER_DESKTOP_H_
