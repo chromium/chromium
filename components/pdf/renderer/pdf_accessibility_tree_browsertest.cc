@@ -288,7 +288,8 @@ void CheckListItem(const ui::AXNode* item,
 const ui::AXNode* CheckListItemWithNestedList(
     const ui::AXNode* item,
     std::string_view expected_text,
-    std::string_view expected_marker_name = "• ") {
+    std::string_view expected_marker_name = "• ",
+    std::string_view expected_nested_tag = "ul") {
   if (!item) {
     ADD_FAILURE();
     return nullptr;
@@ -329,8 +330,8 @@ const ui::AXNode* CheckListItemWithNestedList(
     ADD_FAILURE() << "Expected third child to be a nested list";
     return nullptr;
   }
-  EXPECT_EQ("ul", nested_list->GetStringAttribute(
-                      ax::mojom::StringAttribute::kHtmlTag));
+  EXPECT_EQ(expected_nested_tag, nested_list->GetStringAttribute(
+                                     ax::mojom::StringAttribute::kHtmlTag));
   EXPECT_TRUE(nested_list->GetBoolAttribute(
       ax::mojom::BoolAttribute::kIsLineBreakingObject));
   return nested_list;
@@ -6446,6 +6447,202 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListDecimalNumbersNotList) {
 
   CheckParagraph(page->GetChildAtIndex(0u), "3.14is pi.");
   CheckParagraph(page->GetChildAtIndex(1u), "3.14is pi.");
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListNestedInUnordered) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"•", "Item", "1.", "Subitem 1", "2.", "Subitem 2"},
+      {
+          gfx::RectF(30.0f, 44.0f, 4.0f, 4.0f),
+          gfx::RectF(45.0f, 40.0f, 80.0f, 12.0f),
+          gfx::RectF(50.0f, 57.0f, 10.0f, 12.0f),
+          gfx::RectF(65.0f, 57.0f, 80.0f, 12.0f),
+          gfx::RectF(50.0f, 74.0f, 10.0f, 12.0f),
+          gfx::RectF(65.0f, 74.0f, 80.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* top_list = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, top_list);
+  EXPECT_EQ(ax::mojom::Role::kList, top_list->GetRole());
+  EXPECT_EQ("ul",
+            top_list->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
+  ASSERT_EQ(1u, top_list->GetChildCount());
+
+  const ui::AXNode* nested_list = CheckListItemWithNestedList(
+      top_list->GetChildAtIndex(0u), "Item", "• ", "ol");
+  CheckOrderedList(nested_list, {"Subitem 1", "Subitem 2"}, {"1. ", "2. "});
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListResumesAfterSublist) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"1.", "Item 1", "2.", "Item 2", "1.", "Subitem 1", "2.", "Subitem 2",
+       "3.", "Item 3"},
+      {
+          gfx::RectF(30.0f, 40.0f, 10.0f, 12.0f),
+          gfx::RectF(45.0f, 40.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 57.0f, 10.0f, 12.0f),
+          gfx::RectF(45.0f, 57.0f, 60.0f, 12.0f),
+          gfx::RectF(50.0f, 74.0f, 10.0f, 12.0f),
+          gfx::RectF(65.0f, 74.0f, 60.0f, 12.0f),
+          gfx::RectF(50.0f, 91.0f, 10.0f, 12.0f),
+          gfx::RectF(65.0f, 91.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 108.0f, 10.0f, 12.0f),
+          gfx::RectF(45.0f, 108.0f, 60.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* top_list = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, top_list);
+  EXPECT_EQ(ax::mojom::Role::kList, top_list->GetRole());
+  EXPECT_EQ("ol",
+            top_list->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
+  ASSERT_EQ(3u, top_list->GetChildCount());
+
+  CheckListItem(top_list->GetChildAtIndex(0u), "Item 1", "1. ");
+  const ui::AXNode* nested_list = CheckListItemWithNestedList(
+      top_list->GetChildAtIndex(1u), "Item 2", "2. ", "ol");
+  CheckOrderedList(nested_list, {"Subitem 1", "Subitem 2"}, {"1. ", "2. "});
+  CheckListItem(top_list->GetChildAtIndex(2u), "Item 3", "3. ");
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListTypeChangeStartsNewList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"•", "Bullet 1", "•", "Bullet 2", "1.", "Ordered 1", "2.", "Ordered 2"},
+      {
+          gfx::RectF(30.0f, 44.0f, 4.0f, 4.0f),
+          gfx::RectF(45.0f, 40.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 61.0f, 4.0f, 4.0f),
+          gfx::RectF(45.0f, 57.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 74.0f, 10.0f, 12.0f),
+          gfx::RectF(45.0f, 74.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 91.0f, 10.0f, 12.0f),
+          gfx::RectF(45.0f, 91.0f, 60.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  CheckUnorderedList(page->GetChildAtIndex(0u), {"Bullet 1", "Bullet 2"}, "• ");
+  CheckOrderedList(page->GetChildAtIndex(1u), {"Ordered 1", "Ordered 2"},
+                   {"1. ", "2. "});
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListNestedInOrdered) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // 1. Numbers
+  //    ○ 1
+  //    ○ 2
+  //    ○ 3
+  // 2. Fruits
+  //
+  // Body
+  //
+  // The trailing paragraph gives the page enough lines to measure its typical
+  // line spacing, so the sublist isn't mistaken for a paragraph gap.
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"1.", "Numbers", "○", "1", "○", "2", "○", "3", "2.", "Fruits", "Body"},
+      {
+          gfx::RectF(30.0f, 40.0f, 10.0f, 12.0f),
+          gfx::RectF(45.0f, 40.0f, 60.0f, 12.0f),
+          gfx::RectF(50.0f, 61.0f, 4.0f, 4.0f),
+          gfx::RectF(65.0f, 57.0f, 6.0f, 12.0f),
+          gfx::RectF(50.0f, 78.0f, 4.0f, 4.0f),
+          gfx::RectF(65.0f, 74.0f, 6.0f, 12.0f),
+          gfx::RectF(50.0f, 95.0f, 4.0f, 4.0f),
+          gfx::RectF(65.0f, 91.0f, 6.0f, 12.0f),
+          gfx::RectF(30.0f, 108.0f, 10.0f, 12.0f),
+          gfx::RectF(45.0f, 108.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 142.0f, 60.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  const ui::AXNode* top_list = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, top_list);
+  EXPECT_EQ("ol",
+            top_list->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
+  ASSERT_EQ(2u, top_list->GetChildCount());
+
+  const ui::AXNode* nested_list = CheckListItemWithNestedList(
+      top_list->GetChildAtIndex(0u), "Numbers", "1. ", "ul");
+  CheckUnorderedList(nested_list, {"1", "2", "3"}, "○ ");
+  CheckListItem(top_list->GetChildAtIndex(1u), "Fruits", "2. ");
+  CheckParagraph(page->GetChildAtIndex(1u), "Body");
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicListTypeChangeStartsNewSublist) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // 1. Item 1
+  // 2. Item 2
+  //    • Bullet A
+  //    • Bullet B
+  //    1. Subitem 1
+  //    2. Subitem 2
+  // 3. Item 3
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"1.", "Item 1", "2.", "Item 2", "•", "Bullet A", "•", "Bullet B", "1.",
+       "Subitem 1", "2.", "Subitem 2", "3.", "Item 3"},
+      {
+          gfx::RectF(30.0f, 40.0f, 10.0f, 12.0f),
+          gfx::RectF(45.0f, 40.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 57.0f, 10.0f, 12.0f),
+          gfx::RectF(45.0f, 57.0f, 60.0f, 12.0f),
+          gfx::RectF(50.0f, 78.0f, 4.0f, 4.0f),
+          gfx::RectF(65.0f, 74.0f, 60.0f, 12.0f),
+          gfx::RectF(50.0f, 95.0f, 4.0f, 4.0f),
+          gfx::RectF(65.0f, 91.0f, 60.0f, 12.0f),
+          gfx::RectF(50.0f, 108.0f, 10.0f, 12.0f),
+          gfx::RectF(65.0f, 108.0f, 60.0f, 12.0f),
+          gfx::RectF(50.0f, 125.0f, 10.0f, 12.0f),
+          gfx::RectF(65.0f, 125.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 142.0f, 10.0f, 12.0f),
+          gfx::RectF(45.0f, 142.0f, 60.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* top_list = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, top_list);
+  EXPECT_EQ("ol",
+            top_list->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
+  ASSERT_EQ(3u, top_list->GetChildCount());
+  CheckListItem(top_list->GetChildAtIndex(0u), "Item 1", "1. ");
+  CheckListItem(top_list->GetChildAtIndex(2u), "Item 3", "3. ");
+
+  // Item 2 holds the bulleted sublist followed by a separate ordered sublist.
+  const ui::AXNode* item = top_list->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, item);
+  ASSERT_EQ(4u, item->GetChildCount());
+  EXPECT_EQ("Item 2", item->GetChildAtIndex(1u)->GetStringAttribute(
+                          ax::mojom::StringAttribute::kName));
+  CheckUnorderedList(item->GetChildAtIndex(2u), {"Bullet A", "Bullet B"});
+  CheckOrderedList(item->GetChildAtIndex(3u), {"Subitem 1", "Subitem 2"},
+                   {"1. ", "2. "});
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListRequiresSequence) {

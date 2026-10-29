@@ -1657,9 +1657,12 @@ ListMarkerForm ClassifyNestedOnlyMarker(std::string_view text,
 }
 
 // Returns how a list marker at `x` should be placed relative to `levels`.
+// `is_ordered` is whether the marker is ordered; a level of the other kind
+// cannot accept it, so it starts a new list instead.
 ListPlacement GetListPlacement(base::span<const ListLevel> levels,
                                float x,
-                               float max_nest) {
+                               float max_nest,
+                               bool is_ordered) {
   if (levels.empty() || x > levels.back().marker_x + max_nest) {
     return {.kind = ListPlacementKind::kNewList};
   }
@@ -1674,6 +1677,17 @@ ListPlacement GetListPlacement(base::span<const ListLevel> levels,
   while (target_level > 0 &&
          x < levels[target_level].marker_x - kListIndentThreshold) {
     --target_level;
+  }
+
+  // A marker can't join a level of the other kind (ordered vs. unordered), so
+  // start a new list at the same depth instead: a new top-level list, or a new
+  // sublist in the parent level's last item.
+  if (levels[target_level].last_ordered_value.has_value() != is_ordered) {
+    if (target_level == 0) {
+      return {.kind = ListPlacementKind::kNewList};
+    }
+    return {.kind = ListPlacementKind::kNested,
+            .level_index = target_level - 1};
   }
 
   return {.kind = ListPlacementKind::kExistingLevel,
@@ -1812,7 +1826,7 @@ ListMarkerKind ClassifyListMarker(const PageLayoutData& layout,
       GetListItemFontSize(run_context, ordered_kind.form);
   const float max_nest = kMaxListNestingIndentEm * item_font_size;
   const ListPlacement placement =
-      GetListPlacement(list_levels, run_x, max_nest);
+      GetListPlacement(list_levels, run_x, max_nest, /*is_ordered=*/true);
 
   const int value = *ordered_kind.ordered_value;
   if (placement.kind == ListPlacementKind::kExistingLevel) {
@@ -2686,8 +2700,9 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateListItemNode(
   const float marker_x = run_context.run->bounds.x();
   const float max_nest = kMaxListNestingIndentEm *
                          GetListItemFontSize(run_context, marker_kind.form);
-  const ListPlacement placement = GetListPlacement(levels, marker_x, max_nest);
   const std::optional<int>& ordered_value = marker_kind.ordered_value;
+  const ListPlacement placement = GetListPlacement(
+      levels, marker_x, max_nest, /*is_ordered=*/ordered_value.has_value());
   const char* list_tag = ordered_value ? "ol" : "ul";
 
   switch (placement.kind) {
