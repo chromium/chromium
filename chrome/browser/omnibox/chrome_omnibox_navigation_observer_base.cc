@@ -38,6 +38,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -357,7 +358,7 @@ void ChromeOmniboxNavigationObserverBase::OpenAlternativeNavMatch(
     const std::u16string& text,
     const AutocompleteMatch& alternative_nav_match,
     const GURL& search_url,
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   if (!web_contents) {
     return;
   }

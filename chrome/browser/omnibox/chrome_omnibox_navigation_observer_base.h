@@ -16,7 +16,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 class GURL;
 class Profile;
@@ -66,7 +66,8 @@ class ChromeOmniboxNavigationObserverBase
       const std::u16string& text,
       const AutocompleteMatch& alternative_nav_match,
       const GURL& search_url,
-      WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab);
+      ui::mojom::WindowOpenDisposition disposition =
+          ui::mojom::WindowOpenDisposition::kCurrentTab);
 
  protected:
   ChromeOmniboxNavigationObserverBase(

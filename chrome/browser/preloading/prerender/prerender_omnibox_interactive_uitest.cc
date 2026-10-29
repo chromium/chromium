@@ -65,6 +65,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 
 namespace {
@@ -264,7 +265,7 @@ class PrerenderOmniboxUIBrowserTest : public InProcessBrowserTest,
         ->GetOmniboxController()
         ->edit_model()
         ->OpenCurrentSelection(base::TimeTicks::Now(),
-                               WindowOpenDisposition::kCurrentTab,
+                               ui::mojom::WindowOpenDisposition::kCurrentTab,
                                /*via_keyboard=*/true);
   }
 

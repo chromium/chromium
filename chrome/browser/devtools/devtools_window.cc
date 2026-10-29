@@ -48,7 +48,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "components/sessions/core/session_id.h"
 #include "extensions/buildflags/buildflags.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/renderer_host/chrome_render_widget_host_view_mac_history_swiping_control.h"
 #endif
@@ -1598,7 +1598,7 @@ WebContents* DevToolsWindow::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
@@ -1978,7 +1978,7 @@ void DevToolsWindow::OpenInNewTab(
   }
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          fixed_url, WindowOpenDisposition::kNewForegroundTab,
+          fixed_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
   if (initiator_frame) {
     params.initiator_origin = initiator_frame->GetLastCommittedOrigin();

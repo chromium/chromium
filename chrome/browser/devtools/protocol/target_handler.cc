@@ -27,8 +27,8 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace {
@@ -41,11 +41,11 @@ NavigateParams CreateNavigateParams(Profile* profile,
   CHECK(new_window || browser, base::NotFatalUntil::M161);
   NavigateParams params(profile, url, transition);
   if (new_window) {
-    params.disposition = WindowOpenDisposition::kNewWindow;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewWindow;
   } else {
-    params.disposition = (background)
-                             ? WindowOpenDisposition::kNewBackgroundTab
-                             : WindowOpenDisposition::kNewForegroundTab;
+    params.disposition =
+        (background) ? ui::mojom::WindowOpenDisposition::kNewBackgroundTab
+                     : ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     params.browser = browser;
   }
   if (background) {

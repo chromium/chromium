@@ -50,8 +50,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_info.h"
@@ -767,7 +767,7 @@ class PrerenderNewTabPageBrowserTest
   void SimulateNewTabNavigation(const GURL& url) {
     GetActiveWebContents()->OpenURL(
         content::OpenURLParams::CreateBrowserInitiated(
-            url, WindowOpenDisposition::kCurrentTab,
+            url, ui::mojom::WindowOpenDisposition::kCurrentTab,
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK)),
         page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
             chrome_navigation_initiator::kNewTabPage));
@@ -1059,7 +1059,8 @@ class PrerenderPrewarmDefaultSearchEngineTest
     content::WebContents* original_web_contents = GetActiveWebContents();
     original_web_contents->OpenURL(
         content::OpenURLParams::CreateBrowserInitiated(
-            GURL(url::kAboutBlankURL), WindowOpenDisposition::kNewForegroundTab,
+            GURL(url::kAboutBlankURL),
+            ui::mojom::WindowOpenDisposition::kNewForegroundTab,
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK)),
         page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
             chrome_navigation_initiator::kNewTabPage));

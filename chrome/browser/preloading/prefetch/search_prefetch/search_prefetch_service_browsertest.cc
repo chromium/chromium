@@ -78,8 +78,8 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/buildflags/buildflags.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "extensions/browser/background_script_executor.h"
@@ -2969,10 +2969,11 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   // Link click.
   content::TestNavigationManager navigation_manager(GetWebContents(),
                                                     search_url);
-  GetWebContents()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                                search_url, WindowOpenDisposition::kCurrentTab,
-                                ui::PAGE_TRANSITION_LINK),
-                            /*navigation_handle_callback=*/{});
+  GetWebContents()->OpenURL(
+      content::OpenURLParams::CreateBrowserInitiated(
+          search_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_LINK),
+      /*navigation_handle_callback=*/{});
   ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
   EXPECT_EQ(2u, search_server_request_count());
@@ -3058,7 +3059,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest, NoServePost) {
                                                     search_url);
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          search_url, WindowOpenDisposition::kCurrentTab,
+          search_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_TYPED);
   std::string post_data = "test=body";
   params.post_data = network::ResourceRequestBody::CreateFromCopyOfBytes(

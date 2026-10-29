@@ -83,8 +83,8 @@
 #include "net/test/test_data_directory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
@@ -1412,7 +1412,8 @@ void CaptivePortalBrowserTest::SlowLoadNoCaptivePortal(
   MultiNavigationObserver navigation_observer;
   CaptivePortalObserver portal_observer(browser->GetProfile());
   ui_test_utils::NavigateToURLWithDisposition(
-      browser, GURL(kMockHttpsUrl), WindowOpenDisposition::kCurrentTab,
+      browser, GURL(kMockHttpsUrl),
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   portal_observer.WaitForResults(1);
@@ -1536,7 +1537,7 @@ void CaptivePortalBrowserTest::SlowLoadBehindCaptivePortal(
   MultiNavigationObserver navigation_observer;
   CaptivePortalObserver portal_observer(browser->GetProfile());
   ui_test_utils::NavigateToURLWithDisposition(
-      browser, hanging_url, WindowOpenDisposition::kCurrentTab,
+      browser, hanging_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
   portal_observer.WaitForResults(expected_portal_checks);
 
@@ -1654,7 +1655,7 @@ void CaptivePortalBrowserTest::FastErrorBehindCaptivePortal(
   CaptivePortalObserver portal_observer(browser->GetProfile());
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ui_test_utils::NavigateToURLWithDisposition(
-      browser, error_url, WindowOpenDisposition::kCurrentTab,
+      browser, error_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   portal_observer.WaitForResults(1);
@@ -1732,7 +1733,7 @@ void CaptivePortalBrowserTest::FastErrorWithInterstitialTimer(
 
   SSLInterstitialTimerObserver interstitial_timer_observer(broken_tab_contents);
   ui_test_utils::NavigateToURLWithDisposition(
-      browser, cert_error_url, WindowOpenDisposition::kCurrentTab,
+      browser, cert_error_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
   interstitial_timer_observer.WaitForTimerStarted();
 
@@ -2017,10 +2018,11 @@ void CaptivePortalBrowserTest::RunNavigateLoadingTabToTimeoutTest(
   tab_strip_model->ActivateTabAt(
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
-  browser->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                       timeout_url, WindowOpenDisposition::kCurrentTab,
-                       ui::PAGE_TRANSITION_TYPED),
-                   /*navigation_handle_callback=*/{});
+  browser->OpenURL(
+      content::OpenURLParams::CreateBrowserInitiated(
+          timeout_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED),
+      /*navigation_handle_callback=*/{});
   portal_observer.WaitForResults(1);
   EXPECT_FALSE(CheckPending(browser));
   EXPECT_EQ(1, NumLoadingTabs());
@@ -2164,7 +2166,8 @@ class ChromeAppCaptivePortalBrowserTest : public CaptivePortalBrowserTest {
         ->BrowserAppLauncher()
         ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
             extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-            WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest));
+            ui::mojom::WindowOpenDisposition::kNewWindow,
+            apps::LaunchSource::kFromTest));
   }
 
   content::RenderFrameHost* InstallAndLaunchChromeApp() {
@@ -2527,7 +2530,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
   // Navigate the Login tab to a cert error. In the real world, the captive
   // portal might take the user to a Login page with a bad certificate.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), cert_error_url, WindowOpenDisposition::kCurrentTab,
+      browser(), cert_error_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_TRUE(IsLoginTab(login_tab_contents));
 
@@ -2606,7 +2609,8 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
 
   // The portal serves its login page over HTTPS with a bad certificate.
   ui_test_utils::NavigateToURLWithDisposition(
-      login_browser, cert_error_url, WindowOpenDisposition::kCurrentTab,
+      login_browser, cert_error_url,
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   ASSERT_TRUE(IsShowingInterstitial(portal_window_contents));
@@ -2693,7 +2697,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
   // Page appears loading. Reloading it cancels the page load. Since the load is
   // stopped, no cert error occurs and SSLErrorHandler isn't instantiated.
   MultiNavigationObserver test_navigation_observer;
-  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
   test_navigation_observer.WaitForNavigations(1);
 
   // Make sure that the |ssl_error_handler| is deleted.
@@ -2751,11 +2755,11 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
   // Can't use ui_test_utils::NavigateToURLWithDisposition because it waits for
   // a load stop notification before starting a new navigation.
   MultiNavigationObserver test_navigation_observer;
-  browser()->OpenURL(
-      content::OpenURLParams::CreateBrowserInitiated(
-          embedded_test_server()->GetURL("/title2.html"),
-          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
-      /*navigation_handle_callback=*/{});
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         embedded_test_server()->GetURL("/title2.html"),
+                         ui::mojom::WindowOpenDisposition::kCurrentTab,
+                         ui::PAGE_TRANSITION_TYPED),
+                     /*navigation_handle_callback=*/{});
   test_navigation_observer.WaitForNavigations(1);
 
   // Make sure that the |ssl_error_handler| is deleted.
@@ -2818,10 +2822,11 @@ IN_PROC_BROWSER_TEST_F(
   // tabs to stop loading before navigating.
   CaptivePortalObserver portal_observer(browser()->GetProfile());
   MultiNavigationObserver test_navigation_observer;
-  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                         cert_error_url, WindowOpenDisposition::kCurrentTab,
-                         ui::PAGE_TRANSITION_TYPED),
-                     /*navigation_handle_callback=*/{});
+  browser()->OpenURL(
+      content::OpenURLParams::CreateBrowserInitiated(
+          cert_error_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED),
+      /*navigation_handle_callback=*/{});
   test_navigation_observer.WaitForNavigations(1);
   // Should end up with an SSL interstitial.
   ASSERT_TRUE(IsShowingInterstitial(broken_tab_contents));
@@ -2863,10 +2868,11 @@ IN_PROC_BROWSER_TEST_F(
   // tabs to stop loading before navigating.
   CaptivePortalObserver portal_observer(browser()->GetProfile());
   MultiNavigationObserver test_navigation_observer;
-  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                         cert_error_url, WindowOpenDisposition::kCurrentTab,
-                         ui::PAGE_TRANSITION_TYPED),
-                     /*navigation_handle_callback=*/{});
+  browser()->OpenURL(
+      content::OpenURLParams::CreateBrowserInitiated(
+          cert_error_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED),
+      /*navigation_handle_callback=*/{});
   // Expect two navigations:
   // 1- For completing the load of the above navigation.
   // 2- For completing the load of the login tab.
@@ -2975,7 +2981,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, TwoBrokenTabs) {
   CaptivePortalObserver portal_observer(browser()->GetProfile());
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("/title2.html"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
@@ -3113,7 +3119,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, GoBack) {
   tab_strip_model->ActivateTabAt(
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
-  chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::GoBack(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
   navigation_observer.WaitForNavigations(1);
 
   EXPECT_EQ(1, navigation_observer.NumNavigationsForTab(
@@ -3149,7 +3155,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, GoBackToTimeout) {
   // Go to the error page.
   MultiNavigationObserver navigation_observer;
   CaptivePortalObserver portal_observer(browser()->GetProfile());
-  chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::GoBack(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
 
   // Wait for the check triggered by the broken tab and for the login tab to
   // stop loading.
@@ -3273,7 +3279,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, DISABLED_TwoWindows) {
   // NavigateParams and NEW_BACKGROUND_TAB to avoid activating the window.
   NavigateParams params(inactive_browser, GURL(kMockHttpsQuickTimeoutUrl),
                         ui::PAGE_TRANSITION_TYPED);
-  params.disposition = WindowOpenDisposition::kNewBackgroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
   params.window_action = NavigateParams::WindowAction::kNoAction;
   ui_test_utils::NavigateToURL(&params);
   navigation_observer.WaitForNavigations(2);

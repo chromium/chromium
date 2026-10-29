@@ -32,7 +32,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace {
 
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnNTP,
 
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), chrome::ChromeUINewTabPageURLAsGURL(),
-        WindowOpenDisposition::kCurrentTab,
+        ui::mojom::WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     ASSERT_EQ(1, browser()->GetTabStripModel()->count());
 
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnNTP,
 
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), chrome::ChromeUINewTabPageURLAsGURL(),
-        WindowOpenDisposition::kNewForegroundTab,
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     ASSERT_EQ(2, browser()->GetTabStripModel()->count());
 
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnSRP,
     EXPECT_CALL(*controller_, Start).Times(0);
 
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL(srp_url), WindowOpenDisposition::kCurrentTab,
+        browser(), GURL(srp_url), ui::mojom::WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     ASSERT_EQ(1, browser()->GetTabStripModel()->count());
 
@@ -214,7 +214,8 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnSRP,
     EXPECT_CALL(*controller_, Start).Times(0);
 
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL(srp_url), WindowOpenDisposition::kNewBackgroundTab,
+        browser(), GURL(srp_url),
+        ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     ASSERT_EQ(2, browser()->GetTabStripModel()->count());
 
@@ -227,7 +228,8 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnSRP,
     EXPECT_CALL(*controller_, Start).Times(0);
 
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL(srp_url), WindowOpenDisposition::kNewForegroundTab,
+        browser(), GURL(srp_url),
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     ASSERT_EQ(3, browser()->GetTabStripModel()->count());
 
@@ -263,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnWeb,
     EXPECT_CALL(*controller_, Start).Times(0);
 
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL(web_url), WindowOpenDisposition::kCurrentTab,
+        browser(), GURL(web_url), ui::mojom::WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     ASSERT_EQ(1, browser()->GetTabStripModel()->count());
 
@@ -276,7 +278,8 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnWeb,
     EXPECT_CALL(*controller_, Start).Times(0);
 
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL(web_url), WindowOpenDisposition::kNewBackgroundTab,
+        browser(), GURL(web_url),
+        ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     ASSERT_EQ(2, browser()->GetTabStripModel()->count());
 
@@ -289,7 +292,8 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnWeb,
     EXPECT_CALL(*controller_, Start).Times(0);
 
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL(web_url), WindowOpenDisposition::kNewForegroundTab,
+        browser(), GURL(web_url),
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     ASSERT_EQ(3, browser()->GetTabStripModel()->count());
 

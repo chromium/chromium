@@ -27,8 +27,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -110,7 +110,7 @@ class LiveCaptionSurfaceTest : public InProcessBrowserTest {
   // Opens a new tab and waits for it to load the given URL.
   content::WebContents* LoadNewTab(GURL url) {
     content::RenderFrameHost* rfh = ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::kNewForegroundTab,
+        browser(), url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     return content::WebContents::FromRenderFrameHost(rfh);
   }
@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSurfaceTest, Sessions) {
     surface_1->Activate();
     ASSERT_EQ(wc_1, browser()->tab_strip_model()->GetActiveWebContents());
 
-    chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+    chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
     content::WaitForLoadStop(wc_1);
     base::RunLoop().RunUntilIdle();
     checkpointer.Call(2);

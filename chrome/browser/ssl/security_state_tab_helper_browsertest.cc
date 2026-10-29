@@ -97,8 +97,8 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
@@ -1083,11 +1083,11 @@ IN_PROC_BROWSER_TEST_F(SecurityStateLoadingTest, NavigationStateChanges) {
 
   // Navigate to a page that doesn't finish loading. Test that the
   // security state is neutral while the page is loading.
-  browser()->OpenURL(
-      content::OpenURLParams::CreateBrowserInitiated(
-          embedded_test_server()->GetURL("/title1.html"),
-          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
-      /*navigation_handle_callback=*/{});
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         embedded_test_server()->GetURL("/title1.html"),
+                         ui::mojom::WindowOpenDisposition::kCurrentTab,
+                         ui::PAGE_TRANSITION_TYPED),
+                     /*navigation_handle_callback=*/{});
   CheckSecurityInfoForNonCommitted(
       browser()->GetTabStripModel()->GetActiveWebContents());
 }
@@ -1284,7 +1284,7 @@ IN_PROC_BROWSER_TEST_F(DidChangeVisibleSecurityStateTest,
             observer.latest_security_level());
 
   content::LoadStopObserver back_nav_load_observer(web_contents);
-  chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::GoBack(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
   back_nav_load_observer.Wait();
 
   EXPECT_EQ(security_state::SecurityLevel::SECURE,

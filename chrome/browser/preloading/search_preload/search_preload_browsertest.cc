@@ -51,8 +51,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace {
 
@@ -478,7 +478,7 @@ class SearchPreloadBrowserTestBase : public PlatformBrowserTest,
     observer.set_wait_event(wait_event);
     GetWebContents().OpenURL(
         content::OpenURLParams::CreateBrowserInitiated(
-            url, WindowOpenDisposition::kCurrentTab,
+            url, ui::mojom::WindowOpenDisposition::kCurrentTab,
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                       ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)),
         /*navigation_handle_callback=*/{});

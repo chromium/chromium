@@ -130,9 +130,9 @@
 #include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/origin.h"
 
@@ -260,7 +260,7 @@ void DefaultBindingsDelegate::OpenInNewTab(
     const std::optional<std::string>& initiator_id) {
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL(url), WindowOpenDisposition::kNewForegroundTab,
+          GURL(url), ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
   // The URL typically originates from content that is controlled by the
   // inspected target, which is not a local WebContents here (e.g. a remote
@@ -297,7 +297,7 @@ void DefaultBindingsDelegate::OpenSearchResultsInNewTab(
       GetDefaultSearchURLForSearchTerms(url_service, base::UTF8ToUTF16(query));
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL(url), WindowOpenDisposition::kNewForegroundTab,
+          GURL(url), ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
   browser->OpenURL(params, /*navigation_handle_callback=*/{});
 }

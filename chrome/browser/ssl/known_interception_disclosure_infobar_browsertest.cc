@@ -22,7 +22,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/test_data_directory.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
@@ -208,7 +208,8 @@ IN_PROC_BROWSER_TEST_P(KnownInterceptionDisclosurePlatformBrowserTest,
   // Test that the infobar is shown on new tabs after it has been triggered
   // once.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
+      browser(), GURL("about:blank"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* tab2 = tab_strip_model->GetActiveWebContents();
   EXPECT_EQ(1u, GetDisclosureCount(tab2));

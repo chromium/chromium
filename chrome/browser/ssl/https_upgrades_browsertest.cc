@@ -82,8 +82,8 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
@@ -3641,7 +3641,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   // Simulate the full URL was typed with an http scheme.
   content::TestNavigationObserver nav_observer(contents, 1);
   omnibox_client->OnAutocompleteAccept(
-      http_url, nullptr, WindowOpenDisposition::kCurrentTab,
+      http_url, nullptr, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui::PAGE_TRANSITION_TYPED,
       omnibox::AutocompleteMatchType::kUrlWhatYouTyped, base::TimeTicks(),
       false, true, std::u16string(), AutocompleteMatch(), AutocompleteMatch());
@@ -3674,7 +3674,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   // Simulate the full URL was autocompleted with an http scheme.
   content::TestNavigationObserver nav_observer(contents, 1);
   omnibox_client->OnAutocompleteAccept(
-      http_url, nullptr, WindowOpenDisposition::kCurrentTab,
+      http_url, nullptr, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui::PAGE_TRANSITION_TYPED, omnibox::AutocompleteMatchType::kNavsuggest,
       base::TimeTicks(), false, false, std::u16string(), AutocompleteMatch(),
       AutocompleteMatch());
@@ -3709,7 +3709,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   // Simulate the full URL was typed with an http scheme.
   content::TestNavigationObserver nav_observer(contents, 1);
   omnibox_client->OnAutocompleteAccept(
-      http_url, nullptr, WindowOpenDisposition::kCurrentTab,
+      http_url, nullptr, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui::PAGE_TRANSITION_TYPED,
       omnibox::AutocompleteMatchType::kUrlWhatYouTyped, base::TimeTicks(),
       false, true, std::u16string(), AutocompleteMatch(), AutocompleteMatch());
@@ -3756,7 +3756,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   // through bar.com and baz.com.
   content::TestNavigationObserver nav_observer(contents, 1);
   omnibox_client->OnAutocompleteAccept(
-      initial_url, nullptr, WindowOpenDisposition::kCurrentTab,
+      initial_url, nullptr, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui::PAGE_TRANSITION_TYPED,
       omnibox::AutocompleteMatchType::kUrlWhatYouTyped, base::TimeTicks(),
       false, true, std::u16string(), AutocompleteMatch(), AutocompleteMatch());
@@ -3897,7 +3897,7 @@ IN_PROC_BROWSER_TEST_F(
   // Simulate a typed schemeless navigation.
   content::TestNavigationObserver nav_observer(contents, 1);
   omnibox_client->OnAutocompleteAccept(
-      http_url, nullptr, WindowOpenDisposition::kCurrentTab,
+      http_url, nullptr, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
       omnibox::AutocompleteMatchType::kUrlWhatYouTyped, base::TimeTicks(), true,
@@ -3947,7 +3947,7 @@ IN_PROC_BROWSER_TEST_F(
   // Simulate a typed schemeless navigation.
   content::TestNavigationObserver nav_observer(contents, 1);
   omnibox_client->OnAutocompleteAccept(
-      http_url, nullptr, WindowOpenDisposition::kCurrentTab,
+      http_url, nullptr, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
       omnibox::AutocompleteMatchType::kUrlWhatYouTyped, base::TimeTicks(), true,
@@ -3999,7 +3999,7 @@ IN_PROC_BROWSER_TEST_F(
   // Simulate a typed schemeless navigation.
   content::TestNavigationObserver nav_observer(contents, 1);
   omnibox_client->OnAutocompleteAccept(
-      http_url, nullptr, WindowOpenDisposition::kCurrentTab,
+      http_url, nullptr, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
       omnibox::AutocompleteMatchType::kUrlWhatYouTyped, base::TimeTicks(), true,
@@ -4060,7 +4060,7 @@ IN_PROC_BROWSER_TEST_F(
   // Simulate a typed schemeless navigation.
   content::TestNavigationObserver nav_observer(contents, 1);
   omnibox_client->OnAutocompleteAccept(
-      http_url, nullptr, WindowOpenDisposition::kCurrentTab,
+      http_url, nullptr, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
       omnibox::AutocompleteMatchType::kUrlWhatYouTyped, base::TimeTicks(), true,
@@ -4113,7 +4113,7 @@ IN_PROC_BROWSER_TEST_F(
   // Simulate a typed schemeless navigation.
   content::TestNavigationObserver nav_observer(contents, 1);
   omnibox_client->OnAutocompleteAccept(
-      http_url, nullptr, WindowOpenDisposition::kCurrentTab,
+      http_url, nullptr, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
       omnibox::AutocompleteMatchType::kUrlWhatYouTyped, base::TimeTicks(), true,
@@ -4194,7 +4194,7 @@ IN_PROC_BROWSER_TEST_F(
   // Simulate a typed schemeless navigation.
   content::TestNavigationObserver nav_observer(contents, 1);
   omnibox_client->OnAutocompleteAccept(
-      http_url, nullptr, WindowOpenDisposition::kCurrentTab,
+      http_url, nullptr, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
       omnibox::AutocompleteMatchType::kUrlWhatYouTyped, base::TimeTicks(), true,
@@ -4239,7 +4239,7 @@ IN_PROC_BROWSER_TEST_F(
   // Simulate a typed schemeless navigation.
   content::TestNavigationObserver nav_observer(contents, 1);
   omnibox_client->OnAutocompleteAccept(
-      http_url, nullptr, WindowOpenDisposition::kCurrentTab,
+      http_url, nullptr, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
       omnibox::AutocompleteMatchType::kUrlWhatYouTyped, base::TimeTicks(), true,

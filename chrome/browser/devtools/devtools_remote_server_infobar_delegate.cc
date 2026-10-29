@@ -23,8 +23,8 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -73,7 +73,7 @@ bool DevToolsRemoteServerInfobarDelegate::Accept() {
   }
   GURL internal_url("chrome://inspect#remote-debugging");
   NavigateParams params(browser, internal_url, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
   return ConfirmInfoBarDelegate::Accept();
 }

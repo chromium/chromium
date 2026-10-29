@@ -101,7 +101,7 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace {
 
@@ -1820,7 +1820,7 @@ void NoStatePrefetchBrowserTest::RunServiceWorkerInterceptTest(
   // Open a new tab to replace the one closed with all the RenderProcessHosts.
   ui_test_utils::NavigateToURLWithDisposition(
       current_browser(), GURL(url::kAboutBlankURL),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // The SW intercepts kPrefetchPage and replaces it with a body that contains
@@ -2068,7 +2068,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, OpenTaskManager) {
   // Open a new tab to replace the one closed with all the RenderProcessHosts.
   ui_test_utils::NavigateToURLWithDisposition(
       current_browser(), src_server()->GetURL(kPrefetchPage),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, prefetch_page));
 }

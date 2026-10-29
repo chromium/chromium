@@ -28,9 +28,9 @@
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/events/event.h"
 
@@ -499,7 +499,8 @@ void AskBeforeHttpDialogController::OnHelpCenterLinkClicked(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(kLearnMoreLink),
           ui::DispositionFromEventFlags(
-              event.flags(), WindowOpenDisposition::kNewForegroundTab),
+              event.flags(),
+              ui::mojom::WindowOpenDisposition::kNewForegroundTab),
           ui::PAGE_TRANSITION_LINK);
   contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }

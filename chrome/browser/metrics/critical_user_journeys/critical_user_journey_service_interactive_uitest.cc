@@ -47,7 +47,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_sequence.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/download/download_display.h"
@@ -387,7 +387,7 @@ class RealCriticalUserJourneyServiceInteractiveTest
               manager, 1,
               content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL));
       ui_test_utils::NavigateToURLWithDisposition(
-          browser(), url, WindowOpenDisposition::kCurrentTab,
+          browser(), url, ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui_test_utils::BROWSER_TEST_NO_WAIT);
       observer->WaitForFinished();
     }));

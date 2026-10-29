@@ -49,7 +49,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_POSIX)
@@ -156,12 +156,12 @@ class MetricsServiceBrowserTest : public InProcessBrowserTest {
     base::FilePath page1_path = test_directory.AppendASCII("title2.html");
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), net::FilePathToFileURL(page1_path),
-        WindowOpenDisposition::kNewForegroundTab, kBrowserTestFlags);
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab, kBrowserTestFlags);
 
     base::FilePath page2_path = test_directory.AppendASCII("iframe.html");
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), net::FilePathToFileURL(page2_path),
-        WindowOpenDisposition::kNewForegroundTab, kBrowserTestFlags);
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab, kBrowserTestFlags);
   }
 
  private:

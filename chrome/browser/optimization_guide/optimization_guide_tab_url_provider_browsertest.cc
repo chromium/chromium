@@ -11,7 +11,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 using testing::ElementsAre;
 
@@ -64,7 +64,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideTabUrlProviderBrowserTest,
   // Add another tab to the regular browser.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://example2.com"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   OptimizationGuideTabUrlProvider provider(browser()->GetProfile());
