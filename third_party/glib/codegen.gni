@@ -96,6 +96,7 @@ template("glib_genmarshal") {
       args = []
     }
     args += [
+      "--quiet",
       "--output",
       rebase_path(invoker.output, _base_dir),
       "--${invoker.mode}",
