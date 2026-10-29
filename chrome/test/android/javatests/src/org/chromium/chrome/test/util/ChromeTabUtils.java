@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 
 import org.junit.Assert;
 
-import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TriState;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -27,15 +26,11 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabWebContentsObserver;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -44,7 +39,9 @@ import org.chromium.chrome.test.transit.page.PageInteractableOrHiddenCondition;
 import org.chromium.chrome.test.transit.page.PageLoadedCondition;
 import org.chromium.chrome.test.transit.page.PageTitleCondition;
 import org.chromium.chrome.test.transit.page.PageUrlCondition;
+import org.chromium.chrome.test.transit.tabmodel.TabAddedCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabClosingCondition;
+import org.chromium.chrome.test.transit.tabmodel.TabSelectedCondition;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
@@ -55,11 +52,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /** A utility class that contains methods generic to all Tabs tests. */
 public class ChromeTabUtils {
-    private static final String TAG = "ChromeTabUtils";
     public static final int TITLE_UPDATE_TIMEOUT_SECONDS = 3;
 
     /**
@@ -311,66 +306,56 @@ public class ChromeTabUtils {
      * Creates a new tab by invoking the 'New Tab' menu item.
      *
      * <p>Returns when the tab has been created and has finished navigating.
+     *
+     * @return The new tab.
+     * @deprecated From a page Station, use {@code openGenericAppMenu().openNewTab()}, or {@code
+     *     openNewTabFast()} if the test doesn't need the menu.
      */
-    public static void newTabFromMenu(
+    @Deprecated
+    public static Tab newTabFromMenu(
             Instrumentation instrumentation, final ChromeActivity activity) {
-        newTabFromMenu(instrumentation, activity, false, true);
+        return newTabFromMenu(instrumentation, activity, false, true);
     }
 
     /**
      * Creates a new tab by invoking the 'New Tab' or 'New Incognito Tab' menu item.
-     * <p>
-     * Returns when the tab has been created and has finished navigating.
+     *
+     * <p>Returns when the tab has been created and has finished navigating.
+     *
+     * @return The new tab.
+     * @deprecated From a page Station, use {@code openGenericAppMenu().openNewTab()} or {@code
+     *     openGenericAppMenu().openNewIncognitoTab()}, or {@code openNewTabFast()} / {@code
+     *     openNewIncognitoTabFast()} if the test doesn't need the menu.
      */
-    public static void newTabFromMenu(
+    @Deprecated
+    public static Tab newTabFromMenu(
             Instrumentation instrumentation,
             final ChromeActivity activity,
             boolean incognito,
             boolean waitForNtpLoad) {
-        final CallbackHelper createdCallback = new CallbackHelper();
-        final CallbackHelper selectedCallback = new CallbackHelper();
-
         TabModel tabModel = activity.getTabModelSelector().getModel(incognito);
-        TabModelObserver observer =
-                new TabModelObserver() {
-                    @Override
-                    public void didAddTab(
-                            Tab tab,
-                            @TabLaunchType int type,
-                            @TabCreationState int creationState,
-                            boolean markedForSelection) {
-                        createdCallback.notifyCalled();
-                    }
+        TabSelectedCondition tabSelected =
+                new TabSelectedCondition(/* numTabsBeingSelected= */ 1, () -> tabModel);
+        Triggers.runTo(
+                        () ->
+                                MenuUtils.invokeCustomMenuActionSync(
+                                        instrumentation,
+                                        activity,
+                                        incognito
+                                                ? R.id.new_incognito_tab_menu_id
+                                                : R.id.new_tab_menu_id))
+                // Tabs opened in quick succession on tablets can take longer than the default
+                // timeout to load.
+                .withTimeout(10000L)
+                .waitFor(
+                        new TabAddedCondition(/* numTabsBeingOpened= */ 1, () -> tabModel),
+                        tabSelected,
+                        new PageLoadedCondition(tabSelected, TriState.NOT_SET));
 
-                    @Override
-                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                        selectedCallback.notifyCalled();
-                    }
-                };
-        ThreadUtils.runOnUiThreadBlocking(() -> tabModel.addObserver(observer));
-
-        MenuUtils.invokeCustomMenuActionSync(
-                instrumentation,
-                activity,
-                incognito ? R.id.new_incognito_tab_menu_id : R.id.new_tab_menu_id);
-
-        try {
-            createdCallback.waitForCallback(0);
-        } catch (TimeoutException ex) {
-            throw new AssertionError("Never received tab created event", ex);
-        }
-        try {
-            selectedCallback.waitForCallback(0);
-        } catch (TimeoutException ex) {
-            throw new AssertionError("Never received tab selected event", ex);
-        }
-        ThreadUtils.runOnUiThreadBlocking(() -> tabModel.removeObserver(observer));
-
-        Tab tab = getActivityTab(activity);
-        waitForTabPageLoaded(tab, (String) null);
+        Tab tab = tabSelected.get();
         if (waitForNtpLoad) NewTabPageTestUtils.waitForNtpLoaded(tab);
         instrumentation.waitForIdleSync();
-        Log.d(TAG, "newTabFromMenu <<");
+        return tab;
     }
 
     /**

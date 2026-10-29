@@ -8,25 +8,19 @@ import static org.hamcrest.Matchers.containsString;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.TriStateUtils;
-import org.chromium.base.test.transit.CallbackCondition;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
 import org.chromium.chrome.test.transit.tabmodel.TabAddedCondition;
+import org.chromium.chrome.test.transit.tabmodel.TabSelectedCondition;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -310,57 +304,6 @@ public class BasePageStation<HostActivity extends ChromeActivity>
                 .withTimeout(10000)
                 .withPossiblyAlreadyFulfilled()
                 .waitForAnd(new PageLoadCallbackCondition(loadedTabElement.value()));
-    }
-
-    private static class TabSelectedCondition extends CallbackCondition
-            implements TabModelObserver, Supplier<Tab> {
-        private final List<Tab> mTabsSelected = new ArrayList<>();
-        private final Supplier<TabModel> mTabModelSupplier;
-        private TabModel mTabModel;
-
-        private TabSelectedCondition(
-                int numTabsBeingSelected, Supplier<TabModel> tabModelSupplier) {
-            super("didSelectTab", numTabsBeingSelected);
-            mTabModelSupplier = dependOnSupplier(tabModelSupplier, "ChromeActivity");
-        }
-
-        @Override
-        public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-            if (mTabsSelected.contains(tab)) {
-                // We get multiple (2-3 depending on the case) didSelectTab when selecting a Tab, so
-                // filter out redundant callbacks to make sure we wait for different Tabs.
-                return;
-            }
-            mTabsSelected.add(tab);
-            notifyCalled();
-        }
-
-        @Override
-        public void onStartMonitoring() {
-            super.onStartMonitoring();
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        mTabModel = mTabModelSupplier.get();
-                        mTabModel.addObserver(this);
-                    });
-        }
-
-        @Override
-        public void onStopMonitoring() {
-            super.onStopMonitoring();
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        mTabModel.removeObserver(this);
-                    });
-        }
-
-        @Override
-        public Tab get() {
-            if (mTabsSelected.isEmpty()) {
-                return null;
-            }
-            return mTabsSelected.get(mTabsSelected.size() - 1);
-        }
     }
 
     private static class CorrectActivityTabCondition<ActivityT extends ChromeActivity>
