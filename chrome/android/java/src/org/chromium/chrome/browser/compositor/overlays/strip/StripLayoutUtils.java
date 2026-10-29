@@ -391,13 +391,13 @@ public class StripLayoutUtils {
 
     private static <T> void moveElementUp(T[] array, int oldIndex, int newIndex) {
         assert oldIndex <= newIndex;
-        if (oldIndex == newIndex || oldIndex + 1 == newIndex) return;
+        if (oldIndex == newIndex) return;
 
         T elem = array[oldIndex];
-        for (int i = oldIndex; i < newIndex - 1; i++) {
+        for (int i = oldIndex; i < newIndex; i++) {
             array[i] = array[i + 1];
         }
-        array[newIndex - 1] = elem;
+        array[newIndex] = elem;
     }
 
     private static <T> void moveElementDown(T[] array, int oldIndex, int newIndex) {

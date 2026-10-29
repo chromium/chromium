@@ -1654,13 +1654,8 @@ public class StripLayoutHelperManager
 
                     @Override
                     public void didMoveTab(Tab tab, int newIndex, int curIndex) {
-                        // For right-direction move, layout helper re-ordering logic
-                        // expects destination index = position + 1
                         getStripLayoutHelper(tab.isIncognitoBranded())
-                                .tabMoved(
-                                        tab.getId(),
-                                        curIndex,
-                                        newIndex > curIndex ? newIndex + 1 : newIndex);
+                                .tabMoved(tab.getId(), curIndex, newIndex);
                     }
 
                     @Override

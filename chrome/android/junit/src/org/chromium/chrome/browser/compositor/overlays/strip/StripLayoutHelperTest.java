@@ -2329,6 +2329,37 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    public void testTabMoved() {
+        initializeTest(/* tabIndex= */ 0);
+
+        // Initial order: [0, 1, 2, 3, 4].
+        // 1. Move tab 1 rightward by 1 position (1 -> 2). Expected order: [0, 2, 1, 3, 4].
+        mStripLayoutHelper.tabMoved(/* id= */ 1, /* oldIndex= */ 1, /* newIndex= */ 2);
+        assertStripTabIds(0, 2, 1, 3, 4);
+
+        // 2. Move tab 2 rightward by multiple positions (1 -> 4). Expected order: [0, 1, 3, 4, 2].
+        mStripLayoutHelper.tabMoved(/* id= */ 2, /* oldIndex= */ 1, /* newIndex= */ 4);
+        assertStripTabIds(0, 1, 3, 4, 2);
+
+        // 3. Move tab 4 leftward by 1 position (3 -> 2). Expected order: [0, 1, 4, 3, 2].
+        mStripLayoutHelper.tabMoved(/* id= */ 4, /* oldIndex= */ 3, /* newIndex= */ 2);
+        assertStripTabIds(0, 1, 4, 3, 2);
+
+        // 4. Move tab 2 leftward by multiple positions (4 -> 0). Expected order: [2, 0, 1, 4, 3].
+        mStripLayoutHelper.tabMoved(/* id= */ 2, /* oldIndex= */ 4, /* newIndex= */ 0);
+        assertStripTabIds(2, 0, 1, 4, 3);
+    }
+
+    private void assertStripTabIds(int... expectedTabIds) {
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        assertEquals("Unexpected number of strip tabs.", expectedTabIds.length, tabs.length);
+        for (int i = 0; i < expectedTabIds.length; i++) {
+            assertEquals(
+                    "Unexpected tab ID at index " + i + ".", expectedTabIds[i], tabs[i].getTabId());
+        }
+    }
+
+    @Test
     public void testOnDown_OnNewTabButton() {
         // Initialize.
         initializeTest(/* tabIndex= */ 0);
