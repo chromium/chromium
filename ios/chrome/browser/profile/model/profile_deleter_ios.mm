@@ -12,7 +12,6 @@
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
-#import "base/ios/ios_util.h"
 #import "base/json/json_file_value_serializer.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/sequence_checker.h"
@@ -85,7 +84,7 @@ void DeleteWebkitStorage(const TaskRunnerPtr& task_runner,
                          std::string profile_name,
                          DeletionResultCallback callback,
                          const base::Uuid& webkit_storage_id) {
-  if (!base::ios::IsRunningOnIOS17OrLater() || !webkit_storage_id.is_valid()) {
+  if (!webkit_storage_id.is_valid()) {
     DeleteProfileStorage(task_runner, profile_dir, std::move(profile_name),
                          std::move(callback));
     return;
