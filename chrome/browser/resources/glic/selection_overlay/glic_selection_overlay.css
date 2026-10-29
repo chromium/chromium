@@ -257,6 +257,10 @@
   display: none !important;
 }
 
+#floatingPromptContainer:has(.action-chips-row[no-prompt-box]) {
+  animation: none;
+}
+
 @keyframes promptFadeIn {
   from {
     opacity: 0;
@@ -412,6 +416,75 @@
 
 .dogfood-feedback-icon {
   mask-image: url('/dogfood.svg');
+}
+
+/* Without the prompt box, the chips grow out of the spark, leaving no
+ * clip-path once they end. */
+.action-chips-row[no-prompt-box] {
+  --chip-reveal: 150ms cubic-bezier(0.25, 1, 0.5, 1) backwards;
+}
+
+.action-chips-row[no-prompt-box] > .action-chip {
+  animation: chip-reveal-grow var(--chip-reveal);
+}
+
+.action-chips-row[no-prompt-box] > .action-chip:not(:first-child) {
+  --chip-reveal-slide-from: -50px;
+  animation: chip-reveal-grow var(--chip-reveal),
+      chip-reveal-fade-in var(--chip-reveal),
+      chip-reveal-slide var(--chip-reveal);
+  animation-delay: 50ms;
+}
+
+.action-chips-row[no-prompt-box] >
+    :is(.settings-button, .dogfood-feedback-button) {
+  --chip-reveal-slide-from: -70px;
+  animation: chip-reveal-fade-in var(--chip-reveal),
+      chip-reveal-slide var(--chip-reveal);
+  animation-delay: 50ms;
+}
+
+.action-chips-row[no-prompt-box] > .action-chip:first-child
+    :is(.chip-icon, .chip-label) {
+  animation: chip-reveal-fade-in var(--chip-reveal);
+}
+
+/* From a 30px circle at the left edge to the whole chip, outset 6px so the
+ * shadow isn't clipped. */
+@keyframes chip-reveal-grow {
+  from {
+    clip-path: inset(0 calc(100% - 30px) 0 0 round 15px);
+  }
+  to {
+    clip-path: inset(-6px round 21px);
+  }
+}
+
+@keyframes chip-reveal-slide {
+  from {
+    translate: var(--chip-reveal-slide-from) 0;
+  }
+}
+
+@keyframes chip-reveal-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Keeps only the fades. */
+@media (prefers-reduced-motion: reduce) {
+  .action-chips-row[no-prompt-box] > .action-chip,
+  .action-chips-row[no-prompt-box] > .action-chip:not(:first-child),
+  .action-chips-row[no-prompt-box] >
+      :is(.settings-button, .dogfood-feedback-button) {
+    animation-name: chip-reveal-fade-in;
+  }
+
+  .action-chips-row[no-prompt-box] > .action-chip:first-child
+      :is(.chip-icon, .chip-label) {
+    animation: none;
+  }
 }
 
 #inlineFulfillmentHost {

@@ -423,23 +423,16 @@ export class GlicSelectionOverlayElement extends
       // When the prompt box is not shown, anchor the bottom-left of the row at
       // the region's top-right corner (selRight, selTop). When an inline
       // fulfillment card replaces the row, keep the card's top-left corner at
-      // the row's top-left corner so it expands downward.
-      const idealCenterX = selRight + effectiveWidth / 2;
-      let clampedCenterX: number;
-      if (effectiveWidth >= maxAvailableWidth) {
-        clampedCenterX = viewportWidth / 2;
-      } else {
-        const minCenter = effectiveWidth / 2 + margin;
-        const maxCenter = viewportWidth - effectiveWidth / 2 - margin;
-        clampedCenterX = Math.max(minCenter, Math.min(idealCenterX, maxCenter));
-      }
+      // the row's top-left corner so it expands downward. The row is positioned
+      // by its left edge so the chips grow out of the spark's spot.
+      const clampedLeft = Math.max(
+          margin, Math.min(selRight, viewportWidth - effectiveWidth - margin));
 
       const idealTop = selTop -
           (this.shownInlineAction_ ? this.replacedChipsRowHeight_ : height);
       const targetTop = Math.max(
           margin, Math.min(idealTop, viewportHeight - height - margin));
-      return `left: ${clampedCenterX}px; top: ${
-          targetTop}px; transform: translateX(-50%);`;
+      return `left: ${clampedLeft}px; top: ${targetTop}px;`;
     };
 
     const container =

@@ -100,6 +100,7 @@ export function getHtml(this: GlicSelectionOverlayElement) {
         ` : ''}
 
         <div class="action-chips-row"
+            ?no-prompt-box="${!this.enableSelectionOverlayPromptBox}"
             @pointerdown="${this.onPromptPointerdown}">
           ${this.suggestedActions.map((action, index) => html`
             <cr-button class="action-chip"
@@ -113,7 +114,8 @@ export function getHtml(this: GlicSelectionOverlayElement) {
               <span class="chip-label">${action.title}</span>
             </cr-button>
           `)}
-          ${!this.enableSelectionOverlayPromptBox ? html`
+          ${!this.enableSelectionOverlayPromptBox &&
+            this.suggestedActions.length > 0 ? html`
             <cr-button id="settingsButton"
                 class="settings-button"
                 title="$i18n{settings}"
