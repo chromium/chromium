@@ -121,8 +121,11 @@ GlicGeminiEnterpriseManager::~GlicGeminiEnterpriseManager() = default;
 
 void GlicGeminiEnterpriseManager::Bind(
     mojo::PendingReceiver<mojom::GeminiEnterpriseHandler> receiver) {
-  if (!profile_ || GlicProviderLatch::GetProvider(*profile_) !=
-                       GlicProvider::kGeminiEnterprise) {
+  // Off-the-record profiles share their original profile's provider, but auth
+  // tabs are never opened for them (see `OpenAuthTabImpl()`).
+  if (!profile_ || profile_->IsOffTheRecord() ||
+      GlicProviderLatch::GetProvider(*profile_) !=
+          GlicProvider::kGeminiEnterprise) {
     return;
   }
   receiver_.reset();

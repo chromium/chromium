@@ -45,7 +45,9 @@ class GlicProviderLatchTest : public testing::Test {
   void SetUp() override { helper_.SetUp(); }
 
  protected:
-  void ExpectLatchedAsGeminiEnterprise(Profile* profile) {
+  // Expects `profile` to be latched as Gemini Enterprise with the configured
+  // guest URL.
+  void ExpectGeminiEnterprise(Profile* profile) {
     ASSERT_TRUE(profile);
     EXPECT_EQ(GlicProviderLatch::GetProvider(*profile),
               GlicProvider::kGeminiEnterprise);
@@ -53,11 +55,23 @@ class GlicProviderLatchTest : public testing::Test {
               GetLocalizedGuestURL(GURL(kGuestUrl)));
   }
 
-  void ExpectNotGeicLatched(Profile* profile) {
+  // Expects off-the-record `profile` to use the same provider and spec as its
+  // original profile, which is latched as Gemini Enterprise.
+  void ExpectSameAsOriginalProfile(Profile* profile) {
     ASSERT_TRUE(profile);
-    KeyedServiceBaseFactory* factory = GlicProviderLatchFactory::GetInstance();
-    factory->CreateServiceNowForTesting(profile);
-    EXPECT_FALSE(factory->IsServiceCreated(profile));
+    ASSERT_TRUE(profile->IsOffTheRecord());
+    Profile* original_profile = profile->GetOriginalProfile();
+    EXPECT_EQ(GlicProviderLatch::GetProvider(*profile),
+              GlicProviderLatch::GetProvider(*original_profile));
+    EXPECT_EQ(&GetGlicProviderSpec(profile),
+              &GetGlicProviderSpec(original_profile));
+    ExpectGeminiEnterprise(profile);
+  }
+
+  // Expects `profile` to resolve to the default (fallback) Gemini latch
+  // because its original profile isn't latched.
+  void ExpectDefaultLatch(Profile* profile) {
+    ASSERT_TRUE(profile);
     EXPECT_EQ(GlicProviderLatch::GetProvider(*profile), GlicProvider::kGemini);
     EXPECT_EQ(GetGlicProviderSpec(profile).GetSettingsSectionId(),
               kGeminiSettingsSectionId);
@@ -68,41 +82,61 @@ class GlicProviderLatchTest : public testing::Test {
   ProfileTestingHelper helper_;
 };
 
-TEST_F(GlicProviderLatchTest, RegularProfileIsLatchedAsGeminiEnterprise) {
-  ExpectLatchedAsGeminiEnterprise(helper_.regular_profile());
+// Only regular profiles get their own latch.
+TEST_F(GlicProviderLatchTest, RegularProfileIsGeminiEnterprise) {
+  ExpectGeminiEnterprise(helper_.regular_profile());
 }
 
-TEST_F(GlicProviderLatchTest, IncognitoProfileIsNotLatched) {
-  ExpectNotGeicLatched(helper_.incognito_profile());
+// Off-the-record profiles belong to the same user as their original profile,
+// so they use its provider (e.g. an enterprise user's incognito window is still
+// Gemini Enterprise).
+TEST_F(GlicProviderLatchTest, IncognitoProfileUsesOriginalProfile) {
+  ExpectSameAsOriginalProfile(helper_.incognito_profile());
 }
 
-TEST_F(GlicProviderLatchTest, IsolatedModeProfileIsNotLatched) {
-  ExpectNotGeicLatched(helper_.isolated_mode_profile());
+TEST_F(GlicProviderLatchTest, IsolatedModeProfileUsesOriginalProfile) {
+  ExpectSameAsOriginalProfile(helper_.isolated_mode_profile());
 }
 
-TEST_F(GlicProviderLatchTest, GuestProfilesAreNotLatched) {
-  ExpectNotGeicLatched(helper_.guest_profile());
-  ExpectNotGeicLatched(helper_.guest_profile_otr());
+// Only regular profiles get their own latch; off-the-record profiles read their
+// original profile's latch.
+TEST_F(GlicProviderLatchTest, OffTheRecordProfilesHaveNoLatchOfTheirOwn) {
+  KeyedServiceBaseFactory* factory = GlicProviderLatchFactory::GetInstance();
+  for (Profile* profile :
+       {helper_.incognito_profile(), helper_.isolated_mode_profile()}) {
+    factory->CreateServiceNowForTesting(profile);
+    EXPECT_FALSE(factory->IsServiceCreated(profile));
+  }
+}
+
+// Guest, system and Ash internal profiles aren't regular profiles, so neither
+// they nor their original profile are latched, and they get the default Gemini
+// latch. Glic is disabled for them anyway (GlicEnabling::IsProfileEligible()).
+TEST_F(GlicProviderLatchTest, GuestProfilesUseDefaultLatch) {
+  ExpectDefaultLatch(helper_.guest_profile());
+  ExpectDefaultLatch(helper_.guest_profile_otr());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
-TEST_F(GlicProviderLatchTest, SystemProfilesAreNotLatched) {
-  ExpectNotGeicLatched(helper_.system_profile());
-  ExpectNotGeicLatched(helper_.system_profile_otr());
+TEST_F(GlicProviderLatchTest, SystemProfilesUseDefaultLatch) {
+  ExpectDefaultLatch(helper_.system_profile());
+  ExpectDefaultLatch(helper_.system_profile_otr());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
-TEST_F(GlicProviderLatchTest, AshInternalProfilesAreNotLatched) {
-  ExpectNotGeicLatched(helper_.signin_profile());
-  ExpectNotGeicLatched(helper_.signin_profile_otr());
-  ExpectNotGeicLatched(helper_.lockscreen_profile());
-  ExpectNotGeicLatched(helper_.lockscreen_profile_otr());
-  ExpectNotGeicLatched(helper_.shimless_rma_app_profile());
-  ExpectNotGeicLatched(helper_.shimless_rma_app_profile_otr());
+TEST_F(GlicProviderLatchTest, AshInternalProfilesUseDefaultLatch) {
+  ExpectDefaultLatch(helper_.signin_profile());
+  ExpectDefaultLatch(helper_.signin_profile_otr());
+  ExpectDefaultLatch(helper_.lockscreen_profile());
+  ExpectDefaultLatch(helper_.lockscreen_profile_otr());
+  ExpectDefaultLatch(helper_.shimless_rma_app_profile());
+  ExpectDefaultLatch(helper_.shimless_rma_app_profile_otr());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// The provider is decided once, when the profile is created; later
+// configuration changes don't affect it.
 TEST_F(GlicProviderLatchTest, LatchDoesNotChangeWithConfiguration) {
   Profile* profile = helper_.regular_profile();
   profile->GetPrefs()->SetString(
@@ -110,14 +144,11 @@ TEST_F(GlicProviderLatchTest, LatchDoesNotChangeWithConfiguration) {
       "https://business.gemini.google/home/cid/updated");
   scoped_command_line_.GetProcessCommandLine()->RemoveSwitch("geic-guest-url");
 
-  EXPECT_EQ(GlicProviderLatch::GetProvider(*profile),
-            GlicProvider::kGeminiEnterprise);
-  EXPECT_EQ(GetGlicProviderSpec(profile).GetGuestUrl(profile),
-            GetLocalizedGuestURL(GURL(kGuestUrl)));
+  ExpectGeminiEnterprise(profile);
 }
 
-// A test latch set before the profile's keyed services are created replaces
-// the value the factory would resolve from the GEiC configuration.
+// A latch set for testing before keyed services are created wins over the
+// configured provider.
 class GlicProviderLatchSetForTestingTest : public GlicProviderLatchTest {
  public:
   void SetUp() override {
@@ -143,7 +174,7 @@ TEST_F(GlicProviderLatchSetForTestingTest, OverridesResolvedLatch) {
             GetLocalizedGuestURL(GURL(kGuestUrl)));
 }
 
-// Without GEiC configuration, profiles are latched as Gemini.
+// Without GEiC configuration, regular profiles are latched as Gemini.
 TEST(GlicProviderLatchDefaultTest, ProfileIsLatchedAsGemini) {
   ProfileTestingHelper helper;
   helper.SetUp();

@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
 
 namespace glic {
@@ -29,10 +30,12 @@ GlicProviderLatch::GlicProviderLatch(
 GlicProviderLatch::~GlicProviderLatch() = default;
 
 // static
-const GlicProviderLatch& GlicProviderLatch::Get(
-    content::BrowserContext& context) {
+const GlicProviderLatch& GlicProviderLatch::Get(Profile& profile) {
+  // Off-the-record profiles aren't latched; they share the latch of their
+  // original profile.
+  Profile* original_profile = profile.GetOriginalProfile();
   if (auto* latch = static_cast<GlicProviderLatch*>(
-          context.GetUserData(kGlicProviderLatchKey))) {
+          original_profile->GetUserData(kGlicProviderLatchKey))) {
     return *latch;
   }
   static const base::NoDestructor<GlicProviderLatch> kFallbackLatch(
@@ -41,8 +44,8 @@ const GlicProviderLatch& GlicProviderLatch::Get(
 }
 
 // static
-GlicProvider GlicProviderLatch::GetProvider(content::BrowserContext& context) {
-  return Get(context).provider_;
+GlicProvider GlicProviderLatch::GetProvider(Profile& profile) {
+  return Get(profile).provider_;
 }
 
 const GlicProviderSpec& GlicProviderLatch::GetSpec() const {

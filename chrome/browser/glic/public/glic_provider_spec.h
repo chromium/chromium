@@ -33,6 +33,7 @@ class GlicProviderSpec;
 
 // Returns the `GlicProviderSpec` for `profile` owned by `GlicProviderLatch`
 // (or a static Consumer spec when `profile` is null or not latched).
+// Off-the-record profiles use the spec of their original profile.
 const GlicProviderSpec& GetGlicProviderSpec(Profile* profile);
 
 // Creates the per-profile `GlicProviderSpec` stored in `GlicProviderLatch`.

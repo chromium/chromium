@@ -13,6 +13,8 @@
 #include "chrome/browser/glic/public/glic_provider.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 
+class Profile;
+
 namespace content {
 class BrowserContext;
 }  // namespace content
@@ -30,10 +32,13 @@ class GlicProviderLatchFactory;
 // `GetGlicProviderSpec(profile)` over branching on the provider.
 //
 // Every regular user profile (`ProfileSelections::BuildForRegularProfile()`) is
-// latched by `GlicProviderLatchFactory`. If a `BrowserContext` has not been
-// latched (e.g. non-regular profiles), `Get()` falls back to a default
-// `GlicProvider::kGemini` latch. Keyed service factories that read the
-// provider while building their service must
+// latched by `GlicProviderLatchFactory`; other profiles are not. Lookups
+// resolve through the original profile: off-the-record profiles (incognito and
+// isolated-mode) have no latch of their own and share the provider and spec of
+// their original profile. If the original profile is not a regular profile
+// (e.g. guest, system, or Ash internal profiles), it has no latch and `Get()`
+// falls back to a default `GlicProvider::kGemini` latch. Keyed service
+// factories that read the provider while building their service must
 // `DependsOn(GlicProviderLatchFactory::GetInstance())`.
 class GlicProviderLatch final : public base::SupportsUserData::Data {
  public:
@@ -41,15 +46,16 @@ class GlicProviderLatch final : public base::SupportsUserData::Data {
   GlicProviderLatch& operator=(const GlicProviderLatch&) = delete;
   ~GlicProviderLatch() override;
 
-  // Returns the `GlicProviderLatch` for `context`, or a fallback
-  // `GlicProvider::kGemini` latch if `context` has not been latched.
-  static const GlicProviderLatch& Get(content::BrowserContext& context);
+  // Returns the `GlicProviderLatch` of the original profile of `profile` (i.e.
+  // `profile` itself unless it is off-the-record), or a fallback
+  // `GlicProvider::kGemini` latch if the original profile has not been latched.
+  static const GlicProviderLatch& Get(Profile& profile);
 
-  // Returns the latched provider for `context`, or `GlicProvider::kGemini` if
-  // `context` has not been latched.
+  // Returns the latched provider of the original profile of `profile`, or
+  // `GlicProvider::kGemini` if the original profile has not been latched.
   // TODO(crbug.com/576351868): Consider exposing the appropriate spec or rules
   // directly instead of `GetProvider`.
-  static GlicProvider GetProvider(content::BrowserContext& context);
+  static GlicProvider GetProvider(Profile& profile);
 
   // Returns the latched `GlicProviderSpec`.
   const GlicProviderSpec& GetSpec() const;

@@ -39,5 +39,8 @@ source_set("provider") {
     "//base",
     "//url",
   ]
-  deps = [ "//content/public/browser" ]
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//content/public/browser",
+  ]
 }
