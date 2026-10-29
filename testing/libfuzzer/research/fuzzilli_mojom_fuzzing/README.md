@@ -82,7 +82,8 @@ Legend: ✅ supported · ⚠️ partial / approximated · ❌ not supported
 | `handle<data_pipe_producer>` | `jsMojoDataPipeProducerHandle` | ✅ | |
 | `handle<data_pipe_consumer>` | `jsMojoDataPipeConsumerHandle` | ✅ | |
 | `handle<shared_buffer>` | `jsMojoSharedBufferHandle` | ✅ | |
-| `handle<message_pipe>`, `handle<platform>` | – | ❌ | |
+| `handle<platform>` | `jsMojoPlatformHandle` | ✅ | Receive-only: JS cannot create one, so no generator produces it. |
+| `handle<message_pipe>` | – | ❌ | |
 
 ### User-defined types
 

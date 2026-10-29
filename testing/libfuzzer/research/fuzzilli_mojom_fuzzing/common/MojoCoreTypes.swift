@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 /// Definitions for the `Mojo` JavaScript API: the `Mojo` builtin itself, the
-/// shared buffer and data pipe handles it vends, and the results and options
-/// bags of its methods.
+/// handles it vends or that JS receives from the browser, and the results and
+/// options bags of its methods.
 ///
 /// See `MojoCommonProfile.swift` for the naming conventions these definitions
 /// follow and for how the lists below are registered.
@@ -14,6 +14,7 @@ extension CommonMojoStrings {
     static let mojoSharedBufferHandle = "MojoSharedBufferHandle"
     static let mojoDataPipeProducerHandle = "MojoDataPipeProducerHandle"
     static let mojoDataPipeConsumerHandle = "MojoDataPipeConsumerHandle"
+    static let mojoPlatformHandle = "MojoPlatformHandle"
     static let mojoCreateSharedBufferResult = "MojoCreateSharedBufferResult"
     static let mojoCreateDataPipeOptions = "MojoCreateDataPipeOptions"
     static let mojoCreateDataPipeResult = "MojoCreateDataPipeResult"
@@ -33,6 +34,7 @@ public let mojoCoreObjectGroups: [ObjectGroup] = [
     .mojoSharedBufferHandle,
     .mojoDataPipeProducerHandle,
     .mojoDataPipeConsumerHandle,
+    .mojoPlatformHandle,
     .mojoCreateSharedBufferResult,
     .mojoCreateDataPipeResult,
     .mojoWriteDataResult,
@@ -66,6 +68,13 @@ extension ILType {
     public static let jsMojoDataPipeConsumerHandle: ILType = .object(
         ofGroup: CommonMojoStrings.mojoDataPipeConsumerHandle,
         withMethods: ["close", "readData", "queryData", "discardData"]
+    )
+    /// A `handle<platform>`. JS cannot create one; it can only receive one in
+    /// a message from the browser. Only `close` is exposed. The other
+    /// `MojoHandle` methods fail on a wrapped platform handle.
+    public static let jsMojoPlatformHandle: ILType = .object(
+        ofGroup: CommonMojoStrings.mojoPlatformHandle,
+        withMethods: ["close"]
     )
     public static let jsMojoCreateSharedBufferResult: ILType = .object(
         ofGroup: CommonMojoStrings.mojoCreateSharedBufferResult,
@@ -136,6 +145,14 @@ extension ObjectGroup {
                 .plain(.jsBufferSource),
                 .either(.jsMojoReadDataOptions, .undefined),
             ] => .jsMojoReadDataResult,
+        ]
+    )
+    public static let mojoPlatformHandle = ObjectGroup(
+        name: CommonMojoStrings.mojoPlatformHandle,
+        instanceType: .jsMojoPlatformHandle,
+        properties: [:],
+        methods: [
+            "close": [] => .undefined
         ]
     )
     public static let mojoCreateSharedBufferResult = ObjectGroup(
