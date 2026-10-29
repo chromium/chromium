@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 // Pixel tests for the default search engine picker dialog, opened from
-// chrome://settings/search.
+// chrome://settings/search, and for the "More search engines" dialog, opened
+// from the picker.
 //
 // The tests replace the prepopulated search engines with artificial ones, so
 // that the screenshots don't change when the production lists of search
@@ -43,6 +44,10 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSettingsTabId);
 // Baseline Gerrit CL number of the most recent CL that modified the UI of the
 // default search engine picker.
 constexpr char kPickerScreenshotBaselineCL[] = "8641569";
+
+// Baseline Gerrit CL number of the most recent CL that modified the UI of the
+// "More search engines" dialog.
+constexpr char kMoreEnginesScreenshotBaselineCL[] = "8641629";
 
 // Artificial prepopulated search engines, which replace the production ones
 // through `ScopedPrepopulatedEnginesOverride`. They have no favicon URL, so
@@ -130,12 +135,18 @@ constexpr PrepopulatedEngine kHotel = {
 // picker.
 constexpr size_t kRegionalEngineCount = 5;
 
+// Number of known engines, which are the ones listed in the "More search
+// engines" dialog.
+constexpr size_t kKnownEngineCount = 8;
+
 // The search page of chrome://settings, from which the picker is opened.
 const DeepQuery kSearchPage = {"settings-ui", "settings-main",
                                "settings-search-page-index",
                                "settings-search-page"};
 const DeepQuery kPickerDialog =
     kSearchPage + "settings-search-engine-list-dialog";
+const DeepQuery kMoreEnginesDialog =
+    kSearchPage + "settings-search-engine-more-engines-dialog";
 
 // Format of a function returning whether the dialog it is called on is open and
 // lists the number of engines given as format argument.
@@ -144,6 +155,16 @@ constexpr char kIsDialogShownJsFormat[] = R"js(
     const dialog = el.shadowRoot.querySelector('cr-dialog');
     const engines = el.shadowRoot.querySelectorAll('cr-radio-button');
     return !!dialog && dialog.open && engines.length === %zu;
+  })js";
+
+// Selects the "Hotel" engine in the "More search engines" dialog it is called
+// on. The engine is selected through the radio group rather than by clicking
+// it, to avoid the click ripple animation.
+constexpr char kSelectHotelJs[] = R"js(
+  (el) => {
+    const hotel = [...el.shadowRoot.querySelectorAll('cr-radio-button')].find(
+        button => button.textContent.trim() === 'Hotel');
+    el.shadowRoot.querySelector('cr-radio-group').selected = hotel.name;
   })js";
 
 // Variants in which each screenshot is taken.
@@ -185,6 +206,21 @@ class SearchEnginePickerPixelBrowserTest
         WaitForDialog(kPickerDialog, kRegionalEngineCount));
   }
 
+  // Opens the "More search engines" dialog from the picker.
+  auto OpenMoreEnginesDialog() {
+    return Steps(
+        OpenPicker(),
+        ClickElement(kSettingsTabId, kPickerDialog + "#moreEnginesButton"),
+        WaitForDialog(kMoreEnginesDialog, kKnownEngineCount));
+  }
+
+  // Searches `query` in the "More search engines" dialog.
+  auto SearchMoreEngines(const std::string& query) {
+    return ExecuteJsAt(
+        kSettingsTabId, kMoreEnginesDialog + "#searchField",
+        base::StringPrintf("(el) => el.setValue('%s')", query.c_str()));
+  }
+
   // Takes a screenshot of `dialog`.
   auto ScreenshotDialog(const DeepQuery& dialog,
                         const std::string& screenshot_name,
@@ -219,6 +255,37 @@ IN_PROC_BROWSER_TEST_P(SearchEnginePickerPixelBrowserTest, Picker) {
   RunTestSequence(OpenPicker(),
                   ScreenshotDialog(kPickerDialog, "SearchEnginePicker",
                                    kPickerScreenshotBaselineCL));
+}
+
+IN_PROC_BROWSER_TEST_P(SearchEnginePickerPixelBrowserTest, MoreEngines) {
+  RunTestSequence(OpenMoreEnginesDialog(),
+                  ScreenshotDialog(kMoreEnginesDialog, "MoreSearchEngines",
+                                   kMoreEnginesScreenshotBaselineCL));
+}
+
+IN_PROC_BROWSER_TEST_P(SearchEnginePickerPixelBrowserTest,
+                       MoreEnginesFiltered) {
+  RunTestSequence(
+      OpenMoreEnginesDialog(),
+      // Matches "Foxtrot" and "Hotel".
+      SearchMoreEngines("ot"), WaitForDialog(kMoreEnginesDialog, 2),
+      ExecuteJsAt(kSettingsTabId, kMoreEnginesDialog, kSelectHotelJs),
+      WaitForJsResultAt(kSettingsTabId,
+                        kMoreEnginesDialog + "#setAsDefaultButton",
+                        "(el) => !el.disabled"),
+      ScreenshotDialog(kMoreEnginesDialog, "MoreSearchEnginesFiltered",
+                       kMoreEnginesScreenshotBaselineCL));
+}
+
+IN_PROC_BROWSER_TEST_P(SearchEnginePickerPixelBrowserTest,
+                       MoreEnginesNoResults) {
+  RunTestSequence(
+      OpenMoreEnginesDialog(), SearchMoreEngines("zulu"),
+      WaitForDialog(kMoreEnginesDialog, 0),
+      WaitForElementVisible(kSettingsTabId,
+                            kMoreEnginesDialog + ".no-search-results"),
+      ScreenshotDialog(kMoreEnginesDialog, "MoreSearchEnginesNoResults",
+                       kMoreEnginesScreenshotBaselineCL));
 }
 
 INSTANTIATE_TEST_SUITE_P(
