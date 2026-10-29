@@ -34,6 +34,7 @@
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 using base::Time;
@@ -573,6 +574,37 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryLocalTimeRanges) {
                                      {kUrl3, 3, kLocal},
                                      {kUrl2, 2, kLocal},
                                  }));
+}
+
+// Tests that an empty page from a query with `begin_time` doesn't make the next
+// page start over from the newest visit and return duplicates.
+TEST_F(BrowsingHistoryServiceTest, QueryHistoryLocalTimeRangeEmptyPage) {
+  // The visit at hour 0 is before `begin_time`, so the local backend never
+  // reports `reached_beginning` for this query.
+  AddHistory({{kUrl1, 0, kLocal}, {kUrl2, 2, kLocal}, {kUrl3, 3, kLocal}});
+  QueryOptions options;
+  options.begin_time = OffsetToTime(1);
+
+  for (bool group_visits : {false, true}) {
+    SCOPED_TRACE(testing::Message() << "group_visits: " << group_visits);
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatureState(kBrowsingHistorySimilarVisitsGrouping,
+                                      group_visits);
+
+    EXPECT_THAT(QueryHistory(options),
+                MatchesQueryResult(baseline_time_, /*reached_beginning*/ false,
+                                   std::vector<TestResult>{
+                                       {kUrl3, 3, kLocal},
+                                       {kUrl2, 2, kLocal},
+                                   }));
+    EXPECT_THAT(ContinueQuery(),
+                MatchesQueryResult(baseline_time_, /*reached_beginning*/ false,
+                                   std::vector<TestResult>{}));
+    // Without keeping the end time, this page would start over from `kUrl3`.
+    EXPECT_THAT(ContinueQuery(),
+                MatchesQueryResult(baseline_time_, /*reached_beginning*/ false,
+                                   std::vector<TestResult>{}));
+  }
 }
 
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryRemoteTimeRanges) {
@@ -1367,6 +1399,166 @@ TEST_F(BrowsingHistoryServiceTest,
           AllOf(Field(&ClientGroup::name, "Device C"),
                 Field(&ClientGroup::is_local_device, true),
                 Field(&ClientGroup::client_ids, ElementsAre("guid5", "")))));
+}
+
+// Tests local queries with `KEEP_ALL_DUPLICATES` (as used by chrome://history),
+// where BrowsingHistoryService alone merges same-day visits, with
+// `kBrowsingHistorySimilarVisitsGrouping` both enabled and disabled.
+class BrowsingHistoryServiceKeepAllDuplicatesTest
+    : public BrowsingHistoryServiceTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  BrowsingHistoryServiceKeepAllDuplicatesTest() {
+    feature_list_.InitWithFeatureState(kBrowsingHistorySimilarVisitsGrouping,
+                                       GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that same-day visits to a URL are merged into one entry whose
+// `all_visit_ids` lists every visit, newest first, and that the URL's lifetime
+// visit count isn't added up once per merged visit.
+TEST_P(BrowsingHistoryServiceKeepAllDuplicatesTest,
+       SameDayVisitsMergedWithAllVisitIds) {
+  // Visit IDs follow insertion order: 1, 2, 3. Hours 1 and 2 are on the first
+  // day, hour 26 is on the next day.
+  AddHistory({
+      {kUrl1, 1, kLocal},
+      {kUrl1, 2, kLocal},
+      {kUrl1, 26, kLocal},
+  });
+
+  QueryOptions options;
+  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+  TestBrowsingHistoryDriver::QueryResult result = QueryHistory(options);
+
+  ASSERT_EQ(2u, result.first.size());
+  EXPECT_EQ(GURL(kUrl1), result.first[0].url);
+  EXPECT_THAT(result.first[0].all_visit_ids, ElementsAre(3));
+  EXPECT_EQ(GURL(kUrl1), result.first[1].url);
+  EXPECT_THAT(result.first[1].all_visit_ids, ElementsAre(2, 1));
+  // `kUrl1` has 3 visits in total; merging two entries must not double it.
+  EXPECT_EQ(3, result.first[1].visit_count);
+}
+
+// Tests that when a URL's same-day visits span two pages, each visit ID is
+// attributed to exactly one entry.
+TEST_P(BrowsingHistoryServiceKeepAllDuplicatesTest,
+       VisitIdsAttributedOnceAcrossPages) {
+  // Same day, newest first: kUrl1@3 (ID 3), kUrl2@2 (ID 2), kUrl1@1 (ID 1),
+  // kUrl3@0 (ID 4).
+  AddHistory({
+      {kUrl1, 1, kLocal},
+      {kUrl2, 2, kLocal},
+      {kUrl1, 3, kLocal},
+      {kUrl3, 0, kLocal},
+  });
+
+  QueryOptions options;
+  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+  options.max_count = 2;
+
+  TestBrowsingHistoryDriver::QueryResult page1 = QueryHistory(options);
+  ASSERT_EQ(2u, page1.first.size());
+  EXPECT_EQ(GURL(kUrl1), page1.first[0].url);
+  EXPECT_THAT(page1.first[0].all_visit_ids, ElementsAre(3));
+  EXPECT_EQ(GURL(kUrl2), page1.first[1].url);
+  EXPECT_THAT(page1.first[1].all_visit_ids, ElementsAre(2));
+
+  // Visit 1 is only returned, and attributed, on the second page.
+  TestBrowsingHistoryDriver::QueryResult page2 = ContinueQuery();
+  ASSERT_EQ(2u, page2.first.size());
+  EXPECT_EQ(GURL(kUrl1), page2.first[0].url);
+  EXPECT_THAT(page2.first[0].all_visit_ids, ElementsAre(1));
+  EXPECT_EQ(GURL(kUrl3), page2.first[1].url);
+  EXPECT_THAT(page2.first[1].all_visit_ids, ElementsAre(4));
+}
+
+// Tests that same-day typed visits to a URL are merged without adding up the
+// URL's lifetime typed count once per merged visit.
+TEST_P(BrowsingHistoryServiceKeepAllDuplicatesTest,
+       SameDayVisitsKeepUrlTypedCount) {
+  for (int hour_offset : {1, 2}) {
+    HistoryAddPageArgs args;
+    args.url = GURL(kUrl1);
+    args.time = OffsetToTime(hour_offset);
+    args.transition = ui::PAGE_TRANSITION_TYPED;
+    local_history()->AddPage(args);
+  }
+
+  QueryOptions options;
+  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+  TestBrowsingHistoryDriver::QueryResult result = QueryHistory(options);
+
+  ASSERT_EQ(1u, result.first.size());
+  // `kUrl1` was typed twice in total; merging two entries must not double it.
+  EXPECT_EQ(2, result.first[0].typed_count);
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         BrowsingHistoryServiceKeepAllDuplicatesTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "GroupingEnabled"
+                                             : "GroupingDisabled";
+                         });
+
+// Tests that when similar visits to different URLs are grouped, the entry's
+// visit and typed counts add up each URL's lifetime counts exactly once.
+TEST_F(BrowsingHistoryServiceTest, GroupSimilarVisitsAddsCountsOncePerUrl) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kBrowsingHistorySimilarVisitsGrouping);
+
+  // All visits have the same host and title, so they are grouped into one
+  // entry. http://www.a.com/1 is typed twice, http://www.a.com/2 is visited
+  // once through a link.
+  static constexpr struct {
+    const char* url;
+    int hour_offset;
+    ui::PageTransition transition;
+  } kVisits[] = {
+      {"http://www.a.com/1", 1, ui::PAGE_TRANSITION_TYPED},
+      {"http://www.a.com/1", 2, ui::PAGE_TRANSITION_TYPED},
+      {"http://www.a.com/2", 3, ui::PAGE_TRANSITION_LINK},
+  };
+  for (const auto& visit : kVisits) {
+    HistoryAddPageArgs args;
+    args.url = GURL(visit.url);
+    args.time = OffsetToTime(visit.hour_offset);
+    args.title = u"Title A";
+    args.transition = visit.transition;
+    local_history()->AddPage(args);
+  }
+
+  QueryOptions options;
+  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+  TestBrowsingHistoryDriver::QueryResult result = QueryHistory(options);
+
+  ASSERT_EQ(1u, result.first.size());
+  // 2 visits to /1 plus 1 visit to /2; /1 is counted once, not once per visit.
+  EXPECT_EQ(3, result.first[0].visit_count);
+  EXPECT_EQ(2, result.first[0].typed_count);
+}
+
+// Tests that a URL's local counts are kept when it's grouped with a remote
+// visit to the same URL, which always reports zero counts. Remote visits are
+// only queried past the oldest local visit, so they're always older.
+TEST_F(BrowsingHistoryServiceTest,
+       GroupSimilarVisitsKeepsLocalCountsWithRemoteVisit) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kBrowsingHistorySimilarVisitsGrouping);
+
+  AddHistory({{kUrl1, 2, kLocal}, {kUrl1, 1, kRemote}});
+
+  QueryOptions options;
+  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+  TestBrowsingHistoryDriver::QueryResult result = QueryHistory(options);
+
+  ASSERT_EQ(1u, result.first.size());
+  EXPECT_EQ(kBoth, result.first[0].entry_type);
+  EXPECT_EQ(1, result.first[0].visit_count);
 }
 
 }  // namespace
