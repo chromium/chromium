@@ -9,7 +9,6 @@
 #import "components/commerce/ios/browser/commerce_tab_helper.h"
 #import "components/data_sharing/public/features.h"
 #import "components/enterprise/browser/reporting/reporting_features.h"
-#import "components/enterprise/net/core/features.h"
 #import "components/favicon/core/favicon_service.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/history/core/browser/top_sites.h"
@@ -449,13 +448,15 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
       .WithFactory<DeviceTrustServiceFactoryIOS>(profile);
 
   // Lets `ProxyServiceController` attribute proxy auth challenges to the
-  // pending navigation. Not needed for prerendering, which is cancelled on auth
-  // challenges, nor in Incognito, where the controller doesn't exist.
-  attacher
-      .CreateDeferredWhen<EnterpriseProxyTabHelper>(
-          !attacher.IsOffTheRecord() && !attacher.IsForPrerender() &&
-          enterprise_net::IsDynamicRouteFetchingEnabled())
-      .WithFactory<EnterpriseProxyErrorServiceFactoryIOS>(profile);
+  // pending navigation. `EnterpriseProxyErrorService` only exists while dynamic
+  // route fetching is enabled. Not needed for prerendering, which is cancelled
+  // on auth challenges, nor in Incognito, where the controller doesn't exist.
+  if (!attacher.IsOffTheRecord() && !attacher.IsForPrerender()) {
+    if (enterprise_net::EnterpriseProxyErrorService* error_service =
+            EnterpriseProxyErrorServiceFactoryIOS::GetForProfile(profile)) {
+      attacher.Create<EnterpriseProxyTabHelper>(error_service);
+    }
+  }
 
   if (web::features::IsCobaltEnabled()) {
     ios::provider::AttachCobaltTabHelpers(attacher);
