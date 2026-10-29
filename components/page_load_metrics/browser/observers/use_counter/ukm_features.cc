@@ -138,6 +138,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kV8MediaSession_SetActionHandler_Method,
           WebFeature::kLargeStickyAd,
           WebFeature::kStickyVideoAdDetected,
+          WebFeature::kStickyPopOutVideoAdDetected,
           WebFeature::
               kElementWithLeftwardOrUpwardOverflowDirection_ScrollLeftOrTopSetPositive,
           WebFeature::kThirdPartyFileSystem,
