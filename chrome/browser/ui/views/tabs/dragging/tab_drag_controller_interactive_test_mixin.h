@@ -56,9 +56,11 @@ class TabDragControllerInteractiveTestMixin : public T {
                   const gfx::NativeWindow window_hint,
                   int id = 0) {
     if (input_source() == InputSource::INPUT_SOURCE_MOUSE) {
-      return ui_test_utils::SendMouseMoveSync(location, window_hint) &&
-             ui_test_utils::SendMouseEventsSync(ui_controls::LEFT,
-                                                ui_controls::DOWN, window_hint);
+      bool result = ui_test_utils::SendMouseMoveSync(location, window_hint) &&
+                    ui_test_utils::SendMouseEventsSync(
+                        ui_controls::LEFT, ui_controls::DOWN, window_hint);
+      mouse_pressed_ = result;
+      return result;
     }
 #if BUILDFLAG(IS_CHROMEOS)
     return SendTouchEventsSync(ui_controls::kTouchPress, id, location);
@@ -97,6 +99,7 @@ class TabDragControllerInteractiveTestMixin : public T {
 
   bool ReleaseInput(int id = 0, bool async = false) {
     if (input_source() == InputSource::INPUT_SOURCE_MOUSE) {
+      mouse_pressed_ = false;
       return async ? ui_controls::SendMouseEvents(ui_controls::LEFT,
                                                   ui_controls::UP)
                    : ui_test_utils::SendMouseEventsSync(ui_controls::LEFT,
@@ -111,6 +114,21 @@ class TabDragControllerInteractiveTestMixin : public T {
     NOTREACHED();
 #endif
   }
+
+  void TearDownOnMainThread() override {
+    T::TearDownOnMainThread();
+    if (mouse_pressed_) {
+      // Use `async=true` because browser windows have already been closed (or,
+      // on Windows, the cursor may be over a non-client caption area that
+      // dispatches `WM_NCLBUTTONUP` instead of `WM_LBUTTONUP`), which would
+      // cause `SendMouseEventsSync` to hang waiting for a client-area
+      // `WM_LBUTTONUP` message.
+      ReleaseInput(/*id=*/0, /*async=*/true);
+    }
+  }
+
+ private:
+  bool mouse_pressed_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_DRAGGING_TAB_DRAG_CONTROLLER_INTERACTIVE_TEST_MIXIN_H_

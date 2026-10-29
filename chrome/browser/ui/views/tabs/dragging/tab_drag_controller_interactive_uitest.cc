@@ -837,6 +837,8 @@ IN_PROC_BROWSER_TEST_F(TabDragCaptureLostTest, ReleaseCaptureOnDrag) {
   ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(
       GetCenterInScreenCoordinates(tab_strip->tab_at(0))));
   EXPECT_FALSE(IsDragSessionActive(tab_strip));
+  ASSERT_TRUE(
+      ui_test_utils::SendMouseEventsSync(ui_controls::LEFT, ui_controls::UP));
 }
 
 #endif
