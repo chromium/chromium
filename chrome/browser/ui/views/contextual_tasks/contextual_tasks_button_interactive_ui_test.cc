@@ -589,9 +589,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
       // Switching away and back keeps the ephemeral button removed.
       SelectTab(kTabStripElementId, 1), SelectTab(kTabStripElementId, 0),
       EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
-      // Opening and closing the side panel again adds the next ephemeral
-      // button.
-      SimulateOpeningContextualTaskSidePanel(),
+      // Starting a new task and opening/closing the side panel again adds the
+      // next ephemeral button.
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
       SimulateClosingContextualTaskSidePanel(),
       WaitForShow(kContextualTasksEphemeralToolbarButtonElementId));
 }
@@ -791,7 +791,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
-                       ButtonShowsWhenActiveTaskInZeroState) {
+                       ButtonDoesNotShowWhenActiveTaskInZeroState) {
   RunTestSequence(
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
       AddInstrumentedTab(kSecondTab, GetTestURL()),
@@ -811,9 +811,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
       SimulateOpeningContextualTaskSidePanel(),
       EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
       SimulateClosingContextualTaskSidePanel(),
-      // Button should show when the side panel is closed even if the active
-      // task has no thread (zero state).
-      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId));
+      // Button should not show when the side panel is closed if the active
+      // task is still in zero state (not showing results).
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId));
 }
 
 class ContextualTasksEphemeralButtonFeatureEnabledInteractiveTest
@@ -882,7 +882,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksEphemeralButtonFeatureEnabledInteractiveTest,
-    ButtonShowsWhenClosingZeroStateFromPinnedButton) {
+    ButtonDoesNotShowWhenClosingZeroStateFromPinnedButton) {
   RunTestSequence(
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
       AddInstrumentedTab(kSecondTab, GetTestURL()),
@@ -899,9 +899,10 @@ IN_PROC_BROWSER_TEST_F(
       PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
       WaitForHide(kContextualTasksEphemeralToolbarButtonElementId),
       // Closing the side panel leaves tab 0 associated with the zero-state
-      // task. The ephemeral button shows because the side panel was closed.
+      // task. The ephemeral button should not show because no results were
+      // loaded in zero state.
       SimulateClosingContextualTaskSidePanel(),
-      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId));
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId));
 }
 
 // Keeps the side panel's open/close animations running so that a rapid double
@@ -909,6 +910,15 @@ IN_PROC_BROWSER_TEST_F(
 class ContextualTasksEphemeralButtonAnimatedPinnedInteractiveTest
     : public ContextualTasksEphemeralButtonFeatureEnabledInteractiveTest {
  public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        ContextualTasksEphemeralButtonFeatureEnabledInteractiveTest::
+            GetEnabledFeatures();
+    enabled_features.push_back(
+        {contextual_tasks::kContextualTasksPinningV2, {}});
+    return enabled_features;
+  }
+
   bool ShouldDisableSidePanelAnimations() const override { return false; }
 };
 
@@ -2548,12 +2558,22 @@ IN_PROC_BROWSER_TEST_F(
                   pinned_button = b;
                   return true;
                 }),
-      // In zero state (no ongoing task on Tab 0), the pinned button should not
+      // Before opening the side panel on Tab 0, the pinned button should not
       // show the active indicator.
       Do([&]() { VerifyActiveIndicator(false); }),
+      // Opening the side panel in zero state shows the active indicator while
+      // open, but closing it in zero state clobbers eligibility and hides it.
+      Do([&]() {
+        contextual_tasks::ContextualTasksPanelController::From(browser())
+            ->Show();
+      }),
+      Do([&]() { VerifyActiveIndicator(true); }),
+      SimulateClosingContextualTaskSidePanel(),
+      Do([&]() { VerifyActiveIndicator(false); }),
+      RemoveTaskFromTab(0),
       // Create an ongoing task on Tab 0 and open/close the side panel: the
       // pinned button should show the active indicator (blue icon + underline).
-      CreateTaskForTab(0), Do([&]() { VerifyActiveIndicator(true); }),
+      CreateTaskForTab(0),
       SimulateOpeningContextualTaskSidePanel(),
       Do([&]() { VerifyActiveIndicator(true); }),
       SimulateClosingContextualTaskSidePanel(),
