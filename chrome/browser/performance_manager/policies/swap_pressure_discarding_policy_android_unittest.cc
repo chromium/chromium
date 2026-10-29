@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_metrics.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -57,7 +58,7 @@ class FakePageDiscarder : public mechanism::PageDiscarder {
     return base::MiB(80);
   }
 
-  const std::vector<const PageNode*>& discarded_pages() const {
+  const std::vector<raw_ptr<const PageNode>>& discarded_pages() const {
     return discarded_pages_;
   }
 
@@ -84,7 +85,7 @@ class FakePageDiscarder : public mechanism::PageDiscarder {
   }
 
  private:
-  std::vector<const PageNode*> discarded_pages_;
+  std::vector<raw_ptr<const PageNode>> discarded_pages_;
   base::flat_set<const PageNode*> failing_pages_;
   base::flat_set<const PageNode*> failing_or_destroyed_pages_;
   base::RepeatingCallback<void(const PageNode*)> on_discard_callback_;
