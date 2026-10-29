@@ -24,8 +24,8 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace {
 
@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(UkmPageLoadMetricsObserverBrowserTest,
       content::OpenURLParams::CreateBrowserInitiated(
           embedded_test_server()->GetURL("origin.com",
                                          "/subresource_loading/index.html"),
-          WindowOpenDisposition::kCurrentTab,
+          ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)),
       /*navigation_handle_callback=*/std::move(
@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(UkmPageLoadMetricsObserverBrowserTest,
       content::OpenURLParams::CreateBrowserInitiated(
           embedded_test_server()->GetURL("origin.com",
                                          "/subresource_loading/index.html"),
-          WindowOpenDisposition::kCurrentTab,
+          ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)),
       /*navigation_handle_callback=*/std::move(

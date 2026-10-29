@@ -23,7 +23,7 @@
 #include "net/ssl/client_cert_store.h"
 #include "net/ssl/ssl_server_config.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 class HttpsEngagementPageLoadMetricsBrowserTest : public InProcessBrowserTest {
@@ -90,7 +90,7 @@ class HttpsEngagementPageLoadMetricsBrowserTest : public InProcessBrowserTest {
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(chrome::kChromeUIVersionURL),
-        WindowOpenDisposition::kNewForegroundTab,
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     base::TimeDelta upper_bound_delta = base::TimeTicks::Now() - start;
 
@@ -117,7 +117,7 @@ class HttpsEngagementPageLoadMetricsBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), GURL(chrome::kChromeUIVersionURL)));
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::kNewBackgroundTab,
+        browser(), url, ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
     // Make sure the correct tab is in the foreground.
@@ -142,7 +142,7 @@ class HttpsEngagementPageLoadMetricsBrowserTest : public InProcessBrowserTest {
     EXPECT_TRUE(ui_test_utils::NavigateToURL(
         browser(), GURL(chrome::kChromeUIVersionURL)));
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::kNewBackgroundTab,
+        browser(), url, ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
     // Make sure the correct tab is in the foreground.

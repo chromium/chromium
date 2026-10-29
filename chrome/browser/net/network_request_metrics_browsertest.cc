@@ -43,7 +43,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -161,7 +161,8 @@ class NetworkRequestMetricsBrowserTest
     GURL interesting_url = embedded_test_server()->GetURL(kInterestingPath);
     if (GetParam() == RequestType::kMainFrame) {
       ui_test_utils::NavigateToURLWithDisposition(
-          browser(), interesting_url, WindowOpenDisposition::kCurrentTab,
+          browser(), interesting_url,
+          ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui_test_utils::BROWSER_TEST_NO_WAIT);
     } else {
       WaitForMainFrameResourceObserver wait_for_main_frame_resource_observer(
@@ -169,7 +170,7 @@ class NetworkRequestMetricsBrowserTest
       ui_test_utils::NavigateToURLWithDisposition(
           browser(),
           embedded_test_server()->GetURL(kUninterestingMainFramePath),
-          WindowOpenDisposition::kCurrentTab,
+          ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui_test_utils::BROWSER_TEST_NO_WAIT);
       uninteresting_main_frame_response_->WaitForRequest();
       uninteresting_main_frame_response_->Send(

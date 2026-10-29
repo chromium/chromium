@@ -49,9 +49,9 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/schemeful_site.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace {
@@ -282,7 +282,7 @@ void GlicPasswordChangeActuator::StartActuation(const GURL& target_url) {
 
   content::OpenURLParams open_url_params =
       content::OpenURLParams::CreateBrowserInitiated(
-          target_url, WindowOpenDisposition::kNewBackgroundTab,
+          target_url, ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
           ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
 
   content::WebContents* new_contents =
@@ -388,7 +388,7 @@ void GlicPasswordChangeActuator::OpenPasswordChangeTab(
                                                       : change_password_url_;
     originator->OpenURL(
         content::OpenURLParams::CreateBrowserInitiated(
-            target_url, WindowOpenDisposition::kNewForegroundTab,
+            target_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
             ui::PAGE_TRANSITION_LINK),
         /*navigation_handle_callback=*/{});
   }

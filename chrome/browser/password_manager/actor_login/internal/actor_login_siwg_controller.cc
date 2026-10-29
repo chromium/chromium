@@ -23,8 +23,8 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 namespace actor_login {
@@ -289,11 +289,11 @@ void ActorLoginSiwgController::DidOpenRequestedURL(
     content::RenderFrameHost* source_render_frame_host,
     const GURL& url,
     const content::Referrer& referrer,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     ui::PageTransition transition,
     bool started_from_context_menu,
     bool renderer_initiated) {
-  if (disposition == WindowOpenDisposition::kNewPopup) {
+  if (disposition == ui::mojom::WindowOpenDisposition::kNewPopup) {
     popup_observer_ = std::make_unique<PopupObserver>(new_contents, this);
   }
 }

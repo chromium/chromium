@@ -124,8 +124,8 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom-shared.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NewWindowClassification) {
 
   base::HistogramTester histogram_tester;
   NavigateParams nav_params(browser(), url, ui::PAGE_TRANSITION_LINK);
-  nav_params.disposition = WindowOpenDisposition::kNewWindow;
+  nav_params.disposition = ui::mojom::WindowOpenDisposition::kNewWindow;
   Navigate(&nav_params);
 
   BrowserWindowInterface* new_browser =
@@ -540,11 +540,11 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PageLCPImagePriority) {
     ASSERT_TRUE(base::ReadFileToString(file_name, &file_contents));
   }
 
-  browser()->OpenURL(
-      content::OpenURLParams::CreateBrowserInitiated(
-          embedded_test_server()->GetURL("/mock_page.html"),
-          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
-      /*navigation_handle_callback=*/{});
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         embedded_test_server()->GetURL("/mock_page.html"),
+                         ui::mojom::WindowOpenDisposition::kCurrentTab,
+                         ui::PAGE_TRANSITION_TYPED),
+                     /*navigation_handle_callback=*/{});
 
   main_html_response->WaitForRequest();
   main_html_response->Send(kHtmlHttpResponseHeader);
@@ -659,11 +659,11 @@ class PageLoadMetricsBrowserTestAnimatedLCP
     std::string first_frame = file_contents.substr(0, first_frame_size);
     std::string second_frame = file_contents.substr(first_frame_size);
 
-    browser()->OpenURL(
-        content::OpenURLParams::CreateBrowserInitiated(
-            embedded_test_server()->GetURL("/mock_page.html"),
-            WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
-        /*navigation_handle_callback=*/{});
+    browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                           embedded_test_server()->GetURL("/mock_page.html"),
+                           ui::mojom::WindowOpenDisposition::kCurrentTab,
+                           ui::PAGE_TRANSITION_TYPED),
+                       /*navigation_handle_callback=*/{});
 
     main_html_response->WaitForRequest();
     main_html_response->Send(kHtmlHttpResponseHeader);
@@ -958,10 +958,10 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestWithInitialWebUIParam,
 
   // Load the document and specify no-store for the main resource.
   content::TestNavigationManager navigation_manager(web_contents(), kUrl);
-  browser()->OpenURL(
-      content::OpenURLParams::CreateBrowserInitiated(
-          kUrl, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
-      /*navigation_handle_callback=*/{});
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         kUrl, ui::mojom::WindowOpenDisposition::kCurrentTab,
+                         ui::PAGE_TRANSITION_TYPED),
+                     /*navigation_handle_callback=*/{});
 
   // The navigation starts.
   EXPECT_TRUE(navigation_manager.WaitForRequestStart());
@@ -1035,7 +1035,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NewPageInNewForegroundTab) {
   NavigateParams params(browser(),
                         embedded_test_server()->GetURL("/title1.html"),
                         ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
 
   Navigate(&params);
   auto waiter = std::make_unique<PageLoadMetricsTestWaiter>(
@@ -2314,7 +2314,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
                        InitialVisibilityOfMultipleRestoredTabs) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GetTestURL(), WindowOpenDisposition::kNewBackgroundTab,
+      browser(), GetTestURL(),
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   BrowserWindowInterface* const new_browser = QuitBrowserAndRestore(browser());
@@ -2372,11 +2373,11 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsResourceLoadBrowserTest,
 
   auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
 
-  browser()->OpenURL(
-      content::OpenURLParams::CreateBrowserInitiated(
-          embedded_test_server()->GetURL("/mock_page.html"),
-          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
-      /*navigation_handle_callback=*/{});
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         embedded_test_server()->GetURL("/mock_page.html"),
+                         ui::mojom::WindowOpenDisposition::kCurrentTab,
+                         ui::PAGE_TRANSITION_TYPED),
+                     /*navigation_handle_callback=*/{});
 
   main_response->WaitForRequest();
   main_response->Send(kHttpResponseHeader);
@@ -2417,11 +2418,11 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsResourceLoadBrowserTest,
 
   auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
 
-  browser()->OpenURL(
-      content::OpenURLParams::CreateBrowserInitiated(
-          embedded_test_server()->GetURL("/mock_page.html"),
-          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
-      /*navigation_handle_callback=*/{});
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         embedded_test_server()->GetURL("/mock_page.html"),
+                         ui::mojom::WindowOpenDisposition::kCurrentTab,
+                         ui::PAGE_TRANSITION_TYPED),
+                     /*navigation_handle_callback=*/{});
 
   main_html_response->WaitForRequest();
   main_html_response->Send(kHttpResponseHeader);
@@ -3197,7 +3198,8 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           embedded_test_server()->GetURL("/title1.html"),
-          WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_TYPED);
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+          ui::PAGE_TRANSITION_TYPED);
   content::WebContents* target_contents =
       browser()->OpenURL(params,
                          /*navigation_handle_callback=*/{});
@@ -3260,7 +3262,7 @@ class PageLoadMetricsBrowserTestTerminatedPage
     content::OpenURLParams page =
         content::OpenURLParams::CreateBrowserInitiated(
             embedded_test_server()->GetURL("/title1.html"),
-            WindowOpenDisposition::kNewForegroundTab,
+            ui::mojom::WindowOpenDisposition::kNewForegroundTab,
             ui::PAGE_TRANSITION_TYPED);
 
     content::WebContents* contents =
@@ -3471,10 +3473,11 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestRendererCrashedPage,
       RenderFrameHost()->GetProcess(),
       content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
 
-  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                         GURL(GetParam()), WindowOpenDisposition::kCurrentTab,
-                         ui::PAGE_TRANSITION_TYPED),
-                     /*navigation_handle_callback=*/{});
+  browser()->OpenURL(
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(GetParam()), ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED),
+      /*navigation_handle_callback=*/{});
 
   crash_observer.Wait();
   EXPECT_FALSE(crash_observer.did_exit_normally());
@@ -3529,10 +3532,11 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestNoRendererCrashedPage,
   content::RenderProcessHostWatcher destruction_observer(contents,
       content::RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
 
-  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                         GURL(GetParam()), WindowOpenDisposition::kCurrentTab,
-                         ui::PAGE_TRANSITION_TYPED),
-                     /*navigation_handle_callback=*/{});
+  browser()->OpenURL(
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(GetParam()), ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED),
+      /*navigation_handle_callback=*/{});
 
   destruction_observer.Wait();
   EXPECT_TRUE(web_contents() == contents);
@@ -4254,7 +4258,7 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBackForwardCacheBrowserTest,
   // Open and move to a new tab. This hides A, which should log a foreground
   // duration.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url_b, WindowOpenDisposition::kNewForegroundTab,
+      browser(), url_b, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   // The new tab opening should cause a foreground duration for the original
   // tab, since it's been hidden.
@@ -4272,13 +4276,13 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBackForwardCacheBrowserTest,
 
   // Switch back to the tab for url_a.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url_a, WindowOpenDisposition::kSwitchToTab,
+      browser(), url_a, ui::mojom::WindowOpenDisposition::kSwitchToTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   // And then switch back to url_b's tab. This should call OnHidden for the
   // url_a tab again, but no new foreground duration should be logged.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url_b, WindowOpenDisposition::kSwitchToTab,
+      browser(), url_b, ui::mojom::WindowOpenDisposition::kSwitchToTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   int64_t bf_count_after_switch = CountForMetricForURL(
@@ -4295,7 +4299,7 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBackForwardCacheBrowserTest,
   // OnComplete to be called on the BFCache observer, but this should not cause
   // a new foreground duration to be logged.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url_a, WindowOpenDisposition::kSwitchToTab,
+      browser(), url_a, ui::mojom::WindowOpenDisposition::kSwitchToTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
   CloseBrowserSynchronously(browser());
 
@@ -4367,7 +4371,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaintTimingSliceBrowserTest,
 
   base::HistogramTester histogram_tester;
   NavigateParams nav_params(browser(), url, ui::PAGE_TRANSITION_LINK);
-  nav_params.disposition = WindowOpenDisposition::kNewWindow;
+  nav_params.disposition = ui::mojom::WindowOpenDisposition::kNewWindow;
   Navigate(&nav_params);
 
   BrowserWindowInterface* new_browser =
@@ -4398,7 +4402,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaintTimingSliceBrowserTest,
 
   base::HistogramTester histogram_tester;
   NavigateParams nav_params(browser(), url, ui::PAGE_TRANSITION_LINK);
-  nav_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  nav_params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&nav_params);
 
   PageLoadMetricsTestWaiter waiter(
@@ -4437,7 +4441,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaintTimingSliceBrowserTest,
   waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
   waiter->AddPageExpectation(TimingField::kLargestContentfulPaint);
   waiter->AddPageExpectation(TimingField::kLoadEvent);
-  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
   waiter->Wait();
 
   NavigateToUntrackedUrl();

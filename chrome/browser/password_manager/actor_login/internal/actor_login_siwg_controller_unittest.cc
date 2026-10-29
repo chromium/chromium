@@ -46,8 +46,8 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace actor_login {
 namespace {
@@ -207,7 +207,7 @@ class ActorLoginSiwgControllerTest : public ChromeRenderViewHostTestHarness {
                          content::WebContents* popup_contents) {
     observer->DidOpenRequestedURL(
         popup_contents, /*source_render_frame_host=*/nullptr, GURL(),
-        content::Referrer(), WindowOpenDisposition::kNewPopup,
+        content::Referrer(), ui::mojom::WindowOpenDisposition::kNewPopup,
         ui::PAGE_TRANSITION_LINK,
         /*started_from_context_menu=*/false, /*renderer_initiated=*/false);
   }

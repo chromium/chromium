@@ -23,8 +23,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace {
 
@@ -144,7 +144,8 @@ IN_PROC_BROWSER_TEST_F(PermissionManagerBrowserTest,
       content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   incognito_browser()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL(blink::kChromeUICrashURL), WindowOpenDisposition::kCurrentTab,
+          GURL(blink::kChromeUICrashURL),
+          ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
   crash_observer.Wait();

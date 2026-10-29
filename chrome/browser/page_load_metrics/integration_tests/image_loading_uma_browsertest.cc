@@ -17,8 +17,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 class ImageLoadingUMATest : public InProcessBrowserTest {
  public:
@@ -76,7 +76,8 @@ class ImageLoadingUMATest : public InProcessBrowserTest {
     content::WebContents* contents = browser()->OpenURL(
         content::OpenURLParams::CreateBrowserInitiated(
             embedded_test_server()->GetURL("/mock_page.html"),
-            WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
+            ui::mojom::WindowOpenDisposition::kCurrentTab,
+            ui::PAGE_TRANSITION_TYPED),
         /*navigation_handle_callback=*/{});
     auto waiter =
         std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(

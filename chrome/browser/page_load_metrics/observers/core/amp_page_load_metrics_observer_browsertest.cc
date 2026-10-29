@@ -19,7 +19,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 using UkmEntry = ukm::builders::AmpPageLoad;

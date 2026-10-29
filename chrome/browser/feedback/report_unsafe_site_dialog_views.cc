@@ -28,7 +28,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -50,14 +50,14 @@ content::WebContents* OpenLinkInBrowser(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture) {
   if (!tab_interface || !user_gesture) {
     return nullptr;
   }
-  if (disposition != WindowOpenDisposition::kNewForegroundTab &&
-      disposition != WindowOpenDisposition::kNewPopup) {
+  if (disposition != ui::mojom::WindowOpenDisposition::kNewForegroundTab &&
+      disposition != ui::mojom::WindowOpenDisposition::kNewPopup) {
     return nullptr;
   }
   return chrome::AddWebContents(

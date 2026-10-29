@@ -88,7 +88,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/origin.h"
 
 using content::BrowserThread;
@@ -450,7 +450,8 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
   void NavigateToNewTabWithFrame(std::string_view host) {
     GURL main_url(https_server_.GetURL(host, "/iframe.html"));
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), main_url, WindowOpenDisposition::kNewForegroundTab,
+        browser(), main_url,
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
@@ -2704,10 +2705,10 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
                                     /*create_if_needed=*/true),
                                 /*from_user_gesture=*/true));
 
-  NavigateToURLWithDisposition(incognito_browser,
-                               https_server().GetURL(kHostA, "/iframe.html"),
-                               WindowOpenDisposition::kNewForegroundTab,
-                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLWithDisposition(
+      incognito_browser, https_server().GetURL(kHostA, "/iframe.html"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   NavigateFrameTo(EchoCookiesURL(kHostB), incognito_browser);
 
   EXPECT_FALSE(content::ExecJs(GetFrame(incognito_browser),
@@ -2720,10 +2721,10 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, IncognitoCanUseAPI) {
                                     /*create_if_needed=*/true),
                                 /*from_user_gesture=*/true));
 
-  NavigateToURLWithDisposition(incognito_browser,
-                               https_server().GetURL(kHostA, "/empty.html"),
-                               WindowOpenDisposition::kNewForegroundTab,
-                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLWithDisposition(
+      incognito_browser, https_server().GetURL(kHostA, "/empty.html"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Even in an incognito profile, it's possible to use the Storage Access API
   // if all the requirements are satisfied.

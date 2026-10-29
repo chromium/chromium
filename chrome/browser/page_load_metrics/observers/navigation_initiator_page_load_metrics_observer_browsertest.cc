@@ -36,8 +36,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace {
 
@@ -179,7 +179,8 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
   GURL url = embedded_test_server()->GetURL("/empty.html");
   GetActiveWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
+          url, ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED),
       page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
           chrome_navigation_initiator::kNewTabPage));
 
@@ -266,7 +267,8 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
   GURL url = embedded_test_server()->GetURL("www.example.com", "/empty.html");
   GetActiveWebContents()->OpenURL(
       content::OpenURLParams(
-          url, content::Referrer(), WindowOpenDisposition::kCurrentTab,
+          url, content::Referrer(),
+          ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_API),
           /*is_renderer_initiated=*/false),
@@ -1285,7 +1287,7 @@ IN_PROC_BROWSER_TEST_P(NavigationInitiatorPageLoadMetricsBFCacheBrowserTest,
   {
     // Reload url_b.
     base::HistogramTester histogram_tester;
-    chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+    chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
     EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
 
     histogram_tester.ExpectUniqueSample(
@@ -1418,7 +1420,7 @@ IN_PROC_BROWSER_TEST_P(NavigationInitiatorPageLoadMetricsBFCacheBrowserTest,
   {
     // Reload url_srp.
     base::HistogramTester histogram_tester;
-    chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+    chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
     EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
 
     histogram_tester.ExpectUniqueSample(
@@ -1485,7 +1487,7 @@ IN_PROC_BROWSER_TEST_P(NavigationInitiatorPageLoadMetricsBFCacheBrowserTest,
   // 2. Reload url_a.
   {
     base::HistogramTester histogram_tester;
-    chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+    chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
     EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
 
     histogram_tester.ExpectUniqueSample(
@@ -1595,7 +1597,7 @@ IN_PROC_BROWSER_TEST_P(NavigationInitiatorPageLoadMetricsBFCacheBrowserTest,
   // 3. Reload url_b.
   {
     base::HistogramTester histogram_tester;
-    chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+    chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
     EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
 
     histogram_tester.ExpectUniqueSample(

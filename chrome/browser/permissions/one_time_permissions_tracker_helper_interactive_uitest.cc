@@ -17,7 +17,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interactive_test.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 class OneTimePermissionsTrackerHelperBrowserTest
     : public InteractiveBrowserTest {
@@ -51,7 +51,7 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionsTrackerHelperBrowserTest,
       // navigation to finish.
       Do(base::BindLambdaForTesting([&]() {
         ui_test_utils::NavigateToURLWithDisposition(
-            browser(), url_3, WindowOpenDisposition::kCurrentTab,
+            browser(), url_3, ui::mojom::WindowOpenDisposition::kCurrentTab,
             ui_test_utils::BROWSER_TEST_NO_WAIT);
       })),
 

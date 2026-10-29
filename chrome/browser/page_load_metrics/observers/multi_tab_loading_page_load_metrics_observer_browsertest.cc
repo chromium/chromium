@@ -15,7 +15,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 class MultiTabLoadingPageLoadMetricsBrowserTest : public InProcessBrowserTest {
  public:
@@ -27,7 +27,7 @@ class MultiTabLoadingPageLoadMetricsBrowserTest : public InProcessBrowserTest {
 
   void NavigateToURLWithoutWaiting(GURL url) {
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::kCurrentTab,
+        browser(), url, ui::mojom::WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_NO_WAIT);
   }
 
@@ -72,7 +72,8 @@ IN_PROC_BROWSER_TEST_F(MultiTabLoadingPageLoadMetricsBrowserTest,
 
   // Open a new foreground tab.
   ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
-      browser(), GetTestURL(), 1, WindowOpenDisposition::kNewForegroundTab,
+      browser(), GetTestURL(), 1,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Navigate away to force the histogram recording.
@@ -95,7 +96,8 @@ IN_PROC_BROWSER_TEST_F(MultiTabLoadingPageLoadMetricsBrowserTest,
 
   // Open a tab in the background.
   ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
-      browser(), GetTestURL(), 1, WindowOpenDisposition::kNewBackgroundTab,
+      browser(), GetTestURL(), 1,
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Close the foreground tab.

@@ -27,8 +27,8 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace {
@@ -187,7 +187,8 @@ void ScriptPasswordChangeActuator::OpenPasswordChangeTab(
     web_contents = originator->OpenURL(
         content::OpenURLParams::CreateBrowserInitiated(
             GURL(change_password_url_),
-            WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK),
+            ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+            ui::PAGE_TRANSITION_LINK),
         /*navigation_handle_callback=*/{});
     CHECK(web_contents);
   } else if (hidden_executor_) {
