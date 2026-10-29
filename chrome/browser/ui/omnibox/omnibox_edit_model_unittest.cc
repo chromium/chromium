@@ -242,7 +242,10 @@ class OmniboxEditModelTest : public testing::Test {
   std::unique_ptr<TestOmniboxView> view_;
 };
 
-TEST_F(OmniboxEditModelTest, DISABLED_InlineAutocompleteText) {
+// Verifies that `OmniboxEditModel` properly updates inline autocomplete text
+// in the attached view during typing, reverting, and accepting temporary text.
+// Ensures that `inline_autocompletion()` reflects the expected suggestions.
+TEST_F(OmniboxEditModelTest, InlineAutocompleteText) {
   // Test if the model updates the inline autocomplete text in the view.
   EXPECT_EQ(std::u16string(), view()->inline_autocompletion());
   model()->SetUserText(u"he");
