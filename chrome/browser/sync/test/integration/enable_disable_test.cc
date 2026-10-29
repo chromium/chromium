@@ -132,8 +132,7 @@ class EnableDisableSingleClientTest
            syncer::kSeparateLocalAndAccountSearchEngines,
            syncer::kSpellcheckSeparateLocalAndAccountDictionaries,
            syncer::kSeparateLocalAndAccountThemes,
-           switches::kSyncEnableBookmarksInTransportMode,
-           syncer::kReadingListEnableSyncTransportModeUponSignIn},
+           switches::kSyncEnableBookmarksInTransportMode},
           /*disabled_features=*/{});
     }
   }

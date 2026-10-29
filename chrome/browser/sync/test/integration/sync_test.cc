@@ -192,8 +192,9 @@ std::unique_ptr<KeyedService> CreateGCMProfileService(
   CHECK(invalidation_sender);
   invalidation_sender->AddFakeGCMDriver(fake_gcm_driver.get());
   // `FakeSyncGCMDriver` may outlive `invalidation_sender`, as `SyncTest`
-  // destroys `fake_server_sync_invalidation_sender_` in `TearDownOnMainThread()`
-  // before `ProfileManager` destroys profiles and their `KeyedService`s.
+  // destroys `fake_server_sync_invalidation_sender_` in
+  // `TearDownOnMainThread()` before `ProfileManager` destroys profiles and
+  // their `KeyedService`s.
   fake_gcm_driver->SetOnDestroyedCallback(base::BindOnce(
       &fake_server::FakeServerSyncInvalidationSender::RemoveFakeGCMDriver,
       invalidation_sender, fake_gcm_driver.get()));
@@ -1362,9 +1363,7 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
           switches::kSyncEnableBookmarksInTransportMode)) {
     allowed_types.Put(syncer::BOOKMARKS);
   }
-  if (syncer::IsReadingListAccountStorageEnabled()) {
-    allowed_types.Put(syncer::READING_LIST);
-  }
+  allowed_types.Put(syncer::READING_LIST);
   if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     allowed_types.Put(syncer::AUTOFILL_WALLET_METADATA);
     if (base::FeatureList::IsEnabled(

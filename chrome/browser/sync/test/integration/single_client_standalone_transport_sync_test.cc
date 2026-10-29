@@ -101,9 +101,6 @@ class SingleClientStandaloneTransportSyncTest : public SyncTest {
             syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
 #endif  // BUILDFLAG(IS_CHROMEOS)
             switches::kSyncEnableBookmarksInTransportMode,
-#if !BUILDFLAG(IS_ANDROID)
-            syncer::kReadingListEnableSyncTransportModeUponSignIn,
-#endif  // !BUILDFLAG(IS_ANDROID)
             syncer::kReplaceSyncPromosWithSignInPromos,
             syncer::kSeparateLocalAndAccountSearchEngines,
             syncer::kSeparateLocalAndAccountThemes,
@@ -444,10 +441,6 @@ class ReplaceSyncWithSigninMigrationSyncTest : public SyncTest {
         // prerequisite to account storage for preferences.
         syncer::kSeparateLocalAndAccountSearchEngines,
         switches::kSyncEnableBookmarksInTransportMode};
-#if !BUILDFLAG(IS_ANDROID)
-    enabled_features.push_back(
-        syncer::kReadingListEnableSyncTransportModeUponSignIn);
-#endif
     default_features_.InitWithFeatures(enabled_features,
                                        /*disabled_features=*/{});
 

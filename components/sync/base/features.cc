@@ -110,18 +110,6 @@ DEFINE_SYNC_AUTOFILL_AI_FEATURE(kSyncWalletVehicleRegistrations);
 BASE_FEATURE(kSpellcheckSeparateLocalAndAccountDictionaries,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-BASE_FEATURE(kReadingListEnableSyncTransportModeUponSignIn,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsReadingListAccountStorageEnabled() {
-  return base::FeatureList::IsEnabled(
-      syncer::kReadingListEnableSyncTransportModeUponSignIn);
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kSeparateLocalAndAccountThemes, base::FEATURE_ENABLED_BY_DEFAULT);
 

@@ -87,13 +87,11 @@ class SyncAuthTestBase : public SyncTest {
       disabled_features.push_back(syncer::kSyncUsePropagatedAccessToken);
     }
     if (setup_sync_mode == SetupSyncMode::kSyncTransportOnly) {
-      enabled_features.insert(
-          enabled_features.end(),
-          {syncer::kReplaceSyncPromosWithSignInPromos,
-           switches::kSyncEnableBookmarksInTransportMode,
-           switches::kEnablePreferencesAccountStorage,
-           syncer::kSeparateLocalAndAccountSearchEngines,
-           syncer::kReadingListEnableSyncTransportModeUponSignIn});
+      enabled_features.insert(enabled_features.end(),
+                              {syncer::kReplaceSyncPromosWithSignInPromos,
+                               switches::kSyncEnableBookmarksInTransportMode,
+                               switches::kEnablePreferencesAccountStorage,
+                               syncer::kSeparateLocalAndAccountSearchEngines});
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }

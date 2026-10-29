@@ -182,8 +182,7 @@ class MigrationTest : public SyncTest,
            syncer::kSeparateLocalAndAccountSearchEngines,
            syncer::kSpellcheckSeparateLocalAndAccountDictionaries,
            syncer::kSeparateLocalAndAccountThemes,
-           switches::kSyncEnableBookmarksInTransportMode,
-           syncer::kReadingListEnableSyncTransportModeUponSignIn},
+           switches::kSyncEnableBookmarksInTransportMode},
           {});
     }
   }

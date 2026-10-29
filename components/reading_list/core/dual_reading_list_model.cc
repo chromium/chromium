@@ -12,7 +12,6 @@
 #include "base/strings/string_util.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
-#include "components/sync/base/features.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "url/gurl.h"
@@ -69,12 +68,7 @@ DualReadingListModel::GetSyncControllerDelegateForTransportMode() {
   // TODO(crbug.com/40251098): This logic should be moved to a controller and
   // made more sophisticated by enabling it only if the user opted in (possibly
   // pref-based).
-  if (syncer::IsReadingListAccountStorageEnabled()) {
-    return account_model_->GetSyncControllerDelegate();
-  }
-
-  // Otherwise, disable the datatype.
-  return nullptr;
+  return account_model_->GetSyncControllerDelegate();
 }
 
 bool DualReadingListModel::IsPerformingBatchUpdates() const {

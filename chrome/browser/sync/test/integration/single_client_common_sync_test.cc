@@ -544,8 +544,7 @@ class SingleClientFeatureToTransportSyncTest : public SyncTest {
     // users.
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {syncer::kReadingListEnableSyncTransportModeUponSignIn,
-         syncer::kReplaceSyncPromosWithSignInPromos},
+        {syncer::kReplaceSyncPromosWithSignInPromos},
         /*disabled_features=*/{});
   }
 
@@ -811,10 +810,6 @@ class SingleClientOldProgressMarkerSyncTest : public SyncTest {
   SingleClientOldProgressMarkerSyncTest() : SyncTest(SINGLE_CLIENT) {
     features_.InitWithFeatures(
         /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
-#if !BUILDFLAG(IS_ANDROID)
-                              syncer::
-                                  kReadingListEnableSyncTransportModeUponSignIn,
-#endif  // !BUILDFLAG(IS_ANDROID)
                               switches::kSyncEnableBookmarksInTransportMode},
         /*disabled_features=*/{});
   }

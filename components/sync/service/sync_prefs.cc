@@ -711,7 +711,7 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
       return base::FeatureList::IsEnabled(
           switches::kSyncEnableBookmarksInTransportMode);
     case UserSelectableType::kReadingList:
-      return syncer::IsReadingListAccountStorageEnabled();
+      return true;
     case UserSelectableType::kPreferences:
       if (!base::FeatureList::IsEnabled(
               switches::kEnablePreferencesAccountStorage)) {

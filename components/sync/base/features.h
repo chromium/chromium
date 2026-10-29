@@ -128,19 +128,6 @@ DECLARE_SYNC_AUTOFILL_AI_FEATURE(kSyncWalletVehicleRegistrations);
 // the local and account data separation behind this feature flag.
 BASE_DECLARE_FEATURE(kSpellcheckSeparateLocalAndAccountDictionaries);
 
-// Feature flag used for enabling sync (transport mode) for signed-in users that
-// haven't turned on full sync.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-BASE_DECLARE_FEATURE(kReadingListEnableSyncTransportModeUponSignIn);
-// Returns whether reading list storage related UI can be enabled, by testing
-// `kReadingListEnableSyncTransportModeUponSignIn`.
-bool IsReadingListAccountStorageEnabled();
-#else
-constexpr bool IsReadingListAccountStorageEnabled() {
-  return true;
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
 // If enabled, sync-the-transport will auto-start (avoid deferring startup) if
 // sync metadata isn't available (i.e. initial sync never completed).
 BASE_DECLARE_FEATURE(kSyncAlwaysForceImmediateStartIfTransportDataMissing);

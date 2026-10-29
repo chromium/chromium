@@ -47,10 +47,6 @@ class SingleClientReadingListSyncTest
  public:
   SingleClientReadingListSyncTest() : SyncTest(SINGLE_CLIENT) {
     std::vector<base::test::FeatureRef> enabled_features;
-#if !BUILDFLAG(IS_ANDROID)
-    enabled_features.push_back(
-        syncer::kReadingListEnableSyncTransportModeUponSignIn);
-#endif  // !BUILDFLAG(IS_ANDROID)
     if (GetParam() == SyncTest::SetupSyncMode::kSyncTransportOnly) {
       enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
     }
