@@ -293,12 +293,15 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="ExtensionInstall.UserMayLoadExtension.Result" enum="Boolean"
-    expires_after="2026-06-05">
+    expires_after="2027-06-17">
   <owner>ydago@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Records whether a user may load an extension. Recorded when ExtensionService
     checks if a user may load an extension.
+
+    Warning: this histogram was expired from 2026-06-05 to 2026-10-27; data may
+    be missing.
   </summary>
 </histogram>
 
