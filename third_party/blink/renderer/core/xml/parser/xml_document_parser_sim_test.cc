@@ -12,6 +12,8 @@
 #include "third_party/blink/renderer/core/dom/transform_source.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -23,14 +25,18 @@ namespace blink {
 
 namespace {
 
+enum class AutomaticallyFinish { kYes, kNo };
+
 // Writes the given data (if any) to the response and then finishes it when
 // an event is dispatched. Dispatching the event from an inline script lets a
 // test deliver the end of the navigation body while XMLDocumentParser is
 // still parsing the chunk that contains the script.
 class FinishResponseListener final : public NativeEventListener {
  public:
-  FinishResponseListener(SimRequest* response, const String& final_data)
-      : response_(response), final_data_(final_data) {}
+  FinishResponseListener(SimRequest* response,
+                         const String& final_data,
+                         AutomaticallyFinish finish)
+      : response_(response), final_data_(final_data), finish_(finish) {}
 
   void Invoke(ExecutionContext*, Event*) override {
     EXPECT_FALSE(was_invoked_);
@@ -38,7 +44,9 @@ class FinishResponseListener final : public NativeEventListener {
     if (!final_data_.empty()) {
       response_->Write(final_data_);
     }
-    response_->Finish();
+    if (finish_ == AutomaticallyFinish::kYes) {
+      response_->Finish();
+    }
   }
 
   bool WasInvoked() const { return was_invoked_; }
@@ -46,6 +54,7 @@ class FinishResponseListener final : public NativeEventListener {
  private:
   const raw_ptr<SimRequest, UnprotectedInRelease | DanglingUntriaged> response_;
   const String final_data_;
+  const AutomaticallyFinish finish_;
   bool was_invoked_ = false;
 };
 
@@ -86,12 +95,24 @@ String BuildChunkAfterExternalScript(bool close_document) {
 
 class XMLDocumentParserSimTest : public SimTest {};
 
+class XMLDocumentParserParameterizedSimTest
+    : public SimTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  ScopedXMLParsingRustForTest scoped_rust_{GetParam()};
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         XMLDocumentParserParameterizedSimTest,
+                         testing::Bool());
+
 // The response of an XHTML navigation may finish while the parser is in the
 // middle of a chunk, e.g. when an inline script run by the parser causes the
 // remainder of the body to be consumed. The parser must defer the completion
 // until the chunk has been fully parsed instead of ending the document from
 // inside the script.
-TEST_F(XMLDocumentParserSimTest, LoadCompletionDuringInlineScript) {
+TEST_P(XMLDocumentParserParameterizedSimTest,
+       LoadCompletionDuringInlineScript) {
   SimRequest main_resource("https://example.com/test.xhtml",
                            "application/xhtml+xml");
   SimSubresourceRequest external_script("https://example.com/ext.js",
@@ -106,7 +127,7 @@ TEST_F(XMLDocumentParserSimTest, LoadCompletionDuringInlineScript) {
       "<script src=\"ext.js\"></script>");
 
   auto* listener = MakeGarbageCollected<FinishResponseListener>(
-      &main_resource, /*final_data=*/String());
+      &main_resource, /*final_data=*/String(), AutomaticallyFinish::kYes);
   GetDocument().addEventListener(AtomicString("finish-response"), listener);
 
   // Buffered while the parser waits for the external script.
@@ -139,7 +160,8 @@ TEST_F(XMLDocumentParserSimTest, LoadCompletionDuringInlineScript) {
 // Same as above, but the final piece of the body arrives together with the
 // completion while the parser is inside the chunk. The data must be parsed
 // before the document is finished.
-TEST_F(XMLDocumentParserSimTest, FinalDataAndLoadCompletionDuringInlineScript) {
+TEST_P(XMLDocumentParserParameterizedSimTest,
+       FinalDataAndLoadCompletionDuringInlineScript) {
   SimRequest main_resource("https://example.com/test.xhtml",
                            "application/xhtml+xml");
   SimSubresourceRequest external_script("https://example.com/ext.js",
@@ -153,7 +175,8 @@ TEST_F(XMLDocumentParserSimTest, FinalDataAndLoadCompletionDuringInlineScript) {
       "<script src=\"ext.js\"></script>");
 
   auto* listener = MakeGarbageCollected<FinishResponseListener>(
-      &main_resource, /*final_data=*/"<p id=\"tail\">y</p></body></html>");
+      &main_resource, /*final_data=*/"<p id=\"tail\">y</p></body></html>",
+      AutomaticallyFinish::kYes);
   GetDocument().addEventListener(AtomicString("finish-response"), listener);
 
   main_resource.Write(BuildChunkAfterExternalScript(/*close_document=*/false));
@@ -186,7 +209,8 @@ TEST_F(XMLDocumentParserSimTest, FinalDataAndLoadCompletionDuringInlineScript) {
 // unclosed elements with namespace declarations. The response finishing
 // during the inline script must not end the document from inside the chunk;
 // the parser has to fail the document in an orderly way afterwards.
-TEST_F(XMLDocumentParserSimTest, LoadCompletionDuringInlineScriptBadMarkup) {
+TEST_P(XMLDocumentParserParameterizedSimTest,
+       LoadCompletionDuringInlineScriptBadMarkup) {
   SimRequest main_resource("https://example.com/test.xhtml",
                            "application/xhtml+xml");
   SimSubresourceRequest external_script("https://example.com/ext.js",
@@ -200,7 +224,7 @@ TEST_F(XMLDocumentParserSimTest, LoadCompletionDuringInlineScriptBadMarkup) {
       "<script src=\"ext.js\"></script>");
 
   auto* listener = MakeGarbageCollected<FinishResponseListener>(
-      &main_resource, /*final_data=*/String());
+      &main_resource, /*final_data=*/String(), AutomaticallyFinish::kYes);
   GetDocument().addEventListener(AtomicString("finish-response"), listener);
 
   StringBuilder markup;
@@ -234,6 +258,66 @@ TEST_F(XMLDocumentParserSimTest, LoadCompletionDuringInlineScriptBadMarkup) {
             "loading");
 
   // The malformed document must still reach completion.
+  EXPECT_TRUE(GetDocument().LoadEventFinished());
+}
+
+// Flushing pending text inside StartElementNs() -> UpdateLeafTextNode() can
+// synchronously fire a blur event on a disabled focused control inside a
+// fieldset legend. If the blur listener feeds more data to the parser, the
+// nested Append() must be queued until the outer StartElementNs() finishes
+// creating and pushing the element onto the current node stack.
+TEST_P(XMLDocumentParserParameterizedSimTest,
+       ReentrantAppendDuringStartElementNs) {
+  SimRequest main_resource("https://example.com/test.xhtml",
+                           "application/xhtml+xml");
+  SimSubresourceRequest external_script("https://example.com/ext.js",
+                                        "text/javascript");
+  LoadURL("https://example.com/test.xhtml");
+  GetDocument().GetPage()->GetFocusController().SetActive(true);
+  GetDocument().GetPage()->GetFocusController().SetFocused(true);
+
+  main_resource.Write(R"HTML(<?xml version="1.0" encoding="UTF-8"?>
+      <html xmlns="http://www.w3.org/1999/xhtml"><body>
+      <script src="ext.js"></script>)HTML");
+
+  auto* listener = MakeGarbageCollected<FinishResponseListener>(
+      &main_resource, "<span id=\"inner\">inside</span>",
+      AutomaticallyFinish::kNo);
+  GetDocument().addEventListener(AtomicString("finish-response"), listener);
+
+  main_resource.Write(R"HTML(
+      <fieldset><legend><input/></legend>
+      <script>
+      var count = 0, input = document.querySelector('input');
+      input.onblur = function() {
+        if (count++) {
+          document.dispatchEvent(new Event('finish-response'));
+          return;
+        }
+        input.disabled = false; input.focus(); input.disabled = true;
+      };
+      input.focus();
+      input.disabled = true;
+      </script>x<p id="outer-p" xmlns:ns="http://example.com/ns">)HTML");
+  external_script.Complete("");
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(listener->WasInvoked());
+
+  main_resource.Write("</p></fieldset></body></html>");
+  main_resource.Finish();
+  test::RunPendingTasks();
+
+  Element* outer_p = GetDocument().getElementById(AtomicString("outer-p"));
+  ASSERT_TRUE(outer_p);
+  EXPECT_EQ(
+      outer_p->getAttributeNS(AtomicString("http://www.w3.org/2000/xmlns/"),
+                              AtomicString("ns")),
+      "http://example.com/ns");
+
+  Element* inner = GetDocument().getElementById(AtomicString("inner"));
+  ASSERT_TRUE(inner);
+  EXPECT_EQ(inner->parentElement(), outer_p);
   EXPECT_TRUE(GetDocument().LoadEventFinished());
 }
 

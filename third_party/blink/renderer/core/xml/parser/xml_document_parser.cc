@@ -529,10 +529,6 @@ void XMLDocumentParser::end() {
 }
 
 void XMLDocumentParser::Finish() {
-  // FIXME: We should DCHECK(!m_parserStopped) here, since it does not
-  // makes sense to call any methods on DocumentParser once it's been stopped.
-  // However, FrameLoader::stop calls DocumentParser::finish unconditionally.
-
   Flush();
   if (IsDetached())
     return;

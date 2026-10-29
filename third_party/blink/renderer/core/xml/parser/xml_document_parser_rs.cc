@@ -265,16 +265,22 @@ void XMLDocumentParserRs::Append(const String& xml_string) {
     return;
   }
 
-  if (parser_paused_ || in_process_events_) {
-    pending_src_.Append(xml_string);
-    return;
-  }
-
   if (!xml_string.empty()) {
     // Resume parsing, recover from unbalanced root error at previous chunk
     // boundary.
     carry_unbalanced_root_error_ = std::nullopt;
   }
+
+  if (parser_paused_ || in_process_events_) {
+    pending_src_.Append(xml_string);
+    return;
+  }
+
+  AppendToSource(xml_string);
+  ProcessEvents();
+}
+
+void XMLDocumentParserRs::AppendToSource(const String& xml_string) {
   if (RuntimeEnabledFeatures::XMLParserReplaceLoneSurrogatesEnabled()) {
     // Replace lone surrogates with U+FFFD so the parser does a best-effort
     // parse instead of rejecting the whole input (crbug.com/40814739).
@@ -285,15 +291,20 @@ void XMLDocumentParserRs::Append(const String& xml_string) {
     xml_ffi::append_to_source(*read_state_,
                               base::StringViewToRustSlice(xml_string.Utf8()));
   }
-  ProcessEvents();
 }
 
 void XMLDocumentParserRs::ProcessEvents() {
+  CHECK(!IsDetached());
+  CHECK(!parser_paused_);
+  CHECK(!in_process_events_);
+
   {
-    CHECK(!in_process_events_);
     base::AutoReset<bool> reentrancy_guard(&in_process_events_, true);
-    while (!parser_paused_ && !IsStopped() && !saw_end_document_ &&
-           !xml_ffi::saw_error(*read_state_)) {
+    while (!parser_paused_ && !IsStopped() && !saw_xsl_transform_ &&
+           !saw_end_document_ && !xml_ffi::saw_error(*read_state_)) {
+      if (!pending_src_.empty()) {
+        AppendToSource(pending_src_.ReleaseString());
+      }
       xml_ffi::process_next_event(*read_state_);
     }
     if (xml_ffi::saw_error(*read_state_)) {
@@ -319,14 +330,6 @@ void XMLDocumentParserRs::ProcessEvents() {
 
   if (IsDetached() || parser_paused_) {
     return;
-  }
-
-  if (!pending_src_.empty()) {
-    String rest = pending_src_.ReleaseString();
-    Append(rest);
-    if (IsDetached() || parser_paused_) {
-      return;
-    }
   }
 
   if (finish_called_) {
@@ -909,11 +912,6 @@ void XMLDocumentParserRs::EndInternal() {
 }
 
 void XMLDocumentParserRs::Finish() {
-  // FIXME: We should DCHECK(!m_parserStopped) here, since it does not
-  // makes sense to call any methods on DocumentParser once it's been stopped.
-  // However, FrameLoader::stop calls DocumentParser::finish unconditionally.
-  // FIXME carried over from XmlDocumentParser.
-
   Flush();
   if (IsDetached()) {
     return;
@@ -1129,14 +1127,10 @@ void XMLDocumentParserRs::PauseParsing() {
 }
 
 void XMLDocumentParserRs::ResumeParsing() {
-  DCHECK(!IsDetached());
-  DCHECK(parser_paused_);
+  CHECK(!IsDetached());
+  CHECK(parser_paused_);
   parser_paused_ = false;
   ProcessEvents();
-
-  if (finish_called_) {
-    EndInternal();
-  }
 }
 
 HashMap<String, String> ParseAttributesRust(const String& attrs_string,
