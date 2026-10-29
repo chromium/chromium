@@ -8,6 +8,7 @@
 #import <utility>
 
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_keyed_service.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -15,6 +16,7 @@
 
 TTCKeyedServiceFactory::TTCKeyedServiceFactory(PassKey key)
     : TypedProfileKeyedServiceFactoryIOS(std::move(key), "TTCKeyedService") {
+  DependsOn(actor::ActorServiceFactory::GetInstance());
   DependsOn(BrowserListFactory::GetInstance());
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
 }
@@ -26,5 +28,6 @@ std::unique_ptr<KeyedService> TTCKeyedServiceFactory::BuildServiceInstanceFor(
   }
   return std::make_unique<TTCKeyedService>(
       OptimizationGuideServiceFactory::GetForProfile(profile),
-      BrowserListFactory::GetForProfile(profile));
+      BrowserListFactory::GetForProfile(profile),
+      actor::ActorServiceFactory::GetForProfile(profile));
 }

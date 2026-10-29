@@ -20,14 +20,19 @@ class BrowserList;
 class OptimizationGuideService;
 class TtcSessionController;
 
+namespace actor {
+class ActorService;
+}  // namespace actor
+
 // Profile-keyed service that manages the active TTC voice session
 // lifecycle, state transitions, and coordination for a Profile.
 class TTCKeyedService : public KeyedService {
  public:
-  // Constructs the keyed service with `optimization_guide` and `browser_list`
-  // for the owning profile.
+  // Constructs the keyed service with `optimization_guide`, `browser_list`, and
+  // `actor_service` for the owning profile.
   TTCKeyedService(OptimizationGuideService* optimization_guide,
-                  BrowserList* browser_list);
+                  BrowserList* browser_list,
+                  actor::ActorService* actor_service);
   TTCKeyedService(const TTCKeyedService&) = delete;
   TTCKeyedService& operator=(const TTCKeyedService&) = delete;
   ~TTCKeyedService() override;
@@ -79,6 +84,9 @@ class TTCKeyedService : public KeyedService {
 
   // The `BrowserList` for the owning profile, passed to session controllers.
   raw_ptr<BrowserList> browser_list_ = nullptr;
+
+  // The `ActorService` used to execute tool actuations.
+  raw_ptr<actor::ActorService> actor_service_ = nullptr;
 
   // Shared session journal retaining entries for the current or most recent
   // session. Declared before `session_controller_` so `journal_` outlives any

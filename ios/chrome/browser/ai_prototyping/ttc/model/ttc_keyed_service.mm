@@ -10,22 +10,29 @@
 #import "base/check.h"
 #import "components/ttc/app/ttc_backend.h"
 #import "components/ttc/app/ttc_mes_client.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_actuation_handler.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_websocket_backend.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/public/provider/chrome/browser/intelligence/ttc_api.h"
 
 TTCKeyedService::TTCKeyedService(OptimizationGuideService* optimization_guide,
-                                 BrowserList* browser_list)
-    : optimization_guide_(optimization_guide), browser_list_(browser_list) {}
+                                 BrowserList* browser_list,
+                                 actor::ActorService* actor_service)
+    : optimization_guide_(optimization_guide),
+      browser_list_(browser_list),
+      actor_service_(actor_service) {}
 
 TTCKeyedService::~TTCKeyedService() = default;
 
 void TTCKeyedService::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EndSession();
+  actor_service_ = nullptr;
   browser_list_ = nullptr;
+  optimization_guide_ = nullptr;
 }
 
 bool TTCKeyedService::IsEnabled() const {
@@ -79,8 +86,11 @@ void TTCKeyedService::StartSession() {
     backend = std::make_unique<ttc::TtcMesClient>(optimization_guide_.get());
   }
 
-  session_controller_ =
-      std::make_unique<TtcSessionController>(std::move(backend), browser_list_);
+  auto actuation_handler =
+      std::make_unique<TtcActuationHandler>(actor_service_.get());
+
+  session_controller_ = std::make_unique<TtcSessionController>(
+      std::move(backend), browser_list_, std::move(actuation_handler));
   session_controller_->set_journal(&journal_);
 
   session_controller_->StartSession();

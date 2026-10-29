@@ -12,9 +12,14 @@
 
 #import "base/functional/bind.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/test_future.h"
+#import "base/values.h"
+#import "components/actor/public/mojom/actor_types.mojom.h"
+#import "components/ttc/app/public/tool_types.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_keyed_service_factory.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_states.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -41,7 +46,7 @@ class TTCKeyedServiceTest : public PlatformTest {
     profile_.reset();
     if (enable_ttc) {
       scoped_feature_list_.Reset();
-      scoped_feature_list_.InitAndEnableFeature(kTTCEnabled);
+      scoped_feature_list_.InitWithFeatures({kTTCEnabled, kActorTools}, {});
       TTCKeyedServiceFactory::GetInstance();
     } else {
       scoped_feature_list_.Reset();
@@ -249,5 +254,25 @@ TEST_F(TTCKeyedServiceTest,
   service->StartSession();
   EXPECT_FALSE(has_event("SessionStarted"));
   EXPECT_FALSE(has_event("BackendError"));
+  service->EndSession();
+}
+
+// Tests that `StartSession` wires a `TtcActuationHandler` into the active
+// `TtcSessionController`.
+TEST_F(TTCKeyedServiceTest, TestStartSessionWiresActuationHandler) {
+  TTCKeyedService* service =
+      TTCKeyedServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(service, nullptr);
+  service->StartSession();
+  ASSERT_NE(service->session_controller(), nullptr);
+  base::test::TestFuture<ttc::ToolResponse> future;
+  ttc::ToolRequest request{"unknown_tool", base::DictValue()};
+
+  service->session_controller()->OnToolCall(request, future.GetCallback());
+
+  const ttc::ToolResponse& response = future.Get();
+  ASSERT_FALSE(response.Ok());
+  EXPECT_EQ(response.error().code,
+            actor::mojom::ActionResultCode::kToolUnknown);
   service->EndSession();
 }
