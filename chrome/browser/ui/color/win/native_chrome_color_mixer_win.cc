@@ -187,7 +187,17 @@ void AddNativeHighContrastColors(ui::ColorMixer& mixer) {
       kColorTabBackgroundActiveFrameActive};
   mixer[kColorTabBackgroundInactiveHoverFrameActive] = {kColorToolbarText};
   mixer[kColorTabBackgroundInactiveHoverFrameInactive] = {kColorToolbarText};
+  mixer[kColorTabBackgroundSelectedFrameActive] = {
+      kColorTabBackgroundActiveFrameActive};
+  mixer[kColorTabBackgroundSelectedFrameInactive] = {
+      kColorTabBackgroundActiveFrameInactive};
+  mixer[kColorTabBackgroundSelectedHoverFrameActive] = {
+      kColorTabBackgroundSelectedFrameActive};
+  mixer[kColorTabBackgroundSelectedHoverFrameInactive] = {
+      kColorTabBackgroundSelectedFrameInactive};
   mixer[kColorTabForegroundActiveFrameActive] = {ui::kColorNativeHighlightText};
+  mixer[kColorTabForegroundActiveFrameInactive] = {
+      kColorTabForegroundActiveFrameActive};
   mixer[kColorTabForegroundInactiveHoverFrameActive] = {
       kColorTabForegroundActiveFrameActive};
   mixer[kColorTabForegroundInactiveHoverFrameInactive] = {
