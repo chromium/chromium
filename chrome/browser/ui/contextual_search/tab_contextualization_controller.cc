@@ -26,7 +26,9 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -184,6 +186,10 @@ TabContextualizationController::GetPageContextAvailability() const {
   if (web_contents->HasUncommittedNavigationInPrimaryMainFrame()) {
     return PageContextAvailability::kLoading;
   }
+  if (!web_contents->GetPrimaryMainFrame()->IsRenderFrameLive() ||
+      web_contents->IsCrashed()) {
+    return PageContextAvailability::kUnavailable;
+  }
   if (web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
     return PageContextAvailability::kReadyToExtract;
   }
@@ -228,6 +234,29 @@ TabContextualizationController::GetPageContextAvailability() const {
 #endif  // BUILDFLAG(IS_ANDROID)
   return web_contents->IsLoading() ? PageContextAvailability::kLoading
                                    : PageContextAvailability::kUnavailable;
+}
+
+bool TabContextualizationController::ReloadTabIfPossible() {
+  content::WebContents* web_contents = tab_->GetContents();
+  if (!web_contents) {
+    return false;
+  }
+  content::NavigationEntry* last_committed_entry =
+      web_contents->GetController().GetLastCommittedEntry();
+  if (!last_committed_entry || last_committed_entry->GetHasPostData() ||
+      web_contents->GetLastCommittedURL().is_empty()) {
+    return false;
+  }
+  const bool needs_reload =
+      !web_contents->GetPrimaryMainFrame()->IsRenderFrameLive() ||
+      web_contents->IsCrashed() || web_contents->WasDiscarded() ||
+      web_contents->GetController().NeedsReload();
+  if (!needs_reload) {
+    return false;
+  }
+  web_contents->GetController().Reload(content::ReloadType::NORMAL,
+                                       /*check_for_repost=*/false);
+  return GetPageContextAvailability() == PageContextAvailability::kLoading;
 }
 
 void TabContextualizationController::
@@ -456,7 +485,13 @@ void TabContextualizationController::GetPageContext(
 
   Observe(web_contents);
 
-  switch (GetPageContextAvailability()) {
+  PageContextAvailability availability = GetPageContextAvailability();
+  if (availability == PageContextAvailability::kUnavailable &&
+      ReloadTabIfPossible()) {
+    availability = PageContextAvailability::kLoading;
+  }
+
+  switch (availability) {
     case PageContextAvailability::kReadyToExtract:
       FetchPageContextInternal(std::move(callback));
       return;

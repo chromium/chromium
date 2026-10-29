@@ -1309,11 +1309,21 @@ void ContextualSearchboxHandler::ContinueAddTabContext(
                      weak_ptr_factory_.GetWeakPtr(), context_token));
   pending_tab_context_fetches_.insert_or_assign(context_token,
                                                 std::move(fetch));
+  // `GetPageContext()` may synchronously start reloading a crashed or
+  // discarded tab; if so, notify the page and observe when loading finishes.
+  const bool was_loading = IsTabShowingLoadingIndicator(tab->GetContents());
   tab_contextualization_controller->GetPageContext(
       base::BindOnce(&ContextualSearchboxHandler::OnGetTabPageContext,
                      weak_ptr_factory_.GetWeakPtr(), delay_upload,
                      context_token),
       context_token);
+  if (!was_loading && IsTabShowingLoadingIndicator(tab->GetContents())) {
+    tab_load_stop_observers_.push_back(std::make_unique<TabLoadStopObserver>(
+        tab->GetContents(),
+        base::BindRepeating(&ContextualSearchboxHandler::OnTabStoppedLoading,
+                            base::Unretained(this))));
+    page_->OnTabStripChanged();
+  }
 
   auto pending_request = pending_tab_context_fetches_.find(context_token);
   if (pending_request != pending_tab_context_fetches_.end() &&

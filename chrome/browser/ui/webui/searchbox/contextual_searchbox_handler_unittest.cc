@@ -4402,6 +4402,90 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   mock_searchbox_page_.FlushForTesting();
 }
 
+TEST_F(ContextualSearchboxHandlerTestTabsTest,
+       AddTabContext_NotifiesPageWhenReloadStartsAndStops) {
+  auto* stale_tab = AddTab(GURL("https://www.google.com"));
+  // Keep `stale_tab` inactive so the active-tab navigation observer does not
+  // also notify the page when the navigation commits.
+  AddTab(GURL("https://www.youtube.com"));
+  const int stale_tab_id = stale_tab->GetHandle().raw_value();
+
+  std::unique_ptr<content::NavigationSimulator> reload_navigation;
+  lens::TabContextualizationController::GetPageContextCallback
+      pending_page_context_callback;
+  MockTabContextualizationController* tab_contextualization_controller =
+      static_cast<MockTabContextualizationController*>(
+          lens::TabContextualizationController::From(stale_tab));
+  EXPECT_CALL(*tab_contextualization_controller, GetPageContext(testing::_))
+      .WillOnce([&reload_navigation, &pending_page_context_callback, stale_tab](
+                    lens::TabContextualizationController::GetPageContextCallback
+                        callback) {
+        // Simulate `GetPageContext()` starting an in-place reload of the tab.
+        reload_navigation =
+            content::NavigationSimulator::CreateBrowserInitiated(
+                GURL("https://www.google.com"), stale_tab->GetContents());
+        reload_navigation->Start();
+        pending_page_context_callback = std::move(callback);
+      });
+
+  // `OnTabStripChanged()` should be called immediately when `GetPageContext()`
+  // transitions the tab into a loading state.
+  EXPECT_CALL(mock_searchbox_page_, OnTabStripChanged).Times(1);
+  EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged).Times(1);
+  base::test::TestFuture<base::expected<
+      base::UnguessableToken, contextual_search::ContextUploadErrorType>>
+      future;
+  handler().AddTabContext(stale_tab_id, /*delay_upload=*/false,
+                          searchbox::mojom::TabAttachmentSource::kContextMenu,
+                          future.GetCallback());
+  mock_searchbox_page_.FlushForTesting();
+  ASSERT_TRUE(future.Get().has_value());
+  testing::Mock::VerifyAndClearExpectations(&mock_searchbox_page_);
+
+  // When the reload finishes (`DidStopLoading()`), `TabLoadStopObserver` must
+  // notify the page again so the loading spinner clears, and the pending page
+  // context callback proceeds to upload the extracted context.
+  EXPECT_CALL(mock_searchbox_page_, OnTabStripChanged).Times(1);
+  EXPECT_CALL(
+      query_controller(),
+      StartFileUploadFlow(future.Get().value(), testing::NotNull(), testing::_))
+      .Times(1);
+  reload_navigation->Commit();
+  std::move(pending_page_context_callback)
+      .Run(std::make_unique<lens::ContextualInputData>());
+  mock_searchbox_page_.FlushForTesting();
+}
+
+TEST_F(ContextualSearchboxHandlerTestTabsTest,
+       AddTabContext_AlreadyLoadingTabDoesNotNotifyOnStart) {
+  auto* loading_tab = AddTab(GURL("https://www.google.com"));
+  AddTab(GURL("https://www.youtube.com"));
+  const int loading_tab_id = loading_tab->GetHandle().raw_value();
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://www.google.com/search"), loading_tab->GetContents());
+  navigation->Start();
+
+  MockTabContextualizationController* tab_contextualization_controller =
+      static_cast<MockTabContextualizationController*>(
+          lens::TabContextualizationController::From(loading_tab));
+  EXPECT_CALL(*tab_contextualization_controller, GetPageContext(testing::_))
+      .Times(1);
+
+  // Because the tab was already loading before `GetPageContext()` was called,
+  // `OnTabStripChanged()` should not fire on start.
+  EXPECT_CALL(mock_searchbox_page_, OnTabStripChanged).Times(0);
+  EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged).Times(1);
+  base::test::TestFuture<base::expected<
+      base::UnguessableToken, contextual_search::ContextUploadErrorType>>
+      future;
+  handler().AddTabContext(loading_tab_id, /*delay_upload=*/false,
+                          searchbox::mojom::TabAttachmentSource::kContextMenu,
+                          future.GetCallback());
+  mock_searchbox_page_.FlushForTesting();
+  ASSERT_TRUE(future.Get().has_value());
+}
+
 TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs_UsesServerLimit) {
   base::FieldTrialParams params;
   params[ntp_composebox::kContextMenuMaxTabSuggestions.name] = "2";
