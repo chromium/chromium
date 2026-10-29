@@ -5,6 +5,7 @@
 #include "ash/public/cpp/shelf_prefs.h"
 
 #include <memory>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -90,7 +91,7 @@ std::string GetPerDisplayPref(PrefService* prefs,
   return default_string ? *default_string : std::string();
 }
 
-ShelfAlignment AlignmentFromPref(const std::string& value) {
+ShelfAlignment AlignmentFromPref(std::string_view value) {
   if (value == kShelfAlignmentLeft)
     return ShelfAlignment::kLeft;
   if (value == kShelfAlignmentRight)
@@ -115,7 +116,7 @@ const char* AlignmentToPref(ShelfAlignment alignment) {
   NOTREACHED();
 }
 
-ShelfAutoHideBehavior AutoHideBehaviorFromPref(const std::string& value) {
+ShelfAutoHideBehavior AutoHideBehaviorFromPref(std::string_view value) {
   // Note: To maintain sync compatibility with old images of chrome/chromeos
   // the set of values that may be encountered includes the now-extinct
   // "Default" as well as "Never" and "Always", "Default" should now

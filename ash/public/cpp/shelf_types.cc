@@ -96,7 +96,7 @@ bool SamePinState(ShelfItemType a, ShelfItemType b) {
   return a_unpinned == b_unpinned;
 }
 
-ShelfID::ShelfID(const std::string& app_id, const std::string& launch_id)
+ShelfID::ShelfID(std::string_view app_id, std::string_view launch_id)
     : app_id(app_id), launch_id(launch_id) {
   DCHECK(launch_id.empty() || !app_id.empty()) << "launch ids require app ids.";
 }

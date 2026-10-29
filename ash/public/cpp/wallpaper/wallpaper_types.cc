@@ -4,7 +4,7 @@
 
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 
-#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/logging.h"
@@ -12,7 +12,7 @@
 
 namespace ash {
 
-std::string WallpaperTypeToString(WallpaperType type) {
+std::string_view WallpaperTypeToString(WallpaperType type) {
   switch (type) {
     case WallpaperType::kDaily:
       return "Daily";

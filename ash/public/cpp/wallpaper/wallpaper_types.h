@@ -5,7 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_WALLPAPER_WALLPAPER_TYPES_H_
 #define ASH_PUBLIC_CPP_WALLPAPER_WALLPAPER_TYPES_H_
 
-#include <string>
+#include <string_view>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -90,7 +90,7 @@ enum class ColorProfileType {
   NUM_OF_COLOR_PROFILES,
 };
 
-ASH_PUBLIC_EXPORT std::string WallpaperTypeToString(WallpaperType type);
+ASH_PUBLIC_EXPORT std::string_view WallpaperTypeToString(WallpaperType type);
 
 ASH_PUBLIC_EXPORT bool IsAllowedInPrefs(WallpaperType type);
 ASH_PUBLIC_EXPORT bool IsWallpaperTypeSyncable(WallpaperType type);

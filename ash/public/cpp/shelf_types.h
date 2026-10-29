@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <ostream>
 #include <string>
+#include <string_view>
 
 #include "ash/public/cpp/ash_public_export.h"
 
@@ -220,8 +221,8 @@ enum AppStatus {
 // As an example, a remote desktop client may want each remote application to
 // have its own icon.
 struct ASH_PUBLIC_EXPORT ShelfID {
-  explicit ShelfID(const std::string& app_id = std::string(),
-                   const std::string& launch_id = std::string());
+  explicit ShelfID(std::string_view app_id = {},
+                   std::string_view launch_id = {});
   ~ShelfID();
 
   ShelfID(const ShelfID& other);

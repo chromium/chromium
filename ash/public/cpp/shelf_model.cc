@@ -5,6 +5,7 @@
 #include "ash/public/cpp/shelf_model.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "ash/public/cpp/shelf_item_delegate.h"
@@ -81,14 +82,14 @@ void ShelfModel::PinExistingItemWithID(const std::string& app_id) {
   Set(index, item);
 }
 
-bool ShelfModel::IsAppPinned(const std::string& app_id) const {
+bool ShelfModel::IsAppPinned(std::string_view app_id) const {
   const int index = ItemIndexByID(ShelfID(app_id));
   if (index < 0)
     return false;
   return IsPinnedShelfItemType(items_[index].type);
 }
 
-bool ShelfModel::AllowedToSetAppPinState(const std::string& app_id,
+bool ShelfModel::AllowedToSetAppPinState(std::string_view app_id,
                                          bool target_pin) const {
   if (IsAppPinned(app_id) == target_pin)
     return true;

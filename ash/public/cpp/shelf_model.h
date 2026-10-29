@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <string_view>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/shelf_item.h"
@@ -92,16 +93,15 @@ class ASH_PUBLIC_EXPORT ShelfModel {
   // if the item is already pinned.
   void PinExistingItemWithID(const std::string& app_id);
 
-  // Checks if the app with |app_id_| is pinned to the shelf.
-  bool IsAppPinned(const std::string& app_id) const;
+  // Checks if the app with `app_id` is pinned to the shelf.
+  bool IsAppPinned(std::string_view app_id) const;
 
   // Returns whether the app specified by `app_id` is allowed to be set with the
   // target pin state. If `target_pin` is true, the target is to pin the item;
   // otherwise, the target is to unpin the item.
   // Returns true if the app's current pin state matches the target state, even
   // if the app pin state is not modifiable (e.g. due to policy).
-  bool AllowedToSetAppPinState(const std::string& app_id,
-                               bool target_pin) const;
+  bool AllowedToSetAppPinState(std::string_view app_id, bool target_pin) const;
 
   // Unpins app item with |app_id|.
   void UnpinAppWithID(const std::string& app_id);
