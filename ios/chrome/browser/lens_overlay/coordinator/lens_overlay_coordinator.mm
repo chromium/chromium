@@ -87,6 +87,7 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
 #import "ios/public/provider/chrome/browser/lens/lens_image_metadata.h"
@@ -188,12 +189,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   /// Presenter for the lens container.
   LensOverlayContainerPresenter* _containerPresenter;
 
-  /// Layout guide for the initial visible area (when results bottom sheet is
-  /// not shown).
-  UILayoutGuide* _initialVisibleAreaLayoutGuide;
-
   /// Constraints for the initial visible area layout guide.
-  NSArray<NSLayoutConstraint*>* _initialVisibleAreaConstraints;
+  NSLayoutConstraint* _bottomVisibleAreaConstraint;
 
   // The entrypoint associated with the current session.
   LensOverlayEntrypoint _entrypoint;
@@ -234,7 +231,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   _mediator.delegate = self;
 
   [self.browser->GetSceneState().layoutState addObserver:self];
-  [self updateInitialVisibleAreaLayoutGuide];
+  [self refreshVisibleAreaBottomConstraint];
   // The mediator might destroy lens UI if the search engine doesn't support
   // lens.
   _mediator.templateURLService =
@@ -756,15 +753,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     [self.browser->GetSceneState().layoutState removeObserver:self];
   }
   [self stopResultPage];
-  if (_initialVisibleAreaConstraints) {
-    [NSLayoutConstraint deactivateConstraints:_initialVisibleAreaConstraints];
-    _initialVisibleAreaConstraints = nil;
-  }
-  if (_initialVisibleAreaLayoutGuide) {
-    [_containerViewController.view
-        removeLayoutGuide:_initialVisibleAreaLayoutGuide];
-    _initialVisibleAreaLayoutGuide = nil;
-  }
+  _bottomVisibleAreaConstraint.active = NO;
+  _bottomVisibleAreaConstraint = nil;
   _containerViewController = nil;
   [_mediator disconnect];
   _selectionViewController = nil;
@@ -861,7 +851,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     return;
   }
 
-  [self updateInitialVisibleAreaLayoutGuide];
+  [self refreshVisibleAreaBottomConstraint];
 
   if (!lens::IsLVFEntrypoint(_entrypoint)) {
     PrefService* local_state = GetApplicationContext()->GetLocalState();
@@ -907,7 +897,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
 - (void)lensOverlayContainerPresenterDidReadjustPresentation:
     (LensOverlayContainerPresenter*)containerPresenter {
-  [self updateInitialVisibleAreaLayoutGuide];
+  [self refreshVisibleAreaBottomConstraint];
 
   if (UseCustomLensOverlayBottomSheet() && IsChromeNextIaEnabled() &&
       _resultsPagePresenter.isResultPageVisible) {
@@ -999,7 +989,11 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 - (void)lensOverlayResultsPagePresenter:
             (LensOverlayResultsPagePresenter*)presenter
         didAdjustVisibleAreaLayoutGuide:(UILayoutGuide*)visibleAreaLayoutGuide {
-  _selectionViewController.visibleAreaLayoutGuide = visibleAreaLayoutGuide;
+  _bottomVisibleAreaConstraint.active = NO;
+  _bottomVisibleAreaConstraint =
+      [_selectionViewController.visibleAreaLayoutGuide.bottomAnchor
+          constraintEqualToAnchor:visibleAreaLayoutGuide.bottomAnchor];
+  [self refreshVisibleAreaBottomConstraint];
 }
 
 - (void)lensOverlayResultsPagePresenter:
@@ -1606,23 +1600,36 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   _associatedTabHelper->CaptureFullscreenSnapshot(base::BindOnce(completion));
 }
 
-// Creates or updates the initial visible area layout guide, to ensure that it
-// takes into account the AppBar when it overlaps the browser.
-- (void)updateInitialVisibleAreaLayoutGuide {
-  if (!_containerViewController || !_selectionViewController) {
+- (void)createVisibleAreaLayoutGuideIfNeeded {
+  if (!_containerViewController || !_selectionViewController ||
+      _selectionViewController.visibleAreaLayoutGuide) {
     return;
   }
 
-  if (!_initialVisibleAreaLayoutGuide) {
-    _initialVisibleAreaLayoutGuide = [[UILayoutGuide alloc] init];
-    [_selectionViewController.view
-        addLayoutGuide:_initialVisibleAreaLayoutGuide];
-  }
+  UILayoutGuide* visibleAreaLayoutGuide = [[UILayoutGuide alloc] init];
+  [_selectionViewController.view addLayoutGuide:visibleAreaLayoutGuide];
+  _selectionViewController.visibleAreaLayoutGuide = visibleAreaLayoutGuide;
 
-  if (_initialVisibleAreaConstraints) {
-    [NSLayoutConstraint deactivateConstraints:_initialVisibleAreaConstraints];
-  }
+  UILayoutGuide* visibleAreaGuide =
+      _selectionViewController.visibleAreaLayoutGuide;
+  NSLayoutYAxisAnchor* bottomAnchor = [self defaultVisibleAreaBottomAnchor];
+  NSLayoutConstraint* defaultBottomConstraint =
+      [visibleAreaGuide.bottomAnchor constraintEqualToAnchor:bottomAnchor];
+  defaultBottomConstraint.priority = UILayoutPriorityDefaultHigh;
 
+  [NSLayoutConstraint activateConstraints:@[
+    defaultBottomConstraint,
+    [visibleAreaGuide.topAnchor
+        constraintEqualToAnchor:_selectionViewController.view.topAnchor],
+    [visibleAreaGuide.leadingAnchor
+        constraintEqualToAnchor:_selectionViewController.view.leadingAnchor],
+    [visibleAreaGuide.trailingAnchor
+        constraintEqualToAnchor:_selectionViewController.view.trailingAnchor],
+  ]];
+}
+
+// Returns the default visible area bottom anchor.
+- (NSLayoutYAxisAnchor*)defaultVisibleAreaBottomAnchor {
   BOOL snapToAppBarAllowed =
       IsChromeNextIaEnabled() && IsFullscreenRefactoringEnabled();
   BOOL usesSidePanel =
@@ -1635,40 +1642,30 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   BOOL shouldSnapToAppBar =
       snapToAppBarAllowed && appBarAtBottom && viewInWindow && !usesSidePanel;
 
-  NSLayoutYAxisAnchor* bottomAnchor =
-      _selectionViewController.view.bottomAnchor;
   if (shouldSnapToAppBar) {
     LayoutGuideCenter* layoutGuideCenter =
         LayoutGuideCenterForBrowser(self.browser);
     UIView* appBarView =
         [layoutGuideCenter referencedViewUnderName:kAppBarGuide];
     if (appBarView) {
-      bottomAnchor = appBarView.topAnchor;
+      return appBarView.topAnchor;
     }
   }
 
-  _initialVisibleAreaConstraints = @[
-    [_initialVisibleAreaLayoutGuide.topAnchor
-        constraintEqualToAnchor:_selectionViewController.view.topAnchor],
-    [_initialVisibleAreaLayoutGuide.leadingAnchor
-        constraintEqualToAnchor:_selectionViewController.view.leadingAnchor],
-    [_initialVisibleAreaLayoutGuide.trailingAnchor
-        constraintEqualToAnchor:_selectionViewController.view.trailingAnchor],
-    [_initialVisibleAreaLayoutGuide.bottomAnchor
-        constraintEqualToAnchor:bottomAnchor],
-  ];
+  return _selectionViewController.view.bottomAnchor;
+}
 
-  [NSLayoutConstraint activateConstraints:_initialVisibleAreaConstraints];
-
+// Refreshes the visible area layout guide, to ensure that it takes into account
+// the AppBar when it overlaps the browser.
+- (void)refreshVisibleAreaBottomConstraint {
+  [self createVisibleAreaLayoutGuideIfNeeded];
   // Only update selection VC's visible area layout guide if results bottom
   // sheet is not currently visible or if it's a side panel.
-  BOOL bottomSheetNotVisible = !self.isResultsBottomSheetCreated ||
-                               !_resultsPagePresenter.isResultPageVisible;
-  BOOL shouldUpdateLayourGuide = usesSidePanel || bottomSheetNotVisible;
-  if (shouldUpdateLayourGuide) {
-    _selectionViewController.visibleAreaLayoutGuide =
-        _initialVisibleAreaLayoutGuide;
-  }
+  BOOL usesSidePanel =
+      lens::ResultPagePresentationFor(self.baseViewController) ==
+      lens::ResultPagePresentationType::kSidePanel;
+  BOOL snapToEdges = usesSidePanel || !self.isResultsBottomSheetCreated;
+  _bottomVisibleAreaConstraint.active = !snapToEdges;
 }
 
 #pragma mark - Low memory warning
@@ -1860,6 +1857,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
   CGFloat guidanceRestHeight = _resultsPagePresenter.presentedResultsPageHeight;
   [_selectionViewController setGuidanceRestHeight:guidanceRestHeight];
+  [self refreshVisibleAreaBottomConstraint];
 }
 
 - (void)indicateLensOverlayVisible:(BOOL)lensOverlayVisible {
@@ -1871,7 +1869,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
 - (void)layoutState:(SceneLayoutState*)layoutState
     didChangeAppBarPosition:(AppBarPosition)appBarPosition {
-  [self updateInitialVisibleAreaLayoutGuide];
+  [self refreshVisibleAreaBottomConstraint];
 }
 
 @end

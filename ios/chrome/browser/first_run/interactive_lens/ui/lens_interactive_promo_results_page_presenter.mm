@@ -51,7 +51,6 @@ const CGFloat kOpacityAnimationDuration = 0.4;
   if (self) {
     _baseViewController = baseViewController;
     _resultViewController = resultViewController;
-    _visibleAreaLayoutGuide = [[UILayoutGuide alloc] init];
   }
 
   return self;
@@ -232,7 +231,7 @@ const CGFloat kOpacityAnimationDuration = 0.4;
   ]];
 
   [self adjustSelectionOcclusionInsets];
-  [self setUpVisibleAreaLayoutGuideIfNeeded];
+  [self setUpVisibleAreaLayoutGuide];
 
   // Before the animation, place the view off-screen.
   _resultViewController.view.transform = CGAffineTransformMakeTranslation(
@@ -255,11 +254,10 @@ const CGFloat kOpacityAnimationDuration = 0.4;
 
 // Sets up the layout guide that defines the area not obstructed by the results
 // page.
-- (void)setUpVisibleAreaLayoutGuideIfNeeded {
-  if ([_baseViewController.view.layoutGuides
-          containsObject:_visibleAreaLayoutGuide]) {
-    return;
-  }
+- (void)setUpVisibleAreaLayoutGuide {
+  [_visibleAreaLayoutGuide.owningView
+      removeLayoutGuide:_visibleAreaLayoutGuide];
+  _visibleAreaLayoutGuide = [[UILayoutGuide alloc] init];
 
   [_baseViewController.view addLayoutGuide:_visibleAreaLayoutGuide];
   AddSameConstraintsToSides(_visibleAreaLayoutGuide, _baseViewController.view,

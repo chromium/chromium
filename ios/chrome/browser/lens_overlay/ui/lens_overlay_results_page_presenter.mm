@@ -125,8 +125,6 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
     _presentationNavigationController.toolbarHidden = YES;
     _presentationNavigationController.navigationBarHidden = YES;
     _presentationNavigationController.delegate = self;
-
-    _visibleAreaLayoutGuide = [[UILayoutGuide alloc] init];
   }
 
   return self;
@@ -178,12 +176,10 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
   }
 }
 
-- (void)setUpVisibleAreaLayoutGuideIfNeeded {
-  // If it's a reveal the layout guide it's already set up.
-  if ([_baseViewController.view.layoutGuides
-          containsObject:_visibleAreaLayoutGuide]) {
-    return;
-  }
+- (void)setUpVisibleAreaLayoutGuide {
+  [_visibleAreaLayoutGuide.owningView
+      removeLayoutGuide:_visibleAreaLayoutGuide];
+  _visibleAreaLayoutGuide = [[UILayoutGuide alloc] init];
 
   [_baseViewController.view addLayoutGuide:_visibleAreaLayoutGuide];
 
@@ -284,7 +280,7 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
                                 }];
   } else {
     [self setupGestureTrackers];
-    [self setUpVisibleAreaLayoutGuideIfNeeded];
+    [self setUpVisibleAreaLayoutGuide];
     [self monitorResultsBottomSheetPosition];
 
     // Presenting the bottom sheet adds a gesture recognizer on the main window
@@ -657,11 +653,9 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
 
 - (void)lensOverlayBottomSheetWillPresent:
     (id<LensOverlayBottomSheet>)bottomSheet {
-  if ([_baseViewController.view.layoutGuides
-          containsObject:_visibleAreaLayoutGuide]) {
-    return;
-  }
-
+  [_visibleAreaLayoutGuide.owningView
+      removeLayoutGuide:_visibleAreaLayoutGuide];
+  _visibleAreaLayoutGuide = [[UILayoutGuide alloc] init];
   [_baseViewController.view addLayoutGuide:_visibleAreaLayoutGuide];
 
   AddSameConstraintsToSides(
