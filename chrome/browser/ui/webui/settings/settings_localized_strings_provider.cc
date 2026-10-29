@@ -2181,19 +2181,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
 
 void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
                              Profile* profile) {
-  std::string sync_dashboard_url =
-      google_util::AppendGoogleLocaleParam(
-          GURL(chrome::kSyncGoogleDashboardURL),
-          g_browser_process->GetApplicationLocale())
-          .spec();
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  html_source->AddString(
-      "syncDisconnectManagedProfileExplanation",
-      l10n_util::GetStringFUTF8(
-          IDS_SETTINGS_TURN_OFF_SYNC_MANAGED_PROFILE_EXPLANATION, u"$1",
-          base::ASCIIToUTF16(sync_dashboard_url)));
-
   if (profile->IsChild()) {
     static constexpr webui::LocalizedString kTurnOffStrings[] = {
         {"syncDisconnect", IDS_SETTINGS_PEOPLE_SYNC_TURN_OFF},
@@ -2205,8 +2193,6 @@ void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
     static constexpr webui::LocalizedString kSyncDisconnectStrings[] = {
         {"syncDisconnectDeleteProfile",
          IDS_SETTINGS_TURN_OFF_SYNC_DIALOG_CHECKBOX},
-        {"syncDisconnectConfirm",
-         IDS_SETTINGS_TURN_OFF_SYNC_DIALOG_MANAGED_CONFIRM},
         {"syncDisconnectExplanation",
          IDS_SETTINGS_SYNC_DISCONNECT_AND_SIGN_OUT_EXPLANATION_SUPERVISED_PROFILE},
     };
@@ -2228,8 +2214,6 @@ void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
     static constexpr webui::LocalizedString kSyncDisconnectStrings[] = {
         {"syncDisconnectDeleteProfile",
          IDS_SETTINGS_TURN_OFF_SYNC_DIALOG_CHECKBOX},
-        {"syncDisconnectConfirm",
-         IDS_SETTINGS_TURN_OFF_SYNC_DIALOG_MANAGED_CONFIRM},
         {"syncDisconnectExplanation",
          IDS_SETTINGS_SYNC_DISCONNECT_AND_SIGN_OUT_EXPLANATION},
     };

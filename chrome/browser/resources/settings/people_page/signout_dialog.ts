@@ -15,7 +15,6 @@ import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
-import {htmlEscape} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
@@ -138,25 +137,10 @@ export class SettingsSignoutDialogElement extends
     }
   }
 
-  // <if expr="not is_chromeos">
-  protected getDisconnectExplanationHtml_(): TrustedHTML {
-    const domain = this.syncStatus?.domain || '';
-    if (domain) {
-      return sanitizeInnerHtml(loadTimeData.getStringF(
-          'syncDisconnectManagedProfileExplanation',
-          `<span>${htmlEscape(domain)}</span>`));
-    }
-    return sanitizeInnerHtml(
-        loadTimeData.getString('syncDisconnectExplanation'));
-  }
-  // </if>
-
-  // <if expr="is_chromeos">
   protected getDisconnectExplanationHtml_(): TrustedHTML {
     return sanitizeInnerHtml(
         loadTimeData.getString('syncDisconnectExplanation'));
   }
-  // </if>
 
   protected onDeleteProfileCheckedChanged_(e: CustomEvent<{value: boolean}>) {
     this.deleteProfile_ = e.detail.value;
