@@ -110,6 +110,11 @@ public final class EdgeToEdgeFieldTrialImpl implements EdgeToEdgeFieldTrial {
         ResettersForTesting.register(() -> sBottomChinOverrides = null);
     }
 
+    static void setEverywhereOverridesForTesting(String oemList, String minVersions) {
+        sEverywhereOverrides = new EdgeToEdgeFieldTrialImpl(oemList, minVersions);
+        ResettersForTesting.register(() -> sEverywhereOverrides = null);
+    }
+
     private final Map<String, Integer> mOemMinVersionOverrides;
     private @Nullable Boolean mIsSupported;
 
