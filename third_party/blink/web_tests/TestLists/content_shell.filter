@@ -244,15 +244,8 @@ external/wpt/html/webappapis/scripting/processing-model-2/runtime-error-in-setIn
 external/wpt/html/webappapis/scripting/processing-model-2/runtime-error-in-setTimeout.html
 external/wpt/inert/inert-iframe-hittest.html
 external/wpt/input-events/input-events-exec-command.html
-external/wpt/mathml/presentation-markup/fractions/frac-parameters-gap-*
-external/wpt/mathml/presentation-markup/operators/mo-paint-lspace-rspace.html
-external/wpt/mathml/presentation-markup/operators/operator-dictionary-arabic-*
+external/wpt/mathml/presentation-markup/operators/operator-dictionary-arabic-002.html
 external/wpt/mathml/presentation-markup/operators/stretchy-largeop-with-default-font-1.html
-external/wpt/mathml/presentation-markup/scripts/stretchy-munderover-3b.html
-external/wpt/mathml/presentation-markup/scripts/underover-stretchy-*
-external/wpt/mathml/presentation-markup/tables/table-default-styles-001.html
-external/wpt/mathml/relations/css-styling/mozilla-393760-2.xml
-external/wpt/mathml/relations/html5-tree/tabindex-002.tentative.html
 external/wpt/mediacapture-streams/BrowserCaptureMediaStreamTrack-restrictTo.https.html
 external/wpt/navigation-api/navigate-event/defaultPrevented-window-stop-after-dispatch.html
 external/wpt/navigation-api/navigate-event/signal-abort-window-stop.html
