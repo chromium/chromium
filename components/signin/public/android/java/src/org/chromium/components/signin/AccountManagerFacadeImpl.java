@@ -23,6 +23,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
@@ -168,9 +169,12 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                     new AuthTask() {
                         @Override
                         public AccessTokenData run() throws AuthException {
-                            return mDelegate.getAccessToken(
-                                    CoreAccountInfo.getAndroidAccountFrom(coreAccountInfo),
-                                    oauth2Scope);
+                            return getAccessTokenAndRecordLatency(
+                                    () ->
+                                            mDelegate.getAccessToken(
+                                                    CoreAccountInfo.getAndroidAccountFrom(
+                                                            coreAccountInfo),
+                                                    oauth2Scope));
                         }
 
                         @Override
@@ -210,7 +214,10 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                 new AuthTask() {
                     @Override
                     public AccessTokenData run() throws AuthException {
-                        return mDelegate.getAccessTokenForPlatformAccount(platformAccount, scope);
+                        return getAccessTokenAndRecordLatency(
+                                () ->
+                                        mDelegate.getAccessTokenForPlatformAccount(
+                                                platformAccount, scope));
                     }
 
                     @Override
@@ -226,6 +233,39 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                         pendingRequestFinished();
                     }
                 });
+    }
+
+    /** A call to the system account manager that returns an access token. */
+    private interface AccessTokenCall {
+        AccessTokenData run() throws AuthException;
+    }
+
+    /**
+     * Runs {@code call} and records its duration in
+     * Signin.Android.SystemAccountManagerAccessTokenLatency.{Success,Failure}. Each call is
+     * recorded separately, so retries done by {@link ConnectionRetry} are recorded as separate
+     * samples.
+     */
+    private static AccessTokenData getAccessTokenAndRecordLatency(AccessTokenCall call)
+            throws AuthException {
+        // uptimeMillis() to match base::TimeTicks (CLOCK_MONOTONIC, which excludes deep sleep)
+        // used by the native Signin.AccessTokenFetch.Latency histograms.
+        final long startTimeMs = TimeUtils.uptimeMillis();
+        try {
+            AccessTokenData token = call.run();
+            recordSystemAccountManagerLatency(/* success= */ true, startTimeMs);
+            return token;
+        } catch (AuthException e) {
+            recordSystemAccountManagerLatency(/* success= */ false, startTimeMs);
+            throw e;
+        }
+    }
+
+    private static void recordSystemAccountManagerLatency(boolean success, long startTimeMs) {
+        RecordHistogram.recordMediumTimesHistogram(
+                "Signin.Android.SystemAccountManagerAccessTokenLatency."
+                        + (success ? "Success" : "Failure"),
+                TimeUtils.uptimeMillis() - startTimeMs);
     }
 
     private void pendingRequestStarted() {

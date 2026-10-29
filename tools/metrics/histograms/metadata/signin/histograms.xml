@@ -1109,6 +1109,29 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram
+    name="Signin.Android.SystemAccountManagerAccessTokenLatency.{Result}"
+    units="ms" expires_after="2027-04-01">
+  <owner>samarchehade@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Records the duration of a single call to the Android system account manager
+    (Google Play Services) to get an OAuth2 access token, when the call finished
+    with {Result}. Retries are recorded separately, without the wait for network
+    connectivity between them. Recorded when each call returns, even if the
+    native access token request was cancelled while the call was in progress
+    (e.g. because the consumer destroyed its AccessTokenFetcher), as the call
+    itself cannot be cancelled. See also
+    Signin.AccessTokenFetch.Latency.TokenService, which measures the whole token
+    service attempt. This histogram is intended to be removed once retries are
+    removed from the Java side (crbug.com/40157158).
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="a failure"/>
+    <variant name="Success" summary="a success"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.AndroidDeviceAccountsNumberWhenEnteringFRE"
     units="count" expires_after="2027-04-29">
   <owner>bsazonov@chromium.org</owner>

@@ -65,6 +65,7 @@ const char* ScopeLimitedUnrecoverableErrorReasonToString(
   NOTREACHED();
 }
 
+// LINT.IfChange(IsTransientError)
 bool IsTransientError(GoogleServiceAuthError::State state) {
   switch (state) {
     // These are failures that are likely to succeed if tried again.
@@ -78,6 +79,7 @@ bool IsTransientError(GoogleServiceAuthError::State state) {
       return false;
   }
 }
+// LINT.ThenChange(//google_apis/gaia/android/java/src/org/chromium/google_apis/gaia/GoogleServiceAuthError.java:IsTransientError)
 }  // namespace
 
 bool operator==(const GoogleServiceAuthError&,
@@ -392,11 +394,6 @@ jni_zero::ScopedJavaLocalRef<jobject> GoogleServiceAuthError::ToJavaObject(
         env, details.GetJavaObject());
   }
   return Java_GoogleServiceAuthError_Constructor(env, state());
-}
-
-static bool JNI_GoogleServiceAuthError_IsTransientError(JNIEnv* env,
-                                                        int32_t state) {
-  return IsTransientError(static_cast<GoogleServiceAuthError::State>(state));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

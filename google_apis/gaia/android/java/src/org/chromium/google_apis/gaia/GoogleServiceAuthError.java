@@ -9,7 +9,6 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import com.google.errorprone.annotations.DoNotMock;
 
 import org.jni_zero.CalledByNative;
-import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -70,12 +69,18 @@ public class GoogleServiceAuthError {
         return assertNonNull(mDeviceManagementErrorDetails);
     }
 
+    // LINT.IfChange(IsTransientError)
+    /** Returns whether the error is likely to go away if the request is retried. */
     public boolean isTransientError() {
-        return GoogleServiceAuthErrorJni.get().isTransientError(mState);
+        switch (mState) {
+            case GoogleServiceAuthErrorState.CONNECTION_FAILED:
+            case GoogleServiceAuthErrorState.SERVICE_UNAVAILABLE:
+            case GoogleServiceAuthErrorState.REQUEST_CANCELED:
+            case GoogleServiceAuthErrorState.CHALLENGE_RESPONSE_REQUIRED:
+                return true;
+            default:
+                return false;
+        }
     }
-
-    @NativeMethods
-    interface Natives {
-        boolean isTransientError(@GoogleServiceAuthErrorState int state);
-    }
+    // LINT.ThenChange(//google_apis/gaia/google_service_auth_error.cc:IsTransientError)
 }

@@ -4,8 +4,6 @@
 
 package org.chromium.components.signin;
 
-
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -49,6 +47,7 @@ import org.robolectric.shadows.ShadowAccountManager;
 import org.robolectric.shadows.ShadowUserManager;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
@@ -81,6 +80,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
             ShadowAccountManager.class,
         })
 public class AccountManagerFacadeImplTest {
+    private static final String SYSTEM_ACCOUNT_MANAGER_LATENCY_SUCCESS =
+            "Signin.Android.SystemAccountManagerAccessTokenLatency.Success";
+    private static final String SYSTEM_ACCOUNT_MANAGER_LATENCY_FAILURE =
+            "Signin.Android.SystemAccountManagerAccessTokenLatency.Failure";
+
     private static final AccountInfo TEST_ACCOUNT =
             new AccountInfo.Builder("test@gmail.com", new GaiaId("testGaiaId")).build();
 
@@ -98,6 +102,10 @@ public class AccountManagerFacadeImplTest {
     @Rule
     public final GrantPermissionRule mGrantPermissionRule =
             GrantPermissionRule.grant(Manifest.permission.GET_ACCOUNTS);
+
+    @Rule public final FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
+
+    @Mock private AccountManagerFacade.GetAccessTokenCallback mGetAccessTokenCallbackMock;
 
     @Mock ExternalAuthUtils mExternalAuthUtilsMock;
 
@@ -893,6 +901,112 @@ public class AccountManagerFacadeImplTest {
         InOrder inOrder = inOrder(mObserverMock, mMockCallback);
         inOrder.verify(mObserverMock).onAccountsChanged();
         inOrder.verify(mMockCallback).onResult(any());
+    }
+
+    @Test
+    @Features.DisableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
+    public void testGetAccessTokenRecordsSystemAccountManagerLatencyOnSuccess() throws Exception {
+        CoreAccountInfo account = addTestAccount("test@gmail.com");
+        doAnswer(
+                        invocation -> {
+                            mFakeTimeTestRule.advanceMillis(300);
+                            return invocation.callRealMethod();
+                        })
+                .when(mDelegate)
+                .getAccessToken(any(), any());
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(SYSTEM_ACCOUNT_MANAGER_LATENCY_SUCCESS, 300)
+                        .expectNoRecords(SYSTEM_ACCOUNT_MANAGER_LATENCY_FAILURE)
+                        .build();
+
+        mFacade.getAccessToken(account, "scope", mGetAccessTokenCallbackMock);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mGetAccessTokenCallbackMock).onGetTokenSuccess(any());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @Features.EnableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
+    public void
+            testGetAccessTokenRecordsSystemAccountManagerLatencyOnSuccess_migrateAccountManagerDelegateEnabled()
+                    throws Exception {
+        CoreAccountInfo account = addTestAccount("test@gmail.com");
+        doAnswer(
+                        invocation -> {
+                            mFakeTimeTestRule.advanceMillis(300);
+                            return invocation.callRealMethod();
+                        })
+                .when(mDelegate)
+                .getAccessTokenForPlatformAccount(any(), any());
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(SYSTEM_ACCOUNT_MANAGER_LATENCY_SUCCESS, 300)
+                        .expectNoRecords(SYSTEM_ACCOUNT_MANAGER_LATENCY_FAILURE)
+                        .build();
+
+        mFacade.getAccessToken(account, "scope", mGetAccessTokenCallbackMock);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mGetAccessTokenCallbackMock).onGetTokenSuccess(any());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @Features.DisableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
+    public void testGetAccessTokenRecordsSystemAccountManagerLatencyOnFailure() throws Exception {
+        CoreAccountInfo account = addTestAccount("test@gmail.com");
+        // A permanent error, so that ConnectionRetry reports it right away instead of waiting for a
+        // network change to retry.
+        doAnswer(
+                        invocation -> {
+                            mFakeTimeTestRule.advanceMillis(200);
+                            throw new AuthException(
+                                    /* isTransient= */ false, new Exception("Test failure"));
+                        })
+                .when(mDelegate)
+                .getAccessToken(any(), any());
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(SYSTEM_ACCOUNT_MANAGER_LATENCY_FAILURE, 200)
+                        .expectNoRecords(SYSTEM_ACCOUNT_MANAGER_LATENCY_SUCCESS)
+                        .build();
+
+        mFacade.getAccessToken(account, "scope", mGetAccessTokenCallbackMock);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mGetAccessTokenCallbackMock).onGetTokenFailure(any());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @Features.EnableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
+    public void
+            testGetAccessTokenRecordsSystemAccountManagerLatencyOnFailure_migrateAccountManagerDelegateEnabled()
+                    throws Exception {
+        CoreAccountInfo account = addTestAccount("test@gmail.com");
+        // A permanent error, so that ConnectionRetry reports it right away instead of waiting for a
+        // network change to retry.
+        doAnswer(
+                        invocation -> {
+                            mFakeTimeTestRule.advanceMillis(200);
+                            throw new AuthException(
+                                    /* isTransient= */ false, new Exception("Test failure"));
+                        })
+                .when(mDelegate)
+                .getAccessTokenForPlatformAccount(any(), any());
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(SYSTEM_ACCOUNT_MANAGER_LATENCY_FAILURE, 200)
+                        .expectNoRecords(SYSTEM_ACCOUNT_MANAGER_LATENCY_SUCCESS)
+                        .build();
+
+        mFacade.getAccessToken(account, "scope", mGetAccessTokenCallbackMock);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mGetAccessTokenCallbackMock).onGetTokenFailure(any());
+        histogramWatcher.assertExpected();
     }
 
     private void setAccountRestrictionPatterns(String... patterns) {
