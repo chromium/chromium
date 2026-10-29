@@ -203,7 +203,12 @@ void BeginFrameSourceWayland::MaybeIssueBeginFrame() {
   // and deadline equal to the interval. If we don't have presentation time,
   // frame_time will resolve to "now" and still be consistent with the deadline
   // of now + interval, but both will be out of sync with the display.
-  base::TimeTicks frame_time = deadline - effective_interval;
+  //
+  // The frame time must advance or viz drops the begin frame without acking,
+  // which can happen if the interval grows between issues. Clamp to the
+  // previous deadline, as in DelayBasedBeginFrameSource::OnTimerTick.
+  base::TimeTicks frame_time =
+      std::max(deadline - effective_interval, last_frame_deadline_time_);
 
   DVLOG(2) << "MaybeIssueBeginFrame:"
            << " vsync_interval=" << vsync_interval_.InMillisecondsF() << "ms"
