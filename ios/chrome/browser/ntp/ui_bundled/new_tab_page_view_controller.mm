@@ -53,9 +53,10 @@
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ui/base/device_form_factor.h"
 
-using ntp_tiles::AimButtonRefactorArm;
-
 namespace {
+
+using ntp_tiles::AimButtonRefactorArm;
+using ntp_tiles::GetAimButtonRefactorArm;
 
 // Animation time for the shift up/down animations to focus/defocus omnibox.
 const CGFloat kShiftTilesUpAnimationDuration = 0.1;
@@ -938,8 +939,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
 - (void)setAIMAllowed:(BOOL)allowed {
   _isAIMAllowed = allowed;
-  if (ntp_tiles::GetAimButtonRefactorArm() ==
-      ntp_tiles::AimButtonRefactorArm::kAimAsModule) {
+  if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsModule) {
     [self.contentSuggestionsViewController setAIMAllowed:allowed];
   }
 }
@@ -1335,9 +1335,10 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 - (void)setContentSuggestionsViewController:
     (ContentSuggestionsViewController*)contentSuggestionsViewController {
   _contentSuggestionsViewController = contentSuggestionsViewController;
-  if (ntp_tiles::GetAimButtonRefactorArm() ==
-      ntp_tiles::AimButtonRefactorArm::kAimAsModule) {
+  if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsModule) {
     [_contentSuggestionsViewController setAIMAllowed:_isAIMAllowed];
+    _contentSuggestionsViewController.NTPShortcutsHandler =
+        self.NTPShortcutsHandler;
   }
 }
 
@@ -1345,6 +1346,10 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
     (id<NewTabPageShortcutsHandler>)NTPShortcutsHandler {
   _NTPShortcutsHandler = NTPShortcutsHandler;
   _quickActionsViewController.NTPShortcutsHandler = NTPShortcutsHandler;
+  if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsModule) {
+    self.contentSuggestionsViewController.NTPShortcutsHandler =
+        NTPShortcutsHandler;
+  }
 }
 
 - (void)setLayoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter {
@@ -1357,10 +1362,17 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   if (!_isAIMAllowed || !IsAimEnabledInNtp()) {
     return NO;
   }
-  AimButtonRefactorArm arm = ntp_tiles::GetAimButtonRefactorArm();
-  return arm != AimButtonRefactorArm::kAimAsModule &&
-         arm != AimButtonRefactorArm::kAimAsMvt &&
-         arm != AimButtonRefactorArm::kNoChips;
+  switch (GetAimButtonRefactorArm()) {
+    case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
+    case AimButtonRefactorArm::kImageGenerationQuickAction:
+    case AimButtonRefactorArm::kAttachImageQuickAction:
+    case AimButtonRefactorArm::kDisabled:
+      return YES;
+    case AimButtonRefactorArm::kAimAsModule:
+    case AimButtonRefactorArm::kAimAsMvt:
+    case AimButtonRefactorArm::kNoChips:
+      return NO;
+  }
 }
 
 // Applies the horizontal constraints for the quick actions row.
