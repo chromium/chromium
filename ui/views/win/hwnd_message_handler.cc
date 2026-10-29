@@ -1214,7 +1214,8 @@ void HWNDMessageHandler::SetAspectRatio(float aspect_ratio,
 }
 
 void HWNDMessageHandler::SizeConstraintsChanged() {
-  LONG style = ::GetWindowLong(hwnd(), GWL_STYLE);
+  const LONG old_style = ::GetWindowLong(hwnd(), GWL_STYLE);
+  LONG style = old_style;
 
   // Key style considerations:
   // - WS_THICKFRAME: Enables resizing. Cannot be used with translucent
@@ -1240,6 +1241,14 @@ void HWNDMessageHandler::SizeConstraintsChanged() {
                      !(style & static_cast<LONG>(WS_POPUP | WS_CHILD)));
   set_style_func(WS_MAXIMIZEBOX, can_maximize);
   set_style_func(WS_MINIMIZEBOX, delegate_->CanMinimize());
+
+  // SendFrameChanged() is only needed to apply a GWL_STYLE change to the frame
+  // (styles are cached until SWP_FRAMECHANGED), so skip both calls when the
+  // style is unchanged (e.g. a CanFullscreen() change doesn't affect it).
+  if (style == old_style &&
+      base::FeatureList::IsEnabled(features::kSkipRedundantSendFrameChanged)) {
+    return;
+  }
 
   ::SetWindowLong(hwnd(), GWL_STYLE, style);
   SendFrameChanged();
@@ -1823,13 +1832,35 @@ void HWNDMessageHandler::ClientAreaSizeChanged() {
       IsHeadless()) {
     return;
   }
-  delegate_->HandleClientSizeChanged(GetClientAreaBounds().size());
-  if (IsDestroyed()) {
-    return;
+  const gfx::Size client_size = GetClientAreaBounds().size();
+  // This runs on every SWP_FRAMECHANGED and every size change request (see
+  // DidClientAreaSizeChange()), even when the client size didn't change. Skip
+  // notifying the delegate when neither the client size nor the show state
+  // changed: it resizes the root window and widget, which is costly (e.g.
+  // Widget::SaveWindowPlacementIfNeeded() calls ::GetWindowPlacement()).
+  if (!base::FeatureList::IsEnabled(features::kSkipRedundantSendFrameChanged) ||
+      UpdateClientAreaState(client_size)) {
+    delegate_->HandleClientSizeChanged(client_size);
+    if (IsDestroyed()) {
+      return;
+    }
   }
 
   current_window_size_message_++;
   sent_window_size_changing_ = false;
+}
+
+bool HWNDMessageHandler::UpdateClientAreaState(const gfx::Size& client_size) {
+  CHECK(base::FeatureList::IsEnabled(features::kSkipRedundantSendFrameChanged));
+  const ClientAreaState state = {.size = client_size,
+                                 .is_maximized = IsMaximized(),
+                                 .is_minimized = IsMinimized(),
+                                 .is_fullscreen = IsFullscreen()};
+  if (last_client_area_state_ == state) {
+    return false;
+  }
+  last_client_area_state_ = state;
+  return true;
 }
 
 bool HWNDMessageHandler::GetClientAreaInsets(gfx::Insets* insets,
@@ -2123,8 +2154,14 @@ void HWNDMessageHandler::OnDisplayChange(UINT bits_per_pixel,
   }
 
   // Force a WM_NCCALCSIZE to occur to ensure that we handle auto hide
-  // taskbars correctly.
-  SendFrameChanged();
+  // taskbars correctly. OnNCCalcSize() only adjusts for auto-hide taskbars when
+  // the window is maximized, and the other insets it computes don't depend on
+  // the display configuration (except DPI, handled by WM_DPICHANGED). So the
+  // costly frame change can be skipped for other windows.
+  if (!base::FeatureList::IsEnabled(features::kSkipRedundantSendFrameChanged) ||
+      IsMaximized()) {
+    SendFrameChanged();
+  }
 }
 
 LRESULT HWNDMessageHandler::OnDpiChanged(UINT msg,
@@ -2172,6 +2209,9 @@ LRESULT HWNDMessageHandler::OnDpiChanged(UINT msg,
   if (IsDestroyed()) {
     return 0;
   }
+  // The scale factor changes even if the size in pixels doesn't, so ensure that
+  // the delegate is notified of the new bounds.
+  last_client_area_state_.reset();
   SetBoundsInternal(gfx::Rect(*reinterpret_cast<RECT*>(l_param)), false);
   if (IsDestroyed()) {
     return 0;
@@ -3036,8 +3076,12 @@ void HWNDMessageHandler::OnSettingChange(UINT flags, const wchar_t* section) {
   // If the work area is changing, then it could be as a result of the taskbar
   // broadcasting the WM_SETTINGCHANGE message due to changes in auto hide
   // settings, etc. Force a WM_NCCALCSIZE to occur to ensure that we handle
-  // this correctly.
-  if (flags == SPI_SETWORKAREA) {
+  // this correctly. As in OnDisplayChange(), only maximized windows have
+  // auto-hide taskbar adjustments, so skip the costly frame change otherwise.
+  if (flags == SPI_SETWORKAREA &&
+      (!base::FeatureList::IsEnabled(
+           features::kSkipRedundantSendFrameChanged) ||
+       IsMaximized())) {
     SendFrameChanged();
   }
 }
@@ -4000,7 +4044,12 @@ void HWNDMessageHandler::SetBoundsInternal(const gfx::Rect& bounds_in_pixels,
   // changed.
   if (old_size == bounds_in_pixels.size() && force_size_changed &&
       !background_fullscreen_hack_) {
-    delegate_->HandleClientSizeChanged(GetClientAreaBounds().size());
+    const gfx::Size client_size = GetClientAreaBounds().size();
+    if (base::FeatureList::IsEnabled(
+            features::kSkipRedundantSendFrameChanged)) {
+      UpdateClientAreaState(client_size);
+    }
+    delegate_->HandleClientSizeChanged(client_size);
     if (IsDestroyed()) {
       return;
     }

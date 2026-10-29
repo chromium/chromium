@@ -86,6 +86,10 @@ BASE_FEATURE(kNotifyCompositorOfWindowVisibilityOnMacOs,
 #endif
 
 #if BUILDFLAG(IS_WIN)
+// When enabled, HWNDMessageHandler skips redundant SendFrameChanged() calls and
+// no-op HandleClientSizeChanged() notifications.
+BASE_FEATURE(kSkipRedundantSendFrameChanged, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, HWNDMessageHandler::Activate() skips SetWindowPos() and
 // SetForegroundWindow() when an unminimized, unowned window is already the
 // active foreground window and at the top of its z-order band.

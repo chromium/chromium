@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -32,6 +33,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/aura/window_tree_host_observer.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
@@ -1273,6 +1275,71 @@ TEST_F(DesktopWindowTreeHostWinTest,
 
 namespace {
 
+// Subclasses `hwnd`'s window procedure for the lifetime of this object to
+// count how many times `target_message` is received.
+class ScopedWndProcMessageCounter {
+ public:
+  ScopedWndProcMessageCounter(HWND hwnd, UINT target_message)
+      : hwnd_(hwnd), target_message_(target_message) {
+    CHECK_EQ(instance_, nullptr);
+    instance_ = this;
+    original_wndproc_ = reinterpret_cast<WNDPROC>(::SetWindowLongPtr(
+        hwnd_, GWLP_WNDPROC,
+        reinterpret_cast<LONG_PTR>(&ScopedWndProcMessageCounter::WndProc)));
+  }
+
+  ScopedWndProcMessageCounter(const ScopedWndProcMessageCounter&) = delete;
+  ScopedWndProcMessageCounter& operator=(const ScopedWndProcMessageCounter&) =
+      delete;
+
+  ~ScopedWndProcMessageCounter() {
+    if (::IsWindow(hwnd_) && original_wndproc_) {
+      ::SetWindowLongPtr(hwnd_, GWLP_WNDPROC,
+                         reinterpret_cast<LONG_PTR>(original_wndproc_));
+    }
+    instance_ = nullptr;
+  }
+
+  int count() const { return count_; }
+  void reset() { count_ = 0; }
+
+ private:
+  static LRESULT CALLBACK WndProc(HWND hwnd,
+                                  UINT message,
+                                  WPARAM w_param,
+                                  LPARAM l_param) {
+    if (instance_ && hwnd == instance_->hwnd_ &&
+        message == instance_->target_message_) {
+      ++instance_->count_;
+    }
+    return ::CallWindowProc(instance_->original_wndproc_, hwnd, message,
+                            w_param, l_param);
+  }
+
+  static inline ScopedWndProcMessageCounter* instance_ = nullptr;
+  const HWND hwnd_;
+  const UINT target_message_;
+  WNDPROC original_wndproc_ = nullptr;
+  int count_ = 0;
+};
+
+class HostResizeCounter : public aura::WindowTreeHostObserver {
+ public:
+  explicit HostResizeCounter(aura::WindowTreeHost* host) {
+    observation_.Observe(host);
+  }
+
+  void OnHostResized(aura::WindowTreeHost* host) override { ++count_; }
+
+  int count() const { return count_; }
+  void reset() { count_ = 0; }
+
+ private:
+  int count_ = 0;
+  base::ScopedObservation<aura::WindowTreeHost, aura::WindowTreeHostObserver>
+      observation_{this};
+};
+
 class ShowStateChangeCounter : public WidgetObserver {
  public:
   explicit ShowStateChangeCounter(Widget* widget) {
@@ -1291,11 +1358,33 @@ class ShowStateChangeCounter : public WidgetObserver {
 
 }  // namespace
 
+class DesktopWindowTreeHostWinSkipRedundantSendFrameChangedTest
+    : public DesktopWindowTreeHostWinTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  DesktopWindowTreeHostWinSkipRedundantSendFrameChangedTest() {
+    feature_list_.InitWithFeatureState(features::kSkipRedundantSendFrameChanged,
+                                       skip_redundant_send_frame_changed());
+  }
+
+  static bool skip_redundant_send_frame_changed() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DesktopWindowTreeHostWinSkipRedundantSendFrameChangedTest,
+    testing::Bool(),
+    [](const auto& info) { return info.param ? "Enabled" : "Disabled"; });
+
 // Verifies that observers are notified of a show state change that doesn't
 // change the client area size, e.g. when maximizing a window whose client area
 // already has the maximized size. Widget detects show state changes when it is
 // notified of a client area size change.
-TEST_F(DesktopWindowTreeHostWinTest, ShowStateChangeWithoutClientSizeChange) {
+TEST_P(DesktopWindowTreeHostWinSkipRedundantSendFrameChangedTest,
+       ShowStateChangeWithoutClientSizeChange) {
   Widget widget;
   Widget::InitParams params = CreateParams(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
@@ -1354,6 +1443,111 @@ TEST_F(DesktopWindowTreeHostWinTest, ShowStateChangeWithoutClientSizeChange) {
   frameless_widget.Restore();
   ASSERT_FALSE(frameless_widget.IsMinimized());
   EXPECT_EQ(frameless_show_state_counter.count(), 2);
+}
+
+// Verifies that WM_DISPLAYCHANGE and WM_SETTINGCHANGE(SPI_SETWORKAREA) only
+// cause a frame change and client size notification for maximized windows when
+// kSkipRedundantSendFrameChanged is enabled, and for all windows otherwise.
+TEST_P(DesktopWindowTreeHostWinSkipRedundantSendFrameChangedTest,
+       SkipRedundantSendFrameChangedOnDisplayAndSettingChange) {
+  Widget widget;
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  params.bounds = gfx::Rect(100, 100, 200, 200);
+  HWND hwnd = InitTestWidget(widget, std::move(params));
+  ASSERT_FALSE(widget.IsMaximized());
+
+  ScopedWndProcMessageCounter nc_calc_counter(hwnd, WM_NCCALCSIZE);
+  HostResizeCounter resize_counter(widget.GetNativeWindow()->GetHost());
+
+  // For a non-maximized window, WM_DISPLAYCHANGE and
+  // WM_SETTINGCHANGE(SPI_SETWORKAREA) call SendFrameChanged(), which notifies
+  // the delegate of a client size change, unless the feature is enabled.
+  ::SendMessage(hwnd, WM_DISPLAYCHANGE, 32, MAKELPARAM(1920, 1080));
+  EXPECT_EQ(nc_calc_counter.count(),
+            skip_redundant_send_frame_changed() ? 0 : 1);
+  EXPECT_EQ(resize_counter.count(),
+            skip_redundant_send_frame_changed() ? 0 : 1);
+
+  nc_calc_counter.reset();
+  resize_counter.reset();
+  ::SendMessage(hwnd, WM_SETTINGCHANGE, SPI_SETWORKAREA, 0);
+  EXPECT_EQ(nc_calc_counter.count(),
+            skip_redundant_send_frame_changed() ? 0 : 1);
+  EXPECT_EQ(resize_counter.count(),
+            skip_redundant_send_frame_changed() ? 0 : 1);
+
+  // For a maximized window, they always call SendFrameChanged().
+  widget.Maximize();
+  ASSERT_TRUE(widget.IsMaximized());
+
+  nc_calc_counter.reset();
+  ::SendMessage(hwnd, WM_DISPLAYCHANGE, 32, MAKELPARAM(1920, 1080));
+  EXPECT_EQ(nc_calc_counter.count(), 1);
+
+  nc_calc_counter.reset();
+  ::SendMessage(hwnd, WM_SETTINGCHANGE, SPI_SETWORKAREA, 0);
+  EXPECT_EQ(nc_calc_counter.count(), 1);
+}
+
+// Verifies that a size constraints change that doesn't change GWL_STYLE only
+// causes a frame change when kSkipRedundantSendFrameChanged is disabled, and
+// that GWL_STYLE changes are always applied.
+TEST_P(DesktopWindowTreeHostWinSkipRedundantSendFrameChangedTest,
+       SkipRedundantSendFrameChangedOnSizeConstraintsChanged) {
+  Widget widget;
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  params.bounds = gfx::Rect(100, 100, 200, 200);
+  HWND hwnd = InitTestWidget(widget, std::move(params));
+  widget.widget_delegate()->SetCanResize(true);
+  widget.OnSizeConstraintsChanged();
+
+  ScopedWndProcMessageCounter nc_calc_counter(hwnd, WM_NCCALCSIZE);
+  HostResizeCounter resize_counter(widget.GetNativeWindow()->GetHost());
+
+  // OnSizeConstraintsChanged() calls SendFrameChanged() when GWL_STYLE doesn't
+  // change, unless the feature is enabled.
+  widget.OnSizeConstraintsChanged();
+  EXPECT_EQ(nc_calc_counter.count(),
+            skip_redundant_send_frame_changed() ? 0 : 1);
+  EXPECT_EQ(resize_counter.count(),
+            skip_redundant_send_frame_changed() ? 0 : 1);
+
+  // Changes to GWL_STYLE are always applied.
+  nc_calc_counter.reset();
+  widget.widget_delegate()->SetCanResize(false);
+  EXPECT_EQ(nc_calc_counter.count(), 1);
+  EXPECT_EQ(::GetWindowLong(hwnd, GWL_STYLE) & WS_THICKFRAME, 0);
+}
+
+// Verifies that a frame change that doesn't change the client area size only
+// notifies the delegate when kSkipRedundantSendFrameChanged is disabled, and
+// that actual client area size changes are always notified.
+TEST_P(DesktopWindowTreeHostWinSkipRedundantSendFrameChangedTest,
+       SkipRedundantClientSizeChanged) {
+  Widget widget;
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  params.bounds = gfx::Rect(100, 100, 200, 200);
+  InitTestWidget(widget, std::move(params));
+
+  HWNDMessageHandler* handler =
+      DesktopWindowTreeHostWinTestApi(static_cast<DesktopWindowTreeHostWin*>(
+                                          widget.GetNativeWindow()->GetHost()))
+          .GetHwndMessageHandler();
+  HostResizeCounter resize_counter(widget.GetNativeWindow()->GetHost());
+
+  // SendFrameChanged() notifies the delegate of a client size change even when
+  // the client area size is unchanged, unless the feature is enabled.
+  handler->SendFrameChanged();
+  EXPECT_EQ(resize_counter.count(),
+            skip_redundant_send_frame_changed() ? 0 : 1);
+
+  // Actual client area size changes are always notified.
+  resize_counter.reset();
+  widget.SetBounds(gfx::Rect(100, 100, 300, 300));
+  EXPECT_EQ(resize_counter.count(), 1);
 }
 
 }  // namespace test

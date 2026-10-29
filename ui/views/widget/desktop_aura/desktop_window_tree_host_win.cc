@@ -1293,6 +1293,15 @@ bool DesktopWindowTreeHostWin::HandleInitialFocus(
 }
 
 void DesktopWindowTreeHostWin::HandleDisplayChange() {
+  // Called from HWNDMessageHandler::OnDisplayChange(), which then calls
+  // SendFrameChanged(). When kSkipRedundantSendFrameChanged is disabled, that
+  // always reaches CheckForMonitorChange() via HandleClientSizeChanged(). When
+  // enabled, it doesn't unless the window is maximized and its client size or
+  // show state changes, so call CheckForMonitorChange() here. It updates the
+  // compositor's display color spaces if the nearest display changed.
+  if (base::FeatureList::IsEnabled(features::kSkipRedundantSendFrameChanged)) {
+    CheckForMonitorChange();
+  }
   if (Widget* widget = GetWidget(); widget && widget->widget_delegate()) {
     widget->widget_delegate()->OnDisplayChanged();
   }
