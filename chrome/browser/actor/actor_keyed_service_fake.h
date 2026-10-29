@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ACTOR_ACTOR_KEYED_SERVICE_FAKE_H_
 #define CHROME_BROWSER_ACTOR_ACTOR_KEYED_SERVICE_FAKE_H_
 
+#include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
@@ -23,6 +25,10 @@ class ActorKeyedServiceFake : public ActorKeyedService {
   TaskId CreateTaskForTesting();
   TaskId CreateTransientTaskForTesting();
   TaskId CreateExperimentalTriggeringTaskForTesting();
+  // Same as CreateExperimentalTriggeringTaskForTesting(), but with the given
+  // task `title` (which may be empty).
+  TaskId CreateExperimentalTriggeringTaskWithTitleForTesting(
+      const std::string& title);
   void PauseTaskForTesting(TaskId task_id, bool from_actor);
   void StopTaskForTesting(TaskId task_id,
                           actor::ActorTask::StoppedReason stopped_reason);
@@ -30,7 +36,8 @@ class ActorKeyedServiceFake : public ActorKeyedService {
  private:
   TaskId CreateTaskWithDurationAndFeatureModeForTesting(
       actor::webui::mojom::TaskDuration duration,
-      glic::mojom::FeatureMode feature_mode);
+      glic::mojom::FeatureMode feature_mode,
+      const std::string& title = "Test Task");
 
   TaskId CreateTaskWithDurationForTesting(
       actor::webui::mojom::TaskDuration duration);

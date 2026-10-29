@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/service/glic_activity_manager.h"
 #include "chrome/browser/glic/public/service/legacy_glic_activity_manager.h"
@@ -70,17 +71,30 @@ void GlicActorTaskNotificationHandler::MaybeShow(Profile* profile,
     return;
   }
 
-  std::u16string title = l10n_util::GetStringUTF16(
-      IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_TITLE);
   std::optional<std::string> task_title =
       state_manager->GetActorTaskTitle(task_id);
-  std::u16string body =
-      task_title && !task_title->empty()
-          ? l10n_util::GetStringFUTF16(
-                IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_BODY,
-                base::UTF8ToUTF16(*task_title))
-          : l10n_util::GetStringUTF16(
-                IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_BODY_FALLBACK);
+  const bool has_task_title = task_title && !task_title->empty();
+  std::u16string title;
+  std::u16string body;
+  if (base::FeatureList::IsEnabled(
+          features::kGlicExperimentalTriggeringOsNotificationUpdatedStrings)) {
+    // The title is always generic and the body only states that the task has
+    // started. The task title isn't used, as it is a generic placeholder.
+    title = l10n_util::GetStringUTF16(
+        IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_TITLE_V2);
+    body = l10n_util::GetStringUTF16(
+        IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_BODY_STARTED_V2);
+  } else {
+    title = l10n_util::GetStringUTF16(
+        IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_TITLE);
+    body =
+        has_task_title
+            ? l10n_util::GetStringFUTF16(
+                  IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_BODY,
+                  base::UTF8ToUTF16(*task_title))
+            : l10n_util::GetStringUTF16(
+                  IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_BODY_FALLBACK);
+  }
 
   std::string notification_id = GetNotificationId(task_id);
   message_center::Notification notification(

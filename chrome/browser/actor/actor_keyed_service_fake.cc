@@ -41,6 +41,14 @@ TaskId ActorKeyedServiceFake::CreateExperimentalTriggeringTaskForTesting() {
       glic::mojom::FeatureMode::kExperimentalTriggering);
 }
 
+TaskId
+ActorKeyedServiceFake::CreateExperimentalTriggeringTaskWithTitleForTesting(
+    const std::string& title) {
+  return CreateTaskWithDurationAndFeatureModeForTesting(  // IN-TEST
+      actor::webui::mojom::TaskDuration::kDefault,
+      glic::mojom::FeatureMode::kExperimentalTriggering, title);
+}
+
 TaskId ActorKeyedServiceFake::CreateTaskWithDurationForTesting(  // IN-TEST
     actor::webui::mojom::TaskDuration duration) {
   return CreateTaskWithDurationAndFeatureModeForTesting(  // IN-TEST
@@ -50,7 +58,8 @@ TaskId ActorKeyedServiceFake::CreateTaskWithDurationForTesting(  // IN-TEST
 TaskId ActorKeyedServiceFake::
     CreateTaskWithDurationAndFeatureModeForTesting(  // IN-TEST
         actor::webui::mojom::TaskDuration duration,
-        glic::mojom::FeatureMode feature_mode) {
+        glic::mojom::FeatureMode feature_mode,
+        const std::string& title) {
   std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher =
       ui::NewMockUiEventDispatcher();
   auto* mock_ui_dispatcher =
@@ -69,7 +78,7 @@ TaskId ActorKeyedServiceFake::
                               /*requires_page_stabilization=*/true)));
 
   auto task_options = webui::mojom::TaskOptions::New();
-  task_options->title = "Test Task";
+  task_options->title = title;
   task_options->duration = duration;
   task_options->feature_mode = feature_mode;
   return ActorKeyedService::CreateTaskForTesting(  // IN-TEST

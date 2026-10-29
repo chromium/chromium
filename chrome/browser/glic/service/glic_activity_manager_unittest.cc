@@ -29,6 +29,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 namespace glic {
 using actor::ActorKeyedServiceFake;
@@ -533,9 +534,87 @@ class GlicActivityManagerOsNotificationTest : public GlicActivityManagerTest {
         features::kGlicExperimentalTriggeringOsNotification);
   }
 
+ protected:
+  // Moves `task_id` to the acting state, notifies the manager and returns the
+  // resulting OS notification, if any.
+  std::optional<message_center::Notification> StartTaskAndGetNotification(
+      TaskId task_id) {
+    actor_service()->GetTask(task_id)->SetState(
+        actor::ActorTask::State::kActing);
+    actor::ui::ActorUiStateManager::Get(profile_.get())
+        ->OnUiEvent(actor::ui::TaskStateChanged(
+            task_id, actor::ActorTask::State::kActing));
+    OnActorTaskStateUpdate(task_id);
+    return display_service_tester()->GetNotification(
+        "actor_task_start_" + base::NumberToString(task_id.value()));
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// Verifies the updated notification copy for a task without a title: the
+// generic title is shown with a "Started" body.
+TEST_F(GlicActivityManagerOsNotificationTest,
+       UpdatedStrings_NoTaskTitle_ShowsGenericTitleAndStarted) {
+  auto notification = StartTaskAndGetNotification(
+      actor_service()->CreateExperimentalTriggeringTaskWithTitleForTesting(""));
+  ASSERT_TRUE(notification.has_value());
+  EXPECT_EQ(notification->title(),
+            l10n_util::GetStringUTF16(
+                IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_TITLE_V2));
+  EXPECT_EQ(
+      notification->message(),
+      l10n_util::GetStringUTF16(
+          IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_BODY_STARTED_V2));
+}
+
+// Verifies that the updated notification copy ignores the task title, which is
+// a generic placeholder: the generic title is shown with a "Started" body.
+TEST_F(GlicActivityManagerOsNotificationTest,
+       UpdatedStrings_WithTaskTitle_IgnoresTaskTitle) {
+  auto notification = StartTaskAndGetNotification(
+      actor_service()->CreateExperimentalTriggeringTaskWithTitleForTesting(
+          "Book a table"));
+  ASSERT_TRUE(notification.has_value());
+  EXPECT_EQ(notification->title(),
+            l10n_util::GetStringUTF16(
+                IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_TITLE_V2));
+  EXPECT_EQ(
+      notification->message(),
+      l10n_util::GetStringUTF16(
+          IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_BODY_STARTED_V2));
+}
+
+// Verifies that the legacy copy is shown when the updated strings are disabled.
+TEST_F(GlicActivityManagerOsNotificationTest,
+       UpdatedStringsDisabled_UsesLegacyStrings) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kGlicExperimentalTriggeringOsNotificationUpdatedStrings);
+
+  auto notification = StartTaskAndGetNotification(
+      actor_service()->CreateExperimentalTriggeringTaskWithTitleForTesting(
+          "Book a table"));
+  ASSERT_TRUE(notification.has_value());
+  EXPECT_EQ(notification->title(),
+            l10n_util::GetStringUTF16(
+                IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_TITLE));
+  EXPECT_EQ(notification->message(),
+            l10n_util::GetStringFUTF16(
+                IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_BODY,
+                u"Book a table"));
+
+  notification = StartTaskAndGetNotification(
+      actor_service()->CreateExperimentalTriggeringTaskWithTitleForTesting(""));
+  ASSERT_TRUE(notification.has_value());
+  EXPECT_EQ(notification->title(),
+            l10n_util::GetStringUTF16(
+                IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_TITLE));
+  EXPECT_EQ(notification->message(),
+            l10n_util::GetStringUTF16(
+                IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_BODY_FALLBACK));
+}
 
 // Verifies that an OS notification is displayed when an experimental triggering
 // task starts and no browser window is active.

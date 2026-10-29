@@ -367,4 +367,9 @@ const base::FeatureParam<int> kGlicShowNotTellTutorialsArm{
     &kGlicShowNotTellTutorials, "tutorials_arm", 0};
 
 BASE_FEATURE(kGlicActivityHub, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// TODO(b/55358603): Remove, together with the legacy
+// IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_* strings, once launched.
+BASE_FEATURE(kGlicExperimentalTriggeringOsNotificationUpdatedStrings,
+             FEATURE_ENABLED_BY_DEFAULT_NON_ANDROID);
 }  // namespace features
