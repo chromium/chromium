@@ -594,6 +594,20 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
         /*is_invalid_ip=*/false, clock_.NowTicks(), error, std::nullopt);
   }
 
+  // Sets up mock expectations on `csd_service_` and `database_manager_` for
+  // pre-classification checks on `url`, and initializes
+  // `pre_classification_run_loop_` to observe the check result histogram.
+  //
+  // Parameters:
+  //   - `url`: The URL undergoing pre-classification checks.
+  //   - `is_private`: If non-null, sets expectation on `IsPrivateIPAddress`.
+  //   - `match_csd_allowlist`: If non-null, sets expectation on
+  //     `CheckCsdAllowlistUrl` and `CanCheckUrl` for `url`. If null, expects
+  //     `CheckCsdAllowlistUrl` to not be called.
+  //   - `get_valid_cached_result`: If non-null, sets expectation on
+  //     `GetValidCachedResult`.
+  //   - `over_phishing_report_limit`: If non-null, sets expectation on
+  //     `AtPhishingReportLimit`.
   void ExpectPreClassificationChecks(
       const GURL& url,
       const bool* is_private = nullptr,
@@ -608,7 +622,7 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
       EXPECT_CALL(*database_manager_.get(), CheckCsdAllowlistUrl(url, _))
           .WillOnce(Return(*match_csd_allowlist ? AsyncMatch::MATCH
                                                 : AsyncMatch::NO_MATCH));
-      EXPECT_CALL(*database_manager_.get(), CanCheckUrl(_))
+      EXPECT_CALL(*database_manager_.get(), CanCheckUrl(url))
           .WillOnce(Return(true));
     } else {
       EXPECT_CALL(*database_manager_.get(), CheckCsdAllowlistUrl(url, _))
@@ -633,15 +647,23 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
             pre_classification_run_loop_->QuitClosure()));
   }
 
-  // Wait for the preclassification check histogram to be logged, then
-  // flush the generated IPC (if it exists).
+  // Flushes any pending mojo calls on `csd_host_->phishing_detector_` if
+  // bound, ensuring that IPC messages to `fake_phishing_detector_` are
+  // dispatched.
+  void FlushPhishingDetectorForTesting() {
+    if (csd_host_->phishing_detector_) {
+      csd_host_->phishing_detector_.FlushForTesting();
+    }
+  }
+
+  // Waits for the preclassification check histogram to be logged using
+  // `pre_classification_run_loop_`, then flushes the generated IPC (if it
+  // exists) by calling `FlushPhishingDetectorForTesting()`.
   void WaitAndCheckPreClassificationChecks() {
     if (!pre_classification_run_loop_->AnyQuitCalled()) {
       pre_classification_run_loop_->Run();
     }
-    if (csd_host_->phishing_detector_) {
-      csd_host_->phishing_detector_.FlushForTesting();
-    }
+    FlushPhishingDetectorForTesting();
   }
 
   void NotifyClientSideDetectionObservers() {
@@ -1477,31 +1499,67 @@ TEST_F(ClientSideDetectionHostTest,
   PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
 }
 
-// This test doesn't work because it makes assumption about how
-// the message loop is run, and those assumptions are wrong when properly
-// simulating a navigation with browser-side navigations.
-// TODO(clamy): Fix the test and re-enable. See crbug.com/41338215.
-TEST_F(ClientSideDetectionHostTest,
-       DISABLED_NavigationCancelsShouldClassifyUrl) {
+// Verifies that canceling pending pre-classification requests works as expected
+// when a new navigation commits before the first URL's checks finish. Ensures
+// that the canceled request logs `NO_CLASSIFY_CANCEL` and the new navigation
+// completes classification with `CLASSIFY`.
+TEST_F(ClientSideDetectionHostTest, NavigationCancelsShouldClassifyUrl) {
+  base::HistogramTester histogram_tester;
+
   // Test that canceling pending should classify requests works as expected.
   GURL first_url("http://first.phishy.url.com");
   GURL second_url("http://second.url.com/");
-  // The first few checks are done synchronously so check that they have been
-  // done for the first URL, while the second URL has all the checks done.  We
-  // need to manually set up the IsPrivateIPAddress mock since if the same mock
-  // expectation is specified twice, gmock will only use the last instance of
-  // it, meaning the first will never be matched.
+
+  // Set allowlist details for both URLs so neither triggers an assertion
+  // failure in the mock database manager.
+  database_manager_->SetAllowlistLookupDetailsForUrl(first_url, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(second_url, false);
+
+  // Both navigations perform the private IP check.
   EXPECT_CALL(*csd_service_, IsPrivateIPAddress(_))
       .WillOnce(Return(false))
       .WillOnce(Return(false));
+
+  // The first URL starts pre-classification and checks the CSD allowlist
+  // before being canceled by the second navigation.
   ExpectPreClassificationChecks(first_url, nullptr, &kFalse, nullptr, nullptr);
+  // The second URL completes all pre-classification checks.
   ExpectPreClassificationChecks(second_url, nullptr, &kFalse, &kFalse, &kFalse);
+
+  // Wait specifically for the second URL to finish pre-classification with
+  // `CLASSIFY`. The canceled `first_url` logs `NO_CLASSIFY_CANCEL`, which would
+  // otherwise prematurely quit the default observer in
+  // `ExpectPreClassificationChecks`.
+  base::RunLoop run_loop;
+  base::StatisticsRecorder::ScopedHistogramSampleObserver observer(
+      "SBClientPhishing.PreClassificationCheckResult",
+      base::BindRepeating(
+          [](base::RepeatingClosure quit_closure,
+             std::string_view /*histogram_name*/, uint64_t /*name_hash*/,
+             base::HistogramBase::Sample32 sample) {
+            if (sample == PreClassificationCheckResult::CLASSIFY) {
+              quit_closure.Run();
+            }
+          },
+          run_loop.QuitClosure()));
 
   NavigateAndCommit(first_url);
   // Don't flush the message loop, as we want to navigate to a different
   // url before the final pre-classification checks are run.
   NavigateAndCommit(second_url);
-  WaitAndCheckPreClassificationChecks();
+
+  run_loop.Run();
+
+  FlushPhishingDetectorForTesting();
+
+  fake_phishing_detector_.CheckMessage(&second_url);
+
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult",
+      PreClassificationCheckResult::NO_CLASSIFY_CANCEL, 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult",
+      PreClassificationCheckResult::CLASSIFY, 1);
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckPass) {
