@@ -315,7 +315,7 @@ TEST_F(SearchEnginesHandlerTest, GetSaveGuestChoiceGuestProfile) {
   ASSERT_TRUE(
       regional_capabilities::RegionalCapabilitiesServiceFactory::GetForProfile(
           profile())
-          ->IsInEeaCountry());
+          ->IsInSearchEngineChoiceScreenRegion());
   ASSERT_TRUE(choice_service->IsDsePropagationAllowedForGuest());
 
   EXPECT_EQ(0U, web_ui()->call_data().size());
@@ -358,7 +358,7 @@ TEST_F(SearchEnginesHandlerTest, GetSaveGuestChoiceGuestProfile_NonEEA) {
   ASSERT_FALSE(
       regional_capabilities::RegionalCapabilitiesServiceFactory::GetForProfile(
           profile())
-          ->IsInEeaCountry());
+          ->IsInSearchEngineChoiceScreenRegion());
   ASSERT_FALSE(choice_service->IsDsePropagationAllowedForGuest());
 
   EXPECT_EQ(0U, web_ui()->call_data().size());
@@ -385,7 +385,7 @@ TEST_F(SearchEnginesHandlerTest, UpdateSavedGuestSearch) {
   ASSERT_TRUE(
       regional_capabilities::RegionalCapabilitiesServiceFactory::GetForProfile(
           profile())
-          ->IsInEeaCountry());
+          ->IsInSearchEngineChoiceScreenRegion());
   ASSERT_TRUE(choice_service->IsDsePropagationAllowedForGuest());
 
   EXPECT_EQ(std::nullopt,
@@ -443,7 +443,7 @@ TEST_F(SearchEnginesHandlerTest, UpdateSavedGuestSearch_NonEEA) {
   ASSERT_FALSE(
       regional_capabilities::RegionalCapabilitiesServiceFactory::GetForProfile(
           profile())
-          ->IsInEeaCountry());
+          ->IsInSearchEngineChoiceScreenRegion());
   ASSERT_FALSE(choice_service->IsDsePropagationAllowedForGuest());
 
   EXPECT_EQ(std::nullopt,

@@ -3156,18 +3156,20 @@ void AddSearchStrings(content::WebUIDataSource* html_source, Profile* profile) {
   html_source->AddString("searchExplanationLearnMoreURL",
                          chrome::kOmniboxLearnMoreURL);
 
-  const bool is_eea =
+  const bool is_in_search_engine_choice_screen_region =
       CHECK_DEREF(regional_capabilities::RegionalCapabilitiesServiceFactory::
                       GetForProfile(profile))
-          .IsInEeaCountry();
+          .IsInSearchEngineChoiceScreenRegion();
   html_source->AddLocalizedString(
       "searchEnginesSettingsDialogSubtitle",
-      is_eea ? IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE
-             : IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE_NON_EEA);
+      is_in_search_engine_choice_screen_region
+          ? IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE
+          : IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE_NON_EEA);
   html_source->AddLocalizedString(
       "searchEnginesPickerSubtitle",
-      is_eea ? IDS_SETTINGS_SEARCH_ENGINES_PICKER_SUBTITLE
-             : IDS_SETTINGS_SEARCH_ENGINES_PICKER_SUBTITLE_NON_EEA);
+      is_in_search_engine_choice_screen_region
+          ? IDS_SETTINGS_SEARCH_ENGINES_PICKER_SUBTITLE
+          : IDS_SETTINGS_SEARCH_ENGINES_PICKER_SUBTITLE_NON_EEA);
 }
 
 void AddSearchEnginesStrings(content::WebUIDataSource* html_source) {

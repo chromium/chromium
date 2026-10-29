@@ -245,7 +245,7 @@ public class SearchEngineAdapter extends BaseAdapter
             sortAndFilterUnnecessaryTemplateUrl(
                     templateUrls,
                     defaultSearchEngineTemplateUrl,
-                    regionalCapabilities.isInEeaCountry());
+                    regionalCapabilities.isInSearchEngineChoiceScreenRegion());
 
             prepopulatedUrls = new ArrayList<>();
             recentlyVisitedUrls = new ArrayList<>();

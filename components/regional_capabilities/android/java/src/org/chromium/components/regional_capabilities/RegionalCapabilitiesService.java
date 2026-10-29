@@ -59,6 +59,21 @@ public class RegionalCapabilitiesService {
     }
 
     /**
+     * Returns whether the profile is associated with a region in which we can show a search engine
+     * choice screen.
+     *
+     * <p>Testing note: To control the value this returns in manual or automated tests, consider
+     * using the {@code --search-engine-choice-country} command line flag and its special arguments,
+     * defined in //components/regional_capabilities/regional_capabilities_switches.h
+     */
+    @MainThread
+    public boolean isInSearchEngineChoiceScreenRegion() {
+        ThreadUtils.assertOnUiThread();
+        return RegionalCapabilitiesServiceJni.get()
+                .isInSearchEngineChoiceScreenRegion(mNativeService);
+    }
+
+    /**
      * Returns whether the profile country is a EEA member. Uses the understanding of profile
      * country that is used for search engine choice screens and similar features, which might be
      * different than what LocaleUtils returns.
@@ -79,6 +94,8 @@ public class RegionalCapabilitiesService {
     @NativeMethods
     public interface Natives {
         boolean mayShowLinkedGoogleServicesSetting(long nativeRegionalCapabilitiesService);
+
+        boolean isInSearchEngineChoiceScreenRegion(long nativeRegionalCapabilitiesService);
 
         boolean isInEeaCountry(long nativeRegionalCapabilitiesService);
     }

@@ -97,7 +97,7 @@ public class SearchEngineSettingsRenderTest {
         GURL engine2Gurl = new GURL("https://gurl2.example.com");
         List<TemplateUrl> templateUrls = List.of(engine1, engine2);
 
-        doReturn(true).when(mMockRegionalCapabilities).isInEeaCountry();
+        doReturn(true).when(mMockRegionalCapabilities).isInSearchEngineChoiceScreenRegion();
         RegionalCapabilitiesServiceFactory.setInstanceForTesting(mMockRegionalCapabilities);
 
         doReturn(new ArrayList<>(templateUrls)).when(mMockTemplateUrlService).getTemplateUrls();

@@ -81,7 +81,7 @@ public class SearchEngineSettings extends ListFragment
         assert mProfile != null;
         RegionalCapabilitiesService regionalCapabilities =
                 RegionalCapabilitiesServiceFactory.getForProfile(mProfile);
-        if (regionalCapabilities.isInEeaCountry()) {
+        if (regionalCapabilities.isInSearchEngineChoiceScreenRegion()) {
             View headerView =
                     getLayoutInflater()
                             .inflate(R.layout.search_engine_choice_header, listView, false);

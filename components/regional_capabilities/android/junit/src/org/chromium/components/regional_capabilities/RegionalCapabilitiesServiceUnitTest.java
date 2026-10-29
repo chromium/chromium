@@ -40,6 +40,14 @@ public class RegionalCapabilitiesServiceUnitTest {
     }
 
     @Test
+    public void isInSearchEngineChoiceScreenRegion() {
+        when(mMockServiceJni.isInSearchEngineChoiceScreenRegion(anyLong())).thenReturn(true);
+        RegionalCapabilitiesService service = new RegionalCapabilitiesService(42L);
+        assertTrue(service.isInSearchEngineChoiceScreenRegion());
+        verify(mMockServiceJni).isInSearchEngineChoiceScreenRegion(42L);
+    }
+
+    @Test
     public void isInEeaCountry() {
         when(mMockServiceJni.isInEeaCountry(anyLong())).thenReturn(true);
         RegionalCapabilitiesService service = new RegionalCapabilitiesService(42L);

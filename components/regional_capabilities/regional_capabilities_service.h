@@ -260,6 +260,8 @@ class RegionalCapabilitiesService : public KeyedService {
   // See `MayShowLinkedGoogleServicesSetting()`.
   bool MayShowLinkedGoogleServicesSetting(JNIEnv* env);
 
+  // See `IsInSearchEngineChoiceScreenRegion()`.
+  bool IsInSearchEngineChoiceScreenRegion(JNIEnv* env);
   // See `IsInEeaCountry()`.
   bool IsInEeaCountry(JNIEnv* env);
 #endif

@@ -840,6 +840,10 @@ bool RegionalCapabilitiesService::MayShowLinkedGoogleServicesSetting(
   return MayShowLinkedGoogleServicesSetting();
 }
 
+bool RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
+    JNIEnv* env) {
+  return IsInSearchEngineChoiceScreenRegion();
+}
 bool RegionalCapabilitiesService::IsInEeaCountry(JNIEnv* env) {
   return IsInEeaCountry();
 }

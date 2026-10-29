@@ -367,7 +367,7 @@ public class SearchEngineAdapterTest {
         doReturn(p2).when(mTemplateUrlService).getDefaultSearchEngineTemplateUrl();
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
 
-        doReturn(false).when(mRegionalCapabilities).isInEeaCountry();
+        doReturn(false).when(mRegionalCapabilities).isInSearchEngineChoiceScreenRegion();
         RegionalCapabilitiesServiceFactory.setInstanceForTesting(mRegionalCapabilities);
 
         var adapter =
@@ -414,7 +414,7 @@ public class SearchEngineAdapterTest {
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
 
         // Test for non-EEA country.
-        doReturn(false).when(mRegionalCapabilities).isInEeaCountry();
+        doReturn(false).when(mRegionalCapabilities).isInSearchEngineChoiceScreenRegion();
         RegionalCapabilitiesServiceFactory.setInstanceForTesting(mRegionalCapabilities);
 
         var adapter =
@@ -430,7 +430,7 @@ public class SearchEngineAdapterTest {
         assertEquals("3", adapter.getValueForTesting());
 
         // Test for EEA country.
-        doReturn(true).when(mRegionalCapabilities).isInEeaCountry();
+        doReturn(true).when(mRegionalCapabilities).isInSearchEngineChoiceScreenRegion();
         RegionalCapabilitiesServiceFactory.setInstanceForTesting(mRegionalCapabilities);
 
         adapter = new SearchEngineAdapter(mContext, mProfile, /* siteSearchClickHandler= */ null);
@@ -459,7 +459,7 @@ public class SearchEngineAdapterTest {
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
 
         // Test for non-EEA country.
-        doReturn(false).when(mRegionalCapabilities).isInEeaCountry();
+        doReturn(false).when(mRegionalCapabilities).isInSearchEngineChoiceScreenRegion();
         RegionalCapabilitiesServiceFactory.setInstanceForTesting(mRegionalCapabilities);
 
         var adapter =
