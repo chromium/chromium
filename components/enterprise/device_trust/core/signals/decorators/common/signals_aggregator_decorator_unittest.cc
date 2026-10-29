@@ -333,12 +333,14 @@ TEST_F(SignalsAggregatorDecoratorTest, DecorateEmptyAndMissingValues) {
   response.os_signals_response->display_name = std::nullopt;
   response.os_signals_response->mac_addresses = std::nullopt;
   response.os_signals_response->system_dns_servers = std::nullopt;
+  response.os_signals_response->os_firewall = std::nullopt;
   response.os_signals_response->device_affiliation_ids = {};
   response.profile_signals_response->profile_affiliation_ids = {};
 
   base::DictValue actual_dict = DecorateSignals(std::move(response));
 
   EXPECT_EQ(actual_dict.FindString(device_signals::names::kVendorId), nullptr);
+  EXPECT_FALSE(actual_dict.contains(device_signals::names::kOsFirewall));
   CheckSignalValue(actual_dict, device_signals::names::kDisplayName, "");
 
   const base::ListValue* mac_addresses =

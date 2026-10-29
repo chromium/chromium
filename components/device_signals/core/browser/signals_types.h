@@ -231,8 +231,7 @@ struct OsSignalsResponse : BaseSignalResponse {
   std::optional<std::string> hostname = std::nullopt;
   std::optional<std::vector<std::string>> mac_addresses = std::nullopt;
   std::string operating_system{};
-  device_signals::SettingValue os_firewall =
-      device_signals::SettingValue::UNKNOWN;
+  std::optional<device_signals::SettingValue> os_firewall = std::nullopt;
 
   // Version of the OS
   // - Win: <major>.<minor>.<build>.<patch>, e.g 10.0.22631.5909

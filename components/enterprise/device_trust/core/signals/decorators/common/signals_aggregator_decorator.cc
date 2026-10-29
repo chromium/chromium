@@ -110,8 +110,11 @@ void AddOsSignals(const device_signals::OsSignalsResponse& os_signals,
                    static_cast<int>(os_signals.disk_encryption));
   signals_dict.Set(device_signals::names::kScreenLockSecured,
                    static_cast<int>(os_signals.screen_lock_secured));
-  signals_dict.Set(device_signals::names::kOsFirewall,
-                   static_cast<int>(os_signals.os_firewall));
+
+  if (os_signals.os_firewall.has_value()) {
+    signals_dict.Set(device_signals::names::kOsFirewall,
+                     static_cast<int>(os_signals.os_firewall.value()));
+  }
 
   if (os_signals.secure_boot_mode.has_value()) {
     signals_dict.Set(device_signals::names::kSecureBootEnabled,

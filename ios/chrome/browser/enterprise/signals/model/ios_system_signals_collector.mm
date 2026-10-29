@@ -72,6 +72,9 @@ void IOSSystemSignalsCollector::GetOsSignals(
   signal_response->screen_lock_secured = screen_lock;
   // `diskEncryption` mirrors `screenLockSecured` on iOS.
   signal_response->disk_encryption = screen_lock;
+  // iOS has no OS firewall whose state Chrome can evaluate.
+  // TODO(crbug.com/578001589): Leave `os_firewall` unset, as on Android.
+  signal_response->os_firewall = device_signals::SettingValue::UNKNOWN;
 
   // Fetch hardware info asynchronously to be safe.
   base::SysInfo::GetHardwareInfo(

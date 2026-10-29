@@ -299,7 +299,13 @@ void ChromeProfileRequestGenerator::OnAggregatedSignalsReceived(
     }
 
     os_report->set_name(os_signals.operating_system);
-    os_report->set_os_firewall(TranslateSettingValue(os_signals.os_firewall));
+    // The server requires `os_firewall` in every report, and the report has no
+    // "unspecified" value, so an unset value is reported as UNKNOWN.
+    // TODO(crbug.com/577999409): Stop sending `os_firewall` when it is unset
+    // once the server no longer requires it.
+    os_report->set_os_firewall(
+        TranslateSettingValue(os_signals.os_firewall.value_or(
+            device_signals::SettingValue::UNKNOWN)));
     os_report->set_screen_lock_secured(
         TranslateSettingValue(os_signals.screen_lock_secured));
     if (os_signals.system_dns_servers) {

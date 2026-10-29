@@ -286,6 +286,10 @@ class ChromeProfileRequestGeneratorTest
       EXPECT_EQ(os_report.version(), kFakeSignalOsVersion);
       EXPECT_EQ(os_report.screen_lock_secured(), em::SettingValue::ENABLED);
       EXPECT_EQ(os_report.distribution_version(), kFakeDistoVersion);
+      // `os_firewall` is not set in the collected signals, but the report must
+      // still carry it as UNKNOWN.
+      EXPECT_TRUE(os_report.has_os_firewall());
+      EXPECT_EQ(os_report.os_firewall(), em::SettingValue::UNKNOWN);
 
       EXPECT_EQ(3, os_report.mac_addresses_size());
       EXPECT_EQ(os_report.mac_addresses(0), kFakeSignalMacAddr1);

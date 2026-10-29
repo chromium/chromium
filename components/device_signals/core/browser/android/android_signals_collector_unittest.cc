@@ -99,6 +99,7 @@ class AndroidSignalsCollectorTest : public GenericOsSignalsCollectorTestBase {
               device_signals::GetSecurityPatchLevelEpoch());
     EXPECT_EQ(response.screen_lock_secured, expected_screen_lock_secured_);
     EXPECT_EQ(response.disk_encryption, SettingValue::ENABLED);
+    EXPECT_FALSE(response.os_firewall.has_value());
   }
 
   void SetDeviceSecure(bool is_device_secure) {

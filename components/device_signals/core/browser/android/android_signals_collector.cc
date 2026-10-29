@@ -5,6 +5,7 @@
 #include "components/device_signals/core/browser/android/android_signals_collector.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -113,6 +114,8 @@ void AndroidSignalsCollector::GetOsSignals(
                                                    : SettingValue::DISABLED;
   signal_response.disk_encryption =
       os_security_info_provider_->GetDiskEncryption();
+  // Android has no OS firewall whose state Chrome can evaluate.
+  signal_response.os_firewall = std::nullopt;
 
   response.os_signals_response = std::move(signal_response);
 
