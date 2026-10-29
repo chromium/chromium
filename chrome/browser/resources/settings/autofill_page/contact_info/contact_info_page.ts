@@ -729,21 +729,19 @@ export class SettingsContactInfoPageElement extends
   }
 
   private async onGmailOtpFillingPrefOrAccountChange_() {
+    // Early return to avoid setting a pref when PrefService is not
+    // yet initialized.
+    if (!this.gmailOtpFillingEnabledPref_) {
+      return;
+    }
+
     const currentEmail =
         (this.showGmailOtpFillingToggle_ && this.accountInfo_) ?
         this.accountInfo_.email :
         null;
 
-    if (!this.showGmailOtpFillingToggle_ || !currentEmail) {
-      this.resetOtpFillingState_();
-      return;
-    }
-
-    if (!this.gmailOtpFillingEnabledPref_) {
-      return;
-    }
-
-    if (!this.gmailOtpFillingEnabledPref_.value) {
+    if (!this.showGmailOtpFillingToggle_ || !currentEmail ||
+        !this.gmailOtpFillingEnabledPref_.value) {
       this.resetOtpFillingState_();
       return;
     }

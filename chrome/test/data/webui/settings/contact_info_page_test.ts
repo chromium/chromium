@@ -794,6 +794,22 @@ suite('ContactInfoPageUiTest', function() {
         'fetchUserDataProcessingConsent should not be called when pref is off');
   });
 
+  test('OtpFillingToggleWithUninitializedPrefService', async function() {
+    loadTimeData.overrideValues({autofillGmailOtpFillingEnabled: true});
+    AutofillManagerImpl.setInstance(new TestAutofillManager());
+
+    // Reset PrefService to simulate the case where it has not been initialized
+    // yet when the page is connected.
+    PrefService.resetInstanceForTesting();
+
+    const page = document.createElement('settings-contact-info-page');
+    document.body.appendChild(page);
+    await microtasksFinished();
+
+    assertTrue(isVisible(page.$.autofillOtpFillingToggle));
+    assertFalse(page.$.autofillOtpFillingToggle.checked);
+  });
+
   test('OtpFillingToggleExternallyEnabledUpdatesToggle', async function() {
     loadTimeData.overrideValues({autofillGmailOtpFillingEnabled: true});
     const autofillManager = new TestAutofillManager();
