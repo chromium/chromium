@@ -260,14 +260,39 @@ class DocumentPipFrameView::LocationBarModelDelegateImpl
   content::WebContents* GetActiveWebContents() const override {
     return host_->GetOpenerWebContents();
   }
+  bool GetURL(GURL* url) const override;
+  bool ShouldPreventElision() override;
   bool ShouldTrimDisplayUrlAfterHostName() const override;
+  bool ShouldDisplayURL() const override;
 
  private:
   const raw_ref<DocumentPipHost> host_;
 };
 
+bool DocumentPipFrameView::LocationBarModelDelegateImpl::GetURL(
+    GURL* url) const {
+  CHECK(url);
+  if (content::WebContents* const web_contents = GetActiveWebContents()) {
+    *url = web_contents->GetLastCommittedURL();
+    return true;
+  }
+  return false;
+}
+
+bool DocumentPipFrameView::LocationBarModelDelegateImpl::
+    ShouldPreventElision() {
+  // We should never allow the full URL to show, as the PiP window only cares
+  // about the origin of the opener.
+  return false;
+}
+
 bool DocumentPipFrameView::LocationBarModelDelegateImpl::
     ShouldTrimDisplayUrlAfterHostName() const {
+  return true;
+}
+
+bool DocumentPipFrameView::LocationBarModelDelegateImpl::ShouldDisplayURL()
+    const {
   return true;
 }
 
