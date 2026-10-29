@@ -131,30 +131,6 @@ BASE_FEATURE(kInstallPlatformExperienceHelperWin,
 BASE_FEATURE(kRestartNetworkServiceUnsandboxedForFailedLaunch,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Gates sandboxed iframe navigation toward external protocol behind any of:
-// - allow-top-navigation
-// - allow-top-navigation-to-custom-protocols
-// - allow-top-navigation-with-user-gesture (+ user gesture)
-// - allow-popups
-//
-// Motivation:
-// Developers are surprised that a sandboxed iframe can navigate and/or
-// redirect the user toward an external application.
-// General iframe navigation in sandboxed iframe are not blocked normally,
-// because they stay within the iframe. However they can be seen as a popup or
-// a top-level navigation when it leads to opening an external application. In
-// this case, it makes sense to extend the scope of sandbox flags, to block
-// malvertising.
-//
-// Implementation bug: https://crbug.com/40057420
-// I2S: https://groups.google.com/a/chromium.org/g/blink-dev/c/-t-f7I6VvOI
-//
-// Enabled in M103. Flag to be removed in M106
-BASE_FEATURE(kSandboxExternalProtocolBlocked, base::FEATURE_ENABLED_BY_DEFAULT);
-// Enabled in M100. Flag to be removed in M106
-BASE_FEATURE(kSandboxExternalProtocolBlockedWarning,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_LINUX)
 // If true, encrypt new data with the key provided by SecretPortalKeyProvider.
 // Otherwise, it will only decrypt existing data.

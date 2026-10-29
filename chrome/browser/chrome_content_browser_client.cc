@@ -1304,36 +1304,18 @@ void LaunchURL(
 
       if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
               kDisableSandboxExternalProtocolSwitch)) {
-        if (base::FeatureList::IsEnabled(
-                features::kSandboxExternalProtocolBlocked)) {
-          rfh->AddMessageToConsole(
-              blink::mojom::ConsoleMessageLevel::kError,
-              "Navigation to external protocol blocked by sandbox, because it "
-              "doesn't contain any of: "
-              "'allow-top-navigation-to-custom-protocols', "
-              "'allow-top-navigation-by-user-activation', "
-              "'allow-top-navigation', or "
-              "'allow-popups'. See "
-              "https://chromestatus.com/feature/5680742077038592 and "
-              "https://chromeenterprise.google/policies/"
-              "#SandboxExternalProtocolBlocked");
-          return;
-        }
-
-        if (base::FeatureList::IsEnabled(
-                features::kSandboxExternalProtocolBlockedWarning)) {
-          rfh->AddMessageToConsole(
-              blink::mojom::ConsoleMessageLevel::kError,
-              "After Chrome M103, navigation toward external protocol "
-              "will be blocked by sandbox, if it doesn't contain any of:"
-              "'allow-top-navigation-to-custom-protocols', "
-              "'allow-top-navigation-by-user-activation', "
-              "'allow-top-navigation', or "
-              "'allow-popups'. See "
-              "https://chromestatus.com/feature/5680742077038592 and "
-              "https://chromeenterprise.google/policies/"
-              "#SandboxExternalProtocolBlocked");
-        }
+        rfh->AddMessageToConsole(
+            blink::mojom::ConsoleMessageLevel::kError,
+            "Navigation to external protocol blocked by sandbox, because it "
+            "doesn't contain any of: "
+            "'allow-top-navigation-to-custom-protocols', "
+            "'allow-top-navigation-by-user-activation', "
+            "'allow-top-navigation', or "
+            "'allow-popups'. See "
+            "https://chromestatus.com/feature/5680742077038592 and "
+            "https://chromeenterprise.google/policies/"
+            "#SandboxExternalProtocolBlocked");
+        return;
       }
     }
   }

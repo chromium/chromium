@@ -61,10 +61,6 @@ class ExternalProtocolHandlerLocalOnlyBrowserTest
 class ExternalProtocolHandlerSandboxBrowserTest
     : public ExternalProtocolHandlerBrowserTest {
  public:
-  ExternalProtocolHandlerSandboxBrowserTest() {
-    features_.InitAndEnableFeature(features::kSandboxExternalProtocolBlocked);
-  }
-
   void SetUpOnMainThread() override {
     ExternalProtocolHandlerBrowserTest::SetUpOnMainThread();
     AllowCustomProtocol();
@@ -137,8 +133,6 @@ class ExternalProtocolHandlerSandboxBrowserTest
 
     return message == allowed_msg_1 || message == allowed_msg_2;
   }
-
-  base::test::ScopedFeatureList features_;
 };
 
 // Observe that the tab is created then automatically closed.
