@@ -297,6 +297,8 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_OPEN_INCOGNITO_AS_WINDOW_RESTRICTIONS =
             "AndroidOpenIncognitoAsWindowRestrictions";
     public static final String ANDROID_PAGE_INFO_AS_APP_MENU_ITEM = "AndroidPageInfoAsAppMenuItem";
+    public static final String ANDROID_PROGRESS_BAR_CANCEL_ON_WINDOW_INVISIBLE =
+            "AndroidProgressBarCancelOnWindowInvisible";
     public static final String ANDROID_PROGRESS_BAR_VISUAL_UPDATE =
             "AndroidProgressBarVisualUpdate";
     public static final String ANDROID_SAVE_CARD_NON_BLOCKING_DIALOG =
@@ -985,6 +987,11 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_OPEN_INCOGNITO_AS_WINDOW_RESTRICTIONS, true);
     public static final CachedFlag sAndroidPageInfoAsAppMenuItem =
             newCachedFlag(ANDROID_PAGE_INFO_AS_APP_MENU_ITEM, true);
+    public static final CachedFlag sAndroidProgressBarCancelOnWindowInvisible =
+            newCachedFlag(
+                    ANDROID_PROGRESS_BAR_CANCEL_ON_WINDOW_INVISIBLE,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ false);
     public static final CachedFlag sAndroidProgressBarVisualUpdate =
             newCachedFlag(
                     ANDROID_PROGRESS_BAR_VISUAL_UPDATE,
@@ -1508,6 +1515,7 @@ public abstract class ChromeFeatureList {
                     sAndroidOpenIncognitoAsWindow,
                     sAndroidOpenIncognitoAsWindowRestrictions,
                     sAndroidPageInfoAsAppMenuItem,
+                    sAndroidProgressBarCancelOnWindowInvisible,
                     sAndroidProgressBarVisualUpdate,
                     sAndroidSetupList,
                     sAndroidStartupImprovements,

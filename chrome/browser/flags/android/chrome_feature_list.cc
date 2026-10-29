@@ -289,6 +289,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidOmniboxFocusedNewTabPage,
     &kAndroidOpenIncognitoAsWindowRestrictions,
     &kAndroidPageInfoAsAppMenuItem,
+    &kAndroidProgressBarCancelOnWindowInvisible,
     &kAndroidProgressBarVisualUpdate,
     &kAndroidSaveCardNonBlockingDialog,
     &kAndroidSetGoogleAccountInHelp,
@@ -714,6 +715,7 @@ BASE_FEATURE(kAndroidNewTabButtonTabstripWebUI, base::FEATURE_DISABLED_BY_DEFAUL
 BASE_FEATURE(kAndroidOmniboxFocusedNewTabPage, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidOpenIncognitoAsWindowRestrictions, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidPageInfoAsAppMenuItem, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidProgressBarCancelOnWindowInvisible, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidProgressBarVisualUpdate, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidSaveCardNonBlockingDialog, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidSetGoogleAccountInHelp, base::FEATURE_ENABLED_BY_DEFAULT);

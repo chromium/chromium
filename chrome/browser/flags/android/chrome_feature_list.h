@@ -66,6 +66,7 @@ BASE_DECLARE_FEATURE(kAndroidNewTabButtonTabstripWebUI);
 BASE_DECLARE_FEATURE(kAndroidOmniboxFocusedNewTabPage);
 BASE_DECLARE_FEATURE(kAndroidOpenIncognitoAsWindowRestrictions);
 BASE_DECLARE_FEATURE(kAndroidPageInfoAsAppMenuItem);
+BASE_DECLARE_FEATURE(kAndroidProgressBarCancelOnWindowInvisible);
 BASE_DECLARE_FEATURE(kAndroidProgressBarVisualUpdate);
 BASE_DECLARE_FEATURE(kAndroidSaveCardNonBlockingDialog);
 BASE_DECLARE_FEATURE(kAndroidSetGoogleAccountInHelp);

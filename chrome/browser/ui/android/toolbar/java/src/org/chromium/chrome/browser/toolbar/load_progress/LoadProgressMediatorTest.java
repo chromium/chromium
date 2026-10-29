@@ -30,6 +30,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressProperties.CompletionState;
@@ -289,6 +291,39 @@ public class LoadProgressMediatorTest {
         assertEquals(1.0f, mModel.get(LoadProgressProperties.PROGRESS), MathUtils.EPSILON);
         assertEquals(
                 CompletionState.FINISHED_DO_ANIMATE,
+                mModel.get(LoadProgressProperties.COMPLETION_STATE));
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_PROGRESS_BAR_CANCEL_ON_WINDOW_INVISIBLE)
+    public void uncommittedMainFrameNavigationFinishesProgressBar() {
+        initMediator();
+        doReturn(0.1f).when(mTab).getProgress();
+
+        NavigationHandle navigation =
+                NavigationHandle.createForTesting(
+                        URL_1,
+                        /* isRendererInitiated= */ true,
+                        /* transition= */ 0,
+                        /* hasUserGesture= */ false);
+        mTabObserver.onDidStartNavigationInPrimaryMainFrame(mTab, navigation);
+        assertEquals(
+                CompletionState.UNFINISHED, mModel.get(LoadProgressProperties.COMPLETION_STATE));
+
+        // If the tab is still loading another navigation, do not finish the progress bar.
+        doReturn(true).when(mTab).isLoading();
+        navigation.callDidFinishForTesting(URL_1, /* hasCommitted= */ false);
+        mTabObserver.onDidFinishNavigationInPrimaryMainFrame(mTab, navigation);
+        assertEquals(
+                CompletionState.UNFINISHED, mModel.get(LoadProgressProperties.COMPLETION_STATE));
+
+        // Finish navigation without committing when the tab is no longer loading (e.g., an aborted
+        // navigation where mIsLoading was false so onLoadStopped(toDifferentDocument=false) was
+        // ignored).
+        doReturn(false).when(mTab).isLoading();
+        mTabObserver.onDidFinishNavigationInPrimaryMainFrame(mTab, navigation);
+        assertEquals(
+                CompletionState.FINISHED_DONT_ANIMATE,
                 mModel.get(LoadProgressProperties.COMPLETION_STATE));
     }
 }

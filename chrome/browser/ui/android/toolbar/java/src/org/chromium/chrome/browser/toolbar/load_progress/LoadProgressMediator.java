@@ -10,6 +10,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -61,6 +62,18 @@ public class LoadProgressMediator {
                                 mLoadProgressSimulator.cancel();
                                 startLoadProgress();
                                 updateLoadProgress(tab.getProgress());
+                            }
+
+                            @Override
+                            public void onDidFinishNavigationInPrimaryMainFrame(
+                                    Tab tab, NavigationHandle navigation) {
+                                if (ChromeFeatureList.sAndroidProgressBarCancelOnWindowInvisible
+                                                .isEnabled()
+                                        && !navigation.isSameDocument()
+                                        && !navigation.hasCommitted()
+                                        && !tab.isLoading()) {
+                                    finishLoadProgress(false);
+                                }
                             }
 
                             @Override
