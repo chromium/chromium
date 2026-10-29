@@ -132,6 +132,7 @@ extern const base::FeatureParam<bool> kShowRhsAimHint;
 BASE_DECLARE_FEATURE(kOmniboxMultimodalInput);
 BASE_DECLARE_FEATURE(kOmniboxDebounceKeyboardVisibility);
 BASE_DECLARE_FEATURE(kOmniboxDisableTabsForCanvas);
+BASE_DECLARE_FEATURE(kOmniboxAimOpenInNewTab);
 BASE_DECLARE_FEATURE(kAim3pEntrypoint);
 extern const base::FeatureParam<bool> kAim3pEntrypointDebug;
 

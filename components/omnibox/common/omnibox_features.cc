@@ -214,6 +214,10 @@ BASE_FEATURE(kOmniboxFuseboxUserEdGuidedTour, DISABLED);
 // attached.
 BASE_FEATURE(kOmniboxDisableTabsForCanvas, ENABLED);
 
+// When enabled, AIM queries submitted from the Omnibox while on a web page open
+// in a new tab instead of navigating away from the current page.
+BASE_FEATURE(kOmniboxAimOpenInNewTab, DISABLED);
+
 // Enables the AIM entrypoint for third party search engines.
 BASE_FEATURE(kAim3pEntrypoint, ENABLED);
 const base::FeatureParam<bool> kAim3pEntrypointDebug{
@@ -741,6 +745,7 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kOmniboxAimImageDownscaling,
       &kOmniboxDebounceKeyboardVisibility,
       &kOmniboxDisableTabsForCanvas,
+      &kOmniboxAimOpenInNewTab,
       &kOmniboxSessionlessVoiceSearch,
       &kSuppressStatusIconDuringHttpNavigation,
       &kZeroSuggestPrefetchOnPageLoadAndTabSwitch,

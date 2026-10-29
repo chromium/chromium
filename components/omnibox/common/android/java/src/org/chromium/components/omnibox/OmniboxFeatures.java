@@ -145,6 +145,13 @@ public class OmniboxFeatures {
     public static final CachedFlag sStarterPackExpansion =
             newFlag(OmniboxFeatureList.STARTER_PACK_EXPANSION, FeatureState.ENABLED_IN_PROD);
 
+    /**
+     * Opens AI Mode queries submitted from the Omnibox while on a web page in a new tab, instead of
+     * navigating away from the current page.
+     */
+    private static final CachedFlag sOmniboxAimOpenInNewTab =
+            newFlag(OmniboxFeatureList.OMNIBOX_AIM_OPEN_IN_NEW_TAB, FeatureState.DISABLED_IN_PROD);
+
     public static final CachedFlag sOmniboxSessionlessVoiceSearch =
             newFlag(
                     OmniboxFeatureList.OMNIBOX_SESSIONLESS_VOICE_SEARCH,
@@ -414,6 +421,11 @@ public class OmniboxFeatures {
      */
     public static boolean isAim3pEntrypointEnabled() {
         return sAim3pEntrypoint.isEnabled();
+    }
+
+    /** Returns whether AI Mode queries submitted from a web page should open in a new tab. */
+    public static boolean isAimOpenInNewTabEnabled() {
+        return sOmniboxAimOpenInNewTab.isEnabled();
     }
 
     private static @Nullable Boolean sDebounceKeyboardVisibilityForTesting;

@@ -7168,6 +7168,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxDisableTabsForCanvasDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxDisableTabsForCanvas)},
 
+    {"omnibox-aim-open-in-new-tab",
+     flag_descriptions::kOmniboxAimOpenInNewTabName,
+     flag_descriptions::kOmniboxAimOpenInNewTabDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxAimOpenInNewTab)},
+
     {"omnibox-aim-suppress-verbatim-match",
      flag_descriptions::kAIMSuppressVerbatimMatchName,
      flag_descriptions::kAIMSuppressVerbatimMatchDescription, kOsAndroid,

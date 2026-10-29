@@ -7546,6 +7546,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "omnibox-aim-open-in-new-tab",
+    "owners": ["peterkang@google.com", "chrome-mobile-search@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "omnibox-aim-suppress-verbatim-match",
     "owners": [
       "charlesyc@google.com",

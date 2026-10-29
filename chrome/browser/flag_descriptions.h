@@ -3717,6 +3717,12 @@ inline constexpr char kOmniboxDisableTabsForCanvasDescription[] =
     "Disables tab attachments when Canvas is active and disables Canvas tool "
     "when tabs are attached.";
 
+inline constexpr char kOmniboxAimOpenInNewTabName[] =
+    "Omnibox AI Mode Open In New Tab";
+inline constexpr char kOmniboxAimOpenInNewTabDescription[] =
+    "Opens AI Mode queries submitted from the Omnibox in a new tab when on a "
+    "non-NTP page, instead of navigating away from the current page.";
+
 inline constexpr char kOmniboxNumNtpZpsRecentSearchesName[] =
     "Omnibox: Recent Searches on new tab page ZPS";
 inline constexpr char kOmniboxNumNtpZpsRecentSearchesDescription[] =
