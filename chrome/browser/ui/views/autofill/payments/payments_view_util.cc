@@ -68,10 +68,20 @@ std::unique_ptr<views::ImageView> CreateIconView(
   switch (icon_to_show) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case TitleWithIconAfterLabelView::Icon::GOOGLE_PAY:
-      model = ui::ImageModel::FromImageGenerator(
-          base::BindRepeating(&CreateTiledGooglePayLogo, kGooglePayLogoWidth,
-                              kIconHeight),
-          gfx::Size(kGooglePayLogoWidth, kIconHeight));
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillEnableGradientGoogleLogos)) {
+        model = ui::ImageModel::FromImageSkia(
+            *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+                IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT));
+        model_dark = ui::ImageModel::FromImageSkia(
+            *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+                IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT_DARK));
+      } else {
+        model = ui::ImageModel::FromImageGenerator(
+            base::BindRepeating(&CreateTiledGooglePayLogo, kGooglePayLogoWidth,
+                                kIconHeight),
+            gfx::Size(kGooglePayLogoWidth, kIconHeight));
+      }
       break;
     case TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_AFFIRM:
       model = ui::ImageModel::FromImageSkia(
