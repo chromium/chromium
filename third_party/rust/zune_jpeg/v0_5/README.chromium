@@ -11,8 +11,28 @@ Security Critical: yes
 Description: A fast, correct and safe jpeg decoder
 
 Local Modifications:
-- Backport raw iMCU and scanline decoding.
-- Carry a single local port of the final raw-input, accurate IDCT, progressive
-  block-smoothing, and raw-publication fixes proposed in
-  https://github.com/etemesi254/zune-image/pull/494.
-  Preserve existing best-effort packed and scanline decoding.
+- Keep the age-eligible 0.5.16-rc2 package as the download base. Chromium's
+  minimum publish-age policy currently excludes 0.5.16-rc3.
+- Backport the accepted upstream prerequisites at
+  2f9086b07cdf5a36621ce18f79d310f99b751de9, including merged raw/scanline and
+  YCCK-to-CMYK support. Preserve the existing PR443 fix and its attribution.
+- Apply provenance-labelled, non-duplicated Rust-source deltas from:
+  https://github.com/etemesi254/zune-image/pull/487
+  https://github.com/etemesi254/zune-image/pull/494
+  https://github.com/etemesi254/zune-image/pull/499
+  https://github.com/etemesi254/zune-image/pull/498
+  https://github.com/etemesi254/zune-image/pull/504
+  https://github.com/etemesi254/zune-image/pull/506
+  https://github.com/etemesi254/zune-image/pull/508
+  https://github.com/etemesi254/zune-image/pull/505
+  https://github.com/etemesi254/zune-image/pull/507
+  Each patch records its published PR head and cumulative source stage.
+- The effective Rust source is byte-identical to the validated combination
+  of these published PRs; there are no additional Chromium-only decoder
+  implementation changes. Keep coded/raw geometry, strict errors, growing
+  input and full-frame recovery separate from buffered publication bounds.
+  Reduced output supports only 1/2, 1/4 and 1/8 and is frame-buffered.
+- Track upstream acceptance and release availability in:
+  https://github.com/etemesi254/zune-image/issues/503
+  Remove maintained patches only after verifying their complete behavior is
+  included in the selected upstream release.

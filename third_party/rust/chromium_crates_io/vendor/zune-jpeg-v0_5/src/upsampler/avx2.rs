@@ -14,11 +14,15 @@ use core::arch::x86_64::*;
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 #[target_feature(enable = "avx2")]
 pub unsafe fn upsample_horizontal_avx2(
-    input: &[i16],
-    in_near: &[i16],
-    in_far: &[i16],
-    scratch: &mut [i16],
-    output: &mut [i16],
+    input: &[i16], _in_near: &[i16], _in_far: &[i16], _scratch: &mut [i16], output: &mut [i16]
+) {
+    unsafe { upsample_horizontal_filtered::<2, 1, 2>(input, output) }
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx2")]
+unsafe fn upsample_horizontal_filtered<const SHIFT: i32, const EVEN: i16, const ODD: i16>(
+    input: &[i16], output: &mut [i16]
 ) {
     assert_eq!(input.len() * 2, output.len());
     assert!(input.len() > 2);
@@ -26,15 +30,16 @@ pub unsafe fn upsample_horizontal_avx2(
     let len = input.len();
 
     if len < 18 {
-        return super::scalar::upsample_horizontal(input, in_near, in_far, scratch, output);
+        return super::scalar::upsample_horizontal_filtered::<SHIFT, EVEN, ODD>(input, output);
     }
 
     // First two pixels
-    output[0] = input[0];
-    output[1] = (input[0] * 3 + input[1] + 2) >> 2;
+    output[0] = (4 * input[0] + EVEN) >> SHIFT;
+    output[1] = (input[0] * 3 + input[1] + ODD) >> SHIFT;
 
     let v_three = _mm256_set1_epi16(3);
-    let v_two = _mm256_set1_epi16(2);
+    let v_even_bias = _mm256_set1_epi16(EVEN);
+    let v_odd_bias = _mm256_set1_epi16(ODD);
 
     let upsample16 = |input: &[i16; 18], output: &mut [i16; 32]| {
         let in_ptr = input.as_ptr();
@@ -49,10 +54,11 @@ pub unsafe fn upsample_horizontal_avx2(
             )
         };
 
-        let v_common = _mm256_add_epi16(_mm256_mullo_epi16(v_curr, v_three), v_two);
-
-        let v_even = _mm256_srai_epi16(_mm256_add_epi16(v_common, v_prev), 2);
-        let v_odd = _mm256_srai_epi16(_mm256_add_epi16(v_common, v_next), 2);
+        let v_common = _mm256_mullo_epi16(v_curr, v_three);
+        let v_even = _mm256_srai_epi16::<SHIFT>(
+            _mm256_add_epi16(_mm256_add_epi16(v_common, v_prev), v_even_bias));
+        let v_odd = _mm256_srai_epi16::<SHIFT>(
+            _mm256_add_epi16(_mm256_add_epi16(v_common, v_next), v_odd_bias));
 
         let v_res_1 = _mm256_unpacklo_epi16(v_even, v_odd);
         let v_res_2 = _mm256_unpackhi_epi16(v_even, v_odd);
@@ -84,18 +90,22 @@ pub unsafe fn upsample_horizontal_avx2(
     }
 
     // Last two pixels.
-    output[output.len() - 2] = (3 * input[len - 1] + input[len - 2] + 2) >> 2;
-    output[output.len() - 1] = input[len - 1];
+    output[output.len() - 2] = (3 * input[len - 1] + input[len - 2] + EVEN) >> SHIFT;
+    output[output.len() - 1] = (4 * input[len - 1] + ODD) >> SHIFT;
 }
 
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 #[target_feature(enable = "avx2")]
 pub unsafe fn upsample_vertical_avx2(
-    input: &[i16],
-    in_near: &[i16],
-    in_far: &[i16],
-    scratch: &mut [i16],
-    output: &mut [i16],
+    input: &[i16], in_near: &[i16], in_far: &[i16], _scratch: &mut [i16], output: &mut [i16]
+) {
+    unsafe { upsample_vertical_filtered::<true>(input, in_near, in_far, output) }
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx2")]
+unsafe fn upsample_vertical_filtered<const ROUND: bool>(
+    input: &[i16], in_near: &[i16], in_far: &[i16], output: &mut [i16]
 ) {
     assert_eq!(input.len() * 2, output.len());
     assert_eq!(in_near.len(), input.len());
@@ -104,13 +114,14 @@ pub unsafe fn upsample_vertical_avx2(
     let len = input.len();
 
     if len < 16 {
-        return super::scalar::upsample_vertical(input, in_near, in_far, scratch, output);
+        return super::scalar::upsample_vertical_filtered::<ROUND>(input, in_near, in_far, output);
     }
 
     let middle = output.len() / 2;
     let (out_top, out_bottom) = output.split_at_mut(middle);
 
     let v_three = _mm256_set1_epi16(3);
+    let v_one = _mm256_set1_epi16(1);
     let v_two = _mm256_set1_epi16(2);
 
     let upsample16 = |input: &[i16; 16],
@@ -127,10 +138,15 @@ pub unsafe fn upsample_vertical_avx2(
             )
         };
 
-        let v_common = _mm256_add_epi16(_mm256_mullo_epi16(v_in, v_three), v_two);
-
-        let v_out_top = _mm256_srai_epi16(_mm256_add_epi16(v_common, v_near), 2);
-        let v_out_bottom = _mm256_srai_epi16(_mm256_add_epi16(v_common, v_far), 2);
+        let v_common = _mm256_mullo_epi16(v_in, v_three);
+        let top = _mm256_add_epi16(v_common, v_near);
+        let bottom = _mm256_add_epi16(v_common, v_far);
+        let v_out_top = if ROUND {
+            _mm256_srai_epi16::<2>(_mm256_add_epi16(top, v_one))
+        } else { top };
+        let v_out_bottom = if ROUND {
+            _mm256_srai_epi16::<2>(_mm256_add_epi16(bottom, v_two))
+        } else { bottom };
 
         // SAFETY: Outputs are 16 * 16 bit long, so the stores are safe.
         unsafe {
@@ -174,18 +190,13 @@ pub unsafe fn upsample_vertical_avx2(
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 #[target_feature(enable = "avx2")]
 pub unsafe fn upsample_hv_avx2(
-    input: &[i16],
-    in_near: &[i16],
-    in_far: &[i16],
-    scratch_space: &mut [i16],
-    output: &mut [i16],
+    input: &[i16], in_near: &[i16], in_far: &[i16], scratch_space: &mut [i16], output: &mut [i16]
 ) {
     assert_eq!(input.len() * 4, output.len());
     assert!(input.len() * 2 <= scratch_space.len());
     let scratch_space = &mut scratch_space[..input.len() * 2];
 
-
-    upsample_vertical_avx2(input, in_near, in_far, &mut [], scratch_space);
+    unsafe { upsample_vertical_filtered::<false>(input, in_near, in_far, scratch_space) };
 
     let scratch_half = scratch_space.len() / 2;
     let output_half = output.len() / 2;
@@ -193,7 +204,8 @@ pub unsafe fn upsample_hv_avx2(
     let (scratch_top, scratch_bottom) = scratch_space.split_at_mut(scratch_half);
     let (out_top, out_bottom) = output.split_at_mut(output_half);
 
-    let mut t = [0];
-    upsample_horizontal_avx2(scratch_top, &[], &[], &mut t, out_top);
-    upsample_horizontal_avx2(scratch_bottom, &[], &[], &mut t, out_bottom);
+    unsafe {
+        upsample_horizontal_filtered::<4, 8, 7>(scratch_top, out_top);
+        upsample_horizontal_filtered::<4, 8, 7>(scratch_bottom, out_bottom);
+    }
 }

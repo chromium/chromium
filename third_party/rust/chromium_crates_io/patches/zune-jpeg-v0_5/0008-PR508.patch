@@ -1,0 +1,897 @@
+From 5e1bfa2abc7cc9dbbfd9365d972be800aff8b61f Mon Sep 17 00:00:00 2001
+From: Sergio Gonzalez Martin <sergiog@microsoft.com>
+Date: Mon, 26 Oct 2026 19:32:59 +0000
+Subject: [PATCH] [rust jpeg] Buffered publication rows (PR508)
+
+Backport of https://github.com/etemesi254/zune-image/pull/508
+Published head: 9867965335ee4f058fb11199b4f8b9e70f40af55
+
+Effective cumulative source stage: 9867965335ee4f058fb11199b4f8b9e70f40af55
+Only this stage's new Rust-source delta is carried. Prerequisite changes are not duplicated in later PR patches.
+
+Tracking: https://github.com/etemesi254/zune-image/issues/503
+
+Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+---
+ .../vendor/zune-jpeg-v0_5/src/bitstream.rs    |  27 +++-
+ .../vendor/zune-jpeg-v0_5/src/decoder.rs      |  57 +++++++
+ .../vendor/zune-jpeg-v0_5/src/mcu.rs          | 104 ++++++++++++-
+ .../vendor/zune-jpeg-v0_5/src/mcu_prog.rs     | 140 +++++++++++++++---
+ .../zune-jpeg-v0_5/src/recovery_tests.rs      |  90 +++++++++++
+ .../vendor/zune-jpeg-v0_5/src/scaled.rs       |   9 ++
+ 6 files changed, 402 insertions(+), 25 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs
+index 263994c12f3d9d07081945b2d9da54b1e623a2e3..2adab10de0f3c6b4b97cd78069d7dd6d9281353e 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs
+@@ -84,9 +84,11 @@ macro_rules! decode_huff {
+             }
+ 
+             if code_length == 17{
++                $stream.corrupt_data = true;
+                 if $stream.strict {
+                     return Err(DecodeErrors::FormatStatic("Bad Huffman Code Corrupt JPEG"));
+                 }
++                warn!("Bad Huffman code in JPEG entropy");
+                 // The sequential recovery rule consumes the invalid 17-bit
+                 // code and substitutes a zero symbol, not the rest of the scan.
+                 $symbol = 0;
+@@ -124,7 +126,8 @@ pub(crate) struct HuffmanBitstreamState {
+     pub(crate) seen_eoi:          bool,
+     pub(crate) eob_run:           i32,
+     pub(crate) marker_bits:       Option<u8>,
+-    pub(crate) insufficient_data: bool
++    pub(crate) insufficient_data: bool,
++    pub(crate) corrupt_data:      bool
+ }
+ 
+ /// Type-erased bitstream state snapshot stored in `ScanCheckpoint`.
+@@ -152,6 +155,12 @@ pub(crate) trait BitStream {
+ 
+     fn begin_mcu(&mut self) {}
+ 
++    fn has_corrupt_data(&self) -> bool {
++        false
++    }
++
++    fn clear_huffman_code_warning(&mut self) {}
++
+     /// Create a new Bitstream for progressive decoding
+     fn new_progressive(al: u8, spec_start: u8, spec_end: u8) -> Self;
+ 
+@@ -314,6 +323,7 @@ pub(crate) struct BitStreamHuffman {
+     insufficient_data:   bool,
+     // Latched at the MCU boundary, not between components of the same MCU.
+     skip_mcu:            bool,
++    corrupt_data:        bool,
+ }
+ 
+ impl BitStreamHuffman {
+@@ -553,9 +563,11 @@ impl BitStreamHuffman {
+                 length += 1;
+             }
+             if length == 17 {
++                self.corrupt_data = true;
+                 if self.strict {
+                     return Err(DecodeErrors::FormatStatic("Bad Huffman Code Corrupt JPEG"));
+                 }
++                warn!("Bad Huffman code in progressive JPEG entropy");
+                 symbol = 0;
+             }
+         }
+@@ -677,6 +689,7 @@ impl BitStream for BitStreamHuffman {
+             marker_bits:         None,
+             insufficient_data:   false,
+             skip_mcu:            false,
++            corrupt_data:        false,
+         }
+     }
+ 
+@@ -703,6 +716,7 @@ impl BitStream for BitStreamHuffman {
+             marker_bits:         None,
+             insufficient_data:   false,
+             skip_mcu:            false,
++            corrupt_data:        false,
+         }
+     }
+ 
+@@ -714,6 +728,14 @@ impl BitStream for BitStreamHuffman {
+         self.skip_mcu = self.insufficient_data && !self.strict;
+     }
+ 
++    fn has_corrupt_data(&self) -> bool {
++        self.corrupt_data || self.insufficient_data
++    }
++
++    fn clear_huffman_code_warning(&mut self) {
++        self.corrupt_data = false;
++    }
++
+     #[inline(always)]
+     fn overread_by(&self) -> usize {
+         self.overread_by
+@@ -767,6 +789,7 @@ impl BitStream for BitStreamHuffman {
+             eob_run:        self.eob_run,
+             marker_bits:    self.marker_bits,
+             insufficient_data: self.insufficient_data,
++            corrupt_data: self.corrupt_data
+         }
+     }
+ 
+@@ -784,6 +807,7 @@ impl BitStream for BitStreamHuffman {
+         self.eob_run = state.eob_run;
+         self.marker_bits = state.marker_bits;
+         self.insufficient_data = state.insufficient_data;
++        self.corrupt_data = state.corrupt_data;
+     }
+ 
+     #[inline(always)]
+@@ -1291,6 +1315,7 @@ impl BitStream for BitStreamHuffman {
+         self.marker_bits = None;
+         self.insufficient_data = false;
+         self.skip_mcu = false;
++        self.corrupt_data = false;
+     }
+ }
+ 
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
+index 4a984c7bf20cbdaa3313efd5a87dd3aecbf68a1f..e9d184dafdc4da3d055d44ecafff0a707f407568 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
+@@ -402,6 +402,9 @@ pub struct JpegDecoder<T> {
+     /// Repeated scans update existing blocks, including across suspended input.
+     pub(crate) baseline_coefficients: [Vec<i32>; MAX_COMPONENTS],
+     pub(crate) baseline_seen_components: [bool; MAX_COMPONENTS],
++    pub(crate) baseline_eoi_seen: bool,
++    /// Corruption halting buffered input before EOI; full recovery is unchanged.
++    pub(crate) baseline_corrupt: bool,
+     /// Active progressive scan scratch buffers.
+     ///
+     /// Storage is retained across EOF or cancellation so retries can reuse its
+@@ -416,6 +419,10 @@ pub struct JpegDecoder<T> {
+     pub(crate) progressive_last_good_row: usize,
+     /// Pending row position; discarded scans must not change smoothing precision.
+     pub(crate) progressive_scan_last_good_row: usize,
++    /// Complete input iMCU rows in the current progressive scan.
++    pub(crate) progressive_input_rows: usize,
++    /// Whether the progressive input contained an actual EOI marker.
++    pub(crate) progressive_eoi_seen: bool,
+     /// The first progressive scan has no previous precision to fall back to.
+     pub(crate) progressive_smoothing_first_scan: bool,
+     /// Number of committed progressive scans currently rendered as preview
+@@ -2174,11 +2181,15 @@ where
+             progressive_mcus_buffer:     core::array::from_fn(|_| Vec::new()),
+             baseline_coefficients:       core::array::from_fn(|_| Vec::new()),
+             baseline_seen_components:    [false; MAX_COMPONENTS],
++            baseline_eoi_seen:           false,
++            baseline_corrupt:            false,
+             progressive_scan_buffer: core::array::from_fn(|_| Vec::new()),
+             upsampler_scratch: Vec::new(),
+             progressive_completed_scans: 0,
+             progressive_last_good_row: 0,
+             progressive_scan_last_good_row: 0,
++            progressive_input_rows: 0,
++            progressive_eoi_seen: false,
+             progressive_smoothing_first_scan: true,
+             progressive_displayed_scans: 0,
+             progressive_render_incomplete: false,
+@@ -2343,6 +2354,52 @@ where
+         Some(self.progressive_completed_scans)
+     }
+ 
++    /// Return the coded-pixel row prefix available from buffered scan decoding.
++    ///
++    /// After a successful buffered decode, incremental consumers can publish this
++    /// prefix instead of displaying the previous completed scan's full-frame preview.
++    /// Every progressive DC component must be present before publication.
++    /// DC smoothing requires two future iMCU rows until a real EOI is seen.
++    /// Buffered sequential images cannot publish before EOI or after corruption
++    /// halted input before EOI.
++    /// Full-frame best-effort decoding and raw output are unchanged.
++    /// Returns `None` before headers, for ordinary stripe-based sequential output,
++    /// or for legacy best-effort merged DC/AC scans without progressive row bounds.
++    #[must_use]
++    pub fn buffered_output_rows(&self) -> Option<usize> {
++        if !self.headers_decoded {
++            return None;
++        }
++        let height = usize::from(self.height());
++        if !self.is_progressive {
++            return self
++                .baseline_coefficients
++                .iter()
++                .any(|buffer| !buffer.is_empty())
++                .then_some(if self.baseline_eoi_seen && !self.baseline_corrupt {
++                    height
++                } else {
++                    0
++                });
++        }
++        if self.spec_start == 0 && self.spec_end != 0 {
++            return None;
++        }
++        if self
++            .components
++            .iter()
++            .any(|component| component.progressive_bits[0] < 0)
++        {
++            return Some(0);
++        }
++        if self.progressive_eoi_seen {
++            return Some(height);
++        }
++        let lookahead =
++            if self.spec_start == 0 && self.progressive_smoothing_enabled() { 2 } else { 0 };
++        Some((self.progressive_input_rows.saturating_sub(lookahead) * self.v_max * 8).min(height))
++    }
++
+     /// Return the number of output bytes currently holding a progressive
+     /// preview image.
+     ///
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
+index b6d61ef185845f9579d07f1ca1857286b7870953..712d9cbbac4d07894b70feca79db0e037955fc91 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
+@@ -20,7 +20,7 @@ use crate::components::SampleRatios;
+ use crate::decoder::{HeaderAppendStateSnapshot, McuDecodeOutput, MAX_COMPONENTS};
+ use crate::errors::DecodeErrors;
+ use crate::marker::Marker;
+-use crate::mcu_prog::get_marker;
++use crate::mcu_prog::get_marker_with_discarded;
+ use crate::misc::{calculate_padded_width, setup_component_params};
+ use crate::worker::{color_convert, upsample};
+ use crate::JpegDecoder;
+@@ -68,7 +68,39 @@ fn prepare_baseline_coefficients(
+ mod coefficient_buffer_tests {
+     use alloc::vec;
+ 
+-    use super::{baseline_coefficient_count, prepare_baseline_coefficients, DCT_BLOCK};
++    use zune_core::bytestream::ZCursor;
++
++    use super::{
++        baseline_coefficient_count, prepare_baseline_coefficients, JpegDecoder, DCT_BLOCK
++    };
++
++    #[test]
++    fn native_fast_input_window_requires_its_budget_and_no_marker() {
++        let mut stuffed = vec![0; 512];
++        stuffed[0] = 0xff;
++        let mut marker = stuffed.clone();
++        marker[1] = 0xd9;
++        let mut trailing_prefix = vec![0; 512];
++        trailing_prefix[511] = 0xff;
++        for (data, blocks, expected) in [
++            (vec![0; 511], 1, false),
++            (vec![0; 512], 1, true),
++            (vec![0; 512], 2, false),
++            (vec![0; 1024], 2, true),
++            (stuffed, 1, true),
++            (marker, 1, false),
++            (trailing_prefix, 1, false)
++        ] {
++            let mut decoder = JpegDecoder::new(ZCursor::new(&data));
++            assert_eq!(
++                decoder.native_fast_huffman_window(blocks).unwrap(),
++                expected
++            );
++            assert_eq!(decoder.stream.position().unwrap(), 0);
++        }
++        let mut decoder = JpegDecoder::new(ZCursor::new(&[]));
++        assert!(decoder.native_fast_huffman_window(usize::MAX).is_err());
++    }
+ 
+     #[test]
+     fn checked_geometry_counts_all_sampling_factors() {
+@@ -286,6 +318,8 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+         let raw_mode = output.is_raw();
+         if !resuming {
+             self.baseline_seen_components.fill(false);
++            self.baseline_eoi_seen = false;
++            self.baseline_corrupt = false;
+         }
+ 
+         for (pos, comp) in self.components.iter_mut().enumerate() {
+@@ -515,6 +549,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                     Vec::new()
+                 };
+                 let seen_components = self.baseline_seen_components;
++                let baseline_corrupt = self.baseline_corrupt;
+ 
+                 // decode a whole MCU width,
+                 // this takes into account interleaved components.
+@@ -570,6 +605,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                             .copy_from_slice(coefficients);
+                     }
+                     self.baseline_seen_components = seen_components;
++                    self.baseline_corrupt = baseline_corrupt;
+                 }
+ 
+                 let terminate = match terminate_result {
+@@ -847,7 +883,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+             // did not discover that marker while decoding coefficients, look
+             // for it before treating the image as complete.
+             if !all_components_in_first_scan && !*stream.seen_eoi() {
+-                match get_marker(&mut self.stream, &mut stream) {
++                match self.get_baseline_marker(&mut stream) {
+                     Ok(Marker::EOI) => {
+                         *stream.seen_eoi() = true;
+                         break;
+@@ -904,7 +940,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+         if self.expects_dnl {
+             let scan_components = self.z_order;
+             let scan_component_count = usize::from(self.num_scans);
+-            match get_marker(&mut self.stream, &mut stream) {
++            match self.get_baseline_marker(&mut stream) {
+                 Ok(Marker::DNL) => {
+                     let length = self.stream.get_u16_be_err()?;
+                     if length != 4 {
+@@ -951,7 +987,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+         // So this ensures we reach it
+         // Ensure we read EOI
+         if !*stream.seen_eoi() {
+-            let marker = get_marker(&mut self.stream, &mut stream);
++            let marker = self.get_baseline_marker(&mut stream);
+             match marker {
+                 Ok(Marker::EOI) => {
+                     self.reassemble_extended_xmp();
+@@ -1023,11 +1059,46 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+ 
+         trace!("Finished decoding image");
+ 
++        self.baseline_corrupt |= stream.has_corrupt_data();
++        self.baseline_eoi_seen |= *stream.seen_eoi();
+         output.mark_source_complete();
+ 
+         Ok(())
+     }
+ 
++    fn get_baseline_marker<B: BitStream>(
++        &mut self, stream: &mut B
++    ) -> Result<Marker, DecodeErrors> {
++        self.baseline_corrupt |= stream.has_corrupt_data();
++        let (marker, discarded) = get_marker_with_discarded(&mut self.stream, stream)?;
++        if discarded != 0 {
++            // A warning raised while reaching EOI does not halt native output.
++            if marker != Marker::EOI {
++                self.baseline_corrupt = true;
++            }
++            warn!("Discarded {discarded} bytes before JPEG scan marker");
++        }
++        Ok(marker)
++    }
++
++    fn native_fast_huffman_window(&mut self, blocks: usize) -> Result<bool, DecodeErrors> {
++        let length = blocks
++            .checked_mul(DCT_BLOCK * 8)
++            .ok_or(DecodeErrors::FormatStatic(
++                "Huffman MCU input budget overflow"
++            ))?;
++        let bytes = match self.stream.peek_at(0, length) {
++            Ok(bytes) => bytes,
++            Err(error) if error.is_recoverable_eof() => return Ok(false),
++            Err(error) => return Err(error.into())
++        };
++        // Native's fast MCU decoder does not warn for recovered Huffman codes.
++        // Its 512-byte-per-block guard and an uninterrupted entropy window
++        // guarantee that it does not fall back to the warning-producing path.
++        Ok(bytes.last() != Some(&0xff)
++            && !bytes.windows(2).any(|pair| pair[0] == 0xff && pair[1] != 0))
++    }
++
+     /// Process all MCUs when baseline decoding has been processing them component-after-component.
+     /// Transform buffered coefficient blocks into the component stripes expected
+     /// by the interleaved post processor.
+@@ -1204,6 +1275,17 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+ 
+         let z_order = self.z_order;
+         let z_scans = &z_order[..usize::from(self.num_scans)];
++        let blocks_in_mcu = z_scans
++            .iter()
++            .map(|&index| {
++                if SAMPLED {
++                    self.components[index].horizontal_sample
++                        * self.components[index].vertical_sample
++                } else {
++                    1
++                }
++            })
++            .sum();
+ 
+         // How much of the head of `tmp` was written by the last MCU decoding? We only check for
+         // two different cases and not all possible outcomes as this is only used to optimize the
+@@ -1224,6 +1306,9 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+         };
+ 
+         for j in start_col..scan_du_width {
++            let native_fast_window = PROGRESSIVE && !self.baseline_corrupt
++                && self.restart_interval == 0 && stream.marker().is_none()
++                && self.native_fast_huffman_window(blocks_in_mcu)?;
+             stream.begin_mcu();
+             // iterate over components
+             for &k in z_scans {
+@@ -1343,6 +1428,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                             if self.stream.eof()? {
+                                 return Err(DecodeErrors::ExhaustedData);
+                             }
++                            self.baseline_corrupt = true;
+                             return if self.options.strict_mode() {
+                                 Err(err)
+                             } else {
+@@ -1408,6 +1494,10 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                 }
+             }
+ 
++            if native_fast_window && stream.marker().is_none() {
++                stream.clear_huffman_code_warning();
++            }
++            self.baseline_corrupt |= stream.has_corrupt_data();
+             self.todo = self.todo.wrapping_sub(1);
+ 
+             if self.todo == 0 {
+@@ -1650,7 +1740,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+     /// * `Ok(false)` - Found EOI, decoding complete
+     /// * `Err(_)` - Error (too many markers, unexpected marker in strict mode, etc.)
+     fn advance_to_next_sos<B: BitStream>(
+-        &mut self, first_marker: Marker, stream: &mut B, final_scan: bool,
++        &mut self, first_marker: Marker, stream: &mut B, final_scan: bool
+     ) -> Result<bool, DecodeErrors> {
+         // Limit iterations to prevent DoS from malicious files.
+         const MAX_INTER_SCAN_MARKERS: usize = 64;
+@@ -1702,7 +1792,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+             }
+             markers_seen += 1;
+             restore_inter_scan_on_suspend!(self.check_cancelled());
+-            let marker = restore_inter_scan_on_suspend!(get_marker(&mut self.stream, stream));
++            let marker = restore_inter_scan_on_suspend!(self.get_baseline_marker(stream));
+ 
+             match marker {
+                 Marker::SOS => {
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
+index d5b7868031efae722b1b7add2588c02cd94c53d6..5c546077f1b92ced68b29701bffaaff26e9e982f 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
+@@ -436,6 +436,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+             }
+         }
+ 
++        self.progressive_eoi_seen |= marker == Marker::EOI;
+         self.reassemble_extended_xmp();
+         self.finish_progressive_decoding(block, output, upsampler_scratch)
+     }
+@@ -446,6 +447,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+         use_scratch_coefficients: bool, upsampler_scratch: &mut Vec<i16>
+     ) -> Result<bool, DecodeErrors> {
+         self.progressive_scan_last_good_row = 0;
++        self.progressive_input_rows = 0;
+         if !use_scratch_coefficients {
+             // The default first decode attempt takes this path and updates the
+             // existing progressive buffers directly without cloning them.
+@@ -489,6 +491,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+             fine_resume.as_ref(),
+             !output.is_raw()
+         );
++        self.progressive_eoi_seen |= matches!(*stream.marker(), Some(Marker::EOI));
+ 
+         if let Err(e) = result {
+             if matches!(e, DecodeErrors::Cancelled) {
+@@ -563,6 +566,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+         &mut self, stream: &mut B, block: &mut [Vec<i16>; MAX_COMPONENTS], suspend_dc_eof: bool
+     ) -> Result<bool, DecodeErrors> {
+         let result = self.parse_entropy_coded_data(stream, block, None, suspend_dc_eof);
++        self.progressive_eoi_seen |= matches!(*stream.marker(), Some(Marker::EOI));
+ 
+         if let Err(e) = result {
+             if matches!(e, DecodeErrors::Cancelled) {
+@@ -653,6 +657,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+         self.progressive_completed_scans = 0;
+         self.progressive_displayed_scans = 0;
+         self.progressive_render_incomplete = false;
++        self.progressive_input_rows = 0;
+         self.pixels_decoded = 0;
+     }
+ 
+@@ -816,6 +821,14 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+         (mcu_width, mcu_height)
+     }
+ 
++    fn set_progressive_input_row(&mut self, component: usize, row: usize, height: usize) {
++        self.progressive_input_rows = if row == height {
++            self.mcu_y
++        } else {
++            row / self.components[component].vertical_sample
++        };
++    }
++
+     fn parse_dc_first_non_interleaved<B: BitStream>(
+         &mut self, stream: &mut B, buffer: &mut [Vec<i16>; MAX_COMPONENTS], k: usize,
+         resume_position: Option<(usize, usize)>, suspend_dc_eof: bool
+@@ -824,6 +837,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+         let dc_pos = self.components[k].dc_huff_table % MAX_COMPONENTS;
+         let width_stride = self.components[k].width_stride / 8;
+         let (resume_row, resume_col) = resume_position.unwrap_or((0, 0));
++        self.set_progressive_input_row(k, resume_row, mcu_height);
+ 
+         let mut cancel = self.cancel_debounced(mcu_width);
+         for i in resume_row..mcu_height {
+@@ -860,6 +874,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                     self.handle_rst_main(stream)?;
+                 }
+             }
++            self.set_progressive_input_row(k, i + 1, mcu_height);
+             self.checkpoint_progressive_dc_first_row::<B>(stream, i + 1)?;
+         }
+         Ok(())
+@@ -890,6 +905,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                     self.handle_rst_main(stream)?;
+                 }
+             }
++            self.set_progressive_input_row(k, i + 1, mcu_height);
+         }
+         Ok(())
+     }
+@@ -933,6 +949,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                 self.todo -= 1;
+                 self.handle_rst_main(stream)?;
+             }
++            self.set_progressive_input_row(k, i + 1, mcu_height);
+         }
+         Ok(())
+     }
+@@ -967,6 +984,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                 self.todo -= 1;
+                 self.handle_rst_main(stream)?;
+             }
++            self.set_progressive_input_row(k, i + 1, mcu_height);
+         }
+         Ok(())
+     }
+@@ -977,6 +995,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+     ) -> Result<(), DecodeErrors> {
+         let mut cancel = self.cancel_debounced(self.mcu_x);
+         let (resume_row, resume_col) = resume_position.unwrap_or((0, 0));
++        self.progressive_input_rows = resume_row;
+         for i in resume_row..self.mcu_y {
+             if progressive_input_available(stream) {
+                 self.progressive_scan_last_good_row = i;
+@@ -1016,6 +1035,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                 self.todo -= 1;
+                 self.handle_rst_main(stream)?;
+             }
++            self.progressive_input_rows = i + 1;
+             self.checkpoint_progressive_dc_first_row::<B>(stream, i + 1)?;
+         }
+         Ok(())
+@@ -1059,6 +1079,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                 // EOF the decoder falls back to scan-start replay.
+                 self.handle_rst_main(stream)?;
+             }
++            self.progressive_input_rows = i + 1;
+         }
+         Ok(())
+     }
+@@ -1158,6 +1179,19 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+         let handled_restart = self.handle_rst_main_inner(stream)?;
+         Ok(was_due && handled_restart)
+     }
++    pub(crate) fn progressive_smoothing_enabled(&self) -> bool {
++        self.components.iter().all(|component| {
++            component.progressive_bits[0] >= 0
++                && SMOOTHING_COEFFICIENTS
++                    .iter()
++                    .all(|&index| component.quantization_table[index] != 0)
++        }) && self.components.iter().any(|component| {
++            component.progressive_bits[1..10]
++                .iter()
++                .any(|&bits| bits != 0)
++        })
++    }
++
+     #[allow(clippy::too_many_lines)]
+     #[allow(clippy::needless_range_loop, clippy::cast_sign_loss)]
+     fn finish_progressive_decoding(
+@@ -1225,17 +1259,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+         let mut tmp = [0_i32; DCT_BLOCK];
+ 
+         let raw_mode = output.is_raw();
+-        let smoothing_enabled = self.components.iter().all(|component| {
+-                component.progressive_bits[0] >= 0
+-                    && SMOOTHING_COEFFICIENTS
+-                        .iter()
+-                        .all(|&index| component.quantization_table[index] != 0)
+-            })
+-            && self.components.iter().any(|component| {
+-                component.progressive_bits[1..10]
+-                    .iter()
+-                    .any(|&bits| bits != 0)
+-            });
++        let smoothing_enabled = self.progressive_smoothing_enabled();
+ 
+         for (pos, comp) in self.components.iter_mut().enumerate() {
+             // Allocate only needed components.
+@@ -1457,31 +1481,44 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+ ///
+ /// This reads until it gets a marker or end of file is encountered
+ pub fn get_marker<T, B: BitStream>(
+-    reader: &mut ZReader<T>, stream: &mut B,
++    reader: &mut ZReader<T>, stream: &mut B
+ ) -> Result<Marker, DecodeErrors>
+ where
+-    T: ZByteReaderTrait,
++    T: ZByteReaderTrait
++{
++    get_marker_with_discarded(reader, stream).map(|(marker, _)| marker)
++}
++
++pub(crate) fn get_marker_with_discarded<T, B: BitStream>(
++    reader: &mut ZReader<T>, stream: &mut B
++) -> Result<(Marker, usize), DecodeErrors>
++where
++    T: ZByteReaderTrait
+ {
+     if let Some(marker) = stream.marker().take() {
+-        return Ok(marker);
++        return Ok((marker, 0));
+     }
+ 
+-    // read until we get a marker
+-
++    let mut discarded = 0;
+     while !reader.eof()? {
+         let marker = reader.read_u8_err()?;
+ 
+         if marker == 255 {
+             let mut r = reader.read_u8_err()?;
++            let mut prefix_bytes = 1;
+             // 0xFF 0XFF(some images may be like that)
+             while r == 0xFF {
++                prefix_bytes += 1;
+                 r = reader.read_u8_err()?;
+             }
+ 
+             if r != 0 {
+-                return Marker::from_u8(r)
++                return Marker::from_u8(r).map(|marker| (marker, discarded))
+                     .ok_or_else(|| DecodeErrors::Format(format!("Unknown marker 0xFF{r:X}")));
+             }
++            discarded += prefix_bytes + 1;
++        } else {
++            discarded += 1;
+         }
+     }
+     return Err(DecodeErrors::ExhaustedData);
+@@ -1600,6 +1637,7 @@ mod tests {
+                 .jpeg_set_out_colorspace(ColorSpace::RGB);
+             let mut decoder = JpegDecoder::new_with_options(ZCursor::new(&data), options);
+             let pixels = decoder.decode().unwrap();
++            assert_eq!(decoder.buffered_output_rows(), Some(if eoi { 8 } else { 0 }));
+             assert_eq!(decoder.progressive_mcus_buffer[0][0], 128);
+             assert_eq!(decoder.progressive_mcus_buffer[1][0], 128);
+             assert_eq!(
+@@ -1611,6 +1649,73 @@ mod tests {
+         }
+     }
+ 
++    #[test]
++    fn buffered_progressive_publication_requires_every_dc_component() {
++        for (truncated, eoi) in [(false, true), (false, false), (true, false)] {
++            let data = noninterleaved_dc_jpeg(1, truncated, eoi);
++            let options = DecoderOptions::default().set_strict_mode(false);
++            let mut decoder = JpegDecoder::new_with_options(ZCursor::new(&data), options);
++            assert_eq!(decoder.decode().unwrap().len(), 8 * 8 * 3);
++            assert_eq!(decoder.buffered_output_rows(), Some(0));
++        }
++    }
++
++    #[test]
++    fn progressive_output_rows_track_sampling_and_partial_bottom_mcus() {
++        for eoi in [false, true] {
++            let mut data = noninterleaved_dc_jpeg(0, false, false);
++            let sof = data
++                .windows(2)
++                .position(|marker| marker == [0xff, 0xc2])
++                .unwrap();
++            data[sof + 5..sof + 7].copy_from_slice(&113_u16.to_be_bytes());
++            data[sof + 11] = 0x12;
++            for component in 1..=3 {
++                data.extend_from_slice(&[0xff, 0xda, 0, 8, 1, component, 0, 0, 0, 0]);
++                let blocks = if component == 1 { 15 } else { 8 };
++                let mut bits = Vec::new();
++                for _ in 0..blocks {
++                    bits.extend_from_slice(&[0, 1, 0, 0, 0, 0, 0, 0, 0]);
++                }
++                while bits.len() % 8 != 0 {
++                    bits.push(1);
++                }
++                for chunk in bits.chunks_exact(8) {
++                    let byte = chunk.iter().fold(0, |value, bit| (value << 1) | bit);
++                    data.push(byte);
++                    if byte == 0xff {
++                        data.push(0);
++                    }
++                }
++            }
++            if eoi {
++                data.extend_from_slice(&[0xff, 0xd9]);
++            }
++            let options = DecoderOptions::default().set_strict_mode(false);
++            let mut decoder = JpegDecoder::new_with_options(ZCursor::new(&data), options);
++            assert_eq!(decoder.buffered_output_rows(), None);
++            let pixels = decoder.decode().unwrap();
++            assert_eq!(pixels.len(), 8 * 113 * 3);
++            assert_eq!(decoder.progressive_input_rows, if eoi { 8 } else { 7 });
++            assert_eq!(
++                decoder.buffered_output_rows(),
++                Some(if eoi { 113 } else { 80 })
++            );
++
++            let options = DecoderOptions::default().set_strict_mode(false);
++            let mut scaled = JpegDecoder::new_with_options(ZCursor::new(&data), options)
++                .into_scaled(crate::JpegScale::Half)
++                .unwrap();
++            let mut reduced = vec![0; scaled.output_buffer_size().unwrap()];
++            scaled.decode_into(&mut reduced).unwrap();
++            assert_eq!(scaled.dimensions(), (4, 57));
++            assert_eq!(
++                scaled.buffered_output_rows(),
++                Some(if eoi { 113 } else { 80 })
++            );
++        }
++    }
++
+     #[test]
+     fn packed_progressive_best_effort_preserves_supported_malformed_scans() {
+         use zune_core::colorspace::ColorSpace;
+@@ -1640,6 +1745,7 @@ mod tests {
+             decoder
+                 .decode_into(&mut packed)
+                 .unwrap_or_else(|error| panic!("incremental={incremental}: {error:?}"));
++            assert_eq!(decoder.buffered_output_rows(), None);
+ 
+             let mut decoder = JpegDecoder::new_with_options(ZCursor::new(&data), options);
+             decoder.set_incremental_mode(incremental);
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/recovery_tests.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/recovery_tests.rs
+index 9e81a80ca71bfaac14a3c4f8c29f0c7ca441f9f2..998c28fff34943a01eecf479a3f027d9e1c618a2 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/recovery_tests.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/recovery_tests.rs
+@@ -110,6 +110,27 @@ fn bad_huffman_code_consumes_seventeen_bits_only_in_lenient_mode() {
+     assert!(decoder.decode().is_err());
+ }
+ 
++#[test]
++fn buffered_publication_tracks_eoi_after_trailing_metadata() {
++    for eoi in [false, true] {
++        let mut data = frame(8, 8, &[(1, 0x11), (2, 0x11), (3, 0x11)]);
++        for component in 1..=3 {
++            scan(&mut data, &[component], &[(0, false)]);
++        }
++        data.extend_from_slice(&[0xFF, 0xE3, 0, 2, 0xFF, 0xFE, 0, 6, b't', b'e', b's', b't']);
++        if eoi {
++            data.extend_from_slice(&[0xFF, 0xD9]);
++        }
++        let mut decoder = JpegDecoder::new_with_options(ZCursor::new(&data), options(false));
++        assert_eq!(decoder.buffered_output_rows(), None);
++        assert_eq!(decoder.decode().unwrap(), [128; 8 * 8 * 3]);
++        assert_eq!(
++            decoder.buffered_output_rows(),
++            Some(if eoi { 8 } else { 0 })
++        );
++    }
++}
++
+ #[test]
+ fn invalid_ac_run_does_not_wrap_and_overwrite_dc() {
+     let mut data = frame(8, 8, &[(1, 0x11), (2, 0x11), (3, 0x11)]);
+@@ -121,6 +142,7 @@ fn invalid_ac_run_does_not_wrap_and_overwrite_dc() {
+     decoder.decode().unwrap();
+     assert_eq!(decoder.baseline_coefficients[0][0], 0);
+     assert_eq!(decoder.baseline_coefficients[0][63], 8);
++    assert_eq!(decoder.buffered_output_rows(), Some(8));
+     let mut decoder = JpegDecoder::new_with_options(ZCursor::new(&data), options(true));
+     assert!(decoder.decode().is_err());
+ }
+@@ -167,6 +189,48 @@ fn repeated_sequential_scan_preserves_ac_and_resets_dc_prediction() {
+     assert_eq!(&decoder.baseline_coefficients[0][..2], &[8, 8]);
+ }
+ 
++#[test]
++fn buffered_sequential_publication_tracks_native_input_completion() {
++    for case in [
++        "clean",
++        "incomplete",
++        "bad_huffman",
++        "discarded_entropy",
++        "discarded_before_eoi"
++    ] {
++        let mut data = frame(8, 8, &[(1, 0x11), (2, 0x11), (3, 0x11)]);
++        if case == "bad_huffman" {
++            data.extend_from_slice(&[0xFF, 0xDA, 0, 8, 1, 1, 0, 0, 63, 0, 0xFF, 0, 0xFF, 0, 0x9F]);
++        } else {
++            scan(&mut data, &[1], &[(0, false)]);
++        }
++        if case == "discarded_entropy" {
++            data.extend_from_slice(&[0x12; 12]);
++        }
++        scan(&mut data, &[2, 3], &[(0, false); 2]);
++        if case == "discarded_before_eoi" {
++            data.extend_from_slice(&[0x12; 12]);
++        }
++        if case != "incomplete" {
++            data.extend_from_slice(&[0xFF, 0xD9]);
++        }
++        let mut decoder = JpegDecoder::new_with_options(ZCursor::new(&data), options(false));
++        assert_eq!(decoder.decode().unwrap(), [128; 8 * 8 * 3], "{case}");
++        assert_eq!(
++            decoder.buffered_output_rows(),
++            Some(if matches!(case, "clean" | "discarded_before_eoi") { 8 } else { 0 }),
++            "{case}"
++        );
++    }
++
++    let mut data = frame(8, 8, &[(1, 0x11), (2, 0x11), (3, 0x11)]);
++    scan(&mut data, &[1, 2, 3], &[(0, false); 3]);
++    data.extend_from_slice(&[0xFF, 0xD9]);
++    let mut decoder = JpegDecoder::new_with_options(ZCursor::new(&data), options(false));
++    decoder.decode().unwrap();
++    assert_eq!(decoder.buffered_output_rows(), None);
++}
++
+ #[test]
+ fn premature_scan_marker_is_recoverable_only_in_lenient_mode() {
+     let mut data = frame(16, 16, &[(1, 0x11)]);
+@@ -178,6 +242,32 @@ fn premature_scan_marker_is_recoverable_only_in_lenient_mode() {
+     assert_eq!(lenient.decode().unwrap().len(), 16 * 16 * 3);
+ }
+ 
++#[test]
++fn buffered_fast_huffman_recovery_preserves_publication() {
++    for bad_last in [false, true] {
++        let mut data = frame(8, 8, &[(1, 0x11), (2, 0x11), (3, 0x11)]);
++        if bad_last {
++            scan(&mut data, &[1], &[(0, false)]);
++            scan(&mut data, &[2], &[(0, false)]);
++        }
++        let component = if bad_last { 3 } else { 1 };
++        data.extend_from_slice(&[
++            0xff, 0xda, 0, 8, 1, component, 0, 0, 63, 0, 0xff, 0, 0xff, 0, 0x9f
++        ]);
++        if !bad_last {
++            scan(&mut data, &[2, 3], &[(0, false); 2]);
++        }
++        data.extend_from_slice(&[0; 2048]);
++        data.extend_from_slice(&[0xff, 0xd9]);
++        let mut decoder = JpegDecoder::new_with_options(ZCursor::new(&data), options(false));
++        assert_eq!(decoder.decode().unwrap(), [128; 8 * 8 * 3]);
++        assert_eq!(
++            decoder.buffered_output_rows(),
++            Some(if bad_last { 8 } else { 0 })
++        );
++    }
++}
++
+ #[test]
+ fn malformed_entropy_is_bounded_with_and_without_end_markers() {
+     let mut random = 1_u32;
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/scaled.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/scaled.rs
+index cce9ae117eeb4503766931d67cd31d3bcd0e2f5d..b75b5466114d97566c17bd5bef1a9ebc0560e532 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/scaled.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/scaled.rs
+@@ -69,6 +69,15 @@ impl<T: ZByteReaderTrait> ScaledJpegDecoder<T> {
+         (self.output.width, self.output.height)
+     }
+ 
++    /// Buffered publication bound in coded-pixel rows, not reduced rows.
++    ///
++    /// Forward [`JpegDecoder::buffered_output_rows`] without changing geometry.
++    /// Consumers must apply the selected scale denominator.
++    #[must_use]
++    pub fn buffered_output_rows(&self) -> Option<usize> {
++        self.decoder.buffered_output_rows()
++    }
++
+     /// Required packed output bytes, or `None` if the size overflows.
+     pub fn output_buffer_size(&self) -> Option<usize> {
+         self.output
+-- 
+2.56.0
+

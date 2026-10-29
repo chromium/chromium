@@ -1,0 +1,490 @@
+From 8e6393b607777c6a1eb57c6e95a74c29dae9799b Mon Sep 17 00:00:00 2001
+From: Sergio Gonzalez Martin <sergiog@microsoft.com>
+Date: Mon, 26 Oct 2026 19:32:59 +0000
+Subject: [PATCH] [rust jpeg] Packed progressive reconstruction (PR504)
+
+Backport of https://github.com/etemesi254/zune-image/pull/504
+Published head: fe79d5842d21e01f500496c35120ee568be59aa8
+
+Effective cumulative source stage: 94946ddc272d1b75b0ece72666348d31028562ab
+Only this stage's new Rust-source delta is carried. Prerequisite changes are not duplicated in later PR patches.
+
+Tracking: https://github.com/etemesi254/zune-image/issues/503
+
+Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+---
+ .../vendor/zune-jpeg-v0_5/src/bitstream.rs    | 228 +++++++++++-------
+ .../zune-jpeg-v0_5/src/bitstream_arith.rs     |   4 +-
+ .../vendor/zune-jpeg-v0_5/src/mcu_prog.rs     |  76 +++++-
+ 3 files changed, 206 insertions(+), 102 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs
+index ac5720019faf135340f3b1a97934f494a67e387b..37dc8d87eec50b6b7a5801b409e94e1719b6060e 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs
+@@ -189,7 +189,7 @@ pub(crate) trait BitStream {
+ 
+     fn decode_prog_dc_first<T>(
+         &mut self, reader: &mut ZReader<T>, dc_table: &mut Self::DCEntropyTable, block: &mut i16,
+-        dc_prediction: &mut i32, last_dc_diff: &mut i32
++        dc_prediction: &mut i32, last_dc_diff: &mut i32, suspend_at_eof: bool
+     ) -> Result<(), DecodeErrors>
+     where
+         T: ZByteReaderTrait;
+@@ -430,6 +430,131 @@ impl BitStreamHuffman {
+     }
+ }
+ 
++impl BitStreamHuffman {
++    #[inline(always)]
++    fn refill_byte<T: ZByteReaderTrait, const SUSPEND: bool>(
++        &mut self, reader: &mut ZReader<T>
++    ) -> Result<bool, DecodeErrors> {
++        let read_byte = |reader: &mut ZReader<T>| -> Result<u64, DecodeErrors> {
++            if SUSPEND && reader.eof()? {
++                return Err(DecodeErrors::ExhaustedData);
++            }
++            Ok(u64::from(reader.read_u8()))
++        };
++        let past_end = reader.eof()?;
++        let byte = read_byte(reader)?;
++        self.overread_by += usize::from(reader.eof()?);
++        self.zeros_past_end += 8 * usize::from(past_end);
++        self.buffer = (self.buffer << 8) | byte;
++        self.bits_left += 8;
++        if byte == 0xff {
++            let stuffed_past_end = reader.eof()?;
++            let mut next_byte = read_byte(reader)?;
++            self.stuffed_past_end |= stuffed_past_end;
++            while next_byte == 0xff {
++                let more_past_end = reader.eof()?;
++                next_byte = read_byte(reader)?;
++                self.stuffed_past_end |= more_past_end;
++            }
++            if next_byte == 0 {
++                self.overread_by += usize::from(reader.eof()?);
++            }
++            if next_byte != 0 {
++                self.buffer >>= 8;
++                self.bits_left -= 8;
++                if self.bits_left != 0 {
++                    self.aligned_buffer = self.buffer << (64 - self.bits_left);
++                }
++                let marker = Marker::from_u8(next_byte as u8);
++                self.marker = marker;
++                if let Some(Marker::UNKNOWN(_)) = marker {
++                    return Err(DecodeErrors::Format(
++                        "Unknown marker in bit stream".to_string()
++                    ));
++                }
++                if next_byte == 0xd9 {
++                    self.buffer <<= 8;
++                    self.bits_left += 8;
++                    self.aligned_buffer = self.buffer << (64 - self.bits_left);
++                }
++                return Ok(false);
++            }
++        }
++        Ok(true)
++    }
++
++    fn refill_progressive_dc<T: ZByteReaderTrait>(
++        &mut self, reader: &mut ZReader<T>
++    ) -> Result<(), DecodeErrors> {
++        if self.marker.is_some() || self.seen_eoi {
++            self.refill(reader)?;
++            return Ok(());
++        }
++        let minimum_bits = (usize::BITS - 7) as u8;
++        while self.bits_left < minimum_bits {
++            if !self.refill_byte::<T, true>(reader)? {
++                break;
++            }
++        }
++        if self.bits_left < 8 {
++            self.refill(reader)?;
++        }
++        self.aligned_buffer = self.buffer << (64 - self.bits_left);
++        Ok(())
++    }
++
++    fn decode_progressive_dc<T: ZByteReaderTrait>(
++        &mut self, reader: &mut ZReader<T>, table: &HuffmanTable
++    ) -> Result<i32, DecodeErrors> {
++        // A suspending source cannot commit a partial refill. Use the native
++        // eight-bit lookup and word-sized prefetch before publishing a DC.
++        if self.bits_left < 8 {
++            self.refill_progressive_dc(reader)?;
++        }
++        let mut entry = table.lookup[self.peek_bits::<HUFF_LOOKAHEAD>() as usize];
++        let mut length = entry >> HUFF_LOOKAHEAD;
++        if length > 8 && self.bits_left < HUFF_LOOKAHEAD {
++            self.refill_progressive_dc(reader)?;
++            entry = table.lookup[self.peek_bits::<HUFF_LOOKAHEAD>() as usize];
++            length = entry >> HUFF_LOOKAHEAD;
++        }
++        let mut symbol = entry & ((1 << HUFF_LOOKAHEAD) - 1);
++        if length > i32::from(HUFF_LOOKAHEAD) {
++            while length < 17 {
++                if i32::from(self.bits_left) < length {
++                    self.refill_progressive_dc(reader)?;
++                }
++                let code = self.peek_bits::<16>() as i32;
++                if code < table.maxcode[length as usize] {
++                    symbol = i32::from(
++                        table.values[(((code >> (16 - length)) + table.offset[length as usize])
++                            & 0xff) as usize]
++                    );
++                    break;
++                }
++                length += 1;
++            }
++            if length == 17 {
++                if self.strict {
++                    return Err(DecodeErrors::FormatStatic("Bad Huffman Code Corrupt JPEG"));
++                }
++                symbol = 0;
++            }
++        }
++        if i32::from(self.bits_left) < length {
++            self.refill_progressive_dc(reader)?;
++        }
++        self.drop_bits(length as u8);
++        if symbol == 0 {
++            return Ok(0);
++        }
++        if self.bits_left < symbol as u8 {
++            self.refill_progressive_dc(reader)?;
++        }
++        Ok(huff_extend(self.get_bits(symbol as u8), symbol))
++    }
++}
++
+ impl BitStream for BitStreamHuffman {
+     type State = HuffmanBitstreamState;
+     type DCEntropyTable = HuffmanTable;
+@@ -640,7 +765,7 @@ impl BitStream for BitStreamHuffman {
+             BitstreamStateSnapshot::Huffman(s) => self.restore_state(s),
+             BitstreamStateSnapshot::None => {}
+             #[cfg(feature = "arith")]
+-            _ => unreachable!("Huffman stream given arithmetic snapshot"),
++            _ => unreachable!("Huffman stream given arithmetic snapshot")
+         }
+     }
+ 
+@@ -656,81 +781,6 @@ impl BitStream for BitStreamHuffman {
+     where
+         T: ZByteReaderTrait
+     {
+-        /// Macro version of a single byte refill.
+-        /// Arguments
+-        /// buffer-> our io buffer, because rust macros cannot get values from
+-        /// the surrounding environment bits_left-> number of bits left
+-        /// to full refill
+-        macro_rules! refill {
+-            ($buffer:expr,$byte:expr,$bits_left:expr) => {
+-                // read a byte from the stream; one read once the data has ended is a zero
+-                // the data never held
+-                let past_end = reader.eof()?;
+-                $byte = u64::from(reader.read_u8());
+-                self.overread_by += usize::from(reader.eof()?);
+-                self.zeros_past_end += 8 * usize::from(past_end);
+-                // append to the buffer
+-                // JPEG is a MSB type buffer so that means we append this
+-                // to the lower end (0..8) of the buffer and push the rest bits above..
+-                $buffer = ($buffer << 8) | $byte;
+-                // Increment bits left
+-                $bits_left += 8;
+-                // Check for special case  of OxFF, to see if it's a stream or a marker
+-                if $byte == 0xff {
+-                    // read next byte; when the data has ended this read is a zero the data
+-                    // never held, and resolving the stuffing against it consumed it: whether
+-                    // the 0xFF was data or the first half of a marker is what the missing
+-                    // byte would have said, and a row that reached it is not publishable
+-                    let stuffed_past_end = reader.eof()?;
+-                    let mut next_byte = u64::from(reader.read_u8());
+-                    self.stuffed_past_end |= stuffed_past_end;
+-                    // Byte snuffing, if we encounter byte snuff, we skip the byte
+-                    if next_byte != 0x00 {
+-                        // skip that byte we read
+-                        while next_byte == 0xFF {
+-                            let more_past_end = reader.eof()?;
+-                            next_byte = u64::from(reader.read_u8());
+-                            self.stuffed_past_end |= more_past_end;
+-                        }
+-                    }
+-                    // read_u8 gives 0 once the input runs out. That 0 is not a stuffed
+-                    // byte: the 0xFF bytes may be fill bytes before a marker that has
+-                    // not arrived yet. Count it as an over-read so the scan stops (or,
+-                    // in incremental mode, retries) instead of decoding a 0xFF data byte.
+-                    if next_byte == 0x00 {
+-                        self.overread_by += usize::from(reader.eof()?);
+-                    }
+-                    if next_byte != 0x00 {
+-                        {
+-                            // Undo the byte append and return
+-                            $buffer >>= 8;
+-                            $bits_left -= 8;
+-
+-                            if $bits_left != 0 {
+-                                self.aligned_buffer = $buffer << (64 - $bits_left);
+-                            }
+-
+-                            let marker = Marker::from_u8(next_byte as u8);
+-                            self.marker = marker;
+-
+-                            if let Some(Marker::UNKNOWN(_)) = marker{
+-                                return Err(DecodeErrors::Format("Unknown marker in bit stream".to_string()));
+-                            }
+-                            if next_byte == 0xD9 {
+-                                // special handling for eoi, fill some bytes,even if its zero,
+-                                // removes some panics
+-                                self.buffer <<= 8;
+-                                self.bits_left += 8;
+-                                self.aligned_buffer = self.buffer << (64 - self.bits_left);
+-                            }
+-
+-                            return Ok(false);
+-                        }
+-                    }
+-                }
+-            };
+-        }
+-
+         // 32 bits is enough for a decode(16 bits) and receive_extend(max 16 bits)
+         if self.bits_left < 32 {
+             if self.marker.is_some() || self.seen_eoi {
+@@ -779,16 +829,11 @@ impl BitStream for BitStreamHuffman {
+ 
+                 reader.rewind(4)?;
+             }
+-            // This serves two reasons,
+-            // 1: Make clippy shut up
+-            // 2: Favour register reuse
+-            let mut byte;
+-            // 4 refills, if all succeed the stream should contain enough bits to decode a
+-            // value
+-            refill!(self.buffer, byte, self.bits_left);
+-            refill!(self.buffer, byte, self.bits_left);
+-            refill!(self.buffer, byte, self.bits_left);
+-            refill!(self.buffer, byte, self.bits_left);
++            for _ in 0..4 {
++                if !self.refill_byte::<T, false>(reader)? {
++                    return Ok(false);
++                }
++            }
+             // Construct an MSB buffer whose top bits are the bitstream we are currently holding.
+             self.aligned_buffer = self.buffer << (64 - self.bits_left);
+         }
+@@ -939,12 +984,17 @@ impl BitStream for BitStreamHuffman {
+     #[inline]
+     fn decode_prog_dc_first<T>(
+         &mut self, reader: &mut ZReader<T>, dc_table: &mut HuffmanTable, block: &mut i16,
+-        dc_prediction: &mut i32, _last_dc_diff: &mut i32
++        dc_prediction: &mut i32, _last_dc_diff: &mut i32, suspend_at_eof: bool
+     ) -> Result<(), DecodeErrors>
+     where
+         T: ZByteReaderTrait
+     {
+-        self.decode_dc(reader, dc_table, dc_prediction)?;
++        if suspend_at_eof {
++            *dc_prediction =
++                dc_prediction.wrapping_add(self.decode_progressive_dc(reader, dc_table)?);
++        } else {
++            self.decode_dc(reader, dc_table, dc_prediction)?;
++        }
+         *block = (*dc_prediction as i16).wrapping_mul(self.successive_low_mask);
+         return Ok(());
+     }
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream_arith.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream_arith.rs
+index c274aff2dad8aafd753b00d6e06d829338f6ea7e..4d27cf33cd7ae1b5d907f8f4529a9c83783fc4cd 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream_arith.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream_arith.rs
+@@ -872,10 +872,10 @@ impl BitStream for BitStreamArithmetic {
+     #[inline]
+     fn decode_prog_dc_first<T>(
+         &mut self, reader: &mut ZReader<T>, dc_table: &mut ArithDCTables, block: &mut i16,
+-        dc_prediction: &mut i32, last_dc_diff: &mut i32,
++        dc_prediction: &mut i32, last_dc_diff: &mut i32, _suspend_at_eof: bool
+     ) -> Result<(), DecodeErrors>
+     where
+-        T: ZByteReaderTrait,
++        T: ZByteReaderTrait
+     {
+         self.decode_dc(reader, dc_table, dc_prediction, last_dc_diff)?;
+         *block = (*dc_prediction as i16).wrapping_mul(self.successive_low_mask);
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
+index 766f515108aa222f4c5c931a0d1b600717f1934e..d5b7868031efae722b1b7add2588c02cd94c53d6 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
+@@ -449,7 +449,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+         if !use_scratch_coefficients {
+             // The default first decode attempt takes this path and updates the
+             // existing progressive buffers directly without cloning them.
+-            return self.decode_progressive_scan_direct(stream, block);
++            return self.decode_progressive_scan_direct(stream, block, !output.is_raw());
+         }
+ 
+         // Incremental preservation was explicitly enabled for the first attempt,
+@@ -483,7 +483,12 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+             }
+         }
+ 
+-        let result = self.parse_entropy_coded_data(stream, scan_block, fine_resume.as_ref());
++        let result = self.parse_entropy_coded_data(
++            stream,
++            scan_block,
++            fine_resume.as_ref(),
++            !output.is_raw()
++        );
+ 
+         if let Err(e) = result {
+             if matches!(e, DecodeErrors::Cancelled) {
+@@ -555,9 +560,9 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+     }
+ 
+     fn decode_progressive_scan_direct<B: BitStream>(
+-        &mut self, stream: &mut B, block: &mut [Vec<i16>; MAX_COMPONENTS]
++        &mut self, stream: &mut B, block: &mut [Vec<i16>; MAX_COMPONENTS], suspend_dc_eof: bool
+     ) -> Result<bool, DecodeErrors> {
+-        let result = self.parse_entropy_coded_data(stream, block, None);
++        let result = self.parse_entropy_coded_data(stream, block, None, suspend_dc_eof);
+ 
+         if let Err(e) = result {
+             if matches!(e, DecodeErrors::Cancelled) {
+@@ -719,7 +724,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+     #[allow(clippy::too_many_lines, clippy::cast_sign_loss)]
+     fn parse_entropy_coded_data<B: BitStream>(
+         &mut self, stream: &mut B, buffer: &mut [Vec<i16>; MAX_COMPONENTS],
+-        fine_resume: Option<&ProgressiveFineCheckpoint>,
++        fine_resume: Option<&ProgressiveFineCheckpoint>, suspend_dc_eof: bool
+     ) -> Result<(), DecodeErrors> {
+         self.reset_prog_params(stream);
+         if let Some(checkpoint) = fine_resume {
+@@ -760,7 +765,9 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                 if self.succ_high == 0 {
+                     let resume_position =
+                         fine_resume.map(|checkpoint| (checkpoint.mcu_row, checkpoint.mcu_col));
+-                    self.parse_dc_first_non_interleaved(stream, buffer, k, resume_position)?;
++                    self.parse_dc_first_non_interleaved(
++                        stream, buffer, k, resume_position, suspend_dc_eof
++                    )?;
+                 } else {
+                     self.parse_dc_refine_non_interleaved(stream, buffer, k)?;
+                 }
+@@ -791,7 +798,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+             if self.succ_high == 0 {
+                 let resume_position =
+                     fine_resume.map(|checkpoint| (checkpoint.mcu_row, checkpoint.mcu_col));
+-                self.parse_dc_first_interleaved(stream, buffer, resume_position)?;
++                self.parse_dc_first_interleaved(stream, buffer, resume_position, suspend_dc_eof)?;
+             } else {
+                 self.parse_dc_refine_interleaved(stream, buffer)?;
+             }
+@@ -811,7 +818,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+ 
+     fn parse_dc_first_non_interleaved<B: BitStream>(
+         &mut self, stream: &mut B, buffer: &mut [Vec<i16>; MAX_COMPONENTS], k: usize,
+-        resume_position: Option<(usize, usize)>
++        resume_position: Option<(usize, usize)>, suspend_dc_eof: bool
+     ) -> Result<(), DecodeErrors> {
+         let (mcu_width, mcu_height) = self.get_non_interleaved_dimensions(k);
+         let dc_pos = self.components[k].dc_huff_table % MAX_COMPONENTS;
+@@ -846,6 +853,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                         dc_pred,
+                         &mut component.dc_pred,
+                         &mut component.dc_diff,
++                        suspend_dc_eof
+                     )?;
+ 
+                     self.todo -= 1;
+@@ -965,7 +973,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+ 
+     fn parse_dc_first_interleaved<B: BitStream>(
+         &mut self, stream: &mut B, buffer: &mut [Vec<i16>; MAX_COMPONENTS],
+-        resume_position: Option<(usize, usize)>
++        resume_position: Option<(usize, usize)>, suspend_dc_eof: bool
+     ) -> Result<(), DecodeErrors> {
+         let mut cancel = self.cancel_debounced(self.mcu_x);
+         let (resume_row, resume_col) = resume_position.unwrap_or((0, 0));
+@@ -1000,6 +1008,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                                 data,
+                                 &mut component.dc_pred,
+                                 &mut component.dc_diff,
++                                suspend_dc_eof
+                             )?;
+                         }
+                     }
+@@ -1216,8 +1225,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+         let mut tmp = [0_i32; DCT_BLOCK];
+ 
+         let raw_mode = output.is_raw();
+-        let smoothing_enabled = raw_mode
+-            && self.components.iter().all(|component| {
++        let smoothing_enabled = self.components.iter().all(|component| {
+                 component.progressive_bits[0] >= 0
+                     && SMOOTHING_COEFFICIENTS
+                         .iter()
+@@ -1581,6 +1589,28 @@ mod tests {
+         }
+     }
+ 
++    #[test]
++    fn packed_progressive_dc_eof_preserves_suspension_frontier() {
++        use zune_core::colorspace::ColorSpace;
++
++        for (truncated, eoi) in [(false, true), (false, false), (true, false)] {
++            let data = noninterleaved_dc_jpeg(3, truncated, eoi);
++            let options = DecoderOptions::default()
++                .set_strict_mode(false)
++                .jpeg_set_out_colorspace(ColorSpace::RGB);
++            let mut decoder = JpegDecoder::new_with_options(ZCursor::new(&data), options);
++            let pixels = decoder.decode().unwrap();
++            assert_eq!(decoder.progressive_mcus_buffer[0][0], 128);
++            assert_eq!(decoder.progressive_mcus_buffer[1][0], 128);
++            assert_eq!(
++                decoder.progressive_mcus_buffer[2][0],
++                if eoi { 128 } else { 0 }
++            );
++            let expected = if eoi { [166, 127, 172] } else { [144, 138, 172] };
++            assert!(pixels.chunks_exact(3).all(|pixel| pixel == expected));
++        }
++    }
++
+     #[test]
+     fn packed_progressive_best_effort_preserves_supported_malformed_scans() {
+         use zune_core::colorspace::ColorSpace;
+@@ -1680,6 +1710,30 @@ mod tests {
+         }
+     }
+ 
++    #[test]
++    fn progressive_packed_smoothing_matches_libjpeg() {
++        for (complete_ac, expected) in [
++            (false, 0xa007_fba6_4972_7faa),
++            (true, 0xd39b_63bf_88b1_b6ed)
++        ] {
++            let data = smoothing_jpeg(complete_ac);
++            for options in [DecoderOptions::new_safe(), DecoderOptions::new_fast()] {
++                let mut decoder = JpegDecoder::new_with_options(
++                    ZCursor::new(&data),
++                    options
++                        .set_strict_mode(false)
++                        .jpeg_set_out_colorspace(zune_core::colorspace::ColorSpace::Luma)
++                );
++                let pixels = decoder.decode().unwrap();
++                assert_eq!(pixels.len(), 22 * 19);
++                assert_eq!(plane_hash(&pixels, 22), expected);
++                assert!(decoder.progressive_mcus_buffer[0]
++                    .chunks_exact(64)
++                    .all(|block| block[1..].iter().all(|&value| value == 0)));
++            }
++        }
++    }
++
+     #[test]
+     fn smoothing_preserves_known_coefficients_and_precision_bounds() {
+         let mut blocks = [0; 9 * 64];
+-- 
+2.56.0
+

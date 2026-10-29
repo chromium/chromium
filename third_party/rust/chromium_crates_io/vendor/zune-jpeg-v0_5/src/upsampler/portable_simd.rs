@@ -6,17 +6,19 @@
  * You can redistribute it or modify it under terms of the MIT, Apache License or Zlib license
  */
 
-use std::simd::prelude::*;
+use core::simd::prelude::*;
 
 const LANES: usize = 16;
 type V = Simd<i16, LANES>;
 
 pub fn upsample_horizontal_simd(
-    input: &[i16],
-    in_near: &[i16],
-    in_far: &[i16],
-    scratch: &mut [i16],
-    output: &mut [i16],
+    input: &[i16], _in_near: &[i16], _in_far: &[i16], _scratch: &mut [i16], output: &mut [i16]
+) {
+    upsample_horizontal_filtered::<2, 1, 2>(input, output);
+}
+
+fn upsample_horizontal_filtered<const SHIFT: i32, const EVEN: i16, const ODD: i16>(
+    input: &[i16], output: &mut [i16]
 ) {
     assert_eq!(input.len() * 2, output.len());
     assert!(input.len() > 2);
@@ -24,25 +26,26 @@ pub fn upsample_horizontal_simd(
     let len = input.len();
 
     if len < 18 {
-        return super::scalar::upsample_horizontal(input, in_near, in_far, scratch, output);
+        return super::scalar::upsample_horizontal_filtered::<SHIFT, EVEN, ODD>(input, output);
     }
 
     // First two pixels
-    output[0] = input[0];
-    output[1] = (input[0] * 3 + input[1] + 2) >> 2;
+    output[0] = (4 * input[0] + EVEN) >> SHIFT;
+    output[1] = (input[0] * 3 + input[1] + ODD) >> SHIFT;
 
     let v_three = V::splat(3);
-    let v_two = V::splat(2);
+    let v_even_bias = V::splat(EVEN);
+    let v_odd_bias = V::splat(ODD);
+    let shift = i16::try_from(SHIFT).expect("upsampling shift fits i16");
 
     let upsample16 = |input: &[i16; 18], output: &mut [i16; 32]| {
         let v_prev = V::from_slice(&input[0..LANES]);
         let v_curr = V::from_slice(&input[1..LANES + 1]);
         let v_next = V::from_slice(&input[2..LANES + 2]);
 
-        let v_common = v_curr * v_three + v_two;
-
-        let v_even = (v_common + v_prev) >> 2;
-        let v_odd = (v_common + v_next) >> 2;
+        let v_common = v_curr * v_three;
+        let v_even = (v_common + v_prev + v_even_bias) >> shift;
+        let v_odd = (v_common + v_next + v_odd_bias) >> shift;
 
         let (v_res_1, v_res_2) = v_even.interleave(v_odd);
 
@@ -67,16 +70,18 @@ pub fn upsample_horizontal_simd(
     }
 
     // Last two pixels.
-    output[output.len() - 2] = (3 * input[len - 1] + input[len - 2] + 2) >> 2;
-    output[output.len() - 1] = input[len - 1];
+    output[output.len() - 2] = (3 * input[len - 1] + input[len - 2] + EVEN) >> SHIFT;
+    output[output.len() - 1] = (4 * input[len - 1] + ODD) >> SHIFT;
 }
 
 pub fn upsample_vertical_simd(
-    input: &[i16],
-    in_near: &[i16],
-    in_far: &[i16],
-    _scratch_space: &mut [i16],
-    output: &mut [i16],
+    input: &[i16], in_near: &[i16], in_far: &[i16], _scratch_space: &mut [i16], output: &mut [i16]
+) {
+    upsample_vertical_filtered::<true>(input, in_near, in_far, output);
+}
+
+fn upsample_vertical_filtered<const ROUND: bool>(
+    input: &[i16], in_near: &[i16], in_far: &[i16], output: &mut [i16]
 ) {
     assert_eq!(input.len() * 2, output.len());
     assert_eq!(in_near.len(), input.len());
@@ -85,13 +90,14 @@ pub fn upsample_vertical_simd(
     let len = input.len();
 
     if len < 16 {
-        return super::scalar::upsample_vertical(input, in_near, in_far, _scratch_space, output);
+        return super::scalar::upsample_vertical_filtered::<ROUND>(input, in_near, in_far, output);
     }
 
     let middle = output.len() / 2;
     let (out_top, out_bottom) = output.split_at_mut(middle);
 
     let v_three = V::splat(3);
+    let v_one = V::splat(1);
     let v_two = V::splat(2);
 
     let upsample16 = |input: &[i16; 16],
@@ -103,10 +109,11 @@ pub fn upsample_vertical_simd(
         let v_near = V::from(*in_near);
         let v_far = V::from(*in_far);
 
-        let v_common = v_in * v_three + v_two;
-
-        let v_out_top = (v_common + v_near) >> 2;
-        let v_out_bottom = (v_common + v_far) >> 2;
+        let v_common = v_in * v_three;
+        let top = v_common + v_near;
+        let bottom = v_common + v_far;
+        let v_out_top = if ROUND { (top + v_one) >> 2 } else { top };
+        let v_out_bottom = if ROUND { (bottom + v_two) >> 2 } else { bottom };
 
         v_out_top.copy_to_slice(out_top.as_mut_slice());
         v_out_bottom.copy_to_slice(out_bottom.as_mut_slice());
@@ -145,19 +152,14 @@ pub fn upsample_vertical_simd(
 }
 
 pub fn upsample_hv_simd(
-    input: &[i16],
-    in_near: &[i16],
-    in_far: &[i16],
-    scratch_space: &mut [i16],
-    output: &mut [i16],
+    input: &[i16], in_near: &[i16], in_far: &[i16], scratch_space: &mut [i16], output: &mut [i16]
 ) {
     assert_eq!(input.len() * 4, output.len());
     
     assert!(input.len() * 2 <= scratch_space.len());
     let scratch_space = &mut scratch_space[..input.len() * 2];
 
-
-    upsample_vertical_simd(input, in_near, in_far, &mut [], scratch_space);
+    upsample_vertical_filtered::<false>(input, in_near, in_far, scratch_space);
 
     let scratch_half = scratch_space.len() / 2;
     let output_half = output.len() / 2;
@@ -165,7 +167,6 @@ pub fn upsample_hv_simd(
     let (scratch_top, scratch_bottom) = scratch_space.split_at_mut(scratch_half);
     let (out_top, out_bottom) = output.split_at_mut(output_half);
 
-    let mut t = [0];
-    upsample_horizontal_simd(scratch_top, &[], &[], &mut t, out_top);
-    upsample_horizontal_simd(scratch_bottom, &[], &[], &mut t, out_bottom);
+    upsample_horizontal_filtered::<4, 8, 7>(scratch_top, out_top);
+    upsample_horizontal_filtered::<4, 8, 7>(scratch_bottom, out_bottom);
 }

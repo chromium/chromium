@@ -270,7 +270,9 @@ pub(crate) fn setup_component_params<T: ZByteReaderTrait>(
         }
     }
 
-    if img.is_mjpeg {
+    // Abbreviated sequential JPEG streams (including MJPEG frames without an
+    // AVI1 marker) may omit the standard Huffman tables.
+    if img.is_mjpeg || (img.info.sof.is_sequential_dct() && !img.is_arithmetic) {
         fill_default_mjpeg_tables(
             img.is_progressive,
             &mut img.entropy_tables.dc_huffman,
@@ -307,6 +309,63 @@ pub fn calculate_padded_width(actual_width: usize, sub_sample: SampleRatios) -> 
         SampleRatios::Generic(h, _) => {
             ((actual_width + ((h * 8).saturating_sub(1))) / (h * 8)) * (h * 8)
         }
+    }
+}
+
+#[cfg(test)]
+mod abbreviated_tests {
+    use alloc::vec;
+    use alloc::vec::Vec;
+
+    use zune_core::bytestream::ZCursor;
+    use zune_core::colorspace::ColorSpace;
+    use zune_core::options::DecoderOptions;
+
+    use super::{fill_default_mjpeg_tables, HuffmanTable};
+    use crate::JpegDecoder;
+
+    fn abbreviated_grayscale() -> Vec<u8> {
+        let mut data = vec![0xFF, 0xD8, 0xFF, 0xDB, 0, 67, 0];
+        data.extend_from_slice(&[8; 64]);
+        data.extend_from_slice(&[
+            0xFF, 0xC0, 0, 11, 8, 0, 8, 0, 8, 1, 1, 0x11, 0, 0xFF, 0xDA, 0, 8, 1, 1, 0, 0, 63, 0,
+            0x2B, 0xFF, 0xD9
+        ]);
+        data
+    }
+
+    #[test]
+    fn baseline_without_dht_or_avi_marker_uses_standard_tables() {
+        let data = abbreviated_grayscale();
+        let options = DecoderOptions::default()
+            .set_strict_mode(true)
+            .jpeg_set_out_colorspace(ColorSpace::RGB);
+        let mut decoder = JpegDecoder::new_with_options(ZCursor::new(&data), options);
+        assert_eq!(decoder.decode().unwrap(), [128; 8 * 8 * 3]);
+    }
+
+    #[test]
+    fn abbreviated_stream_does_not_guess_nonstandard_table_selectors() {
+        let mut data = abbreviated_grayscale();
+        let selector = data.len() - 8;
+        data[selector] = 0x22;
+        let mut decoder = JpegDecoder::new(ZCursor::new(&data));
+        assert!(decoder.decode().is_err());
+    }
+
+    #[test]
+    fn default_tables_preserve_explicit_tables_and_other_selectors() {
+        let mut dc = core::array::from_fn::<_, 4, _>(|_| None);
+        let mut ac = dc.clone();
+        let mut counts = [0; 17];
+        counts[1] = 1;
+        dc[0] = Some(HuffmanTable::new_unfilled(&counts, &[7], true, false).unwrap());
+        ac[1] = Some(HuffmanTable::new_unfilled(&counts, &[0], false, false).unwrap());
+        fill_default_mjpeg_tables(false, &mut dc, &mut ac);
+        assert_eq!(dc[0].as_ref().unwrap().values[0], 7);
+        assert_eq!(ac[1].as_ref().unwrap().values[0], 0);
+        assert!(dc[1].is_some() && ac[0].is_some());
+        assert!(dc[2..].iter().chain(ac[2..].iter()).all(Option::is_none));
     }
 }
 

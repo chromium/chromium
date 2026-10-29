@@ -12,7 +12,15 @@ use core::arch::aarch64::{vdupq_n_s16, vld1q_s16, vaddq_s16, vmulq_s16, vshrq_n_
 #[cfg(target_arch = "aarch64")]
 #[target_feature(enable = "neon")]
 pub unsafe fn upsample_horizontal_neon(
-    input: &[i16], in_near: &[i16], in_far: &[i16], scratch: &mut [i16], output: &mut [i16]
+    input: &[i16], _in_near: &[i16], _in_far: &[i16], _scratch: &mut [i16], output: &mut [i16]
+) {
+    unsafe { upsample_horizontal_filtered::<2, 1, 2>(input, output) }
+}
+
+#[cfg(target_arch = "aarch64")]
+#[target_feature(enable = "neon")]
+unsafe fn upsample_horizontal_filtered<const SHIFT: i32, const EVEN: i16, const ODD: i16>(
+    input: &[i16], output: &mut [i16]
 ) {
     assert_eq!(input.len() * 2, output.len());
     assert!(input.len() > 2);
@@ -20,15 +28,16 @@ pub unsafe fn upsample_horizontal_neon(
     let len = input.len();
 
     if len < 10 {
-        return super::scalar::upsample_horizontal(input, in_near, in_far, scratch, output);
+        return super::scalar::upsample_horizontal_filtered::<SHIFT, EVEN, ODD>(input, output);
     }
 
     // First two pixels
-    output[0] = input[0];
-    output[1] = (input[0] * 3 + input[1] + 2) >> 2;
+    output[0] = (4 * input[0] + EVEN) >> SHIFT;
+    output[1] = (input[0] * 3 + input[1] + ODD) >> SHIFT;
 
     let v_three = vdupq_n_s16(3);
-    let v_two = vdupq_n_s16(2);
+    let v_even_bias = vdupq_n_s16(EVEN);
+    let v_odd_bias = vdupq_n_s16(ODD);
 
     let upsample8 = |input: &[i16; 10], output: &mut [i16; 16]| {
         let in_ptr = input.as_ptr();
@@ -43,9 +52,11 @@ pub unsafe fn upsample_horizontal_neon(
             )
         };
 
-        let v_common = vaddq_s16(vmulq_s16(v_curr, v_three), v_two);
-        let v_even = vshrq_n_s16::<2>(vaddq_s16(v_common, v_prev));
-        let v_odd = vshrq_n_s16::<2>(vaddq_s16(v_common, v_next));
+        let v_common = vmulq_s16(v_curr, v_three);
+        let v_even = vshrq_n_s16::<SHIFT>(
+            vaddq_s16(vaddq_s16(v_common, v_prev), v_even_bias));
+        let v_odd = vshrq_n_s16::<SHIFT>(
+            vaddq_s16(vaddq_s16(v_common, v_next), v_odd_bias));
 
         let v_res_1 = vzip1q_s16(v_even, v_odd);
         let v_res_2 = vzip2q_s16(v_even, v_odd);
@@ -74,14 +85,22 @@ pub unsafe fn upsample_horizontal_neon(
     }
 
     // Last two pixels.
-    output[output.len() - 2] = (3 * input[len - 1] + input[len - 2] + 2) >> 2;
-    output[output.len() - 1] = input[len - 1];
+    output[output.len() - 2] = (3 * input[len - 1] + input[len - 2] + EVEN) >> SHIFT;
+    output[output.len() - 1] = (4 * input[len - 1] + ODD) >> SHIFT;
 }
 
 #[cfg(target_arch = "aarch64")]
 #[target_feature(enable = "neon")]
 pub unsafe fn upsample_vertical_neon(
-    input: &[i16], in_near: &[i16], in_far: &[i16], scratch: &mut [i16], output: &mut [i16]
+    input: &[i16], in_near: &[i16], in_far: &[i16], _scratch: &mut [i16], output: &mut [i16]
+) {
+    unsafe { upsample_vertical_filtered::<true>(input, in_near, in_far, output) }
+}
+
+#[cfg(target_arch = "aarch64")]
+#[target_feature(enable = "neon")]
+unsafe fn upsample_vertical_filtered<const ROUND: bool>(
+    input: &[i16], in_near: &[i16], in_far: &[i16], output: &mut [i16]
 ) {
     assert_eq!(input.len() * 2, output.len());
     assert_eq!(in_near.len(), input.len());
@@ -90,13 +109,14 @@ pub unsafe fn upsample_vertical_neon(
     let len = input.len();
 
     if len < 16 {
-        return super::scalar::upsample_vertical(input, in_near, in_far, scratch, output);
+        return super::scalar::upsample_vertical_filtered::<ROUND>(input, in_near, in_far, output);
     }
 
     let middle = output.len() / 2;
     let (out_top, out_bottom) = output.split_at_mut(middle);
 
     let v_three = vdupq_n_s16(3);
+    let v_one = vdupq_n_s16(1);
     let v_two = vdupq_n_s16(2);
 
     let upsample8 = |input: &[i16; 8],
@@ -113,9 +133,15 @@ pub unsafe fn upsample_vertical_neon(
             )
         };
 
-        let v_common = vaddq_s16(vmulq_s16(v_in, v_three), v_two);
-        let v_out_top = vshrq_n_s16::<2>(vaddq_s16(v_common, v_near));
-        let v_out_bottom = vshrq_n_s16::<2>(vaddq_s16(v_common, v_far));
+        let v_common = vmulq_s16(v_in, v_three);
+        let top = vaddq_s16(v_common, v_near);
+        let bottom = vaddq_s16(v_common, v_far);
+        let v_out_top = if ROUND {
+            vshrq_n_s16::<2>(vaddq_s16(top, v_one))
+        } else { top };
+        let v_out_bottom = if ROUND {
+            vshrq_n_s16::<2>(vaddq_s16(bottom, v_two))
+        } else { bottom };
 
         // SAFETY: Outputs are 8 * 16 bit long, so the stores are safe.
         unsafe {
@@ -167,7 +193,7 @@ pub unsafe fn upsample_hv_neon(
 
     // SAFETY: caller guarantees NEON is available
     unsafe {
-        upsample_vertical_neon(input, in_near, in_far, &mut [], scratch_space);
+        upsample_vertical_filtered::<false>(input, in_near, in_far, scratch_space);
 
         let scratch_half = scratch_space.len() / 2;
         let output_half = output.len() / 2;
@@ -175,8 +201,7 @@ pub unsafe fn upsample_hv_neon(
         let (scratch_top, scratch_bottom) = scratch_space.split_at_mut(scratch_half);
         let (out_top, out_bottom) = output.split_at_mut(output_half);
 
-        let mut t = [0];
-        upsample_horizontal_neon(scratch_top, &[], &[], &mut t, out_top);
-        upsample_horizontal_neon(scratch_bottom, &[], &[], &mut t, out_bottom);
+        upsample_horizontal_filtered::<4, 8, 7>(scratch_top, out_top);
+        upsample_horizontal_filtered::<4, 8, 7>(scratch_bottom, out_bottom);
     }
 }

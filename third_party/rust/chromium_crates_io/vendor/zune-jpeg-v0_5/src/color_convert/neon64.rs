@@ -10,9 +10,20 @@
 //! NEON is mandatory on aarch64.
 
 #![cfg(all(feature = "neon", target_arch = "aarch64"))]
-use core::arch::aarch64::{uint8x16_t, vdupq_n_s16, vcombine_s16, vcreate_s16, vld1q_s16, vsubq_s16, vdupq_n_s32, vmlal_laneq_s16, vget_low_s16, vmlal_high_laneq_s16, vqshrun_n_s32, vqmovn_u16, vcombine_u16, vcombine_u8, vst3q_u8, uint8x16x3_t, vst4q_u8, uint8x16x4_t, vdupq_n_u8};
+use core::arch::aarch64::{
+    uint8x16_t, uint8x16x3_t, uint8x16x4_t, vaddq_s32, vcombine_s16, vcombine_u16, vcombine_u8,
+    vcreate_s16, vdupq_n_s16, vdupq_n_s32, vdupq_n_u8, vget_low_s16, vld1q_s16,
+    vmlal_high_laneq_s16, vmlal_laneq_s16, vmovl_high_s16, vmovl_s16, vnegq_s32, vqmovn_u16,
+    vqshrun_n_s32, vshlq_n_s32, vst3q_u8, vst4q_u8, vsubq_s16
+};
 
-use crate::color_convert::scalar::{CB_CF, CR_CF, C_G_CB_COEF_2, C_G_CR_COEF_1, YUV_RND, Y_CF};
+// The widened correction below restores native precision from this 14-bit base.
+const Y_CF: i16 = 16_384;
+const CR_CF: i16 = 22_970;
+const CB_CF: i16 = 29_032;
+const C_G_CR_COEF_1: i16 = -11_700;
+const C_G_CB_COEF_2: i16 = -5_638;
+const YUV_RND: i16 = (1 << 13) - 1;
 
 const C_1: u64 = u64::from_ne_bytes([
     Y_CF.to_ne_bytes()[0],
@@ -80,21 +91,48 @@ unsafe fn ycbcr_to_rgb_baseline_no_clamp(
         let b2 = vmlal_laneq_s16::<2>(acc2, vget_low_s16(cb1), coefficients);
         let b3 = vmlal_high_laneq_s16::<2>(acc3, cb1, coefficients);
 
+        let native_precision = |value, correction| {
+            vaddq_s32(
+                vshlq_n_s32::<2>(value),
+                vaddq_s32(correction, vdupq_n_s32(4))
+            )
+        };
+        let cr_wide = [
+            vmovl_s16(vget_low_s16(cr0)),
+            vmovl_high_s16(cr0),
+            vmovl_s16(vget_low_s16(cr1)),
+            vmovl_high_s16(cr1)
+        ];
+        let cb_wide = [
+            vmovl_s16(vget_low_s16(cb0)),
+            vmovl_high_s16(cb0),
+            vmovl_s16(vget_low_s16(cb1)),
+            vmovl_high_s16(cb1)
+        ];
+        let r0 = native_precision(r0, cr_wide[0]);
+        let r1 = native_precision(r1, cr_wide[1]);
+        let r2 = native_precision(r2, cr_wide[2]);
+        let r3 = native_precision(r3, cr_wide[3]);
+        let b0 = native_precision(b0, vshlq_n_s32::<1>(cb_wide[0]));
+        let b1 = native_precision(b1, vshlq_n_s32::<1>(cb_wide[1]));
+        let b2 = native_precision(b2, vshlq_n_s32::<1>(cb_wide[2]));
+        let b3 = native_precision(b3, vshlq_n_s32::<1>(cb_wide[3]));
+
         // Saturating shift right with signed -> unsigned saturation
-        let qr0 = vqshrun_n_s32::<14>(r0);
-        let qr1 = vqshrun_n_s32::<14>(r1);
-        let qr2 = vqshrun_n_s32::<14>(r2);
-        let qr3 = vqshrun_n_s32::<14>(r3);
+        let qr0 = vqshrun_n_s32::<16>(r0);
+        let qr1 = vqshrun_n_s32::<16>(r1);
+        let qr2 = vqshrun_n_s32::<16>(r2);
+        let qr3 = vqshrun_n_s32::<16>(r3);
 
         let mut g0 = vmlal_laneq_s16::<4>(acc0, vget_low_s16(cb0), coefficients);
         let mut g1 = vmlal_high_laneq_s16::<4>(acc1, cb0, coefficients);
         let mut g2 = vmlal_laneq_s16::<4>(acc2, vget_low_s16(cb1), coefficients);
         let mut g3 = vmlal_high_laneq_s16::<4>(acc3, cb1, coefficients);
 
-        let qb0 = vqshrun_n_s32::<14>(b0);
-        let qb1 = vqshrun_n_s32::<14>(b1);
-        let qb2 = vqshrun_n_s32::<14>(b2);
-        let qb3 = vqshrun_n_s32::<14>(b3);
+        let qb0 = vqshrun_n_s32::<16>(b0);
+        let qb1 = vqshrun_n_s32::<16>(b1);
+        let qb2 = vqshrun_n_s32::<16>(b2);
+        let qb3 = vqshrun_n_s32::<16>(b3);
 
         let r0 = vqmovn_u16(vcombine_u16(qr0, qr1));
         let r1 = vqmovn_u16(vcombine_u16(qr2, qr3));
@@ -107,10 +145,12 @@ unsafe fn ycbcr_to_rgb_baseline_no_clamp(
         g2 = vmlal_laneq_s16::<3>(g2, vget_low_s16(cr1), coefficients);
         g3 = vmlal_high_laneq_s16::<3>(g3, cr1, coefficients);
 
-        let qg0 = vqshrun_n_s32::<14>(g0);
-        let qg1 = vqshrun_n_s32::<14>(g1);
-        let qg2 = vqshrun_n_s32::<14>(g2);
-        let qg3 = vqshrun_n_s32::<14>(g3);
+        let green_correction =
+            |index| vnegq_s32(vshlq_n_s32::<1>(vaddq_s32(cr_wide[index], cb_wide[index])));
+        let qg0 = vqshrun_n_s32::<16>(native_precision(g0, green_correction(0)));
+        let qg1 = vqshrun_n_s32::<16>(native_precision(g1, green_correction(1)));
+        let qg2 = vqshrun_n_s32::<16>(native_precision(g2, green_correction(2)));
+        let qg3 = vqshrun_n_s32::<16>(native_precision(g3, green_correction(3)));
 
         let g0 = vqmovn_u16(vcombine_u16(qg0, qg1));
         let g1 = vqmovn_u16(vcombine_u16(qg2, qg3));

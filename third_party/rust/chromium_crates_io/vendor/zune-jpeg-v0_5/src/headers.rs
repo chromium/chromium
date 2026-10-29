@@ -454,6 +454,7 @@ pub(crate) fn parse_start_of_frame<T: ZByteReaderTrait>(
         // intercept the DNL marker rather than stopping at row 0.
         if img_height == 0 {
             img.expects_dnl = true;
+            img.dnl_image = true;
         }
         img.info.components = num_components;
         img.components = components;
@@ -603,6 +604,8 @@ pub(crate) fn parse_sos<T: ZByteReaderTrait>(
             let component = &mut image.components[j];
             component.dc_huff_table = usize::from((y >> 4) & 0xF);
             component.ac_huff_table = usize::from(y & 0xF);
+            component.dc_pred = 0;
+            component.dc_diff = 0;
             trace!(
                 "Assigned huffman tables {}/{} to component {j}, id={}",
                 component.dc_huff_table,
@@ -614,6 +617,11 @@ pub(crate) fn parse_sos<T: ZByteReaderTrait>(
         image.spec_end = spec_end;
         image.succ_high = succ_high;
         image.succ_low = succ_low;
+        image.todo = if image.restart_interval == 0 {
+            0x7fff_ffff
+        } else {
+            image.restart_interval
+        };
 
         trace!("Ss={spec_start}, Se={spec_end} Ah={succ_high} Al={succ_low}");
 
@@ -741,7 +749,14 @@ pub(crate) fn parse_app1<T: ZByteReaderTrait>(
         match payload {
             App1Payload::Exif(data) => decoder.info.exif_data = Some(data),
             App1Payload::Xmp(data) => decoder.info.xmp_data = Some(data),
-            App1Payload::ExtendedXmp(seg) => decoder.extended_xmp_segments.push(seg),
+            App1Payload::ExtendedXmp(seg) => {
+                let bytes_received = decoder
+                    .extended_xmp_bytes_received
+                    .checked_add(seg.data.len())
+                    .ok_or(DecodeErrors::FormatStatic("Extended XMP size overflow"))?;
+                decoder.extended_xmp_segments.push(seg);
+                decoder.extended_xmp_bytes_received = bytes_received;
+            }
             App1Payload::Unknown => {}
         }
         Ok(())

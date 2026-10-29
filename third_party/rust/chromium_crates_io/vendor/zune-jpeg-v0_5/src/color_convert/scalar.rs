@@ -8,18 +8,11 @@
 
 use core::convert::TryInto;
 
-// Bt.601 Full Range inverse coefficients computed with 14 bits of precision with MPFR.
-// This is important to keep them in i16.
-// In most cases LLVM will detect what we're doing i16 widening to i32 math and will use
-// appropriate optimizations.
-pub(crate) const Y_CF: i16 = 16384;
-pub(crate) const CR_CF: i16 = 22970;
-pub(crate) const CB_CF: i16 = 29032;
-pub(crate) const C_G_CR_COEF_1: i16 = -11700;
-pub(crate) const C_G_CB_COEF_2: i16 = -5638;
-pub(crate) const YUV_PREC: i16 = 14;
-// Rounding const for YUV -> RGB conversion: floating equivalent 0.499(9).
-pub(crate) const YUV_RND: i16 = (1 << (YUV_PREC - 1)) - 1;
+pub(super) const CR_FRAC: i16 = 26_345;
+pub(super) const CB_FRAC: i16 = -14_942;
+pub(super) const C_G_CR_FRAC: i16 = 18_734;
+pub(super) const C_G_CB_FRAC: i16 = -22_554;
+pub(super) const YUV_RND: i32 = 1 << 15;
 
 /// Limit values to 0 and 255
 #[inline]
@@ -28,6 +21,20 @@ fn clamp(a: i32) -> u8 {
     a.clamp(0, 255) as u8
 }
 
+// Keep exact 16-bit rounding while splitting out whole chroma contributions,
+// leaving fractional coefficients that fit signed 16-bit multiply-adds.
+fn native_rgb(y: i16, cb: i16, cr: i16) -> (u8, u8, u8) {
+    let y = i32::from(y);
+    let cb = i32::from(cb - 128);
+    let cr = i32::from(cr - 128);
+    (
+        clamp(y + cr + ((i32::from(CR_FRAC) * cr + YUV_RND) >> 16)),
+        clamp(
+            y - cr + ((i32::from(C_G_CR_FRAC) * cr + i32::from(C_G_CB_FRAC) * cb + YUV_RND) >> 16)
+        ),
+        clamp(y + 2 * cb + ((i32::from(CB_FRAC) * cb + YUV_RND) >> 16))
+    )
+}
 
 /// Convert YCbCr to RGB/BGR
 ///
@@ -50,27 +57,17 @@ pub fn ycbcr_to_rgba_inner_16_scalar<const BGRA: bool>(
         .zip(cb.iter().zip(cr.iter()))
         .zip(opt.chunks_exact_mut(4))
     {
-        let cr = cr - 128;
-        let cb = cb - 128;
-
-        let y0 = i32::from(y) * i32::from(Y_CF) + i32::from(YUV_RND);
-
-        let r = (y0 + i32::from(cr) * i32::from(CR_CF)) >> YUV_PREC;
-        let g = (y0
-            + i32::from(cr) * i32::from(C_G_CR_COEF_1)
-            + i32::from(cb) * i32::from(C_G_CB_COEF_2))
-            >> YUV_PREC;
-        let b = (y0 + i32::from(cb) * i32::from(CB_CF)) >> YUV_PREC;
+        let (r, g, b) = native_rgb(y, *cb, *cr);
 
         if BGRA {
-            out[0] = clamp(b);
-            out[1] = clamp(g);
-            out[2] = clamp(r);
+            out[0] = b;
+            out[1] = g;
+            out[2] = r;
             out[3] = 255;
         } else {
-            out[0] = clamp(r);
-            out[1] = clamp(g);
-            out[2] = clamp(b);
+            out[0] = r;
+            out[1] = g;
+            out[2] = b;
             out[3] = 255;
         }
     }
@@ -99,26 +96,16 @@ pub fn ycbcr_to_rgb_inner_16_scalar<const BGRA: bool>(
         .zip(cb.iter().zip(cr.iter()))
         .zip(opt.chunks_exact_mut(3))
     {
-        let cr = cr - 128;
-        let cb = cb - 128;
-
-        let y0 = i32::from(y) * i32::from(Y_CF) + i32::from(YUV_RND);
-
-        let r = (y0 + i32::from(cr) * i32::from(CR_CF)) >> YUV_PREC;
-        let g = (y0
-            + i32::from(cr) * i32::from(C_G_CR_COEF_1)
-            + i32::from(cb) * i32::from(C_G_CB_COEF_2))
-            >> YUV_PREC;
-        let b = (y0 + i32::from(cb) * i32::from(CB_CF)) >> YUV_PREC;
+        let (r, g, b) = native_rgb(y, *cb, *cr);
 
         if BGRA {
-            out[0] = clamp(b);
-            out[1] = clamp(g);
-            out[2] = clamp(r);
+            out[0] = b;
+            out[1] = g;
+            out[2] = r;
         } else {
-            out[0] = clamp(r);
-            out[1] = clamp(g);
-            out[2] = clamp(b);
+            out[0] = r;
+            out[1] = g;
+            out[2] = b;
         }
     }
 

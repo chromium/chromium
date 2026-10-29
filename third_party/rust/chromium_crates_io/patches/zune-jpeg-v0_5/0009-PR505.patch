@@ -1,0 +1,818 @@
+From 8b58d3c56e67ee8e1ab19aa079260b64d9ac4cef Mon Sep 17 00:00:00 2001
+From: Sergio Gonzalez Martin <sergiog@microsoft.com>
+Date: Mon, 26 Oct 2026 19:32:59 +0000
+Subject: [PATCH] [rust jpeg] Native fancy chroma reconstruction (PR505)
+
+Backport of https://github.com/etemesi254/zune-image/pull/505
+Published head: 3f791d04d1d7e07090693b9c595eca79fa7e3215
+
+Effective cumulative source stage: 846eb9b4c0304f6cf4720d7ddc3949b2b5bf479a
+Only this stage's new Rust-source delta is carried. Prerequisite changes are not duplicated in later PR patches.
+
+Tracking: https://github.com/etemesi254/zune-image/issues/503
+
+Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+---
+ .../vendor/zune-jpeg-v0_5/src/mcu.rs          |  43 ++++++
+ .../vendor/zune-jpeg-v0_5/src/upsampler.rs    | 122 +++++++++++++++++-
+ .../zune-jpeg-v0_5/src/upsampler/avx2.rs      |  82 +++++++-----
+ .../zune-jpeg-v0_5/src/upsampler/neon.rs      |  63 ++++++---
+ .../src/upsampler/portable_simd.rs            |  73 +++++------
+ .../zune-jpeg-v0_5/src/upsampler/scalar.rs    | 100 +++++---------
+ 6 files changed, 326 insertions(+), 157 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
+index 712d9cbbac4d07894b70feca79db0e037955fc91..bb8f70bc3115e7784c79305c479cf0d327e65a8f 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
+@@ -1927,6 +1927,49 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+         }
+ 
+         let mut px = *pixels_written;
++        if self.h_max == 0 || self.v_max == 0 {
++            return Err(DecodeErrors::FormatStatic("Invalid component sampling"));
++        }
++        for component in &mut self.components {
++            if component.raw_coeff.is_empty() {
++                continue;
++            }
++            let visible_width = (width * component.horizontal_sample).div_ceil(self.h_max);
++            let visible_height =
++                (usize::from(self.info.height) * component.vertical_sample).div_ceil(self.v_max);
++            let stride = component.width_stride;
++            if visible_width == 0
++                || visible_width > stride
++                || component.raw_coeff.len() % stride != 0
++            {
++                return Err(DecodeErrors::FormatStatic(
++                    "Invalid component reconstruction dimensions"
++                ));
++            }
++            let rows = component.raw_coeff.len() / stride;
++            // DNL leaves the height unknown, but horizontal edges are already known.
++            let valid_rows = if self.expects_dnl {
++                rows
++            } else {
++                visible_height.saturating_sub(i * rows).min(rows)
++            };
++            if valid_rows == 0 {
++                continue;
++            }
++            for row in component
++                .raw_coeff
++                .chunks_exact_mut(stride)
++                .take(valid_rows)
++            {
++                let edge = row[visible_width - 1];
++                row[visible_width..].fill(edge);
++            }
++            for row in valid_rows..rows {
++                component
++                    .raw_coeff
++                    .copy_within((valid_rows - 1) * stride..valid_rows * stride, row * stride);
++            }
++        }
+         // indicates whether image is vertically up-sampled
+         let is_vertically_sampled = self
+             .components
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler.rs
+index 8585b98bad35a88c6a43d02dbaee41705853c5aa..5f7e6e029143e0896c2ebb76645c9b796361c8ed 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler.rs
+@@ -80,7 +80,8 @@
+ //!
+ //! # Horizontal vertical downsampling/chroma quartering.
+ //!
+-//! Carry out a vertical filter in the first pass, then a horizontal filter in the second pass.
++//! Keep vertical weighted sums at full precision through horizontal filtering.
++//! Apply the native alternating rounding biases only at the final output.
+ #![allow(unreachable_code)]
+ use zune_core::options::DecoderOptions;
+ 
+@@ -181,6 +182,125 @@ pub fn generic_sampler() -> UpSampler {
+ mod tests {
+     use super::*;
+ 
++    #[test]
++    fn native_fancy_upsampling_rounding() {
++        let mut horizontal = [0; 6];
++        scalar::upsample_horizontal(&[2, 0, 2], &[], &[], &mut [], &mut horizontal);
++        assert_eq!(horizontal, [2, 2, 0, 1, 1, 2]);
++
++        let mut vertical = [0; 6];
++        scalar::upsample_vertical(&[0, 1, 2], &[2, 0, 0], &[2, 0, 0], &mut [], &mut vertical);
++        assert_eq!(vertical, [0, 1, 1, 1, 1, 2]);
++
++        let mut hv = [0; 12];
++        scalar::upsample_hv(&[2, 0, 2], &[0, 2, 0], &[1, 1, 1], &mut [0; 6], &mut hv);
++        assert_eq!(hv, [2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2]);
++    }
++
++    #[test]
++    fn partial_mcu_rgb_matches_native() {
++        // A 14x10 4:2:0 image with AC chroma in the partial right/bottom MCU.
++        // The RGB hash is the native JDCT_ISLOW + fancy-upsampling result.
++        const JPEG: &[u8] = &[
++            0xff, 0xd8, 0xff, 0xdb, 0x00, 0x43, 0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
++            0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
++            0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
++            0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
++            0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
++            0x01, 0xff, 0xc0, 0x00, 0x11, 0x08, 0x00, 0x0a, 0x00, 0x0e, 0x03, 0x01, 0x22, 0x00,
++            0x02, 0x11, 0x00, 0x03, 0x11, 0x00, 0xff, 0xc4, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00,
++            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++            0xff, 0xc4, 0x00, 0x16, 0x10, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x15, 0xff, 0xda, 0x00, 0x0c,
++            0x03, 0x01, 0x00, 0x02, 0x00, 0x03, 0x00, 0x00, 0x3f, 0x00, 0x00, 0x5f, 0x37, 0xdf,
++            0xff, 0xd9
++        ];
++        for options in [DecoderOptions::new_safe(), DecoderOptions::new_fast()] {
++            let mut decoder = crate::JpegDecoder::new_with_options(
++                zune_core::bytestream::ZCursor::new(JPEG),
++                options
++            );
++            let pixels = decoder.decode().unwrap();
++            assert_eq!(pixels.len(), 14 * 10 * 3);
++            let hash = pixels.iter().fold(0xcbf2_9ce4_8422_2325_u64, |hash, byte| {
++                (hash ^ u64::from(*byte)).wrapping_mul(0x100_0000_01b3)
++            });
++            assert_eq!(hash, 0x17be_0800_0e74_5511);
++        }
++    }
++
++    #[test]
++    fn native_fancy_upsampling_dispatch_and_boundaries() {
++        let options = DecoderOptions::default();
++        for width in (3..68).chain([128, 511, 1024]) {
++            let input: Vec<i16> = (0..width)
++                .map(|x| i16::try_from((x * 73 + x / 3) % 256).unwrap())
++                .collect();
++            let near: Vec<i16> = (0..width)
++                .map(|x| i16::try_from((x * 19 + 255) % 256).unwrap())
++                .collect();
++            let far: Vec<i16> = (0..width)
++                .map(|x| i16::try_from((x * 151 + 1) % 256).unwrap())
++                .collect();
++            for (horizontal, vertical, sampler) in [
++                (true, false, choose_horizontal_samp_function(&options)),
++                (false, true, choose_v_samp_function(&options)),
++                (true, true, choose_hv_samp_function(&options))
++            ] {
++                let row_width = width * if horizontal { 2 } else { 1 };
++                let height = if vertical { 2 } else { 1 };
++                let length = row_width * height;
++                let mut output = vec![-1; length + 5];
++                sampler(
++                    &input,
++                    &near,
++                    &far,
++                    &mut vec![0; width * 2],
++                    &mut output[..length]
++                );
++                for y in 0..height {
++                    for x in 0..row_width {
++                        let source = x / if horizontal { 2 } else { 1 };
++                        let adjacent = if x % 2 == 0 {
++                            source.saturating_sub(1)
++                        } else {
++                            (source + 1).min(width - 1)
++                        };
++                        let current = i32::from(input[source]);
++                        let neighbor = if y == 0 { &near } else { &far };
++                        let expected = match (horizontal, vertical) {
++                            (true, true) => {
++                                let a = 3 * current + i32::from(neighbor[source]);
++                                let b =
++                                    3 * i32::from(input[adjacent]) + i32::from(neighbor[adjacent]);
++                                (3 * a + b + if x % 2 == 0 { 8 } else { 7 }) >> 4
++                            }
++                            (true, false) => {
++                                (3 * current
++                                    + i32::from(input[adjacent])
++                                    + if x % 2 == 0 { 1 } else { 2 })
++                                    >> 2
++                            }
++                            (false, true) => {
++                                (3 * current
++                                    + i32::from(neighbor[source])
++                                    + if y == 0 { 1 } else { 2 })
++                                    >> 2
++                            }
++                            _ => unreachable!()
++                        };
++                        assert_eq!(
++                            output[y * row_width + x],
++                            i16::try_from(expected).unwrap(),
++                            "width={width} x={x} y={y} horizontal={horizontal} vertical={vertical}"
++                        );
++                    }
++                }
++                assert_eq!(&output[length..], &[-1; 5]);
++            }
++        }
++    }
++
+     #[cfg(feature = "portable_simd")]
+     mod portable_simd_impl {
+         use super::*;
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/avx2.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/avx2.rs
+index a13672e10988bbf1c2997e9741676ebb2989ba35..2c1ec2eed74dcd2cc33c8f544bfd5188f77fe09f 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/avx2.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/avx2.rs
+@@ -14,11 +14,15 @@ use core::arch::x86_64::*;
+ #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+ #[target_feature(enable = "avx2")]
+ pub unsafe fn upsample_horizontal_avx2(
+-    input: &[i16],
+-    in_near: &[i16],
+-    in_far: &[i16],
+-    scratch: &mut [i16],
+-    output: &mut [i16],
++    input: &[i16], _in_near: &[i16], _in_far: &[i16], _scratch: &mut [i16], output: &mut [i16]
++) {
++    unsafe { upsample_horizontal_filtered::<2, 1, 2>(input, output) }
++}
++
++#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
++#[target_feature(enable = "avx2")]
++unsafe fn upsample_horizontal_filtered<const SHIFT: i32, const EVEN: i16, const ODD: i16>(
++    input: &[i16], output: &mut [i16]
+ ) {
+     assert_eq!(input.len() * 2, output.len());
+     assert!(input.len() > 2);
+@@ -26,15 +30,16 @@ pub unsafe fn upsample_horizontal_avx2(
+     let len = input.len();
+ 
+     if len < 18 {
+-        return super::scalar::upsample_horizontal(input, in_near, in_far, scratch, output);
++        return super::scalar::upsample_horizontal_filtered::<SHIFT, EVEN, ODD>(input, output);
+     }
+ 
+     // First two pixels
+-    output[0] = input[0];
+-    output[1] = (input[0] * 3 + input[1] + 2) >> 2;
++    output[0] = (4 * input[0] + EVEN) >> SHIFT;
++    output[1] = (input[0] * 3 + input[1] + ODD) >> SHIFT;
+ 
+     let v_three = _mm256_set1_epi16(3);
+-    let v_two = _mm256_set1_epi16(2);
++    let v_even_bias = _mm256_set1_epi16(EVEN);
++    let v_odd_bias = _mm256_set1_epi16(ODD);
+ 
+     let upsample16 = |input: &[i16; 18], output: &mut [i16; 32]| {
+         let in_ptr = input.as_ptr();
+@@ -49,10 +54,11 @@ pub unsafe fn upsample_horizontal_avx2(
+             )
+         };
+ 
+-        let v_common = _mm256_add_epi16(_mm256_mullo_epi16(v_curr, v_three), v_two);
+-
+-        let v_even = _mm256_srai_epi16(_mm256_add_epi16(v_common, v_prev), 2);
+-        let v_odd = _mm256_srai_epi16(_mm256_add_epi16(v_common, v_next), 2);
++        let v_common = _mm256_mullo_epi16(v_curr, v_three);
++        let v_even = _mm256_srai_epi16::<SHIFT>(
++            _mm256_add_epi16(_mm256_add_epi16(v_common, v_prev), v_even_bias));
++        let v_odd = _mm256_srai_epi16::<SHIFT>(
++            _mm256_add_epi16(_mm256_add_epi16(v_common, v_next), v_odd_bias));
+ 
+         let v_res_1 = _mm256_unpacklo_epi16(v_even, v_odd);
+         let v_res_2 = _mm256_unpackhi_epi16(v_even, v_odd);
+@@ -84,18 +90,22 @@ pub unsafe fn upsample_horizontal_avx2(
+     }
+ 
+     // Last two pixels.
+-    output[output.len() - 2] = (3 * input[len - 1] + input[len - 2] + 2) >> 2;
+-    output[output.len() - 1] = input[len - 1];
++    output[output.len() - 2] = (3 * input[len - 1] + input[len - 2] + EVEN) >> SHIFT;
++    output[output.len() - 1] = (4 * input[len - 1] + ODD) >> SHIFT;
+ }
+ 
+ #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+ #[target_feature(enable = "avx2")]
+ pub unsafe fn upsample_vertical_avx2(
+-    input: &[i16],
+-    in_near: &[i16],
+-    in_far: &[i16],
+-    scratch: &mut [i16],
+-    output: &mut [i16],
++    input: &[i16], in_near: &[i16], in_far: &[i16], _scratch: &mut [i16], output: &mut [i16]
++) {
++    unsafe { upsample_vertical_filtered::<true>(input, in_near, in_far, output) }
++}
++
++#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
++#[target_feature(enable = "avx2")]
++unsafe fn upsample_vertical_filtered<const ROUND: bool>(
++    input: &[i16], in_near: &[i16], in_far: &[i16], output: &mut [i16]
+ ) {
+     assert_eq!(input.len() * 2, output.len());
+     assert_eq!(in_near.len(), input.len());
+@@ -104,13 +114,14 @@ pub unsafe fn upsample_vertical_avx2(
+     let len = input.len();
+ 
+     if len < 16 {
+-        return super::scalar::upsample_vertical(input, in_near, in_far, scratch, output);
++        return super::scalar::upsample_vertical_filtered::<ROUND>(input, in_near, in_far, output);
+     }
+ 
+     let middle = output.len() / 2;
+     let (out_top, out_bottom) = output.split_at_mut(middle);
+ 
+     let v_three = _mm256_set1_epi16(3);
++    let v_one = _mm256_set1_epi16(1);
+     let v_two = _mm256_set1_epi16(2);
+ 
+     let upsample16 = |input: &[i16; 16],
+@@ -127,10 +138,15 @@ pub unsafe fn upsample_vertical_avx2(
+             )
+         };
+ 
+-        let v_common = _mm256_add_epi16(_mm256_mullo_epi16(v_in, v_three), v_two);
+-
+-        let v_out_top = _mm256_srai_epi16(_mm256_add_epi16(v_common, v_near), 2);
+-        let v_out_bottom = _mm256_srai_epi16(_mm256_add_epi16(v_common, v_far), 2);
++        let v_common = _mm256_mullo_epi16(v_in, v_three);
++        let top = _mm256_add_epi16(v_common, v_near);
++        let bottom = _mm256_add_epi16(v_common, v_far);
++        let v_out_top = if ROUND {
++            _mm256_srai_epi16::<2>(_mm256_add_epi16(top, v_one))
++        } else { top };
++        let v_out_bottom = if ROUND {
++            _mm256_srai_epi16::<2>(_mm256_add_epi16(bottom, v_two))
++        } else { bottom };
+ 
+         // SAFETY: Outputs are 16 * 16 bit long, so the stores are safe.
+         unsafe {
+@@ -174,18 +190,13 @@ pub unsafe fn upsample_vertical_avx2(
+ #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+ #[target_feature(enable = "avx2")]
+ pub unsafe fn upsample_hv_avx2(
+-    input: &[i16],
+-    in_near: &[i16],
+-    in_far: &[i16],
+-    scratch_space: &mut [i16],
+-    output: &mut [i16],
++    input: &[i16], in_near: &[i16], in_far: &[i16], scratch_space: &mut [i16], output: &mut [i16]
+ ) {
+     assert_eq!(input.len() * 4, output.len());
+     assert!(input.len() * 2 <= scratch_space.len());
+     let scratch_space = &mut scratch_space[..input.len() * 2];
+ 
+-
+-    upsample_vertical_avx2(input, in_near, in_far, &mut [], scratch_space);
++    unsafe { upsample_vertical_filtered::<false>(input, in_near, in_far, scratch_space) };
+ 
+     let scratch_half = scratch_space.len() / 2;
+     let output_half = output.len() / 2;
+@@ -193,7 +204,8 @@ pub unsafe fn upsample_hv_avx2(
+     let (scratch_top, scratch_bottom) = scratch_space.split_at_mut(scratch_half);
+     let (out_top, out_bottom) = output.split_at_mut(output_half);
+ 
+-    let mut t = [0];
+-    upsample_horizontal_avx2(scratch_top, &[], &[], &mut t, out_top);
+-    upsample_horizontal_avx2(scratch_bottom, &[], &[], &mut t, out_bottom);
++    unsafe {
++        upsample_horizontal_filtered::<4, 8, 7>(scratch_top, out_top);
++        upsample_horizontal_filtered::<4, 8, 7>(scratch_bottom, out_bottom);
++    }
+ }
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/neon.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/neon.rs
+index 7fc7c78ab461a336e3238a25d17da9a33f4b2d4f..7edf95345f4faedf927a59353cc90c5621f30976 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/neon.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/neon.rs
+@@ -12,7 +12,15 @@ use core::arch::aarch64::{vdupq_n_s16, vld1q_s16, vaddq_s16, vmulq_s16, vshrq_n_
+ #[cfg(target_arch = "aarch64")]
+ #[target_feature(enable = "neon")]
+ pub unsafe fn upsample_horizontal_neon(
+-    input: &[i16], in_near: &[i16], in_far: &[i16], scratch: &mut [i16], output: &mut [i16]
++    input: &[i16], _in_near: &[i16], _in_far: &[i16], _scratch: &mut [i16], output: &mut [i16]
++) {
++    unsafe { upsample_horizontal_filtered::<2, 1, 2>(input, output) }
++}
++
++#[cfg(target_arch = "aarch64")]
++#[target_feature(enable = "neon")]
++unsafe fn upsample_horizontal_filtered<const SHIFT: i32, const EVEN: i16, const ODD: i16>(
++    input: &[i16], output: &mut [i16]
+ ) {
+     assert_eq!(input.len() * 2, output.len());
+     assert!(input.len() > 2);
+@@ -20,15 +28,16 @@ pub unsafe fn upsample_horizontal_neon(
+     let len = input.len();
+ 
+     if len < 10 {
+-        return super::scalar::upsample_horizontal(input, in_near, in_far, scratch, output);
++        return super::scalar::upsample_horizontal_filtered::<SHIFT, EVEN, ODD>(input, output);
+     }
+ 
+     // First two pixels
+-    output[0] = input[0];
+-    output[1] = (input[0] * 3 + input[1] + 2) >> 2;
++    output[0] = (4 * input[0] + EVEN) >> SHIFT;
++    output[1] = (input[0] * 3 + input[1] + ODD) >> SHIFT;
+ 
+     let v_three = vdupq_n_s16(3);
+-    let v_two = vdupq_n_s16(2);
++    let v_even_bias = vdupq_n_s16(EVEN);
++    let v_odd_bias = vdupq_n_s16(ODD);
+ 
+     let upsample8 = |input: &[i16; 10], output: &mut [i16; 16]| {
+         let in_ptr = input.as_ptr();
+@@ -43,9 +52,11 @@ pub unsafe fn upsample_horizontal_neon(
+             )
+         };
+ 
+-        let v_common = vaddq_s16(vmulq_s16(v_curr, v_three), v_two);
+-        let v_even = vshrq_n_s16::<2>(vaddq_s16(v_common, v_prev));
+-        let v_odd = vshrq_n_s16::<2>(vaddq_s16(v_common, v_next));
++        let v_common = vmulq_s16(v_curr, v_three);
++        let v_even = vshrq_n_s16::<SHIFT>(
++            vaddq_s16(vaddq_s16(v_common, v_prev), v_even_bias));
++        let v_odd = vshrq_n_s16::<SHIFT>(
++            vaddq_s16(vaddq_s16(v_common, v_next), v_odd_bias));
+ 
+         let v_res_1 = vzip1q_s16(v_even, v_odd);
+         let v_res_2 = vzip2q_s16(v_even, v_odd);
+@@ -74,14 +85,22 @@ pub unsafe fn upsample_horizontal_neon(
+     }
+ 
+     // Last two pixels.
+-    output[output.len() - 2] = (3 * input[len - 1] + input[len - 2] + 2) >> 2;
+-    output[output.len() - 1] = input[len - 1];
++    output[output.len() - 2] = (3 * input[len - 1] + input[len - 2] + EVEN) >> SHIFT;
++    output[output.len() - 1] = (4 * input[len - 1] + ODD) >> SHIFT;
+ }
+ 
+ #[cfg(target_arch = "aarch64")]
+ #[target_feature(enable = "neon")]
+ pub unsafe fn upsample_vertical_neon(
+-    input: &[i16], in_near: &[i16], in_far: &[i16], scratch: &mut [i16], output: &mut [i16]
++    input: &[i16], in_near: &[i16], in_far: &[i16], _scratch: &mut [i16], output: &mut [i16]
++) {
++    unsafe { upsample_vertical_filtered::<true>(input, in_near, in_far, output) }
++}
++
++#[cfg(target_arch = "aarch64")]
++#[target_feature(enable = "neon")]
++unsafe fn upsample_vertical_filtered<const ROUND: bool>(
++    input: &[i16], in_near: &[i16], in_far: &[i16], output: &mut [i16]
+ ) {
+     assert_eq!(input.len() * 2, output.len());
+     assert_eq!(in_near.len(), input.len());
+@@ -90,13 +109,14 @@ pub unsafe fn upsample_vertical_neon(
+     let len = input.len();
+ 
+     if len < 16 {
+-        return super::scalar::upsample_vertical(input, in_near, in_far, scratch, output);
++        return super::scalar::upsample_vertical_filtered::<ROUND>(input, in_near, in_far, output);
+     }
+ 
+     let middle = output.len() / 2;
+     let (out_top, out_bottom) = output.split_at_mut(middle);
+ 
+     let v_three = vdupq_n_s16(3);
++    let v_one = vdupq_n_s16(1);
+     let v_two = vdupq_n_s16(2);
+ 
+     let upsample8 = |input: &[i16; 8],
+@@ -113,9 +133,15 @@ pub unsafe fn upsample_vertical_neon(
+             )
+         };
+ 
+-        let v_common = vaddq_s16(vmulq_s16(v_in, v_three), v_two);
+-        let v_out_top = vshrq_n_s16::<2>(vaddq_s16(v_common, v_near));
+-        let v_out_bottom = vshrq_n_s16::<2>(vaddq_s16(v_common, v_far));
++        let v_common = vmulq_s16(v_in, v_three);
++        let top = vaddq_s16(v_common, v_near);
++        let bottom = vaddq_s16(v_common, v_far);
++        let v_out_top = if ROUND {
++            vshrq_n_s16::<2>(vaddq_s16(top, v_one))
++        } else { top };
++        let v_out_bottom = if ROUND {
++            vshrq_n_s16::<2>(vaddq_s16(bottom, v_two))
++        } else { bottom };
+ 
+         // SAFETY: Outputs are 8 * 16 bit long, so the stores are safe.
+         unsafe {
+@@ -167,7 +193,7 @@ pub unsafe fn upsample_hv_neon(
+ 
+     // SAFETY: caller guarantees NEON is available
+     unsafe {
+-        upsample_vertical_neon(input, in_near, in_far, &mut [], scratch_space);
++        upsample_vertical_filtered::<false>(input, in_near, in_far, scratch_space);
+ 
+         let scratch_half = scratch_space.len() / 2;
+         let output_half = output.len() / 2;
+@@ -175,8 +201,7 @@ pub unsafe fn upsample_hv_neon(
+         let (scratch_top, scratch_bottom) = scratch_space.split_at_mut(scratch_half);
+         let (out_top, out_bottom) = output.split_at_mut(output_half);
+ 
+-        let mut t = [0];
+-        upsample_horizontal_neon(scratch_top, &[], &[], &mut t, out_top);
+-        upsample_horizontal_neon(scratch_bottom, &[], &[], &mut t, out_bottom);
++        upsample_horizontal_filtered::<4, 8, 7>(scratch_top, out_top);
++        upsample_horizontal_filtered::<4, 8, 7>(scratch_bottom, out_bottom);
+     }
+ }
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/portable_simd.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/portable_simd.rs
+index 0eddd6757fde99f8cae65af479fcb7cdea686165..e715e9b13ce8bdf8d64e1e23e8493fff19464640 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/portable_simd.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/portable_simd.rs
+@@ -6,17 +6,19 @@
+  * You can redistribute it or modify it under terms of the MIT, Apache License or Zlib license
+  */
+ 
+-use std::simd::prelude::*;
++use core::simd::prelude::*;
+ 
+ const LANES: usize = 16;
+ type V = Simd<i16, LANES>;
+ 
+ pub fn upsample_horizontal_simd(
+-    input: &[i16],
+-    in_near: &[i16],
+-    in_far: &[i16],
+-    scratch: &mut [i16],
+-    output: &mut [i16],
++    input: &[i16], _in_near: &[i16], _in_far: &[i16], _scratch: &mut [i16], output: &mut [i16]
++) {
++    upsample_horizontal_filtered::<2, 1, 2>(input, output);
++}
++
++fn upsample_horizontal_filtered<const SHIFT: i32, const EVEN: i16, const ODD: i16>(
++    input: &[i16], output: &mut [i16]
+ ) {
+     assert_eq!(input.len() * 2, output.len());
+     assert!(input.len() > 2);
+@@ -24,25 +26,26 @@ pub fn upsample_horizontal_simd(
+     let len = input.len();
+ 
+     if len < 18 {
+-        return super::scalar::upsample_horizontal(input, in_near, in_far, scratch, output);
++        return super::scalar::upsample_horizontal_filtered::<SHIFT, EVEN, ODD>(input, output);
+     }
+ 
+     // First two pixels
+-    output[0] = input[0];
+-    output[1] = (input[0] * 3 + input[1] + 2) >> 2;
++    output[0] = (4 * input[0] + EVEN) >> SHIFT;
++    output[1] = (input[0] * 3 + input[1] + ODD) >> SHIFT;
+ 
+     let v_three = V::splat(3);
+-    let v_two = V::splat(2);
++    let v_even_bias = V::splat(EVEN);
++    let v_odd_bias = V::splat(ODD);
++    let shift = i16::try_from(SHIFT).expect("upsampling shift fits i16");
+ 
+     let upsample16 = |input: &[i16; 18], output: &mut [i16; 32]| {
+         let v_prev = V::from_slice(&input[0..LANES]);
+         let v_curr = V::from_slice(&input[1..LANES + 1]);
+         let v_next = V::from_slice(&input[2..LANES + 2]);
+ 
+-        let v_common = v_curr * v_three + v_two;
+-
+-        let v_even = (v_common + v_prev) >> 2;
+-        let v_odd = (v_common + v_next) >> 2;
++        let v_common = v_curr * v_three;
++        let v_even = (v_common + v_prev + v_even_bias) >> shift;
++        let v_odd = (v_common + v_next + v_odd_bias) >> shift;
+ 
+         let (v_res_1, v_res_2) = v_even.interleave(v_odd);
+ 
+@@ -67,16 +70,18 @@ pub fn upsample_horizontal_simd(
+     }
+ 
+     // Last two pixels.
+-    output[output.len() - 2] = (3 * input[len - 1] + input[len - 2] + 2) >> 2;
+-    output[output.len() - 1] = input[len - 1];
++    output[output.len() - 2] = (3 * input[len - 1] + input[len - 2] + EVEN) >> SHIFT;
++    output[output.len() - 1] = (4 * input[len - 1] + ODD) >> SHIFT;
+ }
+ 
+ pub fn upsample_vertical_simd(
+-    input: &[i16],
+-    in_near: &[i16],
+-    in_far: &[i16],
+-    _scratch_space: &mut [i16],
+-    output: &mut [i16],
++    input: &[i16], in_near: &[i16], in_far: &[i16], _scratch_space: &mut [i16], output: &mut [i16]
++) {
++    upsample_vertical_filtered::<true>(input, in_near, in_far, output);
++}
++
++fn upsample_vertical_filtered<const ROUND: bool>(
++    input: &[i16], in_near: &[i16], in_far: &[i16], output: &mut [i16]
+ ) {
+     assert_eq!(input.len() * 2, output.len());
+     assert_eq!(in_near.len(), input.len());
+@@ -85,13 +90,14 @@ pub fn upsample_vertical_simd(
+     let len = input.len();
+ 
+     if len < 16 {
+-        return super::scalar::upsample_vertical(input, in_near, in_far, _scratch_space, output);
++        return super::scalar::upsample_vertical_filtered::<ROUND>(input, in_near, in_far, output);
+     }
+ 
+     let middle = output.len() / 2;
+     let (out_top, out_bottom) = output.split_at_mut(middle);
+ 
+     let v_three = V::splat(3);
++    let v_one = V::splat(1);
+     let v_two = V::splat(2);
+ 
+     let upsample16 = |input: &[i16; 16],
+@@ -103,10 +109,11 @@ pub fn upsample_vertical_simd(
+         let v_near = V::from(*in_near);
+         let v_far = V::from(*in_far);
+ 
+-        let v_common = v_in * v_three + v_two;
+-
+-        let v_out_top = (v_common + v_near) >> 2;
+-        let v_out_bottom = (v_common + v_far) >> 2;
++        let v_common = v_in * v_three;
++        let top = v_common + v_near;
++        let bottom = v_common + v_far;
++        let v_out_top = if ROUND { (top + v_one) >> 2 } else { top };
++        let v_out_bottom = if ROUND { (bottom + v_two) >> 2 } else { bottom };
+ 
+         v_out_top.copy_to_slice(out_top.as_mut_slice());
+         v_out_bottom.copy_to_slice(out_bottom.as_mut_slice());
+@@ -145,19 +152,14 @@ pub fn upsample_vertical_simd(
+ }
+ 
+ pub fn upsample_hv_simd(
+-    input: &[i16],
+-    in_near: &[i16],
+-    in_far: &[i16],
+-    scratch_space: &mut [i16],
+-    output: &mut [i16],
++    input: &[i16], in_near: &[i16], in_far: &[i16], scratch_space: &mut [i16], output: &mut [i16]
+ ) {
+     assert_eq!(input.len() * 4, output.len());
+     
+     assert!(input.len() * 2 <= scratch_space.len());
+     let scratch_space = &mut scratch_space[..input.len() * 2];
+ 
+-
+-    upsample_vertical_simd(input, in_near, in_far, &mut [], scratch_space);
++    upsample_vertical_filtered::<false>(input, in_near, in_far, scratch_space);
+ 
+     let scratch_half = scratch_space.len() / 2;
+     let output_half = output.len() / 2;
+@@ -165,7 +167,6 @@ pub fn upsample_hv_simd(
+     let (scratch_top, scratch_bottom) = scratch_space.split_at_mut(scratch_half);
+     let (out_top, out_bottom) = output.split_at_mut(output_half);
+ 
+-    let mut t = [0];
+-    upsample_horizontal_simd(scratch_top, &[], &[], &mut t, out_top);
+-    upsample_horizontal_simd(scratch_bottom, &[], &[], &mut t, out_bottom);
++    upsample_horizontal_filtered::<4, 8, 7>(scratch_top, out_top);
++    upsample_horizontal_filtered::<4, 8, 7>(scratch_bottom, out_bottom);
+ }
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/scalar.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/scalar.rs
+index 120ca28bdc8ded3ceb1715758dd1eae897a88003..26953e333f5f94dc77e5d94a43abe2fe39e3c5dc 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/scalar.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/scalar.rs
+@@ -9,52 +9,35 @@
+ pub fn upsample_horizontal(
+     input: &[i16], _ref: &[i16], _in_near: &[i16], _scratch: &mut [i16], output: &mut [i16]
+ ) {
+-    assert_eq!(
+-        input.len() * 2,
+-        output.len(),
+-        "Input length is not half the size of the output length"
+-    );
+-    assert!(
+-        output.len() > 4 && input.len() > 2,
+-        "Too Short of a vector, cannot upsample"
+-    );
+-
+-    output[0] = input[0];
+-    output[1] = (input[0] * 3 + input[1] + 2) >> 2;
+-
+-    // This code is written for speed and not readability
+-    //
+-    // The readable code is
+-    //
+-    //      for i in 1..input.len() - 1{
+-    //         let sample = 3 * input[i] + 2;
+-    //         out[i * 2] = (sample + input[i - 1]) >> 2;
+-    //         out[i * 2 + 1] = (sample + input[i + 1]) >> 2;
+-    //     }
+-    //
+-    // The output of a pixel is determined by it's surrounding neighbours but we attach more weight to it's nearest
+-    // neighbour (input[i]) than to the next nearest neighbour.
+-
+-    for (output_window, input_window) in output[2..].chunks_exact_mut(2).zip(input.windows(3)) {
+-        let sample = 3 * input_window[1] + 2;
++    upsample_horizontal_filtered::<2, 1, 2>(input, output);
++}
+ 
+-        output_window[0] = (sample + input_window[0]) >> 2;
+-        output_window[1] = (sample + input_window[2]) >> 2;
++pub(super) fn upsample_horizontal_filtered<const SHIFT: i32, const EVEN: i16, const ODD: i16>(
++    input: &[i16], output: &mut [i16]
++) {
++    assert_eq!(input.len() * 2, output.len());
++    assert!(input.len() > 2);
++    output[0] = (4 * input[0] + EVEN) >> SHIFT;
++    output[1] = (3 * input[0] + input[1] + ODD) >> SHIFT;
++    for (out, samples) in output[2..].chunks_exact_mut(2).zip(input.windows(3)) {
++        let current = 3 * samples[1];
++        out[0] = (current + samples[0] + EVEN) >> SHIFT;
++        out[1] = (current + samples[2] + ODD) >> SHIFT;
+     }
+-    // Get lengths
+-    let out_len = output.len() - 2;
+-    let input_len = input.len() - 2;
+-
+-    // slice the output vector
+-    let f_out = &mut output[out_len..];
+-    let i_last = &input[input_len..];
+-
+-    // write out manually..
+-    f_out[0] = (3 * i_last[1] + i_last[0] + 2) >> 2;
+-    f_out[1] = i_last[1];
++    let last = input.len() - 1;
++    let end = output.len() - 2;
++    output[end] = (3 * input[last] + input[last - 1] + EVEN) >> SHIFT;
++    output[end + 1] = (4 * input[last] + ODD) >> SHIFT;
+ }
++
+ pub fn upsample_vertical(
+     input: &[i16], in_near: &[i16], in_far: &[i16], _scratch_space: &mut [i16], output: &mut [i16]
++) {
++    upsample_vertical_filtered::<true>(input, in_near, in_far, output);
++}
++
++pub(super) fn upsample_vertical_filtered<const ROUND: bool>(
++    input: &[i16], in_near: &[i16], in_far: &[i16], output: &mut [i16]
+ ) {
+     assert_eq!(input.len() * 2, output.len());
+     assert_eq!(in_near.len(), input.len());
+@@ -64,52 +47,37 @@ pub fn upsample_vertical(
+ 
+     let (out_top, out_bottom) = output.split_at_mut(middle);
+ 
+-    // for the first row, closest row is in_near
+-    for ((near, far), x) in input.iter().zip(in_near.iter()).zip(out_top) {
+-        *x = (((3 * near) + 2) + far) >> 2;
++    for ((current, near), pixel) in input.iter().zip(in_near).zip(out_top) {
++        let sum = 3 * current + near;
++        *pixel = if ROUND { (sum + 1) >> 2 } else { sum };
+     }
+-    // for the second row, the closest row to input is in_far
+-    for ((near, far), x) in input.iter().zip(in_far.iter()).zip(out_bottom) {
+-        *x = (((3 * near) + 2) + far) >> 2;
++    for ((current, far), pixel) in input.iter().zip(in_far).zip(out_bottom) {
++        let sum = 3 * current + far;
++        *pixel = if ROUND { (sum + 2) >> 2 } else { sum };
+     }
+ }
+ 
+ pub fn upsample_hv(
+     input: &[i16], in_near: &[i16], in_far: &[i16], scratch_space: &mut [i16], output: &mut [i16]
+ ) {
+-
+     assert_eq!(input.len() * 4, output.len());
+ 
+     assert!(input.len() * 2 <= scratch_space.len());
+     let scratch_space = &mut scratch_space[..input.len() * 2];
+ 
+ 
+-    let mut t = [0];
+-    upsample_vertical(input, in_near, in_far, &mut t, scratch_space);
+-    // horizontal upsampling must be done separate for every line
+-    // Otherwise it introduces artifacts that may cause the edge colors
+-    // to appear on the other line.
+-
+-    // Since this is called for two scanlines/widths currently
+-    // splitting the inputs and outputs into half ensures we only handle
+-    // one scanline per iteration
++    // Keep vertical sums unrounded until the combined 2-D filter is complete.
++    upsample_vertical_filtered::<false>(input, in_near, in_far, scratch_space);
+     let scratch_half = scratch_space.len() / 2;
+ 
+     let output_half = output.len() / 2;
+ 
+-    upsample_horizontal(
++    upsample_horizontal_filtered::<4, 8, 7>(
+         &scratch_space[..scratch_half],
+-        &[],
+-        &[],
+-        &mut t,
+         &mut output[..output_half]
+     );
+-
+-    upsample_horizontal(
++    upsample_horizontal_filtered::<4, 8, 7>(
+         &scratch_space[scratch_half..],
+-        &[],
+-        &[],
+-        &mut t,
+         &mut output[output_half..]
+     );
+ }
+-- 
+2.56.0
+

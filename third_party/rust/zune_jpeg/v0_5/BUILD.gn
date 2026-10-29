@@ -36,6 +36,8 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs",
     "//third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs",
     "//third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/misc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/recovery_tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/scaled.rs",
     "//third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/unsafe_utils.rs",
     "//third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/unsafe_utils_avx2.rs",
     "//third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/unsafe_utils_neon.rs",

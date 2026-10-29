@@ -1,0 +1,449 @@
+From ab01e0f205143c0b0b0b893276c90170e2e4ff31 Mon Sep 17 00:00:00 2001
+From: Sergio Gonzalez Martin <sergiog@microsoft.com>
+Date: Mon, 26 Oct 2026 19:32:59 +0000
+Subject: [PATCH] [rust jpeg] Native YCbCr precision (PR499)
+
+Backport of https://github.com/etemesi254/zune-image/pull/499
+Published head: 2a80e28582592a438cf87498600bac902857c734
+
+Effective cumulative source stage: 3ed13dad005bef3d03f6c718208adb53c3b6dc9c
+Only this stage's new Rust-source delta is carried. Prerequisite changes are not duplicated in later PR patches.
+
+Tracking: https://github.com/etemesi254/zune-image/issues/503
+
+Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+---
+ .../zune-jpeg-v0_5/src/color_convert.rs       | 56 ++++++++++++
+ .../zune-jpeg-v0_5/src/color_convert/avx.rs   | 89 +++++++------------
+ .../src/color_convert/neon64.rs               | 70 +++++++++++----
+ .../src/color_convert/scalar.rs               | 79 +++++++---------
+ 4 files changed, 174 insertions(+), 120 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert.rs
+index e9494af4aae6594799e1a4c9f614c8b1494ce93c..f90dd757bd69a43bc0dbee6375ffe7ef2de262d8 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert.rs
+@@ -25,6 +25,9 @@
+ //!
+ //! - `YCbCr` to `RGB,RGBA,GRAYSCALE,RGBX`.
+ //!
++//! Packed RGB/RGBA/BGR/BGRA conversion preserves native 16-bit coefficient
++//! precision and half-up rounding on scalar and SIMD paths.
++//!
+ //!
+ //! Hey there, if your reading this it means you probably need something, so let me help you.
+ //!
+@@ -116,6 +119,59 @@ mod tests {
+         ycbcr_to_rgb_inner_16_scalar, ycbcr_to_rgba_inner_16_scalar
+     };
+ 
++    #[test]
++    fn native_color_coefficient_precision() {
++        let formats = [
++            ColorSpace::RGB,
++            ColorSpace::RGBA,
++            ColorSpace::BGR,
++            ColorSpace::BGRA
++        ];
++        let options = DecoderOptions::default();
++        let y: [i16; 16] = core::array::from_fn(|index| (index * 17) as i16);
++        for format in formats {
++            let scalar: ColorConvert16Ptr = match format {
++                ColorSpace::RGB => ycbcr_to_rgb_inner_16_scalar::<false>,
++                ColorSpace::RGBA => ycbcr_to_rgba_inner_16_scalar::<false>,
++                ColorSpace::BGR => ycbcr_to_rgb_inner_16_scalar::<true>,
++                ColorSpace::BGRA => ycbcr_to_rgba_inner_16_scalar::<true>,
++                _ => unreachable!()
++            };
++            let channels = format.num_components();
++            let dispatched = choose_ycbcr_to_rgb_convert_func(format, &options).unwrap();
++            for convert in [scalar, dispatched] {
++                assert_converter_matches_scalar(convert, scalar, channels * 16, channels == 4);
++                for cb in 0_i16..=255 {
++                    for cr in 0_i16..=255 {
++                        let cb_samples = [cb; 16];
++                        let cr_samples = [cr; 16];
++                        let mut output = [0xa5; 82];
++                        let mut offset = 7;
++                        convert(&y, &cb_samples, &cr_samples, &mut output, &mut offset);
++                        assert_eq!(offset, 7 + channels * 16);
++                        assert_eq!(&output[..7], &[0xa5; 7]);
++                        assert!(output[offset..].iter().all(|&byte| byte == 0xa5));
++                        for (index, pixel) in output[7..offset].chunks_exact(channels).enumerate() {
++                            let cb = i32::from(cb) - 128;
++                            let cr = i32::from(cr) - 128;
++                            let y = i32::from(y[index]);
++                            let red = (y + ((91_881 * cr + 32_768) >> 16)).clamp(0, 255) as u8;
++                            let green = (y + ((-46_802 * cr - 22_554 * cb + 32_768) >> 16))
++                                .clamp(0, 255) as u8;
++                            let blue = (y + ((116_130 * cb + 32_768) >> 16)).clamp(0, 255) as u8;
++                            let expected = if matches!(format, ColorSpace::BGR | ColorSpace::BGRA) {
++                                [blue, green, red, 255]
++                            } else {
++                                [red, green, blue, 255]
++                            };
++                            assert_eq!(pixel, &expected[..channels]);
++                        }
++                    }
++                }
++            }
++        }
++    }
++
+     fn input_vectors() -> Vec<([i16; 16], [i16; 16], [i16; 16])> {
+         let mut vectors = vec![
+             ([0; 16], [0; 16], [0; 16]),
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert/avx.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert/avx.rs
+index 516174a55148a5e2ca002132987fd314b5c448d4..d3953f8bc736c491f79d4443421e39bf3541d3de 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert/avx.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert/avx.rs
+@@ -13,9 +13,9 @@
+ //! Herein lies super optimized codes to do color conversions.
+ //!
+ //!
+-//! 1. The YCbCr to RGB use integer approximations and not the floating point equivalent.
+-//! That means we may be +- 2 of pixels generated by libjpeg-turbo jpeg decoding
+-//! (also libjpeg uses routines like `Y  =  0.29900 * R + 0.33700 * G + 0.11400 * B + 0.25000 * G`)
++//! YCbCr to RGB uses native 16-bit fixed-point coefficients and rounding.
++//! Splitting whole chroma contributions from the fractions keeps the
++//! coefficients in signed 16-bit multiply-add lanes.
+ //!
+ //! Firstly, we use integers (fun fact:there is no part of this code base where were dealing with
+ //! floating points.., fun fact: the first fun fact wasn't even fun.)
+@@ -44,7 +44,7 @@ use core::arch::x86::*;
+ #[cfg(target_arch = "x86_64")]
+ use core::arch::x86_64::*;
+ 
+-use crate::color_convert::scalar::{CB_CF, CR_CF, C_G_CB_COEF_2, C_G_CR_COEF_1, YUV_RND, Y_CF};
++use crate::color_convert::scalar::{CB_FRAC, CR_FRAC, C_G_CB_FRAC, C_G_CR_FRAC, YUV_RND};
+ 
+ pub union YmmRegister {
+     // both are 32 when using std::mem::size_of
+@@ -53,13 +53,15 @@ pub union YmmRegister {
+     array: [i16; 16]
+ }
+ 
+-const R_AVX_COEF: i32 = i32::from_ne_bytes([CR_CF.to_ne_bytes()[0], CR_CF.to_ne_bytes()[1], 0, 0]);
+-const B_AVX_COEF: i32 = i32::from_ne_bytes([0, 0, CB_CF.to_ne_bytes()[0], CB_CF.to_ne_bytes()[1]]);
++const R_AVX_COEF: i32 =
++    i32::from_ne_bytes([CR_FRAC.to_ne_bytes()[0], CR_FRAC.to_ne_bytes()[1], 0, 0]);
++const B_AVX_COEF: i32 =
++    i32::from_ne_bytes([0, 0, CB_FRAC.to_ne_bytes()[0], CB_FRAC.to_ne_bytes()[1]]);
+ const G_COEF_AVX_COEF: i32 = i32::from_ne_bytes([
+-    C_G_CR_COEF_1.to_ne_bytes()[0],
+-    C_G_CR_COEF_1.to_ne_bytes()[1],
+-    C_G_CB_COEF_2.to_ne_bytes()[0],
+-    C_G_CB_COEF_2.to_ne_bytes()[1]
++    C_G_CR_FRAC.to_ne_bytes()[0],
++    C_G_CR_FRAC.to_ne_bytes()[1],
++    C_G_CB_FRAC.to_ne_bytes()[0],
++    C_G_CB_FRAC.to_ne_bytes()[1]
+ ]);
+ 
+ //--------------------------------------------------------------------------------------------------
+@@ -190,64 +192,33 @@ unsafe fn ycbcr_to_rgb_baseline_no_clamp(
+     // At first, we have to pack i16 U and V that stores u8 into one u8 [U,V]
+     // then zero extend, and keep in mind that lanes is already been permuted.
+ 
+-    let y_coeff = _mm256_set1_epi32(i32::from(Y_CF));
+     let cr_coeff = _mm256_set1_epi32(R_AVX_COEF);
+     let cb_coeff = _mm256_set1_epi32(B_AVX_COEF);
+     let cg_coeff = _mm256_set1_epi32(G_COEF_AVX_COEF);
+-    let v_rnd = _mm256_set1_epi32(i32::from(YUV_RND));
++    let v_rnd = _mm256_set1_epi32(YUV_RND);
+     let uv_bias = _mm256_set1_epi16(128);
+ 
+     // UV in memory because x86/x86_64 is always little endian
+     let v_0 = _mm256_slli_epi16::<8>(cb_c);
+     let u_v_8 = _mm256_or_si256(v_0, cr_c);
+ 
+-    let mut u_v_lo = _mm256_unpacklo_epi8(u_v_8, _mm256_setzero_si256());
+-    let mut u_v_hi = _mm256_unpackhi_epi8(u_v_8, _mm256_setzero_si256());
+-
+-    let mut y_lo = _mm256_unpacklo_epi16(y_c, _mm256_setzero_si256());
+-    let mut y_hi = _mm256_unpackhi_epi16(y_c, _mm256_setzero_si256());
+-
+-    u_v_lo = _mm256_sub_epi16(u_v_lo, uv_bias);
+-    u_v_hi = _mm256_sub_epi16(u_v_hi, uv_bias);
+-
+-    y_lo = _mm256_madd_epi16(y_lo, y_coeff);
+-    y_hi = _mm256_madd_epi16(y_hi, y_coeff);
+-
+-    let mut r_lo = _mm256_madd_epi16(u_v_lo, cr_coeff);
+-    let mut r_hi = _mm256_madd_epi16(u_v_hi, cr_coeff);
+-
+-    let mut g_lo = _mm256_madd_epi16(u_v_lo, cg_coeff);
+-    let mut g_hi = _mm256_madd_epi16(u_v_hi, cg_coeff);
+-
+-    // This ordering is preferred to reduce register file pressure.
+-
+-    y_lo = _mm256_add_epi32(y_lo, v_rnd);
+-    y_hi = _mm256_add_epi32(y_hi, v_rnd);
+-
+-    let mut b_lo = _mm256_madd_epi16(u_v_lo, cb_coeff);
+-    let mut b_hi = _mm256_madd_epi16(u_v_hi, cb_coeff);
+-
+-    r_lo = _mm256_add_epi32(r_lo, y_lo);
+-    r_hi = _mm256_add_epi32(r_hi, y_hi);
+-
+-    g_lo = _mm256_add_epi32(g_lo, y_lo);
+-    g_hi = _mm256_add_epi32(g_hi, y_hi);
+-
+-    b_lo = _mm256_add_epi32(b_lo, y_lo);
+-    b_hi = _mm256_add_epi32(b_hi, y_hi);
+-
+-    r_lo = _mm256_srai_epi32::<14>(r_lo);
+-    r_hi = _mm256_srai_epi32::<14>(r_hi);
+-
+-    g_lo = _mm256_srai_epi32::<14>(g_lo);
+-    g_hi = _mm256_srai_epi32::<14>(g_hi);
+-
+-    b_lo = _mm256_srai_epi32::<14>(b_lo);
+-    b_hi = _mm256_srai_epi32::<14>(b_hi);
+-
+-    let r = _mm256_packus_epi32(r_lo, r_hi);
+-    let g = _mm256_packus_epi32(g_lo, g_hi);
+-    let b = _mm256_packus_epi32(b_lo, b_hi);
++    let u_v_lo = _mm256_sub_epi16(_mm256_unpacklo_epi8(u_v_8, _mm256_setzero_si256()), uv_bias);
++    let u_v_hi = _mm256_sub_epi16(_mm256_unpackhi_epi8(u_v_8, _mm256_setzero_si256()), uv_bias);
++    // Split whole chroma contributions from the 16-bit fractions so every
++    // coefficient still fits the signed 16-bit multiply-add lanes.
++    let fraction = |coefficients| {
++        let low = _mm256_add_epi32(_mm256_madd_epi16(u_v_lo, coefficients), v_rnd);
++        let high = _mm256_add_epi32(_mm256_madd_epi16(u_v_hi, coefficients), v_rnd);
++        _mm256_packs_epi32(_mm256_srai_epi32::<16>(low), _mm256_srai_epi32::<16>(high))
++    };
++    let cb = _mm256_sub_epi16(cb_c, uv_bias);
++    let cr = _mm256_sub_epi16(cr_c, uv_bias);
++    let r = _mm256_add_epi16(_mm256_add_epi16(y_c, cr), fraction(cr_coeff));
++    let g = _mm256_add_epi16(_mm256_sub_epi16(y_c, cr), fraction(cg_coeff));
++    let b = _mm256_add_epi16(
++        _mm256_add_epi16(y_c, _mm256_slli_epi16::<1>(cb)),
++        fraction(cb_coeff)
++    );
+ 
+     return (r, g, b);
+ }
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert/neon64.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert/neon64.rs
+index 1cb17837c65d83240dfcc9eb64d55426ddf848ea..123d0d91d426456efad44b414dd86f4255b013cb 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert/neon64.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert/neon64.rs
+@@ -10,9 +10,20 @@
+ //! NEON is mandatory on aarch64.
+ 
+ #![cfg(all(feature = "neon", target_arch = "aarch64"))]
+-use core::arch::aarch64::{uint8x16_t, vdupq_n_s16, vcombine_s16, vcreate_s16, vld1q_s16, vsubq_s16, vdupq_n_s32, vmlal_laneq_s16, vget_low_s16, vmlal_high_laneq_s16, vqshrun_n_s32, vqmovn_u16, vcombine_u16, vcombine_u8, vst3q_u8, uint8x16x3_t, vst4q_u8, uint8x16x4_t, vdupq_n_u8};
+-
+-use crate::color_convert::scalar::{CB_CF, CR_CF, C_G_CB_COEF_2, C_G_CR_COEF_1, YUV_RND, Y_CF};
++use core::arch::aarch64::{
++    uint8x16_t, uint8x16x3_t, uint8x16x4_t, vaddq_s32, vcombine_s16, vcombine_u16, vcombine_u8,
++    vcreate_s16, vdupq_n_s16, vdupq_n_s32, vdupq_n_u8, vget_low_s16, vld1q_s16,
++    vmlal_high_laneq_s16, vmlal_laneq_s16, vmovl_high_s16, vmovl_s16, vnegq_s32, vqmovn_u16,
++    vqshrun_n_s32, vshlq_n_s32, vst3q_u8, vst4q_u8, vsubq_s16
++};
++
++// The widened correction below restores native precision from this 14-bit base.
++const Y_CF: i16 = 16_384;
++const CR_CF: i16 = 22_970;
++const CB_CF: i16 = 29_032;
++const C_G_CR_COEF_1: i16 = -11_700;
++const C_G_CB_COEF_2: i16 = -5_638;
++const YUV_RND: i16 = (1 << 13) - 1;
+ 
+ const C_1: u64 = u64::from_ne_bytes([
+     Y_CF.to_ne_bytes()[0],
+@@ -80,21 +91,48 @@ unsafe fn ycbcr_to_rgb_baseline_no_clamp(
+         let b2 = vmlal_laneq_s16::<2>(acc2, vget_low_s16(cb1), coefficients);
+         let b3 = vmlal_high_laneq_s16::<2>(acc3, cb1, coefficients);
+ 
++        let native_precision = |value, correction| {
++            vaddq_s32(
++                vshlq_n_s32::<2>(value),
++                vaddq_s32(correction, vdupq_n_s32(4))
++            )
++        };
++        let cr_wide = [
++            vmovl_s16(vget_low_s16(cr0)),
++            vmovl_high_s16(cr0),
++            vmovl_s16(vget_low_s16(cr1)),
++            vmovl_high_s16(cr1)
++        ];
++        let cb_wide = [
++            vmovl_s16(vget_low_s16(cb0)),
++            vmovl_high_s16(cb0),
++            vmovl_s16(vget_low_s16(cb1)),
++            vmovl_high_s16(cb1)
++        ];
++        let r0 = native_precision(r0, cr_wide[0]);
++        let r1 = native_precision(r1, cr_wide[1]);
++        let r2 = native_precision(r2, cr_wide[2]);
++        let r3 = native_precision(r3, cr_wide[3]);
++        let b0 = native_precision(b0, vshlq_n_s32::<1>(cb_wide[0]));
++        let b1 = native_precision(b1, vshlq_n_s32::<1>(cb_wide[1]));
++        let b2 = native_precision(b2, vshlq_n_s32::<1>(cb_wide[2]));
++        let b3 = native_precision(b3, vshlq_n_s32::<1>(cb_wide[3]));
++
+         // Saturating shift right with signed -> unsigned saturation
+-        let qr0 = vqshrun_n_s32::<14>(r0);
+-        let qr1 = vqshrun_n_s32::<14>(r1);
+-        let qr2 = vqshrun_n_s32::<14>(r2);
+-        let qr3 = vqshrun_n_s32::<14>(r3);
++        let qr0 = vqshrun_n_s32::<16>(r0);
++        let qr1 = vqshrun_n_s32::<16>(r1);
++        let qr2 = vqshrun_n_s32::<16>(r2);
++        let qr3 = vqshrun_n_s32::<16>(r3);
+ 
+         let mut g0 = vmlal_laneq_s16::<4>(acc0, vget_low_s16(cb0), coefficients);
+         let mut g1 = vmlal_high_laneq_s16::<4>(acc1, cb0, coefficients);
+         let mut g2 = vmlal_laneq_s16::<4>(acc2, vget_low_s16(cb1), coefficients);
+         let mut g3 = vmlal_high_laneq_s16::<4>(acc3, cb1, coefficients);
+ 
+-        let qb0 = vqshrun_n_s32::<14>(b0);
+-        let qb1 = vqshrun_n_s32::<14>(b1);
+-        let qb2 = vqshrun_n_s32::<14>(b2);
+-        let qb3 = vqshrun_n_s32::<14>(b3);
++        let qb0 = vqshrun_n_s32::<16>(b0);
++        let qb1 = vqshrun_n_s32::<16>(b1);
++        let qb2 = vqshrun_n_s32::<16>(b2);
++        let qb3 = vqshrun_n_s32::<16>(b3);
+ 
+         let r0 = vqmovn_u16(vcombine_u16(qr0, qr1));
+         let r1 = vqmovn_u16(vcombine_u16(qr2, qr3));
+@@ -107,10 +145,12 @@ unsafe fn ycbcr_to_rgb_baseline_no_clamp(
+         g2 = vmlal_laneq_s16::<3>(g2, vget_low_s16(cr1), coefficients);
+         g3 = vmlal_high_laneq_s16::<3>(g3, cr1, coefficients);
+ 
+-        let qg0 = vqshrun_n_s32::<14>(g0);
+-        let qg1 = vqshrun_n_s32::<14>(g1);
+-        let qg2 = vqshrun_n_s32::<14>(g2);
+-        let qg3 = vqshrun_n_s32::<14>(g3);
++        let green_correction =
++            |index| vnegq_s32(vshlq_n_s32::<1>(vaddq_s32(cr_wide[index], cb_wide[index])));
++        let qg0 = vqshrun_n_s32::<16>(native_precision(g0, green_correction(0)));
++        let qg1 = vqshrun_n_s32::<16>(native_precision(g1, green_correction(1)));
++        let qg2 = vqshrun_n_s32::<16>(native_precision(g2, green_correction(2)));
++        let qg3 = vqshrun_n_s32::<16>(native_precision(g3, green_correction(3)));
+ 
+         let g0 = vqmovn_u16(vcombine_u16(qg0, qg1));
+         let g1 = vqmovn_u16(vcombine_u16(qg2, qg3));
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert/scalar.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert/scalar.rs
+index 3518edbc03ff426c5fecf6ae7f624b27fe607ba3..a29af072b3030dc6ae9d0e807512ffbcfb080b47 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert/scalar.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert/scalar.rs
+@@ -8,18 +8,11 @@
+ 
+ use core::convert::TryInto;
+ 
+-// Bt.601 Full Range inverse coefficients computed with 14 bits of precision with MPFR.
+-// This is important to keep them in i16.
+-// In most cases LLVM will detect what we're doing i16 widening to i32 math and will use
+-// appropriate optimizations.
+-pub(crate) const Y_CF: i16 = 16384;
+-pub(crate) const CR_CF: i16 = 22970;
+-pub(crate) const CB_CF: i16 = 29032;
+-pub(crate) const C_G_CR_COEF_1: i16 = -11700;
+-pub(crate) const C_G_CB_COEF_2: i16 = -5638;
+-pub(crate) const YUV_PREC: i16 = 14;
+-// Rounding const for YUV -> RGB conversion: floating equivalent 0.499(9).
+-pub(crate) const YUV_RND: i16 = (1 << (YUV_PREC - 1)) - 1;
++pub(super) const CR_FRAC: i16 = 26_345;
++pub(super) const CB_FRAC: i16 = -14_942;
++pub(super) const C_G_CR_FRAC: i16 = 18_734;
++pub(super) const C_G_CB_FRAC: i16 = -22_554;
++pub(super) const YUV_RND: i32 = 1 << 15;
+ 
+ /// Limit values to 0 and 255
+ #[inline]
+@@ -28,6 +21,20 @@ fn clamp(a: i32) -> u8 {
+     a.clamp(0, 255) as u8
+ }
+ 
++// Keep exact 16-bit rounding while splitting out whole chroma contributions,
++// leaving fractional coefficients that fit signed 16-bit multiply-adds.
++fn native_rgb(y: i16, cb: i16, cr: i16) -> (u8, u8, u8) {
++    let y = i32::from(y);
++    let cb = i32::from(cb - 128);
++    let cr = i32::from(cr - 128);
++    (
++        clamp(y + cr + ((i32::from(CR_FRAC) * cr + YUV_RND) >> 16)),
++        clamp(
++            y - cr + ((i32::from(C_G_CR_FRAC) * cr + i32::from(C_G_CB_FRAC) * cb + YUV_RND) >> 16)
++        ),
++        clamp(y + 2 * cb + ((i32::from(CB_FRAC) * cb + YUV_RND) >> 16))
++    )
++}
+ 
+ /// Convert YCbCr to RGB/BGR
+ ///
+@@ -50,27 +57,17 @@ pub fn ycbcr_to_rgba_inner_16_scalar<const BGRA: bool>(
+         .zip(cb.iter().zip(cr.iter()))
+         .zip(opt.chunks_exact_mut(4))
+     {
+-        let cr = cr - 128;
+-        let cb = cb - 128;
+-
+-        let y0 = i32::from(y) * i32::from(Y_CF) + i32::from(YUV_RND);
+-
+-        let r = (y0 + i32::from(cr) * i32::from(CR_CF)) >> YUV_PREC;
+-        let g = (y0
+-            + i32::from(cr) * i32::from(C_G_CR_COEF_1)
+-            + i32::from(cb) * i32::from(C_G_CB_COEF_2))
+-            >> YUV_PREC;
+-        let b = (y0 + i32::from(cb) * i32::from(CB_CF)) >> YUV_PREC;
++        let (r, g, b) = native_rgb(y, *cb, *cr);
+ 
+         if BGRA {
+-            out[0] = clamp(b);
+-            out[1] = clamp(g);
+-            out[2] = clamp(r);
++            out[0] = b;
++            out[1] = g;
++            out[2] = r;
+             out[3] = 255;
+         } else {
+-            out[0] = clamp(r);
+-            out[1] = clamp(g);
+-            out[2] = clamp(b);
++            out[0] = r;
++            out[1] = g;
++            out[2] = b;
+             out[3] = 255;
+         }
+     }
+@@ -99,26 +96,16 @@ pub fn ycbcr_to_rgb_inner_16_scalar<const BGRA: bool>(
+         .zip(cb.iter().zip(cr.iter()))
+         .zip(opt.chunks_exact_mut(3))
+     {
+-        let cr = cr - 128;
+-        let cb = cb - 128;
+-
+-        let y0 = i32::from(y) * i32::from(Y_CF) + i32::from(YUV_RND);
+-
+-        let r = (y0 + i32::from(cr) * i32::from(CR_CF)) >> YUV_PREC;
+-        let g = (y0
+-            + i32::from(cr) * i32::from(C_G_CR_COEF_1)
+-            + i32::from(cb) * i32::from(C_G_CB_COEF_2))
+-            >> YUV_PREC;
+-        let b = (y0 + i32::from(cb) * i32::from(CB_CF)) >> YUV_PREC;
++        let (r, g, b) = native_rgb(y, *cb, *cr);
+ 
+         if BGRA {
+-            out[0] = clamp(b);
+-            out[1] = clamp(g);
+-            out[2] = clamp(r);
++            out[0] = b;
++            out[1] = g;
++            out[2] = r;
+         } else {
+-            out[0] = clamp(r);
+-            out[1] = clamp(g);
+-            out[2] = clamp(b);
++            out[0] = r;
++            out[1] = g;
++            out[2] = b;
+         }
+     }
+ 
+-- 
+2.56.0
+

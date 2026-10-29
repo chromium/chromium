@@ -117,6 +117,98 @@ pub fn choose_idct_1x1_func(_: &DecoderOptions) -> IDCTPtr {
 mod tests {
     use super::*;
 
+    fn check_scaled_idct(input: [i32; 64], half: [i16; 16], quarter: [i16; 4], eighth: i16) {
+        const STRIDE: usize = 7;
+        let cases: [(usize, IDCTPtr, &[i16]); 3] = [
+            (4, scalar::idct_scaled_4x4, &half),
+            (2, scalar::idct_scaled_2x2, &quarter),
+            (1, scalar::idct_scaled_1x1, core::slice::from_ref(&eighth))
+        ];
+        for (side, transform, expected) in cases {
+            let mut coefficients = input;
+            let mut output = vec![-1; (side - 1) * STRIDE + side];
+            transform(&mut coefficients, &mut output, STRIDE);
+            assert_eq!(coefficients, input);
+            for (index, sample) in output.into_iter().enumerate() {
+                let row = index / STRIDE;
+                let column = index % STRIDE;
+                let value = if column < side { expected[row * side + column] } else { -1 };
+                assert_eq!(sample, value, "scale 1/{}, position {index}", 8 / side);
+            }
+        }
+    }
+
+    #[test]
+    fn scaled_idct_native_mixed_and_clipping() {
+        // Golden samples were produced by libjpeg-turbo's reduced IDCTs with
+        // unit quantization, not by resizing its full-size output.
+        let mut input = [0; 64];
+        for (coefficient, index) in input.iter_mut().zip(0_i32..) {
+            *coefficient = ((index * 29) % 107) - 53;
+        }
+        check_scaled_idct(
+            input,
+            [
+                122, 116, 112, 114, 115, 84, 157, 132, 115, 124, 126, 112, 122, 129, 123, 138
+            ],
+            [109, 129, 123, 125],
+            121
+        );
+        input.fill(0);
+        input[0] = 700;
+        input[1] = 700;
+        input[8] = -400;
+        input[9] = 200;
+        check_scaled_idct(
+            input,
+            [
+                255, 215, 88, 0, 255, 242, 135, 60, 255, 255, 203, 147, 255, 255, 250, 208
+            ],
+            [255, 70, 255, 202],
+            216
+        );
+    }
+
+    #[test]
+    fn scaled_idct_native_axis_and_rounding() {
+        let mut input = [0; 64];
+        input[0] = -5;
+        check_scaled_idct(input, [127; 16], [127; 4], 127);
+        input.fill(0);
+        input[1] = 47;
+        input[3] = -83;
+        input[7] = 19;
+        check_scaled_idct(
+            input,
+            [
+                130, 142, 114, 126, 130, 142, 114, 126, 130, 142, 114, 126, 130, 142, 114, 126
+            ],
+            [136, 120, 136, 120],
+            128
+        );
+        input.fill(0);
+        input[8] = -101;
+        input[24] = 35;
+        input[56] = -49;
+        check_scaled_idct(
+            input,
+            [
+                115, 115, 115, 115, 117, 117, 117, 117, 139, 139, 139, 139, 141, 141, 141, 141
+            ],
+            [116, 116, 140, 140],
+            128
+        );
+    }
+
+    #[test]
+    fn scaled_idct_discards_cancelled_frequencies() {
+        let mut input = [0; 64];
+        input[4] = 719;
+        input[32] = -299;
+        input[36] = 153;
+        check_scaled_idct(input, [128; 16], [128; 4], 128);
+    }
+
     fn check_idct(input: [i32; 64], expected: [i16; 64], reduced: bool) {
         const STRIDE: usize = 13;
         let mut functions: Vec<(&str, IDCTPtr)> = vec![
@@ -125,7 +217,10 @@ mod tests {
         ];
         if reduced {
             functions.push(("scalar 4x4", scalar::idct4x4));
-            functions.push(("native 4x4", choose_idct_4x4_func(&DecoderOptions::new_fast())));
+            functions.push((
+                "native 4x4",
+                choose_idct_4x4_func(&DecoderOptions::new_fast())
+            ));
         }
         if input[1..].iter().all(|&coefficient| coefficient == 0) {
             functions.push(("DC only", idct_int_1x1));

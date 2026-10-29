@@ -283,8 +283,10 @@ impl BitStreamArithmetic {
     where
         T: ZByteReaderTrait,
     {
-        let b = if self.marker.is_some() {
-            // When a marker is present, the decoder is repeatedly fed zero bytes
+        let b = if self.marker.is_some() || self.seen_eoi {
+            // When a marker is present, the decoder is repeatedly fed zero bytes.
+            // An EOI stays in force after the decoder acknowledges it: whatever follows
+            // it is not part of this image's entropy data.
             0
         } else {
             reader.read_u8_err()?
@@ -708,6 +710,11 @@ impl BitStream for BitStreamArithmetic {
     }
 
     #[inline(always)]
+    fn marker_ends_data() -> bool {
+        false
+    }
+
+    #[inline(always)]
     fn supports_mcu_checkpoint() -> bool {
         false
     }
@@ -865,10 +872,10 @@ impl BitStream for BitStreamArithmetic {
     #[inline]
     fn decode_prog_dc_first<T>(
         &mut self, reader: &mut ZReader<T>, dc_table: &mut ArithDCTables, block: &mut i16,
-        dc_prediction: &mut i32, last_dc_diff: &mut i32,
+        dc_prediction: &mut i32, last_dc_diff: &mut i32, _suspend_at_eof: bool
     ) -> Result<(), DecodeErrors>
     where
-        T: ZByteReaderTrait,
+        T: ZByteReaderTrait
     {
         self.decode_dc(reader, dc_table, dc_prediction, last_dc_diff)?;
         *block = (*dc_prediction as i16).wrapping_mul(self.successive_low_mask);

@@ -32,9 +32,8 @@
 
 use core::arch::aarch64::*;
 
-use crate::unsafe_utils::{transpose, YmmRegister};
-
 use super::{CONST_BITS, OUTPUT_SHIFT, PASS1_ROUND, PASS1_SHIFT, SCALE_BITS};
+use crate::unsafe_utils::{transpose, YmmRegister};
 
 #[inline]
 #[target_feature(enable = "neon")]

@@ -91,11 +91,7 @@ impl Marker {
             0xDB => Some(DQT),
             0xDC => Some(DNL),
             0xDD => Some(DRI),
-            0xE0 => Some(APP(0)),
-            0xE1 => Some(APP(1)),
-            0xE2 => Some(APP(2)),
-            0xED => Some(APP(13)),
-            0xEE => Some(APP(14)),
+            0xE0..=0xEF => Some(APP(n - 0xE0)),
             _ => Some(UNKNOWN(n))
         }
     }

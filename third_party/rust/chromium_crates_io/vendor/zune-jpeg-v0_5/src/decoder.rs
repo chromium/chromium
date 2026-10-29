@@ -136,12 +136,16 @@ pub type IDCTPtr = fn(&mut [i32; 64], &mut [i16], usize);
 #[derive(Clone)]
 pub(crate) struct ScanDecodeState {
     pub(crate) scan_start_position:        usize,
+    pub(crate) scan_start_height:          u16,
+    pub(crate) scan_start_expects_dnl:     bool,
     pub(crate) append_snapshot:            HeaderAppendStateSnapshot,
     pub(crate) sos_snapshot:               SosParamsSnapshot,
     pub(crate) header_snapshot:            ScanHeaderStateSnapshot,
     pub(crate) scan_checkpoint:            Option<Box<ScanCheckpoint>>,
     pub(crate) progressive_checkpoint:     Option<Box<ProgressiveScanCheckpoint>>,
-    pub(crate) progressive_fine_checkpoint: Option<Box<ProgressiveFineCheckpoint>>
+    pub(crate) progressive_fine_checkpoint: Option<Box<ProgressiveFineCheckpoint>>,
+    pub(crate) baseline_components_seen:   [bool; MAX_COMPONENTS],
+    pub(crate) baseline_scans_seen:        usize
 }
 
 /// Saved state at the start of a progressive scan.
@@ -237,23 +241,26 @@ pub(crate) struct ScanCheckpoint {
 // Snapshot append-only metadata so marker or scan replay can roll it back.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) struct HeaderAppendStateSnapshot {
-    icc:  usize,
-    xmp:  usize,
-    gain: usize
+    icc:       usize,
+    xmp:       usize,
+    xmp_bytes: usize,
+    gain:      usize
 }
 
 impl HeaderAppendStateSnapshot {
     pub(crate) fn capture<T: ZByteReaderTrait>(decoder: &JpegDecoder<T>) -> Self {
         Self {
-            icc:  decoder.icc_data.len(),
-            xmp:  decoder.extended_xmp_segments.len(),
-            gain: decoder.info.gain_map_info.len()
+            icc:       decoder.icc_data.len(),
+            xmp:       decoder.extended_xmp_segments.len(),
+            xmp_bytes: decoder.extended_xmp_bytes_received,
+            gain:      decoder.info.gain_map_info.len()
         }
     }
 
     pub(crate) fn rollback<T: ZByteReaderTrait>(self, decoder: &mut JpegDecoder<T>) {
         decoder.icc_data.truncate(self.icc);
         decoder.extended_xmp_segments.truncate(self.xmp);
+        decoder.extended_xmp_bytes_received = self.xmp_bytes;
         decoder.info.gain_map_info.truncate(self.gain);
     }
 }
@@ -373,7 +380,9 @@ pub struct JpegDecoder<T> {
     pub(crate) is_mjpeg:                    bool,
     pub(crate) coeff:                       usize, // Solves some weird bug :)
     /// Extended XMP segments
-    pub(crate) extended_xmp_segments:       Vec<ExtendedXmpSegment>,
+    pub(crate) extended_xmp_segments: Vec<ExtendedXmpSegment>,
+    /// Total Extended XMP payload bytes committed so far.
+    pub(crate) extended_xmp_bytes_received: usize,
     /// Stream position where the header parser should resume on a future
     /// call after a recoverable EOF. Zero means "start from SOI".
     ///
@@ -387,15 +396,15 @@ pub struct JpegDecoder<T> {
     /// Number of output bytes known to be stable after the most recent
     /// `decode_into` attempt.
     pub(crate) pixels_decoded:              usize,
-    /// Persistent coefficient buffers for multi-SOS baseline decoding.
-    ///
-    /// Owned by the decoder so contents survive a recoverable EOF and the
-    /// next `decode_into` retry can resume from where it stopped without
-    /// copying anything. Progressive decoding also uses these as the committed
-    /// coefficient buffers for completed scans. The inner `Vec`s are reused
-    /// across `decode_into` calls; capacity is reclaimed only when the decoder
-    /// is dropped.
+    /// Committed quantized coefficients for completed progressive scans.
     pub(crate) progressive_mcus_buffer: [Vec<i16>; MAX_COMPONENTS],
+    /// Persistent dequantized coefficients for multi-SOS sequential decoding.
+    /// Repeated scans update existing blocks, including across suspended input.
+    pub(crate) baseline_coefficients: [Vec<i32>; MAX_COMPONENTS],
+    pub(crate) baseline_seen_components: [bool; MAX_COMPONENTS],
+    pub(crate) baseline_eoi_seen: bool,
+    /// Corruption halting buffered input before EOI; full recovery is unchanged.
+    pub(crate) baseline_corrupt: bool,
     /// Active progressive scan scratch buffers.
     ///
     /// Storage is retained across EOF or cancellation so retries can reuse its
@@ -410,6 +419,10 @@ pub struct JpegDecoder<T> {
     pub(crate) progressive_last_good_row: usize,
     /// Pending row position; discarded scans must not change smoothing precision.
     pub(crate) progressive_scan_last_good_row: usize,
+    /// Complete input iMCU rows in the current progressive scan.
+    pub(crate) progressive_input_rows: usize,
+    /// Whether the progressive input contained an actual EOI marker.
+    pub(crate) progressive_eoi_seen: bool,
     /// The first progressive scan has no previous precision to fall back to.
     pub(crate) progressive_smoothing_first_scan: bool,
     /// Number of committed progressive scans currently rendered as preview
@@ -454,7 +467,19 @@ pub struct JpegDecoder<T> {
     /// scan's entropy data. The MCU decode loop will intercept that marker
     /// and store the real height; if it never arrives, decoding returns an
     /// error.
-    pub(crate) expects_dnl:                 bool,
+    pub(crate) expects_dnl: bool,
+    /// Persistent identity for images whose SOF height was supplied through
+    /// DNL, including tolerated pre-SOS DNL placement.
+    pub(crate) dnl_image: bool,
+    /// Height committed by DNL. Kept outside scan replay state so public
+    /// geometry and option validation remain stable while the parser rewinds.
+    pub(crate) resolved_dnl_height: Option<u16>,
+    /// DNL height parsed through entropy read-ahead but not yet reached by the
+    /// MCU-row decoder.
+    pub(crate) pending_dnl_height: Option<u16>,
+    /// Reader position immediately after the pending DNL body. Any movement
+    /// while DNL is pending means decoding attempted to consume post-DNL data.
+    pub(crate) pending_dnl_stream_position: Option<u64>,
     /// Sequential raw iMCU-row progress shared across borrowing sessions.
     raw_pull_state:                         RawPullState,
     /// Sequential converted scanline progress shared across borrowing sessions.
@@ -465,7 +490,8 @@ pub struct JpegDecoder<T> {
 pub(crate) enum McuDecodeOutput<'planes, 'buf> {
     Pixels(&'planes mut [u8]),
     RawPlanes(RawPlanesSink<'planes, 'buf>),
-    Scanlines(ConvertedScanlineSink<'planes>)
+    Scanlines(ConvertedScanlineSink<'planes>),
+    Scaled(&'planes mut crate::scaled::ScaledOutput)
 }
 
 impl McuDecodeOutput<'_, '_> {
@@ -477,7 +503,7 @@ impl McuDecodeOutput<'_, '_> {
         match self {
             Self::Pixels(pixels) => Some(pixels),
             Self::Scanlines(sink) => Some(sink.pixels),
-            Self::RawPlanes(_) => None
+            Self::RawPlanes(_) | Self::Scaled(_) => None
         }
     }
 
@@ -485,14 +511,21 @@ impl McuDecodeOutput<'_, '_> {
         match self {
             Self::RawPlanes(sink) => sink.requested_stripe,
             Self::Scanlines(sink) => Some(sink.requested_stripe),
-            Self::Pixels(_) => None
+            Self::Pixels(_) | Self::Scaled(_) => None
+        }
+    }
+
+    pub(crate) const fn requested_raw_stripe(&self) -> Option<usize> {
+        match self {
+            Self::RawPlanes(sink) => sink.requested_stripe,
+            Self::Pixels(_) | Self::Scanlines(_) | Self::Scaled(_) => None
         }
     }
 
     pub(crate) const fn requests_raw_output(&self) -> bool {
         match self {
             Self::RawPlanes(_) => true,
-            Self::Pixels(_) | Self::Scanlines(_) => false
+            Self::Pixels(_) | Self::Scanlines(_) | Self::Scaled(_) => false
         }
     }
 
@@ -600,7 +633,7 @@ struct RawPullState {
     owner:                    RawPullOwner,
     phase:                    RawPullPhase,
     next_stripe:              usize,
-    entropy_tables:           Option<EntropyTables>,
+    entropy_tables:           Option<Box<EntropyTables>>,
     layout:                   Option<[PlaneInfo; MAX_COMPONENTS]>,
     rows_per_stripe:          [usize; MAX_COMPONENTS],
     input_complete:          bool,
@@ -631,7 +664,7 @@ struct ScanlineState {
     staged_rows:     usize,
     staging:         Vec<u8>,
     source_complete: bool,
-    entropy_tables:  Option<EntropyTables>
+    entropy_tables:  Option<Box<EntropyTables>>
 }
 
 impl Default for ScanlineState {
@@ -675,6 +708,22 @@ impl Default for RawPullState {
 /// Unlike [`JpegDecoder::decode`] and [`JpegDecoder::decode_into`], raw output
 /// skips upsampling and color conversion and returns one post-IDCT plane per
 /// JPEG component. The configured output colorspace is therefore ignored.
+///
+/// Interleaved sequential images can produce raw iMCU rows while entropy data
+/// is decoded. Progressive and multi-SOS images first accumulate all coefficient
+/// scans, then reconstruct final component samples directly from those
+/// coefficients. Their first row request may therefore consume the complete
+/// compressed image before returning output, but it does not allocate or
+/// convert through a packed RGB frame. Recoverable suspension during that
+/// buffered phase leaves caller planes untouched. Because raw output exposes
+/// only final samples, a suspended or cancelled progressive decode discards
+/// partial coefficient state and replays its scans on retry instead of cloning
+/// full coefficient planes for preview preservation.
+///
+/// When no more bytes can arrive, [`Self::set_input_complete`] allows non-strict
+/// decoding to reconstruct available progressive coefficients at final EOF.
+/// This does not make missing component DC data displayable or relax strict
+/// validation. Without that signal, incomplete input remains resumable.
 pub struct RawDecodeSession<'decoder, T> {
     decoder: &'decoder mut JpegDecoder<T>,
     previous_incremental_mode: bool,
@@ -682,10 +731,12 @@ pub struct RawDecodeSession<'decoder, T> {
 
 /// Stateful converted scanline output session.
 ///
-/// Obtain a session with [`JpegDecoder::scanline_output`], call [`Self::start`],
-/// then read or skip rows sequentially before finishing. The session uses the
-/// decoder's configured output colorspace and the same upsampling and color
-/// conversion pipeline as [`JpegDecoder::decode_into`].
+/// Obtain a session with [`JpegDecoder::scanline_output`], then read or skip
+/// rows sequentially before finishing. [`Self::read_scanlines`] starts the
+/// session lazily; [`Self::start`] remains available as an optional preflight
+/// when output geometry is needed before allocating row storage. The session
+/// uses the decoder's configured output colorspace and the same upsampling and
+/// color conversion pipeline as [`JpegDecoder::decode_into`].
 ///
 /// Progressive and multi-SOS images do not expose provisional preview rows
 /// through this API. They return [`ScanlineReadStatus::NeedMoreInput`] until
@@ -719,6 +770,8 @@ where
     ///
     /// A suspended start does not advance output and can be retried on the
     /// same session after exposing more input through the underlying reader.
+    /// Calling this explicitly is optional because [`Self::read_scanlines`]
+    /// starts the session lazily.
     pub fn start(&mut self) -> Result<ScanlineStatus, DecodeErrors> {
         if self.decoder.scanline_state.phase == ScanlinePhase::Complete {
             return Ok(ScanlineStatus::Complete);
@@ -776,14 +829,20 @@ where
     /// zero-row operation. If input suspends after some staged rows were copied,
     /// those stable rows are returned first and suspension is reported on a
     /// later call. `Complete` means no logical rows remain; call [`Self::finish`]
-    /// to complete the compressed stream.
+    /// to complete the compressed stream. If [`Self::start`] has not been called,
+    /// this method starts the session first. Header suspension returns
+    /// [`ScanlineReadStatus::NeedMoreInput`] without touching `output`.
     pub fn read_scanlines(
         &mut self, output: &mut [u8], stride: usize
     ) -> Result<ScanlineReadStatus, DecodeErrors> {
         if !self.decoder.scanline_state.started {
-            return Err(DecodeErrors::FormatStatic(
-                "scanline output must be started before reading rows"
-            ));
+            match self.start()? {
+                ScanlineStatus::Ready => {}
+                ScanlineStatus::NeedMoreInput => {
+                    return Ok(ScanlineReadStatus::NeedMoreInput)
+                }
+                ScanlineStatus::Complete => return Ok(ScanlineReadStatus::Complete)
+            }
         }
         let row_bytes = self.output_row_bytes().ok_or(DecodeErrors::FormatStatic(
             "converted output row size overflow"
@@ -1048,7 +1107,9 @@ where
 
         let (rows_written, source_complete) = match output {
             McuDecodeOutput::Scanlines(sink) => (sink.rows_written, sink.source_complete),
-            McuDecodeOutput::Pixels(_) | McuDecodeOutput::RawPlanes(_) => unreachable!()
+            McuDecodeOutput::Pixels(_)
+            | McuDecodeOutput::RawPlanes(_)
+            | McuDecodeOutput::Scaled(_) => unreachable!()
         };
         if let Err(error) = decode_result {
             if error.is_recoverable_eof() {
@@ -1065,7 +1126,8 @@ where
         if self.decoder.scanline_state.phase == ScanlinePhase::StreamingBaseline
             && self.decoder.is_arithmetic
         {
-            self.decoder.scanline_state.entropy_tables = Some(self.decoder.entropy_tables.clone());
+            self.decoder.scanline_state.entropy_tables =
+                Some(Box::new(self.decoder.entropy_tables.clone()));
         }
         Ok(ScanlineReadStatus::RowsProcessed { rows: rows_written })
     }
@@ -1088,7 +1150,7 @@ where
                     "missing arithmetic contexts for converted scanline resume"
                 )
             )?;
-            self.decoder.entropy_tables = tables.clone();
+            self.decoder.entropy_tables = tables.as_ref().clone();
         }
         Ok(())
     }
@@ -1233,7 +1295,7 @@ where
 
         let layout = self.pull_layout()?;
         let n = self.decoder.components.len();
-        if self.decoder.expects_dnl {
+        if self.decoder.is_dnl_image() {
             return Err(DecodeErrors::FormatStatic(
                 "raw output does not support DNL images"
             ));
@@ -1287,7 +1349,9 @@ where
 
         let sink = match output {
             McuDecodeOutput::RawPlanes(sink) => sink,
-            McuDecodeOutput::Pixels(_) | McuDecodeOutput::Scanlines(_) => unreachable!()
+            McuDecodeOutput::Pixels(_)
+            | McuDecodeOutput::Scanlines(_)
+            | McuDecodeOutput::Scaled(_) => unreachable!()
         };
         if sink.source_complete {
             self.decoder.raw_pull_state.buffered_source_complete = true;
@@ -1307,7 +1371,8 @@ where
         if self.decoder.raw_pull_state.phase == RawPullPhase::StreamingBaseline
             && self.decoder.is_arithmetic
         {
-            self.decoder.raw_pull_state.entropy_tables = Some(self.decoder.entropy_tables.clone());
+            self.decoder.raw_pull_state.entropy_tables =
+                Some(Box::new(self.decoder.entropy_tables.clone()));
         }
         Ok(RawImcuRowStatus::RowReady {
             rows_written: sink.rows_written
@@ -1419,7 +1484,11 @@ where
 
     fn prepare_pull_scan(&mut self) -> Result<(), DecodeErrors> {
         self.decoder.prepare_for_scan_decode()?;
-        self.decoder.mcu_checkpoints_enabled = true;
+        // Raw progressive output exposes only final component samples. Decode directly into the
+        // coefficient buffers and replay all scans after suspension/cancellation instead of
+        // cloning each active scan's full coefficient planes. Caller output remains untouched
+        // until coefficient decoding completes.
+        self.decoder.mcu_checkpoints_enabled = !self.decoder.is_progressive;
         Ok(())
     }
 
@@ -1446,10 +1515,15 @@ where
             None => false
         };
         if resumes_completed_row {
-            let tables = self.decoder.raw_pull_state.entropy_tables.as_ref().ok_or(
-                DecodeErrors::FormatStatic("missing arithmetic contexts for raw iMCU-row resume")
-            )?;
-            self.decoder.entropy_tables = tables.clone();
+            let tables = self
+                .decoder
+                .raw_pull_state
+                .entropy_tables
+                .as_ref()
+                .ok_or(DecodeErrors::FormatStatic(
+                    "missing arithmetic contexts for raw iMCU-row resume"
+                ))?;
+            self.decoder.entropy_tables = tables.as_ref().clone();
         }
         Ok(())
     }
@@ -1464,6 +1538,11 @@ where
     /// bytes from [`Self::layout`]. The configured output colorspace is
     /// ignored. Samples within each plane's logical `width * height` area are
     /// meaningful; trailing DCT padding is implementation-defined.
+    ///
+    /// For progressive JPEGs, all scans are decoded before the first component
+    /// samples are reconstructed. The final planes preserve the sampling factors
+    /// and logical dimensions reported by [`Self::layout`]; no packed RGB
+    /// intermediate is created.
     ///
     /// On a recoverable EOF, call this method again on the same session after
     /// exposing more input. Successful calls can also be replayed and produce
@@ -1493,7 +1572,7 @@ where
     /// [`DecodeErrors::Format`] for the wrong plane count, or an error from
     /// the underlying decode pipeline.
     pub fn decode_into_planes(&mut self, planes: &mut [&mut [u8]]) -> Result<(), DecodeErrors> {
-        if self.decoder.expects_dnl {
+        if self.decoder.is_dnl_image() {
             return Err(DecodeErrors::FormatStatic(
                 "raw output does not support DNL images"
             ));
@@ -1538,6 +1617,11 @@ where
     /// [`PlaneInfo::width`], and each plane must contain at least
     /// `stride * PlaneInfo::height` bytes.
     ///
+    /// Progressive input availability follows [`Self::decode_into_planes`]:
+    /// coefficient scans are buffered to completion before final component
+    /// samples are written, and recoverable suspension leaves the destination
+    /// planes unchanged.
+    ///
     /// On a recoverable EOF, call this method again on the same session after
     /// exposing more input. Successful calls can also be replayed and produce
     /// bit-identical logical samples.
@@ -1571,7 +1655,7 @@ where
     pub fn decode_into_planes_strided(
         &mut self, planes: &mut [&mut [u8]], strides: &[usize]
     ) -> Result<(), DecodeErrors> {
-        if self.decoder.expects_dnl {
+        if self.decoder.is_dnl_image() {
             return Err(DecodeErrors::FormatStatic(
                 "raw output does not support DNL images"
             ));
@@ -1613,6 +1697,10 @@ where
         &mut self, planes: &mut [&mut [u8]], strides: &[usize],
         layout: &[PlaneInfo; MAX_COMPONENTS]
     ) -> Result<(), DecodeErrors> {
+        if self.decoder.is_progressive {
+            return self.decode_progressive_whole_with_strides(planes, strides, layout);
+        }
+
         let count = planes.len();
         loop {
             let stripe = self.decoder.raw_pull_state.next_stripe;
@@ -1651,6 +1739,57 @@ where
                 RawImcuRowStatus::Complete => return Ok(())
             }
         }
+    }
+
+    fn decode_progressive_whole_with_strides(
+        &mut self, planes: &mut [&mut [u8]], strides: &[usize],
+        layout: &[PlaneInfo; MAX_COMPONENTS]
+    ) -> Result<(), DecodeErrors> {
+        let count = planes.len();
+        match self.decoder.raw_pull_state.owner {
+            RawPullOwner::None => self.decoder.raw_pull_state.owner = RawPullOwner::WholeImage,
+            RawPullOwner::WholeImage => {}
+            RawPullOwner::Pull => {
+                return Err(DecodeErrors::FormatStatic(
+                    "cannot switch raw output API during an active decode sequence"
+                ))
+            }
+        }
+
+        if !self.decoder.raw_pull_state.buffered_source_complete {
+            self.prepare_pull_scan()?;
+            self.decoder.raw_pull_state.phase = RawPullPhase::BufferedRows;
+            self.decoder.decode_buffered_raw_source(0, layout, count)?;
+            self.decoder.raw_pull_state.buffered_source_complete = true;
+        }
+
+        let mut lengths = [0; MAX_COMPONENTS];
+        let mut target_strides = [0; MAX_COMPONENTS];
+        let mut target_widths = [0; MAX_COMPONENTS];
+        let mut target_heights = [0; MAX_COMPONENTS];
+        for index in 0..count {
+            lengths[index] = planes[index].len();
+            target_strides[index] = strides[index];
+            target_widths[index] = layout[index].width;
+            target_heights[index] = layout[index].height;
+        }
+        let sink = RawPlanesSink {
+            planes,
+            lengths,
+            target_strides,
+            target_widths,
+            target_heights,
+            n_components: count,
+            requested_stripe: None,
+            rows_written: [0; MAX_COMPONENTS],
+            stripe_ready: false,
+            source_complete: false
+        };
+        let mut output = McuDecodeOutput::RawPlanes(sink);
+        self.decoder.render_buffered_output_stripe(&mut output)?;
+        self.decoder.finish_output_source();
+        self.decoder.raw_pull_state.phase = RawPullPhase::Complete;
+        Ok(())
     }
 }
 
@@ -1722,14 +1861,92 @@ where
         let header_snapshot = self.capture_scan_header_state();
         self.scan_state = Some(Box::new(ScanDecodeState {
             scan_start_position,
+            scan_start_height: self.info.height,
+            scan_start_expects_dnl: self.expects_dnl,
             append_snapshot,
             sos_snapshot,
             header_snapshot,
             scan_checkpoint: None,
             progressive_checkpoint: None,
-            progressive_fine_checkpoint: None
+            progressive_fine_checkpoint: None,
+            baseline_components_seen: [false; MAX_COMPONENTS],
+            baseline_scans_seen: 0
         }));
         Ok(())
+    }
+
+    pub(crate) fn validate_dnl_height(&self, height: u16) -> Result<(), DecodeErrors> {
+        if height == 0 {
+            return Err(DecodeErrors::FormatStatic("DNL height must be nonzero"));
+        }
+        if usize::from(height) > self.options.max_height() {
+            return Err(DecodeErrors::Format(format!(
+                "DNL height {height} greater than height limit {}",
+                self.options.max_height()
+            )));
+        }
+        if let Some(resolved) = self.resolved_dnl_height() {
+            if resolved != height {
+                return Err(DecodeErrors::Format(format!(
+                    "DNL height changed from {resolved} to {height} during replay"
+                )));
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn resolve_dnl_height(&mut self, height: u16) -> Result<(), DecodeErrors> {
+        self.validate_dnl_height(height)?;
+        self.info.set_height(height);
+        self.expects_dnl = false;
+        self.resolved_dnl_height = Some(height);
+        Ok(())
+    }
+
+    pub(crate) fn resolved_dnl_height(&self) -> Option<u16> {
+        self.resolved_dnl_height
+    }
+
+    pub(crate) fn is_dnl_image(&self) -> bool {
+        self.dnl_image
+    }
+
+    fn republish_resolved_dnl_height(&mut self) {
+        if let Some(height) = self.resolved_dnl_height() {
+            self.info.set_height(height);
+            self.expects_dnl = false;
+        }
+    }
+
+    pub(crate) fn mark_baseline_scan_components_complete(
+        &mut self, scan_components: &[usize],
+    ) -> bool {
+        let component_count = self.components.len();
+        let Some(state) = self.scan_state.as_deref_mut() else {
+            return false;
+        };
+        for &component in scan_components {
+            if component < MAX_COMPONENTS {
+                state.baseline_components_seen[component] = true;
+            }
+        }
+        state.baseline_components_seen[..component_count].iter().all(|seen| *seen)
+    }
+
+    pub(crate) fn baseline_components_complete(&self) -> bool {
+        self.scan_state.as_deref().is_some_and(|state| {
+            state.baseline_components_seen[..self.components.len()].iter().all(|seen| *seen)
+        })
+    }
+
+    pub(crate) fn baseline_scans_seen(&self) -> usize {
+        self.scan_state.as_deref().map_or(0, |state| state.baseline_scans_seen)
+    }
+
+    pub(crate) fn set_baseline_scans_seen(&mut self, scans_seen: usize) {
+        if let Some(state) = self.scan_state.as_deref_mut() {
+            state.baseline_scans_seen = scans_seen;
+        }
     }
 
     pub(crate) fn scan_checkpoint(&self) -> Option<&ScanCheckpoint> {
@@ -1954,6 +2171,7 @@ where
             is_mjpeg:                    false,
             coeff:                       1,
             extended_xmp_segments:       vec![],
+            extended_xmp_bytes_received: 0,
             header_resume_position:      0,
             scan_state:                  None,
             pixels_decoded:              0,
@@ -1961,16 +2179,26 @@ where
             incremental_mode:            false,
             scan_decode_attempted:       false,
             progressive_mcus_buffer:     core::array::from_fn(|_| Vec::new()),
+            baseline_coefficients:       core::array::from_fn(|_| Vec::new()),
+            baseline_seen_components:    [false; MAX_COMPONENTS],
+            baseline_eoi_seen:           false,
+            baseline_corrupt:            false,
             progressive_scan_buffer: core::array::from_fn(|_| Vec::new()),
             upsampler_scratch: Vec::new(),
             progressive_completed_scans: 0,
             progressive_last_good_row: 0,
             progressive_scan_last_good_row: 0,
+            progressive_input_rows: 0,
+            progressive_eoi_seen: false,
             progressive_smoothing_first_scan: true,
             progressive_displayed_scans: 0,
             progressive_render_incomplete: false,
             marker_body_scratch:         Vec::new(),
             expects_dnl:                 false,
+            dnl_image:                   false,
+            resolved_dnl_height:         None,
+            pending_dnl_height:          None,
+            pending_dnl_stream_position: None,
             raw_pull_state:              RawPullState::default(),
             scanline_state:              ScanlineState::default()
         }
@@ -1994,15 +2222,8 @@ where
             // loop will intercept the DNL marker and set info.height — then
             // truncate to the actual decoded size.
             let max_size = self
-                .options
-                .max_height()
-                .checked_mul(usize::from(self.info.width))
-                .and_then(|v| {
-                    v.checked_mul(self.options.jpeg_get_out_colorspace().num_components())
-                })
-                .ok_or(DecodeErrors::FormatStatic(
-                    "DNL image dimensions overflow usize"
-                ))?;
+                .output_buffer_size_for_height(self.options.max_height())
+                .ok_or(DecodeErrors::FormatStatic("DNL image dimensions overflow usize"))?;
             let mut out = vec![0u8; max_size];
             self.decode_into(&mut out)?;
             // After decode_into, info.height has been set by the DNL handler.
@@ -2067,17 +2288,43 @@ where
     ///  - `Some(usize)`: Minimum size for a buffer needed to decode the image
     ///  - `None`: Indicates headers are unavailable or image dimensions overflow `usize`
     ///
+    /// DNL images return a buffer size based on the configured maximum height
+    /// until their actual height is known.
+    ///
     #[must_use]
     pub fn output_buffer_size(&self) -> Option<usize> {
-        return if self.headers_decoded {
-            Some(
-                usize::from(self.width())
-                    .checked_mul(usize::from(self.height()))?
-                    .checked_mul(self.options.jpeg_get_out_colorspace().num_components())?
-            )
+        let height = self.resolved_dnl_height().map_or_else(
+            || {
+                if self.expects_dnl {
+                    self.options.max_height()
+                } else {
+                    usize::from(self.height())
+                }
+            },
+            usize::from,
+        );
+        self.output_buffer_size_for_height(height)
+    }
+
+    fn output_buffer_size_for_height(&self, height: usize) -> Option<usize> {
+        if !self.headers_decoded {
+            return None;
+        }
+        usize::from(self.width())
+            .checked_mul(height)?
+            .checked_mul(self.options.jpeg_get_out_colorspace().num_components())
+    }
+
+    fn decode_output_buffer_size(&self) -> Result<usize, DecodeErrors> {
+        if let Some(height) = self.resolved_dnl_height() {
+            self.validate_dnl_height(height)?;
+            self.output_buffer_size_for_height(usize::from(height))
+        } else if self.expects_dnl {
+            self.output_buffer_size_for_height(self.options.max_height())
         } else {
-            None
-        };
+            self.output_buffer_size()
+        }
+        .ok_or(DecodeErrors::FormatStatic("Image dimensions overflow usize"))
     }
 
     /// Return the number of output bytes known to be stable after the most
@@ -2105,6 +2352,52 @@ where
             return None;
         }
         Some(self.progressive_completed_scans)
+    }
+
+    /// Return the coded-pixel row prefix available from buffered scan decoding.
+    ///
+    /// After a successful buffered decode, incremental consumers can publish this
+    /// prefix instead of displaying the previous completed scan's full-frame preview.
+    /// Every progressive DC component must be present before publication.
+    /// DC smoothing requires two future iMCU rows until a real EOI is seen.
+    /// Buffered sequential images cannot publish before EOI or after corruption
+    /// halted input before EOI.
+    /// Full-frame best-effort decoding and raw output are unchanged.
+    /// Returns `None` before headers, for ordinary stripe-based sequential output,
+    /// or for legacy best-effort merged DC/AC scans without progressive row bounds.
+    #[must_use]
+    pub fn buffered_output_rows(&self) -> Option<usize> {
+        if !self.headers_decoded {
+            return None;
+        }
+        let height = usize::from(self.height());
+        if !self.is_progressive {
+            return self
+                .baseline_coefficients
+                .iter()
+                .any(|buffer| !buffer.is_empty())
+                .then_some(if self.baseline_eoi_seen && !self.baseline_corrupt {
+                    height
+                } else {
+                    0
+                });
+        }
+        if self.spec_start == 0 && self.spec_end != 0 {
+            return None;
+        }
+        if self
+            .components
+            .iter()
+            .any(|component| component.progressive_bits[0] < 0)
+        {
+            return Some(0);
+        }
+        if self.progressive_eoi_seen {
+            return Some(height);
+        }
+        let lookahead =
+            if self.spec_start == 0 && self.progressive_smoothing_enabled() { 2 } else { 0 };
+        Some((self.progressive_input_rows.saturating_sub(lookahead) * self.v_max * 8).min(height))
     }
 
     /// Return the number of output bytes currently holding a progressive
@@ -2175,8 +2468,7 @@ where
     /// Strict mode rejects truncated scans, while incremental mode uses the
     /// error to signal that the caller should provide more input.
     pub(crate) fn scan_eof_is_error(&self) -> bool {
-        self.options.strict_mode()
-            || (self.incremental_mode && !self.raw_pull_state.input_complete)
+        self.options.strict_mode() || (self.incremental_mode && !self.raw_pull_state.input_complete)
     }
 
     /// Return the number of output scanlines known to be stable after the
@@ -2222,8 +2514,11 @@ where
 
     /// Begin an exclusive converted scanline output session.
     ///
-    /// Call [`ScanlineDecodeSession::start`] before reading rows. Recreating a
-    /// session after input suspension preserves decoder-owned scanline state.
+    /// [`ScanlineDecodeSession::read_scanlines`] starts the session lazily.
+    /// Call [`ScanlineDecodeSession::start`] explicitly only when output
+    /// geometry or header errors are needed before the first row request.
+    /// Recreating a session after input suspension preserves decoder-owned
+    /// scanline state.
     pub fn scanline_output(&mut self) -> ScanlineDecodeSession<'_, T> {
         self.abort_raw_pull_sequence();
         if self.scanline_state.phase == ScanlinePhase::Complete {
@@ -2250,7 +2545,10 @@ where
                     .get(index)
                     .map_or(0, |component| component.raw_coeff.capacity())
             }),
-            core::array::from_fn(|index| self.progressive_mcus_buffer[index].capacity())
+            core::array::from_fn(|index| {
+                self.progressive_mcus_buffer[index].capacity()
+                    + self.baseline_coefficients[index].capacity()
+            })
         )
     }
 
@@ -2494,8 +2792,11 @@ where
         self.idct_1x1_func = choose_idct_1x1_func(&self.options);
     }
     #[allow(clippy::cast_possible_truncation)]
-    fn reassemble_extended_xmp(&mut self) {
-        if self.extended_xmp_segments.is_empty() {
+    pub(crate) fn reassemble_extended_xmp(&mut self) {
+        let Some(first_segment) = self.extended_xmp_segments.first() else {
+            return;
+        };
+        if self.extended_xmp_bytes_received < first_segment.total_size as usize {
             return;
         }
 
@@ -2510,6 +2811,7 @@ where
             if &segment.guid != guid || segment.total_size != total_size {
                 error!("Inconsistent Extended XMP segments");
                 self.extended_xmp_segments.clear();
+                self.extended_xmp_bytes_received = 0;
                 return;
             }
         }
@@ -2523,7 +2825,16 @@ where
                 complete = false;
                 break;
             }
-            rolling_offset += segment.data.len() as u32;
+            let Some(next_offset) = u32::try_from(segment.data.len())
+                .ok()
+                .and_then(|len| rolling_offset.checked_add(len))
+            else {
+                error!("Extended XMP size overflow");
+                self.extended_xmp_segments.clear();
+                self.extended_xmp_bytes_received = 0;
+                return;
+            };
+            rolling_offset = next_offset;
         }
 
         if complete && rolling_offset == total_size {
@@ -2534,11 +2845,12 @@ where
             self.info.extended_xmp = Some(result);
             self.info.extended_xmp_guid = Some(guid.clone());
             self.extended_xmp_segments.clear();
-        } else if rolling_offset > total_size {
-            error!("Extended XMP overflow");
+            self.extended_xmp_bytes_received = 0;
+        } else {
+            error!("Invalid Extended XMP segment layout");
             self.extended_xmp_segments.clear();
+            self.extended_xmp_bytes_received = 0;
         }
-        // Else: Incomplete, wait for more.
     }
     /// Decode Decoder headers
     ///
@@ -2869,9 +3181,12 @@ where
                         ));
                     }
                     let height = u16::from_be_bytes([b[0], b[1]]);
-                    if decoder.expects_dnl {
-                        decoder.info.set_height(height);
-                        decoder.expects_dnl = false;
+                    if decoder.dnl_image {
+                        if decoder.expects_dnl {
+                            decoder.resolve_dnl_height(height)?;
+                        } else {
+                            decoder.validate_dnl_height(height)?;
+                        }
                     }
                     Ok(())
                 })?;
@@ -3065,6 +3380,11 @@ where
                 "12-bit JPEG pixel decoding is not supported"
             ));
         }
+        if self.is_progressive && self.expects_dnl {
+            return Err(DecodeErrors::FormatStatic(
+                "progressive JPEG with in-scan DNL is not supported",
+            ));
+        }
         Ok(())
     }
 
@@ -3121,20 +3441,22 @@ where
     ///
     ///
     #[allow(clippy::too_many_lines)]
-    fn prepare_for_scan_decode(&mut self) -> Result<(), DecodeErrors> {
+    pub(crate) fn prepare_for_scan_decode(&mut self) -> Result<(), DecodeErrors> {
         // Pull the scan-resume state out into owned locals so the restore
         // below can freely mutate `self`. When headers haven't completed
         // yet, `scan_plan` is `None` and we just run header decoding below.
         struct ScanPlan {
-            scan_start_position:   usize,
-            outer_append_snapshot: HeaderAppendStateSnapshot,
-            outer_sos_snapshot:    SosParamsSnapshot,
-            outer_header_snapshot: ScanHeaderStateSnapshot,
+            scan_start_position:    usize,
+            scan_start_height:      u16,
+            scan_start_expects_dnl: bool,
+            outer_append_snapshot:  HeaderAppendStateSnapshot,
+            outer_sos_snapshot:     SosParamsSnapshot,
+            outer_header_snapshot:  ScanHeaderStateSnapshot,
             /// Snapshots taken from the checkpoint (if any) so the seek and
             /// SOS-restore steps below do not need to touch `scan_state`.
-            checkpoint_view:       Option<CheckpointView>,
-            progressive_view:      Option<ProgressiveCheckpointView>,
-            progressive_fine_view: Option<ProgressiveFineCheckpointView>
+            checkpoint_view:        Option<CheckpointView>,
+            progressive_view:       Option<ProgressiveCheckpointView>,
+            progressive_fine_view:  Option<ProgressiveFineCheckpointView>
         }
         #[derive(Clone, Copy)]
         struct CheckpointView {
@@ -3165,6 +3487,8 @@ where
         }
         let scan_plan = self.scan_state.as_deref().map(|state| ScanPlan {
             scan_start_position:   state.scan_start_position,
+            scan_start_height:     state.scan_start_height,
+            scan_start_expects_dnl: state.scan_start_expects_dnl,
             outer_append_snapshot: state.append_snapshot,
             outer_sos_snapshot:    state.sos_snapshot,
             outer_header_snapshot: state.header_snapshot.clone(),
@@ -3202,6 +3526,8 @@ where
         if let Some(plan) = scan_plan {
             let ScanPlan {
                 scan_start_position,
+                scan_start_height,
+                scan_start_expects_dnl,
                 outer_append_snapshot,
                 outer_sos_snapshot,
                 outer_header_snapshot,
@@ -3209,6 +3535,10 @@ where
                 progressive_view,
                 progressive_fine_view
             } = plan;
+            self.pending_dnl_height = None;
+            self.pending_dnl_stream_position = None;
+            self.info.set_height(scan_start_height);
+            self.expects_dnl = scan_start_expects_dnl;
             // Roll back inline metadata from a previous scan attempt.
             let resume_append_snapshot = progressive_fine_view.as_ref().map_or_else(
                 || {
@@ -3302,7 +3632,17 @@ where
                     comp.dc_pred = 0;
                     comp.dc_diff = 0;
                 }
+                if !self.is_progressive {
+                    if let Some(state) = self.scan_state.as_deref_mut() {
+                        state.baseline_components_seen = [false; MAX_COMPONENTS];
+                        state.baseline_scans_seen = 0;
+                    }
+                }
             }
+            // Components take their quantization tables once, from the tables in
+            // effect at the first SOS (`setup_component_params`). A DQT between
+            // later scans must not change them when resuming from a later checkpoint.
+            self.qt_tables = outer_header_snapshot.qt_tables;
             if checkpoint_view.is_none() && !had_progressive_view {
                 // First-SOS replay restarts progressive coefficient assembly;
                 // scan-boundary retries restore `todo` in `parse_entropy_coded_data`.
@@ -3337,7 +3677,7 @@ where
         Ok(())
     }
 
-    fn decode_mcu_output_with_success_cleanup(
+    pub(crate) fn decode_mcu_output_with_success_cleanup(
         &mut self, output: &mut McuDecodeOutput<'_, '_>
     ) -> Result<(), DecodeErrors> {
         match self.decode_mcu_output(output) {
@@ -3361,19 +3701,36 @@ where
                 }
                 Ok(())
             }
-            Err(e) => Err(e)
+            Err(e) => {
+                self.republish_resolved_dnl_height();
+                Err(e)
+            }
         }
     }
 
     pub fn decode_into(&mut self, out: &mut [u8]) -> Result<(), DecodeErrors> {
         self.abort_raw_pull_sequence();
         self.abort_scanline_sequence();
-        self.prepare_for_scan_decode()?;
+        if self.headers_decoded {
+            let expected_size = self.decode_output_buffer_size()?;
+            if out.len() < expected_size {
+                return Err(DecodeErrors::TooSmallOutput(expected_size, out.len()));
+            }
+        }
+        if let Err(error) = self.prepare_for_scan_decode() {
+            self.republish_resolved_dnl_height();
+            return Err(error);
+        }
 
-        let expected_size = self.output_buffer_size().unwrap();
-
+        let expected_size = match self.decode_output_buffer_size() {
+            Ok(size) => size,
+            Err(error) => {
+                self.republish_resolved_dnl_height();
+                return Err(error);
+            }
+        };
         if out.len() < expected_size {
-            // too small of a size
+            self.republish_resolved_dnl_height();
             return Err(DecodeErrors::TooSmallOutput(expected_size, out.len()));
         }
 
@@ -3383,6 +3740,22 @@ where
 
         let mut output = McuDecodeOutput::Pixels(out);
         self.decode_mcu_output_with_success_cleanup(&mut output)
+    }
+
+    /// Select true reduced-IDCT output without changing coded image metadata.
+    ///
+    /// The returned decoder owns independent reduced component planes and
+    /// preserves them across incremental retries. Select the scale before
+    /// starting any pixel, scanline, or raw-plane decode.
+    pub fn into_scaled(
+        self, scale: crate::JpegScale
+    ) -> Result<crate::ScaledJpegDecoder<T>, DecodeErrors> {
+        if self.scan_decode_attempted {
+            return Err(DecodeErrors::FormatStatic(
+                "select output scaling before starting scan decoding"
+            ));
+        }
+        crate::ScaledJpegDecoder::new(self, scale)
     }
 
     fn decode_mcu_output(
@@ -3469,9 +3842,7 @@ where
     }
 
     fn abort_raw_pull_sequence(&mut self) {
-        if self.raw_pull_state.owner == RawPullOwner::None
-            && !self.raw_pull_state.input_complete
-        {
+        if self.raw_pull_state.owner == RawPullOwner::None && !self.raw_pull_state.input_complete {
             return;
         }
         self.raw_pull_state = RawPullState::default();
@@ -3805,6 +4176,103 @@ impl ImageInfo {
 }
 
 #[cfg(test)]
+mod extended_xmp_tests {
+    use zune_core::bytestream::ZCursor;
+
+    use super::{ExtendedXmpSegment, HeaderAppendStateSnapshot, JpegDecoder};
+
+    #[test]
+    fn reassembly_waits_until_declared_payload_is_present() {
+        const PARTS: u32 = 10_000;
+        let guid = vec![b'G'; 32];
+        let mut decoder = JpegDecoder::new(ZCursor::new(&[]));
+
+        for offset in (1..PARTS).rev() {
+            decoder.extended_xmp_segments.push(ExtendedXmpSegment {
+                offset,
+                total_size: PARTS,
+                guid: guid.clone(),
+                data: vec![(offset % 251) as u8]
+            });
+            decoder.extended_xmp_bytes_received += 1;
+            decoder.reassemble_extended_xmp();
+
+            assert_eq!(decoder.extended_xmp_segments[0].offset, PARTS - 1);
+            assert!(decoder.info.extended_xmp.is_none());
+        }
+
+        decoder.extended_xmp_segments.push(ExtendedXmpSegment {
+            offset: 0,
+            total_size: PARTS,
+            guid: guid.clone(),
+            data: vec![0]
+        });
+        decoder.extended_xmp_bytes_received += 1;
+        decoder.reassemble_extended_xmp();
+
+        let xmp = decoder.info.extended_xmp.unwrap();
+        assert_eq!(xmp.len(), PARTS as usize);
+        assert_eq!(xmp[0], 0);
+        assert_eq!(xmp[PARTS as usize - 1], ((PARTS - 1) % 251) as u8);
+        assert_eq!(decoder.info.extended_xmp_guid, Some(guid));
+        assert!(decoder.extended_xmp_segments.is_empty());
+        assert_eq!(decoder.extended_xmp_bytes_received, 0);
+    }
+
+    #[test]
+    fn invalid_layout_is_discarded_once_payload_reaches_declared_size() {
+        let guid = vec![b'G'; 32];
+        let mut decoder = JpegDecoder::new(ZCursor::new(&[]));
+        decoder.extended_xmp_segments = vec![
+            ExtendedXmpSegment {
+                offset: 0,
+                total_size: 4,
+                guid: guid.clone(),
+                data: vec![1, 2]
+            },
+            ExtendedXmpSegment {
+                offset: 1,
+                total_size: 4,
+                guid,
+                data: vec![3, 4]
+            }
+        ];
+        decoder.extended_xmp_bytes_received = 4;
+
+        decoder.reassemble_extended_xmp();
+
+        assert!(decoder.info.extended_xmp.is_none());
+        assert!(decoder.extended_xmp_segments.is_empty());
+        assert_eq!(decoder.extended_xmp_bytes_received, 0);
+    }
+
+    #[test]
+    fn append_snapshot_rolls_back_extended_xmp_byte_count() {
+        let mut decoder = JpegDecoder::new(ZCursor::new(&[]));
+        decoder.extended_xmp_segments.push(ExtendedXmpSegment {
+            offset: 0,
+            total_size: 4,
+            guid: vec![b'G'; 32],
+            data: vec![1, 2]
+        });
+        decoder.extended_xmp_bytes_received = 2;
+        let snapshot = HeaderAppendStateSnapshot::capture(&decoder);
+
+        decoder.extended_xmp_segments.push(ExtendedXmpSegment {
+            offset: 2,
+            total_size: 4,
+            guid: vec![b'G'; 32],
+            data: vec![3, 4]
+        });
+        decoder.extended_xmp_bytes_received = 4;
+        snapshot.rollback(&mut decoder);
+
+        assert_eq!(decoder.extended_xmp_segments.len(), 1);
+        assert_eq!(decoder.extended_xmp_bytes_received, 2);
+    }
+}
+
+#[cfg(test)]
 mod planar_layout_helpers {
     use zune_core::bytestream::ZCursor;
     use zune_core::colorspace::ColorSpace;
@@ -3818,16 +4286,13 @@ mod planar_layout_helpers {
         let mut data = vec![0xFF, 0xD8, 0xFF, 0xDB, 0, 67, 0];
         data.extend_from_slice(&[1; 64]);
         data.extend_from_slice(&[
-            0xFF, 0xC2, 0, 17, 8, 0, 8, 0, 8, 3,
-            1, 0x11, 0, 2, 0x11, 0, 3, 0x11, 0,
-            0xFF, 0xC4, 0, 20, 0,
+            0xFF, 0xC2, 0, 17, 8, 0, 8, 0, 8, 3, 1, 0x11, 0, 2, 0x11, 0, 3, 0x11, 0, 0xFF, 0xC4, 0,
+            20, 0
         ]);
         data.extend_from_slice(&[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
         data.push(0);
         for component in 1..=3 {
-            data.extend_from_slice(&[
-                0xFF, 0xDA, 0, 8, 1, component, 0, 0, 0, 0, 0x7F,
-            ]);
+            data.extend_from_slice(&[0xFF, 0xDA, 0, 8, 1, component, 0, 0, 0, 0, 0x7F]);
         }
         if with_eoi {
             data.extend_from_slice(&[0xFF, 0xD9]);
@@ -3840,7 +4305,7 @@ mod planar_layout_helpers {
         let data = dc_only_progressive_jpeg(false);
         let mut decoder = JpegDecoder::new_with_options(
             ZCursor::new(&data),
-            DecoderOptions::default().set_strict_mode(false),
+            DecoderOptions::default().set_strict_mode(false)
         );
         decoder.decode_headers().unwrap();
         let mut raw = decoder.raw_output();
@@ -3848,15 +4313,23 @@ mod planar_layout_helpers {
         let mut u = [0xA5; 8 * 11];
         let mut v = [0xA5; 8 * 11];
         assert_eq!(
-            raw.decode_next_imcu_row(&mut [&mut y, &mut u, &mut v], &[11; 3]).unwrap(),
+            raw.decode_next_imcu_row(&mut [&mut y, &mut u, &mut v], &[11; 3])
+                .unwrap(),
             RawImcuRowStatus::NeedMoreInput,
         );
-        assert!(y.iter().chain(u.iter()).chain(v.iter()).all(|&value| value == 0xA5));
+        assert!(y
+            .iter()
+            .chain(u.iter())
+            .chain(v.iter())
+            .all(|&value| value == 0xA5));
 
         raw.set_input_complete();
         assert!(matches!(
-            raw.decode_next_imcu_row(&mut [&mut y, &mut u, &mut v], &[11; 3]).unwrap(),
-            RawImcuRowStatus::RowReady { rows_written: [8, 8, 8, 0] },
+            raw.decode_next_imcu_row(&mut [&mut y, &mut u, &mut v], &[11; 3])
+                .unwrap(),
+            RawImcuRowStatus::RowReady {
+                rows_written: [8, 8, 8, 0]
+            },
         ));
         for plane in [&y, &u, &v] {
             for row in plane.chunks_exact(11) {
@@ -3865,7 +4338,8 @@ mod planar_layout_helpers {
             }
         }
         assert_eq!(
-            raw.decode_next_imcu_row(&mut [&mut [], &mut [], &mut []], &[11; 3]).unwrap(),
+            raw.decode_next_imcu_row(&mut [&mut [], &mut [], &mut []], &[11; 3])
+                .unwrap(),
             RawImcuRowStatus::Complete,
         );
     }
@@ -3875,7 +4349,7 @@ mod planar_layout_helpers {
         let data = dc_only_progressive_jpeg(false);
         let mut decoder = JpegDecoder::new_with_options(
             ZCursor::new(&data),
-            DecoderOptions::default().set_strict_mode(true),
+            DecoderOptions::default().set_strict_mode(true)
         );
         decoder.decode_headers().unwrap();
         let mut raw = decoder.raw_output();
@@ -3887,7 +4361,11 @@ mod planar_layout_helpers {
             .decode_next_imcu_row(&mut [&mut y, &mut u, &mut v], &[8; 3])
             .unwrap_err()
             .is_recoverable_eof());
-        assert!(y.iter().chain(u.iter()).chain(v.iter()).all(|&value| value == 0xA5));
+        assert!(y
+            .iter()
+            .chain(u.iter())
+            .chain(v.iter())
+            .all(|&value| value == 0xA5));
     }
 
     #[test]
@@ -3895,13 +4373,16 @@ mod planar_layout_helpers {
         let data = dc_only_progressive_jpeg(false);
         let mut decoder = JpegDecoder::new_with_options(
             ZCursor::new(&data),
-            DecoderOptions::default().set_strict_mode(false),
+            DecoderOptions::default().set_strict_mode(false)
         );
         decoder.decode_headers().unwrap();
         decoder.set_incremental_mode(true);
         decoder.raw_output().set_input_complete();
         let mut output = vec![0; decoder.output_buffer_size().unwrap()];
-        assert!(decoder.decode_into(&mut output).unwrap_err().is_recoverable_eof());
+        assert!(decoder
+            .decode_into(&mut output)
+            .unwrap_err()
+            .is_recoverable_eof());
     }
 
     #[test]
@@ -4019,6 +4500,10 @@ mod planar_layout_helpers {
 
         assert!(decoder
             .progressive_mcus_buffer
+            .iter()
+            .all(|buffer| buffer.capacity() == 0));
+        assert!(decoder
+            .baseline_coefficients
             .iter()
             .all(|buffer| buffer.capacity() == 0));
         assert!(decoder.scanline_state.staging.capacity() <= row_bytes * 36);

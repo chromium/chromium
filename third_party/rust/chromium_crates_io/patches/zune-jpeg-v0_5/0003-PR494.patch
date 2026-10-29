@@ -1,31 +1,29 @@
-From 8a008c72e62e303f3f1029e73c8ee3090bd65c87 Mon Sep 17 00:00:00 2001
+From a8deb0858f56d1e50fc0e8548d5313fdec44fc5a Mon Sep 17 00:00:00 2001
 From: Sergio Gonzalez Martin <sergiog@microsoft.com>
-Date: Tue, 20 Oct 2026 23:17:49 +0000
-Subject: [PATCH] [rust jpeg] Fix progressive raw output and IDCT parity
+Date: Mon, 26 Oct 2026 19:32:58 +0000
+Subject: [PATCH] [rust jpeg] Final raw input and accurate IDCT (PR494)
 
-Carry a local port of the final raw-input, accurate-IDCT, progressive
-block-smoothing and raw-publication fixes proposed in zune-image PR494:
-https://github.com/etemesi254/zune-image/pull/494
+Backport of https://github.com/etemesi254/zune-image/pull/494
+Published head: 9546310ab9c3e132101269485d997f6662420cc0
 
-Upstream commits e7eaf26bc101df958f451a9affc4bd721d1154ba and
-7d3e74c34b2252b6a4477399c7c52ccc9cf0fcab contain the corresponding fixes.
-Preserve strict validation, resumable retries, row padding, and existing
-packed/scanline best-effort decoding while matching native raw output.
+Effective cumulative source stage: 9546310ab9c3e132101269485d997f6662420cc0
+Only this stage's new Rust-source delta is carried. Prerequisite changes are not duplicated in later PR patches.
 
-Bug: 493315750
+Tracking: https://github.com/etemesi254/zune-image/issues/503
+
 Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
 ---
  .../vendor/zune-jpeg-v0_5/src/components.rs   |   6 +
- .../vendor/zune-jpeg-v0_5/src/decoder.rs      | 120 +++-
- .../vendor/zune-jpeg-v0_5/src/idct.rs         | 147 +++++
- .../vendor/zune-jpeg-v0_5/src/idct/avx2.rs    | 116 ++--
- .../vendor/zune-jpeg-v0_5/src/idct/neon.rs    |  34 +-
- .../vendor/zune-jpeg-v0_5/src/idct/scalar.rs  | 171 +++---
- .../vendor/zune-jpeg-v0_5/src/mcu_prog.rs     | 548 +++++++++++++++++-
- 7 files changed, 971 insertions(+), 171 deletions(-)
+ .../vendor/zune-jpeg-v0_5/src/decoder.rs      | 135 +++-
+ .../vendor/zune-jpeg-v0_5/src/idct.rs         | 150 ++++
+ .../vendor/zune-jpeg-v0_5/src/idct/avx2.rs    | 125 ++--
+ .../vendor/zune-jpeg-v0_5/src/idct/neon.rs    |  35 +-
+ .../vendor/zune-jpeg-v0_5/src/idct/scalar.rs  | 171 +++--
+ .../vendor/zune-jpeg-v0_5/src/mcu_prog.rs     | 659 +++++++++++++++++-
+ 7 files changed, 1092 insertions(+), 189 deletions(-)
 
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/components.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/components.rs
-index d6eff2f1d11dd..4e6fd2475daa5 100644
+index d6eff2f1d11ddf50953773341cff3edf2edea285..4e6fd2475daa54116b54fcb5d19b3e1e50f96b2a 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/components.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/components.rs
 @@ -53,6 +53,10 @@ pub(crate) struct Components {
@@ -49,10 +47,10 @@ index d6eff2f1d11dd..4e6fd2475daa5 100644
              // set later
              width_stride: horizontal_sample,
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
-index 3bb172c140f17..5d3a14d06b1bf 100644
+index bfe27063caa146046c0a3ec73d190892295efee9..b21d22d5fe67249157b8615b942ac751959ef920 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
-@@ -406,6 +406,12 @@ pub struct JpegDecoder<T> {
+@@ -415,6 +415,12 @@ pub struct JpegDecoder<T> {
      pub(crate) upsampler_scratch: Vec<i16>,
      /// Number of progressive scans committed into `progressive_mcus_buffer`.
      pub(crate) progressive_completed_scans: usize,
@@ -65,15 +63,15 @@ index 3bb172c140f17..5d3a14d06b1bf 100644
      /// Number of committed progressive scans currently rendered as preview
      /// pixels in the output buffer.
      pub(crate) progressive_displayed_scans: usize,
-@@ -597,6 +603,7 @@ struct RawPullState {
-     entropy_tables:           Option<EntropyTables>,
+@@ -625,6 +631,7 @@ struct RawPullState {
+     entropy_tables:           Option<Box<EntropyTables>>,
      layout:                   Option<[PlaneInfo; MAX_COMPONENTS]>,
      rows_per_stripe:          [usize; MAX_COMPONENTS],
 +    input_complete:          bool,
      buffered_source_complete: bool
  }
  
-@@ -652,6 +659,7 @@ impl Default for RawPullState {
+@@ -680,6 +687,7 @@ impl Default for RawPullState {
              entropy_tables:           None,
              layout:                   None,
              rows_per_stripe:          [0; MAX_COMPONENTS],
@@ -81,7 +79,19 @@ index 3bb172c140f17..5d3a14d06b1bf 100644
              buffered_source_complete: false
          }
      }
-@@ -1090,6 +1098,16 @@ impl<T> RawDecodeSession<'_, T>
+@@ -706,6 +714,11 @@ impl Default for RawPullState {
+ /// only final samples, a suspended or cancelled progressive decode discards
+ /// partial coefficient state and replays its scans on retry instead of cloning
+ /// full coefficient planes for preview preservation.
++///
++/// When no more bytes can arrive, [`Self::set_input_complete`] allows non-strict
++/// decoding to reconstruct available progressive coefficients at final EOF.
++/// This does not make missing component DC data displayable or relax strict
++/// validation. Without that signal, incomplete input remains resumable.
+ pub struct RawDecodeSession<'decoder, T> {
+     decoder: &'decoder mut JpegDecoder<T>,
+     previous_incremental_mode: bool,
+@@ -1140,6 +1153,16 @@ impl<T> RawDecodeSession<'_, T>
  where
      T: ZByteReaderTrait
  {
@@ -98,7 +108,7 @@ index 3bb172c140f17..5d3a14d06b1bf 100644
      /// Number of components in SOF declaration order.
      ///
      /// Returns `None` when headers have not been decoded yet.
-@@ -1261,7 +1279,7 @@ where
+@@ -1311,7 +1334,7 @@ where
          let mut output = McuDecodeOutput::RawPlanes(raw_planes);
  
          if let Err(error) = self.decode_pull_phase(&mut output, &layout, n) {
@@ -107,7 +117,7 @@ index 3bb172c140f17..5d3a14d06b1bf 100644
                  return Ok(RawImcuRowStatus::NeedMoreInput);
              }
              return Err(error);
-@@ -1946,6 +1964,9 @@ where
+@@ -2150,6 +2173,9 @@ where
              progressive_scan_buffer: core::array::from_fn(|_| Vec::new()),
              upsampler_scratch: Vec::new(),
              progressive_completed_scans: 0,
@@ -117,28 +127,25 @@ index 3bb172c140f17..5d3a14d06b1bf 100644
              progressive_displayed_scans: 0,
              progressive_render_incomplete: false,
              marker_body_scratch:         Vec::new(),
-@@ -2154,7 +2175,8 @@ where
+@@ -2381,7 +2407,7 @@ where
      /// Strict mode rejects truncated scans, while incremental mode uses the
      /// error to signal that the caller should provide more input.
      pub(crate) fn scan_eof_is_error(&self) -> bool {
 -        self.options.strict_mode() || self.incremental_mode
-+        self.options.strict_mode()
-+            || (self.incremental_mode && !self.raw_pull_state.input_complete)
++        self.options.strict_mode() || (self.incremental_mode && !self.raw_pull_state.input_complete)
      }
  
      /// Return the number of output scanlines known to be stable after the
-@@ -3447,7 +3469,9 @@ where
+@@ -3736,7 +3762,7 @@ where
      }
  
      fn abort_raw_pull_sequence(&mut self) {
 -        if self.raw_pull_state.owner == RawPullOwner::None {
-+        if self.raw_pull_state.owner == RawPullOwner::None
-+            && !self.raw_pull_state.input_complete
-+        {
++        if self.raw_pull_state.owner == RawPullOwner::None && !self.raw_pull_state.input_complete {
              return;
          }
          self.raw_pull_state = RawPullState::default();
-@@ -3790,6 +3814,96 @@ mod planar_layout_helpers {
+@@ -4176,6 +4202,109 @@ mod planar_layout_helpers {
      use super::{round_up_pow2, JpegDecoder, RawImcuRowStatus, ScanlineReadStatus, ScanlineStatus};
      use crate::idct::{choose_idct_1x1_func, choose_idct_4x4_func, choose_idct_func};
  
@@ -146,16 +153,13 @@ index 3bb172c140f17..5d3a14d06b1bf 100644
 +        let mut data = vec![0xFF, 0xD8, 0xFF, 0xDB, 0, 67, 0];
 +        data.extend_from_slice(&[1; 64]);
 +        data.extend_from_slice(&[
-+            0xFF, 0xC2, 0, 17, 8, 0, 8, 0, 8, 3,
-+            1, 0x11, 0, 2, 0x11, 0, 3, 0x11, 0,
-+            0xFF, 0xC4, 0, 20, 0,
++            0xFF, 0xC2, 0, 17, 8, 0, 8, 0, 8, 3, 1, 0x11, 0, 2, 0x11, 0, 3, 0x11, 0, 0xFF, 0xC4, 0,
++            20, 0
 +        ]);
 +        data.extend_from_slice(&[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 +        data.push(0);
 +        for component in 1..=3 {
-+            data.extend_from_slice(&[
-+                0xFF, 0xDA, 0, 8, 1, component, 0, 0, 0, 0, 0x7F,
-+            ]);
++            data.extend_from_slice(&[0xFF, 0xDA, 0, 8, 1, component, 0, 0, 0, 0, 0x7F]);
 +        }
 +        if with_eoi {
 +            data.extend_from_slice(&[0xFF, 0xD9]);
@@ -168,7 +172,7 @@ index 3bb172c140f17..5d3a14d06b1bf 100644
 +        let data = dc_only_progressive_jpeg(false);
 +        let mut decoder = JpegDecoder::new_with_options(
 +            ZCursor::new(&data),
-+            DecoderOptions::default().set_strict_mode(false),
++            DecoderOptions::default().set_strict_mode(false)
 +        );
 +        decoder.decode_headers().unwrap();
 +        let mut raw = decoder.raw_output();
@@ -176,15 +180,23 @@ index 3bb172c140f17..5d3a14d06b1bf 100644
 +        let mut u = [0xA5; 8 * 11];
 +        let mut v = [0xA5; 8 * 11];
 +        assert_eq!(
-+            raw.decode_next_imcu_row(&mut [&mut y, &mut u, &mut v], &[11; 3]).unwrap(),
++            raw.decode_next_imcu_row(&mut [&mut y, &mut u, &mut v], &[11; 3])
++                .unwrap(),
 +            RawImcuRowStatus::NeedMoreInput,
 +        );
-+        assert!(y.iter().chain(u.iter()).chain(v.iter()).all(|&value| value == 0xA5));
++        assert!(y
++            .iter()
++            .chain(u.iter())
++            .chain(v.iter())
++            .all(|&value| value == 0xA5));
 +
 +        raw.set_input_complete();
 +        assert!(matches!(
-+            raw.decode_next_imcu_row(&mut [&mut y, &mut u, &mut v], &[11; 3]).unwrap(),
-+            RawImcuRowStatus::RowReady { rows_written: [8, 8, 8, 0] },
++            raw.decode_next_imcu_row(&mut [&mut y, &mut u, &mut v], &[11; 3])
++                .unwrap(),
++            RawImcuRowStatus::RowReady {
++                rows_written: [8, 8, 8, 0]
++            },
 +        ));
 +        for plane in [&y, &u, &v] {
 +            for row in plane.chunks_exact(11) {
@@ -193,7 +205,8 @@ index 3bb172c140f17..5d3a14d06b1bf 100644
 +            }
 +        }
 +        assert_eq!(
-+            raw.decode_next_imcu_row(&mut [&mut [], &mut [], &mut []], &[11; 3]).unwrap(),
++            raw.decode_next_imcu_row(&mut [&mut [], &mut [], &mut []], &[11; 3])
++                .unwrap(),
 +            RawImcuRowStatus::Complete,
 +        );
 +    }
@@ -203,7 +216,7 @@ index 3bb172c140f17..5d3a14d06b1bf 100644
 +        let data = dc_only_progressive_jpeg(false);
 +        let mut decoder = JpegDecoder::new_with_options(
 +            ZCursor::new(&data),
-+            DecoderOptions::default().set_strict_mode(true),
++            DecoderOptions::default().set_strict_mode(true)
 +        );
 +        decoder.decode_headers().unwrap();
 +        let mut raw = decoder.raw_output();
@@ -215,7 +228,11 @@ index 3bb172c140f17..5d3a14d06b1bf 100644
 +            .decode_next_imcu_row(&mut [&mut y, &mut u, &mut v], &[8; 3])
 +            .unwrap_err()
 +            .is_recoverable_eof());
-+        assert!(y.iter().chain(u.iter()).chain(v.iter()).all(|&value| value == 0xA5));
++        assert!(y
++            .iter()
++            .chain(u.iter())
++            .chain(v.iter())
++            .all(|&value| value == 0xA5));
 +    }
 +
 +    #[test]
@@ -223,20 +240,23 @@ index 3bb172c140f17..5d3a14d06b1bf 100644
 +        let data = dc_only_progressive_jpeg(false);
 +        let mut decoder = JpegDecoder::new_with_options(
 +            ZCursor::new(&data),
-+            DecoderOptions::default().set_strict_mode(false),
++            DecoderOptions::default().set_strict_mode(false)
 +        );
 +        decoder.decode_headers().unwrap();
 +        decoder.set_incremental_mode(true);
 +        decoder.raw_output().set_input_complete();
 +        let mut output = vec![0; decoder.output_buffer_size().unwrap()];
-+        assert!(decoder.decode_into(&mut output).unwrap_err().is_recoverable_eof());
++        assert!(decoder
++            .decode_into(&mut output)
++            .unwrap_err()
++            .is_recoverable_eof());
 +    }
 +
      #[test]
      fn div_ceil_basic() {
          assert_eq!(0usize.div_ceil(8), 0);
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct.rs
-index 7cdfff6f726ef..7cfe2f673b375 100644
+index 7cdfff6f726ef688156affa742940b72ca6b66aa..26104e31711cb4cf3700fdbdf10ecf869d61b715 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct.rs
 @@ -39,6 +39,14 @@ use zune_core::options::DecoderOptions;
@@ -254,7 +274,7 @@ index 7cdfff6f726ef..7cfe2f673b375 100644
  #[cfg(feature = "x86")]
  pub mod avx2;
  #[cfg(feature = "neon")]
-@@ -109,6 +117,145 @@ pub fn choose_idct_1x1_func(_: &DecoderOptions) -> IDCTPtr {
+@@ -109,6 +117,148 @@ pub fn choose_idct_1x1_func(_: &DecoderOptions) -> IDCTPtr {
  mod tests {
      use super::*;
  
@@ -266,7 +286,10 @@ index 7cdfff6f726ef..7cfe2f673b375 100644
 +        ];
 +        if reduced {
 +            functions.push(("scalar 4x4", scalar::idct4x4));
-+            functions.push(("native 4x4", choose_idct_4x4_func(&DecoderOptions::new_fast())));
++            functions.push((
++                "native 4x4",
++                choose_idct_4x4_func(&DecoderOptions::new_fast())
++            ));
 +        }
 +        if input[1..].iter().all(|&coefficient| coefficient == 0) {
 +            functions.push(("DC only", idct_int_1x1));
@@ -401,19 +424,33 @@ index 7cdfff6f726ef..7cfe2f673b375 100644
      fn idct_test0() {
          let stride = 8;
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/avx2.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/avx2.rs
-index 7388f1156eeda..70abbe462468c 100644
+index 7388f1156eeda72c65e4a9fbc0d930bcd1caf4b7..b432819462d2a03f3017986cbebdd964f4e631ec 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/avx2.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/avx2.rs
-@@ -38,7 +38,7 @@ use core::arch::x86_64::*;
+@@ -36,10 +36,9 @@ use core::arch::x86::*;
+ #[cfg(target_arch = "x86_64")]
+ use core::arch::x86_64::*;
  
++use super::{CONST_BITS, OUTPUT_SHIFT, PASS1_ROUND, PASS1_SHIFT, SCALE_BITS};
  use crate::unsafe_utils::{transpose, YmmRegister};
  
 -const SCALE_BITS: i32 = 512 + 65536 + (128 << 17);
-+use super::{CONST_BITS, OUTPUT_SHIFT, PASS1_ROUND, PASS1_SHIFT, SCALE_BITS};
- 
+-
  // Pack i32 to i16's,
  // clamp them to be between 0-255
-@@ -178,16 +178,16 @@ pub unsafe fn idct_avx2(
+ // Undo shuffling
+@@ -85,9 +84,7 @@ macro_rules! permute_store {
+     unused_assignments,
+     clippy::zero_prefixed_literal
+ )]
+-pub unsafe fn idct_avx2(
+-    in_vector: &mut [i32; 64], out_vector: &mut [i16], stride: usize,
+-) {
++pub unsafe fn idct_avx2(in_vector: &mut [i32; 64], out_vector: &mut [i16], stride: usize) {
+     let mut pos = 0;
+ 
+     // load into registers
+@@ -178,16 +175,16 @@ pub unsafe fn idct_avx2(
              // avx one should produce identical code.)
  
              // even part
@@ -435,7 +472,7 @@ index 7388f1156eeda..70abbe462468c 100644
              };
  
              let x0 = t0 + t3 + $SCALE_BITS;
-@@ -199,17 +199,17 @@ pub unsafe fn idct_avx2(
+@@ -199,17 +196,17 @@ pub unsafe fn idct_avx2(
              let p4 = row5 + row1;
              let p1 = row7 + row1;
              let p2 = row5 + row3;
@@ -462,7 +499,7 @@ index 7388f1156eeda..70abbe462468c 100644
  
              t3 += p1 + p4;
              t2 += p2 + p3;
-@@ -229,13 +229,13 @@ pub unsafe fn idct_avx2(
+@@ -229,13 +226,13 @@ pub unsafe fn idct_avx2(
      }
  
      // Process rows
@@ -478,7 +515,18 @@ index 7388f1156eeda..70abbe462468c 100644
      transpose(
          &mut row0, &mut row1, &mut row2, &mut row3, &mut row4, &mut row5, &mut row6, &mut row7,
      );
-@@ -275,13 +275,13 @@ pub unsafe fn idct_avx2_4x4(
+@@ -256,9 +253,7 @@ pub unsafe fn idct_avx2(
+     unused_assignments,
+     clippy::zero_prefixed_literal
+ )]
+-pub unsafe fn idct_avx2_4x4(
+-    in_vector: &mut [i32; 64], out_vector: &mut [i16], stride: usize,
+-) {
++pub unsafe fn idct_avx2_4x4(in_vector: &mut [i32; 64], out_vector: &mut [i16], stride: usize) {
+     let rw0 = _mm256_loadu_si256(in_vector[00..].as_ptr().cast());
+     let rw1 = _mm256_loadu_si256(in_vector[08..].as_ptr().cast());
+     let rw2 = _mm256_loadu_si256(in_vector[16..].as_ptr().cast());
+@@ -275,13 +270,13 @@ pub unsafe fn idct_avx2_4x4(
      let mut row7 = YmmRegister { mm256: rw0 };
  
      {
@@ -496,7 +544,7 @@ index 7388f1156eeda..70abbe462468c 100644
  
          let x0 = row0 + p3;
          let x1 = row0 + p1;
-@@ -292,26 +292,26 @@ pub unsafe fn idct_avx2_4x4(
+@@ -292,26 +287,26 @@ pub unsafe fn idct_avx2_4x4(
          let i4 = row3;
          let i3 = row1;
  
@@ -538,7 +586,7 @@ index 7388f1156eeda..70abbe462468c 100644
      }
  
      transpose(
-@@ -322,19 +322,13 @@ pub unsafe fn idct_avx2_4x4(
+@@ -322,19 +317,13 @@ pub unsafe fn idct_avx2_4x4(
          let i2 = row2;
          let i0 = row0;
  
@@ -562,7 +610,7 @@ index 7388f1156eeda..70abbe462468c 100644
          let x0 = t0 + t3;
          let x3 = t0 - t3;
          let x1 = t0 + t2;
-@@ -344,25 +338,25 @@ pub unsafe fn idct_avx2_4x4(
+@@ -344,25 +333,25 @@ pub unsafe fn idct_avx2_4x4(
          let i3 = row3;
          let i1 = row1;
  
@@ -604,19 +652,22 @@ index 7388f1156eeda..70abbe462468c 100644
  
      transpose(
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/neon.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/neon.rs
-index 3912a61866f48..811368518a2b1 100644
+index 3912a61866f481e0b3b7a149432416d82d4be18a..5956b6013ecf385ae1e8f9109903617eca44a85d 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/neon.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/neon.rs
-@@ -34,7 +34,7 @@ use core::arch::aarch64::*;
+@@ -32,10 +32,9 @@
  
+ use core::arch::aarch64::*;
+ 
++use super::{CONST_BITS, OUTPUT_SHIFT, PASS1_ROUND, PASS1_SHIFT, SCALE_BITS};
  use crate::unsafe_utils::{transpose, YmmRegister};
  
 -const SCALE_BITS: i32 = 512 + 65536 + (128 << 17);
-+use super::{CONST_BITS, OUTPUT_SHIFT, PASS1_ROUND, PASS1_SHIFT, SCALE_BITS};
- 
+-
  #[inline]
  #[target_feature(enable = "neon")]
-@@ -141,13 +141,13 @@ pub unsafe fn idct_neon(in_vector: &mut [i32; 64], out_vector: &mut [i16], strid
+ unsafe fn pack_16(a: int32x4x2_t) -> int16x8_t {
+@@ -141,13 +140,13 @@ pub unsafe fn idct_neon(in_vector: &mut [i32; 64], out_vector: &mut [i16], strid
                  // into multiply-acumulate pairs
  
                  // even part
@@ -635,7 +686,7 @@ index 3912a61866f48..811368518a2b1 100644
  
                  let x0 = t0 + t3 + $SCALE_BITS;
                  let x3 = t0 - t3 + $SCALE_BITS;
-@@ -158,17 +158,17 @@ pub unsafe fn idct_neon(in_vector: &mut [i32; 64], out_vector: &mut [i16], strid
+@@ -158,17 +157,17 @@ pub unsafe fn idct_neon(in_vector: &mut [i32; 64], out_vector: &mut [i16], strid
                  let p4 = row5 + row1;
                  let p1 = row7 + row1;
                  let p2 = row5 + row3;
@@ -662,7 +713,7 @@ index 3912a61866f48..811368518a2b1 100644
  
                  t3 += p1 + p4;
                  t2 += p2 + p3;
-@@ -188,13 +188,13 @@ pub unsafe fn idct_neon(in_vector: &mut [i32; 64], out_vector: &mut [i16], strid
+@@ -188,13 +187,13 @@ pub unsafe fn idct_neon(in_vector: &mut [i32; 64], out_vector: &mut [i16], strid
          }
  
          // Process rows
@@ -679,7 +730,7 @@ index 3912a61866f48..811368518a2b1 100644
              &mut row0, &mut row1, &mut row2, &mut row3, &mut row4, &mut row5, &mut row6, &mut row7,
          );
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/scalar.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/scalar.rs
-index 624e2c8ea0f67..49ad44038d220 100644
+index 624e2c8ea0f677999d6ef99b3fa755e263824b96..49ad44038d2201a9be79dace42ce64140a380df4 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/scalar.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/scalar.rs
 @@ -10,7 +10,7 @@
@@ -966,10 +1017,10 @@ index 624e2c8ea0f67..49ad44038d220 100644
  
          pos += stride;
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
-index b837c19a4e040..b189b6feae653 100644
+index 670f3b9479f259fb4c7c2d90435749fa38b44ee7..f532af45820e6ce35aecb945cb00a084348de33e 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
-@@ -27,6 +27,136 @@ use crate::mcu::DCT_BLOCK;
+@@ -27,6 +27,179 @@ use crate::mcu::DCT_BLOCK;
  use crate::misc::{calculate_padded_width, setup_component_params};
  
  const PROGRESSIVE_CHECKPOINT_ROW_INTERVAL: usize = 8;
@@ -985,14 +1036,14 @@ index b837c19a4e040..b189b6feae653 100644
 +/// Estimated coefficients must never enter the scan buffers used by refinement
 +/// or retry. Precision is in zigzag order; quantization is in natural order.
 +struct ProgressiveSmoothing<'a> {
-+    blocks: &'a [i16],
-+    stride: usize,
-+    width: usize,
-+    height: usize,
++    blocks:          &'a [i16],
++    stride:          usize,
++    width:           usize,
++    height:          usize,
 +    vertical_sample: usize,
-+    imcu_rows: usize,
-+    bits: &'a [i8],
-+    quantization: &'a [i32; 64],
++    imcu_rows:       usize,
++    bits:            &'a [i8],
++    quantization:    &'a [i32; 64]
 +}
 +
 +impl ProgressiveSmoothing<'_> {
@@ -1010,7 +1061,7 @@ index b837c19a4e040..b189b6feae653 100644
 +        let imcu_row = y / self.vertical_sample;
 +        let block_rows = min(
 +            self.vertical_sample,
-+            self.height - imcu_row * self.vertical_sample,
++            self.height - imcu_row * self.vertical_sample
 +        );
 +        let image_row = imcu_row * block_rows + y % self.vertical_sample;
 +        let image_rows = block_rows * self.imcu_rows;
@@ -1020,53 +1071,94 @@ index b837c19a4e040..b189b6feae653 100644
 +        let next_next = if image_row + 2 < image_rows { y + 2 } else { next };
 +        let rows = [previous_previous, previous, y, next, next_next];
 +        let columns = [
-+            x.saturating_sub(2), x.saturating_sub(1), x,
-+            min(x + 1, self.width - 1), min(x + 2, self.width - 1),
++            x.saturating_sub(2),
++            x.saturating_sub(1),
++            x,
++            min(x + 1, self.width - 1),
++            min(x + 2, self.width - 1)
 +        ];
 +        let mut dc = [0; 25];
 +        for (row_index, row) in rows.into_iter().enumerate() {
 +            for (column_index, column) in columns.into_iter().enumerate() {
 +                dc[row_index * 5 + column_index] = i32::from(
-+                    self.blocks.get((row * self.stride + column) * 64).copied().unwrap_or(0),
++                    self.blocks
++                        .get((row * self.stride + column) * 64)
++                        .copied()
++                        .unwrap_or(0)
 +                );
 +            }
 +        }
-+        let [
-+            dc01, dc02, dc03, dc04, dc05,
-+            dc06, dc07, dc08, dc09, dc10,
-+            dc11, dc12, dc13, dc14, dc15,
-+            dc16, dc17, dc18, dc19, dc20,
-+            dc21, dc22, dc23, dc24, dc25,
-+        ] = dc;
++        let [dc01, dc02, dc03, dc04, dc05, dc06, dc07, dc08, dc09, dc10, dc11, dc12, dc13, dc14, dc15, dc16, dc17, dc18, dc19, dc20, dc21, dc22, dc23, dc24, dc25] =
++            dc;
 +
 +        // The 5x5 estimation kernels are the same as libjpeg's
 +        // decompress_smooth_data. DC-only scans also interpolate DC and
 +        // estimate four additional AC coefficients.
 +        let estimates = if change_dc {
 +            [
-+                -2 * dc01 - 6 * dc02 - 8 * dc03 - 6 * dc04 - 2 * dc05
-+                    - 6 * dc06 + 6 * dc07 + 42 * dc08 + 6 * dc09 - 6 * dc10
-+                    - 8 * dc11 + 42 * dc12 + 152 * dc13 + 42 * dc14 - 8 * dc15
-+                    - 6 * dc16 + 6 * dc17 + 42 * dc18 + 6 * dc19 - 6 * dc20
-+                    - 2 * dc21 - 6 * dc22 - 8 * dc23 - 6 * dc24 - 2 * dc25,
-+                -dc01 - dc02 + dc04 + dc05 - 3 * dc06 + 13 * dc07
-+                    - 13 * dc09 + 3 * dc10 - 3 * dc11 + 38 * dc12 - 38 * dc14
-+                    + 3 * dc15 - 3 * dc16 + 13 * dc17 - 13 * dc19 + 3 * dc20
-+                    - dc21 - dc22 + dc24 + dc25,
++                -2 * dc01 - 6 * dc02 - 8 * dc03 - 6 * dc04 - 2 * dc05 - 6 * dc06
++                    + 6 * dc07
++                    + 42 * dc08
++                    + 6 * dc09
++                    - 6 * dc10
++                    - 8 * dc11
++                    + 42 * dc12
++                    + 152 * dc13
++                    + 42 * dc14
++                    - 8 * dc15
++                    - 6 * dc16
++                    + 6 * dc17
++                    + 42 * dc18
++                    + 6 * dc19
++                    - 6 * dc20
++                    - 2 * dc21
++                    - 6 * dc22
++                    - 8 * dc23
++                    - 6 * dc24
++                    - 2 * dc25,
++                -dc01 - dc02 + dc04 + dc05 - 3 * dc06 + 13 * dc07 - 13 * dc09 + 3 * dc10 - 3 * dc11
++                    + 38 * dc12
++                    - 38 * dc14
++                    + 3 * dc15
++                    - 3 * dc16
++                    + 13 * dc17
++                    - 13 * dc19
++                    + 3 * dc20
++                    - dc21
++                    - dc22
++                    + dc24
++                    + dc25,
 +                -dc01 - 3 * dc02 - 3 * dc03 - 3 * dc04 - dc05 - dc06
-+                    + 13 * dc07 + 38 * dc08 + 13 * dc09 - dc10 + dc16
-+                    - 13 * dc17 - 38 * dc18 - 13 * dc19 + dc20 + dc21
-+                    + 3 * dc22 + 3 * dc23 + 3 * dc24 + dc25,
-+                dc03 + 2 * dc07 + 7 * dc08 + 2 * dc09 - 5 * dc12 - 14 * dc13
-+                    - 5 * dc14 + 2 * dc17 + 7 * dc18 + 2 * dc19 + dc23,
-+                -dc01 + dc05 + 9 * dc07 - 9 * dc09 - 9 * dc17 + 9 * dc19
-+                    + dc21 - dc25,
++                    + 13 * dc07
++                    + 38 * dc08
++                    + 13 * dc09
++                    - dc10
++                    + dc16
++                    - 13 * dc17
++                    - 38 * dc18
++                    - 13 * dc19
++                    + dc20
++                    + dc21
++                    + 3 * dc22
++                    + 3 * dc23
++                    + 3 * dc24
++                    + dc25,
++                dc03 + 2 * dc07 + 7 * dc08 + 2 * dc09 - 5 * dc12 - 14 * dc13 - 5 * dc14
++                    + 2 * dc17
++                    + 7 * dc18
++                    + 2 * dc19
++                    + dc23,
++                -dc01 + dc05 + 9 * dc07 - 9 * dc09 - 9 * dc17 + 9 * dc19 + dc21 - dc25,
 +                2 * dc07 - 5 * dc08 + 2 * dc09 + dc11 + 7 * dc12 - 14 * dc13
-+                    + 7 * dc14 + dc15 + 2 * dc17 - 5 * dc18 + 2 * dc19,
++                    + 7 * dc14
++                    + dc15
++                    + 2 * dc17
++                    - 5 * dc18
++                    + 2 * dc19,
 +                dc07 - dc09 + 2 * dc12 - 2 * dc14 + dc17 - dc19,
 +                dc07 - 3 * dc08 + dc09 - dc17 + 3 * dc18 - dc19,
 +                dc07 - dc09 - 3 * dc12 + 3 * dc14 + dc17 - dc19,
-+                dc07 + 2 * dc08 + dc09 - dc17 - 2 * dc18 - dc19,
++                dc07 + 2 * dc08 + dc09 - dc17 - 2 * dc18 - dc19
 +            ]
 +        } else {
 +            [
@@ -1074,10 +1166,14 @@ index b837c19a4e040..b189b6feae653 100644
 +                -7 * dc11 + 50 * dc12 - 50 * dc14 + 7 * dc15,
 +                -7 * dc03 + 50 * dc08 - 50 * dc18 + 7 * dc23,
 +                -dc03 + 13 * dc08 - 24 * dc13 + 13 * dc18 - dc23,
-+                dc10 + dc16 - 10 * dc17 + 10 * dc19 - dc02 - dc20
-+                    + dc22 - dc24 + dc04 - dc06 + 10 * dc07 - 10 * dc09,
++                dc10 + dc16 - 10 * dc17 + 10 * dc19 - dc02 - dc20 + dc22 - dc24 + dc04 - dc06
++                    + 10 * dc07
++                    - 10 * dc09,
 +                -dc11 + 13 * dc12 - 24 * dc13 + 13 * dc14 - dc15,
-+                0, 0, 0, 0,
++                0,
++                0,
++                0,
++                0
 +            ]
 +        };
 +        for (index, &position) in SMOOTHING_COEFFICIENTS.iter().enumerate() {
@@ -1085,9 +1181,7 @@ index b837c19a4e040..b189b6feae653 100644
 +                if !change_dc {
 +                    continue;
 +                }
-+            } else if self.bits[index] == 0 || output[position] != 0
-+                || (!change_dc && index > 5)
-+            {
++            } else if self.bits[index] == 0 || output[position] != 0 || (!change_dc && index > 5) {
 +                continue;
 +            }
 +            let quantization = i64::from(self.quantization[position]);
@@ -1106,7 +1200,16 @@ index b837c19a4e040..b189b6feae653 100644
  
  impl<T: ZByteReaderTrait> JpegDecoder<T> {
      /// Decode a progressive image
-@@ -117,6 +247,12 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+@@ -76,7 +249,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+     )]
+     fn decode_mcu_ycbcr_progressive_inner<B: BitStream>(
+         &mut self, output: &mut McuDecodeOutput<'_, '_>, block: &mut [Vec<i16>; MAX_COMPONENTS],
+-        scan_block: &mut [Vec<i16>; MAX_COMPONENTS], upsampler_scratch: &mut Vec<i16>,
++        scan_block: &mut [Vec<i16>; MAX_COMPONENTS], upsampler_scratch: &mut Vec<i16>
+     ) -> Result<(), DecodeErrors> {
+         setup_component_params(self)?;
+         let mut mcu_height;
+@@ -121,6 +294,12 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
  
          if self.progressive_scan_checkpoint().is_none() {
              self.progressive_completed_scans = 0;
@@ -1119,15 +1222,18 @@ index b837c19a4e040..b189b6feae653 100644
          }
          for (i, comp) in self.components.iter().enumerate() {
              let len = mcu_width * comp.vertical_sample * comp.horizontal_sample * mcu_height;
-@@ -252,6 +388,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+@@ -264,8 +443,9 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+     fn decode_progressive_scan<B: BitStream>(
+         &mut self, stream: &mut B, block: &mut [Vec<i16>; MAX_COMPONENTS],
          scan_block: &mut [Vec<i16>; MAX_COMPONENTS], output: &mut McuDecodeOutput<'_, '_>,
-         use_scratch_coefficients: bool
+-        use_scratch_coefficients: bool, upsampler_scratch: &mut Vec<i16>,
++        use_scratch_coefficients: bool, upsampler_scratch: &mut Vec<i16>
      ) -> Result<bool, DecodeErrors> {
 +        self.progressive_scan_last_good_row = 0;
          if !use_scratch_coefficients {
              // The default first decode attempt takes this path and updates the
              // existing progressive buffers directly without cloning them.
-@@ -324,6 +461,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+@@ -338,6 +518,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                  self.invalidate_progressive_fine_checkpoint();
              }
              self.invalidate_progressive_scan_checkpoint();
@@ -1135,7 +1241,7 @@ index b837c19a4e040..b189b6feae653 100644
              return Ok(false);
          }
          if stream.overread_by() > 0 {
-@@ -344,6 +482,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+@@ -358,6 +539,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                  self.invalidate_progressive_fine_checkpoint();
              }
              self.invalidate_progressive_scan_checkpoint();
@@ -1143,7 +1249,7 @@ index b837c19a4e040..b189b6feae653 100644
              return Ok(false);
          }
  
-@@ -353,6 +492,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+@@ -367,12 +549,13 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
              }
          }
          self.progressive_completed_scans += 1;
@@ -1151,7 +1257,14 @@ index b837c19a4e040..b189b6feae653 100644
          self.invalidate_progressive_scan_checkpoint();
          Ok(true)
      }
-@@ -379,6 +519,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+ 
+     fn decode_progressive_scan_direct<B: BitStream>(
+-        &mut self, stream: &mut B, block: &mut [Vec<i16>; MAX_COMPONENTS],
++        &mut self, stream: &mut B, block: &mut [Vec<i16>; MAX_COMPONENTS]
+     ) -> Result<bool, DecodeErrors> {
+         let result = self.parse_entropy_coded_data(stream, block, None);
+ 
+@@ -393,6 +576,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                  return Err(e);
              }
              error!("{e}");
@@ -1159,7 +1272,7 @@ index b837c19a4e040..b189b6feae653 100644
              return Ok(false);
          }
          if stream.overread_by() > 0 {
-@@ -387,13 +528,35 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+@@ -401,13 +585,40 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                  return Err(DecodeErrors::ExhaustedData);
              }
              error!("{}", DecodeErrors::ExhaustedData);
@@ -1174,7 +1287,9 @@ index b837c19a4e040..b189b6feae653 100644
  
 +    fn accept_progressive_precision(&mut self) {
 +        self.progressive_last_good_row = self.progressive_scan_last_good_row;
-+        let first_scan = self.components.iter()
++        let first_scan = self
++            .components
++            .iter()
 +            .all(|component| component.progressive_bits.iter().all(|&bits| bits == -1));
 +        self.progressive_smoothing_first_scan = first_scan;
 +        for &index in &self.z_order[..usize::from(self.num_scans)] {
@@ -1182,9 +1297,12 @@ index b837c19a4e040..b189b6feae653 100644
 +            if first_scan {
 +                component.progressive_previous_bits.fill(0);
 +            } else {
-+                component.progressive_previous_bits.copy_from_slice(&component.progressive_bits[..10]);
++                component
++                    .progressive_previous_bits
++                    .copy_from_slice(&component.progressive_bits[..10]);
 +            }
-+            if let Some(bits) = component.progressive_bits
++            if let Some(bits) = component
++                .progressive_bits
 +                .get_mut(usize::from(self.spec_start)..=usize::from(self.spec_end))
 +            {
 +                bits.fill(self.succ_low as i8);
@@ -1194,8 +1312,17 @@ index b837c19a4e040..b189b6feae653 100644
 +
      fn handle_progressive_inter_scan_error(
          &mut self, error: DecodeErrors, block: &[Vec<i16>; MAX_COMPONENTS],
-         output: &mut McuDecodeOutput<'_, '_>, preserve_completed_scans: bool
-@@ -594,11 +757,19 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+         output: &mut McuDecodeOutput<'_, '_>, preserve_completed_scans: bool,
+@@ -600,7 +811,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+ 
+     fn parse_dc_first_non_interleaved<B: BitStream>(
+         &mut self, stream: &mut B, buffer: &mut [Vec<i16>; MAX_COMPONENTS], k: usize,
+-        resume_position: Option<(usize, usize)>,
++        resume_position: Option<(usize, usize)>
+     ) -> Result<(), DecodeErrors> {
+         let (mcu_width, mcu_height) = self.get_non_interleaved_dimensions(k);
+         let dc_pos = self.components[k].dc_huff_table % MAX_COMPONENTS;
+@@ -609,11 +820,19 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
  
          let mut cancel = self.cancel_debounced(mcu_width);
          for i in resume_row..mcu_height {
@@ -1215,7 +1342,16 @@ index b837c19a4e040..b189b6feae653 100644
                  let start = 64 * (j + i * width_stride);
                  let dc_pred_opt: Option<&mut i16> = buffer[k].get_mut(start);
  
-@@ -632,6 +803,9 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+@@ -639,7 +858,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+     }
+ 
+     fn parse_dc_refine_non_interleaved<B: BitStream>(
+-        &mut self, stream: &mut B, buffer: &mut [Vec<i16>; MAX_COMPONENTS], k: usize,
++        &mut self, stream: &mut B, buffer: &mut [Vec<i16>; MAX_COMPONENTS], k: usize
+     ) -> Result<(), DecodeErrors> {
+         let (mcu_width, mcu_height) = self.get_non_interleaved_dimensions(k);
+         let width_stride = self.components[k].width_stride / 8;
+@@ -647,6 +866,9 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
  
          let mut cancel = self.cancel_debounced(mcu_width);
          for i in 0..mcu_height {
@@ -1225,7 +1361,16 @@ index b837c19a4e040..b189b6feae653 100644
              if cancel.is_cancelled() {
                  return Err(DecodeErrors::Cancelled);
              }
-@@ -658,6 +832,9 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+@@ -665,7 +887,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+     }
+ 
+     fn parse_ac_first_non_interleaved<B: BitStream>(
+-        &mut self, stream: &mut B, buffer: &mut [Vec<i16>; MAX_COMPONENTS], k: usize,
++        &mut self, stream: &mut B, buffer: &mut [Vec<i16>; MAX_COMPONENTS], k: usize
+     ) -> Result<(), DecodeErrors> {
+         let (mcu_width, mcu_height) = self.get_non_interleaved_dimensions(k);
+         let ac_pos = self.components[k].ac_huff_table;
+@@ -673,6 +895,9 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
  
          let mut cancel = self.cancel_debounced(mcu_width);
          for i in 0..mcu_height {
@@ -1235,7 +1380,16 @@ index b837c19a4e040..b189b6feae653 100644
              if cancel.is_cancelled() {
                  return Err(DecodeErrors::Cancelled);
              }
-@@ -699,6 +876,9 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+@@ -705,7 +930,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+     }
+ 
+     fn parse_ac_refine_non_interleaved<B: BitStream>(
+-        &mut self, stream: &mut B, buffer: &mut [Vec<i16>; MAX_COMPONENTS], k: usize,
++        &mut self, stream: &mut B, buffer: &mut [Vec<i16>; MAX_COMPONENTS], k: usize
+     ) -> Result<(), DecodeErrors> {
+         let (mcu_width, mcu_height) = self.get_non_interleaved_dimensions(k);
+         let ac_pos = self.components[k].ac_huff_table;
+@@ -714,6 +939,9 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
  
          let mut cancel = self.cancel_debounced(mcu_width);
          for i in 0..mcu_height {
@@ -1245,7 +1399,13 @@ index b837c19a4e040..b189b6feae653 100644
              if cancel.is_cancelled() {
                  return Err(DecodeErrors::Cancelled);
              }
-@@ -727,6 +907,9 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+@@ -737,11 +965,14 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+ 
+     fn parse_dc_first_interleaved<B: BitStream>(
+         &mut self, stream: &mut B, buffer: &mut [Vec<i16>; MAX_COMPONENTS],
+-        resume_position: Option<(usize, usize)>,
++        resume_position: Option<(usize, usize)>
+     ) -> Result<(), DecodeErrors> {
          let mut cancel = self.cancel_debounced(self.mcu_x);
          let (resume_row, resume_col) = resume_position.unwrap_or((0, 0));
          for i in resume_row..self.mcu_y {
@@ -1255,7 +1415,12 @@ index b837c19a4e040..b189b6feae653 100644
              if cancel.is_cancelled() {
                  return Err(DecodeErrors::Cancelled);
              }
-@@ -771,6 +954,9 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+@@ -782,10 +1013,13 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+     }
+ 
+     fn parse_dc_refine_interleaved<B: BitStream>(
+-        &mut self, stream: &mut B, buffer: &mut [Vec<i16>; MAX_COMPONENTS],
++        &mut self, stream: &mut B, buffer: &mut [Vec<i16>; MAX_COMPONENTS]
      ) -> Result<(), DecodeErrors> {
          let mut cancel = self.cancel_debounced(self.mcu_x);
          for i in 0..self.mcu_y {
@@ -1265,22 +1430,28 @@ index b837c19a4e040..b189b6feae653 100644
              if cancel.is_cancelled() {
                  return Err(DecodeErrors::Cancelled);
              }
-@@ -905,6 +1091,14 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+@@ -919,8 +1153,19 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+     #[allow(clippy::needless_range_loop, clippy::cast_sign_loss)]
      fn finish_progressive_decoding(
-         &mut self, block: &[Vec<i16>; MAX_COMPONENTS], output: &mut McuDecodeOutput<'_, '_>
+         &mut self, block: &[Vec<i16>; MAX_COMPONENTS], output: &mut McuDecodeOutput<'_, '_>,
+-        upsampler_scratch_space: &mut Vec<i16>,
++        upsampler_scratch_space: &mut Vec<i16>
      ) -> Result<(), DecodeErrors> {
 +        // Raw output must not publish never-seen channels as neutral ones,
 +        // even at final EOF. Preserve the packed decoder's legacy best-effort
 +        // handling of malformed progressive scans.
 +        if output.is_raw()
-+            && self.components.iter().any(|component| component.progressive_bits[0] < 0)
++            && self
++                .components
++                .iter()
++                .any(|component| component.progressive_bits[0] < 0)
 +        {
 +            return Err(DecodeErrors::ExhaustedData);
 +        }
          // Rendering replaces the caller's output row by row. Until every row
          // succeeds, the buffer may contain a mix of preview generations and
          // must not be advertised as a displayable progressive frame.
-@@ -954,6 +1148,16 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+@@ -971,6 +1216,18 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
          let mut tmp = [0_i32; DCT_BLOCK];
  
          let raw_mode = output.is_raw();
@@ -1292,12 +1463,14 @@ index b837c19a4e040..b189b6feae653 100644
 +                        .all(|&index| component.quantization_table[index] != 0)
 +            })
 +            && self.components.iter().any(|component| {
-+                component.progressive_bits[1..10].iter().any(|&bits| bits != 0)
++                component.progressive_bits[1..10]
++                    .iter()
++                    .any(|&bits| bits != 0)
 +            });
  
          for (pos, comp) in self.components.iter_mut().enumerate() {
              // Allocate only needed components.
-@@ -1001,6 +1205,25 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+@@ -1020,6 +1277,25 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                      continue 'component;
                  }
                  let qt_table = &component.quantization_table;
@@ -1323,7 +1496,7 @@ index b837c19a4e040..b189b6feae653 100644
  
                  // step is the number of pixels this iteration wil be handling
                  // Given by the number of mcu's height and the length of the component block
-@@ -1043,6 +1266,9 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+@@ -1068,6 +1344,9 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                          {
                              *out = i32::from(*x) * qt_val;
                          }
@@ -1333,7 +1506,7 @@ index b837c19a4e040..b189b6feae653 100644
                          // determine where to write.
                          let sl = &mut temp_channel[component.idct_pos..];
  
-@@ -1167,11 +1393,331 @@ where
+@@ -1196,11 +1475,369 @@ where
  #[cfg(test)]
  mod tests {
      use zune_core::bytestream::ZCursor;
@@ -1347,22 +1520,19 @@ index b837c19a4e040..b189b6feae653 100644
 +        let mut data = vec![0xFF, 0xD8, 0xFF, 0xDB, 0, 67, 0];
 +        data.extend_from_slice(&[1; 64]);
 +        data.extend_from_slice(&[
-+            0xFF, 0xC2, 0, 11, 8, 0, 19, 0, 22, 1, 1, 0x11, 0,
-+            0xFF, 0xC4, 0, 30, 0,
++            0xFF, 0xC2, 0, 11, 8, 0, 19, 0, 22, 1, 1, 0x11, 0, 0xFF, 0xC4, 0, 30, 0
 +        ]);
 +        data.extend_from_slice(&[0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 +        data.extend(0..11);
 +        data.extend_from_slice(&[
 +            0xFF, 0xDA, 0, 8, 1, 1, 0, 0, 0, 0,
 +            // DC coefficients: -512, -256, 0, -256, 0, 256, 0, 256, 512.
-+            167, 254, 96, 19, 0, 151, 252, 192, 38, 1, 47, 249, 128, 76, 3,
++            167, 254, 96, 19, 0, 151, 252, 192, 38, 1, 47, 249, 128, 76, 3
 +        ]);
 +        if complete_ac {
 +            data.extend_from_slice(&[0xFF, 0xC4, 0, 20, 0x10]);
 +            data.extend_from_slice(&[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-+            data.extend_from_slice(&[
-+                0xFF, 0xDA, 0, 8, 1, 1, 0, 1, 63, 0, 0, 0x7F, 0xFF, 0xD9,
-+            ]);
++            data.extend_from_slice(&[0xFF, 0xDA, 0, 8, 1, 1, 0, 1, 63, 0, 0, 0x7F, 0xFF, 0xD9]);
 +        }
 +        data
 +    }
@@ -1371,15 +1541,12 @@ index b837c19a4e040..b189b6feae653 100644
 +        let mut data = vec![0xFF, 0xD8, 0xFF, 0xDB, 0, 67, 0];
 +        data.extend_from_slice(&[1; 64]);
 +        data.extend_from_slice(&[
-+            0xFF, 0xC2, 0, 17, 8, 0, 8, 0, 8, 3,
-+            1, 0x11, 0, 2, 0x11, 0, 3, 0x11, 0,
-+            0xFF, 0xC4, 0, 20, 0,
++            0xFF, 0xC2, 0, 17, 8, 0, 8, 0, 8, 3, 1, 0x11, 0, 2, 0x11, 0, 3, 0x11, 0, 0xFF, 0xC4, 0,
++            20, 0
 +        ]);
 +        data.extend_from_slice(&[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8]);
 +        for component in 1..=channels {
-+            data.extend_from_slice(&[
-+                0xFF, 0xDA, 0, 8, 1, component, 0, 0, 0, 0, 0x40,
-+            ]);
++            data.extend_from_slice(&[0xFF, 0xDA, 0, 8, 1, component, 0, 0, 0, 0, 0x40]);
 +            if component != channels || !truncated_scan {
 +                data.push(0x7F);
 +            }
@@ -1410,15 +1577,18 @@ index b837c19a4e040..b189b6feae653 100644
 +            );
 +            raw.set_input_complete();
 +            let [y, u, v] = &mut planes;
-+            assert!(raw.decode_next_imcu_row(&mut [y, u, v], &[8; 3])
-+                .unwrap_err().is_recoverable_eof());
++            assert!(raw
++                .decode_next_imcu_row(&mut [y, u, v], &[8; 3])
++                .unwrap_err()
++                .is_recoverable_eof());
 +            assert_eq!(planes, [[0xA5; 64]; 3]);
 +        }
 +
 +        for (truncated_scan, eoi) in [(false, true), (false, false), (true, false)] {
 +            let data = noninterleaved_dc_jpeg(3, truncated_scan, eoi);
 +            let mut decoder = JpegDecoder::new_with_options(
-+                ZCursor::new(&data), DecoderOptions::default().set_strict_mode(false),
++                ZCursor::new(&data),
++                DecoderOptions::default().set_strict_mode(false)
 +            );
 +            decoder.decode_headers().unwrap();
 +            let mut raw = decoder.raw_output();
@@ -1427,11 +1597,14 @@ index b837c19a4e040..b189b6feae653 100644
 +            let [y, u, v] = &mut planes;
 +            assert!(matches!(
 +                raw.decode_next_imcu_row(&mut [y, u, v], &[8; 3]).unwrap(),
-+                RawImcuRowStatus::RowReady { rows_written: [8, 8, 8, 0] },
++                RawImcuRowStatus::RowReady {
++                    rows_written: [8, 8, 8, 0]
++                },
 +            ));
 +            assert_eq!(planes, [[144; 64]; 3]);
 +            assert_eq!(
-+                raw.decode_next_imcu_row(&mut [&mut [], &mut [], &mut []], &[8; 3]).unwrap(),
++                raw.decode_next_imcu_row(&mut [&mut [], &mut [], &mut []], &[8; 3])
++                    .unwrap(),
 +                RawImcuRowStatus::Complete,
 +            );
 +        }
@@ -1439,26 +1612,32 @@ index b837c19a4e040..b189b6feae653 100644
 +
 +    #[test]
 +    fn packed_progressive_best_effort_preserves_supported_malformed_scans() {
-+        use crate::{ScanlineReadStatus, ScanlineStatus};
 +        use zune_core::colorspace::ColorSpace;
++
++        use crate::{ScanlineReadStatus, ScanlineStatus};
 +
 +        // Advertise a malformed merged DC/AC first scan (Ss=0, Se=63).
 +        // Packed decoding intentionally supports a best-effort result even
 +        // though native decoding rejects it and other DC channels are unseen.
 +        let mut data = noninterleaved_dc_jpeg(3, false, true);
-+        let sos = data.windows(2).position(|marker| marker == [0xFF, 0xDA]).unwrap();
++        let sos = data
++            .windows(2)
++            .position(|marker| marker == [0xFF, 0xDA])
++            .unwrap();
 +        let spectral_end = sos + 6 + usize::from(data[sos + 4]) * 2;
 +        data[spectral_end] = 63;
 +
 +        for incremental in [false, true] {
-+            let options = DecoderOptions::default().set_strict_mode(false)
++            let options = DecoderOptions::default()
++                .set_strict_mode(false)
 +                .jpeg_set_out_colorspace(ColorSpace::RGB);
 +            let mut decoder = JpegDecoder::new_with_options(ZCursor::new(&data), options);
 +            decoder.set_incremental_mode(incremental);
 +            decoder.decode_headers().unwrap();
 +            assert_eq!(decoder.dimensions(), Some((8, 8)));
 +            let mut packed = vec![0xA5; decoder.output_buffer_size().unwrap()];
-+            decoder.decode_into(&mut packed)
++            decoder
++                .decode_into(&mut packed)
 +                .unwrap_or_else(|error| panic!("incremental={incremental}: {error:?}"));
 +
 +            let mut decoder = JpegDecoder::new_with_options(ZCursor::new(&data), options);
@@ -1470,11 +1649,9 @@ index b837c19a4e040..b189b6feae653 100644
 +            let mut rows = 0;
 +            while rows < 8 {
 +                let end = (rows + 3).min(8);
-+                let status = scanlines.read_scanlines(
-+                    &mut converted[rows * stride..end * stride], stride,
-+                ).unwrap_or_else(|error| {
-+                    panic!("incremental={incremental}: {error:?}")
-+                });
++                let status = scanlines
++                    .read_scanlines(&mut converted[rows * stride..end * stride], stride)
++                    .unwrap_or_else(|error| panic!("incremental={incremental}: {error:?}"));
 +                let ScanlineReadStatus::RowsProcessed { rows: count } = status else {
 +                    panic!("incremental={incremental}: {status:?}");
 +                };
@@ -1487,7 +1664,9 @@ index b837c19a4e040..b189b6feae653 100644
 +    }
 +
 +    fn plane_hash(plane: &[u8], stride: usize) -> u64 {
-+        plane.chunks_exact(stride).flat_map(|row| row[..22].iter())
++        plane
++            .chunks_exact(stride)
++            .flat_map(|row| row[..22].iter())
 +            .fold(0xcbf2_9ce4_8422_2325, |hash, byte| {
 +                (hash ^ u64::from(*byte)).wrapping_mul(0x100_0000_01b3)
 +            })
@@ -1499,19 +1678,21 @@ index b837c19a4e040..b189b6feae653 100644
 +        // both dimensions. The two hashes are native libjpeg raw-plane goldens.
 +        for (complete_ac, expected) in [
 +            (false, 0xa007_fba6_4972_7faa),
-+            (true, 0xd39b_63bf_88b1_b6ed),
++            (true, 0xd39b_63bf_88b1_b6ed)
 +        ] {
 +            let data = smoothing_jpeg(complete_ac);
 +            for options in [DecoderOptions::new_safe(), DecoderOptions::new_fast()] {
 +                let mut decoder = JpegDecoder::new_with_options(
-+                    ZCursor::new(&data), options.set_strict_mode(false),
++                    ZCursor::new(&data),
++                    options.set_strict_mode(false)
 +                );
 +                decoder.decode_headers().unwrap();
 +                for _ in 0..2 {
 +                    let mut raw = decoder.raw_output();
 +                    raw.set_input_complete();
 +                    let mut plane = [0xA5; 27 * 19];
-+                    raw.decode_into_planes_strided(&mut [&mut plane], &[27]).unwrap();
++                    raw.decode_into_planes_strided(&mut [&mut plane], &[27])
++                        .unwrap();
 +                    assert_eq!(plane_hash(&plane, 27), expected);
 +                    for row in plane.chunks_exact(27) {
 +                        assert_eq!(&row[22..], &[0xA5; 5]);
@@ -1521,7 +1702,8 @@ index b837c19a4e040..b189b6feae653 100644
 +                    assert!(coefficients[1..].iter().all(|&value| value == 0));
 +                }
 +                assert_eq!(decoder.components[0].progressive_bits[0], 0);
-+                assert!(decoder.components[0].progressive_bits[1..].iter()
++                assert!(decoder.components[0].progressive_bits[1..]
++                    .iter()
 +                    .all(|&bits| bits == if complete_ac { 0 } else { -1 }));
 +            }
 +        }
@@ -1530,7 +1712,10 @@ index b837c19a4e040..b189b6feae653 100644
 +    #[test]
 +    fn smoothing_preserves_known_coefficients_and_precision_bounds() {
 +        let mut blocks = [0; 9 * 64];
-+        for (block, dc) in [-512, -256, 0, -256, 0, 256, 0, 256, 512].into_iter().enumerate() {
++        for (block, dc) in [-512, -256, 0, -256, 0, 256, 0, 256, 512]
++            .into_iter()
++            .enumerate()
++        {
 +            blocks[block * 64] = dc;
 +        }
 +        let original = blocks;
@@ -1540,9 +1725,14 @@ index b837c19a4e040..b189b6feae653 100644
 +            precision[0] = 0;
 +            precision[2] = bits;
 +            let smoothing = ProgressiveSmoothing {
-+                blocks: &blocks, stride: 3, width: 3, height: 3,
-+                vertical_sample: 1, imcu_rows: 3, bits: &precision,
-+                quantization: &quantization,
++                blocks:          &blocks,
++                stride:          3,
++                width:           3,
++                height:          3,
++                vertical_sample: 1,
++                imcu_rows:       3,
++                bits:            &precision,
++                quantization:    &quantization
 +            };
 +            let mut output = [0; 64];
 +            output[1] = 7;
@@ -1563,9 +1753,9 @@ index b837c19a4e040..b189b6feae653 100644
 +        use std::rc::Rc;
 +
 +        struct GrowingInput {
-+            data: Vec<u8>,
-+            visible: Rc<Cell<usize>>,
-+            position: usize,
++            data:     Vec<u8>,
++            visible:  Rc<Cell<usize>>,
++            position: usize
 +        }
 +        impl Read for GrowingInput {
 +            fn read(&mut self, destination: &mut [u8]) -> io::Result<usize> {
@@ -1590,7 +1780,7 @@ index b837c19a4e040..b189b6feae653 100644
 +                let position = match from {
 +                    SeekFrom::Start(position) => position as i64,
 +                    SeekFrom::End(offset) => self.visible.get() as i64 + offset,
-+                    SeekFrom::Current(offset) => self.position as i64 + offset,
++                    SeekFrom::Current(offset) => self.position as i64 + offset
 +                };
 +                self.position = usize::try_from(position)
 +                    .map_err(|_| io::Error::from(io::ErrorKind::InvalidInput))?;
@@ -1603,22 +1793,32 @@ index b837c19a4e040..b189b6feae653 100644
 +        // Leave the AC scan one byte short, so its zero coefficients appear
 +        // complete after lookahead but its precision must still be rolled back.
 +        let visible = Rc::new(Cell::new(len - 3));
-+        let input = GrowingInput { data, visible: visible.clone(), position: 0 };
-+        let mut decoder = JpegDecoder::new_with_options(
-+            input, DecoderOptions::default().set_strict_mode(false),
-+        );
++        let input = GrowingInput {
++            data,
++            visible: visible.clone(),
++            position: 0
++        };
++        let mut decoder =
++            JpegDecoder::new_with_options(input, DecoderOptions::default().set_strict_mode(false));
 +        decoder.decode_headers().unwrap();
 +        let mut plane = [0xA5; 27 * 19];
 +        {
 +            let mut raw = decoder.raw_output();
-+            assert!(raw.decode_into_planes_strided(&mut [&mut plane], &[27])
-+                .unwrap_err().is_recoverable_eof());
++            assert!(raw
++                .decode_into_planes_strided(&mut [&mut plane], &[27])
++                .unwrap_err()
++                .is_recoverable_eof());
 +        }
 +        assert!(plane.iter().all(|&sample| sample == 0xA5));
 +        assert_eq!(decoder.components[0].progressive_bits[0], 0);
-+        assert!(decoder.components[0].progressive_bits[1..].iter().all(|&bits| bits == -1));
++        assert!(decoder.components[0].progressive_bits[1..]
++            .iter()
++            .all(|&bits| bits == -1));
 +        visible.set(len);
-+        decoder.raw_output().decode_into_planes_strided(&mut [&mut plane], &[27]).unwrap();
++        decoder
++            .raw_output()
++            .decode_into_planes_strided(&mut [&mut plane], &[27])
++            .unwrap();
 +        assert_eq!(plane_hash(&plane, 27), 0xd39b_63bf_88b1_b6ed);
 +        assert_eq!(decoder.components[0].progressive_bits, [0; 64]);
 +        for coefficients in decoder.progressive_mcus_buffer[0].chunks_exact(64) {
@@ -1629,21 +1829,29 @@ index b837c19a4e040..b189b6feae653 100644
 +        // channel is available, then resume normally without a final-EOF hint.
 +        let data = noninterleaved_dc_jpeg(3, false, true);
 +        let len = data.len();
-+        let scans: Vec<_> = data.windows(2).enumerate()
++        let scans: Vec<_> = data
++            .windows(2)
++            .enumerate()
 +            .filter_map(|(offset, bytes)| (bytes == [0xFF, 0xDA]).then_some(offset))
 +            .collect();
 +        let visible = Rc::new(Cell::new(scans[0] + 11));
-+        let input = GrowingInput { data, visible: visible.clone(), position: 0 };
-+        let mut decoder = JpegDecoder::new_with_options(
-+            input, DecoderOptions::default().set_strict_mode(false),
-+        );
++        let input = GrowingInput {
++            data,
++            visible: visible.clone(),
++            position: 0
++        };
++        let mut decoder =
++            JpegDecoder::new_with_options(input, DecoderOptions::default().set_strict_mode(false));
 +        decoder.decode_headers().unwrap();
 +        let mut planes = [[0xA5; 64]; 3];
 +        for end in [scans[0] + 11, scans[2]] {
 +            visible.set(end);
 +            let [y, u, v] = &mut planes;
 +            assert_eq!(
-+                decoder.raw_output().decode_next_imcu_row(&mut [y, u, v], &[8; 3]).unwrap(),
++                decoder
++                    .raw_output()
++                    .decode_next_imcu_row(&mut [y, u, v], &[8; 3])
++                    .unwrap(),
 +                crate::RawImcuRowStatus::NeedMoreInput,
 +            );
 +            assert_eq!(planes, [[0xA5; 64]; 3]);
@@ -1654,11 +1862,14 @@ index b837c19a4e040..b189b6feae653 100644
 +        let mut raw = decoder.raw_output();
 +        assert!(matches!(
 +            raw.decode_next_imcu_row(&mut [y, u, v], &[8; 3]).unwrap(),
-+            crate::RawImcuRowStatus::RowReady { rows_written: [8, 8, 8, 0] },
++            crate::RawImcuRowStatus::RowReady {
++                rows_written: [8, 8, 8, 0]
++            },
 +        ));
 +        assert_eq!(planes, [[144; 64]; 3]);
 +        assert_eq!(
-+            raw.decode_next_imcu_row(&mut [&mut [], &mut [], &mut []], &[8; 3]).unwrap(),
++            raw.decode_next_imcu_row(&mut [&mut [], &mut [], &mut []], &[8; 3])
++                .unwrap(),
 +            crate::RawImcuRowStatus::Complete,
 +        );
 +    }
@@ -1666,3 +1877,6 @@ index b837c19a4e040..b189b6feae653 100644
      #[cfg(feature = "arith")]
      fn coefficient_hash(coefficients: &[i16]) -> u64 {
          coefficients
+-- 
+2.56.0
+

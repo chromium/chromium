@@ -1,0 +1,805 @@
+From 8c9f37a6a44725535eefd6e1b489c47c771403cd Mon Sep 17 00:00:00 2001
+From: Sergio Gonzalez Martin <sergiog@microsoft.com>
+Date: Mon, 26 Oct 2026 19:32:59 +0000
+Subject: [PATCH] [rust jpeg] Reduced IDCT output (PR498)
+
+Backport of https://github.com/etemesi254/zune-image/pull/498
+Published head: c0fd65c06ac6972523bd88ea773414d7d50a3dc6
+
+Effective cumulative source stage: c0fd65c06ac6972523bd88ea773414d7d50a3dc6
+Only this stage's new Rust-source delta is carried. Prerequisite changes are not duplicated in later PR patches.
+
+Tracking: https://github.com/etemesi254/zune-image/issues/503
+
+Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+---
+ .../vendor/zune-jpeg-v0_5/src/decoder.rs      |  55 +++-
+ .../vendor/zune-jpeg-v0_5/src/idct.rs         |  92 ++++++
+ .../vendor/zune-jpeg-v0_5/src/idct/scalar.rs  |  68 ++++
+ .../vendor/zune-jpeg-v0_5/src/lib.rs          |  12 +
+ .../vendor/zune-jpeg-v0_5/src/mcu.rs          |  27 +-
+ .../vendor/zune-jpeg-v0_5/src/mcu_prog.rs     |   9 +-
+ .../vendor/zune-jpeg-v0_5/src/scaled.rs       | 295 ++++++++++++++++++
+ 7 files changed, 537 insertions(+), 21 deletions(-)
+ create mode 100644 third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/scaled.rs
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
+index b21d22d5fe67249157b8615b942ac751959ef920..17a4d6b0dd92e4fa07ea7d85dca7c185712319c0 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
+@@ -486,7 +486,8 @@ pub struct JpegDecoder<T> {
+ pub(crate) enum McuDecodeOutput<'planes, 'buf> {
+     Pixels(&'planes mut [u8]),
+     RawPlanes(RawPlanesSink<'planes, 'buf>),
+-    Scanlines(ConvertedScanlineSink<'planes>)
++    Scanlines(ConvertedScanlineSink<'planes>),
++    Scaled(&'planes mut crate::scaled::ScaledOutput)
+ }
+ 
+ impl McuDecodeOutput<'_, '_> {
+@@ -498,7 +499,7 @@ impl McuDecodeOutput<'_, '_> {
+         match self {
+             Self::Pixels(pixels) => Some(pixels),
+             Self::Scanlines(sink) => Some(sink.pixels),
+-            Self::RawPlanes(_) => None
++            Self::RawPlanes(_) | Self::Scaled(_) => None
+         }
+     }
+ 
+@@ -506,21 +507,21 @@ impl McuDecodeOutput<'_, '_> {
+         match self {
+             Self::RawPlanes(sink) => sink.requested_stripe,
+             Self::Scanlines(sink) => Some(sink.requested_stripe),
+-            Self::Pixels(_) => None
++            Self::Pixels(_) | Self::Scaled(_) => None
+         }
+     }
+ 
+     pub(crate) const fn requested_raw_stripe(&self) -> Option<usize> {
+         match self {
+             Self::RawPlanes(sink) => sink.requested_stripe,
+-            Self::Pixels(_) | Self::Scanlines(_) => None
++            Self::Pixels(_) | Self::Scanlines(_) | Self::Scaled(_) => None
+         }
+     }
+ 
+     pub(crate) const fn requests_raw_output(&self) -> bool {
+         match self {
+             Self::RawPlanes(_) => true,
+-            Self::Pixels(_) | Self::Scanlines(_) => false
++            Self::Pixels(_) | Self::Scanlines(_) | Self::Scaled(_) => false
+         }
+     }
+ 
+@@ -1102,7 +1103,9 @@ where
+ 
+         let (rows_written, source_complete) = match output {
+             McuDecodeOutput::Scanlines(sink) => (sink.rows_written, sink.source_complete),
+-            McuDecodeOutput::Pixels(_) | McuDecodeOutput::RawPlanes(_) => unreachable!()
++            McuDecodeOutput::Pixels(_)
++            | McuDecodeOutput::RawPlanes(_)
++            | McuDecodeOutput::Scaled(_) => unreachable!()
+         };
+         if let Err(error) = decode_result {
+             if error.is_recoverable_eof() {
+@@ -1342,7 +1345,9 @@ where
+ 
+         let sink = match output {
+             McuDecodeOutput::RawPlanes(sink) => sink,
+-            McuDecodeOutput::Pixels(_) | McuDecodeOutput::Scanlines(_) => unreachable!()
++            McuDecodeOutput::Pixels(_)
++            | McuDecodeOutput::Scanlines(_)
++            | McuDecodeOutput::Scaled(_) => unreachable!()
+         };
+         if sink.source_complete {
+             self.decoder.raw_pull_state.buffered_source_complete = true;
+@@ -3377,22 +3382,22 @@ where
+     ///
+     ///
+     #[allow(clippy::too_many_lines)]
+-    fn prepare_for_scan_decode(&mut self) -> Result<(), DecodeErrors> {
++    pub(crate) fn prepare_for_scan_decode(&mut self) -> Result<(), DecodeErrors> {
+         // Pull the scan-resume state out into owned locals so the restore
+         // below can freely mutate `self`. When headers haven't completed
+         // yet, `scan_plan` is `None` and we just run header decoding below.
+         struct ScanPlan {
+-            scan_start_position:   usize,
+-            scan_start_height:     u16,
++            scan_start_position:    usize,
++            scan_start_height:      u16,
+             scan_start_expects_dnl: bool,
+-            outer_append_snapshot: HeaderAppendStateSnapshot,
+-            outer_sos_snapshot:    SosParamsSnapshot,
+-            outer_header_snapshot: ScanHeaderStateSnapshot,
++            outer_append_snapshot:  HeaderAppendStateSnapshot,
++            outer_sos_snapshot:     SosParamsSnapshot,
++            outer_header_snapshot:  ScanHeaderStateSnapshot,
+             /// Snapshots taken from the checkpoint (if any) so the seek and
+             /// SOS-restore steps below do not need to touch `scan_state`.
+-            checkpoint_view:       Option<CheckpointView>,
+-            progressive_view:      Option<ProgressiveCheckpointView>,
+-            progressive_fine_view: Option<ProgressiveFineCheckpointView>
++            checkpoint_view:        Option<CheckpointView>,
++            progressive_view:       Option<ProgressiveCheckpointView>,
++            progressive_fine_view:  Option<ProgressiveFineCheckpointView>
+         }
+         #[derive(Clone, Copy)]
+         struct CheckpointView {
+@@ -3613,7 +3618,7 @@ where
+         Ok(())
+     }
+ 
+-    fn decode_mcu_output_with_success_cleanup(
++    pub(crate) fn decode_mcu_output_with_success_cleanup(
+         &mut self, output: &mut McuDecodeOutput<'_, '_>
+     ) -> Result<(), DecodeErrors> {
+         match self.decode_mcu_output(output) {
+@@ -3678,6 +3683,22 @@ where
+         self.decode_mcu_output_with_success_cleanup(&mut output)
+     }
+ 
++    /// Select true reduced-IDCT output without changing coded image metadata.
++    ///
++    /// The returned decoder owns independent reduced component planes and
++    /// preserves them across incremental retries. Select the scale before
++    /// starting any pixel, scanline, or raw-plane decode.
++    pub fn into_scaled(
++        self, scale: crate::JpegScale
++    ) -> Result<crate::ScaledJpegDecoder<T>, DecodeErrors> {
++        if self.scan_decode_attempted {
++            return Err(DecodeErrors::FormatStatic(
++                "select output scaling before starting scan decoding"
++            ));
++        }
++        crate::ScaledJpegDecoder::new(self, scale)
++    }
++
+     fn decode_mcu_output(
+         &mut self, output: &mut McuDecodeOutput<'_, '_>
+     ) -> Result<(), DecodeErrors> {
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct.rs
+index 26104e31711cb4cf3700fdbdf10ecf869d61b715..c3803709c57e00287ee91bbc3763e902ab72d51e 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct.rs
+@@ -117,6 +117,98 @@ pub fn choose_idct_1x1_func(_: &DecoderOptions) -> IDCTPtr {
+ mod tests {
+     use super::*;
+ 
++    fn check_scaled_idct(input: [i32; 64], half: [i16; 16], quarter: [i16; 4], eighth: i16) {
++        const STRIDE: usize = 7;
++        let cases: [(usize, IDCTPtr, &[i16]); 3] = [
++            (4, scalar::idct_scaled_4x4, &half),
++            (2, scalar::idct_scaled_2x2, &quarter),
++            (1, scalar::idct_scaled_1x1, core::slice::from_ref(&eighth))
++        ];
++        for (side, transform, expected) in cases {
++            let mut coefficients = input;
++            let mut output = vec![-1; (side - 1) * STRIDE + side];
++            transform(&mut coefficients, &mut output, STRIDE);
++            assert_eq!(coefficients, input);
++            for (index, sample) in output.into_iter().enumerate() {
++                let row = index / STRIDE;
++                let column = index % STRIDE;
++                let value = if column < side { expected[row * side + column] } else { -1 };
++                assert_eq!(sample, value, "scale 1/{}, position {index}", 8 / side);
++            }
++        }
++    }
++
++    #[test]
++    fn scaled_idct_native_mixed_and_clipping() {
++        // Golden samples were produced by libjpeg-turbo's reduced IDCTs with
++        // unit quantization, not by resizing its full-size output.
++        let mut input = [0; 64];
++        for (coefficient, index) in input.iter_mut().zip(0_i32..) {
++            *coefficient = ((index * 29) % 107) - 53;
++        }
++        check_scaled_idct(
++            input,
++            [
++                122, 116, 112, 114, 115, 84, 157, 132, 115, 124, 126, 112, 122, 129, 123, 138
++            ],
++            [109, 129, 123, 125],
++            121
++        );
++        input.fill(0);
++        input[0] = 700;
++        input[1] = 700;
++        input[8] = -400;
++        input[9] = 200;
++        check_scaled_idct(
++            input,
++            [
++                255, 215, 88, 0, 255, 242, 135, 60, 255, 255, 203, 147, 255, 255, 250, 208
++            ],
++            [255, 70, 255, 202],
++            216
++        );
++    }
++
++    #[test]
++    fn scaled_idct_native_axis_and_rounding() {
++        let mut input = [0; 64];
++        input[0] = -5;
++        check_scaled_idct(input, [127; 16], [127; 4], 127);
++        input.fill(0);
++        input[1] = 47;
++        input[3] = -83;
++        input[7] = 19;
++        check_scaled_idct(
++            input,
++            [
++                130, 142, 114, 126, 130, 142, 114, 126, 130, 142, 114, 126, 130, 142, 114, 126
++            ],
++            [136, 120, 136, 120],
++            128
++        );
++        input.fill(0);
++        input[8] = -101;
++        input[24] = 35;
++        input[56] = -49;
++        check_scaled_idct(
++            input,
++            [
++                115, 115, 115, 115, 117, 117, 117, 117, 139, 139, 139, 139, 141, 141, 141, 141
++            ],
++            [116, 116, 140, 140],
++            128
++        );
++    }
++
++    #[test]
++    fn scaled_idct_discards_cancelled_frequencies() {
++        let mut input = [0; 64];
++        input[4] = 719;
++        input[32] = -299;
++        input[36] = 153;
++        check_scaled_idct(input, [128; 16], [128; 4], 128);
++    }
++
+     fn check_idct(input: [i32; 64], expected: [i16; 64], reduced: bool) {
+         const STRIDE: usize = 13;
+         let mut functions: Vec<(&str, IDCTPtr)> = vec![
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/scalar.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/scalar.rs
+index 49ad44038d2201a9be79dace42ce64140a380df4..947d7d5087a1479989eb3cddbbffa3a7021dd39b 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/scalar.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/scalar.rs
+@@ -39,6 +39,74 @@ pub fn idct_int_1x1(in_vector: &mut [i32; 64], mut out_vector: &mut [i16], strid
+     }
+ }
+ 
++// Separable reduced-IDCT weights and pass precision match libjpeg-turbo's
++// jidctred.c. These average DCT reconstruction cells, rather than sampling a
++// full 8x8 reconstruction. Frequency four vanishes at half scale; even AC
++// frequencies vanish at quarter scale.
++const HALF_WEIGHTS: [[i32; 8]; 4] = [
++    [16384, 20995, 15137, 7373, 0, -4926, -6270, -4176],
++    [16384, 8697, -15137, -17799, 0, 11893, 6270, -1730],
++    [16384, -8697, -15137, 17799, 0, -11893, 6270, 1730],
++    [16384, -20995, 15137, -7373, 0, 4926, -6270, 4176]
++];
++
++const QUARTER_WEIGHTS: [[i32; 8]; 2] = [
++    [32768, 29692, 0, -10426, 0, 6967, 0, -5906],
++    [32768, -29692, 0, 10426, 0, -6967, 0, 5906]
++];
++
++fn reduced_idct<const SIDE: usize>(
++    coefficients: &[i32; 64], output: &mut [i16], stride: usize, weights: &[[i32; 8]; SIDE],
++    column_shift: u32, row_shift: u32
++) {
++    assert!(stride >= SIDE && output.len() >= (SIDE - 1) * stride + SIDE);
++    let mut workspace = [[0_i32; 8]; SIDE];
++    for row in 0..SIDE {
++        for column in 0..8 {
++            let mut sum = 0_i32;
++            for frequency in 0..8 {
++                sum = wa(
++                    sum,
++                    wm(
++                        coefficients[frequency * 8 + column],
++                        weights[row][frequency]
++                    )
++                );
++            }
++            workspace[row][column] = wa(sum, 1 << (column_shift - 1)) >> column_shift;
++        }
++    }
++    for row in 0..SIDE {
++        for column in 0..SIDE {
++            let mut sum = 0_i32;
++            for frequency in 0..8 {
++                sum = wa(
++                    sum,
++                    wm(workspace[row][frequency], weights[column][frequency])
++                );
++            }
++            let sample = wa(sum, 1 << (row_shift - 1)) >> row_shift;
++            output[row * stride + column] = clamp(wa(sample, 128));
++        }
++    }
++}
++
++/// Reconstruct a half-scale 4x4 block without modifying coefficients or row padding.
++pub fn idct_scaled_4x4(coefficients: &mut [i32; 64], output: &mut [i16], stride: usize) {
++    reduced_idct(coefficients, output, stride, &HALF_WEIGHTS, 12, 19);
++}
++
++/// Reconstruct a quarter-scale 2x2 block without modifying coefficients or row padding.
++pub fn idct_scaled_2x2(coefficients: &mut [i32; 64], output: &mut [i16], stride: usize) {
++    reduced_idct(coefficients, output, stride, &QUARTER_WEIGHTS, 13, 20);
++}
++
++/// Reconstruct the eighth-scale block average without modifying coefficients.
++pub fn idct_scaled_1x1(coefficients: &mut [i32; 64], output: &mut [i16], stride: usize) {
++    assert!(stride > 0 && !output.is_empty());
++    output[0] = clamp(wa(wa(coefficients[0], 4) >> 3, 128));
++}
++
+ #[allow(unused_assignments)]
+ #[allow(
+     clippy::too_many_lines,
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/lib.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/lib.rs
+index 8dd779fd678b4b2f2117f3b5f444673eecf2bef2..db6dca158b5687049cd06ce8ce482510e3a495c2 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/lib.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/lib.rs
+@@ -70,6 +70,16 @@
+ //! assert_eq!(scanlines.finish().unwrap(), ScanlineStatus::Complete);
+ //! ```
+ //!
++//! ## Reduced-IDCT output
++//!
++//! Select [`JpegScale::Half`], [`JpegScale::Quarter`], or [`JpegScale::Eighth`]
++//! with [`JpegDecoder::into_scaled`] before starting pixel decoding. This produces
++//! native reduced-IDCT samples, not a resized full-size image. Output dimensions
++//! are rounded up; component-specific IDCT sizes account for chroma subsampling.
++//! [`ScaledJpegDecoder`] retains reduced planes across incremental retries and
++//! publishes converted pixels only after reconstruction completes. Existing
++//! full-size, raw-plane, and scanline APIs keep their original geometry.
++//!
+ //! ## Incremental input
+ //!
+ //! `JpegDecoder` can be retried on the same decoder when the underlying reader can
+@@ -326,6 +336,7 @@ pub use crate::decoder::{
+     ScanlineReadStatus, ScanlineStatus
+ };
+ pub use crate::marker::Marker;
++pub use crate::scaled::{JpegScale, ScaledJpegDecoder};
+ mod bitstream;
+ #[cfg(feature = "arith")]
+ mod bitstream_arith;
+@@ -344,6 +355,7 @@ mod marker;
+ mod mcu;
+ mod mcu_prog;
+ mod misc;
++mod scaled;
+ mod unsafe_utils;
+ mod unsafe_utils_avx2;
+ mod unsafe_utils_neon;
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
+index 952a78e88d7e755af60003cf03d26e8dd92c0e71..b8527cf57cc5d227a5b89cf29b8a0754c21a0b19 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
+@@ -43,7 +43,8 @@ struct McuWidthContext<'a, B: BitStream> {
+     // Full-image coefficient buffers for multi-SOS baseline scans.
+     progressive:    &'a mut [Vec<i16>; MAX_COMPONENTS],
+     // True when decoding the final data-unit row of the current scan.
+-    is_last_row:    bool
++    is_last_row:    bool,
++    scaled:        Option<&'a mut crate::scaled::ScaledOutput>
+ }
+ 
+ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+@@ -106,7 +107,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+     #[inline(never)]
+     fn decode_mcu_ycbcr_baseline_inner<B: BitStream>(
+         &mut self, output: &mut McuDecodeOutput<'_, '_>,
+-        progressive_mcus: &mut [Vec<i16>; MAX_COMPONENTS], upsampler_scratch_space: &mut Vec<i16>,
++        progressive_mcus: &mut [Vec<i16>; MAX_COMPONENTS], upsampler_scratch_space: &mut Vec<i16>
+     ) -> Result<(), DecodeErrors> {
+         setup_component_params(self)?;
+ 
+@@ -393,6 +394,10 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                         stream: &mut stream,
+                         progressive: &mut *progressive_mcus,
+                         is_last_row: i + 1 >= scan_mcu_height,
++                        scaled: match output {
++                            McuDecodeOutput::Scaled(scaled) => Some(&mut **scaled),
++                            _ => None,
++                        },
+                     };
+                     if all_components_in_first_scan {
+                         self.decode_mcu_width::<false, B>(&mut mcu_width_context)
+@@ -455,6 +460,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                                     self.copy_raw_planes_for_mcu_stripe(i, raw_planes)?;
+                                 }
+                                 McuDecodeOutput::Scanlines(_) => return Err(e),
++                                McuDecodeOutput::Scaled(_) => {},
+                             }
+                         } else if let Some(pixels) = output.pixels_mut() {
+                             pixels.fill(128);
+@@ -554,6 +560,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                     }
+ 
+                     match output {
++                        McuDecodeOutput::Scaled(_) => {},
+                         McuDecodeOutput::Pixels(pixels) => {
+                             let output_stride =
+                                 width * self.options.jpeg_get_out_colorspace().num_components();
+@@ -777,7 +784,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+             }
+         }
+ 
+-        if !all_components_in_first_scan {
++        if !all_components_in_first_scan && !matches!(output, McuDecodeOutput::Scaled(_)) {
+             self.finish_baseline_decoding(progressive_mcus, mcu_width, output)?;
+         }
+ 
+@@ -945,6 +952,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+ 
+             // process that whole stripe of MCUs
+             match output {
++                McuDecodeOutput::Scaled(_) => {},
+                 McuDecodeOutput::Pixels(pixels) => self.post_process(
+                     pixels,
+                     width * self.options.jpeg_get_out_colorspace().num_components(),
+@@ -1179,6 +1187,19 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                             // tmp was only written partially, note that len is in ZigZag order.
+                             clobber_more_than_4x4 = len > 10;
+ 
++                            if let Some(scaled) = context.scaled.as_deref_mut() {
++                                let (block_x, block_y) = if PROGRESSIVE || !SAMPLED {
++                                    (j, mcu_row)
++                                } else {
++                                    (
++                                        j * component.horizontal_sample + h_samp,
++                                        mcu_row * component.vertical_sample + v_samp,
++                                    )
++                                };
++                                scaled.write_block(k, block_x, block_y, tmp)?;
++                                continue;
++                            }
++
+                             let idct_position = if PROGRESSIVE {
+                                 // For non-interleaved, j indexes data units directly
+                                 j * 8
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
+index f532af45820e6ce35aecb945cb00a084348de33e..766f515108aa222f4c5c931a0d1b600717f1934e 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
+@@ -1347,6 +1347,12 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                         if let Some(smoothing) = &smoothing {
+                             smoothing.apply(j, i * component.vertical_sample + k, &mut tmp);
+                         }
++                        if let McuDecodeOutput::Scaled(scaled) = output {
++                            scaled.write_block(
++                                position, j, i * component.vertical_sample + k, &tmp,
++                            )?;
++                            continue;
++                        }
+                         // determine where to write.
+                         let sl = &mut temp_channel[component.idct_pos..];
+ 
+@@ -1367,6 +1373,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+ 
+             // process that width up until it's impossible
+             match output {
++                McuDecodeOutput::Scaled(_) => {},
+                 McuDecodeOutput::Pixels(pixels) => self.post_process(
+                     pixels,
+                     width * self.options.jpeg_get_out_colorspace().num_components(),
+@@ -1712,9 +1719,9 @@ mod tests {
+     #[test]
+     #[cfg(feature = "std")]
+     fn progressive_smoothing_retry_does_not_commit_estimates_or_precision() {
++        use alloc::rc::Rc;
+         use std::cell::Cell;
+         use std::io::{self, BufRead, Read, Seek, SeekFrom};
+-        use std::rc::Rc;
+ 
+         struct GrowingInput {
+             data:     Vec<u8>,
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/scaled.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/scaled.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..cce9ae117eeb4503766931d67cd31d3bcd0e2f5d
+--- /dev/null
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/scaled.rs
+@@ -0,0 +1,295 @@
++/*
++ * Copyright (c) 2026.
++ *
++ * This software is free software;
++ *
++ * You can redistribute it or modify it under terms of the MIT, Apache License or Zlib license
++ */
++
++//! Reduced-IDCT decoding with coded and decoded geometry kept separate.
++
++use alloc::vec;
++use alloc::vec::Vec;
++
++use zune_core::bytestream::ZByteReaderTrait;
++
++use crate::decoder::{IDCTPtr, McuDecodeOutput, MAX_COMPONENTS};
++use crate::errors::DecodeErrors;
++use crate::idct::scalar::{idct_scaled_1x1, idct_scaled_2x2, idct_scaled_4x4};
++use crate::worker::color_convert;
++use crate::JpegDecoder;
++
++/// Native reduced-IDCT output ratios. Dimensions are rounded up.
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++pub enum JpegScale {
++    /// Decode at one half of the coded width and height.
++    Half,
++    /// Decode at one quarter of the coded width and height.
++    Quarter,
++    /// Decode at one eighth of the coded width and height.
++    Eighth
++}
++
++impl JpegScale {
++    /// The denominator of the output ratio (2, 4, or 8).
++    #[must_use]
++    pub const fn denominator(self) -> usize {
++        match self {
++            Self::Half => 2,
++            Self::Quarter => 4,
++            Self::Eighth => 8
++        }
++    }
++}
++
++/// An owning scaled decoder, created with [`JpegDecoder::into_scaled`].
++///
++/// Entropy checkpoints and reduced component planes survive recoverable input
++/// errors. Output is published only after reconstruction completes. Owning the
++/// decoder prevents raw/full-size output from inheriting scaled geometry.
++pub struct ScaledJpegDecoder<T> {
++    decoder:  JpegDecoder<T>,
++    output:   ScaledOutput,
++    complete: bool
++}
++
++impl<T: ZByteReaderTrait> ScaledJpegDecoder<T> {
++    pub(crate) fn new(mut decoder: JpegDecoder<T>, scale: JpegScale) -> Result<Self, DecodeErrors> {
++        decoder.decode_headers()?;
++        let output = ScaledOutput::new(&decoder, scale)?;
++        Ok(Self {
++            decoder,
++            output,
++            complete: false
++        })
++    }
++
++    /// Decoded width and height, each rounded up from the coded dimensions.
++    pub fn dimensions(&self) -> (usize, usize) {
++        (self.output.width, self.output.height)
++    }
++
++    /// Required packed output bytes, or `None` if the size overflows.
++    pub fn output_buffer_size(&self) -> Option<usize> {
++        self.output
++            .width
++            .checked_mul(self.output.height)?
++            .checked_mul(
++                self.decoder
++                    .options
++                    .jpeg_get_out_colorspace()
++                    .num_components()
++            )
++    }
++
++    /// Make scan EOF recoverable rather than publishing best-effort output.
++    ///
++    /// Enable this before decoding when the underlying reader can grow. Retain
++    /// this decoder across recoverable EOF and retry after exposing more input.
++    pub fn set_incremental_mode(&mut self, enabled: bool) {
++        self.decoder.set_incremental_mode(enabled);
++    }
++
++    /// Decode a complete reduced frame into packed pixels.
++    ///
++    /// A short buffer is rejected before decoding. Bytes beyond
++    /// [`Self::output_buffer_size`] are untouched. Recoverable scan EOF does not
++    /// publish partial pixels; reduced planes and entropy checkpoints survive
++    /// for the next call. Successful calls may be repeated to copy the frame
++    /// without decoding the input again.
++    pub fn decode_into(&mut self, output: &mut [u8]) -> Result<(), DecodeErrors> {
++        let length = self
++            .output_buffer_size()
++            .ok_or(DecodeErrors::FormatStatic("scaled output size overflow"))?;
++        if output.len() < length {
++            return Err(DecodeErrors::TooSmallOutput(length, output.len()));
++        }
++        if !self.complete {
++            self.decoder.prepare_for_scan_decode()?;
++            self.decoder
++                .decode_mcu_output_with_success_cleanup(&mut McuDecodeOutput::Scaled(
++                    &mut self.output
++                ))?;
++            self.complete = true;
++        }
++        self.output.pack(&self.decoder, &mut output[..length])
++    }
++}
++
++pub(crate) struct ScaledOutput {
++    width:  usize,
++    height: usize,
++    planes: Vec<ScaledPlane>
++}
++
++struct ScaledPlane {
++    width:             usize,
++    height:            usize,
++    stride:            usize,
++    block_size:        usize,
++    horizontal_expand: usize,
++    vertical_expand:   usize,
++    fancy:             bool,
++    transform:         IDCTPtr,
++    samples:           Vec<i16>
++}
++
++impl ScaledOutput {
++    fn new<T: ZByteReaderTrait>(
++        decoder: &JpegDecoder<T>, scale: JpegScale
++    ) -> Result<Self, DecodeErrors> {
++        let width = usize::from(decoder.info.width);
++        let height = usize::from(decoder.info.height);
++        if width == 0 || height == 0 {
++            return Err(DecodeErrors::FormatStatic(
++                "scaled decoding requires known image dimensions"
++            ));
++        }
++        let minimum = 8 / scale.denominator();
++        let h_max = decoder
++            .components
++            .iter()
++            .map(|c| c.horizontal_sample)
++            .max()
++            .ok_or(DecodeErrors::FormatStatic("scaled image has no components"))?;
++        let v_max = decoder
++            .components
++            .iter()
++            .map(|c| c.vertical_sample)
++            .max()
++            .ok_or(DecodeErrors::FormatStatic("scaled image has no components"))?;
++        let mut planes = Vec::with_capacity(decoder.components.len());
++        for component in &decoder.components {
++            let mut block_size = minimum;
++            // Match native component-size selection: e.g. half-scale 4:2:0
++            // reconstructs 4x4 luma and 8x8 chroma, requiring no upsampling.
++            while block_size < 8
++                && (h_max * minimum) % (component.horizontal_sample * block_size * 2) == 0
++                && (v_max * minimum) % (component.vertical_sample * block_size * 2) == 0
++            {
++                block_size *= 2;
++            }
++            let transform = match block_size {
++                1 => idct_scaled_1x1,
++                2 => idct_scaled_2x2,
++                4 => idct_scaled_4x4,
++                8 => decoder.idct_func,
++                _ => unreachable!()
++            };
++            let stride = width.div_ceil(h_max * 8) * component.horizontal_sample * block_size;
++            let rows = height.div_ceil(v_max * 8) * component.vertical_sample * block_size;
++            let length = stride
++                .checked_mul(rows)
++                .ok_or(DecodeErrors::FormatStatic("scaled component size overflow"))?;
++            planes.push(ScaledPlane {
++                width: (width * component.horizontal_sample * block_size).div_ceil(h_max * 8),
++                height: (height * component.vertical_sample * block_size).div_ceil(v_max * 8),
++                stride,
++                block_size,
++                horizontal_expand: h_max * minimum / (component.horizontal_sample * block_size),
++                vertical_expand: v_max * minimum / (component.vertical_sample * block_size),
++                fancy: minimum > 1,
++                transform,
++                samples: vec![128; length]
++            });
++        }
++        Ok(Self {
++            width: width.div_ceil(scale.denominator()),
++            height: height.div_ceil(scale.denominator()),
++            planes
++        })
++    }
++
++    pub(crate) fn write_block(
++        &mut self, component: usize, x: usize, y: usize, coefficients: &[i32; 64]
++    ) -> Result<(), DecodeErrors> {
++        let plane = self
++            .planes
++            .get_mut(component)
++            .ok_or(DecodeErrors::FormatStatic(
++                "invalid scaled output component"
++            ))?;
++        let side = plane.block_size;
++        if x >= plane.stride / side || y >= plane.samples.len() / plane.stride / side {
++            return Err(DecodeErrors::FormatStatic("scaled block outside component"));
++        }
++        let offset = y * side * plane.stride + x * side;
++        // Full-size chroma IDCTs may mutate their input. Keep the entropy
++        // decoder's sparse scratch coefficients intact on every backend.
++        let mut coefficients = *coefficients;
++        (plane.transform)(
++            &mut coefficients,
++            &mut plane.samples[offset..],
++            plane.stride
++        );
++        Ok(())
++    }
++
++    fn pack<T: ZByteReaderTrait>(
++        &self, decoder: &JpegDecoder<T>, output: &mut [u8]
++    ) -> Result<(), DecodeErrors> {
++        let padded_width = self.width.div_ceil(16) * 16;
++        let mut rows: [Vec<i16>; MAX_COMPONENTS] = core::array::from_fn(|_| vec![0; padded_width]);
++        let output_colorspace = decoder.options.jpeg_get_out_colorspace();
++        let row_bytes = self.width * output_colorspace.num_components();
++        let mut cancel = decoder.cancel_debounced(self.width.div_ceil(8));
++        for (y, row) in output.chunks_exact_mut(row_bytes).enumerate() {
++            if cancel.is_cancelled() {
++                return Err(DecodeErrors::Cancelled);
++            }
++            for (plane, samples) in self.planes.iter().zip(rows.iter_mut()) {
++                if plane.horizontal_expand == 1 && plane.vertical_expand == 1 {
++                    let start = y.min(plane.height - 1) * plane.stride;
++                    let width = self.width.min(plane.width);
++                    samples[..width].copy_from_slice(&plane.samples[start..start + width]);
++                    let edge = samples[width - 1];
++                    samples[width..self.width].fill(edge);
++                } else {
++                    for (x, sample) in samples[..self.width].iter_mut().enumerate() {
++                        *sample = plane.sample(x, y);
++                    }
++                }
++                let edge = samples[self.width - 1];
++                samples[self.width..].fill(edge);
++            }
++            color_convert(
++                &core::array::from_fn(|index| rows[index].as_slice()),
++                decoder.color_convert_16,
++                decoder.input_colorspace,
++                output_colorspace,
++                row,
++                self.width,
++                padded_width
++            )?;
++        }
++        Ok(())
++    }
++}
++
++impl ScaledPlane {
++    fn at(&self, x: usize, y: usize) -> i16 {
++        self.samples[y.min(self.height - 1) * self.stride + x.min(self.width - 1)]
++    }
++
++    fn sample(&self, x: usize, y: usize) -> i16 {
++        let source_x = x / self.horizontal_expand;
++        let source_y = y / self.vertical_expand;
++        let current = self.at(source_x, source_y);
++        let adjacent_x = if x % 2 == 0 { source_x.saturating_sub(1) } else { source_x + 1 };
++        let adjacent_y = if y % 2 == 0 { source_y.saturating_sub(1) } else { source_y + 1 };
++        match (self.horizontal_expand, self.vertical_expand) {
++            (2, 1) if self.fancy && self.width > 2 => {
++                (3 * current + self.at(adjacent_x, source_y) + if x % 2 == 0 { 1 } else { 2 }) >> 2
++            }
++            (1, 2) if self.fancy => {
++                (3 * current + self.at(source_x, adjacent_y) + if y % 2 == 0 { 1 } else { 2 }) >> 2
++            }
++            (2, 2) if self.fancy && self.width > 2 => {
++                let near = 3 * current + self.at(source_x, adjacent_y);
++                let far = 3 * self.at(adjacent_x, source_y) + self.at(adjacent_x, adjacent_y);
++                (3 * near + far + if x % 2 == 0 { 8 } else { 7 }) >> 4
++            }
++            _ => current
++        }
++    }
++}
+-- 
+2.56.0
+

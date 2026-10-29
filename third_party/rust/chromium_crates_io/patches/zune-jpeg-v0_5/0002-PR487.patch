@@ -1,0 +1,149 @@
+From 771b430d49acab19607fa853ac78dac61f77bc3a Mon Sep 17 00:00:00 2001
+From: Sergio Gonzalez Martin <sergiog@microsoft.com>
+Date: Mon, 26 Oct 2026 19:32:58 +0000
+Subject: [PATCH] [rust jpeg] Progressive raw replay (PR487)
+
+Backport of https://github.com/etemesi254/zune-image/pull/487
+Published head: b75b845ba71c5302428e191f62261b7d31fe2c51
+
+Effective cumulative source stage: b75b845ba71c5302428e191f62261b7d31fe2c51
+Only this stage's new Rust-source delta is carried. Prerequisite changes are not duplicated in later PR patches.
+
+Tracking: https://github.com/etemesi254/zune-image/issues/503
+
+Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+---
+ .../vendor/zune-jpeg-v0_5/src/decoder.rs      | 82 ++++++++++++++++++-
+ 1 file changed, 81 insertions(+), 1 deletion(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
+index edc3fc15781519e5b19f4379634d0edd5fdcfa41..bfe27063caa146046c0a3ec73d190892295efee9 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
+@@ -695,6 +695,17 @@ impl Default for RawPullState {
+ /// Unlike [`JpegDecoder::decode`] and [`JpegDecoder::decode_into`], raw output
+ /// skips upsampling and color conversion and returns one post-IDCT plane per
+ /// JPEG component. The configured output colorspace is therefore ignored.
++///
++/// Interleaved sequential images can produce raw iMCU rows while entropy data
++/// is decoded. Progressive and multi-SOS images first accumulate all coefficient
++/// scans, then reconstruct final component samples directly from those
++/// coefficients. Their first row request may therefore consume the complete
++/// compressed image before returning output, but it does not allocate or
++/// convert through a packed RGB frame. Recoverable suspension during that
++/// buffered phase leaves caller planes untouched. Because raw output exposes
++/// only final samples, a suspended or cancelled progressive decode discards
++/// partial coefficient state and replays its scans on retry instead of cloning
++/// full coefficient planes for preview preservation.
+ pub struct RawDecodeSession<'decoder, T> {
+     decoder: &'decoder mut JpegDecoder<T>,
+     previous_incremental_mode: bool,
+@@ -1441,7 +1452,11 @@ where
+ 
+     fn prepare_pull_scan(&mut self) -> Result<(), DecodeErrors> {
+         self.decoder.prepare_for_scan_decode()?;
+-        self.decoder.mcu_checkpoints_enabled = true;
++        // Raw progressive output exposes only final component samples. Decode directly into the
++        // coefficient buffers and replay all scans after suspension/cancellation instead of
++        // cloning each active scan's full coefficient planes. Caller output remains untouched
++        // until coefficient decoding completes.
++        self.decoder.mcu_checkpoints_enabled = !self.decoder.is_progressive;
+         Ok(())
+     }
+ 
+@@ -1492,6 +1507,11 @@ where
+     /// ignored. Samples within each plane's logical `width * height` area are
+     /// meaningful; trailing DCT padding is implementation-defined.
+     ///
++    /// For progressive JPEGs, all scans are decoded before the first component
++    /// samples are reconstructed. The final planes preserve the sampling factors
++    /// and logical dimensions reported by [`Self::layout`]; no packed RGB
++    /// intermediate is created.
++    ///
+     /// On a recoverable EOF, call this method again on the same session after
+     /// exposing more input. Successful calls can also be replayed and produce
+     /// bit-identical planes.
+@@ -1565,6 +1585,11 @@ where
+     /// [`PlaneInfo::width`], and each plane must contain at least
+     /// `stride * PlaneInfo::height` bytes.
+     ///
++    /// Progressive input availability follows [`Self::decode_into_planes`]:
++    /// coefficient scans are buffered to completion before final component
++    /// samples are written, and recoverable suspension leaves the destination
++    /// planes unchanged.
++    ///
+     /// On a recoverable EOF, call this method again on the same session after
+     /// exposing more input. Successful calls can also be replayed and produce
+     /// bit-identical logical samples.
+@@ -1640,6 +1665,10 @@ where
+         &mut self, planes: &mut [&mut [u8]], strides: &[usize],
+         layout: &[PlaneInfo; MAX_COMPONENTS]
+     ) -> Result<(), DecodeErrors> {
++        if self.decoder.is_progressive {
++            return self.decode_progressive_whole_with_strides(planes, strides, layout);
++        }
++
+         let count = planes.len();
+         loop {
+             let stripe = self.decoder.raw_pull_state.next_stripe;
+@@ -1679,6 +1708,57 @@ where
+             }
+         }
+     }
++
++    fn decode_progressive_whole_with_strides(
++        &mut self, planes: &mut [&mut [u8]], strides: &[usize],
++        layout: &[PlaneInfo; MAX_COMPONENTS]
++    ) -> Result<(), DecodeErrors> {
++        let count = planes.len();
++        match self.decoder.raw_pull_state.owner {
++            RawPullOwner::None => self.decoder.raw_pull_state.owner = RawPullOwner::WholeImage,
++            RawPullOwner::WholeImage => {}
++            RawPullOwner::Pull => {
++                return Err(DecodeErrors::FormatStatic(
++                    "cannot switch raw output API during an active decode sequence"
++                ))
++            }
++        }
++
++        if !self.decoder.raw_pull_state.buffered_source_complete {
++            self.prepare_pull_scan()?;
++            self.decoder.raw_pull_state.phase = RawPullPhase::BufferedRows;
++            self.decoder.decode_buffered_raw_source(0, layout, count)?;
++            self.decoder.raw_pull_state.buffered_source_complete = true;
++        }
++
++        let mut lengths = [0; MAX_COMPONENTS];
++        let mut target_strides = [0; MAX_COMPONENTS];
++        let mut target_widths = [0; MAX_COMPONENTS];
++        let mut target_heights = [0; MAX_COMPONENTS];
++        for index in 0..count {
++            lengths[index] = planes[index].len();
++            target_strides[index] = strides[index];
++            target_widths[index] = layout[index].width;
++            target_heights[index] = layout[index].height;
++        }
++        let sink = RawPlanesSink {
++            planes,
++            lengths,
++            target_strides,
++            target_widths,
++            target_heights,
++            n_components: count,
++            requested_stripe: None,
++            rows_written: [0; MAX_COMPONENTS],
++            stripe_ready: false,
++            source_complete: false
++        };
++        let mut output = McuDecodeOutput::RawPlanes(sink);
++        self.decoder.render_buffered_output_stripe(&mut output)?;
++        self.decoder.finish_output_source();
++        self.decoder.raw_pull_state.phase = RawPullPhase::Complete;
++        Ok(())
++    }
+ }
+ 
+ impl<T> JpegDecoder<T>
+-- 
+2.56.0
+

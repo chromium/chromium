@@ -80,7 +80,8 @@
 //!
 //! # Horizontal vertical downsampling/chroma quartering.
 //!
-//! Carry out a vertical filter in the first pass, then a horizontal filter in the second pass.
+//! Keep vertical weighted sums at full precision through horizontal filtering.
+//! Apply the native alternating rounding biases only at the final output.
 #![allow(unreachable_code)]
 use zune_core::options::DecoderOptions;
 
@@ -180,6 +181,125 @@ pub fn generic_sampler() -> UpSampler {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn native_fancy_upsampling_rounding() {
+        let mut horizontal = [0; 6];
+        scalar::upsample_horizontal(&[2, 0, 2], &[], &[], &mut [], &mut horizontal);
+        assert_eq!(horizontal, [2, 2, 0, 1, 1, 2]);
+
+        let mut vertical = [0; 6];
+        scalar::upsample_vertical(&[0, 1, 2], &[2, 0, 0], &[2, 0, 0], &mut [], &mut vertical);
+        assert_eq!(vertical, [0, 1, 1, 1, 1, 2]);
+
+        let mut hv = [0; 12];
+        scalar::upsample_hv(&[2, 0, 2], &[0, 2, 0], &[1, 1, 1], &mut [0; 6], &mut hv);
+        assert_eq!(hv, [2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2]);
+    }
+
+    #[test]
+    fn partial_mcu_rgb_matches_native() {
+        // A 14x10 4:2:0 image with AC chroma in the partial right/bottom MCU.
+        // The RGB hash is the native JDCT_ISLOW + fancy-upsampling result.
+        const JPEG: &[u8] = &[
+            0xff, 0xd8, 0xff, 0xdb, 0x00, 0x43, 0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+            0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+            0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+            0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+            0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+            0x01, 0xff, 0xc0, 0x00, 0x11, 0x08, 0x00, 0x0a, 0x00, 0x0e, 0x03, 0x01, 0x22, 0x00,
+            0x02, 0x11, 0x00, 0x03, 0x11, 0x00, 0xff, 0xc4, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0xff, 0xc4, 0x00, 0x16, 0x10, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x15, 0xff, 0xda, 0x00, 0x0c,
+            0x03, 0x01, 0x00, 0x02, 0x00, 0x03, 0x00, 0x00, 0x3f, 0x00, 0x00, 0x5f, 0x37, 0xdf,
+            0xff, 0xd9
+        ];
+        for options in [DecoderOptions::new_safe(), DecoderOptions::new_fast()] {
+            let mut decoder = crate::JpegDecoder::new_with_options(
+                zune_core::bytestream::ZCursor::new(JPEG),
+                options
+            );
+            let pixels = decoder.decode().unwrap();
+            assert_eq!(pixels.len(), 14 * 10 * 3);
+            let hash = pixels.iter().fold(0xcbf2_9ce4_8422_2325_u64, |hash, byte| {
+                (hash ^ u64::from(*byte)).wrapping_mul(0x100_0000_01b3)
+            });
+            assert_eq!(hash, 0x17be_0800_0e74_5511);
+        }
+    }
+
+    #[test]
+    fn native_fancy_upsampling_dispatch_and_boundaries() {
+        let options = DecoderOptions::default();
+        for width in (3..68).chain([128, 511, 1024]) {
+            let input: Vec<i16> = (0..width)
+                .map(|x| i16::try_from((x * 73 + x / 3) % 256).unwrap())
+                .collect();
+            let near: Vec<i16> = (0..width)
+                .map(|x| i16::try_from((x * 19 + 255) % 256).unwrap())
+                .collect();
+            let far: Vec<i16> = (0..width)
+                .map(|x| i16::try_from((x * 151 + 1) % 256).unwrap())
+                .collect();
+            for (horizontal, vertical, sampler) in [
+                (true, false, choose_horizontal_samp_function(&options)),
+                (false, true, choose_v_samp_function(&options)),
+                (true, true, choose_hv_samp_function(&options))
+            ] {
+                let row_width = width * if horizontal { 2 } else { 1 };
+                let height = if vertical { 2 } else { 1 };
+                let length = row_width * height;
+                let mut output = vec![-1; length + 5];
+                sampler(
+                    &input,
+                    &near,
+                    &far,
+                    &mut vec![0; width * 2],
+                    &mut output[..length]
+                );
+                for y in 0..height {
+                    for x in 0..row_width {
+                        let source = x / if horizontal { 2 } else { 1 };
+                        let adjacent = if x % 2 == 0 {
+                            source.saturating_sub(1)
+                        } else {
+                            (source + 1).min(width - 1)
+                        };
+                        let current = i32::from(input[source]);
+                        let neighbor = if y == 0 { &near } else { &far };
+                        let expected = match (horizontal, vertical) {
+                            (true, true) => {
+                                let a = 3 * current + i32::from(neighbor[source]);
+                                let b =
+                                    3 * i32::from(input[adjacent]) + i32::from(neighbor[adjacent]);
+                                (3 * a + b + if x % 2 == 0 { 8 } else { 7 }) >> 4
+                            }
+                            (true, false) => {
+                                (3 * current
+                                    + i32::from(input[adjacent])
+                                    + if x % 2 == 0 { 1 } else { 2 })
+                                    >> 2
+                            }
+                            (false, true) => {
+                                (3 * current
+                                    + i32::from(neighbor[source])
+                                    + if y == 0 { 1 } else { 2 })
+                                    >> 2
+                            }
+                            _ => unreachable!()
+                        };
+                        assert_eq!(
+                            output[y * row_width + x],
+                            i16::try_from(expected).unwrap(),
+                            "width={width} x={x} y={y} horizontal={horizontal} vertical={vertical}"
+                        );
+                    }
+                }
+                assert_eq!(&output[length..], &[-1; 5]);
+            }
+        }
+    }
 
     #[cfg(feature = "portable_simd")]
     mod portable_simd_impl {

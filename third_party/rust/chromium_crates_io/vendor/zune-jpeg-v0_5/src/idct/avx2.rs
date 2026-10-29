@@ -36,9 +36,8 @@ use core::arch::x86::*;
 #[cfg(target_arch = "x86_64")]
 use core::arch::x86_64::*;
 
-use crate::unsafe_utils::{transpose, YmmRegister};
-
 use super::{CONST_BITS, OUTPUT_SHIFT, PASS1_ROUND, PASS1_SHIFT, SCALE_BITS};
+use crate::unsafe_utils::{transpose, YmmRegister};
 
 // Pack i32 to i16's,
 // clamp them to be between 0-255
@@ -85,9 +84,7 @@ macro_rules! permute_store {
     unused_assignments,
     clippy::zero_prefixed_literal
 )]
-pub unsafe fn idct_avx2(
-    in_vector: &mut [i32; 64], out_vector: &mut [i16], stride: usize,
-) {
+pub unsafe fn idct_avx2(in_vector: &mut [i32; 64], out_vector: &mut [i16], stride: usize) {
     let mut pos = 0;
 
     // load into registers
@@ -256,9 +253,7 @@ pub unsafe fn idct_avx2(
     unused_assignments,
     clippy::zero_prefixed_literal
 )]
-pub unsafe fn idct_avx2_4x4(
-    in_vector: &mut [i32; 64], out_vector: &mut [i16], stride: usize,
-) {
+pub unsafe fn idct_avx2_4x4(in_vector: &mut [i32; 64], out_vector: &mut [i16], stride: usize) {
     let rw0 = _mm256_loadu_si256(in_vector[00..].as_ptr().cast());
     let rw1 = _mm256_loadu_si256(in_vector[08..].as_ptr().cast());
     let rw2 = _mm256_loadu_si256(in_vector[16..].as_ptr().cast());
