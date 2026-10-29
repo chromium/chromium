@@ -56,13 +56,7 @@ the Private Join and Compute library and dependencies using Bazel:
 
 ```bash
 cd private-join-and-compute
-bazel build :all
-```
-
-If you get an error, you may need to build with the following flags:
-
-```bash
-bazel build :all --incompatible_disable_deprecated_attr_params=false --incompatible_depset_is_not_iterable=false --incompatible_new_actions_api=false --incompatible_no_support_tools_in_action_inputs=false
+bazel build //private_join_and_compute:all
 ```
 
 (All the following instructions must be run from inside the
@@ -71,7 +65,7 @@ private-join-and-compute folder.)
 Next, generate some dummy data to run the protocol on:
 
 ```shell
-bazel-bin/generate_dummy_data --server_data_file=/tmp/dummy_server_data.csv \
+bazel-bin/private_join_and_compute/generate_dummy_data --server_data_file=/tmp/dummy_server_data.csv \
 --client_data_file=/tmp/dummy_client_data.csv
 ```
 
@@ -82,7 +76,7 @@ also change the size of the dummy data generated using additional flags. For
 example:
 
 ```shell
-bazel-bin/generate_dummy_data \
+bazel-bin/private_join_and_compute/generate_dummy_data \
 --server_data_file=/tmp/dummy_server_data.csv \
 --client_data_file=/tmp/dummy_client_data.csv --server_data_size=1000 \
 --client_data_size=1000 --intersection_size=200 --max_associated_value=100
@@ -91,7 +85,7 @@ bazel-bin/generate_dummy_data \
 Once you've generated dummy data, you can start the server as follows:
 
 ```shell
-bazel-bin/server --server_data_file=/tmp/dummy_server_data.csv
+bazel-bin/private_join_and_compute/server --server_data_file=/tmp/dummy_server_data.csv
 ```
 
 The server will load data from the specified file, and wait for a connection
@@ -102,7 +96,7 @@ Create a new terminal and navigate to the private-join-and-compute folder. Once
 there, run the following command to start the client:
 
 ```shell
-bazel-bin/client --client_data_file=/tmp/dummy_client_data.csv
+bazel-bin/private_join_and_compute/client --client_data_file=/tmp/dummy_client_data.csv
 ```
 
 The client will connect to the server and execute the steps of the protocol
@@ -137,31 +131,46 @@ careful analysis of whether any party has an incentive to lie about their
 inputs. This risk can also be mitigated by external enforcement such as code
 audits.
 
-### Leakage from the Intersection-Sum.
+### Leakage from Intersection-Sum with Cardinality.
 
 While the Private Join and Compute functionality is supposed to reveal only the
-intersection-size and intersection-sum, it is possible that the intersection-sum
-itself could reveal something about which identifiers were in common.
+intersection-size and intersection-sum, it is possible that these outputs
+themselves could reveal something about the inputs.
 
 For example, if an identifier has a very unique associated integer values, then
 it may be easy to detect if that identifier was in the intersection simply by
 looking at the intersection-sum. One way this could happen is if one of the
 identifiers has a very large associated value compared to all other identifiers.
 In that case, if the intersection-sum is large, one could reasonably infer that
-that identifier was in the intersection. To mitigate this, we suggest scrubbing
-inputs to remove identifiers with "outlier" values.
+that identifier was in the intersection.
 
 Another way that the intersection-sum may leak which identifiers are in the
 intersection is if the intersection is too small. This could make it easier to
 guess which combination of identifiers could be in the intersection in order to
-yield a particular intersection-sum. To mitigate this, one could abort the
-protocol if the intersection-size is below a certain threshold, or to add noise
-to the output of the protocol.
+yield a particular intersection-sum.
+
+Finally, a sequence of computations on the same or related input data could
+allow inferring more about the inputs.
+
+Possible mitigations include requiring the inputs to be sufficiently large and
+sufficiently different across different executions, pruning outlier values,
+adding differential privacy noise to the outputs, and aborting if the
+intersection size is too small.
 
 (Note that these mitigations are not currently implemented in this open-source
 library.)
+
+Works including Guo et al
+[("Birds of a Feather Flock Together", USENIX '22)](https://usenix.org/conference/usenixsecurity22/presentation/guo)
+systematically study the leakage of intersection-sum with cardinality, and also
+explore mitigations. We refer readers to these works for further discussion.
 
 ## Disclaimers
 
 This is not an officially supported Google product. The software is provided
 as-is without any guarantees or warranties, express or implied.
+
+## Acknowledgements
+
+Thank you to Nick Angelou ([s0l0ist@](https://github.com/s0l0ist)) who's work
+provided the basis for the Bzlmod migration.
