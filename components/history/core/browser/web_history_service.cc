@@ -135,6 +135,7 @@ class RequestImpl : public WebHistoryService::Request {
           semantics {
             sender: "Web History"
             destination: GOOGLE_OWNED_SERVICE
+            api_service_name: "footprints-pa.googleapis.com"
           }
           policy {
             cookies_allowed: NO
