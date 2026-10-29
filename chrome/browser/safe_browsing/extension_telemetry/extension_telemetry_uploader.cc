@@ -48,6 +48,7 @@ constexpr net::NetworkTrafficAnnotationTag
         "A list of currently installed extensions (id, name, version) along "
         "with a list of extension event data associated with each extension."
       destination: GOOGLE_OWNED_SERVICE
+      api_service_name: "safebrowsing.googleapis.com"
     }
     policy {
       cookies_allowed: YES
