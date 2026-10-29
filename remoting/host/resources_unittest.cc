@@ -23,14 +23,12 @@ class ResourcesTest : public testing::Test {
   bool resources_available_;
 };
 
-// TODO(alexeypa): Reenable the test once http://crbug.com/269143 (ChromeOS) and
-// http://crbug.com/268043 (MacOS) are fixed.
-TEST_F(ResourcesTest, DISABLED_ProductName) {
+TEST_F(ResourcesTest, ProductName) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::string expected_product_name = "Chrome Remote Desktop";
 #else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::string expected_product_name = "Chromoting";
-#endif  // BUILDFLAGdefined(GOOGLE_CRANDING)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   // Chrome-style i18n is not used on Windows or Android.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
