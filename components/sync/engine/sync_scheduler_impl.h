@@ -272,6 +272,11 @@ class SyncSchedulerImpl : public SyncScheduler {
   // storing the RespectGlobalBackoff setting.
   std::optional<RespectGlobalBackoff> pending_access_token_request_backoff_;
 
+  // Set when a sync cycle is skipped because the fetched access token was
+  // empty, so that `OnCredentialsUpdated()` knows to retry once credentials are
+  // available.
+  bool waiting_for_credentials_ = false;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SyncSchedulerImpl> weak_ptr_factory_{this};

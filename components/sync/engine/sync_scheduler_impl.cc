@@ -93,7 +93,12 @@ SyncSchedulerImpl::SyncSchedulerImpl(
       delay_provider_(std::move(delay_provider)),
       syncer_(std::move(syncer)),
       cycle_context_(context),
-      ignore_auth_credentials_(ignore_auth_credentials) {}
+      ignore_auth_credentials_(ignore_auth_credentials) {
+  // When credentials are ignored (e.g., local sync), access tokens are never
+  // used or fetched.
+  CHECK(!ignore_auth_credentials_ ||
+        !cycle_context_->sync_access_token_fetcher());
+}
 
 SyncSchedulerImpl::~SyncSchedulerImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -105,11 +110,13 @@ void SyncSchedulerImpl::OnCredentialsUpdated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // If this is the first time we got credentials, or we were previously in an
-  // auth error state, then try connecting to the server now.
+  // auth error state (or skipped a sync cycle waiting for credentials), then
+  // try connecting to the server now.
   HttpResponse::ServerConnectionCode server_status =
       cycle_context_->connection_manager()->server_status();
-  if (server_status == HttpResponse::NONE ||
+  if (waiting_for_credentials_ || server_status == HttpResponse::NONE ||
       server_status == HttpResponse::SYNC_AUTH_ERROR) {
+    waiting_for_credentials_ = false;
     OnServerConnectionErrorFixed();
   }
 }
@@ -590,17 +597,17 @@ void SyncSchedulerImpl::Stop() {
   pending_wakeup_timer_.Stop();
   pending_configure_params_.reset();
   pending_access_token_request_backoff_.reset();
+  waiting_for_credentials_ = false;
   if (started_) {
     started_ = false;
   }
 }
 
 void SyncSchedulerImpl::TrySyncCycleJob(RespectGlobalBackoff respect_backoff) {
-  // If the token fetcher is not available (e.g., when
-  // kSyncUsePropagatedAccessToken is disabled or in unit tests that do not
-  // supply a fetcher), proceed immediately with TrySyncCycleJobImpl using an
-  // empty token. Otherwise, request an access token asynchronously on the UI
-  // thread before running the sync cycle.
+  // If the token fetcher is not available (e.g., for local sync or when
+  // `kSyncUsePropagatedAccessToken` is disabled), proceed immediately with
+  // `TrySyncCycleJobImpl()` using an empty token. Otherwise, request an access
+  // token asynchronously on the UI thread before running the sync cycle.
   if (!cycle_context_->sync_access_token_fetcher()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&SyncSchedulerImpl::TrySyncCycleJobImpl,
@@ -628,11 +635,28 @@ void SyncSchedulerImpl::TrySyncCycleJob(RespectGlobalBackoff respect_backoff) {
 void SyncSchedulerImpl::OnAccessTokenFetched(
     signin::AccessTokenInfo access_token_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // The token fetcher is not available for local sync.
+  CHECK(!ignore_auth_credentials_);
 
-  // Note that `access_token_info` can be empty in case of local sync enabled.
   CHECK(pending_access_token_request_backoff_.has_value());
   RespectGlobalBackoff respect_backoff = *pending_access_token_request_backoff_;
   pending_access_token_request_backoff_.reset();
+
+  // If no valid access token is available (e.g. during transient token fetch
+  // errors or while Sync is paused), skip the sync cycle and wait for
+  // `OnCredentialsUpdated()`.
+  //
+  // Note that `respect_backoff` is intentionally not preserved:
+  // `OnCredentialsUpdated()` ignores global backoff (while still respecting
+  // throttling), matching recovery from `SYNC_AUTH_ERROR`.
+  if (access_token_info.token.empty()) {
+    waiting_for_credentials_ = true;
+    return;
+  }
+
+  // Reset in case a previous cycle was skipped due to an empty token and a new
+  // cycle fetched a valid token before `OnCredentialsUpdated()` ran.
+  waiting_for_credentials_ = false;
   TrySyncCycleJobImpl(respect_backoff, std::move(access_token_info));
 }
 
