@@ -7,9 +7,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
+#include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,10 +33,16 @@ constexpr char kNeedsTranscodingPrefix[] = "ntr_";
 const FilePath::CharType kPathPostfix[] =
     FILE_PATH_LITERAL("image_data_storage");
 
+bool IsStoragePathLink(const FilePath& storage_path) {
+  return base::IsLink(storage_path) || base::IsLink(storage_path.DirName());
+}
+
 InitializationStatus InitializeImpl(FilePath storage_path) {
   File::Error error;
-  // This will check if the directory exists first.
-  if (base::CreateDirectoryAndGetError(storage_path, &error)) {
+  // CreateDirectoryAndGetError() succeeds if `storage_path` is a symlink to an
+  // existing directory, so check for links after it runs.
+  if (base::CreateDirectoryAndGetError(storage_path, &error) &&
+      !IsStoragePathLink(storage_path)) {
     return InitializationStatus::INITIALIZED;
   }
 
@@ -53,10 +62,22 @@ void SaveImageImpl(FilePath storage_path,
                    const std::string& key,
                    std::string data,
                    bool needs_transcoding) {
+  if (IsStoragePathLink(storage_path)) {
+    DVLOG(1) << "Storage path is a symbolic link.";
+    return;
+  }
+
   FilePath file_path = BuildFilePath(storage_path, key, needs_transcoding);
 
-  if (!base::WriteFile(file_path, data)) {
+  // FLAG_NO_FOLLOW maps to O_NOFOLLOW on POSIX (Android, ChromeOS, Linux,
+  // Mac, iOS) and is ignored on Windows.
+  File file(file_path,
+            File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE | File::FLAG_NO_FOLLOW);
+  if (!file.IsValid() || !file.WriteAndCheck(0, base::as_byte_span(data))) {
     DVLOG(1) << "WriteFile failed.";
+    file.Close();
+    base::DeleteFile(file_path);
+    return;
   }
 
   if (!needs_transcoding) {
@@ -72,18 +93,33 @@ void SaveImageImpl(FilePath storage_path,
 std::string LoadImageImpl(FilePath storage_path,
                           const std::string& key,
                           bool needs_transcoding) {
-  FilePath file_path = BuildFilePath(storage_path, key, needs_transcoding);
-
-  if (!base::PathExists(file_path)) {
-    return "";
+  if (IsStoragePathLink(storage_path)) {
+    return std::string();
   }
 
+  FilePath file_path = BuildFilePath(storage_path, key, needs_transcoding);
+
+  // FLAG_NO_FOLLOW maps to O_NOFOLLOW on POSIX and is ignored on Windows.
+  File file(file_path,
+            File::FLAG_OPEN | File::FLAG_READ | File::FLAG_NO_FOLLOW);
+  if (!file.IsValid()) {
+    return std::string();
+  }
+
+  base::ScopedFILE stream(base::FileToFILE(std::move(file), "rb"));
   std::string data;
-  base::ReadFileToString(file_path, &data);
+  if (!stream || !base::ReadStreamToString(stream.get(), &data)) {
+    return std::string();
+  }
+
   return data;
 }
 
 void DeleteImageImpl(FilePath storage_path, const std::string& key) {
+  if (IsStoragePathLink(storage_path)) {
+    return;
+  }
+
   FilePath file_path =
       BuildFilePath(storage_path, key, /* needs_transcoding */ false);
   bool success = base::DeleteFile(file_path);
@@ -101,6 +137,10 @@ void DeleteImageImpl(FilePath storage_path, const std::string& key) {
 }
 
 std::vector<std::string> GetAllKeysImpl(FilePath storage_path) {
+  if (IsStoragePathLink(storage_path)) {
+    return {};
+  }
+
   std::vector<std::string> keys;
   FileEnumerator file_enumerator(storage_path, false, FileEnumerator::FILES);
   for (FilePath name = file_enumerator.Next(); !name.empty();
