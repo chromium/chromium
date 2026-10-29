@@ -7,7 +7,7 @@ import {assertNotReachedCase} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {FuseboxAction, SuggestInventory} from '//resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import {TabAttachmentSource} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {DriveUploadError, SearchContextAttachment, SelectedFileInfo, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {DriveUploadError, SelectedFileInfo, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
@@ -348,22 +348,6 @@ export class ComposeboxInputModel {
   canSubmit(): boolean {
     return this.hasValidQuery() || this.hasFiles();
   }
-}
-
-export function hasOnlyAutoAddedTabAttachments(
-    attachments: SearchContextAttachment[]): boolean {
-  if (attachments.length === 0) {
-    return false;
-  }
-  for (const attachment of attachments) {
-    if (!attachment.tabAttachment) {
-      return false;
-    }
-    if (!isAutoAddedOrigin(attachment.tabAttachment.source)) {
-      return false;
-    }
-  }
-  return true;
 }
 
 export enum SingleTabType {
