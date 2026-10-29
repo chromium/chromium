@@ -670,10 +670,11 @@ chromium-metrics-reviews@google.com.
   <owner>openscreen-eng@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
-    Records the percentage of {CastStreamingSenderAudioVideo} frames that are
-    reported as late, and therefore dropped by the sender, during a cast
-    mirroring session. Recorded at the end of a cast mirroring session. Logged
-    on all desktop platforms.
+    Records the percentage of {CastStreamingSenderAudioVideo} frames that the
+    receiver reports as played out late, out of all captured frames, during a
+    cast mirroring session. A frame is late when its playout delay delta in the
+    receiver's RTCP frame log is positive. Recorded at the end of a cast
+    mirroring session. Logged on all desktop platforms.
   </summary>
   <token key="CastStreamingSenderAudioVideo"
       variants="CastStreamingSenderAudioVideo"/>
@@ -691,6 +692,10 @@ chromium-metrics-reviews@google.com.
     Records number of {CastStreamingSenderAudioVideo} packets that had to be
     retransmitted as a percentage of number of packets sent. Histogram is
     recorded at the end of the mirroring session.
+
+    Warning: this histogram is not recorded while the mirroring service uses the
+    Open Screen sender statistics, which have no retransmitted packet count. See
+    crbug.com/578898700.
   </summary>
   <token key="CastStreamingSenderAudioVideo"
       variants="CastStreamingSenderAudioVideo"/>
@@ -723,7 +728,13 @@ chromium-metrics-reviews@google.com.
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
-    Records the reason when an frame is dropped during a Cast Streaming session.
+    Records the reason when a frame is dropped during a Cast Streaming session.
+
+    For the Remoting variants, this is recorded each time RemotingSender fails
+    to enqueue a frame, including failures that it retries later. As a result,
+    it counts failed enqueue attempts, not only frames that were dropped. Use
+    CastStreaming.Sender.{CastStreamingSender}.PercentDroppedFrames for the
+    share of frames that were actually dropped.
   </summary>
   <token key="CastStreamingSender" variants="CastStreamingSender"/>
 </histogram>
