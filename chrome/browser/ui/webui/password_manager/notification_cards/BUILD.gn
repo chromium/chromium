@@ -85,10 +85,16 @@ source_set("unit_tests") {
   ]
 
   if (is_chrome_branded) {
-    sources += [ "passkey_unlock_promo_unittest.cc" ]
+    sources += [
+      "passkey_unlock_promo_unittest.cc",
+      "web_password_manager_promo_unittest.cc",
+    ]
     deps += [
       "//chrome/browser/webauthn",
       "//components/password_manager/core/browser/features:password_features",
+      "//components/signin/public/base",
+      "//components/sync:test_support",
+      "//components/sync/base",
     ]
   }
 
