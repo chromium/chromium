@@ -114,10 +114,13 @@ class BackgroundDownloaderTest : public testing::Test {
   }
 
   void TearDown() override {
-    background_sequence_->PostTask(
+    base::RunLoop run_loop;
+    background_sequence_->PostTaskAndReply(
         FROM_HERE,
         base::BindOnce(&BackgroundDownloaderSharedSession::InvalidateAndCancel,
-                       shared_session_));
+                       shared_session_),
+        run_loop.QuitClosure());
+    run_loop.Run();
   }
 
  protected:
@@ -174,6 +177,7 @@ class BackgroundDownloaderTest : public testing::Test {
     return test_server_->base_url().ReplaceComponents(replacements);
   }
 
+  std::unique_ptr<base::test::TaskEnvironment> environment_;
   const base::FilePath download_cache_ =
       base::CreateUniqueTempDirectoryScopedToTest();
   scoped_refptr<base::SequencedTaskRunner> background_sequence_;
@@ -182,7 +186,6 @@ class BackgroundDownloaderTest : public testing::Test {
   base::RepeatingCallback<std::unique_ptr<HttpResponse>(
       const HttpRequest& request)>
       request_handler_;
-  std::unique_ptr<base::test::TaskEnvironment> environment_;
 
  private:
   std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request) {
@@ -195,6 +198,7 @@ class BackgroundDownloaderTest : public testing::Test {
 };
 
 // TODO(crbug.com/40939899): Disabled due to excessive flakiness.
+// Tests that `BackgroundDownloader` can download a small file.
 TEST_F(BackgroundDownloaderTest, DISABLED_SimpleDownload) {
   request_handler_ = base::BindLambdaForTesting([](const HttpRequest&) {
     std::unique_ptr<BasicHttpResponse> response =
@@ -223,8 +227,9 @@ TEST_F(BackgroundDownloaderTest, DISABLED_SimpleDownload) {
   run_loop.Run();
 }
 
-// TODO(crbug.com/40939899): Disabled due to excessive flakiness.
-TEST_F(BackgroundDownloaderTest, DISABLED_DownloadDiscoveredInCache) {
+// Tests that a download is served from `download_cache_` without reaching the
+// server.
+TEST_F(BackgroundDownloaderTest, DownloadDiscoveredInCache) {
   request_handler_ = base::BindLambdaForTesting([](const HttpRequest&) {
     EXPECT_TRUE(false) << "The download server was expected to not be reached.";
     return base::WrapUnique<HttpResponse>(nullptr);
@@ -325,6 +330,8 @@ TEST_F(BackgroundDownloaderTest, DISABLED_ServerHangup) {
 }
 
 // TODO(crbug.com/40939899): Disabled due to excessive flakiness.
+// Tests that a duplicate download request fails with
+// `CrxDownloaderError::MAC_BG_DUPLICATE_DOWNLOAD`.
 TEST_F(BackgroundDownloaderTest, DISABLED_DuplicateDownload) {
   scoped_refptr<base::SequencedTaskRunner> current_task_runner =
       base::SequencedTaskRunner::GetCurrentDefault();
@@ -410,6 +417,8 @@ TEST_F(BackgroundDownloaderTest, DISABLED_ConcurrentDownloaders) {
 }
 
 // TODO(crbug.com/40939899): Disabled due to excessive flakiness.
+// Tests that exceeding the maximum number of concurrent downloads fails with
+// `CrxDownloaderError::MAC_BG_SESSION_TOO_MANY_TASKS`.
 TEST_F(BackgroundDownloaderTest, DISABLED_MaxDownloads) {
   request_handler_ = base::BindLambdaForTesting([](const HttpRequest& request) {
     return base::WrapUnique<HttpResponse>(new HungResponse());
@@ -475,39 +484,20 @@ class BackgroundDownloaderPeriodicTasksTest : public BackgroundDownloaderTest {
   }
 };
 
-// TODO(crbug.com/40939899): Disabled due to excessive flakiness.
-TEST_F(BackgroundDownloaderPeriodicTasksTest, DISABLED_CleansStaleDownloads) {
-  request_handler_ = base::BindLambdaForTesting([](const HttpRequest&) {
-    std::unique_ptr<BasicHttpResponse> response =
-        std::make_unique<BasicHttpResponse>();
-    response->set_code(net::HTTP_OK);
-    response->set_content(kSmallDownloadData);
-    response->set_content_type("text/plain");
-    return base::WrapUnique<HttpResponse>(response.release());
-  });
-
+// Tests that periodic maintenance evicts stale files from `download_cache_`.
+TEST_F(BackgroundDownloaderPeriodicTasksTest, CleansStaleDownloads) {
   ASSERT_TRUE(
       base::WriteFile(download_cache_.Append("file1"), kSmallDownloadData));
   ASSERT_TRUE(
       base::WriteFile(download_cache_.Append("file2"), kSmallDownloadData));
   environment_->FastForwardBy(base::Days(3));
 
-  base::RunLoop run_loop;
-  DoStartDownload(GetURL(),
-                  base::BindLambdaForTesting(
-                      [](bool is_handled, const CrxDownloader::Result& result,
-                         const CrxDownloader::DownloadMetrics& metrics) {})
-                      .Then(run_loop.QuitClosure()));
-  run_loop.Run();
-
-  environment_->FastForwardBy(base::Minutes(30));
-  environment_->RunUntilIdle();
-
   EXPECT_FALSE(base::PathExists(download_cache_.Append("file1")));
   EXPECT_FALSE(base::PathExists(download_cache_.Append("file2")));
 }
 
 // TODO(crbug.com/40939899): Disabled due to excessive flakiness.
+// Tests that periodic maintenance cancels downloads that make no progress.
 TEST_F(BackgroundDownloaderPeriodicTasksTest,
        DISABLED_CancelsTasksWithNoProgress) {
   request_handler_ = base::BindLambdaForTesting([](const HttpRequest&) {
