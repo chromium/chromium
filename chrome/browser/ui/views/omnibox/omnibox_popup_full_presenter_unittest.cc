@@ -17,15 +17,19 @@
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace {
 
 class DummyOmniboxPopupPresenterDelegate
     : public OmniboxPopupPresenterDelegate {
  public:
-  views::Widget* GetLocationBarWidget() override { return nullptr; }
+  views::Widget* GetLocationBarWidget() override {
+    return location_bar_widget_;
+  }
   OmniboxPopupFileSelector* GetOmniboxPopupFileSelector() const override {
     return nullptr;
   }
@@ -34,6 +38,13 @@ class DummyOmniboxPopupPresenterDelegate
   }
   views::View* GetLocationBarFocusRestoreView() override { return nullptr; }
   bool is_full_webui_omnibox() const override { return false; }
+
+  void set_location_bar_widget(views::Widget* widget) {
+    location_bar_widget_ = widget;
+  }
+
+ private:
+  raw_ptr<views::Widget> location_bar_widget_ = nullptr;
 };
 
 class TestOmniboxPopupFullPresenter : public OmniboxPopupFullPresenter {
@@ -47,6 +58,18 @@ class TestOmniboxPopupFullPresenter : public OmniboxPopupFullPresenter {
 
   int content_height() const { return content_height_; }
   void set_content_height(int height) { content_height_ = height; }
+  int synchronize_popup_bounds_count() const {
+    return synchronize_popup_bounds_count_;
+  }
+
+ protected:
+  void SynchronizePopupBounds() override {
+    ++synchronize_popup_bounds_count_;
+    OmniboxPopupFullPresenter::SynchronizePopupBounds();
+  }
+
+ private:
+  int synchronize_popup_bounds_count_ = 0;
 };
 
 class OmniboxPopupFullPresenterTest : public views::ViewsTestBase {
@@ -155,5 +178,36 @@ TEST_F(OmniboxPopupFullPresenterTest, ShadowMarginDropsBottomWhenCollapsed) {
   presenter_->OnContentHeightChanged(collapsed_height + full_insets.height());
   EXPECT_EQ(presenter_->content_height(), collapsed_height);
   EXPECT_EQ(presenter_->GetShadowMargin(), collapsed_insets);
+}
+
+// The popup is its own top-level window, which doesn't always move with the
+// browser window (e.g. a macOS child window when the browser is resized from
+// its top edge). It must re-align itself whenever the browser widget's bounds
+// change.
+TEST_F(OmniboxPopupFullPresenterTest,
+       SynchronizesBoundsWhenBrowserWidgetMoves) {
+  std::unique_ptr<views::Widget> browser_widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  dummy_delegate_.set_location_bar_widget(browser_widget.get());
+  widget_ptr_->Show();
+
+  auto* observer = static_cast<views::WidgetObserver*>(presenter_.get());
+  const int initial_count = presenter_->synchronize_popup_bounds_count();
+
+  observer->OnWidgetBoundsChanged(browser_widget.get(),
+                                  gfx::Rect(10, 60, 400, 300));
+  EXPECT_EQ(presenter_->synchronize_popup_bounds_count(), initial_count + 1);
+
+  // The popup widget's own bounds changes, e.g. from syncing, are ignored.
+  observer->OnWidgetBoundsChanged(widget_ptr_, gfx::Rect(10, 60, 400, 40));
+  EXPECT_EQ(presenter_->synchronize_popup_bounds_count(), initial_count + 1);
+
+  // A hidden popup isn't synced.
+  widget_ptr_->Hide();
+  observer->OnWidgetBoundsChanged(browser_widget.get(),
+                                  gfx::Rect(10, 80, 400, 280));
+  EXPECT_EQ(presenter_->synchronize_popup_bounds_count(), initial_count + 1);
+
+  dummy_delegate_.set_location_bar_widget(nullptr);
 }
 }  // namespace

@@ -105,6 +105,12 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // activation (Escape handling, macOS key window restoration). The browser or
   // popup widget deactivating schedules `BlurIfBrowserOrPopupInactive()`.
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+  // Keeps the popup over the location bar when the browser widget moves or
+  // resizes. The popup is its own top-level window, which doesn't always move
+  // with the browser window, e.g. a macOS child window stays put when its
+  // parent is resized from the top edge.
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override;
   void StopForwardingEvents();
 
   // views::FocusChangeListener:
