@@ -151,6 +151,7 @@ void HashAffiliationFetcher::StartRequest(
           data:
             "Hash prefixes of websites URLs or package name for android apps."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "affiliation.googleapis.com"
         }
         policy {
           cookies_allowed: NO
