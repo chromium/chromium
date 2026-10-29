@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_UTIL_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
@@ -71,10 +72,11 @@ ASH_PUBLIC_EXPORT bool ExecuteInProgressCommand(
     HoldingSpaceCommandId command_id);
 
 // Returns the string representation of the specified file system `type`.
-ASH_PUBLIC_EXPORT std::string ToString(HoldingSpaceFile::FileSystemType type);
+ASH_PUBLIC_EXPORT std::string_view ToString(
+    HoldingSpaceFile::FileSystemType type);
 
 // Returns the string representation of the specified holding space item `type`.
-ASH_PUBLIC_EXPORT std::string ToString(HoldingSpaceItem::Type type);
+ASH_PUBLIC_EXPORT std::string_view ToString(HoldingSpaceItem::Type type);
 
 }  // namespace holding_space_util
 }  // namespace ash

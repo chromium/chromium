@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <map>
 #include <string>
+#include <string_view>
 
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "base/check_is_test.h"
@@ -58,7 +59,7 @@ FilePickerBindingContext ToFilePickerBindingContext(
 
 // Returns the string representation of the specified `action`. Note that these
 // values are persisted to histograms so should remain unchanged.
-std::string ToString(ItemAction action) {
+constexpr std::string_view ToString(ItemAction action) {
   switch (action) {
     case ItemAction::kCancel:
       return "Cancel";
@@ -86,7 +87,7 @@ std::string ToString(ItemAction action) {
 
 // Records the counts of the specified holding space `items` to the item count
 // histograms associated with the specified `prefix`.
-void RecordItemCounts(const std::string& prefix,
+void RecordItemCounts(std::string_view prefix,
                       const std::vector<const HoldingSpaceItem*>& items) {
   // Aliases.
   using FileSystemType = HoldingSpaceFile::FileSystemType;
@@ -124,9 +125,9 @@ void RecordItemCounts(const std::string& prefix,
   constexpr auto kAllowlistedFsTypes = base::MakeFixedFlatSet<FileSystemType>(
       {FileSystemType::kDriveFs, FileSystemType::kLocal});
 
-  std::map<FileSystemType, std::string> fs_type_strings;
+  std::map<FileSystemType, std::string_view> fs_type_strings;
   for (const FileSystemType fs_type : kAllowlistedFsTypes) {
-    const std::string& fs_type_string =
+    const std::string_view fs_type_string =
         fs_type_strings.emplace(fs_type, holding_space_util::ToString(fs_type))
             .first->second;
 
@@ -138,7 +139,7 @@ void RecordItemCounts(const std::string& prefix,
 
   for (const Type type : holding_space_util::GetAllItemTypes()) {
     // Record "{prefix}.{type}";
-    const std::string type_string = holding_space_util::ToString(type);
+    const std::string_view type_string = holding_space_util::ToString(type);
     base::UmaHistogramExactLinear(base::StrCat({prefix, ".", type_string}),
                                   counts.by_type[type], kExclusiveMax);
 
@@ -205,7 +206,7 @@ void RecordFilesAppChipAction(FilesAppChipAction action) {
 
 void RecordItemAction(const std::vector<const HoldingSpaceItem*>& items,
                       ItemAction action) {
-  const std::string action_string = ToString(action);
+  const std::string_view action_string = ToString(action);
 
   for (const HoldingSpaceItem* item : items) {
     // Record "HoldingSpace.Item.Action.All".

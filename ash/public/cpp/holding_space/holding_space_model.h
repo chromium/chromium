@@ -10,6 +10,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
@@ -123,23 +124,23 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
   void AddItems(std::vector<std::unique_ptr<HoldingSpaceItem>> items);
 
   // Removes a single holding space item from the model.
-  void RemoveItem(const std::string& id);
+  void RemoveItem(std::string_view id);
 
   // Removes multiple holding space items from the model.
   void RemoveItems(const std::set<std::string>& ids);
 
   // Similar to `RemoveItem()` but returns the unique pointer to the removed
   // item. If the specified item does not exist in the model, returns `nullptr`.
-  std::unique_ptr<HoldingSpaceItem> TakeItem(const std::string& id);
+  std::unique_ptr<HoldingSpaceItem> TakeItem(std::string_view id);
 
   // Fully initializes a partially initialized holding space item using the
   // provided `file`. The item will be removed if `file` system URL is empty.
-  void InitializeOrRemoveItem(const std::string& id,
+  void InitializeOrRemoveItem(std::string_view id,
                               const HoldingSpaceFile& file);
 
   // Returns an object which, upon its destruction, performs an atomic update to
   // the holding space item associated with the specified `id`.
-  std::unique_ptr<ScopedItemUpdate> UpdateItem(const std::string& id);
+  std::unique_ptr<ScopedItemUpdate> UpdateItem(std::string_view id);
 
   // Removes all holding space items from the model for which the specified
   // `predicate` returns true. Returns the unique pointers to the items removed
@@ -156,7 +157,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
 
   // Gets a single holding space item.
   // Returns nullptr if the item does not exist in the model.
-  const HoldingSpaceItem* GetItem(const std::string& id) const;
+  const HoldingSpaceItem* GetItem(std::string_view id) const;
 
   // Gets a single holding space item with the specified `type` backed by the
   // specified `file_path`. Returns `nullptr` if the item does not exist in the

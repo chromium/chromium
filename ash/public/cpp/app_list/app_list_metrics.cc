@@ -4,6 +4,8 @@
 
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 
+#include <string_view>
+
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -71,7 +73,7 @@ constexpr char kAppListSortDiscoveryDurationAfterNudgeTablet[] =
     "Apps.AppList.SortDiscoveryDurationAfterEducationNudgeV2.TabletMode";
 
 // LINT.IfChange(SearchSessionConclusion)
-std::string SearchSessionConclusionToString(
+std::string_view SearchSessionConclusionToString(
     SearchSessionConclusion conclusion) {
   switch (conclusion) {
     case SearchSessionConclusion::kQuit:

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <numeric>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
@@ -194,8 +195,8 @@ void HoldingSpaceModel::AddItems(
     observer.OnHoldingSpaceItemsAdded(item_ptrs);
 }
 
-void HoldingSpaceModel::RemoveItem(const std::string& id) {
-  RemoveItems({id});
+void HoldingSpaceModel::RemoveItem(std::string_view id) {
+  TakeItem(id);
 }
 
 void HoldingSpaceModel::RemoveItems(const std::set<std::string>& item_ids) {
@@ -207,12 +208,12 @@ void HoldingSpaceModel::RemoveItems(const std::set<std::string>& item_ids) {
 }
 
 std::unique_ptr<HoldingSpaceItem> HoldingSpaceModel::TakeItem(
-    const std::string& id) {
+    std::string_view id) {
   auto items = RemoveIf(base::BindRepeating(
-      [](const std::string& id, const HoldingSpaceItem* item) {
+      [](std::string_view id, const HoldingSpaceItem* item) {
         return item->id() == id;
       },
-      std::cref(id)));
+      id));
 
   if (items.empty())
     return nullptr;
@@ -221,7 +222,7 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceModel::TakeItem(
   return std::move(items[0]);
 }
 
-void HoldingSpaceModel::InitializeOrRemoveItem(const std::string& id,
+void HoldingSpaceModel::InitializeOrRemoveItem(std::string_view id,
                                                const HoldingSpaceFile& file) {
   if (file.file_system_url.is_empty()) {
     RemoveItem(id);
@@ -242,7 +243,7 @@ void HoldingSpaceModel::InitializeOrRemoveItem(const std::string& id,
 }
 
 std::unique_ptr<HoldingSpaceModel::ScopedItemUpdate>
-HoldingSpaceModel::UpdateItem(const std::string& id) {
+HoldingSpaceModel::UpdateItem(std::string_view id) {
   auto item_it = std::ranges::find(items_, id, &HoldingSpaceItem::id);
   DCHECK(item_it != items_.end());
   return base::WrapUnique(new ScopedItemUpdate(this, item_it->get()));
@@ -299,8 +300,7 @@ void HoldingSpaceModel::RemoveAll() {
     observer.OnHoldingSpaceItemsRemoved(item_ptrs);
 }
 
-const HoldingSpaceItem* HoldingSpaceModel::GetItem(
-    const std::string& id) const {
+const HoldingSpaceItem* HoldingSpaceModel::GetItem(std::string_view id) const {
   auto item_it = std::ranges::find(items_, id, &HoldingSpaceItem::id);
 
   if (item_it == items_.end())

@@ -5,9 +5,10 @@
 #ifndef ASH_PUBLIC_CPP_APP_LIST_APP_LIST_METRICS_H_
 #define ASH_PUBLIC_CPP_APP_LIST_APP_LIST_METRICS_H_
 
-#include "ash/public/cpp/ash_public_export.h"
-
 #include <string>
+#include <string_view>
+
+#include "ash/public/cpp/ash_public_export.h"
 
 namespace ash {
 enum class AppListLaunchedFrom;
@@ -218,7 +219,7 @@ enum class ContinueFileSuggestionType {
   kMaxValue = kModifiedByCurrentUserFile,
 };
 
-ASH_PUBLIC_EXPORT std::string SearchSessionConclusionToString(
+ASH_PUBLIC_EXPORT std::string_view SearchSessionConclusionToString(
     SearchSessionConclusion conclusion);
 
 // Returns true if the `show_source` is one that a user directly triggers.

@@ -200,7 +200,7 @@ bool ExecuteInProgressCommand(const HoldingSpaceItem* item,
 }
 
 // NOTE: These values are persisted to histograms and must remain unchanged.
-std::string ToString(HoldingSpaceFile::FileSystemType type) {
+std::string_view ToString(HoldingSpaceFile::FileSystemType type) {
   switch (type) {
     case HoldingSpaceFile::FileSystemType::kArcContent:
       return "ArcContent";
@@ -246,7 +246,7 @@ std::string ToString(HoldingSpaceFile::FileSystemType type) {
 }
 
 // NOTE: These values are persisted to histograms and must remain unchanged.
-std::string ToString(HoldingSpaceItem::Type type) {
+std::string_view ToString(HoldingSpaceItem::Type type) {
   switch (type) {
     case HoldingSpaceItem::Type::kArcDownload:
       return "ArcDownload";
