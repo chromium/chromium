@@ -49,9 +49,12 @@ class COMPONENT_EXPORT(UI_BASE_X) X11DesktopWindowMoveClient
   void EndMoveLoop();
 
   // See X11WholeScreenMoveLoop::TakeConsumedTouches().
-  std::vector<X11WholeScreenMoveLoop::ConsumedTouch> TakeConsumedTouches() {
+  std::vector<PointerId> TakeConsumedTouches() {
     return move_loop_.TakeConsumedTouches();
   }
+
+  // See X11WholeScreenMoveLoop::grabbed_pointer().
+  bool grabbed_pointer() const { return move_loop_.grabbed_pointer(); }
 
  private:
   X11WholeScreenMoveLoop move_loop_{this};

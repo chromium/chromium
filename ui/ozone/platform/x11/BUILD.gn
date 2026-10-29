@@ -172,6 +172,7 @@ source_set("x11_unittests") {
     "//ui/ozone:platform",
     "//ui/ozone:test_support",
     "//ui/ozone/common",
+    "//ui/platform_window/wm",
   ]
 
   if (!is_chromeos) {

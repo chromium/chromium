@@ -5,6 +5,7 @@
 #include "ui/base/x/x11_whole_screen_move_loop.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -134,11 +135,9 @@ TEST(X11WholeScreenMoveLoopTest, ReportsConsumedTouchRelease) {
   move_loop.RunMoveLoop(/*can_grab_pointer=*/false, nullptr, nullptr,
                         base::DoNothing());
 
-  auto consumed = move_loop.TakeConsumedTouches();
-  ASSERT_EQ(1u, consumed.size());
-  EXPECT_EQ(5, consumed[0].id);
-  EXPECT_EQ(gfx::PointF(10, 20), consumed[0].location);
+  EXPECT_EQ(std::vector<PointerId>{5}, move_loop.TakeConsumedTouches());
   EXPECT_TRUE(move_loop.TakeConsumedTouches().empty());
+  EXPECT_FALSE(move_loop.grabbed_pointer());
 }
 
 }  // namespace ui

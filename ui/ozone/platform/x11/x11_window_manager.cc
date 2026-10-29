@@ -7,6 +7,8 @@
 #include <algorithm>
 
 #include "ui/base/x/x11_pointer_grab.h"
+#include "ui/events/event.h"
+#include "ui/events/types/event_type.h"
 #include "ui/ozone/platform/x11/x11_window.h"
 
 namespace ui {
@@ -86,6 +88,9 @@ void X11WindowManager::RemoveWindow(X11Window* window) {
       window_mouse_currently_on_ = nullptr;
     windows_.erase(it);
   }
+  base::EraseIf(active_touches_, [window](const auto& pair) {
+    return pair.second.window == window;
+  });
 }
 
 X11Window* X11WindowManager::GetWindow(gfx::AcceleratedWidget widget) const {
@@ -111,6 +116,56 @@ void X11WindowManager::MouseOnWindow(X11Window* window) {
 
   window_mouse_currently_on_ = window;
   window->OnCursorUpdate();
+}
+
+void X11WindowManager::OnTouchEventDispatched(X11Window* window,
+                                              const TouchEvent& event) {
+  const PointerId id = event.pointer_details().id;
+  switch (event.type()) {
+    case EventType::kTouchPressed:
+      // A press for an id that is still tracked supersedes the earlier
+      // sequence, whose end was never seen.
+      active_touches_[id] = {.id = id,
+                             .window = window,
+                             .location = event.location_f(),
+                             .root_location = event.root_location_f()};
+      break;
+    case EventType::kTouchMoved:
+      if (auto it = active_touches_.find(id);
+          it != active_touches_.end() && it->second.window == window) {
+        it->second.location = event.location_f();
+        it->second.root_location = event.root_location_f();
+      }
+      break;
+    case EventType::kTouchReleased:
+    case EventType::kTouchCancelled:
+      active_touches_.erase(id);
+      break;
+    default:
+      break;
+  }
+}
+
+std::vector<X11WindowManager::ActiveTouch> X11WindowManager::TakeActiveTouches(
+    const std::vector<PointerId>& ids) {
+  std::vector<ActiveTouch> touches;
+  for (PointerId id : ids) {
+    if (auto it = active_touches_.find(id); it != active_touches_.end()) {
+      touches.push_back(it->second);
+      active_touches_.erase(it);
+    }
+  }
+  return touches;
+}
+
+std::vector<X11WindowManager::ActiveTouch>
+X11WindowManager::TakeAllActiveTouches() {
+  std::vector<ActiveTouch> touches;
+  for (const auto& [id, touch] : active_touches_) {
+    touches.push_back(touch);
+  }
+  active_touches_.clear();
+  return touches;
 }
 
 }  // namespace ui

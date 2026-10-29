@@ -1481,6 +1481,9 @@ void X11Window::DispatchUiEvent(ui::Event* event, const x11::Event& xev) {
   // Linux are checked with cmt-device path, and can include DT_CMT_SCROLL_
   // data. See more discussion in https://crrev.com/c/853953
   UpdateWMUserTime(event);
+  if (event->IsTouchEvent()) {
+    window_manager->OnTouchEventDispatched(this, *event->AsTouchEvent());
+  }
   DispatchEventFromNativeUiEvent(
       event, base::BindOnce(&PlatformWindowDelegate::DispatchEvent,
                             base::Unretained(platform_window_delegate())));
@@ -1646,8 +1649,8 @@ bool X11Window::RunMoveLoop(const gfx::Vector2d& drag_offset) {
   const bool moved =
       x11_window_move_client_->RunMoveLoop(!HasCapture(), drag_offset);
   if (alive) {
-    CancelConsumedTouches(alive,
-                          x11_window_move_client_->TakeConsumedTouches());
+    CancelTouchesEndedByMoveLoop(x11_window_move_client_->TakeConsumedTouches(),
+                                 x11_window_move_client_->grabbed_pointer());
   }
   return moved;
 }
@@ -1687,31 +1690,47 @@ bool X11Window::StartDrag(
   }
 
   auto consumed_touches = whole_screen_drag_loop->TakeConsumedTouches();
+  const bool grabbed_pointer = whole_screen_drag_loop->grabbed_pointer();
   drag_loop_.reset();
   drag_location_delegate_ = nullptr;
   drag_drop_client_->CleanupDrag();
-  CancelConsumedTouches(alive, std::move(consumed_touches));
+  CancelTouchesEndedByMoveLoop(std::move(consumed_touches), grabbed_pointer);
   return dropped;
 }
 
 // static
-void X11Window::CancelConsumedTouches(
-    base::WeakPtr<X11Window> fallback,
-    std::vector<X11WholeScreenMoveLoop::ConsumedTouch> touches) {
+void X11Window::CancelTouchesEndedByMoveLoop(
+    std::vector<PointerId> consumed_touches,
+    bool grabbed_pointer) {
   auto* window_manager = X11WindowManager::GetInstance();
+  // Releasing the loop's own pointer grab ends every touch sequence that was
+  // still active, not just those whose release the loop consumed.
+  std::vector<X11WindowManager::ActiveTouch> touches =
+      grabbed_pointer ? window_manager->TakeAllActiveTouches()
+                      : window_manager->TakeActiveTouches(consumed_touches);
+
+  struct PendingCancel {
+    base::WeakPtr<X11Window> window;
+    PointerId id;
+    gfx::PointF location;
+    gfx::PointF root_location;
+  };
+  std::vector<PendingCancel> cancels;
   for (const auto& touch : touches) {
-    X11Window* target =
-        touch.window == x11::Window::None
-            ? fallback.get()
-            : window_manager->GetWindow(
-                  static_cast<gfx::AcceleratedWidget>(touch.window));
-    if (!target) {
+    cancels.push_back({touch.window->GetWeakPtr(), touch.id, touch.location,
+                       touch.root_location});
+  }
+  touches.clear();
+
+  // Dispatching may destroy any window.
+  for (const auto& cancel : cancels) {
+    if (!cancel.window) {
       continue;
     }
-    TouchEvent cancel(EventType::kTouchCancelled, touch.location,
-                      touch.location, EventTimeForNow(),
-                      PointerDetails(EventPointerType::kTouch, touch.id));
-    target->platform_window_delegate()->DispatchEvent(&cancel);
+    TouchEvent event(EventType::kTouchCancelled, cancel.location,
+                     cancel.root_location, EventTimeForNow(),
+                     PointerDetails(EventPointerType::kTouch, cancel.id));
+    cancel.window->platform_window_delegate()->DispatchEvent(&event);
   }
 }
 

@@ -5,16 +5,31 @@
 #ifndef UI_OZONE_PLATFORM_X11_X11_WINDOW_MANAGER_H_
 #define UI_OZONE_PLATFORM_X11_X11_WINDOW_MANAGER_H_
 
+#include <vector>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/events/pointer_details.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 
+class TouchEvent;
 class X11Window;
 
 class X11WindowManager {
  public:
+  // A touch sequence that was dispatched to an X11Window and has not ended.
+  struct ActiveTouch {
+    PointerId id;
+    raw_ptr<X11Window> window;
+    // The most recent location of the touch, relative to `window`, and its
+    // root location.
+    gfx::PointF location;
+    gfx::PointF root_location;
+  };
+
   X11WindowManager();
 
   X11WindowManager(const X11WindowManager&) = delete;
@@ -54,6 +69,17 @@ class X11WindowManager {
 
   void MouseOnWindow(X11Window* delegate);
 
+  // Records that `event` was dispatched to `window`, so that the touch
+  // sequence can still be ended if its release never reaches any window (see
+  // TakeActiveTouches()).
+  void OnTouchEventDispatched(X11Window* window, const TouchEvent& event);
+
+  // Removes and returns the active touch sequences whose ids are in `ids`.
+  std::vector<ActiveTouch> TakeActiveTouches(const std::vector<PointerId>& ids);
+
+  // Removes and returns all active touch sequences.
+  std::vector<ActiveTouch> TakeAllActiveTouches();
+
   const X11Window* window_mouse_currently_on_for_test() const {
     return window_mouse_currently_on_;
   }
@@ -64,6 +90,10 @@ class X11WindowManager {
 
   base::flat_map<gfx::AcceleratedWidget, raw_ptr<X11Window, CtnExperimental>>
       windows_;
+
+  // Touch sequences that were dispatched to a window and have not ended, keyed
+  // by id.
+  base::flat_map<PointerId, ActiveTouch> active_touches_;
 };
 
 }  // namespace ui

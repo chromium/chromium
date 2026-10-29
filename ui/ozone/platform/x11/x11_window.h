@@ -91,6 +91,18 @@ class X11Window : public PlatformWindow,
   // pointer is inside the window, so has_pointer() is not yet meaningful.
   bool IsMapPending() const { return map_pending_; }
 
+  // Dispatches a touch cancel for each touch sequence that an
+  // X11WholeScreenMoveLoop ended without its end reaching any window: those
+  // whose release or cancel the loop consumed (`consumed_touches`) and, if the
+  // loop grabbed the pointer itself (`grabbed_pointer`), all touch sequences
+  // that were still active, since releasing that grab ends them. Each cancel
+  // goes to the window the touch sequence was dispatched to. Without this,
+  // aura would consider those touches active indefinitely. May destroy any
+  // window.
+  static void CancelTouchesEndedByMoveLoop(
+      std::vector<PointerId> consumed_touches,
+      bool grabbed_pointer);
+
   // PlatformWindow:
   void Show(bool inactive) override;
   void Hide() override;
@@ -195,14 +207,6 @@ class X11Window : public PlatformWindow,
   uint32_t DispatchEvent(const PlatformEvent& event) override;
 
   void DispatchUiEvent(ui::Event* event, const x11::Event& xev);
-
-  // Dispatches a touch cancel for each touch sequence whose release or cancel
-  // was consumed by an X11WholeScreenMoveLoop, to the window the touch was
-  // targeted at (or `fallback` if that is unknown). Without this, aura would
-  // consider those touches active indefinitely. May destroy any window.
-  static void CancelConsumedTouches(
-      base::WeakPtr<X11Window> fallback,
-      std::vector<X11WholeScreenMoveLoop::ConsumedTouch> touches);
 
   // WmMoveResizeHandler
   void DispatchHostWindowDragMovement(

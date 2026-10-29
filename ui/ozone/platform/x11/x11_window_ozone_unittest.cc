@@ -3,10 +3,14 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <ostream>
 #include <utility>
+#include <vector>
 
 #include "base/nix/xdg_util.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,6 +29,7 @@
 #include "ui/platform_window/extensions/x11_extension_delegate.h"
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/platform_window_init_properties.h"
+#include "ui/platform_window/wm/wm_move_loop_handler.h"
 
 namespace ui {
 
@@ -383,6 +388,143 @@ TEST_F(X11WindowOzoneTest, NotifyStartupCompletePreservesGeometryCache) {
   x11::Connection::Get()->Sync();
   x11::Connection::Get()->DispatchAll();
   EXPECT_EQ(window->GetBoundsInPixels(), kNewBounds);
+}
+
+namespace {
+
+constexpr int kTouchDeviceId = 0;
+
+// A touch event received by a MockPlatformWindowDelegate.
+struct ReceivedTouch {
+  EventType type;
+  PointerId id;
+
+  bool operator==(const ReceivedTouch&) const = default;
+
+  friend void PrintTo(const ReceivedTouch& touch, std::ostream* os) {
+    *os << "{type=" << static_cast<int>(touch.type) << ", id=" << touch.id
+        << "}";
+  }
+};
+
+// Dispatches an XI2 touch event of `evtype` for `tracking_id`, reported
+// relative to `event_window`.
+void DispatchTouch(int evtype, int tracking_id, x11::Window event_window) {
+  ScopedXI2Event xi_event;
+  xi_event.InitTouchEvent(kTouchDeviceId, evtype, tracking_id,
+                          gfx::Point(100, 100), {});
+  x11::Event* event = xi_event;
+  event->As<x11::Input::DeviceEvent>()->event = event_window;
+  x11::Connection::Get()->DispatchEvent(*event);
+}
+
+}  // namespace
+
+class X11WindowOzoneTouchTest : public X11WindowOzoneTest {
+ public:
+  void SetUp() override {
+    X11WindowOzoneTest::SetUp();
+    // Start each test with fresh touch id assignments.
+    TouchFactory::GetInstance()->ResetForTest();
+    SetUpTouchDevicesForTest({kTouchDeviceId});
+
+    EXPECT_CALL(delegate_, OnClosed()).Times(1);
+    window_ = CreatePlatformWindow(&delegate_, gfx::Rect(30, 80, 800, 600),
+                                   &widget_, nullptr);
+    ON_CALL(delegate_, DispatchEvent(_)).WillByDefault([this](Event* event) {
+      if (event->IsTouchEvent()) {
+        received_touches_.push_back(
+            {event->type(), event->AsTouchEvent()->pointer_details().id});
+      }
+    });
+  }
+
+  void TearDown() override {
+    window_.reset();
+    X11WindowOzoneTest::TearDown();
+  }
+
+ protected:
+  x11::Window xwindow() const { return static_cast<x11::Window>(widget_); }
+
+  // Runs the window's move loop. `during_loop` runs once the loop has started
+  // and must end it.
+  void RunMoveLoop(base::OnceClosure during_loop) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(during_loop));
+    GetWmMoveLoopHandler(*window_)->RunMoveLoop(gfx::Vector2d());
+  }
+
+  void EndMoveLoop() { GetWmMoveLoopHandler(*window_)->EndMoveLoop(); }
+
+  testing::NiceMock<MockPlatformWindowDelegate> delegate_;
+  gfx::AcceleratedWidget widget_;
+  std::unique_ptr<PlatformWindow> window_;
+  std::vector<ReceivedTouch> received_touches_;
+};
+
+// A move loop that grabs the pointer itself ends every active touch sequence
+// when it releases the grab, and the X server reports their end relative to
+// the loop's input window. The windows must still see those touches end, even
+// if the loop ends while they are down (e.g. on Escape) and even if they did
+// not start the move. (The grab itself is not taken here, since tests may share
+// the X server with other test processes.)
+TEST_F(X11WindowOzoneTouchTest, CancelsAllActiveTouchesAfterGrabbedMoveLoop) {
+  DispatchTouch(x11::Input::DeviceEvent::TouchBegin, 10, xwindow());
+  DispatchTouch(x11::Input::DeviceEvent::TouchBegin, 11, xwindow());
+  ASSERT_EQ((std::vector<ReceivedTouch>{{EventType::kTouchPressed, 0},
+                                        {EventType::kTouchPressed, 1}}),
+            received_touches_);
+  received_touches_.clear();
+
+  X11Window::CancelTouchesEndedByMoveLoop(/*consumed_touches=*/{},
+                                          /*grabbed_pointer=*/true);
+
+  EXPECT_EQ((std::vector<ReceivedTouch>{{EventType::kTouchCancelled, 0},
+                                        {EventType::kTouchCancelled, 1}}),
+            received_touches_);
+
+  // The touches are no longer active, so they are not cancelled again.
+  received_touches_.clear();
+  X11Window::CancelTouchesEndedByMoveLoop(/*consumed_touches=*/{},
+                                          /*grabbed_pointer=*/true);
+  EXPECT_TRUE(received_touches_.empty());
+}
+
+// A touch release consumed by the move loop must end the touch sequence on the
+// window it was dispatched to, whichever window the X server reported the
+// release relative to (e.g. a window that is not an X11Window).
+TEST_F(X11WindowOzoneTouchTest, MoveLoopCancelsConsumedTouchRelease) {
+  // With capture, the loop does not grab the pointer.
+  window_->SetCapture();
+  DispatchTouch(x11::Input::DeviceEvent::TouchBegin, 10, xwindow());
+  ASSERT_EQ((std::vector<ReceivedTouch>{{EventType::kTouchPressed, 0}}),
+            received_touches_);
+  received_touches_.clear();
+
+  const auto other_window = x11::Connection::Get()->GenerateId<x11::Window>();
+  RunMoveLoop(base::BindLambdaForTesting([other_window]() {
+    // The release ends the loop.
+    DispatchTouch(x11::Input::DeviceEvent::TouchEnd, 10, other_window);
+  }));
+
+  EXPECT_EQ((std::vector<ReceivedTouch>{{EventType::kTouchCancelled, 0}}),
+            received_touches_);
+  window_->ReleaseCapture();
+}
+
+// A move loop that did not grab the pointer must leave touch sequences that
+// are still down alone, e.g. so that a tab drag can re-attach to a tab strip
+// with the finger still down.
+TEST_F(X11WindowOzoneTouchTest, MoveLoopWithoutPointerGrabKeepsActiveTouches) {
+  window_->SetCapture();
+  DispatchTouch(x11::Input::DeviceEvent::TouchBegin, 10, xwindow());
+  received_touches_.clear();
+
+  RunMoveLoop(base::BindLambdaForTesting([this]() { EndMoveLoop(); }));
+
+  EXPECT_TRUE(received_touches_.empty());
+  window_->ReleaseCapture();
 }
 
 }  // namespace ui
