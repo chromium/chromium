@@ -216,7 +216,7 @@ class MockChromePasswordManagerClient : public ChromePasswordManagerClient {
     return client;
   }
 
-  MOCK_METHOD(net::CertStatus, GetMainFrameCertStatus, (), (const override));
+  MOCK_METHOD(net::CertStatus, GetMainFrameCertStatus, (), (const, override));
 
   MockChromePasswordManagerClient(const MockChromePasswordManagerClient&) =
       delete;

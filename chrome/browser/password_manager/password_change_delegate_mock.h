@@ -29,7 +29,7 @@ class PasswordChangeDelegateMock final : public PasswordChangeDelegate {
   MOCK_METHOD(PasswordChangeDelegate::State,
               GetCurrentState,
               (),
-              (const override));
+              (const, override));
   MOCK_METHOD(void, Stop, (), (override));
   MOCK_METHOD(void, OpenPasswordChangeTab, (), (override));
   MOCK_METHOD(void, OpenPasswordDetails, (), (override));

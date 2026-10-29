@@ -55,7 +55,7 @@ class MockPasswordCrossDomainConfirmationPopupView
   base::OnceClosure& cancel_callback() { return cancel_callback_; }
 
   MOCK_METHOD(void, Hide, (), (override));
-  MOCK_METHOD(bool, OverlapsWithPictureInPictureWindow, (), (const override));
+  MOCK_METHOD(bool, OverlapsWithPictureInPictureWindow, (), (const, override));
 
   base::WeakPtr<MockPasswordCrossDomainConfirmationPopupView> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

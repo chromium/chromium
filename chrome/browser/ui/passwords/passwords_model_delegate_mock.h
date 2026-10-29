@@ -25,7 +25,7 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
 
   ~PasswordsModelDelegateMock() override;
 
-  MOCK_METHOD(content::WebContents*, GetWebContents, (), (const override));
+  MOCK_METHOD(content::WebContents*, GetWebContents, (), (const, override));
   MOCK_METHOD(password_manager::PasswordFormMetricsRecorder*,
               GetPasswordFormMetricsRecorder,
               (),
@@ -34,44 +34,47 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
               GetPasswordFeatureManager,
               (),
               (override));
-  MOCK_METHOD(url::Origin, GetOrigin, (), (const override));
-  MOCK_METHOD(password_manager::ui::State, GetState, (), (const override));
+  MOCK_METHOD(url::Origin, GetOrigin, (), (const, override));
+  MOCK_METHOD(password_manager::ui::State, GetState, (), (const, override));
   MOCK_METHOD(const password_manager::PasswordForm&,
               GetPendingPassword,
               (),
-              (const override));
+              (const, override));
   MOCK_METHOD(password_manager::metrics_util::CredentialSourceType,
               GetCredentialSource,
               (),
-              (const override));
+              (const, override));
   MOCK_METHOD(
       const std::vector<std::unique_ptr<password_manager::PasswordForm>>&,
       GetCurrentForms,
       (),
-      (const override));
+      (const, override));
   MOCK_METHOD(const std::optional<password_manager::PasswordForm>&,
               GetManagePasswordsSingleCredentialDetailsModeCredential,
               (),
-              (const override));
+              (const, override));
   MOCK_METHOD(password_manager::InteractionsStats*,
               GetCurrentInteractionStats,
               (),
-              (const override));
-  MOCK_METHOD(size_t, GetTotalNumberCompromisedPasswords, (), (const override));
-  MOCK_METHOD(bool, BubbleIsManualFallbackForSaving, (), (const override));
+              (const, override));
+  MOCK_METHOD(size_t,
+              GetTotalNumberCompromisedPasswords,
+              (),
+              (const, override));
+  MOCK_METHOD(bool, BubbleIsManualFallbackForSaving, (), (const, override));
   MOCK_METHOD(bool,
               GpmPinCreatedDuringRecentPasskeyCreation,
               (),
-              (const override));
-  MOCK_METHOD(const std::string&, PasskeyRpId, (), (const override));
+              (const, override));
+  MOCK_METHOD(const std::string&, PasskeyRpId, (), (const, override));
   MOCK_METHOD(const std::u16string&,
               PasswordChangeUsername,
               (),
-              (const override));
+              (const, override));
   MOCK_METHOD(const std::u16string&,
               PasswordChangeNewPassword,
               (),
-              (const override));
+              (const, override));
   MOCK_METHOD(void, OnBubbleShown, (), (override));
   MOCK_METHOD(void, OnBubbleHidden, (), (override));
   MOCK_METHOD(void, OnNoInteraction, (), (override));
@@ -127,7 +130,7 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
   MOCK_METHOD(PasswordChangeDelegate*,
               GetPasswordChangeDelegate,
               (),
-              (const override));
+              (const, override));
   MOCK_METHOD(PasswordsLeakDialogDelegate*,
               GetPasswordsLeakDialogDelegate,
               (),

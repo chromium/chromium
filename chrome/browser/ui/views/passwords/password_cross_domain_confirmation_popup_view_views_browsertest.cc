@@ -41,14 +41,14 @@ class MockPasswordCrossDomainConfirmationPopupController
   // AutofillPopupViewDelegate:
   MOCK_METHOD(void, Hide, (autofill::SuggestionHidingReason), (override));
   MOCK_METHOD(void, ViewDestroyed, (), (override));
-  MOCK_METHOD(gfx::NativeView, container_view, (), (const override));
-  MOCK_METHOD(content::WebContents*, GetWebContents, (), (const override));
-  MOCK_METHOD(const gfx::RectF&, element_bounds, (), (const override));
-  MOCK_METHOD(autofill::PopupAnchorType, anchor_type, (), (const override));
+  MOCK_METHOD(gfx::NativeView, container_view, (), (const, override));
+  MOCK_METHOD(content::WebContents*, GetWebContents, (), (const, override));
+  MOCK_METHOD(const gfx::RectF&, element_bounds, (), (const, override));
+  MOCK_METHOD(autofill::PopupAnchorType, anchor_type, (), (const, override));
   MOCK_METHOD(base::i18n::TextDirection,
               GetElementTextDirection,
               (),
-              (const override));
+              (const, override));
   MOCK_METHOD(std::u16string, GetBodyText, (), (const, override));
   MOCK_METHOD(std::u16string, GetTitleText, (), (const, override));
 

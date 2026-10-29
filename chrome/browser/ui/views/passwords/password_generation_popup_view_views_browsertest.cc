@@ -38,28 +38,28 @@ class MockPasswordGenerationPopupController
   // AutofillPopupViewDelegate:
   MOCK_METHOD(void, Hide, (autofill::SuggestionHidingReason), (override));
   MOCK_METHOD(void, ViewDestroyed, (), (override));
-  MOCK_METHOD(gfx::NativeView, container_view, (), (const override));
-  MOCK_METHOD(content::WebContents*, GetWebContents, (), (const override));
-  MOCK_METHOD(const gfx::RectF&, element_bounds, (), (const override));
-  MOCK_METHOD(autofill::PopupAnchorType, anchor_type, (), (const override));
+  MOCK_METHOD(gfx::NativeView, container_view, (), (const, override));
+  MOCK_METHOD(content::WebContents*, GetWebContents, (), (const, override));
+  MOCK_METHOD(const gfx::RectF&, element_bounds, (), (const, override));
+  MOCK_METHOD(autofill::PopupAnchorType, anchor_type, (), (const, override));
   MOCK_METHOD(base::i18n::TextDirection,
               GetElementTextDirection,
               (),
-              (const override));
+              (const, override));
 
   // PasswordGenerationPopupController:
   MOCK_METHOD(void, PasswordAccepted, (), (override));
   MOCK_METHOD(void, PasswordRejected, (), (override));
   MOCK_METHOD(std::u16string, GetPrimaryAccountEmail, (), (override));
-  MOCK_METHOD(GenerationUIState, state, (), (const override));
-  MOCK_METHOD(bool, accept_button_selected, (), (const override));
-  MOCK_METHOD(bool, cancel_button_selected, (), (const override));
+  MOCK_METHOD(GenerationUIState, state, (), (const, override));
+  MOCK_METHOD(bool, accept_button_selected, (), (const, override));
+  MOCK_METHOD(bool, cancel_button_selected, (), (const, override));
   MOCK_METHOD(const password_manager::PasswordString&,
               password,
               (),
-              (const override));
-  MOCK_METHOD(const std::u16string&, HelpText, (), (const override));
-  MOCK_METHOD(std::u16string, SuggestedText, (), (const override));
+              (const, override));
+  MOCK_METHOD(const std::u16string&, HelpText, (), (const, override));
+  MOCK_METHOD(std::u16string, SuggestedText, (), (const, override));
 
   base::WeakPtr<PasswordGenerationPopupController> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
