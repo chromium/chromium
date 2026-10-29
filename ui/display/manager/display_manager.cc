@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/linear_find.h"
 #include "base/functional/bind.h"
@@ -2448,6 +2449,15 @@ Display DisplayManager::CreateDisplayFromDisplayInfoById(int64_t id) {
   // in |UpdateNonPrimaryDisplayBoundsForLayout| called in |UpdateDisplay|.
   new_display.SetScaleAndBounds(device_scale_factor,
                                 gfx::Rect(bounds_in_native.size()));
+  const gfx::Size min_dip_size = GetMinimumDisplaySize(new_display.size());
+  if (new_display.size().width() < min_dip_size.width() ||
+      new_display.size().height() < min_dip_size.height()) {
+    // TODO(crbug.com/462446075): Upgrade to CHECK once verified.
+    DUMP_WILL_BE_CHECK(false)
+        << "Display size " << new_display.size().ToString()
+        << " is smaller than minimum " << min_dip_size.ToString()
+        << ", display_info=" << display_info.ToString();
+  }
   new_display.set_rotation(display_info.GetActiveRotation());
   new_display.set_panel_rotation(display_info.GetLogicalActiveRotation());
   new_display.set_touch_support(display_info.touch_support());
