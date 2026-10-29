@@ -26,10 +26,6 @@ const TableBorders* TableNode::GetTableBorders() const {
   return table_borders;
 }
 
-const BoxStrut& TableNode::GetTableBordersStrut() const {
-  return GetTableBorders()->TableBorder();
-}
-
 scoped_refptr<const TableTypes::Columns> TableNode::GetColumnConstraints(
     const TableGroupedChildren& grouped_children,
     const BoxStrut& border_padding) const {

@@ -170,12 +170,6 @@ class CORE_EXPORT LineInfo {
   // without clamping.
   LayoutUnit ComputeWidth() const;
 
-#if DCHECK_IS_ON()
-  // Returns width in float. This function is used for avoiding |LayoutUnit|
-  // saturated addition of items in line.
-  float ComputeWidthInFloat() const;
-#endif
-
   bool HasTrailingSpaces() const { return has_trailing_spaces_; }
   void SetHasTrailingSpaces() { has_trailing_spaces_ = true; }
 
@@ -249,15 +243,6 @@ class CORE_EXPORT LineInfo {
   // True if this line has unsuccessful block-in-inline children that need to
   // propagate the results.
   bool HasUnsuccessfulBlockInInline() const;
-
-  // |MayHaveTextCombineOrRubyItem()| is a flag for special text handling
-  // during "text-align:justify".
-  bool MayHaveTextCombineOrRubyItem() const {
-    return may_have_text_combine_or_ruby_item_;
-  }
-  void SetHaveTextCombineOrRubyItem() {
-    may_have_text_combine_or_ruby_item_ = true;
-  }
 
   // True if the line might contain ruby overhang. It affects min-max
   // computation.
@@ -358,14 +343,6 @@ class CORE_EXPORT LineInfo {
   bool needs_accurate_end_position_ = false;
   bool is_ruby_base_ = false;
   bool is_ruby_text_ = false;
-  // Even if text combine item causes line break, this variable is not reset.
-  // This variable is used to add spacing before/after text combine items if
-  // "text-align: justify".
-  // Also, the variable is used to represent existence of <ruby>, which needs
-  // special handling for "text-align: justify".
-  // Note: To avoid scanning |InlineItemResults|, this variable is true
-  // when |InlineItemResult| to |results_|.
-  bool may_have_text_combine_or_ruby_item_ = false;
   // True if the last processed line might contain ruby overhang.
   bool may_have_ruby_overhang_ = false;
   bool allow_hang_for_alignment_ = false;

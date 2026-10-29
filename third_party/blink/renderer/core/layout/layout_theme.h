@@ -248,8 +248,6 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   AppearanceValue AdjustAppearanceWithElementType(AppearanceValue appearance,
                                                   const Element&);
 
-  void UpdateForcedColorsState();
-
   std::optional<Color> custom_focus_ring_color_;
   base::TimeDelta caret_blink_interval_ = base::Milliseconds(500);
 

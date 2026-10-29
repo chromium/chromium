@@ -588,9 +588,6 @@ inline InlineItemResult* LineBreaker::AddItem(const InlineItem& item,
     DCHECK_GE(end_offset, current_.text_offset);
     DCHECK_LE(end_offset, item.EndOffset());
   }
-  if (item.IsTextCombine()) [[unlikely]] {
-    line_info->SetHaveTextCombineOrRubyItem();
-  }
   InlineItemResults* item_results = line_info->MutableResults();
   return &item_results->emplace_back(
       item, current_.item_index,
@@ -3626,7 +3623,6 @@ InlineItemResult* LineBreaker::AddRubyColumnResult(
   if (data->base_line.MayHaveRubyOverhang()) {
     line_info.SetMayHaveRubyOverhang();
   }
-  line_info.SetHaveTextCombineOrRubyItem();
   data->is_continuation = is_continuation;
 
   data->annotation_line_list = annotation_line_list;

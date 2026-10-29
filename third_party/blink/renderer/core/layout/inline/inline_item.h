@@ -162,14 +162,6 @@ class CORE_EXPORT InlineItem final : public GarbageCollected<InlineItem> {
 
   TextDirection Direction() const { return DirectionFromLevel(BidiLevel()); }
   UBiDiLevel BidiLevel() const { return static_cast<UBiDiLevel>(bidi_level_); }
-  // Resolved bidi level for the reordering algorithm. Certain items have
-  // artificial bidi level for the reordering algorithm without affecting its
-  // direction.
-  UBiDiLevel BidiLevelForReorder() const {
-    // List markers should not be reordered to protect it from being included
-    // into unclosed inline boxes.
-    return Type() != InlineItem::kListMarker ? BidiLevel() : 0;
-  }
 
   LayoutObject* GetLayoutObject() const { return layout_object_.Get(); }
 

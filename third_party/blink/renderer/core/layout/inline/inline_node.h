@@ -208,14 +208,6 @@ class CORE_EXPORT InlineNode : public LayoutInputNode {
     data.ValidateCapacity();
     return data;
   }
-  // Same as |Data()| but can access even when |NeedsCollectInlines()| is set.
-  const InlineNodeData& MaybeDirtyData() const {
-    DCHECK(IsPrepareLayoutFinished());
-    const InlineNodeData& data =
-        *To<LayoutBlockFlow>(box_.Get())->GetInlineNodeData();
-    data.ValidateCapacity();
-    return data;
-  }
   const InlineNodeData& EnsureData() const;
 
   void AdjustFontForTextCombineUprightAll() const;

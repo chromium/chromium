@@ -128,7 +128,6 @@ class CORE_EXPORT LayoutTextFragment : public LayoutText {
     valid_ng_items_ = false;
     LayoutText::InsertedIntoTree();
   }
-  LayoutBlock* BlockForAccompanyingFirstLetter() const;
   UChar32 PreviousCharacter() const override;
   void TextDidChange() override;
 

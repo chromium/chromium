@@ -46,9 +46,7 @@ class CORE_EXPORT InlineChildLayoutContext {
   LogicalLineItems& AcquireTempLogicalLineItems();
   void ReleaseTempLogicalLineItems(LogicalLineItems&);
 
-  // Returns the InlineLayoutStateStack in this context.
-  bool HasBoxStates() const { return box_states_.has_value(); }
-  InlineLayoutStateStack* BoxStates() { return &*box_states_; }
+  // Resets the InlineLayoutStateStack in this context and returns it.
   InlineLayoutStateStack* ResetBoxStates() { return &box_states_.emplace(); }
 
   // Returns the box states in this context if it exists and it can be used to

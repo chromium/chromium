@@ -276,8 +276,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   bool ComputeInitialShouldCreateBoxFragment() const;
   bool ComputeInitialShouldCreateBoxFragment(const ComputedStyle& style) const;
 
-  PhysicalRect CulledInlineVisualOverflowBoundingBox() const;
-
   // PhysicalRectCollector should be like a function:
   // void (const PhysicalRect&).
   template <typename PhysicalRectCollector>

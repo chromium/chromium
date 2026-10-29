@@ -86,7 +86,6 @@ void LineInfo::Reset() {
   needs_accurate_end_position_ = false;
   is_ruby_base_ = false;
   is_ruby_text_ = false;
-  may_have_text_combine_or_ruby_item_ = false;
   may_have_ruby_overhang_ = false;
   allow_hang_for_alignment_ = false;
   is_start_of_paragraph_ = false;
@@ -424,17 +423,6 @@ LayoutUnit LineInfo::ComputeWidth() const {
 
   return inline_size;
 }
-
-#if DCHECK_IS_ON()
-float LineInfo::ComputeWidthInFloat() const {
-  float inline_size = TextIndent();
-  for (const InlineItemResult& item_result : Results()) {
-    inline_size += item_result.inline_size.ToFloat();
-  }
-
-  return inline_size;
-}
-#endif
 
 // Block start adjustment and annotation ovreflow
 //

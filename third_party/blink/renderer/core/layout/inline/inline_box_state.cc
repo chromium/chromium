@@ -268,18 +268,6 @@ LayoutUnit InlineBoxState::TextTop(FontBaseline baseline_type) const {
   NOTREACHED();
 }
 
-bool InlineBoxState::CanAddTextOfStyle(const ComputedStyle& text_style) const {
-  if (text_style.VerticalAlign() != EVerticalAlign::kBaseline)
-    return false;
-  DCHECK(style);
-  if (style == &text_style ||
-      base::ValuesEquivalent(style->GetFont(), text_style.GetFont()) ||
-      style->GetFont()->PrimaryFont() == text_style.GetFont()->PrimaryFont()) {
-    return true;
-  }
-  return false;
-}
-
 void InlineLayoutStateStack::Trace(Visitor* visitor) const {
   visitor->Trace(stack_);
   visitor->Trace(box_data_list_);

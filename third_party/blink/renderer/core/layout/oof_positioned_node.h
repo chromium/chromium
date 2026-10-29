@@ -453,8 +453,6 @@ struct CORE_EXPORT LogicalOofNodeForFragmentation final
     is_for_fragmentation_ = true;
   }
 
-  const LayoutObject* CssContainingBlock() const { return box_->Container(); }
-
   void TraceAfterDispatch(Visitor* visitor) const;
 };
 

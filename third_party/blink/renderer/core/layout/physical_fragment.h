@@ -771,8 +771,6 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
  protected:
   ~PhysicalFragment() = default;
 
-  const ComputedStyle& SlowEffectiveStyle() const;
-
   static bool DependsOnPercentageBlockSize(const FragmentBuilder&);
 
   OofData* OofDataFromBuilder(FragmentBuilder*);

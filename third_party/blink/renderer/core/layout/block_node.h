@@ -272,19 +272,6 @@ struct DowncastTraits<BlockNode> {
   static bool AllowFrom(const LayoutInputNode& node) { return node.IsBlock(); }
 };
 
-// Devtools can trigger layout to collect devtools-specific data. We don't want
-// or need such devtools layouts to write to the fragment or layout trees. This
-// class sets a flag that is checked before storing the layout results. If the
-// flag is true, we bail before writing anything.
-class DevtoolsReadonlyLayoutScope {
-  STACK_ALLOCATED();
-
- public:
-  DevtoolsReadonlyLayoutScope();
-  static bool InDevtoolsLayout();
-  ~DevtoolsReadonlyLayoutScope();
-};
-
 }  // namespace blink
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::BlockNode)

@@ -82,12 +82,6 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
 
   PhysicalRect LocalSelectionVisualRect() const final;
 
-  bool HasObjectFit() const {
-    NOT_DESTROYED();
-    return Style().GetObjectFit() !=
-           ComputedStyleInitialValues::InitialObjectFit();
-  }
-
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,

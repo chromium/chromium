@@ -210,12 +210,6 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
   previous_physical_container_size_ = physical_fragment.Size();
 }
 
-void SimplifiedLayoutAlgorithm::AppendNewChildFragment(
-    const PhysicalFragment& fragment,
-    LogicalOffset offset) {
-  container_builder_.AddChild(fragment, offset);
-}
-
 const LayoutResult* SimplifiedLayoutAlgorithm::Layout() {
   // Since simplified layout's |Layout()| function deals with laying out
   // children, we can early out if we are display-locked.

@@ -926,7 +926,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     void SavePreviousSize() {
       GetLayoutBox().previous_size_ = GetLayoutBox().StitchedSize();
     }
-    void ClearPreviousSize() { GetLayoutBox().previous_size_ = PhysicalSize(); }
     void SavePreviousOverflowData();
     void ClearPreviousOverflowData() {
       DCHECK(!RuntimeEnabledFeatures::

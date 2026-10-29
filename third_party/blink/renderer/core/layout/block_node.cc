@@ -1583,19 +1583,4 @@ void BlockNode::UpdateShapeOutsideInfoIfNeeded(
       constraint_space.PercentageResolutionInlineSize());
 }
 
-static bool g_devtools_layout = false;
-bool DevtoolsReadonlyLayoutScope::InDevtoolsLayout() {
-  return g_devtools_layout;
-}
-
-DevtoolsReadonlyLayoutScope::DevtoolsReadonlyLayoutScope() {
-  DCHECK(!g_devtools_layout);
-  g_devtools_layout = true;
-}
-
-DevtoolsReadonlyLayoutScope::~DevtoolsReadonlyLayoutScope() {
-  DCHECK(g_devtools_layout);
-  g_devtools_layout = false;
-}
-
 }  // namespace blink

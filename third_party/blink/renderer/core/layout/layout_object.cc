@@ -938,11 +938,6 @@ bool LayoutObject::IsScrollMarkerGroup() const {
   return GetNode() && GetNode()->IsScrollMarkerGroupPseudoElement();
 }
 
-bool LayoutObject::IsScrollMarkerGroupBefore() const {
-  NOT_DESTROYED();
-  return GetNode() && GetNode()->IsScrollMarkerGroupBeforePseudoElement();
-}
-
 bool LayoutObject::IsListMarkerForSummary() const {
   NOT_DESTROYED();
   if (!IsListMarker()) {

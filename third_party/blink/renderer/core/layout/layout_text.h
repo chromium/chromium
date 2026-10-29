@@ -158,8 +158,6 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   }
 
   enum ClippingOption { kNoClipping, kClipToEllipsis };
-  void LocalQuadsInFlippedBlocksDirection(Vector<gfx::QuadF>&,
-                                          ClippingOption = kNoClipping) const;
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
@@ -250,13 +248,6 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   bool IsAllCollapsibleWhitespace() const;
 
   PhysicalRect DebugRect() const override;
-
-  void AutosizingMultiplerChanged() {
-    NOT_DESTROYED();
-    // The font size is changing, so we need to make sure to rebuild everything.
-    valid_ng_items_ = false;
-    SetNeedsCollectInlines();
-  }
 
   virtual UChar32 PreviousCharacter() const;
 

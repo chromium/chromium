@@ -144,11 +144,6 @@ struct InlineBoxState {
   // 'text-top' offset for 'vertical-align'.
   LayoutUnit TextTop(FontBaseline baseline_type) const;
 
-  // Returns if the text style can be added without open-tag.
-  // Text with different font or vertical-align needs to be wrapped with an
-  // inline box.
-  bool CanAddTextOfStyle(const ComputedStyle&) const;
-
   // Adjust `metrics` for `text-box-trim` and `text-box-edge` properties.
   static void AdjustEdges(const ComputedStyle& style,
                           const Font& font,

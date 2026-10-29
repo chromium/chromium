@@ -42,8 +42,6 @@ class CORE_EXPORT SimplifiedLayoutAlgorithm
                             const LayoutResult&,
                             bool keep_old_size = false);
 
-  void AppendNewChildFragment(const PhysicalFragment&, LogicalOffset);
-
   // Attempt to perform simplified layout on all children and return a new
   // result. If nullptr is returned, it means that simplified layout isn't
   // possible.

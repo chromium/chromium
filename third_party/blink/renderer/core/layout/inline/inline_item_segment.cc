@@ -119,15 +119,6 @@ void InlineItemSegments::CheckOffset(unsigned offset,
 }
 #endif
 
-void InlineItemSegments::ToRanges(RunSegmenterRanges& ranges) const {
-  ranges.ReserveInitialCapacity(segments_.size());
-  wtf_size_t start_offset = 0;
-  for (const InlineItemSegment& segment : segments_) {
-    ranges.push_back(segment.ToRunSegmenterRange(start_offset));
-    start_offset = segment.EndOffset();
-  }
-}
-
 InlineItemSegments::Iterator InlineItemSegments::Ranges(
     unsigned start_offset,
     unsigned end_offset,
