@@ -584,7 +584,7 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   UIViewAnimationCurve curve = static_cast<UIViewAnimationCurve>(
       [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue]);
   [self.delegate assistantAIMViewController:self
-                didShowKeyboardWithDuration:duration
+               willShowKeyboardWithDuration:duration
                                       curve:curve];
 }
 

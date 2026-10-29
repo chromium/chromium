@@ -366,7 +366,7 @@ class AssistantAIMUIStateProvider
 }
 
 - (void)assistantAIMViewController:(AssistantAIMViewController*)viewController
-       didShowKeyboardWithDuration:(NSTimeInterval)duration
+      willShowKeyboardWithDuration:(NSTimeInterval)duration
                              curve:(UIViewAnimationCurve)curve {
   // Only expand the assistant sheet if the focused field (main responder) is
   // inside the main view.
