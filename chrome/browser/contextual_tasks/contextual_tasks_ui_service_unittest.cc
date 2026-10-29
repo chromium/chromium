@@ -3386,6 +3386,9 @@ TEST_F(
   ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
       .WillByDefault(testing::Return(false));
 
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
@@ -3413,6 +3416,14 @@ TEST_F(
       blink::mojom::WindowFeatures()));
 
   run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.AiResponse.UserAction.LinkClicked.Panel", true, 1);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ContextualTasks.AiResponse.UserAction.LinkClicked.Panel"));
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.AiResponse.UserAction.LinkClicked.Panel.OpenDisposition",
+      ContextualTasksLinkOpenDisposition::kCurrentTab, 1);
 }
 
 TEST_F(
@@ -3423,6 +3434,8 @@ TEST_F(
 
   ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
       .WillByDefault(testing::Return(false));
+
+  base::HistogramTester histogram_tester;
 
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
@@ -3455,6 +3468,12 @@ TEST_F(
       std::nullopt, blink::mojom::WindowFeatures()));
 
   run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.AiResponse.UserAction.LinkClicked.Panel", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.AiResponse.UserAction.LinkClicked.Panel.OpenDisposition",
+      ContextualTasksLinkOpenDisposition::kNewBackgroundTab, 1);
 }
 
 TEST_F(ContextualTasksUiServiceTest,
@@ -4024,6 +4043,83 @@ TEST_F(
   EXPECT_EQ(
       1, histogram_tester.GetBucketCount(
              "ContextualTasks.AiResponse.UserAction.LinkClicked.Panel", true));
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.AiResponse.UserAction.LinkClicked.Panel.OpenDisposition",
+      ContextualTasksLinkOpenDisposition::kCurrentTab, 1);
+}
+
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_PostRearchitecture_SidePanel_CitationLink_NewBackgroundTab_DoesNotClobberActiveTab) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {contextual_tasks::kContextualTasksSidePanelRearchitecture,
+       contextual_tasks::kContextualTasksClobberActiveTab},
+      {});
+
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(testing::Return(false));
+
+  base::HistogramTester histogram_tester;
+
+  auto panel_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  auto active_tab_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  GURL initial_url("https://start.com/");
+  content::WebContentsTester::For(active_tab_contents.get())
+      ->SetLastCommittedURL(initial_url);
+
+  tabs::MockTabInterface mock_tab;
+  ON_CALL(mock_tab, GetContents)
+      .WillByDefault(Return(active_tab_contents.get()));
+
+  NiceMock<MockBrowserWindowInterface> browser;
+  NiceMock<MockTabListInterface> mock_tab_list;
+  ON_CALL(mock_tab_list, GetTabCount).WillByDefault(Return(1));
+  ON_CALL(mock_tab_list, GetTab(0)).WillByDefault(Return(&mock_tab));
+  ON_CALL(mock_tab_list, GetActiveTab).WillByDefault(Return(&mock_tab));
+  ui::ScopedUnownedUserData<TabListInterface> tab_list_registration(
+      browser.GetUnownedUserDataHost(), mock_tab_list);
+
+  webui::SetBrowserWindowInterface(panel_contents.get(), &browser);
+
+  service_for_nav_->SetSidePanelWebContentsForTesting(panel_contents.get());
+
+  GURL citation_url(
+      "https://new-citation.example.com/paper#:~:text=sample+citation");
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _))
+      .WillOnce([&](const content::OpenURLParams& params,
+                    const blink::mojom::WindowFeatures& features,
+                    BrowserWindowInterface* target_browser) {
+        EXPECT_EQ(citation_url, params.url);
+        EXPECT_EQ(WindowOpenDisposition::kNewBackgroundTab, params.disposition);
+        run_loop.Quit();
+      });
+
+  content::OpenURLParams open_params(citation_url, content::Referrer(),
+                                     WindowOpenDisposition::kNewBackgroundTab,
+                                     ui::PageTransition::PAGE_TRANSITION_LINK,
+                                     /*is_renderer_initiated=*/true);
+
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      std::move(open_params), panel_contents.get(),
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
+      /*is_same_site_or_from_ui=*/false, /*is_mobile_ua=*/false, std::nullopt,
+      std::nullopt, blink::mojom::WindowFeatures()));
+
+  run_loop.Run();
+
+  // Active tab was NOT clobbered.
+  EXPECT_EQ(initial_url, active_tab_contents->GetLastCommittedURL());
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.AiResponse.UserAction.LinkClicked.Panel", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.AiResponse.UserAction.LinkClicked.Panel.OpenDisposition",
+      ContextualTasksLinkOpenDisposition::kNewBackgroundTab, 1);
 }
 
 TEST_F(ContextualTasksUiServiceTest, ShouldHandleLensNavigation_TargetIsSrp) {

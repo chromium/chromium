@@ -79,6 +79,19 @@ chromium-metrics-reviews@google.com.
   //chrome/browser/resources/contextual_tasks/extension/background.ts:ContextualTasksExtensionPostMessageError
 ) -->
 
+<!-- LINT.IfChange(ContextualTasksLinkOpenDisposition) -->
+
+<enum name="ContextualTasksLinkOpenDisposition">
+  <int value="0" label="Current tab"/>
+  <int value="1" label="New foreground tab"/>
+  <int value="2" label="New background tab"/>
+  <int value="3" label="New window"/>
+  <int value="4" label="Off the record"/>
+  <int value="5" label="Other"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/contextual_tasks/contextual_tasks_utils.h:ContextualTasksLinkOpenDisposition) -->
+
 <!-- LINT.IfChange(ContextualTasksPermanentToolbarButtonThreadAction) -->
 
 <enum name="ContextualTasksPermanentToolbarButtonThreadAction">

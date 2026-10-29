@@ -20,6 +20,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
+#include "ui/base/window_open_disposition.h"
 
 class Profile;
 class BrowserWindowInterface;
@@ -287,6 +288,27 @@ void RecordExtensionHandshakeStatus(ExtensionHandshakeStatus status);
 void RecordExtensionHandshakeLatency(base::TimeDelta latency);
 void RecordExtensionPostMessageError(ExtensionPostMessageError error);
 void RecordExtensionQueuedSearchMessagesDropped(size_t count);
+
+// The requested open disposition when a user clicks a link in the contextual
+// tasks side panel. Recorded in
+// `ContextualTasks.AiResponse.UserAction.LinkClicked.Panel.OpenDisposition`.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(ContextualTasksLinkOpenDisposition)
+enum class ContextualTasksLinkOpenDisposition {
+  kCurrentTab = 0,
+  kNewForegroundTab = 1,
+  kNewBackgroundTab = 2,
+  kNewWindow = 3,
+  kOffTheRecord = 4,
+  kOther = 5,
+  kMaxValue = kOther,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_tasks/enums.xml:ContextualTasksLinkOpenDisposition)
+
+// Records side panel link click metrics, including the requested window open
+// disposition.
+void RecordSidePanelLinkClickedMetrics(WindowOpenDisposition disposition);
 
 }  // namespace contextual_tasks
 
