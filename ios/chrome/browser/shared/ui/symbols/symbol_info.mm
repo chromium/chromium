@@ -628,6 +628,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"star.bubble.fill", SymbolType::kSystem};
     case SymbolStarLeadingHalfFilled:
       return {@"star.leadinghalf.filled", SymbolType::kSystem};
+    case SymbolStopFill:
+      return {@"stop.fill", SymbolType::kSystem};
     case SymbolSuitcase:
       return {@"suitcase", SymbolType::kSystem};
     case SymbolSunFill:

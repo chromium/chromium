@@ -329,6 +329,7 @@ typedef NS_ENUM(NSInteger, Symbol) {
   SymbolSquareStack3dDownRight,
   SymbolStarBubbleFill,
   SymbolStarLeadingHalfFilled,
+  SymbolStopFill,
   SymbolSuitcase,
   SymbolSunFill,
   SymbolSwitch2,
