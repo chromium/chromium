@@ -15,10 +15,8 @@ export function getHtml(this: SettingsShoppingPageElement) {
         ?disabled="${this.optInToggleDisabled_()}"
         @settings-boolean-control-change="${
             this.onOptInToggleSettingsBooleanControlChange_}"
-        pref-key="synthetic.settings.autofill.shopping_opted_in"
-        no-set-pref
-        no-extension-indicator
-        label="$i18n{shoppingOptInToggleLabel}"
+        pref-key="synthetic.settings.autofill.shopping_opted_in" no-set-pref
+        no-extension-indicator label="$i18n{shoppingOptInToggleLabel}"
         sub-label="$i18n{shoppingOptInToggleSubLabel}">
     </settings-toggle-button>
     ${this.showSuggestionsFromGeminiSettings_ ? html`
@@ -43,10 +41,8 @@ export function getHtml(this: SettingsShoppingPageElement) {
 
   <!-- Entities list card -->
   <div class="card">
-    <settings-autofill-ai-entries-list
-        list-title="$i18n{shoppingCardTitle}"
-        page-name="Shopping"
-        .allowedEntityTypes="${this.allowedEntityTypes_}"
+    <settings-autofill-ai-entries-list list-title="$i18n{shoppingCardTitle}"
+        page-name="Shopping" .allowedEntityTypes="${this.allowedEntityTypes_}"
         .metricEntityTypes="${this.metricEntityTypes_}"
         .allowNewEntitiesAdditionPref="${this.shoppingOptedInPref_}">
     </settings-autofill-ai-entries-list>

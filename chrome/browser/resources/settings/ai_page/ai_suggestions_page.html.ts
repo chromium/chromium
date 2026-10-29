@@ -47,8 +47,7 @@ export function getHtml(this: SettingsAiSuggestionsPageElement) {
           pref-key="contextual_cueing.chrome_suggestions_settings">
       </settings-ai-policy-indicator>
     `}
-    <settings-toggle-button
-        id="showSuggestionsToggle"
+    <settings-toggle-button id="showSuggestionsToggle"
         aria-label="$i18n{aiSuggestionsToggleLabel}"
         pref-key="optimization_guide.contextual_cueing_setting_state"
         .numericUncheckedValues="${this.computeNumericUncheckedValues_()}"
@@ -77,8 +76,8 @@ export function getHtml(this: SettingsAiSuggestionsPageElement) {
       <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
       <ul class="icon-bulleted-list">
         <li>
-          <cr-icon icon="settings20:screensaver-auto"
-              aria-hidden="true"></cr-icon>
+          <cr-icon icon="settings20:screensaver-auto" aria-hidden="true">
+          </cr-icon>
           <div class="secondary">$i18n{aiSuggestionsConsider1}</div>
         </li>
         <li>

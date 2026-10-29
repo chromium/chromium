@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {HomeUrlInputElement} from './home_url_input.js';
 
 export function getHtml(this: HomeUrlInputElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <!-- Max length of 100 KB to prevent browser from freezing. -->
 <cr-input id="input" .value="${this.value}"
@@ -25,5 +24,4 @@ export function getHtml(this: HomeUrlInputElement) {
   ` : ''}
 </cr-input>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

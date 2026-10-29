@@ -10,11 +10,8 @@ export function getHtml(this: SettingsSkillsPageElement) {
   return html`<!--_html_template_start_-->
 <settings-subpage page-title="$i18n{skillsSettingLabel}"
     route-path="${this.routePath}">
-  <settings-toggle-button
-      id="skillsToggle"
-      pref-key="skills.enabled"
-      label="$i18n{skillsToggleLabel}"
-      sub-label="$i18n{skillsSettingSublabel}">
+  <settings-toggle-button id="skillsToggle" pref-key="skills.enabled"
+      label="$i18n{skillsToggleLabel}" sub-label="$i18n{skillsSettingSublabel}">
   </settings-toggle-button>
   <div class="settings-columned-section">
     <div class="column">
@@ -46,8 +43,7 @@ export function getHtml(this: SettingsSkillsPageElement) {
     </div>
   </div>
   <cr-link-row id="skillsGalleryLink" class="hr"
-      label="$i18n{skillsGalleryHeader}"
-      sub-label="$i18n{skillsGalleryLabel}"
+      label="$i18n{skillsGalleryHeader}" sub-label="$i18n{skillsGalleryLabel}"
       @click="${this.onSkillsGalleryLinkClick_}" external>
   </cr-link-row>
 </settings-subpage>

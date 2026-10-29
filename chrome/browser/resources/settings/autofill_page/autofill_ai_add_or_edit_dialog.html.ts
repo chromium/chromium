@@ -14,25 +14,29 @@ export function getHtml(this: SettingsAutofillAiAddOrEditDialogElement) {
     <div class="title-text">${this.dialogTitle}</div>
 
     ${this.shouldShowWalletBranding_() ? html`
-      <if expr="_google_chrome">
-        ${this.shouldShowStandaloneWalletIcon_() ? html`
-          <div class="title-icon-container-standalone">
-            <img srcset="${this.getScaledSrcSet_('chrome://theme/IDR_AUTOFILL_GOOGLE_WALLET_ICON')}"
-                alt=""
-                role="presentation">
-          </div>
-        ` : html`
-          <div class="title-icon-container">
-            <picture id="branding-image">
-              <source srcset="${this.getScaledSrcSet_('chrome://theme/IDR_AUTOFILL_GOOGLE_WALLET_DARK')}"
-                  media="(prefers-color-scheme: dark)">
-              <img srcset="${this.getScaledSrcSet_('chrome://theme/IDR_AUTOFILL_GOOGLE_WALLET')}"
-                  alt=""
-                  role="presentation">
-            </picture>
-          </div>
-        `}
-      </if>
+<if expr="_google_chrome">
+      ${this.shouldShowStandaloneWalletIcon_() ? html`
+        <div class="title-icon-container-standalone">
+          <img
+              srcset="${this.getScaledSrcSet_(
+                  'chrome://theme/IDR_AUTOFILL_GOOGLE_WALLET_ICON')}"
+              alt="" role="presentation">
+        </div>
+      ` : html`
+        <div class="title-icon-container">
+          <picture id="branding-image">
+            <source
+                srcset="${this.getScaledSrcSet_(
+                    'chrome://theme/IDR_AUTOFILL_GOOGLE_WALLET_DARK')}"
+                media="(prefers-color-scheme: dark)">
+            <img
+                srcset="${this.getScaledSrcSet_(
+                    'chrome://theme/IDR_AUTOFILL_GOOGLE_WALLET')}"
+                alt="" role="presentation">
+          </picture>
+        </div>
+      `}
+</if>
     ` : ''}
   </div>
   <div slot="body">
@@ -41,16 +45,19 @@ export function getHtml(this: SettingsAutofillAiAddOrEditDialogElement) {
       ${this.validationError_}
     </div>
 
-    ${this.completeAttributeInstanceList_.map((attributeInstanceItem, index) => html`
-      ${this.isDataType_(attributeInstanceItem,
-          chrome.autofillPrivate.AttributeTypeDataType.COUNTRY) ? html`
+    ${this.completeAttributeInstanceList_.map(
+        (attributeInstanceItem, index) => html`
+      ${this.isDataType_(
+          attributeInstanceItem,
+          chrome.autofillPrivate.AttributeTypeDataType.COUNTRY) ?
+          html`
         <label id="country-select-label" class="cr-form-field-label">
-          ${attributeInstanceItem.type.typeNameAsString}${this.getRequiredIndicator_(attributeInstanceItem)}
+          ${attributeInstanceItem.type.typeNameAsString}${
+              this.getRequiredIndicator_(attributeInstanceItem)}
         </label>
         <select id="country-select" class="md-select"
             aria-label="${attributeInstanceItem.type.typeNameAsString}"
-            data-index="${index}"
-            @change="${this.onCountrySelectChange_}">
+            data-index="${index}" @change="${this.onCountrySelectChange_}">
           <option value="">$i18n{autofillDropdownNoOptionSelected}</option>
           ${this.countryList_.map(countryItem => html`
             <option value="${this.getCountryCode_(countryItem)}"
@@ -64,58 +71,62 @@ export function getHtml(this: SettingsAutofillAiAddOrEditDialogElement) {
       ` : ''}
 
       <!-- TODO(crbug.com/406006293): Revisit the design of date pickers. -->
-      ${this.isDataType_(attributeInstanceItem,
-          chrome.autofillPrivate.AttributeTypeDataType.DATE) ? html`
+      ${this.isDataType_(
+          attributeInstanceItem,
+          chrome.autofillPrivate.AttributeTypeDataType.DATE) ?
+          html`
         <div class="date-field">
 
-          <label id="date-select-label"
-              class="cr-form-field-label"
+          <label id="date-select-label" class="cr-form-field-label"
               ?hidden="${this.isDateInvalid_(attributeInstanceItem)}">
-            ${attributeInstanceItem.type.typeNameAsString}${this.getRequiredIndicator_(attributeInstanceItem)}
+            ${attributeInstanceItem.type.typeNameAsString}${
+                this.getRequiredIndicator_(attributeInstanceItem)}
           </label>
-          <label id="invalid-date-select-label"
-              class="cr-form-field-label"
+          <label id="invalid-date-select-label" class="cr-form-field-label"
               ?hidden="${!this.isDateInvalid_(attributeInstanceItem)}">
-            ${attributeInstanceItem.type.typeNameAsString}${this.getRequiredIndicator_(attributeInstanceItem)}
+            ${attributeInstanceItem.type.typeNameAsString}${
+                this.getRequiredIndicator_(attributeInstanceItem)}
           </label>
 
           <select id="month-select" class="md-select"
-              aria-label="${this.i18n('autofillAiAccessibilityLabelMonthDropdown',
+              aria-label="${this.i18n(
+                  'autofillAiAccessibilityLabelMonthDropdown',
                   attributeInstanceItem.type.typeNameAsString)}"
-              data-index="${index}"
-              @change="${this.onMonthSelectChange_}">
+              data-index="${index}" @change="${this.onMonthSelectChange_}">
             <option value="">
               $i18n{autofillAiMonthDropdownNoOptionSelected}
             </option>
             ${this.months_.map(month => html`
               <option value="${month}"
-                  ?selected="${this.isMonthSelected_(attributeInstanceItem, month)}">
+                  ?selected="${
+                      this.isMonthSelected_(attributeInstanceItem, month)}">
                 ${this.getMonthName_(month)}
               </option>
             `)}
           </select>
 
           <select id="day-select" class="md-select"
-              aria-label="${this.i18n('autofillAiAccessibilityLabelDayDropdown',
+              aria-label="${this.i18n(
+                  'autofillAiAccessibilityLabelDayDropdown',
                   attributeInstanceItem.type.typeNameAsString)}"
-              data-index="${index}"
-              @change="${this.onDaySelectChange_}">
+              data-index="${index}" @change="${this.onDaySelectChange_}">
             <option value="">
               $i18n{autofillAiDayDropdownNoOptionSelected}
             </option>
             ${this.days_.map(day => html`
               <option value="${day}"
-                  ?selected="${this.isDaySelected_(attributeInstanceItem, day)}">
+                  ?selected="${
+                      this.isDaySelected_(attributeInstanceItem, day)}">
                 ${day}
               </option>
             `)}
           </select>
 
           <select id="year-select" class="md-select"
-              aria-label="${this.i18n('autofillAiAccessibilityLabelYearDropdown',
+              aria-label="${this.i18n(
+                  'autofillAiAccessibilityLabelYearDropdown',
                   attributeInstanceItem.type.typeNameAsString)}"
-              data-index="${index}"
-              @change="${this.onYearSelectChange_}">
+              data-index="${index}" @change="${this.onYearSelectChange_}">
             <option value="">
               $i18n{autofillAiYearDropdownNoOptionSelected}
             </option>
@@ -137,7 +148,8 @@ export function getHtml(this: SettingsAutofillAiAddOrEditDialogElement) {
             </option>
             ${this.years_.map(year => html`
               <option value="${year}"
-                  ?selected="${this.isYearSelected_(attributeInstanceItem, year)}">
+                  ?selected="${
+                      this.isYearSelected_(attributeInstanceItem, year)}">
                 ${year}
               </option>
             `)}
@@ -150,22 +162,22 @@ export function getHtml(this: SettingsAutofillAiAddOrEditDialogElement) {
         </div>
       ` : ''}
 
-      ${this.isDataType_(attributeInstanceItem,
-          chrome.autofillPrivate.AttributeTypeDataType.STRING) ? html`
+      ${this.isDataType_(
+          attributeInstanceItem,
+          chrome.autofillPrivate.AttributeTypeDataType.STRING) ?
+          html`
         <cr-input id="attribute-instance-field" type="text"
             label="${this.computeInputLabel_(attributeInstanceItem)}"
             .value="${attributeInstanceItem.value as string}"
-            data-index="${index}"
-            spellcheck="false" maxlength="1000"
+            data-index="${index}" spellcheck="false" maxlength="1000"
             @value-changed="${this.onAttributeInstanceFieldValueChanged_}"
             @input="${this.onAttributeInstanceFieldInput_}"
             ?invalid="${this.isFieldInvalid_(attributeInstanceItem)}">
         </cr-input>
       ` : ''}
     `)}
-    <div id="footer"
-         ?hidden="${this.shouldHideFooterText_()}"
-         .innerHTML="${this.footerText_}">
+    <div id="footer" ?hidden="${this.shouldHideFooterText_()}"
+        .innerHTML="${this.footerText_}">
     </div>
   </div>
   <div slot="button-container">
@@ -175,9 +187,7 @@ export function getHtml(this: SettingsAutofillAiAddOrEditDialogElement) {
     </cr-button>
     <cr-button class="action-button" ?disabled="${!this.canSave_}"
         @click="${this.onConfirmClick_}">
-      <div class="spinner"
-         ?hidden="${!this.shouldShowSpinner_()}">
-      </div>
+      <div class="spinner" ?hidden="${!this.shouldShowSpinner_()}"></div>
 
       <span ?hidden="${this.shouldShowSpinner_()}">
         <!--

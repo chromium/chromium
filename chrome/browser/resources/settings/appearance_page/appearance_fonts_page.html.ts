@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SettingsAppearanceFontsPageElement} from './appearance_fonts_page.js';
 
 export function getHtml(this: SettingsAppearanceFontsPageElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <settings-subpage page-title="$i18n{customizeFonts}"
     route-path="${this.routePath}">
@@ -194,5 +193,4 @@ export function getHtml(this: SettingsAppearanceFontsPageElement) {
   </div>
 </settings-subpage>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

@@ -28,7 +28,8 @@ export function getHtml(this: SettingsAutofillAiEntriesListElement) {
     <li class="list-item">
       <div class="entity-type-icon"
           ?hidden="${!this.typeNameToIconName_(item.type.typeName)}">
-        <cr-icon icon="${this.typeNameToIconName_(item.type.typeName)}"></cr-icon>
+        <cr-icon icon="${this.typeNameToIconName_(item.type.typeName)}">
+        </cr-icon>
       </div>
       <div class="start">
         <div class="ellipses">${item.entityInstanceLabel}</div>
@@ -38,8 +39,7 @@ export function getHtml(this: SettingsAutofillAiEntriesListElement) {
       </div>
       <div id="walletIndicator" ?hidden="${!item.storedInWallet}">
 <if expr="_google_chrome">
-        <cr-icon aria-hidden="true"
-            icon="settings-internal:google-wallet">
+        <cr-icon aria-hidden="true" icon="settings-internal:google-wallet">
         </cr-icon>
 </if>
 <if expr="not _google_chrome">
@@ -55,15 +55,16 @@ export function getHtml(this: SettingsAutofillAiEntriesListElement) {
         </cr-icon-button>
       ` : html`
         <cr-icon-button id="moreButton" class="icon-more-vert"
-            data-index="${index}"
-            @click="${this.onMoreButtonClick_}"
-            title="${this.i18n('autofillAiMoreActionsForEntityInstance',
+            data-index="${index}" @click="${this.onMoreButtonClick_}"
+            title="${this.i18n(
+                'autofillAiMoreActionsForEntityInstance',
                 item.entityInstanceLabel, item.entityInstanceSubLabel)}">
         </cr-icon-button>
       `}
     </li>
   `)}
-  <li id="entriesNone" class="list-item" ?hidden="${this.entityInstances_.length > 0}">
+  <li id="entriesNone" class="list-item"
+      ?hidden="${this.entityInstances_.length > 0}">
     $i18n{autofillAiEntityInstancesNone}
   </li>
 </ul>
@@ -86,9 +87,13 @@ export function getHtml(this: SettingsAutofillAiEntriesListElement) {
     .template="${() => html`
       <cr-action-menu role-description="$i18n{menu}">
         <button id="menuEditEntityInstance" class="dropdown-item"
-            @click="${this.onMenuEditEntityInstanceClick_}">$i18n{edit}</button>
+            @click="${this.onMenuEditEntityInstanceClick_}">
+          $i18n{edit}
+        </button>
         <button id="menuRemoveEntityInstance" class="dropdown-item"
-            @click="${this.onMenuRemoveEntityInstanceClick_}">$i18n{delete}</button>
+            @click="${this.onMenuRemoveEntityInstanceClick_}">
+          $i18n{delete}
+        </button>
       </cr-action-menu>
     `}">
 </cr-lazy-render-lit>

@@ -11,14 +11,11 @@ export function getHtml(this: AiSiteAddDialogElement) {
 <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
   <div slot="title">Add a site</div>
   <div slot="body">
-    <cr-input id="site" label="Site"
-        placeholder="example.com"
-        .value="${this.site}"
-        @value-changed="${this.onSiteValueChanged_}"
-        ?invalid="${!!this.errorMessage_}"
-        error-message="${this.errorMessage_}"
-        spellcheck="false"
-        autofocus></cr-input>
+    <cr-input id="site" label="Site" placeholder="example.com"
+        .value="${this.site}" @value-changed="${this.onSiteValueChanged_}"
+        ?invalid="${!!this.errorMessage_}" error-message="${this.errorMessage_}"
+        spellcheck="false" autofocus>
+    </cr-input>
   </div>
   <div slot="button-container">
     <cr-button class="cancel-button" @click="${this.onCancelClick_}">

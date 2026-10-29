@@ -11,8 +11,7 @@ export function getHtml(this: SettingsWalletablePassDetectionToggleElement) {
 <settings-toggle-button id="toggle"
     @settings-boolean-control-change="${this.onSettingsBooleanControlChange_}"
     pref-key="synthetic.settings.autofill.walletable_pass_detection_opted_in"
-    ?disabled="${this.ineligibleUser_}"
-    no-extension-indicator
+    ?disabled="${this.ineligibleUser_}" no-extension-indicator
     label="$i18n{walletablePassDetectionToggleLabel}"
     sub-label="$i18n{walletablePassDetectionToggleSubLabel}">
 </settings-toggle-button>
@@ -29,8 +28,7 @@ export function getHtml(this: SettingsWalletablePassDetectionToggleElement) {
         </div>
       </li>
       <li>
-        <cr-icon icon="privacy:notifications"
-            aria-hidden="true"></cr-icon>
+        <cr-icon icon="privacy:notifications" aria-hidden="true"></cr-icon>
         <div class="cr-secondary-text">
           $i18n{walletablePassDetectionWhenOnNotifications}
         </div>

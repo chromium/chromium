@@ -27,11 +27,9 @@ export function getHtml(this: SettingsPayOverTimeIssuerListEntryElement) {
     <div id="paymentsIndicator">
 <if expr="_google_chrome">
       <picture id="paymentsIcon">
-        <source
-            srcset="${this.getGooglePayDarkModeLogoSrcSet_()}"
+        <source srcset="${this.getGooglePayDarkModeLogoSrcSet_()}"
             media="(prefers-color-scheme: dark)">
-        <img alt=""
-            srcset="${this.getGooglePayLightModeLogoSrcSet_()}">
+        <img alt="" srcset="${this.getGooglePayLightModeLogoSrcSet_()}">
       </picture>
 </if>
 <if expr="not _google_chrome">

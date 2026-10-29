@@ -15,7 +15,9 @@ export function getHtml(this: SettingsVirtualCardUnenrollDialogElement) {
   </div>
   <div slot="button-container">
     <cr-button id="cancelButton" class="cancel-button"
-        @click="${this.onCancelButtonClick_}">$i18n{cancel}</cr-button>
+        @click="${this.onCancelButtonClick_}">
+      $i18n{cancel}
+    </cr-button>
     <cr-button id="confirmButton" class="action-button"
         @click="${this.onConfirmButtonClick_}">
       $i18n{unenrollVirtualCardDialogConfirm}

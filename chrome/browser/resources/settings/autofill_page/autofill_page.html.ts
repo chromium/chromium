@@ -17,8 +17,7 @@ export function getHtml(this: SettingsAutofillPageElement) {
 </h2>
 <div class="card-container" @data-category-click="${this.onDataCategoryClick_}"
     @data-chip-click="${this.onDataChipClick_}">
-  <category-reference-card card-title="$i18n{localPasswordManager}"
-      is-external
+  <category-reference-card card-title="$i18n{localPasswordManager}" is-external
       .categoryId="${this.hierarchy_.passwordManager.id}"
       .chips="${this.getVisibleChips_(this.hierarchy_.passwordManager.chips)}">
   </category-reference-card>

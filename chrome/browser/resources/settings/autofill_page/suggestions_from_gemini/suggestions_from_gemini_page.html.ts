@@ -9,20 +9,19 @@ import type {SettingsSuggestionsFromGeminiPageElement} from './suggestions_from_
 export function getHtml(this: SettingsSuggestionsFromGeminiPageElement) {
   return html`<!--_html_template_start_-->
 <settings-subpage page-title="$i18n{autofillPersonalContextSettingsTitle}"
-    route-path="${this.routePath}"
-    class="multi-card">
+    route-path="${this.routePath}" class="multi-card">
   <div class="card">
     <settings-toggle-button id="suggestionsFromGeminiToggle"
         pref-key="generated.find_and_fill_with_gemini"
         label="$i18n{autofillPersonalContextSettingsToggleTitle}"
         sub-label="$i18n{autofillPersonalContextSettingsToggleSummary}"
-        @settings-boolean-control-change="${this.onToggleSettingsBooleanControlChange_}">
+        @settings-boolean-control-change="${
+            this.onToggleSettingsBooleanControlChange_}">
     </settings-toggle-button>
     <cr-link-row id="manageConnectedAppsLinkRow"
         label="$i18n{autofillPersonalContextSettingsManageConnectedAppsTitle}"
         sub-label="$i18n{autofillPersonalContextSettingsManageConnectedAppsSummary}"
-        @click="${this.onManageConnectedAppsClick_}"
-        external>
+        @click="${this.onManageConnectedAppsClick_}" external>
     </cr-link-row>
   </div>
   <div class="card" ?hidden="${!this.showDoubleCtrlShortcut_()}">
@@ -44,8 +43,7 @@ export function getHtml(this: SettingsSuggestionsFromGeminiPageElement) {
       <cr-shortcut-input class="cr-padded-text shortcut-input"
           input-aria-label="$i18n{atMemoryShortcutInputAreaLabel}"
           edit-button-aria-label="$i18n{atMemoryShortcutEditButtonLabel}"
-          clear-button-aria-label=
-              "$i18n{atMemoryShortcutClearButtonLabel}"
+          clear-button-aria-label="$i18n{atMemoryShortcutClearButtonLabel}"
           .shortcut="${this.atMemoryShortcutPref_?.value || ''}"
           allow-ctrl-alt-shortcuts
           @shortcut-updated="${this.onAtMemoryShortcutUpdated_}">
@@ -76,7 +74,8 @@ export function getHtml(this: SettingsSuggestionsFromGeminiPageElement) {
           </li>
           <li>
             <cr-icon icon="settings20:personal-recommendations"
-                aria-hidden="true"></cr-icon>
+                aria-hidden="true">
+            </cr-icon>
             <div class="cr-secondary-text">
               $i18n{suggestionsFromGeminiWhenUsed2}
             </div>
@@ -94,8 +93,7 @@ export function getHtml(this: SettingsSuggestionsFromGeminiPageElement) {
             </div>
           </li>
           <li>
-            <cr-icon icon="settings20:account-box" aria-hidden="true">
-            </cr-icon>
+            <cr-icon icon="settings20:account-box" aria-hidden="true"></cr-icon>
             <div class="cr-secondary-text">
               $i18n{suggestionsFromGeminiConsider2}
             </div>

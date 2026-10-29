@@ -46,7 +46,8 @@ suite('LoggingInfoBullet', function() {
     const li = row.shadowRoot.querySelector('li');
     assertTrue(!!li);
     assertEquals(
-        loadTimeData.getString('aiSubpageSublabelReviewers'), li.textContent);
+        loadTimeData.getString('aiSubpageSublabelReviewers'),
+        li.textContent.trim());
     assertTrue(!!li.querySelector('cr-icon'));
     assertFalse(!!li.querySelector('cr-policy-pref-indicator'));
   });
@@ -67,7 +68,8 @@ suite('LoggingInfoBullet', function() {
     // The custom label is not used since it only applies when logging is
     // disabled.
     assertEquals(
-        loadTimeData.getString('aiSubpageSublabelReviewers'), li.textContent);
+        loadTimeData.getString('aiSubpageSublabelReviewers'),
+        li.textContent.trim());
   });
 
   test('infoBulletPolicyAllowWithoutLogging', async () => {
@@ -84,7 +86,7 @@ suite('LoggingInfoBullet', function() {
     assertTrue(!!li);
     assertEquals(
         loadTimeData.getString('aiSubpageSublabelLoggingManagedDisabled'),
-        li.textContent);
+        li.textContent.trim());
     assertFalse(!!li.querySelector('cr-icon'));
     assertTrue(!!li.querySelector('cr-policy-pref-indicator'));
   });
@@ -103,7 +105,7 @@ suite('LoggingInfoBullet', function() {
 
     const li = row.shadowRoot.querySelector('li');
     assertTrue(!!li);
-    assertEquals(customLabel, li.textContent);
+    assertEquals(customLabel, li.textContent.trim());
   });
 
   test('infoBulletPolicyDisabled', async () => {
@@ -120,7 +122,7 @@ suite('LoggingInfoBullet', function() {
     assertTrue(!!li);
     assertEquals(
         loadTimeData.getString('aiSubpageSublabelLoggingManagedDisabled'),
-        li.textContent);
+        li.textContent.trim());
     assertFalse(!!li.querySelector('cr-icon'));
     assertTrue(!!li.querySelector('cr-policy-pref-indicator'));
   });
@@ -139,7 +141,7 @@ suite('LoggingInfoBullet', function() {
 
     const li = row.shadowRoot.querySelector('li');
     assertTrue(!!li);
-    assertEquals(customLabel, li.textContent);
+    assertEquals(customLabel, li.textContent.trim());
     assertFalse(!!li.querySelector('cr-icon'));
     assertTrue(!!li.querySelector('cr-policy-pref-indicator'));
   });

@@ -12,16 +12,14 @@ export function getHtml(this: SettingsIbanEditDialogElement) {
   <div slot="title">${this.title_}</div>
   <div slot="body">
     <cr-input id="valueInput" label="$i18n{addPaymentMethodIban}"
-        @blur="${this.onIbanInputBlur_}"
-        ?invalid="${this.showErrorForIban_()}"
-        error-message="$i18n{ibanInvalid}"
-        .value="${this.value_}" @value-changed="${this.onValueChanged_}"
-        autofocus>
+        @blur="${this.onIbanInputBlur_}" ?invalid="${this.showErrorForIban_()}"
+        error-message="$i18n{ibanInvalid}" .value="${this.value_}"
+        @value-changed="${this.onValueChanged_}" autofocus>
     </cr-input>
     <cr-input id="nicknameInput" label="$i18n{ibanNickname}"
         .value="${this.nickname_}"
-        @value-changed="${this.onNicknameValueChanged_}"
-        spellcheck="false" maxlength="25"
+        @value-changed="${this.onNicknameValueChanged_}" spellcheck="false"
+        maxlength="25"
         aria-description="${this.i18n('inputMaxLengthDescription', 25)}">
       <div id="charCount" slot="suffix" ?hidden="${!this.nickname_}">
         ${this.computeNicknameCharCount_()}/25
@@ -33,7 +31,9 @@ export function getHtml(this: SettingsIbanEditDialogElement) {
   </div>
   <div slot="button-container">
     <cr-button id="cancelButton" class="cancel-button"
-        @click="${this.onCancelButtonClick_}">$i18n{cancel}</cr-button>
+        @click="${this.onCancelButtonClick_}">
+      $i18n{cancel}
+    </cr-button>
     <cr-button id="saveButton" class="action-button"
         ?disabled="${!this.isIbanValid_()}"
         @click="${this.onIbanSaveButtonClick_}">

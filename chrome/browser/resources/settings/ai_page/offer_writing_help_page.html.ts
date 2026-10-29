@@ -10,93 +10,92 @@ export function getHtml(this: SettingsOfferWritingHelpPageElement) {
   return html`<!--_html_template_start_-->
 <settings-subpage page-title="$i18n{aiComposeLabel}"
     route-path="${this.routePath}">
-<settings-ai-policy-indicator
-    pref-key="optimization_guide.model_execution.compose_enterprise_policy_allowed">
-</settings-ai-policy-indicator>
-<div class="cr-row first">
-  <div class="flex cr-padded-text">
-    <div id="helpMeWriteLabel">$i18n{aiComposeLabel}</div>
-    <div class="secondary">
-      $i18n{aiComposeSublabelV2}$i18n{sentenceEnd}
-      <a href="${this.getLearnMoreUrl_()}"
-          aria-label="$i18n{aiComposeSettingLearnMoreA11y}"
-          aria-description="$i18n{opensInNewTab}"
-          @click="${this.onLearnMoreClick_}" target="_blank">
-        $i18n{learnMore}
-      </a>
-    </div>
-  </div>
-</div>
-<div class="settings-columned-section">
-  <div class="column">
-    <h2 class="description-header">$i18n{columnHeadingWhenUsed}</h2>
-    <ul class="icon-bulleted-list">
-      <li>
-        <cr-icon icon="settings20:pen-spark" aria-hidden="true"></cr-icon>
-        <div class="secondary">$i18n{aiComposeWhenOnWritingHelp}</div>
-      </li>
-      <li>
-        <cr-icon icon="settings20:summarize" aria-hidden="true"></cr-icon>
-        <div class="secondary">$i18n{aiComposeWhenOnWritingExamples}</div>
-      </li>
-      <li>
-        <cr-icon icon="settings20:text-analysis" aria-hidden="true"></cr-icon>
-        <div class="secondary">$i18n{aiComposeWhenOnWritingReferences}</div>
-      </li>
-    </ul>
-  </div>
-  <div class="column">
-    <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
-    <ul class="icon-bulleted-list">
-      <li>
-        <cr-icon icon="settings20:psychiatry" aria-hidden="true"></cr-icon>
-        <div class="secondary">$i18n{aiSubpageSublabelAi}</div>
-      </li>
-      <li>
-        <cr-icon icon="settings20:google" aria-hidden="true"></cr-icon>
-        <div class="secondary">$i18n{aiComposeComposeConsiderData}</div>
-      </li>
-      <settings-ai-logging-info-bullet
-          pref-key="optimization_guide.model_execution.compose_enterprise_policy_allowed">
-      </settings-ai-logging-info-bullet>
-    </ul>
-  </div>
-</div>
-
-${this.enableComposeProactiveNudge_ ? html`
-  <settings-toggle-button class="hr"
-      pref-key="compose.proactive_nudge_enabled"
-      label="$i18n{offerWritingHelpToggleLabel}"
-      sub-label="$i18n{offerWritingHelpToggleSublabel}"
-      @settings-boolean-control-change="${this.onComposeProactiveNudgeToggleSettingsBooleanControlChange_}">
-  </settings-toggle-button>
-  <div class="cr-row">
-    <div id="disabledSitesHeading" class="flex">
-      $i18n{offerWritingHelpDisabledSitesLabelV2}
-    </div>
-  </div>
-  <div id="noDisabledSitesLabel" class="list-frame"
-      ?hidden="${this.hasSites_()}">
-    <div class="list-item secondary">
-      $i18n{offerWritingHelpNoDisabledSites}
-    </div>
-  </div>
-  <div id="disabledSitesList" class="list-frame" role="list">
-    ${this.siteList_.map(item => html`
-      <div class="list-item" role="listitem">
-        <div class="start cr-padded-text">${item}</div>
-        <cr-icon-button
-            class="icon-delete-gray"
-            aria-label="${this.i18n(
-                'offerWritingHelpRemoveDisabledSiteAriaLabel', item)}"
-            data-site="${item}"
-            @click="${this.onDeleteClick_}"
-            title="$i18n{delete}">
-        </cr-icon-button>
+  <settings-ai-policy-indicator
+      pref-key="optimization_guide.model_execution.compose_enterprise_policy_allowed">
+  </settings-ai-policy-indicator>
+  <div class="cr-row first">
+    <div class="flex cr-padded-text">
+      <div id="helpMeWriteLabel">$i18n{aiComposeLabel}</div>
+      <div class="secondary">
+        $i18n{aiComposeSublabelV2}$i18n{sentenceEnd}
+        <a href="${this.getLearnMoreUrl_()}"
+            aria-label="$i18n{aiComposeSettingLearnMoreA11y}"
+            aria-description="$i18n{opensInNewTab}"
+            @click="${this.onLearnMoreClick_}" target="_blank">
+          $i18n{learnMore}
+        </a>
       </div>
-    `)}
+    </div>
   </div>
-` : ''}
+  <div class="settings-columned-section">
+    <div class="column">
+      <h2 class="description-header">$i18n{columnHeadingWhenUsed}</h2>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:pen-spark" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{aiComposeWhenOnWritingHelp}</div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:summarize" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{aiComposeWhenOnWritingExamples}</div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:text-analysis" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{aiComposeWhenOnWritingReferences}</div>
+        </li>
+      </ul>
+    </div>
+    <div class="column">
+      <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:psychiatry" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{aiSubpageSublabelAi}</div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:google" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{aiComposeComposeConsiderData}</div>
+        </li>
+        <settings-ai-logging-info-bullet
+            pref-key="optimization_guide.model_execution.compose_enterprise_policy_allowed">
+        </settings-ai-logging-info-bullet>
+      </ul>
+    </div>
+  </div>
+
+  ${this.enableComposeProactiveNudge_ ? html`
+    <settings-toggle-button class="hr"
+        pref-key="compose.proactive_nudge_enabled"
+        label="$i18n{offerWritingHelpToggleLabel}"
+        sub-label="$i18n{offerWritingHelpToggleSublabel}"
+        @settings-boolean-control-change="${
+            this.onComposeProactiveNudgeToggleSettingsBooleanControlChange_}">
+    </settings-toggle-button>
+    <div class="cr-row">
+      <div id="disabledSitesHeading" class="flex">
+        $i18n{offerWritingHelpDisabledSitesLabelV2}
+      </div>
+    </div>
+    <div id="noDisabledSitesLabel" class="list-frame"
+        ?hidden="${this.hasSites_()}">
+      <div class="list-item secondary">
+        $i18n{offerWritingHelpNoDisabledSites}
+      </div>
+    </div>
+    <div id="disabledSitesList" class="list-frame" role="list">
+      ${this.siteList_.map(item => html`
+        <div class="list-item" role="listitem">
+          <div class="start cr-padded-text">${item}</div>
+          <cr-icon-button class="icon-delete-gray"
+              aria-label="${this.i18n(
+                  'offerWritingHelpRemoveDisabledSiteAriaLabel', item)}"
+              data-site="${item}" @click="${this.onDeleteClick_}"
+              title="$i18n{delete}">
+          </cr-icon-button>
+        </div>
+      `)}
+    </div>
+  ` : ''}
 </settings-subpage>
 <!--_html_template_end_-->`;
 }

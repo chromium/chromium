@@ -8,89 +8,90 @@ import type {SettingsCreditCardListEntryElement} from './credit_card_list_entry.
 
 export function getHtml(this: SettingsCreditCardListEntryElement) {
   return html`<!--_html_template_start_-->
-    <div class="list-item" role="row">
-      <div class="type-column" role="cell">
-        <img id="cardImage" srcset="${this.getCardImage_()}" alt="">
-        <div class="summary-column screen-reader-only-host-node">
-          <div class="screen-reader-only">
-            ${this.getCardIdentifierAriaLabel_()},
-            ${this.getSummaryAriaLabel_()},
-            ${this.getSummaryAriaSublabel_()}
-          </div>
-          <div>
-            <span id="label" class="ellipses" aria-hidden="true">
-              ${this.creditCard.metadata?.summaryLabel || ''}
-            </span>
-            ${this.hasCardIdentifier_() ? html`
-              <div class="sub-label" aria-hidden="true">
-                <span id="summaryLabel_1">
-                  ${this.creditCard.metadata?.summarySublabel || ''}
-                </span>
-                <span id="summaryLabel_2">
-                  ${this.getExpirationlabel_()}
-                </span>
-              </div>
-            ` : html`
-              <span id="expirationLabel" class="sub-label" aria-hidden="true">
-                ${this.getExpirationlabel_()}
-              </span>
-            `}
-          </div>
-          <div id="summarySublabel" class="sub-label">
-            <!-- aria-hidden is true because the screen-reader-only section
-                 above handles this content via getSummaryAriaSublabel_. -->
-            <span aria-hidden="true">${this.getSummarySublabel_()}</span>
-            ${this.hasSummaryAndBenefitSublabel_() ? html`|` : ''}
-            ${this.isCardBenefitsProductUrlAvailable_() ? html`
-              <a id="summaryTermsLink"
-                aria-label="${this.getBenefitsTermsAriaLabel_()}"
-                aria-description="$i18n{opensInNewTab}"
-                @click="${this.onSummarySublabelTermsLinkClick_}"
-                href="${this.getCardBenefitsProductUrl_()}"
-                target="_blank">$i18n{benefitsTermsTagForCreditCardListEntry}</a>
-            ` : ''}
-          </div>
-        </div>
+<div class="list-item" role="row">
+  <div class="type-column" role="cell">
+    <img id="cardImage" srcset="${this.getCardImage_()}" alt="">
+    <div class="summary-column screen-reader-only-host-node">
+      <div class="screen-reader-only">
+        ${this.getCardIdentifierAriaLabel_()},
+        ${this.getSummaryAriaLabel_()},
+        ${this.getSummaryAriaSublabel_()}
       </div>
-      <div class="expiration-column">
-        <div role="cell" class="misc-column">
-          <div id="paymentsIndicator"
-              ?hidden="${!this.shouldShowPaymentsIndicator_()}">
-            <if expr="_google_chrome">
-              <picture id="paymentsIcon">
-                <source
-                    srcset="${this.getGooglePayDarkModeLogoSrcSet_()}"
-                    media="(prefers-color-scheme: dark)">
-                <img alt=""
-                    srcset="${this.getGooglePayLightModeLogoSrcSet_()}">
-              </picture>
-            </if>
-            <if expr="not _google_chrome">
-              <span class="sub-label">
-                $i18n{googlePayments}
-              </span>
-            </if>
+      <div>
+        <span id="label" class="ellipses" aria-hidden="true">
+          ${this.creditCard.metadata?.summaryLabel || ''}
+        </span>
+        ${this.hasCardIdentifier_() ? html`
+          <div class="sub-label" aria-hidden="true">
+            <span id="summaryLabel_1">
+              ${this.creditCard.metadata?.summarySublabel || ''}
+            </span>
+            <span id="summaryLabel_2">
+              ${this.getExpirationlabel_()}
+            </span>
           </div>
-          ${this.showDots_() ? html`
-            <cr-icon-button class="icon-more-vert" id="creditCardMenu"
-                title="${this.moreActionsTitle_()}"
-                @click="${this.onDotsMenuClick_}">
-            </cr-icon-button>
-          ` : ''}
-          ${this.shouldShowOutlinkWithWalletBranding_() ? html`
-            <cr-icon-button class="icon-external" id="remoteCreditCardLink"
-                title="$i18n{remotePaymentMethodsWalletLinkLabel}" role="link"
-                @click="${this.onRemoteEditClick_}"
-                aria-description="$i18n{opensInNewTab}"></cr-icon-button>
-          ` : ''}
-          ${this.shouldShowOutlinkWithoutWalletBranding_() ? html`
-            <cr-icon-button class="icon-external" id="remoteCreditCardLink"
-                title="$i18n{remotePaymentMethodsLinkLabel}" role="link"
-                @click="${this.onRemoteEditClick_}"
-                aria-description="$i18n{opensInNewTab}"></cr-icon-button>
-          ` : ''}
-        </div>
+        ` : html`
+          <span id="expirationLabel" class="sub-label" aria-hidden="true">
+            ${this.getExpirationlabel_()}
+          </span>
+        `}
+      </div>
+      <div id="summarySublabel" class="sub-label">
+        <!-- aria-hidden is true because the screen-reader-only section
+                 above handles this content via getSummaryAriaSublabel_. -->
+        <span aria-hidden="true">${this.getSummarySublabel_()}</span>
+        ${this.hasSummaryAndBenefitSublabel_() ? html`|` : ''}
+        ${this.isCardBenefitsProductUrlAvailable_() ? html`
+          <a id="summaryTermsLink"
+              aria-label="${this.getBenefitsTermsAriaLabel_()}"
+              aria-description="$i18n{opensInNewTab}"
+              @click="${this.onSummarySublabelTermsLinkClick_}"
+              href="${this.getCardBenefitsProductUrl_()}" target="_blank">
+            $i18n{benefitsTermsTagForCreditCardListEntry}
+          </a>
+        ` : ''}
       </div>
     </div>
+  </div>
+  <div class="expiration-column">
+    <div role="cell" class="misc-column">
+      <div id="paymentsIndicator"
+          ?hidden="${!this.shouldShowPaymentsIndicator_()}">
+<if expr="_google_chrome">
+        <picture id="paymentsIcon">
+          <source srcset="${this.getGooglePayDarkModeLogoSrcSet_()}"
+              media="(prefers-color-scheme: dark)">
+          <img alt="" srcset="${this.getGooglePayLightModeLogoSrcSet_()}">
+        </picture>
+</if>
+<if expr="not _google_chrome">
+        <span class="sub-label">
+          $i18n{googlePayments}
+        </span>
+</if>
+      </div>
+      ${this.showDots_() ? html`
+        <cr-icon-button class="icon-more-vert" id="creditCardMenu"
+            title="${this.moreActionsTitle_()}"
+            @click="${this.onDotsMenuClick_}">
+        </cr-icon-button>
+      ` : ''}
+      ${this.shouldShowOutlinkWithWalletBranding_() ? html`
+        <cr-icon-button class="icon-external" id="remoteCreditCardLink"
+            title="$i18n{remotePaymentMethodsWalletLinkLabel}" role="link"
+            @click="${this.onRemoteEditClick_}"
+            aria-description="$i18n{opensInNewTab}">
+        </cr-icon-button>
+      ` : ''}
+      ${this.shouldShowOutlinkWithoutWalletBranding_() ? html`
+        <cr-icon-button class="icon-external" id="remoteCreditCardLink"
+            title="$i18n{remotePaymentMethodsLinkLabel}" role="link"
+            @click="${this.onRemoteEditClick_}"
+            aria-description="$i18n{opensInNewTab}">
+        </cr-icon-button>
+      ` : ''}
+    </div>
+  </div>
+</div>
 <!--_html_template_end_-->`;
 }

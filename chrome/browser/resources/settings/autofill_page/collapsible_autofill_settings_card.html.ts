@@ -23,8 +23,7 @@ export function getHtml(this: CollapsibleAutofillSettingsCardElement) {
           this.onOptInToggleSettingsBooleanControlChange_}"
       ?disabled="${this.optInToggleDisabled_()}"
       pref-key="synthetic.settings.autofill.enhanced_autofill_opted_in"
-      no-extension-indicator
-      label="$i18n{autofillAiPageTitle}"
+      no-extension-indicator label="$i18n{autofillAiPageTitle}"
       sub-label="$i18n{autofillAiToggleSubLabel}">
   </settings-toggle-button>
   ${this.showExtensionControlledIndicator_() ? html`
@@ -44,8 +43,7 @@ export function getHtml(this: CollapsibleAutofillSettingsCardElement) {
       <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
       <ul class="icon-bulleted-list">
         <li>
-          <cr-icon icon="settings20:text-analysis" aria-hidden="true">
-          </cr-icon>
+          <cr-icon icon="settings20:text-analysis" aria-hidden="true"></cr-icon>
           <div class="cr-secondary-text">
             $i18n{autofillAiWhenOnCanFillDifficultFields}
           </div>
@@ -62,31 +60,29 @@ export function getHtml(this: CollapsibleAutofillSettingsCardElement) {
           </div>
         </li>
         ${this.showLoggingInfoBullet_() ? html`
-          <settings-ai-logging-info-bullet
-              id="enterpriseInfoBullet"
+          <settings-ai-logging-info-bullet id="enterpriseInfoBullet"
               pref-key="optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed"
-              logging-managed-disabled-custom-label=
-                  "$i18n{autofillAiSubpageSublabelLoggingManagedDisabled}">
+              logging-managed-disabled-custom-label="$i18n{autofillAiSubpageSublabelLoggingManagedDisabled}">
           </settings-ai-logging-info-bullet>
         ` : ''}
       </ul>
     </div>
   </div>
 
-  <if expr="is_win or is_macosx or is_chromeos">
-    ${this.autofillAiReauthOnViewingSensitiveDataEnabled_ ? html`
-      <settings-toggle-button id="optInAuthenticationToggle"
-          ?disabled="${!this.enhancedAutofillEligibleUser_}"
-          pref-key="autofill.autofill_ai.reauth_before_viewing_sensitive_data"
-          no-extension-indicator
-          label="$i18n{autofillAiAuthenticationToggleTitle}"
-          sub-label="$i18n{autofillAiAuthenticationToggleSubtitle}"
-          no-toggle-on-host-click
-          @click="${this.onChangeAuthenticationRequirementClick_}"
-          @change="${this.onChangeAuthenticationRequirementChange_}">
-      </settings-toggle-button>
-    ` : ''}
-  </if>
+<if expr="is_win or is_macosx or is_chromeos">
+  ${this.autofillAiReauthOnViewingSensitiveDataEnabled_ ? html`
+    <settings-toggle-button id="optInAuthenticationToggle"
+        ?disabled="${!this.enhancedAutofillEligibleUser_}"
+        pref-key="autofill.autofill_ai.reauth_before_viewing_sensitive_data"
+        no-extension-indicator
+        label="$i18n{autofillAiAuthenticationToggleTitle}"
+        sub-label="$i18n{autofillAiAuthenticationToggleSubtitle}"
+        no-toggle-on-host-click
+        @click="${this.onChangeAuthenticationRequirementClick_}"
+        @change="${this.onChangeAuthenticationRequirementChange_}">
+    </settings-toggle-button>
+  ` : ''}
+</if>
 
   ${this.isUserEligibleForWalletablePassDetection_ ? html`
     <div class="hr"></div>

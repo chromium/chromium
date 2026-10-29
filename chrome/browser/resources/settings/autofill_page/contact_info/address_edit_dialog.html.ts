@@ -8,80 +8,73 @@ import type {SettingsAddressEditDialogElement} from './address_edit_dialog.js';
 
 export function getHtml(this: SettingsAddressEditDialogElement) {
   return html`<!--_html_template_start_-->
-    <cr-dialog id="dialog" close-text="$i18n{close}">
-      <div slot="title">${this.title_}</div>
-      <div slot="body">
-        <div id="select-row" class="address-row">
-          <label id="select-label" class="cr-form-field-label">
-            $i18n{addressCountry}
-          </label>
-          <select id="country" class="md-select" aria-labelledby="select-label"
-              .value="${this.countryCode_}"
-              @change="${this.onCountryCodeSelectChange_}" autofocus>
-            <!-- TODO(crbug.com/403312087): Use
+<cr-dialog id="dialog" close-text="$i18n{close}">
+  <div slot="title">${this.title_}</div>
+  <div slot="body">
+    <div id="select-row" class="address-row">
+      <label id="select-label" class="cr-form-field-label">
+        $i18n{addressCountry}
+      </label>
+      <select id="country" class="md-select" aria-labelledby="select-label"
+          .value="${this.countryCode_}"
+          @change="${this.onCountryCodeSelectChange_}" autofocus>
+        <!-- TODO(crbug.com/403312087): Use
                  $i18n{autofillDropdownNoOptionSelected} as a text for this
                  option once the string is approved. -->
-            <option value="" ?hidden="${this.isAccountAddress_}"></option>
-            ${this.countries_.map(item => html`
-              <option value="${this.getCode_(item)}"
-                  ?disabled="${this.isDivision_(item)}">
-                ${this.getName_(item)}
-              </option>
-            `)}
-          </select>
-        </div>
-        ${this.components_.map((row, rowIndex) => html`
-          <div class="address-row">
-            ${row.map((item, columnIndex) => html`
-              ${item.isTextarea ? html`
-                <cr-textarea label="${item.label}"
-                    .value="${item.value}"
-                    @value-changed="${this.onValueChanged_}"
-                    data-row="${rowIndex}"
-                    data-column="${columnIndex}"
-                    class="address-column ${item.additionalClassName}"
-                    spellcheck="false" maxlength="1000"
-                    ?required="${item.isRequired}"
-                    ?invalid="${this.isVisuallyInvalid_(item.isValidatable,
-                                                        item.isValid)}">
-                </cr-textarea>
-              ` : html`
-                <cr-input type="text" label="${item.label}"
-                    .value="${item.value}"
-                    @value-changed="${this.onValueChanged_}"
-                    data-row="${rowIndex}"
-                    data-column="${columnIndex}"
-                    spellcheck="false" maxlength="1000"
-                    class="address-column ${item.additionalClassName}
-                        ${this.getPhoneNumberInputClass_(item.fieldType)}"
-                    ?required="${item.isRequired}"
-                    ?invalid="${this.isVisuallyInvalid_(item.isValidatable,
-                                                        item.isValid)}">
-                </cr-input>
-              `}
-            `)}
-          </div>
+        <option value="" ?hidden="${this.isAccountAddress_}"></option>
+        ${this.countries_.map(item => html`
+          <option value="${this.getCode_(item)}"
+              ?disabled="${this.isDivision_(item)}">
+            ${this.getName_(item)}
+          </option>
         `)}
-        <div id="notices" ?hidden="${!this.isAccountAddress_}">
-          <div id="validationError" ?hidden="${!this.validationError_}">
-            ${this.validationError_}
-          </div>
-          <div id="accountRecordTypeNotice"
-              ?hidden="${!this.accountAddressRecordTypeNotice_}">
-            ${this.accountAddressRecordTypeNotice_}
-          </div>
-        </div>
+      </select>
+    </div>
+    ${this.components_.map((row, rowIndex) => html`
+      <div class="address-row">
+        ${row.map((item, columnIndex) => html`
+          ${item.isTextarea ? html`
+            <cr-textarea label="${item.label}" .value="${item.value}"
+                @value-changed="${this.onValueChanged_}" data-row="${rowIndex}"
+                data-column="${columnIndex}"
+                class="address-column ${item.additionalClassName}"
+                spellcheck="false" maxlength="1000"
+                ?required="${item.isRequired}" ?invalid="${
+                    this.isVisuallyInvalid_(item.isValidatable, item.isValid)}">
+            </cr-textarea>
+          ` : html`
+            <cr-input type="text" label="${item.label}" .value="${item.value}"
+                @value-changed="${this.onValueChanged_}" data-row="${rowIndex}"
+                data-column="${columnIndex}" spellcheck="false" maxlength="1000"
+                class="address-column ${item.additionalClassName}
+                        ${this.getPhoneNumberInputClass_(item.fieldType)}"
+                ?required="${item.isRequired}" ?invalid="${
+                    this.isVisuallyInvalid_(item.isValidatable, item.isValid)}">
+            </cr-input>
+          `}
+        `)}
       </div>
-      <div slot="button-container">
-        <cr-button id="cancelButton" class="cancel-button"
-            @click="${this.onCancelClick_}">
-          $i18n{cancel}
-        </cr-button>
-        <cr-button id="saveButton" class="action-button"
-            ?disabled="${!this.canSave_}" @click="${this.onSaveButtonClick_}">
-          $i18n{save}
-        </cr-button>
+    `)}
+    <div id="notices" ?hidden="${!this.isAccountAddress_}">
+      <div id="validationError" ?hidden="${!this.validationError_}">
+        ${this.validationError_}
       </div>
-    </cr-dialog>
+      <div id="accountRecordTypeNotice"
+          ?hidden="${!this.accountAddressRecordTypeNotice_}">
+        ${this.accountAddressRecordTypeNotice_}
+      </div>
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button id="cancelButton" class="cancel-button"
+        @click="${this.onCancelClick_}">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button id="saveButton" class="action-button"
+        ?disabled="${!this.canSave_}" @click="${this.onSaveButtonClick_}">
+      $i18n{save}
+    </cr-button>
+  </div>
+</cr-dialog>
 <!--_html_template_end_-->`;
 }

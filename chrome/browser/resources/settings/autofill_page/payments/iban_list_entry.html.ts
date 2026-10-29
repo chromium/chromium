@@ -26,11 +26,9 @@ export function getHtml(this: SettingsIbanListEntryElement) {
         ?hidden="${!this.shouldShowGooglePaymentsIndicator_()}">
 <if expr="_google_chrome">
       <picture id="paymentsIcon">
-        <source
-            srcset="${this.getGooglePayDarkModeLogoSrcSet_()}"
+        <source srcset="${this.getGooglePayDarkModeLogoSrcSet_()}"
             media="(prefers-color-scheme: dark)">
-        <img alt=""
-            srcset="${this.getGooglePayLightModeLogoSrcSet_()}">
+        <img alt="" srcset="${this.getGooglePayLightModeLogoSrcSet_()}">
       </picture>
 </if>
 <if expr="not _google_chrome">
@@ -39,21 +37,23 @@ export function getHtml(this: SettingsIbanListEntryElement) {
     </div>
     ${this.showDotsMenu_() ? html`
       <cr-icon-button class="icon-more-vert" id="ibanMenu"
-           title="${this.getMoreActionsTitle_()}"
-           @click="${this.onDotsMenuClick_}">
+          title="${this.getMoreActionsTitle_()}"
+          @click="${this.onDotsMenuClick_}">
       </cr-icon-button>
     ` : ''}
     ${this.shouldShowOutlinkWithWalletBranding_() ? html`
       <cr-icon-button class="icon-external" id="remoteIbanLink"
           title="$i18n{remotePaymentMethodsWalletLinkLabel}" role="link"
           @click="${this.onRemoteEditClick_}"
-          aria-description="$i18n{opensInNewTab}"></cr-icon-button>
+          aria-description="$i18n{opensInNewTab}">
+      </cr-icon-button>
     ` : ''}
     ${this.shouldShowOutlinkWithoutWalletBranding_() ? html`
       <cr-icon-button class="icon-external" id="remoteIbanLink"
           title="$i18n{remotePaymentMethodsLinkLabel}" role="link"
           @click="${this.onRemoteEditClick_}"
-          aria-description="$i18n{opensInNewTab}"></cr-icon-button>
+          aria-description="$i18n{opensInNewTab}">
+      </cr-icon-button>
     ` : ''}
   </div>
 </div>

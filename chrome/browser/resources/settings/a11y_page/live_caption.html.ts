@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SettingsLiveCaptionElement} from './live_caption.js';
 
 export function getHtml(this: SettingsLiveCaptionElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 ${!this.enableLiveCaptionMultiLanguage_ ? html`
   <div class="cr-row cr-row-with-template first">
@@ -34,7 +33,8 @@ ${!this.enableLiveCaptionMultiLanguage_ ? html`
         <span aria-live="polite" class="cr-secondary-text cr-row-gap">
           ${this.computeSpeechRecognitionSmallExpertModelStatus_()}
         </span>
-        ${this.speechRecognitionSmallExpertModelState_ === 'kInstalled' ? html`
+        ${this.speechRecognitionSmallExpertModelState_ === 'kInstalled' ?
+            html`
           <cr-icon-button iron-icon="cr:delete"
               id="deleteSpeechRecognitionSmallExpertModelButton"
               @click="${this.onDeleteSpeechRecognitionSmallExpertModelClick_}"
@@ -77,7 +77,8 @@ ${this.enableLiveCaptionMultiLanguage_ ? html`
         <span aria-live="polite" class="cr-secondary-text cr-row-gap">
           ${this.computeSpeechRecognitionSmallExpertModelStatus_()}
         </span>
-        ${this.speechRecognitionSmallExpertModelState_ === 'kInstalled' ? html`
+        ${this.speechRecognitionSmallExpertModelState_ === 'kInstalled' ?
+            html`
           <cr-icon-button iron-icon="cr:delete"
               id="deleteSpeechRecognitionSmallExpertModelButton"
               @click="${this.onDeleteSpeechRecognitionSmallExpertModelClick_}"
@@ -88,40 +89,40 @@ ${this.enableLiveCaptionMultiLanguage_ ? html`
       </div>
     ` : ''}
     ${!this.enableLiveCaptionSpeechRecognitionSmallExpertModel_ ? html`
-    <div class="cr-row continuation">
-      <div class="flex settings-box-text">
-        $i18n{captionsManageLanguagesTitle}
-        <div class="secondary">$i18n{captionsManageLanguagesSubtitle}</div>
+      <div class="cr-row continuation">
+        <div class="flex settings-box-text">
+          $i18n{captionsManageLanguagesTitle}
+          <div class="secondary">$i18n{captionsManageLanguagesSubtitle}</div>
+        </div>
+        <cr-button id="addLanguage" @click="${this.onAddLanguagesClick_}">
+          $i18n{addLanguages}
+        </cr-button>
       </div>
-      <cr-button id="addLanguage" @click="${this.onAddLanguagesClick_}">
-        $i18n{addLanguages}
-      </cr-button>
-    </div>
-    <div class="list-frame">
-      <div id="languageList" class="vertical-list" role="list">
-        ${this.installedLanguagePacks_.map(item => html`
-          <div class="list-item" role="listitem">
-            <div class="start cr-padded-text">${item.displayName}
-              <span id="defaultLanguageLabel"
-                  ?hidden="${!this.isDefaultLanguage_(item.code)}">
-                $i18n{defaultLanguageLabel}
+      <div class="list-frame">
+        <div id="languageList" class="vertical-list" role="list">
+          ${this.installedLanguagePacks_.map(item => html`
+            <div class="list-item" role="listitem">
+              <div class="start cr-padded-text">
+                ${item.displayName}
+                <span id="defaultLanguageLabel"
+                    ?hidden="${!this.isDefaultLanguage_(item.code)}">
+                  $i18n{defaultLanguageLabel}
+                </span>
+              </div>
+              <span aria-live="polite" role="region"
+                  class="cr-secondary-text cr-row-gap">
+                ${item.downloadProgress}
               </span>
+              <cr-icon-button class="icon-more-vert" title="$i18n{moreActions}"
+                  id="more-${item.code}" data-code="${item.code}"
+                  @click="${this.onDotsClick_}"
+                  aria-label="${this.computeMoreButtonAriaLabel_(
+                      item.displayName, item.code)}">
+              </cr-icon-button>
             </div>
-            <span aria-live="polite" role="region"
-                class="cr-secondary-text cr-row-gap">
-              ${item.downloadProgress}
-            </span>
-            <cr-icon-button class="icon-more-vert" title="$i18n{moreActions}"
-                id="more-${item.code}"
-                data-code="${item.code}"
-                @click="${this.onDotsClick_}"
-                aria-label="${this.computeMoreButtonAriaLabel_(
-                    item.displayName, item.code)}">
-            </cr-icon-button>
-          </div>
-        `)}
+          `)}
+        </div>
       </div>
-    </div>
     ` : ''}
     <settings-toggle-button id="maskOffensiveWordsToggleButton"
         pref-key="accessibility.captions.live_caption_mask_offensive_words"
@@ -157,5 +158,4 @@ ${this.showAddLanguagesDialog_ ? html`
 </cr-lazy-render-lit>
 </if>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

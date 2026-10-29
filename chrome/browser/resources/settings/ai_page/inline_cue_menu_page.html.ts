@@ -15,8 +15,7 @@ export function getHtml(this: SettingsInlineCueMenuPageElement) {
   <div class="preview-container">
     <h2 class="preview-label">$i18n{siteSettingsInlineCueMenuPreview}</h2>
     <div class="preview-box">
-      <div class="preview-text-block"
-          .innerHTML="${this.getPreviewText_()}">
+      <div class="preview-text-block" .innerHTML="${this.getPreviewText_()}">
       </div>
     </div>
     <div class="preview-pill">
@@ -31,8 +30,7 @@ export function getHtml(this: SettingsInlineCueMenuPageElement) {
   </div>
   <settings-toggle-button id="mainToggle"
       pref-key="synthetic.settings.contextual_cueing.inline_cue_menu.enabled"
-      no-set-pref
-      label="$i18n{siteSettingsInlineCueMenuToggleLabel}"
+      no-set-pref label="$i18n{siteSettingsInlineCueMenuToggleLabel}"
       sub-label="$i18n{siteSettingsInlineCueMenuToggleSublabel}"
       @settings-boolean-control-change="${
           this.onMainToggleSettingsBooleanControlChange_}">
@@ -62,8 +60,7 @@ export function getHtml(this: SettingsInlineCueMenuPageElement) {
   </div>
   ${this.showAddSiteDialog_ ? html`
     <add-site-dialog .category="${ContentSettingsTypes.INLINE_CUE_MENU}"
-        .contentSetting="${ContentSetting.BLOCK}"
-        .hasIncognito="${false}"
+        .contentSetting="${ContentSetting.BLOCK}" .hasIncognito="${false}"
         @close="${this.onAddSiteDialogClose_}">
     </add-site-dialog>
   ` : ''}

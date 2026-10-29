@@ -9,38 +9,37 @@ import type {SettingsAiInfoCardElement} from './ai_info_card.js';
 export function getHtml(this: SettingsAiInfoCardElement) {
   return html`<!--_html_template_start_-->
 <settings-section>
-<div class="settings-columned-section">
-  <div class="column">
-    <h2 class="title first">$i18n{aiPageMainTitle}</h2>
-    <h3 class="description-header">$i18n{columnHeadingConsider}</h3>
-    <ul class="icon-bulleted-list">
-      <li>
-        <cr-icon icon="settings20:psychiatry" aria-hidden="true"></cr-icon>
-        <div class="secondary">$i18n{aiPageMainSublabel1}</div>
-      </li>
-      <li>
-        <cr-icon icon="settings20:google" aria-hidden="true"></cr-icon>
-        <div class="secondary">$i18n{aiPageMainSublabel2}</div>
-      </li>
-      <li>
-        <cr-icon icon="${this.getIcon3_()}" aria-hidden="true"></cr-icon>
-        <div class="secondary">
-        ${this.isManaged_() ? html`
-          $i18n{aiPageMainManagedSublabel3}
-          <a href="$i18n{aiPageMainManagedLearnMoreUrl}"
-              aria-label="$i18n{aiPageMainManagedLearnMoreAccessibiltyLabel}"
-              aria-description="$i18n{opensInNewTab}"
-              target="_blank">
-            $i18n{learnMore}
-          </a>
-        ` : html`
-          $i18n{aiPageMainSublabel3}
-        `}
-        </div>
-      </li>
-    </ul>
+  <div class="settings-columned-section">
+    <div class="column">
+      <h2 class="title first">$i18n{aiPageMainTitle}</h2>
+      <h3 class="description-header">$i18n{columnHeadingConsider}</h3>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:psychiatry" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{aiPageMainSublabel1}</div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:google" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{aiPageMainSublabel2}</div>
+        </li>
+        <li>
+          <cr-icon icon="${this.getIcon3_()}" aria-hidden="true"></cr-icon>
+          <div class="secondary">
+            ${this.isManaged_() ? html`
+              $i18n{aiPageMainManagedSublabel3}
+              <a href="$i18n{aiPageMainManagedLearnMoreUrl}"
+                  aria-label="$i18n{aiPageMainManagedLearnMoreAccessibiltyLabel}"
+                  aria-description="$i18n{opensInNewTab}" target="_blank">
+                $i18n{learnMore}
+              </a>
+            ` : html`
+              $i18n{aiPageMainSublabel3}
+            `}
+          </div>
+        </li>
+      </ul>
+    </div>
   </div>
-</div>
 </settings-section>
 <!--_html_template_end_-->`;
 }

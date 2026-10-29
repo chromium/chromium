@@ -15,7 +15,9 @@ export function getHtml(this: SettingsAiModeSearchPageElement) {
           label="$i18n{stsSettingsOption1ShareOpenTabsForEveryThreadV3}"
           @click="${this.onLearnMoreRowClick_}" external>
         <div slot="sub-label">
-          <span>$i18n{stsSettingsOption1ChooseHowRelevantOpenTabsCanBeUsedV3}</span>
+          <span>
+            $i18n{stsSettingsOption1ChooseHowRelevantOpenTabsCanBeUsedV3}
+          </span>
           <a href="https://support.google.com/chrome?p=ai_mode_search"
               aria-label="$i18n{stsSettingsOption1LearnMore}"
               aria-description="$i18n{opensInNewTab}"
@@ -32,7 +34,9 @@ export function getHtml(this: SettingsAiModeSearchPageElement) {
             $i18n{stsSettingsOption1ShareOpenTabsForEveryThreadV3}
           </div>
           <div class="secondary">
-            <span>$i18n{stsSettingsOption1ChooseHowRelevantOpenTabsCanBeUsedV3}</span>
+            <span>
+              $i18n{stsSettingsOption1ChooseHowRelevantOpenTabsCanBeUsedV3}
+            </span>
             <a href="https://support.google.com/chrome?p=ai_mode_search"
                 aria-label="$i18n{stsSettingsOption1LearnMore}"
                 aria-description="$i18n{opensInNewTab}" id="learnMoreLink"
@@ -48,8 +52,7 @@ export function getHtml(this: SettingsAiModeSearchPageElement) {
         $i18n{aiSubpageFeatureManagedDisabledLabel}
       </div>
     `}
-    <settings-toggle-button
-        id="shareTabsEveryThreadToggle"
+    <settings-toggle-button id="shareTabsEveryThreadToggle"
         aria-label="$i18n{stsSettingsOption1ShareOpenTabsForEveryThreadV3}"
         pref-key="contextual_tasks.share_open_tabs_every_thread"
         ?disabled="${this.isDisabledByPolicy_()}">
@@ -67,8 +70,7 @@ export function getHtml(this: SettingsAiModeSearchPageElement) {
       $i18n{add}
     </cr-button>
   </div>
-  <div id="noSitesAddedLabel" class="list-frame"
-      ?hidden="${this.hasSites_()}">
+  <div id="noSitesAddedLabel" class="list-frame" ?hidden="${this.hasSites_()}">
     <div class="list-item">
       <div class="flex secondary">
         No sites added
@@ -79,29 +81,27 @@ export function getHtml(this: SettingsAiModeSearchPageElement) {
     ${this.siteList_.map(item => html`
       <div class="list-item" role="listitem">
         <div class="start cr-padded-text">${item}</div>
-        <cr-icon-button
-            class="icon-more-vert"
-            aria-label="More actions"
-            data-site="${item}"
-            @click="${this.onMenuClick_}"
+        <cr-icon-button class="icon-more-vert" aria-label="More actions"
+            data-site="${item}" @click="${this.onMenuClick_}"
             title="More actions">
         </cr-icon-button>
       </div>
     `)}
   </div>
 
-  <cr-lazy-render-lit id="menu" .template="${() => html`
-    <cr-action-menu>
-      <button id="edit" class="dropdown-item" role="menuitem"
-          @click="${this.onEditClick_}">
-        $i18n{edit}
-      </button>
-      <button id="delete" class="dropdown-item" role="menuitem"
-          @click="${this.onRemoveSiteClick_}">
-        $i18n{remove}
-      </button>
-    </cr-action-menu>
-  `}">
+  <cr-lazy-render-lit id="menu"
+      .template="${() => html`
+        <cr-action-menu>
+          <button id="edit" class="dropdown-item" role="menuitem"
+              @click="${this.onEditClick_}">
+            $i18n{edit}
+          </button>
+          <button id="delete" class="dropdown-item" role="menuitem"
+              @click="${this.onRemoveSiteClick_}">
+            $i18n{remove}
+          </button>
+        </cr-action-menu>
+      `}">
   </cr-lazy-render-lit>
 
   ${this.showAddSiteDialog_ ? html`

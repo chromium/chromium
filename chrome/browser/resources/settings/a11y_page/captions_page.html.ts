@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SettingsCaptionsPageElement} from './captions_page.js';
 
 export function getHtml(this: SettingsCaptionsPageElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <settings-subpage page-title="$i18n{captionsTitle}"
     route-path="${this.routePath}">
@@ -21,13 +20,14 @@ export function getHtml(this: SettingsCaptionsPageElement) {
     <div class="start">$i18n{captionsPreferencesSubtitle}</div>
   </div>
   <div class="preview-box">
-    <span style="
-        font-size:${this.textSizePref_?.value};
-        font-family:${this.getFontFamily_()};
-        background-color: ${this.computeBackgroundColor_()};
-        color: ${this.computeTextColor_()};
-        text-shadow: ${this.textShadowPref_?.value};
-        padding: ${this.computePadding_(this.textSizePref_?.value || '')}">
+    <span
+        style="
+            font-size:${this.textSizePref_?.value};
+            font-family:${this.getFontFamily_()};
+            background-color: ${this.computeBackgroundColor_()};
+            color: ${this.computeTextColor_()};
+            text-shadow: ${this.textShadowPref_?.value};
+            padding: ${this.computePadding_(this.textSizePref_?.value || '')}">
       $i18n{quickBrownFox}
     </span>
   </div>
@@ -105,5 +105,4 @@ export function getHtml(this: SettingsCaptionsPageElement) {
   </div>
 </settings-subpage>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

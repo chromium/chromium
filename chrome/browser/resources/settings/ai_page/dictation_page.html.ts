@@ -31,8 +31,7 @@ export function getHtml(this: SettingsDictationPageElement) {
           input-aria-label="$i18n{dictationShortcutLabel}"
           edit-button-aria-label="$i18n{dictationShortcutEditLabel}"
           clear-button-aria-label="$i18n{dictationShortcutClearLabel}"
-          .shortcut="${this.registeredShortcut_}"
-          allow-ctrl-alt-shortcuts
+          .shortcut="${this.registeredShortcut_}" allow-ctrl-alt-shortcuts
           @shortcut-updated="${this.onShortcutUpdated_}">
       </cr-shortcut-input>
     </div>
