@@ -4506,7 +4506,8 @@ class OverviewSessionFlingTest : public AshTestBase {
   }
 };
 
-TEST_F(OverviewSessionFlingTest, BasicFling) {
+// TODO(b/579301631): Re-enable once the flakiness is fixed.
+TEST_F(OverviewSessionFlingTest, DISABLED_BasicFling) {
   std::vector<std::unique_ptr<aura::Window>> windows(16);
   for (int i = 15; i >= 0; --i)
     windows[i] = CreateWindowWithAppType();
