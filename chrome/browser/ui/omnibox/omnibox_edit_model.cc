@@ -2232,7 +2232,9 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
       autocomplete_controller()->GetSuggestionGroupHeaderText(
           result.match_at(popup_selection_.line).suggestion_group_id),
       match_text, include_positional_info,
-      controller_->client()->GetTemplateURLService(), label_prefix_length);
+      controller_->client()->GetTemplateURLService(),
+      autocomplete_controller()->autocomplete_provider_client(),
+      label_prefix_length);
 }
 
 std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForAimButton() {

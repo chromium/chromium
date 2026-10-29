@@ -993,7 +993,8 @@ void SearchboxHandler::PopulateAccessibilityLabels(
     const OmniboxPopupSelection selection(line, state);
     std::u16string label = searchbox::GetAccessibilityLabelForSelection(
         result, selection, header_text, narrated_text,
-        /*include_positional_info=*/true, turl_service);
+        /*include_positional_info=*/true, turl_service,
+        autocomplete_controller()->autocomplete_provider_client());
     // AIM button visibility isn't known here. It only affects whether the IPH
     // row's dismiss button suffix is read after the first match, when the AIM
     // button is focusable in between.
