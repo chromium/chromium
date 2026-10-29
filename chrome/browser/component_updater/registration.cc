@@ -167,12 +167,7 @@ void RegisterComponentsForUpdate() {
   RegisterFileTypePoliciesComponent(cus);
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS)
-  // CRLSetFetcher attempts to load a CRL set from either the local disk or
-  // network.
-  // For Chrome OS this registration is delayed until user login.
-  component_updater::RegisterCRLSetComponent(cus);
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+  RegisterCRLSetComponent(cus);
 
   RegisterOriginTrialsComponent(cus);
   RegisterMediaEngagementPreloadComponent(cus, base::OnceClosure());

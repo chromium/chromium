@@ -82,9 +82,6 @@ class UserSessionInitializer : public session_manager::SessionManagerObserver,
   // and start certificate loader with it.
   void InitializeCerts(Profile* profile);
 
-  // Starts loading CRL set.
-  void InitializeCRLSetFetcher();
-
   // Initialize all services that need the primary profile.
   void InitializePrimaryProfileServices(Profile* profile,
                                         const user_manager::User* user);

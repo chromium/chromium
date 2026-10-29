@@ -38,7 +38,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
-#include "chrome/browser/component_updater/crl_set_component_installer.h"
 #include "chrome/browser/google/google_brand_chromeos.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
@@ -169,7 +168,6 @@ void UserSessionInitializer::OnUserProfileLoaded(const AccountId& account_id) {
 
     InitRlz(profile);
     InitializeCerts(profile);
-    InitializeCRLSetFetcher();
     InitializePrimaryProfileServices(profile, user);
 
     FamilyUserMetricsServiceFactory::GetForBrowserContext(profile);
@@ -236,13 +234,6 @@ void UserSessionInitializer::InitializeCerts(Profile* profile) {
     CHECK(user_cert_db);
     NetworkCertLoader::Get()->SetUserServerCertDatabaseService(user_cert_db);
   }
-}
-
-void UserSessionInitializer::InitializeCRLSetFetcher() {
-  component_updater::ComponentUpdateService* cus =
-      g_browser_process->component_updater();
-  if (cus)
-    component_updater::RegisterCRLSetComponent(cus);
 }
 
 void UserSessionInitializer::InitializePrimaryProfileServices(
