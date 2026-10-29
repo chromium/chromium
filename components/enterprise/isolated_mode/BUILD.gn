@@ -22,11 +22,27 @@ source_set("isolated_mode") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
+  sources = [
+    "scoped_isolated_mode_override_for_testing.cc",
+    "scoped_isolated_mode_override_for_testing.h",
+  ]
+
+  deps = [
+    ":isolated_mode",
+    "//base",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "isolated_mode_settings_service_unittest.cc" ]
   deps = [
     ":isolated_mode",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/prefs:test_support",

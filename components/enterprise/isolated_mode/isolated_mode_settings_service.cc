@@ -4,6 +4,7 @@
 
 #include "components/enterprise/isolated_mode/isolated_mode_settings_service.h"
 
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "components/enterprise/isolated_mode/isolated_mode_features.h"
@@ -15,6 +16,8 @@ namespace enterprise_isolated_mode {
 
 namespace {
 
+std::optional<bool> g_replaces_incognito_for_testing;
+
 bool IsCommandLineSwitchSupported(version_info::Channel channel) {
   return channel != version_info::Channel::STABLE &&
          channel != version_info::Channel::BETA;
@@ -22,6 +25,11 @@ bool IsCommandLineSwitchSupported(version_info::Channel channel) {
 
 bool ComputeReplacesIncognito(const PrefService* prefs,
                               version_info::Channel channel) {
+  if (g_replaces_incognito_for_testing.has_value()) {
+    CHECK_IS_TEST();
+    return *g_replaces_incognito_for_testing;
+  }
+
   if (IsCommandLineSwitchSupported(channel) &&
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceEnterpriseIsolatedModeReplacesIncognito)) {
@@ -50,5 +58,14 @@ IsolatedModeSettingsService::IsolatedModeSettingsService(
     // evaluation to the Profile lifecycle and locking in the channel state.
     : replaces_incognito_(ComputeReplacesIncognito(prefs, channel)),
       milestone2_enabled_(ComputeMilestone2Enabled()) {}
+
+// static
+base::AutoReset<std::optional<bool>>
+IsolatedModeSettingsService::SetDefaultReplacesIncognitoForTesting(
+    bool replaces_incognito) {
+  CHECK_IS_TEST();
+  return base::AutoReset<std::optional<bool>>(&g_replaces_incognito_for_testing,
+                                              replaces_incognito);
+}
 
 }  // namespace enterprise_isolated_mode

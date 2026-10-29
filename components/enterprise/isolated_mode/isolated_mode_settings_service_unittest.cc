@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/enterprise/isolated_mode/prefs.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/version_info/channel.h"
@@ -106,6 +107,68 @@ TEST_F(IsolatedModeSettingsServiceTest, Milestone2EnabledIgnoresPrefService) {
   feature_list_.InitAndEnableFeature(kEnterpriseIsolatedModeMilestone2);
   IsolatedModeSettingsService service(nullptr, version_info::Channel::DEV);
   EXPECT_TRUE(service.Milestone2Enabled());
+}
+
+TEST_F(IsolatedModeSettingsServiceTest,
+       ScopedIsolatedModeOverrideForTestingPreCreation) {
+  {
+    // Default override enables Isolated Mode for newly created services even
+    // when the feature and policy are unset.
+    ScopedIsolatedModeOverrideForTesting scoped_enable;
+    IsolatedModeSettingsService enabled_service(&pref_service_,
+                                                version_info::Channel::STABLE);
+    EXPECT_TRUE(enabled_service.ReplacesIncognito());
+
+    {
+      // Nested override can force Isolated Mode off even when both the feature
+      // and policy are enabled.
+      base::test::ScopedFeatureList scoped_feature_list(
+          kEnableEnterpriseIsolatedMode);
+      pref_service_.SetInteger(kEnterpriseIsolatedModeSettings,
+                               static_cast<int>(IsolatedModeSetting::kEnabled));
+      ScopedIsolatedModeOverrideForTesting scoped_disable(
+        /*replaces_incognito=*/false);
+      IsolatedModeSettingsService disabled_service(
+          &pref_service_, version_info::Channel::STABLE);
+      EXPECT_FALSE(disabled_service.ReplacesIncognito());
+    }
+
+    // Exiting the inner scope restores the outer override.
+    IsolatedModeSettingsService outer_service(&pref_service_,
+                                              version_info::Channel::STABLE);
+    EXPECT_TRUE(outer_service.ReplacesIncognito());
+  }
+
+  // Exiting the outer scope restores normal evaluation for subsequent services.
+  IsolatedModeSettingsService service_after_reset(
+      &pref_service_, version_info::Channel::STABLE);
+  EXPECT_FALSE(service_after_reset.ReplacesIncognito());
+}
+
+TEST_F(IsolatedModeSettingsServiceTest,
+       ScopedIsolatedModeOverrideForTestingServiceOverride) {
+  IsolatedModeSettingsService service(&pref_service_,
+                                      version_info::Channel::STABLE);
+  ASSERT_FALSE(service.ReplacesIncognito());
+
+  {
+    // Overrides `ReplacesIncognito()` on the existing service instance.
+    ScopedIsolatedModeOverrideForTesting scoped_enable(&service);
+    EXPECT_TRUE(service.ReplacesIncognito());
+
+    {
+      // Nested per-instance override temporarily flips the state back to false.
+      ScopedIsolatedModeOverrideForTesting scoped_disable(&service,
+        /*replaces_incognito=*/false);
+      EXPECT_FALSE(service.ReplacesIncognito());
+    }
+
+    // Exiting the inner scope restores the outer override on `service`.
+    EXPECT_TRUE(service.ReplacesIncognito());
+  }
+
+  // Exiting the outer scope restores `service`'s original cached value.
+  EXPECT_FALSE(service.ReplacesIncognito());
 }
 
 }  // namespace enterprise_isolated_mode
