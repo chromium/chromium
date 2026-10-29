@@ -775,6 +775,7 @@ class Generator(generator.Generator):
       for method in interface.methods:
         router_kind = None
         handler_kind = None
+        receiver_first = False
 
         if len(method.parameters) == 2:
           p1 = method.parameters[0]
@@ -784,6 +785,12 @@ class Generator(generator.Generator):
           ):
             router_kind = p1.kind.kind
             handler_kind = p2.kind.kind
+          elif mojom.IsPendingReceiverKind(
+            p1.kind
+          ) and mojom.IsPendingRemoteKind(p2.kind):
+            handler_kind = p1.kind.kind
+            router_kind = p2.kind.kind
+            receiver_first = True
         elif len(method.parameters) == 1:
           p1 = method.parameters[0]
           if mojom.IsPendingReceiverKind(p1.kind):
@@ -814,6 +821,7 @@ class Generator(generator.Generator):
                 router_kind, 'PendingReceiver'
               ),
               'router_router': get_ts_identifier(router_kind, 'CallbackRouter'),
+              'receiver_first': receiver_first,
             }
           )
         return webui_factory
