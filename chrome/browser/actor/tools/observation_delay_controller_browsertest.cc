@@ -21,7 +21,6 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/core/browser/form_predictions_tracker.h"
 #include "components/autofill/core/browser/form_predictions_tracker_test_api.h"
 #include "components/autofill/core/browser/mock_form_predictions_tracker.h"
 #include "components/autofill/core/common/form_data.h"
@@ -457,21 +456,14 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
 
 class ObservationAutofillClient : public autofill::TestContentAutofillClient {
  public:
-  explicit ObservationAutofillClient(content::WebContents* web_contents)
-      : autofill::TestContentAutofillClient(web_contents) {
-    auto tracker = std::make_unique<
-        testing::StrictMock<autofill::MockFormPredictionsTracker>>(this);
-    mock_tracker_ptr_ = tracker.get();
-    set_form_predictions_tracker(std::move(tracker));
-  }
+  using autofill::TestContentAutofillClient::TestContentAutofillClient;
 
-  autofill::MockFormPredictionsTracker& mock_tracker() {
-    return *mock_tracker_ptr_;
+  autofill::MockFormPredictionsTracker* GetFormPredictionsTracker() override {
+    return &mock_tracker_;
   }
 
  private:
-  // Owned by the base class.
-  raw_ptr<autofill::MockFormPredictionsTracker> mock_tracker_ptr_ = nullptr;
+  testing::StrictMock<autofill::MockFormPredictionsTracker> mock_tracker_{this};
 };
 
 class ObservationDelayControllerAutofillTest
@@ -515,9 +507,7 @@ class ObservationDelayControllerAutofillTest
 // `kWaitForAutofillPredictions` and then to `kDone` once the tracker completes.
 IN_PROC_BROWSER_TEST_P(ObservationDelayControllerAutofillTest,
                        FormPredictionsTrackerCallsBack) {
-  autofill::MockFormPredictionsTracker& tracker =
-      autofill_client()->mock_tracker();
-  EXPECT_CALL(tracker, Wait)
+  EXPECT_CALL(*autofill_client()->GetFormPredictionsTracker(), Wait)
       .WillOnce(testing::WithArgs<0, 1>(
           [](base::OnceClosure callback, base::TimeDelta timeout) {
             base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(

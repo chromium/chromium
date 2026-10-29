@@ -37,7 +37,6 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_quality/addresses/test_address_normalizer.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
-#include "components/autofill/core/browser/form_predictions_tracker.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver_factory.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver_factory.h"
@@ -860,15 +859,6 @@ class TestAutofillClientTemplate : public T {
     injected_gmail_otp_backend_ = std::move(gmail_otp_backend);
   }
 
-  FormPredictionsTracker* GetFormPredictionsTracker() override {
-    return form_predictions_tracker_.get();
-  }
-
-  void set_form_predictions_tracker(
-      std::unique_ptr<FormPredictionsTracker> form_predictions_tracker) {
-    form_predictions_tracker_ = std::move(form_predictions_tracker);
-  }
-
   OtpMetricsTracker* GetOtpMetricsTracker() override {
     return otp_metrics_tracker_.get();
   }
@@ -1043,7 +1033,6 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
   std::unique_ptr<TestVotesUploader> votes_uploader_;
 
-  std::unique_ptr<FormPredictionsTracker> form_predictions_tracker_;
   raw_ptr<affiliations::AffiliationService> affiliation_service_ = nullptr;
 
   base::WeakPtrFactory<TestAutofillClientTemplate> weak_ptr_factory_{this};
