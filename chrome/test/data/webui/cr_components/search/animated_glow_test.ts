@@ -60,7 +60,7 @@ suite('SearchAnimatedGlowElementTest', () => {
     assertTrue(!!element.shadowRoot.querySelector('.gradient-outer-glow'));
   });
 
-  test('does not render energy effect wrappers in none mode', async () => {
+  test('does not render gradient elements in none mode', async () => {
     element.glowMode = GlowMode.NONE;
     element.animationState = GlowAnimationState.EXPANDING;
     await microtasksFinished();
@@ -68,6 +68,12 @@ suite('SearchAnimatedGlowElementTest', () => {
     assertEquals('none', element.getAttribute('glow-mode'));
     assertFalse(!!element.shadowRoot.querySelector('.gradient-blur-wrapper'));
     assertFalse(!!element.shadowRoot.querySelector('.gradient-sharp-wrapper'));
+    assertFalse(!!element.shadowRoot.querySelector('.gradient-outer-glow'));
+    assertFalse(!!element.shadowRoot.querySelector('.gradient'));
+    assertFalse(!!element.shadowRoot.querySelector('.double-gradient'));
+    assertFalse(!!element.shadowRoot.querySelector('.double-gradient-mask'));
+    assertTrue(!!element.shadowRoot.querySelector('.background'));
+    assertTrue(!!element.shadowRoot.querySelector('#dragDropPlaceholder'));
   });
 
   test(
