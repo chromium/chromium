@@ -95,10 +95,10 @@ void UserSessionTestEnvironment::LogIn(const AccountId& account_id,
       account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id),
       new_user,
       /*has_active_session=*/false);
-  session_manager_->SessionStarted();
   if (delegate_) {
     delegate_->CreateProfile(account_id);
   }
+  session_manager_->SessionStarted();
 }
 
 }  // namespace ash::test

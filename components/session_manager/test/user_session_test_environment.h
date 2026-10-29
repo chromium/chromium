@@ -42,6 +42,9 @@ class UserSessionTestEnvironment {
     virtual void DestroyProfileManager() = 0;
 
     // Creates and initializes a Profile for the user specified by `account_id`.
+    // Called during LogIn() after CreateSession() and before SessionStarted(),
+    // as UserSessionManager creates the profile before the session becomes
+    // active.
     virtual void CreateProfile(const AccountId& account_id) = 0;
   };
 
