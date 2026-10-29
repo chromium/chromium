@@ -986,9 +986,6 @@ content::WebContents* PermissionRequestManager::GetAssociatedWebContents() {
 }
 
 bool PermissionRequestManager::RecreateView() {
-  const bool should_do_auto_response_for_testing =
-      (current_request_prompt_disposition_ ==
-       PermissionPromptDisposition::MAC_OS_PROMPT);
   // Check that a request is filed, and the surface is allowlisted or
   // has an initiated permission prompt. If a flow model is not created even
   // though a permission prompt has been requested, it will cause a crash.
@@ -1023,13 +1020,6 @@ bool PermissionRequestManager::RecreateView() {
   current_request_pepc_prompt_position_ = view_->GetPromptPosition();
   SetCurrentRequestsInitialStatuses();
 
-  if (auto_response_for_test_ != NONE && should_do_auto_response_for_testing) {
-    // MAC_OS_PROMPT disposition has it's own auto-response logic for testing,
-    // so if that was the original disposition we would have skipped our own
-    // auto-response logic. Since the disposition can have changed, trigger
-    // a possible auto response again here.
-    DoAutoResponseForTesting();  // IN-TEST
-  }
   return true;
 }
 
@@ -1981,11 +1971,6 @@ void PermissionRequestManager::LogWarningToConsole(const char* message) {
 }
 
 void PermissionRequestManager::DoAutoResponseForTesting() {
-  // The macOS prompt has its own mechanism of auto responding.
-  if (current_request_prompt_disposition_ ==
-      PermissionPromptDisposition::MAC_OS_PROMPT) {
-    return;
-  }
   switch (auto_response_for_test_) {
     case ACCEPT_ONCE:
       AcceptThisTime(auto_response_prompt_options_for_test_);

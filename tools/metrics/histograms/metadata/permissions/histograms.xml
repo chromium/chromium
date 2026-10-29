@@ -336,7 +336,6 @@ chromium-metrics-reviews@google.com.
   <variant name="LocationBarLeftQuietIcon"/>
   <variant name="LocationBarRightAnimatedIcon"/>
   <variant name="LocationBarRightStaticIcon"/>
-  <variant name="MacOsPrompt"/>
   <variant name="MessageUI"/>
   <variant name="MessageUILoud"/>
   <variant name="MiniInfobar"/>

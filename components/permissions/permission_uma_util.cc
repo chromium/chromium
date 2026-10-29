@@ -1952,8 +1952,6 @@ std::string PermissionUmaUtil::GetPromptDispositionString(
       return "NoneVisible";
     case PermissionPromptDisposition::NOT_APPLICABLE:
       return "NotApplicable";
-    case PermissionPromptDisposition::MAC_OS_PROMPT:
-      return "MacOsPrompt";
     case PermissionPromptDisposition::MESSAGE_UI_LOUD:
       return "MessageUILoud";
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_ICON:
