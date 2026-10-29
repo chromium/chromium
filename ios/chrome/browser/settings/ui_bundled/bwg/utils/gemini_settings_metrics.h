@@ -45,16 +45,8 @@ void RecordGeminiSettingsItemShown(IOSGeminiSettingsItem item);
 // Records that the user tapped an item in the Gemini settings page.
 void RecordGeminiSettingsItemUsed(IOSGeminiSettingsItem item);
 
-// Records that the user tapped the close button on the Gemini camera settings
-// page.
-void RecordGeminiCameraSettingsClose();
-
-// Records that the user tapped the back button on the Gemini camera settings
-// page.
-void RecordGeminiCameraSettingsBack();
-
 // Records that the user toggled the Gemini camera setting on/off on the Gemini
-// camera settings page.
+// settings page.
 void RecordGeminiCameraSettingsToggled(bool enabled);
 
 // Records that the user tapped the close button on the Gemini suggestions

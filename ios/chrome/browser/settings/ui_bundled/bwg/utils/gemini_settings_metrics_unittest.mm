@@ -9,8 +9,6 @@
 #import "testing/platform_test.h"
 
 namespace {
-const char kCameraSettingsClose[] = "MobileGeminiCameraSettingsClose";
-const char kCameraSettingsBack[] = "MobileGeminiCameraSettingsBack";
 const char kCameraSettingsToggledOn[] =
     "MobileGeminiCameraSettingsGeminiCameraPermissionToggledOn";
 const char kCameraSettingsToggledOff[] =
@@ -53,16 +51,6 @@ TEST_F(GeminiSettingsMetricsTest, RecordGeminiSettingsItemUsed) {
   histogram_tester_.ExpectUniqueSample(
       kItemUsedHistogram, static_cast<int>(IOSGeminiSettingsItem::kUsageLimits),
       1);
-}
-
-TEST_F(GeminiSettingsMetricsTest, RecordGeminiCameraSettingsClose) {
-  RecordGeminiCameraSettingsClose();
-  EXPECT_EQ(1, user_action_tester_.GetActionCount(kCameraSettingsClose));
-}
-
-TEST_F(GeminiSettingsMetricsTest, RecordGeminiCameraSettingsBack) {
-  RecordGeminiCameraSettingsBack();
-  EXPECT_EQ(1, user_action_tester_.GetActionCount(kCameraSettingsBack));
 }
 
 TEST_F(GeminiSettingsMetricsTest, RecordGeminiCameraSettingsToggled) {

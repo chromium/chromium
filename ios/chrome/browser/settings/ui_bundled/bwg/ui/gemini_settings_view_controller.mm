@@ -14,19 +14,15 @@
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_action_type.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_context.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_metadata.h"
-#import "ios/chrome/browser/settings/ui_bundled/bwg/ui/gemini_camera_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/ui/gemini_location_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/utils/gemini_settings_metrics.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
-#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/apple/url_conversions.h"
@@ -90,8 +86,8 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   TableViewSwitchItem* _closedCaptioningItem;
   // Precise location item.
   TableViewMultiDetailTextItem* _preciseLocationItem;
-  // Camera item.
-  TableViewMultiDetailTextItem* _cameraItem;
+  // Switch item for toggling camera permission.
+  TableViewSwitchItem* _cameraItem;
   // Suggestions item.
   TableViewMultiDetailTextItem* _suggestionsItem;
   // Switch item for toggling microphone.
@@ -100,8 +96,6 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   TableViewSwitchItem* _pageContentSharingItem;
   // Location view controller shown when precise location row is tapped.
   GeminiLocationViewController* _locationViewController;
-  // Camera view controller shown when camera row is tapped.
-  GeminiCameraViewController* _cameraViewController;
   // Closed captioning preference value.
   BOOL _closedCaptioningEnabled;
   // Precise location preference value.
@@ -158,13 +152,6 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
                trailingDetailText:[self preciseLocationTrailingDetailText]
           accessibilityIdentifier:kLocationCellId];
 
-  _cameraItem =
-      [self detailItemWithType:ItemTypeCamera
-                             text:l10n_util::GetNSString(
-                                      IDS_IOS_GEMINI_SETTINGS_CAMERA_TITLE)
-               trailingDetailText:[self cameraTrailingDetailText]
-          accessibilityIdentifier:kCameraCellId];
-
   _microphoneItem =
       [self switchItemWithType:ItemTypeMicrophone
                              text:l10n_util::GetNSString(
@@ -196,12 +183,6 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
                           text:l10n_util::GetNSString(
                                    IDS_IOS_BWG_SETTINGS_LOCATION_FOOTER_TEXT)
                        linkURL:GURL(kGeminiPreciseLocationURL)];
-
-  TableViewLinkHeaderFooterItem* cameraFooterItem = [self
-      headerFooterItemWithType:ItemTypeCameraFooter
-                          text:l10n_util::GetNSString(
-                                   IDS_IOS_GEMINI_SETTINGS_CAMERA_FOOTER_TEXT)
-                       linkURL:GURL()];
 
   TableViewLinkHeaderFooterItem* suggestionsFooterItem;
   if (contextual_cueing::IsGeminiContextualSuggestionsCuesEnabled()) {
@@ -262,6 +243,21 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   }
 
   if ([self.mutator isImageRemixAvailable]) {
+    _cameraItem =
+        [self switchItemWithType:ItemTypeCamera
+                               text:l10n_util::GetNSString(
+                                        IDS_IOS_GEMINI_SETTINGS_CAMERA_TITLE)
+                        switchValue:_cameraEnabled
+            accessibilityIdentifier:kCameraCellId];
+    _cameraItem.target = self;
+    _cameraItem.selector = @selector(cameraSwitchTapped:);
+
+    TableViewLinkHeaderFooterItem* cameraFooterItem = [self
+        headerFooterItemWithType:ItemTypeCameraFooter
+                            text:l10n_util::GetNSString(
+                                     IDS_IOS_GEMINI_SETTINGS_CAMERA_FOOTER_TEXT)
+                         linkURL:GURL()];
+
     [model addSectionWithIdentifier:SectionIdentifierCamera];
     if (!firstPermissionsSectionIdentifier) {
       firstPermissionsSectionIdentifier = SectionIdentifierCamera;
@@ -430,6 +426,13 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   [self.mutator setClosedCaptioningPref:switchView.isOn];
 }
 
+// Called from the Camera setting's `UIControlEventValueChanged`.
+// Updates underlying camera permission pref.
+- (void)cameraSwitchTapped:(UISwitch*)switchView {
+  RecordGeminiCameraSettingsToggled(switchView.isOn);
+  [self.mutator setCameraPermissionPref:switchView.isOn];
+}
+
 // Called from the Microphone setting's UIControlEventTouchUpInside.
 // Updates underlying microphone pref.
 - (void)microphoneSwitchTapped:(UISwitch*)switchView {
@@ -440,15 +443,6 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 // pref value.
 - (NSString*)preciseLocationTrailingDetailText {
   if (_preciseLocationEnabled) {
-    return l10n_util::GetNSString(IDS_IOS_SETTING_ON);
-  }
-
-  return l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-}
-
-// Returns camera trailing detail text which depends on the related pref value.
-- (NSString*)cameraTrailingDetailText {
-  if (_cameraEnabled) {
     return l10n_util::GetNSString(IDS_IOS_SETTING_ON);
   }
 
@@ -478,15 +472,6 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
     _locationViewController.preciseLocationEnabled = _preciseLocationEnabled;
     _locationViewController.mutator = self.mutator;
     [self.navigationController pushViewController:_locationViewController
-                                         animated:YES];
-  }
-
-  if ([self.tableViewModel itemTypeForIndexPath:indexPath] == ItemTypeCamera) {
-    _cameraViewController = [[GeminiCameraViewController alloc]
-        initWithStyle:ChromeTableViewStyle()];
-    _cameraViewController.cameraEnabled = _cameraEnabled;
-    _cameraViewController.mutator = self.mutator;
-    [self.navigationController pushViewController:_cameraViewController
                                          animated:YES];
   }
 
@@ -587,12 +572,8 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 - (void)setCameraPermissionEnabled:(BOOL)enabled {
   _cameraEnabled = enabled;
 
-  if (_cameraViewController) {
-    _cameraViewController.cameraEnabled = enabled;
-  }
-
-  if ([self isViewLoaded]) {
-    _cameraItem.trailingDetailText = [self cameraTrailingDetailText];
+  if ([self isViewLoaded] && _cameraItem) {
+    _cameraItem.on = _cameraEnabled;
     [self reconfigureCellsForItems:@[ _cameraItem ]];
   }
 }

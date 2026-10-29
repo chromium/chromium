@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/gemini_settings_coordinator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/gemini_settings_mediator.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/gemini_settings_mutator.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/gemini_suggestions_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/ui/gemini_settings_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/ui/gemini_suggestions_view_controller.h"
@@ -16,11 +19,15 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -154,4 +161,49 @@ TEST_F(GeminiSettingsCoordinatorTest,
 
   EXPECT_OCMOCK_VERIFY(base_navigation_controller);
   [coordinator stop];
+}
+
+// Tests that the Camera row in `GeminiSettingsViewController` is rendered as an
+// inline switch when Image Remix is available and updates the camera permission
+// preference and user action metrics when toggled.
+TEST_F(GeminiSettingsCoordinatorTest, CameraPermissionSwitchToggle) {
+  base::UserActionTester user_action_tester;
+  GeminiSettingsViewController* view_controller =
+      [[GeminiSettingsViewController alloc]
+          initWithStyle:ChromeTableViewStyle()];
+  id mutator = OCMProtocolMock(@protocol(GeminiSettingsMutator));
+  OCMStub([mutator isImageRemixAvailable]).andReturn(YES);
+  view_controller.mutator = mutator;
+
+  [view_controller setCameraPermissionEnabled:YES];
+  [view_controller loadViewIfNeeded];
+
+  // Section 0 is Preferences; Section 1 is the first enabled Permissions
+  // section (Camera when Location is disabled).
+  ASSERT_GT([view_controller.tableViewModel numberOfSections], 1);
+  TableViewItem* camera_item = [view_controller.tableViewModel
+      itemAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]];
+  TableViewSwitchItem* camera_switch_item =
+      base::apple::ObjCCast<TableViewSwitchItem>(camera_item);
+  ASSERT_TRUE(camera_switch_item);
+  EXPECT_NSEQ(@"CameraCellId", camera_switch_item.accessibilityIdentifier);
+  EXPECT_TRUE(camera_switch_item.isOn);
+
+  OCMExpect([mutator setCameraPermissionPref:NO]);
+  UISwitch* switch_view = [[UISwitch alloc] init];
+  switch_view.on = NO;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+  [camera_switch_item.target performSelector:camera_switch_item.selector
+                                  withObject:switch_view];
+#pragma clang diagnostic pop
+
+  EXPECT_OCMOCK_VERIFY(mutator);
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(
+                "MobileGeminiCameraSettingsGeminiCameraPermissionToggledOff"));
+
+  // Verify that consumer updates after the view is loaded reconfigure the item.
+  [view_controller setCameraPermissionEnabled:NO];
+  EXPECT_FALSE(camera_switch_item.isOn);
 }
