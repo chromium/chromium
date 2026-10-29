@@ -669,6 +669,8 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   AimButtonRefactorArm arm = GetAimButtonRefactorArm();
   if (arm == AimButtonRefactorArm::kImageGenerationQuickAction ||
       arm == AimButtonRefactorArm::kAttachImageQuickAction) {
+    [self.composeboxInputStateManager disconnect];
+    self.composeboxInputStateManager.delegate = nil;
     self.composeboxInputStateManager = nil;
   }
   _fullscreenBrowserAgentObserverBridge.reset();
