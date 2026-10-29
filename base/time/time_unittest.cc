@@ -30,11 +30,13 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
-#elif BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS)
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#else
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_libc_timezone_override.h"
-#elif BUILDFLAG(IS_WIN)
-#include <windows.h>
 #endif
 
 namespace base {
@@ -385,6 +387,192 @@ TEST_F(TimeTest, LocalMidnight) {
   EXPECT_EQ(0, exploded.second);
   EXPECT_EQ(0, exploded.millisecond);
 }
+
+TEST_F(TimeTest, LocalMidnightWithOffset) {
+  Time base_time;
+  ASSERT_TRUE(
+      Time::FromLocalExploded({2025, 7, 2, 15, 14, 30, 0, 0}, &base_time));
+
+  Time expected_day_minus_2;
+  ASSERT_TRUE(Time::FromLocalExploded({2025, 7, 0, 13, 0, 0, 0, 0},
+                                      &expected_day_minus_2));
+  Time expected_day_minus_1;
+  ASSERT_TRUE(Time::FromLocalExploded({2025, 7, 1, 14, 0, 0, 0, 0},
+                                      &expected_day_minus_1));
+  Time expected_day_0;
+  ASSERT_TRUE(
+      Time::FromLocalExploded({2025, 7, 2, 15, 0, 0, 0, 0}, &expected_day_0));
+  Time expected_day_plus_1;
+  ASSERT_TRUE(Time::FromLocalExploded({2025, 7, 3, 16, 0, 0, 0, 0},
+                                      &expected_day_plus_1));
+  Time expected_day_plus_2;
+  ASSERT_TRUE(Time::FromLocalExploded({2025, 7, 4, 17, 0, 0, 0, 0},
+                                      &expected_day_plus_2));
+
+  EXPECT_EQ(expected_day_minus_2, base_time.LocalMidnightWithOffset(-2));
+  EXPECT_EQ(expected_day_minus_1, base_time.LocalMidnightWithOffset(-1));
+  EXPECT_EQ(expected_day_0, base_time.LocalMidnightWithOffset(0));
+  EXPECT_EQ(expected_day_plus_1, base_time.LocalMidnightWithOffset(1));
+  EXPECT_EQ(expected_day_plus_1, base_time.NextLocalMidnight());
+  EXPECT_EQ(expected_day_plus_2, base_time.LocalMidnightWithOffset(2));
+}
+
+// Windows `Time::Explode` / `FromExploded` use Win32
+// `SystemTimeToTzSpecificLocalTime` / `TzSpecificLocalTimeToSystemTime`, which
+// query the OS timezone directly and ignore both the `TZ` environment variable
+// and ICU's default timezone override.
+#if !BUILDFLAG(IS_WIN)
+TEST_F(TimeTest, LocalMidnightWithOffsetDstTransitions) {
+  {
+    test::ScopedRestoreDefaultTimezone la_icu_tz("America/Los_Angeles");
+    test::ScopedLibcTimezoneOverride la_libc_tz("America/Los_Angeles");
+
+    // 2025-11-02 is a 25-hour DST fall-back day in America/Los_Angeles (PDT
+    // UTC-7 -> PST UTC-8 at 02:00 local time).
+    Time oct_29_midnight;
+    ASSERT_TRUE(
+        Time::FromUTCExploded({2025, 10, 3, 29, 7, 0, 0, 0},
+                              &oct_29_midnight));  // 2025-10-29 00:00 PDT
+    Time nov_1_midnight;
+    ASSERT_TRUE(
+        Time::FromUTCExploded({2025, 11, 6, 1, 7, 0, 0, 0},
+                              &nov_1_midnight));  // 2025-11-01 00:00 PDT
+    Time nov_2_midnight;
+    ASSERT_TRUE(
+        Time::FromUTCExploded({2025, 11, 0, 2, 7, 0, 0, 0},
+                              &nov_2_midnight));  // 2025-11-02 00:00 PDT
+    Time nov_3_midnight;
+    ASSERT_TRUE(
+        Time::FromUTCExploded({2025, 11, 1, 3, 8, 0, 0, 0},
+                              &nov_3_midnight));  // 2025-11-03 00:00 PST
+    Time nov_4_midnight;
+    ASSERT_TRUE(
+        Time::FromUTCExploded({2025, 11, 2, 4, 8, 0, 0, 0},
+                              &nov_4_midnight));  // 2025-11-04 00:00 PST
+    Time nov_5_midnight;
+    ASSERT_TRUE(
+        Time::FromUTCExploded({2025, 11, 3, 5, 8, 0, 0, 0},
+                              &nov_5_midnight));  // 2025-11-05 00:00 PST
+
+    // 2025-11-02 00:30 PDT (07:30 UTC), before the 2:00 AM -> 1:00 AM
+    // fall-back. Naive `LocalMidnight() + Days(1)` would land at 2025-11-02
+    // 23:00 PST.
+    Time fall_back_0030 = nov_2_midnight + Minutes(30);
+    EXPECT_EQ(nov_1_midnight, fall_back_0030.LocalMidnightWithOffset(-1));
+    EXPECT_EQ(nov_2_midnight, fall_back_0030.LocalMidnightWithOffset(0));
+    EXPECT_EQ(nov_3_midnight, fall_back_0030.LocalMidnightWithOffset(1));
+    EXPECT_EQ(nov_3_midnight, fall_back_0030.NextLocalMidnight());
+    EXPECT_EQ(nov_4_midnight, fall_back_0030.LocalMidnightWithOffset(2));
+
+    // 2025-11-02 12:00 PST (20:00 UTC), after the fall-back.
+    Time fall_back_noon = nov_2_midnight + Hours(13);
+    EXPECT_EQ(nov_1_midnight, fall_back_noon.LocalMidnightWithOffset(-1));
+    EXPECT_EQ(nov_2_midnight, fall_back_noon.LocalMidnightWithOffset(0));
+    EXPECT_EQ(nov_3_midnight, fall_back_noon.LocalMidnightWithOffset(1));
+    EXPECT_EQ(nov_3_midnight, fall_back_noon.NextLocalMidnight());
+
+    // 2025-11-03 10:00 PST (18:00 UTC), stepping backwards across the 25-hour
+    // fall-back day.
+    Time day_after_fall_back = nov_3_midnight + Hours(10);
+    EXPECT_EQ(nov_2_midnight, day_after_fall_back.LocalMidnightWithOffset(-1));
+    EXPECT_EQ(nov_1_midnight, day_after_fall_back.LocalMidnightWithOffset(-2));
+
+    // Multi-day offset (±7 days) crossing the fall-back transition.
+    EXPECT_EQ(nov_5_midnight,
+              (oct_29_midnight + Hours(10)).LocalMidnightWithOffset(7));
+    EXPECT_EQ(oct_29_midnight,
+              (nov_5_midnight + Hours(10)).LocalMidnightWithOffset(-7));
+
+    // 2025-03-09 is a 23-hour DST spring-forward day in America/Los_Angeles
+    // (PST UTC-8 -> PDT UTC-7 at 02:00 local time).
+    Time mar_5_midnight;
+    ASSERT_TRUE(
+        Time::FromUTCExploded({2025, 3, 3, 5, 8, 0, 0, 0},
+                              &mar_5_midnight));  // 2025-03-05 00:00 PST
+    Time mar_8_midnight;
+    ASSERT_TRUE(
+        Time::FromUTCExploded({2025, 3, 6, 8, 8, 0, 0, 0},
+                              &mar_8_midnight));  // 2025-03-08 00:00 PST
+    Time mar_9_midnight;
+    ASSERT_TRUE(
+        Time::FromUTCExploded({2025, 3, 0, 9, 8, 0, 0, 0},
+                              &mar_9_midnight));  // 2025-03-09 00:00 PST
+    Time mar_10_midnight;
+    ASSERT_TRUE(
+        Time::FromUTCExploded({2025, 3, 1, 10, 7, 0, 0, 0},
+                              &mar_10_midnight));  // 2025-03-10 00:00 PDT
+    Time mar_12_midnight;
+    ASSERT_TRUE(
+        Time::FromUTCExploded({2025, 3, 3, 12, 7, 0, 0, 0},
+                              &mar_12_midnight));  // 2025-03-12 00:00 PDT
+
+    // 2025-03-09 00:30 PST (08:30 UTC), before the 2:00 AM -> 3:00 AM
+    // spring-forward.
+    Time spring_forward_0030 = mar_9_midnight + Minutes(30);
+    EXPECT_EQ(mar_8_midnight, spring_forward_0030.LocalMidnightWithOffset(-1));
+    EXPECT_EQ(mar_9_midnight, spring_forward_0030.LocalMidnightWithOffset(0));
+    EXPECT_EQ(mar_10_midnight, spring_forward_0030.LocalMidnightWithOffset(1));
+    EXPECT_EQ(mar_10_midnight, spring_forward_0030.NextLocalMidnight());
+
+    // 2025-03-10 10:00 PDT (17:00 UTC), stepping backwards across the 23-hour
+    // spring-forward day. Naive `(LocalMidnight() - Days(1)).LocalMidnight()`
+    // would land at 2025-03-08 00:00 PST (skipping 2025-03-09 entirely).
+    Time day_after_spring_forward = mar_10_midnight + Hours(10);
+    EXPECT_EQ(mar_9_midnight,
+              day_after_spring_forward.LocalMidnightWithOffset(-1));
+    EXPECT_EQ(mar_8_midnight,
+              day_after_spring_forward.LocalMidnightWithOffset(-2));
+
+    // Multi-day offset (±7 days) crossing the spring-forward transition.
+    EXPECT_EQ(mar_12_midnight,
+              (mar_5_midnight + Hours(10)).LocalMidnightWithOffset(7));
+    EXPECT_EQ(mar_5_midnight,
+              (mar_12_midnight + Hours(10)).LocalMidnightWithOffset(-7));
+  }
+
+  {
+    // In America/Santiago, DST springs forward at midnight (00:00 -> 01:00) on
+    // 2025-09-07 (CLT UTC-4 -> CLST UTC-3). Because 00:00:00 does not exist on
+    // 2025-09-07, `LocalMidnight()` returns 01:00:00 CLST (04:00:00 UTC).
+    test::ScopedRestoreDefaultTimezone santiago_icu_tz("America/Santiago");
+    test::ScopedLibcTimezoneOverride santiago_libc_tz("America/Santiago");
+
+    Time sep_6_midnight;
+    ASSERT_TRUE(
+        Time::FromUTCExploded({2025, 9, 6, 6, 4, 0, 0, 0},
+                              &sep_6_midnight));  // 2025-09-06 00:00 CLT
+    Time sep_7_midnight;
+    ASSERT_TRUE(Time::FromUTCExploded(
+        {2025, 9, 0, 7, 4, 0, 0, 0},
+        &sep_7_midnight));  // 2025-09-07 01:00 CLST (00:00 does not exist)
+    Time sep_8_midnight;
+    ASSERT_TRUE(
+        Time::FromUTCExploded({2025, 9, 1, 8, 3, 0, 0, 0},
+                              &sep_8_midnight));  // 2025-09-08 00:00 CLST
+
+    // Starting on the day before the midnight transition and stepping into /
+    // across it.
+    Time sep_6_morning = sep_6_midnight + Hours(10);
+    EXPECT_EQ(sep_7_midnight, sep_6_morning.LocalMidnightWithOffset(1));
+    EXPECT_EQ(sep_7_midnight, sep_6_morning.NextLocalMidnight());
+    EXPECT_EQ(sep_8_midnight, sep_6_morning.LocalMidnightWithOffset(2));
+
+    // Starting on the midnight-transition day itself (where `LocalMidnight()`
+    // is 01:00 CLST).
+    Time sep_7_morning = sep_7_midnight + Minutes(30);  // 2025-09-07 01:30 CLST
+    EXPECT_EQ(sep_6_midnight, sep_7_morning.LocalMidnightWithOffset(-1));
+    EXPECT_EQ(sep_7_midnight, sep_7_morning.LocalMidnightWithOffset(0));
+    EXPECT_EQ(sep_8_midnight, sep_7_morning.LocalMidnightWithOffset(1));
+    EXPECT_EQ(sep_8_midnight, sep_7_morning.NextLocalMidnight());
+
+    // Starting on the day after the midnight transition and stepping backwards
+    // into / across it.
+    Time sep_8_morning = sep_8_midnight + Hours(10);
+    EXPECT_EQ(sep_7_midnight, sep_8_morning.LocalMidnightWithOffset(-1));
+    EXPECT_EQ(sep_6_midnight, sep_8_morning.LocalMidnightWithOffset(-2));
+  }
+}
+#endif  // !BUILDFLAG(IS_WIN)
 
 // These tests require the ability to fake the local time zone.
 #if BUILDFLAG(IS_FUCHSIA)

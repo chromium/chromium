@@ -103,6 +103,18 @@ Time Time::NowFromSystemTime() {
       std::memory_order_relaxed)();
 }
 
+Time Time::LocalMidnightWithOffset(int day_offset) const {
+  if (day_offset == 0) {
+    return LocalMidnight();
+  }
+  // Anchor near local noon (`LocalMidnight() + Hours(12)`) before shifting by
+  // `Days(day_offset)` and rounding down to local midnight. This provides a
+  // symmetric ~12-hour margin in both directions so that DST transitions (where
+  // a local calendar day is 23 or 25 hours long) still land on the target
+  // calendar day.
+  return (LocalMidnight() + Hours(12) + Days(day_offset)).LocalMidnight();
+}
+
 Time Time::Midnight(bool is_local) const {
   Exploded exploded;
   Explode(is_local, &exploded);

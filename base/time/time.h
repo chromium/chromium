@@ -812,8 +812,23 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
 
   // The following two functions round down the time to the nearest day in
   // either UTC or local time. It will represent midnight on that day.
+  //
+  // NOTE: Do not add `base::Days(N)` directly to `LocalMidnight()` to compute
+  // midnight on another local calendar day, as Daylight Saving Time transitions
+  // make some local days 23 or 25 hours long. Use `NextLocalMidnight()` or
+  // `LocalMidnightWithOffset()` instead.
   Time UTCMidnight() const { return Midnight(false); }
   Time LocalMidnight() const { return Midnight(true); }
+
+  // Returns local midnight on the calendar day `day_offset` days from the
+  // local calendar day of this Time (e.g., `day_offset = 1` returns midnight at
+  // the start of the next local day; `day_offset = -1` returns midnight at the
+  // start of the previous local day). Accounts for Daylight Saving Time
+  // transitions where a local calendar day may not be 24 hours long.
+  // Note: This is a precise "days" offset; e.g. "+365" does *not* guarantee
+  // "next year" (due to leap years), etc.
+  Time LocalMidnightWithOffset(int day_offset) const;
+  Time NextLocalMidnight() const { return LocalMidnightWithOffset(1); }
 
   // For legacy deserialization only. Converts an integer value representing
   // Time to a class. This may be used when deserializing a |Time| structure,
