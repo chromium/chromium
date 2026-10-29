@@ -355,7 +355,7 @@ std::u16string BirchCalendarItem::GetSubtitle(base::Time start_time,
                                             minutes) +
            u" · " + GetStartEndString(start_time, end_time);
   }
-  if (now.LocalMidnight() + base::Days(1) < start_time) {
+  if (now.NextLocalMidnight() < start_time) {
     // This event starts tomorrow. We don't show events more than 1 day in the
     // future, so we don't need to worry about days other than "tomorrow".
     // Return "Tomorrow · 10:00 AM - 11:30 AM"
@@ -762,7 +762,7 @@ void BirchLastActiveItem::LoadIcon(LoadIconCallback callback) const {
 // static
 std::u16string BirchLastActiveItem::GetSubtitle(base::Time last_visit) {
   std::u16string prefix;
-  if (last_visit < base::Time::Now().LocalMidnight() - base::Days(1)) {
+  if (last_visit < base::Time::Now().LocalMidnightWithOffset(-1)) {
     // If the last visit was before yesterday, show "X days ago".
     int days = (base::Time::Now() - last_visit).InDays();
     prefix = l10n_util::GetPluralStringFUTF16(

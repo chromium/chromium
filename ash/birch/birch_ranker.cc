@@ -312,7 +312,7 @@ bool BirchRanker::IsOngoingEvent(const BirchCalendarItem& item) const {
 }
 
 bool BirchRanker::IsTomorrowEvent(const BirchCalendarItem& item) const {
-  return now_.LocalMidnight() + base::Days(1) < item.start_time();
+  return now_.NextLocalMidnight() < item.start_time();
 }
 
 }  // namespace ash
