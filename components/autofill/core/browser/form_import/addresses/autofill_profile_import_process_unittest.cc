@@ -718,6 +718,44 @@ TEST_F(
   EXPECT_TRUE(at_import.silently_updated_profiles().empty());
 }
 
+// Tests that merging an observed profile that only adds a country into a
+// country-less stored profile requires user confirmation even when the
+// visible-type sets match (e.g. empty country vs. GB).
+TEST_F(
+    AutofillProfileImportProcessTest,
+    MergeIntoCountrylessProfileRequiresConfirmation_MatchingVisibleTypeSets) {
+  AutofillProfile existing_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
+  test::SetProfileInfo(&existing_profile, test::SetProfileInfoOptionsBuilder()
+                                              .with_first_name("Max")
+                                              .with_last_name("Mustermann")
+                                              .with_address1("Hauptstrasse 5")
+                                              .with_zipcode("1010")
+                                              .with_city("Wien")
+                                              .Build());
+  address_data_manager().AddProfile(existing_profile);
+
+  AutofillProfile observed_gb_profile(AddressCountryCode("GB"));
+  test::SetProfileInfo(&observed_gb_profile,
+                       test::SetProfileInfoOptionsBuilder()
+                           .with_first_name("Max")
+                           .with_last_name("Mustermann")
+                           .with_address1("Hauptstrasse 5")
+                           .with_zipcode("1010")
+                           .with_city("Wien")
+                           .with_country("GB")
+                           .Build());
+  ASSERT_EQ(existing_profile.GetUserVisibleTypes(),
+            observed_gb_profile.GetUserVisibleTypes());
+
+  ProfileImportProcess gb_import = CreateProfileImportProcess(
+      observed_gb_profile, /*allow_only_silent_updates=*/false);
+  EXPECT_EQ(gb_import.import_type(),
+            AutofillProfileImportType::kConfirmableMerge);
+  EXPECT_TRUE(gb_import.requires_user_prompt());
+  EXPECT_TRUE(gb_import.silently_updated_profiles().empty());
+}
+
 // Tests the scenario in which an observed profile can be merged with an
 // existing profile for which updates are blocked.
 TEST_F(AutofillProfileImportProcessTest, BlockedMerge) {

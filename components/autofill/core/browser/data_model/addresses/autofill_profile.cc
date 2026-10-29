@@ -447,7 +447,8 @@ FieldType AutofillProfile::GetStorableTypeOf(FieldType type) const {
 }
 
 FieldTypeSet AutofillProfile::GetUserVisibleTypes() const {
-  FieldTypeSet visible_types{PHONE_HOME_WHOLE_NUMBER, EMAIL_ADDRESS};
+  FieldTypeSet visible_types{PHONE_HOME_WHOLE_NUMBER, EMAIL_ADDRESS,
+                             ADDRESS_HOME_COUNTRY};
   std::string components_language_code;
   for (const AutofillAddressUIComponent& component : GetAddressComponents(
            GetAddressCountryCode().value(), kAddressComponentsDefaultLocality,

@@ -2304,25 +2304,25 @@ TEST_P(GetUserVisibleTypesTest, GetUserVisibleTypes) {
 INSTANTIATE_TEST_SUITE_P(
     AutofillProfileTest,
     GetUserVisibleTypesTest,
-    testing::Values(GetUserVisibleTypesTestCase(
-                        FieldTypeSet({NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
-                                      ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
-                                      ADDRESS_HOME_ZIP, EMAIL_ADDRESS,
-                                      PHONE_HOME_WHOLE_NUMBER, COMPANY_NAME}),
-                        AddressCountryCode("US")),
-                    GetUserVisibleTypesTestCase(
-                        FieldTypeSet({NAME_FULL, ALTERNATIVE_FULL_NAME,
-                                      ADDRESS_HOME_STREET_ADDRESS,
-                                      ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP,
-                                      EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER,
-                                      COMPANY_NAME}),
-                        AddressCountryCode("JP")),
-                    GetUserVisibleTypesTestCase(
-                        FieldTypeSet({NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
-                                      ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
-                                      ADDRESS_HOME_ZIP, EMAIL_ADDRESS,
-                                      PHONE_HOME_WHOLE_NUMBER, COMPANY_NAME}),
-                        AddressCountryCode("GB"))),
+    testing::Values(
+        GetUserVisibleTypesTestCase(
+            FieldTypeSet({NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
+                          ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
+                          ADDRESS_HOME_ZIP, ADDRESS_HOME_COUNTRY, EMAIL_ADDRESS,
+                          PHONE_HOME_WHOLE_NUMBER, COMPANY_NAME}),
+            AddressCountryCode("US")),
+        GetUserVisibleTypesTestCase(
+            FieldTypeSet({NAME_FULL, ALTERNATIVE_FULL_NAME,
+                          ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_STATE,
+                          ADDRESS_HOME_ZIP, ADDRESS_HOME_COUNTRY, EMAIL_ADDRESS,
+                          PHONE_HOME_WHOLE_NUMBER, COMPANY_NAME}),
+            AddressCountryCode("JP")),
+        GetUserVisibleTypesTestCase(
+            FieldTypeSet({NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
+                          ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
+                          ADDRESS_HOME_ZIP, ADDRESS_HOME_COUNTRY, EMAIL_ADDRESS,
+                          PHONE_HOME_WHOLE_NUMBER, COMPANY_NAME}),
+            AddressCountryCode("GB"))),
     [](const testing::TestParamInfo<GetUserVisibleTypesTestCase>& info) {
       return info.param.country_code.value();
     });

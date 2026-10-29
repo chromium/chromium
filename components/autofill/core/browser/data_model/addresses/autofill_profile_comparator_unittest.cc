@@ -994,10 +994,9 @@ TEST_F(AutofillProfileComparatorTest,
           at_profile, gb_profile, kLocale));
 }
 
-// Tests that settings-visible differences are detected when visible-type sets
-// differ: one profile has an empty country (as on legacy country-less or
-// `kAccountNameEmail` profiles) and the other has AT, skipping the early return
-// and exercising `std::ranges::any_of` over the union of visible types.
+// Tests that settings-visible differences are detected when profiles have
+// different countries with differing visible-type sets (e.g. empty country vs.
+// AT).
 TEST_F(AutofillProfileComparatorTest,
        ProfilesHaveDifferentSettingsVisibleValues_DifferentVisibleTypeSets) {
   AutofillProfile countryless_profile(kLegacyHierarchyCountryCode);
@@ -1014,7 +1013,7 @@ TEST_F(AutofillProfileComparatorTest,
   at_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"AT");
   ASSERT_NE(countryless_profile.GetUserVisibleTypes(),
             at_profile.GetUserVisibleTypes());
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
           countryless_profile, at_profile, kLocale));
 
@@ -1024,6 +1023,30 @@ TEST_F(AutofillProfileComparatorTest,
   EXPECT_TRUE(
       AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
           countryless_profile, at_profile, kLocale));
+}
+
+// Tests that settings-visible differences are detected when profiles have
+// different countries with matching visible-type sets (e.g. empty country vs.
+// GB).
+TEST_F(AutofillProfileComparatorTest,
+       ProfilesHaveDifferentSettingsVisibleValues_MatchingVisibleTypeSets) {
+  AutofillProfile countryless_profile(kLegacyHierarchyCountryCode);
+  test::SetProfileInfo(&countryless_profile,
+                       test::SetProfileInfoOptionsBuilder()
+                           .with_first_name("Max")
+                           .with_last_name("Mustermann")
+                           .with_address1("Hauptstrasse 5")
+                           .with_zipcode("1010")
+                           .with_city("Wien")
+                           .Build());
+
+  AutofillProfile gb_profile = countryless_profile;
+  gb_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"GB");
+  ASSERT_EQ(countryless_profile.GetUserVisibleTypes(),
+            gb_profile.GetUserVisibleTypes());
+  EXPECT_TRUE(
+      AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
+          countryless_profile, gb_profile, kLocale));
 }
 
 TEST_F(AutofillProfileComparatorTest, GetProfileDifference) {
@@ -1232,6 +1255,12 @@ TEST_P(NonMergeableSettingVisibleTypesTest, DifferingTypesLegacy) {
   }
   // Initialize all other setting-visible types with the same value.
   for (FieldType t : a.GetUserVisibleTypes()) {
+    // `ADDRESS_HOME_COUNTRY` is already initialized to `country_code` above;
+    // overwriting it with `"same"` would replace custom country hierarchies
+    // (such as JP) with the legacy hierarchy.
+    if (t == ADDRESS_HOME_COUNTRY) {
+      continue;
+    }
     // If a type of the same `FieldTypeGroup` was already set, ignore it, to
     // avoid constructing conflicting substructures.
     if (!std::ranges::contains(type_differences.differing_types,
