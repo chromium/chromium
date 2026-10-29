@@ -3360,7 +3360,6 @@ class ContextualTasksRecontextUiTest
         }
       }
       disabled.push_back(kContextualTasks);
-      enabled.push_back({kContextualTasksSidePanel, {}});
       feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
     } else {
       auto enabled = GetDefaultEnabledFeatures();

@@ -757,7 +757,6 @@ class ContextualTasksLensInteractionBrowserTest
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     enabled_features.reserve(10);
-    enabled_features.push_back({contextual_tasks::kContextualTasks, {}});
     enabled_features.push_back(
         {lens::features::kLensOverlay,
          {{"endpoint-url",
@@ -772,8 +771,6 @@ class ContextualTasksLensInteractionBrowserTest
            embedded_test_server()->GetURL("/v1/clusterinfo").spec()},
           {"lens-composebox-endpoint-url",
            embedded_test_server()->GetURL("/v1/crupload").spec()}}});
-    enabled_features.push_back(
-        {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}});
     for (auto& feature : GetAdditionalEnabledFeatures()) {
       enabled_features.push_back(std::move(feature));
     }

@@ -88,7 +88,6 @@ class ContextualSearchCueTargetTest : public ChromeRenderViewHostTestHarness {
             {contextual_tasks::kContextualSearchContextualCuesHandleEdu, {}},
             {contextual_tasks::kContextualSearchContextualCuesHandleShopping,
              {}},
-            {contextual_tasks::kContextualTasksSidePanel, {}},
             {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
         },
         {});
