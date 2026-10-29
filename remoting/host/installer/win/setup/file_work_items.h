@@ -5,6 +5,18 @@
 #ifndef REMOTING_HOST_INSTALLER_WIN_SETUP_FILE_WORK_ITEMS_H_
 #define REMOTING_HOST_INSTALLER_WIN_SETUP_FILE_WORK_ITEMS_H_
 
+// Chrome Remote Desktop product-specific payload file `WorkItem`s for the
+// Windows host installer.
+//
+// What belongs here:
+// - `DeployFilesWorkItem` and `DeleteFilesWorkItem`, which deploy and remove
+//   the CRD payload file set (`kPayloadFiles`) using the generic file
+//   primitives in `file_util.{h,cc}`.
+//
+// What does NOT belong here:
+// - Generic, product-agnostic file operation primitives or test injection
+//   callbacks. Put those in `file_util.{h,cc}`.
+
 #include <string>
 #include <utility>
 #include <vector>

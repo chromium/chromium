@@ -43,7 +43,7 @@ std::unique_ptr<WorkItemList> CreateUpdatePendingWorkItemList(
 
   list->AddCreateDirWorkItem(install_dir);
   list->AddWorkItem(new DeployFilesWorkItem(source_dir, install_dir));
-  list->AddWorkItem(new HostRegistryWorkItem(install_dir, /*is_update=*/true));
+  list->AddWorkItem(new HostRegistryWorkItem(install_dir));
   list->AddWorkItem(
       new SignalUpdatePendingWorkItem(std::move(event_name_for_testing)));
 

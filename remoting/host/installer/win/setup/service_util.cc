@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Low-level Win32 Service Control Manager (SCM) and kernel event helper
+// functions for the Windows host installer.
+//
+// See `service_util.h` for the boundary between low-level Win32 SCM/event
+// helpers (which belong here) and service/event `WorkItem`s (which belong in
+// `service_work_items.{h,cc}`).
+
 #include "remoting/host/installer/win/setup/service_util.h"
 
 #include <windows.h>

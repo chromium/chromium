@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Chrome Remote Desktop product-specific payload file `WorkItem`s for the
+// Windows host installer.
+//
+// See `file_work_items.h` for the boundary between CRD payload file `WorkItem`s
+// (which belong here) and generic file operation primitives (which belong in
+// `file_util.{h,cc}`).
+
 #include "remoting/host/installer/win/setup/file_work_items.h"
 
 #include <windows.h>
@@ -128,12 +135,53 @@ DeleteFilesWorkItem::~DeleteFilesWorkItem() = default;
 bool DeleteFilesWorkItem::DoImpl() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  std::vector<const wchar_t*> name_ptrs;
-  name_ptrs.reserve(file_names_.size());
-  for (const auto& name : file_names_) {
-    name_ptrs.push_back(name.c_str());
+
+  if (!base::DirectoryExists(install_dir_)) {
+    return true;
   }
-  return UninstallPayloadFiles(install_dir_, name_ptrs);
+
+  CleanupOldFiles(install_dir_);
+
+  bool all_deleted = true;
+  for (const auto& file_name : file_names_) {
+    base::FilePath file_path = install_dir_.Append(file_name);
+    if (!base::PathExists(file_path)) {
+      continue;
+    }
+
+    if (!DeleteFileForSetup(file_path)) {
+      // If the file is still locked during uninstall, rename to .old and
+      // schedule for deletion on reboot.
+      base::FilePath old_file;
+      if (MoveLockedFileToOldPath(file_path, &old_file)) {
+        ScheduleDeleteOnReboot(old_file);
+      } else {
+        // If the file cannot be renamed to .old (e.g. opened without
+        // FILE_SHARE_DELETE), schedule the original file for deletion on reboot
+        // so the OS cleans it up and allows `install_dir_` to be removed on
+        // reboot.
+        ScheduleDeleteOnReboot(file_path);
+        PLOG(WARNING) << "Failed to rename locked file " << file_path.value()
+                      << " to .old path; scheduled for deletion on reboot.";
+        all_deleted = false;
+      }
+    }
+  }
+
+  // Attempt non-recursive removal of `install_dir_` if it is now empty. If
+  // locked `.old` files remain, schedule `install_dir_` for reboot removal
+  // after the `.old` files.
+  if (!::RemoveDirectoryW(install_dir_.value().c_str())) {
+    DWORD error = ::GetLastError();
+    if (error == ERROR_DIR_NOT_EMPTY) {
+      ScheduleDeleteOnReboot(install_dir_);
+    } else if (error != ERROR_FILE_NOT_FOUND && error != ERROR_PATH_NOT_FOUND) {
+      PLOG(WARNING) << "Failed to remove installation directory: "
+                    << install_dir_.value();
+    }
+  }
+
+  return all_deleted;
 }
 
 void DeleteFilesWorkItem::RollbackImpl() {

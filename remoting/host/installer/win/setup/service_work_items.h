@@ -5,6 +5,19 @@
 #ifndef REMOTING_HOST_INSTALLER_WIN_SETUP_SERVICE_WORK_ITEMS_H_
 #define REMOTING_HOST_INSTALLER_WIN_SETUP_SERVICE_WORK_ITEMS_H_
 
+// Chrome Remote Desktop Windows service and host event `WorkItem`s for the
+// Windows host installer.
+//
+// What belongs here:
+// - `WorkItem` subclasses (`StopServiceWorkItem`,
+//   `InstallOrUpdateServiceWorkItem`, `StartServiceWorkItem`,
+//   `SignalUpdatePendingWorkItem`, `UninstallServiceWorkItem`) and their test
+//   injection seams.
+//
+// What does NOT belong here:
+// - Low-level Win32 Service Control Manager (SCM) or kernel event helper
+//   implementations. Put those in `service_util.{h,cc}`.
+
 #include <string>
 
 #include "base/files/file_path.h"

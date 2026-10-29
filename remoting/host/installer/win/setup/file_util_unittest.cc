@@ -6,8 +6,6 @@
 
 #include <windows.h>
 
-#include <array>
-#include <memory>
 #include <string>
 
 #include "base/containers/flat_set.h"
@@ -15,8 +13,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "base/logging.h"
 #include "base/win/scoped_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,19 +20,9 @@ namespace remoting::installer {
 
 namespace {
 
-inline constexpr wchar_t kTestHostBinary[] = L"remoting_host.exe";
 inline constexpr wchar_t kTestCoreBinary[] = L"remoting_core.dll";
 inline constexpr wchar_t kTestCoreOld0[] = L"remoting_core.dll.old";
 inline constexpr wchar_t kTestCoreOld1[] = L"remoting_core.dll.1.old";
-
-inline constexpr auto kTestPayloadFiles = std::to_array<const wchar_t*>({
-    kTestHostBinary,
-    kTestCoreBinary,
-});
-
-inline constexpr auto kSingleCorePayload = std::to_array<const wchar_t*>({
-    kTestCoreBinary,
-});
 
 }  // namespace
 
@@ -116,52 +102,28 @@ class FileUtilTest : public testing::Test {
   int reboot_delete_count_ = 0;
 };
 
-TEST_F(FileUtilTest, DeployAndUninstallPayloadFiles_FreshInstallAndCleanup) {
-  for (const wchar_t* name : kTestPayloadFiles) {
-    ASSERT_TRUE(base::WriteFile(source_dir_.Append(name), "v1_content"));
-  }
+TEST_F(FileUtilTest, InstallFileWithStagedRename_FreshInstallAndOverwrite) {
+  ASSERT_TRUE(base::CreateDirectory(install_dir_));
+  base::FilePath src_file = source_dir_.Append(kTestCoreBinary);
+  base::FilePath dst_file = install_dir_.Append(kTestCoreBinary);
 
-  EXPECT_TRUE(DeployPayloadFiles(source_dir_, install_dir_, kTestPayloadFiles));
+  ASSERT_TRUE(base::WriteFile(src_file, "v1_content"));
+  EXPECT_TRUE(InstallFileWithStagedRename(src_file, dst_file));
   EXPECT_EQ(scheduled_reboot_delete_count(), 0);
 
-  for (const wchar_t* name : kTestPayloadFiles) {
-    std::string content;
-    EXPECT_TRUE(base::ReadFileToString(install_dir_.Append(name), &content));
-    EXPECT_EQ(content, "v1_content");
-  }
+  std::string content;
+  EXPECT_TRUE(base::ReadFileToString(dst_file, &content));
+  EXPECT_EQ(content, "v1_content");
 
-  // Verify in-place unlocked update overwrites files without creating .old
+  // Verify in-place unlocked update overwrites file without creating .old
   // files or scheduling reboot deletions.
-  for (const wchar_t* name : kTestPayloadFiles) {
-    ASSERT_TRUE(base::WriteFile(source_dir_.Append(name), "v2_content"));
-  }
-  EXPECT_TRUE(DeployPayloadFiles(source_dir_, install_dir_, kTestPayloadFiles));
+  ASSERT_TRUE(base::WriteFile(src_file, "v2_content"));
+  EXPECT_TRUE(InstallFileWithStagedRename(src_file, dst_file));
   EXPECT_EQ(scheduled_reboot_delete_count(), 0);
   EXPECT_FALSE(base::PathExists(install_dir_.Append(kTestCoreOld0)));
 
-  for (const wchar_t* name : kTestPayloadFiles) {
-    std::string content;
-    EXPECT_TRUE(base::ReadFileToString(install_dir_.Append(name), &content));
-    EXPECT_EQ(content, "v2_content");
-  }
-
-  // Verify DeployPayloadFiles cleans up any pre-existing unlocked .old files.
-  base::FilePath stale_old = install_dir_.Append(L"stale_file.exe.old");
-  ASSERT_TRUE(base::WriteFile(stale_old, "stale"));
-  EXPECT_TRUE(DeployPayloadFiles(source_dir_, install_dir_, kTestPayloadFiles));
-  EXPECT_FALSE(base::PathExists(stale_old));
-
-  EXPECT_TRUE(UninstallPayloadFiles(install_dir_, kTestPayloadFiles));
-  EXPECT_FALSE(base::DirectoryExists(install_dir_));
-}
-
-TEST_F(FileUtilTest, DeployPayloadFiles_MissingSourceFileFails) {
-  // Only write the first file, leaving kTestCoreBinary missing in source_dir_.
-  ASSERT_TRUE(
-      base::WriteFile(source_dir_.Append(kTestHostBinary), "v1_content"));
-
-  EXPECT_FALSE(
-      DeployPayloadFiles(source_dir_, install_dir_, kTestPayloadFiles));
+  EXPECT_TRUE(base::ReadFileToString(dst_file, &content));
+  EXPECT_EQ(content, "v2_content");
 }
 
 TEST_F(FileUtilTest, InstallFileWithStagedRename_MissingSourceFileFails) {
@@ -245,75 +207,6 @@ TEST_F(FileUtilTest,
   SimulateFileUnlocked(old_file_1);
   CleanupOldFiles(install_dir_);
   EXPECT_FALSE(base::PathExists(old_file_1));
-}
-
-TEST_F(FileUtilTest, UninstallPayloadFiles_NonExistentDirectorySucceeds) {
-  base::FilePath non_existent = temp_dir_.GetPath().Append(L"does_not_exist");
-  EXPECT_TRUE(UninstallPayloadFiles(non_existent, kTestPayloadFiles));
-}
-
-TEST_F(FileUtilTest, UninstallPayloadFiles_PreservesDirectoryWithExtraFiles) {
-  ASSERT_TRUE(
-      base::WriteFile(source_dir_.Append(kTestCoreBinary), "v1_binary"));
-  ASSERT_TRUE(
-      DeployPayloadFiles(source_dir_, install_dir_, kSingleCorePayload));
-
-  // Add an untracked file in `install_dir_`. UninstallPayloadFiles should
-  // delete the payload file and schedule `install_dir_` for reboot removal when
-  // RemoveDirectoryW returns ERROR_DIR_NOT_EMPTY.
-  base::FilePath extra_file = install_dir_.Append(L"extra_file.txt");
-  ASSERT_TRUE(base::WriteFile(extra_file, "extra"));
-
-  EXPECT_TRUE(UninstallPayloadFiles(install_dir_, kSingleCorePayload));
-  EXPECT_FALSE(base::PathExists(install_dir_.Append(kTestCoreBinary)));
-  EXPECT_TRUE(base::PathExists(extra_file));
-  EXPECT_EQ(scheduled_reboot_delete_count(), 1);
-}
-
-TEST_F(FileUtilTest, UninstallPayloadFiles_LockedFileScheduledForReboot) {
-  ASSERT_TRUE(
-      base::WriteFile(source_dir_.Append(kTestCoreBinary), "v1_binary"));
-  ASSERT_TRUE(
-      DeployPayloadFiles(source_dir_, install_dir_, kSingleCorePayload));
-
-  base::FilePath installed_file = install_dir_.Append(kTestCoreBinary);
-  base::FilePath old_file = install_dir_.Append(kTestCoreOld0);
-
-  SimulateFileLocked(installed_file);
-
-  EXPECT_TRUE(UninstallPayloadFiles(install_dir_, kSingleCorePayload));
-  // Both the renamed `.old` file and `install_dir` should be scheduled for
-  // reboot removal.
-  EXPECT_EQ(scheduled_reboot_delete_count(), 2);
-  EXPECT_FALSE(base::PathExists(installed_file));
-  EXPECT_TRUE(base::PathExists(old_file));
-
-  SimulateFileUnlocked(old_file);
-}
-
-TEST_F(FileUtilTest,
-       UninstallPayloadFiles_ExclusiveLockedFileScheduledForReboot) {
-  ASSERT_TRUE(
-      base::WriteFile(source_dir_.Append(kTestCoreBinary), "v1_binary"));
-  ASSERT_TRUE(
-      DeployPayloadFiles(source_dir_, install_dir_, kSingleCorePayload));
-
-  base::FilePath installed_file = install_dir_.Append(kTestCoreBinary);
-
-  // Lock the file exclusively without FILE_SHARE_DELETE so
-  // MoveLockedFileToOldPath fails, triggering the fallback to
-  // ScheduleDeleteOnReboot(file_path).
-  base::File locked_file(installed_file,
-                         base::File::FLAG_OPEN | base::File::FLAG_READ);
-  ASSERT_TRUE(locked_file.IsValid());
-
-  EXPECT_FALSE(UninstallPayloadFiles(install_dir_, kSingleCorePayload));
-  // Both the locked original file and install_dir should be scheduled for
-  // reboot removal.
-  EXPECT_EQ(scheduled_reboot_delete_count(), 2);
-  EXPECT_TRUE(base::PathExists(installed_file));
-
-  locked_file.Close();
 }
 
 }  // namespace remoting::installer

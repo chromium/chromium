@@ -5,11 +5,24 @@
 #ifndef REMOTING_HOST_INSTALLER_WIN_SETUP_FILE_UTIL_H_
 #define REMOTING_HOST_INSTALLER_WIN_SETUP_FILE_UTIL_H_
 
-#include "base/containers/span.h"
+// Generic, product-agnostic file operation primitives and test seams for the
+// Windows host installer.
+//
+// What belongs here:
+// - Low-level file operation wrappers (`CopyFileForSetup`,
+//   `DeleteFileForSetup`, `MoveFileForSetup`) and test injection callbacks.
+// - Generic locked-file staging helpers (`MoveLockedFileToOldPath`,
+//   `ScheduleDeleteOnReboot`, `CleanupOldFiles`,
+//   `InstallFileWithStagedRename`).
+//
+// What does NOT belong here:
+// - Chrome Remote Desktop product-specific payload file lists (`kPayloadFiles`)
+//   or `WorkItem` subclasses for deploying/uninstalling CRD payload files. Put
+//   those in `file_work_items.{h,cc}`.
+
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/win/windows_types.h"
-#include "remoting/host/installer/win/setup/installer_constants.h"
 
 namespace remoting::installer {
 
@@ -56,21 +69,6 @@ void CleanupOldFiles(const base::FilePath& install_dir);
 // `dest_file`.
 bool InstallFileWithStagedRename(const base::FilePath& source_file,
                                  const base::FilePath& dest_file);
-
-// Deploys `file_names` from `source_dir` into `install_dir`. Creates
-// `install_dir` if it does not exist and cleans up any unlocked "*.old" files
-// from previous updates.
-bool DeployPayloadFiles(
-    const base::FilePath& source_dir,
-    const base::FilePath& install_dir,
-    base::span<const wchar_t* const> file_names = kPayloadFiles);
-
-// Removes `file_names` and any leftover "*.old" files from `install_dir`, and
-// removes `install_dir` if empty (or schedules it for reboot removal if locked
-// files remain).
-bool UninstallPayloadFiles(
-    const base::FilePath& install_dir,
-    base::span<const wchar_t* const> file_names = kPayloadFiles);
 
 }  // namespace remoting::installer
 

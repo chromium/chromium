@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Generic, product-agnostic file operation primitives and test seams for the
+// Windows host installer.
+//
+// See `file_util.h` for the boundary between generic file primitives (which
+// belong here) and Chrome Remote Desktop payload file `WorkItem`s (which belong
+// in `file_work_items.{h,cc}`).
+
 #include "remoting/host/installer/win/setup/file_util.h"
 
 #include <windows.h>
@@ -15,6 +22,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "remoting/host/installer/win/setup/installer_constants.h"
 
 namespace remoting::installer {
 
@@ -196,85 +204,6 @@ bool InstallFileWithStagedRename(const base::FilePath& source_file,
   // remains locked when the installer finishes.
   ScheduleDeleteOnReboot(old_file);
   return true;
-}
-
-bool DeployPayloadFiles(const base::FilePath& source_dir,
-                        const base::FilePath& install_dir,
-                        base::span<const wchar_t* const> file_names) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  if (!base::CreateDirectory(install_dir)) {
-    PLOG(ERROR) << "Failed to create installation directory: "
-                << install_dir.value();
-    return false;
-  }
-
-  // Clean up any unlocked .old files left behind by previous updates.
-  CleanupOldFiles(install_dir);
-
-  for (const wchar_t* file_name : file_names) {
-    base::FilePath src_path = source_dir.Append(file_name);
-    base::FilePath dst_path = install_dir.Append(file_name);
-    if (!InstallFileWithStagedRename(src_path, dst_path)) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-bool UninstallPayloadFiles(const base::FilePath& install_dir,
-                           base::span<const wchar_t* const> file_names) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  if (!base::DirectoryExists(install_dir)) {
-    return true;
-  }
-
-  CleanupOldFiles(install_dir);
-
-  bool all_deleted = true;
-  for (const wchar_t* file_name : file_names) {
-    base::FilePath file_path = install_dir.Append(file_name);
-    if (!base::PathExists(file_path)) {
-      continue;
-    }
-
-    if (!GetDeleteFileCallback().Run(file_path)) {
-      // If the file is still locked during uninstall, rename to .old and
-      // schedule for deletion on reboot.
-      base::FilePath old_file;
-      if (MoveLockedFileToOldPath(file_path, &old_file)) {
-        ScheduleDeleteOnReboot(old_file);
-      } else {
-        // If the file cannot be renamed to .old (e.g. opened without
-        // FILE_SHARE_DELETE), schedule the original file for deletion on reboot
-        // so the OS cleans it up and allows install_dir to be removed on
-        // reboot.
-        ScheduleDeleteOnReboot(file_path);
-        PLOG(WARNING) << "Failed to rename locked file " << file_path.value()
-                      << " to .old path; scheduled for deletion on reboot.";
-        all_deleted = false;
-      }
-    }
-  }
-
-  // Attempt non-recursive removal of `install_dir` if it is now empty. If
-  // locked `.old` files remain, schedule `install_dir` for reboot removal
-  // after the `.old` files.
-  if (!::RemoveDirectoryW(install_dir.value().c_str())) {
-    DWORD error = ::GetLastError();
-    if (error == ERROR_DIR_NOT_EMPTY) {
-      ScheduleDeleteOnReboot(install_dir);
-    } else if (error != ERROR_FILE_NOT_FOUND && error != ERROR_PATH_NOT_FOUND) {
-      PLOG(WARNING) << "Failed to remove installation directory: "
-                    << install_dir.value();
-    }
-  }
-
-  return all_deleted;
 }
 
 }  // namespace remoting::installer

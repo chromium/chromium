@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Chrome Remote Desktop Windows service and host event `WorkItem`s for the
+// Windows host installer.
+//
+// See `service_work_items.h` for the boundary between service/event `WorkItem`s
+// (which belong here) and low-level Win32 SCM/event helpers (which belong in
+// `service_util.{h,cc}`).
+
 #include "remoting/host/installer/win/setup/service_work_items.h"
 
 #include <windows.h>

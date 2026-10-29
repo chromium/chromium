@@ -5,6 +5,18 @@
 #ifndef REMOTING_HOST_INSTALLER_WIN_SETUP_SERVICE_UTIL_H_
 #define REMOTING_HOST_INSTALLER_WIN_SETUP_SERVICE_UTIL_H_
 
+// Low-level Win32 Service Control Manager (SCM) and kernel event helper
+// functions for the Windows host installer.
+//
+// What belongs here:
+// - Direct, stateless Win32 SCM and kernel event helper functions (e.g.,
+//   querying or signaling host events, creating/updating/starting/stopping/
+//   deleting the Windows service).
+//
+// What does NOT belong here:
+// - `WorkItem` subclasses, rollback state tracking, or the `ServiceManager`
+//   abstraction used by `WorkItem`s. Put those in `service_work_items.{h,cc}`.
+
 #include "base/files/file_path.h"
 #include "remoting/base/branding.h"
 

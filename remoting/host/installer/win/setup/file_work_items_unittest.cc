@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -27,6 +28,10 @@ inline constexpr wchar_t kTestBinary2[] = L"test_core.dll";
 
 inline constexpr auto kTestFiles = std::to_array<const wchar_t*>({
     kTestBinary1,
+    kTestBinary2,
+});
+
+inline constexpr auto kSingleCorePayload = std::to_array<const wchar_t*>({
     kTestBinary2,
 });
 
@@ -77,6 +82,23 @@ TEST_F(FileWorkItemsTest, DeployFilesWorkItem_SuccessAndRollback) {
   item.Rollback();
   EXPECT_FALSE(base::PathExists(install_dir_.Append(kTestBinary1)));
   EXPECT_FALSE(base::PathExists(install_dir_.Append(kTestBinary2)));
+}
+
+TEST_F(FileWorkItemsTest, DeployFilesWorkItem_MissingSourceFileFails) {
+  ASSERT_TRUE(base::DeleteFile(source_dir_.Append(kTestBinary2)));
+
+  DeployFilesWorkItem item(source_dir_, install_dir_, kTestFiles);
+  EXPECT_FALSE(item.Do());
+}
+
+TEST_F(FileWorkItemsTest, DeployFilesWorkItem_CleansUpStaleOldFiles) {
+  ASSERT_TRUE(base::CreateDirectory(install_dir_));
+  base::FilePath stale_old = install_dir_.Append(L"stale_file.exe.old");
+  ASSERT_TRUE(base::WriteFile(stale_old, "stale"));
+
+  DeployFilesWorkItem item(source_dir_, install_dir_, kTestFiles);
+  EXPECT_TRUE(item.Do());
+  EXPECT_FALSE(base::PathExists(stale_old));
 }
 
 TEST_F(FileWorkItemsTest, DeployFilesWorkItem_StagedRenameRollback) {
@@ -212,6 +234,85 @@ TEST_F(FileWorkItemsTest, DeleteFilesWorkItem_DeletesInstalledFiles) {
   EXPECT_TRUE(item.Do());
   EXPECT_FALSE(base::PathExists(install_dir_.Append(kTestBinary1)));
   EXPECT_FALSE(base::PathExists(install_dir_.Append(kTestBinary2)));
+  EXPECT_FALSE(base::DirectoryExists(install_dir_));
+}
+
+TEST_F(FileWorkItemsTest, DeleteFilesWorkItem_NonExistentDirectorySucceeds) {
+  base::FilePath non_existent = temp_dir_.GetPath().Append(L"does_not_exist");
+  DeleteFilesWorkItem item(non_existent, kTestFiles);
+  EXPECT_TRUE(item.Do());
+}
+
+TEST_F(FileWorkItemsTest,
+       DeleteFilesWorkItem_PreservesDirectoryWithExtraFiles) {
+  DeployFilesWorkItem deploy_item(source_dir_, install_dir_,
+                                  kSingleCorePayload);
+  ASSERT_TRUE(deploy_item.Do());
+  reboot_deleted_files_.clear();
+
+  // Add an untracked file in `install_dir_`. DeleteFilesWorkItem should delete
+  // the payload file and schedule `install_dir_` for reboot removal when
+  // RemoveDirectoryW returns ERROR_DIR_NOT_EMPTY.
+  base::FilePath extra_file = install_dir_.Append(L"extra_file.txt");
+  ASSERT_TRUE(base::WriteFile(extra_file, "extra"));
+
+  DeleteFilesWorkItem delete_item(install_dir_, kSingleCorePayload);
+  EXPECT_TRUE(delete_item.Do());
+  EXPECT_FALSE(base::PathExists(install_dir_.Append(kTestBinary2)));
+  EXPECT_TRUE(base::PathExists(extra_file));
+  ASSERT_EQ(reboot_deleted_files_.size(), 1u);
+  EXPECT_EQ(reboot_deleted_files_[0], install_dir_);
+}
+
+TEST_F(FileWorkItemsTest, DeleteFilesWorkItem_LockedFileScheduledForReboot) {
+  DeployFilesWorkItem deploy_item(source_dir_, install_dir_,
+                                  kSingleCorePayload);
+  ASSERT_TRUE(deploy_item.Do());
+  reboot_deleted_files_.clear();
+
+  base::FilePath installed_file = install_dir_.Append(kTestBinary2);
+  base::FilePath old_file = installed_file.AddExtension(kOldFileExtension);
+
+  SetDeleteFileCallbackForTesting(
+      base::BindRepeating([](const base::FilePath&) { return false; }));
+
+  DeleteFilesWorkItem delete_item(install_dir_, kSingleCorePayload);
+  EXPECT_TRUE(delete_item.Do());
+  // Both the renamed `.old` file and `install_dir_` should be scheduled for
+  // reboot removal.
+  ASSERT_EQ(reboot_deleted_files_.size(), 2u);
+  EXPECT_EQ(reboot_deleted_files_[0], old_file);
+  EXPECT_EQ(reboot_deleted_files_[1], install_dir_);
+  EXPECT_FALSE(base::PathExists(installed_file));
+  EXPECT_TRUE(base::PathExists(old_file));
+}
+
+TEST_F(FileWorkItemsTest,
+       DeleteFilesWorkItem_ExclusiveLockedFileScheduledForReboot) {
+  DeployFilesWorkItem deploy_item(source_dir_, install_dir_,
+                                  kSingleCorePayload);
+  ASSERT_TRUE(deploy_item.Do());
+  reboot_deleted_files_.clear();
+
+  base::FilePath installed_file = install_dir_.Append(kTestBinary2);
+
+  // Lock the file exclusively without FILE_SHARE_DELETE so
+  // MoveLockedFileToOldPath fails, triggering the fallback to
+  // ScheduleDeleteOnReboot(file_path).
+  base::File locked_file(installed_file,
+                         base::File::FLAG_OPEN | base::File::FLAG_READ);
+  ASSERT_TRUE(locked_file.IsValid());
+
+  DeleteFilesWorkItem delete_item(install_dir_, kSingleCorePayload);
+  EXPECT_FALSE(delete_item.Do());
+  // Both the locked original file and `install_dir_` should be scheduled for
+  // reboot removal.
+  ASSERT_EQ(reboot_deleted_files_.size(), 2u);
+  EXPECT_EQ(reboot_deleted_files_[0], installed_file);
+  EXPECT_EQ(reboot_deleted_files_[1], install_dir_);
+  EXPECT_TRUE(base::PathExists(installed_file));
+
+  locked_file.Close();
 }
 
 }  // namespace remoting::installer
