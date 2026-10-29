@@ -28,6 +28,7 @@ import android.webkit.MimeTypeMap;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.shadows.ShadowBinder;
@@ -35,6 +36,7 @@ import org.robolectric.shadows.ShadowContentResolver;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -54,6 +56,8 @@ public class DropDataProviderImplTest {
     private static final String IMAGE_FILENAME_B = "image.gif";
     private static final String IMAGE_FILENAME_C = "image.png";
     private static final int CLEAR_CACHED_DATA_INTERVAL_MS = 10_000;
+
+    @Rule public final FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     private DropDataProviderImpl mDropDataProviderImpl;
 
@@ -193,6 +197,7 @@ public class DropDataProviderImplTest {
         mDropDataProviderImpl.openFile(new DropDataContentProvider(), uri);
 
         // Next image drag starts before the previous image expires.
+        mFakeTimeTestRule.advanceMillis(1);
         mDropDataProviderImpl.cache(IMAGE_DATA_B, EXTENSION_B, IMAGE_FILENAME_B);
         assertImageFirstExpiredOpenFileRecorded(/* expectedCnt= */ 0);
 

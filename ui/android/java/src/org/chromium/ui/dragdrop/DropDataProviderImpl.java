@@ -23,6 +23,7 @@ import android.provider.OpenableColumns;
 import android.webkit.MimeTypeMap;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -121,7 +122,7 @@ public class DropDataProviderImpl {
     }
 
     private Uri generateUri() {
-        String timestamp = String.valueOf(System.currentTimeMillis());
+        String timestamp = String.valueOf(TimeUtils.currentTimeMillis());
         return new Uri.Builder()
                 .scheme(ContentResolver.SCHEME_CONTENT)
                 .authority(
